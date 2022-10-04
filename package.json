@@ -2,6 +2,16 @@
   "name": "quizmon",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Itay Raveh",
+    "email": "itayitay30@gmail.com"
+  },
+  "description": "The Ultimate Pokemon Knowledge Test",
+  "homepage": "https://github.com/itay-raveh/quizmon",
+  "engines": {
+    "node": "^16.0.0",
+    "vscode": "^1.22.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
