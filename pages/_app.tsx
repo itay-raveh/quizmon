@@ -1,7 +1,7 @@
-import { MantineProvider } from "@mantine/core";
-import { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
+import { MantineProvider } from '@mantine/core';
+import { AppProps } from 'next/app';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 const qc = new QueryClient();
 
@@ -11,7 +11,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       <MantineProvider withGlobalStyles withNormalizeCSS>
         <Component {...pageProps} />
       </MantineProvider>
-      {process.env.NODE_ENV === "development" && (
+      {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
     </QueryClientProvider>
