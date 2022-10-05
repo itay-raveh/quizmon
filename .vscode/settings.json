@@ -5,5 +5,11 @@
     "source.fixAll": true,
     "source.organizeImports": true
   },
-  "conventionalCommits.scopes": ["vscode", "npm"]
+  "conventionalCommits.scopes": ["vscode", "npm"],
+  "[svg]": {
+    "editor.defaultFormatter": "jock.svg"
+  },
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  }
 }
