@@ -1,7 +1,7 @@
 module.exports = {
   devmoji: [
     {
-      code: 'chore-assets',
+      code: 'assets',
       emoji: 'bento',
     },
   ],
