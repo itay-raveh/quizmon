@@ -53,8 +53,8 @@ const App = ({ Component, pageProps, colorSchemeCookie }: AppProps) => {
           <Image
             src={colorScheme === 'light' ? bgLight : bgDark}
             alt=''
-            // layout=fill + z-index=-1 = background image
             layout='fill'
+            objectFit='cover'
             style={{ zIndex: -1 }}
           />
           <Component {...pageProps} />
