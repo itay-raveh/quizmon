@@ -4,14 +4,15 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
+import bgDark from '@public/bg/dark.jpg';
+import bgLight from '@public/bg/light.jpg';
 import { getCookie, setCookie } from 'cookies-next';
 import {
   AppContext,
   AppProps as NextAppProps,
   default as NextApp,
 } from 'next/app';
-import { MantineProvider } from '@mantine/core';
-import { AppProps } from 'next/app';
+import Image from 'next/image';
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
@@ -49,6 +50,13 @@ const App = ({ Component, pageProps, colorSchemeCookie }: AppProps) => {
         toggleColorScheme={toggleColorScheme}
       >
         <MantineProvider withGlobalStyles withNormalizeCSS>
+          <Image
+            src={colorScheme === 'light' ? bgLight : bgDark}
+            alt=''
+            // layout=fill + z-index=-1 = background image
+            layout='fill'
+            style={{ zIndex: -1 }}
+          />
           <Component {...pageProps} />
         </MantineProvider>
       </ColorSchemeProvider>
