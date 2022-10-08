@@ -11,7 +11,8 @@
     "assets",
     "config",
     "styling",
-    "store"
+    "store",
+    "pages"
   ],
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
