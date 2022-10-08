@@ -1,9 +1,9 @@
 import { Button, Center, Checkbox, Stack } from '@mantine/core';
-import logo from '@public/logo.png';
 import { numToRoman } from 'lib/util/numToRoman';
 import range from 'lodash.range';
 import type { NextPage } from 'next';
 import Image from 'next/future/image';
+import logo from 'public/logo.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectGenerations, setGenerations } from 'store/generationsSlice';
 
