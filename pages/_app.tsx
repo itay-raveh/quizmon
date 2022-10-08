@@ -4,6 +4,7 @@ import Image from 'next/image';
 import bg from 'public/bg.jpg';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { wrapper } from 'store/store';
 
 const qc = new QueryClient();
 
@@ -29,4 +30,4 @@ const App = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default App;
+export default wrapper.withRedux(App);
