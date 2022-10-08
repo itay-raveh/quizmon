@@ -10,7 +10,8 @@
     "npm",
     "assets",
     "config",
-    "styling"
+    "styling",
+    "store"
   ],
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
