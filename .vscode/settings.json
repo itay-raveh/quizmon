@@ -12,7 +12,8 @@
     "config",
     "styling",
     "store",
-    "pages"
+    "pages",
+    "github"
   ],
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
