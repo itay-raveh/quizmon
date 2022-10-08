@@ -1,6 +1,6 @@
-import { MantineProvider } from '@mantine/core';
+import { Box, MantineProvider } from '@mantine/core';
 import { AppProps as NextAppProps } from 'next/app';
-import Image from 'next/image';
+import Image from 'next/future/image';
 import bg from 'public/bg.jpg';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
@@ -14,13 +14,16 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <QueryClientProvider client={qc}>
       <MantineProvider withGlobalStyles withNormalizeCSS>
-        <Image
-          src={bg}
-          alt=''
-          layout='fill'
-          objectFit='cover'
-          style={{ zIndex: -1 }}
-        />
+        <Box
+          sx={{
+            position: 'fixed',
+            width: '100vw',
+            height: '100vh',
+            zIndex: -1,
+          }}
+        >
+          <Image src={bg} alt='' style={{ objectFit: 'cover' }} fill priority />
+        </Box>
         <Component {...pageProps} />
       </MantineProvider>
       {process.env.NODE_ENV === 'development' && (
