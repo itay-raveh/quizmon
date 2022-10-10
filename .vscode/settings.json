@@ -5,7 +5,16 @@
     "source.fixAll": true,
     "source.organizeImports": true
   },
-  "conventionalCommits.scopes": ["vscode", "npm", "assets", "config"],
+  "conventionalCommits.scopes": [
+    "vscode",
+    "npm",
+    "assets",
+    "config",
+    "styling",
+    "store",
+    "pages",
+    "github"
+  ],
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
   },
