@@ -5,7 +5,7 @@ import type { NextPage } from 'next';
 import Image from 'next/future/image';
 import logo from 'public/logo.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectGenerations, setGenerations } from 'store/generationsSlice';
+import { selectGenerations, setGenerations } from 'store/slices/generations';
 
 interface IndexPageProps {}
 
