@@ -1,16 +1,23 @@
 import { Box, MantineProvider } from '@mantine/core';
-import { AppProps as NextAppProps } from 'next/app';
+import type { AppProps as NextAppProps } from 'next/app';
 import Image from 'next/future/image';
 import bg from 'public/bg.jpg';
+import type { FC } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
+import { Provider as StoreProvider } from 'react-redux';
 import { wrapper } from 'store/store';
 
 const qc = new QueryClient();
 
 interface AppProps extends NextAppProps {}
 
-const App = ({ Component, pageProps }: AppProps) => {
+const App: FC<AppProps> = ({ Component, ...rest }) => {
+  const {
+    store,
+    props: { pageProps },
+  } = wrapper.useWrappedStore(rest);
+
   return (
     <QueryClientProvider client={qc}>
       <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -24,7 +31,9 @@ const App = ({ Component, pageProps }: AppProps) => {
         >
           <Image src={bg} alt='' style={{ objectFit: 'cover' }} fill priority />
         </Box>
-        <Component {...pageProps} />
+        <StoreProvider store={store}>
+          <Component {...pageProps} />
+        </StoreProvider>
       </MantineProvider>
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />
@@ -33,4 +42,4 @@ const App = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default wrapper.withRedux(App);
+export default App;

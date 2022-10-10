@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 import type { Action } from 'redux';
-import { AppState } from './store';
+import type { AppState } from '../store';
 
 export interface Generations {
   generations: string[];
