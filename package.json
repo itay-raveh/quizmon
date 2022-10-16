@@ -39,7 +39,6 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@types/lodash.range": "^3.2.7",
     "@types/node": "^18.8.1",
     "@types/react": "^18.0.21",
     "@types/react-dom": "18.0.6",
