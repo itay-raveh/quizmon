@@ -40,6 +40,9 @@ const IndexPage: NextPage<IndexPageProps> = () => {
           <Button size='xl'>Start</Button>
         </Stack>
       </Center>
+      <footer>
+        <a href='https://www.textstudio.co/'>Logo generator</a>
+      </footer>
     </main>
   );
 };
