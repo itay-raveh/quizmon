@@ -20,5 +20,6 @@
   },
   "[ignore]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
-  }
+  },
+  "cSpell.words": ["pokeapi", "Pokemons"]
 }
