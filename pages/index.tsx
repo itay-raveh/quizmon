@@ -1,20 +1,23 @@
-import { Button, Center, Checkbox, Stack } from '@mantine/core';
-import { numToRoman } from 'lib/util/numToRoman';
-import range from 'lodash.range';
+import { Button, Center, Code, Group, Stack } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import ModifiersFormModal from 'components/ModifiersFormModal';
+import { modifiersInitialValues } from 'lib/models/Modifiers';
 import type { NextPage } from 'next';
 import Image from 'next/future/image';
 import logo from 'public/logo.png';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectGenerations, setGenerations } from 'store/slices/generations';
+import { useState } from 'react';
 
-interface IndexPageProps {}
-
-const IndexPage: NextPage<IndexPageProps> = () => {
-  const generations = useSelector(selectGenerations);
-  const dispatch = useDispatch();
+const IndexPage: NextPage = () => {
+  const [modifiers, setModifiers] = useState(modifiersInitialValues);
+  const [opened, { close, open }] = useDisclosure(false);
 
   return (
     <main>
+      <ModifiersFormModal
+        opened={opened}
+        onClose={close}
+        onSubmit={setModifiers}
+      />
       <Center sx={{ height: '100vh' }}>
         <Stack align='center'>
           <Image
@@ -23,21 +26,13 @@ const IndexPage: NextPage<IndexPageProps> = () => {
             style={{ maxWidth: '30rem', height: 'auto' }}
             priority
           />
-          {/* <a href='https://www.textstudio.co/'>Logo generator</a> */}
-
-          <Checkbox.Group
-            value={generations}
-            onChange={(generations) => dispatch(setGenerations(generations))}
-            label='Select Generations'
-            description='you will only see Pokémon from these generations'
-          >
-            {range(1, 9)
-              .map(numToRoman)
-              .map((gen) => (
-                <Checkbox key={gen} value={gen} label={`Gen ${gen}`} />
-              ))}
-          </Checkbox.Group>
-          <Button size='xl'>Start</Button>
+          <Group>
+            <Button variant='outline' onClick={open}>
+              Modifiers
+            </Button>
+            <Button>Start</Button>
+          </Group>
+          <Code block>{JSON.stringify(modifiers, undefined, 2)}</Code>
         </Stack>
       </Center>
       <footer>
