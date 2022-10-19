@@ -27,6 +27,8 @@
     "@mantine/form": "^5.5.5",
     "@mantine/hooks": "^5.5.1",
     "@mantine/next": "^5.5.1",
+    "lodash.shuffle": "^4.2.0",
+    "lodash.startcase": "^4.4.0",
     "next": "^12.3.1",
     "pokenode-ts": "^1.17.0",
     "react": "18.2.0",
@@ -36,6 +38,8 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
+    "@types/lodash.shuffle": "^4.2.7",
+    "@types/lodash.startcase": "^4.4.7",
     "@types/node": "^18.8.1",
     "@types/react": "^18.0.21",
     "@types/react-dom": "18.0.6",
