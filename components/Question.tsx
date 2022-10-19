@@ -9,9 +9,14 @@ export interface QuestionProps {
   pokemonFormName: string;
   pokemonFormNameList: string[];
   options: string[];
+  nextQuestion: () => void;
 }
 
-const Question: FC<QuestionProps> = ({ pokemonFormName, options }) => {
+const Question: FC<QuestionProps> = ({
+  pokemonFormName,
+  options,
+  nextQuestion,
+}) => {
   const { isLoading, data: pokemonForm } = useQuery(
     ['pokemon-form', pokemonFormName],
     () => pokeapi.pokemon.getPokemonFormByName(pokemonFormName)
@@ -63,6 +68,9 @@ const Question: FC<QuestionProps> = ({ pokemonFormName, options }) => {
             </Button>
           ))}
         </Group>
+        <Button disabled={!clickedOption} onClick={() => nextQuestion()}>
+          Next
+        </Button>
       </Stack>
     </section>
   );

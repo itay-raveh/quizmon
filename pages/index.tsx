@@ -1,7 +1,7 @@
 import { Button, Center, Group, Stack } from '@mantine/core';
 import { useCounter, useDisclosure } from '@mantine/hooks';
 import ModifiersFormModal from 'components/ModifiersFormModal';
-import Question, { QuestionProps } from 'components/Question';
+import Question from 'components/Question';
 import { ModifiersContext } from 'lib/context/ModifiersContext';
 import { modifiersInitialValues } from 'lib/models/Modifiers';
 import { pokeapi } from 'lib/pokeapi';
@@ -90,7 +90,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
   );
 
   // props for `Question`s for the forms in `pokemonFormNameList`
-  const questionPropsList: (QuestionProps & { key: string })[] = useMemo(
+  const questionPropsList = useMemo(
     () =>
       pokemonFormNameList.map((pokemonFormName) => {
         // get 3 random other forms
@@ -107,15 +107,16 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
         return {
           key: pokemonFormName,
           pokemonFormName,
-          pokemonFormNameList,
           options,
         };
       }),
     [pokemonFormNameList]
   );
 
-  const [questionIdx, { increment: nextQuestion, decrement: prevQuestion }] =
-    useCounter(0, { min: 0, max: questionPropsList.length - 1 });
+  const [questionIdx, { increment: nextQuestion }] = useCounter(0, {
+    min: 0,
+    max: questionPropsList.length - 1,
+  });
 
   return (
     <main>
@@ -140,22 +141,16 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
                 </Button>
                 <Button onClick={() => setStarted(true)}>Start</Button>
               </Group>
-              {pokemonFormNameList.length} Forms
+              {questionPropsList.length} Questions
             </>
           ) : (
-            <>
-              <ModifiersContext.Provider value={modifiers}>
-                <Question {...questionPropsList[questionIdx]} />
-              </ModifiersContext.Provider>
-              <Group>
-                {questionIdx > 0 && (
-                  <Button onClick={prevQuestion}>Back</Button>
-                )}
-                {questionIdx < pokemonFormNameList.length - 1 && (
-                  <Button onClick={nextQuestion}>Next</Button>
-                )}
-              </Group>
-            </>
+            <ModifiersContext.Provider value={modifiers}>
+              <Question
+                {...questionPropsList[questionIdx]}
+                pokemonFormNameList={pokemonFormNameList}
+                nextQuestion={nextQuestion}
+              />
+            </ModifiersContext.Provider>
           )}
         </Stack>
       </Center>
