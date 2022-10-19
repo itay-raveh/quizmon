@@ -1,35 +1,41 @@
-import { Modifiers } from 'lib/models/Modifiers';
+import { Button, Center, Group, Loader, Stack } from '@mantine/core';
 import { pokeapi } from 'lib/pokeapi';
-import Image from 'next/future/image';
-import type { FC } from 'react';
+import startCase from 'lodash.startcase';
+import { FC } from 'react';
 import { useQuery } from 'react-query';
+import Sprite, { SPRITE_SIZE } from './Sprite';
 
-interface QuestionProps {
-  pokemonName: string;
-  pokemonNameList: (string | undefined)[];
-  modifiers: Modifiers;
+export interface QuestionProps {
+  pokemonFormName: string;
+  pokemonFormNameList: string[];
+  options: string[];
 }
 
-const Question: FC<QuestionProps> = ({ pokemonName }) => {
-  const { data: pokemon } = useQuery(['pokemon', pokemonName], () =>
-    pokeapi.pokemon.getPokemonByName(pokemonName)
+const Question: FC<QuestionProps> = ({ pokemonFormName, options }) => {
+  const { isLoading, data: pokemonForm } = useQuery(
+    ['pokemon-form', pokemonFormName],
+    () => pokeapi.pokemon.getPokemonFormByName(pokemonFormName)
   );
 
-  if (!pokemon) return <section>No such Pokemon</section>;
+  if (isLoading)
+    return (
+      <Center sx={{ width: SPRITE_SIZE + 50, height: SPRITE_SIZE + 50 }}>
+        <Loader size='xl' />
+      </Center>
+    );
 
-  const image = pokemon.sprites.other?.['official-artwork'].front_default;
-
-  if (!image) return <section>No sprite for this Pokemon</section>;
+  if (!pokemonForm) return <section>No such pokemon</section>;
 
   return (
     <section>
-      <Image
-        src={image}
-        alt={pokemon.name}
-        width='300'
-        height='300'
-        // style={{ filter: 'contrast(0%) brightness(0%)' }}
-      />
+      <Stack align='center'>
+        <Sprite pokemonForm={pokemonForm} />
+        <Group>
+          {options.map((option) => (
+            <Button key={option}>{startCase(option)}</Button>
+          ))}
+        </Group>
+      </Stack>
     </section>
   );
 };
