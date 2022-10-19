@@ -1,6 +1,6 @@
-import { Button, Center, Group, Stack } from '@mantine/core';
-import { useCounter, useDisclosure } from '@mantine/hooks';
-import ModifiersFormModal from 'components/ModifiersFormModal';
+import { Center, Stack } from '@mantine/core';
+import { useCounter } from '@mantine/hooks';
+import Landing from 'components/Landing';
 import Question from 'components/Question';
 import { ModifiersContext } from 'lib/context/ModifiersContext';
 import { modifiersInitialValues } from 'lib/models/Modifiers';
@@ -8,8 +8,7 @@ import { pokeapi } from 'lib/pokeapi';
 import { GenRoman } from 'lib/types/GenRoman';
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
-import Image from 'next/future/image';
-import logo from 'public/logo.png';
+
 import { useMemo, useState } from 'react';
 
 type GenToString = Record<GenRoman, string>;
@@ -76,8 +75,6 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
 
   const [started, setStarted] = useState(false);
 
-  const [opened, { close, open }] = useDisclosure(false);
-
   // all pokemon form names from the generations selected in `modifiers.generations`
   const pokemonFormNameList = useMemo(
     () =>
@@ -120,29 +117,14 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
 
   return (
     <main>
-      <ModifiersFormModal
-        opened={opened}
-        onClose={close}
-        onSubmit={setModifiers}
-      />
       <Center sx={{ height: '100vh' }}>
         <Stack align='center'>
           {!started ? (
-            <>
-              <Image
-                src={logo}
-                alt='Quizmon: The Ultimate Pokémon Knowledge Test'
-                style={{ maxWidth: '30rem', height: 'auto' }}
-                priority
-              />
-              <Group>
-                <Button variant='outline' onClick={open}>
-                  Modifiers
-                </Button>
-                <Button onClick={() => setStarted(true)}>Start</Button>
-              </Group>
-              {questionPropsList.length} Questions
-            </>
+            <Landing
+              setModifiers={setModifiers}
+              setStarted={setStarted}
+              questionCount={questionPropsList.length}
+            />
           ) : (
             <ModifiersContext.Provider value={modifiers}>
               <Question
