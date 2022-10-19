@@ -5,14 +5,14 @@ import Question from 'components/Question';
 import { ModifiersContext } from 'lib/context/ModifiersContext';
 import { modifiersInitialValues } from 'lib/models/Modifiers';
 import { pokeapi } from 'lib/pokeapi';
-import { GenRoman } from 'lib/types/GenRoman';
+import type {
+  GenRoman,
+  GenToString,
+  GenToStringArray,
+} from 'lib/types/GenRoman';
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
-
 import { useMemo, useState } from 'react';
-
-type GenToString = Record<GenRoman, string>;
-type GenToStringArray = Record<GenRoman, string[]>;
 
 interface IndexPageProps {
   genToPokemonFormNameList: GenToStringArray;

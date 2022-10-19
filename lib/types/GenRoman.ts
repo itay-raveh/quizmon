@@ -10,3 +10,6 @@ export const generations = [
 ] as const;
 
 export type GenRoman = typeof generations[number];
+
+export type GenToString = Record<GenRoman, string>;
+export type GenToStringArray = Record<GenRoman, string[]>;
