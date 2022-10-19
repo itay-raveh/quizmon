@@ -1,6 +1,13 @@
-import { Button, Checkbox, Group, Modal } from '@mantine/core';
+import {
+  Button,
+  Checkbox,
+  Group,
+  Modal,
+  NumberInput,
+  Stack,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Modifiers, modifiersInitialValues } from 'lib/models/Modifiers';
+import { modifiersInitialValues, type Modifiers } from 'lib/models/Modifiers';
 import { generations } from 'lib/types/GenRoman';
 import type { FC } from 'react';
 
@@ -32,22 +39,37 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
       centered
     >
       <form onSubmit={form.onSubmit(onSubmit)}>
-        <Checkbox.Group
-          label='Generations'
-          description='You will only see Pokémon from these generations'
-          spacing='xs'
-          errorProps={{ sx: { marginTop: '0.3rem' } }}
-          {...form.getInputProps('generations')}
-        >
-          {generations.map((gen) => (
-            <Checkbox key={gen} value={gen} label={`Gen ${gen}`} />
-          ))}
-        </Checkbox.Group>
-        <Group position='right' mt='1rem'>
-          <Button type='submit' onClick={onClose} disabled={!form.isValid()}>
-            Save
-          </Button>
-        </Group>
+        <Stack>
+          <Checkbox.Group
+            label='Generations'
+            description='You will only see Pokémon from these generations'
+            spacing='xs'
+            errorProps={{ sx: { marginTop: '0.3rem' } }}
+            {...form.getInputProps('generations')}
+          >
+            {generations.map((gen) => (
+              <Checkbox key={gen} value={gen} label={`Gen ${gen}`} />
+            ))}
+          </Checkbox.Group>
+          <NumberInput
+            label='Limit'
+            description='Maximum number of questions'
+            disabled={!form.values.isLimitActive}
+            min={0}
+            rightSection={
+              <Checkbox
+                {...form.getInputProps('isLimitActive', { type: 'checkbox' })}
+                mr='xl'
+              />
+            }
+            {...form.getInputProps('limit')}
+          />
+          <Group position='right'>
+            <Button type='submit' onClick={onClose} disabled={!form.isValid()}>
+              Save
+            </Button>
+          </Group>
+        </Stack>
       </form>
     </Modal>
   );
