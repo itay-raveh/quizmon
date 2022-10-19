@@ -110,9 +110,13 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
     [pokemonFormNameList]
   );
 
+  const questionCount = modifiers.isLimitActive
+    ? modifiers.limit
+    : questionPropsList.length;
+
   const [questionIdx, { increment: nextQuestion }] = useCounter(0, {
     min: 0,
-    max: questionPropsList.length - 1,
+    max: questionCount - 1,
   });
 
   return (
@@ -123,7 +127,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
             <Landing
               setModifiers={setModifiers}
               setStarted={setStarted}
-              questionCount={questionPropsList.length}
+              questionCount={questionCount}
             />
           ) : (
             <ModifiersContext.Provider value={modifiers}>
