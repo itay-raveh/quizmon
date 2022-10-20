@@ -116,29 +116,39 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
 
   const [questionIdx, { increment: nextQuestion }] = useCounter(0, {
     min: 0,
-    max: questionCount - 1,
+    max: questionCount,
   });
+
+  let content;
+
+  if (!started) {
+    content = (
+      <Landing
+        setModifiers={setModifiers}
+        setStarted={setStarted}
+        questionCount={questionCount}
+      />
+    );
+  } else {
+    if (questionIdx < questionCount) {
+      content = (
+        <ModifiersContext.Provider value={modifiers}>
+          <Question
+            {...questionPropsList[questionIdx]}
+            pokemonFormNameList={pokemonFormNameList}
+            nextQuestion={nextQuestion}
+          />
+        </ModifiersContext.Provider>
+      );
+    } else {
+      content = <div>End</div>;
+    }
+  }
 
   return (
     <main>
       <Center sx={{ height: '100vh' }}>
-        <Stack align='center'>
-          {!started ? (
-            <Landing
-              setModifiers={setModifiers}
-              setStarted={setStarted}
-              questionCount={questionCount}
-            />
-          ) : (
-            <ModifiersContext.Provider value={modifiers}>
-              <Question
-                {...questionPropsList[questionIdx]}
-                pokemonFormNameList={pokemonFormNameList}
-                nextQuestion={nextQuestion}
-              />
-            </ModifiersContext.Provider>
-          )}
-        </Stack>
+        <Stack align='center'>{content}</Stack>
       </Center>
       <footer>
         <a href='https://www.textstudio.co/'>Logo generator</a>
