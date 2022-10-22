@@ -1,17 +1,9 @@
-import {
-  Button,
-  Checkbox,
-  Group,
-  Modal,
-  NumberInput,
-  Stack,
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { Modal, Stack } from '@mantine/core';
 import { modifiersInitialValues, type Modifiers } from 'lib/models/Modifiers';
-import { generations } from 'lib/types/GenRoman';
 import type { FC } from 'react';
 import { FormProvider, useForm } from './form';
 import Generations from './Generations';
+import Limit from './Limit';
 
 interface ModifiersFormModalProps {
   opened: boolean;
@@ -44,6 +36,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack>
             <Generations />
+            <Limit />
         </Stack>
       </form>
       </FormProvider>
