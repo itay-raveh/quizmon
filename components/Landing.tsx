@@ -7,15 +7,11 @@ import ModifiersFormModal from './ModifiersFormModal';
 
 interface LandingProps {
   setModifiers: Dispatch<SetStateAction<Modifiers>>;
-  setStarted: Dispatch<SetStateAction<boolean>>;
+  start: () => void;
   questionCount: number;
 }
 
-const Landing: FC<LandingProps> = ({
-  setModifiers,
-  setStarted,
-  questionCount,
-}) => {
+const Landing: FC<LandingProps> = ({ setModifiers, start, questionCount }) => {
   const [opened, { close, open }] = useDisclosure(false);
 
   return (
@@ -30,7 +26,7 @@ const Landing: FC<LandingProps> = ({
         <Button variant='outline' onClick={open}>
           Modifiers
         </Button>
-        <Button onClick={() => setStarted(true)}>Start</Button>
+        <Button onClick={start}>Start</Button>
       </Group>
       {questionCount} Questions
     </>
