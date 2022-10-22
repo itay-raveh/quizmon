@@ -19,7 +19,13 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
           zIndex: -1,
         }}
       >
-        <Image src={bg} alt='' style={{ objectFit: 'cover' }} fill priority />
+        <Image
+          src={bg}
+          alt=''
+          fill
+          priority
+          style={{ objectFit: 'cover', filter: 'blur(5px)' }}
+        />
       </Box>
       <QueryClientProvider client={qc}>
         <Component {...pageProps} />
