@@ -122,6 +122,11 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
     max: questionCount,
   });
 
+  const [correctCount, { increment: incrementCorrectCount }] = useCounter(0, {
+    min: 0,
+    max: questionCount,
+  });
+
   let content;
 
   if (!started) {
@@ -142,6 +147,10 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
           <Question
             {...questionPropsList[questionIdx]}
             pokemonFormNameList={pokemonFormNameList}
+            nextQuestion={(correct) => {
+              if (correct) incrementCorrectCount();
+              nextQuestion();
+            }}
             stopwatch={stopwatch}
           />
         </ModifiersContext.Provider>
