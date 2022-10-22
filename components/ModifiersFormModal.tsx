@@ -45,6 +45,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
             description='You will only see Pokémon from these generations'
             spacing='xs'
             errorProps={{ sx: { marginTop: '0.3rem' } }}
+            sx={{ minHeight: '4.5rem' }}
             {...form.getInputProps('generations')}
           >
             {generations.map((gen) => (
