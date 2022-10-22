@@ -2,6 +2,7 @@ import { Center, Stack } from '@mantine/core';
 import { useCounter } from '@mantine/hooks';
 import Landing from 'components/Landing';
 import Question from 'components/Question';
+import Results from 'components/Results';
 import { ModifiersContext } from 'lib/context/ModifiersContext';
 import { modifiersInitialValues } from 'lib/models/Modifiers';
 import { pokeapi } from 'lib/pokeapi';
@@ -156,7 +157,13 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
         </ModifiersContext.Provider>
       );
     } else {
-      content = <div>End</div>;
+      content = (
+        <Results
+          stopwatch={stopwatch}
+          questionCount={questionCount}
+          correctCount={correctCount}
+        />
+      );
     }
   }
 
