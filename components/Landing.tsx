@@ -22,10 +22,12 @@ const Landing: FC<LandingProps> = ({ setModifiers, start }) => {
       />
       <Logo />
       <Group>
-        <Button variant='outline' onClick={open}>
+        <Button size='md' variant='outline' onClick={open}>
           Modifiers
         </Button>
-        <Button onClick={start}>Start</Button>
+        <Button size='md' onClick={start}>
+          Start
+        </Button>
       </Group>
     </>
   );
