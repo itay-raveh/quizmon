@@ -1,4 +1,4 @@
-import { Title } from '@mantine/core';
+import { Button, Group, Title } from '@mantine/core';
 import { formatStopwatch } from 'lib/utils';
 import type { FC } from 'react';
 import { StopwatchResult } from 'react-timer-hook';
@@ -29,6 +29,9 @@ const Results: FC<ResultsProps> = ({
           {questionCount})
         </strong>
       </Title>
+      <Group position='center' mt='xl'>
+        <Button onClick={() => location.reload()}>Back to home page</Button>
+      </Group>
     </section>
   );
 };
