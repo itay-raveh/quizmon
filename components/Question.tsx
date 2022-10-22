@@ -9,7 +9,7 @@ export interface QuestionProps {
   pokemonFormName: string;
   pokemonFormNameList: string[];
   options: string[];
-  nextQuestion: () => void;
+  nextQuestion: (correct: boolean) => void;
 }
 
 const Question: FC<QuestionProps> = ({
@@ -68,7 +68,10 @@ const Question: FC<QuestionProps> = ({
             </Button>
           ))}
         </Group>
-        <Button disabled={!clickedOption} onClick={() => nextQuestion()}>
+        <Button
+          disabled={!clickedOption}
+          onClick={() => nextQuestion(clickedOption === pokemonFormName)}
+        >
           Next
         </Button>
       </Stack>
