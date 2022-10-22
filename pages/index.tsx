@@ -138,7 +138,6 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
           setStarted(true);
           stopwatch.start();
         }}
-        questionCount={questionCount}
       />
     );
   } else {
@@ -172,7 +171,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
       <Center sx={{ height: '100vh' }}>
         <Stack align='center'>{content}</Stack>
       </Center>
-      <footer>
+      <footer style={{ position: 'absolute', bottom: 0 }}>
         <a href='https://www.textstudio.co/'>Logo generator</a>
       </footer>
     </main>
