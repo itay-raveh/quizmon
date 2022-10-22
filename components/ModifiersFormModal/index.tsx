@@ -10,6 +10,7 @@ import { useForm } from '@mantine/form';
 import { modifiersInitialValues, type Modifiers } from 'lib/models/Modifiers';
 import { generations } from 'lib/types/GenRoman';
 import type { FC } from 'react';
+import { FormProvider, useForm } from './form';
 
 interface ModifiersFormModalProps {
   opened: boolean;
@@ -22,7 +23,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const form = useForm<Modifiers>({
+  const form = useForm({
     initialValues: modifiersInitialValues,
     validate: {
       generations: (value) => (value.length < 1 ? 'Select at least one' : null),
@@ -38,6 +39,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
       size='auto'
       centered
     >
+      <FormProvider form={form}>
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack>
           <Checkbox.Group
@@ -72,6 +74,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
           </Group>
         </Stack>
       </form>
+      </FormProvider>
     </Modal>
   );
 };
