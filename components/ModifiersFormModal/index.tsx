@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import { FormProvider, useForm } from './form';
 import Generations from './Generations';
 import Limit from './Limit';
+import Save from './Save';
 
 interface ModifiersFormModalProps {
   opened: boolean;
@@ -33,12 +34,13 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
       centered
     >
       <FormProvider form={form}>
-      <form onSubmit={form.onSubmit(onSubmit)}>
-        <Stack>
+        <form onSubmit={form.onSubmit(onSubmit)}>
+          <Stack>
             <Generations />
             <Limit />
-        </Stack>
-      </form>
+            <Save onClose={onClose} />
+          </Stack>
+        </form>
       </FormProvider>
     </Modal>
   );
