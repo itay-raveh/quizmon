@@ -1,8 +1,10 @@
-import { Button, Center, Group, Loader, Stack } from '@mantine/core';
+import { Button, Center, Group, Loader, Stack, Text } from '@mantine/core';
 import { pokeapi } from 'lib/pokeapi';
+import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
-import { FC, useState } from 'react';
+import { useState, type FC } from 'react';
 import { useQuery } from 'react-query';
+import type { StopwatchResult } from 'react-timer-hook';
 import Sprite, { SPRITE_SIZE } from './Sprite';
 
 export interface QuestionProps {
@@ -10,12 +12,14 @@ export interface QuestionProps {
   pokemonFormNameList: string[];
   options: string[];
   nextQuestion: (correct: boolean) => void;
+  stopwatch: StopwatchResult;
 }
 
 const Question: FC<QuestionProps> = ({
   pokemonFormName,
   options,
   nextQuestion,
+  stopwatch,
 }) => {
   const { isLoading, data: pokemonForm } = useQuery(
     ['pokemon-form', pokemonFormName],
@@ -55,6 +59,9 @@ const Question: FC<QuestionProps> = ({
   return (
     <section>
       <Stack align='center'>
+        <Text size='xl' weight={700}>
+          {formatStopwatch(stopwatch)}
+        </Text>
         <Sprite pokemonForm={pokemonForm} />
         <Group>
           {options.map((option) => (
