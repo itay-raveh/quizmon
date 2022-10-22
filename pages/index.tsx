@@ -13,6 +13,7 @@ import type {
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
 import { useMemo, useState } from 'react';
+import { useStopwatch } from 'react-timer-hook';
 
 interface IndexPageProps {
   genToPokemonFormNameList: GenToStringArray;
@@ -75,6 +76,8 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
 
   const [started, setStarted] = useState(false);
 
+  const stopwatch = useStopwatch({ autoStart: false });
+
   // all pokemon form names from the generations selected in `modifiers.generations`
   const pokemonFormNameList = useMemo(
     () =>
@@ -125,7 +128,10 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
     content = (
       <Landing
         setModifiers={setModifiers}
-        setStarted={setStarted}
+        start={() => {
+          setStarted(true);
+          stopwatch.start();
+        }}
         questionCount={questionCount}
       />
     );
@@ -136,7 +142,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
           <Question
             {...questionPropsList[questionIdx]}
             pokemonFormNameList={pokemonFormNameList}
-            nextQuestion={nextQuestion}
+            stopwatch={stopwatch}
           />
         </ModifiersContext.Provider>
       );
