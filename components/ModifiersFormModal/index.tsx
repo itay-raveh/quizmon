@@ -2,6 +2,7 @@ import { Modal, Stack } from '@mantine/core';
 import { modifiersInitialValues, type Modifiers } from 'lib/models/Modifiers';
 import type { FC } from 'react';
 import { FormProvider, useForm } from './form';
+import FormCategories from './FormCategories';
 import Generations from './Generations';
 import Limit from './Limit';
 import Save from './Save';
@@ -21,6 +22,8 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
     initialValues: modifiersInitialValues,
     validate: {
       generations: (value) => (value.length < 1 ? 'Select at least one' : null),
+      formCategories: (value) =>
+        value.length < 1 ? 'Select at least one' : null,
     },
     validateInputOnChange: true,
   });
@@ -38,6 +41,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
           <Stack>
             <Generations />
             <Limit />
+            <FormCategories />
             <Save onClose={onClose} />
           </Stack>
         </form>
