@@ -1,41 +1,34 @@
-import { Button, Center, Group, Loader, Stack, Text } from '@mantine/core';
+import { Button, Group, Loader, Stack, Text } from '@mantine/core';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
 import { useState, type FC } from 'react';
 import { useQuery } from 'react-query';
 import type { StopwatchResult } from 'react-timer-hook';
-import Sprite, { SPRITE_SIZE } from './Sprite';
+import Sprite from './Sprite';
 
 export interface QuestionProps {
-  pokemonFormName: string;
-  pokemonFormNameList: string[];
+  pokemonName: string;
   options: string[];
-  nextQuestion: (correct: boolean) => void;
   stopwatch: StopwatchResult;
+  nextQuestion: (correct: boolean) => void;
 }
 
 const Question: FC<QuestionProps> = ({
-  pokemonFormName,
+  pokemonName,
   options,
-  nextQuestion,
   stopwatch,
+  nextQuestion,
 }) => {
-  const { isLoading, data: pokemonForm } = useQuery(
-    ['pokemon-form', pokemonFormName],
-    () => pokeapi.pokemon.getPokemonFormByName(pokemonFormName)
+  const { isLoading, data: pokemon } = useQuery(['pokemon', pokemonName], () =>
+    pokeapi.pokemon.getPokemonByName(pokemonName)
   );
 
   const [clickedOption, setClickedOption] = useState('');
 
-  if (isLoading)
-    return (
-      <Center sx={{ width: SPRITE_SIZE + 50, height: SPRITE_SIZE + 50 }}>
-        <Loader size='xl' />
-      </Center>
-    );
+  if (isLoading) return <Loader size='xl' />;
 
-  if (!pokemonForm) return <section>No such pokemon</section>;
+  if (!pokemon) return <section>No such pokemon</section>;
 
   const getColor = (option: string) => {
     // if no button was clicked yet
@@ -45,7 +38,7 @@ const Question: FC<QuestionProps> = ({
       return undefined;
 
     // if this is the correct option
-    if (option === pokemonFormName)
+    if (option === pokemonName)
       // mark it as correct
       return 'green';
 
@@ -62,7 +55,7 @@ const Question: FC<QuestionProps> = ({
         <Text size='xl' weight={700}>
           {formatStopwatch(stopwatch)}
         </Text>
-        <Sprite pokemonForm={pokemonForm} />
+        <Sprite pokemon={pokemon} />
         <Group>
           {options.map((option) => (
             <Button
@@ -77,7 +70,7 @@ const Question: FC<QuestionProps> = ({
         </Group>
         <Button
           disabled={!clickedOption}
-          onClick={() => nextQuestion(clickedOption === pokemonFormName)}
+          onClick={() => nextQuestion(clickedOption === pokemonName)}
         >
           Next
         </Button>
