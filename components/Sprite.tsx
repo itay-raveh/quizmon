@@ -9,18 +9,14 @@ interface SpriteProps {
 }
 
 const Sprite: FC<SpriteProps> = ({ pokemon }) => {
+  const officialArtwork =
+    pokemon?.sprites.other?.['official-artwork'].front_default;
 
-  if (isLoading)
-    return (
-      <Center sx={{ width: SPRITE_SIZE, height: SPRITE_SIZE }}>
-        <Loader size='xl' />
-      </Center>
-    );
+  const home = pokemon?.sprites.other?.home.front_default;
 
-  const best =
-    pokemon?.sprites.other?.['official-artwork'].front_default ||
-    pokemon?.sprites.other?.home.front_default ||
-    pokemon?.sprites.front_default;
+  const sprite = pokemon?.sprites.front_default;
+
+  const best = officialArtwork || home || sprite;
 
   if (!best) return <section>No sprite for this Pokemon</section>;
 
@@ -32,7 +28,7 @@ const Sprite: FC<SpriteProps> = ({ pokemon }) => {
       height={SPRITE_SIZE}
       style={{
         filter: 'drop-shadow(0px 0px 10px #000)',
-        // imageRendering: 'pixelated',
+        imageRendering: best === sprite ? 'pixelated' : 'auto',
       }}
     />
   );
