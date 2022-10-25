@@ -22,5 +22,13 @@
   "[ignore]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
   },
-  "cSpell.words": ["pokeapi", "Pokemons", "startcase"]
+  "cSpell.words": [
+    "alola",
+    "galar",
+    "gmax",
+    "hisui",
+    "pokeapi",
+    "Pokemons",
+    "startcase"
+  ]
 }
