@@ -6,73 +6,75 @@ import Results from 'components/Results';
 import { ModifiersContext } from 'lib/context/ModifiersContext';
 import { modifiersInitialValues } from 'lib/models/Modifiers';
 import { pokeapi } from 'lib/pokeapi';
-import type {
-  GenRoman,
-  GenToString,
-  GenToStringArray,
-} from 'lib/types/GenRoman';
+import { knownFormCategories, type FormCategory } from 'lib/types/FormCategory';
+import type { GenRoman } from 'lib/types/GenRoman';
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
 import { useMemo, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
 
+interface PokemonInitialData {
+  formCategory: FormCategory;
+  generation: GenRoman;
+}
+
+type PokemonsInitialData = { [name: string]: PokemonInitialData };
+
 interface IndexPageProps {
-  genToPokemonFormNameList: GenToStringArray;
+  pokemonsInitialData: PokemonsInitialData;
 }
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
-  const pokemonFormResourceList = await pokeapi.pokemon.listPokemonForms(
+  const pokemonResources = await pokeapi.pokemon.listPokemons(
     0,
-    9999
+    9999 // all of them, hopefully
   );
 
-  const pokemonFormList = await Promise.all(
-    pokemonFormResourceList.results.map((pokemonFormResource) =>
-      pokeapi.pokemon.getPokemonFormByName(pokemonFormResource.name)
+  const pokemons = await Promise.all(
+    pokemonResources.results.map((pokemonResource) =>
+      pokeapi.pokemon.getPokemonByName(pokemonResource.name)
     )
   );
 
-  const pokemonFormToGen = (await Promise.all(
-    // for each form
-    pokemonFormList
-      // if its a pokemon,
-      .filter((pokemonForm) => pokemonForm.name === pokemonForm.pokemon.name)
-      .map(async (pokemonForm) => {
-        // get its VersionGroup
-        const versionGroup = await pokeapi.game.getVersionGroupByName(
-          pokemonForm.version_group.name
-        );
+  const pokemonsInitialData: PokemonsInitialData =
+    Object.fromEntries<PokemonInitialData>(
+      await Promise.all(
+        pokemons.map(async (pokemon) => {
+          // assuming first form is default form
+          const defaultFormName = pokemon.forms[0].name;
 
-        // transform the VersionGroup gen name to be `GenRoman`  compatible
-        const genName = versionGroup.generation.name
-          .substring('generation-'.length)
-          .toUpperCase() as GenRoman;
+          const defaultForm = await pokeapi.pokemon.getPokemonFormByName(
+            defaultFormName
+          );
 
-        return {
-          [genName]: pokemonForm.name,
-        };
-      })
-  )) as GenToString[];
+          const versionGroup = await pokeapi.game.getVersionGroupByName(
+            defaultForm.version_group.name
+          );
 
-  // reduce GenToString[] to GenToStringArray
-  const pivotReduce = (pivoted: GenToStringArray, record: GenToString) => {
-    let key: GenRoman;
-    for (key in record) {
-      if (!pivoted[key]) pivoted[key] = [];
-      pivoted[key].push(record[key]);
-    }
-    return pivoted;
-  };
+          // transform the `VersionGroup` gen name to `GenRoman`
+          const generation = versionGroup.generation.name
+            .substring('generation-'.length)
+            .toUpperCase() as GenRoman;
 
-  const genToPokemonFormNameList = pokemonFormToGen.reduce(
-    pivotReduce,
-    {} as GenToStringArray
-  );
+          // determine form category
+          let formCategory: FormCategory = 'other';
+          if (pokemon.is_default) formCategory = 'default';
+          // if a known category is the pokemon name, that is the category
+          else
+            knownFormCategories.forEach((category) => {
+              if (pokemon.name.includes(`-${category}`))
+                formCategory = category;
+            });
 
-  return { props: { genToPokemonFormNameList } };
+          return [pokemon.name, { generation, formCategory }] as const;
+        })
+      )
+    );
+
+  return { props: { pokemonsInitialData } };
 };
 
-const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
+const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   const [modifiers, setModifiers] = useState(modifiersInitialValues);
 
   const [started, setStarted] = useState(false);
@@ -80,38 +82,42 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
   const stopwatch = useStopwatch({ autoStart: false });
 
   // all pokemon form names from the generations selected in `modifiers.generations`
-  const pokemonFormNameList = useMemo(
+  const filteredPokemons = useMemo(
     () =>
       shuffle(
-        Object.entries(genToPokemonFormNameList)
-          .filter(([gen]) => modifiers.generations.includes(gen as GenRoman))
-          .flatMap(([, pokemonFormName]) => pokemonFormName)
+        Object.entries(pokemonsInitialData)
+          .filter(
+            ([, pokemonInitialData]) =>
+              modifiers.generations.includes(pokemonInitialData.generation) &&
+              modifiers.formCategories.includes(pokemonInitialData.formCategory)
+          )
+          .map(([name]) => name)
       ),
-    [genToPokemonFormNameList, modifiers.generations]
+    [modifiers.formCategories, modifiers.generations, pokemonsInitialData]
   );
 
-  // props for `Question`s for the forms in `pokemonFormNameList`
+  // props for `Question`s for the forms in `filteredPokemons`
   const questionPropsList = useMemo(
     () =>
-      pokemonFormNameList.map((pokemonFormName) => {
-        // get 3 random other forms
+      filteredPokemons.map((name) => {
+        // get 3 random other pokemon
         const otherOptions = shuffle(
-          pokemonFormNameList.filter((name) => name !== pokemonFormName)
+          filteredPokemons.filter((otherName) => otherName !== name)
         ).slice(0, 3);
 
-        // add the current form
-        otherOptions.push(pokemonFormName);
+        // add the current pokemon
+        otherOptions.push(name);
 
         // shuffle again to create 4 options
         const options = shuffle(otherOptions);
 
         return {
-          key: pokemonFormName,
-          pokemonFormName,
+          key: name,
+          pokemonName: name,
           options,
         };
       }),
-    [pokemonFormNameList]
+    [filteredPokemons]
   );
 
   const questionCount = modifiers.isLimitActive
@@ -146,12 +152,11 @@ const IndexPage: NextPage<IndexPageProps> = ({ genToPokemonFormNameList }) => {
         <ModifiersContext.Provider value={modifiers}>
           <Question
             {...questionPropsList[questionIdx]}
-            pokemonFormNameList={pokemonFormNameList}
+            stopwatch={stopwatch}
             nextQuestion={(correct) => {
               if (correct) incrementCorrectCount();
               nextQuestion();
             }}
-            stopwatch={stopwatch}
           />
         </ModifiersContext.Provider>
       );
