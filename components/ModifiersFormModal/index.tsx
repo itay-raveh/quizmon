@@ -40,8 +40,8 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
         <form onSubmit={form.onSubmit(onSubmit)}>
           <Stack>
             <Generations />
-            <Limit />
             <FormCategories />
+            <Limit />
             <Save onClose={onClose} />
           </Stack>
         </form>
