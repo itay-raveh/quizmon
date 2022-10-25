@@ -1,24 +1,13 @@
-import { Checkbox } from '@mantine/core';
 import { generations } from 'lib/types/GenRoman';
 import type { FC } from 'react';
-import { useFormContext } from './form';
+import CheckboxGroup from './CheckboxGroup';
 
-const Generations: FC = () => {
-  const form = useFormContext();
-
-  return (
-    <Checkbox.Group
-      label='Generations'
-      description='You will only see Pokémon from these generations'
-      errorProps={{ sx: { marginTop: '0.3rem' } }}
-      sx={{ minHeight: '4.5rem' }}
-      {...form.getInputProps('generations')}
-    >
-      {generations.map((gen) => (
-        <Checkbox key={gen} value={gen} label={`Gen ${gen}`} />
-      ))}
-    </Checkbox.Group>
-  );
-};
+const Generations: FC = () => (
+  <CheckboxGroup
+    name='generations'
+    description='You will only see Pokémon from these generations'
+    values={generations}
+  />
+);
 
 export default Generations;
