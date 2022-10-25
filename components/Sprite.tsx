@@ -1,21 +1,14 @@
-import { Center, Loader } from '@mantine/core';
-import { pokeapi } from 'lib/pokeapi';
-import Image from 'next/future/image';
-import type { PokemonForm } from 'pokenode-ts';
+import Image from 'next/image';
+import type { Pokemon } from 'pokenode-ts';
 import type { FC } from 'react';
-import { useQuery } from 'react-query';
 
-export const SPRITE_SIZE = 300 as const;
+const SPRITE_SIZE = 300 as const;
 
 interface SpriteProps {
-  pokemonForm: PokemonForm;
+  pokemon: Pokemon;
 }
 
-const Sprite: FC<SpriteProps> = ({ pokemonForm }) => {
-  const { isLoading, data: pokemon } = useQuery(
-    ['pokemon', pokemonForm.name],
-    () => pokeapi.pokemon.getPokemonByName(pokemonForm.name)
-  );
+const Sprite: FC<SpriteProps> = ({ pokemon }) => {
 
   if (isLoading)
     return (
@@ -34,7 +27,7 @@ const Sprite: FC<SpriteProps> = ({ pokemonForm }) => {
   return (
     <Image
       src={best}
-      alt={pokemonForm.name}
+      alt={pokemon.name}
       width={SPRITE_SIZE}
       height={SPRITE_SIZE}
       style={{
