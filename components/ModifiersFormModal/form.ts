@@ -8,16 +8,13 @@ export const [FormProvider, useFormContext, useForm] =
 const atLeastOne = (value: unknown[]) =>
   value.length < 1 ? 'Select at least one' : null;
 
-export const useFormInput: UseFormInput<Modifiers> = {
-  initialValues: {
-    generations: ['I'],
-    formCategories: ['default'],
-    isLimitActive: true,
-    limit: 10,
-  },
+type MakeUseFormInput = (initialValues: Modifiers) => UseFormInput<Modifiers>;
+
+export const makeUseFormInput: MakeUseFormInput = (initialValues) => ({
+  initialValues: initialValues,
   validate: {
     generations: atLeastOne,
     formCategories: atLeastOne,
   },
   validateInputOnChange: true,
-};
+});

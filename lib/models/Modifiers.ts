@@ -7,3 +7,10 @@ export interface Modifiers {
   isLimitActive: boolean;
   limit: number;
 }
+
+export const modifiersInitialValues: Modifiers = {
+  generations: ['I'],
+  formCategories: ['default'],
+  isLimitActive: true,
+  limit: 10,
+};
