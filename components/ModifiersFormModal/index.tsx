@@ -1,8 +1,12 @@
 import { Modal, Stack } from '@mantine/core';
 import { ModifiersContext } from 'lib/context/ModifiersContext';
 import type { Modifiers } from 'lib/models/Modifiers';
+import {
+  makeUseFormInput,
+  ModifiersFormProvider,
+  useModifiersForm,
+} from 'lib/modifiersForm';
 import { useContext, type FC } from 'react';
-import { FormProvider, makeUseFormInput, useForm } from './form';
 import FormCategories from './FormCategories';
 import Generations from './Generations';
 import Limit from './Limit';
@@ -20,7 +24,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
   onSubmit,
 }) => {
   const modifiers = useContext(ModifiersContext);
-  const form = useForm(makeUseFormInput(modifiers));
+  const form = useModifiersForm(makeUseFormInput(modifiers));
 
   return (
     <Modal
@@ -30,7 +34,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
       size='auto'
       centered
     >
-      <FormProvider form={form}>
+      <ModifiersFormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmit)}>
           <Stack>
             <Generations />
@@ -39,7 +43,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
             <Save onClose={onClose} />
           </Stack>
         </form>
-      </FormProvider>
+      </ModifiersFormProvider>
     </Modal>
   );
 };

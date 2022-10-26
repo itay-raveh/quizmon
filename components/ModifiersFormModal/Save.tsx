@@ -1,13 +1,13 @@
 import { Button, Group } from '@mantine/core';
+import { useModifiersFormContext } from 'lib/modifiersForm';
 import type { FC } from 'react';
-import { useFormContext } from './form';
 
 interface SaveProps {
   onClose: () => void;
 }
 
 const Save: FC<SaveProps> = ({ onClose }) => {
-  const form = useFormContext();
+  const form = useModifiersFormContext();
 
   return (
     <Group position='right'>

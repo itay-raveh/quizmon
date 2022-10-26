@@ -1,9 +1,12 @@
 import { createFormContext } from '@mantine/form';
 import type { UseFormInput } from '@mantine/form/lib/types';
-import type { Modifiers } from 'lib/models/Modifiers';
+import type { Modifiers } from './models/Modifiers';
 
-export const [FormProvider, useFormContext, useForm] =
-  createFormContext<Modifiers>();
+export const [
+  ModifiersFormProvider,
+  useModifiersFormContext,
+  useModifiersForm,
+] = createFormContext<Modifiers>();
 
 const atLeastOne = (value: unknown[]) =>
   value.length < 1 ? 'Select at least one' : null;
