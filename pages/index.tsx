@@ -149,16 +149,14 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   } else {
     if (questionIdx < questionCount) {
       content = (
-        <ModifiersContext.Provider value={modifiers}>
-          <Question
-            {...questionPropsList[questionIdx]}
-            stopwatch={stopwatch}
-            nextQuestion={(correct) => {
-              if (correct) incrementCorrectCount();
-              nextQuestion();
-            }}
-          />
-        </ModifiersContext.Provider>
+        <Question
+          {...questionPropsList[questionIdx]}
+          stopwatch={stopwatch}
+          nextQuestion={(correct) => {
+            if (correct) incrementCorrectCount();
+            nextQuestion();
+          }}
+        />
       );
     } else {
       content = (
@@ -174,7 +172,11 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   return (
     <main>
       <Center sx={{ height: '100vh' }}>
-        <Stack align='center'>{content}</Stack>
+        <Stack align='center'>
+          <ModifiersContext.Provider value={modifiers}>
+            {content}
+          </ModifiersContext.Provider>
+        </Stack>
       </Center>
       <footer style={{ position: 'absolute', bottom: 0 }}>
         <a href='https://www.textstudio.co/'>Logo generator</a>
