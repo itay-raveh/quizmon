@@ -1,19 +1,23 @@
 import { createFormContext } from '@mantine/form';
 import type { UseFormInput } from '@mantine/form/lib/types';
+import { useContext } from 'react';
+import { ModifiersContext } from './context/ModifiersContext';
 import type { Modifiers } from './models/Modifiers';
 
-export const [
+const [
   ModifiersFormProvider,
   useModifiersFormContext,
-  useModifiersForm,
+  useModifiersFormDirectly,
 ] = createFormContext<Modifiers>();
+
+export { ModifiersFormProvider, useModifiersFormContext };
 
 const atLeastOne = (value: unknown[]) =>
   value.length < 1 ? 'Select at least one' : null;
 
 type MakeUseFormInput = (initialValues: Modifiers) => UseFormInput<Modifiers>;
 
-export const makeUseFormInput: MakeUseFormInput = (initialValues) => ({
+const makeUseFormInput: MakeUseFormInput = (initialValues) => ({
   initialValues: initialValues,
   validate: {
     generations: atLeastOne,
@@ -21,3 +25,6 @@ export const makeUseFormInput: MakeUseFormInput = (initialValues) => ({
   },
   validateInputOnChange: true,
 });
+
+export const useModifiersForm = () =>
+  useModifiersFormDirectly(makeUseFormInput(useContext(ModifiersContext)));

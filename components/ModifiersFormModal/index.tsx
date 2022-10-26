@@ -1,12 +1,7 @@
 import { Modal, Stack } from '@mantine/core';
-import { ModifiersContext } from 'lib/context/ModifiersContext';
 import type { Modifiers } from 'lib/models/Modifiers';
-import {
-  makeUseFormInput,
-  ModifiersFormProvider,
-  useModifiersForm,
-} from 'lib/modifiersForm';
-import { useContext, type FC } from 'react';
+import { ModifiersFormProvider, useModifiersForm } from 'lib/modifiersForm';
+import type { FC } from 'react';
 import FormCategories from './FormCategories';
 import Generations from './Generations';
 import Limit from './Limit';
@@ -23,8 +18,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const modifiers = useContext(ModifiersContext);
-  const form = useModifiersForm(makeUseFormInput(modifiers));
+  const form = useModifiersForm();
 
   return (
     <Modal
