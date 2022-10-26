@@ -11,14 +11,27 @@
     "assets",
     "config",
     "styling",
-    "store",
     "pages",
-    "github"
+    "github",
+    "lib",
+    "components"
   ],
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
   },
   "[ignore]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
-  }
+  },
+  "cSpell.words": [
+    "alola",
+    "galar",
+    "gmax",
+    "hisui",
+    "mantine",
+    "pokeapi",
+    "Pokemons",
+    "pokenode",
+    "quizmon",
+    "startcase"
+  ]
 }
