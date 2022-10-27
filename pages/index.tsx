@@ -7,7 +7,7 @@ import {
   getPokemonsInitialData,
   type PokemonsInitialData,
 } from 'lib/initialData';
-import { initialValues } from 'lib/modifiers';
+import { filterPokemonsInitialData, initialValues } from 'lib/modifiers';
 import { ModifiersProvider } from 'lib/modifiers/context';
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
@@ -31,19 +31,9 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
 
   const stopwatch = useStopwatch({ autoStart: false });
 
-  // all pokemon form names from the generations selected in `modifiers.generations`
   const filteredPokemons = useMemo(
-    () =>
-      shuffle(
-        Object.entries(pokemonsInitialData)
-          .filter(
-            ([, pokemonInitialData]) =>
-              modifiers.generations.includes(pokemonInitialData.generation) &&
-              modifiers.formCategories.includes(pokemonInitialData.formCategory)
-          )
-          .map(([name]) => name)
-      ),
-    [modifiers.formCategories, modifiers.generations, pokemonsInitialData]
+    () => shuffle(filterPokemonsInitialData(modifiers, pokemonsInitialData)),
+    [modifiers, pokemonsInitialData]
   );
 
   // props for `Question`s for the forms in `filteredPokemons`
