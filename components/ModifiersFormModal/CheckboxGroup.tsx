@@ -20,7 +20,6 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
     <Checkbox.Group
       label={startCase(name)}
       description={description}
-      errorProps={{ mt: 'xs' }}
       sx={{ minHeight: '5rem' }}
       {...form.getInputProps(name)}
     >
