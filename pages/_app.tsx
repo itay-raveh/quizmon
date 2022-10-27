@@ -1,4 +1,5 @@
 import { Box, MantineProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
 import type { AppProps } from 'next/app';
 import Image from 'next/future/image';
 import bg from 'public/bg.jpg';
@@ -11,28 +12,30 @@ const qc = new QueryClient();
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
-      <Box
-        sx={{
-          position: 'fixed',
-          width: '100vw',
-          height: '100vh',
-          zIndex: -1,
-        }}
-      >
-        <Image
-          src={bg}
-          alt=''
-          fill
-          priority
-          style={{ objectFit: 'cover', filter: 'blur(5px)' }}
-        />
-      </Box>
-      <QueryClientProvider client={qc}>
-        <Component {...pageProps} />
-        {process.env.NODE_ENV === 'development' && (
-          <ReactQueryDevtools initialIsOpen={false} />
-        )}
-      </QueryClientProvider>
+      <NotificationsProvider>
+        <Box
+          sx={{
+            position: 'fixed',
+            width: '100vw',
+            height: '100vh',
+            zIndex: -1,
+          }}
+        >
+          <Image
+            src={bg}
+            alt=''
+            fill
+            priority
+            style={{ objectFit: 'cover', filter: 'blur(5px)' }}
+          />
+        </Box>
+        <QueryClientProvider client={qc}>
+          <Component {...pageProps} />
+          {process.env.NODE_ENV === 'development' && (
+            <ReactQueryDevtools initialIsOpen={false} />
+          )}
+        </QueryClientProvider>
+      </NotificationsProvider>
     </MantineProvider>
   );
 };
