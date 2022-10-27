@@ -4,7 +4,7 @@ import Landing from 'components/Landing';
 import Question from 'components/Question';
 import Results from 'components/Results';
 import { modifiersInitialValues } from 'lib/modifiers';
-import { ModifiersContext } from 'lib/modifiers/context';
+import { ModifiersProvider } from 'lib/modifiers/context';
 import { pokeapi } from 'lib/pokeapi';
 import { knownFormCategories, type FormCategory } from 'lib/types/FormCategory';
 import type { GenRoman } from 'lib/types/GenRoman';
@@ -173,9 +173,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
     <main>
       <Center sx={{ height: '100vh' }}>
         <Stack align='center'>
-          <ModifiersContext.Provider value={modifiers}>
-            {content}
-          </ModifiersContext.Provider>
+          <ModifiersProvider value={modifiers}>{content}</ModifiersProvider>
         </Stack>
       </Center>
       <footer style={{ position: 'absolute', bottom: 0 }}>
