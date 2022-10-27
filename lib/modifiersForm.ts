@@ -1,8 +1,8 @@
 import { createFormContext } from '@mantine/form';
 import type { UseFormInput } from '@mantine/form/lib/types';
 import { useContext } from 'react';
-import { ModifiersContext } from './context/ModifiersContext';
 import type { Modifiers } from './models/Modifiers';
+import { ModifiersContext } from './modifiers/context';
 
 const [
   ModifiersFormProvider,
