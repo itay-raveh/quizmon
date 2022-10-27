@@ -1,5 +1,5 @@
-import { modifiersInitialValues } from 'lib/models/Modifiers';
 import { createContext } from 'react';
+import { modifiersInitialValues } from '.';
 
 export const ModifiersContext = createContext(modifiersInitialValues);
 ModifiersContext.displayName = 'ModifiersContext';

@@ -1,6 +1,6 @@
 import { Button, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import type { Modifiers } from 'lib/models/Modifiers';
+import type { Modifiers } from 'lib/modifiers';
 import type { Dispatch, FC, SetStateAction } from 'react';
 import Logo from './Logo';
 import ModifiersFormModal from './ModifiersFormModal';

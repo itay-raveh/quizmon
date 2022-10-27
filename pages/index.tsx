@@ -3,7 +3,7 @@ import { useCounter } from '@mantine/hooks';
 import Landing from 'components/Landing';
 import Question from 'components/Question';
 import Results from 'components/Results';
-import { modifiersInitialValues } from 'lib/models/Modifiers';
+import { modifiersInitialValues } from 'lib/modifiers';
 import { ModifiersContext } from 'lib/modifiers/context';
 import { pokeapi } from 'lib/pokeapi';
 import { knownFormCategories, type FormCategory } from 'lib/types/FormCategory';
