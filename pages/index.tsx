@@ -3,73 +3,23 @@ import { useCounter } from '@mantine/hooks';
 import Landing from 'components/Landing';
 import Question from 'components/Question';
 import Results from 'components/Results';
+import {
+  getPokemonsInitialData,
+  type PokemonsInitialData,
+} from 'lib/initialData';
 import { initialValues } from 'lib/modifiers';
 import { ModifiersProvider } from 'lib/modifiers/context';
-import { pokeapi } from 'lib/pokeapi';
-import { knownFormCategories, type FormCategory } from 'lib/types/FormCategory';
-import type { GenRoman } from 'lib/types/GenRoman';
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
 import { useMemo, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
-
-interface PokemonInitialData {
-  formCategory: FormCategory;
-  generation: GenRoman;
-}
-
-type PokemonsInitialData = { [name: string]: PokemonInitialData };
 
 interface IndexPageProps {
   pokemonsInitialData: PokemonsInitialData;
 }
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
-  const pokemonResources = await pokeapi.pokemon.listPokemons(
-    0,
-    9999 // all of them, hopefully
-  );
-
-  const pokemons = await Promise.all(
-    pokemonResources.results.map((pokemonResource) =>
-      pokeapi.pokemon.getPokemonByName(pokemonResource.name)
-    )
-  );
-
-  const pokemonsInitialData: PokemonsInitialData =
-    Object.fromEntries<PokemonInitialData>(
-      await Promise.all(
-        pokemons.map(async (pokemon) => {
-          // assuming first form is default form
-          const defaultFormName = pokemon.forms[0].name;
-
-          const defaultForm = await pokeapi.pokemon.getPokemonFormByName(
-            defaultFormName
-          );
-
-          const versionGroup = await pokeapi.game.getVersionGroupByName(
-            defaultForm.version_group.name
-          );
-
-          // transform the `VersionGroup` gen name to `GenRoman`
-          const generation = versionGroup.generation.name
-            .substring('generation-'.length)
-            .toUpperCase() as GenRoman;
-
-          // determine form category
-          let formCategory: FormCategory = 'other';
-          if (pokemon.is_default) formCategory = 'default';
-          // if a known category is the pokemon name, that is the category
-          else
-            knownFormCategories.forEach((category) => {
-              if (pokemon.name.includes(`-${category}`))
-                formCategory = category;
-            });
-
-          return [pokemon.name, { generation, formCategory }] as const;
-        })
-      )
-    );
+  const pokemonsInitialData = await getPokemonsInitialData();
 
   return { props: { pokemonsInitialData } };
 };
