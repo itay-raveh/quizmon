@@ -1,5 +1,8 @@
 import { Modal, Stack } from '@mantine/core';
-import type { Modifiers } from 'lib/modifiers';
+import { showNotification } from '@mantine/notifications';
+import { IconX } from '@tabler/icons';
+import { type PokemonsInitialData } from 'lib/initialData';
+import { filterPokemonsInitialData, type Modifiers } from 'lib/modifiers';
 import {
   ModifiersFormProvider,
   useModifiersForm,
@@ -11,17 +14,29 @@ import Limit from './Limit';
 import Save from './Save';
 
 interface ModifiersFormModalProps {
+  pokemonsInitialData: PokemonsInitialData;
   opened: boolean;
   onClose: () => void;
   onSubmit: (values: Modifiers) => void;
 }
 
 const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
+  pokemonsInitialData,
   opened,
   onClose,
   onSubmit,
 }) => {
   const form = useModifiersForm();
+
+  const showNoPokemonNotification = () =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+    showNotification({
+      title: 'Oh oh!',
+      message: 'There are no Pokemon that match these modifiers',
+      color: 'red',
+      icon: <IconX size={18} />,
+      disallowClose: true,
+    });
 
   return (
     <Modal
@@ -37,7 +52,14 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
             <Generations />
             <FormCategories />
             <Limit />
-            <Save onClose={onClose} />
+            <Save
+              onClose={
+                filterPokemonsInitialData(form.values, pokemonsInitialData)
+                  .length > 0
+                  ? onClose
+                  : showNoPokemonNotification
+              }
+            />
           </Stack>
         </form>
       </ModifiersFormProvider>

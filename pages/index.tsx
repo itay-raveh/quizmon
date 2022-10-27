@@ -79,6 +79,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   if (!started) {
     content = (
       <Landing
+        pokemonsInitialData={pokemonsInitialData}
         setModifiers={setModifiers}
         start={() => {
           setStarted(true);
