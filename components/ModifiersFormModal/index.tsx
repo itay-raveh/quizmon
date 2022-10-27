@@ -1,4 +1,4 @@
-import { Modal, Stack } from '@mantine/core';
+import { Modal, Space, Stack } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
 import type { PokemonsInitialData } from 'lib/initialData';
@@ -69,16 +69,17 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
     <Modal
       opened={opened}
       onClose={onClose}
-      title='Modifiers'
+      title='Modifiers & Filters'
       size='auto'
       centered
     >
       <ModifiersFormProvider form={form}>
         <form onSubmit={form.onSubmit(onSubmit)}>
-          <Stack>
+          <Stack spacing={0}>
             <Generations />
             <FormCategories />
             <Limit />
+            <Space m='xl' />
             <Save onClick={onSaveClick} />
           </Stack>
         </form>
