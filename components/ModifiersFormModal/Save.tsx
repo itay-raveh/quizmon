@@ -1,21 +1,16 @@
 import { Button, Group } from '@mantine/core';
 import type { FC } from 'react';
-import { useFormContext } from './form';
 
 interface SaveProps {
-  onClose: () => void;
+  onClick: () => void;
 }
 
-const Save: FC<SaveProps> = ({ onClose }) => {
-  const form = useFormContext();
-
-  return (
-    <Group position='right'>
-      <Button type='submit' onClick={onClose} disabled={!form.isValid()}>
-        Save
-      </Button>
-    </Group>
-  );
-};
+const Save: FC<SaveProps> = ({ onClick }) => (
+  <Group position='right'>
+    <Button type='submit' onClick={onClick}>
+      Save
+    </Button>
+  </Group>
+);
 
 export default Save;

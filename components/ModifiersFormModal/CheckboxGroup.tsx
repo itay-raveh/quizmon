@@ -1,7 +1,7 @@
 import { Checkbox } from '@mantine/core';
+import { useModifiersFormContext } from 'lib/modifiers/form/context';
 import startCase from 'lodash.startcase';
 import type { FC } from 'react';
-import { useFormContext } from './form';
 
 interface CheckboxGroupProps {
   name: string;
@@ -14,13 +14,12 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
   description,
   values,
 }) => {
-  const form = useFormContext();
+  const form = useModifiersFormContext();
 
   return (
     <Checkbox.Group
       label={startCase(name)}
       description={description}
-      errorProps={{ mt: 'xs' }}
       sx={{ minHeight: '5rem' }}
       {...form.getInputProps(name)}
     >
