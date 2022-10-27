@@ -8,7 +8,7 @@ export interface Modifiers {
   limit: number;
 }
 
-export const modifiersInitialValues: Modifiers = {
+export const initialValues: Modifiers = {
   generations: ['I'],
   formCategories: ['default'],
   isLimitActive: true,

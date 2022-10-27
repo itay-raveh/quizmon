@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
-import { modifiersInitialValues } from '.';
+import { initialValues } from '.';
 
-const ModifiersContext = createContext(modifiersInitialValues);
+const ModifiersContext = createContext(initialValues);
 ModifiersContext.displayName = 'ModifiersContext';
 
 export const ModifiersProvider = ModifiersContext.Provider;
