@@ -1,6 +1,9 @@
 import { Modal, Stack } from '@mantine/core';
 import type { Modifiers } from 'lib/modifiers';
-import { ModifiersFormProvider, useModifiersForm } from 'lib/modifiersForm';
+import {
+  ModifiersFormProvider,
+  useModifiersForm,
+} from 'lib/modifiers/form/context';
 import type { FC } from 'react';
 import FormCategories from './FormCategories';
 import Generations from './Generations';

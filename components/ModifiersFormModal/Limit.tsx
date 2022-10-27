@@ -1,5 +1,5 @@
 import { Checkbox, NumberInput } from '@mantine/core';
-import { useModifiersFormContext } from 'lib/modifiersForm';
+import { useModifiersFormContext } from 'lib/modifiers/form/context';
 import type { FC } from 'react';
 
 const Limit: FC = () => {

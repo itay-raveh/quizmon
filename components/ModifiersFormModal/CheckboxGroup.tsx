@@ -1,5 +1,5 @@
 import { Checkbox } from '@mantine/core';
-import { useModifiersFormContext } from 'lib/modifiersForm';
+import { useModifiersFormContext } from 'lib/modifiers/form/context';
 import startCase from 'lodash.startcase';
 import type { FC } from 'react';
 
