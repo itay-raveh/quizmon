@@ -1,6 +1,6 @@
 import { Container, createStyles } from '@mantine/core';
-import { FC } from 'react';
-import Item, { ItemProps } from './Item';
+import type { FC } from 'react';
+import Item, { type ItemProps } from './Item';
 
 const useStyles = createStyles((theme) => ({
   items: {
