@@ -63,7 +63,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
   )
     onSaveClick = () =>
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      showErrorNotification('There are no Pokemon that match these modifiers.');
+      showErrorNotification('There are no Pokémon that match these modifiers.');
 
   return (
     <Modal

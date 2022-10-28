@@ -6,7 +6,7 @@
     "name": "Itay Raveh",
     "email": "itayitay30@gmail.com"
   },
-  "description": "The Ultimate Pokemon Knowledge Test",
+  "description": "The Ultimate Pokémon Knowledge Test",
   "homepage": "https://github.com/itay-raveh/quizmon",
   "engines": {
     "node": "^16.0.0",

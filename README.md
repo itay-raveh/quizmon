@@ -1,3 +1,3 @@
 # Quizmon
 
-The Ultimate Pokemon Knowledge Test
+The Ultimate Pokémon Knowledge Test
