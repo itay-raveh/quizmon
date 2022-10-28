@@ -17,7 +17,6 @@ const Footer: FC = () => {
 
   return (
     <footer className={classes.footer}>
-      {/* <Center> */}
       <Items
         items={[
           {
@@ -37,7 +36,6 @@ const Footer: FC = () => {
           },
         ]}
       />
-      {/* </Center> */}
     </footer>
   );
 };
