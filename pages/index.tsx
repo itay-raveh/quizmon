@@ -117,9 +117,6 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
           <ModifiersProvider value={modifiers}>{content}</ModifiersProvider>
         </Stack>
       </Center>
-      <footer style={{ position: 'absolute', bottom: 0 }}>
-        <a href='https://www.textstudio.co/'>Logo generator</a>
-      </footer>
     </main>
   );
 };
