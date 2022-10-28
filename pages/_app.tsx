@@ -1,5 +1,6 @@
 import { Box, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
+import Footer from 'components/Footer';
 import type { AppProps } from 'next/app';
 import Image from 'next/future/image';
 import bg from 'public/bg.jpg';
@@ -36,6 +37,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
           )}
         </QueryClientProvider>
       </NotificationsProvider>
+      <Footer />
     </MantineProvider>
   );
 };
