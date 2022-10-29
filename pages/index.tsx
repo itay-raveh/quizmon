@@ -1,5 +1,5 @@
 import { Center, Stack } from '@mantine/core';
-import { useCounter } from '@mantine/hooks';
+import { useCounter, useLocalStorage } from '@mantine/hooks';
 import Landing from 'components/Landing';
 import Question from 'components/Question';
 import Results from 'components/Results';
@@ -25,7 +25,10 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
 };
 
 const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
-  const [modifiers, setModifiers] = useState(initialValues);
+  const [modifiers, setModifiers] = useLocalStorage({
+    key: 'modifiers',
+    defaultValue: initialValues,
+  });
 
   const [started, setStarted] = useState(false);
 
