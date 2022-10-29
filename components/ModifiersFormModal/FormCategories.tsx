@@ -5,7 +5,7 @@ import CheckboxGroup from './CheckboxGroup';
 const FormCategories: FC = () => (
   <CheckboxGroup
     name='formCategories'
-    description='You will only get these forms of pokemon'
+    description='You will only get these forms of Pokémon'
     values={formCategories}
   />
 );
