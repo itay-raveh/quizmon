@@ -1,3 +1,4 @@
+import { useModifiers } from 'lib/modifiers/context';
 import Image from 'next/image';
 import type { Pokemon } from 'pokenode-ts';
 import type { FC } from 'react';
@@ -9,6 +10,8 @@ interface SpriteProps {
 }
 
 const Sprite: FC<SpriteProps> = ({ pokemon }) => {
+  const modifiers = useModifiers();
+
   const officialArtwork =
     pokemon?.sprites.other?.['official-artwork'].front_default;
 
@@ -27,7 +30,9 @@ const Sprite: FC<SpriteProps> = ({ pokemon }) => {
       width={SPRITE_SIZE}
       height={SPRITE_SIZE}
       style={{
-        filter: 'drop-shadow(0px 0px 10px #000)',
+        filter: modifiers.whosThatPokemon
+          ? 'brightness(0%)'
+          : 'drop-shadow(0px 0px 10px #000)',
         imageRendering: best === sprite ? 'pixelated' : 'auto',
       }}
     />
