@@ -7,12 +7,14 @@ interface ResultsProps {
   stopwatch: StopwatchResult;
   questionCount: number;
   correctCount: number;
+  newGame: () => void;
 }
 
 const Results: FC<ResultsProps> = ({
   stopwatch,
   questionCount,
   correctCount,
+  newGame,
 }) => {
   if (stopwatch.isRunning) stopwatch.pause();
 
@@ -30,7 +32,7 @@ const Results: FC<ResultsProps> = ({
         </strong>
       </Title>
       <Group position='center' mt='xl'>
-        <Button onClick={() => location.reload()}>Back to home page</Button>
+        <Button onClick={newGame}>New Game</Button>
       </Group>
     </section>
   );

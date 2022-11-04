@@ -3,6 +3,7 @@ import { useCounter, useLocalStorage } from '@mantine/hooks';
 import Landing from 'components/Landing';
 import Question from 'components/Question';
 import Results from 'components/Results';
+import SPRouter from 'components/SPRouter';
 import {
   getPokemonsInitialData,
   type PokemonsInitialData,
@@ -24,13 +25,15 @@ export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
   return { props: { pokemonsInitialData } };
 };
 
+type Phase = 'landing' | 'questions' | 'results';
+
 const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   const [modifiers, setModifiers] = useLocalStorage({
     key: 'modifiers',
     defaultValue: initialValues,
   });
 
-  const [started, setStarted] = useState(false);
+  const [phase, setPhase] = useState<Phase>('landing');
 
   const stopwatch = useStopwatch({ autoStart: false });
 
@@ -67,57 +70,70 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
     ? modifiers.limit
     : questionPropsList.length;
 
-  const [questionIdx, { increment: nextQuestion }] = useCounter(0, {
+  const [questionIdx, { increment: nextQuestion, reset: resetQuestionsCount }] =
+    useCounter(0, {
+      min: 0,
+      max: questionCount,
+    });
+
+  const finalQuestion = questionIdx === questionCount - 1;
+
+  const [
+    correctCount,
+    { increment: incrementCorrectCount, reset: resetCorrectCount },
+  ] = useCounter(0, {
     min: 0,
     max: questionCount,
   });
-
-  const [correctCount, { increment: incrementCorrectCount }] = useCounter(0, {
-    min: 0,
-    max: questionCount,
-  });
-
-  let content;
-
-  if (!started) {
-    content = (
-      <Landing
-        pokemonsInitialData={pokemonsInitialData}
-        setModifiers={setModifiers}
-        start={() => {
-          setStarted(true);
-          stopwatch.start();
-        }}
-      />
-    );
-  } else {
-    if (questionIdx < questionCount) {
-      content = (
-        <Question
-          {...questionPropsList[questionIdx]}
-          stopwatch={stopwatch}
-          nextQuestion={(correct) => {
-            if (correct) incrementCorrectCount();
-            nextQuestion();
-          }}
-        />
-      );
-    } else {
-      content = (
-        <Results
-          stopwatch={stopwatch}
-          questionCount={questionCount}
-          correctCount={correctCount}
-        />
-      );
-    }
-  }
 
   return (
     <main>
       <Center sx={{ height: '100vh' }}>
         <Stack align='center'>
-          <ModifiersProvider value={modifiers}>{content}</ModifiersProvider>
+          <ModifiersProvider value={modifiers}>
+            <SPRouter
+              page={phase}
+              pages={{
+                landing: (
+                  <Landing
+                    pokemonsInitialData={pokemonsInitialData}
+                    setModifiers={setModifiers}
+                    start={() => {
+                      stopwatch.start();
+                      setPhase('questions');
+                    }}
+                  />
+                ),
+                questions: (
+                  <Question
+                    {...questionPropsList[questionIdx]}
+                    stopwatch={stopwatch}
+                    nextQuestion={(correct) => {
+                      if (correct) incrementCorrectCount();
+                      if (finalQuestion) setPhase('results');
+                      nextQuestion();
+                    }}
+                    final={finalQuestion}
+                  />
+                ),
+                results: (
+                  <Results
+                    stopwatch={stopwatch}
+                    questionCount={questionCount}
+                    correctCount={correctCount}
+                    newGame={() => {
+                      setPhase('landing');
+                      resetQuestionsCount();
+                      resetCorrectCount();
+                      stopwatch.reset();
+                      // make memos recompute
+                      setModifiers({ ...modifiers });
+                    }}
+                  />
+                ),
+              }}
+            />
+          </ModifiersProvider>
         </Stack>
       </Center>
     </main>
