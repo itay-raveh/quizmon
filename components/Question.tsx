@@ -12,6 +12,7 @@ export interface QuestionProps {
   options: string[];
   stopwatch: StopwatchResult;
   nextQuestion: (correct: boolean) => void;
+  final: boolean;
 }
 
 const Question: FC<QuestionProps> = ({
@@ -19,6 +20,7 @@ const Question: FC<QuestionProps> = ({
   options,
   stopwatch,
   nextQuestion,
+  final,
 }) => {
   const { isLoading, data: pokemon } = useQuery(['pokemon', pokemonName], () =>
     pokeapi.pokemon.getPokemonByName(pokemonName)
@@ -61,7 +63,10 @@ const Question: FC<QuestionProps> = ({
             <Button
               key={option}
               size='lg'
-              onClick={() => !clickedOption && setClickedOption(option)}
+              onClick={() => {
+                if (!clickedOption) setClickedOption(option);
+                if (final) stopwatch.pause();
+              }}
               color={getColor(option)}
             >
               {startCase(option)}

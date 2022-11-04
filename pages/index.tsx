@@ -76,6 +76,8 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
       max: questionCount,
     });
 
+  const finalQuestion = questionIdx === questionCount - 1;
+
   const [
     correctCount,
     { increment: incrementCorrectCount, reset: resetCorrectCount },
@@ -108,10 +110,10 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
                     stopwatch={stopwatch}
                     nextQuestion={(correct) => {
                       if (correct) incrementCorrectCount();
-                      if (questionIdx === questionCount - 1)
-                        setPhase('results');
-                      else nextQuestion();
+                      if (finalQuestion) setPhase('results');
+                      nextQuestion();
                     }}
+                    final={finalQuestion}
                   />
                 ),
                 results: (
@@ -123,6 +125,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
                       setPhase('landing');
                       resetQuestionsCount();
                       resetCorrectCount();
+                      stopwatch.reset();
                       // make memos recompute
                       setModifiers({ ...modifiers });
                     }}
