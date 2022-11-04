@@ -43,6 +43,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
+    "@types/lodash.sample": "^4.2.7",
     "@types/lodash.shuffle": "^4.2.7",
     "@types/lodash.startcase": "^4.4.7",
     "@types/node": "^18.8.1",
