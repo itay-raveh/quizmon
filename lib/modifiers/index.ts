@@ -5,6 +5,7 @@ import type { GenRoman } from 'lib/types/GenRoman';
 export interface Modifiers {
   generations: GenRoman[];
   formCategories: FormCategory[];
+  randomSprite: boolean;
   whosThatPokemon: boolean;
   isLimitActive: boolean;
   limit: number;
@@ -13,6 +14,7 @@ export interface Modifiers {
 export const initialValues: Modifiers = {
   generations: ['I'],
   formCategories: ['default'],
+  randomSprite: false,
   whosThatPokemon: false,
   isLimitActive: true,
   limit: 10,
