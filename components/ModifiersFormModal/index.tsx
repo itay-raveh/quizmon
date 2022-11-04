@@ -11,6 +11,7 @@ import type { FC } from 'react';
 import FormCategories from './FormCategories';
 import Generations from './Generations';
 import Limit from './Limit';
+import RandomSprite from './RandomSprite';
 import Save from './Save';
 import WhosThatPokemon from './WhosThatPokemon';
 
@@ -79,6 +80,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
           <Stack>
             <Generations />
             <FormCategories />
+            <RandomSprite />
             <WhosThatPokemon />
             <Limit />
             <Save onClick={onSaveClick} />
