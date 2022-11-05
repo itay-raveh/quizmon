@@ -18,6 +18,13 @@ import Button from './Button';
 import Sprite from './Sprite';
 
 const useStyles = createStyles((theme) => ({
+  loader: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+
   navGroup: {
     width: '14rem',
 
@@ -63,7 +70,7 @@ const Question: FC<QuestionProps> = ({
 
   const [clickedOption, setClickedOption] = useState('');
 
-  if (isLoading) return <Loader size='xl' />;
+  if (isLoading) return <Loader className={classes.loader} size='xl' />;
 
   if (!pokemon) return <section>No such pokemon</section>;
 
