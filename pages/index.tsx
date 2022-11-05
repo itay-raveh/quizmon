@@ -86,6 +86,15 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
     max: questionCount,
   });
 
+  const newGame = () => {
+    setPhase('landing');
+    resetQuestionsCount();
+    resetCorrectCount();
+    stopwatch.reset();
+    // make memos recompute
+    setModifiers({ ...modifiers });
+  };
+
   return (
     <main>
       <Center sx={{ height: '100vh' }}>
@@ -121,14 +130,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
                     stopwatch={stopwatch}
                     questionCount={questionCount}
                     correctCount={correctCount}
-                    newGame={() => {
-                      setPhase('landing');
-                      resetQuestionsCount();
-                      resetCorrectCount();
-                      stopwatch.reset();
-                      // make memos recompute
-                      setModifiers({ ...modifiers });
-                    }}
+                newGame={newGame}
                   />
                 ),
               }}
