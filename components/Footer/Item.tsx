@@ -3,8 +3,11 @@ import type { FC } from 'react';
 
 const useStyles = createStyles((theme) => ({
   item: {
+    marginTop: '0.1rem',
+    marginBottom: '0.1rem',
+
     [theme.fn.smallerThan('sm')]: {
-      marginTop: theme.spacing.xs,
+      fontSize: '0.6rem',
     },
   },
 }));

@@ -1,3 +1,4 @@
+import { Container } from '@mantine/core';
 import { useModifiers } from 'lib/modifiers/context';
 import sample from 'lodash.sample';
 import Image from 'next/image';
@@ -114,18 +115,20 @@ const Sprite: FC<SpriteProps> = ({ pokemon }) => {
   if (!sprite) return <section>No sprite for this Pokemon</section>;
 
   return (
-    <Image
-      src={sprite.src}
-      alt={pokemon.name}
-      width={SPRITE_SIZE}
-      height={SPRITE_SIZE}
-      style={{
-        filter: modifiers.whosThatPokemon
-          ? 'brightness(0%)'
-          : 'drop-shadow(0px 0px 10px #000)',
-        imageRendering: sprite.rendering,
-      }}
-    />
+    <Container sx={{ width: '15rem', maxWidth: '60vw' }}>
+      <Image
+        src={sprite.src}
+        alt={pokemon.name}
+        width={SPRITE_SIZE}
+        height={SPRITE_SIZE}
+        style={{
+          filter: modifiers.whosThatPokemon
+            ? 'brightness(0%)'
+            : 'drop-shadow(0px 0px 10px #000)',
+          imageRendering: sprite.rendering,
+        }}
+      />
+    </Container>
   );
 };
 
