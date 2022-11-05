@@ -18,13 +18,6 @@ import Button from './Button';
 import Sprite from './Sprite';
 
 const useStyles = createStyles((theme) => ({
-  loader: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-  },
-
   navGroup: {
     width: '14rem',
 
@@ -102,11 +95,10 @@ const Question: FC<QuestionProps> = ({
         <Title order={4}>Current time: {formatStopwatch(stopwatch)}</Title>
         {!pokemon || isLoading ? (
           <Loader
-            className={classes.loader}
             size='xl'
             sx={{
-              width: '16rem',
-              maxWidth: '60vw',
+              height: '15rem',
+              maxHeight: '60vw',
             }}
           />
         ) : (
