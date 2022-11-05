@@ -34,12 +34,16 @@ const useStyles = createStyles((theme) => ({
   },
 
   options: {
-    width: '20rem',
-    maxWidth: '90vw',
+    maxWidth: '90%',
   },
 
   optionButton: {
     width: '100%',
+
+    [theme.fn.largerThan('sm')]: {
+      height: '3rem',
+      fontSize: '1rem',
+    },
   },
 }));
 
@@ -101,27 +105,29 @@ const Question: FC<QuestionProps> = ({
         </Title>
         <Title order={4}>Current time: {formatStopwatch(stopwatch)}</Title>
         <Sprite pokemon={pokemon} />
-        <Grid className={classes.options}>
-          {options.map((option) => (
-            <Grid.Col key={option} xs={12} sm={6} md={3}>
-              <Button
-                className={classes.optionButton}
-                onClick={() => {
-                  if (!clickedOption) setClickedOption(option);
-                  if (final) stopwatch.pause();
-                }}
-                color={getColor(option)}
-              >
-                {startCase(option)}
-              </Button>
-            </Grid.Col>
-          ))}
-        </Grid>
+        <Center>
+          <Grid className={classes.options}>
+            {options.map((option) => (
+              <Grid.Col key={option} xs={12} sm={6} md={3}>
+                <Button
+                  className={classes.optionButton}
+                  onClick={() => {
+                    if (!clickedOption) setClickedOption(option);
+                    if (final) stopwatch.pause();
+                  }}
+                  color={getColor(option)}
+                >
+                  {startCase(option)}
+                </Button>
+              </Grid.Col>
+            ))}
+          </Grid>
+        </Center>
         <Group className={classes.navGroup} grow>
           <Button variant='light' onClick={newGame}>
             New Game
           </Button>
-        <Button
+          <Button
             color='blue.9'
             onClick={() =>
               clickedOption
@@ -130,9 +136,9 @@ const Question: FC<QuestionProps> = ({
                     'You have to answer the question first...'
                   )
             }
-        >
+          >
             Next Question
-        </Button>
+          </Button>
         </Group>
       </Stack>
     </Center>
