@@ -7,8 +7,6 @@ const useStyles = createStyles((theme) => ({
     display: 'flex',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingTop: theme.spacing.xl,
-    paddingBottom: theme.spacing.xl,
 
     [theme.fn.smallerThan('sm')]: {
       flexDirection: 'column',
