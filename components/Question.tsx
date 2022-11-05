@@ -1,4 +1,12 @@
-import { createStyles, Grid, Loader, Stack, Text } from '@mantine/core';
+import {
+  Center,
+  createStyles,
+  Grid,
+  Group,
+  Loader,
+  Stack,
+  Title,
+} from '@mantine/core';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
@@ -66,7 +74,7 @@ const Question: FC<QuestionProps> = ({
   };
 
   return (
-    <section>
+    <Center sx={{ height: '85vh' }}>
       <Stack align='center'>
         <Text size='xl' weight={700}>
           {formatStopwatch(stopwatch)}
@@ -95,7 +103,7 @@ const Question: FC<QuestionProps> = ({
           Next
         </Button>
       </Stack>
-    </section>
+    </Center>
   );
 };
 

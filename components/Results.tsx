@@ -1,4 +1,4 @@
-import { Group, Title } from '@mantine/core';
+import { Center, Group, Stack, Title } from '@mantine/core';
 import { formatStopwatch } from 'lib/utils';
 import type { FC } from 'react';
 import type { StopwatchResult } from 'react-timer-hook';
@@ -18,8 +18,8 @@ const Results: FC<ResultsProps> = ({
   newGame,
 }) => (
   <section>
-    <Title>Results</Title>
-    <Title order={2}>
+    <Center sx={{ height: '100vh' }}>
+      <Stack>
       Final Time: <strong>{formatStopwatch(stopwatch)}</strong>
     </Title>
     <Title order={2}>
@@ -31,6 +31,8 @@ const Results: FC<ResultsProps> = ({
     <Group position='center' mt='xl'>
       <Button onClick={newGame}>New Game</Button>
     </Group>
+      </Stack>
+    </Center>
   </section>
 );
 

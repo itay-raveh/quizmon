@@ -97,8 +97,6 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
 
   return (
     <main>
-      <Center sx={{ height: '100vh' }}>
-        <Stack align='center'>
           <ModifiersProvider value={modifiers}>
             <SPRouter
               page={phase}
@@ -136,8 +134,6 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
               }}
             />
           </ModifiersProvider>
-        </Stack>
-      </Center>
     </main>
   );
 };
