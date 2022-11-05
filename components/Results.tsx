@@ -20,17 +20,20 @@ const Results: FC<ResultsProps> = ({
   <section>
     <Center sx={{ height: '100vh' }}>
       <Stack>
-      Final Time: <strong>{formatStopwatch(stopwatch)}</strong>
-    </Title>
-    <Title order={2}>
-      Score:{' '}
-      <strong>
-        {(correctCount / questionCount) * 100}% ({correctCount}/{questionCount})
-      </strong>
-    </Title>
-    <Group position='center' mt='xl'>
-      <Button onClick={newGame}>New Game</Button>
-    </Group>
+        <Title order={1}>Results</Title>
+        <Title order={3}>
+          Final Time: <strong>{formatStopwatch(stopwatch)}</strong>
+        </Title>
+        <Title order={3}>
+          Score:{' '}
+          <strong>
+            {((correctCount / questionCount) * 100).toFixed(2)}% ({correctCount}
+            /{questionCount})
+          </strong>
+        </Title>
+        <Group position='center' mt='xl'>
+          <Button onClick={newGame}>New Game</Button>
+        </Group>
       </Stack>
     </Center>
   </section>
