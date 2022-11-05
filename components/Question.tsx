@@ -81,6 +81,7 @@ const Question: FC<QuestionProps> = ({
         <Title order={1} mt='xl'>
           Question #{String(questionNumber).padStart(3, '0')}
         </Title>
+        <Title order={4}>Current time: {formatStopwatch(stopwatch)}</Title>
         <Sprite pokemon={pokemon} />
         <Grid className={classes.options}>
           {options.map((option) => (
