@@ -1,4 +1,5 @@
-import { Button, Group } from '@mantine/core';
+import { Group } from '@mantine/core';
+import Button from 'components/Button';
 import type { FC } from 'react';
 
 interface SaveProps {
