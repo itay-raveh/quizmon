@@ -7,12 +7,12 @@ import popUpOff from 'public/sounds/pop-up-off.mp3';
 import popUpOn from 'public/sounds/pop-up-on.mp3';
 
 const Checkbox: FC<CheckboxProps> = (props) => {
-  const [playActive] = useSound(popDown as string, {
+  const [playActive] = useSound(popDown, {
     id: 'active',
     volume: 0.25,
   });
-  const [playOn] = useSound(popUpOn as string, { id: 'on', volume: 0.25 });
-  const [playOff] = useSound(popUpOff as string, { id: 'off', volume: 0.25 });
+  const [playOn] = useSound(popUpOn, { id: 'on', volume: 0.25 });
+  const [playOff] = useSound(popUpOff, { id: 'off', volume: 0.25 });
 
   return (
     <MantineCheckbox

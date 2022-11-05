@@ -9,11 +9,11 @@ import popUpOn from 'public/sounds/pop-up-on.mp3';
 const Button: FC<PolymorphicComponentProps<'button', ButtonProps>> = (
   props
 ) => {
-  const [playActive] = useSound(popDown as string, {
+  const [playActive] = useSound(popDown, {
     id: 'active',
     volume: 0.25,
   });
-  const [playOn] = useSound(popUpOn as string, { id: 'on', volume: 0.25 });
+  const [playOn] = useSound(popUpOn, { id: 'on', volume: 0.25 });
 
   return (
     <MantineButton
