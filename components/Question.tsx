@@ -7,6 +7,7 @@ import {
   Stack,
   Title,
 } from '@mantine/core';
+import { showErrorNotification } from 'lib/notifications';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
@@ -34,6 +35,7 @@ export interface QuestionProps {
   stopwatch: StopwatchResult;
   nextQuestion: (correct: boolean) => void;
   final: boolean;
+  newGame: () => void;
 }
 
 const Question: FC<QuestionProps> = ({
@@ -43,6 +45,7 @@ const Question: FC<QuestionProps> = ({
   stopwatch,
   nextQuestion,
   final,
+  newGame,
 }) => {
   const { classes } = useStyles();
 
@@ -100,10 +103,16 @@ const Question: FC<QuestionProps> = ({
           ))}
         </Grid>
         <Button
-          disabled={!clickedOption}
-          onClick={() => nextQuestion(clickedOption === pokemonName)}
+            color='blue.9'
+            onClick={() =>
+              clickedOption
+                ? nextQuestion(clickedOption === pokemonName)
+                : showErrorNotification(
+                    'You have to answer the question first...'
+                  )
+            }
         >
-          Next
+            Next Question
         </Button>
       </Stack>
     </Center>
