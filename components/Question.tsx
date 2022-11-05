@@ -1,4 +1,4 @@
-import { Button, Group, Loader, Stack, Text } from '@mantine/core';
+import { Button, createStyles, Grid, Loader, Stack, Text } from '@mantine/core';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
@@ -6,6 +6,17 @@ import { useState, type FC } from 'react';
 import { useQuery } from 'react-query';
 import type { StopwatchResult } from 'react-timer-hook';
 import Sprite from './Sprite';
+
+const useStyles = createStyles(() => ({
+  options: {
+    width: '20rem',
+    maxWidth: '90vw',
+  },
+
+  optionButton: {
+    width: '100%',
+  },
+}));
 
 export interface QuestionProps {
   pokemonName: string;
@@ -22,6 +33,8 @@ const Question: FC<QuestionProps> = ({
   nextQuestion,
   final,
 }) => {
+  const { classes } = useStyles();
+
   const { isLoading, data: pokemon } = useQuery(['pokemon', pokemonName], () =>
     pokeapi.pokemon.getPokemonByName(pokemonName)
   );
@@ -58,21 +71,22 @@ const Question: FC<QuestionProps> = ({
           {formatStopwatch(stopwatch)}
         </Text>
         <Sprite pokemon={pokemon} />
-        <Group>
+        <Grid className={classes.options}>
           {options.map((option) => (
-            <Button
-              key={option}
-              size='lg'
-              onClick={() => {
-                if (!clickedOption) setClickedOption(option);
-                if (final) stopwatch.pause();
-              }}
-              color={getColor(option)}
-            >
-              {startCase(option)}
-            </Button>
+            <Grid.Col key={option} xs={12} sm={6} md={3}>
+              <Button
+                className={classes.optionButton}
+                onClick={() => {
+                  if (!clickedOption) setClickedOption(option);
+                  if (final) stopwatch.pause();
+                }}
+                color={getColor(option)}
+              >
+                {startCase(option)}
+              </Button>
+            </Grid.Col>
           ))}
-        </Group>
+        </Grid>
         <Button
           disabled={!clickedOption}
           onClick={() => nextQuestion(clickedOption === pokemonName)}
