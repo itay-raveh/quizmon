@@ -17,7 +17,15 @@ import type { StopwatchResult } from 'react-timer-hook';
 import Button from './Button';
 import Sprite from './Sprite';
 
-const useStyles = createStyles(() => ({
+const useStyles = createStyles((theme) => ({
+  navGroup: {
+    width: '14rem',
+
+    [theme.fn.smallerThan('xs')]: {
+      width: '90vw',
+    },
+  },
+
   options: {
     width: '20rem',
     maxWidth: '90vw',
@@ -102,6 +110,10 @@ const Question: FC<QuestionProps> = ({
             </Grid.Col>
           ))}
         </Grid>
+        <Group className={classes.navGroup} grow>
+          <Button variant='light' onClick={newGame}>
+            New Game
+          </Button>
         <Button
             color='blue.9'
             onClick={() =>
@@ -114,6 +126,7 @@ const Question: FC<QuestionProps> = ({
         >
             Next Question
         </Button>
+        </Group>
       </Stack>
     </Center>
   );

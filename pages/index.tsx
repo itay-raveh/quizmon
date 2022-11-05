@@ -1,4 +1,3 @@
-import { Center, Stack } from '@mantine/core';
 import { useCounter, useLocalStorage } from '@mantine/hooks';
 import Landing from 'components/Landing';
 import Question from 'components/Question';
@@ -97,44 +96,45 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
 
   return (
     <main>
-          <ModifiersProvider value={modifiers}>
-            <SPRouter
-              page={phase}
-              pages={{
-                landing: (
-                  <Landing
-                    pokemonsInitialData={pokemonsInitialData}
-                    setModifiers={setModifiers}
-                    start={() => {
-                      stopwatch.start();
-                      setPhase('questions');
-                    }}
-                  />
-                ),
-                questions: (
-                  <Question
+      <ModifiersProvider value={modifiers}>
+        <SPRouter
+          page={phase}
+          pages={{
+            landing: (
+              <Landing
+                pokemonsInitialData={pokemonsInitialData}
+                setModifiers={setModifiers}
+                start={() => {
+                  stopwatch.start();
+                  setPhase('questions');
+                }}
+              />
+            ),
+            questions: (
+              <Question
                 questionNumber={questionIdx + 1}
-                    {...questionPropsList[questionIdx]}
-                    stopwatch={stopwatch}
-                    nextQuestion={(correct) => {
-                      if (correct) incrementCorrectCount();
-                      if (finalQuestion) setPhase('results');
-                      nextQuestion();
-                    }}
-                    final={finalQuestion}
-                  />
-                ),
-                results: (
-                  <Results
-                    stopwatch={stopwatch}
-                    questionCount={questionCount}
-                    correctCount={correctCount}
+                {...questionPropsList[questionIdx]}
+                stopwatch={stopwatch}
+                nextQuestion={(correct) => {
+                  if (correct) incrementCorrectCount();
+                  if (finalQuestion) setPhase('results');
+                  nextQuestion();
+                }}
+                final={finalQuestion}
                 newGame={newGame}
-                  />
-                ),
-              }}
-            />
-          </ModifiersProvider>
+              />
+            ),
+            results: (
+              <Results
+                stopwatch={stopwatch}
+                questionCount={questionCount}
+                correctCount={correctCount}
+                newGame={newGame}
+              />
+            ),
+          }}
+        />
+      </ModifiersProvider>
     </main>
   );
 };
