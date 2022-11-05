@@ -28,7 +28,6 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
               src={bg}
               alt=''
               fill
-              priority
               style={{
                 objectFit: 'cover',
                 filter:

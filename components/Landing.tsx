@@ -1,4 +1,4 @@
-import { Center, Group, Stack } from '@mantine/core';
+import { Center, createStyles, Grid, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import type { PokemonsInitialData } from 'lib/initialData';
 import type { Modifiers } from 'lib/modifiers';
@@ -6,6 +6,16 @@ import type { Dispatch, FC, SetStateAction } from 'react';
 import Button from './Button';
 import Logo from './Logo';
 import ModifiersFormModal from './ModifiersFormModal';
+
+const useStyles = createStyles(() => ({
+  grid: {
+    width: '14rem',
+    maxWidth: '50vw',
+  },
+  button: {
+    width: '100%',
+  },
+}));
 
 interface LandingProps {
   pokemonsInitialData: PokemonsInitialData;
@@ -18,6 +28,7 @@ const Landing: FC<LandingProps> = ({
   setModifiers,
   start,
 }) => {
+  const { classes } = useStyles();
   const [opened, { close, open }] = useDisclosure(false);
 
   return (
@@ -30,14 +41,23 @@ const Landing: FC<LandingProps> = ({
           onSubmit={setModifiers}
         />
         <Logo />
-        <Group>
-          <Button size='md' variant='outline' onClick={open}>
-            Modifiers
-          </Button>
-          <Button size='md' onClick={start}>
-            Start
-          </Button>
-        </Group>
+        <Grid className={classes.grid}>
+          <Grid.Col xs={12} sm={6}>
+            <Button
+              className={classes.button}
+              size='md'
+              variant='outline'
+              onClick={open}
+            >
+              Modifiers
+            </Button>
+          </Grid.Col>
+          <Grid.Col xs={12} sm={6}>
+            <Button className={classes.button} size='md' onClick={start}>
+              Start
+            </Button>
+          </Grid.Col>
+        </Grid>
       </Stack>
     </Center>
   );
