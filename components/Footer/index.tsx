@@ -7,8 +7,9 @@ const useStyles = createStyles((theme) => ({
     width: '100%',
     position: 'absolute',
     bottom: 0,
-    backdropFilter: 'blur(100px)',
+    padding: '0.1rem',
     borderTop: `1px solid ${theme.colors.gray[2]}`,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
   },
 }));
 
