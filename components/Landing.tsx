@@ -1,8 +1,9 @@
-import { Button, Group } from '@mantine/core';
+import { Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import type { PokemonsInitialData } from 'lib/initialData';
 import type { Modifiers } from 'lib/modifiers';
 import type { Dispatch, FC, SetStateAction } from 'react';
+import Button from './Button';
 import Logo from './Logo';
 import ModifiersFormModal from './ModifiersFormModal';
 

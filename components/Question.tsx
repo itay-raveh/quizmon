@@ -1,10 +1,11 @@
-import { Button, createStyles, Grid, Loader, Stack, Text } from '@mantine/core';
+import { createStyles, Grid, Loader, Stack, Text } from '@mantine/core';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
 import { useState, type FC } from 'react';
 import { useQuery } from 'react-query';
 import type { StopwatchResult } from 'react-timer-hook';
+import Button from './Button';
 import Sprite from './Sprite';
 
 const useStyles = createStyles(() => ({
