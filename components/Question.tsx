@@ -28,6 +28,7 @@ const useStyles = createStyles(() => ({
 }));
 
 export interface QuestionProps {
+  questionNumber: number;
   pokemonName: string;
   options: string[];
   stopwatch: StopwatchResult;
@@ -36,6 +37,7 @@ export interface QuestionProps {
 }
 
 const Question: FC<QuestionProps> = ({
+  questionNumber,
   pokemonName,
   options,
   stopwatch,
@@ -76,9 +78,9 @@ const Question: FC<QuestionProps> = ({
   return (
     <Center sx={{ height: '85vh' }}>
       <Stack align='center'>
-        <Text size='xl' weight={700}>
-          {formatStopwatch(stopwatch)}
-        </Text>
+        <Title order={1} mt='xl'>
+          Question #{String(questionNumber).padStart(3, '0')}
+        </Title>
         <Sprite pokemon={pokemon} />
         <Grid className={classes.options}>
           {options.map((option) => (

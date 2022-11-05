@@ -113,6 +113,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
                 ),
                 questions: (
                   <Question
+                questionNumber={questionIdx + 1}
                     {...questionPropsList[questionIdx]}
                     stopwatch={stopwatch}
                     nextQuestion={(correct) => {
