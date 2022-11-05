@@ -74,10 +74,6 @@ const Question: FC<QuestionProps> = ({
 
   const [clickedOption, setClickedOption] = useState('');
 
-  if (isLoading) return <Loader className={classes.loader} size='xl' />;
-
-  if (!pokemon) return <section>No such pokemon</section>;
-
   const getColor = (option: string) => {
     // if no button was clicked yet
     if (!clickedOption)
@@ -104,7 +100,18 @@ const Question: FC<QuestionProps> = ({
           Question #{String(questionNumber).padStart(3, '0')}
         </Title>
         <Title order={4}>Current time: {formatStopwatch(stopwatch)}</Title>
-        <Sprite pokemon={pokemon} />
+        {!pokemon || isLoading ? (
+          <Loader
+            className={classes.loader}
+            size='xl'
+            sx={{
+              width: '16rem',
+              maxWidth: '60vw',
+            }}
+          />
+        ) : (
+          <Sprite pokemon={pokemon} />
+        )}
         <Center>
           <Grid className={classes.options}>
             {options.map((option) => (
