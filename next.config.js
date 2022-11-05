@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
+    minimumCacheTTL: 60 * 60 * 24,
     domains: [
       'raw.githubusercontent.com', // PokeAPI
     ],

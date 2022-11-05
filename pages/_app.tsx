@@ -29,7 +29,12 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
               alt=''
               fill
               priority
-              style={{ objectFit: 'cover', filter: 'blur(5px)' }}
+              style={{
+                objectFit: 'cover',
+                filter:
+                  'blur(3px) contrast(50%) saturate(175%) brightness(115%)',
+                transform: 'scale(105%)',
+              }}
             />
           </Box>
           <QueryClientProvider client={qc}>

@@ -1,4 +1,13 @@
-import { createStyles, Grid, Loader, Stack, Text } from '@mantine/core';
+import {
+  Center,
+  createStyles,
+  Grid,
+  Group,
+  Loader,
+  Stack,
+  Title,
+} from '@mantine/core';
+import { showErrorNotification } from 'lib/notifications';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
@@ -8,31 +17,47 @@ import type { StopwatchResult } from 'react-timer-hook';
 import Button from './Button';
 import Sprite from './Sprite';
 
-const useStyles = createStyles(() => ({
+const useStyles = createStyles((theme) => ({
+  navGroup: {
+    width: '14rem',
+
+    [theme.fn.smallerThan('xs')]: {
+      width: '90vw',
+    },
+  },
+
   options: {
-    width: '20rem',
-    maxWidth: '90vw',
+    maxWidth: '90%',
   },
 
   optionButton: {
     width: '100%',
+
+    [theme.fn.largerThan('sm')]: {
+      height: '3rem',
+      fontSize: '1rem',
+    },
   },
 }));
 
 export interface QuestionProps {
+  questionNumber: number;
   pokemonName: string;
   options: string[];
   stopwatch: StopwatchResult;
   nextQuestion: (correct: boolean) => void;
   final: boolean;
+  newGame: () => void;
 }
 
 const Question: FC<QuestionProps> = ({
+  questionNumber,
   pokemonName,
   options,
   stopwatch,
   nextQuestion,
   final,
+  newGame,
 }) => {
   const { classes } = useStyles();
 
@@ -41,10 +66,6 @@ const Question: FC<QuestionProps> = ({
   );
 
   const [clickedOption, setClickedOption] = useState('');
-
-  if (isLoading) return <Loader size='xl' />;
-
-  if (!pokemon) return <section>No such pokemon</section>;
 
   const getColor = (option: string) => {
     // if no button was clicked yet
@@ -66,36 +87,60 @@ const Question: FC<QuestionProps> = ({
   };
 
   return (
-    <section>
+    <Center sx={{ height: '85vh' }}>
       <Stack align='center'>
-        <Text size='xl' weight={700}>
-          {formatStopwatch(stopwatch)}
-        </Text>
-        <Sprite pokemon={pokemon} />
-        <Grid className={classes.options}>
-          {options.map((option) => (
-            <Grid.Col key={option} xs={12} sm={6} md={3}>
-              <Button
-                className={classes.optionButton}
-                onClick={() => {
-                  if (!clickedOption) setClickedOption(option);
-                  if (final) stopwatch.pause();
-                }}
-                color={getColor(option)}
-              >
-                {startCase(option)}
-              </Button>
-            </Grid.Col>
-          ))}
-        </Grid>
-        <Button
-          disabled={!clickedOption}
-          onClick={() => nextQuestion(clickedOption === pokemonName)}
-        >
-          Next
-        </Button>
+        <Title order={1} mt='xl'>
+          Question #{String(questionNumber).padStart(3, '0')}
+        </Title>
+        <Title order={4}>Current time: {formatStopwatch(stopwatch)}</Title>
+        {!pokemon || isLoading ? (
+          <Loader
+            size='xl'
+            sx={{
+              height: '15rem',
+              maxHeight: '60vw',
+            }}
+          />
+        ) : (
+          <Sprite pokemon={pokemon} />
+        )}
+        <Center>
+          <Grid className={classes.options}>
+            {options.map((option) => (
+              <Grid.Col key={option} xs={12} sm={6} md={3}>
+                <Button
+                  className={classes.optionButton}
+                  onClick={() => {
+                    if (!clickedOption) setClickedOption(option);
+                    if (final) stopwatch.pause();
+                  }}
+                  color={getColor(option)}
+                >
+                  {startCase(option)}
+                </Button>
+              </Grid.Col>
+            ))}
+          </Grid>
+        </Center>
+        <Group className={classes.navGroup} grow>
+          <Button variant='light' onClick={newGame}>
+            New Game
+          </Button>
+          <Button
+            color='blue.9'
+            onClick={() =>
+              clickedOption
+                ? nextQuestion(clickedOption === pokemonName)
+                : showErrorNotification(
+                    'You have to answer the question first...'
+                  )
+            }
+          >
+            Next Question
+          </Button>
+        </Group>
       </Stack>
-    </section>
+    </Center>
   );
 };
 

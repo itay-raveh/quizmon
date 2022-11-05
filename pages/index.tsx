@@ -1,4 +1,3 @@
-import { Center, Stack } from '@mantine/core';
 import { useCounter, useLocalStorage } from '@mantine/hooks';
 import Landing from 'components/Landing';
 import Question from 'components/Question';
@@ -86,56 +85,56 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
     max: questionCount,
   });
 
+  const newGame = () => {
+    setPhase('landing');
+    resetQuestionsCount();
+    resetCorrectCount();
+    stopwatch.reset();
+    // make memos recompute
+    setModifiers({ ...modifiers });
+  };
+
   return (
     <main>
-      <Center sx={{ height: '100vh' }}>
-        <Stack align='center'>
-          <ModifiersProvider value={modifiers}>
-            <SPRouter
-              page={phase}
-              pages={{
-                landing: (
-                  <Landing
-                    pokemonsInitialData={pokemonsInitialData}
-                    setModifiers={setModifiers}
-                    start={() => {
-                      stopwatch.start();
-                      setPhase('questions');
-                    }}
-                  />
-                ),
-                questions: (
-                  <Question
-                    {...questionPropsList[questionIdx]}
-                    stopwatch={stopwatch}
-                    nextQuestion={(correct) => {
-                      if (correct) incrementCorrectCount();
-                      if (finalQuestion) setPhase('results');
-                      nextQuestion();
-                    }}
-                    final={finalQuestion}
-                  />
-                ),
-                results: (
-                  <Results
-                    stopwatch={stopwatch}
-                    questionCount={questionCount}
-                    correctCount={correctCount}
-                    newGame={() => {
-                      setPhase('landing');
-                      resetQuestionsCount();
-                      resetCorrectCount();
-                      stopwatch.reset();
-                      // make memos recompute
-                      setModifiers({ ...modifiers });
-                    }}
-                  />
-                ),
-              }}
-            />
-          </ModifiersProvider>
-        </Stack>
-      </Center>
+      <ModifiersProvider value={modifiers}>
+        <SPRouter
+          page={phase}
+          pages={{
+            landing: (
+              <Landing
+                pokemonsInitialData={pokemonsInitialData}
+                setModifiers={setModifiers}
+                start={() => {
+                  stopwatch.start();
+                  setPhase('questions');
+                }}
+              />
+            ),
+            questions: (
+              <Question
+                questionNumber={questionIdx + 1}
+                {...questionPropsList[questionIdx]}
+                stopwatch={stopwatch}
+                nextQuestion={(correct) => {
+                  if (correct) incrementCorrectCount();
+                  if (finalQuestion) setPhase('results');
+                  nextQuestion();
+                }}
+                final={finalQuestion}
+                newGame={newGame}
+              />
+            ),
+            results: (
+              <Results
+                stopwatch={stopwatch}
+                questionCount={questionCount}
+                correctCount={correctCount}
+                newGame={newGame}
+              />
+            ),
+          }}
+        />
+      </ModifiersProvider>
     </main>
   );
 };

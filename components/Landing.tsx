@@ -1,4 +1,4 @@
-import { Group } from '@mantine/core';
+import { Center, Group, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import type { PokemonsInitialData } from 'lib/initialData';
 import type { Modifiers } from 'lib/modifiers';
@@ -21,23 +21,25 @@ const Landing: FC<LandingProps> = ({
   const [opened, { close, open }] = useDisclosure(false);
 
   return (
-    <>
-      <ModifiersFormModal
-        pokemonsInitialData={pokemonsInitialData}
-        opened={opened}
-        onClose={close}
-        onSubmit={setModifiers}
-      />
-      <Logo />
-      <Group>
-        <Button size='md' variant='outline' onClick={open}>
-          Modifiers
-        </Button>
-        <Button size='md' onClick={start}>
-          Start
-        </Button>
-      </Group>
-    </>
+    <Center sx={{ height: '100vh' }}>
+      <Stack align='center'>
+        <ModifiersFormModal
+          pokemonsInitialData={pokemonsInitialData}
+          opened={opened}
+          onClose={close}
+          onSubmit={setModifiers}
+        />
+        <Logo />
+        <Group>
+          <Button size='md' variant='outline' onClick={open}>
+            Modifiers
+          </Button>
+          <Button size='md' onClick={start}>
+            Start
+          </Button>
+        </Group>
+      </Stack>
+    </Center>
   );
 };
 

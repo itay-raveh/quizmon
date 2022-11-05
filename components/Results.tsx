@@ -1,4 +1,4 @@
-import { Group, Title } from '@mantine/core';
+import { Center, Group, Stack, Title } from '@mantine/core';
 import { formatStopwatch } from 'lib/utils';
 import type { FC } from 'react';
 import type { StopwatchResult } from 'react-timer-hook';
@@ -18,19 +18,24 @@ const Results: FC<ResultsProps> = ({
   newGame,
 }) => (
   <section>
-    <Title>Results</Title>
-    <Title order={2}>
-      Final Time: <strong>{formatStopwatch(stopwatch)}</strong>
-    </Title>
-    <Title order={2}>
-      Score:{' '}
-      <strong>
-        {(correctCount / questionCount) * 100}% ({correctCount}/{questionCount})
-      </strong>
-    </Title>
-    <Group position='center' mt='xl'>
-      <Button onClick={newGame}>New Game</Button>
-    </Group>
+    <Center sx={{ height: '100vh' }}>
+      <Stack>
+        <Title order={1}>Results</Title>
+        <Title order={3}>
+          Final Time: <strong>{formatStopwatch(stopwatch)}</strong>
+        </Title>
+        <Title order={3}>
+          Score:{' '}
+          <strong>
+            {((correctCount / questionCount) * 100).toFixed(2)}% ({correctCount}
+            /{questionCount})
+          </strong>
+        </Title>
+        <Group position='center' mt='xl'>
+          <Button onClick={newGame}>New Game</Button>
+        </Group>
+      </Stack>
+    </Center>
   </section>
 );
 

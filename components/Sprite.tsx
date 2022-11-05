@@ -5,7 +5,7 @@ import Image from 'next/image';
 import type { Pokemon, PokemonSprites, VersionSprites } from 'pokenode-ts';
 import { useMemo, type FC } from 'react';
 
-const SPRITE_SIZE = 300 as const;
+const SPRITE_SIZE = 500 as const;
 
 type ImageRenderingMode = 'pixelated' | 'auto';
 
@@ -115,7 +115,12 @@ const Sprite: FC<SpriteProps> = ({ pokemon }) => {
   if (!sprite) return <section>No sprite for this Pokemon</section>;
 
   return (
-    <Container sx={{ width: '15rem', maxWidth: '60vw' }}>
+    <Container
+      sx={{
+        width: '16rem',
+        maxWidth: '60vw',
+      }}
+    >
       <Image
         src={sprite.src}
         alt={pokemon.name}

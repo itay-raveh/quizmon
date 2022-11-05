@@ -1,12 +1,15 @@
 import { Modal, Stack } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import { IconCheck, IconX } from '@tabler/icons';
+
 import type { PokemonsInitialData } from 'lib/initialData';
 import { filterPokemonsInitialData, type Modifiers } from 'lib/modifiers';
 import {
   ModifiersFormProvider,
   useModifiersForm,
 } from 'lib/modifiers/form/context';
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from 'lib/notifications';
 import type { FC } from 'react';
 import FormCategories from './FormCategories';
 import Generations from './Generations';
@@ -30,33 +33,12 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
 }) => {
   const form = useModifiersForm();
 
-  const showErrorNotification = (message: string) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-    showNotification({
-      message,
-      title: 'Oh oh!',
-      color: 'red',
-      icon: <IconX size={18} />,
-      disallowClose: true,
-    });
-
-  const showSuccessNotification = (message: string) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-    showNotification({
-      message,
-      title: 'Success!',
-      color: 'green',
-      icon: <IconCheck size={18} />,
-      disallowClose: true,
-    });
-
   let onSaveClick = () => {
     showSuccessNotification('Saved new modifiers.');
     onClose();
   };
   if (!form.isValid())
     onSaveClick = () =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       showErrorNotification(
         'There are some errors in the form, check for red text and fix them.'
       );
@@ -64,8 +46,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
     filterPokemonsInitialData(form.values, pokemonsInitialData).length === 0
   )
     onSaveClick = () =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      showErrorNotification('There are no Pokémon that match these modifiers.');
+      showErrorNotification('There are no Pokémon that match these filters.');
 
   return (
     <Modal
