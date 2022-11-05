@@ -9,7 +9,7 @@ import ModifiersFormModal from './ModifiersFormModal';
 
 const useStyles = createStyles(() => ({
   grid: {
-    width: '13rem',
+    width: '14rem',
     maxWidth: '50vw',
   },
   button: {
