@@ -6,7 +6,7 @@ const Logo: FC = () => (
   <Image
     src={logo}
     alt='Quizmon: The Ultimate Pokémon Knowledge Test'
-    style={{ maxWidth: '30rem', height: 'auto' }}
+    style={{ width: '30rem', maxWidth: '90vw', height: 'auto' }}
     priority
   />
 );
