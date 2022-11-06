@@ -107,7 +107,7 @@ const Question: FC<QuestionProps> = ({
         <Center>
           <Grid className={classes.options}>
             {options.map((option) => (
-              <Grid.Col key={option} xs={12} sm={6} md={3}>
+              <Grid.Col key={option} xs={12} sm={6}>
                 <Button
                   className={classes.optionButton}
                   onClick={() => {
