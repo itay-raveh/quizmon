@@ -82,7 +82,6 @@ const getRandomSprite = (
   const allSprites: SpriteData[] = [...topLevelSprites, ...versionSprites];
 
   const other = sprites.other;
-  console.log('other', other);
 
   if (other) {
     allSprites.push(
@@ -93,7 +92,6 @@ const getRandomSprite = (
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   return sample(allSprites) as SpriteData;
 };
 
