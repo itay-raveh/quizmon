@@ -5,7 +5,7 @@ import Image from 'next/image';
 import type { Pokemon, PokemonSprites, VersionSprites } from 'pokenode-ts';
 import { useMemo, type FC } from 'react';
 
-const SPRITE_SIZE = 500 as const;
+const SPRITE_SIZE = 300 as const;
 
 type ImageRenderingMode = 'pixelated' | 'auto';
 
@@ -82,7 +82,6 @@ const getRandomSprite = (
   const allSprites: SpriteData[] = [...topLevelSprites, ...versionSprites];
 
   const other = sprites.other;
-  console.log('other', other);
 
   if (other) {
     allSprites.push(
@@ -93,7 +92,6 @@ const getRandomSprite = (
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   return sample(allSprites) as SpriteData;
 };
 
