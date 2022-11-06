@@ -5,7 +5,7 @@ import Image from 'next/image';
 import type { Pokemon, PokemonSprites, VersionSprites } from 'pokenode-ts';
 import { useMemo, type FC } from 'react';
 
-const SPRITE_SIZE = 500 as const;
+const SPRITE_SIZE = 300 as const;
 
 type ImageRenderingMode = 'pixelated' | 'auto';
 
