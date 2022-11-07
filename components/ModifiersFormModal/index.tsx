@@ -1,8 +1,9 @@
 import { Modal, Stack } from '@mantine/core';
-
 import type { PokemonsInitialData } from 'lib/initialData';
 import { filterPokemonsInitialData, type Modifiers } from 'lib/modifiers';
+import { useModifiers } from 'lib/modifiers/context';
 import {
+  makeUseFormInput,
   ModifiersFormProvider,
   useModifiersForm,
 } from 'lib/modifiers/form/context';
@@ -14,6 +15,7 @@ import type { FC } from 'react';
 import FormCategories from './FormCategories';
 import Generations from './Generations';
 import Limit from './Limit';
+import ModifiersLoader from './ModifiersLoader';
 import RandomSprite from './RandomSprite';
 import Save from './Save';
 import WhosThatPokemon from './WhosThatPokemon';
@@ -31,7 +33,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const form = useModifiersForm();
+  const form = useModifiersForm(makeUseFormInput(useModifiers()));
 
   let onSaveClick = () => {
     showSuccessNotification('Saved new modifiers.');
@@ -57,6 +59,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
       centered
     >
       <ModifiersFormProvider form={form}>
+        <ModifiersLoader />
         <form onSubmit={form.onSubmit(onSubmit)}>
           <Stack>
             <Generations />
