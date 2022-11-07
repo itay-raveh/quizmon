@@ -11,6 +11,7 @@ import { filterPokemonsInitialData, initialValues } from 'lib/modifiers';
 import { ModifiersProvider } from 'lib/modifiers/context';
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
+import staticPokemonsInitialData from 'public/pokemonsInitialData.json';
 import { useMemo, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
 
@@ -19,7 +20,9 @@ interface IndexPageProps {
 }
 
 export const getStaticProps: GetStaticProps<IndexPageProps> = async () => {
-  const pokemonsInitialData = await getPokemonsInitialData();
+  const pokemonsInitialData =
+    (staticPokemonsInitialData as PokemonsInitialData) ??
+    (await getPokemonsInitialData());
 
   return { props: { pokemonsInitialData } };
 };
