@@ -31,7 +31,7 @@ const Results: FC<ResultsProps> = ({
 
   return (
     <section>
-      <Center sx={{ height: '100vh' }}>
+      <Center sx={{ height: '90vh' }}>
         <Stack sx={{ width: '20rem', maxWidth: '90vw' }}>
           <Title order={1}>Results</Title>
           <Item
