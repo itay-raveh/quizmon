@@ -12,10 +12,8 @@ const Score: FC<ScoreProps> = ({ score }) => {
   const [playScore, { stop: stopScore }] = useSound(prizeWheelSpin);
 
   useEffect(() => {
-    {
-      score > 1 && playScore();
-      return stopScore;
-    }
+    score > 1 && playScore();
+    return stopScore;
   }, [playScore, score, stopScore]);
 
   const formattingFn = useCallback(
