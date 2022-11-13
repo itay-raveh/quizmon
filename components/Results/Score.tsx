@@ -19,7 +19,7 @@ const Score: FC<ScoreProps> = ({ score }) => {
 
   return (
     <Item
-      title='Score'
+      title='Score:'
       points={
         <CountUp
           end={score}

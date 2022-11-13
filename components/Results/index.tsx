@@ -35,7 +35,7 @@ const Results: FC<ResultsProps> = ({
         <Stack sx={{ width: '20rem', maxWidth: '90vw' }}>
           <Title order={1}>Results</Title>
           <Item
-            title='Accuracy'
+            title='Accuracy:'
             value={`${((correctCount / questionCount) * 100).toFixed(2)}%`}
             points={
               <Fraction
@@ -50,7 +50,7 @@ const Results: FC<ResultsProps> = ({
             }
           />
           <Item
-            title='Time'
+            title='Time:'
             value={formatStopwatch(stopwatch)}
             multiplier={
               <Fraction

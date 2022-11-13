@@ -23,7 +23,7 @@ const Item: FC<ItemProps> = ({ title, value, bold, multiplier, points }) => (
   <Text size='lg' weight={bold ? 700 : 500}>
     <Group grow>
       {Object.entries({
-        title: { inner: <>{title}:</>, align: 'left' },
+        title: { inner: title, align: 'left' },
         value: { inner: value, align: 'center' },
         third: {
           inner: multiplier ? <>&times;{multiplier}</> : points,
