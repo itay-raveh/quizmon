@@ -6,6 +6,7 @@ import type { StopwatchResult } from 'react-timer-hook';
 import Button from '../Button';
 import Fraction from './Fraction';
 import Item from './Item';
+import Score from './Score';
 
 interface ResultsProps {
   stopwatch: StopwatchResult;
@@ -21,7 +22,6 @@ const Results: FC<ResultsProps> = ({
   newGame,
 }) => {
   const modifiers = useModifiers();
-
   const accuracy = correctCount ** 3 / questionCount;
   const seconds =
     stopwatch.hours * 3600 + stopwatch.minutes * 60 + stopwatch.seconds;
@@ -70,13 +70,7 @@ const Results: FC<ResultsProps> = ({
           {modifiers.randomSprite && (
             <Item title='Random sprite' multiplier={2} />
           )}
-          <Item
-            title='Score'
-            points={Intl.NumberFormat(undefined, {
-              maximumFractionDigits: 0,
-            }).format(accuracy * time * whosThatPokemon * randomSprite)}
-            bold
-          />
+          <Score score={accuracy * time * whosThatPokemon * randomSprite} />
           <Button onClick={newGame}>New Game</Button>
         </Stack>
       </Center>
