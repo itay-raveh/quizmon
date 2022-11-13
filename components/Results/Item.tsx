@@ -20,14 +20,19 @@ interface PointsItemProps extends BaseItemProps {
 type ItemProps = MulItemProps | PointsItemProps;
 
 const Item: FC<ItemProps> = ({ title, value, bold, multiplier, points }) => (
-  <Text size='xl' weight={bold ? 700 : 500}>
+  <Text size='lg' weight={bold ? 700 : 500}>
     <Group grow>
       {Object.entries({
-        title: <>{title}:</>,
-        value,
-        third: multiplier ? <>&times;{multiplier}</> : points,
-      }).map(([key, inner]) => (
-        <Text key={key}>{inner}</Text>
+        title: { inner: <>{title}:</>, align: 'left' },
+        value: { inner: value, align: 'center' },
+        third: {
+          inner: multiplier ? <>&times;{multiplier}</> : points,
+          align: 'right',
+        },
+      }).map(([key, { inner, align }]) => (
+        <Text key={key} align={align as React.CSSProperties['textAlign']}>
+          {inner}
+        </Text>
       ))}
     </Group>
   </Text>
