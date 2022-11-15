@@ -16,6 +16,9 @@ import staticPokemonsInitialData from 'public/assets/pokemonsInitialData.json';
 import { useMemo, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
 
+const TITLE = 'Quizmon' as const;
+const DESC = 'The Ultimate Pokémon Knowledge Test' as const;
+
 interface IndexPageProps {
   pokemonsInitialData: PokemonsInitialData;
 }
@@ -101,7 +104,21 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   return (
     <>
       <Head>
-        <title>The Ultimate Pokémon Test</title>
+        <title>{TITLE}</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <meta charSet='utf-8' />
+        <meta name='description' content={DESC} />
+        <meta property='og:title' content={TITLE} key='ogtitle' />
+        <meta property='og:description' content={DESC} key='ogdesc' />
+        <meta name='twitter:card' content={DESC} key='twcard' />
+        <meta
+          property='og:image'
+          content='public/assets/images/logo.png'
+          key='ogimage'
+        />
+        <meta property='og:site_name' content={TITLE} key='ogsitename' />
+        <meta property='og:title' content={TITLE} key='ogtitle' />
+        <meta property='og:description' content={DESC} key='ogdesc' />
         <link
           rel='apple-touch-icon'
           sizes='180x180'
