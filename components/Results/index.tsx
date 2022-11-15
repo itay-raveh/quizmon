@@ -26,8 +26,8 @@ const Results: FC<ResultsProps> = ({
   const seconds =
     stopwatch.hours * 3600 + stopwatch.minutes * 60 + stopwatch.seconds;
   const time = questionCount ** 3 / seconds;
-  const whosThatPokemon = 1 + +modifiers.whosThatPokemon;
-  const randomSprite = 1 + +modifiers.randomSprite;
+  const whosThatPokemon = modifiers.whosThatPokemon ? correctCount : 1;
+  const randomSprite = modifiers.randomSprite ? correctCount : 1;
 
   return (
     <section>
@@ -65,10 +65,10 @@ const Results: FC<ResultsProps> = ({
             }
           />
           {modifiers.whosThatPokemon && (
-            <Item title="Who's That Pokémon?" multiplier={2} />
+            <Item title="Who's That Pokémon?" multiplier={correctCount} />
           )}
           {modifiers.randomSprite && (
-            <Item title='Random sprite' multiplier={2} />
+            <Item title='Random sprite' multiplier={correctCount} />
           )}
           <Score score={accuracy * time * whosThatPokemon * randomSprite} />
           <Button onClick={newGame}>New Game</Button>
