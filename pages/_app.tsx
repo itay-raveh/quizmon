@@ -4,7 +4,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Footer from 'components/Footer';
 import type { AppProps } from 'next/app';
 import Image from 'next/future/image';
-import bg from 'public/bg.jpg';
+import bg from 'public/assets/images/bg.jpg';
 import type { FC } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';

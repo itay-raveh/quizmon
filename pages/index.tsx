@@ -11,7 +11,8 @@ import { filterPokemonsInitialData, initialValues } from 'lib/modifiers';
 import { ModifiersProvider } from 'lib/modifiers/context';
 import shuffle from 'lodash.shuffle';
 import type { GetStaticProps, NextPage } from 'next';
-import staticPokemonsInitialData from 'public/pokemonsInitialData.json';
+import Head from 'next/head';
+import staticPokemonsInitialData from 'public/assets/pokemonsInitialData.json';
 import { useMemo, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
 
@@ -98,47 +99,73 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   };
 
   return (
-    <main>
-      <ModifiersProvider value={modifiers}>
-        <SPRouter
-          page={phase}
-          pages={{
-            landing: (
-              <Landing
-                pokemonsInitialData={pokemonsInitialData}
-                setModifiers={setModifiers}
-                start={() => {
-                  stopwatch.start();
-                  setPhase('questions');
-                }}
-              />
-            ),
-            questions: (
-              <Question
-                questionNumber={questionIdx + 1}
-                {...questionPropsList[questionIdx]}
-                stopwatch={stopwatch}
-                nextQuestion={(correct) => {
-                  if (correct) incrementCorrectCount();
-                  if (finalQuestion) setPhase('results');
-                  nextQuestion();
-                }}
-                final={finalQuestion}
-                newGame={newGame}
-              />
-            ),
-            results: (
-              <Results
-                stopwatch={stopwatch}
-                questionCount={questionCount}
-                correctCount={correctCount}
-                newGame={newGame}
-              />
-            ),
-          }}
+    <>
+      <Head>
+        <title>The Ultimate Pokémon Test</title>
+        <link
+          rel='apple-touch-icon'
+          sizes='180x180'
+          href='/apple-touch-icon.png'
         />
-      </ModifiersProvider>
-    </main>
+        <link
+          rel='icon'
+          type='image/png'
+          sizes='32x32'
+          href='/favicon-32x32.png'
+        />
+        <link
+          rel='icon'
+          type='image/png'
+          sizes='16x16'
+          href='/favicon-16x16.png'
+        />
+        <link rel='manifest' href='/site.webmanifest' />
+        <link rel='mask-icon' href='/safari-pinned-tab.svg' color='#5bbad5' />
+        <meta name='msapplication-TileColor' content='#da532c' />
+        <meta name='theme-color' content='#ffffff' />
+      </Head>
+      <main>
+        <ModifiersProvider value={modifiers}>
+          <SPRouter
+            page={phase}
+            pages={{
+              landing: (
+                <Landing
+                  pokemonsInitialData={pokemonsInitialData}
+                  setModifiers={setModifiers}
+                  start={() => {
+                    stopwatch.start();
+                    setPhase('questions');
+                  }}
+                />
+              ),
+              questions: (
+                <Question
+                  questionNumber={questionIdx + 1}
+                  {...questionPropsList[questionIdx]}
+                  stopwatch={stopwatch}
+                  nextQuestion={(correct) => {
+                    if (correct) incrementCorrectCount();
+                    if (finalQuestion) setPhase('results');
+                    nextQuestion();
+                  }}
+                  final={finalQuestion}
+                  newGame={newGame}
+                />
+              ),
+              results: (
+                <Results
+                  stopwatch={stopwatch}
+                  questionCount={questionCount}
+                  correctCount={correctCount}
+                  newGame={newGame}
+                />
+              ),
+            }}
+          />
+        </ModifiersProvider>
+      </main>
+    </>
   );
 };
 
