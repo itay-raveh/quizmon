@@ -1,4 +1,4 @@
-import prizeWheelSpin from 'public/sounds/prize-wheel-spin.mp3';
+import prizeWheelSpin from 'public/assets/sounds/prize-wheel-spin.mp3';
 import { useCallback, useEffect, type FC } from 'react';
 import CountUp from 'react-countup';
 import useSound from 'use-sound';
