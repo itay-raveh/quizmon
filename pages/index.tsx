@@ -18,6 +18,9 @@ import { useStopwatch } from 'react-timer-hook';
 
 const TITLE = 'Quizmon' as const;
 const DESC = 'The Ultimate Pokémon Knowledge Test' as const;
+const DOMAIN = 'quizmon.vercel.app' as const;
+const URL = `https://${DOMAIN}/`;
+const LOGO = URL + 'assets/images/logo.png';
 
 interface IndexPageProps {
   pokemonsInitialData: PokemonsInitialData;
@@ -104,21 +107,19 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
   return (
     <>
       <Head>
-        <title>{TITLE}</title>
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <meta charSet='utf-8' />
+        <title>Quizmon</title>
         <meta name='description' content={DESC} />
-        <meta property='og:title' content={TITLE} key='ogtitle' />
-        <meta property='og:description' content={DESC} key='ogdesc' />
-        <meta name='twitter:card' content={DESC} key='twcard' />
-        <meta
-          property='og:image'
-          content='public/assets/images/logo.png'
-          key='ogimage'
-        />
-        <meta property='og:site_name' content={TITLE} key='ogsitename' />
-        <meta property='og:title' content={TITLE} key='ogtitle' />
-        <meta property='og:description' content={DESC} key='ogdesc' />
+        <meta property='og:url' content={URL} />
+        <meta property='og:type' content='website' />
+        <meta property='og:title' content={TITLE} />
+        <meta property='og:description' content={DESC} />
+        <meta property='og:image' content={LOGO} />
+        <meta name='twitter:card' content='summary_large_image' />
+        <meta property='twitter:domain' content={DOMAIN} />
+        <meta property='twitter:url' content={URL} />
+        <meta name='twitter:title' content={TITLE} />
+        <meta name='twitter:description' content={DESC} />
+        <meta name='twitter:image' content={LOGO} />
         <link
           rel='apple-touch-icon'
           sizes='180x180'
