@@ -19,8 +19,8 @@ import { useStopwatch } from 'react-timer-hook';
 const TITLE = 'Quizmon' as const;
 const DESC = 'The Ultimate Pokémon Knowledge Test' as const;
 const DOMAIN = 'quizmon.vercel.app' as const;
-const URL = `https://${DOMAIN}/`;
-const LOGO = URL + 'assets/images/logo.png';
+const URL = `https://${DOMAIN}/` as const;
+const LOGO = `${URL}assets/images/favicon.png` as const;
 
 interface IndexPageProps {
   pokemonsInitialData: PokemonsInitialData;
@@ -112,14 +112,15 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
         <meta property='og:url' content={URL} />
         <meta property='og:type' content='website' />
         <meta property='og:title' content={TITLE} />
+        <meta property='og:site_name' content={TITLE} />
         <meta property='og:description' content={DESC} />
-        <meta property='og:image' content={LOGO} />
+        <meta property='og:image' itemProp='image' content={LOGO} />
         <meta name='twitter:card' content='summary_large_image' />
         <meta property='twitter:domain' content={DOMAIN} />
         <meta property='twitter:url' content={URL} />
         <meta name='twitter:title' content={TITLE} />
         <meta name='twitter:description' content={DESC} />
-        <meta name='twitter:image' content={LOGO} />
+        <meta name='twitter:image' itemProp='image' content={LOGO} />
         <link
           rel='apple-touch-icon'
           sizes='180x180'
