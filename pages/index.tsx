@@ -113,13 +113,13 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
         <meta property='og:type' content='website' />
         <meta property='og:title' content={TITLE} />
         <meta property='og:description' content={DESC} />
-        <meta property='og:image' content={LOGO} />
+        <meta property='og:image' itemProp='image' content={LOGO} />
         <meta name='twitter:card' content='summary_large_image' />
         <meta property='twitter:domain' content={DOMAIN} />
         <meta property='twitter:url' content={URL} />
         <meta name='twitter:title' content={TITLE} />
         <meta name='twitter:description' content={DESC} />
-        <meta name='twitter:image' content={LOGO} />
+        <meta name='twitter:image' itemProp='image' content={LOGO} />
         <link
           rel='apple-touch-icon'
           sizes='180x180'
