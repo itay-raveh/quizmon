@@ -19,8 +19,8 @@ import { useStopwatch } from 'react-timer-hook';
 const TITLE = 'Quizmon' as const;
 const DESC = 'The Ultimate Pokémon Knowledge Test' as const;
 const DOMAIN = 'quizmon.vercel.app' as const;
-const URL = `https://${DOMAIN}/`;
-const LOGO = URL + 'assets/images/logo.png';
+const URL = `https://${DOMAIN}/` as const;
+const LOGO = `${URL}assets/images/favicon.png` as const;
 
 interface IndexPageProps {
   pokemonsInitialData: PokemonsInitialData;
