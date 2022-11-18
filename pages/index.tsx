@@ -112,6 +112,7 @@ const IndexPage: NextPage<IndexPageProps> = ({ pokemonsInitialData }) => {
         <meta property='og:url' content={URL} />
         <meta property='og:type' content='website' />
         <meta property='og:title' content={TITLE} />
+        <meta property='og:site_name' content={TITLE} />
         <meta property='og:description' content={DESC} />
         <meta property='og:image' itemProp='image' content={LOGO} />
         <meta name='twitter:card' content='summary_large_image' />
