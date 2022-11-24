@@ -18,6 +18,7 @@ import Limit from './Limit';
 import ModifiersLoader from './ModifiersLoader';
 import RandomSprite from './RandomSprite';
 import Save from './Save';
+import SpeedrunMode from './SpeedrunMode';
 import WhosThatPokemon from './WhosThatPokemon';
 
 interface ModifiersFormModalProps {
@@ -67,6 +68,7 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
             <RandomSprite />
             <WhosThatPokemon />
             <Limit />
+            <SpeedrunMode />
             <Save onClick={onSaveClick} />
           </Stack>
         </form>
