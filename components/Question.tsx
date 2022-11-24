@@ -2,16 +2,14 @@ import {
   Center,
   createStyles,
   Grid,
-  Group,
   Loader,
   Stack,
   Title,
 } from '@mantine/core';
-import { showErrorNotification } from 'lib/notifications';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
-import { useState, type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { useQuery } from 'react-query';
 import type { StopwatchResult } from 'react-timer-hook';
 import Button from './Button';
@@ -66,6 +64,15 @@ const Question: FC<QuestionProps> = ({
   );
 
   const [clickedOption, setClickedOption] = useState('');
+
+  useEffect(() => {
+    clickedOption &&
+      setTimeout(
+        () => nextQuestion(clickedOption === pokemonName),
+        750 + 1000 * Number(clickedOption !== pokemonName)
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clickedOption]);
 
   const getColor = (option: string) => {
     // if no button was clicked yet
@@ -122,23 +129,9 @@ const Question: FC<QuestionProps> = ({
             ))}
           </Grid>
         </Center>
-        <Group className={classes.navGroup} grow>
-          <Button variant='light' onClick={newGame}>
-            New Game
-          </Button>
-          <Button
-            color='blue.9'
-            onClick={() =>
-              clickedOption
-                ? nextQuestion(clickedOption === pokemonName)
-                : showErrorNotification(
-                    'You have to answer the question first...'
-                  )
-            }
-          >
-            Next Question
-          </Button>
-        </Group>
+        <Button variant='light' onClick={newGame}>
+          New Game
+        </Button>
       </Stack>
     </Center>
   );
