@@ -6,6 +6,7 @@ import {
   Stack,
   Title,
 } from '@mantine/core';
+import { useModifiers } from 'lib/modifiers/context';
 import { pokeapi } from 'lib/pokeapi';
 import { formatStopwatch } from 'lib/utils';
 import startCase from 'lodash.startcase';
@@ -59,6 +60,8 @@ const Question: FC<QuestionProps> = ({
 }) => {
   const { classes } = useStyles();
 
+  const modifiers = useModifiers();
+
   const { isLoading, data: pokemon } = useQuery(['pokemon', pokemonName], () =>
     pokeapi.pokemon.getPokemonByName(pokemonName)
   );
@@ -69,7 +72,9 @@ const Question: FC<QuestionProps> = ({
     clickedOption &&
       setTimeout(
         () => nextQuestion(clickedOption === pokemonName),
-        750 + 1000 * Number(clickedOption !== pokemonName)
+        modifiers.speedrunMode
+          ? 0
+          : 750 + 1000 * Number(clickedOption !== pokemonName)
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clickedOption]);
