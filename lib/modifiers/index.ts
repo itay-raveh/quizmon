@@ -3,12 +3,16 @@ import type { FormCategory } from 'lib/types/FormCategory';
 import type { GenRoman } from 'lib/types/GenRoman';
 
 export interface Modifiers {
+  // filters
   generations: GenRoman[];
   formCategories: FormCategory[];
+  // modifiers
   randomSprite: boolean;
   whosThatPokemon: boolean;
+  // game settings
   isLimitActive: boolean;
   limit: number;
+  speedrunMode: boolean;
 }
 
 export const initialValues: Modifiers = {
@@ -18,6 +22,7 @@ export const initialValues: Modifiers = {
   whosThatPokemon: false,
   isLimitActive: true,
   limit: 10,
+  speedrunMode: false,
 };
 
 /**
