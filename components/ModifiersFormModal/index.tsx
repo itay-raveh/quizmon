@@ -1,4 +1,4 @@
-import { Modal, Stack } from '@mantine/core';
+import { Modal, Stack, Text } from '@mantine/core';
 import type { PokemonsInitialData } from 'lib/initialData';
 import { filterPokemonsInitialData, type Modifiers } from 'lib/modifiers';
 import { useModifiers } from 'lib/modifiers/context';
@@ -63,10 +63,13 @@ const ModifiersFormModal: FC<ModifiersFormModalProps> = ({
         <ModifiersLoader />
         <form onSubmit={form.onSubmit(onSubmit)}>
           <Stack>
+            <Text weight={700}>Filters</Text>
             <Generations />
             <FormCategories />
+            <Text weight={700}>Modifiers</Text>
             <RandomSprite />
             <WhosThatPokemon />
+            <Text weight={700}>Settings</Text>
             <Limit />
             <SpeedrunMode />
             <Save onClick={onSaveClick} />
