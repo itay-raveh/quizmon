@@ -1,52 +1,67 @@
-# Quizmon
+<p align="center">
+  <img src="public/assets/images/logo.png" alt="Quizmon" width="480">
+</p>
 
-The ultimate Pokémon knowledge test.
+<p align="center">
+  <strong>A tiny Pokémon quiz I started while learning React.</strong>
+</p>
 
-Quizmon is a browser game for identifying Pokémon against the clock. Filter by
-generation and form, enable silhouette or random-sprite challenges, and compare
-scores across runs.
+<p align="center">
+  <a href="https://quizmon.raveh.dev/"><strong>Play Quizmon</strong></a>
+</p>
 
-## Development
+Quizmon shows you a Pokémon sprite and four names. Pick fast, keep your
+accuracy up, and find out how much Pokédex trivia still lives in your head.
 
-Install the locked tools and project dependencies, then start Vite:
+## How to play
+
+1. Press **Start** for a ten-question Generation I quiz.
+2. Pick the name that matches each Pokémon.
+3. Finish with as many correct answers as you can, in as little time as you
+   can.
+
+Quizmon combines accuracy and speed into one score. It needs no account and
+stores your preferred modifiers in your browser.
+
+## Make it harder
+
+Open **Modifiers** before a game to build your own challenge:
+
+- Mix Pokémon from Generations I through IX, including regional and special
+  forms.
+- Turn every sprite into a **Who’s that Pokémon?** silhouette or choose a
+  random sprite for each question.
+- Set the quiz length and enable speedrun mode when the answer reveal starts
+  feeling slow.
+
+## Run it on your machine
+
+From a clone of this repository:
 
 ```sh
 mise install
 npm ci
-mise run hooks:install
 mise run dev
 ```
 
-Run every repository check with:
+Vite prints the local URL when the development server starts.
 
-```sh
-mise run check
-```
+## Work on it
 
-Install Chromium once and run the browser tests with:
+| Command                  | What it does                             |
+| ------------------------ | ---------------------------------------- |
+| `mise run hooks:install` | Installs the prek commit hooks           |
+| `mise run check`         | Formats and validates the repository     |
+| `mise run e2e`           | Runs the browser tests                   |
+| `mise run data:update`   | Refreshes the checked-in Pokémon catalog |
 
-```sh
-npx playwright install chromium
-mise run e2e
-```
-
-Commits follow the [Conventional Commits](https://www.conventionalcommits.org/)
-format. Prek checks formatting and linting before each commit, validates commit
-messages locally, and runs the same checks in CI.
+Commits use the [Conventional Commits](https://www.conventionalcommits.org/)
+format. CI runs the same formatting, linting, unit, browser, build, and
+configuration checks you can run on your machine.
 
 ## Pokémon data
 
-The catalog is checked in so builds and gameplay do not depend on a bulk API
-request. Refresh Generation IX defaults from PokéAPI with:
-
-```sh
-mise run data:update
-```
-
-Individual Pokémon details and sprites are loaded from PokéAPI during play.
-
-## Deployment
-
-Pushes to `master` deploy the Vite build as static assets on Cloudflare Workers.
-The `quizmon.raveh.dev` custom domain is managed in the
-[`infra`](https://github.com/itay-raveh/infra) repository.
+Quizmon keeps its Pokémon catalog in the repository, then asks
+[PokéAPI](https://pokeapi.co/) for sprites and details during a game. The game
+is a fan project and has no affiliation with Nintendo, Game Freak, or The
+Pokémon Company.
