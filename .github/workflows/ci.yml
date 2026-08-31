@@ -35,10 +35,8 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: npm run commitlint -- --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
-      - run: mise run check
-      - run: git diff --exit-code
       - run: npx playwright install --with-deps chromium
-      - run: mise run e2e
+      - run: mise run check
 
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

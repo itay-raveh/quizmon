@@ -11,46 +11,32 @@ node = "24.20.0"
 prek = "0.5.0"
 "github:zizmorcore/zizmor" = "1.29.0"
 
-[tasks.dev]
-description = "Run the local Vite development server"
-run = "npm run dev"
-
-[tasks.format]
-description = "Format repository files"
-run = "npm run format"
-
-[tasks.validate]
-description = "Validate the app, Worker, and repository configuration"
+[tasks.setup]
+description = "Set up tools, dependencies, browser binaries, and Git hooks"
 run = [
+  "npm ci",
+  "npx --no-install playwright install chromium",
+  "prek install",
+]
+
+[tasks.check]
+description = "Run every repository check without modifying files"
+run = [
+  "npm run format:check",
   "npm run lint",
   "npm test",
   "npm run build",
-  "prek run --all-files",
+  "npm run test:e2e",
+  "prek validate-config prek.toml",
   "npx --no-install wrangler deploy --dry-run --outdir .wrangler/dry-run",
   "actionlint",
   "zizmor --offline .github/workflows",
   "lychee --offline --include-fragments --root-dir \"$PWD/public\" index.html README.md",
 ]
 
-[tasks.check]
-description = "Format and validate the repository"
-run = [
-  { task = "format" },
-  { task = "validate" },
-]
-
-[tasks.e2e]
-description = "Run the browser test suite"
-run = "npm run test:e2e"
-
-[tasks."hooks:install"]
-description = "Install prek pre-commit and commit-msg hooks"
-run = "prek install"
-
 [tasks.deploy]
 description = "Build and deploy Quizmon to Cloudflare Workers"
-run = "npm run deploy"
-
-[tasks."data:update"]
-description = "Refresh the checked-in Pokémon catalog from PokéAPI"
-run = "npm run data:update"
+run = [
+  "npm run build",
+  "npx --no-install wrangler deploy",
+]
