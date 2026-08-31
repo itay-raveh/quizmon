@@ -34,16 +34,6 @@ Open **Modifiers** before a game to build your own challenge:
 - Set the quiz length and enable speedrun mode when the answer reveal starts
   feeling slow.
 
-## Why I made it
-
-I started Quizmon in 2022 as a small React and Next.js learning project. It
-grew through experiments with state, forms, API calls, animations, and the
-question Pokémon fans ask: “Wait, what was that one called?”
-
-The 2026 rebuild replaced Next.js with Vite, updated the game to modern React,
-and moved it to Cloudflare Workers. It kept the original quiz, its odd little
-modifiers, and the big loud logo.
-
 ## Run it on your machine
 
 From a clone of this repository:
