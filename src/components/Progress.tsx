@@ -18,7 +18,7 @@ export const Progress = ({ current, total }: ProgressProps) => (
     <span className="progress__track" aria-hidden="true">
       <span
         className="progress__fill"
-        style={{ width: `${(current / total) * 100}%` }}
+        style={{ transform: `scaleX(${current / total})` }}
       />
     </span>
   </div>
