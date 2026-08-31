@@ -19,8 +19,10 @@ test.beforeEach(async ({ page }) => {
 
 test('plays a complete one-question game', async ({ page }) => {
   let requestedPokemon = '';
+  let requestCount = 0;
 
   await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
+    requestCount += 1;
     requestedPokemon = route.request().url().split('/').at(-1) ?? '';
     await route.fulfill({
       contentType: 'application/json',
@@ -47,6 +49,7 @@ test('plays a complete one-question game', async ({ page }) => {
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 001');
   await expect.poll(() => requestedPokemon).not.toBe('');
+  await expect.poll(() => requestCount).toBe(1);
 
   const answer = requestedPokemon
     .split('-')

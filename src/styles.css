@@ -133,7 +133,10 @@ main {
 }
 
 .game-button:disabled {
+  box-shadow: none;
   cursor: default;
+  filter: saturate(0.6);
+  opacity: 0.68;
 }
 
 .game-button--quiet {
@@ -162,6 +165,18 @@ main {
   width: min(22rem, 100%);
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
+}
+
+.landing__status {
+  margin: 0;
+  color: var(--blue-900);
+  font-weight: 800;
+  text-align: center;
+}
+
+.landing__status--error {
+  display: grid;
+  gap: 0.65rem;
 }
 
 .question,

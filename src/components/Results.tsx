@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import useSound from 'use-sound';
-import { calculateScore, formatDuration } from '@/lib/game';
-import type { Modifiers } from '@/lib/types';
+import { calculateScore, formatDuration } from '@/game/game';
+import type { Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { GameButton } from './GameButton';
 

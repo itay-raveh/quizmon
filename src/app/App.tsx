@@ -1,32 +1,31 @@
 import { useCallback, useState } from 'react';
-import pokemonData from './data/pokemon.json';
-import { Footer } from './components/Footer';
-import { Landing } from './components/Landing';
-import { ModifiersDialog } from './components/ModifiersDialog';
-import { Question } from './components/Question';
-import { Results } from './components/Results';
-import { buildQuestions } from './lib/game';
-import { usePersistentModifiers } from './lib/storage';
-import { useStopwatch } from './lib/stopwatch';
-import type { PokemonCatalog } from './lib/types';
+import { Footer } from '@/components/Footer';
+import { Landing } from '@/components/Landing';
+import { ModifiersDialog } from '@/components/ModifiersDialog';
+import { Question } from '@/components/Question';
+import { Results } from '@/components/Results';
+import { usePokemonCatalog } from '@/game/catalog';
+import { buildQuestions } from '@/game/game';
+import { usePersistentModifiers } from '@/game/storage';
+import { useStopwatch } from '@/game/stopwatch';
+import type { QuestionData } from '@/game/types';
 
 type Phase = 'landing' | 'questions' | 'results';
 
-const catalog = pokemonData as PokemonCatalog;
-
 export const App = () => {
+  const catalogState = usePokemonCatalog();
   const [modifiers, setModifiers] = usePersistentModifiers();
   const [phase, setPhase] = useState<Phase>('landing');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
-  const [questions, setQuestions] = useState(() =>
-    buildQuestions(catalog, modifiers),
-  );
+  const [questions, setQuestions] = useState<QuestionData[]>([]);
   const { elapsedSeconds, pause, reset, start } = useStopwatch();
 
   const startGame = () => {
-    setQuestions(buildQuestions(catalog, modifiers));
+    if (catalogState.status !== 'ready') return;
+
+    setQuestions(buildQuestions(catalogState.catalog, modifiers));
     setQuestionIndex(0);
     setCorrectCount(0);
     reset();
@@ -64,7 +63,9 @@ export const App = () => {
       <main>
         {phase === 'landing' ? (
           <Landing
+            catalogStatus={catalogState.status}
             onOpenSettings={() => setSettingsOpen(true)}
+            onRetryCatalog={catalogState.retry}
             onStart={startGame}
           />
         ) : null}
@@ -95,9 +96,9 @@ export const App = () => {
 
       <Footer />
 
-      {settingsOpen ? (
+      {settingsOpen && catalogState.status === 'ready' ? (
         <ModifiersDialog
-          catalog={catalog}
+          catalog={catalogState.catalog}
           modifiers={modifiers}
           onClose={() => setSettingsOpen(false)}
           onSave={(nextModifiers) => {

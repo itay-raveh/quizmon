@@ -21,7 +21,8 @@ type PokemonState =
   | { status: 'ready'; pokemon: Pokemon; error?: never }
   | { status: 'error'; pokemon?: never; error: string };
 
-const cache = new Map<string, Pokemon>();
+const pokemonCache = new Map<string, Pokemon>();
+const pokemonRequests = new Map<string, Promise<Pokemon>>();
 
 const isPokemon = (value: unknown): value is Pokemon => {
   if (!value || typeof value !== 'object') return false;
@@ -36,46 +37,63 @@ const isPokemon = (value: unknown): value is Pokemon => {
 export const usePokemon = (name: string) => {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<PokemonState>(() => {
-    const cached = cache.get(name);
+    const cached = pokemonCache.get(name);
     return cached
       ? { status: 'ready', pokemon: cached }
       : { status: 'loading' };
   });
 
   useEffect(() => {
-    const cached = cache.get(name);
-    if (cached) return;
+    let active = true;
 
-    const controller = new AbortController();
+    const loadPokemon = () => {
+      const cached = pokemonCache.get(name);
+      if (cached) return Promise.resolve(cached);
 
-    void fetch(
-      `https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(name)}`,
-      {
-        headers: { Accept: 'application/json' },
-        signal: controller.signal,
-      },
-    )
-      .then(async (response) => {
-        if (!response.ok)
-          throw new Error(`PokéAPI returned ${response.status}`);
-        const payload: unknown = await response.json();
-        if (!isPokemon(payload))
-          throw new Error('PokéAPI returned invalid data');
-        cache.set(name, payload);
+      const pending = pokemonRequests.get(name);
+      if (pending) return pending;
+
+      const request = fetch(
+        `https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(name)}`,
+        {
+          cache: 'force-cache',
+          headers: { Accept: 'application/json' },
+        },
+      )
+        .then(async (response) => {
+          if (!response.ok)
+            throw new Error(`PokéAPI returned ${response.status}`);
+          const payload: unknown = await response.json();
+          if (!isPokemon(payload))
+            throw new Error('PokéAPI returned invalid data');
+          pokemonCache.set(name, payload);
+          return payload;
+        })
+        .finally(() => pokemonRequests.delete(name));
+
+      pokemonRequests.set(name, request);
+      return request;
+    };
+
+    void loadPokemon()
+      .then((payload) => {
+        if (!active) return;
         setState({ status: 'ready', pokemon: payload });
       })
       .catch((error: unknown) => {
-        if (controller.signal.aborted) return;
+        if (!active) return;
         const message =
           error instanceof Error ? error.message : 'Request failed';
         setState({ status: 'error', error: message });
       });
 
-    return () => controller.abort();
+    return () => {
+      active = false;
+    };
   }, [attempt, name]);
 
   const retry = useCallback(() => {
-    cache.delete(name);
+    pokemonCache.delete(name);
     setState({ status: 'loading' });
     setAttempt((current) => current + 1);
   }, [name]);

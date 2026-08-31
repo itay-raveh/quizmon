@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { filterPokemon, formatPokemonName } from '@/lib/game';
+import { filterPokemon, formatPokemonName } from '@/game/game';
 import {
   formCategories,
   generations,
@@ -7,7 +7,7 @@ import {
   type Generation,
   type Modifiers,
   type PokemonCatalog,
-} from '@/lib/types';
+} from '@/game/types';
 import { Checkbox } from './Checkbox';
 import { GameButton } from './GameButton';
 

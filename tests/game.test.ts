@@ -8,8 +8,8 @@ import {
   getQuestionCount,
   normalizeModifiers,
   shuffle,
-} from '@/lib/game';
-import type { Modifiers, PokemonCatalog } from '@/lib/types';
+} from '@/game/game';
+import type { Modifiers, PokemonCatalog } from '@/game/types';
 
 const catalog: PokemonCatalog = {
   bulbasaur: { generation: 'I', formCategory: 'default' },

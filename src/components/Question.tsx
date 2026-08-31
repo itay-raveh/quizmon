@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { formatDuration, formatPokemonName } from '@/lib/game';
-import { usePokemon } from '@/lib/pokemon';
-import type { Modifiers, QuestionData } from '@/lib/types';
+import { formatDuration, formatPokemonName } from '@/game/game';
+import { usePokemon } from '@/game/pokemon';
+import type { Modifiers, QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
 import { Progress } from './Progress';
 import { Sprite } from './Sprite';

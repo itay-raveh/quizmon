@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-const DATA_PATH = new URL('../src/data/pokemon.json', import.meta.url);
+const DATA_PATH = new URL('../src/game/data/pokemon.json', import.meta.url);
 const GENERATION = 9;
 const GENERATION_NAME = 'IX';
 const CONCURRENCY = 8;

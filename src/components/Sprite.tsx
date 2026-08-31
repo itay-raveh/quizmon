@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Pokemon, PokemonSprites } from '@/lib/pokemon';
+import type { Pokemon, PokemonSprites } from '@/game/pokemon';
 
 interface SpriteData {
   rendering: 'auto' | 'pixelated';
