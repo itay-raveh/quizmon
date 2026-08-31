@@ -1,15 +1,62 @@
 name: CI
 
 on:
-  pull_request:
+  push:
     branches: [master]
-    types: [opened, edited, synchronize]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MISE_LOCKED: 1
 
 jobs:
-  cc:
-    runs-on: ubuntu-latest
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Conventional Commit Checker
-        uses: agenthunt/conventional-commit-checker-action@v1.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4
+      - run: npm ci
+      - name: Check pushed commit message
+        if: github.event_name == 'push'
+        run: npm run commitlint -- --last --verbose
+      - name: Check pull request commit messages
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: npm run commitlint -- --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+      - run: mise run check
+      - run: git diff --exit-code
+      - run: npx playwright install --with-deps chromium
+      - run: mise run e2e
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://quizmon.raveh.dev
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4
+        with:
+          install_args: node
+      - run: npm ci
+      - run: mise run deploy
