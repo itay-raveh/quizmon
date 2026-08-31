@@ -1,7 +1,9 @@
+import { site } from '@/app/site';
+
 export const Logo = () => (
   <img
     className="logo"
     src="/assets/images/logo.png"
-    alt="Quizmon: The Ultimate Pokémon Knowledge Test"
+    alt={`${site.name}: ${site.tagline}`}
   />
 );

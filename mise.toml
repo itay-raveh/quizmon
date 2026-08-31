@@ -31,7 +31,8 @@ run = [
   "npx --no-install wrangler deploy --dry-run --outdir .wrangler/dry-run",
   "actionlint",
   "zizmor --offline .github/workflows",
-  "lychee --offline --include-fragments --root-dir \"$PWD/public\" index.html README.md",
+  "lychee --offline --include-fragments --root-dir \"$PWD/dist\" dist/index.html",
+  "lychee --offline --include-fragments README.md",
 ]
 
 [tasks.deploy]

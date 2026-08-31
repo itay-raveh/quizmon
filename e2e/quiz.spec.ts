@@ -17,6 +17,41 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test('publishes complete, non-duplicated site metadata', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page).toHaveTitle('Quizmon');
+  await expect(page.locator('meta[name="description"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://quizmon.raveh.dev/',
+  );
+  await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
+  await expect(page.locator('meta[property="og:description"]')).toHaveCount(1);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    'content',
+    'https://quizmon.raveh.dev/assets/images/social-card.png',
+  );
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+    'content',
+    'summary_large_image',
+  );
+  await expect(page.locator('meta[name^="twitter:"]')).toHaveCount(1);
+
+  const manifestResponse = await page.request.get('/site.webmanifest');
+  expect(manifestResponse.ok()).toBe(true);
+  expect(manifestResponse.headers()['content-type']).toContain(
+    'application/manifest+json',
+  );
+  await expect(manifestResponse.json()).resolves.toMatchObject({
+    name: 'Quizmon',
+    description:
+      'The ultimate Pokémon knowledge test. Identify Pokémon, tune the challenge, and race the clock.',
+    theme_color: '#72c3ee',
+  });
+});
+
 test('plays a complete one-question game', async ({ page }) => {
   let requestedPokemon = '';
   let requestCount = 0;
