@@ -60,6 +60,7 @@ a:hover {
 
 .app {
   position: relative;
+  isolation: isolate;
   display: grid;
   min-height: 100svh;
   grid-template-rows: 1fr auto;
