@@ -179,7 +179,7 @@ export const App = () => {
 
   return (
     <SoundProvider enabled={modifiers.soundEnabled}>
-      <div className="app">
+      <div className={`app app--${phase}`}>
         <div className="background" aria-hidden="true" />
         <main>
           {phase === 'landing' ? (
@@ -223,7 +223,7 @@ export const App = () => {
           ) : null}
         </main>
 
-        {phase === 'landing' ? <Footer /> : null}
+        <Footer />
 
         {settingsOpen && catalogState.status === 'ready' ? (
           <ModifiersDialog

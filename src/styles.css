@@ -111,6 +111,18 @@ input {
   overflow-x: clip;
 }
 
+.app--questions,
+.app--results {
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.app--questions main,
+.app--results main {
+  min-height: auto;
+  padding-bottom: 0.55rem;
+}
+
 .background {
   position: fixed;
   z-index: -1;
@@ -1097,6 +1109,18 @@ main {
 
 .site-footer a {
   color: inherit;
+}
+
+.app--questions .site-footer,
+.app--results .site-footer {
+  position: static;
+  width: min(42rem, calc(100% - 1.7rem));
+  height: auto;
+  padding: 0.4rem 0.7rem max(0.55rem, env(safe-area-inset-bottom));
+  justify-self: center;
+  flex-wrap: wrap;
+  font-size: var(--text-tiny);
+  transform: none;
 }
 
 @keyframes surface-in {

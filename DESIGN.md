@@ -194,7 +194,7 @@ The landscape is a fixed full-viewport plate with centered cover cropping. Main 
 
 The landing page is an open stage, not a card. On desktop, the wordmark, daily strip, and two-button row occupy the center while most of the sky and field remain visible. At the `36rem` breakpoint, the wordmark expands to `90vw`, the daily strip expands to `90%`, and the two actions each use `42%` of the viewport width. Preserve the same vertical story instead of inventing a mobile navigation or stacking extra containers.
 
-Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer is absent during questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
+Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer remains present in normal document flow below questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
 The Training setup dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Generation and knowledge-category grids reduce to three columns on narrow screens.
 
@@ -263,7 +263,7 @@ Dialogs use one cream header and a paper body. The Training setup keeps a cream 
 
 Serve the wordmark and landscape through AVIF and WebP sources, with the checked-in provenance-bearing PNG plates as fallbacks. Keep the wordmark proportions and the landscape's crisp pixel edges. Use cover cropping for the background without blur, gradients, overlays, or added scenery.
 
-The visible footer remains unboxed and comp-faithful: “Wordmark made with TextStudio · Data from PokéAPI · Open source on GitHub”. Each named source is linked. Keep the Nintendo trademark sentence visually hidden and noninteractive.
+The visible footer remains unboxed and comp-faithful: “Wordmark made with TextStudio · Data from PokéAPI · Open source on GitHub”. Each named source is linked. It aligns to the landscape artwork on the landing screen and moves into normal document flow below questions and results so it never covers gameplay. Keep the Nintendo trademark sentence visually hidden and noninteractive.
 
 ### Motion
 

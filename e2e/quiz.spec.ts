@@ -87,6 +87,7 @@ test('plays and shares a complete Training question without a live API call', as
 
   await page.goto('/');
   await expect(page.getByRole('img', { name: /Quizmon/ })).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toBeVisible();
   await page.getByRole('button', { name: 'Start training' }).click();
 
   await expect(
@@ -95,6 +96,7 @@ test('plays and shares a complete Training question without a live API call', as
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 001');
+  await expect(page.getByRole('contentinfo')).toBeVisible();
   const src = await page
     .getByRole('img', { name: /Pokémon/ })
     .getAttribute('src');
@@ -110,6 +112,7 @@ test('plays and shares a complete Training question without a live API call', as
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toBeVisible();
   await expect(page.getByText('100.00%')).toBeVisible();
   expect(apiCalls).toBe(0);
 
