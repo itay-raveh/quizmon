@@ -32,13 +32,11 @@ const categoryLabels: Record<QuestionCategory, string> = {
   identity: 'Pokédex scan',
   matchup: 'Type matchup',
   move: 'Move check',
-  scale: 'Size check',
   stat: 'Stat showdown',
   type: 'Type check',
 };
 
 const pokemonOptionCategories: readonly QuestionCategory[] = [
-  'scale',
   'description',
   'evolution',
   'stat',
@@ -259,55 +257,6 @@ const buildIdentityQuestion = (
   );
 };
 
-const scaleMetrics = ['height', 'weight'] as const;
-
-const buildScaleQuestion = (
-  context: QuestionContext,
-): QuestionData | undefined => {
-  const metric = pick(scaleMetrics, context.random) ?? 'height';
-  const findHighest = context.random() < 0.5;
-  const candidates = shuffle(
-    context.pool.filter(({ pokemon }) => pokemon[metric] > 0),
-    context.random,
-  );
-  const fresh = candidates.filter(({ name }) => !context.used.has(name));
-  const target = [...fresh, ...candidates].find(({ pokemon }) => {
-    const distractors = candidates.filter(({ pokemon: other }) =>
-      findHighest
-        ? other[metric] < pokemon[metric]
-        : other[metric] > pokemon[metric],
-    );
-    return distractors.length >= 3;
-  });
-  if (!target) return undefined;
-
-  context.used.add(target.name);
-  const distractors = candidates
-    .filter(({ name, pokemon }) => {
-      if (name === target.name) return false;
-      return findHighest
-        ? pokemon[metric] < target.pokemon[metric]
-        : pokemon[metric] > target.pokemon[metric];
-    })
-    .map(({ name }) => name);
-  const adjective =
-    metric === 'height'
-      ? findHighest
-        ? 'tallest'
-        : 'shortest'
-      : findHighest
-        ? 'heaviest'
-        : 'lightest';
-
-  return makeQuestion(
-    'scale',
-    target,
-    target.name,
-    optionSet(target.name, distractors, context.random),
-    textPrompt(`Which Pokémon is the ${adjective}?`),
-  );
-};
-
 const escapeRegExp = (value: string) =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -513,9 +462,6 @@ const buildCategoryQuestion = (
   switch (category) {
     case 'identity':
       question = buildIdentityQuestion(context, silhouette);
-      break;
-    case 'scale':
-      question = buildScaleQuestion(context);
       break;
     case 'description':
       question = buildDescriptionQuestion(context);

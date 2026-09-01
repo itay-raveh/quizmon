@@ -2,38 +2,52 @@ import catalogData from '@/game/data/pokemon.json';
 import {
   buildDailyQuestions,
   createSeededRandom,
+  getDailyCategories,
   getDailyModifiers,
   getUtcDate,
   parseDailyDate,
 } from '@/game/daily';
-import { generations, type PokemonCatalog } from '@/game/types';
+import {
+  generations,
+  knowledgeCategories,
+  type PokemonCatalog,
+} from '@/game/types';
 
 const catalog = catalogData as PokemonCatalog;
 
 describe('daily Trainer Trial', () => {
-  it('builds the same ten-category gauntlet for the same UTC date', () => {
+  it('builds the same seeded ten-question challenge for a UTC date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');
+    const categories = getDailyCategories('2026-09-01');
 
     expect(first).toEqual(second);
-    expect(first.map(({ category }) => category)).toEqual([
-      'identity',
-      'scale',
-      'description',
-      'type',
-      'evolution',
-      'ability',
-      'move',
-      'stat',
-      'matchup',
-      'champion',
-    ]);
+    expect(first).toHaveLength(10);
+    expect(first.map(({ category }) => category)).toEqual(categories);
+    expect(categories.at(-1)).toBe('champion');
+    expect(
+      categories
+        .slice(0, -1)
+        .every((category) =>
+          knowledgeCategories.includes(
+            category as (typeof knowledgeCategories)[number],
+          ),
+        ),
+    ).toBe(true);
   });
 
-  it('changes the question sequence on a different date', () => {
+  it('changes both the category schedule and questions on a different date', () => {
+    expect(getDailyCategories('2026-09-01')).not.toEqual(
+      getDailyCategories('2026-09-02'),
+    );
     expect(buildDailyQuestions(catalog, '2026-09-01')).not.toEqual(
       buildDailyQuestions(catalog, '2026-09-02'),
     );
+  });
+
+  it('allows categories to repeat before the Champion finale', () => {
+    const standard = getDailyCategories('2026-09-01').slice(0, -1);
+    expect(new Set(standard).size).toBeLessThan(standard.length);
   });
 
   it('creates a repeatable random sequence', () => {

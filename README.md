@@ -7,7 +7,7 @@
 </p>
 
 Quizmon is a quick browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats,
-size, and identity across Generations I through IX.
+and identity across Generations I through IX.
 
 - Play the daily challenge. You get
   one attempt, saved in your browser.

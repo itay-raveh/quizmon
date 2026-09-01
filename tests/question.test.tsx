@@ -3,13 +3,13 @@ import { Question } from '@/components/Question';
 import type { QuestionData } from '@/game/types';
 
 const question: QuestionData = {
-  category: 'scale',
+  category: 'stat',
   correctOption: 'pikachu',
-  id: 'scale:pikachu:0',
+  id: 'stat:pikachu:0',
   media: { kind: 'none' },
   options: ['pikachu', 'eevee', 'ditto', 'mew'],
   pokemonName: 'pikachu',
-  prompt: { kind: 'text', text: 'Which Pokémon is the lightest?' },
+  prompt: { kind: 'text', text: 'Which Pokémon has the highest Speed?' },
 };
 
 const renderQuestion = (number: number) =>

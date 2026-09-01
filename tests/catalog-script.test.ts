@@ -56,7 +56,6 @@ const makeClient = (): CatalogClient => ({
         abilities: [
           { slot: 1, ability: { name: 'run-away' }, is_hidden: false },
         ],
-        height: index + 1,
         id: index + 1,
         moves: [
           {
@@ -81,7 +80,6 @@ const makeClient = (): CatalogClient => ({
           { base_stat: 50, stat: { name: 'speed' } },
         ],
         types: [{ slot: 1, type: { name: 'normal', url: '/type/1' } }],
-        weight: (index + 1) * 10,
       })) as never,
     );
   },
@@ -125,10 +123,8 @@ describe('catalog generation', () => {
       description: 'species-1 field notes.',
       generation: 'I',
       genus: 'Test',
-      height: 1,
       levelMoves: ['tackle'],
       types: ['normal'],
-      weight: 10,
     });
     expect(catalog.pokemon['species-9']?.generation).toBe('IX');
     expect(catalog.typeRelations.normal).toEqual({

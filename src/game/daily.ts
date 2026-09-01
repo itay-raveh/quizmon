@@ -1,6 +1,7 @@
 import { buildQuestionSequence, defaultModifiers } from './game';
 import {
   generations,
+  knowledgeCategories,
   type GameMode,
   type Modifiers,
   type PokemonCatalog,
@@ -8,21 +9,10 @@ import {
   type QuestionData,
 } from './types';
 
-const DAILY_CHALLENGE_VERSION = 3;
+const DAILY_CHALLENGE_VERSION = 4;
 const DAILY_QUESTION_COUNT = 10;
+const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const DAILY_CATEGORIES: readonly QuestionCategory[] = [
-  'identity',
-  'scale',
-  'description',
-  'type',
-  'evolution',
-  'ability',
-  'move',
-  'stat',
-  'matchup',
-  'champion',
-];
 
 export const getUtcDate = (date = new Date()): string =>
   date.toISOString().slice(0, 10);
@@ -74,13 +64,25 @@ export const getDailyModifiers = (soundEnabled: boolean): Modifiers => ({
   soundEnabled,
 });
 
+export const getDailyCategories = (date: string): QuestionCategory[] => {
+  const random = createSeededRandom(
+    `quizmon-daily-categories-v${DAILY_CHALLENGE_VERSION}:${date}`,
+  );
+  const standard = Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, () => {
+    const index = Math.floor(random() * knowledgeCategories.length);
+    return knowledgeCategories[index] ?? 'identity';
+  });
+
+  return [...standard, 'champion'];
+};
+
 export const buildDailyQuestions = (
   catalog: PokemonCatalog,
   date: string,
 ): QuestionData[] =>
   buildQuestionSequence(
     catalog,
-    DAILY_CATEGORIES,
+    getDailyCategories(date),
     getDailyModifiers(true),
     createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
   );

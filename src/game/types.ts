@@ -14,7 +14,6 @@ export type Generation = (typeof generations)[number];
 
 export const knowledgeCategories = [
   'identity',
-  'scale',
   'description',
   'type',
   'evolution',
@@ -45,13 +44,11 @@ export interface PokemonKnowledge {
   evolvesTo: string[];
   generation: Generation;
   genus: string;
-  height: number;
   id: number;
   levelMoves: string[];
   sprite: string | null;
   stats: Record<StatName, number>;
   types: string[];
-  weight: number;
 }
 
 export interface TypeRelations {

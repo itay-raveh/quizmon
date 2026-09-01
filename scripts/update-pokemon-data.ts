@@ -187,7 +187,6 @@ export const buildPokemonCatalog = async (
       evolvesTo: [...(evolvesTo.get(species.name) ?? [])].sort(),
       generation,
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
-      height: entry.height,
       id: entry.id,
       levelMoves: getLevelMoves(entry),
       sprite: getSprite(entry),
@@ -195,12 +194,11 @@ export const buildPokemonCatalog = async (
       types: entry.types
         .sort((left, right) => left.slot - right.slot)
         .map(({ type }) => type.name),
-      weight: entry.weight,
     };
   }
 
   return {
-    contentVersion: 4,
+    contentVersion: 5,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

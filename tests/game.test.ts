@@ -33,14 +33,14 @@ describe('normalizeModifiers', () => {
     expect(
       normalizeModifiers({
         generations: ['IX', 'not-a-generation'],
-        knowledgeCategories: ['scale', 'not-a-category'],
+        knowledgeCategories: ['stat', 'not-a-category'],
         isLimitActive: true,
         limit: 0,
         speedrunMode: true,
       }),
     ).toEqual({
       generations: ['IX'],
-      knowledgeCategories: ['scale'],
+      knowledgeCategories: ['stat'],
       soundEnabled: true,
       isLimitActive: true,
       limit: 1,
@@ -108,7 +108,7 @@ describe('question building', () => {
       questions.map((question) => [question.category, question]),
     );
 
-    for (const category of ['scale', 'description', 'evolution', 'stat']) {
+    for (const category of ['description', 'evolution', 'stat']) {
       const question = byCategory[category];
       expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
       expect(question?.media.kind).toBe('none');
@@ -138,7 +138,7 @@ describe('question building', () => {
       }
     }
 
-    for (const category of ['identity', 'scale', 'description', 'stat']) {
+    for (const category of ['identity', 'description', 'stat']) {
       expect(byCategory[category]?.prompt.kind).toBe('text');
     }
 
@@ -169,48 +169,13 @@ describe('question building', () => {
       true,
     );
   });
-
-  it('builds scale comparisons with one measurable answer', () => {
-    const questions = buildQuestions(
-      catalog,
-      {
-        ...defaultModifiers,
-        generations: [...generations],
-        knowledgeCategories: ['scale'],
-        limit: 20,
-      },
-      createSeededRandom('scale-comparisons'),
-    );
-
-    expect(questions).toHaveLength(20);
-    for (const question of questions) {
-      const metric = /tallest|shortest/.test(
-        getQuestionPromptText(question.prompt),
-      )
-        ? 'height'
-        : 'weight';
-      const correct = catalog.pokemon[question.correctOption]?.[metric];
-      const distractors = question.options
-        .filter((name) => name !== question.correctOption)
-        .map((name) => catalog.pokemon[name]?.[metric]);
-
-      expect(correct).toBeTypeOf('number');
-      expect(
-        distractors.every((value) =>
-          /tallest|heaviest/.test(getQuestionPromptText(question.prompt))
-            ? value! < correct!
-            : value! > correct!,
-        ),
-      ).toBe(true);
-    }
-  });
 });
 
 describe('scoring', () => {
   it('awards 100 points for a normal correct answer', () => {
     const [question] = buildQuestions(
       catalog,
-      { ...defaultModifiers, knowledgeCategories: ['scale'], limit: 1 },
+      { ...defaultModifiers, knowledgeCategories: ['stat'], limit: 1 },
       createSeededRandom('score'),
     );
     expect(question && getAnswerPoints(question, true)).toBe(100);
@@ -220,7 +185,7 @@ describe('scoring', () => {
   it('adds a bounded mastery bonus to earned knowledge points', () => {
     const answers = [
       { category: 'identity', correct: true, points: 100 },
-      { category: 'scale', correct: false, points: 0 },
+      { category: 'stat', correct: false, points: 0 },
       { category: 'champion', correct: true, points: 50 },
     ] as const;
 

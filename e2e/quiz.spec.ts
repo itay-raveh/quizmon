@@ -62,7 +62,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await expect(manifestResponse.json()).resolves.toMatchObject({
     name: 'Quizmon',
     description:
-      'Take a new ten-question Pokémon Trainer Trial every day, then practice types, moves, evolutions, stats, size, and more.',
+      'Take a new ten-question Pokémon Trainer Trial every day, then practice types, moves, evolutions, stats, and more.',
     theme_color: '#72c3ee',
   });
 
@@ -258,17 +258,15 @@ test('opens the same daily question from the same shared date', async ({
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
-  const firstSprite = await page
-    .getByRole('img', { name: /silhouette/ })
-    .getAttribute('src');
+  const firstTitle = await page
+    .getByRole('heading', { level: 1 })
+    .textContent();
+  const firstPrompt = await page.locator('.question__prompt').textContent();
+  const firstOptions = await page.locator('.answer').allTextContents();
 
   await page.reload();
   await page.getByRole('button', { name: 'Play daily' }).click();
-  await expect(page.getByRole('img', { name: /silhouette/ })).toHaveAttribute(
-    'src',
-    firstSprite!,
-  );
-
-  await page.locator('.answer').first().click();
-  await expect(page.locator('.sprite')).not.toHaveClass(/sprite--silhouette/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(firstTitle!);
+  await expect(page.locator('.question__prompt')).toHaveText(firstPrompt!);
+  await expect(page.locator('.answer')).toHaveText(firstOptions);
 });
