@@ -1,5 +1,11 @@
 import { defaultModifiers } from '@/game/game';
-import { canPersistResults, readDailyResult, saveResult } from '@/game/storage';
+import {
+  canPersistResults,
+  markGenerationPromptAnswered,
+  readDailyResult,
+  saveResult,
+  shouldShowGenerationPrompt,
+} from '@/game/storage';
 import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
@@ -124,5 +130,20 @@ describe('saved results', () => {
       ),
     ).toEqual({ best: result, isNewBest: false, isSaved: false });
     setItem.mockRestore();
+  });
+});
+
+describe('generation prompt', () => {
+  beforeEach(() => window.localStorage.clear());
+
+  it('only appears before a player has chosen or saved settings', () => {
+    expect(shouldShowGenerationPrompt()).toBe(true);
+
+    markGenerationPromptAnswered();
+    expect(shouldShowGenerationPrompt()).toBe(false);
+
+    window.localStorage.clear();
+    window.localStorage.setItem('quizmon.training-settings.v2', '{}');
+    expect(shouldShowGenerationPrompt()).toBe(false);
   });
 });

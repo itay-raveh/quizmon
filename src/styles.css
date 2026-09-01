@@ -893,6 +893,7 @@ main {
 }
 
 .modifiers-dialog,
+.generation-prompt,
 .share-dialog {
   width: min(42rem, calc(100% - 1rem));
   max-height: min(48rem, calc(100svh - 1rem));
@@ -911,7 +912,13 @@ main {
   width: min(32rem, calc(100% - 1rem));
 }
 
+.generation-prompt {
+  width: min(30rem, calc(100% - 1rem));
+  padding: 0;
+}
+
 .modifiers-dialog[open],
+.generation-prompt[open],
 .share-dialog[open] {
   display: flex;
   flex-direction: column;
@@ -919,11 +926,13 @@ main {
 }
 
 .modifiers-dialog::backdrop,
+.generation-prompt::backdrop,
 .share-dialog::backdrop {
   background: rgba(8, 35, 73, 0.8);
 }
 
 .modifiers-dialog__header,
+.generation-prompt__header,
 .share-dialog__header {
   display: flex;
   padding: 1rem 1.15rem 0.85rem;
@@ -934,11 +943,52 @@ main {
 }
 
 .modifiers-dialog h2,
+.generation-prompt h2,
 .share-dialog h2 {
   margin: 0;
   color: var(--navy);
   font-size: var(--text-headline);
   font-weight: 800;
+}
+
+.generation-prompt__body {
+  display: grid;
+  padding: 1.15rem 1.2rem 1.3rem;
+  gap: 1rem;
+}
+
+.generation-prompt__body > p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.generation-prompt__choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.generation-prompt__choices .game-button {
+  display: grid;
+  min-height: 5.2rem;
+  padding: 0.8rem;
+  align-content: center;
+  gap: 0.15rem;
+}
+
+.generation-prompt__choices strong {
+  font-size: var(--text-body);
+}
+
+.generation-prompt__choices span {
+  font-size: var(--text-small);
+  font-weight: 650;
+}
+
+.generation-prompt__note {
+  font-size: var(--text-small);
 }
 
 .settings-tabs {
@@ -1411,6 +1461,10 @@ main {
 
   .share-target:last-child {
     grid-column: 1 / -1;
+  }
+
+  .generation-prompt__choices {
+    grid-template-columns: 1fr;
   }
 
   .answer {

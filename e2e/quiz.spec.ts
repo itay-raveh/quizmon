@@ -31,6 +31,7 @@ const seedBrowserRandom = (page: Page, seed: string) =>
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
+    if (window.location.search.includes('fresh=1')) return;
     window.localStorage.setItem(
       'quizmon.training-settings.v2',
       JSON.stringify({
@@ -162,6 +163,39 @@ test('plays and shares a complete Training question without a live API call', as
   const shareText = await page.evaluate(() => navigator.clipboard.readText());
   expect(shareText).toContain('Quizmon · Training');
   expect(shareText.toLowerCase()).not.toContain(pokemon!);
+});
+
+test('asks new players which generations they know before Training', async ({
+  page,
+}) => {
+  await page.goto('/?fresh=1');
+
+  await page.getByRole('button', { name: 'Start training' }).click();
+  const prompt = page.getByRole('dialog', {
+    name: 'Which Pokémon do you know?',
+  });
+  await expect(prompt).toBeVisible();
+  await expect(
+    prompt.getByText('You can change this later in Settings.'),
+  ).toBeVisible();
+
+  await prompt.getByRole('button', { name: /Gen I only/ }).click();
+  await expect(prompt).toBeHidden();
+  await expect(page.locator('.question')).toBeVisible();
+
+  const savedSettingsJson = await page.evaluate(() =>
+    window.localStorage.getItem('quizmon.training-settings.v2'),
+  );
+  expect(savedSettingsJson).not.toBeNull();
+  const savedSettings = JSON.parse(savedSettingsJson!) as {
+    generations: string[];
+  };
+  expect(savedSettings.generations).toEqual(['I']);
+  expect(
+    await page.evaluate(() =>
+      window.localStorage.getItem('quizmon.generation-prompt.v1'),
+    ),
+  ).toBe('1');
 });
 
 test('answers questions with the number keys', async ({ page }) => {

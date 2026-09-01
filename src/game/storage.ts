@@ -4,6 +4,7 @@ import type { GameMode, GameResult, Modifiers } from './types';
 
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
+const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 
 interface SavedResults {
   daily: Record<string, GameResult>;
@@ -51,6 +52,25 @@ export const usePersistentModifiers = () => {
   };
 
   return [modifiers, setModifiers] as const;
+};
+
+export const shouldShowGenerationPrompt = (): boolean => {
+  try {
+    return (
+      !window.localStorage.getItem(SETTINGS_KEY) &&
+      !window.localStorage.getItem(GENERATION_PROMPT_KEY)
+    );
+  } catch {
+    return true;
+  }
+};
+
+export const markGenerationPromptAnswered = () => {
+  try {
+    window.localStorage.setItem(GENERATION_PROMPT_KEY, '1');
+  } catch {
+    return;
+  }
 };
 
 const getTrainingKey = (modifiers: Modifiers): string =>

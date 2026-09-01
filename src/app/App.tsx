@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
+import { GenerationPromptDialog } from '@/components/GenerationPromptDialog';
 import { Landing } from '@/components/Landing';
 import {
   ModifiersDialog,
@@ -18,14 +19,18 @@ import {
 import { buildQuestions, calculateScore } from '@/game/game';
 import {
   canPersistResults,
+  markGenerationPromptAnswered,
   readDailyResult,
   saveResult,
+  shouldShowGenerationPrompt,
   usePersistentModifiers,
 } from '@/game/storage';
 import { useStopwatch } from '@/game/stopwatch';
+import { generations } from '@/game/types';
 import type {
   GameMode,
   GameResult,
+  Generation,
   Modifiers,
   AnswerResult,
   QuestionData,
@@ -41,6 +46,10 @@ export const App = () => {
   const [modifiers, setModifiers] = usePersistentModifiers();
   const [phase, setPhase] = useState<Phase>('landing');
   const [settings, setSettings] = useState<SettingsState | null>(null);
+  const [generationPromptOpen, setGenerationPromptOpen] = useState(false);
+  const [generationPromptPending, setGenerationPromptPending] = useState(
+    shouldShowGenerationPrompt,
+  );
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerResult[]>([]);
   const [questions, setQuestions] = useState<QuestionData[]>([]);
@@ -100,8 +109,28 @@ export const App = () => {
     setPhase('questions');
   };
 
+  const startCustomGameWithGenerations = (generations: Generation[]) => {
+    if (catalogState.status !== 'ready') return;
+
+    const nextModifiers = { ...modifiers, generations };
+    setModifiers(nextModifiers);
+    markGenerationPromptAnswered();
+    setGenerationPromptPending(false);
+    setGenerationPromptOpen(false);
+    startGame(
+      buildQuestions(catalogState.catalog, nextModifiers),
+      nextModifiers,
+      { kind: 'training' },
+    );
+  };
+
   const startCustomGame = () => {
     if (catalogState.status !== 'ready') return;
+
+    if (generationPromptPending) {
+      setGenerationPromptOpen(true);
+      return;
+    }
 
     startGame(buildQuestions(catalogState.catalog, modifiers), modifiers, {
       kind: 'training',
@@ -151,6 +180,10 @@ export const App = () => {
   const saveSettings = useCallback(
     (nextModifiers: Modifiers) => {
       setModifiers(nextModifiers);
+      if (generationPromptPending) {
+        markGenerationPromptAnswered();
+        setGenerationPromptPending(false);
+      }
       if (phase === 'questions') {
         setActiveModifiers((current) => ({
           ...current,
@@ -161,7 +194,7 @@ export const App = () => {
       setSettings(null);
       if (phase === 'questions') start();
     },
-    [phase, setModifiers, start],
+    [generationPromptPending, phase, setModifiers, start],
   );
 
   const answerQuestion = useCallback(
@@ -273,6 +306,14 @@ export const App = () => {
             onClose={closeSettings}
             onSave={saveSettings}
             trainingChangesApplyNextGame={phase !== 'landing'}
+          />
+        ) : null}
+
+        {generationPromptOpen ? (
+          <GenerationPromptDialog
+            onCancel={() => setGenerationPromptOpen(false)}
+            onChooseAll={() => startCustomGameWithGenerations([...generations])}
+            onChooseGenOne={() => startCustomGameWithGenerations(['I'])}
           />
         ) : null}
       </div>
