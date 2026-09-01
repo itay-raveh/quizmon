@@ -417,7 +417,7 @@ main {
 
 .timer {
   padding: 0.35rem 0.58rem;
-  color: #e7feff;
+  color: #ddfafe;
   background: var(--blue);
   border: 2px solid var(--navy);
   border-radius: 0.3rem;
@@ -568,7 +568,7 @@ main {
   align-self: stretch;
   padding: 0.75rem;
   align-content: center;
-  color: #e7feff;
+  color: #ddfafe;
   background: var(--blue);
   border-left: 2px solid var(--navy);
   text-align: left;
@@ -869,7 +869,7 @@ main {
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  color: #e7feff;
+  color: #ddfafe;
   background: var(--blue);
   border: 2px solid var(--navy);
   border-radius: 0.35rem;

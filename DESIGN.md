@@ -2,6 +2,7 @@
 name: Quizmon
 description: A restrained Logo Echo interface for a quick, charming Pokémon knowledge game.
 colors:
+  landscape-sky: '#72c3ee'
   primary: '#0d6be6'
   primary-text: '#ddfafe'
   outline: '#083b7e'
@@ -16,6 +17,11 @@ colors:
   error: '#a92843'
   focus: '#083b7e'
   footer-ink: '#1b3e40'
+  control-shine: 'rgba(255, 255, 255, 0.12)'
+  modal-scrim: 'rgba(8, 35, 73, 0.8)'
+  disabled-surface: '#e5ebed'
+  error-ink: '#8b1e31'
+  error-surface: '#fff0f3'
 typography:
   display:
     fontFamily: 'Gabarito Variable, system-ui, sans-serif'
@@ -46,8 +52,11 @@ typography:
     letterSpacing: '0.04em'
 rounded:
   compact: '0.2rem'
+  field: '0.25rem'
   control: '0.3rem'
+  icon-control: '0.35rem'
   button: '0.5rem'
+  mobile-surface: '0.55rem'
   surface: '0.75rem'
 spacing:
   xs: '0.25rem'
