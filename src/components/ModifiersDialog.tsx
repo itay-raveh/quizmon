@@ -287,9 +287,6 @@ export const ModifiersDialog = ({
                   />
                 </label>
               </div>
-              <p className="matching-count">
-                {matchingCount.toLocaleString()} Pokémon match these filters.
-              </p>
             </fieldset>
 
             {submitted && !isValid ? (

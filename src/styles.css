@@ -1004,8 +1004,7 @@ main {
   font-weight: 800;
 }
 
-.field-description,
-.matching-count {
+.field-description {
   margin: 0.25rem 0 0.75rem;
   color: var(--muted);
   font-size: var(--text-label);
@@ -1159,10 +1158,6 @@ main {
 .number-field input:disabled {
   background: #e5ebed;
   cursor: not-allowed;
-}
-
-.matching-count {
-  margin-bottom: 0;
 }
 
 .form-error {

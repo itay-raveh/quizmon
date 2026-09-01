@@ -188,7 +188,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     'aria-selected',
     'true',
   );
-  await expect(dialog.getByText(/Pokémon match these filters/)).toBeVisible();
   const selectAllGenerations = dialog.getByRole('button', {
     name: 'Select all generations',
   });
