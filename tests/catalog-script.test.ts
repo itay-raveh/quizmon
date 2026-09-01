@@ -2,74 +2,151 @@ import {
   buildPokemonCatalog,
   type CatalogClient,
 } from '../scripts/update-pokemon-data.ts';
-import type { PokemonCatalog } from '@/game/types';
+import type { ResourceLink } from 'pokenode-ts';
+
+const resourceUrl = <T>(resource: ResourceLink<T>) =>
+  typeof resource === 'string' ? resource : resource.url;
+
+const resourceName = <T>(resource: ResourceLink<T>) =>
+  typeof resource !== 'string' && 'name' in resource
+    ? resource.name
+    : (resourceUrl(resource).split('/').filter(Boolean).at(-1) ?? '');
+
+const makeClient = (): CatalogClient => ({
+  getGenerationById(id) {
+    return Promise.resolve({
+      pokemon_species: [
+        {
+          name: `species-${id}`,
+          url: `https://pokeapi.co/api/v2/pokemon-species/${id}`,
+        },
+      ],
+    } as never);
+  },
+  resolveSpecies(resources) {
+    return Promise.resolve(
+      resources.map((resource) => ({
+        name: resourceName(resource),
+        evolution_chain: {
+          url: `https://pokeapi.co/api/v2/evolution-chain/${resourceName(resource)}`,
+        },
+        evolves_from_species: null,
+        flavor_text_entries: [
+          {
+            flavor_text: `${resourceName(resource)} field notes.`,
+            language: { name: 'en' },
+          },
+        ],
+        genera: [{ genus: 'Test Pokémon', language: { name: 'en' } }],
+        varieties: [
+          {
+            is_default: true,
+            pokemon: {
+              name: resourceName(resource),
+              url: `https://pokeapi.co/api/v2/pokemon/${resourceName(resource)}`,
+            },
+          },
+        ],
+      })) as never,
+    );
+  },
+  resolvePokemon(resources) {
+    return Promise.resolve(
+      resources.map((resource, index) => ({
+        abilities: [
+          { slot: 1, ability: { name: 'run-away' }, is_hidden: false },
+        ],
+        cries: { latest: 'https://example.test/cry.ogg', legacy: '' },
+        id: index + 1,
+        moves: [
+          {
+            move: { name: 'tackle' },
+            version_group_details: [
+              { move_learn_method: { name: 'level-up' } },
+            ],
+          },
+        ],
+        name: resourceName(resource),
+        species: { name: resourceName(resource) },
+        sprites: {
+          front_default: 'https://example.test/sprite.png',
+          other: {},
+        },
+        stats: [
+          { base_stat: 50, stat: { name: 'hp' } },
+          { base_stat: 50, stat: { name: 'attack' } },
+          { base_stat: 50, stat: { name: 'defense' } },
+          { base_stat: 50, stat: { name: 'special-attack' } },
+          { base_stat: 50, stat: { name: 'special-defense' } },
+          { base_stat: 50, stat: { name: 'speed' } },
+        ],
+        types: [{ slot: 1, type: { name: 'normal', url: '/type/1' } }],
+      })) as never,
+    );
+  },
+  resolveEvolutionChains(resources) {
+    return Promise.resolve(
+      resources.map((resource, index) => ({
+        id: index + 1,
+        baby_trigger_item: null,
+        chain: {
+          is_baby: false,
+          species: {
+            name: resourceName(resource),
+          },
+          evolution_details: [],
+          evolves_to: [],
+        },
+      })) as never,
+    );
+  },
+  resolveTypes() {
+    return Promise.resolve([
+      {
+        name: 'normal',
+        damage_relations: {
+          double_damage_to: [],
+          half_damage_to: [],
+          no_damage_to: [],
+        },
+      },
+    ] as never);
+  },
+});
 
 describe('catalog generation', () => {
-  it('rebuilds every default generation and preserves curated forms', async () => {
-    const generationCalls: number[] = [];
-    const concurrencyValues: number[] = [];
-    const client: CatalogClient = {
-      getGenerationById(id) {
-        generationCalls.push(id);
-        return Promise.resolve({
-          pokemon_species: [
-            { name: `species-${id}`, url: `https://example.test/${id}` },
-          ],
-        });
-      },
-      resolveAll(resources, options) {
-        concurrencyValues.push(options.concurrency);
-        return Promise.resolve(
-          resources.map((resource) => ({
-            varieties: [
-              { is_default: false, pokemon: { name: 'alternate' } },
-              {
-                is_default: true,
-                pokemon: { name: `${resource.name}-default` },
-              },
-            ],
-          })),
-        );
-      },
-    };
-    const existing: PokemonCatalog = {
-      'z-curated-mega': { formCategory: 'mega', generation: 'VI' },
-      'stale-default': { formCategory: 'default', generation: 'I' },
-    };
+  it('normalizes every generation into one versioned knowledge catalog', async () => {
+    const catalog = await buildPokemonCatalog(makeClient());
 
-    const catalog = await buildPokemonCatalog(existing, client);
-
-    expect(generationCalls).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    expect(concurrencyValues).toEqual(Array(9).fill(4));
-    expect(catalog['species-1-default']).toEqual({
-      formCategory: 'default',
+    expect(Object.keys(catalog.pokemon)).toHaveLength(9);
+    expect(catalog.pokemon['species-1']).toMatchObject({
+      abilities: ['run-away'],
+      description: 'species-1 field notes.',
       generation: 'I',
+      genus: 'Test',
+      levelMoves: ['tackle'],
+      types: ['normal'],
     });
-    expect(catalog['species-9-default']).toEqual({
-      formCategory: 'default',
-      generation: 'IX',
+    expect(catalog.pokemon['species-9']?.generation).toBe('IX');
+    expect(catalog.typeRelations.normal).toEqual({
+      doubleTo: [],
+      halfTo: [],
+      noneTo: [],
     });
-    expect(catalog['z-curated-mega']).toEqual(existing['z-curated-mega']);
-    expect(catalog['stale-default']).toBeUndefined();
-    expect(Object.keys(catalog)).toEqual([...Object.keys(catalog)].sort());
   });
 
   it('fails rather than silently omitting a species without a default', async () => {
-    const client: CatalogClient = {
-      getGenerationById(id) {
-        return Promise.resolve({
-          pokemon_species: [
-            { name: `species-${id}`, url: `https://example.test/${id}` },
-          ],
-        });
-      },
-      resolveAll() {
-        return Promise.resolve([{ varieties: [] }]);
-      },
-    };
+    const client = makeClient();
+    client.resolveSpecies = (resources) =>
+      Promise.resolve(
+        resources.map((resource) => ({
+          name: resourceName(resource),
+          varieties: [],
+        })) as never,
+      );
 
-    await expect(buildPokemonCatalog({}, client)).rejects.toThrow(
-      'Pokémon species has no default variety',
+    await expect(buildPokemonCatalog(client)).rejects.toThrow(
+      'has no default Pokémon variety',
     );
   });
 });

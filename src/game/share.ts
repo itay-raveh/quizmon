@@ -5,13 +5,14 @@ export const buildShareText = (mode: GameMode, result: GameResult): string => {
   const score = Intl.NumberFormat(undefined, {
     maximumFractionDigits: 0,
   }).format(result.score);
-  const accuracy = Math.round(
-    (result.correctCount / result.questionCount) * 100,
-  );
+  const pattern = result.answers
+    .map(({ correct }) => (correct ? '🟦' : '⬜'))
+    .join('');
 
   return [
     `Quizmon · ${getModeLabel(mode)}`,
-    `${result.correctCount}/${result.questionCount} · ${accuracy}% · ${score} points`,
+    `${score} / ${result.questionCount * 100} points · ${result.correctCount}/${result.questionCount}`,
+    pattern,
     mode.kind === 'daily'
       ? getDailyUrl(mode.date)
       : new URL('/', window.location.origin).toString(),

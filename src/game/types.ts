@@ -12,45 +12,100 @@ export const generations = [
 
 export type Generation = (typeof generations)[number];
 
-export const formCategories = [
-  'default',
-  'mega',
-  'gmax',
-  'hisui',
-  'galar',
-  'alola',
-  'other',
+export const knowledgeCategories = [
+  'identity',
+  'cry',
+  'description',
+  'type',
+  'evolution',
+  'ability',
+  'move',
+  'stat',
+  'matchup',
 ] as const;
 
-export type FormCategory = (typeof formCategories)[number];
+export type KnowledgeCategory = (typeof knowledgeCategories)[number];
+export type QuestionCategory = KnowledgeCategory | 'champion';
 
-export interface PokemonSummary {
-  formCategory: FormCategory;
+export const statNames = [
+  'hp',
+  'attack',
+  'defense',
+  'special-attack',
+  'special-defense',
+  'speed',
+] as const;
+
+export type StatName = (typeof statNames)[number];
+
+export interface PokemonKnowledge {
+  abilities: string[];
+  cry: string | null;
+  description: string;
+  evolvesFrom: string | null;
+  evolvesTo: string[];
   generation: Generation;
+  genus: string;
+  id: number;
+  levelMoves: string[];
+  sprite: string | null;
+  stats: Record<StatName, number>;
+  types: string[];
 }
 
-export type PokemonCatalog = Record<string, PokemonSummary>;
+export interface TypeRelations {
+  doubleTo: string[];
+  halfTo: string[];
+  noneTo: string[];
+}
+
+export interface PokemonCatalog {
+  contentVersion: number;
+  pokemon: Record<string, PokemonKnowledge>;
+  typeRelations: Record<string, TypeRelations>;
+}
 
 export interface Modifiers {
   generations: Generation[];
-  formCategories: FormCategory[];
-  randomSprite: boolean;
+  knowledgeCategories: KnowledgeCategory[];
   soundEnabled: boolean;
-  whosThatPokemon: boolean;
   isLimitActive: boolean;
   limit: number;
   speedrunMode: boolean;
 }
 
+export type QuestionMedia =
+  | { kind: 'cry'; src: string }
+  | {
+      kind: 'sprite';
+      revealAt?: number;
+      silhouette: boolean;
+      src: string;
+    }
+  | { kind: 'none' };
+
 export interface QuestionData {
+  category: QuestionCategory;
+  correctOption: string;
+  clues?: string[];
+  id: string;
+  media: QuestionMedia;
   options: string[];
   pokemonName: string;
-  spriteRandom: number;
+  prompt: string;
 }
 
-export type GameMode = { kind: 'custom' } | { kind: 'daily'; date: string };
+export type GameMode = { kind: 'training' } | { kind: 'daily'; date: string };
+
+export interface AnswerResult {
+  category: QuestionCategory;
+  correct: boolean;
+  points: number;
+}
 
 export interface GameResult {
+  answers: AnswerResult[];
+  contentVersion: number;
   correctCount: number;
   elapsedSeconds: number;
   questionCount: number;

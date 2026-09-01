@@ -1,3 +1,5 @@
+import catalogData from '@/game/data/pokemon.json';
+import { createSeededRandom } from '@/game/daily';
 import {
   buildQuestions,
   calculateScore,
@@ -5,20 +7,18 @@ import {
   filterPokemon,
   formatDuration,
   formatPokemonName,
+  getAnswerPoints,
   getQuestionCount,
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
-import type { Modifiers, PokemonCatalog } from '@/game/types';
+import {
+  generations,
+  knowledgeCategories,
+  type PokemonCatalog,
+} from '@/game/types';
 
-const catalog: PokemonCatalog = {
-  bulbasaur: { generation: 'I', formCategory: 'default' },
-  charmander: { generation: 'I', formCategory: 'default' },
-  squirtle: { generation: 'I', formCategory: 'default' },
-  pikachu: { generation: 'I', formCategory: 'default' },
-  chikorita: { generation: 'II', formCategory: 'default' },
-  'charizard-mega-x': { generation: 'VI', formCategory: 'mega' },
-};
+const catalog = catalogData as PokemonCatalog;
 
 describe('normalizeModifiers', () => {
   it('returns defaults for malformed storage', () => {
@@ -29,19 +29,15 @@ describe('normalizeModifiers', () => {
     expect(
       normalizeModifiers({
         generations: ['IX', 'not-a-generation'],
-        formCategories: ['default'],
-        randomSprite: true,
-        whosThatPokemon: true,
+        knowledgeCategories: ['cry', 'not-a-category'],
         isLimitActive: true,
         limit: 0,
         speedrunMode: true,
       }),
     ).toEqual({
       generations: ['IX'],
-      formCategories: ['default'],
-      randomSprite: true,
+      knowledgeCategories: ['cry'],
       soundEnabled: true,
-      whosThatPokemon: true,
       isLimitActive: true,
       limit: 1,
       speedrunMode: true,
@@ -50,144 +46,105 @@ describe('normalizeModifiers', () => {
 
   it('restores required selections when stored arrays are empty', () => {
     expect(
-      normalizeModifiers({ generations: [], formCategories: [] }),
+      normalizeModifiers({ generations: [], knowledgeCategories: [] }),
     ).toMatchObject({
       generations: defaultModifiers.generations,
-      formCategories: defaultModifiers.formCategories,
+      knowledgeCategories: defaultModifiers.knowledgeCategories,
     });
   });
 });
 
-describe('filterPokemon', () => {
-  it('filters by generation and form category together', () => {
-    const modifiers: Modifiers = {
+describe('question building', () => {
+  it('filters the normalized catalog by generation', () => {
+    const names = filterPokemon(catalog, {
       ...defaultModifiers,
-      generations: ['VI'],
-      formCategories: ['mega'],
-    };
+      generations: ['IX'],
+    });
 
-    expect(filterPokemon(catalog, modifiers)).toEqual(['charizard-mega-x']);
-  });
-
-  it('returns an empty list when nothing matches', () => {
+    expect(names.length).toBeGreaterThan(100);
     expect(
-      filterPokemon(catalog, {
-        ...defaultModifiers,
-        generations: ['IX'],
-      }),
-    ).toEqual([]);
-  });
-});
-
-describe('getQuestionCount', () => {
-  it('clamps a configured limit to the available pool', () => {
-    expect(getQuestionCount(4, { ...defaultModifiers, limit: 100 })).toBe(4);
+      names.every((name) => catalog.pokemon[name]?.generation === 'IX'),
+    ).toBe(true);
   });
 
-  it('uses the complete pool when the limit is disabled', () => {
-    expect(
-      getQuestionCount(4, { ...defaultModifiers, isLimitActive: false }),
-    ).toBe(4);
-  });
-
-  it('returns zero for an empty pool', () => {
-    expect(getQuestionCount(0, defaultModifiers)).toBe(0);
-  });
-});
-
-describe('buildQuestions', () => {
-  it('builds unique answer sets containing the correct Pokémon', () => {
-    const questions = buildQuestions(
-      catalog,
-      { ...defaultModifiers, limit: 2 },
-      () => 0.25,
-    );
-
-    expect(questions).toHaveLength(2);
-    for (const question of questions) {
-      expect(question.options).toContain(question.pokemonName);
-      expect(new Set(question.options).size).toBe(question.options.length);
-      expect(question.options).toHaveLength(4);
-    }
-  });
-
-  it('supports a pool smaller than four Pokémon', () => {
-    const questions = buildQuestions(
-      { pikachu: catalog.pikachu! },
-      { ...defaultModifiers, limit: 1 },
-      () => 0,
-    );
-
-    expect(questions).toEqual([
-      { pokemonName: 'pikachu', options: ['pikachu'], spriteRandom: 0 },
-    ]);
-  });
-
-  it('prefers distractors from the same generation and form category', () => {
+  it('builds every training category with four unique options', () => {
     const questions = buildQuestions(
       catalog,
       {
         ...defaultModifiers,
-        generations: ['I', 'II'],
-        isLimitActive: false,
+        generations: [...generations],
+        knowledgeCategories: [...knowledgeCategories],
+        limit: knowledgeCategories.length,
       },
-      () => 0.25,
-    );
-    const bulbasaur = questions.find(
-      ({ pokemonName }) => pokemonName === 'bulbasaur',
+      createSeededRandom('all-categories'),
     );
 
-    expect(bulbasaur?.options).toHaveLength(4);
-    expect(
-      bulbasaur?.options.every(
-        (name) =>
-          catalog[name]?.generation === 'I' &&
-          catalog[name]?.formCategory === 'default',
-      ),
-    ).toBe(true);
+    expect(questions).toHaveLength(knowledgeCategories.length);
+    expect(new Set(questions.map(({ category }) => category))).toEqual(
+      new Set(knowledgeCategories),
+    );
+    for (const question of questions) {
+      expect(question.options).toContain(question.correctOption);
+      expect(new Set(question.options).size).toBe(4);
+    }
+  });
+
+  it('keeps matchup and property distractors unambiguous', () => {
+    const questions = ['ability', 'move', 'matchup'].flatMap(
+      (knowledgeCategory) =>
+        buildQuestions(
+          catalog,
+          {
+            ...defaultModifiers,
+            generations: [...generations],
+            knowledgeCategories: [
+              knowledgeCategory as 'ability' | 'move' | 'matchup',
+            ],
+            limit: 5,
+          },
+          createSeededRandom(knowledgeCategory),
+        ),
+    );
+
+    expect(questions).toHaveLength(15);
+    expect(questions.every(({ options }) => new Set(options).size === 4)).toBe(
+      true,
+    );
   });
 });
 
-describe('shuffle', () => {
-  it('does not mutate its input', () => {
+describe('scoring', () => {
+  it('awards 100 points for a normal correct answer', () => {
+    const [question] = buildQuestions(
+      catalog,
+      { ...defaultModifiers, knowledgeCategories: ['cry'], limit: 1 },
+      createSeededRandom('score'),
+    );
+    expect(question && getAnswerPoints(question, true)).toBe(100);
+    expect(question && getAnswerPoints(question, false)).toBe(0);
+  });
+
+  it('adds answer points without a time multiplier', () => {
+    expect(
+      calculateScore([
+        { category: 'identity', correct: true, points: 100 },
+        { category: 'cry', correct: false, points: 0 },
+        { category: 'champion', correct: true, points: 50 },
+      ]),
+    ).toBe(150);
+  });
+});
+
+describe('utilities', () => {
+  it('clamps question counts and does not mutate shuffled input', () => {
+    expect(getQuestionCount(4, { ...defaultModifiers, limit: 100 })).toBe(4);
     const input = [1, 2, 3];
     expect(shuffle(input, () => 0)).toEqual([2, 3, 1]);
     expect(input).toEqual([1, 2, 3]);
   });
-});
 
-describe('calculateScore', () => {
-  it('preserves the original score formula', () => {
-    expect(calculateScore(8, 10, 20, defaultModifiers)).toBe(2560);
-  });
-
-  it('applies challenge multipliers', () => {
-    expect(
-      calculateScore(8, 10, 20, {
-        ...defaultModifiers,
-        randomSprite: true,
-        whosThatPokemon: true,
-      }),
-    ).toBe(163840);
-  });
-
-  it('stays finite when a speedrun finishes inside one second', () => {
-    const score = calculateScore(1, 1, 0, defaultModifiers);
-    expect(score).toBe(1);
-    expect(Number.isFinite(score)).toBe(true);
-  });
-
-  it('returns zero for an empty quiz', () => {
-    expect(calculateScore(0, 0, 0, defaultModifiers)).toBe(0);
-  });
-});
-
-describe('formatters', () => {
-  it('formats elapsed time', () => {
+  it('formats durations and API names', () => {
     expect(formatDuration(3661)).toBe('01:01:01');
-  });
-
-  it('formats API names for people', () => {
-    expect(formatPokemonName('mr-mime')).toBe('Mr Mime');
+    expect(formatPokemonName('special-attack')).toBe('Special Attack');
   });
 });

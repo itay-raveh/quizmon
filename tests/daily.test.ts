@@ -1,3 +1,4 @@
+import catalogData from '@/game/data/pokemon.json';
 import {
   buildDailyQuestions,
   createSeededRandom,
@@ -5,28 +6,28 @@ import {
   getUtcDate,
   parseDailyDate,
 } from '@/game/daily';
-import type { PokemonCatalog } from '@/game/types';
+import { generations, type PokemonCatalog } from '@/game/types';
 
-const catalog = Object.fromEntries(
-  Array.from({ length: 12 }, (_, index) => [
-    `pokemon-${index}`,
-    {
-      formCategory: index === 11 ? 'mega' : 'default',
-      generation: index < 6 ? 'I' : 'IX',
-    },
-  ]),
-) as PokemonCatalog;
+const catalog = catalogData as PokemonCatalog;
 
-describe('daily challenges', () => {
-  it('builds the same ten default-form questions for the same UTC date', () => {
+describe('daily Trainer Trial', () => {
+  it('builds the same ten-category gauntlet for the same UTC date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');
 
     expect(first).toEqual(second);
-    expect(first).toHaveLength(10);
-    expect(first.every(({ pokemonName }) => pokemonName !== 'pokemon-11')).toBe(
-      true,
-    );
+    expect(first.map(({ category }) => category)).toEqual([
+      'identity',
+      'cry',
+      'description',
+      'type',
+      'evolution',
+      'ability',
+      'move',
+      'stat',
+      'matchup',
+      'champion',
+    ]);
   });
 
   it('changes the question sequence on a different date', () => {
@@ -41,15 +42,12 @@ describe('daily challenges', () => {
     expect([first(), first(), first()]).toEqual([second(), second(), second()]);
   });
 
-  it('uses all generations without inheriting visual challenge modifiers', () => {
+  it('uses all generations and a fixed ten-question length', () => {
     expect(getDailyModifiers(false)).toMatchObject({
-      formCategories: ['default'],
-      generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
+      generations: [...generations],
       isLimitActive: true,
       limit: 10,
-      randomSprite: false,
       soundEnabled: false,
-      whosThatPokemon: false,
     });
   });
 });

@@ -1,12 +1,10 @@
-import type { SpriteData } from '@/game/sprite';
-
 interface SpriteProps {
   silhouette: boolean;
-  sprite: SpriteData | null;
+  src: string | null;
 }
 
-export const Sprite = ({ silhouette, sprite }: SpriteProps) => {
-  if (!sprite) {
+export const Sprite = ({ silhouette, src }: SpriteProps) => {
+  if (!src) {
     return (
       <p className="sprite-error">No image is available for this Pokémon.</p>
     );
@@ -16,11 +14,10 @@ export const Sprite = ({ silhouette, sprite }: SpriteProps) => {
     <div className="sprite-frame">
       <img
         className={`sprite ${silhouette ? 'sprite--silhouette' : ''}`}
-        src={sprite.src}
+        src={src}
         alt={silhouette ? 'Mystery Pokémon silhouette' : 'Pokémon to identify'}
         width="300"
         height="300"
-        style={{ imageRendering: sprite.rendering }}
       />
     </div>
   );

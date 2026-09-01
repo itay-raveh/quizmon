@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { filterPokemon, formatPokemonName } from '@/game/game';
+import { filterPokemon, getCategoryLabel } from '@/game/game';
 import {
-  formCategories,
   generations,
-  type FormCategory,
+  knowledgeCategories,
   type Generation,
+  type KnowledgeCategory,
   type Modifiers,
   type PokemonCatalog,
 } from '@/game/types';
@@ -36,7 +36,7 @@ export const ModifiersDialog = ({
     [catalog, draft],
   );
   const hasSelections =
-    draft.generations.length > 0 && draft.formCategories.length > 0;
+    draft.generations.length > 0 && draft.knowledgeCategories.length > 0;
   const limitIsValid =
     !draft.isLimitActive ||
     (Number.isInteger(draft.limit) &&
@@ -85,7 +85,7 @@ export const ModifiersDialog = ({
       }}
     >
       <header className="modifiers-dialog__header">
-        <h2 id="modifiers-title">Modifiers &amp; filters</h2>
+        <h2 id="modifiers-title">Training setup</h2>
         <button
           className="dialog-close"
           aria-label="Close modifiers"
@@ -134,21 +134,21 @@ export const ModifiersDialog = ({
           </fieldset>
 
           <fieldset>
-            <legend>Forms</legend>
+            <legend>Knowledge mix</legend>
             <p className="field-description">
-              Choose which kinds of Pokémon forms can appear.
+              Pick the kinds of questions you want to practice.
             </p>
-            <div className="choice-grid">
-              {formCategories.map((category) => (
+            <div className="choice-grid choice-grid--knowledge">
+              {knowledgeCategories.map((category) => (
                 <Checkbox
-                  checked={draft.formCategories.includes(category)}
+                  checked={draft.knowledgeCategories.includes(category)}
                   key={category}
-                  label={formatPokemonName(category)}
+                  label={getCategoryLabel(category)}
                   onChange={(event) =>
                     setDraft((current) => ({
                       ...current,
-                      formCategories: toggleValue<FormCategory>(
-                        current.formCategories,
+                      knowledgeCategories: toggleValue<KnowledgeCategory>(
+                        current.knowledgeCategories,
                         category,
                         event.target.checked,
                       ),
@@ -160,30 +160,8 @@ export const ModifiersDialog = ({
           </fieldset>
 
           <fieldset>
-            <legend>Modifiers</legend>
+            <legend>Play style</legend>
             <div className="modifier-list">
-              <Checkbox
-                checked={draft.randomSprite}
-                description="Pick from every available sprite instead of the official artwork."
-                label="Random sprite"
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    randomSprite: event.target.checked,
-                  }))
-                }
-              />
-              <Checkbox
-                checked={draft.whosThatPokemon}
-                description="Turn the Pokémon into a silhouette."
-                label="Who’s that Pokémon?"
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    whosThatPokemon: event.target.checked,
-                  }))
-                }
-              />
               <Checkbox
                 checked={draft.speedrunMode}
                 description="Move to the next question immediately."
@@ -247,7 +225,7 @@ export const ModifiersDialog = ({
           {submitted && !isValid ? (
             <p className="form-error" role="alert">
               {!hasSelections || matchingCount === 0
-                ? 'Choose filters that include at least one Pokémon.'
+                ? 'Choose at least one generation and question type.'
                 : `Choose between 1 and ${matchingCount} questions.`}
             </p>
           ) : null}
@@ -257,7 +235,7 @@ export const ModifiersDialog = ({
           <GameButton tone="quiet" onClick={closeDialog}>
             Cancel
           </GameButton>
-          <GameButton type="submit">Save modifiers</GameButton>
+          <GameButton type="submit">Save setup</GameButton>
         </footer>
       </form>
     </dialog>

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useGameSounds } from '@/audio/sound';
 import { getModeLabel } from '@/game/daily';
-import { formatDuration } from '@/game/game';
+import { formatDuration, getCategoryLabel } from '@/game/game';
 import { shareResult } from '@/game/share';
-import type { GameMode, GameResult, Modifiers } from '@/game/types';
+import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { GameButton } from './GameButton';
 
@@ -11,7 +11,6 @@ interface ResultsProps {
   bestResult: GameResult;
   isNewBest: boolean;
   mode: GameMode;
-  modifiers: Modifiers;
   onNewGame: () => void;
   result: GameResult;
 }
@@ -20,7 +19,6 @@ export const Results = ({
   bestResult,
   isNewBest,
   mode,
-  modifiers,
   onNewGame,
   result,
 }: ResultsProps) => {
@@ -55,7 +53,9 @@ export const Results = ({
 
   return (
     <section className="results" aria-labelledby="results-title">
-      <h1 id="results-title">Results</h1>
+      <h1 id="results-title">
+        {mode.kind === 'daily' ? 'Trial complete' : 'Training complete'}
+      </h1>
       <p className="game-mode">{getModeLabel(mode)}</p>
 
       <dl className="results-list">
@@ -75,19 +75,23 @@ export const Results = ({
             {Math.max(1, result.elapsedSeconds)} seconds
           </dd>
         </div>
-        {modifiers.whosThatPokemon ? (
-          <div>
-            <dt>Silhouette</dt>
-            <dd>×{result.correctCount}</dd>
-          </div>
-        ) : null}
-        {modifiers.randomSprite ? (
-          <div>
-            <dt>Random sprite</dt>
-            <dd>×{result.correctCount}</dd>
-          </div>
-        ) : null}
       </dl>
+
+      <ol className="answer-trail" aria-label="Question results">
+        {result.answers.map((answer, index) => (
+          <li
+            className={answer.correct ? 'answer-trail--correct' : ''}
+            key={`${answer.category}-${index}`}
+            title={`${getCategoryLabel(answer.category)}: ${answer.correct ? 'correct' : 'incorrect'}`}
+          >
+            <span aria-hidden="true">{answer.correct ? '✓' : '×'}</span>
+            <span className="visually-hidden">
+              {getCategoryLabel(answer.category)}:{' '}
+              {answer.correct ? 'correct' : 'incorrect'}
+            </span>
+          </li>
+        ))}
+      </ol>
 
       <div className="score" aria-label={`Score ${formatScore(result.score)}`}>
         <span>Score</span>
@@ -96,15 +100,19 @@ export const Results = ({
         </strong>
       </div>
 
-      <p className="personal-best">
-        {isNewBest ? <strong>New best!</strong> : 'Best'}{' '}
-        {formatScore(bestResult.score)} points
-      </p>
+      {mode.kind === 'training' ? (
+        <p className="personal-best">
+          {isNewBest ? <strong>New best!</strong> : 'Best'}{' '}
+          {formatScore(bestResult.score)} points
+        </p>
+      ) : (
+        <p className="personal-best">Saved on this device.</p>
+      )}
 
       <div className="results__actions">
         <GameButton onClick={() => void handleShare()}>Share result</GameButton>
         <GameButton tone="quiet" onClick={onNewGame}>
-          New game
+          {mode.kind === 'daily' ? 'Back to start' : 'Train again'}
         </GameButton>
       </div>
       <p className="share-status" aria-live="polite">

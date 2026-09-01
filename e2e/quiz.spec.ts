@@ -1,15 +1,25 @@
 import { expect, test } from '@playwright/test';
+import catalogData from '../src/game/data/pokemon.json' with { type: 'json' };
+
+const imageBody = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+  'base64',
+);
+
+const formatName = (name: string) =>
+  name
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
-      'modifiers',
+      'quizmon.training-settings.v2',
       JSON.stringify({
         generations: ['I'],
-        formCategories: ['default'],
-        randomSprite: false,
+        knowledgeCategories: ['identity'],
         soundEnabled: false,
-        whosThatPokemon: false,
         isLimitActive: true,
         limit: 1,
         speedrunMode: true,
@@ -18,13 +28,7 @@ test.beforeEach(async ({ page }) => {
   });
 
   await page.route('https://raw.githubusercontent.com/**', async (route) => {
-    await route.fulfill({
-      contentType: 'image/png',
-      body: Buffer.from(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
-        'base64',
-      ),
-    });
+    await route.fulfill({ contentType: 'image/png', body: imageBody });
   });
 });
 
@@ -58,7 +62,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await expect(manifestResponse.json()).resolves.toMatchObject({
     name: 'Quizmon',
     description:
-      'The ultimate Pokémon knowledge test. Identify Pokémon, tune the challenge, and race the clock.',
+      'Take a new ten-question Pokémon Trainer Trial every day, then practice cries, types, moves, evolutions, stats, and more.',
     theme_color: '#72c3ee',
   });
 
@@ -67,7 +71,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   expect(await robotsResponse.text()).toBe('User-agent: *\nAllow: /\n');
 });
 
-test('plays and shares a complete one-question game', async ({
+test('plays and shares a complete Training question without a live API call', async ({
   context,
   page,
 }) => {
@@ -75,207 +79,139 @@ test('plays and shares a complete one-question game', async ({
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'share', { value: undefined });
   });
-  let requestedPokemon = '';
-  let requestCount = 0;
-
-  await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
-    requestCount += 1;
-    requestedPokemon = route.request().url().split('/').at(-1) ?? '';
-    await route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify({
-        name: requestedPokemon,
-        sprites: {
-          front_default:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
-          other: {},
-          versions: {},
-        },
-      }),
-    });
+  let apiCalls = 0;
+  await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+    apiCalls += 1;
+    await route.abort();
   });
 
   await page.goto('/');
   await expect(page.getByRole('img', { name: /Quizmon/ })).toBeVisible();
-  await page.getByRole('button', { name: 'Custom game' }).click();
+  await page.getByRole('button', { name: 'Start training' }).click();
 
   await expect(
-    page.getByRole('heading', { name: 'Who’s that Pokémon?' }),
+    page.getByRole('heading', { name: 'Pokédex scan' }),
   ).toBeVisible();
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 001');
-  await expect.poll(() => requestedPokemon).not.toBe('');
-  await expect.poll(() => requestCount).toBe(1);
+  const src = await page
+    .getByRole('img', { name: /Pokémon/ })
+    .getAttribute('src');
+  const pokemon = Object.entries(catalogData.pokemon).find(
+    ([, entry]) => entry.sprite === src,
+  )?.[0];
+  expect(pokemon).toBeTruthy();
 
-  const answer = requestedPokemon
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-  await page.getByRole('button', { name: answer, exact: true }).click();
-
-  await expect(page.getByText('Correct!')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Results' })).toBeVisible();
+  await page
+    .getByRole('button', { name: formatName(pokemon!), exact: true })
+    .click();
+  await expect(page.getByText('Correct! +100 points')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Training complete' }),
+  ).toBeVisible();
   await expect(page.getByText('100.00%')).toBeVisible();
-  await expect(page.getByText(/New best!/)).toBeVisible();
+  expect(apiCalls).toBe(0);
 
   await page.getByRole('button', { name: 'Share result' }).click();
   await expect(page.getByText('Result copied to the clipboard.')).toBeVisible();
   const shareText = await page.evaluate(() => navigator.clipboard.readText());
-  expect(shareText).toContain('Quizmon · Custom game');
-  expect(shareText.toLowerCase()).not.toContain(requestedPokemon);
-});
-
-test('prefetches and decodes the next question before advancing', async ({
-  page,
-}) => {
-  await page.addInitScript(() => {
-    const modifiers = JSON.parse(
-      window.localStorage.getItem('modifiers') ?? '{}',
-    ) as Record<string, unknown>;
-    window.localStorage.setItem(
-      'modifiers',
-      JSON.stringify({ ...modifiers, limit: 2 }),
-    );
-  });
-
-  const requestedPokemon: string[] = [];
-  await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
-    const name = route.request().url().split('/').filter(Boolean).at(-1) ?? '';
-    requestedPokemon.push(name);
-    await route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify({
-        name,
-        sprites: {
-          front_default:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
-          other: {},
-          versions: {},
-        },
-      }),
-    });
-  });
-
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Custom game' }).click();
-  await expect(
-    page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 002');
-  await expect.poll(() => requestedPokemon).toHaveLength(2);
-
-  const firstAnswer = requestedPokemon[0]
-    ?.split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-  expect(firstAnswer).toBeTruthy();
-  await page.getByRole('button', { name: firstAnswer, exact: true }).click();
-
-  await expect(
-    page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('002 / 002');
-  expect(requestedPokemon).toHaveLength(2);
+  expect(shareText).toContain('Quizmon · Training');
+  expect(shareText.toLowerCase()).not.toContain(pokemon!);
 });
 
 test('answers questions with the number keys', async ({ page }) => {
-  let requestedPokemon = '';
-  await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
-    requestedPokemon =
-      route.request().url().split('/').filter(Boolean).at(-1) ?? '';
-    await route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify({
-        name: requestedPokemon,
-        sprites: {
-          front_default:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
-          other: {},
-          versions: {},
-        },
-      }),
-    });
-  });
-
   await page.goto('/');
-  await page.getByRole('button', { name: 'Custom game' }).click();
-  await expect.poll(() => requestedPokemon).not.toBe('');
+  await page.getByRole('button', { name: 'Start training' }).click();
 
-  const answer = requestedPokemon
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-  const answerButton = page.getByRole('button', { name: answer, exact: true });
-  const shortcut = await answerButton.getAttribute('aria-keyshortcuts');
+  const image = page.getByRole('img', { name: /Pokémon/ });
+  const src = await image.getAttribute('src');
+  const pokemon = Object.entries(catalogData.pokemon).find(
+    ([, entry]) => entry.sprite === src,
+  )?.[0];
+  const answer = page.getByRole('button', {
+    name: formatName(pokemon!),
+    exact: true,
+  });
+  const shortcut = await answer.getAttribute('aria-keyshortcuts');
   expect(shortcut).toMatch(/^[1-4]$/);
   await page.keyboard.press(shortcut!);
 
-  await expect(page.getByText('Correct!')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Results' })).toBeVisible();
+  await expect(page.getByText('Correct! +100 points')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Training complete' }),
+  ).toBeVisible();
 });
 
-test('keeps modifier actions reachable on a phone', async ({ page }) => {
+test('keeps Training setup reachable on a phone', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Modifiers' }).click();
+  await page.getByRole('button', { name: 'Setup' }).click();
 
-  const dialog = page.getByRole('dialog', { name: 'Modifiers & filters' });
+  const dialog = page.getByRole('dialog', { name: 'Training setup' });
   await expect(dialog).toBeVisible();
   await expect(
     dialog.getByRole('button', { name: 'Close modifiers' }),
   ).toBeFocused();
-  await page.keyboard.press('Shift+Tab');
   await expect(
-    page.getByRole('link', { name: 'TextStudio' }),
-  ).not.toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(
-    dialog.getByRole('button', { name: 'Close modifiers' }),
-  ).toBeFocused();
-  await expect(
-    dialog.getByRole('button', { name: 'Save modifiers' }),
+    dialog.getByRole('button', { name: 'Save setup' }),
   ).toBeVisible();
   await expect(dialog.getByText(/Pokémon match these filters/)).toBeVisible();
 
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Modifiers' })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Setup' })).toBeFocused();
 });
 
-test('opens a deterministic daily challenge from a shared date', async ({
+test('shows a saved daily score instead of another play button', async ({
   page,
 }) => {
-  const requestedPokemon: string[] = [];
-  await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
-    const name = route.request().url().split('/').filter(Boolean).at(-1) ?? '';
-    requestedPokemon.push(name);
-    await route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify({
-        name,
-        sprites: {
-          front_default:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
-          other: {},
-          versions: {},
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {
+          '2026-09-01': {
+            answers: Array.from({ length: 10 }, (_, index) => ({
+              category: index === 9 ? 'champion' : 'identity',
+              correct: index < 8,
+              points: index < 8 ? 100 : 0,
+            })),
+            contentVersion: 2,
+            correctCount: 8,
+            elapsedSeconds: 90,
+            questionCount: 10,
+            score: 800,
+          },
         },
+        training: {},
       }),
-    });
+    );
   });
 
   await page.goto('/?daily=2026-09-01');
-  await expect(page.getByText('Sep 1, 2026 · 10 questions')).toBeVisible();
-  await page.getByRole('button', { name: 'Play daily' }).click();
+  await expect(page.getByText('Daily complete')).toBeVisible();
+  await expect(page.getByText('Sep 1, 2026 · 800 / 1,000')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Play daily' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
+});
 
+test('opens the same daily question from the same shared date', async ({
+  page,
+}) => {
+  await page.goto('/?daily=2026-09-01');
+  await page.getByRole('button', { name: 'Play daily' }).click();
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
-  await expect(page.getByText(/Daily challenge · Sep 1, 2026/)).toBeVisible();
-  await expect.poll(() => requestedPokemon).toHaveLength(2);
-  const firstRun = [...requestedPokemon];
+  const firstSprite = await page
+    .getByRole('img', { name: /silhouette/ })
+    .getAttribute('src');
 
-  requestedPokemon.length = 0;
   await page.reload();
   await page.getByRole('button', { name: 'Play daily' }).click();
-  await expect.poll(() => requestedPokemon).toHaveLength(2);
-  expect(requestedPokemon).toEqual(firstRun);
+  await expect(page.getByRole('img', { name: /silhouette/ })).toHaveAttribute(
+    'src',
+    firstSprite!,
+  );
 });

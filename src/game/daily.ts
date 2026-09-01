@@ -1,16 +1,28 @@
-import { defaultModifiers } from './game';
+import { buildQuestionSequence, defaultModifiers } from './game';
 import {
   generations,
   type GameMode,
   type Modifiers,
   type PokemonCatalog,
+  type QuestionCategory,
   type QuestionData,
 } from './types';
-import { buildQuestions } from './game';
 
-const DAILY_CHALLENGE_VERSION = 1;
+const DAILY_CHALLENGE_VERSION = 2;
 const DAILY_QUESTION_COUNT = 10;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const DAILY_CATEGORIES: readonly QuestionCategory[] = [
+  'identity',
+  'cry',
+  'description',
+  'type',
+  'evolution',
+  'ability',
+  'move',
+  'stat',
+  'matchup',
+  'champion',
+];
 
 export const getUtcDate = (date = new Date()): string =>
   date.toISOString().slice(0, 10);
@@ -56,6 +68,7 @@ export const createSeededRandom = (seed: string): (() => number) => {
 export const getDailyModifiers = (soundEnabled: boolean): Modifiers => ({
   ...defaultModifiers,
   generations: [...generations],
+  knowledgeCategories: [...defaultModifiers.knowledgeCategories],
   isLimitActive: true,
   limit: DAILY_QUESTION_COUNT,
   soundEnabled,
@@ -65,16 +78,17 @@ export const buildDailyQuestions = (
   catalog: PokemonCatalog,
   date: string,
 ): QuestionData[] =>
-  buildQuestions(
+  buildQuestionSequence(
     catalog,
+    DAILY_CATEGORIES,
     getDailyModifiers(true),
     createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
   );
 
 export const getModeLabel = (mode: GameMode): string =>
   mode.kind === 'daily'
-    ? `Daily challenge · ${formatDailyDate(mode.date)}`
-    : 'Custom game';
+    ? `Trainer Trial · ${formatDailyDate(mode.date)}`
+    : 'Training';
 
 export const getDailyUrl = (date: string): string => {
   const url = new URL(window.location.href);

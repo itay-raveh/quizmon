@@ -12,21 +12,22 @@ Pokémon fans playing short quizzes on desktop or mobile. They want to test and 
 
 ## Product Purpose
 
-Quizmon is a charming, complete browser game for identifying Pokémon from their sprites. It should make a quick round feel playful and satisfying, whether the player returns for the shared daily challenge or configures a custom game.
+Quizmon is a charming, complete browser game for testing broad Pokémon knowledge. Its signature mode is a new ten-question Trainer Trial every UTC day, with repeatable Training for the topics a player wants to practice.
 
 ## Positioning
 
-Quizmon combines a fast four-choice recognition loop with a configurable Pokémon pool, alternate forms, silhouette and sprite modifiers, speedrun timing, a shared daily challenge, and locally stored best scores.
+Quizmon combines one deterministic daily gauntlet with a configurable training loop. Questions cover identification, cries, Pokédex descriptions, types, matchups, abilities, moves, stats, and evolutions, then finish with a progressive-clue Champion question.
 
 ## Operating Context
 
-Players open Quizmon in a browser, choose the daily challenge or configure a custom round, answer with pointer, touch, or number keys, and receive an immediately shareable result. Settings and best scores stay in the browser. No account or hosted application backend is required.
+Players open Quizmon in a browser, take the daily Trainer Trial once, or configure a Training round by generation and knowledge category. They answer with pointer, touch, or number keys and receive an immediately shareable, spoiler-free result. Settings, completed dailies, and best Training scores stay in the browser. No account or hosted application backend is required.
 
 ## Capabilities and Constraints
 
-- Covers Pokémon from Generations I through IX, including regional and special forms.
-- Uses PokéAPI data and artwork through the project's existing data layer.
-- Supports daily and custom games, finite or unlimited rounds, sound, silhouettes, random sprite selection, and speedrun mode.
+- Covers the default Pokémon species from Generations I through IX.
+- Builds a versioned local knowledge catalog from PokéAPI through `pokenode-ts`; live rounds do not depend on API requests.
+- Supports one strict daily attempt, repeatable Training, configurable question categories and generations, sound, finite or full-pool rounds, and speedrun transitions.
+- Scores each round out of 100 points per question. Time is displayed and breaks equal Training scores, but does not multiply points.
 - Must remain responsive, keyboard-operable, and usable without an account.
 - Must preserve the existing game mechanics and static-web deployment model during visual work.
 - Must not imply affiliation with Nintendo, Game Freak, or The Pokémon Company.
@@ -54,4 +55,4 @@ Players open Quizmon in a browser, choose the daily challenge or configure a cus
 - Keep each round immediate, readable, and satisfying across input methods.
 - Let playful character extend through every state without obscuring choices, progress, or results.
 - Preserve the recognizable Quizmon identity while giving the interface the same level of commitment as the logo and setting.
-- Keep daily play effortless and custom play expressive.
+- Keep daily play effortless and Training expressive.

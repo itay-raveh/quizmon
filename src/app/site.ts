@@ -2,7 +2,7 @@ export const site = {
   name: 'Quizmon',
   tagline: 'The Ultimate Pokémon Knowledge Test',
   description:
-    'The ultimate Pokémon knowledge test. Identify Pokémon, tune the challenge, and race the clock.',
+    'Take a new ten-question Pokémon Trainer Trial every day, then practice cries, types, moves, evolutions, stats, and more.',
   url: 'https://quizmon.raveh.dev/',
   language: 'en',
   locale: 'en_US',

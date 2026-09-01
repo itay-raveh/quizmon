@@ -2,12 +2,19 @@ import { useState } from 'react';
 import { defaultModifiers, normalizeModifiers } from './game';
 import type { GameMode, GameResult, Modifiers } from './types';
 
-const STORAGE_KEY = 'modifiers';
-const BEST_SCORES_KEY = 'quizmon.best-scores.v1';
+const SETTINGS_KEY = 'quizmon.training-settings.v2';
+const RESULTS_KEY = 'quizmon.results.v2';
+
+interface SavedResults {
+  daily: Record<string, GameResult>;
+  training: Record<string, GameResult>;
+}
+
+const emptyResults = (): SavedResults => ({ daily: {}, training: {} });
 
 const readModifiers = (): Modifiers => {
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
+    const stored = window.localStorage.getItem(SETTINGS_KEY);
     return stored ? normalizeModifiers(JSON.parse(stored)) : defaultModifiers;
   } catch {
     return defaultModifiers;
@@ -22,7 +29,7 @@ export const usePersistentModifiers = () => {
     setModifiersState(normalized);
 
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(normalized));
     } catch {
       // The game still works when storage is unavailable.
     }
@@ -31,41 +38,60 @@ export const usePersistentModifiers = () => {
   return [modifiers, setModifiers] as const;
 };
 
-const getModeKey = (mode: GameMode, modifiers: Modifiers): string => {
-  if (mode.kind === 'daily') return `daily:${mode.date}`;
-
-  return JSON.stringify({
-    formCategories: [...modifiers.formCategories].sort(),
+const getTrainingKey = (modifiers: Modifiers): string =>
+  JSON.stringify({
     generations: [...modifiers.generations].sort(),
     isLimitActive: modifiers.isLimitActive,
+    knowledgeCategories: [...modifiers.knowledgeCategories].sort(),
     limit: modifiers.isLimitActive ? modifiers.limit : null,
-    randomSprite: modifiers.randomSprite,
     speedrunMode: modifiers.speedrunMode,
-    whosThatPokemon: modifiers.whosThatPokemon,
   });
-};
 
-const readBestScores = (): Record<string, GameResult> => {
+const readResults = (): SavedResults => {
   try {
-    const stored = window.localStorage.getItem(BEST_SCORES_KEY);
-    if (!stored) return {};
-    const parsed: unknown = JSON.parse(stored);
-    return parsed && typeof parsed === 'object'
-      ? (parsed as Record<string, GameResult>)
-      : {};
+    const stored = window.localStorage.getItem(RESULTS_KEY);
+    if (!stored) return emptyResults();
+    const parsed = JSON.parse(stored) as Partial<SavedResults>;
+    return {
+      daily: parsed.daily ?? {},
+      training: parsed.training ?? {},
+    };
   } catch {
-    return {};
+    return emptyResults();
   }
 };
 
-export const saveBestScore = (
+const writeResults = (results: SavedResults): boolean => {
+  try {
+    window.localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const readDailyResult = (date: string): GameResult | null =>
+  readResults().daily[date] ?? null;
+
+export const saveResult = (
   mode: GameMode,
   modifiers: Modifiers,
   result: GameResult,
 ): { best: GameResult; isNewBest: boolean } => {
-  const scores = readBestScores();
-  const key = getModeKey(mode, modifiers);
-  const previous = scores[key];
+  const results = readResults();
+
+  if (mode.kind === 'daily') {
+    const previous = results.daily[mode.date];
+    if (previous) return { best: previous, isNewBest: false };
+    results.daily[mode.date] = result;
+    return {
+      best: result,
+      isNewBest: writeResults(results),
+    };
+  }
+
+  const key = getTrainingKey(modifiers);
+  const previous = results.training[key];
   const isNewBest =
     !previous ||
     result.score > previous.score ||
@@ -74,11 +100,9 @@ export const saveBestScore = (
 
   if (!isNewBest) return { best: previous, isNewBest };
 
-  scores[key] = result;
-  try {
-    window.localStorage.setItem(BEST_SCORES_KEY, JSON.stringify(scores));
-  } catch {
-    return { best: result, isNewBest: false };
-  }
-  return { best: result, isNewBest };
+  results.training[key] = result;
+  return {
+    best: result,
+    isNewBest: writeResults(results),
+  };
 };
