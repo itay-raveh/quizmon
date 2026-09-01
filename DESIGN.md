@@ -185,7 +185,7 @@ The landscape is a fixed full-viewport plate with centered cover cropping. Main 
 
 The landing page is an open stage, not a card. On desktop, the wordmark, daily strip, and two-button row occupy the center while most of the sky and field remain visible. At the `36rem` breakpoint, the wordmark expands to `90vw`, the daily strip expands to `90%`, and the two actions each use `42%` of the viewport width. Preserve the same vertical story instead of inventing a mobile navigation or stacking extra containers.
 
-Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
+Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer is absent during questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
 The Training setup dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Generation and knowledge-category grids reduce to three columns on narrow screens.
 
@@ -244,7 +244,7 @@ The progress track is a slim pale-blue bar with a `2px` navy border and yellow f
 
 ### Results Surface
 
-Results use the same contained surface as questions. Rows are separated by low-contrast navy dividers, and a compact answer trail summarizes the round. The score sits in a full-width cream band with navy rules at the top and bottom. Actions reuse the primary and quiet button pair. Sharing opens the native system sheet when available and otherwise offers direct service targets in a compact Quizmon dialog; clipboard copy is always labelled as a separate action.
+Results use the same contained surface as questions. Rows are separated by low-contrast navy dividers, and a compact answer trail summarizes the round. The score sits in a full-width cream band with navy rules at the top and bottom. Each correct answer earns up to 100 knowledge points. The mastery bonus is `round(knowledge² / maximum knowledge)`, so accuracy has visible weight without exceeding the knowledge score. The band shows both parts. Actions reuse the primary and quiet button pair. Sharing opens the native system sheet when available and otherwise offers direct service targets in a compact Quizmon dialog. Daily shares use the date without repeating the in-game mode label, and green or red squares communicate each result. Clipboard copy is always labelled as a separate action.
 
 ### Dialogs and Fields
 
@@ -254,7 +254,7 @@ Dialogs use one cream header and a paper body. The Training setup keeps a cream 
 
 Serve the wordmark and landscape through AVIF and WebP sources, with the checked-in provenance-bearing PNG plates as fallbacks. Keep the wordmark proportions and the landscape's crisp pixel edges. Use cover cropping for the background without blur, gradients, overlays, or added scenery.
 
-The visible footer remains unboxed and comp-faithful: “Wordmark made with TextStudio · Data from PokéAPI · Fan project”. Keep the Nintendo trademark sentence visually hidden and noninteractive.
+The visible footer remains unboxed and comp-faithful: “Wordmark made with TextStudio · Data from PokéAPI · Open source on GitHub”. Each named source is linked. Keep the Nintendo trademark sentence visually hidden and noninteractive.
 
 ### Motion
 
@@ -271,7 +271,7 @@ The first question and the result surface use one `180ms` ease-out entrance from
 - **Do** give buttons a physical pressed state through synchronized translation and compressed lower shadows.
 - **Do** animate the start and finish of a round, keep its question surface stable, and honor reduced motion.
 - **Do** prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.
-- **Do** preserve the exact visible footer copy and its visually hidden trademark sentence.
+- **Do** keep the three concise footer credits linked and preserve the visually hidden trademark sentence.
 
 ### Don't:
 

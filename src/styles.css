@@ -715,6 +715,13 @@ main {
   line-height: 1.05;
 }
 
+.score__breakdown {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+
 .personal-best {
   margin: -0.35rem 0 1.2rem;
   color: var(--muted);

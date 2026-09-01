@@ -585,8 +585,22 @@ export const getAnswerPoints = (
   return [100, 75, 50, 25][Math.max(0, Math.min(3, cluesShown - 1))] ?? 25;
 };
 
-export const calculateScore = (answers: readonly AnswerResult[]): number =>
+export const getKnowledgePoints = (answers: readonly AnswerResult[]): number =>
   answers.reduce((total, answer) => total + answer.points, 0);
+
+export const getMasteryBonus = (answers: readonly AnswerResult[]): number => {
+  if (answers.length === 0) return 0;
+  const knowledgePoints = getKnowledgePoints(answers);
+  return Math.round(
+    (knowledgePoints * knowledgePoints) / (answers.length * 100),
+  );
+};
+
+export const getMaximumScore = (questionCount: number): number =>
+  Math.max(0, questionCount) * 200;
+
+export const calculateScore = (answers: readonly AnswerResult[]): number =>
+  getKnowledgePoints(answers) + getMasteryBonus(answers);
 
 export const getCategoryLabel = (category: QuestionCategory): string =>
   categoryLabels[category];

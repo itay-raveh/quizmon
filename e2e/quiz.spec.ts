@@ -203,7 +203,7 @@ test('shows a saved daily score instead of another play button', async ({
 
   await page.goto('/?daily=2026-09-01');
   await expect(page.getByText('Daily complete')).toBeVisible();
-  await expect(page.getByText('Sep 1, 2026 · 800 / 1,000')).toBeVisible();
+  await expect(page.getByText('Sep 1, 2026 · 1,440 / 2,000')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Play daily' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
 });

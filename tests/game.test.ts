@@ -8,6 +8,9 @@ import {
   formatDuration,
   formatPokemonName,
   getAnswerPoints,
+  getKnowledgePoints,
+  getMasteryBonus,
+  getMaximumScore,
   getQuestionCount,
   normalizeModifiers,
   shuffle,
@@ -186,14 +189,28 @@ describe('scoring', () => {
     expect(question && getAnswerPoints(question, false)).toBe(0);
   });
 
-  it('adds answer points without a time multiplier', () => {
-    expect(
-      calculateScore([
-        { category: 'identity', correct: true, points: 100 },
-        { category: 'scale', correct: false, points: 0 },
-        { category: 'champion', correct: true, points: 50 },
-      ]),
-    ).toBe(150);
+  it('adds a bounded mastery bonus to earned knowledge points', () => {
+    const answers = [
+      { category: 'identity', correct: true, points: 100 },
+      { category: 'scale', correct: false, points: 0 },
+      { category: 'champion', correct: true, points: 50 },
+    ] as const;
+
+    expect(getKnowledgePoints(answers)).toBe(150);
+    expect(getMasteryBonus(answers)).toBe(75);
+    expect(calculateScore(answers)).toBe(225);
+    expect(getMaximumScore(answers.length)).toBe(600);
+  });
+
+  it('doubles a perfect knowledge score and handles an empty round', () => {
+    const perfect = Array.from({ length: 10 }, () => ({
+      category: 'identity' as const,
+      correct: true,
+      points: 100,
+    }));
+
+    expect(calculateScore(perfect)).toBe(2000);
+    expect(calculateScore([])).toBe(0);
   });
 });
 

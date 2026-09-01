@@ -1,4 +1,5 @@
 import { formatDailyDate } from '@/game/daily';
+import { getMaximumScore } from '@/game/game';
 import type { GameResult } from '@/game/types';
 import { GameButton } from './GameButton';
 import { Logo } from './Logo';
@@ -52,7 +53,7 @@ export const Landing = ({
           <span>
             {formatDailyDate(dailyDate)} ·{' '}
             {dailyResult
-              ? `${dailyResult.score.toLocaleString()} / 1,000${dailyResultSaved ? '' : ' · not saved'}`
+              ? `${dailyResult.score.toLocaleString()} / ${getMaximumScore(dailyResult.questionCount).toLocaleString()}${dailyResultSaved ? '' : ' · not saved'}`
               : storageAvailable
                 ? '10 questions'
                 : 'browser storage required'}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { defaultModifiers, normalizeModifiers } from './game';
+import { calculateScore, defaultModifiers, normalizeModifiers } from './game';
 import type { GameMode, GameResult, Modifiers } from './types';
 
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
@@ -11,6 +11,21 @@ interface SavedResults {
 }
 
 const emptyResults = (): SavedResults => ({ daily: {}, training: {} });
+
+const normalizeResult = (result: GameResult): GameResult =>
+  Array.isArray(result.answers)
+    ? { ...result, score: calculateScore(result.answers) }
+    : result;
+
+const normalizeResultRecord = (
+  results: Record<string, GameResult> | undefined,
+): Record<string, GameResult> =>
+  Object.fromEntries(
+    Object.entries(results ?? {}).map(([key, result]) => [
+      key,
+      normalizeResult(result),
+    ]),
+  );
 
 const readModifiers = (): Modifiers => {
   try {
@@ -53,8 +68,8 @@ const readResults = (): SavedResults => {
     if (!stored) return emptyResults();
     const parsed = JSON.parse(stored) as Partial<SavedResults>;
     return {
-      daily: parsed.daily ?? {},
-      training: parsed.training ?? {},
+      daily: normalizeResultRecord(parsed.daily),
+      training: normalizeResultRecord(parsed.training),
     };
   } catch {
     return emptyResults();
@@ -90,16 +105,17 @@ export const saveResult = (
   result: GameResult,
 ): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
   const results = readResults();
+  const normalizedResult = normalizeResult(result);
 
   if (mode.kind === 'daily') {
     const previous = results.daily[mode.date];
     if (previous) {
       return { best: previous, isNewBest: false, isSaved: true };
     }
-    results.daily[mode.date] = result;
+    results.daily[mode.date] = normalizedResult;
     const isSaved = writeResults(results);
     return {
-      best: result,
+      best: normalizedResult,
       isNewBest: isSaved,
       isSaved,
     };
@@ -109,18 +125,18 @@ export const saveResult = (
   const previous = results.training[key];
   const isNewBest =
     !previous ||
-    result.score > previous.score ||
-    (result.score === previous.score &&
-      result.elapsedSeconds < previous.elapsedSeconds);
+    normalizedResult.score > previous.score ||
+    (normalizedResult.score === previous.score &&
+      normalizedResult.elapsedSeconds < previous.elapsedSeconds);
 
   if (!isNewBest) {
     return { best: previous, isNewBest, isSaved: true };
   }
 
-  results.training[key] = result;
+  results.training[key] = normalizedResult;
   const isSaved = writeResults(results);
   return {
-    best: result,
+    best: normalizedResult,
     isNewBest: isSaved,
     isSaved,
   };

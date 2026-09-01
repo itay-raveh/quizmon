@@ -1,7 +1,12 @@
 import { useCallback, useEffect } from 'react';
 import { useGameSounds } from '@/audio/sound';
 import { getModeLabel } from '@/game/daily';
-import { formatDuration, getCategoryLabel } from '@/game/game';
+import {
+  formatDuration,
+  getCategoryLabel,
+  getKnowledgePoints,
+  getMasteryBonus,
+} from '@/game/game';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { GameButton } from './GameButton';
@@ -84,6 +89,10 @@ export const Results = ({
         <strong>
           <AnimatedScore format={formatScore} value={result.score} />
         </strong>
+        <small className="score__breakdown">
+          {formatScore(getKnowledgePoints(result.answers))} knowledge +{' '}
+          {formatScore(getMasteryBonus(result.answers))} mastery
+        </small>
       </div>
 
       {mode.kind === 'training' ? (

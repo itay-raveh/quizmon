@@ -15,7 +15,7 @@ const result: GameResult = {
   correctCount: 1,
   elapsedSeconds: 20,
   questionCount: 2,
-  score: 100,
+  score: 150,
 };
 
 describe('result sharing', () => {
@@ -30,9 +30,10 @@ describe('result sharing', () => {
     window.history.replaceState({}, '', '/play?daily=old#answer');
     const text = buildShareText({ kind: 'daily', date: '2026-09-01' }, result);
 
-    expect(text).toContain('Trainer Trial');
-    expect(text).toContain('100 / 200 points · 1/2');
-    expect(text).toContain('🟦⬜');
+    expect(text).toContain('Quizmon · Sep 1, 2026');
+    expect(text).not.toContain('Trainer Trial');
+    expect(text).toContain('150 / 400 points · 1/2');
+    expect(text).toContain('🟩🟥');
     expect(text).toContain('?daily=2026-09-01');
     expect(text).not.toContain('pikachu');
     expect(text).not.toContain('#answer');
@@ -42,7 +43,7 @@ describe('result sharing', () => {
     const content = buildShareContent({ kind: 'training' }, result);
 
     expect(content.title).toBe('Quizmon · Training');
-    expect(content.text).toContain('100 / 200 points · 1/2');
+    expect(content.text).toContain('150 / 400 points · 1/2');
     expect(content.text).not.toContain(content.url);
     expect(content.url).toBe(`${window.location.origin}/`);
   });
@@ -61,7 +62,7 @@ describe('result sharing', () => {
     );
     expect(canShareResult()).toBe(true);
     expect(share.mock.calls[0]?.[0]).toEqual({
-      text: 'Quizmon · Training\n100 / 200 points · 1/2\n🟦⬜',
+      text: 'Quizmon · Training\n150 / 400 points · 1/2\n🟩🟥',
       title: 'Quizmon · Training',
       url: `${window.location.origin}/`,
     });

@@ -14,7 +14,13 @@ export const Footer = () => (
       </a>
     </span>
     <span aria-hidden="true">·</span>
-    <span>Fan project</span>
+    <a
+      href="https://github.com/itay-raveh/quizmon"
+      rel="noreferrer"
+      target="_blank"
+    >
+      Open source on GitHub
+    </a>
     <span className="visually-hidden">Pokémon is a trademark of Nintendo.</span>
   </footer>
 );
