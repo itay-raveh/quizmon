@@ -8,12 +8,12 @@ import {
   type QuestionData,
 } from './types';
 
-const DAILY_CHALLENGE_VERSION = 2;
+const DAILY_CHALLENGE_VERSION = 3;
 const DAILY_QUESTION_COUNT = 10;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DAILY_CATEGORIES: readonly QuestionCategory[] = [
   'identity',
-  'cry',
+  'scale',
   'description',
   'type',
   'evolution',

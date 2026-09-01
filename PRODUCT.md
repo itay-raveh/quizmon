@@ -16,7 +16,7 @@ Quizmon is a charming, complete browser game for testing broad Pokémon knowledg
 
 ## Positioning
 
-Quizmon combines one deterministic daily gauntlet with a configurable training loop. Questions cover identification, cries, Pokédex descriptions, types, matchups, abilities, moves, stats, and evolutions, then finish with a progressive-clue Champion question.
+Quizmon combines one deterministic daily gauntlet with a configurable training loop. Questions cover identification, Pokédex descriptions, types, matchups, abilities, moves, stats, size, and evolutions, then finish with a progressive-clue Champion question.
 
 ## Operating Context
 

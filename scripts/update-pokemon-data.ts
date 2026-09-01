@@ -184,12 +184,12 @@ export const buildPokemonCatalog = async (
       abilities: entry.abilities
         .sort((left, right) => left.slot - right.slot)
         .map(({ ability }) => ability.name),
-      cry: entry.cries.latest || entry.cries.legacy || null,
       description: description ? cleanText(description) : '',
       evolvesFrom: species.evolves_from_species?.name ?? null,
       evolvesTo: [...(evolvesTo.get(species.name) ?? [])].sort(),
       generation,
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
+      height: entry.height,
       id: entry.id,
       levelMoves: getLevelMoves(entry),
       sprite: getSprite(entry),
@@ -197,11 +197,12 @@ export const buildPokemonCatalog = async (
       types: entry.types
         .sort((left, right) => left.slot - right.slot)
         .map(({ type }) => type.name),
+      weight: entry.weight,
     };
   }
 
   return {
-    contentVersion: 2,
+    contentVersion: 3,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

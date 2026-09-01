@@ -27,10 +27,6 @@ const preloadMedia = (question: QuestionData) => {
   if (question.media.kind === 'sprite') {
     const image = new Image();
     image.src = question.media.src;
-  } else if (question.media.kind === 'cry') {
-    const audio = new Audio();
-    audio.preload = 'auto';
-    audio.src = question.media.src;
   }
 };
 
@@ -47,9 +43,7 @@ export const Question = ({
 }: QuestionProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [cluesShown, setCluesShown] = useState(1);
-  const [cryStatus, setCryStatus] = useState('');
   const answerTimeout = useRef<number | null>(null);
-  const audio = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (nextQuestion) preloadMedia(nextQuestion);
@@ -102,17 +96,6 @@ export const Question = ({
     cluesShown >= question.media.revealAt;
   const championPoints = getAnswerPoints(question, true, cluesShown);
 
-  const playCry = async () => {
-    try {
-      audio.current?.pause();
-      if (audio.current) audio.current.currentTime = 0;
-      await audio.current?.play();
-      setCryStatus('Cry played.');
-    } catch {
-      setCryStatus('The cry could not be played. Try again.');
-    }
-  };
-
   return (
     <section
       className={
@@ -160,18 +143,6 @@ export const Question = ({
           silhouette={question.media.silhouette}
           src={question.media.src}
         />
-      ) : null}
-
-      {question.media.kind === 'cry' ? (
-        <div className="cry-player">
-          <audio ref={audio} preload="auto" src={question.media.src} />
-          <GameButton tone="quiet" onClick={() => void playCry()}>
-            Play cry
-          </GameButton>
-          <span className="visually-hidden" aria-live="polite">
-            {cryStatus}
-          </span>
-        </div>
       ) : null}
 
       <div className="answers">

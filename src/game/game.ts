@@ -25,12 +25,12 @@ export const defaultModifiers: Modifiers = {
 const categoryLabels: Record<QuestionCategory, string> = {
   ability: 'Ability check',
   champion: 'Champion question',
-  cry: 'Cry check',
   description: 'Field notes',
   evolution: 'Evolution trail',
   identity: 'Pokédex scan',
   matchup: 'Type matchup',
   move: 'Move check',
+  scale: 'Size check',
   stat: 'Stat showdown',
   type: 'Type check',
 };
@@ -189,18 +189,52 @@ const buildIdentityQuestion = (
   );
 };
 
-const buildCryQuestion = (
+const scaleMetrics = ['height', 'weight'] as const;
+
+const buildScaleQuestion = (
   context: QuestionContext,
 ): QuestionData | undefined => {
-  const target = pickTarget(context, ({ cry }) => Boolean(cry));
-  if (!target?.pokemon.cry) return undefined;
+  const metric = pick(scaleMetrics, context.random) ?? 'height';
+  const findHighest = context.random() < 0.5;
+  const candidates = shuffle(
+    context.pool.filter(({ pokemon }) => pokemon[metric] > 0),
+    context.random,
+  );
+  const fresh = candidates.filter(({ name }) => !context.used.has(name));
+  const target = [...fresh, ...candidates].find(({ pokemon }) => {
+    const distractors = candidates.filter(({ pokemon: other }) =>
+      findHighest
+        ? other[metric] < pokemon[metric]
+        : other[metric] > pokemon[metric],
+    );
+    return distractors.length >= 3;
+  });
+  if (!target) return undefined;
+
+  context.used.add(target.name);
+  const distractors = candidates
+    .filter(({ name, pokemon }) => {
+      if (name === target.name) return false;
+      return findHighest
+        ? pokemon[metric] < target.pokemon[metric]
+        : pokemon[metric] > target.pokemon[metric];
+    })
+    .map(({ name }) => name);
+  const adjective =
+    metric === 'height'
+      ? findHighest
+        ? 'tallest'
+        : 'shortest'
+      : findHighest
+        ? 'heaviest'
+        : 'lightest';
+
   return makeQuestion(
-    'cry',
+    'scale',
     target,
     target.name,
-    pokemonOptions(context, target),
-    'Whose cry is this?',
-    { kind: 'cry', src: target.pokemon.cry },
+    optionSet(target.name, distractors, context.random),
+    `Which Pokémon is the ${adjective}?`,
   );
 };
 
@@ -405,8 +439,8 @@ const buildCategoryQuestion = (
   switch (category) {
     case 'identity':
       return buildIdentityQuestion(context, silhouette);
-    case 'cry':
-      return buildCryQuestion(context);
+    case 'scale':
+      return buildScaleQuestion(context);
     case 'description':
       return buildDescriptionQuestion(context);
     case 'type':

@@ -18,7 +18,7 @@ describe('daily Trainer Trial', () => {
     expect(first).toEqual(second);
     expect(first.map(({ category }) => category)).toEqual([
       'identity',
-      'cry',
+      'scale',
       'description',
       'type',
       'evolution',

@@ -4,7 +4,7 @@ import type { GameResult } from '@/game/types';
 const result: GameResult = {
   answers: [
     { category: 'identity', correct: true, points: 100 },
-    { category: 'cry', correct: false, points: 0 },
+    { category: 'scale', correct: false, points: 0 },
   ],
   contentVersion: 2,
   correctCount: 1,

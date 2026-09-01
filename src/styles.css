@@ -420,17 +420,6 @@ main {
   filter: brightness(0) drop-shadow(0 0.45rem 0.45rem rgba(8, 59, 126, 0.35));
 }
 
-.cry-player {
-  display: grid;
-  min-height: 7rem;
-  margin: 0.3rem 0 0.8rem;
-  place-items: center;
-}
-
-.cry-player .game-button {
-  min-width: 9rem;
-}
-
 .clue-board {
   display: grid;
   width: 100%;
@@ -1022,7 +1011,6 @@ main {
   .question--with-media .game-mode,
   .question--with-media .question__prompt,
   .question--with-media .clue-board,
-  .question--with-media .cry-player,
   .question--with-media .answer-feedback,
   .question--with-media .new-game {
     grid-column: 1 / -1;

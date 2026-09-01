@@ -29,14 +29,14 @@ describe('normalizeModifiers', () => {
     expect(
       normalizeModifiers({
         generations: ['IX', 'not-a-generation'],
-        knowledgeCategories: ['cry', 'not-a-category'],
+        knowledgeCategories: ['scale', 'not-a-category'],
         isLimitActive: true,
         limit: 0,
         speedrunMode: true,
       }),
     ).toEqual({
       generations: ['IX'],
-      knowledgeCategories: ['cry'],
+      knowledgeCategories: ['scale'],
       soundEnabled: true,
       isLimitActive: true,
       limit: 1,
@@ -111,13 +111,46 @@ describe('question building', () => {
       true,
     );
   });
+
+  it('builds scale comparisons with one measurable answer', () => {
+    const questions = buildQuestions(
+      catalog,
+      {
+        ...defaultModifiers,
+        generations: [...generations],
+        knowledgeCategories: ['scale'],
+        limit: 20,
+      },
+      createSeededRandom('scale-comparisons'),
+    );
+
+    expect(questions).toHaveLength(20);
+    for (const question of questions) {
+      const metric = /tallest|shortest/.test(question.prompt)
+        ? 'height'
+        : 'weight';
+      const correct = catalog.pokemon[question.correctOption]?.[metric];
+      const distractors = question.options
+        .filter((name) => name !== question.correctOption)
+        .map((name) => catalog.pokemon[name]?.[metric]);
+
+      expect(correct).toBeTypeOf('number');
+      expect(
+        distractors.every((value) =>
+          /tallest|heaviest/.test(question.prompt)
+            ? value! < correct!
+            : value! > correct!,
+        ),
+      ).toBe(true);
+    }
+  });
 });
 
 describe('scoring', () => {
   it('awards 100 points for a normal correct answer', () => {
     const [question] = buildQuestions(
       catalog,
-      { ...defaultModifiers, knowledgeCategories: ['cry'], limit: 1 },
+      { ...defaultModifiers, knowledgeCategories: ['scale'], limit: 1 },
       createSeededRandom('score'),
     );
     expect(question && getAnswerPoints(question, true)).toBe(100);
@@ -128,7 +161,7 @@ describe('scoring', () => {
     expect(
       calculateScore([
         { category: 'identity', correct: true, points: 100 },
-        { category: 'cry', correct: false, points: 0 },
+        { category: 'scale', correct: false, points: 0 },
         { category: 'champion', correct: true, points: 50 },
       ]),
     ).toBe(150);

@@ -62,7 +62,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await expect(manifestResponse.json()).resolves.toMatchObject({
     name: 'Quizmon',
     description:
-      'Take a new ten-question Pokémon Trainer Trial every day, then practice cries, types, moves, evolutions, stats, and more.',
+      'Take a new ten-question Pokémon Trainer Trial every day, then practice types, moves, evolutions, stats, size, and more.',
     theme_color: '#72c3ee',
   });
 
