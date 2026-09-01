@@ -1,4 +1,9 @@
-import { buildShareText } from '@/game/share';
+import {
+  buildShareContent,
+  buildShareText,
+  canShareResult,
+  shareResult,
+} from '@/game/share';
 import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
@@ -14,6 +19,13 @@ const result: GameResult = {
 };
 
 describe('result sharing', () => {
+  afterEach(() => {
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: undefined,
+    });
+  });
+
   it('includes the daily date and challenge URL without answer details', () => {
     window.history.replaceState({}, '', '/play?daily=old#answer');
     const text = buildShareText({ kind: 'daily', date: '2026-09-01' }, result);
@@ -24,5 +36,41 @@ describe('result sharing', () => {
     expect(text).toContain('?daily=2026-09-01');
     expect(text).not.toContain('pikachu');
     expect(text).not.toContain('#answer');
+  });
+
+  it('keeps the title, score card, and URL as separate share fields', () => {
+    const content = buildShareContent({ kind: 'training' }, result);
+
+    expect(content.title).toBe('Quizmon · Training');
+    expect(content.text).toContain('100 / 200 points · 1/2');
+    expect(content.text).not.toContain(content.url);
+    expect(content.url).toBe(`${window.location.origin}/`);
+  });
+
+  it('opens the native share sheet when the browser supports it', async () => {
+    const share = vi
+      .fn<(data: ShareData) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: share,
+    });
+
+    await expect(shareResult({ kind: 'training' }, result)).resolves.toBe(
+      'shared',
+    );
+    expect(canShareResult()).toBe(true);
+    expect(share.mock.calls[0]?.[0]).toEqual({
+      text: 'Quizmon · Training\n100 / 200 points · 1/2\n🟦⬜',
+      title: 'Quizmon · Training',
+      url: `${window.location.origin}/`,
+    });
+  });
+
+  it('opens fallback options instead of copying when native sharing is absent', async () => {
+    expect(canShareResult()).toBe(false);
+    await expect(shareResult({ kind: 'training' }, result)).resolves.toBe(
+      'unsupported',
+    );
   });
 });

@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import { formatDailyDate } from '@/game/daily';
-import { shareResult } from '@/game/share';
 import type { GameResult } from '@/game/types';
 import { GameButton } from './GameButton';
 import { Logo } from './Logo';
+import { ShareResultButton } from './ShareResultButton';
 
 interface LandingProps {
   catalogStatus: 'loading' | 'ready' | 'error';
@@ -28,27 +27,6 @@ export const Landing = ({
   onStartDaily,
   storageAvailable,
 }: LandingProps) => {
-  const [shareStatus, setShareStatus] = useState('');
-
-  const shareDaily = async () => {
-    if (!dailyResult) return;
-    try {
-      const status = await shareResult(
-        { kind: 'daily', date: dailyDate },
-        dailyResult,
-      );
-      setShareStatus(
-        status === 'copied'
-          ? 'Result copied to the clipboard.'
-          : status === 'shared'
-            ? 'Result shared.'
-            : '',
-      );
-    } catch {
-      setShareStatus('Could not share this result.');
-    }
-  };
-
   return (
     <section className="landing" aria-labelledby="landing-title">
       <h1 id="landing-title" className="visually-hidden">
@@ -81,9 +59,12 @@ export const Landing = ({
           </span>
         </div>
         {dailyResult ? (
-          <GameButton onClick={() => void shareDaily()}>
+          <ShareResultButton
+            mode={{ kind: 'daily', date: dailyDate }}
+            result={dailyResult}
+          >
             <span>Share</span>
-          </GameButton>
+          </ShareResultButton>
         ) : (
           <GameButton
             disabled={catalogStatus !== 'ready' || !storageAvailable}
@@ -92,9 +73,6 @@ export const Landing = ({
             <span>Play daily</span>
           </GameButton>
         )}
-        <span className="visually-hidden" aria-live="polite">
-          {shareStatus}
-        </span>
       </div>
       <div className="landing__actions" aria-label="Training">
         <GameButton

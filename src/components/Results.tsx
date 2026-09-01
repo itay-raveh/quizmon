@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useGameSounds } from '@/audio/sound';
 import { getModeLabel } from '@/game/daily';
 import { formatDuration, getCategoryLabel } from '@/game/game';
-import { shareResult } from '@/game/share';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { GameButton } from './GameButton';
+import { ShareResultButton } from './ShareResultButton';
 
 interface ResultsProps {
   bestResult: GameResult;
@@ -24,7 +24,6 @@ export const Results = ({
   result,
   resultSaved,
 }: ResultsProps) => {
-  const [shareStatus, setShareStatus] = useState('');
   const { playScore, stopScore } = useGameSounds();
 
   useEffect(() => {
@@ -37,21 +36,6 @@ export const Results = ({
       Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(value),
     [],
   );
-
-  const handleShare = async () => {
-    try {
-      const status = await shareResult(mode, result);
-      setShareStatus(
-        status === 'copied'
-          ? 'Result copied to the clipboard.'
-          : status === 'shared'
-            ? 'Result shared.'
-            : '',
-      );
-    } catch {
-      setShareStatus('Could not share this result.');
-    }
-  };
 
   return (
     <section className="results" aria-labelledby="results-title">
@@ -119,14 +103,11 @@ export const Results = ({
       )}
 
       <div className="results__actions">
-        <GameButton onClick={() => void handleShare()}>Share result</GameButton>
+        <ShareResultButton mode={mode} result={result} />
         <GameButton tone="quiet" onClick={onNewGame}>
           {mode.kind === 'daily' ? 'Back to start' : 'Train again'}
         </GameButton>
       </div>
-      <p className="share-status" aria-live="polite">
-        {shareStatus}
-      </p>
     </section>
   );
 };

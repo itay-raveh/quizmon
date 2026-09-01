@@ -1,7 +1,16 @@
 import { getDailyUrl, getModeLabel } from './daily';
 import type { GameMode, GameResult } from './types';
 
-export const buildShareText = (mode: GameMode, result: GameResult): string => {
+export interface ShareContent {
+  text: string;
+  title: string;
+  url: string;
+}
+
+export const buildShareContent = (
+  mode: GameMode,
+  result: GameResult,
+): ShareContent => {
   const score = Intl.NumberFormat(undefined, {
     maximumFractionDigits: 0,
   }).format(result.score);
@@ -9,33 +18,49 @@ export const buildShareText = (mode: GameMode, result: GameResult): string => {
     .map(({ correct }) => (correct ? '🟦' : '⬜'))
     .join('');
 
-  return [
-    `Quizmon · ${getModeLabel(mode)}`,
-    `${score} / ${result.questionCount * 100} points · ${result.correctCount}/${result.questionCount}`,
-    pattern,
-    mode.kind === 'daily'
-      ? getDailyUrl(mode.date)
-      : new URL('/', window.location.origin).toString(),
-  ].join('\n');
+  return {
+    text: [
+      `${score} / ${result.questionCount * 100} points · ${result.correctCount}/${result.questionCount}`,
+      pattern,
+    ].join('\n'),
+    title: `Quizmon · ${getModeLabel(mode)}`,
+    url:
+      mode.kind === 'daily'
+        ? getDailyUrl(mode.date)
+        : new URL('/', window.location.origin).toString(),
+  };
 };
+
+export const buildShareText = (mode: GameMode, result: GameResult): string => {
+  const content = buildShareContent(mode, result);
+  return [content.title, content.text, content.url].join('\n');
+};
+
+export const canShareResult = (): boolean =>
+  typeof navigator.share === 'function';
 
 export const shareResult = async (
   mode: GameMode,
   result: GameResult,
-): Promise<'shared' | 'copied' | 'cancelled'> => {
-  const text = buildShareText(mode, result);
+): Promise<'shared' | 'unsupported' | 'cancelled'> => {
+  if (!canShareResult()) return 'unsupported';
 
-  if (navigator.share) {
-    try {
-      await navigator.share({ text, title: 'Quizmon result' });
-      return 'shared';
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        return 'cancelled';
-      }
+  const content = buildShareContent(mode, result);
+
+  try {
+    await navigator.share({
+      text: `${content.title}\n${content.text}`,
+      title: content.title,
+      url: content.url,
+    });
+    return 'shared';
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      return 'cancelled';
     }
+    throw error;
   }
-
-  await navigator.clipboard.writeText(text);
-  return 'copied';
 };
+
+export const copyResult = (mode: GameMode, result: GameResult): Promise<void> =>
+  navigator.clipboard.writeText(buildShareText(mode, result));

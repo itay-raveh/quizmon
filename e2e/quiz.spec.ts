@@ -114,7 +114,19 @@ test('plays and shares a complete Training question without a live API call', as
   expect(apiCalls).toBe(0);
 
   await page.getByRole('button', { name: 'Share result' }).click();
-  await expect(page.getByText('Result copied to the clipboard.')).toBeVisible();
+  const shareDialog = page.getByRole('dialog', { name: 'Share result' });
+  await expect(shareDialog).toBeVisible();
+  await expect(
+    shareDialog.getByRole('button', { name: 'WhatsApp' }),
+  ).toBeVisible();
+  await expect(
+    shareDialog.getByRole('button', { name: 'Telegram' }),
+  ).toBeVisible();
+  await expect(
+    shareDialog.getByRole('button', { name: 'Bluesky' }),
+  ).toBeVisible();
+  await shareDialog.getByRole('button', { name: 'Copy result' }).click();
+  await expect(shareDialog.getByText('Result copied.')).toBeVisible();
   const shareText = await page.evaluate(() => navigator.clipboard.readText());
   expect(shareText).toContain('Quizmon · Training');
   expect(shareText.toLowerCase()).not.toContain(pokemon!);

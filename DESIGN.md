@@ -244,11 +244,11 @@ The progress track is a slim pale-blue bar with a `2px` navy border and yellow f
 
 ### Results Surface
 
-Results use the same contained surface as questions. Rows are separated by low-contrast navy dividers, and a compact answer trail summarizes the round. The score sits in a full-width cream band with navy rules at the top and bottom. Actions reuse the primary and quiet button pair.
+Results use the same contained surface as questions. Rows are separated by low-contrast navy dividers, and a compact answer trail summarizes the round. The score sits in a full-width cream band with navy rules at the top and bottom. Actions reuse the primary and quiet button pair. Sharing opens the native system sheet when available and otherwise offers direct service targets in a compact Quizmon dialog; clipboard copy is always labelled as a separate action.
 
-### Modifiers Dialog and Fields
+### Dialogs and Fields
 
-The dialog uses one cream header, one scrollable paper body, and one cream action footer. A dark navy backdrop provides separation without blurring the landscape. Checkboxes are square white controls with `2px` navy borders and cobalt checked states. Number fields use the same white fill, navy border, and compact corners. On mobile, keep the action footer outside the scrolling body and preserve three-column choice grids.
+Dialogs use one cream header and a paper body. The Training setup keeps a cream action footer outside its scrolling body, while the shorter share sheet lays out clearly labelled service buttons and one full-width copy action. A dark navy backdrop provides separation without blurring the landscape. Checkboxes are square white controls with `2px` navy borders and cobalt checked states. Number fields use the same white fill, navy border, and compact corners. On mobile, preserve three-column setup choice grids and comfortable share targets.
 
 ### Brand Assets and Footer
 

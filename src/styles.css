@@ -631,7 +631,8 @@ main {
   font-weight: 700;
 }
 
-.modifiers-dialog {
+.modifiers-dialog,
+.share-dialog {
   width: min(42rem, calc(100% - 1rem));
   max-height: min(48rem, calc(100svh - 1rem));
   padding: 0;
@@ -645,17 +646,24 @@ main {
     0 0.7rem 0 var(--navy-shadow);
 }
 
-.modifiers-dialog[open] {
+.share-dialog {
+  width: min(32rem, calc(100% - 1rem));
+}
+
+.modifiers-dialog[open],
+.share-dialog[open] {
   display: flex;
   flex-direction: column;
   animation: surface-in 160ms ease-out both;
 }
 
-.modifiers-dialog::backdrop {
+.modifiers-dialog::backdrop,
+.share-dialog::backdrop {
   background: rgba(8, 35, 73, 0.8);
 }
 
-.modifiers-dialog__header {
+.modifiers-dialog__header,
+.share-dialog__header {
   display: flex;
   padding: 1rem 1.15rem 0.85rem;
   align-items: center;
@@ -664,10 +672,76 @@ main {
   border-bottom: 2px solid var(--navy);
 }
 
-.modifiers-dialog h2 {
+.modifiers-dialog h2,
+.share-dialog h2 {
   margin: 0;
   color: var(--navy);
   font-size: clamp(1.35rem, 4vw, 1.75rem);
+}
+
+.share-dialog__body {
+  display: grid;
+  padding: 1.1rem 1.2rem 1.2rem;
+  gap: 1rem;
+}
+
+.share-dialog__body > p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.share-targets {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.share-target {
+  display: flex;
+  min-height: 3rem;
+  padding: 0.5rem 0.65rem;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  color: var(--navy);
+  background: var(--paper);
+  border: 2px solid var(--navy);
+  border-radius: 0.5rem;
+  box-shadow:
+    0 0.16rem 0 var(--yellow),
+    0 0.24rem 0 var(--navy-shadow);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 100ms ease,
+    box-shadow 100ms ease,
+    filter 100ms ease;
+  grid-column: span 2;
+}
+
+.share-target:nth-last-child(-n + 2) {
+  grid-column: span 3;
+}
+
+.share-target:hover {
+  filter: brightness(1.03);
+  transform: translateY(-1px);
+}
+
+.share-target:active {
+  box-shadow: 0 0.08rem 0 var(--navy-shadow);
+  transform: translateY(0.16rem);
+}
+
+.share-copy {
+  width: 100%;
+}
+
+.share-dialog .share-status {
+  margin: -0.35rem 0 0;
+  text-align: center;
 }
 
 .dialog-close {
@@ -975,6 +1049,19 @@ main {
   .answers {
     grid-template-columns: 1fr;
     gap: 0.55rem;
+  }
+
+  .share-targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .share-target,
+  .share-target:nth-last-child(-n + 2) {
+    grid-column: span 1;
+  }
+
+  .share-target:last-child {
+    grid-column: 1 / -1;
   }
 
   .answer {
