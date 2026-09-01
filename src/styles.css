@@ -1206,12 +1206,14 @@ main {
 .app--questions .site-footer,
 .app--results .site-footer {
   position: static;
-  width: min(42rem, calc(100% - 1.7rem));
+  width: min(42rem, calc(100% - 0.5rem));
   height: auto;
-  padding: 0.4rem 0.7rem max(0.55rem, env(safe-area-inset-bottom));
+  padding: 0.4rem 0 max(0.55rem, env(safe-area-inset-bottom));
   justify-self: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  gap: 0.1rem;
   font-size: var(--text-tiny);
+  white-space: nowrap;
   transform: none;
 }
 

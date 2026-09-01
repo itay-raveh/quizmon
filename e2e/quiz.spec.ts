@@ -228,6 +228,21 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   ).toBeVisible();
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect.poll(() => timer.getAttribute('aria-label')).not.toBe(pausedAt);
+
+  await page.setViewportSize({ width: 320, height: 844 });
+  const footerMetrics = await page
+    .getByRole('contentinfo')
+    .evaluate((footer) => ({
+      clientWidth: footer.clientWidth,
+      scrollWidth: footer.scrollWidth,
+      childTops: [...footer.children]
+        .filter((child) => !child.classList.contains('visually-hidden'))
+        .map((child) => Math.round(child.getBoundingClientRect().top)),
+    }));
+  expect(new Set(footerMetrics.childTops).size).toBe(1);
+  expect(footerMetrics.scrollWidth).toBeLessThanOrEqual(
+    footerMetrics.clientWidth,
+  );
 });
 
 test('shows a saved daily score instead of another play button', async ({
