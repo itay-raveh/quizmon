@@ -86,8 +86,6 @@ const getStats = (pokemon: Pokemon): Record<StatName, number> => {
 };
 
 const getSprite = (pokemon: Pokemon): string | null =>
-  pokemon.sprites.other?.['official-artwork']?.front_default ??
-  pokemon.sprites.other?.home?.front_default ??
   pokemon.sprites.front_default;
 
 const getLevelMoves = (pokemon: Pokemon): string[] =>
@@ -202,7 +200,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 3,
+    contentVersion: 4,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

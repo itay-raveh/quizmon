@@ -175,15 +175,15 @@ const makeQuestion = (
   prompt,
 });
 
-const getPixelSpriteUrl = (id: number) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-
 const getPokemonOptionVisual = (
   pokemon: PokemonKnowledge,
-): PokemonOptionVisual => ({
-  dexNumber: pokemon.id,
-  src: getPixelSpriteUrl(pokemon.id),
-});
+): PokemonOptionVisual | undefined =>
+  pokemon.sprite
+    ? {
+        dexNumber: pokemon.id,
+        src: pokemon.sprite,
+      }
+    : undefined;
 
 const addQuestionVisuals = (
   context: QuestionContext,
@@ -193,9 +193,8 @@ const addQuestionVisuals = (
     const optionVisuals = Object.fromEntries(
       question.options.flatMap((option) => {
         const pokemon = context.catalog.pokemon[option];
-        return pokemon
-          ? [[option, getPokemonOptionVisual(pokemon)] as const]
-          : [];
+        const visual = pokemon ? getPokemonOptionVisual(pokemon) : undefined;
+        return visual ? [[option, visual] as const] : [];
       }),
     );
     return { ...question, optionVisuals };
@@ -203,10 +202,10 @@ const addQuestionVisuals = (
 
   if (targetSpriteCategories.includes(question.category)) {
     const target = context.catalog.pokemon[question.pokemonName];
-    if (target) {
+    if (target?.sprite) {
       return {
         ...question,
-        media: { kind: 'pixel-sprite', src: getPixelSpriteUrl(target.id) },
+        media: { kind: 'pixel-sprite', src: target.sprite },
       };
     }
   }

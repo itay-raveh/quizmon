@@ -31,6 +31,8 @@ const preloadQuestionImages = (question: QuestionData) => {
 
   for (const src of sources) {
     const image = new Image();
+    image.decoding = 'async';
+    image.fetchPriority = 'low';
     image.src = src;
   }
 };
@@ -157,6 +159,8 @@ export const Question = ({
             className="pixel-sprite"
             src={question.media.src}
             alt=""
+            decoding="async"
+            fetchPriority="high"
             width="96"
             height="96"
           />
@@ -184,6 +188,7 @@ export const Question = ({
                       className="pixel-sprite answer__sprite"
                       src={visual.src}
                       alt=""
+                      decoding="async"
                       width="96"
                       height="96"
                     />

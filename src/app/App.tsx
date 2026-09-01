@@ -223,7 +223,7 @@ export const App = () => {
           ) : null}
         </main>
 
-        <Footer />
+        {phase === 'landing' ? <Footer /> : null}
 
         {settingsOpen && catalogState.status === 'ready' ? (
           <ModifiersDialog

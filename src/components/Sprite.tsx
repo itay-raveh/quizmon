@@ -16,8 +16,10 @@ export const Sprite = ({ silhouette, src }: SpriteProps) => {
         className={`sprite ${silhouette ? 'sprite--silhouette' : ''}`}
         src={src}
         alt={silhouette ? 'Mystery Pokémon silhouette' : 'Pokémon to identify'}
-        width="300"
-        height="300"
+        decoding="async"
+        fetchPriority="high"
+        width="96"
+        height="96"
       />
     </div>
   );
