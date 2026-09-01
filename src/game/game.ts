@@ -16,7 +16,7 @@ import {
 } from './types';
 
 export const defaultModifiers: Modifiers = {
-  generations: ['I'],
+  generations: [...generations],
   knowledgeCategories: [...knowledgeCategories],
   soundEnabled: true,
   isLimitActive: true,

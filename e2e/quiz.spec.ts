@@ -189,6 +189,16 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     'true',
   );
   await expect(dialog.getByText(/Pokémon match these filters/)).toBeVisible();
+  const selectAllGenerations = dialog.getByRole('button', {
+    name: 'Select all generations',
+  });
+  await selectAllGenerations.click();
+  await expect(dialog.getByLabel('IX', { exact: true })).toBeChecked();
+  await dialog
+    .getByRole('button', { name: 'Deselect all generations' })
+    .click();
+  await expect(dialog.getByLabel('I', { exact: true })).not.toBeChecked();
+  await dialog.getByRole('button', { name: 'Select all generations' }).click();
   await dialog.getByRole('tab', { name: 'Experience' }).click();
   await expect(dialog.getByText('Play experience')).toBeVisible();
   await expect(dialog.getByLabel('Speedrun mode')).toBeVisible();

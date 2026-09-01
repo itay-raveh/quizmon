@@ -27,6 +27,10 @@ import {
 const catalog = catalogData as PokemonCatalog;
 
 describe('normalizeModifiers', () => {
+  it('enables every generation by default', () => {
+    expect(defaultModifiers.generations).toEqual(generations);
+  });
+
   it('returns defaults for malformed storage', () => {
     expect(normalizeModifiers('broken')).toEqual(defaultModifiers);
   });

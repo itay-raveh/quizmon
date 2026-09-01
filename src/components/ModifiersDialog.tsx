@@ -50,6 +50,8 @@ export const ModifiersDialog = ({
   );
   const hasSelections =
     draft.generations.length > 0 && draft.knowledgeCategories.length > 0;
+  const allGenerationsSelected =
+    draft.generations.length === generations.length;
   const limitIsValid =
     !draft.isLimitActive ||
     (Number.isInteger(draft.limit) &&
@@ -188,9 +190,26 @@ export const ModifiersDialog = ({
 
             <fieldset>
               <legend>Generations</legend>
-              <p className="field-description">
-                Only Pokémon from these generations appear.
-              </p>
+              <div className="field-description-row">
+                <p className="field-description">
+                  Choose which generations can appear.
+                </p>
+                <button
+                  aria-label={`${allGenerationsSelected ? 'Deselect' : 'Select'} all generations`}
+                  className="selection-toggle"
+                  onClick={() =>
+                    setDraft((current) => ({
+                      ...current,
+                      generations: allGenerationsSelected
+                        ? []
+                        : [...generations],
+                    }))
+                  }
+                  type="button"
+                >
+                  {allGenerationsSelected ? 'Deselect all' : 'Select all'}
+                </button>
+              </div>
               <div className="choice-grid choice-grid--compact">
                 {generations.map((generation) => (
                   <Checkbox

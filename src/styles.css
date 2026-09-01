@@ -1012,6 +1012,42 @@ main {
   line-height: 1.35;
 }
 
+.field-description-row {
+  display: flex;
+  margin: 0.25rem 0 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+}
+
+.field-description-row .field-description {
+  margin: 0;
+}
+
+.selection-toggle {
+  min-height: 2.5rem;
+  padding: 0.35rem 0.65rem;
+  flex: none;
+  color: var(--navy);
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.12rem 0 var(--yellow);
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.selection-toggle:hover {
+  filter: brightness(1.03);
+}
+
+.selection-toggle:active {
+  box-shadow: none;
+  transform: translateY(0.12rem);
+}
+
 .choice-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
