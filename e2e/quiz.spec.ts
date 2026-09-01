@@ -127,7 +127,7 @@ test('plays and shares a complete Training question without a live API call', as
   await page
     .getByRole('button', { name: formatName(pokemon!), exact: true })
     .click();
-  await expect(page.getByText(/Correct! \+\d+ points/)).toBeVisible();
+  await expect(page.getByText(/Correct! \+[\d,]+ points/)).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
@@ -322,7 +322,7 @@ test('shows a saved daily score instead of another play button', async ({
 
   await page.goto('/?daily=2026-09-01');
   await expect(page.getByText('Daily complete')).toBeVisible();
-  await expect(page.getByText('Sep 1, 2026 · 1,440 / 2,250')).toBeVisible();
+  await expect(page.getByText('Sep 1, 2026 · 14,400 points')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Play daily' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
 });

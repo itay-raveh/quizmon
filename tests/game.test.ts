@@ -11,7 +11,6 @@ import {
   getCorrectOptions,
   getKnowledgePoints,
   getMasteryBonus,
-  getMaximumScore,
   getQuestionCount,
   getQuestionPromptText,
   getQuestionTitle,
@@ -201,36 +200,35 @@ describe('question building', () => {
 });
 
 describe('scoring', () => {
-  it('awards 100 points for a normal correct answer', () => {
+  it('awards 1,000 points for a normal correct answer', () => {
     const [question] = buildQuestions(
       catalog,
       { ...defaultModifiers, questionTypes: ['stat-showdown'], limit: 1 },
       createSeededRandom('score'),
     );
-    expect(question && getAnswerPoints(question, true)).toBe(100);
+    expect(question && getAnswerPoints(question, true)).toBe(1_000);
     expect(question && getAnswerPoints(question, false)).toBe(0);
   });
 
   it('adds a bounded mastery bonus to earned knowledge points', () => {
     const answers = [
-      { category: 'identity', correct: true, points: 100 },
+      { category: 'identity', correct: true, points: 1_000 },
       { category: 'stat', correct: false, points: 0 },
-      { category: 'champion', correct: true, points: 50 },
+      { category: 'champion', correct: true, points: 500 },
     ] as const;
 
-    expect(getKnowledgePoints(answers)).toBe(150);
-    expect(getMasteryBonus(answers)).toBe(75);
-    expect(calculateScore(answers)).toBe(225);
-    expect(getMaximumScore(answers.length)).toBe(675);
+    expect(getKnowledgePoints(answers)).toBe(1_500);
+    expect(getMasteryBonus(answers)).toBe(750);
+    expect(calculateScore(answers)).toBe(2_250);
   });
 
-  it('rewards quick answers with a bounded eight-second half-life', () => {
-    expect(getSpeedBonusPoints(100, 0)).toBe(25);
-    expect(getSpeedBonusPoints(100, 2_000)).toBe(21);
-    expect(getSpeedBonusPoints(100, 5_000)).toBe(16);
-    expect(getSpeedBonusPoints(100, 8_000)).toBe(13);
-    expect(getSpeedBonusPoints(100, 16_000)).toBe(6);
-    expect(getSpeedBonusPoints(100, -1)).toBe(25);
+  it('rewards quick answers with a volatile five-second half-life', () => {
+    expect(getSpeedBonusPoints(1_000, 0)).toBe(3_000);
+    expect(getSpeedBonusPoints(1_000, 2_000)).toBe(2_270);
+    expect(getSpeedBonusPoints(1_000, 5_000)).toBe(1_500);
+    expect(getSpeedBonusPoints(1_000, 8_000)).toBe(990);
+    expect(getSpeedBonusPoints(1_000, 16_000)).toBe(330);
+    expect(getSpeedBonusPoints(1_000, -1)).toBe(3_000);
     expect(getSpeedBonusPoints(0, 0)).toBe(0);
   });
 
@@ -238,14 +236,13 @@ describe('scoring', () => {
     const perfect = Array.from({ length: 10 }, () => ({
       category: 'identity' as const,
       correct: true,
-      points: 100,
+      points: 1_000,
       responseMilliseconds: 0,
-      speedBonus: 25,
+      speedBonus: 3_000,
     }));
 
-    expect(getSpeedBonus(perfect)).toBe(250);
-    expect(calculateScore(perfect)).toBe(2250);
-    expect(getMaximumScore(perfect.length)).toBe(2250);
+    expect(getSpeedBonus(perfect)).toBe(30_000);
+    expect(calculateScore(perfect)).toBe(50_000);
     expect(calculateScore([])).toBe(0);
   });
 });

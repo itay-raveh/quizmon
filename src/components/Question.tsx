@@ -204,7 +204,6 @@ export const Question = ({
     question.media.kind !== 'sprite' ||
     question.media.revealAt === undefined ||
     cluesShown >= question.media.revealAt;
-  const championPoints = getAnswerPoints(question, true, cluesShown);
   const className = [
     'question',
     question.media.kind === 'sprite' || question.media.kind === 'pixel-peek'
@@ -246,7 +245,8 @@ export const Question = ({
               tone="quiet"
               onClick={() => setCluesShown((current) => current + 1)}
             >
-              Reveal another clue · {championPoints - 25} points
+              Reveal another clue ·{' '}
+              {getAnswerPoints(question, true, cluesShown + 1)} points
             </GameButton>
           ) : null}
         </div>
@@ -380,7 +380,7 @@ export const Question = ({
 
       <p className="answer-feedback" aria-live="polite">
         {answerCorrect
-          ? `Correct! +${awardedPoints} points`
+          ? `Correct! +${awardedPoints?.toLocaleString()} points`
           : answered
             ? `Correct: ${formatCorrectAnswer(question)}.`
             : '\u00a0'}

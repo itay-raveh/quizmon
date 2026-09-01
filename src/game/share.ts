@@ -1,5 +1,4 @@
 import { formatDailyDate, getDailyUrl } from './daily';
-import { getMaximumScore } from './game';
 import type { GameMode, GameResult } from './types';
 
 export interface ShareContent {
@@ -15,15 +14,12 @@ export const buildShareContent = (
   const score = Intl.NumberFormat(undefined, {
     maximumFractionDigits: 0,
   }).format(result.score);
-  const maximumScore = Intl.NumberFormat(undefined, {
-    maximumFractionDigits: 0,
-  }).format(getMaximumScore(result.questionCount));
   const pattern = result.answers
     .map(({ correct }) => (correct ? '🟩' : '🟥'))
     .join('');
 
   return {
-    text: [`${score} / ${maximumScore} points`, pattern].join('\n'),
+    text: [`${score} points`, pattern].join('\n'),
     title: `Quizmon · ${mode.kind === 'daily' ? formatDailyDate(mode.date) : 'Training'}`,
     url:
       mode.kind === 'daily'

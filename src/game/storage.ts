@@ -1,10 +1,18 @@
 import { useState } from 'react';
-import { calculateScore, defaultModifiers, normalizeModifiers } from './game';
+import {
+  calculateScore,
+  defaultModifiers,
+  getSpeedBonusPoints,
+  normalizeModifiers,
+  SCORE_VERSION,
+} from './game';
 import type { GameMode, GameResult, Modifiers } from './types';
 
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
+const LEGACY_KNOWLEDGE_SCALE = 10;
+const LEGACY_SPEED_BONUS_SCALE = 120;
 
 interface SavedResults {
   daily: Record<string, GameResult>;
@@ -13,10 +21,29 @@ interface SavedResults {
 
 const emptyResults = (): SavedResults => ({ daily: {}, training: {} });
 
-const normalizeResult = (result: GameResult): GameResult =>
-  Array.isArray(result.answers)
-    ? { ...result, score: calculateScore(result.answers) }
-    : result;
+const migrateLegacyAnswer = (answer: GameResult['answers'][number]) => {
+  const points = answer.points * LEGACY_KNOWLEDGE_SCALE;
+  const speedBonus =
+    answer.responseMilliseconds === undefined
+      ? Math.round((answer.speedBonus ?? 0) * LEGACY_SPEED_BONUS_SCALE)
+      : getSpeedBonusPoints(points, answer.responseMilliseconds);
+  return { ...answer, points, speedBonus };
+};
+
+const normalizeResult = (result: GameResult): GameResult => {
+  if (!Array.isArray(result.answers)) return result;
+
+  const answers =
+    result.scoreVersion === SCORE_VERSION
+      ? result.answers
+      : result.answers.map(migrateLegacyAnswer);
+  return {
+    ...result,
+    answers,
+    score: calculateScore(answers),
+    scoreVersion: SCORE_VERSION,
+  };
+};
 
 const normalizeResultRecord = (
   results: Record<string, GameResult> | undefined,

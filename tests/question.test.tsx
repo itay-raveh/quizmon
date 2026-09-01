@@ -217,7 +217,7 @@ describe('question transitions', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
 
-    expect(screen.getByText('Correct! +121 points')).toBeVisible();
+    expect(screen.getByText('Correct! +3,270 points')).toBeVisible();
   });
 
   it('checks every selected answer in a multi-select question', () => {
@@ -250,7 +250,7 @@ describe('question transitions', () => {
     expect(check).toBeEnabled();
     fireEvent.click(check);
 
-    expect(screen.getByText('Correct! +125 points')).toBeVisible();
+    expect(screen.getByText('Correct! +4,000 points')).toBeVisible();
   });
 
   it('numbers an evolution order before checking it', () => {
@@ -285,7 +285,7 @@ describe('question transitions', () => {
     expect(check).toBeEnabled();
     fireEvent.click(check);
 
-    expect(screen.getByText('Correct! +125 points')).toBeVisible();
+    expect(screen.getByText('Correct! +4,000 points')).toBeVisible();
   });
 
   it('reveals reverse-silhouette choices after an answer', () => {

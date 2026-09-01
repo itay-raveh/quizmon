@@ -840,15 +840,17 @@ export const getAnswerPoints = (
   cluesShown = 1,
 ): number => {
   if (!correct) return 0;
-  if (question.category !== 'champion') return 100;
-  return [100, 75, 50, 25][Math.max(0, Math.min(3, cluesShown - 1))] ?? 25;
+  if (question.category !== 'champion') return 1_000;
+  return (
+    [1_000, 750, 500, 250][Math.max(0, Math.min(3, cluesShown - 1))] ?? 250
+  );
 };
 
 export const getKnowledgePoints = (answers: readonly AnswerResult[]): number =>
   answers.reduce((total, answer) => total + answer.points, 0);
 
-const speedBonusRate = 0.25;
-const speedBonusHalfLifeMilliseconds = 8_000;
+const speedBonusRate = 3;
+const speedBonusHalfLifeMilliseconds = 5_000;
 
 export const getSpeedBonusPoints = (
   knowledgePoints: number,
@@ -856,11 +858,11 @@ export const getSpeedBonusPoints = (
 ): number => {
   if (knowledgePoints <= 0) return 0;
   const elapsedMilliseconds = Math.max(0, responseMilliseconds);
-  return Math.round(
+  const bonus =
     knowledgePoints *
-      speedBonusRate *
-      2 ** (-elapsedMilliseconds / speedBonusHalfLifeMilliseconds),
-  );
+    speedBonusRate *
+    2 ** (-elapsedMilliseconds / speedBonusHalfLifeMilliseconds);
+  return Math.round(bonus / 10) * 10;
 };
 
 export const getSpeedBonus = (answers: readonly AnswerResult[]): number =>
@@ -870,12 +872,11 @@ export const getMasteryBonus = (answers: readonly AnswerResult[]): number => {
   if (answers.length === 0) return 0;
   const knowledgePoints = getKnowledgePoints(answers);
   return Math.round(
-    (knowledgePoints * knowledgePoints) / (answers.length * 100),
+    (knowledgePoints * knowledgePoints) / (answers.length * 1_000),
   );
 };
 
-export const getMaximumScore = (questionCount: number): number =>
-  Math.max(0, questionCount) * 225;
+export const SCORE_VERSION = 2;
 
 export const calculateScore = (answers: readonly AnswerResult[]): number =>
   getKnowledgePoints(answers) +

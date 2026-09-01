@@ -11,8 +11,8 @@ const makeResult = (
     (_, index) => ({
       category: 'identity',
       correct: index < correctCount,
-      points: index < correctCount ? 100 : 0,
-      speedBonus: index < correctCount ? 15 : 0,
+      points: index < correctCount ? 1_000 : 0,
+      speedBonus: index < correctCount ? 1_500 : 0,
     }),
   );
 
@@ -22,7 +22,8 @@ const makeResult = (
     correctCount,
     elapsedSeconds: 119,
     questionCount,
-    score: 500,
+    score: 15_000,
+    scoreVersion: 2,
   };
 };
 
@@ -50,7 +51,7 @@ describe('results summary', () => {
       screen.getByRole('list', { name: 'Question results' }),
     ).toBeVisible();
     expect(screen.getAllByRole('listitem')).toHaveLength(10);
-    expect(screen.getByText(/75 speed/)).toBeVisible();
+    expect(screen.getByText(/7,500 speed/)).toBeVisible();
   });
 
   it('replaces the answer trail with a correct count for longer games', () => {

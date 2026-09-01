@@ -8,14 +8,15 @@ import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
   answers: [
-    { category: 'identity', correct: true, points: 100 },
+    { category: 'identity', correct: true, points: 1_000 },
     { category: 'stat', correct: false, points: 0 },
   ],
   contentVersion: 2,
   correctCount: 1,
   elapsedSeconds: 20,
   questionCount: 2,
-  score: 150,
+  score: 1_500,
+  scoreVersion: 2,
 };
 
 describe('result sharing', () => {
@@ -32,7 +33,8 @@ describe('result sharing', () => {
 
     expect(text).toContain('Quizmon · Sep 1, 2026');
     expect(text).not.toContain('Trainer Trial');
-    expect(text).toContain('150 / 450 points');
+    expect(text).toContain('1,500 points');
+    expect(text).not.toContain(' / ');
     expect(text).not.toContain('1/2');
     expect(text).toContain('🟩🟥');
     expect(text).toContain('?daily=2026-09-01');
@@ -44,7 +46,7 @@ describe('result sharing', () => {
     const content = buildShareContent({ kind: 'training' }, result);
 
     expect(content.title).toBe('Quizmon · Training');
-    expect(content.text).toContain('150 / 450 points');
+    expect(content.text).toContain('1,500 points');
     expect(content.text).not.toContain(content.url);
     expect(content.url).toBe(`${window.location.origin}/`);
   });
@@ -63,7 +65,7 @@ describe('result sharing', () => {
     );
     expect(canShareResult()).toBe(true);
     expect(share.mock.calls[0]?.[0]).toEqual({
-      text: 'Quizmon · Training\n150 / 450 points\n🟩🟥',
+      text: 'Quizmon · Training\n1,500 points\n🟩🟥',
       title: 'Quizmon · Training',
       url: `${window.location.origin}/`,
     });

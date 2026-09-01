@@ -3,14 +3,15 @@ import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
   answers: [
-    { category: 'identity', correct: true, points: 100 },
+    { category: 'identity', correct: true, points: 1_000 },
     { category: 'stat', correct: false, points: 0 },
   ],
   contentVersion: 2,
   correctCount: 1,
   elapsedSeconds: 20,
   questionCount: 2,
-  score: 150,
+  score: 1_500,
+  scoreVersion: 2,
 };
 
 describe('saved results', () => {
@@ -34,10 +35,10 @@ describe('saved results', () => {
       answers: result.answers.map((answer) => ({
         ...answer,
         correct: true,
-        points: 100,
+        points: 1_000,
       })),
       correctCount: 2,
-      score: 400,
+      score: 4_000,
     };
 
     expect(saveResult(mode, perfect)).toEqual({
@@ -71,7 +72,7 @@ describe('saved results', () => {
       ...result,
       answers: [
         ...result.answers,
-        { category: 'type' as const, correct: true, points: 100 },
+        { category: 'type' as const, correct: true, points: 1_000 },
       ],
       correctCount: 2,
       questionCount: 3,
@@ -107,17 +108,38 @@ describe('saved results', () => {
   });
 
   it('recalculates scores saved under the previous formula', () => {
+    const legacyResult = { ...result, scoreVersion: undefined };
     window.localStorage.setItem(
       'quizmon.results.v2',
       JSON.stringify({
         daily: {
-          '2026-09-01': { ...result, score: 100 },
+          '2026-09-01': {
+            ...legacyResult,
+            answers: [
+              {
+                category: 'identity',
+                correct: true,
+                points: 100,
+                responseMilliseconds: 5_000,
+                speedBonus: 16,
+              },
+              { category: 'stat', correct: false, points: 0 },
+            ],
+            score: 100,
+          },
         },
         training: {},
       }),
     );
 
-    expect(readDailyResult('2026-09-01')?.score).toBe(150);
+    expect(readDailyResult('2026-09-01')).toMatchObject({
+      answers: [
+        { points: 1_000, speedBonus: 1_500 },
+        { points: 0, speedBonus: 0 },
+      ],
+      score: 3_000,
+      scoreVersion: 2,
+    });
   });
 
   it('reports when browser storage cannot persist a result', () => {

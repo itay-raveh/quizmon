@@ -16,7 +16,7 @@ import {
   getUtcDate,
   parseDailyDate,
 } from '@/game/daily';
-import { buildQuestions, calculateScore } from '@/game/game';
+import { buildQuestions, calculateScore, SCORE_VERSION } from '@/game/game';
 import {
   canPersistResults,
   markGenerationPromptAnswered,
@@ -216,6 +216,7 @@ export const App = () => {
           elapsedSeconds,
           questionCount: questions.length,
           score: calculateScore(nextAnswers),
+          scoreVersion: SCORE_VERSION,
         };
         const best = saveResult(mode, nextResult);
         setResult(nextResult);

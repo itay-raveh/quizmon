@@ -154,4 +154,5 @@ export interface GameResult {
   elapsedSeconds: number;
   questionCount: number;
   score: number;
+  scoreVersion: number;
 }
