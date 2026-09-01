@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
 import { Landing } from '@/components/Landing';
 import { ModifiersDialog } from '@/components/ModifiersDialog';
@@ -58,55 +59,58 @@ export const App = () => {
   const question = questions[questionIndex];
 
   return (
-    <div className="app">
-      <div className="background" aria-hidden="true" />
-      <main>
-        {phase === 'landing' ? (
-          <Landing
-            catalogStatus={catalogState.status}
-            onOpenSettings={() => setSettingsOpen(true)}
-            onRetryCatalog={catalogState.retry}
-            onStart={startGame}
-          />
-        ) : null}
+    <SoundProvider enabled={modifiers.soundEnabled}>
+      <div className="app">
+        <div className="background" aria-hidden="true" />
+        <main>
+          {phase === 'landing' ? (
+            <Landing
+              catalogStatus={catalogState.status}
+              onOpenSettings={() => setSettingsOpen(true)}
+              onRetryCatalog={catalogState.retry}
+              onStart={startGame}
+            />
+          ) : null}
 
-        {phase === 'questions' && question ? (
-          <Question
-            key={`${questionIndex}-${question.pokemonName}`}
-            elapsedSeconds={elapsedSeconds}
+          {phase === 'questions' && question ? (
+            <Question
+              key={`${questionIndex}-${question.pokemonName}`}
+              elapsedSeconds={elapsedSeconds}
+              modifiers={modifiers}
+              nextQuestion={questions[questionIndex + 1]}
+              number={questionIndex + 1}
+              onAnswer={answerQuestion}
+              onNewGame={newGame}
+              question={question}
+              total={questions.length}
+            />
+          ) : null}
+
+          {phase === 'results' ? (
+            <Results
+              correctCount={correctCount}
+              elapsedSeconds={elapsedSeconds}
+              modifiers={modifiers}
+              onNewGame={newGame}
+              questionCount={questions.length}
+            />
+          ) : null}
+        </main>
+
+        <Footer />
+
+        {settingsOpen && catalogState.status === 'ready' ? (
+          <ModifiersDialog
+            catalog={catalogState.catalog}
             modifiers={modifiers}
-            number={questionIndex + 1}
-            onAnswer={answerQuestion}
-            onNewGame={newGame}
-            question={question}
-            total={questions.length}
+            onClose={() => setSettingsOpen(false)}
+            onSave={(nextModifiers) => {
+              setModifiers(nextModifiers);
+              setSettingsOpen(false);
+            }}
           />
         ) : null}
-
-        {phase === 'results' ? (
-          <Results
-            correctCount={correctCount}
-            elapsedSeconds={elapsedSeconds}
-            modifiers={modifiers}
-            onNewGame={newGame}
-            questionCount={questions.length}
-          />
-        ) : null}
-      </main>
-
-      <Footer />
-
-      {settingsOpen && catalogState.status === 'ready' ? (
-        <ModifiersDialog
-          catalog={catalogState.catalog}
-          modifiers={modifiers}
-          onClose={() => setSettingsOpen(false)}
-          onSave={(nextModifiers) => {
-            setModifiers(nextModifiers);
-            setSettingsOpen(false);
-          }}
-        />
-      ) : null}
-    </div>
+      </div>
+    </SoundProvider>
   );
 };

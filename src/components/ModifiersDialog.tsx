@@ -195,6 +195,17 @@ export const ModifiersDialog = ({
                   }))
                 }
               />
+              <Checkbox
+                checked={draft.soundEnabled}
+                description="Play button and results sounds."
+                label="Sound effects"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    soundEnabled: event.target.checked,
+                  }))
+                }
+              />
             </div>
           </fieldset>
 

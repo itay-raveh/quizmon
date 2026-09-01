@@ -1,8 +1,5 @@
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
-import useSound from 'use-sound';
-import popDown from '@/assets/sounds/pop-down.mp3';
-import popOff from '@/assets/sounds/pop-up-off.mp3';
-import popOn from '@/assets/sounds/pop-up-on.mp3';
+import { useGameSounds } from '@/audio/sound';
 
 interface CheckboxProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -19,9 +16,7 @@ export const Checkbox = ({
   onChange,
   ...props
 }: CheckboxProps) => {
-  const [playDown] = useSound(popDown, { volume: 0.25 });
-  const [playOff] = useSound(popOff, { volume: 0.25 });
-  const [playOn] = useSound(popOn, { volume: 0.25 });
+  const { playDown, playOff, playOn } = useGameSounds();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) playOn();

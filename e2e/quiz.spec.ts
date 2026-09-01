@@ -8,12 +8,23 @@ test.beforeEach(async ({ page }) => {
         generations: ['I'],
         formCategories: ['default'],
         randomSprite: false,
+        soundEnabled: false,
         whosThatPokemon: false,
         isLimitActive: true,
         limit: 1,
         speedrunMode: true,
       }),
     );
+  });
+
+  await page.route('https://raw.githubusercontent.com/**', async (route) => {
+    await route.fulfill({
+      contentType: 'image/png',
+      body: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+        'base64',
+      ),
+    });
   });
 });
 
@@ -99,6 +110,93 @@ test('plays a complete one-question game', async ({ page }) => {
   await expect(page.getByText('Correct!')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Results' })).toBeVisible();
   await expect(page.getByText('100.00%')).toBeVisible();
+});
+
+test('prefetches and decodes the next question before advancing', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const modifiers = JSON.parse(
+      window.localStorage.getItem('modifiers') ?? '{}',
+    ) as Record<string, unknown>;
+    window.localStorage.setItem(
+      'modifiers',
+      JSON.stringify({ ...modifiers, limit: 2 }),
+    );
+  });
+
+  const requestedPokemon: string[] = [];
+  await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
+    const name = route.request().url().split('/').filter(Boolean).at(-1) ?? '';
+    requestedPokemon.push(name);
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        name,
+        sprites: {
+          front_default:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
+          other: {},
+          versions: {},
+        },
+      }),
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 002');
+  await expect.poll(() => requestedPokemon).toHaveLength(2);
+
+  const firstAnswer = requestedPokemon[0]
+    ?.split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+  expect(firstAnswer).toBeTruthy();
+  await page.getByRole('button', { name: firstAnswer, exact: true }).click();
+
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('002 / 002');
+  expect(requestedPokemon).toHaveLength(2);
+});
+
+test('answers questions with the number keys', async ({ page }) => {
+  let requestedPokemon = '';
+  await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
+    requestedPokemon =
+      route.request().url().split('/').filter(Boolean).at(-1) ?? '';
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        name: requestedPokemon,
+        sprites: {
+          front_default:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
+          other: {},
+          versions: {},
+        },
+      }),
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect.poll(() => requestedPokemon).not.toBe('');
+
+  const answer = requestedPokemon
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+  const answerButton = page.getByRole('button', { name: answer, exact: true });
+  const shortcut = await answerButton.getAttribute('aria-keyshortcuts');
+  expect(shortcut).toMatch(/^[1-4]$/);
+  await page.keyboard.press(shortcut!);
+
+  await expect(page.getByText('Correct!')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Results' })).toBeVisible();
 });
 
 test('keeps modifier actions reachable on a phone', async ({ page }) => {

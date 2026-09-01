@@ -12,6 +12,7 @@ export const defaultModifiers: Modifiers = {
   generations: ['I'],
   formCategories: ['default'],
   randomSprite: false,
+  soundEnabled: true,
   whosThatPokemon: false,
   isLimitActive: true,
   limit: 10,
@@ -48,6 +49,7 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
         ? selectedCategories
         : defaultModifiers.formCategories,
     randomSprite: candidate.randomSprite === true,
+    soundEnabled: candidate.soundEnabled !== false,
     whosThatPokemon: candidate.whosThatPokemon === true,
     isLimitActive: candidate.isLimitActive !== false,
     limit,
@@ -112,6 +114,7 @@ export const buildQuestions = (
       return {
         pokemonName,
         options: shuffle([...distractors, pokemonName], random),
+        spriteRandom: random(),
       };
     });
 };

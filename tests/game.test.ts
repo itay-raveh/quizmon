@@ -39,6 +39,7 @@ describe('normalizeModifiers', () => {
       generations: ['IX'],
       formCategories: ['default'],
       randomSprite: true,
+      soundEnabled: true,
       whosThatPokemon: true,
       isLimitActive: true,
       limit: 1,
@@ -117,7 +118,7 @@ describe('buildQuestions', () => {
     );
 
     expect(questions).toEqual([
-      { pokemonName: 'pikachu', options: ['pikachu'] },
+      { pokemonName: 'pikachu', options: ['pikachu'], spriteRandom: 0 },
     ]);
   });
 });

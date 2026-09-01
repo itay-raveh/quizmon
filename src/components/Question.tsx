@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { formatDuration, formatPokemonName } from '@/game/game';
-import { usePokemon } from '@/game/pokemon';
+import { preloadPokemon, usePokemon } from '@/game/pokemon';
 import type { Modifiers, QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
 import { Progress } from './Progress';
@@ -9,6 +9,7 @@ import { Sprite } from './Sprite';
 interface QuestionProps {
   elapsedSeconds: number;
   modifiers: Modifiers;
+  nextQuestion?: QuestionData;
   number: number;
   onAnswer: (correct: boolean) => void;
   onNewGame: () => void;
@@ -19,6 +20,7 @@ interface QuestionProps {
 export const Question = ({
   elapsedSeconds,
   modifiers,
+  nextQuestion,
   number,
   onAnswer,
   onNewGame,
@@ -27,7 +29,7 @@ export const Question = ({
 }: QuestionProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const answerTimeout = useRef<number | null>(null);
-  const pokemonState = usePokemon(question.pokemonName);
+  const pokemonState = usePokemon(question, modifiers.randomSprite);
 
   useEffect(() => {
     return () => {
@@ -37,14 +39,36 @@ export const Question = ({
     };
   }, []);
 
-  const selectOption = (option: string) => {
-    if (selectedOption) return;
+  useEffect(() => {
+    if (pokemonState.status === 'ready' && nextQuestion) {
+      preloadPokemon(nextQuestion, modifiers.randomSprite);
+    }
+  }, [modifiers.randomSprite, nextQuestion, pokemonState.status]);
 
-    const correct = option === question.pokemonName;
-    const delay = modifiers.speedrunMode ? 50 : correct ? 750 : 1750;
-    setSelectedOption(option);
-    answerTimeout.current = window.setTimeout(() => onAnswer(correct), delay);
-  };
+  const selectOption = useCallback(
+    (option: string) => {
+      if (selectedOption) return;
+
+      const correct = option === question.pokemonName;
+      const delay = modifiers.speedrunMode ? 50 : correct ? 750 : 1750;
+      setSelectedOption(option);
+      answerTimeout.current = window.setTimeout(() => onAnswer(correct), delay);
+    },
+    [modifiers.speedrunMode, onAnswer, question.pokemonName, selectedOption],
+  );
+
+  useEffect(() => {
+    const answerWithKeyboard = (event: KeyboardEvent) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.repeat)
+        return;
+      const index = Number(event.key) - 1;
+      const option = question.options[index];
+      if (option) selectOption(option);
+    };
+
+    window.addEventListener('keydown', answerWithKeyboard);
+    return () => window.removeEventListener('keydown', answerWithKeyboard);
+  }, [question.options, selectOption]);
 
   const optionClassName = (option: string) => {
     if (!selectedOption) return 'answer';
@@ -87,15 +111,15 @@ export const Question = ({
 
       {pokemonState.status === 'ready' ? (
         <Sprite
-          pokemon={pokemonState.pokemon}
-          random={modifiers.randomSprite}
           silhouette={modifiers.whosThatPokemon}
+          sprite={pokemonState.sprite}
         />
       ) : null}
 
       <div className="answers">
-        {question.options.map((option) => (
+        {question.options.map((option, index) => (
           <GameButton
+            aria-keyshortcuts={String(index + 1)}
             className={optionClassName(option)}
             disabled={
               Boolean(selectedOption) || pokemonState.status !== 'ready'
@@ -103,7 +127,8 @@ export const Question = ({
             key={option}
             onClick={() => selectOption(option)}
           >
-            {formatPokemonName(option)}
+            <kbd aria-hidden="true">{index + 1}</kbd>
+            <span>{formatPokemonName(option)}</span>
           </GameButton>
         ))}
       </div>

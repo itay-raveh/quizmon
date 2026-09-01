@@ -35,6 +35,7 @@ export interface Modifiers {
   generations: Generation[];
   formCategories: FormCategory[];
   randomSprite: boolean;
+  soundEnabled: boolean;
   whosThatPokemon: boolean;
   isLimitActive: boolean;
   limit: number;
@@ -44,4 +45,5 @@ export interface Modifiers {
 export interface QuestionData {
   options: string[];
   pokemonName: string;
+  spriteRandom: number;
 }

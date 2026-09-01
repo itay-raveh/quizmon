@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import useSound from 'use-sound';
-import scoreSound from '@/assets/sounds/prize-wheel-spin.mp3';
+import { useGameSounds } from '@/audio/sound';
 import { calculateScore, formatDuration } from '@/game/game';
 import type { Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
@@ -27,7 +26,7 @@ export const Results = ({
     elapsedSeconds,
     modifiers,
   );
-  const [playScore, { stop: stopScore }] = useSound(scoreSound);
+  const { playScore, stopScore } = useGameSounds();
 
   useEffect(() => {
     if (score > 1) playScore();
