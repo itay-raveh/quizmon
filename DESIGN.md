@@ -18,29 +18,29 @@ colors:
   footer-ink: '#1b3e40'
 typography:
   display:
-    fontFamily: 'Vend Sans Variable, system-ui, sans-serif'
+    fontFamily: 'Gabarito Variable, system-ui, sans-serif'
     fontSize: '2.3rem'
-    fontWeight: 700
+    fontWeight: 800
     lineHeight: 1.05
   headline:
-    fontFamily: 'Vend Sans Variable, system-ui, sans-serif'
+    fontFamily: 'Gabarito Variable, system-ui, sans-serif'
     fontSize: '1.75rem'
-    fontWeight: 700
+    fontWeight: 800
   body:
-    fontFamily: 'Vend Sans Variable, system-ui, sans-serif'
+    fontFamily: 'Gabarito Variable, system-ui, sans-serif'
     fontSize: '1rem'
     fontWeight: 400
   control:
-    fontFamily: 'Vend Sans Variable, system-ui, sans-serif'
+    fontFamily: 'Gabarito Variable, system-ui, sans-serif'
     fontSize: '1rem'
     fontWeight: 700
   label:
-    fontFamily: 'Vend Sans Variable, system-ui, sans-serif'
+    fontFamily: 'Gabarito Variable, system-ui, sans-serif'
     fontSize: '0.82rem'
     fontWeight: 700
     lineHeight: 1.35
   numeric:
-    fontFamily: 'ui-monospace, SFMono-Regular, Consolas, monospace'
+    fontFamily: 'Martian Mono Variable, ui-monospace, monospace'
     fontSize: '0.76rem'
     fontWeight: 800
     letterSpacing: '0.04em'
@@ -120,7 +120,7 @@ The result is playful, direct, and tactile. It avoids generic application chrome
 
 - Exact wordmark and crisp landscape remain the primary identity.
 - Cream, cobalt, navy, and yellow controls echo the wordmark in restrained doses.
-- Dense game information stays clear through Vend Sans and small monospace numeric labels.
+- Dense game information stays clear through Gabarito and small Martian Mono numeric labels.
 - Hard-edged depth makes controls feel physical without adding ornamental framing.
 - One short transform-and-opacity entrance opens a round and its results.
 
@@ -160,16 +160,16 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 
 ## Typography
 
-- **Display Font:** Vend Sans Variable, with system sans-serif fallback
-- **Body Font:** Vend Sans Variable, with system sans-serif fallback
-- **Label/Mono Font:** System monospace for compact numeric status only
+- **Display Font:** Gabarito Variable, with system sans-serif fallback
+- **Body Font:** Gabarito Variable, with system sans-serif fallback
+- **Data Font:** Martian Mono Variable, with system monospace fallback
 
-**Character:** Vend Sans is friendly and readable without looking like a generic corporate interface. Its rounded forms belong with the wordmark while staying clear over dense game states. Monospace is a narrow functional accent, not a pixel-game theme.
+**Character:** Gabarito gives headings and controls a warm, confident game voice without imitating the wordmark. Martian Mono keeps progress, time, Pokédex numbers, and scores crisp. It is a narrow functional accent, not a pixel-game theme.
 
 ### Hierarchy
 
-- **Display** (700, `clamp(1.65rem, 4.5vw, 2.3rem)`, 1.05): Question and results titles.
-- **Headline** (700, `clamp(1.35rem, 4vw, 1.75rem)`): Dialog titles.
+- **Display** (800, `clamp(1.65rem, 4.5vw, 2.3rem)`, 1.05): Question and results titles.
+- **Headline** (800, `clamp(1.35rem, 4vw, 1.75rem)`): Dialog titles.
 - **Body** (400, `1rem`): Instructions, descriptions, and general copy.
 - **Control** (700, `1rem`): Buttons, answers, checkbox labels, and result values.
 - **Label** (700, `0.82rem`, 1.35): Game modes, helper text, result details, and status copy.
@@ -236,7 +236,7 @@ The landing signature is a narrow cream strip with a `2px` navy outline, a short
 
 The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. Sprite questions add unframed artwork with a modest drop shadow, size questions compare Pokémon directly, and the Champion question reveals clues inside one ruled cream field.
 
-Answer buttons use the primary control treatment and include small outlined number-key labels. Size, description, evolution, and stat questions present each Pokémon option as a cream field with a crisp front-facing PokéAPI pixel sprite and a cobalt nameplate containing its Pokédex number and readable Vend Sans name. Type, ability, move, and matchup questions keep text answers and place one compact pixel sprite of the named Pokémon between the prompt and choices. Identification and Champion questions retain their larger artwork or silhouette. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, and unrelated answers fade to `0.5` opacity.
+Answer buttons use the primary control treatment and include small outlined number-key labels. Size, description, evolution, and stat questions present each Pokémon option as a cream field with a crisp front-facing PokéAPI pixel sprite and a cobalt nameplate containing its Pokédex number and readable Gabarito name. Type, ability, move, and matchup questions keep text answers and place one compact pixel sprite of the named Pokémon between the prompt and choices. Identification and Champion questions scale the same classic pixel sprites into larger subjects or silhouettes while preserving hard edges. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, and unrelated answers fade to `0.5` opacity.
 
 ### Progress and Timer
 
@@ -266,7 +266,7 @@ The first question and the result surface use one `180ms` ease-out entrance from
 
 - **Do** preserve the exact wordmark and crisp pixel-art landscape.
 - **Do** keep landing controls small and let open scenery dominate the first viewport.
-- **Do** use Vend Sans for interface text and reserve monospace for compact numeric status.
+- **Do** use Gabarito for interface text and reserve Martian Mono for compact data and scores.
 - **Do** use classic front-facing pixel sprites as compact gameplay information and preserve their hard edges when scaled.
 - **Do** give buttons a physical pressed state through synchronized translation and compressed lower shadows.
 - **Do** animate the start and finish of a round, keep its question surface stable, and honor reduced motion.

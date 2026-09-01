@@ -1,9 +1,28 @@
 :root {
   color: #143149;
   background: #72c3ee;
-  font-family: 'Vend Sans Variable', system-ui, sans-serif;
+  font-family: var(--font-interface);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  --font-interface: 'Gabarito Variable', system-ui, sans-serif;
+  --font-data: 'Martian Mono Variable', ui-monospace, monospace;
+  --text-display: clamp(1.65rem, 4.5vw, 2.3rem);
+  --text-headline: clamp(1.35rem, 4vw, 1.75rem);
+  --text-body: 1rem;
+  --text-control: 1rem;
+  --text-label: 0.82rem;
+  --text-status: 0.85rem;
+  --text-compact-control: 0.88rem;
+  --text-small: 0.78rem;
+  --text-micro: 0.72rem;
+  --text-mini: 0.65rem;
+  --text-tiny: 0.56rem;
+  --text-numeric: 0.76rem;
+  --text-brand-title: clamp(0.9rem, 1.2vw, 1.19rem);
+  --text-brand-detail: clamp(0.72rem, 0.89vw, 0.89rem);
+  --text-brand-control: clamp(0.75rem, 1.06vw, 1.06rem);
+  --text-answer: clamp(0.92rem, 2.6vw, 1.08rem);
+  --text-score: clamp(2rem, 8vw, 3.6rem);
   --navy: #083b7e;
   --navy-shadow: #123f76;
   --blue: #0d6be6;
@@ -221,7 +240,8 @@ main {
   position: absolute;
   top: 22.35%;
   left: 4.17%;
-  font-size: clamp(0.9rem, 1.2vw, 1.19rem);
+  font-size: var(--text-brand-title);
+  font-weight: 800;
   line-height: 1.15;
 }
 
@@ -230,7 +250,7 @@ main {
   top: 54.1%;
   left: 4.17%;
   color: var(--navy);
-  font-size: clamp(0.72rem, 0.89vw, 0.89rem);
+  font-size: var(--text-brand-detail);
   font-weight: 600;
   line-height: 1.2;
 }
@@ -243,7 +263,7 @@ main {
   height: 60%;
   min-height: 0;
   padding: 0.2rem 0.45rem;
-  font-size: clamp(0.75rem, 1.06vw, 1.06rem);
+  font-size: var(--text-brand-control);
 }
 
 .landing__actions {
@@ -257,7 +277,7 @@ main {
   height: 5.1%;
   min-height: 0;
   padding: 0.25rem 0.5rem;
-  font-size: clamp(0.75rem, 1.06vw, 1.06rem);
+  font-size: var(--text-brand-control);
 }
 
 .landing__actions .game-button:first-child {
@@ -325,7 +345,8 @@ main {
 .results h1 {
   margin: 0.85rem 0 0;
   color: var(--navy);
-  font-size: clamp(1.65rem, 4.5vw, 2.3rem);
+  font-size: var(--text-display);
+  font-weight: 800;
   line-height: 1.05;
   text-align: center;
 }
@@ -333,7 +354,7 @@ main {
 .game-mode {
   margin: 0.25rem 0 0;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 700;
   text-align: center;
 }
@@ -364,8 +385,8 @@ main {
 
 .progress__label,
 .timer {
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  font-size: 0.76rem;
+  font-family: var(--font-data);
+  font-size: var(--text-numeric);
   font-weight: 800;
   letter-spacing: 0.04em;
 }
@@ -503,8 +524,8 @@ main {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid currentColor;
   border-radius: 0.2rem;
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  font-size: 0.72rem;
+  font-family: var(--font-data);
+  font-size: var(--text-micro);
   line-height: 1;
   opacity: 0.82;
   place-items: center;
@@ -554,8 +575,8 @@ main {
 }
 
 .answer__nameplate small {
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  font-size: 0.65rem;
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
   font-weight: 800;
   letter-spacing: 0.04em;
   opacity: 0.78;
@@ -563,7 +584,7 @@ main {
 
 .answer__nameplate > span {
   overflow-wrap: anywhere;
-  font-size: clamp(0.92rem, 2.6vw, 1.08rem);
+  font-size: var(--text-answer);
   line-height: 1.08;
   text-shadow: 0.08rem 0.08rem 0 var(--navy);
 }
@@ -642,7 +663,7 @@ main {
 
 .results-list__detail {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 600 !important;
   text-align: right !important;
 }
@@ -682,15 +703,15 @@ main {
 }
 
 .score span {
-  font-size: 0.72rem;
+  font-size: var(--text-micro);
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .score strong {
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  font-size: clamp(2rem, 8vw, 3.6rem);
+  font-family: var(--font-data);
+  font-size: var(--text-score);
   line-height: 1.05;
 }
 
@@ -718,7 +739,7 @@ main {
   min-height: 1.25rem;
   margin: 0.65rem 0 0;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 700;
 }
 
@@ -767,7 +788,8 @@ main {
 .share-dialog h2 {
   margin: 0;
   color: var(--navy);
-  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  font-size: var(--text-headline);
+  font-weight: 800;
 }
 
 .share-dialog__body {
@@ -889,7 +911,7 @@ main {
 .matching-count {
   margin: 0.25rem 0 0.75rem;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   line-height: 1.35;
 }
 
@@ -973,7 +995,7 @@ main {
 
 .checkbox__description {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   line-height: 1.3;
 }
 
@@ -988,7 +1010,7 @@ main {
   width: 9rem;
   gap: 0.25rem;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   font-weight: 700;
 }
 
@@ -1016,7 +1038,7 @@ main {
   background: #fff0f3;
   border: 2px solid var(--wrong);
   border-radius: 0.3rem;
-  font-size: 0.85rem;
+  font-size: var(--text-status);
   font-weight: 700;
 }
 
@@ -1043,7 +1065,7 @@ main {
   color: #1b3e40;
   background: transparent;
   border: 0;
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   font-weight: 700;
   text-align: center;
   transform: translateY(0.36rem);
@@ -1086,12 +1108,12 @@ main {
 
   .daily-card strong {
     top: 18%;
-    font-size: 1rem;
+    font-size: var(--text-body);
   }
 
   .daily-card div > span {
     top: 50%;
-    font-size: 0.78rem;
+    font-size: var(--text-small);
   }
 
   .daily-card > .game-button {
@@ -1099,14 +1121,14 @@ main {
     right: 3%;
     width: 35%;
     height: 60%;
-    font-size: 0.82rem;
+    font-size: var(--text-label);
   }
 
   .landing__actions .game-button {
     top: 60%;
     width: 42%;
     height: 7.5%;
-    font-size: 0.88rem;
+    font-size: var(--text-compact-control);
   }
 
   .landing__actions .game-button:first-child {
@@ -1183,11 +1205,11 @@ main {
   }
 
   .answer__nameplate small {
-    font-size: 0.56rem;
+    font-size: var(--text-tiny);
   }
 
   .answer__nameplate > span {
-    font-size: 0.82rem;
+    font-size: var(--text-label);
   }
 
   .choice-grid,
@@ -1208,7 +1230,7 @@ main {
     width: 92%;
     height: auto;
     flex-wrap: wrap;
-    font-size: 0.56rem;
+    font-size: var(--text-tiny);
     transform: none;
   }
 }

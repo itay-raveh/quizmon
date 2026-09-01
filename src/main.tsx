@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource-variable/vend-sans/wght.css';
+import '@fontsource-variable/gabarito/wght.css';
+import '@fontsource-variable/martian-mono/wght.css';
 import { App } from './app/App';
 import './styles.css';
 
