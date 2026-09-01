@@ -16,10 +16,12 @@ const renderQuestion = (number: number) =>
   render(
     <Question
       elapsedSeconds={0}
+      interactionPaused={false}
       mode={{ kind: 'training' }}
       number={number}
       onAnswer={vi.fn()}
       onNewGame={vi.fn()}
+      onOpenSettings={vi.fn()}
       question={question}
       speedrunMode={false}
       total={10}
@@ -40,10 +42,12 @@ describe('question transitions', () => {
     const rendered = render(
       <Question
         elapsedSeconds={0}
+        interactionPaused={false}
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
         onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
         question={{
           ...question,
           optionVisuals: Object.fromEntries(
@@ -74,10 +78,12 @@ describe('question transitions', () => {
     const rendered = render(
       <Question
         elapsedSeconds={0}
+        interactionPaused={false}
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
         onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
         question={{
           ...question,
           category: 'type',
@@ -116,10 +122,12 @@ describe('question transitions', () => {
     render(
       <Question
         elapsedSeconds={0}
+        interactionPaused={false}
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
         onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
         question={{
           ...question,
           category: 'identity',
@@ -144,5 +152,26 @@ describe('question transitions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
 
     expect(sprite).not.toHaveClass('sprite--silhouette');
+  });
+
+  it('ignores answer shortcuts while settings are open', () => {
+    render(
+      <Question
+        elapsedSeconds={0}
+        interactionPaused
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={question}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    fireEvent.keyDown(window, { key: '1' });
+
+    expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
 });

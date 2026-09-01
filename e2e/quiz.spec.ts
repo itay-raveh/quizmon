@@ -114,6 +114,13 @@ test('plays and shares a complete Training question without a live API call', as
   ).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeVisible();
   await expect(page.getByText('100.00%')).toBeVisible();
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Experience' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await page.getByRole('button', { name: 'Close settings' }).click();
   expect(apiCalls).toBe(0);
 
   await page.getByRole('button', { name: 'Share result' }).click();
@@ -158,24 +165,56 @@ test('answers questions with the number keys', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('keeps Training setup reachable on a phone', async ({ page }) => {
+test('keeps grouped settings reachable throughout a game on a phone', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Setup' }).click();
+  await page.getByRole('button', { name: 'Settings' }).click();
 
-  const dialog = page.getByRole('dialog', { name: 'Training setup' });
+  const dialog = page.getByRole('dialog', { name: 'Settings' });
   await expect(dialog).toBeVisible();
   await expect(
-    dialog.getByRole('button', { name: 'Close modifiers' }),
+    dialog.getByRole('button', { name: 'Close settings' }),
   ).toBeFocused();
   await expect(
-    dialog.getByRole('button', { name: 'Save setup' }),
+    dialog.getByRole('button', { name: 'Save settings' }),
   ).toBeVisible();
+  await expect(dialog.getByRole('tab', { name: 'Training' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
   await expect(dialog.getByText(/Pokémon match these filters/)).toBeVisible();
+  await dialog.getByRole('tab', { name: 'Experience' }).click();
+  await expect(dialog.getByText('Play experience')).toBeVisible();
+  await expect(dialog.getByLabel('Speedrun mode')).toBeVisible();
+  await dialog.getByRole('tab', { name: 'Experience' }).press('ArrowLeft');
+  await expect(dialog.getByRole('tab', { name: 'Training' })).toBeFocused();
 
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Setup' })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Settings' })).toBeFocused();
+
+  await page.getByRole('button', { name: 'Start training' }).click();
+  const timer = page.locator('.timer');
+  await expect
+    .poll(() => timer.getAttribute('aria-label'))
+    .not.toBe('Elapsed time 00:00:00');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('tab', { name: 'Experience' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  const pausedAt = await timer.getAttribute('aria-label');
+  await page.waitForTimeout(1100);
+  await expect(timer).toHaveAttribute('aria-label', pausedAt!);
+  await dialog.getByRole('tab', { name: 'Training' }).click();
+  await expect(
+    dialog.getByText('Training changes apply to your next game.'),
+  ).toBeVisible();
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect.poll(() => timer.getAttribute('aria-label')).not.toBe(pausedAt);
 });
 
 test('shows a saved daily score instead of another play button', async ({

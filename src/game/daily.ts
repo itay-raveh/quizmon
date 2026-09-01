@@ -55,13 +55,16 @@ export const createSeededRandom = (seed: string): (() => number) => {
   };
 };
 
-export const getDailyModifiers = (soundEnabled: boolean): Modifiers => ({
+export const getDailyModifiers = (
+  experience: Pick<Modifiers, 'soundEnabled' | 'speedrunMode'>,
+): Modifiers => ({
   ...defaultModifiers,
   generations: [...generations],
   knowledgeCategories: [...defaultModifiers.knowledgeCategories],
   isLimitActive: true,
   limit: DAILY_QUESTION_COUNT,
-  soundEnabled,
+  soundEnabled: experience.soundEnabled,
+  speedrunMode: experience.speedrunMode,
 });
 
 export const getDailyCategories = (date: string): QuestionCategory[] => {
@@ -83,7 +86,7 @@ export const buildDailyQuestions = (
   buildQuestionSequence(
     catalog,
     getDailyCategories(date),
-    getDailyModifiers(true),
+    getDailyModifiers(defaultModifiers),
     createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
   );
 

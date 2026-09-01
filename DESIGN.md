@@ -196,7 +196,7 @@ The landing page is an open stage, not a card. On desktop, the wordmark, daily s
 
 Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer remains present in normal document flow below questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
-The Training setup dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Generation and knowledge-category grids reduce to three columns on narrow screens.
+The Settings dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Training contains generations, knowledge mix, and quiz length. Experience contains Speedrun mode and sound effects. A two-control tab strip separates the sections without introducing another card layer. Settings remain reachable from the landing screen, every question, and results. Generation and knowledge-category grids reduce to three columns on narrow screens.
 
 Spacing is compact and regular. Most internal gaps sit near `0.7rem`, contained surfaces use `1rem` to `1.5rem` of padding, and controls remain large enough for touch without becoming oversized.
 
@@ -239,11 +239,11 @@ Buttons are compact physical game controls.
 
 ### Daily Challenge Strip
 
-The landing signature is a narrow cream strip with a `2px` navy outline, a short yellow edge, and a modest navy shadow. The title and date stay left aligned. The primary action stays inside the right end. Do not turn this strip into a large dashboard card.
+The landing signature is a narrow cream strip with a `2px` navy outline, a short yellow edge, and a modest navy shadow. The title and date stay left aligned. The primary action stays inside the right end. Do not turn this strip into a large dashboard card. Each UTC date deterministically selects nine standard question categories with repeats allowed, then ends with one Champion question.
 
 ### Question Surface
 
-The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. When a prompt names its subject, the Pokémon name uses bold Gabarito followed by a smaller, muted Martian Mono Pokédex number. The pair stays inline without a badge or added container. Sprite questions add unframed artwork with a modest drop shadow, size questions compare Pokémon directly, and the Champion question reveals clues inside one ruled cream field.
+The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. When a prompt names its subject, the Pokémon name uses bold Gabarito followed by a smaller, muted Martian Mono Pokédex number. The pair stays inline without a badge or added container. Sprite questions add unframed artwork with a modest drop shadow, and the Champion question reveals clues inside one ruled cream field.
 
 Answer buttons use the primary control treatment and include small outlined number-key labels. Description, evolution, and stat questions present each Pokémon option as a cream field with a crisp front-facing PokéAPI pixel sprite and a cobalt nameplate containing its Pokédex number and readable Gabarito name. Type, ability, move, and matchup questions keep text answers and place one compact pixel sprite of the named Pokémon between the prompt and choices. Identification and Champion questions scale the same classic pixel sprites into larger subjects or silhouettes while preserving hard edges. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, unrelated answers fade to `0.5` opacity, and a silhouette immediately reveals its full-color sprite.
 
@@ -257,7 +257,7 @@ Results use the same contained surface as questions. Rows are separated by low-c
 
 ### Dialogs and Fields
 
-Dialogs use one cream header and a paper body. The Training setup keeps a cream action footer outside its scrolling body, while the shorter share sheet lays out clearly labelled service buttons and one full-width copy action. A dark navy backdrop provides separation without blurring the landscape. Checkboxes are square white controls with `2px` navy borders and cobalt checked states. Number fields use the same white fill, navy border, and compact corners. On mobile, preserve three-column setup choice grids and comfortable share targets.
+Dialogs use one cream header and a paper body. Settings keeps a cream action footer outside its scrolling body, while the shorter share sheet lays out clearly labelled service buttons and one full-width copy action. A dark navy backdrop provides separation without blurring the landscape. Checkboxes are square white controls with `2px` navy borders and cobalt checked states. Number fields use the same white fill, navy border, and compact corners. On mobile, preserve three-column setup choice grids and comfortable share targets.
 
 ### Brand Assets and Footer
 

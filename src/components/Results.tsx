@@ -10,6 +10,7 @@ import {
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { GameButton } from './GameButton';
+import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
 
 interface ResultsProps {
@@ -17,6 +18,7 @@ interface ResultsProps {
   isNewBest: boolean;
   mode: GameMode;
   onNewGame: () => void;
+  onOpenSettings: () => void;
   result: GameResult;
   resultSaved: boolean;
 }
@@ -26,6 +28,7 @@ export const Results = ({
   isNewBest,
   mode,
   onNewGame,
+  onOpenSettings,
   result,
   resultSaved,
 }: ResultsProps) => {
@@ -44,9 +47,13 @@ export const Results = ({
 
   return (
     <section className="results" aria-labelledby="results-title">
-      <h1 id="results-title">
-        {mode.kind === 'daily' ? 'Trial complete' : 'Training complete'}
-      </h1>
+      <div className="results__header">
+        <span aria-hidden="true" />
+        <h1 id="results-title">
+          {mode.kind === 'daily' ? 'Trial complete' : 'Training complete'}
+        </h1>
+        <SettingsButton onClick={onOpenSettings} />
+      </div>
       <p className="game-mode">{getModeLabel(mode)}</p>
 
       <dl className="results-list">

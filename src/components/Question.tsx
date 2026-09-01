@@ -14,15 +14,18 @@ import type {
 } from '@/game/types';
 import { GameButton } from './GameButton';
 import { Progress } from './Progress';
+import { SettingsButton } from './SettingsButton';
 import { Sprite } from './Sprite';
 
 interface QuestionProps {
   elapsedSeconds: number;
+  interactionPaused: boolean;
   mode: GameMode;
   nextQuestion?: QuestionData;
   number: number;
   onAnswer: (answer: AnswerResult) => void;
   onNewGame: () => void;
+  onOpenSettings: () => void;
   question: QuestionData;
   speedrunMode: boolean;
   total: number;
@@ -63,11 +66,13 @@ const QuestionPrompt = ({ prompt }: { prompt: QuestionPromptData }) => (
 
 export const Question = ({
   elapsedSeconds,
+  interactionPaused,
   mode,
   nextQuestion,
   number,
   onAnswer,
   onNewGame,
+  onOpenSettings,
   question,
   speedrunMode,
   total,
@@ -87,7 +92,7 @@ export const Question = ({
 
   const selectOption = useCallback(
     (option: string) => {
-      if (selectedOption) return;
+      if (interactionPaused || selectedOption) return;
 
       const correct = option === question.correctOption;
       const points = getAnswerPoints(question, correct, cluesShown);
@@ -98,12 +103,25 @@ export const Question = ({
         delay,
       );
     },
-    [cluesShown, onAnswer, question, selectedOption, speedrunMode],
+    [
+      cluesShown,
+      interactionPaused,
+      onAnswer,
+      question,
+      selectedOption,
+      speedrunMode,
+    ],
   );
 
   useEffect(() => {
     const answerWithKeyboard = (event: KeyboardEvent) => {
-      if (event.altKey || event.ctrlKey || event.metaKey || event.repeat)
+      if (
+        interactionPaused ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.repeat
+      )
         return;
       const index = Number(event.key) - 1;
       const option = question.options[index];
@@ -112,7 +130,7 @@ export const Question = ({
 
     window.addEventListener('keydown', answerWithKeyboard);
     return () => window.removeEventListener('keydown', answerWithKeyboard);
-  }, [question.options, selectOption]);
+  }, [interactionPaused, question.options, selectOption]);
 
   const optionClassName = (option: string) => {
     if (!selectedOption) return 'answer';
@@ -145,6 +163,7 @@ export const Question = ({
         >
           {formatDuration(elapsedSeconds)}
         </span>
+        <SettingsButton onClick={onOpenSettings} />
       </div>
 
       <h1 id="question-title">{getCategoryLabel(question.category)}</h1>

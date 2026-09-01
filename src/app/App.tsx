@@ -2,7 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
 import { Landing } from '@/components/Landing';
-import { ModifiersDialog } from '@/components/ModifiersDialog';
+import {
+  ModifiersDialog,
+  type SettingsTab,
+} from '@/components/ModifiersDialog';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
 import { usePokemonCatalog } from '@/game/catalog';
@@ -29,12 +32,15 @@ import type {
 } from '@/game/types';
 
 type Phase = 'landing' | 'questions' | 'results';
+interface SettingsState {
+  initialTab: SettingsTab;
+}
 
 export const App = () => {
   const catalogState = usePokemonCatalog();
   const [modifiers, setModifiers] = usePersistentModifiers();
   const [phase, setPhase] = useState<Phase>('landing');
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState<SettingsState | null>(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerResult[]>([]);
   const [questions, setQuestions] = useState<QuestionData[]>([]);
@@ -112,7 +118,7 @@ export const App = () => {
       return;
     }
 
-    const dailyModifiers = getDailyModifiers(modifiers.soundEnabled);
+    const dailyModifiers = getDailyModifiers(modifiers);
     startGame(
       buildDailyQuestions(catalogState.catalog, dailyDate),
       dailyModifiers,
@@ -127,6 +133,35 @@ export const App = () => {
     setAnswers([]);
     setPhase('landing');
   }, [pause, reset]);
+
+  const openSettings = useCallback(
+    (initialTab: SettingsTab) => {
+      if (phase === 'questions') pause();
+      setSettings({ initialTab });
+    },
+    [pause, phase],
+  );
+
+  const closeSettings = useCallback(() => {
+    setSettings(null);
+    if (phase === 'questions') start();
+  }, [phase, start]);
+
+  const saveSettings = useCallback(
+    (nextModifiers: Modifiers) => {
+      setModifiers(nextModifiers);
+      if (phase === 'questions') {
+        setActiveModifiers((current) => ({
+          ...current,
+          soundEnabled: nextModifiers.soundEnabled,
+          speedrunMode: nextModifiers.speedrunMode,
+        }));
+      }
+      setSettings(null);
+      if (phase === 'questions') start();
+    },
+    [phase, setModifiers, start],
+  );
 
   const answerQuestion = useCallback(
     (answer: AnswerResult) => {
@@ -188,7 +223,7 @@ export const App = () => {
               dailyDate={dailyDate}
               dailyResult={dailyResult}
               dailyResultSaved={dailyResultSaved}
-              onOpenSettings={() => setSettingsOpen(true)}
+              onOpenSettings={() => openSettings('training')}
               onRetryCatalog={catalogState.retry}
               onStart={startCustomGame}
               onStartDaily={startDailyGame}
@@ -200,12 +235,14 @@ export const App = () => {
             <Question
               key={question.id}
               elapsedSeconds={elapsedSeconds}
+              interactionPaused={Boolean(settings)}
               mode={mode}
               speedrunMode={activeModifiers.speedrunMode}
               nextQuestion={questions[questionIndex + 1]}
               number={questionIndex + 1}
               onAnswer={answerQuestion}
               onNewGame={newGame}
+              onOpenSettings={() => openSettings('experience')}
               question={question}
               total={questions.length}
             />
@@ -217,6 +254,7 @@ export const App = () => {
               isNewBest={isNewBest}
               mode={mode}
               onNewGame={newGame}
+              onOpenSettings={() => openSettings('experience')}
               result={result}
               resultSaved={resultSaved}
             />
@@ -225,15 +263,14 @@ export const App = () => {
 
         <Footer />
 
-        {settingsOpen && catalogState.status === 'ready' ? (
+        {settings && catalogState.status === 'ready' ? (
           <ModifiersDialog
             catalog={catalogState.catalog}
+            initialTab={settings.initialTab}
             modifiers={modifiers}
-            onClose={() => setSettingsOpen(false)}
-            onSave={(nextModifiers) => {
-              setModifiers(nextModifiers);
-              setSettingsOpen(false);
-            }}
+            onClose={closeSettings}
+            onSave={saveSettings}
+            trainingChangesApplyNextGame={phase !== 'landing'}
           />
         ) : null}
       </div>

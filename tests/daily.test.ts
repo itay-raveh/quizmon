@@ -57,11 +57,14 @@ describe('daily Trainer Trial', () => {
   });
 
   it('uses all generations and a fixed ten-question length', () => {
-    expect(getDailyModifiers(false)).toMatchObject({
+    expect(
+      getDailyModifiers({ soundEnabled: false, speedrunMode: true }),
+    ).toMatchObject({
       generations: [...generations],
       isLimitActive: true,
       limit: 10,
       soundEnabled: false,
+      speedrunMode: true,
     });
   });
 });

@@ -81,7 +81,7 @@ export const Landing = ({
           tone="quiet"
           onClick={onOpenSettings}
         >
-          <span>Setup</span>
+          <span>Settings</span>
         </GameButton>
         <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
           <span>Start training</span>
