@@ -14,6 +14,7 @@ import {
   getMaximumScore,
   getQuestionCount,
   getQuestionPromptText,
+  getQuestionTitle,
   getSpeedBonus,
   getSpeedBonusPoints,
   normalizeModifiers,
@@ -117,26 +118,26 @@ describe('question building', () => {
       questions.map((question) => [question.category, question]),
     );
 
-    for (const category of ['description', 'evolution', 'stat']) {
+    for (const category of ['description', 'stat']) {
       const question = byCategory[category];
       expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
       expect(question?.media.kind).toBe('none');
     }
 
-    for (const category of ['type', 'ability', 'move', 'matchup']) {
+    for (const category of ['ability', 'move', 'matchup']) {
       expect(byCategory[category]?.media.kind).toBe('pixel-sprite');
       expect(byCategory[category]?.optionVisuals).toBeUndefined();
     }
 
-    expect(byCategory.identity?.media.kind).toBe('sprite');
+    for (const category of ['identity', 'evolution', 'type']) {
+      const question = byCategory[category];
+      expect(
+        question?.media.kind !== 'none' ||
+          Object.keys(question.optionVisuals ?? {}).length > 0,
+      ).toBe(true);
+    }
 
-    for (const category of [
-      'type',
-      'evolution',
-      'ability',
-      'move',
-      'matchup',
-    ]) {
+    for (const category of ['ability', 'move', 'matchup']) {
       const question = byCategory[category];
       expect(question?.prompt.kind).toBe('pokemon');
       if (question?.prompt.kind === 'pokemon') {
@@ -147,13 +148,63 @@ describe('question building', () => {
       }
     }
 
-    for (const category of ['identity', 'description', 'stat']) {
+    for (const category of ['description', 'stat']) {
       expect(byCategory[category]?.prompt.kind).toBe('text');
     }
 
     expect(getQuestionPromptText(byCategory.description!.prompt)).not.toContain(
       'belongs to',
     );
+  });
+
+  it('mixes the approved playful variants into broad knowledge topics', () => {
+    const expectedTitles = {
+      evolution: ['Evolution trail', 'Missing evolution', 'Evolution order'],
+      identity: [
+        'Pokédex scan',
+        'Pixel peek',
+        'Shiny spotter',
+        'Silhouette match',
+      ],
+      type: ['Type check', 'Odd one out', 'Type roundup'],
+    } as const;
+
+    for (const [category, titles] of Object.entries(expectedTitles)) {
+      const questions = buildQuestions(
+        catalog,
+        {
+          ...defaultModifiers,
+          knowledgeCategories: [category as 'evolution' | 'identity' | 'type'],
+          limit: 80,
+        },
+        createSeededRandom(`playful-${category}`),
+      );
+      expect(new Set(questions.map(getQuestionTitle))).toEqual(new Set(titles));
+    }
+  });
+
+  it('builds exact multi-select and ordering answer keys', () => {
+    const typeQuestions = buildQuestions(
+      catalog,
+      { ...defaultModifiers, knowledgeCategories: ['type'], limit: 80 },
+      createSeededRandom('multi-select'),
+    );
+    const multiSelect = typeQuestions.find(
+      ({ answer }) => answer.interaction === 'multi-select',
+    );
+    expect(multiSelect?.answer.correctOptions.length).toBeGreaterThan(1);
+    expect(multiSelect?.options).toHaveLength(4);
+
+    const evolutionQuestions = buildQuestions(
+      catalog,
+      { ...defaultModifiers, knowledgeCategories: ['evolution'], limit: 80 },
+      createSeededRandom('ordering'),
+    );
+    const ordering = evolutionQuestions.find(
+      ({ answer }) => answer.interaction === 'ordering',
+    );
+    expect(ordering?.answer.correctOptions).toHaveLength(3);
+    expect(ordering?.options).toHaveLength(3);
   });
 
   it('keeps matchup and property distractors unambiguous', () => {

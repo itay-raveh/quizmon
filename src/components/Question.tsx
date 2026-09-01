@@ -39,6 +39,7 @@ const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
     ...(question.media.kind === 'none' ? [] : [question.media.src]),
     ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
+    ...(question.sequenceVisuals ?? []).map(({ src }) => src),
   ];
 
   for (const src of sources) {
@@ -68,6 +69,13 @@ const QuestionPrompt = ({ prompt }: { prompt: QuestionPromptData }) => (
   </p>
 );
 
+const formatCorrectAnswer = (question: QuestionData): string => {
+  const names = getCorrectOptions(question).map(formatPokemonName);
+  if (question.answer.interaction === 'ordering') return names.join(' → ');
+  if (names.length < 2) return names[0] ?? '';
+  return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+};
+
 export const Question = ({
   elapsedMilliseconds,
   elapsedSeconds,
@@ -82,7 +90,8 @@ export const Question = ({
   speedrunMode,
   total,
 }: QuestionProps) => {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [answered, setAnswered] = useState(false);
   const [cluesShown, setCluesShown] = useState(1);
   const [awardedPoints, setAwardedPoints] = useState<number | null>(null);
   const answerTimeout = useRef<number | null>(null);
@@ -97,11 +106,11 @@ export const Question = ({
     };
   }, [nextQuestion]);
 
-  const selectOption = useCallback(
-    (option: string) => {
-      if (interactionPaused || selectedOption) return;
+  const finishAnswer = useCallback(
+    (options: string[]) => {
+      if (interactionPaused || answered) return;
 
-      const correct = isQuestionAnswerCorrect(question, [option]);
+      const correct = isQuestionAnswerCorrect(question, options);
       const points = getAnswerPoints(question, correct, cluesShown);
       const responseMilliseconds = Math.max(
         0,
@@ -109,7 +118,8 @@ export const Question = ({
       );
       const speedBonus = getSpeedBonusPoints(points, responseMilliseconds);
       const delay = speedrunMode ? 80 : correct ? 900 : 1700;
-      setSelectedOption(option);
+      setSelectedOptions(options);
+      setAnswered(true);
       setAwardedPoints(points + speedBonus);
       answerTimeout.current = window.setTimeout(
         () =>
@@ -125,13 +135,37 @@ export const Question = ({
     },
     [
       cluesShown,
+      answered,
       elapsedMilliseconds,
       interactionPaused,
       onAnswer,
       question,
-      selectedOption,
       speedrunMode,
     ],
+  );
+
+  const selectOption = useCallback(
+    (option: string) => {
+      if (interactionPaused || answered) return;
+      if (question.answer.interaction === 'single-choice') {
+        finishAnswer([option]);
+        return;
+      }
+
+      setSelectedOptions((current) => {
+        if (current.includes(option)) {
+          return current.filter((selected) => selected !== option);
+        }
+        if (
+          question.answer.interaction === 'ordering' &&
+          current.length >= question.answer.correctOptions.length
+        ) {
+          return current;
+        }
+        return [...current, option];
+      });
+    },
+    [answered, finishAnswer, interactionPaused, question.answer],
   );
 
   useEffect(() => {
@@ -153,11 +187,17 @@ export const Question = ({
     return () => window.removeEventListener('keydown', answerWithKeyboard);
   }, [interactionPaused, question.options, selectOption]);
 
+  const answerCorrect =
+    answered && isQuestionAnswerCorrect(question, selectedOptions);
+  const correctOptions = getCorrectOptions(question);
   const optionClassName = (option: string) => {
-    const [correctOption] = getCorrectOptions(question);
-    if (!selectedOption) return 'answer';
-    if (option === correctOption) return 'answer answer--correct';
-    if (option === selectedOption) return 'answer answer--wrong';
+    const selected = selectedOptions.includes(option);
+    if (!answered) return selected ? 'answer answer--selected' : 'answer';
+    if (question.answer.interaction === 'ordering') {
+      return answerCorrect ? 'answer answer--correct' : 'answer answer--wrong';
+    }
+    if (correctOptions.includes(option)) return 'answer answer--correct';
+    if (selected) return 'answer answer--wrong';
     return 'answer answer--muted';
   };
 
@@ -168,7 +208,9 @@ export const Question = ({
   const championPoints = getAnswerPoints(question, true, cluesShown);
   const className = [
     'question',
-    question.media.kind === 'sprite' ? 'question--with-media' : '',
+    question.media.kind === 'sprite' || question.media.kind === 'pixel-peek'
+      ? 'question--with-media'
+      : '',
     question.media.kind === 'pixel-sprite' ? 'question--with-portrait' : '',
     number === 1 ? 'question--enter' : '',
   ]
@@ -199,7 +241,7 @@ export const Question = ({
               <li key={clue}>{clue}</li>
             ))}
           </ol>
-          {cluesShown < question.clues.length && !selectedOption ? (
+          {cluesShown < question.clues.length && !answered ? (
             <GameButton
               className="clue-button"
               tone="quiet"
@@ -213,9 +255,32 @@ export const Question = ({
 
       {question.media.kind === 'sprite' && mediaVisible ? (
         <Sprite
-          silhouette={question.media.silhouette && !selectedOption}
+          silhouette={question.media.silhouette && !answered}
           src={question.media.src}
         />
+      ) : null}
+
+      {question.media.kind === 'pixel-peek' ? (
+        <div
+          className={`pixel-peek ${answered ? 'pixel-peek--revealed' : ''}`.trim()}
+        >
+          <img
+            className="pixel-sprite pixel-peek__image"
+            src={question.media.src}
+            alt={
+              answered
+                ? formatPokemonName(question.pokemonName)
+                : 'Cropped Pokémon sprite'
+            }
+            decoding="async"
+            fetchPriority="high"
+            style={{
+              transformOrigin: `${question.media.focusX}% ${question.media.focusY}%`,
+            }}
+            width="96"
+            height="96"
+          />
+        </div>
       ) : null}
 
       {question.media.kind === 'pixel-sprite' ? (
@@ -232,25 +297,79 @@ export const Question = ({
         </div>
       ) : null}
 
+      {question.sequenceVisuals ? (
+        <div
+          className="evolution-sequence"
+          aria-label={`${formatPokemonName(question.sequenceVisuals[0]?.name ?? '')} evolves into an unknown Pokémon, then ${formatPokemonName(question.sequenceVisuals[1]?.name ?? '')}`}
+        >
+          <span className="evolution-sequence__pokemon" aria-hidden="true">
+            <img
+              className="pixel-sprite"
+              src={question.sequenceVisuals[0]?.src}
+              alt=""
+              decoding="async"
+              width="96"
+              height="96"
+            />
+            <b>{formatPokemonName(question.sequenceVisuals[0]?.name ?? '')}</b>
+          </span>
+          <span aria-hidden="true">→</span>
+          <span className="evolution-sequence__unknown" aria-hidden="true">
+            ?
+          </span>
+          <span aria-hidden="true">→</span>
+          <span className="evolution-sequence__pokemon" aria-hidden="true">
+            <img
+              className="pixel-sprite"
+              src={question.sequenceVisuals[1]?.src}
+              alt=""
+              decoding="async"
+              width="96"
+              height="96"
+            />
+            <b>{formatPokemonName(question.sequenceVisuals[1]?.name ?? '')}</b>
+          </span>
+        </div>
+      ) : null}
+
       <div
-        className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''}`.trim()}
+        className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''} ${question.answer.interaction === 'ordering' ? 'answers--ordering' : ''}`.trim()}
       >
         {question.options.map((option, index) => {
           const visual = question.optionVisuals?.[option];
+          const concealed = Boolean(question.concealOptionLabels && !answered);
+          const selectionPosition = selectedOptions.indexOf(option) + 1;
+          const selectionMark =
+            question.answer.interaction === 'ordering' && selectionPosition > 0
+              ? selectionPosition
+              : question.answer.interaction === 'multi-select' &&
+                  selectionPosition > 0
+                ? '✓'
+                : index + 1;
           return (
             <GameButton
+              aria-label={
+                concealed
+                  ? `Silhouette ${index + 1}`
+                  : formatPokemonName(option)
+              }
               aria-keyshortcuts={String(index + 1)}
+              aria-pressed={
+                question.answer.interaction === 'single-choice'
+                  ? undefined
+                  : selectedOptions.includes(option)
+              }
               className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''}`.trim()}
-              disabled={Boolean(selectedOption)}
+              disabled={answered}
               key={option}
               onClick={() => selectOption(option)}
             >
-              <kbd aria-hidden="true">{index + 1}</kbd>
+              <kbd aria-hidden="true">{selectionMark}</kbd>
               {visual ? (
                 <>
                   <span className="answer__sprite-field" aria-hidden="true">
                     <img
-                      className="pixel-sprite answer__sprite"
+                      className={`pixel-sprite answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
                       src={visual.src}
                       alt=""
                       decoding="async"
@@ -259,10 +378,16 @@ export const Question = ({
                     />
                   </span>
                   <span className="answer__nameplate">
-                    <small aria-hidden="true">
-                      No. {String(visual.dexNumber).padStart(4, '0')}
-                    </small>
-                    <span>{formatPokemonName(option)}</span>
+                    {concealed ? (
+                      <span>Silhouette {index + 1}</span>
+                    ) : (
+                      <>
+                        <small aria-hidden="true">
+                          No. {String(visual.dexNumber).padStart(4, '0')}
+                        </small>
+                        <span>{formatPokemonName(option)}</span>
+                      </>
+                    )}
                   </span>
                 </>
               ) : (
@@ -273,16 +398,33 @@ export const Question = ({
         })}
       </div>
 
+      {question.answer.interaction !== 'single-choice' && !answered ? (
+        <GameButton
+          className="check-answer"
+          disabled={
+            selectedOptions.length === 0 ||
+            (question.answer.interaction === 'ordering' &&
+              selectedOptions.length !== correctOptions.length)
+          }
+          onClick={() => finishAnswer(selectedOptions)}
+        >
+          {question.answer.interaction === 'ordering'
+            ? 'Check order'
+            : 'Check answers'}
+        </GameButton>
+      ) : null}
+
       <p className="answer-feedback" aria-live="polite">
-        {isQuestionAnswerCorrect(
-          question,
-          selectedOption ? [selectedOption] : [],
-        )
+        {answerCorrect
           ? `Correct! +${awardedPoints} points`
-          : selectedOption
-            ? `It was ${formatPokemonName(getCorrectOptions(question)[0] ?? '')}.`
+          : answered
+            ? `Correct: ${formatCorrectAnswer(question)}.`
             : '\u00a0'}
       </p>
+
+      {answered && question.explanation ? (
+        <p className="answer-explanation">{question.explanation}</p>
+      ) : null}
 
       <GameButton className="new-game" tone="quiet" onClick={onNewGame}>
         Leave game

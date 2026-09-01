@@ -247,6 +247,8 @@ The question surface is one warm panel centered over the unchanged landscape. Th
 
 Answer buttons use the primary control treatment and include small outlined number-key labels. Description, evolution, and stat questions present each Pokémon option as a cream field with a crisp front-facing PokéAPI pixel sprite and a cobalt nameplate containing its Pokédex number and readable Gabarito name. Type, ability, move, and matchup questions keep text answers and place one compact pixel sprite of the named Pokémon between the prompt and choices. Identification and Champion questions scale the same classic pixel sprites into larger subjects or silhouettes while preserving hard edges. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, unrelated answers fade to `0.5` opacity, and a silhouette immediately reveals its full-color sprite.
 
+Identity, evolution, and type knowledge can use playful interaction variants without adding settings categories. Identity includes reverse silhouettes, cropped pixel peeks, and shiny spotting. Evolution includes missing-link and tap-in-order rounds. Type includes odd-one-out and select-all rounds. Multi-select and ordering choices turn yellow while composing an answer, keep numbered or checked markers visible, and use one explicit check action. Explanations appear only after submission, and concealed or cropped artwork reveals its full sprite at the same moment.
+
 ### Progress and Timer
 
 The progress track is a slim pale-blue bar with a `2px` navy border and yellow fill. The timer is a compact cobalt badge with the same outline and a short yellow lower edge. Both use monospace numeric labels, but neither should introduce a broader HUD frame.

@@ -219,4 +219,148 @@ describe('question transitions', () => {
 
     expect(screen.getByText('Correct! +121 points')).toBeVisible();
   });
+
+  it('checks every selected answer in a multi-select question', () => {
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          answer: {
+            correctOptions: ['pikachu', 'eevee'],
+            interaction: 'multi-select',
+          },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    const check = screen.getByRole('button', { name: 'Check answers' });
+    expect(check).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Eevee' }));
+    expect(check).toBeEnabled();
+    fireEvent.click(check);
+
+    expect(screen.getByText('Correct! +125 points')).toBeVisible();
+  });
+
+  it('numbers an evolution order before checking it', () => {
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          answer: {
+            correctOptions: ['pikachu', 'eevee', 'ditto'],
+            interaction: 'ordering',
+          },
+          options: ['ditto', 'pikachu', 'eevee'],
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    const check = screen.getByRole('button', { name: 'Check order' });
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Eevee' }));
+    expect(check).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Ditto' }));
+    expect(check).toBeEnabled();
+    fireEvent.click(check);
+
+    expect(screen.getByText('Correct! +125 points')).toBeVisible();
+  });
+
+  it('reveals reverse-silhouette choices after an answer', () => {
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          concealOptionLabels: true,
+          optionVisuals: Object.fromEntries(
+            question.options.map((option, index) => [
+              option,
+              {
+                dexNumber: index + 1,
+                silhouette: true,
+                src: `https://example.com/${option}.png`,
+              },
+            ]),
+          ),
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(screen.queryByText('Pikachu')).not.toBeInTheDocument();
+    expect(
+      document.querySelectorAll('.answer__sprite--silhouette'),
+    ).toHaveLength(4);
+    fireEvent.click(screen.getByRole('button', { name: 'Silhouette 1' }));
+
+    expect(screen.getByText('Pikachu')).toBeVisible();
+    expect(
+      document.querySelectorAll('.answer__sprite--silhouette'),
+    ).toHaveLength(0);
+  });
+
+  it('reveals the full sprite after a pixel peek answer', () => {
+    const rendered = render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          media: {
+            focusX: 25,
+            focusY: 75,
+            kind: 'pixel-peek',
+            src: 'https://example.com/pikachu.png',
+          },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(rendered.container.querySelector('.pixel-peek')).not.toHaveClass(
+      'pixel-peek--revealed',
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    expect(rendered.container.querySelector('.pixel-peek')).toHaveClass(
+      'pixel-peek--revealed',
+    );
+  });
 });

@@ -80,6 +80,12 @@ export type QuestionMedia =
       silhouette: boolean;
       src: string;
     }
+  | {
+      focusX: number;
+      focusY: number;
+      kind: 'pixel-peek';
+      src: string;
+    }
   | { kind: 'pixel-sprite'; src: string }
   | { kind: 'none' };
 
@@ -87,6 +93,10 @@ export interface PokemonOptionVisual {
   dexNumber: number;
   silhouette?: boolean;
   src: string;
+}
+
+export interface PokemonSequenceVisual extends PokemonOptionVisual {
+  name: string;
 }
 
 export type QuestionInteraction = 'single-choice' | 'multi-select' | 'ordering';
@@ -110,6 +120,7 @@ export interface QuestionData {
   answer: QuestionAnswer;
   category: QuestionCategory;
   clues?: string[];
+  concealOptionLabels?: boolean;
   explanation?: string;
   id: string;
   media: QuestionMedia;
@@ -117,6 +128,7 @@ export interface QuestionData {
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   prompt: QuestionPrompt;
+  sequenceVisuals?: PokemonSequenceVisual[];
   title?: string;
 }
 
