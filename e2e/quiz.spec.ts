@@ -265,4 +265,7 @@ test('opens the same daily question from the same shared date', async ({
     'src',
     firstSprite!,
   );
+
+  await page.locator('.answer').first().click();
+  await expect(page.locator('.sprite')).not.toHaveClass(/sprite--silhouette/);
 });

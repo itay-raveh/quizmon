@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { Question } from '@/components/Question';
 import type { QuestionData } from '@/game/types';
 
@@ -110,5 +110,39 @@ describe('question transitions', () => {
     expect(screen.getByText('(No. 0025)')).toHaveClass(
       'question__subject-number',
     );
+  });
+
+  it('reveals a silhouette after an answer is selected', () => {
+    render(
+      <Question
+        elapsedSeconds={0}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        question={{
+          ...question,
+          category: 'identity',
+          media: {
+            kind: 'sprite',
+            silhouette: true,
+            src: 'https://example.com/pikachu.png',
+          },
+          prompt: {
+            kind: 'text',
+            text: 'Who is hiding in this silhouette?',
+          },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    const sprite = screen.getByRole('img', { name: /silhouette/ });
+    expect(sprite).toHaveClass('sprite--silhouette');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+
+    expect(sprite).not.toHaveClass('sprite--silhouette');
   });
 });

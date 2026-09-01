@@ -172,7 +172,7 @@ export const Question = ({
 
       {question.media.kind === 'sprite' && mediaVisible ? (
         <Sprite
-          silhouette={question.media.silhouette}
+          silhouette={question.media.silhouette && !selectedOption}
           src={question.media.src}
         />
       ) : null}
