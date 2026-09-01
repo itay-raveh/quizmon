@@ -71,7 +71,7 @@ describe('saved results', () => {
     expect(
       saveResult(
         mode,
-        { ...defaultModifiers, knowledgeCategories: ['stat'] },
+        { ...defaultModifiers, questionTypes: ['stat-showdown'] },
         lower,
       ).isNewBest,
     ).toBe(true);

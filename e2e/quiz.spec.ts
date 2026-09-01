@@ -36,7 +36,7 @@ test.beforeEach(async ({ page }) => {
       'quizmon.training-settings.v2',
       JSON.stringify({
         generations: ['I'],
-        knowledgeCategories: ['identity'],
+        questionTypes: ['pokedex-scan'],
         soundEnabled: false,
         isLimitActive: true,
         limit: 1,
@@ -234,6 +234,19 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     .click();
   await expect(dialog.getByLabel('I', { exact: true })).not.toBeChecked();
   await dialog.getByRole('button', { name: 'Select all generations' }).click();
+  await dialog
+    .getByRole('button', { name: 'Select all question types' })
+    .click();
+  await expect(dialog.getByLabel('Evolution order')).toBeChecked();
+  await expect(dialog.getByLabel('Odd one out')).toBeChecked();
+  await expect(dialog.getByLabel('Missing evolution')).toHaveCount(0);
+  await dialog
+    .getByRole('button', { name: 'Deselect all question types' })
+    .click();
+  await expect(dialog.getByLabel('Pokédex scan')).not.toBeChecked();
+  await dialog
+    .getByRole('button', { name: 'Select all question types' })
+    .click();
   await dialog.getByRole('tab', { name: 'Experience' }).click();
   await expect(dialog.getByText('Play experience')).toBeVisible();
   await expect(dialog.getByLabel('Speedrun mode')).toBeVisible();

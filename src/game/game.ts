@@ -1,10 +1,10 @@
 import {
   generations,
-  knowledgeCategories,
+  questionTypeDefinitions,
+  questionTypes,
   statNames,
   type AnswerResult,
   type Generation,
-  type KnowledgeCategory,
   type Modifiers,
   type PokemonOptionVisual,
   type PokemonCatalog,
@@ -12,12 +12,13 @@ import {
   type QuestionCategory,
   type QuestionData,
   type QuestionPrompt,
+  type QuestionType,
   type StatName,
 } from './types';
 
 export const defaultModifiers: Modifiers = {
   generations: [...generations],
-  knowledgeCategories: [...knowledgeCategories],
+  questionTypes: [...questionTypes],
   soundEnabled: true,
   isLimitActive: true,
   limit: 10,
@@ -52,20 +53,48 @@ const targetSpriteCategories: readonly QuestionCategory[] = [
 const isGeneration = (value: unknown): value is Generation =>
   typeof value === 'string' && generations.includes(value as Generation);
 
-const isKnowledgeCategory = (value: unknown): value is KnowledgeCategory =>
+const isQuestionType = (value: unknown): value is QuestionType =>
+  typeof value === 'string' && questionTypes.includes(value as QuestionType);
+
+const legacyKnowledgeCategories = [
+  'identity',
+  'description',
+  'type',
+  'evolution',
+  'ability',
+  'move',
+  'stat',
+  'matchup',
+] as const;
+
+type LegacyKnowledgeCategory = (typeof legacyKnowledgeCategories)[number];
+
+const isLegacyKnowledgeCategory = (
+  value: unknown,
+): value is LegacyKnowledgeCategory =>
   typeof value === 'string' &&
-  knowledgeCategories.includes(value as KnowledgeCategory);
+  legacyKnowledgeCategories.includes(value as LegacyKnowledgeCategory);
+
+type StoredModifiers = Partial<Modifiers> & {
+  knowledgeCategories?: unknown;
+};
 
 export const normalizeModifiers = (value: unknown): Modifiers => {
   if (!value || typeof value !== 'object') return defaultModifiers;
 
-  const candidate = value as Partial<Modifiers>;
+  const candidate = value as StoredModifiers;
   const selectedGenerations = Array.isArray(candidate.generations)
     ? candidate.generations.filter(isGeneration)
     : [];
-  const selectedCategories = Array.isArray(candidate.knowledgeCategories)
-    ? candidate.knowledgeCategories.filter(isKnowledgeCategory)
+  const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
+    ? candidate.questionTypes.filter(isQuestionType)
     : [];
+  const legacyCategories = Array.isArray(candidate.knowledgeCategories)
+    ? candidate.knowledgeCategories.filter(isLegacyKnowledgeCategory)
+    : [];
+  const migratedQuestionTypes = questionTypes.filter((questionType) =>
+    legacyCategories.includes(questionTypeDefinitions[questionType].category),
+  );
   const limit = Number.isFinite(candidate.limit)
     ? Math.max(1, Math.trunc(candidate.limit as number))
     : defaultModifiers.limit;
@@ -75,10 +104,12 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
       selectedGenerations.length > 0
         ? selectedGenerations
         : defaultModifiers.generations,
-    knowledgeCategories:
-      selectedCategories.length > 0
-        ? selectedCategories
-        : defaultModifiers.knowledgeCategories,
+    questionTypes:
+      selectedQuestionTypes.length > 0
+        ? selectedQuestionTypes
+        : migratedQuestionTypes.length > 0
+          ? migratedQuestionTypes
+          : defaultModifiers.questionTypes,
     soundEnabled: candidate.soundEnabled !== false,
     isLimitActive: candidate.isLimitActive !== false,
     limit,
@@ -692,59 +723,53 @@ const buildChampionQuestion = (
   };
 };
 
-type QuestionBuilder = () => QuestionData | undefined;
-
-const buildQuestionVariant = (
+const buildQuestionType = (
   context: QuestionContext,
-  builders: readonly QuestionBuilder[],
-): QuestionData | undefined => {
-  for (const builder of shuffle(builders, context.random)) {
-    const question = builder();
-    if (question) return question;
-  }
-  return undefined;
-};
-
-const buildCategoryQuestion = (
-  context: QuestionContext,
-  category: QuestionCategory,
-  silhouette = false,
+  questionType: QuestionType | 'champion',
 ): QuestionData | undefined => {
   let question: QuestionData | undefined;
 
-  switch (category) {
-    case 'identity':
-      question = buildQuestionVariant(context, [
-        () => buildIdentityQuestion(context, silhouette),
-        () => buildSilhouetteMatchQuestion(context),
-        () => buildPixelPeekQuestion(context),
-        () => buildShinySpotterQuestion(context),
-      ]);
+  switch (questionType) {
+    case 'pokedex-scan':
+      question = buildIdentityQuestion(context, false);
       break;
-    case 'description':
+    case 'silhouette-match':
+      question = buildSilhouetteMatchQuestion(context);
+      break;
+    case 'pixel-peek':
+      question = buildPixelPeekQuestion(context);
+      break;
+    case 'shiny-spotter':
+      question = buildShinySpotterQuestion(context);
+      break;
+    case 'field-notes':
       question = buildDescriptionQuestion(context);
       break;
-    case 'type':
-      question = buildQuestionVariant(context, [
-        () => buildTypeQuestion(context),
-        () => buildOddOneOutQuestion(context),
-        () => buildChooseAllTypeQuestion(context),
-      ]);
+    case 'type-check':
+      question = buildTypeQuestion(context);
       break;
-    case 'evolution':
-      question = buildQuestionVariant(context, [
-        () => buildEvolutionQuestion(context),
-        () => buildEvolutionOrderQuestion(context),
-      ]);
+    case 'odd-one-out':
+      question = buildOddOneOutQuestion(context);
       break;
-    case 'ability':
-    case 'move':
-      question = buildPropertyQuestion(context, category);
+    case 'type-roundup':
+      question = buildChooseAllTypeQuestion(context);
       break;
-    case 'stat':
+    case 'evolution-trail':
+      question = buildEvolutionQuestion(context);
+      break;
+    case 'evolution-order':
+      question = buildEvolutionOrderQuestion(context);
+      break;
+    case 'ability-check':
+      question = buildPropertyQuestion(context, 'ability');
+      break;
+    case 'move-check':
+      question = buildPropertyQuestion(context, 'move');
+      break;
+    case 'stat-showdown':
       question = buildStatQuestion(context);
       break;
-    case 'matchup':
+    case 'type-matchup':
       question = buildMatchupQuestion(context);
       break;
     case 'champion':
@@ -765,20 +790,28 @@ export const buildQuestions = (
     .filter((candidate): candidate is Candidate => Boolean(candidate.pokemon));
   const count = getQuestionCount(pool.length, modifiers);
   const context: QuestionContext = { catalog, pool, random, used: new Set() };
-  const categoryDeck = shuffle(modifiers.knowledgeCategories, random);
+  const questionTypeDeck = shuffle(modifiers.questionTypes, random);
   const questions: QuestionData[] = [];
 
   for (let index = 0; index < count; index += 1) {
-    const category = categoryDeck[index % categoryDeck.length];
-    if (!category) break;
-    const question = buildCategoryQuestion(
-      context,
-      category,
-      category === 'identity' && random() < 0.5,
-    );
-    const fallback = question ?? buildIdentityQuestion(context, false);
-    if (!fallback) continue;
-    questions.push({ ...fallback, id: `${fallback.id}:${index}` });
+    const selectedType = questionTypeDeck[index % questionTypeDeck.length];
+    if (!selectedType) break;
+    const candidates = [
+      selectedType,
+      ...shuffle(
+        questionTypeDeck.filter(
+          (questionType) => questionType !== selectedType,
+        ),
+        random,
+      ),
+    ];
+    let question: QuestionData | undefined;
+    for (const questionType of candidates) {
+      question = buildQuestionType(context, questionType);
+      if (question) break;
+    }
+    if (!question) continue;
+    questions.push({ ...question, id: `${question.id}:${index}` });
   }
 
   return questions;
@@ -786,7 +819,7 @@ export const buildQuestions = (
 
 export const buildQuestionSequence = (
   catalog: PokemonCatalog,
-  categories: readonly QuestionCategory[],
+  questionSequence: readonly (QuestionType | 'champion')[],
   modifiers: Modifiers,
   random: () => number,
 ): QuestionData[] => {
@@ -795,12 +828,8 @@ export const buildQuestionSequence = (
     .filter((candidate): candidate is Candidate => Boolean(candidate.pokemon));
   const context: QuestionContext = { catalog, pool, random, used: new Set() };
 
-  return categories.flatMap((category, index) => {
-    const question = buildCategoryQuestion(
-      context,
-      category,
-      category === 'identity',
-    );
+  return questionSequence.flatMap((questionType, index) => {
+    const question = buildQuestionType(context, questionType);
     return question ? [{ ...question, id: `${question.id}:${index}` }] : [];
   });
 };
@@ -855,6 +884,9 @@ export const calculateScore = (answers: readonly AnswerResult[]): number =>
 
 export const getCategoryLabel = (category: QuestionCategory): string =>
   categoryLabels[category];
+
+export const getQuestionTypeLabel = (questionType: QuestionType): string =>
+  questionTypeDefinitions[questionType].label;
 
 export const getCorrectOptions = (question: QuestionData): string[] =>
   question.answer.correctOptions;

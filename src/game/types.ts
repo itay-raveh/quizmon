@@ -12,19 +12,29 @@ export const generations = [
 
 export type Generation = (typeof generations)[number];
 
-export const knowledgeCategories = [
-  'identity',
-  'description',
-  'type',
-  'evolution',
-  'ability',
-  'move',
-  'stat',
-  'matchup',
-] as const;
+export const questionTypeDefinitions = {
+  'pokedex-scan': { category: 'identity', label: 'Pokédex scan' },
+  'silhouette-match': { category: 'identity', label: 'Silhouette match' },
+  'pixel-peek': { category: 'identity', label: 'Pixel peek' },
+  'shiny-spotter': { category: 'identity', label: 'Shiny spotter' },
+  'field-notes': { category: 'description', label: 'Field notes' },
+  'type-check': { category: 'type', label: 'Type check' },
+  'odd-one-out': { category: 'type', label: 'Odd one out' },
+  'type-roundup': { category: 'type', label: 'Type roundup' },
+  'evolution-trail': { category: 'evolution', label: 'Evolution trail' },
+  'evolution-order': { category: 'evolution', label: 'Evolution order' },
+  'ability-check': { category: 'ability', label: 'Ability check' },
+  'move-check': { category: 'move', label: 'Move check' },
+  'stat-showdown': { category: 'stat', label: 'Stat showdown' },
+  'type-matchup': { category: 'matchup', label: 'Type matchup' },
+} as const;
 
-export type KnowledgeCategory = (typeof knowledgeCategories)[number];
-export type QuestionCategory = KnowledgeCategory | 'champion';
+export type QuestionType = keyof typeof questionTypeDefinitions;
+export const questionTypes = Object.keys(
+  questionTypeDefinitions,
+) as QuestionType[];
+export type QuestionCategory =
+  (typeof questionTypeDefinitions)[QuestionType]['category'] | 'champion';
 
 export const statNames = [
   'hp',
@@ -66,7 +76,7 @@ export interface PokemonCatalog {
 
 export interface Modifiers {
   generations: Generation[];
-  knowledgeCategories: KnowledgeCategory[];
+  questionTypes: QuestionType[];
   soundEnabled: boolean;
   isLimitActive: boolean;
   limit: number;

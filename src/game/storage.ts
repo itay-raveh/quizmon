@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { calculateScore, defaultModifiers, normalizeModifiers } from './game';
+import { questionTypeDefinitions, questionTypes } from './types';
 import type { GameMode, GameResult, Modifiers } from './types';
 
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
@@ -77,10 +78,32 @@ const getTrainingKey = (modifiers: Modifiers): string =>
   JSON.stringify({
     generations: [...modifiers.generations].sort(),
     isLimitActive: modifiers.isLimitActive,
-    knowledgeCategories: [...modifiers.knowledgeCategories].sort(),
+    questionTypes: [...modifiers.questionTypes].sort(),
     limit: modifiers.isLimitActive ? modifiers.limit : null,
     speedrunMode: modifiers.speedrunMode,
   });
+
+const getLegacyTrainingKey = (modifiers: Modifiers): string | null => {
+  const categories = [
+    ...new Set(
+      modifiers.questionTypes.map(
+        (questionType) => questionTypeDefinitions[questionType].category,
+      ),
+    ),
+  ];
+  const expandedTypes = questionTypes.filter((questionType) =>
+    categories.includes(questionTypeDefinitions[questionType].category),
+  );
+  if (expandedTypes.length !== modifiers.questionTypes.length) return null;
+
+  return JSON.stringify({
+    generations: [...modifiers.generations].sort(),
+    isLimitActive: modifiers.isLimitActive,
+    knowledgeCategories: categories.sort(),
+    limit: modifiers.isLimitActive ? modifiers.limit : null,
+    speedrunMode: modifiers.speedrunMode,
+  });
+};
 
 const readResults = (): SavedResults => {
   try {
@@ -142,7 +165,10 @@ export const saveResult = (
   }
 
   const key = getTrainingKey(modifiers);
-  const previous = results.training[key];
+  const legacyKey = getLegacyTrainingKey(modifiers);
+  const previous =
+    results.training[key] ??
+    (legacyKey ? results.training[legacyKey] : undefined);
   const isNewBest =
     !previous ||
     normalizedResult.score > previous.score ||

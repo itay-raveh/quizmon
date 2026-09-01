@@ -1,14 +1,16 @@
 import catalogData from '@/game/data/pokemon.json';
+import { getQuestionTitle } from '@/game/game';
 import {
   buildDailyQuestions,
-  getDailyCategories,
   getDailyModifiers,
+  getDailyQuestionTypes,
   getUtcDate,
   parseDailyDate,
 } from '@/game/daily';
 import {
   generations,
-  knowledgeCategories,
+  questionTypeDefinitions,
+  questionTypes,
   type PokemonCatalog,
 } from '@/game/types';
 
@@ -18,34 +20,40 @@ describe('daily Trainer Trial', () => {
   it('builds the same seeded ten-question challenge for a UTC date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');
-    const categories = getDailyCategories('2026-09-01');
+    const schedule = getDailyQuestionTypes('2026-09-01');
 
     expect(first).toEqual(second);
     expect(first).toHaveLength(10);
-    expect(first.map(({ category }) => category)).toEqual(categories);
-    expect(categories.at(-1)).toBe('champion');
+    expect(first.map(getQuestionTitle)).toEqual(
+      schedule.map((questionType) =>
+        questionType === 'champion'
+          ? 'Champion question'
+          : questionTypeDefinitions[questionType].label,
+      ),
+    );
+    expect(schedule.at(-1)).toBe('champion');
     expect(
-      categories
+      schedule
         .slice(0, -1)
-        .every((category) =>
-          knowledgeCategories.includes(
-            category as (typeof knowledgeCategories)[number],
+        .every((questionType) =>
+          questionTypes.includes(
+            questionType as (typeof questionTypes)[number],
           ),
         ),
     ).toBe(true);
   });
 
-  it('changes both the category schedule and questions on a different date', () => {
-    expect(getDailyCategories('2026-09-01')).not.toEqual(
-      getDailyCategories('2026-09-02'),
+  it('changes both the question-type schedule and questions on a different date', () => {
+    expect(getDailyQuestionTypes('2026-09-01')).not.toEqual(
+      getDailyQuestionTypes('2026-09-02'),
     );
     expect(buildDailyQuestions(catalog, '2026-09-01')).not.toEqual(
       buildDailyQuestions(catalog, '2026-09-02'),
     );
   });
 
-  it('allows categories to repeat before the Champion finale', () => {
-    const standard = getDailyCategories('2026-09-01').slice(0, -1);
+  it('allows question types to repeat before the Champion finale', () => {
+    const standard = getDailyQuestionTypes('2026-09-01').slice(0, -1);
     expect(new Set(standard).size).toBeLessThan(standard.length);
   });
 

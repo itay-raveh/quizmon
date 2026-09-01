@@ -11,7 +11,7 @@ and identity across Generations I through IX.
 
 - Play the daily challenge. You get
   one attempt, saved in your browser.
-- Play custom games around the generations and topics you want.
+- Play custom games around the generations and question types you want.
 - Finish with a progressive-clue question worth more when you solve it
   early.
 

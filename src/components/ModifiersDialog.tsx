@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { filterPokemon, getCategoryLabel } from '@/game/game';
+import { filterPokemon, getQuestionTypeLabel } from '@/game/game';
 import {
   generations,
-  knowledgeCategories,
+  questionTypes,
   type Generation,
-  type KnowledgeCategory,
   type Modifiers,
   type PokemonCatalog,
+  type QuestionType,
 } from '@/game/types';
 import { Checkbox } from './Checkbox';
 import { GameButton } from './GameButton';
@@ -50,9 +50,11 @@ export const ModifiersDialog = ({
     [catalog, draft],
   );
   const hasSelections =
-    draft.generations.length > 0 && draft.knowledgeCategories.length > 0;
+    draft.generations.length > 0 && draft.questionTypes.length > 0;
   const allGenerationsSelected =
     draft.generations.length === generations.length;
+  const allQuestionTypesSelected =
+    draft.questionTypes.length === questionTypes.length;
   const limitIsValid =
     !draft.isLimitActive ||
     (Number.isInteger(draft.limit) &&
@@ -234,22 +236,39 @@ export const ModifiersDialog = ({
             </fieldset>
 
             <fieldset>
-              <legend>Knowledge mix</legend>
-              <p className="field-description">
-                Pick the kinds of questions you want to practice.
-              </p>
-              <div className="selection-grid selection-grid--topics">
-                {knowledgeCategories.map((category) => (
+              <legend>Question types</legend>
+              <div className="field-description-row">
+                <p className="field-description">
+                  Pick the formats you want to practice.
+                </p>
+                <button
+                  aria-label={`${allQuestionTypesSelected ? 'Deselect' : 'Select'} all question types`}
+                  className="selection-toggle"
+                  onClick={() =>
+                    setDraft((current) => ({
+                      ...current,
+                      questionTypes: allQuestionTypesSelected
+                        ? []
+                        : [...questionTypes],
+                    }))
+                  }
+                  type="button"
+                >
+                  {allQuestionTypesSelected ? 'Deselect all' : 'Select all'}
+                </button>
+              </div>
+              <div className="selection-grid selection-grid--question-types">
+                {questionTypes.map((questionType) => (
                   <SelectionTile
-                    checked={draft.knowledgeCategories.includes(category)}
-                    key={category}
-                    label={getCategoryLabel(category)}
+                    checked={draft.questionTypes.includes(questionType)}
+                    key={questionType}
+                    label={getQuestionTypeLabel(questionType)}
                     onChange={(event) =>
                       setDraft((current) => ({
                         ...current,
-                        knowledgeCategories: toggleValue<KnowledgeCategory>(
-                          current.knowledgeCategories,
-                          category,
+                        questionTypes: toggleValue<QuestionType>(
+                          current.questionTypes,
+                          questionType,
                           event.target.checked,
                         ),
                       }))

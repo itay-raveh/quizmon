@@ -15,16 +15,13 @@ import {
   getQuestionCount,
   getQuestionPromptText,
   getQuestionTitle,
+  getQuestionTypeLabel,
   getSpeedBonus,
   getSpeedBonusPoints,
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
-import {
-  generations,
-  knowledgeCategories,
-  type PokemonCatalog,
-} from '@/game/types';
+import { generations, questionTypes, type PokemonCatalog } from '@/game/types';
 
 const catalog = catalogData as PokemonCatalog;
 
@@ -41,14 +38,14 @@ describe('normalizeModifiers', () => {
     expect(
       normalizeModifiers({
         generations: ['IX', 'not-a-generation'],
-        knowledgeCategories: ['stat', 'not-a-category'],
+        questionTypes: ['stat-showdown', 'not-a-type'],
         isLimitActive: true,
         limit: 0,
         speedrunMode: true,
       }),
     ).toEqual({
       generations: ['IX'],
-      knowledgeCategories: ['stat'],
+      questionTypes: ['stat-showdown'],
       soundEnabled: true,
       isLimitActive: true,
       limit: 1,
@@ -58,11 +55,27 @@ describe('normalizeModifiers', () => {
 
   it('restores required selections when stored arrays are empty', () => {
     expect(
-      normalizeModifiers({ generations: [], knowledgeCategories: [] }),
+      normalizeModifiers({ generations: [], questionTypes: [] }),
     ).toMatchObject({
       generations: defaultModifiers.generations,
-      knowledgeCategories: defaultModifiers.knowledgeCategories,
+      questionTypes: defaultModifiers.questionTypes,
     });
+  });
+
+  it('migrates broad topic settings to their concrete question types', () => {
+    expect(
+      normalizeModifiers({
+        generations: ['I'],
+        knowledgeCategories: ['identity', 'evolution'],
+      }).questionTypes,
+    ).toEqual([
+      'pokedex-scan',
+      'silhouette-match',
+      'pixel-peek',
+      'shiny-spotter',
+      'evolution-trail',
+      'evolution-order',
+    ]);
   });
 });
 
@@ -79,21 +92,21 @@ describe('question building', () => {
     ).toBe(true);
   });
 
-  it('builds every training category with the right number of unique options', () => {
+  it('builds every selected question type with unique options', () => {
     const questions = buildQuestions(
       catalog,
       {
         ...defaultModifiers,
         generations: [...generations],
-        knowledgeCategories: [...knowledgeCategories],
-        limit: knowledgeCategories.length,
+        questionTypes: [...questionTypes],
+        limit: questionTypes.length,
       },
       createSeededRandom('all-categories'),
     );
 
-    expect(questions).toHaveLength(knowledgeCategories.length);
-    expect(new Set(questions.map(({ category }) => category))).toEqual(
-      new Set(knowledgeCategories),
+    expect(questions).toHaveLength(questionTypes.length);
+    expect(new Set(questions.map(getQuestionTitle))).toEqual(
+      new Set(questionTypes.map(getQuestionTypeLabel)),
     );
     for (const question of questions) {
       expect(question.options).toEqual(
@@ -111,8 +124,17 @@ describe('question building', () => {
       {
         ...defaultModifiers,
         generations: [...generations],
-        knowledgeCategories: [...knowledgeCategories],
-        limit: knowledgeCategories.length,
+        questionTypes: [
+          'field-notes',
+          'stat-showdown',
+          'ability-check',
+          'move-check',
+          'type-matchup',
+          'pokedex-scan',
+          'evolution-trail',
+          'type-check',
+        ],
+        limit: 8,
       },
       createSeededRandom('question-visuals'),
     );
@@ -159,51 +181,19 @@ describe('question building', () => {
     );
   });
 
-  it('mixes the approved playful variants into broad knowledge topics', () => {
-    const expectedTitles = {
-      evolution: ['Evolution trail', 'Evolution order'],
-      identity: [
-        'Pokédex scan',
-        'Pixel peek',
-        'Shiny spotter',
-        'Silhouette match',
-      ],
-      type: ['Type check', 'Odd one out', 'Type roundup'],
-    } as const;
-
-    for (const [category, titles] of Object.entries(expectedTitles)) {
-      const questions = buildQuestions(
-        catalog,
-        {
-          ...defaultModifiers,
-          knowledgeCategories: [category as 'evolution' | 'identity' | 'type'],
-          limit: 80,
-        },
-        createSeededRandom(`playful-${category}`),
-      );
-      expect(new Set(questions.map(getQuestionTitle))).toEqual(new Set(titles));
-    }
-  });
-
   it('builds exact multi-select and ordering answer keys', () => {
-    const typeQuestions = buildQuestions(
+    const [multiSelect] = buildQuestions(
       catalog,
-      { ...defaultModifiers, knowledgeCategories: ['type'], limit: 80 },
+      { ...defaultModifiers, questionTypes: ['type-roundup'], limit: 1 },
       createSeededRandom('multi-select'),
-    );
-    const multiSelect = typeQuestions.find(
-      ({ answer }) => answer.interaction === 'multi-select',
     );
     expect(multiSelect?.answer.correctOptions.length).toBeGreaterThan(1);
     expect(multiSelect?.options).toHaveLength(4);
 
-    const evolutionQuestions = buildQuestions(
+    const [ordering] = buildQuestions(
       catalog,
-      { ...defaultModifiers, knowledgeCategories: ['evolution'], limit: 80 },
+      { ...defaultModifiers, questionTypes: ['evolution-order'], limit: 1 },
       createSeededRandom('ordering'),
-    );
-    const ordering = evolutionQuestions.find(
-      ({ answer }) => answer.interaction === 'ordering',
     );
     expect(ordering?.answer.correctOptions).toHaveLength(3);
     expect(ordering?.options).toHaveLength(3);
@@ -214,7 +204,7 @@ describe('scoring', () => {
   it('awards 100 points for a normal correct answer', () => {
     const [question] = buildQuestions(
       catalog,
-      { ...defaultModifiers, knowledgeCategories: ['stat'], limit: 1 },
+      { ...defaultModifiers, questionTypes: ['stat-showdown'], limit: 1 },
       createSeededRandom('score'),
     );
     expect(question && getAnswerPoints(question, true)).toBe(100);

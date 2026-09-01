@@ -6,14 +6,14 @@ interface SelectionTileProps extends Omit<
   'type'
 > {
   label: ReactNode;
-  variant?: 'generation' | 'topic';
+  variant?: 'generation' | 'question-type';
 }
 
 export const SelectionTile = ({
   checked,
   label,
   onChange,
-  variant = 'topic',
+  variant = 'question-type',
   ...props
 }: SelectionTileProps) => {
   const { playDown, playOff, playOn } = useGameSounds();

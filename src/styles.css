@@ -1159,7 +1159,7 @@ main {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.selection-grid--topics {
+.selection-grid--question-types {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -1204,6 +1204,10 @@ main {
   min-width: 0;
   font-weight: 800;
   line-height: 1.15;
+}
+
+.selection-grid--question-types .selection-tile__label {
+  font-size: var(--text-compact-control);
 }
 
 .selection-tile--generation .selection-tile__label {
@@ -1564,7 +1568,7 @@ main {
     font-size: var(--text-label);
   }
 
-  .selection-grid--topics {
+  .selection-grid--question-types {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

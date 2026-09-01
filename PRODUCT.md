@@ -20,7 +20,7 @@ Quizmon combines one deterministic daily gauntlet with a configurable training l
 
 ## Operating Context
 
-Players open Quizmon in a browser, take the daily Trainer Trial once, or configure a Training round by generation and knowledge category. They answer with pointer, touch, or number keys and receive an immediately shareable, spoiler-free result. Settings, completed dailies, and best Training scores stay in the browser. No account or hosted application backend is required.
+Players open Quizmon in a browser, take the daily Trainer Trial once, or configure a Training round by generation and question type. They answer with pointer, touch, or number keys and receive an immediately shareable, spoiler-free result. Settings, completed dailies, and best Training scores stay in the browser. No account or hosted application backend is required.
 
 ## Capabilities and Constraints
 
