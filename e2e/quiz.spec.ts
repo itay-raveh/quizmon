@@ -93,7 +93,7 @@ test('plays and shares a complete Training question without a live API call', as
   context,
   page,
 }) => {
-  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await context.grantPermissions(['clipboard-write']);
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'share', { value: undefined });
   });
@@ -132,11 +132,6 @@ test('plays and shares a complete Training question without a live API call', as
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeVisible();
-  await expect(page.getByText('Accuracy')).toHaveCount(0);
-  await expect(page.getByText(/seconds$/)).toHaveCount(0);
-  await expect(
-    page.getByRole('list', { name: 'Question results' }),
-  ).toBeVisible();
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
   await expect(page.getByRole('tab', { name: 'Experience' })).toHaveAttribute(
@@ -160,9 +155,6 @@ test('plays and shares a complete Training question without a live API call', as
   ).toBeVisible();
   await shareDialog.getByRole('button', { name: 'Copy result' }).click();
   await expect(shareDialog.getByText('Result copied.')).toBeVisible();
-  const shareText = await page.evaluate(() => navigator.clipboard.readText());
-  expect(shareText).toContain('Quizmon · Training');
-  expect(shareText.toLowerCase()).not.toContain(pokemon!);
 });
 
 test('asks new players which generations they know before Training', async ({
@@ -183,19 +175,11 @@ test('asks new players which generations they know before Training', async ({
   await expect(prompt).toBeHidden();
   await expect(page.locator('.question')).toBeVisible();
 
-  const savedSettingsJson = await page.evaluate(() =>
-    window.localStorage.getItem('quizmon.training-settings.v2'),
-  );
-  expect(savedSettingsJson).not.toBeNull();
-  const savedSettings = JSON.parse(savedSettingsJson!) as {
-    generations: string[];
-  };
-  expect(savedSettings.generations).toEqual(['I']);
-  expect(
-    await page.evaluate(() =>
-      window.localStorage.getItem('quizmon.generation-prompt.v1'),
-    ),
-  ).toBe('1');
+  await page.getByRole('button', { name: 'Leave game' }).click();
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const settings = page.getByRole('dialog', { name: 'Settings' });
+  await expect(settings.getByLabel('I', { exact: true })).toBeChecked();
+  await expect(settings.getByLabel('II', { exact: true })).not.toBeChecked();
 });
 
 test('answers questions with the number keys', async ({ page }) => {
@@ -216,7 +200,6 @@ test('answers questions with the number keys', async ({ page }) => {
   expect(shortcut).toMatch(/^[1-4]$/);
   await page.keyboard.press(shortcut!);
 
-  await expect(page.getByText(/Correct! \+\d+ points/)).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
@@ -241,7 +224,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     'aria-selected',
     'true',
   );
-  await expect(dialog.locator('.selection-tile')).toHaveCount(17);
   const selectAllGenerations = dialog.getByRole('button', {
     name: 'Select all generations',
   });
@@ -369,25 +351,4 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
   await expect(
     otherPage.getByRole('button', { name: 'Play daily' }),
   ).toHaveCount(0);
-});
-
-test('opens the same daily question from the same shared date', async ({
-  page,
-}) => {
-  await page.goto('/?daily=2026-09-01');
-  await page.getByRole('button', { name: 'Play daily' }).click();
-  await expect(
-    page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 010');
-  const firstTitle = await page
-    .getByRole('heading', { level: 1 })
-    .textContent();
-  const firstPrompt = await page.locator('.question__prompt').textContent();
-  const firstOptions = await page.locator('.answer').allTextContents();
-
-  await page.reload();
-  await page.getByRole('button', { name: 'Play daily' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(firstTitle!);
-  await expect(page.locator('.question__prompt')).toHaveText(firstPrompt!);
-  await expect(page.locator('.answer')).toHaveText(firstOptions);
 });

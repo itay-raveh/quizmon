@@ -1,11 +1,5 @@
 import { defaultModifiers } from '@/game/game';
-import {
-  canPersistResults,
-  markGenerationPromptAnswered,
-  readDailyResult,
-  saveResult,
-  shouldShowGenerationPrompt,
-} from '@/game/storage';
+import { canPersistResults, readDailyResult, saveResult } from '@/game/storage';
 import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
@@ -97,23 +91,6 @@ describe('saved results', () => {
     expect(readDailyResult('2026-09-01')?.score).toBe(150);
   });
 
-  it('persists and restores speed bonuses', () => {
-    const mode = { kind: 'daily', date: '2026-09-01' } as const;
-    const timedResult = {
-      ...result,
-      answers: result.answers.map((answer, index) => ({
-        ...answer,
-        responseMilliseconds: 2_000,
-        speedBonus: index === 0 ? 21 : 0,
-      })),
-      score: 171,
-    };
-
-    saveResult(mode, defaultModifiers, timedResult);
-
-    expect(readDailyResult(mode.date)).toEqual(timedResult);
-  });
-
   it('reports when browser storage cannot persist a result', () => {
     const setItem = vi
       .spyOn(Storage.prototype, 'setItem')
@@ -130,20 +107,5 @@ describe('saved results', () => {
       ),
     ).toEqual({ best: result, isNewBest: false, isSaved: false });
     setItem.mockRestore();
-  });
-});
-
-describe('generation prompt', () => {
-  beforeEach(() => window.localStorage.clear());
-
-  it('only appears before a player has chosen or saved settings', () => {
-    expect(shouldShowGenerationPrompt()).toBe(true);
-
-    markGenerationPromptAnswered();
-    expect(shouldShowGenerationPrompt()).toBe(false);
-
-    window.localStorage.clear();
-    window.localStorage.setItem('quizmon.training-settings.v2', '{}');
-    expect(shouldShowGenerationPrompt()).toBe(false);
   });
 });

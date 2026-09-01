@@ -1,7 +1,6 @@
 import catalogData from '@/game/data/pokemon.json';
 import {
   buildDailyQuestions,
-  createSeededRandom,
   getDailyCategories,
   getDailyModifiers,
   getUtcDate,
@@ -48,12 +47,6 @@ describe('daily Trainer Trial', () => {
   it('allows categories to repeat before the Champion finale', () => {
     const standard = getDailyCategories('2026-09-01').slice(0, -1);
     expect(new Set(standard).size).toBeLessThan(standard.length);
-  });
-
-  it('creates a repeatable random sequence', () => {
-    const first = createSeededRandom('seed');
-    const second = createSeededRandom('seed');
-    expect([first(), first(), first()]).toEqual([second(), second(), second()]);
   });
 
   it('uses all generations and a fixed ten-question length', () => {

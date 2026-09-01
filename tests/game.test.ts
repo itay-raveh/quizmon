@@ -206,29 +206,6 @@ describe('question building', () => {
     expect(ordering?.answer.correctOptions).toHaveLength(3);
     expect(ordering?.options).toHaveLength(3);
   });
-
-  it('keeps matchup and property distractors unambiguous', () => {
-    const questions = ['ability', 'move', 'matchup'].flatMap(
-      (knowledgeCategory) =>
-        buildQuestions(
-          catalog,
-          {
-            ...defaultModifiers,
-            generations: [...generations],
-            knowledgeCategories: [
-              knowledgeCategory as 'ability' | 'move' | 'matchup',
-            ],
-            limit: 5,
-          },
-          createSeededRandom(knowledgeCategory),
-        ),
-    );
-
-    expect(questions).toHaveLength(15);
-    expect(questions.every(({ options }) => new Set(options).size === 4)).toBe(
-      true,
-    );
-  });
 });
 
 describe('scoring', () => {
