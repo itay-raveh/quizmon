@@ -1,37 +1,36 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGameSounds } from '@/audio/sound';
-import { calculateScore, formatDuration } from '@/game/game';
-import type { Modifiers } from '@/game/types';
+import { getModeLabel } from '@/game/daily';
+import { formatDuration } from '@/game/game';
+import { shareResult } from '@/game/share';
+import type { GameMode, GameResult, Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { GameButton } from './GameButton';
 
 interface ResultsProps {
-  correctCount: number;
-  elapsedSeconds: number;
+  bestResult: GameResult;
+  isNewBest: boolean;
+  mode: GameMode;
   modifiers: Modifiers;
   onNewGame: () => void;
-  questionCount: number;
+  result: GameResult;
 }
 
 export const Results = ({
-  correctCount,
-  elapsedSeconds,
+  bestResult,
+  isNewBest,
+  mode,
   modifiers,
   onNewGame,
-  questionCount,
+  result,
 }: ResultsProps) => {
-  const score = calculateScore(
-    correctCount,
-    questionCount,
-    elapsedSeconds,
-    modifiers,
-  );
+  const [shareStatus, setShareStatus] = useState('');
   const { playScore, stopScore } = useGameSounds();
 
   useEffect(() => {
-    if (score > 1) playScore();
+    if (result.score > 1) playScore();
     return stopScore;
-  }, [playScore, score, stopScore]);
+  }, [playScore, result.score, stopScore]);
 
   const formatScore = useCallback(
     (value: number) =>
@@ -39,47 +38,78 @@ export const Results = ({
     [],
   );
 
+  const handleShare = async () => {
+    try {
+      const status = await shareResult(mode, result);
+      setShareStatus(
+        status === 'copied'
+          ? 'Result copied to the clipboard.'
+          : status === 'shared'
+            ? 'Result shared.'
+            : '',
+      );
+    } catch {
+      setShareStatus('Could not share this result.');
+    }
+  };
+
   return (
     <section className="results" aria-labelledby="results-title">
       <h1 id="results-title">Results</h1>
+      <p className="game-mode">{getModeLabel(mode)}</p>
 
       <dl className="results-list">
         <div>
           <dt>Accuracy</dt>
-          <dd>{((correctCount / questionCount) * 100).toFixed(2)}%</dd>
+          <dd>
+            {((result.correctCount / result.questionCount) * 100).toFixed(2)}%
+          </dd>
           <dd className="results-list__detail">
-            {correctCount} / {questionCount}
+            {result.correctCount} / {result.questionCount}
           </dd>
         </div>
         <div>
           <dt>Time</dt>
-          <dd>{formatDuration(elapsedSeconds)}</dd>
+          <dd>{formatDuration(result.elapsedSeconds)}</dd>
           <dd className="results-list__detail">
-            {Math.max(1, elapsedSeconds)} seconds
+            {Math.max(1, result.elapsedSeconds)} seconds
           </dd>
         </div>
         {modifiers.whosThatPokemon ? (
           <div>
             <dt>Silhouette</dt>
-            <dd>×{correctCount}</dd>
+            <dd>×{result.correctCount}</dd>
           </div>
         ) : null}
         {modifiers.randomSprite ? (
           <div>
             <dt>Random sprite</dt>
-            <dd>×{correctCount}</dd>
+            <dd>×{result.correctCount}</dd>
           </div>
         ) : null}
       </dl>
 
-      <div className="score" aria-label={`Score ${formatScore(score)}`}>
+      <div className="score" aria-label={`Score ${formatScore(result.score)}`}>
         <span>Score</span>
         <strong>
-          <AnimatedScore format={formatScore} value={score} />
+          <AnimatedScore format={formatScore} value={result.score} />
         </strong>
       </div>
 
-      <GameButton onClick={onNewGame}>New game</GameButton>
+      <p className="personal-best">
+        {isNewBest ? <strong>New best!</strong> : 'Best'}{' '}
+        {formatScore(bestResult.score)} points
+      </p>
+
+      <div className="results__actions">
+        <GameButton onClick={() => void handleShare()}>Share result</GameButton>
+        <GameButton tone="quiet" onClick={onNewGame}>
+          New game
+        </GameButton>
+      </div>
+      <p className="share-status" aria-live="polite">
+        {shareStatus}
+      </p>
     </section>
   );
 };

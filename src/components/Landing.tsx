@@ -1,18 +1,23 @@
 import { GameButton } from './GameButton';
 import { Logo } from './Logo';
+import { formatDailyDate } from '@/game/daily';
 
 interface LandingProps {
   catalogStatus: 'loading' | 'ready' | 'error';
+  dailyDate: string;
   onOpenSettings: () => void;
   onRetryCatalog: () => void;
   onStart: () => void;
+  onStartDaily: () => void;
 }
 
 export const Landing = ({
   catalogStatus,
+  dailyDate,
   onOpenSettings,
   onRetryCatalog,
   onStart,
+  onStartDaily,
 }: LandingProps) => (
   <section className="landing" aria-labelledby="landing-title">
     <h1 id="landing-title" className="visually-hidden">
@@ -32,7 +37,16 @@ export const Landing = ({
         </GameButton>
       </div>
     ) : null}
-    <div className="landing__actions">
+    <div className="daily-card">
+      <div>
+        <strong>Daily challenge</strong>
+        <span>{formatDailyDate(dailyDate)} · 10 questions</span>
+      </div>
+      <GameButton disabled={catalogStatus !== 'ready'} onClick={onStartDaily}>
+        Play daily
+      </GameButton>
+    </div>
+    <div className="landing__actions" aria-label="Custom game">
       <GameButton
         disabled={catalogStatus !== 'ready'}
         tone="quiet"
@@ -41,7 +55,7 @@ export const Landing = ({
         Modifiers
       </GameButton>
       <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
-        Start
+        Custom game
       </GameButton>
     </div>
   </section>

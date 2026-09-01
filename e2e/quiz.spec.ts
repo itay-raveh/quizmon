@@ -67,7 +67,14 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   expect(await robotsResponse.text()).toBe('User-agent: *\nAllow: /\n');
 });
 
-test('plays a complete one-question game', async ({ page }) => {
+test('plays and shares a complete one-question game', async ({
+  context,
+  page,
+}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', { value: undefined });
+  });
   let requestedPokemon = '';
   let requestCount = 0;
 
@@ -90,7 +97,7 @@ test('plays a complete one-question game', async ({ page }) => {
 
   await page.goto('/');
   await expect(page.getByRole('img', { name: /Quizmon/ })).toBeVisible();
-  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Custom game' }).click();
 
   await expect(
     page.getByRole('heading', { name: 'Who’s that Pokémon?' }),
@@ -110,6 +117,13 @@ test('plays a complete one-question game', async ({ page }) => {
   await expect(page.getByText('Correct!')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Results' })).toBeVisible();
   await expect(page.getByText('100.00%')).toBeVisible();
+  await expect(page.getByText(/New best!/)).toBeVisible();
+
+  await page.getByRole('button', { name: 'Share result' }).click();
+  await expect(page.getByText('Result copied to the clipboard.')).toBeVisible();
+  const shareText = await page.evaluate(() => navigator.clipboard.readText());
+  expect(shareText).toContain('Quizmon · Custom game');
+  expect(shareText.toLowerCase()).not.toContain(requestedPokemon);
 });
 
 test('prefetches and decodes the next question before advancing', async ({
@@ -144,7 +158,7 @@ test('prefetches and decodes the next question before advancing', async ({
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Custom game' }).click();
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 002');
@@ -183,7 +197,7 @@ test('answers questions with the number keys', async ({ page }) => {
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Custom game' }).click();
   await expect.poll(() => requestedPokemon).not.toBe('');
 
   const answer = requestedPokemon
@@ -223,4 +237,43 @@ test('keeps modifier actions reachable on a phone', async ({ page }) => {
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
   await expect(page.getByRole('button', { name: 'Modifiers' })).toBeFocused();
+});
+
+test('opens a deterministic daily challenge from a shared date', async ({
+  page,
+}) => {
+  const requestedPokemon: string[] = [];
+  await page.route('https://pokeapi.co/api/v2/pokemon/**', async (route) => {
+    const name = route.request().url().split('/').filter(Boolean).at(-1) ?? '';
+    requestedPokemon.push(name);
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        name,
+        sprites: {
+          front_default:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
+          other: {},
+          versions: {},
+        },
+      }),
+    });
+  });
+
+  await page.goto('/?daily=2026-09-01');
+  await expect(page.getByText('Sep 1, 2026 · 10 questions')).toBeVisible();
+  await page.getByRole('button', { name: 'Play daily' }).click();
+
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 010');
+  await expect(page.getByText(/Daily challenge · Sep 1, 2026/)).toBeVisible();
+  await expect.poll(() => requestedPokemon).toHaveLength(2);
+  const firstRun = [...requestedPokemon];
+
+  requestedPokemon.length = 0;
+  await page.reload();
+  await page.getByRole('button', { name: 'Play daily' }).click();
+  await expect.poll(() => requestedPokemon).toHaveLength(2);
+  expect(requestedPokemon).toEqual(firstRun);
 });

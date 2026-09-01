@@ -47,3 +47,12 @@ export interface QuestionData {
   pokemonName: string;
   spriteRandom: number;
 }
+
+export type GameMode = { kind: 'custom' } | { kind: 'daily'; date: string };
+
+export interface GameResult {
+  correctCount: number;
+  elapsedSeconds: number;
+  questionCount: number;
+  score: number;
+}

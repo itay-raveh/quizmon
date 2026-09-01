@@ -16,6 +16,7 @@ const catalog: PokemonCatalog = {
   charmander: { generation: 'I', formCategory: 'default' },
   squirtle: { generation: 'I', formCategory: 'default' },
   pikachu: { generation: 'I', formCategory: 'default' },
+  chikorita: { generation: 'II', formCategory: 'default' },
   'charizard-mega-x': { generation: 'VI', formCategory: 'mega' },
 };
 
@@ -120,6 +121,30 @@ describe('buildQuestions', () => {
     expect(questions).toEqual([
       { pokemonName: 'pikachu', options: ['pikachu'], spriteRandom: 0 },
     ]);
+  });
+
+  it('prefers distractors from the same generation and form category', () => {
+    const questions = buildQuestions(
+      catalog,
+      {
+        ...defaultModifiers,
+        generations: ['I', 'II'],
+        isLimitActive: false,
+      },
+      () => 0.25,
+    );
+    const bulbasaur = questions.find(
+      ({ pokemonName }) => pokemonName === 'bulbasaur',
+    );
+
+    expect(bulbasaur?.options).toHaveLength(4);
+    expect(
+      bulbasaur?.options.every(
+        (name) =>
+          catalog[name]?.generation === 'I' &&
+          catalog[name]?.formCategory === 'default',
+      ),
+    ).toBe(true);
   });
 });
 

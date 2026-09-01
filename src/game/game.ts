@@ -106,10 +106,50 @@ export const buildQuestions = (
   return shuffle(pool, random)
     .slice(0, count)
     .map((pokemonName) => {
-      const distractors = shuffle(
+      const pokemon = catalog[pokemonName];
+      const distractorGroups = [
+        pool.filter((name) => {
+          const candidate = catalog[name];
+          return (
+            name !== pokemonName &&
+            candidate !== undefined &&
+            pokemon !== undefined &&
+            candidate.generation === pokemon.generation &&
+            candidate.formCategory === pokemon.formCategory
+          );
+        }),
+        pool.filter((name) => {
+          const candidate = catalog[name];
+          return (
+            name !== pokemonName &&
+            candidate !== undefined &&
+            pokemon !== undefined &&
+            candidate.generation === pokemon.generation
+          );
+        }),
+        pool.filter((name) => {
+          const candidate = catalog[name];
+          return (
+            name !== pokemonName &&
+            candidate !== undefined &&
+            pokemon !== undefined &&
+            candidate.formCategory === pokemon.formCategory
+          );
+        }),
         pool.filter((name) => name !== pokemonName),
-        random,
-      ).slice(0, 3);
+      ];
+      const distractors: string[] = [];
+      const selected = new Set([pokemonName]);
+
+      for (const group of distractorGroups) {
+        for (const name of shuffle(group, random)) {
+          if (selected.has(name)) continue;
+          selected.add(name);
+          distractors.push(name);
+          if (distractors.length === 3) break;
+        }
+        if (distractors.length === 3) break;
+      }
 
       return {
         pokemonName,

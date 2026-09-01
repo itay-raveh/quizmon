@@ -6,10 +6,21 @@ import { ModifiersDialog } from '@/components/ModifiersDialog';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
 import { usePokemonCatalog } from '@/game/catalog';
-import { buildQuestions } from '@/game/game';
-import { usePersistentModifiers } from '@/game/storage';
+import {
+  buildDailyQuestions,
+  getDailyModifiers,
+  getUtcDate,
+  parseDailyDate,
+} from '@/game/daily';
+import { buildQuestions, calculateScore } from '@/game/game';
+import { saveBestScore, usePersistentModifiers } from '@/game/storage';
 import { useStopwatch } from '@/game/stopwatch';
-import type { QuestionData } from '@/game/types';
+import type {
+  GameMode,
+  GameResult,
+  Modifiers,
+  QuestionData,
+} from '@/game/types';
 
 type Phase = 'landing' | 'questions' | 'results';
 
@@ -21,17 +32,51 @@ export const App = () => {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [questions, setQuestions] = useState<QuestionData[]>([]);
+  const [activeModifiers, setActiveModifiers] = useState<Modifiers>(modifiers);
+  const [mode, setMode] = useState<GameMode>({ kind: 'custom' });
+  const [result, setResult] = useState<GameResult | null>(null);
+  const [bestResult, setBestResult] = useState<GameResult | null>(null);
+  const [isNewBest, setIsNewBest] = useState(false);
+  const [dailyDate] = useState(
+    () => parseDailyDate(window.location.search) ?? getUtcDate(),
+  );
   const { elapsedSeconds, pause, reset, start } = useStopwatch();
 
-  const startGame = () => {
-    if (catalogState.status !== 'ready') return;
-
-    setQuestions(buildQuestions(catalogState.catalog, modifiers));
+  const startGame = (
+    nextQuestions: QuestionData[],
+    nextModifiers: Modifiers,
+    nextMode: GameMode,
+  ) => {
+    setQuestions(nextQuestions);
+    setActiveModifiers(nextModifiers);
+    setMode(nextMode);
+    setResult(null);
+    setBestResult(null);
+    setIsNewBest(false);
     setQuestionIndex(0);
     setCorrectCount(0);
     reset();
     start();
     setPhase('questions');
+  };
+
+  const startCustomGame = () => {
+    if (catalogState.status !== 'ready') return;
+
+    startGame(buildQuestions(catalogState.catalog, modifiers), modifiers, {
+      kind: 'custom',
+    });
+  };
+
+  const startDailyGame = () => {
+    if (catalogState.status !== 'ready') return;
+
+    const dailyModifiers = getDailyModifiers(modifiers.soundEnabled);
+    startGame(
+      buildDailyQuestions(catalogState.catalog, dailyDate),
+      dailyModifiers,
+      { kind: 'daily', date: dailyDate },
+    );
   };
 
   const newGame = useCallback(() => {
@@ -44,16 +89,40 @@ export const App = () => {
 
   const answerQuestion = useCallback(
     (correct: boolean) => {
-      if (correct) setCorrectCount((current) => current + 1);
+      const nextCorrectCount = correct ? correctCount + 1 : correctCount;
+      setCorrectCount(nextCorrectCount);
 
       if (questionIndex === questions.length - 1) {
+        const nextResult = {
+          correctCount: nextCorrectCount,
+          elapsedSeconds,
+          questionCount: questions.length,
+          score: calculateScore(
+            nextCorrectCount,
+            questions.length,
+            elapsedSeconds,
+            activeModifiers,
+          ),
+        };
+        const best = saveBestScore(mode, activeModifiers, nextResult);
+        setResult(nextResult);
+        setBestResult(best.best);
+        setIsNewBest(best.isNewBest);
         pause();
         setPhase('results');
       } else {
         setQuestionIndex((current) => current + 1);
       }
     },
-    [pause, questionIndex, questions.length],
+    [
+      activeModifiers,
+      correctCount,
+      elapsedSeconds,
+      mode,
+      pause,
+      questionIndex,
+      questions.length,
+    ],
   );
 
   const question = questions[questionIndex];
@@ -66,9 +135,11 @@ export const App = () => {
           {phase === 'landing' ? (
             <Landing
               catalogStatus={catalogState.status}
+              dailyDate={dailyDate}
               onOpenSettings={() => setSettingsOpen(true)}
               onRetryCatalog={catalogState.retry}
-              onStart={startGame}
+              onStart={startCustomGame}
+              onStartDaily={startDailyGame}
             />
           ) : null}
 
@@ -76,7 +147,8 @@ export const App = () => {
             <Question
               key={`${questionIndex}-${question.pokemonName}`}
               elapsedSeconds={elapsedSeconds}
-              modifiers={modifiers}
+              mode={mode}
+              modifiers={activeModifiers}
               nextQuestion={questions[questionIndex + 1]}
               number={questionIndex + 1}
               onAnswer={answerQuestion}
@@ -86,13 +158,14 @@ export const App = () => {
             />
           ) : null}
 
-          {phase === 'results' ? (
+          {phase === 'results' && result && bestResult ? (
             <Results
-              correctCount={correctCount}
-              elapsedSeconds={elapsedSeconds}
-              modifiers={modifiers}
+              bestResult={bestResult}
+              isNewBest={isNewBest}
+              mode={mode}
+              modifiers={activeModifiers}
               onNewGame={newGame}
-              questionCount={questions.length}
+              result={result}
             />
           ) : null}
         </main>

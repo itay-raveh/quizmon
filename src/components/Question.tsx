@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getModeLabel } from '@/game/daily';
 import { formatDuration, formatPokemonName } from '@/game/game';
 import { preloadPokemon, usePokemon } from '@/game/pokemon';
-import type { Modifiers, QuestionData } from '@/game/types';
+import type { GameMode, Modifiers, QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
 import { Progress } from './Progress';
 import { Sprite } from './Sprite';
 
 interface QuestionProps {
   elapsedSeconds: number;
+  mode: GameMode;
   modifiers: Modifiers;
   nextQuestion?: QuestionData;
   number: number;
@@ -19,6 +21,7 @@ interface QuestionProps {
 
 export const Question = ({
   elapsedSeconds,
+  mode,
   modifiers,
   nextQuestion,
   number,
@@ -90,6 +93,7 @@ export const Question = ({
       </div>
 
       <h1 id="question-title">Who’s that Pokémon?</h1>
+      <p className="game-mode">{getModeLabel(mode)}</p>
 
       {pokemonState.status === 'loading' ? (
         <div className="sprite-loader" role="status">
