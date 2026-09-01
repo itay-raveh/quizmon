@@ -1,11 +1,10 @@
 import { useCallback, useEffect } from 'react';
 import useSound from 'use-sound';
+import scoreSound from '@/assets/sounds/prize-wheel-spin.mp3';
 import { calculateScore, formatDuration } from '@/game/game';
 import type { Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { GameButton } from './GameButton';
-
-const SCORE_SOUND = '/assets/sounds/prize-wheel-spin.mp3';
 
 interface ResultsProps {
   correctCount: number;
@@ -28,7 +27,7 @@ export const Results = ({
     elapsedSeconds,
     modifiers,
   );
-  const [playScore, { stop: stopScore }] = useSound(SCORE_SOUND);
+  const [playScore, { stop: stopScore }] = useSound(scoreSound);
 
   useEffect(() => {
     if (score > 1) playScore();
@@ -43,7 +42,6 @@ export const Results = ({
 
   return (
     <section className="results" aria-labelledby="results-title">
-      <p className="eyebrow">Run complete</p>
       <h1 id="results-title">Results</h1>
 
       <dl className="results-list">

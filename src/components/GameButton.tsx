@@ -1,8 +1,7 @@
 import type { ButtonHTMLAttributes, MouseEvent, PointerEvent } from 'react';
 import useSound from 'use-sound';
-
-const POP_DOWN = '/assets/sounds/pop-down.mp3';
-const POP_UP = '/assets/sounds/pop-up-on.mp3';
+import popDown from '@/assets/sounds/pop-down.mp3';
+import popUp from '@/assets/sounds/pop-up-on.mp3';
 
 interface GameButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   tone?: 'primary' | 'quiet';
@@ -16,8 +15,8 @@ export const GameButton = ({
   type = 'button',
   ...props
 }: GameButtonProps) => {
-  const [playDown] = useSound(POP_DOWN, { volume: 0.25 });
-  const [playUp] = useSound(POP_UP, { volume: 0.25 });
+  const [playDown] = useSound(popDown, { volume: 0.25 });
+  const [playUp] = useSound(popUp, { volume: 0.25 });
 
   const handlePointerDown = (event: PointerEvent<HTMLButtonElement>) => {
     playDown();

@@ -29,7 +29,7 @@ export const ModifiersDialog = ({
 }: ModifiersDialogProps) => {
   const [draft, setDraft] = useState<Modifiers>(modifiers);
   const [submitted, setSubmitted] = useState(false);
-  const closeButton = useRef<HTMLButtonElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
 
   const matchingCount = useMemo(
     () => filterPokemon(catalog, draft).length,
@@ -45,199 +45,210 @@ export const ModifiersDialog = ({
   const isValid = hasSelections && matchingCount > 0 && limitIsValid;
 
   useEffect(() => {
-    closeButton.current?.focus();
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+    const element = dialog.current;
+    element?.showModal();
+    return () => {
+      if (element?.open) element.close();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, []);
+
+  const closeDialog = () => {
+    dialog.current?.close();
+    onClose();
+  };
 
   const submit = () => {
     setSubmitted(true);
-    if (isValid) onSave(draft);
+    if (isValid) {
+      dialog.current?.close();
+      onSave(draft);
+    }
   };
 
   return (
-    <div
-      className="dialog-backdrop"
-      onMouseDown={(event) => {
-        if (event.currentTarget === event.target) onClose();
+    <dialog
+      ref={dialog}
+      className="modifiers-dialog"
+      aria-labelledby="modifiers-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        closeDialog();
+      }}
+      onPointerDown={(event) => {
+        const bounds = event.currentTarget.getBoundingClientRect();
+        const outside =
+          event.clientX < bounds.left ||
+          event.clientX > bounds.right ||
+          event.clientY < bounds.top ||
+          event.clientY > bounds.bottom;
+        if (outside) closeDialog();
       }}
     >
-      <section
-        className="modifiers-dialog"
-        role="dialog"
-        aria-labelledby="modifiers-title"
-        aria-modal="true"
-      >
-        <header className="modifiers-dialog__header">
-          <div>
-            <p className="eyebrow">Build your challenge</p>
-            <h2 id="modifiers-title">Modifiers &amp; filters</h2>
-          </div>
-          <button
-            ref={closeButton}
-            className="dialog-close"
-            aria-label="Close modifiers"
-            onClick={onClose}
-            type="button"
-          >
-            ×
-          </button>
-        </header>
-
-        <form
-          className="modifiers-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            submit();
-          }}
+      <header className="modifiers-dialog__header">
+        <h2 id="modifiers-title">Modifiers &amp; filters</h2>
+        <button
+          className="dialog-close"
+          aria-label="Close modifiers"
+          autoFocus
+          onClick={closeDialog}
+          type="button"
         >
-          <div className="modifiers-form__body">
-            <fieldset>
-              <legend>Generations</legend>
-              <p className="field-description">
-                Only Pokémon from these generations appear.
-              </p>
-              <div className="choice-grid choice-grid--compact">
-                {generations.map((generation) => (
-                  <Checkbox
-                    checked={draft.generations.includes(generation)}
-                    key={generation}
-                    label={generation}
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        generations: toggleValue<Generation>(
-                          current.generations,
-                          generation,
-                          event.target.checked,
-                        ),
-                      }))
-                    }
-                  />
-                ))}
-              </div>
-            </fieldset>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+      </header>
 
-            <fieldset>
-              <legend>Forms</legend>
-              <p className="field-description">
-                Choose which kinds of Pokémon forms can appear.
-              </p>
-              <div className="choice-grid">
-                {formCategories.map((category) => (
-                  <Checkbox
-                    checked={draft.formCategories.includes(category)}
-                    key={category}
-                    label={formatPokemonName(category)}
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        formCategories: toggleValue<FormCategory>(
-                          current.formCategories,
-                          category,
-                          event.target.checked,
-                        ),
-                      }))
-                    }
-                  />
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>Modifiers</legend>
-              <div className="modifier-list">
+      <form
+        className="modifiers-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          submit();
+        }}
+      >
+        <div className="modifiers-form__body">
+          <fieldset>
+            <legend>Generations</legend>
+            <p className="field-description">
+              Only Pokémon from these generations appear.
+            </p>
+            <div className="choice-grid choice-grid--compact">
+              {generations.map((generation) => (
                 <Checkbox
-                  checked={draft.randomSprite}
-                  description="Pick from every available sprite instead of the official artwork."
-                  label="Random sprite"
+                  checked={draft.generations.includes(generation)}
+                  key={generation}
+                  label={generation}
                   onChange={(event) =>
                     setDraft((current) => ({
                       ...current,
-                      randomSprite: event.target.checked,
+                      generations: toggleValue<Generation>(
+                        current.generations,
+                        generation,
+                        event.target.checked,
+                      ),
                     }))
                   }
                 />
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Forms</legend>
+            <p className="field-description">
+              Choose which kinds of Pokémon forms can appear.
+            </p>
+            <div className="choice-grid">
+              {formCategories.map((category) => (
                 <Checkbox
-                  checked={draft.whosThatPokemon}
-                  description="Turn the Pokémon into a silhouette."
-                  label="Who’s that Pokémon?"
+                  checked={draft.formCategories.includes(category)}
+                  key={category}
+                  label={formatPokemonName(category)}
                   onChange={(event) =>
                     setDraft((current) => ({
                       ...current,
-                      whosThatPokemon: event.target.checked,
+                      formCategories: toggleValue<FormCategory>(
+                        current.formCategories,
+                        category,
+                        event.target.checked,
+                      ),
                     }))
                   }
                 />
-                <Checkbox
-                  checked={draft.speedrunMode}
-                  description="Move to the next question immediately."
-                  label="Speedrun mode"
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Modifiers</legend>
+            <div className="modifier-list">
+              <Checkbox
+                checked={draft.randomSprite}
+                description="Pick from every available sprite instead of the official artwork."
+                label="Random sprite"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    randomSprite: event.target.checked,
+                  }))
+                }
+              />
+              <Checkbox
+                checked={draft.whosThatPokemon}
+                description="Turn the Pokémon into a silhouette."
+                label="Who’s that Pokémon?"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    whosThatPokemon: event.target.checked,
+                  }))
+                }
+              />
+              <Checkbox
+                checked={draft.speedrunMode}
+                description="Move to the next question immediately."
+                label="Speedrun mode"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    speedrunMode: event.target.checked,
+                  }))
+                }
+              />
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Quiz length</legend>
+            <div className="limit-control">
+              <Checkbox
+                checked={draft.isLimitActive}
+                label="Limit questions"
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    isLimitActive: event.target.checked,
+                  }))
+                }
+              />
+              <label className="number-field">
+                <span>Questions</span>
+                <input
+                  disabled={!draft.isLimitActive}
+                  max={Math.max(1, matchingCount)}
+                  min="1"
                   onChange={(event) =>
                     setDraft((current) => ({
                       ...current,
-                      speedrunMode: event.target.checked,
+                      limit: Number(event.target.value),
                     }))
                   }
+                  type="number"
+                  value={draft.limit}
                 />
-              </div>
-            </fieldset>
+              </label>
+            </div>
+            <p className="matching-count">
+              {matchingCount.toLocaleString()} Pokémon match these filters.
+            </p>
+          </fieldset>
 
-            <fieldset>
-              <legend>Quiz length</legend>
-              <div className="limit-control">
-                <Checkbox
-                  checked={draft.isLimitActive}
-                  label="Limit questions"
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      isLimitActive: event.target.checked,
-                    }))
-                  }
-                />
-                <label className="number-field">
-                  <span>Questions</span>
-                  <input
-                    disabled={!draft.isLimitActive}
-                    max={Math.max(1, matchingCount)}
-                    min="1"
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        limit: Number(event.target.value),
-                      }))
-                    }
-                    type="number"
-                    value={draft.limit}
-                  />
-                </label>
-              </div>
-              <p className="matching-count">
-                {matchingCount.toLocaleString()} Pokémon match these filters.
-              </p>
-            </fieldset>
+          {submitted && !isValid ? (
+            <p className="form-error" role="alert">
+              {!hasSelections || matchingCount === 0
+                ? 'Choose filters that include at least one Pokémon.'
+                : `Choose between 1 and ${matchingCount} questions.`}
+            </p>
+          ) : null}
+        </div>
 
-            {submitted && !isValid ? (
-              <p className="form-error" role="alert">
-                {!hasSelections || matchingCount === 0
-                  ? 'Choose filters that include at least one Pokémon.'
-                  : `Choose between 1 and ${matchingCount} questions.`}
-              </p>
-            ) : null}
-          </div>
-
-          <footer className="modifiers-form__actions">
-            <GameButton tone="quiet" onClick={onClose}>
-              Cancel
-            </GameButton>
-            <GameButton type="submit">Save modifiers</GameButton>
-          </footer>
-        </form>
-      </section>
-    </div>
+        <footer className="modifiers-form__actions">
+          <GameButton tone="quiet" onClick={closeDialog}>
+            Cancel
+          </GameButton>
+          <GameButton type="submit">Save modifiers</GameButton>
+        </footer>
+      </form>
+    </dialog>
   );
 };

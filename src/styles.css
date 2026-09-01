@@ -58,6 +58,15 @@ a:hover {
   outline-offset: 0.2rem;
 }
 
+::selection {
+  color: var(--blue-900);
+  background: var(--yellow);
+}
+
+input {
+  caret-color: var(--blue-700);
+}
+
 .app {
   position: relative;
   isolation: isolate;
@@ -73,7 +82,10 @@ a:hover {
   inset: -0.75rem;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)),
-    url('/assets/images/bg.jpg');
+    image-set(
+      url('./assets/images/bg.avif') type('image/avif'),
+      url('./assets/images/bg.webp') type('image/webp')
+    );
   background-position: center;
   background-size: cover;
   filter: blur(3px) contrast(0.72) saturate(1.35) brightness(1.08);
@@ -95,15 +107,6 @@ main {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-
-.eyebrow {
-  margin: 0 0 0.35rem;
-  color: var(--blue-700);
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 
 .game-button {
@@ -140,7 +143,7 @@ main {
 }
 
 .game-button--quiet {
-  color: var(--blue-700);
+  color: var(--blue-900);
   background: rgba(255, 255, 255, 0.45);
   border-color: var(--blue-500);
   box-shadow: none;
@@ -153,9 +156,13 @@ main {
   justify-items: center;
 }
 
+.logo-picture,
 .logo {
   display: block;
   width: 100%;
+}
+
+.logo {
   height: auto;
   filter: drop-shadow(0 0.35rem 0.45rem rgba(23, 63, 115, 0.22));
 }
@@ -420,27 +427,25 @@ main {
   line-height: 1.05;
 }
 
-.dialog-backdrop {
-  position: fixed;
-  z-index: 10;
-  display: grid;
-  padding: 1rem;
-  overflow-y: auto;
-  background: rgba(8, 28, 44, 0.78);
-  inset: 0;
-  place-items: center;
-}
-
 .modifiers-dialog {
-  display: flex;
   width: min(42rem, 100%);
   max-height: min(48rem, calc(100svh - 2rem));
-  flex-direction: column;
+  padding: 0;
   overflow: hidden;
+  color: var(--ink);
   background: #fff;
   border: 2px solid var(--blue-900);
   border-radius: 1rem;
   box-shadow: 0 1.25rem 4rem rgba(0, 0, 0, 0.35);
+}
+
+.modifiers-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.modifiers-dialog::backdrop {
+  background: rgba(8, 28, 44, 0.78);
 }
 
 .modifiers-dialog__header {
@@ -475,6 +480,15 @@ main {
 .dialog-close:hover {
   color: var(--blue-900);
   background: #eef6fb;
+}
+
+.dialog-close svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
 }
 
 .modifiers-form {

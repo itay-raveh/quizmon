@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config';
 import { siteMetadata } from './build/site-metadata.ts';
 
 export default defineConfig({
+  build: {
+    assetsDir: 'assets/build',
+  },
   plugins: [react(), siteMetadata()],
   resolve: {
     alias: {

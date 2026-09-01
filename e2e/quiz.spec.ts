@@ -50,6 +50,10 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
       'The ultimate Pokémon knowledge test. Identify Pokémon, tune the challenge, and race the clock.',
     theme_color: '#72c3ee',
   });
+
+  const robotsResponse = await page.request.get('/robots.txt');
+  expect(robotsResponse.ok()).toBe(true);
+  expect(await robotsResponse.text()).toBe('User-agent: *\nAllow: /\n');
 });
 
 test('plays a complete one-question game', async ({ page }) => {
@@ -105,7 +109,20 @@ test('keeps modifier actions reachable on a phone', async ({ page }) => {
   const dialog = page.getByRole('dialog', { name: 'Modifiers & filters' });
   await expect(dialog).toBeVisible();
   await expect(
+    dialog.getByRole('button', { name: 'Close modifiers' }),
+  ).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.getByRole('link', { name: 'Nintendo' })).not.toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(
+    dialog.getByRole('button', { name: 'Close modifiers' }),
+  ).toBeFocused();
+  await expect(
     dialog.getByRole('button', { name: 'Save modifiers' }),
   ).toBeVisible();
   await expect(dialog.getByText(/Pokémon match these filters/)).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Modifiers' })).toBeFocused();
 });
