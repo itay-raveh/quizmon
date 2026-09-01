@@ -217,7 +217,7 @@ export const App = () => {
           questionCount: questions.length,
           score: calculateScore(nextAnswers),
         };
-        const best = saveResult(mode, activeModifiers, nextResult);
+        const best = saveResult(mode, nextResult);
         setResult(nextResult);
         setBestResult(best.best);
         setIsNewBest(best.isNewBest);
@@ -233,7 +233,6 @@ export const App = () => {
       }
     },
     [
-      activeModifiers,
       answers,
       catalogState,
       elapsedSeconds,

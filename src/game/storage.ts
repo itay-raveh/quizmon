@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { calculateScore, defaultModifiers, normalizeModifiers } from './game';
-import { questionTypeDefinitions, questionTypes } from './types';
 import type { GameMode, GameResult, Modifiers } from './types';
 
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
@@ -74,36 +73,27 @@ export const markGenerationPromptAnswered = () => {
   }
 };
 
-const getTrainingKey = (modifiers: Modifiers): string =>
-  JSON.stringify({
-    generations: [...modifiers.generations].sort(),
-    isLimitActive: modifiers.isLimitActive,
-    questionTypes: [...modifiers.questionTypes].sort(),
-    limit: modifiers.isLimitActive ? modifiers.limit : null,
-    speedrunMode: modifiers.speedrunMode,
-  });
+const getTrainingKey = (questionCount: number): string =>
+  `questions:${questionCount}`;
 
-const getLegacyTrainingKey = (modifiers: Modifiers): string | null => {
-  const categories = [
-    ...new Set(
-      modifiers.questionTypes.map(
-        (questionType) => questionTypeDefinitions[questionType].category,
-      ),
-    ),
-  ];
-  const expandedTypes = questionTypes.filter((questionType) =>
-    categories.includes(questionTypeDefinitions[questionType].category),
-  );
-  if (expandedTypes.length !== modifiers.questionTypes.length) return null;
+const isBetterResult = (candidate: GameResult, previous: GameResult): boolean =>
+  candidate.score > previous.score ||
+  (candidate.score === previous.score &&
+    candidate.elapsedSeconds < previous.elapsedSeconds);
 
-  return JSON.stringify({
-    generations: [...modifiers.generations].sort(),
-    isLimitActive: modifiers.isLimitActive,
-    knowledgeCategories: categories.sort(),
-    limit: modifiers.isLimitActive ? modifiers.limit : null,
-    speedrunMode: modifiers.speedrunMode,
-  });
-};
+const getTrainingBest = (
+  results: Record<string, GameResult>,
+  questionCount: number,
+): GameResult | undefined =>
+  Object.values(results)
+    .filter(
+      (result) =>
+        result.questionCount === questionCount && Array.isArray(result.answers),
+    )
+    .reduce<GameResult | undefined>(
+      (best, result) => (!best || isBetterResult(result, best) ? result : best),
+      undefined,
+    );
 
 const readResults = (): SavedResults => {
   try {
@@ -144,7 +134,6 @@ export const readDailyResult = (date: string): GameResult | null =>
 
 export const saveResult = (
   mode: GameMode,
-  modifiers: Modifiers,
   result: GameResult,
 ): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
   const results = readResults();
@@ -164,16 +153,12 @@ export const saveResult = (
     };
   }
 
-  const key = getTrainingKey(modifiers);
-  const legacyKey = getLegacyTrainingKey(modifiers);
-  const previous =
-    results.training[key] ??
-    (legacyKey ? results.training[legacyKey] : undefined);
-  const isNewBest =
-    !previous ||
-    normalizedResult.score > previous.score ||
-    (normalizedResult.score === previous.score &&
-      normalizedResult.elapsedSeconds < previous.elapsedSeconds);
+  const key = getTrainingKey(normalizedResult.questionCount);
+  const previous = getTrainingBest(
+    results.training,
+    normalizedResult.questionCount,
+  );
+  const isNewBest = !previous || isBetterResult(normalizedResult, previous);
 
   if (!isNewBest) {
     return { best: previous, isNewBest, isSaved: true };
