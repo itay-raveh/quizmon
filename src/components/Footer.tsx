@@ -1,22 +1,20 @@
 export const Footer = () => (
   <footer className="site-footer">
     <span>
-      Logo generated with{' '}
+      Wordmark made with{' '}
       <a href="https://www.textstudio.co" rel="noreferrer" target="_blank">
-        Text Studio
+        TextStudio
       </a>
     </span>
+    <span aria-hidden="true">·</span>
     <span>
-      Pokémon data from{' '}
+      Data from{' '}
       <a href="https://pokeapi.co" rel="noreferrer" target="_blank">
         PokéAPI
       </a>
     </span>
-    <span>
-      Pokémon is a trademark of{' '}
-      <a href="https://www.nintendo.com" rel="noreferrer" target="_blank">
-        Nintendo
-      </a>
-    </span>
+    <span aria-hidden="true">·</span>
+    <span>Fan project</span>
+    <span className="visually-hidden">Pokémon is a trademark of Nintendo.</span>
   </footer>
 );

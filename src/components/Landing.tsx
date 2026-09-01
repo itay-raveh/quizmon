@@ -43,7 +43,7 @@ export const Landing = ({
         <span>{formatDailyDate(dailyDate)} · 10 questions</span>
       </div>
       <GameButton disabled={catalogStatus !== 'ready'} onClick={onStartDaily}>
-        Play daily
+        <span>Play daily</span>
       </GameButton>
     </div>
     <div className="landing__actions" aria-label="Custom game">
@@ -52,10 +52,10 @@ export const Landing = ({
         tone="quiet"
         onClick={onOpenSettings}
       >
-        Modifiers
+        <span>Modifiers</span>
       </GameButton>
       <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
-        Custom game
+        <span>Custom game</span>
       </GameButton>
     </div>
   </section>

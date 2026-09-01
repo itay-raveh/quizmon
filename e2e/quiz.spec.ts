@@ -224,7 +224,9 @@ test('keeps modifier actions reachable on a phone', async ({ page }) => {
     dialog.getByRole('button', { name: 'Close modifiers' }),
   ).toBeFocused();
   await page.keyboard.press('Shift+Tab');
-  await expect(page.getByRole('link', { name: 'Nintendo' })).not.toBeFocused();
+  await expect(
+    page.getByRole('link', { name: 'TextStudio' }),
+  ).not.toBeFocused();
   await page.keyboard.press('Tab');
   await expect(
     dialog.getByRole('button', { name: 'Close modifiers' }),

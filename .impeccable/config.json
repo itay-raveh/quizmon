@@ -3,13 +3,6 @@
   "detector": {
     "ignoreRules": [],
     "ignoreFiles": [],
-    "ignoreValues": [
-      {
-        "rule": "overused-font",
-        "value": "arial",
-        "createdAt": "2026-08-31T15:16:02.179Z",
-        "reason": "Agent: Arial Rounded MT Bold is the established Quizmon heading face and matches the playful wordmark"
-      }
-    ]
+    "ignoreValues": []
   }
 }
