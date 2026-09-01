@@ -122,7 +122,7 @@ The result is playful, direct, and tactile. It avoids generic application chrome
 - Cream, cobalt, navy, and yellow controls echo the wordmark in restrained doses.
 - Dense game information stays clear through Vend Sans and small monospace numeric labels.
 - Hard-edged depth makes controls feel physical without adding ornamental framing.
-- One short transform-and-opacity entrance connects major game surfaces.
+- One short transform-and-opacity entrance opens a round and its results.
 
 ## Colors
 
@@ -258,7 +258,7 @@ The visible footer remains unboxed and comp-faithful: “Wordmark made with Text
 
 ### Motion
 
-Major question and result surfaces use one `180ms` ease-out entrance from `0.45rem` below while fading from transparent. The open dialog uses the same treatment at `160ms`. Buttons use `100ms` transform, shadow, and brightness transitions. Do not chain entrances or add decorative looping motion. Honor `prefers-reduced-motion` by reducing animation and transition durations to effectively immediate.
+The first question and the result surface use one `180ms` ease-out entrance from `0.45rem` below while fading from transparent. The question panel stays fixed while later questions replace its content. The open dialog uses the same treatment at `160ms`. Buttons use `100ms` transform, shadow, and brightness transitions. Do not chain entrances or add decorative looping motion. Honor `prefers-reduced-motion` by reducing animation and transition durations to effectively immediate.
 
 ## Do's and Don'ts
 
@@ -268,7 +268,7 @@ Major question and result surfaces use one `180ms` ease-out entrance from `0.45r
 - **Do** keep landing controls small and let open scenery dominate the first viewport.
 - **Do** use Vend Sans for interface text and reserve monospace for compact numeric status.
 - **Do** give buttons a physical pressed state through synchronized translation and compressed lower shadows.
-- **Do** use a single short transform-and-opacity entrance for major surfaces and honor reduced motion.
+- **Do** animate the start and finish of a round, keep its question surface stable, and honor reduced motion.
 - **Do** prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.
 - **Do** preserve the exact visible footer copy and its visually hidden trademark sentence.
 

@@ -309,6 +309,10 @@ main {
   box-shadow:
     0 0.28rem 0 var(--yellow),
     0 0.62rem 0 var(--navy-shadow);
+}
+
+.question--enter,
+.results {
   animation: surface-in 180ms ease-out both;
 }
 
