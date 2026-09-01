@@ -5,6 +5,7 @@ import {
   formatPokemonName,
   getAnswerPoints,
   getCategoryLabel,
+  getSpeedBonusPoints,
 } from '@/game/game';
 import type {
   AnswerResult,
@@ -18,6 +19,7 @@ import { SettingsButton } from './SettingsButton';
 import { Sprite } from './Sprite';
 
 interface QuestionProps {
+  elapsedMilliseconds: number;
   elapsedSeconds: number;
   interactionPaused: boolean;
   mode: GameMode;
@@ -65,6 +67,7 @@ const QuestionPrompt = ({ prompt }: { prompt: QuestionPromptData }) => (
 );
 
 export const Question = ({
+  elapsedMilliseconds,
   elapsedSeconds,
   interactionPaused,
   mode,
@@ -79,7 +82,9 @@ export const Question = ({
 }: QuestionProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [cluesShown, setCluesShown] = useState(1);
+  const [awardedPoints, setAwardedPoints] = useState<number | null>(null);
   const answerTimeout = useRef<number | null>(null);
+  const questionStartedAt = useRef(elapsedMilliseconds);
 
   useEffect(() => {
     if (nextQuestion) preloadQuestionImages(nextQuestion);
@@ -96,15 +101,29 @@ export const Question = ({
 
       const correct = option === question.correctOption;
       const points = getAnswerPoints(question, correct, cluesShown);
+      const responseMilliseconds = Math.max(
+        0,
+        elapsedMilliseconds - questionStartedAt.current,
+      );
+      const speedBonus = getSpeedBonusPoints(points, responseMilliseconds);
       const delay = speedrunMode ? 80 : correct ? 900 : 1700;
       setSelectedOption(option);
+      setAwardedPoints(points + speedBonus);
       answerTimeout.current = window.setTimeout(
-        () => onAnswer({ category: question.category, correct, points }),
+        () =>
+          onAnswer({
+            category: question.category,
+            correct,
+            points,
+            responseMilliseconds,
+            speedBonus,
+          }),
         delay,
       );
     },
     [
       cluesShown,
+      elapsedMilliseconds,
       interactionPaused,
       onAnswer,
       question,
@@ -253,7 +272,7 @@ export const Question = ({
 
       <p className="answer-feedback" aria-live="polite">
         {selectedOption === question.correctOption
-          ? `Correct! +${getAnswerPoints(question, true, cluesShown)} points`
+          ? `Correct! +${awardedPoints} points`
           : selectedOption
             ? `It was ${formatPokemonName(question.correctOption)}.`
             : '\u00a0'}

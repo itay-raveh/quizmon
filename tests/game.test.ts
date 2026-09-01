@@ -13,6 +13,8 @@ import {
   getMaximumScore,
   getQuestionCount,
   getQuestionPromptText,
+  getSpeedBonus,
+  getSpeedBonusPoints,
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
@@ -192,17 +194,31 @@ describe('scoring', () => {
     expect(getKnowledgePoints(answers)).toBe(150);
     expect(getMasteryBonus(answers)).toBe(75);
     expect(calculateScore(answers)).toBe(225);
-    expect(getMaximumScore(answers.length)).toBe(600);
+    expect(getMaximumScore(answers.length)).toBe(675);
   });
 
-  it('doubles a perfect knowledge score and handles an empty round', () => {
+  it('rewards quick answers with a bounded eight-second half-life', () => {
+    expect(getSpeedBonusPoints(100, 0)).toBe(25);
+    expect(getSpeedBonusPoints(100, 2_000)).toBe(21);
+    expect(getSpeedBonusPoints(100, 5_000)).toBe(16);
+    expect(getSpeedBonusPoints(100, 8_000)).toBe(13);
+    expect(getSpeedBonusPoints(100, 16_000)).toBe(6);
+    expect(getSpeedBonusPoints(100, -1)).toBe(25);
+    expect(getSpeedBonusPoints(0, 0)).toBe(0);
+  });
+
+  it('combines knowledge, speed, and mastery for a perfect round', () => {
     const perfect = Array.from({ length: 10 }, () => ({
       category: 'identity' as const,
       correct: true,
       points: 100,
+      responseMilliseconds: 0,
+      speedBonus: 25,
     }));
 
-    expect(calculateScore(perfect)).toBe(2000);
+    expect(getSpeedBonus(perfect)).toBe(250);
+    expect(calculateScore(perfect)).toBe(2250);
+    expect(getMaximumScore(perfect.length)).toBe(2250);
     expect(calculateScore([])).toBe(0);
   });
 });

@@ -62,7 +62,8 @@ export const App = () => {
     ),
   );
   const [storageAvailable] = useState(canPersistResults);
-  const { elapsedSeconds, pause, reset, start } = useStopwatch();
+  const { elapsedMilliseconds, elapsedSeconds, pause, reset, start } =
+    useStopwatch();
 
   useEffect(() => {
     const syncDailyResult = () => {
@@ -234,6 +235,7 @@ export const App = () => {
           {phase === 'questions' && question ? (
             <Question
               key={question.id}
+              elapsedMilliseconds={elapsedMilliseconds}
               elapsedSeconds={elapsedSeconds}
               interactionPaused={Boolean(settings)}
               mode={mode}

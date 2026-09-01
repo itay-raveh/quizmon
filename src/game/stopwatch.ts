@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export const useStopwatch = () => {
+  const [elapsedMilliseconds, setElapsedMilliseconds] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [running, setRunning] = useState(false);
   const startedAt = useRef(0);
@@ -10,6 +11,7 @@ export const useStopwatch = () => {
     const currentMilliseconds = running
       ? accumulatedMilliseconds.current + performance.now() - startedAt.current
       : accumulatedMilliseconds.current;
+    setElapsedMilliseconds(currentMilliseconds);
     setElapsedSeconds(Math.floor(currentMilliseconds / 1000));
   }, [running]);
 
@@ -30,15 +32,17 @@ export const useStopwatch = () => {
     if (!running) return;
     accumulatedMilliseconds.current += performance.now() - startedAt.current;
     setRunning(false);
+    setElapsedMilliseconds(accumulatedMilliseconds.current);
     setElapsedSeconds(Math.floor(accumulatedMilliseconds.current / 1000));
   }, [running]);
 
   const reset = useCallback(() => {
     accumulatedMilliseconds.current = 0;
     startedAt.current = performance.now();
+    setElapsedMilliseconds(0);
     setElapsedSeconds(0);
     setRunning(false);
   }, []);
 
-  return { elapsedSeconds, pause, reset, start };
+  return { elapsedMilliseconds, elapsedSeconds, pause, reset, start };
 };

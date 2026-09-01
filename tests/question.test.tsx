@@ -15,6 +15,7 @@ const question: QuestionData = {
 const renderQuestion = (number: number) =>
   render(
     <Question
+      elapsedMilliseconds={0}
       elapsedSeconds={0}
       interactionPaused={false}
       mode={{ kind: 'training' }}
@@ -41,6 +42,7 @@ describe('question transitions', () => {
   it('renders Pokémon answers as numbered sprite nameplates', () => {
     const rendered = render(
       <Question
+        elapsedMilliseconds={0}
         elapsedSeconds={0}
         interactionPaused={false}
         mode={{ kind: 'training' }}
@@ -77,6 +79,7 @@ describe('question transitions', () => {
   it('renders one compact portrait for text-valued answers', () => {
     const rendered = render(
       <Question
+        elapsedMilliseconds={0}
         elapsedSeconds={0}
         interactionPaused={false}
         mode={{ kind: 'training' }}
@@ -121,6 +124,7 @@ describe('question transitions', () => {
   it('reveals a silhouette after an answer is selected', () => {
     render(
       <Question
+        elapsedMilliseconds={0}
         elapsedSeconds={0}
         interactionPaused={false}
         mode={{ kind: 'training' }}
@@ -157,6 +161,7 @@ describe('question transitions', () => {
   it('ignores answer shortcuts while settings are open', () => {
     render(
       <Question
+        elapsedMilliseconds={0}
         elapsedSeconds={0}
         interactionPaused
         mode={{ kind: 'training' }}
@@ -173,5 +178,42 @@ describe('question transitions', () => {
     fireEvent.keyDown(window, { key: '1' });
 
     expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
+  });
+
+  it('adds a time-based bonus to a correct answer', () => {
+    const rendered = render(
+      <Question
+        elapsedMilliseconds={1_000}
+        elapsedSeconds={1}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={question}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    rendered.rerender(
+      <Question
+        elapsedMilliseconds={3_000}
+        elapsedSeconds={3}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={question}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+
+    expect(screen.getByText('Correct! +121 points')).toBeVisible();
   });
 });

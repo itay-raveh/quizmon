@@ -12,6 +12,7 @@ const makeResult = (
       category: 'identity',
       correct: index < correctCount,
       points: index < correctCount ? 100 : 0,
+      speedBonus: index < correctCount ? 15 : 0,
     }),
   );
 
@@ -49,6 +50,7 @@ describe('results summary', () => {
       screen.getByRole('list', { name: 'Question results' }),
     ).toBeVisible();
     expect(screen.getAllByRole('listitem')).toHaveLength(10);
+    expect(screen.getByText(/75 speed/)).toBeVisible();
   });
 
   it('replaces the answer trail with a correct count for longer games', () => {

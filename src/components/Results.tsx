@@ -6,6 +6,7 @@ import {
   getCategoryLabel,
   getKnowledgePoints,
   getMasteryBonus,
+  getSpeedBonus,
 } from '@/game/game';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
@@ -96,6 +97,7 @@ export const Results = ({
         </strong>
         <small className="score__breakdown">
           {formatScore(getKnowledgePoints(result.answers))} knowledge +{' '}
+          {formatScore(getSpeedBonus(result.answers))} speed +{' '}
           {formatScore(getMasteryBonus(result.answers))} mastery
         </small>
       </div>

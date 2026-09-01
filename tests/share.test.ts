@@ -32,7 +32,7 @@ describe('result sharing', () => {
 
     expect(text).toContain('Quizmon · Sep 1, 2026');
     expect(text).not.toContain('Trainer Trial');
-    expect(text).toContain('150 / 400 points');
+    expect(text).toContain('150 / 450 points');
     expect(text).not.toContain('1/2');
     expect(text).toContain('🟩🟥');
     expect(text).toContain('?daily=2026-09-01');
@@ -44,7 +44,7 @@ describe('result sharing', () => {
     const content = buildShareContent({ kind: 'training' }, result);
 
     expect(content.title).toBe('Quizmon · Training');
-    expect(content.text).toContain('150 / 400 points');
+    expect(content.text).toContain('150 / 450 points');
     expect(content.text).not.toContain(content.url);
     expect(content.url).toBe(`${window.location.origin}/`);
   });
@@ -63,7 +63,7 @@ describe('result sharing', () => {
     );
     expect(canShareResult()).toBe(true);
     expect(share.mock.calls[0]?.[0]).toEqual({
-      text: 'Quizmon · Training\n150 / 400 points\n🟩🟥',
+      text: 'Quizmon · Training\n150 / 450 points\n🟩🟥',
       title: 'Quizmon · Training',
       url: `${window.location.origin}/`,
     });

@@ -553,6 +553,25 @@ export const getAnswerPoints = (
 export const getKnowledgePoints = (answers: readonly AnswerResult[]): number =>
   answers.reduce((total, answer) => total + answer.points, 0);
 
+const speedBonusRate = 0.25;
+const speedBonusHalfLifeMilliseconds = 8_000;
+
+export const getSpeedBonusPoints = (
+  knowledgePoints: number,
+  responseMilliseconds: number,
+): number => {
+  if (knowledgePoints <= 0) return 0;
+  const elapsedMilliseconds = Math.max(0, responseMilliseconds);
+  return Math.round(
+    knowledgePoints *
+      speedBonusRate *
+      2 ** (-elapsedMilliseconds / speedBonusHalfLifeMilliseconds),
+  );
+};
+
+export const getSpeedBonus = (answers: readonly AnswerResult[]): number =>
+  answers.reduce((total, answer) => total + (answer.speedBonus ?? 0), 0);
+
 export const getMasteryBonus = (answers: readonly AnswerResult[]): number => {
   if (answers.length === 0) return 0;
   const knowledgePoints = getKnowledgePoints(answers);
@@ -562,10 +581,12 @@ export const getMasteryBonus = (answers: readonly AnswerResult[]): number => {
 };
 
 export const getMaximumScore = (questionCount: number): number =>
-  Math.max(0, questionCount) * 200;
+  Math.max(0, questionCount) * 225;
 
 export const calculateScore = (answers: readonly AnswerResult[]): number =>
-  getKnowledgePoints(answers) + getMasteryBonus(answers);
+  getKnowledgePoints(answers) +
+  getSpeedBonus(answers) +
+  getMasteryBonus(answers);
 
 export const getCategoryLabel = (category: QuestionCategory): string =>
   categoryLabels[category];

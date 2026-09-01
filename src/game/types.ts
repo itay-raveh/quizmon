@@ -115,6 +115,8 @@ export interface AnswerResult {
   category: QuestionCategory;
   correct: boolean;
   points: number;
+  responseMilliseconds?: number;
+  speedBonus?: number;
 }
 
 export interface GameResult {
