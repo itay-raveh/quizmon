@@ -61,6 +61,14 @@ describe('normalizeModifiers', () => {
     });
   });
 
+  it('drops removed question types from saved settings', () => {
+    expect(
+      normalizeModifiers({
+        questionTypes: ['evolution-order', 'type-check'],
+      }).questionTypes,
+    ).toEqual(['type-check']);
+  });
+
   it('migrates broad topic settings to their concrete question types', () => {
     expect(
       normalizeModifiers({
@@ -73,7 +81,6 @@ describe('normalizeModifiers', () => {
       'pixel-peek',
       'shiny-spotter',
       'evolution-trail',
-      'evolution-order',
     ]);
   });
 });
@@ -111,9 +118,7 @@ describe('question building', () => {
       expect(question.options).toEqual(
         expect.arrayContaining(getCorrectOptions(question)),
       );
-      const expectedOptionCount =
-        question.answer.interaction === 'ordering' ? 3 : 4;
-      expect(new Set(question.options).size).toBe(expectedOptionCount);
+      expect(new Set(question.options).size).toBe(4);
     }
   });
 
@@ -180,7 +185,7 @@ describe('question building', () => {
     );
   });
 
-  it('builds exact multi-select and ordering answer keys', () => {
+  it('builds an exact multi-select answer key', () => {
     const [multiSelect] = buildQuestions(
       catalog,
       { ...defaultModifiers, questionTypes: ['type-roundup'], limit: 1 },
@@ -188,14 +193,6 @@ describe('question building', () => {
     );
     expect(multiSelect?.answer.correctOptions.length).toBeGreaterThan(1);
     expect(multiSelect?.options).toHaveLength(4);
-
-    const [ordering] = buildQuestions(
-      catalog,
-      { ...defaultModifiers, questionTypes: ['evolution-order'], limit: 1 },
-      createSeededRandom('ordering'),
-    );
-    expect(ordering?.answer.correctOptions).toHaveLength(3);
-    expect(ordering?.options).toHaveLength(3);
   });
 });
 

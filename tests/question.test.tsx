@@ -253,41 +253,6 @@ describe('question transitions', () => {
     expect(screen.getByText('Correct! +4,000 points')).toBeVisible();
   });
 
-  it('numbers an evolution order before checking it', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          answer: {
-            correctOptions: ['pikachu', 'eevee', 'ditto'],
-            interaction: 'ordering',
-          },
-          options: ['ditto', 'pikachu', 'eevee'],
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
-
-    const check = screen.getByRole('button', { name: 'Check order' });
-    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Eevee' }));
-    expect(check).toBeDisabled();
-    fireEvent.click(screen.getByRole('button', { name: 'Ditto' }));
-    expect(check).toBeEnabled();
-    fireEvent.click(check);
-
-    expect(screen.getByText('Correct! +4,000 points')).toBeVisible();
-  });
-
   it('reveals reverse-silhouette choices after an answer', () => {
     render(
       <Question

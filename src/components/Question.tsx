@@ -70,7 +70,6 @@ const QuestionPrompt = ({ prompt }: { prompt: QuestionPromptData }) => (
 
 const formatCorrectAnswer = (question: QuestionData): string => {
   const names = getCorrectOptions(question).map(formatPokemonName);
-  if (question.answer.interaction === 'ordering') return names.join(' → ');
   if (names.length < 2) return names[0] ?? '';
   return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
 };
@@ -155,12 +154,6 @@ export const Question = ({
         if (current.includes(option)) {
           return current.filter((selected) => selected !== option);
         }
-        if (
-          question.answer.interaction === 'ordering' &&
-          current.length >= question.answer.correctOptions.length
-        ) {
-          return current;
-        }
         return [...current, option];
       });
     },
@@ -192,9 +185,6 @@ export const Question = ({
   const optionClassName = (option: string) => {
     const selected = selectedOptions.includes(option);
     if (!answered) return selected ? 'answer answer--selected' : 'answer';
-    if (question.answer.interaction === 'ordering') {
-      return answerCorrect ? 'answer answer--correct' : 'answer answer--wrong';
-    }
     if (correctOptions.includes(option)) return 'answer answer--correct';
     if (selected) return 'answer answer--wrong';
     return 'answer answer--muted';
@@ -297,19 +287,17 @@ export const Question = ({
       ) : null}
 
       <div
-        className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''} ${question.answer.interaction === 'ordering' ? 'answers--ordering' : ''}`.trim()}
+        className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''}`.trim()}
       >
         {question.options.map((option, index) => {
           const visual = question.optionVisuals?.[option];
           const concealed = Boolean(question.concealOptionLabels && !answered);
           const selectionPosition = selectedOptions.indexOf(option) + 1;
           const selectionMark =
-            question.answer.interaction === 'ordering' && selectionPosition > 0
-              ? selectionPosition
-              : question.answer.interaction === 'multi-select' &&
-                  selectionPosition > 0
-                ? '✓'
-                : index + 1;
+            question.answer.interaction === 'multi-select' &&
+            selectionPosition > 0
+              ? '✓'
+              : index + 1;
           return (
             <GameButton
               aria-label={
@@ -365,16 +353,10 @@ export const Question = ({
       {question.answer.interaction !== 'single-choice' && !answered ? (
         <GameButton
           className="check-answer"
-          disabled={
-            selectedOptions.length === 0 ||
-            (question.answer.interaction === 'ordering' &&
-              selectedOptions.length !== correctOptions.length)
-          }
+          disabled={selectedOptions.length === 0}
           onClick={() => finishAnswer(selectedOptions)}
         >
-          {question.answer.interaction === 'ordering'
-            ? 'Check order'
-            : 'Check answers'}
+          Check answers
         </GameButton>
       ) : null}
 

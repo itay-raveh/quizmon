@@ -538,60 +538,6 @@ const buildEvolutionQuestion = (
   );
 };
 
-type EvolutionTriple = readonly [Candidate, Candidate, Candidate];
-
-const getEvolutionTriples = (context: QuestionContext): EvolutionTriple[] => {
-  const poolNames = new Set(context.pool.map(({ name }) => name));
-  return context.pool.flatMap((first) =>
-    first.pokemon.evolvesTo.flatMap((middleName) => {
-      if (!poolNames.has(middleName)) return [];
-      const middlePokemon = context.catalog.pokemon[middleName];
-      if (!middlePokemon) return [];
-      const middle = { name: middleName, pokemon: middlePokemon };
-      return middlePokemon.evolvesTo.flatMap((lastName) => {
-        if (!poolNames.has(lastName)) return [];
-        const lastPokemon = context.catalog.pokemon[lastName];
-        return lastPokemon
-          ? ([
-              [first, middle, { name: lastName, pokemon: lastPokemon }],
-            ] as const)
-          : [];
-      });
-    }),
-  );
-};
-
-const buildEvolutionOrderQuestion = (
-  context: QuestionContext,
-): QuestionData | undefined => {
-  const triples = getEvolutionTriples(context).filter((triple) =>
-    triple.every(({ pokemon }) => Boolean(pokemon.sprite)),
-  );
-  const fresh = triples.filter((triple) =>
-    triple.every(({ name }) => !context.used.has(name)),
-  );
-  const triple = pick(fresh.length > 0 ? fresh : triples, context.random);
-  if (!triple) return undefined;
-  const [, target] = triple;
-  const correctOptions = triple.map(({ name }) => name);
-  correctOptions.forEach((name) => context.used.add(name));
-  const options = shuffle(correctOptions, context.random);
-
-  return {
-    ...makeQuestion(
-      'evolution',
-      target,
-      correctOptions[0] ?? target.name,
-      options,
-      textPrompt('Tap these Pokémon in evolution order.'),
-    ),
-    answer: { correctOptions, interaction: 'ordering' },
-    explanation: correctOptions.map(formatPokemonName).join(' → '),
-    optionVisuals: getOptionVisuals(context, options),
-    title: 'Evolution order',
-  };
-};
-
 const buildPropertyQuestion = (
   context: QuestionContext,
   category: 'ability' | 'move',
@@ -757,9 +703,6 @@ const buildQuestionType = (
     case 'evolution-trail':
       question = buildEvolutionQuestion(context);
       break;
-    case 'evolution-order':
-      question = buildEvolutionOrderQuestion(context);
-      break;
     case 'ability-check':
       question = buildPropertyQuestion(context, 'ability');
       break;
@@ -896,12 +839,6 @@ export const isQuestionAnswerCorrect = (
   question: QuestionData,
   selectedOptions: readonly string[],
 ): boolean => {
-  if (question.answer.interaction === 'ordering') {
-    return question.answer.correctOptions.every(
-      (option, index) => selectedOptions[index] === option,
-    );
-  }
-
   const selected = new Set(selectedOptions);
   return (
     selected.size === question.answer.correctOptions.length &&

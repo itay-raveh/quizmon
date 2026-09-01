@@ -22,7 +22,6 @@ export const questionTypeDefinitions = {
   'odd-one-out': { category: 'type', label: 'Odd one out' },
   'type-roundup': { category: 'type', label: 'Type roundup' },
   'evolution-trail': { category: 'evolution', label: 'Evolution trail' },
-  'evolution-order': { category: 'evolution', label: 'Evolution order' },
   'ability-check': { category: 'ability', label: 'Ability check' },
   'move-check': { category: 'move', label: 'Move check' },
   'stat-showdown': { category: 'stat', label: 'Stat showdown' },
@@ -105,7 +104,7 @@ export interface PokemonOptionVisual {
   src: string;
 }
 
-export type QuestionInteraction = 'single-choice' | 'multi-select' | 'ordering';
+export type QuestionInteraction = 'single-choice' | 'multi-select';
 
 export interface QuestionAnswer {
   correctOptions: string[];
