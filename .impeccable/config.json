@@ -7,7 +7,7 @@
         "rule": "overused-font",
         "value": "arial",
         "createdAt": "2026-08-31T15:16:02.179Z",
-        "reason": "Existing quiz headings intentionally use Arial Rounded MT Bold, a distinct informal rounded face documented by Microsoft and aligned with the established wordmark."
+        "reason": "Agent: Arial Rounded MT Bold is the established Quizmon heading face and matches the playful wordmark"
       }
     ]
   }
