@@ -46,6 +46,7 @@ export interface PokemonKnowledge {
   genus: string;
   id: number;
   levelMoves: string[];
+  shinySprite: string | null;
   sprite: string | null;
   stats: Record<StatName, number>;
   types: string[];

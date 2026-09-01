@@ -69,6 +69,7 @@ const makeClient = (): CatalogClient => ({
         species: { name: resourceName(resource) },
         sprites: {
           front_default: 'https://example.test/sprite.png',
+          front_shiny: 'https://example.test/shiny.png',
           other: {},
         },
         stats: [
@@ -124,6 +125,7 @@ describe('catalog generation', () => {
       generation: 'I',
       genus: 'Test',
       levelMoves: ['tackle'],
+      shinySprite: 'https://example.test/shiny.png',
       types: ['normal'],
     });
     expect(catalog.pokemon['species-9']?.generation).toBe('IX');

@@ -88,6 +88,9 @@ const getStats = (pokemon: Pokemon): Record<StatName, number> => {
 const getSprite = (pokemon: Pokemon): string | null =>
   pokemon.sprites.front_default;
 
+const getShinySprite = (pokemon: Pokemon): string | null =>
+  pokemon.sprites.front_shiny;
+
 const getLevelMoves = (pokemon: Pokemon): string[] =>
   [
     ...new Set(
@@ -189,6 +192,7 @@ export const buildPokemonCatalog = async (
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
       id: entry.id,
       levelMoves: getLevelMoves(entry),
+      shinySprite: getShinySprite(entry),
       sprite: getSprite(entry),
       stats: getStats(entry),
       types: entry.types
@@ -198,7 +202,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 5,
+    contentVersion: 6,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };
