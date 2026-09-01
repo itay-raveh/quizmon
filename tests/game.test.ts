@@ -89,6 +89,35 @@ describe('question building', () => {
     }
   });
 
+  it('adds visuals according to the question answer type', () => {
+    const questions = buildQuestions(
+      catalog,
+      {
+        ...defaultModifiers,
+        generations: [...generations],
+        knowledgeCategories: [...knowledgeCategories],
+        limit: knowledgeCategories.length,
+      },
+      createSeededRandom('question-visuals'),
+    );
+    const byCategory = Object.fromEntries(
+      questions.map((question) => [question.category, question]),
+    );
+
+    for (const category of ['scale', 'description', 'evolution', 'stat']) {
+      const question = byCategory[category];
+      expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
+      expect(question?.media.kind).toBe('none');
+    }
+
+    for (const category of ['type', 'ability', 'move', 'matchup']) {
+      expect(byCategory[category]?.media.kind).toBe('pixel-sprite');
+      expect(byCategory[category]?.optionVisuals).toBeUndefined();
+    }
+
+    expect(byCategory.identity?.media.kind).toBe('sprite');
+  });
+
   it('keeps matchup and property distractors unambiguous', () => {
     const questions = ['ability', 'move', 'matchup'].flatMap(
       (knowledgeCategory) =>

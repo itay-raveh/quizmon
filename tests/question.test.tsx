@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Question } from '@/components/Question';
 import type { QuestionData } from '@/game/types';
 
@@ -34,5 +34,71 @@ describe('question transitions', () => {
 
     const next = renderQuestion(2);
     expect(next.container.firstElementChild).not.toHaveClass('question--enter');
+  });
+
+  it('renders Pokémon answers as numbered sprite nameplates', () => {
+    const rendered = render(
+      <Question
+        elapsedSeconds={0}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        question={{
+          ...question,
+          optionVisuals: Object.fromEntries(
+            question.options.map((option, index) => [
+              option,
+              {
+                dexNumber: index + 1,
+                src: `https://example.com/${option}.png`,
+              },
+            ]),
+          ),
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Pikachu' })).toHaveClass(
+      'answer--pokemon',
+    );
+    expect(rendered.container.querySelectorAll('.answer__sprite')).toHaveLength(
+      4,
+    );
+    expect(screen.getByText('No. 0001')).toBeInTheDocument();
+  });
+
+  it('renders one compact portrait for text-valued answers', () => {
+    const rendered = render(
+      <Question
+        elapsedSeconds={0}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onNewGame={vi.fn()}
+        question={{
+          ...question,
+          category: 'type',
+          correctOption: 'electric',
+          media: {
+            kind: 'pixel-sprite',
+            src: 'https://example.com/pikachu.png',
+          },
+          options: ['electric', 'fire', 'grass', 'water'],
+          prompt: 'Which type does Pikachu have?',
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(
+      rendered.container.querySelectorAll('.question__portrait'),
+    ).toHaveLength(1);
+    expect(rendered.container.querySelector('.answers')).not.toHaveClass(
+      'answers--pokemon',
+    );
   });
 });

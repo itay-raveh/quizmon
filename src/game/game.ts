@@ -6,6 +6,7 @@ import {
   type Generation,
   type KnowledgeCategory,
   type Modifiers,
+  type PokemonOptionVisual,
   type PokemonCatalog,
   type PokemonKnowledge,
   type QuestionCategory,
@@ -34,6 +35,20 @@ const categoryLabels: Record<QuestionCategory, string> = {
   stat: 'Stat showdown',
   type: 'Type check',
 };
+
+const pokemonOptionCategories: readonly QuestionCategory[] = [
+  'scale',
+  'description',
+  'evolution',
+  'stat',
+];
+
+const targetSpriteCategories: readonly QuestionCategory[] = [
+  'type',
+  'ability',
+  'move',
+  'matchup',
+];
 
 const isGeneration = (value: unknown): value is Generation =>
   typeof value === 'string' && generations.includes(value as Generation);
@@ -159,6 +174,45 @@ const makeQuestion = (
   pokemonName: target.name,
   prompt,
 });
+
+const getPixelSpriteUrl = (id: number) =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+
+const getPokemonOptionVisual = (
+  pokemon: PokemonKnowledge,
+): PokemonOptionVisual => ({
+  dexNumber: pokemon.id,
+  src: getPixelSpriteUrl(pokemon.id),
+});
+
+const addQuestionVisuals = (
+  context: QuestionContext,
+  question: QuestionData,
+): QuestionData => {
+  if (pokemonOptionCategories.includes(question.category)) {
+    const optionVisuals = Object.fromEntries(
+      question.options.flatMap((option) => {
+        const pokemon = context.catalog.pokemon[option];
+        return pokemon
+          ? [[option, getPokemonOptionVisual(pokemon)] as const]
+          : [];
+      }),
+    );
+    return { ...question, optionVisuals };
+  }
+
+  if (targetSpriteCategories.includes(question.category)) {
+    const target = context.catalog.pokemon[question.pokemonName];
+    if (target) {
+      return {
+        ...question,
+        media: { kind: 'pixel-sprite', src: getPixelSpriteUrl(target.id) },
+      };
+    }
+  }
+
+  return question;
+};
 
 const pokemonOptions = (
   context: QuestionContext,
@@ -436,27 +490,40 @@ const buildCategoryQuestion = (
   category: QuestionCategory,
   silhouette = false,
 ): QuestionData | undefined => {
+  let question: QuestionData | undefined;
+
   switch (category) {
     case 'identity':
-      return buildIdentityQuestion(context, silhouette);
+      question = buildIdentityQuestion(context, silhouette);
+      break;
     case 'scale':
-      return buildScaleQuestion(context);
+      question = buildScaleQuestion(context);
+      break;
     case 'description':
-      return buildDescriptionQuestion(context);
+      question = buildDescriptionQuestion(context);
+      break;
     case 'type':
-      return buildTypeQuestion(context);
+      question = buildTypeQuestion(context);
+      break;
     case 'evolution':
-      return buildEvolutionQuestion(context);
+      question = buildEvolutionQuestion(context);
+      break;
     case 'ability':
     case 'move':
-      return buildPropertyQuestion(context, category);
+      question = buildPropertyQuestion(context, category);
+      break;
     case 'stat':
-      return buildStatQuestion(context);
+      question = buildStatQuestion(context);
+      break;
     case 'matchup':
-      return buildMatchupQuestion(context);
+      question = buildMatchupQuestion(context);
+      break;
     case 'champion':
-      return buildChampionQuestion(context);
+      question = buildChampionQuestion(context);
+      break;
   }
+
+  return question ? addQuestionVisuals(context, question) : undefined;
 };
 
 export const buildQuestions = (

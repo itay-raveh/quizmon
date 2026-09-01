@@ -23,10 +23,15 @@ interface QuestionProps {
   total: number;
 }
 
-const preloadMedia = (question: QuestionData) => {
-  if (question.media.kind === 'sprite') {
+const preloadQuestionImages = (question: QuestionData) => {
+  const sources = [
+    ...(question.media.kind === 'none' ? [] : [question.media.src]),
+    ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
+  ];
+
+  for (const src of sources) {
     const image = new Image();
-    image.src = question.media.src;
+    image.src = src;
   }
 };
 
@@ -46,7 +51,7 @@ export const Question = ({
   const answerTimeout = useRef<number | null>(null);
 
   useEffect(() => {
-    if (nextQuestion) preloadMedia(nextQuestion);
+    if (nextQuestion) preloadQuestionImages(nextQuestion);
     return () => {
       if (answerTimeout.current !== null) {
         window.clearTimeout(answerTimeout.current);
@@ -98,6 +103,7 @@ export const Question = ({
   const className = [
     'question',
     question.media.kind === 'sprite' ? 'question--with-media' : '',
+    question.media.kind === 'pixel-sprite' ? 'question--with-portrait' : '',
     number === 1 ? 'question--enter' : '',
   ]
     .filter(Boolean)
@@ -145,19 +151,56 @@ export const Question = ({
         />
       ) : null}
 
-      <div className="answers">
-        {question.options.map((option, index) => (
-          <GameButton
-            aria-keyshortcuts={String(index + 1)}
-            className={optionClassName(option)}
-            disabled={Boolean(selectedOption)}
-            key={option}
-            onClick={() => selectOption(option)}
-          >
-            <kbd aria-hidden="true">{index + 1}</kbd>
-            <span>{formatPokemonName(option)}</span>
-          </GameButton>
-        ))}
+      {question.media.kind === 'pixel-sprite' ? (
+        <div className="question__portrait" aria-hidden="true">
+          <img
+            className="pixel-sprite"
+            src={question.media.src}
+            alt=""
+            width="96"
+            height="96"
+          />
+        </div>
+      ) : null}
+
+      <div
+        className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''}`.trim()}
+      >
+        {question.options.map((option, index) => {
+          const visual = question.optionVisuals?.[option];
+          return (
+            <GameButton
+              aria-keyshortcuts={String(index + 1)}
+              className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''}`.trim()}
+              disabled={Boolean(selectedOption)}
+              key={option}
+              onClick={() => selectOption(option)}
+            >
+              <kbd aria-hidden="true">{index + 1}</kbd>
+              {visual ? (
+                <>
+                  <span className="answer__sprite-field" aria-hidden="true">
+                    <img
+                      className="pixel-sprite answer__sprite"
+                      src={visual.src}
+                      alt=""
+                      width="96"
+                      height="96"
+                    />
+                  </span>
+                  <span className="answer__nameplate">
+                    <small aria-hidden="true">
+                      No. {String(visual.dexNumber).padStart(4, '0')}
+                    </small>
+                    <span>{formatPokemonName(option)}</span>
+                  </span>
+                </>
+              ) : (
+                <span>{formatPokemonName(option)}</span>
+              )}
+            </GameButton>
+          );
+        })}
       </div>
 
       <p className="answer-feedback" aria-live="polite">

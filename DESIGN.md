@@ -185,7 +185,7 @@ The landscape is a fixed full-viewport plate with centered cover cropping. Main 
 
 The landing page is an open stage, not a card. On desktop, the wordmark, daily strip, and two-button row occupy the center while most of the sky and field remain visible. At the `36rem` breakpoint, the wordmark expands to `90vw`, the daily strip expands to `90%`, and the two actions each use `42%` of the viewport width. Preserve the same vertical story instead of inventing a mobile navigation or stacking extra containers.
 
-Question and result panels use `min(42rem, 94vw)`. Answer choices form two equal columns on desktop and one column at `36rem` and below. On short, wide screens below `43rem` in height, sprite questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
+Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
 The Training setup dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Generation and knowledge-category grids reduce to three columns on narrow screens.
 
@@ -236,7 +236,7 @@ The landing signature is a narrow cream strip with a `2px` navy outline, a short
 
 The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. Sprite questions add unframed artwork with a modest drop shadow, size questions compare Pokémon directly, and the Champion question reveals clues inside one ruled cream field.
 
-Answer buttons use the primary control treatment and include small outlined number-key labels. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, and unrelated answers fade to `0.5` opacity.
+Answer buttons use the primary control treatment and include small outlined number-key labels. Size, description, evolution, and stat questions present each Pokémon option as a cream field with a crisp front-facing PokéAPI pixel sprite and a cobalt nameplate containing its Pokédex number and readable Vend Sans name. Type, ability, move, and matchup questions keep text answers and place one compact pixel sprite of the named Pokémon between the prompt and choices. Identification and Champion questions retain their larger artwork or silhouette. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, and unrelated answers fade to `0.5` opacity.
 
 ### Progress and Timer
 
@@ -267,6 +267,7 @@ The first question and the result surface use one `180ms` ease-out entrance from
 - **Do** preserve the exact wordmark and crisp pixel-art landscape.
 - **Do** keep landing controls small and let open scenery dominate the first viewport.
 - **Do** use Vend Sans for interface text and reserve monospace for compact numeric status.
+- **Do** use classic front-facing pixel sprites as compact gameplay information and preserve their hard edges when scaled.
 - **Do** give buttons a physical pressed state through synchronized translation and compressed lower shadows.
 - **Do** animate the start and finish of a round, keep its question surface stable, and honor reduced motion.
 - **Do** prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.
@@ -277,6 +278,7 @@ The first question and the result surface use one `180ms` ease-out entrance from
 - **Don't** build a giant HUD, simulated handheld frame, or full-page landing card.
 - **Don't** use glass panels, blurred scenery, gradients, or diffuse floating-card shadows.
 - **Don't** introduce pixel-font overkill, oversized uppercase labels, or decorative game glyphs.
+- **Don't** force Pokémon sprites onto type, move, or ability choices that do not represent Pokémon.
 - **Don't** add navigation, marketing copy, characters, ball symbols, badges, or ornamental frames to fill open space.
 - **Don't** redesign, redraw, crop, blur, or place the wordmark inside another container.
 - **Don't** let decoration obscure answers, progress, score, modifiers, or keyboard focus.

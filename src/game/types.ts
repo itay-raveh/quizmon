@@ -82,7 +82,13 @@ export type QuestionMedia =
       silhouette: boolean;
       src: string;
     }
+  | { kind: 'pixel-sprite'; src: string }
   | { kind: 'none' };
+
+export interface PokemonOptionVisual {
+  dexNumber: number;
+  src: string;
+}
 
 export interface QuestionData {
   category: QuestionCategory;
@@ -91,6 +97,7 @@ export interface QuestionData {
   id: string;
   media: QuestionMedia;
   options: string[];
+  optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   prompt: string;
 }
