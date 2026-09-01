@@ -85,7 +85,15 @@ export type QuestionMedia =
 
 export interface PokemonOptionVisual {
   dexNumber: number;
+  silhouette?: boolean;
   src: string;
+}
+
+export type QuestionInteraction = 'single-choice' | 'multi-select' | 'ordering';
+
+export interface QuestionAnswer {
+  correctOptions: string[];
+  interaction: QuestionInteraction;
 }
 
 export type QuestionPrompt =
@@ -99,15 +107,17 @@ export type QuestionPrompt =
     };
 
 export interface QuestionData {
+  answer: QuestionAnswer;
   category: QuestionCategory;
-  correctOption: string;
   clues?: string[];
+  explanation?: string;
   id: string;
   media: QuestionMedia;
   options: string[];
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   prompt: QuestionPrompt;
+  title?: string;
 }
 
 export type GameMode = { kind: 'training' } | { kind: 'daily'; date: string };

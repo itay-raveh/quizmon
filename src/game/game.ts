@@ -165,8 +165,11 @@ const makeQuestion = (
   prompt: QuestionPrompt,
   media: QuestionData['media'] = { kind: 'none' },
 ): QuestionData => ({
+  answer: {
+    correctOptions: [correctOption],
+    interaction: 'single-choice',
+  },
   category,
-  correctOption,
   id: `${category}:${target.name}`,
   media,
   options,
@@ -590,6 +593,29 @@ export const calculateScore = (answers: readonly AnswerResult[]): number =>
 
 export const getCategoryLabel = (category: QuestionCategory): string =>
   categoryLabels[category];
+
+export const getCorrectOptions = (question: QuestionData): string[] =>
+  question.answer.correctOptions;
+
+export const isQuestionAnswerCorrect = (
+  question: QuestionData,
+  selectedOptions: readonly string[],
+): boolean => {
+  if (question.answer.interaction === 'ordering') {
+    return question.answer.correctOptions.every(
+      (option, index) => selectedOptions[index] === option,
+    );
+  }
+
+  const selected = new Set(selectedOptions);
+  return (
+    selected.size === question.answer.correctOptions.length &&
+    question.answer.correctOptions.every((option) => selected.has(option))
+  );
+};
+
+export const getQuestionTitle = (question: QuestionData): string =>
+  question.title ?? getCategoryLabel(question.category);
 
 export const getQuestionPromptText = (prompt: QuestionPrompt): string =>
   prompt.kind === 'text'

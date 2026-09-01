@@ -4,7 +4,9 @@ import {
   formatDuration,
   formatPokemonName,
   getAnswerPoints,
-  getCategoryLabel,
+  getCorrectOptions,
+  getQuestionTitle,
+  isQuestionAnswerCorrect,
   getSpeedBonusPoints,
 } from '@/game/game';
 import type {
@@ -99,7 +101,7 @@ export const Question = ({
     (option: string) => {
       if (interactionPaused || selectedOption) return;
 
-      const correct = option === question.correctOption;
+      const correct = isQuestionAnswerCorrect(question, [option]);
       const points = getAnswerPoints(question, correct, cluesShown);
       const responseMilliseconds = Math.max(
         0,
@@ -152,8 +154,9 @@ export const Question = ({
   }, [interactionPaused, question.options, selectOption]);
 
   const optionClassName = (option: string) => {
+    const [correctOption] = getCorrectOptions(question);
     if (!selectedOption) return 'answer';
-    if (option === question.correctOption) return 'answer answer--correct';
+    if (option === correctOption) return 'answer answer--correct';
     if (option === selectedOption) return 'answer answer--wrong';
     return 'answer answer--muted';
   };
@@ -185,7 +188,7 @@ export const Question = ({
         <SettingsButton onClick={onOpenSettings} />
       </div>
 
-      <h1 id="question-title">{getCategoryLabel(question.category)}</h1>
+      <h1 id="question-title">{getQuestionTitle(question)}</h1>
       <p className="game-mode">{getModeLabel(mode)}</p>
       <QuestionPrompt prompt={question.prompt} />
 
@@ -271,10 +274,13 @@ export const Question = ({
       </div>
 
       <p className="answer-feedback" aria-live="polite">
-        {selectedOption === question.correctOption
+        {isQuestionAnswerCorrect(
+          question,
+          selectedOption ? [selectedOption] : [],
+        )
           ? `Correct! +${awardedPoints} points`
           : selectedOption
-            ? `It was ${formatPokemonName(question.correctOption)}.`
+            ? `It was ${formatPokemonName(getCorrectOptions(question)[0] ?? '')}.`
             : '\u00a0'}
       </p>
 

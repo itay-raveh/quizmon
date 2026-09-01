@@ -3,8 +3,8 @@ import { Question } from '@/components/Question';
 import type { QuestionData } from '@/game/types';
 
 const question: QuestionData = {
+  answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'stat',
-  correctOption: 'pikachu',
   id: 'stat:pikachu:0',
   media: { kind: 'none' },
   options: ['pikachu', 'eevee', 'ditto', 'mew'],
@@ -90,7 +90,10 @@ describe('question transitions', () => {
         question={{
           ...question,
           category: 'type',
-          correctOption: 'electric',
+          answer: {
+            correctOptions: ['electric'],
+            interaction: 'single-choice',
+          },
           media: {
             kind: 'pixel-sprite',
             src: 'https://example.com/pikachu.png',

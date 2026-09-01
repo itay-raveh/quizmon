@@ -8,6 +8,7 @@ import {
   formatDuration,
   formatPokemonName,
   getAnswerPoints,
+  getCorrectOptions,
   getKnowledgePoints,
   getMasteryBonus,
   getMaximumScore,
@@ -94,7 +95,9 @@ describe('question building', () => {
       new Set(knowledgeCategories),
     );
     for (const question of questions) {
-      expect(question.options).toContain(question.correctOption);
+      expect(question.options).toEqual(
+        expect.arrayContaining(getCorrectOptions(question)),
+      );
       expect(new Set(question.options).size).toBe(4);
     }
   });
