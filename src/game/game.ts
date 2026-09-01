@@ -7,7 +7,6 @@ import {
   type KnowledgeCategory,
   type Modifiers,
   type PokemonOptionVisual,
-  type PokemonSequenceVisual,
   type PokemonCatalog,
   type PokemonKnowledge,
   type QuestionCategory,
@@ -192,16 +191,6 @@ const pokemonPrompt = (
   name: target.name,
 });
 
-const getPokemonOptionVisual = (
-  pokemon: PokemonKnowledge,
-): PokemonOptionVisual | undefined =>
-  pokemon.sprite
-    ? {
-        dexNumber: pokemon.id,
-        src: pokemon.sprite,
-      }
-    : undefined;
-
 const getOptionVisuals = (
   context: QuestionContext,
   options: readonly string[],
@@ -219,14 +208,6 @@ const getOptionVisuals = (
         : [];
     }),
   );
-
-const getSequenceVisual = (
-  name: string,
-  pokemon: PokemonKnowledge,
-): PokemonSequenceVisual | undefined => {
-  const visual = getPokemonOptionVisual(pokemon);
-  return visual ? { ...visual, name } : undefined;
-};
 
 const addQuestionVisuals = (
   context: QuestionContext,
@@ -549,45 +530,6 @@ const getEvolutionTriples = (context: QuestionContext): EvolutionTriple[] => {
   );
 };
 
-const buildMissingEvolutionQuestion = (
-  context: QuestionContext,
-): QuestionData | undefined => {
-  const triples = getEvolutionTriples(context).filter(([, middle]) =>
-    Boolean(middle.pokemon.sprite),
-  );
-  const fresh = triples.filter(([, middle]) => !context.used.has(middle.name));
-  const triple = pick(fresh.length > 0 ? fresh : triples, context.random);
-  if (!triple) return undefined;
-  const [first, target, last] = triple;
-  context.used.add(target.name);
-  const excluded = triple.map(({ name }) => name);
-  const options = optionSet(
-    target.name,
-    context.pool
-      .filter(({ name, pokemon }) => pokemon.sprite && !excluded.includes(name))
-      .map(({ name }) => name),
-    context.random,
-  );
-  const sequenceVisuals = [first, last].flatMap(({ name, pokemon }) => {
-    const visual = getSequenceVisual(name, pokemon);
-    return visual ? [visual] : [];
-  });
-  if (options.length !== 4 || sequenceVisuals.length !== 2) return undefined;
-
-  return {
-    ...makeQuestion(
-      'evolution',
-      target,
-      target.name,
-      options,
-      textPrompt('Choose the missing Pokémon.'),
-    ),
-    explanation: `${formatPokemonName(first.name)} evolves into ${formatPokemonName(target.name)}, then ${formatPokemonName(last.name)}.`,
-    sequenceVisuals,
-    title: 'Missing evolution',
-  };
-};
-
 const buildEvolutionOrderQuestion = (
   context: QuestionContext,
 ): QuestionData | undefined => {
@@ -792,7 +734,6 @@ const buildCategoryQuestion = (
     case 'evolution':
       question = buildQuestionVariant(context, [
         () => buildEvolutionQuestion(context),
-        () => buildMissingEvolutionQuestion(context),
         () => buildEvolutionOrderQuestion(context),
       ]);
       break;

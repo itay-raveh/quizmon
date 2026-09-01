@@ -537,44 +537,6 @@ main {
   transform: scale(1);
 }
 
-.evolution-sequence {
-  display: flex;
-  margin: 0 0 0.65rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  color: var(--navy);
-  font-family: var(--font-data);
-  font-size: var(--text-label);
-  font-weight: 900;
-}
-
-.evolution-sequence__pokemon {
-  display: grid;
-  width: 6rem;
-  place-items: center;
-  font-family: var(--font-body);
-  font-size: var(--text-mini);
-  line-height: 1;
-  text-align: center;
-}
-
-.evolution-sequence__pokemon img {
-  width: 5rem;
-  height: 5rem;
-}
-
-.evolution-sequence__unknown {
-  display: grid;
-  width: 2.8rem;
-  aspect-ratio: 1;
-  background: var(--yellow);
-  border: 2px solid var(--navy);
-  border-radius: 0.5rem;
-  box-shadow: 0 0.2rem 0 var(--blue-shadow);
-  place-items: center;
-}
-
 .clue-board {
   display: grid;
   width: 100%;

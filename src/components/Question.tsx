@@ -39,7 +39,6 @@ const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
     ...(question.media.kind === 'none' ? [] : [question.media.src]),
     ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
-    ...(question.sequenceVisuals ?? []).map(({ src }) => src),
   ];
 
   for (const src of sources) {
@@ -294,41 +293,6 @@ export const Question = ({
             width="96"
             height="96"
           />
-        </div>
-      ) : null}
-
-      {question.sequenceVisuals ? (
-        <div
-          className="evolution-sequence"
-          aria-label={`${formatPokemonName(question.sequenceVisuals[0]?.name ?? '')} evolves into an unknown Pokémon, then ${formatPokemonName(question.sequenceVisuals[1]?.name ?? '')}`}
-        >
-          <span className="evolution-sequence__pokemon" aria-hidden="true">
-            <img
-              className="pixel-sprite"
-              src={question.sequenceVisuals[0]?.src}
-              alt=""
-              decoding="async"
-              width="96"
-              height="96"
-            />
-            <b>{formatPokemonName(question.sequenceVisuals[0]?.name ?? '')}</b>
-          </span>
-          <span aria-hidden="true">→</span>
-          <span className="evolution-sequence__unknown" aria-hidden="true">
-            ?
-          </span>
-          <span aria-hidden="true">→</span>
-          <span className="evolution-sequence__pokemon" aria-hidden="true">
-            <img
-              className="pixel-sprite"
-              src={question.sequenceVisuals[1]?.src}
-              alt=""
-              decoding="async"
-              width="96"
-              height="96"
-            />
-            <b>{formatPokemonName(question.sequenceVisuals[1]?.name ?? '')}</b>
-          </span>
         </div>
       ) : null}
 

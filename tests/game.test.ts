@@ -79,7 +79,7 @@ describe('question building', () => {
     ).toBe(true);
   });
 
-  it('builds every training category with four unique options', () => {
+  it('builds every training category with the right number of unique options', () => {
     const questions = buildQuestions(
       catalog,
       {
@@ -99,7 +99,9 @@ describe('question building', () => {
       expect(question.options).toEqual(
         expect.arrayContaining(getCorrectOptions(question)),
       );
-      expect(new Set(question.options).size).toBe(4);
+      const expectedOptionCount =
+        question.answer.interaction === 'ordering' ? 3 : 4;
+      expect(new Set(question.options).size).toBe(expectedOptionCount);
     }
   });
 
@@ -159,7 +161,7 @@ describe('question building', () => {
 
   it('mixes the approved playful variants into broad knowledge topics', () => {
     const expectedTitles = {
-      evolution: ['Evolution trail', 'Missing evolution', 'Evolution order'],
+      evolution: ['Evolution trail', 'Evolution order'],
       identity: [
         'Pokédex scan',
         'Pixel peek',

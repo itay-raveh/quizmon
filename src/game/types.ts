@@ -95,10 +95,6 @@ export interface PokemonOptionVisual {
   src: string;
 }
 
-export interface PokemonSequenceVisual extends PokemonOptionVisual {
-  name: string;
-}
-
 export type QuestionInteraction = 'single-choice' | 'multi-select' | 'ordering';
 
 export interface QuestionAnswer {
@@ -128,7 +124,6 @@ export interface QuestionData {
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   prompt: QuestionPrompt;
-  sequenceVisuals?: PokemonSequenceVisual[];
   title?: string;
 }
 
