@@ -23,10 +23,7 @@ export const buildShareContent = (
     .join('');
 
   return {
-    text: [
-      `${score} / ${maximumScore} points · ${result.correctCount}/${result.questionCount}`,
-      pattern,
-    ].join('\n'),
+    text: [`${score} / ${maximumScore} points`, pattern].join('\n'),
     title: `Quizmon · ${mode.kind === 'daily' ? formatDailyDate(mode.date) : 'Training'}`,
     url:
       mode.kind === 'daily'
