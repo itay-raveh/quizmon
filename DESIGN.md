@@ -1,6 +1,6 @@
 ---
 name: Quizmon
-description: A restrained Logo Echo interface for a quick, charming Pokémon recognition game.
+description: A restrained Logo Echo interface for a quick, charming Pokémon knowledge game.
 colors:
   primary: '#0d6be6'
   primary-text: '#ddfafe'
@@ -12,9 +12,9 @@ colors:
   game-surface: '#fffbea'
   ink: '#143149'
   muted-ink: '#446078'
-  success: '#2e9b55'
-  error: '#ca3f58'
-  focus: '#fff27a'
+  success: '#18763a'
+  error: '#a92843'
+  focus: '#083b7e'
   footer-ink: '#1b3e40'
 typography:
   display:
@@ -112,7 +112,7 @@ components:
 
 The implemented direction is the approved Logo Echo world, seed `ae843a63`. Quizmon starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.
 
-The landing screen remains open and asset-led. The wordmark occupies the sky, the daily challenge sits in one narrow strip, and the two custom-game controls stay small beneath it. Question, result, and modifier states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.
+The landing screen remains open and asset-led. The wordmark occupies the sky, the Trainer Trial sits in one narrow strip, and the two Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.
 
 The result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.
 
@@ -142,8 +142,8 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 
 ### Tertiary
 
-- **Correct Green** (`colors.success`): Correct-answer feedback only.
-- **Wrong Rose** (`colors.error`): Incorrect-answer and error feedback only.
+- **Correct Forest** (`colors.success`): Correct-answer feedback only.
+- **Wrong Berry** (`colors.error`): Incorrect-answer and error feedback only.
 
 ### Neutral
 
@@ -151,7 +151,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 - **Landscape Ink** (`colors.ink`): Main copy on warm surfaces.
 - **Muted Blue Ink** (`colors.muted-ink`): Supporting descriptions, mode labels, details, and status text.
 - **Hard Navy Shadow** (`colors.hard-shadow`): The dark lower layer under compact controls and contained surfaces.
-- **Focus Yellow** (`colors.focus`): Keyboard focus outlines.
+- **Focus Navy** (`colors.focus`): Keyboard focus outlines separated from controls by a light offset gap.
 - **Field Footer Ink** (`colors.footer-ink`): The small unboxed credit line over the landscape.
 
 **The Logo-First Rule.** Cobalt and yellow echo the wordmark. They do not compete with it by filling large decorative regions.
@@ -185,9 +185,9 @@ The landscape is a fixed full-viewport plate with centered cover cropping. Main 
 
 The landing page is an open stage, not a card. On desktop, the wordmark, daily strip, and two-button row occupy the center while most of the sky and field remain visible. At the `36rem` breakpoint, the wordmark expands to `90vw`, the daily strip expands to `90%`, and the two actions each use `42%` of the viewport width. Preserve the same vertical story instead of inventing a mobile navigation or stacking extra containers.
 
-Question and result panels use `min(42rem, 94vw)`. Answer choices form two equal columns on desktop and one column at `36rem` and below. On short, wide screens below `43rem` in height, the question may split sprite and answers into two columns while progress, title, feedback, and the new-game action span both columns.
+Question and result panels use `min(42rem, 94vw)`. Answer choices form two equal columns on desktop and one column at `36rem` and below. On short, wide screens below `43rem` in height, sprite questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
-The modifiers dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Generation and form grids reduce from four or five columns to three on narrow screens.
+The Training setup dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Generation and knowledge-category grids reduce to three columns on narrow screens.
 
 Spacing is compact and regular. Most internal gaps sit near `0.7rem`, contained surfaces use `1rem` to `1.5rem` of padding, and controls remain large enough for touch without becoming oversized.
 
@@ -234,7 +234,7 @@ The landing signature is a narrow cream strip with a `2px` navy outline, a short
 
 ### Question Surface
 
-The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered title and mode, an unframed Pokémon sprite, and the answer grid. The sprite uses only a modest drop shadow. It does not receive its own card.
+The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. Sprite questions add unframed artwork with a modest drop shadow, cries use one compact playback control, and the Champion question reveals clues inside one ruled cream field.
 
 Answer buttons use the primary control treatment and include small outlined number-key labels. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, and unrelated answers fade to `0.5` opacity.
 
@@ -244,7 +244,7 @@ The progress track is a slim pale-blue bar with a `2px` navy border and yellow f
 
 ### Results Surface
 
-Results use the same contained surface as questions. Rows are separated by low-contrast navy dividers. The score sits in a full-width cream band with navy rules at the top and bottom. Actions reuse the primary and quiet button pair.
+Results use the same contained surface as questions. Rows are separated by low-contrast navy dividers, and a compact answer trail summarizes the round. The score sits in a full-width cream band with navy rules at the top and bottom. Actions reuse the primary and quiet button pair.
 
 ### Modifiers Dialog and Fields
 

@@ -12,8 +12,12 @@ export const AnimatedScore = ({
   value,
 }: AnimatedScoreProps) => {
   const [displayValue, setDisplayValue] = useState(0);
+  const prefersReducedMotion =
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
+
     const startedAt = performance.now();
     let frame = 0;
 
@@ -27,7 +31,7 @@ export const AnimatedScore = ({
 
     frame = window.requestAnimationFrame(update);
     return () => window.cancelAnimationFrame(frame);
-  }, [duration, value]);
+  }, [duration, prefersReducedMotion, value]);
 
-  return <>{format(displayValue)}</>;
+  return <>{format(prefersReducedMotion ? value : displayValue)}</>;
 };

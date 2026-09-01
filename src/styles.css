@@ -13,9 +13,9 @@
   --paper: #fffbea;
   --ink: #143149;
   --muted: #446078;
-  --correct: #2e9b55;
-  --wrong: #ca3f58;
-  --focus: #fff27a;
+  --correct: #18763a;
+  --wrong: #a92843;
+  --focus: #083b7e;
   --r-wordmark-x: 34.05%;
   --r-wordmark-y: 25.2%;
   --r-wordmark-w: 33.42%;
@@ -506,6 +506,15 @@ main {
   opacity: 0.5;
 }
 
+.answer:disabled {
+  filter: none;
+  opacity: 1;
+}
+
+.answer--muted:disabled {
+  opacity: 0.5;
+}
+
 .answer-feedback {
   min-height: 1.4rem;
   margin: 0.7rem 0 0.3rem;
@@ -611,6 +620,10 @@ main {
   color: var(--navy);
 }
 
+.personal-best--warning {
+  color: var(--wrong);
+}
+
 .results__actions {
   display: flex;
   justify-content: center;
@@ -666,8 +679,8 @@ main {
 
 .dialog-close {
   display: grid;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   color: #e7feff;
   background: var(--blue);
@@ -745,6 +758,8 @@ main {
   position: relative;
   display: grid;
   min-width: 0;
+  min-height: 2.75rem;
+  padding-block: 0.35rem;
   grid-template-columns: 1.35rem 1fr;
   gap: 0.55rem;
   align-items: start;
@@ -997,19 +1012,19 @@ main {
 }
 
 @media (max-height: 43rem) and (min-width: 36.01rem) {
-  .question {
+  .question--with-media {
     grid-template-columns: 1fr 1fr;
     column-gap: 1.2rem;
   }
 
-  .question__topline,
-  .question h1,
-  .game-mode,
-  .question__prompt,
-  .clue-board,
-  .cry-player,
-  .answer-feedback,
-  .new-game {
+  .question--with-media .question__topline,
+  .question--with-media h1,
+  .question--with-media .game-mode,
+  .question--with-media .question__prompt,
+  .question--with-media .clue-board,
+  .question--with-media .cry-player,
+  .question--with-media .answer-feedback,
+  .question--with-media .new-game {
     grid-column: 1 / -1;
   }
 

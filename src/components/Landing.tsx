@@ -9,20 +9,24 @@ interface LandingProps {
   catalogStatus: 'loading' | 'ready' | 'error';
   dailyDate: string;
   dailyResult: GameResult | null;
+  dailyResultSaved: boolean;
   onOpenSettings: () => void;
   onRetryCatalog: () => void;
   onStart: () => void;
   onStartDaily: () => void;
+  storageAvailable: boolean;
 }
 
 export const Landing = ({
   catalogStatus,
   dailyDate,
   dailyResult,
+  dailyResultSaved,
   onOpenSettings,
   onRetryCatalog,
   onStart,
   onStartDaily,
+  storageAvailable,
 }: LandingProps) => {
   const [shareStatus, setShareStatus] = useState('');
 
@@ -70,8 +74,10 @@ export const Landing = ({
           <span>
             {formatDailyDate(dailyDate)} ·{' '}
             {dailyResult
-              ? `${dailyResult.score.toLocaleString()} / 1,000`
-              : '10 questions'}
+              ? `${dailyResult.score.toLocaleString()} / 1,000${dailyResultSaved ? '' : ' · not saved'}`
+              : storageAvailable
+                ? '10 questions'
+                : 'browser storage required'}
           </span>
         </div>
         {dailyResult ? (
@@ -80,7 +86,7 @@ export const Landing = ({
           </GameButton>
         ) : (
           <GameButton
-            disabled={catalogStatus !== 'ready'}
+            disabled={catalogStatus !== 'ready' || !storageAvailable}
             onClick={onStartDaily}
           >
             <span>Play daily</span>

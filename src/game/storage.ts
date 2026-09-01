@@ -70,6 +70,17 @@ const writeResults = (results: SavedResults): boolean => {
   }
 };
 
+export const canPersistResults = (): boolean => {
+  const probeKey = `${RESULTS_KEY}.probe`;
+  try {
+    window.localStorage.setItem(probeKey, '1');
+    window.localStorage.removeItem(probeKey);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const readDailyResult = (date: string): GameResult | null =>
   readResults().daily[date] ?? null;
 
@@ -77,16 +88,20 @@ export const saveResult = (
   mode: GameMode,
   modifiers: Modifiers,
   result: GameResult,
-): { best: GameResult; isNewBest: boolean } => {
+): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
   const results = readResults();
 
   if (mode.kind === 'daily') {
     const previous = results.daily[mode.date];
-    if (previous) return { best: previous, isNewBest: false };
+    if (previous) {
+      return { best: previous, isNewBest: false, isSaved: true };
+    }
     results.daily[mode.date] = result;
+    const isSaved = writeResults(results);
     return {
       best: result,
-      isNewBest: writeResults(results),
+      isNewBest: isSaved,
+      isSaved,
     };
   }
 
@@ -98,11 +113,15 @@ export const saveResult = (
     (result.score === previous.score &&
       result.elapsedSeconds < previous.elapsedSeconds);
 
-  if (!isNewBest) return { best: previous, isNewBest };
+  if (!isNewBest) {
+    return { best: previous, isNewBest, isSaved: true };
+  }
 
   results.training[key] = result;
+  const isSaved = writeResults(results);
   return {
     best: result,
-    isNewBest: writeResults(results),
+    isNewBest: isSaved,
+    isSaved,
   };
 };

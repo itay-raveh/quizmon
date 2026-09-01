@@ -196,6 +196,45 @@ test('shows a saved daily score instead of another play button', async ({
   await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
 });
 
+test('syncs a completed daily across open tabs', async ({ context, page }) => {
+  const otherPage = await context.newPage();
+  await Promise.all([
+    page.goto('/?daily=2026-09-01'),
+    otherPage.goto('/?daily=2026-09-01'),
+  ]);
+  await expect(
+    otherPage.getByRole('button', { name: 'Play daily' }),
+  ).toBeVisible();
+
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {
+          '2026-09-01': {
+            answers: Array.from({ length: 10 }, (_, index) => ({
+              category: index === 9 ? 'champion' : 'identity',
+              correct: true,
+              points: 100,
+            })),
+            contentVersion: 2,
+            correctCount: 10,
+            elapsedSeconds: 70,
+            questionCount: 10,
+            score: 1000,
+          },
+        },
+        training: {},
+      }),
+    );
+  });
+
+  await expect(otherPage.getByText('Daily complete')).toBeVisible();
+  await expect(
+    otherPage.getByRole('button', { name: 'Play daily' }),
+  ).toHaveCount(0);
+});
+
 test('opens the same daily question from the same shared date', async ({
   page,
 }) => {

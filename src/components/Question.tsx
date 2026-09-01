@@ -114,7 +114,14 @@ export const Question = ({
   };
 
   return (
-    <section className="question" aria-labelledby="question-title">
+    <section
+      className={
+        question.media.kind === 'sprite'
+          ? 'question question--with-media'
+          : 'question'
+      }
+      aria-labelledby="question-title"
+    >
       <div className="question__topline">
         <Progress current={number} total={total} />
         <span

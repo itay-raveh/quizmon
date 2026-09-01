@@ -13,6 +13,7 @@ interface ResultsProps {
   mode: GameMode;
   onNewGame: () => void;
   result: GameResult;
+  resultSaved: boolean;
 }
 
 export const Results = ({
@@ -21,6 +22,7 @@ export const Results = ({
   mode,
   onNewGame,
   result,
+  resultSaved,
 }: ResultsProps) => {
   const [shareStatus, setShareStatus] = useState('');
   const { playScore, stopScore } = useGameSounds();
@@ -106,7 +108,14 @@ export const Results = ({
           {formatScore(bestResult.score)} points
         </p>
       ) : (
-        <p className="personal-best">Saved on this device.</p>
+        <p
+          className={`personal-best ${resultSaved ? '' : 'personal-best--warning'}`.trim()}
+          role={resultSaved ? undefined : 'alert'}
+        >
+          {resultSaved
+            ? 'Saved on this device.'
+            : 'This result could not be saved. Keep this tab open or enable browser storage.'}
+        </p>
       )}
 
       <div className="results__actions">

@@ -1,5 +1,5 @@
 import { defaultModifiers } from '@/game/game';
-import { readDailyResult, saveResult } from '@/game/storage';
+import { canPersistResults, readDailyResult, saveResult } from '@/game/storage';
 import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
@@ -22,6 +22,7 @@ describe('saved results', () => {
     expect(saveResult(mode, defaultModifiers, result)).toEqual({
       best: result,
       isNewBest: true,
+      isSaved: true,
     });
     expect(readDailyResult(mode.date)).toEqual(result);
   });
@@ -34,6 +35,7 @@ describe('saved results', () => {
     expect(saveResult(mode, defaultModifiers, perfect)).toEqual({
       best: result,
       isNewBest: false,
+      isSaved: true,
     });
     expect(readDailyResult(mode.date)).toEqual(result);
   });
@@ -46,6 +48,7 @@ describe('saved results', () => {
     expect(saveResult(mode, defaultModifiers, lower)).toEqual({
       best: result,
       isNewBest: false,
+      isSaved: true,
     });
     expect(
       saveResult(
@@ -54,5 +57,23 @@ describe('saved results', () => {
         lower,
       ).isNewBest,
     ).toBe(true);
+  });
+
+  it('reports when browser storage cannot persist a result', () => {
+    const setItem = vi
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(() => {
+        throw new DOMException('Storage disabled', 'QuotaExceededError');
+      });
+
+    expect(canPersistResults()).toBe(false);
+    expect(
+      saveResult(
+        { kind: 'daily', date: '2026-09-01' },
+        defaultModifiers,
+        result,
+      ),
+    ).toEqual({ best: result, isNewBest: false, isSaved: false });
+    setItem.mockRestore();
   });
 });

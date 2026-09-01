@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
 import { Landing } from '@/components/Landing';
@@ -14,6 +14,7 @@ import {
 } from '@/game/daily';
 import { buildQuestions, calculateScore } from '@/game/game';
 import {
+  canPersistResults,
   readDailyResult,
   saveResult,
   usePersistentModifiers,
@@ -42,13 +43,36 @@ export const App = () => {
   const [result, setResult] = useState<GameResult | null>(null);
   const [bestResult, setBestResult] = useState<GameResult | null>(null);
   const [isNewBest, setIsNewBest] = useState(false);
+  const [resultSaved, setResultSaved] = useState(true);
   const [dailyDate] = useState(
     () => parseDailyDate(window.location.search) ?? getUtcDate(),
   );
   const [dailyResult, setDailyResult] = useState<GameResult | null>(() =>
     readDailyResult(parseDailyDate(window.location.search) ?? getUtcDate()),
   );
+  const [dailyResultSaved, setDailyResultSaved] = useState(() =>
+    Boolean(
+      readDailyResult(parseDailyDate(window.location.search) ?? getUtcDate()),
+    ),
+  );
+  const [storageAvailable] = useState(canPersistResults);
   const { elapsedSeconds, pause, reset, start } = useStopwatch();
+
+  useEffect(() => {
+    const syncDailyResult = () => {
+      const saved = readDailyResult(dailyDate);
+      if (!saved) return;
+      setDailyResult(saved);
+      setDailyResultSaved(true);
+    };
+
+    window.addEventListener('focus', syncDailyResult);
+    window.addEventListener('storage', syncDailyResult);
+    return () => {
+      window.removeEventListener('focus', syncDailyResult);
+      window.removeEventListener('storage', syncDailyResult);
+    };
+  }, [dailyDate]);
 
   const startGame = (
     nextQuestions: QuestionData[],
@@ -61,6 +85,7 @@ export const App = () => {
     setResult(null);
     setBestResult(null);
     setIsNewBest(false);
+    setResultSaved(true);
     setQuestionIndex(0);
     setAnswers([]);
     reset();
@@ -77,7 +102,15 @@ export const App = () => {
   };
 
   const startDailyGame = () => {
-    if (catalogState.status !== 'ready' || dailyResult) return;
+    if (catalogState.status !== 'ready' || dailyResult || !storageAvailable)
+      return;
+
+    const saved = readDailyResult(dailyDate);
+    if (saved) {
+      setDailyResult(saved);
+      setDailyResultSaved(true);
+      return;
+    }
 
     const dailyModifiers = getDailyModifiers(modifiers.soundEnabled);
     startGame(
@@ -119,7 +152,11 @@ export const App = () => {
         setResult(nextResult);
         setBestResult(best.best);
         setIsNewBest(best.isNewBest);
-        if (mode.kind === 'daily') setDailyResult(best.best);
+        setResultSaved(best.isSaved);
+        if (mode.kind === 'daily') {
+          setDailyResult(best.best);
+          setDailyResultSaved(best.isSaved);
+        }
         pause();
         setPhase('results');
       } else {
@@ -150,10 +187,12 @@ export const App = () => {
               catalogStatus={catalogState.status}
               dailyDate={dailyDate}
               dailyResult={dailyResult}
+              dailyResultSaved={dailyResultSaved}
               onOpenSettings={() => setSettingsOpen(true)}
               onRetryCatalog={catalogState.retry}
               onStart={startCustomGame}
               onStartDaily={startDailyGame}
+              storageAvailable={storageAvailable}
             />
           ) : null}
 
@@ -179,6 +218,7 @@ export const App = () => {
               mode={mode}
               onNewGame={newGame}
               result={result}
+              resultSaved={resultSaved}
             />
           ) : null}
         </main>
