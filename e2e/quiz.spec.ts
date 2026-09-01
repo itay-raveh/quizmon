@@ -113,7 +113,11 @@ test('plays and shares a complete Training question without a live API call', as
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeVisible();
-  await expect(page.getByText('100.00%')).toBeVisible();
+  await expect(page.getByText('Accuracy')).toHaveCount(0);
+  await expect(page.getByText(/seconds$/)).toHaveCount(0);
+  await expect(
+    page.getByRole('list', { name: 'Question results' }),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
   await expect(page.getByRole('tab', { name: 'Experience' })).toHaveAttribute(

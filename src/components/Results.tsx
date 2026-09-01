@@ -57,39 +57,37 @@ export const Results = ({
       <p className="game-mode">{getModeLabel(mode)}</p>
 
       <dl className="results-list">
-        <div>
-          <dt>Accuracy</dt>
-          <dd>
-            {((result.correctCount / result.questionCount) * 100).toFixed(2)}%
-          </dd>
-          <dd className="results-list__detail">
-            {result.correctCount} / {result.questionCount}
-          </dd>
-        </div>
+        {result.questionCount > 10 ? (
+          <div>
+            <dt>Correct</dt>
+            <dd>
+              {result.correctCount} / {result.questionCount}
+            </dd>
+          </div>
+        ) : null}
         <div>
           <dt>Time</dt>
           <dd>{formatDuration(result.elapsedSeconds)}</dd>
-          <dd className="results-list__detail">
-            {Math.max(1, result.elapsedSeconds)} seconds
-          </dd>
         </div>
       </dl>
 
-      <ol className="answer-trail" aria-label="Question results">
-        {result.answers.map((answer, index) => (
-          <li
-            className={answer.correct ? 'answer-trail--correct' : ''}
-            key={`${answer.category}-${index}`}
-            title={`${getCategoryLabel(answer.category)}: ${answer.correct ? 'correct' : 'incorrect'}`}
-          >
-            <span aria-hidden="true">{answer.correct ? '✓' : '×'}</span>
-            <span className="visually-hidden">
-              {getCategoryLabel(answer.category)}:{' '}
-              {answer.correct ? 'correct' : 'incorrect'}
-            </span>
-          </li>
-        ))}
-      </ol>
+      {result.questionCount <= 10 ? (
+        <ol className="answer-trail" aria-label="Question results">
+          {result.answers.map((answer, index) => (
+            <li
+              className={answer.correct ? 'answer-trail--correct' : ''}
+              key={`${answer.category}-${index}`}
+              title={`${getCategoryLabel(answer.category)}: ${answer.correct ? 'correct' : 'incorrect'}`}
+            >
+              <span aria-hidden="true">{answer.correct ? '✓' : '×'}</span>
+              <span className="visually-hidden">
+                {getCategoryLabel(answer.category)}:{' '}
+                {answer.correct ? 'correct' : 'incorrect'}
+              </span>
+            </li>
+          ))}
+        </ol>
+      ) : null}
 
       <div className="score" aria-label={`Score ${formatScore(result.score)}`}>
         <span>Score</span>
