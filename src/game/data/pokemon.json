@@ -1,4651 +1,427 @@
 {
-  "bulbasaur": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "ivysaur": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "venusaur": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "charmander": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "charmeleon": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "charizard": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "squirtle": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "wartortle": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "blastoise": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "caterpie": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "metapod": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "butterfree": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "weedle": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "kakuna": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "beedrill": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "pidgey": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "pidgeotto": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "pidgeot": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "rattata": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "raticate": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "spearow": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "fearow": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "ekans": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "arbok": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "pikachu": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "raichu": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "sandshrew": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "sandslash": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "nidoran-f": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "nidorina": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "nidoqueen": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "nidoran-m": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "nidorino": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "nidoking": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "clefairy": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "clefable": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "vulpix": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "ninetales": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "jigglypuff": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "wigglytuff": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "zubat": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "golbat": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "oddish": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "gloom": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "vileplume": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "paras": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "parasect": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "venonat": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "venomoth": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "diglett": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "dugtrio": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "meowth": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "persian": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "psyduck": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "golduck": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "mankey": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "primeape": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "growlithe": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "arcanine": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "poliwag": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "poliwhirl": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "poliwrath": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "abra": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "kadabra": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "alakazam": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "machop": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "machoke": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "machamp": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "bellsprout": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "weepinbell": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "victreebel": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "tentacool": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "tentacruel": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "geodude": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "graveler": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "golem": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "ponyta": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "rapidash": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "slowpoke": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "slowbro": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "magnemite": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "magneton": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "farfetchd": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "doduo": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "dodrio": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "seel": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "dewgong": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "grimer": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "muk": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "shellder": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "cloyster": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "gastly": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "haunter": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "gengar": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "onix": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "drowzee": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "hypno": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "krabby": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "kingler": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "voltorb": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "electrode": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "exeggcute": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "exeggutor": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "cubone": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "marowak": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "hitmonlee": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "hitmonchan": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "lickitung": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "koffing": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "weezing": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "rhyhorn": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "rhydon": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "chansey": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "tangela": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "kangaskhan": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "horsea": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "seadra": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "goldeen": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "seaking": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "staryu": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "starmie": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "mr-mime": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "scyther": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "jynx": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "electabuzz": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "magmar": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "pinsir": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "tauros": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "magikarp": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "gyarados": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "lapras": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "ditto": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "eevee": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "vaporeon": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "jolteon": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "flareon": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "porygon": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "omanyte": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "omastar": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "kabuto": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "kabutops": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "aerodactyl": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "snorlax": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "articuno": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "zapdos": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "moltres": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "dratini": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "dragonair": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "dragonite": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "mewtwo": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "mew": {
-    "generation": "I",
-    "formCategory": "default"
-  },
-  "chikorita": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "bayleef": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "meganium": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "cyndaquil": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "quilava": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "typhlosion": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "totodile": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "croconaw": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "feraligatr": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "sentret": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "furret": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "hoothoot": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "noctowl": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "ledyba": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "ledian": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "spinarak": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "ariados": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "crobat": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "chinchou": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "lanturn": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "pichu": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "cleffa": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "igglybuff": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "togepi": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "togetic": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "natu": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "xatu": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "mareep": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "flaaffy": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "ampharos": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "bellossom": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "marill": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "azumarill": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "sudowoodo": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "politoed": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "hoppip": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "skiploom": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "jumpluff": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "aipom": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "sunkern": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "sunflora": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "yanma": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "wooper": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "quagsire": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "espeon": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "umbreon": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "murkrow": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "slowking": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "misdreavus": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "unown": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "wobbuffet": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "girafarig": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "pineco": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "forretress": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "dunsparce": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "gligar": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "steelix": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "snubbull": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "granbull": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "qwilfish": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "scizor": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "shuckle": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "heracross": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "sneasel": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "teddiursa": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "ursaring": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "slugma": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "magcargo": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "swinub": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "piloswine": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "corsola": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "remoraid": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "octillery": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "delibird": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "mantine": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "skarmory": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "houndour": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "houndoom": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "kingdra": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "phanpy": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "donphan": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "porygon2": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "stantler": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "smeargle": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "tyrogue": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "hitmontop": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "smoochum": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "elekid": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "magby": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "miltank": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "blissey": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "raikou": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "entei": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "suicune": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "larvitar": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "pupitar": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "tyranitar": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "lugia": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "ho-oh": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "celebi": {
-    "generation": "II",
-    "formCategory": "default"
-  },
-  "treecko": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "grovyle": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "sceptile": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "torchic": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "combusken": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "blaziken": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "mudkip": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "marshtomp": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "swampert": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "poochyena": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "mightyena": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "zigzagoon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "linoone": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "wurmple": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "silcoon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "beautifly": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "cascoon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "dustox": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "lotad": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "lombre": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "ludicolo": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "seedot": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "nuzleaf": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "shiftry": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "taillow": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "swellow": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "wingull": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "pelipper": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "ralts": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "kirlia": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "gardevoir": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "surskit": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "masquerain": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "shroomish": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "breloom": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "slakoth": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "vigoroth": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "slaking": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "nincada": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "ninjask": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "shedinja": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "whismur": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "loudred": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "exploud": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "makuhita": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "hariyama": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "azurill": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "nosepass": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "skitty": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "delcatty": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "sableye": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "mawile": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "aron": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "lairon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "aggron": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "meditite": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "medicham": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "electrike": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "manectric": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "plusle": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "minun": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "volbeat": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "illumise": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "roselia": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "gulpin": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "swalot": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "carvanha": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "sharpedo": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "wailmer": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "wailord": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "numel": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "camerupt": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "torkoal": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "spoink": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "grumpig": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "spinda": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "trapinch": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "vibrava": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "flygon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "cacnea": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "cacturne": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "swablu": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "altaria": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "zangoose": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "seviper": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "lunatone": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "solrock": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "barboach": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "whiscash": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "corphish": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "crawdaunt": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "baltoy": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "claydol": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "lileep": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "cradily": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "anorith": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "armaldo": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "feebas": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "milotic": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "castform": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "kecleon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "shuppet": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "banette": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "duskull": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "dusclops": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "tropius": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "chimecho": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "absol": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "wynaut": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "snorunt": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "glalie": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "spheal": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "sealeo": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "walrein": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "clamperl": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "huntail": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "gorebyss": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "relicanth": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "luvdisc": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "bagon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "shelgon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "salamence": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "beldum": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "metang": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "metagross": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "regirock": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "regice": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "registeel": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "latias": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "latios": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "kyogre": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "groudon": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "rayquaza": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "jirachi": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "deoxys-normal": {
-    "generation": "III",
-    "formCategory": "default"
-  },
-  "turtwig": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "grotle": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "torterra": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "chimchar": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "monferno": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "infernape": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "piplup": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "prinplup": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "empoleon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "starly": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "staravia": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "staraptor": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "bidoof": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "bibarel": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "kricketot": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "kricketune": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "shinx": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "luxio": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "luxray": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "budew": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "roserade": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "cranidos": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "rampardos": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "shieldon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "bastiodon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "burmy": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "wormadam-plant": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "mothim": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "combee": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "vespiquen": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "pachirisu": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "buizel": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "floatzel": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "cherubi": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "cherrim": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "shellos": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "gastrodon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "ambipom": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "drifloon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "drifblim": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "buneary": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "lopunny": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "mismagius": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "honchkrow": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "glameow": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "purugly": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "chingling": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "stunky": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "skuntank": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "bronzor": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "bronzong": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "bonsly": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "mime-jr": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "happiny": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "chatot": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "spiritomb": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "gible": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "gabite": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "garchomp": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "munchlax": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "riolu": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "lucario": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "hippopotas": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "hippowdon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "skorupi": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "drapion": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "croagunk": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "toxicroak": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "carnivine": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "finneon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "lumineon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "mantyke": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "snover": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
   "abomasnow": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "weavile": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "magnezone": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "lickilicky": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "rhyperior": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "tangrowth": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "electivire": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "magmortar": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "togekiss": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "yanmega": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "leafeon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "glaceon": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "gliscor": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "mamoswine": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "porygon-z": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "gallade": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "probopass": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "dusknoir": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "froslass": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "rotom": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "uxie": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "mesprit": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "azelf": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "dialga": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "palkia": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "heatran": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "regigigas": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "giratina-altered": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "cresselia": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "phione": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "manaphy": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "darkrai": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "shaymin-land": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "arceus": {
-    "generation": "IV",
-    "formCategory": "default"
-  },
-  "victini": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "snivy": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "servine": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "serperior": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "tepig": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "pignite": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "emboar": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "oshawott": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "dewott": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "samurott": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "patrat": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "watchog": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "lillipup": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "herdier": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "stoutland": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "purrloin": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "liepard": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "pansage": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "simisage": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "pansear": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "simisear": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "panpour": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "simipour": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "munna": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "musharna": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "pidove": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "tranquill": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "unfezant": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "blitzle": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "zebstrika": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "roggenrola": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "boldore": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "gigalith": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "woobat": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "swoobat": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "drilbur": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "excadrill": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "audino": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "timburr": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "gurdurr": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "conkeldurr": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "tympole": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "palpitoad": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "seismitoad": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "throh": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "sawk": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "sewaddle": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "swadloon": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "leavanny": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "venipede": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "whirlipede": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "scolipede": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "cottonee": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "whimsicott": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "petilil": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "lilligant": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "basculin-red-striped": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "sandile": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "krokorok": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "krookodile": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "darumaka": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "darmanitan-standard": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "maractus": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "dwebble": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "crustle": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "scraggy": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "scrafty": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "sigilyph": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "yamask": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "cofagrigus": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "tirtouga": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "carracosta": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "archen": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "archeops": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "trubbish": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "garbodor": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "zorua": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "zoroark": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "minccino": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "cinccino": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "gothita": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "gothorita": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "gothitelle": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "solosis": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "duosion": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "reuniclus": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "ducklett": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "swanna": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "vanillite": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "vanillish": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "vanilluxe": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "deerling": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "sawsbuck": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "emolga": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "karrablast": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "escavalier": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "foongus": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "amoonguss": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "frillish": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "jellicent": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "alomomola": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "joltik": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "galvantula": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "ferroseed": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "ferrothorn": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "klink": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "klang": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "klinklang": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "tynamo": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "eelektrik": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "eelektross": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "elgyem": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "beheeyem": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "litwick": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "lampent": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "chandelure": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "axew": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "fraxure": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "haxorus": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "cubchoo": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "beartic": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "cryogonal": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "shelmet": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "accelgor": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "stunfisk": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "mienfoo": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "mienshao": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "druddigon": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "golett": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "golurk": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "pawniard": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "bisharp": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "bouffalant": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "rufflet": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "braviary": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "vullaby": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "mandibuzz": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "heatmor": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "durant": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "deino": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "zweilous": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "hydreigon": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "larvesta": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "volcarona": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "cobalion": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "terrakion": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "virizion": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "tornadus-incarnate": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "thundurus-incarnate": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "reshiram": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "zekrom": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "landorus-incarnate": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "kyurem": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "keldeo-ordinary": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "meloetta-aria": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "genesect": {
-    "generation": "V",
-    "formCategory": "default"
-  },
-  "chespin": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "quilladin": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "chesnaught": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "fennekin": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "braixen": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "delphox": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "froakie": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "frogadier": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "greninja": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "bunnelby": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "diggersby": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "fletchling": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "fletchinder": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "talonflame": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "scatterbug": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "spewpa": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "vivillon": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "litleo": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "pyroar": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "flabebe": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "floette": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "florges": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "skiddo": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "gogoat": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "pancham": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "pangoro": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "furfrou": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "espurr": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "meowstic-male": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "honedge": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "doublade": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "aegislash-shield": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "spritzee": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "aromatisse": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "swirlix": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "slurpuff": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "inkay": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "malamar": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "binacle": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "barbaracle": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "skrelp": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "dragalge": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "clauncher": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "clawitzer": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "helioptile": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "heliolisk": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "tyrunt": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "tyrantrum": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "amaura": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "aurorus": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "sylveon": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "hawlucha": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "dedenne": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "carbink": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "goomy": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "sliggoo": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "goodra": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "klefki": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "phantump": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "trevenant": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "pumpkaboo-average": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "gourgeist-average": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "bergmite": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "avalugg": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "noibat": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "noivern": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "xerneas": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "yveltal": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "zygarde-50": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "diancie": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "hoopa": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "volcanion": {
-    "generation": "VI",
-    "formCategory": "default"
-  },
-  "rowlet": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "dartrix": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "decidueye": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "litten": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "torracat": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "incineroar": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "popplio": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "brionne": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "primarina": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "pikipek": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "trumbeak": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "toucannon": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "yungoos": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "gumshoos": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "grubbin": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "charjabug": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "vikavolt": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "crabrawler": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "crabominable": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "oricorio-baile": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "cutiefly": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "ribombee": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "rockruff": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "lycanroc-midday": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "wishiwashi-solo": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "mareanie": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "toxapex": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "mudbray": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "mudsdale": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "dewpider": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "araquanid": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "fomantis": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "lurantis": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "morelull": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "shiinotic": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "salandit": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "salazzle": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "stufful": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "bewear": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "bounsweet": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "steenee": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "tsareena": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "comfey": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "oranguru": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "passimian": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "wimpod": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "golisopod": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "sandygast": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "palossand": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "pyukumuku": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "type-null": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "silvally": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "minior-red-meteor": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "komala": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "turtonator": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "togedemaru": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "mimikyu-disguised": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "bruxish": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "drampa": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "dhelmise": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "jangmo-o": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "hakamo-o": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "kommo-o": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "tapu-koko": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "tapu-lele": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "tapu-bulu": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "tapu-fini": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "cosmog": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "cosmoem": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "solgaleo": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "lunala": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "nihilego": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "buzzwole": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "pheromosa": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "xurkitree": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "celesteela": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "kartana": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "guzzlord": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "necrozma": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "magearna": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "marshadow": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "poipole": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "naganadel": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "stakataka": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "blacephalon": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "zeraora": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "meltan": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "melmetal": {
-    "generation": "VII",
-    "formCategory": "default"
-  },
-  "grookey": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "thwackey": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "rillaboom": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "scorbunny": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "raboot": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "cinderace": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "sobble": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "drizzile": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "inteleon": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "skwovet": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "greedent": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "rookidee": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "corvisquire": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "corviknight": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "blipbug": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "dottler": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "orbeetle": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "nickit": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "thievul": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "gossifleur": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "eldegoss": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "wooloo": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "dubwool": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "chewtle": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "drednaw": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "yamper": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "boltund": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "rolycoly": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "carkol": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "coalossal": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "applin": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "flapple": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "appletun": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "silicobra": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "sandaconda": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "cramorant": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "arrokuda": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "barraskewda": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "toxel": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "toxtricity-amped": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "sizzlipede": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "centiskorch": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "clobbopus": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "grapploct": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "sinistea": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "polteageist": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "hatenna": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "hattrem": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "hatterene": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "impidimp": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "morgrem": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "grimmsnarl": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "obstagoon": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "perrserker": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "cursola": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "sirfetchd": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "mr-rime": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "runerigus": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "milcery": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "alcremie": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "falinks": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "pincurchin": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "snom": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "frosmoth": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "stonjourner": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "eiscue-ice": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "indeedee-male": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "morpeko-full-belly": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "cufant": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "copperajah": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "dracozolt": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "arctozolt": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "dracovish": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "arctovish": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "duraludon": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "dreepy": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "drakloak": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "dragapult": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "zacian": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "zamazenta": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "eternatus": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "kubfu": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "urshifu-single-strike": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "zarude": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "regieleki": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "regidrago": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "glastrier": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "spectrier": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "calyrex": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "wyrdeer": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "kleavor": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "ursaluna": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "basculegion-male": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "sneasler": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "overqwil": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "enamorus-incarnate": {
-    "generation": "VIII",
-    "formCategory": "default"
-  },
-  "deoxys-attack": {
-    "generation": "III",
-    "formCategory": "other"
-  },
-  "deoxys-defense": {
-    "generation": "III",
-    "formCategory": "other"
-  },
-  "deoxys-speed": {
-    "generation": "III",
-    "formCategory": "other"
-  },
-  "wormadam-sandy": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "wormadam-trash": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "shaymin-sky": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "giratina-origin": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "rotom-heat": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "rotom-wash": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "rotom-frost": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "rotom-fan": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "rotom-mow": {
-    "generation": "IV",
-    "formCategory": "other"
-  },
-  "castform-sunny": {
-    "generation": "III",
-    "formCategory": "other"
-  },
-  "castform-rainy": {
-    "generation": "III",
-    "formCategory": "other"
-  },
-  "castform-snowy": {
-    "generation": "III",
-    "formCategory": "other"
-  },
-  "basculin-blue-striped": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "darmanitan-zen": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "meloetta-pirouette": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "tornadus-therian": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "thundurus-therian": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "landorus-therian": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "kyurem-black": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "kyurem-white": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "keldeo-resolute": {
-    "generation": "V",
-    "formCategory": "other"
-  },
-  "meowstic-female": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "aegislash-blade": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pumpkaboo-small": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pumpkaboo-large": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pumpkaboo-super": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "gourgeist-small": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "gourgeist-large": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "gourgeist-super": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "venusaur-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "charizard-mega-x": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "charizard-mega-y": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "blastoise-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "alakazam-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "gengar-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "kangaskhan-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "pinsir-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "gyarados-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "aerodactyl-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "mewtwo-mega-x": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "mewtwo-mega-y": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "ampharos-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "scizor-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "heracross-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "houndoom-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "tyranitar-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "blaziken-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "gardevoir-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "mawile-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "aggron-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "medicham-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "manectric-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "banette-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "absol-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "garchomp-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "lucario-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
+    "formCategory": "default",
+    "generation": "IV"
   },
   "abomasnow-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "floette-eternal": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "latias-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "latios-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "swampert-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "sceptile-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "sableye-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "altaria-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "gallade-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "audino-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "sharpedo-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "slowbro-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "steelix-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "pidgeot-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "glalie-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "diancie-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "metagross-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "kyogre-primal": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "groudon-primal": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "rayquaza-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "pikachu-rock-star": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pikachu-belle": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pikachu-pop-star": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pikachu-phd": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pikachu-libre": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "pikachu-cosplay": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "hoopa-unbound": {
-    "generation": "VI",
-    "formCategory": "other"
-  },
-  "camerupt-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "lopunny-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "salamence-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "beedrill-mega": {
-    "generation": "VI",
-    "formCategory": "mega"
-  },
-  "rattata-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "raticate-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "raticate-totem-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "pikachu-original-cap": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-hoenn-cap": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-sinnoh-cap": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-unova-cap": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-kalos-cap": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-alola-cap": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "raichu-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "sandshrew-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "sandslash-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "vulpix-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "ninetales-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "diglett-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "dugtrio-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "meowth-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "persian-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "geodude-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "graveler-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "golem-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "grimer-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "muk-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "exeggutor-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "marowak-alola": {
-    "generation": "VII",
-    "formCategory": "alola"
-  },
-  "greninja-battle-bond": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "greninja-ash": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "zygarde-10-power-construct": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "zygarde-50-power-construct": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "zygarde-complete": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "gumshoos-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "vikavolt-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "oricorio-pom-pom": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "oricorio-pau": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "oricorio-sensu": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "lycanroc-midnight": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "wishiwashi-school": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "lurantis-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "salazzle-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-orange-meteor": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-yellow-meteor": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-green-meteor": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-blue-meteor": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-indigo-meteor": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-violet-meteor": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-red": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-orange": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-yellow": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-green": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-blue": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-indigo": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "minior-violet": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "mimikyu-busted": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "mimikyu-totem-disguised": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "mimikyu-totem-busted": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "kommo-o-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "magearna-original": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-partner-cap": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "marowak-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "ribombee-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "rockruff-own-tempo": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "lycanroc-dusk": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "araquanid-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "togedemaru-totem": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "necrozma-dusk": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "necrozma-dawn": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "necrozma-ultra": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-starter": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "eevee-starter": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "pikachu-world-cap": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "meowth-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "ponyta-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "rapidash-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "slowpoke-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "slowbro-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "farfetchd-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "weezing-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "mr-mime-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "articuno-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "zapdos-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "moltres-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "slowking-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "corsola-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "zigzagoon-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "linoone-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "darumaka-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "darmanitan-galar-standard": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "darmanitan-galar-zen": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "yamask-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "stunfisk-galar": {
-    "generation": "VIII",
-    "formCategory": "galar"
-  },
-  "zygarde-10": {
-    "generation": "VII",
-    "formCategory": "other"
-  },
-  "cramorant-gulping": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "cramorant-gorging": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "toxtricity-low-key": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "eiscue-noice": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "indeedee-female": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "morpeko-hangry": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "zacian-crowned": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "zamazenta-crowned": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "eternatus-eternamax": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "urshifu-rapid-strike": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "zarude-dada": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "calyrex-ice": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "calyrex-shadow": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "venusaur-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "charizard-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "blastoise-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "butterfree-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "pikachu-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "meowth-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "machamp-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "gengar-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "kingler-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "lapras-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "eevee-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "snorlax-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "garbodor-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "melmetal-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "rillaboom-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "cinderace-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "inteleon-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "corviknight-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "orbeetle-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "drednaw-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "coalossal-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "flapple-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "appletun-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "sandaconda-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "toxtricity-amped-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "centiskorch-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "hatterene-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
-  },
-  "grimmsnarl-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "abra": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "absol": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "absol-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "accelgor": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "aegislash-blade": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "aegislash-shield": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "aerodactyl": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "aerodactyl-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "aggron": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "aggron-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "aipom": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "alakazam": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "alakazam-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "alcremie": {
+    "formCategory": "default",
+    "generation": "VIII"
   },
   "alcremie-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
+    "formCategory": "gmax",
+    "generation": "VIII"
   },
-  "copperajah-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
+  "alomomola": {
+    "formCategory": "default",
+    "generation": "V"
   },
-  "duraludon-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
+  "altaria": {
+    "formCategory": "default",
+    "generation": "III"
   },
-  "urshifu-single-strike-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
+  "altaria-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
   },
-  "urshifu-rapid-strike-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
+  "amaura": {
+    "formCategory": "default",
+    "generation": "VI"
   },
-  "toxtricity-low-key-gmax": {
-    "generation": "VIII",
-    "formCategory": "gmax"
+  "ambipom": {
+    "formCategory": "default",
+    "generation": "IV"
   },
-  "growlithe-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
+  "amoonguss": {
+    "formCategory": "default",
+    "generation": "V"
   },
-  "arcanine-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
+  "ampharos": {
+    "formCategory": "default",
+    "generation": "II"
   },
-  "voltorb-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "electrode-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "typhlosion-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "qwilfish-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "sneasel-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "samurott-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "lilligant-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "zorua-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "zoroark-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "braviary-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "sliggoo-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "goodra-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "avalugg-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "decidueye-hisui": {
-    "generation": "VIII",
-    "formCategory": "hisui"
-  },
-  "dialga-origin": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "palkia-origin": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "basculin-white-striped": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "basculegion-female": {
-    "generation": "VIII",
-    "formCategory": "other"
-  },
-  "enamorus-therian": {
-    "generation": "VIII",
-    "formCategory": "other"
+  "ampharos-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
   },
   "annihilape": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "anorith": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "appletun": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "appletun-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "applin": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "araquanid": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "araquanid-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "arbok": {
+    "formCategory": "default",
+    "generation": "I"
+  },
   "arboliva": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "arcanine": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "arcanine-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "arceus": {
+    "formCategory": "default",
+    "generation": "IV"
   },
   "archaludon": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "archen": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "archeops": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "arctibax": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "arctovish": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "arctozolt": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "ariados": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "armaldo": {
+    "formCategory": "default",
+    "generation": "III"
   },
   "armarouge": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "aromatisse": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "aron": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "arrokuda": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "articuno": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "articuno-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "audino": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "audino-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "aurorus": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "avalugg": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "avalugg-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "axew": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "azelf": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "azumarill": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "azurill": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "bagon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "baltoy": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "banette": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "banette-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "barbaracle": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "barboach": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "barraskewda": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "basculegion-female": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "basculegion-male": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "basculin-blue-striped": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "basculin-red-striped": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "basculin-white-striped": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "bastiodon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
   "baxcalibur": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "bayleef": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "beartic": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "beautifly": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "beedrill": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "beedrill-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "beheeyem": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "beldum": {
+    "formCategory": "default",
+    "generation": "III"
   },
   "bellibolt": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "bellossom": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "bellsprout": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "bergmite": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "bewear": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "bibarel": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "bidoof": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "binacle": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "bisharp": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "blacephalon": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "blastoise": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "blastoise-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "blastoise-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "blaziken": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "blaziken-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "blipbug": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "blissey": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "blitzle": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "boldore": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "boltund": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
   "bombirdier": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "bonsly": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "bouffalant": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "bounsweet": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "braixen": {
+    "formCategory": "default",
+    "generation": "VI"
   },
   "brambleghast": {
     "formCategory": "default",
@@ -4655,13 +431,165 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "braviary": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "braviary-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "breloom": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "brionne": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "bronzong": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "bronzor": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
   "brute-bonnet": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "bruxish": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "budew": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "buizel": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "bulbasaur": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "buneary": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "bunnelby": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "burmy": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "butterfree": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "butterfree-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "buzzwole": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "cacnea": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "cacturne": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "calyrex": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "calyrex-ice": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "calyrex-shadow": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "camerupt": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "camerupt-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
   "capsakid": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "carbink": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "carkol": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "carnivine": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "carracosta": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "carvanha": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "cascoon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "castform": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "castform-rainy": {
+    "formCategory": "other",
+    "generation": "III"
+  },
+  "castform-snowy": {
+    "formCategory": "other",
+    "generation": "III"
+  },
+  "castform-sunny": {
+    "formCategory": "other",
+    "generation": "III"
+  },
+  "caterpie": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "celebi": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "celesteela": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "centiskorch": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "centiskorch-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
   },
   "ceruledge": {
     "formCategory": "default",
@@ -4675,9 +603,69 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "chandelure": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "chansey": {
+    "formCategory": "default",
+    "generation": "I"
+  },
   "charcadet": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "charizard": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "charizard-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "charizard-mega-x": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "charizard-mega-y": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "charjabug": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "charmander": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "charmeleon": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "chatot": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "cherrim": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "cherubi": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "chesnaught": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "chespin": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "chewtle": {
+    "formCategory": "default",
+    "generation": "VIII"
   },
   "chi-yu": {
     "formCategory": "default",
@@ -4687,25 +675,385 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "chikorita": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "chimchar": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "chimecho": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "chinchou": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "chingling": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "cinccino": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "cinderace": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "cinderace-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "clamperl": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "clauncher": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "clawitzer": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "claydol": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "clefable": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "clefairy": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "cleffa": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "clobbopus": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
   "clodsire": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "cloyster": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "coalossal": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "coalossal-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "cobalion": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "cofagrigus": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "combee": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "combusken": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "comfey": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "conkeldurr": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "copperajah": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "copperajah-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "corphish": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "corsola": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "corsola-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "corviknight": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "corviknight-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "corvisquire": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "cosmoem": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "cosmog": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "cottonee": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "crabominable": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "crabrawler": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "cradily": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "cramorant": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "cramorant-gorging": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "cramorant-gulping": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "cranidos": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "crawdaunt": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "cresselia": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "croagunk": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "crobat": {
+    "formCategory": "default",
+    "generation": "II"
   },
   "crocalor": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "croconaw": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "crustle": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "cryogonal": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "cubchoo": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "cubone": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "cufant": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "cursola": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "cutiefly": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
   "cyclizar": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "cyndaquil": {
+    "formCategory": "default",
+    "generation": "II"
   },
   "dachsbun": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "darkrai": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "darmanitan-galar-standard": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "darmanitan-galar-zen": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "darmanitan-standard": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "darmanitan-zen": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "dartrix": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "darumaka": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "darumaka-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "decidueye": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "decidueye-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "dedenne": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "deerling": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "deino": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "delcatty": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "delibird": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "delphox": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "deoxys-attack": {
+    "formCategory": "other",
+    "generation": "III"
+  },
+  "deoxys-defense": {
+    "formCategory": "other",
+    "generation": "III"
+  },
+  "deoxys-normal": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "deoxys-speed": {
+    "formCategory": "other",
+    "generation": "III"
+  },
+  "dewgong": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "dewott": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "dewpider": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "dhelmise": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "dialga": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "dialga-origin": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "diancie": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "diancie-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "diggersby": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "diglett": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "diglett-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
   "dipplin": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "ditto": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "dodrio": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "doduo": {
+    "formCategory": "default",
+    "generation": "I"
   },
   "dolliv": {
     "formCategory": "default",
@@ -4715,17 +1063,325 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "donphan": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "dottler": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "doublade": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "dracovish": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "dracozolt": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "dragalge": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "dragapult": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "dragonair": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "dragonite": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "drakloak": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "drampa": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "drapion": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "dratini": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "drednaw": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "drednaw-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "dreepy": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "drifblim": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "drifloon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "drilbur": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "drizzile": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "drowzee": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "druddigon": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "dubwool": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "ducklett": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "dudunsparce-two-segment": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "dugtrio": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "dugtrio-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "dunsparce": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "duosion": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "duraludon": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "duraludon-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "durant": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "dusclops": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "dusknoir": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "duskull": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "dustox": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "dwebble": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "eelektrik": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "eelektross": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "eevee": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "eevee-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "eevee-starter": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "eiscue-ice": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "eiscue-noice": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "ekans": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "eldegoss": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "electabuzz": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "electivire": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "electrike": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "electrode": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "electrode-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "elekid": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "elgyem": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "emboar": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "emolga": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "empoleon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "enamorus-incarnate": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "enamorus-therian": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "entei": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "escavalier": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "espathra": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "espeon": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "espurr": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "eternatus": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "eternatus-eternamax": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "excadrill": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "exeggcute": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "exeggutor": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "exeggutor-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "exploud": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "falinks": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "farfetchd": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "farfetchd-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
   "farigiraf": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "fearow": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "feebas": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "fennekin": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "feraligatr": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "ferroseed": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "ferrothorn": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "fezandipiti": {
     "formCategory": "default",
@@ -4739,41 +1395,253 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "finneon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "flaaffy": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "flabebe": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
   "flamigo": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "flapple": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "flapple-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "flareon": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "fletchinder": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "fletchling": {
+    "formCategory": "default",
+    "generation": "VI"
   },
   "flittle": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "floatzel": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "floette": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "floette-eternal": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
   "floragato": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "florges": {
+    "formCategory": "default",
+    "generation": "VI"
   },
   "flutter-mane": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "flygon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "fomantis": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "foongus": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "forretress": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "fraxure": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "frigibax": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "frillish-male": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "froakie": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "frogadier": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "froslass": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "frosmoth": {
+    "formCategory": "default",
+    "generation": "VIII"
   },
   "fuecoco": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "furfrou": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "furret": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "gabite": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "gallade": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "gallade-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "galvantula": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "garbodor": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "garbodor-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "garchomp": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "garchomp-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "gardevoir": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "gardevoir-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
   "garganacl": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "gastly": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "gastrodon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "genesect": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "gengar": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "gengar-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "gengar-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "geodude": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "geodude-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
   },
   "gholdengo": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "gible": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "gigalith": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "gimmighoul": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "girafarig": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "giratina-altered": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "giratina-origin": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "glaceon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "glalie": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "glalie-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "glameow": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "glastrier": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "gligar": {
+    "formCategory": "default",
+    "generation": "II"
   },
   "glimmet": {
     "formCategory": "default",
@@ -4783,13 +1651,121 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "gliscor": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "gloom": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "gogoat": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "golbat": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "goldeen": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "golduck": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "golem": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "golem-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "golett": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "golisopod": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "golurk": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "goodra": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "goodra-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "goomy": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "gorebyss": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "gossifleur": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "gothita": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "gothitelle": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "gothorita": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "gouging-fire": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "gourgeist-average": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "gourgeist-large": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "gourgeist-small": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "gourgeist-super": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
   "grafaiai": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "granbull": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "grapploct": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "graveler": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "graveler-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
   },
   "great-tusk": {
     "formCategory": "default",
@@ -4799,13 +1775,293 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "greedent": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "greninja": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "greninja-ash": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "greninja-battle-bond": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "grimer": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "grimer-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "grimmsnarl": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "grimmsnarl-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "grookey": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "grotle": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "groudon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "groudon-primal": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "grovyle": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "growlithe": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "growlithe-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "grubbin": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "grumpig": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "gulpin": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "gumshoos": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "gumshoos-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "gurdurr": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "guzzlord": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "gyarados": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "gyarados-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "hakamo-o": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "happiny": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "hariyama": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "hatenna": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "hatterene": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "hatterene-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "hattrem": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "haunter": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "hawlucha": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "haxorus": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "heatmor": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "heatran": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "heliolisk": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "helioptile": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "heracross": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "heracross-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "herdier": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "hippopotas": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "hippowdon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "hitmonchan": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "hitmonlee": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "hitmontop": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "ho-oh": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "honchkrow": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "honedge": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "hoopa": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "hoopa-unbound": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "hoothoot": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "hoppip": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "horsea": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "houndoom": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "houndoom-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "houndour": {
+    "formCategory": "default",
+    "generation": "II"
+  },
   "houndstone": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "huntail": {
+    "formCategory": "default",
+    "generation": "III"
+  },
   "hydrapple": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "hydreigon": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "hypno": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "igglybuff": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "illumise": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "impidimp": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "incineroar": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "indeedee-female": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "indeedee-male": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "infernape": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "inkay": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "inteleon": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "inteleon-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
   },
   "iron-boulder": {
     "formCategory": "default",
@@ -4847,6 +2103,86 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "ivysaur": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "jangmo-o": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "jellicent-male": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "jigglypuff": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "jirachi": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "jolteon": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "joltik": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "jumpluff": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "jynx": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kabuto": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kabutops": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kadabra": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kakuna": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kangaskhan": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kangaskhan-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "karrablast": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "kartana": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "kecleon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "keldeo-ordinary": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "keldeo-resolute": {
+    "formCategory": "other",
+    "generation": "V"
+  },
   "kilowattrel": {
     "formCategory": "default",
     "generation": "IX"
@@ -4855,45 +2191,773 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "kingdra": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "kingler": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kingler-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "kirlia": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "klang": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "klawf": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "kleavor": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "klefki": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "klink": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "klinklang": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "koffing": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "komala": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "kommo-o": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "kommo-o-totem": {
+    "formCategory": "other",
+    "generation": "VII"
   },
   "koraidon": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "krabby": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "kricketot": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "kricketune": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "krokorok": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "krookodile": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "kubfu": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "kyogre": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "kyogre-primal": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "kyurem": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "kyurem-black": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "kyurem-white": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "lairon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "lampent": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "landorus-incarnate": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "landorus-therian": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "lanturn": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "lapras": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "lapras-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "larvesta": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "larvitar": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "latias": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "latias-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "latios": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "latios-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "leafeon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "leavanny": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "lechonk": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "ledian": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "ledyba": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "lickilicky": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "lickitung": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "liepard": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "lileep": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "lilligant": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "lilligant-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "lillipup": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "linoone": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "linoone-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "litleo": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "litten": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "litwick": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "lokix": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "lombre": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "lopunny": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "lopunny-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "lotad": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "loudred": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "lucario": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "lucario-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "ludicolo": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "lugia": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "lumineon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "lunala": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "lunatone": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "lurantis": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "lurantis-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "luvdisc": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "luxio": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "luxray": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "lycanroc-dusk": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "lycanroc-midday": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "lycanroc-midnight": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
   "mabosstiff": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "machamp": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "machamp-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "machoke": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "machop": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "magby": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "magcargo": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "magearna": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "magearna-original": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "magikarp": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "magmar": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "magmortar": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "magnemite": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "magneton": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "magnezone": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "makuhita": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "malamar": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "mamoswine": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "manaphy": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "mandibuzz": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "manectric": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "manectric-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "mankey": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "mantine": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "mantyke": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "maractus": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "mareanie": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "mareep": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "marill": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "marowak": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "marowak-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "marowak-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "marshadow": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "marshtomp": {
+    "formCategory": "default",
+    "generation": "III"
   },
   "maschiff": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "masquerain": {
+    "formCategory": "default",
+    "generation": "III"
+  },
   "maushold-family-of-four": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "mawile": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "mawile-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "medicham": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "medicham-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "meditite": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "meganium": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "melmetal": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "melmetal-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "meloetta-aria": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "meloetta-pirouette": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "meltan": {
+    "formCategory": "default",
+    "generation": "VII"
   },
   "meowscarada": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "meowstic-female": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "meowstic-male": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "meowth": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "meowth-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "meowth-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "meowth-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "mesprit": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "metagross": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "metagross-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "metang": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "metapod": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "mew": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "mewtwo": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "mewtwo-mega-x": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "mewtwo-mega-y": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "mienfoo": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "mienshao": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "mightyena": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "milcery": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "milotic": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "miltank": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "mime-jr": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "mimikyu-busted": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "mimikyu-disguised": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "mimikyu-totem-busted": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "mimikyu-totem-disguised": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minccino": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "minior-blue": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-blue-meteor": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-green": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-green-meteor": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-indigo": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-indigo-meteor": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-orange": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-orange-meteor": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-red": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-red-meteor": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "minior-violet": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-violet-meteor": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-yellow": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minior-yellow-meteor": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "minun": {
+    "formCategory": "default",
+    "generation": "III"
+  },
   "miraidon": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "misdreavus": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "mismagius": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "moltres": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "moltres-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "monferno": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "morelull": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "morgrem": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "morpeko-full-belly": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "morpeko-hangry": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "mothim": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "mr-mime": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "mr-mime-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "mr-rime": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "mudbray": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "mudkip": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "mudsdale": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "muk": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "muk-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "munchlax": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
   "munkidori": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "munna": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "murkrow": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "musharna": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "nacli": {
     "formCategory": "default",
@@ -4903,9 +2967,117 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "naganadel": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "natu": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "necrozma": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "necrozma-dawn": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "necrozma-dusk": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "necrozma-ultra": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "nickit": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "nidoking": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "nidoqueen": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "nidoran-f": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "nidoran-m": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "nidorina": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "nidorino": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "nihilego": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "nincada": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "ninetales": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "ninetales-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "ninjask": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "noctowl": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "noibat": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "noivern": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "nosepass": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "numel": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "nuzleaf": {
+    "formCategory": "default",
+    "generation": "III"
+  },
   "nymble": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "obstagoon": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "octillery": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "oddish": {
+    "formCategory": "default",
+    "generation": "I"
   },
   "ogerpon": {
     "formCategory": "default",
@@ -4919,13 +3091,117 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "omanyte": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "omastar": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "onix": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "oranguru": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "orbeetle": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "orbeetle-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "oricorio-baile": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "oricorio-pau": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "oricorio-pom-pom": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "oricorio-sensu": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
   "orthworm": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "oshawott": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "overqwil": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "pachirisu": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
   "palafin-zero": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "palkia": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "palkia-origin": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "palossand": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "palpitoad": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "pancham": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "pangoro": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "panpour": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "pansage": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "pansear": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "paras": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "parasect": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "passimian": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "patrat": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "pawmi": {
     "formCategory": "default",
@@ -4939,13 +3215,293 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "pawniard": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "pecharunt": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "pelipper": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "perrserker": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "persian": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "persian-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "petilil": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "phanpy": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "phantump": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "pheromosa": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "phione": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "pichu": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "pidgeot": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "pidgeot-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "pidgeotto": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "pidgey": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "pidove": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "pignite": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "pikachu": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "pikachu-alola-cap": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "pikachu-belle": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pikachu-cosplay": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pikachu-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "pikachu-hoenn-cap": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "pikachu-kalos-cap": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "pikachu-libre": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pikachu-original-cap": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "pikachu-partner-cap": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "pikachu-phd": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pikachu-pop-star": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pikachu-rock-star": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pikachu-sinnoh-cap": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "pikachu-starter": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "pikachu-unova-cap": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "pikachu-world-cap": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "pikipek": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "piloswine": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "pincurchin": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "pineco": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "pinsir": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "pinsir-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "piplup": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "plusle": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "poipole": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "politoed": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "poliwag": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "poliwhirl": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "poliwrath": {
+    "formCategory": "default",
+    "generation": "I"
+  },
   "poltchageist": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "polteageist": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "ponyta": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "ponyta-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "poochyena": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "popplio": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "porygon": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "porygon-z": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "porygon2": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "primarina": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "primeape": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "prinplup": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "probopass": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "psyduck": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "pumpkaboo-average": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "pumpkaboo-large": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pumpkaboo-small": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pumpkaboo-super": {
+    "formCategory": "other",
+    "generation": "VI"
+  },
+  "pupitar": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "purrloin": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "purugly": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "pyroar-male": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "pyukumuku": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "quagsire": {
+    "formCategory": "default",
+    "generation": "II"
   },
   "quaquaval": {
     "formCategory": "default",
@@ -4959,6 +3515,26 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "quilava": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "quilladin": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "qwilfish": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "qwilfish-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "raboot": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
   "rabsca": {
     "formCategory": "default",
     "generation": "IX"
@@ -4967,69 +3543,873 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "raichu": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "raichu-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "raikou": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "ralts": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "rampardos": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "rapidash": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "rapidash-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "raticate": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "raticate-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "raticate-totem-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "rattata": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "rattata-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "rayquaza": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "rayquaza-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "regice": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "regidrago": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "regieleki": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "regigigas": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "regirock": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "registeel": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "relicanth": {
+    "formCategory": "default",
+    "generation": "III"
+  },
   "rellor": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "remoraid": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "reshiram": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "reuniclus": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "revavroom": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "rhydon": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "rhyhorn": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "rhyperior": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "ribombee": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "ribombee-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "rillaboom": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "rillaboom-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "riolu": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
   "roaring-moon": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "rockruff": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "rockruff-own-tempo": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "roggenrola": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "rolycoly": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "rookidee": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "roselia": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "roserade": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "rotom": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "rotom-fan": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "rotom-frost": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "rotom-heat": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "rotom-mow": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "rotom-wash": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "rowlet": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "rufflet": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "runerigus": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "sableye": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "sableye-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "salamence": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "salamence-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "salandit": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "salazzle": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "salazzle-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "samurott": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "samurott-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "sandaconda": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "sandaconda-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "sandile": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "sandshrew": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "sandshrew-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "sandslash": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "sandslash-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
   },
   "sandy-shocks": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "sandygast": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "sawk": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "sawsbuck": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "scatterbug": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "sceptile": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "sceptile-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "scizor": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "scizor-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "scolipede": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "scorbunny": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
   "scovillain": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "scrafty": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "scraggy": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "scream-tail": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "scyther": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "seadra": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "seaking": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "sealeo": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "seedot": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "seel": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "seismitoad": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "sentret": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "serperior": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "servine": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "seviper": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "sewaddle": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "sharpedo": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "sharpedo-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "shaymin-land": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "shaymin-sky": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "shedinja": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "shelgon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "shellder": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "shellos": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "shelmet": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "shieldon": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "shiftry": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "shiinotic": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "shinx": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
   "shroodle": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "shroomish": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "shuckle": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "shuppet": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "sigilyph": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "silcoon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "silicobra": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "silvally": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "simipour": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "simisage": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "simisear": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "sinistcha": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "sinistea": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "sirfetchd": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "sizzlipede": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "skarmory": {
+    "formCategory": "default",
+    "generation": "II"
+  },
   "skeledirge": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "skiddo": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "skiploom": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "skitty": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "skorupi": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "skrelp": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "skuntank": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "skwovet": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "slaking": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "slakoth": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "sliggoo": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "sliggoo-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
   },
   "slither-wing": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "slowbro": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "slowbro-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "slowbro-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "slowking": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "slowking-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "slowpoke": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "slowpoke-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "slugma": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "slurpuff": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "smeargle": {
+    "formCategory": "default",
+    "generation": "II"
+  },
   "smoliv": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "smoochum": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "sneasel": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "sneasel-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "sneasler": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "snivy": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "snom": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "snorlax": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "snorlax-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "snorunt": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "snover": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "snubbull": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "sobble": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "solgaleo": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "solosis": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "solrock": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "spearow": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "spectrier": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "spewpa": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "spheal": {
+    "formCategory": "default",
+    "generation": "III"
   },
   "spidops": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "spinarak": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "spinda": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "spiritomb": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "spoink": {
+    "formCategory": "default",
+    "generation": "III"
+  },
   "sprigatito": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "spritzee": {
+    "formCategory": "default",
+    "generation": "VI"
   },
   "squawkabilly-green-plumage": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "squirtle": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "stakataka": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "stantler": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "staraptor": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "staravia": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "starly": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "starmie": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "staryu": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "steelix": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "steelix-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "steenee": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "stonjourner": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "stoutland": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "stufful": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "stunfisk": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "stunfisk-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "stunky": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "sudowoodo": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "suicune": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "sunflora": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "sunkern": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "surskit": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "swablu": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "swadloon": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "swalot": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "swampert": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "swampert-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "swanna": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "swellow": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "swinub": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "swirlix": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "swoobat": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "sylveon": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
   "tadbulb": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "taillow": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "talonflame": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
   "tandemaus": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "tangela": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "tangrowth": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "tapu-bulu": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "tapu-fini": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "tapu-koko": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "tapu-lele": {
+    "formCategory": "default",
+    "generation": "VII"
   },
   "tarountula": {
     "formCategory": "default",
@@ -5039,9 +4419,57 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "tauros": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "teddiursa": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "tentacool": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "tentacruel": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "tepig": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "terapagos": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "terrakion": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "thievul": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "throh": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "thundurus-incarnate": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "thundurus-therian": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "thwackey": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "timburr": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "ting-lu": {
     "formCategory": "default",
@@ -5059,6 +4487,10 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "tirtouga": {
+    "formCategory": "default",
+    "generation": "V"
+  },
   "toedscool": {
     "formCategory": "default",
     "generation": "IX"
@@ -5066,6 +4498,222 @@
   "toedscruel": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "togedemaru": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "togedemaru-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "togekiss": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "togepi": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "togetic": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "torchic": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "torkoal": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "tornadus-incarnate": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "tornadus-therian": {
+    "formCategory": "other",
+    "generation": "V"
+  },
+  "torracat": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "torterra": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "totodile": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "toucannon": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "toxapex": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "toxel": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "toxicroak": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "toxtricity-amped": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "toxtricity-amped-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "toxtricity-low-key": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "toxtricity-low-key-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "tranquill": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "trapinch": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "treecko": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "trevenant": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "tropius": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "trubbish": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "trumbeak": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "tsareena": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "turtonator": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "turtwig": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "tympole": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "tynamo": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "type-null": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "typhlosion": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "typhlosion-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "tyranitar": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "tyranitar-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "tyrantrum": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "tyrogue": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "tyrunt": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "umbreon": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "unfezant": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "unown": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "ursaluna": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "ursaring": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "urshifu-rapid-strike": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "urshifu-rapid-strike-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "urshifu-single-strike": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "urshifu-single-strike-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "uxie": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "vanillish": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "vanillite": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "vanilluxe": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "vaporeon": {
+    "formCategory": "default",
+    "generation": "I"
   },
   "varoom": {
     "formCategory": "default",
@@ -5075,24 +4723,376 @@
     "formCategory": "default",
     "generation": "IX"
   },
+  "venipede": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "venomoth": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "venonat": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "venusaur": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "venusaur-gmax": {
+    "formCategory": "gmax",
+    "generation": "VIII"
+  },
+  "venusaur-mega": {
+    "formCategory": "mega",
+    "generation": "VI"
+  },
+  "vespiquen": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "vibrava": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "victini": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "victreebel": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "vigoroth": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "vikavolt": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "vikavolt-totem": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "vileplume": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "virizion": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "vivillon": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "volbeat": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "volcanion": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "volcarona": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "voltorb": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "voltorb-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "vullaby": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "vulpix": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "vulpix-alola": {
+    "formCategory": "alola",
+    "generation": "VII"
+  },
+  "wailmer": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "wailord": {
+    "formCategory": "default",
+    "generation": "III"
+  },
   "walking-wake": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "walrein": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "wartortle": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "watchog": {
+    "formCategory": "default",
+    "generation": "V"
   },
   "wattrel": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "weavile": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "weedle": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "weepinbell": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "weezing": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "weezing-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "whimsicott": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "whirlipede": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "whiscash": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "whismur": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "wigglytuff": {
+    "formCategory": "default",
+    "generation": "I"
+  },
   "wiglett": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "wimpod": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "wingull": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "wishiwashi-school": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "wishiwashi-solo": {
+    "formCategory": "default",
+    "generation": "VII"
   },
   "wo-chien": {
     "formCategory": "default",
     "generation": "IX"
   },
+  "wobbuffet": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "woobat": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "wooloo": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "wooper": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "wormadam-plant": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "wormadam-sandy": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
+  "wormadam-trash": {
+    "formCategory": "other",
+    "generation": "IV"
+  },
   "wugtrio": {
     "formCategory": "default",
     "generation": "IX"
+  },
+  "wurmple": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "wynaut": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "wyrdeer": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "xatu": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "xerneas": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "xurkitree": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "yamask": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "yamask-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "yamper": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "yanma": {
+    "formCategory": "default",
+    "generation": "II"
+  },
+  "yanmega": {
+    "formCategory": "default",
+    "generation": "IV"
+  },
+  "yungoos": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "yveltal": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "zacian": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "zacian-crowned": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "zamazenta": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "zamazenta-crowned": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "zangoose": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "zapdos": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "zapdos-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "zarude": {
+    "formCategory": "default",
+    "generation": "VIII"
+  },
+  "zarude-dada": {
+    "formCategory": "other",
+    "generation": "VIII"
+  },
+  "zebstrika": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "zekrom": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "zeraora": {
+    "formCategory": "default",
+    "generation": "VII"
+  },
+  "zigzagoon": {
+    "formCategory": "default",
+    "generation": "III"
+  },
+  "zigzagoon-galar": {
+    "formCategory": "galar",
+    "generation": "VIII"
+  },
+  "zoroark": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "zoroark-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "zorua": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "zorua-hisui": {
+    "formCategory": "hisui",
+    "generation": "VIII"
+  },
+  "zubat": {
+    "formCategory": "default",
+    "generation": "I"
+  },
+  "zweilous": {
+    "formCategory": "default",
+    "generation": "V"
+  },
+  "zygarde-10": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "zygarde-10-power-construct": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "zygarde-50": {
+    "formCategory": "default",
+    "generation": "VI"
+  },
+  "zygarde-50-power-construct": {
+    "formCategory": "other",
+    "generation": "VII"
+  },
+  "zygarde-complete": {
+    "formCategory": "other",
+    "generation": "VII"
   }
 }

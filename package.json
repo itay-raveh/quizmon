@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc --noEmit && vite build",
     "commitlint": "commitlint",
-    "data:update": "node scripts/update-pokemon-data.mjs",
+    "data:update": "node scripts/update-pokemon-data.ts",
     "dev": "vite",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

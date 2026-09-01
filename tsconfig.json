@@ -27,6 +27,7 @@
   },
   "include": [
     "src",
+    "scripts",
     "tests",
     "e2e",
     "eslint.config.js",
