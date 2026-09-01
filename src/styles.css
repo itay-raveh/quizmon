@@ -368,6 +368,23 @@ main {
   text-wrap: balance;
 }
 
+.question__subject {
+  white-space: nowrap;
+}
+
+.question__subject b {
+  color: var(--navy);
+  font-weight: 850;
+}
+
+.question__subject-number {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-micro);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
 .question__topline {
   display: flex;
   width: 100%;

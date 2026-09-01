@@ -12,6 +12,7 @@ import {
   getMasteryBonus,
   getMaximumScore,
   getQuestionCount,
+  getQuestionPromptText,
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
@@ -119,6 +120,27 @@ describe('question building', () => {
     }
 
     expect(byCategory.identity?.media.kind).toBe('sprite');
+
+    for (const category of [
+      'type',
+      'evolution',
+      'ability',
+      'move',
+      'matchup',
+    ]) {
+      const question = byCategory[category];
+      expect(question?.prompt.kind).toBe('pokemon');
+      if (question?.prompt.kind === 'pokemon') {
+        expect(question.prompt.name).toBe(question.pokemonName);
+        expect(question.prompt.dexNumber).toBe(
+          catalog.pokemon[question.pokemonName]?.id,
+        );
+      }
+    }
+
+    for (const category of ['identity', 'scale', 'description', 'stat']) {
+      expect(byCategory[category]?.prompt.kind).toBe('text');
+    }
   });
 
   it('keeps matchup and property distractors unambiguous', () => {
@@ -158,7 +180,9 @@ describe('question building', () => {
 
     expect(questions).toHaveLength(20);
     for (const question of questions) {
-      const metric = /tallest|shortest/.test(question.prompt)
+      const metric = /tallest|shortest/.test(
+        getQuestionPromptText(question.prompt),
+      )
         ? 'height'
         : 'weight';
       const correct = catalog.pokemon[question.correctOption]?.[metric];
@@ -169,7 +193,7 @@ describe('question building', () => {
       expect(correct).toBeTypeOf('number');
       expect(
         distractors.every((value) =>
-          /tallest|heaviest/.test(question.prompt)
+          /tallest|heaviest/.test(getQuestionPromptText(question.prompt))
             ? value! < correct!
             : value! > correct!,
         ),

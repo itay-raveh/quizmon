@@ -11,6 +11,7 @@ import {
   type PokemonKnowledge,
   type QuestionCategory,
   type QuestionData,
+  type QuestionPrompt,
   type StatName,
 } from './types';
 
@@ -163,7 +164,7 @@ const makeQuestion = (
   target: Candidate,
   correctOption: string,
   options: string[],
-  prompt: string,
+  prompt: QuestionPrompt,
   media: QuestionData['media'] = { kind: 'none' },
 ): QuestionData => ({
   category,
@@ -173,6 +174,20 @@ const makeQuestion = (
   options,
   pokemonName: target.name,
   prompt,
+});
+
+const textPrompt = (text: string): QuestionPrompt => ({ kind: 'text', text });
+
+const pokemonPrompt = (
+  target: Candidate,
+  before: string,
+  after: string,
+): QuestionPrompt => ({
+  after,
+  before,
+  dexNumber: target.pokemon.id,
+  kind: 'pokemon',
+  name: target.name,
 });
 
 const getPokemonOptionVisual = (
@@ -237,7 +252,9 @@ const buildIdentityQuestion = (
     target,
     target.name,
     pokemonOptions(context, target),
-    silhouette ? 'Who is hiding in this silhouette?' : 'Who is this Pokémon?',
+    textPrompt(
+      silhouette ? 'Who is hiding in this silhouette?' : 'Who is this Pokémon?',
+    ),
     { kind: 'sprite', silhouette, src: target.pokemon.sprite },
   );
 };
@@ -287,7 +304,7 @@ const buildScaleQuestion = (
     target,
     target.name,
     optionSet(target.name, distractors, context.random),
-    `Which Pokémon is the ${adjective}?`,
+    textPrompt(`Which Pokémon is the ${adjective}?`),
   );
 };
 
@@ -309,7 +326,9 @@ const buildDescriptionQuestion = (
     target,
     target.name,
     pokemonOptions(context, target),
-    `“${redactName(target.pokemon.description, target.name)}” belongs to…`,
+    textPrompt(
+      `“${redactName(target.pokemon.description, target.name)}” belongs to…`,
+    ),
   );
 };
 
@@ -328,7 +347,7 @@ const buildTypeQuestion = (
     target,
     correct,
     optionSet(correct, candidates, context.random),
-    `Which type does ${formatPokemonName(target.name)} have?`,
+    pokemonPrompt(target, 'Which type does ', ' have?'),
   );
 };
 
@@ -351,7 +370,7 @@ const buildEvolutionQuestion = (
         .filter((name) => !excluded.includes(name)),
       context.random,
     ),
-    `Which Pokémon can ${formatPokemonName(target.name)} evolve into?`,
+    pokemonPrompt(target, 'Which Pokémon can ', ' evolve into?'),
   );
 };
 
@@ -377,7 +396,7 @@ const buildPropertyQuestion = (
     target,
     correct,
     options,
-    `Which ${subject} can ${formatPokemonName(target.name)} have?`,
+    pokemonPrompt(target, `Which ${subject} can `, ' have?'),
   );
 };
 
@@ -406,7 +425,9 @@ const buildStatQuestion = (
     target,
     target.name,
     optionSet(target.name, distractors, context.random),
-    `Which Pokémon has the highest base ${formatPokemonName(stat)}?`,
+    textPrompt(
+      `Which Pokémon has the highest base ${formatPokemonName(stat)}?`,
+    ),
   );
 };
 
@@ -450,7 +471,7 @@ const buildMatchupQuestion = (
     target,
     correct,
     optionSet(correct, distractors, context.random),
-    `Which type is super effective against ${formatPokemonName(target.name)}?`,
+    pokemonPrompt(target, 'Which type is super effective against ', '?'),
   );
 };
 
@@ -467,7 +488,7 @@ const buildChampionQuestion = (
       target,
       target.name,
       pokemonOptions(context, target),
-      'Name the Pokémon. Reveal fewer clues to earn more points.',
+      textPrompt('Name the Pokémon. Reveal fewer clues to earn more points.'),
       {
         kind: 'sprite',
         revealAt: 4,
@@ -604,6 +625,11 @@ export const calculateScore = (answers: readonly AnswerResult[]): number =>
 
 export const getCategoryLabel = (category: QuestionCategory): string =>
   categoryLabels[category];
+
+export const getQuestionPromptText = (prompt: QuestionPrompt): string =>
+  prompt.kind === 'text'
+    ? prompt.text
+    : `${prompt.before}${formatPokemonName(prompt.name)}${prompt.after}`;
 
 export const formatDuration = (elapsedSeconds: number): string => {
   const hours = Math.floor(elapsedSeconds / 3600);

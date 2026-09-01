@@ -90,6 +90,16 @@ export interface PokemonOptionVisual {
   src: string;
 }
 
+export type QuestionPrompt =
+  | { kind: 'text'; text: string }
+  | {
+      after: string;
+      before: string;
+      dexNumber: number;
+      kind: 'pokemon';
+      name: string;
+    };
+
 export interface QuestionData {
   category: QuestionCategory;
   correctOption: string;
@@ -99,7 +109,7 @@ export interface QuestionData {
   options: string[];
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
-  prompt: string;
+  prompt: QuestionPrompt;
 }
 
 export type GameMode = { kind: 'training' } | { kind: 'daily'; date: string };

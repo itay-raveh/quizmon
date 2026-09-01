@@ -243,7 +243,7 @@ The landing signature is a narrow cream strip with a `2px` navy outline, a short
 
 ### Question Surface
 
-The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. Sprite questions add unframed artwork with a modest drop shadow, size questions compare Pokémon directly, and the Champion question reveals clues inside one ruled cream field.
+The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. When a prompt names its subject, the Pokémon name uses bold Gabarito followed by a smaller, muted Martian Mono Pokédex number. The pair stays inline without a badge or added container. Sprite questions add unframed artwork with a modest drop shadow, size questions compare Pokémon directly, and the Champion question reveals clues inside one ruled cream field.
 
 Answer buttons use the primary control treatment and include small outlined number-key labels. Size, description, evolution, and stat questions present each Pokémon option as a cream field with a crisp front-facing PokéAPI pixel sprite and a cobalt nameplate containing its Pokédex number and readable Gabarito name. Type, ability, move, and matchup questions keep text answers and place one compact pixel sprite of the named Pokémon between the prompt and choices. Identification and Champion questions scale the same classic pixel sprites into larger subjects or silhouettes while preserving hard edges. Once selected, the correct answer becomes green, the wrong selected answer becomes rose, and unrelated answers fade to `0.5` opacity.
 

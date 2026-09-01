@@ -6,7 +6,12 @@ import {
   getAnswerPoints,
   getCategoryLabel,
 } from '@/game/game';
-import type { AnswerResult, GameMode, QuestionData } from '@/game/types';
+import type {
+  AnswerResult,
+  GameMode,
+  QuestionData,
+  QuestionPrompt as QuestionPromptData,
+} from '@/game/types';
 import { GameButton } from './GameButton';
 import { Progress } from './Progress';
 import { Sprite } from './Sprite';
@@ -36,6 +41,25 @@ const preloadQuestionImages = (question: QuestionData) => {
     image.src = src;
   }
 };
+
+const QuestionPrompt = ({ prompt }: { prompt: QuestionPromptData }) => (
+  <p className="question__prompt">
+    {prompt.kind === 'text' ? (
+      prompt.text
+    ) : (
+      <>
+        {prompt.before}
+        <span className="question__subject">
+          <b>{formatPokemonName(prompt.name)}</b>{' '}
+          <span className="question__subject-number">
+            (No. {String(prompt.dexNumber).padStart(4, '0')})
+          </span>
+        </span>
+        {prompt.after}
+      </>
+    )}
+  </p>
+);
 
 export const Question = ({
   elapsedSeconds,
@@ -125,7 +149,7 @@ export const Question = ({
 
       <h1 id="question-title">{getCategoryLabel(question.category)}</h1>
       <p className="game-mode">{getModeLabel(mode)}</p>
-      <p className="question__prompt">{question.prompt}</p>
+      <QuestionPrompt prompt={question.prompt} />
 
       {question.category === 'champion' && question.clues ? (
         <div className="clue-board">

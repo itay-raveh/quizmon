@@ -9,7 +9,7 @@ const question: QuestionData = {
   media: { kind: 'none' },
   options: ['pikachu', 'eevee', 'ditto', 'mew'],
   pokemonName: 'pikachu',
-  prompt: 'Which Pokémon is the lightest?',
+  prompt: { kind: 'text', text: 'Which Pokémon is the lightest?' },
 };
 
 const renderQuestion = (number: number) =>
@@ -87,7 +87,13 @@ describe('question transitions', () => {
             src: 'https://example.com/pikachu.png',
           },
           options: ['electric', 'fire', 'grass', 'water'],
-          prompt: 'Which type does Pikachu have?',
+          prompt: {
+            after: ' have?',
+            before: 'Which type does ',
+            dexNumber: 25,
+            kind: 'pokemon',
+            name: 'pikachu',
+          },
         }}
         speedrunMode={false}
         total={10}
@@ -99,6 +105,10 @@ describe('question transitions', () => {
     ).toHaveLength(1);
     expect(rendered.container.querySelector('.answers')).not.toHaveClass(
       'answers--pokemon',
+    );
+    expect(screen.getByText('Pikachu').tagName).toBe('B');
+    expect(screen.getByText('(No. 0025)')).toHaveClass(
+      'question__subject-number',
     );
   });
 });
