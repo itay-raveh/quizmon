@@ -141,6 +141,10 @@ describe('question building', () => {
     for (const category of ['identity', 'scale', 'description', 'stat']) {
       expect(byCategory[category]?.prompt.kind).toBe('text');
     }
+
+    expect(getQuestionPromptText(byCategory.description!.prompt)).not.toContain(
+      'belongs to',
+    );
   });
 
   it('keeps matchup and property distractors unambiguous', () => {

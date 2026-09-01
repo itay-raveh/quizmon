@@ -326,9 +326,7 @@ const buildDescriptionQuestion = (
     target,
     target.name,
     pokemonOptions(context, target),
-    textPrompt(
-      `“${redactName(target.pokemon.description, target.name)}” belongs to…`,
-    ),
+    textPrompt(`“${redactName(target.pokemon.description, target.name)}”`),
   );
 };
 
