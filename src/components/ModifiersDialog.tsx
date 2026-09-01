@@ -10,6 +10,7 @@ import {
 } from '@/game/types';
 import { Checkbox } from './Checkbox';
 import { GameButton } from './GameButton';
+import { SelectionTile } from './SelectionTile';
 
 export type SettingsTab = 'training' | 'experience';
 
@@ -210,9 +211,9 @@ export const ModifiersDialog = ({
                   {allGenerationsSelected ? 'Deselect all' : 'Select all'}
                 </button>
               </div>
-              <div className="choice-grid choice-grid--compact">
+              <div className="selection-grid selection-grid--generations">
                 {generations.map((generation) => (
-                  <Checkbox
+                  <SelectionTile
                     checked={draft.generations.includes(generation)}
                     key={generation}
                     label={generation}
@@ -226,6 +227,7 @@ export const ModifiersDialog = ({
                         ),
                       }))
                     }
+                    variant="generation"
                   />
                 ))}
               </div>
@@ -236,9 +238,9 @@ export const ModifiersDialog = ({
               <p className="field-description">
                 Pick the kinds of questions you want to practice.
               </p>
-              <div className="choice-grid choice-grid--knowledge">
+              <div className="selection-grid selection-grid--topics">
                 {knowledgeCategories.map((category) => (
-                  <Checkbox
+                  <SelectionTile
                     checked={draft.knowledgeCategories.includes(category)}
                     key={category}
                     label={getCategoryLabel(category)}

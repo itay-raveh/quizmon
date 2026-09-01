@@ -241,6 +241,7 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     'aria-selected',
     'true',
   );
+  await expect(dialog.locator('.selection-tile')).toHaveCount(17);
   const selectAllGenerations = dialog.getByRole('button', {
     name: 'Select all generations',
   });

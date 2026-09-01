@@ -139,7 +139,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 
 ### Primary
 
-- **Battle Cobalt** (`colors.primary`): Primary actions, selected checkboxes, answer choices, and the timer.
+- **Battle Cobalt** (`colors.primary`): Primary actions, selected tiles, answer choices, and the timer.
 - **Deep Game Navy** (`colors.outline`): Control outlines, headings, progress borders, links, and high-emphasis labels.
 - **Pale Button Ink** (`colors.primary-text`): Text on cobalt controls.
 
@@ -180,7 +180,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 - **Display** (800, `clamp(1.65rem, 4.5vw, 2.3rem)`, 1.05): Question and results titles.
 - **Headline** (800, `clamp(1.35rem, 4vw, 1.75rem)`): Dialog titles.
 - **Body** (400, `1rem`): Instructions, descriptions, and general copy.
-- **Control** (700, `1rem`): Buttons, answers, checkbox labels, and result values.
+- **Control** (700, `1rem`): Buttons, answers, selection labels, and result values.
 - **Label** (700, `0.82rem`, 1.35): Game modes, helper text, result details, and status copy.
 - **Numeric** (800, `0.76rem`, `0.04em` letter spacing): Question progress and elapsed time. Large score figures may use the same monospace family at a larger responsive size.
 
@@ -196,7 +196,7 @@ The landing page is an open stage, not a card. On desktop, the wordmark, daily s
 
 Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer remains present in normal document flow below questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
-The Settings dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Training contains generations, knowledge mix, and quiz length. Experience contains Speedrun mode and sound effects. A two-control tab strip separates the sections without introducing another card layer. Settings remain reachable from the landing screen, every question, and results. Generation and knowledge-category grids reduce to three columns on narrow screens.
+The Settings dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. Its action footer remains visible. Training contains generations, knowledge mix, and quiz length. Experience contains Speedrun mode and sound effects. A two-control tab strip separates the sections without introducing another card layer. Settings remain reachable from the landing screen, every question, and results. Multi-select options use full-tile hit areas with native checkbox semantics. On narrow screens, generations form a three-column grid and knowledge categories form a wider two-column grid.
 
 Spacing is compact and regular. Most internal gaps sit near `0.7rem`, contained surfaces use `1rem` to `1.5rem` of padding, and controls remain large enough for touch without becoming oversized.
 
@@ -217,7 +217,7 @@ Depth is structural and hard-edged. Yellow lower edges and navy shadow layers ma
 
 ## Shapes
 
-Quizmon uses compact rounded rectangles with firm navy strokes. Tiny indicators and checkbox controls use the compact radius. Timers and small panels use a slightly larger control radius. Buttons use a modest `0.5rem` radius, and major game surfaces stop at `0.75rem`.
+Quizmon uses compact rounded rectangles with firm navy strokes. Tiny indicators use the compact radius. Timers and small panels use a slightly larger control radius. Buttons and selection tiles use modest radii, and major game surfaces stop at `0.75rem`.
 
 Control outlines are normally `2px` or `3px`. Borders stay visually continuous and do not become decorative double frames. The landscape and wordmark preserve their original silhouettes and are never clipped into cards.
 
