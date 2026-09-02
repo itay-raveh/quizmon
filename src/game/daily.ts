@@ -9,8 +9,8 @@ import {
   type QuestionType,
 } from './types';
 
-const DAILY_CHALLENGE_VERSION = 7;
-const DAILY_QUESTION_COUNT = 10;
+const DAILY_CHALLENGE_VERSION = 8;
+const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 

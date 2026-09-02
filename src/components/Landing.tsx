@@ -54,7 +54,7 @@ export const Landing = ({
             {dailyResult
               ? `${dailyResult.score.toLocaleString()} points${dailyResultSaved ? '' : ' · not saved'}`
               : storageAvailable
-                ? '10 questions'
+                ? '5 questions'
                 : 'browser storage required'}
           </span>
         </div>

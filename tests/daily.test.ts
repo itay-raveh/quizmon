@@ -17,13 +17,13 @@ import {
 const catalog = catalogData as PokemonCatalog;
 
 describe('daily Trainer Trial', () => {
-  it('builds the same seeded ten-question challenge for a UTC date', () => {
+  it('builds the same seeded five-question challenge for a UTC date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');
     const schedule = getDailyQuestionTypes('2026-09-01');
 
     expect(first).toEqual(second);
-    expect(first).toHaveLength(10);
+    expect(first).toHaveLength(5);
     expect(first.map(getQuestionTitle)).toEqual(
       schedule.map((questionType) =>
         questionType === 'champion'
@@ -57,13 +57,13 @@ describe('daily Trainer Trial', () => {
     expect(new Set(standard).size).toBeLessThan(standard.length);
   });
 
-  it('uses all generations and a fixed ten-question length', () => {
+  it('uses all generations and a fixed five-question length', () => {
     expect(
       getDailyModifiers({ soundEnabled: false, speedrunMode: true }),
     ).toMatchObject({
       generations: [...generations],
       isLimitActive: true,
-      limit: 10,
+      limit: 5,
       soundEnabled: false,
       speedrunMode: true,
     });
