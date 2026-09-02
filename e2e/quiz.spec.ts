@@ -222,10 +222,13 @@ test('plays and shares a complete Training question without a live API call', as
   )?.[0];
   expect(pokemon).toBeTruthy();
 
-  await page
-    .getByRole('button', { name: formatName(pokemon!), exact: true })
-    .click();
-  await expect(page.getByText(/Correct! \+[\d,]+ points/)).toBeVisible();
+  const answer = page.getByRole('button', {
+    name: formatName(pokemon!),
+    exact: true,
+  });
+  await answer.click();
+  await expect(answer).toHaveClass(/answer--correct/);
+  await expect(page.getByText(/\+[\d,]+ points/)).toHaveCount(0);
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();

@@ -183,24 +183,8 @@ describe('question transitions', () => {
     expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
 
-  it('adds a time-based bonus to a correct answer', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={1_000}
-        elapsedSeconds={1}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={question}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
-
-    rendered.rerender(
+  it('keeps answer feedback visual while announcing it accessibly', () => {
+    render(
       <Question
         elapsedMilliseconds={3_000}
         elapsedSeconds={3}
@@ -215,9 +199,12 @@ describe('question transitions', () => {
         total={10}
       />,
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    const answer = screen.getByRole('button', { name: 'Pikachu' });
+    fireEvent.click(answer);
 
-    expect(screen.getByText('Correct! +3,270 points')).toBeVisible();
+    expect(answer).toHaveClass('answer--correct');
+    expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
+    expect(screen.queryByText(/points/)).not.toBeInTheDocument();
   });
 
   it('checks every selected answer in a multi-select question', () => {
@@ -250,7 +237,13 @@ describe('question transitions', () => {
     expect(check).toBeEnabled();
     fireEvent.click(check);
 
-    expect(screen.getByText('Correct! +4,000 points')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Pikachu' })).toHaveClass(
+      'answer--correct',
+    );
+    expect(screen.getByRole('button', { name: 'Eevee' })).toHaveClass(
+      'answer--correct',
+    );
+    expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
   });
 
   it('reveals reverse-silhouette choices after an answer', () => {

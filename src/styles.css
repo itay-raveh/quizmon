@@ -123,6 +123,11 @@ input {
   padding-bottom: 0.55rem;
 }
 
+.app--questions main {
+  padding-top: clamp(0.85rem, 10svh, 5.5rem);
+  align-items: start;
+}
+
 .background {
   position: fixed;
   z-index: -1;
@@ -490,10 +495,13 @@ main {
 }
 
 .question__prompt {
+  display: grid;
+  min-height: 2.9em;
   max-width: 65ch;
   margin: 0.8rem 0;
   font-weight: 650;
   line-height: 1.45;
+  place-items: center;
   text-align: center;
   text-wrap: balance;
 }
@@ -824,25 +832,22 @@ main {
   opacity: 0.5;
 }
 
-.answer-feedback {
-  min-height: 1.4rem;
-  margin: 0.7rem 0 0.3rem;
-  color: var(--navy);
-  font-weight: 800;
-}
-
 .check-answer {
   margin-top: 0.7rem;
 }
 
 .answer-explanation {
   max-width: 54ch;
-  margin: -0.15rem 0 0.4rem;
+  margin: 0.65rem 0 0.4rem;
   color: var(--navy);
   font-size: var(--text-small);
   font-weight: 700;
   line-height: 1.35;
   text-align: center;
+}
+
+.answer-explanation--reserved {
+  visibility: hidden;
 }
 
 .new-game {
@@ -1630,6 +1635,10 @@ main {
     font-size: var(--text-small);
   }
 
+  .question__prompt {
+    min-height: 4.35em;
+  }
+
   .daily-action--with-combo .daily-action__copy {
     padding-right: 3.9rem;
   }
@@ -1761,16 +1770,13 @@ main {
   }
 
   .question__prompt {
+    min-height: 2.9em;
     margin-block: 0.5rem;
   }
 
   .sprite-frame {
     width: min(12rem, 50vw, 28svh);
     margin-block: 0.15rem;
-  }
-
-  .answer-feedback {
-    margin: 0.4rem 0 0.2rem;
   }
 }
 
@@ -1785,7 +1791,6 @@ main {
   .question--with-media .game-mode,
   .question--with-media .question__prompt,
   .question--with-media .clue-board,
-  .question--with-media .answer-feedback,
   .question--with-media .new-game {
     grid-column: 1 / -1;
   }

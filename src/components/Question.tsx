@@ -91,7 +91,6 @@ export const Question = ({
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [answered, setAnswered] = useState(false);
   const [cluesShown, setCluesShown] = useState(1);
-  const [awardedPoints, setAwardedPoints] = useState<number | null>(null);
   const answerTimeout = useRef<number | null>(null);
   const questionStartedAt = useRef(elapsedMilliseconds);
 
@@ -118,7 +117,6 @@ export const Question = ({
       const delay = speedrunMode ? 80 : correct ? 900 : 1700;
       setSelectedOptions(options);
       setAnswered(true);
-      setAwardedPoints(points + speedBonus);
       answerTimeout.current = window.setTimeout(
         () =>
           onAnswer({
@@ -360,17 +358,22 @@ export const Question = ({
         </GameButton>
       ) : null}
 
-      <p className="answer-feedback" aria-live="polite">
-        {answerCorrect
-          ? `Correct! +${awardedPoints?.toLocaleString()} points`
-          : answered
-            ? `Correct: ${formatCorrectAnswer(question)}.`
-            : '\u00a0'}
-      </p>
-
-      {answered && question.explanation ? (
-        <p className="answer-explanation">{question.explanation}</p>
+      {question.explanation ? (
+        <p
+          aria-hidden={!answered}
+          className={`answer-explanation ${answered ? '' : 'answer-explanation--reserved'}`.trim()}
+        >
+          {question.explanation}
+        </p>
       ) : null}
+
+      <span className="visually-hidden" aria-live="polite">
+        {answerCorrect
+          ? 'Correct.'
+          : answered
+            ? `Incorrect. Correct answer: ${formatCorrectAnswer(question)}.`
+            : ''}
+      </span>
 
       <GameButton className="new-game" tone="quiet" onClick={onNewGame}>
         Leave game
