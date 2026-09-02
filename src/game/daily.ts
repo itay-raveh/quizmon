@@ -1,3 +1,4 @@
+import { site } from '../app/site';
 import { buildQuestionSequence, defaultModifiers } from './game';
 import {
   generations,
@@ -98,9 +99,7 @@ export const getModeLabel = (mode: GameMode): string =>
     : 'Training';
 
 export const getDailyUrl = (date: string): string => {
-  const url = new URL(window.location.href);
-  url.search = '';
-  url.hash = '';
+  const url = new URL(site.url);
   url.searchParams.set('daily', date);
   return url.toString();
 };

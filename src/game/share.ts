@@ -1,4 +1,5 @@
 import { formatDailyDate, getDailyUrl } from './daily';
+import { site } from '../app/site';
 import type { GameMode, GameResult } from './types';
 
 export interface ShareContent {
@@ -21,10 +22,7 @@ export const buildShareContent = (
   return {
     text: [`${score} points`, pattern].join('\n'),
     title: `Quizmon · ${mode.kind === 'daily' ? formatDailyDate(mode.date) : 'Training'}`,
-    url:
-      mode.kind === 'daily'
-        ? getDailyUrl(mode.date)
-        : new URL('/', window.location.origin).toString(),
+    url: mode.kind === 'daily' ? getDailyUrl(mode.date) : site.url,
   };
 };
 
@@ -46,9 +44,8 @@ export const shareResult = async (
 
   try {
     await navigator.share({
-      text: `${content.title}\n${content.text}`,
+      text: buildShareText(mode, result),
       title: content.title,
-      url: content.url,
     });
     return 'shared';
   } catch (error) {

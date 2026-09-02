@@ -37,7 +37,7 @@ describe('result sharing', () => {
     expect(text).not.toContain(' / ');
     expect(text).not.toContain('1/2');
     expect(text).toContain('🟩🟥');
-    expect(text).toContain('?daily=2026-09-01');
+    expect(text).toContain('https://quizmon.raveh.dev/?daily=2026-09-01');
     expect(text).not.toContain('pikachu');
     expect(text).not.toContain('#answer');
   });
@@ -48,10 +48,10 @@ describe('result sharing', () => {
     expect(content.title).toBe('Quizmon · Training');
     expect(content.text).toContain('1,500 points');
     expect(content.text).not.toContain(content.url);
-    expect(content.url).toBe(`${window.location.origin}/`);
+    expect(content.url).toBe('https://quizmon.raveh.dev/');
   });
 
-  it('opens the native share sheet when the browser supports it', async () => {
+  it('includes the dated challenge link in the native share payload', async () => {
     const share = vi
       .fn<(data: ShareData) => Promise<void>>()
       .mockResolvedValue(undefined);
@@ -60,14 +60,18 @@ describe('result sharing', () => {
       value: share,
     });
 
-    await expect(shareResult({ kind: 'training' }, result)).resolves.toBe(
-      'shared',
-    );
+    await expect(
+      shareResult({ kind: 'daily', date: '2026-09-01' }, result),
+    ).resolves.toBe('shared');
     expect(canShareResult()).toBe(true);
     expect(share.mock.calls[0]?.[0]).toEqual({
-      text: 'Quizmon · Training\n1,500 points\n🟩🟥',
-      title: 'Quizmon · Training',
-      url: `${window.location.origin}/`,
+      text: [
+        'Quizmon · Sep 1, 2026',
+        '1,500 points',
+        '🟩🟥',
+        'https://quizmon.raveh.dev/?daily=2026-09-01',
+      ].join('\n'),
+      title: 'Quizmon · Sep 1, 2026',
     });
   });
 

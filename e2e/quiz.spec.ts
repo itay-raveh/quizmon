@@ -400,6 +400,16 @@ test('shows a saved daily score instead of another play button', async ({
   page,
 }) => {
   await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: (data: ShareData) => {
+        window.sessionStorage.setItem(
+          'quizmon.test-share',
+          JSON.stringify(data),
+        );
+        return Promise.resolve();
+      },
+    });
     window.localStorage.setItem(
       'quizmon.results.v2',
       JSON.stringify({
@@ -426,7 +436,26 @@ test('shows a saved daily score instead of another play button', async ({
   await expect(page.getByText('Daily complete')).toBeVisible();
   await expect(page.getByText('Sep 1, 2026 · 14,400 points')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Play daily' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Share' })).toBeVisible();
+  await page.getByRole('button', { name: 'Share' }).click();
+
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const data = window.sessionStorage.getItem('quizmon.test-share');
+        return data ? (JSON.parse(data) as ShareData).text : undefined;
+      }),
+    )
+    .toContain('https://quizmon.raveh.dev/?daily=2026-09-01');
+
+  const sharedText = await page.evaluate(() => {
+    const data = window.sessionStorage.getItem('quizmon.test-share');
+    return data ? (JSON.parse(data) as ShareData).text : undefined;
+  });
+  const sharedUrl = sharedText?.split('\n').at(-1);
+  expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01');
+  const { pathname, search } = new URL(sharedUrl!);
+  await page.goto(`${pathname}${search}`);
+  await expect(page.getByText('Sep 1, 2026 · 14,400 points')).toBeVisible();
 });
 
 test('syncs a completed daily across open tabs', async ({ context, page }) => {
