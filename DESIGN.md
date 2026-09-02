@@ -242,6 +242,8 @@ Buttons are compact physical game controls.
 
 The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. “Daily Challenge” is the primary line, with the date and five-question length beneath it in compact data type. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button showing “Daily complete” and the score. Do not wrap it in another card or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
 
+A nonzero Daily Combo adds one capture-ball medallion at the action's right edge. Its large numeric center carries the visual weight, while the small Gabarito label names the combo without turning it into another statistic row. The same medallion replaces the empty left cell in the Daily results header. A challenge earns credit only when completed on its own UTC date. Historical links never repair a combo. Existing consecutive daily results receive legacy credit once.
+
 ### Question Surface
 
 The question surface is one warm panel centered over the unchanged landscape. The progress row sits first, followed by a centered category title, mode, prompt, and answer grid. When a prompt names its subject, the Pokémon name uses bold Gabarito followed by a smaller, muted Martian Mono Pokédex number. The pair stays inline without a badge or added container. Sprite questions add unframed artwork with a modest drop shadow, and the Champion question reveals clues inside one ruled cream field.
@@ -270,7 +272,7 @@ The visible footer remains unboxed and comp-faithful: “Wordmark made with Text
 
 ### Motion
 
-The first question and the result surface use one `180ms` ease-out entrance from `0.45rem` below while fading from transparent. The question panel stays fixed while later questions replace its content. The open dialog uses the same treatment at `160ms`. Buttons use `100ms` transform, shadow, and brightness transitions. Do not chain entrances or add decorative looping motion. Honor `prefers-reduced-motion` by reducing animation and transition durations to effectively immediate.
+The first question and the result surface use one `180ms` ease-out entrance from `0.45rem` below while fading from transparent. The question panel stays fixed while later questions replace its content. The open dialog uses the same treatment at `160ms`. Buttons use `100ms` transform, shadow, and brightness transitions. A newly earned Daily Combo locks into place once with a short scale-and-rotation snap and one expanding yellow capture ring. Do not chain entrances or add decorative looping motion. Honor `prefers-reduced-motion` by reducing animation and transition durations to effectively immediate.
 
 ## Do's and Don'ts
 
@@ -291,6 +293,6 @@ The first question and the result surface use one `180ms` ease-out entrance from
 - **Don't** use glass panels, blurred scenery, gradients, or diffuse floating-card shadows.
 - **Don't** introduce pixel-font overkill, oversized uppercase labels, or decorative game glyphs.
 - **Don't** force Pokémon sprites onto type, move, or ability choices that do not represent Pokémon.
-- **Don't** add navigation, marketing copy, characters, ball symbols, badges, or ornamental frames to fill open space.
+- **Don't** add navigation, marketing copy, characters, badges, ornamental frames, or ball symbols beyond the functional Daily Combo medallion to fill open space.
 - **Don't** redesign, redraw, crop, blur, or place the wordmark inside another container.
 - **Don't** let decoration obscure answers, progress, score, modifiers, or keyboard focus.

@@ -10,12 +10,14 @@ import {
 } from '@/game/game';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
+import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
 import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
 
 interface ResultsProps {
   bestResult: GameResult;
+  dailyStreak: number;
   isNewBest: boolean;
   mode: GameMode;
   onNewGame: () => void;
@@ -26,6 +28,7 @@ interface ResultsProps {
 
 export const Results = ({
   bestResult,
+  dailyStreak,
   isNewBest,
   mode,
   onNewGame,
@@ -49,7 +52,11 @@ export const Results = ({
   return (
     <section className="results" aria-labelledby="results-title">
       <div className="results__header">
-        <span aria-hidden="true" />
+        {mode.kind === 'daily' && dailyStreak > 0 ? (
+          <CatchCombo celebrate count={dailyStreak} />
+        ) : (
+          <span aria-hidden="true" />
+        )}
         <h1 id="results-title">
           {mode.kind === 'daily' ? 'Daily complete' : 'Training complete'}
         </h1>

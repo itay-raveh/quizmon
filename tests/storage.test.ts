@@ -1,4 +1,9 @@
-import { canPersistResults, readDailyResult, saveResult } from '@/game/storage';
+import {
+  canPersistResults,
+  readDailyResult,
+  readDailyStreak,
+  saveResult,
+} from '@/game/storage';
 import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
@@ -16,6 +21,8 @@ const result: GameResult = {
 
 describe('saved results', () => {
   beforeEach(() => window.localStorage.clear());
+
+  afterEach(() => vi.useRealTimers());
 
   it('records a daily result once and restores it', () => {
     const mode = { kind: 'daily', date: '2026-09-01' } as const;
@@ -47,6 +54,71 @@ describe('saved results', () => {
       isSaved: true,
     });
     expect(readDailyResult(mode.date)).toEqual(result);
+  });
+
+  it('credits a consecutive legacy daily history once', () => {
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {
+          '2026-08-31': result,
+          '2026-09-01': result,
+          '2026-09-02': result,
+        },
+        training: {},
+      }),
+    );
+
+    expect(readDailyStreak('2026-09-03')).toBe(3);
+  });
+
+  it('only credits new results completed on their UTC challenge date', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-09-03T12:00:00.000Z'));
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {},
+        streak: { creditedDates: [], version: 1 },
+        training: {},
+      }),
+    );
+
+    saveResult({ kind: 'daily', date: '2026-09-01' }, result);
+    expect(readDailyStreak('2026-09-03')).toBe(0);
+
+    const zeroScore = {
+      ...result,
+      answers: result.answers.map((answer) => ({
+        ...answer,
+        correct: false,
+        points: 0,
+      })),
+      correctCount: 0,
+      score: 0,
+    };
+    saveResult({ kind: 'daily', date: '2026-09-03' }, zeroScore);
+    expect(readDailyStreak('2026-09-03')).toBe(1);
+  });
+
+  it("keeps yesterday's streak active and crosses a year boundary", () => {
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {
+          '2025-12-31': result,
+          '2026-01-01': result,
+        },
+        streak: {
+          creditedDates: ['2025-12-31', '2026-01-01'],
+          version: 1,
+        },
+        training: {},
+      }),
+    );
+
+    expect(readDailyStreak('2026-01-02')).toBe(2);
+    expect(readDailyStreak('2026-01-03')).toBe(0);
   });
 
   it('keeps the best Training score for each quiz length', () => {

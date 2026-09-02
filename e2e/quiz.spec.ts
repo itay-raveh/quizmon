@@ -471,6 +471,46 @@ test('starts the selected daily challenge from a shared link', async ({
   await expect(page.getByText('Daily Challenge · Sep 1, 2026')).toBeVisible();
 });
 
+test("shows a legacy Daily Combo on today's challenge", async ({ page }) => {
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const date = yesterday.toISOString().slice(0, 10);
+
+  await page.addInitScript(
+    ({ dailyDate }) => {
+      window.localStorage.setItem(
+        'quizmon.results.v2',
+        JSON.stringify({
+          daily: {
+            [dailyDate]: {
+              answers: [],
+              contentVersion: 2,
+              correctCount: 0,
+              elapsedSeconds: 10,
+              questionCount: 5,
+              score: 0,
+              scoreVersion: 2,
+            },
+          },
+          training: {},
+        }),
+      );
+    },
+    { dailyDate: date },
+  );
+
+  await page.goto('/');
+
+  await expect(
+    page.getByRole('img', { name: '1-day Daily Combo' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', {
+      name: /Play Daily Challenge.*1-day Daily Combo/,
+    }),
+  ).toBeVisible();
+});
+
 test('syncs a completed daily across open tabs', async ({ context, page }) => {
   const otherPage = await context.newPage();
   await Promise.all([

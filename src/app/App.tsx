@@ -23,6 +23,7 @@ import {
   canPersistResults,
   markGenerationPromptAnswered,
   readDailyResult,
+  readDailyStreak,
   saveResult,
   shouldShowGenerationPrompt,
   usePersistentModifiers,
@@ -75,6 +76,7 @@ export const App = () => {
       readDailyResult(parseDailyDate(window.location.search) ?? getUtcDate()),
     ),
   );
+  const [dailyStreak, setDailyStreak] = useState(readDailyStreak);
   const [storageAvailable] = useState(canPersistResults);
   const linkedDailyStarted = useRef(false);
   const { elapsedMilliseconds, elapsedSeconds, pause, reset, start } =
@@ -83,9 +85,11 @@ export const App = () => {
   useEffect(() => {
     const syncDailyResult = () => {
       const saved = readDailyResult(dailyDate);
-      if (!saved) return;
-      setDailyResult(saved);
-      setDailyResultSaved(true);
+      if (saved) {
+        setDailyResult(saved);
+        setDailyResultSaved(true);
+      }
+      setDailyStreak(readDailyStreak());
     };
 
     window.addEventListener('focus', syncDailyResult);
@@ -254,6 +258,7 @@ export const App = () => {
         if (mode.kind === 'daily') {
           setDailyResult(best.best);
           setDailyResultSaved(best.isSaved);
+          if (best.isSaved) setDailyStreak(readDailyStreak());
         }
         pause();
         setPhase('results');
@@ -285,6 +290,7 @@ export const App = () => {
               dailyDate={dailyDate}
               dailyResult={dailyResult}
               dailyResultSaved={dailyResultSaved}
+              dailyStreak={dailyDate === getUtcDate() ? dailyStreak : 0}
               onOpenSettings={() => openSettings('training')}
               onRetryCatalog={catalogState.retry}
               onStart={startCustomGame}
@@ -314,6 +320,11 @@ export const App = () => {
           {phase === 'results' && result && bestResult ? (
             <Results
               bestResult={bestResult}
+              dailyStreak={
+                mode.kind === 'daily' && mode.date === getUtcDate()
+                  ? dailyStreak
+                  : 0
+              }
               isNewBest={isNewBest}
               mode={mode}
               onNewGame={newGame}

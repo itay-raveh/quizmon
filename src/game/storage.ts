@@ -6,6 +6,7 @@ import {
   normalizeModifiers,
   SCORE_VERSION,
 } from './game';
+import { getUtcDate, parseDailyDate } from './daily';
 import type { GameMode, GameResult, Modifiers } from './types';
 
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
@@ -13,13 +14,24 @@ const RESULTS_KEY = 'quizmon.results.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 const LEGACY_KNOWLEDGE_SCALE = 10;
 const LEGACY_SPEED_BONUS_SCALE = 120;
+const STREAK_VERSION = 1;
+
+interface DailyStreakState {
+  creditedDates: string[];
+  version: number;
+}
 
 interface SavedResults {
   daily: Record<string, GameResult>;
+  streak: DailyStreakState;
   training: Record<string, GameResult>;
 }
 
-const emptyResults = (): SavedResults => ({ daily: {}, training: {} });
+const emptyResults = (): SavedResults => ({
+  daily: {},
+  streak: { creditedDates: [], version: STREAK_VERSION },
+  training: {},
+});
 
 const migrateLegacyAnswer = (answer: GameResult['answers'][number]) => {
   const points = answer.points * LEGACY_KNOWLEDGE_SCALE;
@@ -54,6 +66,30 @@ const normalizeResultRecord = (
       normalizeResult(result),
     ]),
   );
+
+const normalizeStreak = (
+  streak: Partial<DailyStreakState> | undefined,
+  daily: Record<string, GameResult>,
+): DailyStreakState => {
+  const creditedDates =
+    streak?.version === STREAK_VERSION && Array.isArray(streak.creditedDates)
+      ? streak.creditedDates
+      : Object.keys(daily);
+
+  return {
+    creditedDates: [
+      ...new Set(
+        creditedDates.filter(
+          (date) =>
+            typeof date === 'string' &&
+            parseDailyDate(`?daily=${date}`) === date &&
+            daily[date],
+        ),
+      ),
+    ].sort(),
+    version: STREAK_VERSION,
+  };
+};
 
 const readModifiers = (): Modifiers => {
   try {
@@ -127,8 +163,10 @@ const readResults = (): SavedResults => {
     const stored = window.localStorage.getItem(RESULTS_KEY);
     if (!stored) return emptyResults();
     const parsed = JSON.parse(stored) as Partial<SavedResults>;
+    const daily = normalizeResultRecord(parsed.daily);
     return {
-      daily: normalizeResultRecord(parsed.daily),
+      daily,
+      streak: normalizeStreak(parsed.streak, daily),
       training: normalizeResultRecord(parsed.training),
     };
   } catch {
@@ -159,6 +197,25 @@ export const canPersistResults = (): boolean => {
 export const readDailyResult = (date: string): GameResult | null =>
   readResults().daily[date] ?? null;
 
+const previousUtcDate = (date: string): string => {
+  const previous = new Date(`${date}T00:00:00.000Z`);
+  previous.setUTCDate(previous.getUTCDate() - 1);
+  return getUtcDate(previous);
+};
+
+export const readDailyStreak = (today = getUtcDate()): number => {
+  const creditedDates = new Set(readResults().streak.creditedDates);
+  let date = creditedDates.has(today) ? today : previousUtcDate(today);
+  let streak = 0;
+
+  while (creditedDates.has(date)) {
+    streak += 1;
+    date = previousUtcDate(date);
+  }
+
+  return streak;
+};
+
 export const saveResult = (
   mode: GameMode,
   result: GameResult,
@@ -172,6 +229,13 @@ export const saveResult = (
       return { best: previous, isNewBest: false, isSaved: true };
     }
     results.daily[mode.date] = normalizedResult;
+    if (
+      mode.date === getUtcDate() &&
+      !results.streak.creditedDates.includes(mode.date)
+    ) {
+      results.streak.creditedDates.push(mode.date);
+      results.streak.creditedDates.sort();
+    }
     const isSaved = writeResults(results);
     return {
       best: normalizedResult,

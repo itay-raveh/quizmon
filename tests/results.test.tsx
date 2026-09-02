@@ -31,6 +31,7 @@ const renderResults = (result: GameResult) =>
   render(
     <Results
       bestResult={result}
+      dailyStreak={0}
       isNewBest={false}
       mode={{ kind: 'training' }}
       onNewGame={vi.fn()}
@@ -63,5 +64,26 @@ describe('results summary', () => {
       screen.queryByRole('list', { name: 'Question results' }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
+  });
+
+  it('celebrates a Daily Combo without adding another result statistic', () => {
+    const result = makeResult(5, 3);
+    render(
+      <Results
+        bestResult={result}
+        dailyStreak={7}
+        isNewBest={false}
+        mode={{ kind: 'daily', date: '2026-09-03' }}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        result={result}
+        resultSaved
+      />,
+    );
+
+    expect(
+      screen.getByRole('img', { name: '7-day Daily Combo' }),
+    ).toBeVisible();
+    expect(screen.queryByText('Streak')).not.toBeInTheDocument();
   });
 });
