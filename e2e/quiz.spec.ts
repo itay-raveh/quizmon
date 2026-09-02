@@ -447,17 +447,28 @@ test('shows a saved daily score instead of another play button', async ({
         return data ? (JSON.parse(data) as ShareData).text : undefined;
       }),
     )
-    .toContain('https://quizmon.raveh.dev/?daily=2026-09-01');
+    .toContain('https://quizmon.raveh.dev/?daily=2026-09-01&play=1');
 
   const sharedText = await page.evaluate(() => {
     const data = window.sessionStorage.getItem('quizmon.test-share');
     return data ? (JSON.parse(data) as ShareData).text : undefined;
   });
   const sharedUrl = sharedText?.split('\n').at(-1);
-  expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01');
+  expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01&play=1');
   const { pathname, search } = new URL(sharedUrl!);
   await page.goto(`${pathname}${search}`);
   await expect(page.getByText('14,400 points · Share')).toBeVisible();
+});
+
+test('starts the selected daily challenge from a shared link', async ({
+  page,
+}) => {
+  await page.goto('/?daily=2026-09-01&play=1');
+
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 005');
+  await expect(page.getByText('Daily Challenge · Sep 1, 2026')).toBeVisible();
 });
 
 test('syncs a completed daily across open tabs', async ({ context, page }) => {

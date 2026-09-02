@@ -28,6 +28,10 @@ export const parseDailyDate = (search: string): string | null => {
     : value;
 };
 
+export const shouldAutoStartDaily = (search: string): boolean =>
+  parseDailyDate(search) !== null &&
+  new URLSearchParams(search).get('play') === '1';
+
 export const formatDailyDate = (date: string): string =>
   new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
@@ -101,5 +105,6 @@ export const getModeLabel = (mode: GameMode): string =>
 export const getDailyUrl = (date: string): string => {
   const url = new URL(site.url);
   url.searchParams.set('daily', date);
+  url.searchParams.set('play', '1');
   return url.toString();
 };

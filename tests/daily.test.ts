@@ -6,6 +6,7 @@ import {
   getDailyQuestionTypes,
   getUtcDate,
   parseDailyDate,
+  shouldAutoStartDaily,
 } from '@/game/daily';
 import {
   generations,
@@ -76,5 +77,13 @@ describe('daily dates', () => {
     expect(parseDailyDate('?daily=2024-02-29')).toBe('2024-02-29');
     expect(parseDailyDate('?daily=2026-02-29')).toBeNull();
     expect(parseDailyDate('?daily=September-1')).toBeNull();
+  });
+
+  it('only auto-starts an explicitly playable, valid daily link', () => {
+    expect(shouldAutoStartDaily('?daily=2026-09-01&play=1')).toBe(true);
+    expect(shouldAutoStartDaily('?daily=2026-09-01')).toBe(false);
+    expect(shouldAutoStartDaily('?daily=2026-09-01&play=0')).toBe(false);
+    expect(shouldAutoStartDaily('?daily=2026-02-29&play=1')).toBe(false);
+    expect(shouldAutoStartDaily('?play=1')).toBe(false);
   });
 });

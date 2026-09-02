@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
 import { GenerationPromptDialog } from '@/components/GenerationPromptDialog';
@@ -16,6 +16,7 @@ import {
   getDailyModifiers,
   getUtcDate,
   parseDailyDate,
+  shouldAutoStartDaily,
 } from '@/game/daily';
 import { buildQuestions, calculateScore, SCORE_VERSION } from '@/game/game';
 import {
@@ -63,6 +64,9 @@ export const App = () => {
   const [dailyDate] = useState(
     () => parseDailyDate(window.location.search) ?? getUtcDate(),
   );
+  const [autoStartDaily] = useState(() =>
+    shouldAutoStartDaily(window.location.search),
+  );
   const [dailyResult, setDailyResult] = useState<GameResult | null>(() =>
     readDailyResult(parseDailyDate(window.location.search) ?? getUtcDate()),
   );
@@ -72,6 +76,7 @@ export const App = () => {
     ),
   );
   const [storageAvailable] = useState(canPersistResults);
+  const linkedDailyStarted = useRef(false);
   const { elapsedMilliseconds, elapsedSeconds, pause, reset, start } =
     useStopwatch();
 
@@ -91,24 +96,27 @@ export const App = () => {
     };
   }, [dailyDate]);
 
-  const startGame = (
-    nextQuestions: QuestionData[],
-    nextModifiers: Modifiers,
-    nextMode: GameMode,
-  ) => {
-    setQuestions(nextQuestions);
-    setActiveModifiers(nextModifiers);
-    setMode(nextMode);
-    setResult(null);
-    setBestResult(null);
-    setIsNewBest(false);
-    setResultSaved(true);
-    setQuestionIndex(0);
-    setAnswers([]);
-    reset();
-    start();
-    setPhase('questions');
-  };
+  const startGame = useCallback(
+    (
+      nextQuestions: QuestionData[],
+      nextModifiers: Modifiers,
+      nextMode: GameMode,
+    ) => {
+      setQuestions(nextQuestions);
+      setActiveModifiers(nextModifiers);
+      setMode(nextMode);
+      setResult(null);
+      setBestResult(null);
+      setIsNewBest(false);
+      setResultSaved(true);
+      setQuestionIndex(0);
+      setAnswers([]);
+      reset();
+      start();
+      setPhase('questions');
+    },
+    [reset, start],
+  );
 
   const startCustomGameWithGenerations = (generations: Generation[]) => {
     if (catalogState.status !== 'ready') return;
@@ -138,7 +146,7 @@ export const App = () => {
     });
   };
 
-  const startDailyGame = () => {
+  const startDailyGame = useCallback(() => {
     if (catalogState.status !== 'ready' || dailyResult || !storageAvailable)
       return;
 
@@ -155,7 +163,26 @@ export const App = () => {
       dailyModifiers,
       { kind: 'daily', date: dailyDate },
     );
-  };
+  }, [
+    catalogState,
+    dailyDate,
+    dailyResult,
+    modifiers,
+    startGame,
+    storageAvailable,
+  ]);
+
+  useEffect(() => {
+    if (
+      !autoStartDaily ||
+      linkedDailyStarted.current ||
+      catalogState.status !== 'ready'
+    )
+      return;
+
+    linkedDailyStarted.current = true;
+    startDailyGame();
+  }, [autoStartDaily, catalogState.status, startDailyGame]);
 
   const newGame = useCallback(() => {
     pause();
