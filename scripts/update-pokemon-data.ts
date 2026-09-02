@@ -86,13 +86,17 @@ const getStats = (pokemon: Pokemon): Record<StatName, number> => {
 };
 
 const getSprite = (pokemon: Pokemon): string | null =>
-  pokemon.sprites.front_default;
+  pokemon.sprites.front_default ? `/sprites/pokemon/${pokemon.id}.png` : null;
 
 const getBackSprite = (pokemon: Pokemon): string | null =>
-  pokemon.sprites.back_default;
+  pokemon.sprites.back_default
+    ? `/sprites/pokemon/back/${pokemon.id}.png`
+    : null;
 
 const getShinySprite = (pokemon: Pokemon): string | null =>
-  pokemon.sprites.front_shiny;
+  pokemon.sprites.front_shiny
+    ? `/sprites/pokemon/shiny/${pokemon.id}.png`
+    : null;
 
 const getLevelMoves = (pokemon: Pokemon): string[] =>
   [
@@ -206,7 +210,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 7,
+    contentVersion: 8,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

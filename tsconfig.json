@@ -27,6 +27,7 @@
   },
   "include": [
     "src",
+    "worker",
     "scripts",
     "tests",
     "e2e",

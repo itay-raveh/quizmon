@@ -122,12 +122,13 @@ describe('catalog generation', () => {
     expect(Object.keys(catalog.pokemon)).toHaveLength(9);
     expect(catalog.pokemon['species-1']).toMatchObject({
       abilities: ['run-away'],
-      backSprite: 'https://example.test/back.png',
+      backSprite: '/sprites/pokemon/back/1.png',
       description: 'species-1 field notes.',
       generation: 'I',
       genus: 'Test',
       levelMoves: ['tackle'],
-      shinySprite: 'https://example.test/shiny.png',
+      shinySprite: '/sprites/pokemon/shiny/1.png',
+      sprite: '/sprites/pokemon/1.png',
       types: ['normal'],
     });
     expect(catalog.pokemon['species-9']?.generation).toBe('IX');

@@ -4,6 +4,15 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 import { siteMetadata } from './build/site-metadata.ts';
 
+const spriteProxy = {
+  '/sprites': {
+    target: 'https://raw.githubusercontent.com',
+    changeOrigin: true,
+    rewrite: (path: string) =>
+      `/PokeAPI/sprites/master/sprites${path.replace(/^\/sprites/, '')}`,
+  },
+};
+
 export default defineConfig({
   build: {
     assetsDir: 'assets/build',
@@ -24,12 +33,12 @@ export default defineConfig({
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
-            urlPattern:
-              /^https:\/\/raw\.githubusercontent\.com\/PokeAPI\/sprites\//,
+            urlPattern: ({ sameOrigin, url }) =>
+              sameOrigin && url.pathname.startsWith('/sprites/pokemon/'),
             handler: 'CacheFirst',
             options: {
-              cacheName: 'quizmon-pokemon-sprites',
-              cacheableResponse: { statuses: [0, 200] },
+              cacheName: 'quizmon-pokemon-sprites-v2',
+              cacheableResponse: { statuses: [200] },
               expiration: {
                 maxAgeSeconds: 60 * 60 * 24 * 90,
                 maxEntries: 400,
@@ -44,6 +53,12 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  server: {
+    proxy: spriteProxy,
+  },
+  preview: {
+    proxy: spriteProxy,
   },
   test: {
     environment: 'jsdom',

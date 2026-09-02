@@ -45,7 +45,7 @@ test.beforeEach(async ({ page }) => {
     );
   });
 
-  await page.route('https://raw.githubusercontent.com/**', async (route) => {
+  await page.route('**/sprites/pokemon/**', async (route) => {
     await route.fulfill({ contentType: 'image/png', body: imageBody });
   });
 });
