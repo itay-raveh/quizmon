@@ -398,7 +398,7 @@ main {
 .daily-action > .catch-combo {
   position: absolute;
   top: 50%;
-  right: -0.35rem;
+  right: 0.25rem;
   transform: translateY(-50%);
 }
 
@@ -1606,6 +1606,53 @@ main {
   animation: combo-ring 520ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@media (min-width: 36.01rem) and (max-width: 60rem) {
+  .logo-picture {
+    left: calc(50% - 10rem);
+    width: 20rem;
+  }
+
+  .daily-action {
+    left: calc(50% - 9rem);
+    width: 18rem;
+  }
+
+  .daily-action__detail {
+    font-size: var(--text-small);
+  }
+
+  .daily-action--with-combo .daily-action__copy {
+    padding-right: 4.5rem;
+  }
+
+  .daily-action > .catch-combo {
+    right: 1.15rem;
+  }
+
+  .landing__actions .game-button {
+    width: 8.5rem;
+  }
+
+  .landing__actions .game-button:first-child {
+    left: calc(50% - 9rem);
+  }
+
+  .landing__actions .game-button:last-child {
+    left: calc(50% + 0.5rem);
+    width: 8.5rem;
+  }
+
+  .site-footer {
+    top: 91%;
+    left: 5%;
+    width: 90%;
+    height: auto;
+    flex-wrap: nowrap;
+    font-size: var(--text-tiny);
+    transform: none;
+  }
+}
+
 @media (max-width: 36rem) {
   main {
     padding: 0.6rem;
@@ -1640,7 +1687,11 @@ main {
   }
 
   .daily-action--with-combo .daily-action__copy {
-    padding-right: 3.9rem;
+    padding-right: 4.5rem;
+  }
+
+  .daily-action > .catch-combo {
+    right: 1.15rem;
   }
 
   .landing__actions .game-button {

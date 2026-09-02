@@ -479,6 +479,8 @@ test("shows a legacy Daily Combo on today's challenge", async ({ page }) => {
   yesterday.setUTCDate(yesterday.getUTCDate() - 1);
   const date = yesterday.toISOString().slice(0, 10);
 
+  await page.setViewportSize({ width: 320, height: 700 });
+
   await page.addInitScript(
     ({ dailyDate }) => {
       window.localStorage.setItem(
@@ -512,6 +514,38 @@ test("shows a legacy Daily Combo on today's challenge", async ({ page }) => {
       name: /Play Daily Challenge.*1-day Daily Combo/,
     }),
   ).toBeVisible();
+
+  const mobileBounds = await page.evaluate(() => {
+    const action = document
+      .querySelector('.daily-action')
+      ?.getBoundingClientRect();
+    const label = document
+      .querySelector('.daily-action .catch-combo__label')
+      ?.getBoundingClientRect();
+
+    return action && label
+      ? { actionRight: action.right, labelRight: label.right }
+      : null;
+  });
+  expect(mobileBounds).not.toBeNull();
+  expect(mobileBounds!.actionRight - mobileBounds!.labelRight).toBeGreaterThan(
+    8,
+  );
+
+  await page.setViewportSize({ width: 591, height: 844 });
+  await expect(page.locator('.daily-action')).toHaveCSS('width', '288px');
+
+  const footerLines = await page
+    .locator('.site-footer')
+    .evaluate(
+      (footer) =>
+        new Set(
+          [...footer.children]
+            .filter((child) => !child.classList.contains('visually-hidden'))
+            .map((child) => Math.round(child.getBoundingClientRect().top)),
+        ).size,
+    );
+  expect(footerLines).toBe(1);
 });
 
 test('syncs a completed daily across open tabs', async ({ context, page }) => {
