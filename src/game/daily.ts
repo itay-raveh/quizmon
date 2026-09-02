@@ -95,7 +95,7 @@ export const buildDailyQuestions = (
 
 export const getModeLabel = (mode: GameMode): string =>
   mode.kind === 'daily'
-    ? `Trainer Trial · ${formatDailyDate(mode.date)}`
+    ? `Daily Challenge · ${formatDailyDate(mode.date)}`
     : 'Training';
 
 export const getDailyUrl = (date: string): string => {

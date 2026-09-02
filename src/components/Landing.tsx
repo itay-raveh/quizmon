@@ -35,45 +35,43 @@ export const Landing = ({
       <Logo />
       {catalogStatus === 'loading' ? (
         <p className="landing__status" role="status">
-          Loading Trainer Trial…
+          Loading Daily Challenge…
         </p>
       ) : null}
       {catalogStatus === 'error' ? (
         <div className="landing__status landing__status--error" role="alert">
-          <span>The Trainer Trial could not be loaded.</span>
+          <span>The Daily Challenge could not be loaded.</span>
           <GameButton tone="quiet" onClick={onRetryCatalog}>
             Try again
           </GameButton>
         </div>
       ) : null}
-      <div className="daily-card">
-        <div>
-          <strong>{dailyResult ? 'Daily complete' : 'Trainer Trial'}</strong>
-          <span>
-            {formatDailyDate(dailyDate)} ·{' '}
-            {dailyResult
-              ? `${dailyResult.score.toLocaleString()} points${dailyResultSaved ? '' : ' · not saved'}`
-              : storageAvailable
-                ? '5 questions'
-                : 'browser storage required'}
+      {dailyResult ? (
+        <ShareResultButton
+          className="daily-action daily-action--complete"
+          mode={{ kind: 'daily', date: dailyDate }}
+          result={dailyResult}
+        >
+          <strong className="daily-action__title">Daily complete</strong>
+          <span className="daily-action__detail">
+            {dailyResult.score.toLocaleString()} points
+            {dailyResultSaved ? ' · Share' : ' · Not saved · Share'}
           </span>
-        </div>
-        {dailyResult ? (
-          <ShareResultButton
-            mode={{ kind: 'daily', date: dailyDate }}
-            result={dailyResult}
-          >
-            <span>Share</span>
-          </ShareResultButton>
-        ) : (
-          <GameButton
-            disabled={catalogStatus !== 'ready' || !storageAvailable}
-            onClick={onStartDaily}
-          >
-            <span>Play daily</span>
-          </GameButton>
-        )}
-      </div>
+        </ShareResultButton>
+      ) : (
+        <GameButton
+          aria-label={`Play Daily Challenge for ${formatDailyDate(dailyDate)}`}
+          className="daily-action"
+          disabled={catalogStatus !== 'ready' || !storageAvailable}
+          onClick={onStartDaily}
+        >
+          <strong className="daily-action__title">Daily Challenge</strong>
+          <span className="daily-action__detail">
+            {formatDailyDate(dailyDate)} ·{' '}
+            {storageAvailable ? '5 questions' : 'Browser storage required'}
+          </span>
+        </GameButton>
+      )}
       <div className="landing__actions" aria-label="Training">
         <GameButton
           disabled={catalogStatus !== 'ready'}

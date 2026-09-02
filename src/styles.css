@@ -39,10 +39,10 @@
   --r-wordmark-y: 25.2%;
   --r-wordmark-w: 33.42%;
   --r-wordmark-h: 23.2%;
-  --r-daily-panel-x: 35.56%;
-  --r-daily-panel-y: 51.81%;
-  --r-daily-panel-w: 28.81%;
-  --r-daily-panel-h: 8.57%;
+  --r-daily-action-x: 35.56%;
+  --r-daily-action-y: 51.81%;
+  --r-daily-action-w: 28.81%;
+  --r-daily-action-h: 8.57%;
   --r-modifiers-x: 37.83%;
   --r-modifiers-y: 62.6%;
   --r-modifiers-w: 11.85%;
@@ -257,55 +257,42 @@ main {
   object-fit: contain;
 }
 
-.daily-card {
+.daily-action {
   position: absolute;
-  top: var(--r-daily-panel-y);
-  left: var(--r-daily-panel-x);
-  display: block;
-  width: var(--r-daily-panel-w);
-  height: var(--r-daily-panel-h);
-  padding: 0;
+  top: var(--r-daily-action-y);
+  left: var(--r-daily-action-x);
+  display: flex;
+  width: var(--r-daily-action-w);
+  height: var(--r-daily-action-h);
+  min-height: 0;
+  padding: 0.4rem 0.8rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  color: var(--paper);
+  text-align: center;
+}
+
+.daily-action--complete {
   color: var(--navy);
   background: var(--cream);
-  border: 2px solid var(--navy);
-  border-radius: 0.28rem;
-  box-shadow:
-    0 0.16rem 0 var(--yellow),
-    0 0.3rem 0 var(--navy);
 }
 
-.daily-card div {
-  display: contents;
-}
-
-.daily-card strong {
-  position: absolute;
-  top: 22.35%;
-  left: 4.17%;
-  font-size: var(--text-brand-title);
+.daily-action__title {
+  color: inherit;
+  font-size: var(--text-headline);
   font-weight: 800;
   line-height: 1.15;
 }
 
-.daily-card div > span {
-  position: absolute;
-  top: 54.1%;
-  left: 4.17%;
-  color: var(--navy);
+.daily-action__detail {
+  color: inherit;
+  font-family: var(--font-data);
   font-size: var(--text-brand-detail);
-  font-weight: 600;
+  font-weight: 800;
   line-height: 1.2;
-}
-
-.daily-card > .game-button {
-  position: absolute;
-  top: 15%;
-  right: 3.9%;
-  width: 26%;
-  height: 60%;
-  min-height: 0;
-  padding: 0.2rem 0.45rem;
-  font-size: var(--text-brand-control);
+  opacity: 0.9;
 }
 
 .landing__actions {
@@ -331,7 +318,6 @@ main {
   width: var(--r-custom-game-w);
 }
 
-.daily-card > .game-button > span,
 .landing__actions .game-button > span {
   position: static;
   display: inline-block;
@@ -1487,29 +1473,15 @@ main {
     height: 30%;
   }
 
-  .daily-card {
+  .daily-action {
     top: 43%;
     left: 5%;
     width: 90%;
     height: 13%;
   }
 
-  .daily-card strong {
-    top: 18%;
-    font-size: var(--text-body);
-  }
-
-  .daily-card div > span {
-    top: 50%;
+  .daily-action__detail {
     font-size: var(--text-small);
-  }
-
-  .daily-card > .game-button {
-    top: 17%;
-    right: 3%;
-    width: 35%;
-    height: 60%;
-    font-size: var(--text-label);
   }
 
   .landing__actions .game-button {

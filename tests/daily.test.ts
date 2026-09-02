@@ -16,7 +16,7 @@ import {
 
 const catalog = catalogData as PokemonCatalog;
 
-describe('daily Trainer Trial', () => {
+describe('Daily Challenge', () => {
   it('builds the same seeded five-question challenge for a UTC date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');

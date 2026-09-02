@@ -79,10 +79,11 @@ components:
     rounded: '{rounded.button}'
     padding: '0.62rem 1.1rem'
     height: '2.8rem'
-  daily-panel:
-    backgroundColor: '{colors.accent-surface}'
-    textColor: '{colors.outline}'
-    rounded: '{rounded.control}'
+  daily-action:
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.game-surface}'
+    typography: '{typography.control}'
+    rounded: '{rounded.button}'
   game-panel:
     backgroundColor: '{colors.game-surface}'
     textColor: '{colors.ink}'
@@ -121,7 +122,7 @@ components:
 
 The implemented direction is the approved Logo Echo world, seed `ae843a63`. Quizmon starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.
 
-The landing screen remains open and asset-led. The wordmark occupies the sky, the Trainer Trial sits in one narrow strip, and the two Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.
+The landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the two Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.
 
 The result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.
 
@@ -237,9 +238,9 @@ Buttons are compact physical game controls.
 - **Focus:** Use a `0.2rem` focus-yellow outline with a `0.2rem` offset.
 - **Disabled:** Remove the shadow, reduce saturation, set opacity to `0.65`, and keep the cursor neutral.
 
-### Daily Challenge Strip
+### Daily Challenge Action
 
-The landing signature is a narrow cream strip with a `2px` navy outline, a short yellow edge, and a modest navy shadow. The title and date stay left aligned. The primary action stays inside the right end. Do not turn this strip into a large dashboard card. Each UTC date deterministically selects nine standard question categories with repeats allowed, then ends with one Champion question.
+The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. “Daily Challenge” is the primary line, with the date and five-question length beneath it in compact data type. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button showing “Daily complete” and the score. Do not wrap it in another card or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
 
 ### Question Surface
 

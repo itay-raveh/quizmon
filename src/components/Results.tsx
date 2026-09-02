@@ -51,7 +51,7 @@ export const Results = ({
       <div className="results__header">
         <span aria-hidden="true" />
         <h1 id="results-title">
-          {mode.kind === 'daily' ? 'Trial complete' : 'Training complete'}
+          {mode.kind === 'daily' ? 'Daily complete' : 'Training complete'}
         </h1>
         <SettingsButton onClick={onOpenSettings} />
       </div>

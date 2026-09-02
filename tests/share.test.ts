@@ -32,7 +32,6 @@ describe('result sharing', () => {
     const text = buildShareText({ kind: 'daily', date: '2026-09-01' }, result);
 
     expect(text).toContain('Quizmon · Sep 1, 2026');
-    expect(text).not.toContain('Trainer Trial');
     expect(text).toContain('1,500 points');
     expect(text).not.toContain(' / ');
     expect(text).not.toContain('1/2');

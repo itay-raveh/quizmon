@@ -12,7 +12,7 @@ Pokémon fans playing short quizzes on desktop or mobile. They want to test and 
 
 ## Product Purpose
 
-Quizmon is a charming, complete browser game for testing broad Pokémon knowledge. Its signature mode is a new ten-question Trainer Trial every UTC day, with repeatable Training for the topics a player wants to practice.
+Quizmon is a charming, complete browser game for testing broad Pokémon knowledge. Its signature mode is a new five-question Daily Challenge every UTC day, with repeatable Training for the topics a player wants to practice.
 
 ## Positioning
 
@@ -20,7 +20,7 @@ Quizmon combines one deterministic daily gauntlet with a configurable training l
 
 ## Operating Context
 
-Players open Quizmon in a browser, take the daily Trainer Trial once, or configure a Training round by generation and question type. They answer with pointer, touch, or number keys and receive an immediately shareable, spoiler-free result. Settings, completed dailies, and best Training scores stay in the browser. No account or hosted application backend is required.
+Players open Quizmon in a browser, take the Daily Challenge once, or configure a Training round by generation and question type. They answer with pointer, touch, or number keys and receive an immediately shareable, spoiler-free result. Settings, completed dailies, and best Training scores stay in the browser. No account or hosted application backend is required.
 
 ## Capabilities and Constraints
 

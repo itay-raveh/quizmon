@@ -9,12 +9,14 @@ const ShareDialog = lazy(() =>
 
 interface ShareResultButtonProps {
   children?: ReactNode;
+  className?: string;
   mode: GameMode;
   result: GameResult;
 }
 
 export const ShareResultButton = ({
   children = 'Share result',
+  className,
   mode,
   result,
 }: ShareResultButtonProps) => {
@@ -38,7 +40,9 @@ export const ShareResultButton = ({
 
   return (
     <>
-      <GameButton onClick={() => void share()}>{children}</GameButton>
+      <GameButton className={className} onClick={() => void share()}>
+        {children}
+      </GameButton>
       <span className="visually-hidden" aria-live="polite">
         {status}
       </span>

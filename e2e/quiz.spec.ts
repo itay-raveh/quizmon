@@ -101,7 +101,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await expect(manifestResponse.json()).resolves.toMatchObject({
     name: 'Quizmon',
     description:
-      'Take a new five-question Pokémon Trainer Trial every day, then practice types, moves, evolutions, stats, and more.',
+      'Take the five-question Pokémon Daily Challenge each day, then practice types, moves, evolutions, stats, and more.',
     display: 'standalone',
     icons: [
       {
@@ -180,7 +180,7 @@ test('loads the installed app shell and catalog offline', async ({
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { name: 'Quizmon' })).toBeVisible();
     await expect(
-      page.getByRole('button', { name: 'Play daily' }),
+      page.getByRole('button', { name: /Play Daily Challenge/ }),
     ).toBeEnabled();
   } finally {
     await context.setOffline(false);
@@ -434,9 +434,11 @@ test('shows a saved daily score instead of another play button', async ({
 
   await page.goto('/?daily=2026-09-01');
   await expect(page.getByText('Daily complete')).toBeVisible();
-  await expect(page.getByText('Sep 1, 2026 · 14,400 points')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Play daily' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Share' }).click();
+  await expect(page.getByText('14,400 points · Share')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /Play Daily Challenge/ }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: /Daily complete.*Share/ }).click();
 
   await expect
     .poll(() =>
@@ -455,7 +457,7 @@ test('shows a saved daily score instead of another play button', async ({
   expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01');
   const { pathname, search } = new URL(sharedUrl!);
   await page.goto(`${pathname}${search}`);
-  await expect(page.getByText('Sep 1, 2026 · 14,400 points')).toBeVisible();
+  await expect(page.getByText('14,400 points · Share')).toBeVisible();
 });
 
 test('syncs a completed daily across open tabs', async ({ context, page }) => {
@@ -465,7 +467,7 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
     otherPage.goto('/?daily=2026-09-01'),
   ]);
   await expect(
-    otherPage.getByRole('button', { name: 'Play daily' }),
+    otherPage.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toBeVisible();
 
   await page.evaluate(() => {
@@ -493,6 +495,6 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
 
   await expect(otherPage.getByText('Daily complete')).toBeVisible();
   await expect(
-    otherPage.getByRole('button', { name: 'Play daily' }),
+    otherPage.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toHaveCount(0);
 });
