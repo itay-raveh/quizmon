@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/assets/images/logo.png" alt="Quizmon" width="480">
+  <img src="https://quizmon.raveh.dev/assets/images/logo.png" alt="Quizmon" width="480">
 </p>
 
 <p align="center">
@@ -50,4 +50,4 @@ trademarks belong to their respective owners.
 
 ## License
 
-Quizmon is available under the [MIT License](LICENSE).
+Quizmon is available under the [MIT License](https://github.com/itay-raveh/quizmon/blob/main/LICENSE).

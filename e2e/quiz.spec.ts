@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 import catalogData from '../src/game/data/pokemon.json' with { type: 'json' };
 
 const imageBody = Buffer.from(
@@ -148,9 +149,11 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
 
   const markdownResponse = await page.request.get('/index.md');
   expect(markdownResponse.ok()).toBe(true);
-  expect(await markdownResponse.text()).toContain(
-    '# Quizmon\n\nThe Ultimate Pokémon Knowledge Test',
+  const readme = await readFile(
+    new URL('../README.md', import.meta.url),
+    'utf8',
   );
+  expect(await markdownResponse.text()).toBe(readme);
 });
 
 test('loads the installed app shell and catalog offline', async ({

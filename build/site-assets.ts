@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { site } from '../src/app/site.ts';
 
 const absoluteUrl = (path: string) => new URL(path, site.url).href;
@@ -58,39 +59,10 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 </urlset>
 `;
 
-const pageMarkdown = `# ${site.name}
-
-${site.tagline}
-
-${site.description}
-
-## Game modes
-
-- Daily challenge: One deterministic five-question challenge per UTC day, with one attempt saved in the browser.
-- Training: Repeatable rounds configured by Pokémon generation, question type, length, sound, and speedrun mode.
-
-## Questions
-
-Questions cover Pokémon identification, sprites, Pokédex descriptions, types, matchups, abilities, moves, evolutions, stats, and creative comparisons. The catalog includes the default Pokémon species from Generations I through IX.
-
-## Data and privacy
-
-Quizmon builds its catalog from PokéAPI and serves it as a versioned static asset. Live rounds do not call PokéAPI. The game has no accounts or application backend. Settings, completed daily challenges, and Training best scores remain in the browser's local storage.
-
-## Offline use
-
-Quizmon is an installable Progressive Web App. Its application shell and Pokémon catalog work offline. Sprite artwork is cached as the player encounters it.
-
-## Attribution
-
-Quizmon is an unofficial fan-made game. It is not affiliated with Nintendo, Game Freak, or The Pokémon Company. Pokémon and related trademarks belong to their respective owners. Game data comes from PokéAPI.
-
-## Links
-
-- [Play ${site.name}](${site.url})
-- [Source code](${site.repositoryUrl})
-- [PokéAPI](https://pokeapi.co/)
-`;
+const pageMarkdown = readFileSync(
+  new URL('../README.md', import.meta.url),
+  'utf8',
+);
 
 const llms = `# ${site.name}
 
