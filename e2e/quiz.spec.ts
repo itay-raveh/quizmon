@@ -106,7 +106,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
       {
         purpose: 'any',
         sizes: '192x192',
-        src: '/android-chrome-192x192.png',
+        src: '/pwa-192x192.png',
       },
       {
         purpose: 'any',
