@@ -60,6 +60,13 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
     'href',
     'https://quizmon.raveh.dev/',
   );
+  await expect(
+    page.locator('link[rel="alternate"][type="text/markdown"]'),
+  ).toHaveAttribute('href', 'https://quizmon.raveh.dev/index.md');
+  await expect(page.locator('link[rel="describedby"]')).toHaveAttribute(
+    'href',
+    'https://quizmon.raveh.dev/llms.txt',
+  );
   await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
   await expect(page.locator('meta[property="og:description"]')).toHaveCount(1);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
@@ -71,6 +78,19 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
     'summary_large_image',
   );
   await expect(page.locator('meta[name^="twitter:"]')).toHaveCount(1);
+
+  const structuredData: unknown = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ??
+      '{}',
+  );
+  expect(structuredData).toMatchObject({
+    '@type': ['VideoGame', 'WebApplication'],
+    name: 'Quizmon',
+    url: 'https://quizmon.raveh.dev/',
+    applicationCategory: 'GameApplication',
+    isAccessibleForFree: true,
+    offers: { price: 0 },
+  });
 
   const manifestResponse = await page.request.get('/site.webmanifest');
   expect(manifestResponse.ok()).toBe(true);
@@ -110,7 +130,27 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
 
   const robotsResponse = await page.request.get('/robots.txt');
   expect(robotsResponse.ok()).toBe(true);
-  expect(await robotsResponse.text()).toBe('User-agent: *\nAllow: /\n');
+  expect(await robotsResponse.text()).toBe(
+    'User-agent: *\nAllow: /\n\nSitemap: https://quizmon.raveh.dev/sitemap.xml\n',
+  );
+
+  const sitemapResponse = await page.request.get('/sitemap.xml');
+  expect(sitemapResponse.ok()).toBe(true);
+  expect(await sitemapResponse.text()).toContain(
+    '<loc>https://quizmon.raveh.dev/</loc>',
+  );
+
+  const llmsResponse = await page.request.get('/llms.txt');
+  expect(llmsResponse.ok()).toBe(true);
+  expect(await llmsResponse.text()).toContain(
+    '[Quizmon overview](https://quizmon.raveh.dev/index.md)',
+  );
+
+  const markdownResponse = await page.request.get('/index.md');
+  expect(markdownResponse.ok()).toBe(true);
+  expect(await markdownResponse.text()).toContain(
+    '# Quizmon\n\nThe Ultimate Pokémon Knowledge Test',
+  );
 });
 
 test('loads the installed app shell and catalog offline', async ({

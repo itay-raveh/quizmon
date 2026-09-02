@@ -4,6 +4,7 @@ export const site = {
   description:
     'Take a new five-question Pokémon Trainer Trial every day, then practice types, moves, evolutions, stats, and more.',
   url: 'https://quizmon.raveh.dev/',
+  repositoryUrl: 'https://github.com/itay-raveh/quizmon',
   language: 'en',
   locale: 'en_US',
   themeColor: '#72c3ee',

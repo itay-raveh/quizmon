@@ -1,3 +1,5 @@
+import { site } from '@/app/site';
+
 export const Footer = () => (
   <footer className="site-footer">
     <span>
@@ -14,11 +16,7 @@ export const Footer = () => (
       </a>
     </span>
     <span aria-hidden="true">·</span>
-    <a
-      href="https://github.com/itay-raveh/quizmon"
-      rel="noreferrer"
-      target="_blank"
-    >
+    <a href={site.repositoryUrl} rel="noreferrer" target="_blank">
       Open source on GitHub
     </a>
     <span className="visually-hidden">Pokémon is a trademark of Nintendo.</span>

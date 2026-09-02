@@ -1,45 +1,13 @@
 import type { HtmlTagDescriptor, Plugin } from 'vite';
 import { site } from '../src/app/site.ts';
+import {
+  generatedAssets,
+  llmsUrl,
+  markdownUrl,
+  structuredData,
+} from './site-assets.ts';
 
 const absoluteUrl = (path: string) => new URL(path, site.url).href;
-
-const manifest = `${JSON.stringify(
-  {
-    id: '/',
-    name: site.name,
-    short_name: site.name,
-    description: site.description,
-    categories: ['games', 'entertainment'],
-    start_url: '/',
-    scope: '/',
-    icons: [
-      {
-        src: '/android-chrome-192x192.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/pwa-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/pwa-maskable-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-    ],
-    lang: site.language,
-    theme_color: site.themeColor,
-    background_color: site.themeColor,
-    display: 'standalone',
-  },
-  null,
-  2,
-)}\n`;
 
 const meta = (
   attribute: 'name' | 'property',
@@ -60,6 +28,16 @@ const tags: HtmlTagDescriptor[] = [
     attrs: { rel: 'canonical', href: site.url },
     injectTo: 'head',
   },
+  {
+    tag: 'link',
+    attrs: { rel: 'alternate', type: 'text/markdown', href: markdownUrl },
+    injectTo: 'head',
+  },
+  {
+    tag: 'link',
+    attrs: { rel: 'describedby', type: 'text/markdown', href: llmsUrl },
+    injectTo: 'head',
+  },
   meta('property', 'og:type', 'website'),
   meta('property', 'og:site_name', site.name),
   meta('property', 'og:title', site.name),
@@ -72,28 +50,39 @@ const tags: HtmlTagDescriptor[] = [
   meta('property', 'og:image:height', site.socialImage.height),
   meta('property', 'og:image:alt', site.socialImage.alt),
   meta('name', 'twitter:card', 'summary_large_image'),
+  {
+    tag: 'script',
+    attrs: { type: 'application/ld+json' },
+    children: structuredData,
+    injectTo: 'head',
+  },
 ];
 
 export const siteMetadata = (): Plugin => ({
   name: 'quizmon-site-metadata',
   configureServer(server) {
     server.middlewares.use((request, response, next) => {
-      if (request.url?.split('?')[0] !== '/site.webmanifest') {
+      const path = request.url?.split('?')[0]?.slice(1);
+      const asset = generatedAssets.find(({ fileName }) => fileName === path);
+
+      if (!asset) {
         next();
         return;
       }
 
       response.statusCode = 200;
-      response.setHeader('Content-Type', 'application/manifest+json');
-      response.end(manifest);
+      response.setHeader('Content-Type', asset.contentType);
+      response.end(asset.source);
     });
   },
   generateBundle() {
-    this.emitFile({
-      type: 'asset',
-      fileName: 'site.webmanifest',
-      source: manifest,
-    });
+    for (const asset of generatedAssets) {
+      this.emitFile({
+        type: 'asset',
+        fileName: asset.fileName,
+        source: asset.source,
+      });
+    }
   },
   transformIndexHtml(html) {
     return {
