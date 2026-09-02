@@ -205,6 +205,36 @@ main {
     0 0.3rem 0 var(--navy-shadow);
 }
 
+.update-prompt {
+  position: fixed;
+  z-index: 5;
+  top: max(0.75rem, env(safe-area-inset-top));
+  right: max(0.75rem, env(safe-area-inset-right));
+  display: flex;
+  min-height: 3.2rem;
+  padding: 0.45rem 0.5rem 0.45rem 0.8rem;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--navy);
+  background: var(--cream);
+  border: 3px solid var(--navy);
+  border-radius: 0.55rem;
+  box-shadow:
+    0 0.2rem 0 var(--yellow),
+    0 0.38rem 0 var(--navy-shadow);
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  font-weight: 800;
+  animation: surface-in 180ms ease-out both;
+}
+
+.update-prompt .game-button {
+  min-height: 2.2rem;
+  padding: 0.35rem 0.65rem;
+  font-family: var(--font-interface);
+  font-size: var(--text-small);
+}
+
 .landing {
   position: absolute;
   inset: 0;
@@ -1442,6 +1472,12 @@ main {
 @media (max-width: 36rem) {
   main {
     padding: 0.6rem;
+  }
+
+  .update-prompt {
+    right: 0.6rem;
+    left: 0.6rem;
+    justify-content: space-between;
   }
 
   .logo-picture {

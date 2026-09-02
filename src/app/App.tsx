@@ -9,6 +9,7 @@ import {
 } from '@/components/ModifiersDialog';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
+import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { usePokemonCatalog } from '@/game/catalog';
 import {
   buildDailyQuestions,
@@ -295,6 +296,10 @@ export const App = () => {
             />
           ) : null}
         </main>
+
+        <UpdatePrompt
+          visible={phase !== 'questions' && !settings && !generationPromptOpen}
+        />
 
         <Footer />
 

@@ -21,7 +21,7 @@ export default defineConfig({
     react(),
     siteMetadata(),
     VitePWA({
-      injectRegister: 'script',
+      injectRegister: 'auto',
       manifest: false,
       registerType: 'prompt',
       workbox: {
