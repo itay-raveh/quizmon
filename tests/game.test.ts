@@ -24,6 +24,20 @@ import { generations, questionTypes, type PokemonCatalog } from '@/game/types';
 
 const catalog = catalogData as PokemonCatalog;
 
+const attackMultiplier = (
+  attackType: string,
+  defenderTypes: readonly string[],
+): number => {
+  const relations = catalog.typeRelations[attackType];
+  if (!relations) return 1;
+  return defenderTypes.reduce((multiplier, defenderType) => {
+    if (relations.noneTo.includes(defenderType)) return 0;
+    if (relations.doubleTo.includes(defenderType)) return multiplier * 2;
+    if (relations.halfTo.includes(defenderType)) return multiplier / 2;
+    return multiplier;
+  }, 1);
+};
+
 describe('normalizeModifiers', () => {
   it('enables every generation by default', () => {
     expect(defaultModifiers.generations).toEqual(generations);
@@ -69,6 +83,20 @@ describe('normalizeModifiers', () => {
     ).toEqual(['type-check']);
   });
 
+  it('adds new formats to a previously complete selection', () => {
+    const previousQuestionTypes = questionTypes.filter(
+      (questionType) =>
+        !['battle-view', 'evolution-shift', 'counter-pick'].includes(
+          questionType,
+        ),
+    );
+
+    expect(
+      normalizeModifiers({ questionTypes: previousQuestionTypes })
+        .questionTypes,
+    ).toEqual(questionTypes);
+  });
+
   it('migrates broad topic settings to their concrete question types', () => {
     expect(
       normalizeModifiers({
@@ -80,7 +108,9 @@ describe('normalizeModifiers', () => {
       'silhouette-match',
       'pixel-peek',
       'shiny-spotter',
+      'battle-view',
       'evolution-trail',
+      'evolution-shift',
     ]);
   });
 });
@@ -193,6 +223,56 @@ describe('question building', () => {
     );
     expect(multiSelect?.answer.correctOptions.length).toBeGreaterThan(1);
     expect(multiSelect?.options).toHaveLength(4);
+  });
+
+  it('builds Counter Pick with one genuine type advantage', () => {
+    const [question] = buildQuestions(
+      catalog,
+      { ...defaultModifiers, questionTypes: ['counter-pick'], limit: 1 },
+      createSeededRandom('counter-pick'),
+    );
+    expect(question?.title).toBe('Counter pick');
+    expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
+
+    const defender = catalog.pokemon[question!.pokemonName]!;
+    const correct = getCorrectOptions(question!)[0];
+    for (const option of question!.options) {
+      const attacker = catalog.pokemon[option]!;
+      const hasAdvantage = attacker.types.some(
+        (type) => attackMultiplier(type, defender.types) > 1,
+      );
+      expect(hasAdvantage).toBe(option === correct);
+    }
+  });
+
+  it('builds Evolution Shift from a real typing change', () => {
+    const [question] = buildQuestions(
+      catalog,
+      { ...defaultModifiers, questionTypes: ['evolution-shift'], limit: 1 },
+      createSeededRandom('evolution-shift'),
+    );
+    expect(question?.title).toBe('Evolution shift');
+    expect(question?.media.kind).toBe('pixel-sprite');
+
+    const target = catalog.pokemon[question!.pokemonName]!;
+    const evolution = catalog.pokemon[target.evolvesTo[0]!]!;
+    const correct = getCorrectOptions(question!)[0]!;
+    expect(target.types).not.toContain(correct);
+    expect(evolution.types).toContain(correct);
+  });
+
+  it('builds Battle View from the target back sprite', () => {
+    const [question] = buildQuestions(
+      catalog,
+      { ...defaultModifiers, questionTypes: ['battle-view'], limit: 1 },
+      createSeededRandom('battle-view'),
+    );
+    expect(question?.title).toBe('Battle view');
+    expect(question?.media).toEqual({
+      kind: 'sprite',
+      silhouette: false,
+      src: catalog.pokemon[question!.pokemonName]?.backSprite,
+    });
   });
 });
 

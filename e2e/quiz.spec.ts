@@ -237,6 +237,9 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await dialog
     .getByRole('button', { name: 'Select all question types' })
     .click();
+  await expect(dialog.getByLabel('Battle view')).toBeChecked();
+  await expect(dialog.getByLabel('Counter pick')).toBeChecked();
+  await expect(dialog.getByLabel('Evolution shift')).toBeChecked();
   await expect(dialog.getByLabel('Evolution order')).toHaveCount(0);
   await expect(dialog.getByLabel('Odd one out')).toBeChecked();
   await expect(dialog.getByLabel('Missing evolution')).toHaveCount(0);

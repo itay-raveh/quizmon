@@ -67,6 +67,12 @@ const legacyKnowledgeCategories = [
   'matchup',
 ] as const;
 
+const newlyAddedQuestionTypes: readonly QuestionType[] = [
+  'battle-view',
+  'evolution-shift',
+  'counter-pick',
+];
+
 type LegacyKnowledgeCategory = (typeof legacyKnowledgeCategories)[number];
 
 const isLegacyKnowledgeCategory = (
@@ -89,6 +95,12 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
   const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
     ? candidate.questionTypes.filter(isQuestionType)
     : [];
+  const previousQuestionTypes = questionTypes.filter(
+    (questionType) => !newlyAddedQuestionTypes.includes(questionType),
+  );
+  const hadEveryPreviousQuestionType = previousQuestionTypes.every(
+    (questionType) => selectedQuestionTypes.includes(questionType),
+  );
   const legacyCategories = Array.isArray(candidate.knowledgeCategories)
     ? candidate.knowledgeCategories.filter(isLegacyKnowledgeCategory)
     : [];
@@ -106,7 +118,9 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
         : defaultModifiers.generations,
     questionTypes:
       selectedQuestionTypes.length > 0
-        ? selectedQuestionTypes
+        ? hadEveryPreviousQuestionType
+          ? [...questionTypes]
+          : selectedQuestionTypes
         : migratedQuestionTypes.length > 0
           ? migratedQuestionTypes
           : defaultModifiers.questionTypes,
@@ -245,6 +259,7 @@ const addQuestionVisuals = (
   question: QuestionData,
 ): QuestionData => {
   if (question.optionVisuals) return question;
+  if (question.media.kind !== 'none') return question;
 
   if (pokemonOptionCategories.includes(question.category)) {
     const optionVisuals = getOptionVisuals(context, question.options);
@@ -369,6 +384,29 @@ const buildShinySpotterQuestion = (
       option === target.name ? pokemon.shinySprite : pokemon.sprite,
     ),
     title: 'Shiny spotter',
+  };
+};
+
+const buildBattleViewQuestion = (
+  context: QuestionContext,
+): QuestionData | undefined => {
+  const target = pickTarget(context, ({ backSprite }) => Boolean(backSprite));
+  if (!target?.pokemon.backSprite) return undefined;
+
+  return {
+    ...makeQuestion(
+      'identity',
+      target,
+      target.name,
+      pokemonOptions(context, target),
+      textPrompt('Who is this Pokémon from behind?'),
+      {
+        kind: 'sprite',
+        silhouette: false,
+        src: target.pokemon.backSprite,
+      },
+    ),
+    title: 'Battle view',
   };
 };
 
@@ -538,6 +576,51 @@ const buildEvolutionQuestion = (
   );
 };
 
+const buildEvolutionShiftQuestion = (
+  context: QuestionContext,
+): QuestionData | undefined => {
+  const poolNames = new Set(context.pool.map(({ name }) => name));
+  const target = pickTarget(context, ({ evolvesTo, types }) => {
+    if (evolvesTo.length !== 1) return false;
+    const evolutionName = evolvesTo[0];
+    const evolution = evolutionName
+      ? context.catalog.pokemon[evolutionName]
+      : undefined;
+    return Boolean(
+      evolutionName &&
+      poolNames.has(evolutionName) &&
+      evolution?.sprite &&
+      evolution.types.filter((type) => !types.includes(type)).length === 1,
+    );
+  });
+  if (!target?.pokemon.sprite) return undefined;
+  const evolutionName = target.pokemon.evolvesTo[0];
+  const evolution = evolutionName
+    ? context.catalog.pokemon[evolutionName]
+    : undefined;
+  const correct = evolution?.types.find(
+    (type) => !target.pokemon.types.includes(type),
+  );
+  if (!correct || !evolutionName) return undefined;
+
+  return {
+    ...makeQuestion(
+      'evolution',
+      target,
+      correct,
+      optionSet(
+        correct,
+        Object.keys(context.catalog.typeRelations),
+        context.random,
+      ),
+      pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
+      { kind: 'pixel-sprite', src: target.pokemon.sprite },
+    ),
+    explanation: `${formatPokemonName(target.name)} gains the ${formatPokemonName(correct)} type when it evolves into ${formatPokemonName(evolutionName)}.`,
+    title: 'Evolution shift',
+  };
+};
+
 const buildPropertyQuestion = (
   context: QuestionContext,
   category: 'ability' | 'move',
@@ -610,6 +693,15 @@ const attackMultiplier = (
   }, 1);
 };
 
+const hasTypeAdvantage = (
+  catalog: PokemonCatalog,
+  attackerTypes: readonly string[],
+  defenderTypes: readonly string[],
+): boolean =>
+  attackerTypes.some(
+    (type) => attackMultiplier(catalog, type, defenderTypes) > 1,
+  );
+
 const buildMatchupQuestion = (
   context: QuestionContext,
 ): QuestionData | undefined => {
@@ -637,6 +729,55 @@ const buildMatchupQuestion = (
     optionSet(correct, distractors, context.random),
     pokemonPrompt(target, 'Which type is super effective against ', '?'),
   );
+};
+
+const buildCounterPickQuestion = (
+  context: QuestionContext,
+): QuestionData | undefined => {
+  const fresh = context.pool.filter(({ name }) => !context.used.has(name));
+  const repeated = context.pool.filter(({ name }) => context.used.has(name));
+  const targets = [
+    ...shuffle(fresh, context.random),
+    ...shuffle(repeated, context.random),
+  ];
+
+  for (const target of targets) {
+    if (!target.pokemon.sprite) continue;
+    const candidates = context.pool.filter(
+      ({ name, pokemon }) => name !== target.name && Boolean(pokemon.sprite),
+    );
+    const counters = candidates.filter(({ pokemon }) =>
+      hasTypeAdvantage(context.catalog, pokemon.types, target.pokemon.types),
+    );
+    const distractors = candidates.filter(
+      ({ pokemon }) =>
+        !hasTypeAdvantage(context.catalog, pokemon.types, target.pokemon.types),
+    );
+    if (counters.length === 0 || distractors.length < 3) continue;
+    const correct = pick(counters, context.random);
+    if (!correct) continue;
+    const options = optionSet(
+      correct.name,
+      distractors.map(({ name }) => name),
+      context.random,
+    );
+    context.used.add(target.name);
+
+    return {
+      ...makeQuestion(
+        'matchup',
+        target,
+        correct.name,
+        options,
+        pokemonPrompt(target, 'Who can hit ', ' super effectively?'),
+      ),
+      explanation: `${formatPokemonName(correct.name)} has a type that is super effective against ${formatPokemonName(target.name)}.`,
+      optionVisuals: getOptionVisuals(context, options),
+      title: 'Counter pick',
+    };
+  }
+
+  return undefined;
 };
 
 const buildChampionQuestion = (
@@ -688,6 +829,9 @@ const buildQuestionType = (
     case 'shiny-spotter':
       question = buildShinySpotterQuestion(context);
       break;
+    case 'battle-view':
+      question = buildBattleViewQuestion(context);
+      break;
     case 'field-notes':
       question = buildDescriptionQuestion(context);
       break;
@@ -703,6 +847,9 @@ const buildQuestionType = (
     case 'evolution-trail':
       question = buildEvolutionQuestion(context);
       break;
+    case 'evolution-shift':
+      question = buildEvolutionShiftQuestion(context);
+      break;
     case 'ability-check':
       question = buildPropertyQuestion(context, 'ability');
       break;
@@ -714,6 +861,9 @@ const buildQuestionType = (
       break;
     case 'type-matchup':
       question = buildMatchupQuestion(context);
+      break;
+    case 'counter-pick':
+      question = buildCounterPickQuestion(context);
       break;
     case 'champion':
       question = buildChampionQuestion(context);

@@ -68,6 +68,7 @@ const makeClient = (): CatalogClient => ({
         name: resourceName(resource),
         species: { name: resourceName(resource) },
         sprites: {
+          back_default: 'https://example.test/back.png',
           front_default: 'https://example.test/sprite.png',
           front_shiny: 'https://example.test/shiny.png',
           other: {},
@@ -121,6 +122,7 @@ describe('catalog generation', () => {
     expect(Object.keys(catalog.pokemon)).toHaveLength(9);
     expect(catalog.pokemon['species-1']).toMatchObject({
       abilities: ['run-away'],
+      backSprite: 'https://example.test/back.png',
       description: 'species-1 field notes.',
       generation: 'I',
       genus: 'Test',

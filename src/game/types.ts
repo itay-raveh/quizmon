@@ -17,15 +17,18 @@ export const questionTypeDefinitions = {
   'silhouette-match': { category: 'identity', label: 'Silhouette match' },
   'pixel-peek': { category: 'identity', label: 'Pixel peek' },
   'shiny-spotter': { category: 'identity', label: 'Shiny spotter' },
+  'battle-view': { category: 'identity', label: 'Battle view' },
   'field-notes': { category: 'description', label: 'Field notes' },
   'type-check': { category: 'type', label: 'Type check' },
   'odd-one-out': { category: 'type', label: 'Odd one out' },
   'type-roundup': { category: 'type', label: 'Type roundup' },
   'evolution-trail': { category: 'evolution', label: 'Evolution trail' },
+  'evolution-shift': { category: 'evolution', label: 'Evolution shift' },
   'ability-check': { category: 'ability', label: 'Ability check' },
   'move-check': { category: 'move', label: 'Move check' },
   'stat-showdown': { category: 'stat', label: 'Stat showdown' },
   'type-matchup': { category: 'matchup', label: 'Type matchup' },
+  'counter-pick': { category: 'matchup', label: 'Counter pick' },
 } as const;
 
 export type QuestionType = keyof typeof questionTypeDefinitions;
@@ -48,6 +51,7 @@ export type StatName = (typeof statNames)[number];
 
 export interface PokemonKnowledge {
   abilities: string[];
+  backSprite: string | null;
   description: string;
   evolvesFrom: string | null;
   evolvesTo: string[];

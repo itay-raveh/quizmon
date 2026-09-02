@@ -88,6 +88,9 @@ const getStats = (pokemon: Pokemon): Record<StatName, number> => {
 const getSprite = (pokemon: Pokemon): string | null =>
   pokemon.sprites.front_default;
 
+const getBackSprite = (pokemon: Pokemon): string | null =>
+  pokemon.sprites.back_default;
+
 const getShinySprite = (pokemon: Pokemon): string | null =>
   pokemon.sprites.front_shiny;
 
@@ -185,6 +188,7 @@ export const buildPokemonCatalog = async (
       abilities: entry.abilities
         .sort((left, right) => left.slot - right.slot)
         .map(({ ability }) => ability.name),
+      backSprite: getBackSprite(entry),
       description: description ? cleanText(description) : '',
       evolvesFrom: species.evolves_from_species?.name ?? null,
       evolvesTo: [...(evolvesTo.get(species.name) ?? [])].sort(),
@@ -202,7 +206,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 6,
+    contentVersion: 7,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };
