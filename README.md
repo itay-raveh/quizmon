@@ -15,6 +15,9 @@ and identity across Generations I through IX.
 - Finish with a progressive-clue question worth more when you solve it
   early.
 
+Quizmon can be installed from supported browsers. Its app shell and Pokémon
+catalog work offline, while sprite art is cached as you encounter it.
+
 ## Run Quizmon locally
 
 [mise](https://mise.jdx.dev/) installs the pinned tools and exposes one setup task

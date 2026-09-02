@@ -80,13 +80,68 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await expect(manifestResponse.json()).resolves.toMatchObject({
     name: 'Quizmon',
     description:
-      'Take a new ten-question Pokémon Trainer Trial every day, then practice types, moves, evolutions, stats, and more.',
+      'Take a new five-question Pokémon Trainer Trial every day, then practice types, moves, evolutions, stats, and more.',
+    display: 'standalone',
+    icons: [
+      {
+        purpose: 'any',
+        sizes: '192x192',
+        src: '/android-chrome-192x192.png',
+      },
+      {
+        purpose: 'any',
+        sizes: '512x512',
+        src: '/pwa-512x512.png',
+      },
+      {
+        purpose: 'maskable',
+        sizes: '512x512',
+        src: '/pwa-maskable-512x512.png',
+      },
+    ],
     theme_color: '#72c3ee',
   });
+
+  const serviceWorkerResponse = await page.request.get('/sw.js');
+  expect(serviceWorkerResponse.ok()).toBe(true);
+  expect(await serviceWorkerResponse.text()).toContain(
+    'quizmon-pokemon-sprites',
+  );
 
   const robotsResponse = await page.request.get('/robots.txt');
   expect(robotsResponse.ok()).toBe(true);
   expect(await robotsResponse.text()).toBe('User-agent: *\nAllow: /\n');
+});
+
+test('loads the installed app shell and catalog offline', async ({
+  context,
+  page,
+}) => {
+  await page.goto('/');
+
+  const serviceWorkerUrl = await page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.ready;
+    return registration.active?.scriptURL;
+  });
+  expect(serviceWorkerUrl).toBe('http://127.0.0.1:4173/sw.js');
+
+  await page.reload();
+  await expect
+    .poll(() =>
+      page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+    )
+    .toBe(true);
+
+  await context.setOffline(true);
+  try {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('heading', { name: 'Quizmon' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Play daily' }),
+    ).toBeEnabled();
+  } finally {
+    await context.setOffline(false);
+  }
 });
 
 test('plays and shares a complete Training question without a live API call', async ({
