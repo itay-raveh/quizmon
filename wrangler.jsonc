@@ -9,4 +9,10 @@
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
   },
+  "analytics_engine_datasets": [
+    {
+      "binding": "ANALYTICS",
+      "dataset": "quizmon_events",
+    },
+  ],
 }

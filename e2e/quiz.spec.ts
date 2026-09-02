@@ -196,9 +196,14 @@ test('plays and shares a complete Training question without a live API call', as
     Object.defineProperty(navigator, 'share', { value: undefined });
   });
   let apiCalls = 0;
+  const completionEvents: unknown[] = [];
   await page.route('https://pokeapi.co/api/v2/**', async (route) => {
     apiCalls += 1;
     await route.abort();
+  });
+  await page.route('**/api/events/game-completed', async (route) => {
+    completionEvents.push(route.request().postDataJSON());
+    await route.fulfill({ status: 204 });
   });
 
   await page.goto('/');
@@ -232,6 +237,14 @@ test('plays and shares a complete Training question without a live API call', as
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
+  await expect.poll(() => completionEvents).toHaveLength(1);
+  expect(completionEvents[0]).toMatchObject({
+    contentVersion: catalogData.contentVersion,
+    correctCount: 1,
+    mode: 'training',
+    questionCount: 1,
+    scoreVersion: 2,
+  });
   await expect(page.getByRole('contentinfo')).toBeVisible();
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();

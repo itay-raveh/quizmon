@@ -11,6 +11,7 @@ import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
 import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { usePokemonCatalog } from '@/game/catalog';
+import { trackGameCompleted } from '@/game/analytics';
 import {
   buildDailyQuestions,
   getDailyModifiers,
@@ -251,6 +252,7 @@ export const App = () => {
           scoreVersion: SCORE_VERSION,
         };
         const best = saveResult(mode, nextResult);
+        trackGameCompleted(mode, nextResult);
         setResult(nextResult);
         setBestResult(best.best);
         setIsNewBest(best.isNewBest);
