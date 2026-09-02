@@ -495,13 +495,12 @@ main {
 }
 
 .question__prompt {
-  display: grid;
+  width: 100%;
   min-height: 2.9em;
   max-width: 65ch;
   margin: 0.8rem 0;
   font-weight: 650;
   line-height: 1.45;
-  place-items: center;
   text-align: center;
   text-wrap: balance;
 }
@@ -836,23 +835,10 @@ main {
   margin-top: 0.7rem;
 }
 
-.answer-explanation {
-  max-width: 54ch;
-  margin: 0.65rem 0 0.4rem;
-  color: var(--navy);
-  font-size: var(--text-small);
-  font-weight: 700;
-  line-height: 1.35;
-  text-align: center;
-}
-
-.answer-explanation--reserved {
-  visibility: hidden;
-}
-
 .new-game {
   min-height: 2.35rem;
   padding-block: 0.35rem;
+  margin-top: 1.05rem;
 }
 
 .results {

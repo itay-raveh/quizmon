@@ -129,7 +129,6 @@ export interface QuestionData {
   category: QuestionCategory;
   clues?: string[];
   concealOptionLabels?: boolean;
-  explanation?: string;
   id: string;
   media: QuestionMedia;
   options: string[];

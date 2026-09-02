@@ -183,7 +183,7 @@ describe('question transitions', () => {
     expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
 
-  it('keeps answer feedback visual while announcing it accessibly', () => {
+  it('keeps answer feedback visual and assistive-only', () => {
     render(
       <Question
         elapsedMilliseconds={3_000}
@@ -205,6 +205,7 @@ describe('question transitions', () => {
     expect(answer).toHaveClass('answer--correct');
     expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
     expect(screen.queryByText(/points/)).not.toBeInTheDocument();
+    expect(document.querySelector('.answer-explanation')).toBeNull();
   });
 
   it('checks every selected answer in a multi-select question', () => {

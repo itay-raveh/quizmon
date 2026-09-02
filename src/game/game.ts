@@ -379,7 +379,6 @@ const buildShinySpotterQuestion = (
       options,
       textPrompt('Which Pokémon is shown in its shiny colors?'),
     ),
-    explanation: `${formatPokemonName(target.name)} is the shiny one.`,
     optionVisuals: getOptionVisuals(context, options, (pokemon, option) =>
       option === target.name ? pokemon.shinySprite : pokemon.sprite,
     ),
@@ -498,7 +497,6 @@ const buildOddOneOutQuestion = (
       options,
       textPrompt('Which Pokémon does not belong?'),
     ),
-    explanation: `The other three are ${formatPokemonName(type)}-type Pokémon.`,
     optionVisuals: getOptionVisuals(context, options),
     title: 'Odd one out',
   };
@@ -547,7 +545,6 @@ const buildChooseAllTypeQuestion = (
       textPrompt(`Select every ${formatPokemonName(type)}-type Pokémon.`),
     ),
     answer: { correctOptions, interaction: 'multi-select' },
-    explanation: `${correctOptions.map(formatPokemonName).join(' and ')} ${correctOptions.length === 1 ? 'is' : 'are'} ${formatPokemonName(type)} type.`,
     optionVisuals: getOptionVisuals(context, options),
     title: 'Type roundup',
   };
@@ -593,7 +590,6 @@ const buildEvolutionShiftQuestion = (
       pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
       { kind: 'pixel-sprite', src: target.pokemon.sprite },
     ),
-    explanation: `${formatPokemonName(target.name)} gains the ${formatPokemonName(correct)} type when it evolves into ${formatPokemonName(evolutionName)}.`,
     title: 'Evolution shift',
   };
 };
@@ -748,7 +744,6 @@ const buildCounterPickQuestion = (
         options,
         pokemonPrompt(target, 'Who can hit ', ' super effectively?'),
       ),
-      explanation: `${formatPokemonName(correct.name)} has a type that is super effective against ${formatPokemonName(target.name)}.`,
       optionVisuals: getOptionVisuals(context, options),
       title: 'Counter pick',
     };

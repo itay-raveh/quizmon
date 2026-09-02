@@ -271,6 +271,47 @@ test('plays and shares a complete Training question without a live API call', as
   await expect(shareDialog.getByText('Result copied.')).toBeVisible();
 });
 
+test('keeps reverse-silhouette rounds clear on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'quizmon.training-settings.v2',
+      JSON.stringify({
+        generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
+        questionTypes: ['silhouette-match'],
+        soundEnabled: false,
+        isLimitActive: true,
+        limit: 1,
+        speedrunMode: true,
+      }),
+    );
+  });
+
+  await page.goto('/');
+  await seedBrowserRandom(page, 'mobile-silhouette-match');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Silhouette match' }),
+  ).toBeVisible();
+
+  const prompt = page.locator('.question__prompt');
+  const promptBox = await prompt.boundingBox();
+  const answersBox = await page.locator('.answers').boundingBox();
+  const leaveBox = await page
+    .getByRole('button', { name: 'Leave game' })
+    .boundingBox();
+
+  expect(promptBox?.width).toBeGreaterThan(300);
+  expect(answersBox).not.toBeNull();
+  expect(leaveBox).not.toBeNull();
+  expect(leaveBox!.y - (answersBox!.y + answersBox!.height)).toBeGreaterThan(
+    12,
+  );
+
+  await page.getByRole('button', { name: 'Silhouette 1' }).click();
+  await expect(page.locator('.answer-explanation')).toHaveCount(0);
+});
+
 test('asks new players which generations they know before Training', async ({
   page,
 }) => {

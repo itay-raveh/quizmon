@@ -358,15 +358,6 @@ export const Question = ({
         </GameButton>
       ) : null}
 
-      {question.explanation ? (
-        <p
-          aria-hidden={!answered}
-          className={`answer-explanation ${answered ? '' : 'answer-explanation--reserved'}`.trim()}
-        >
-          {question.explanation}
-        </p>
-      ) : null}
-
       <span className="visually-hidden" aria-live="polite">
         {answerCorrect
           ? 'Correct.'
