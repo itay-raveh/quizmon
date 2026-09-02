@@ -22,7 +22,6 @@ export const questionTypeDefinitions = {
   'type-check': { category: 'type', label: 'Type check' },
   'odd-one-out': { category: 'type', label: 'Odd one out' },
   'type-roundup': { category: 'type', label: 'Type roundup' },
-  'evolution-trail': { category: 'evolution', label: 'Evolution trail' },
   'evolution-shift': { category: 'evolution', label: 'Evolution shift' },
   'ability-check': { category: 'ability', label: 'Ability check' },
   'move-check': { category: 'move', label: 'Move check' },

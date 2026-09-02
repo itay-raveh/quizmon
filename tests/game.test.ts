@@ -78,7 +78,7 @@ describe('normalizeModifiers', () => {
   it('drops removed question types from saved settings', () => {
     expect(
       normalizeModifiers({
-        questionTypes: ['evolution-order', 'type-check'],
+        questionTypes: ['evolution-order', 'evolution-trail', 'type-check'],
       }).questionTypes,
     ).toEqual(['type-check']);
   });
@@ -109,7 +109,6 @@ describe('normalizeModifiers', () => {
       'pixel-peek',
       'shiny-spotter',
       'battle-view',
-      'evolution-trail',
       'evolution-shift',
     ]);
   });
@@ -165,7 +164,7 @@ describe('question building', () => {
           'move-check',
           'type-matchup',
           'pokedex-scan',
-          'evolution-trail',
+          'evolution-shift',
           'type-check',
         ],
         limit: 8,

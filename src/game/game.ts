@@ -29,7 +29,7 @@ const categoryLabels: Record<QuestionCategory, string> = {
   ability: 'Ability check',
   champion: 'Champion question',
   description: 'Field notes',
-  evolution: 'Evolution trail',
+  evolution: 'Evolution shift',
   identity: 'Pokédex scan',
   matchup: 'Type matchup',
   move: 'Move check',
@@ -553,29 +553,6 @@ const buildChooseAllTypeQuestion = (
   };
 };
 
-const buildEvolutionQuestion = (
-  context: QuestionContext,
-): QuestionData | undefined => {
-  const target = pickTarget(context, ({ evolvesTo }) => evolvesTo.length > 0);
-  if (!target) return undefined;
-  const correct = pick(target.pokemon.evolvesTo, context.random);
-  if (!correct) return undefined;
-  const excluded = [target.name, ...target.pokemon.evolvesTo];
-  return makeQuestion(
-    'evolution',
-    target,
-    correct,
-    optionSet(
-      correct,
-      context.pool
-        .map(({ name }) => name)
-        .filter((name) => !excluded.includes(name)),
-      context.random,
-    ),
-    pokemonPrompt(target, 'Which Pokémon can ', ' evolve into?'),
-  );
-};
-
 const buildEvolutionShiftQuestion = (
   context: QuestionContext,
 ): QuestionData | undefined => {
@@ -843,9 +820,6 @@ const buildQuestionType = (
       break;
     case 'type-roundup':
       question = buildChooseAllTypeQuestion(context);
-      break;
-    case 'evolution-trail':
-      question = buildEvolutionQuestion(context);
       break;
     case 'evolution-shift':
       question = buildEvolutionShiftQuestion(context);
