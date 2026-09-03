@@ -9,13 +9,14 @@ actionlint = "1.7.12"
 lychee = "0.24.2"
 node = "24.20.0"
 prek = "0.5.0"
+shellcheck = "0.11.0"
 "github:zizmorcore/zizmor" = "1.29.0"
 
 [tasks.setup]
 description = "Set up tools, dependencies, browser binaries, and Git hooks"
 run = [
   "npm ci",
-  "npx --no-install playwright install chromium",
+  "npx --no-install playwright install chromium webkit",
   "prek install",
 ]
 

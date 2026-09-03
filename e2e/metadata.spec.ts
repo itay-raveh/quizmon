@@ -86,9 +86,11 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
 
   const serviceWorkerResponse = await page.request.get('/sw.js');
   expect(serviceWorkerResponse.ok()).toBe(true);
-  expect(await serviceWorkerResponse.text()).toContain(
-    'quizmon-pokemon-sprites',
-  );
+  const serviceWorker = await serviceWorkerResponse.text();
+  expect(serviceWorker).toContain('quizmon-pokemon-sprites');
+  expect(serviceWorker).toContain('quizmon-static-media');
+  expect(serviceWorker).toContain('pokemon-');
+  expect(serviceWorker).not.toMatch(/assets\/build\/(?:background|wordmark)-/);
 
   const robotsResponse = await page.request.get('/robots.txt');
   expect(robotsResponse.ok()).toBe(true);

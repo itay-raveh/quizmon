@@ -1,0 +1,48 @@
+import AxeBuilder from '@axe-core/playwright';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
+
+const expectNoAccessibilityViolations = async (page: Page) => {
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(
+    results.violations,
+    JSON.stringify(results.violations, null, 2),
+  ).toEqual([]);
+};
+
+test('keeps the landing screen accessible', async ({ page }) => {
+  await page.goto('/');
+  await expect(
+    page.getByRole('button', { name: /Play Daily Challenge/ }),
+  ).toBeEnabled();
+  await expectNoAccessibilityViolations(page);
+});
+
+test('keeps Settings accessible', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+});
+
+test('keeps questions and results accessible', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(page.locator('.question')).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+
+  await page.locator('.answer').first().click();
+  await expect(
+    page.getByRole('heading', { name: 'Training complete' }),
+  ).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+});
+
+test('keeps the Trainer Card accessible', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card front' }),
+  ).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+});

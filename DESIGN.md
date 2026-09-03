@@ -4,7 +4,7 @@ description: A restrained Logo Echo interface for a quick, charming Pokémon kno
 colors:
   landscape-sky: '#72c3ee'
   primary: '#0d6be6'
-  primary-text: '#ddfafe'
+  primary-text: '#e8fcff'
   outline: '#083b7e'
   hard-shadow: '#123f76'
   soft-sky: '#b7e1fa'

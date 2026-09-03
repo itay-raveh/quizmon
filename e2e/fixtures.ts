@@ -14,7 +14,8 @@ export const formatName = (name: string) =>
     .join(' ');
 
 export const seedBrowserRandom = (page: Page, seed: string) =>
-  page.evaluate((value) => {
+  page.addInitScript((value) => {
+    Date.now = () => 1_700_000_000_000;
     let hash = 2166136261;
     for (const character of value) {
       hash ^= character.charCodeAt(0);
