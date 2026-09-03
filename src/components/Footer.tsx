@@ -26,15 +26,17 @@ export const Footer = () => (
       </a>
     </span>
     <span aria-hidden="true">·</span>
-    <a href={site.repositoryUrl} rel="noreferrer" target="_blank">
+    <span>
       <span className="site-footer__label site-footer__label--full">
         Open source on{' '}
       </span>
       <span className="site-footer__label site-footer__label--compact">
         Code:{' '}
       </span>
-      GitHub
-    </a>
+      <a href={site.repositoryUrl} rel="noreferrer" target="_blank">
+        GitHub
+      </a>
+    </span>
     <span className="visually-hidden">Pokémon is a trademark of Nintendo.</span>
   </footer>
 );

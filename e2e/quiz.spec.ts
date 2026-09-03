@@ -862,6 +862,9 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   expect(renderedFooterText).toBe(
     'Logo: TextStudio · Data: PokéAPI · Code: GitHub',
   );
+  await expect(
+    page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' }),
+  ).toHaveAttribute('href', 'https://github.com/itay-raveh/quizmon');
 });
 
 test('shows a saved daily score instead of another play button', async ({
