@@ -425,6 +425,22 @@ test('repeats Training immediately with the same configuration', async ({
 test('keeps a customizable two-sided Trainer Card on this device', async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {},
+        progress: {
+          categories: {},
+          gamesCompleted: 1,
+          perfectRounds: 0,
+          version: 1,
+        },
+        streak: { creditedDates: [], version: 1 },
+        training: {},
+      }),
+    );
+  });
   await page.goto('/');
   await page.getByRole('button', { name: 'Trainer Card' }).click();
 
@@ -452,6 +468,9 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   const violetAccent = page.getByRole('radio', { name: 'Violet' });
   await page.getByText('Violet', { exact: true }).click();
   await expect(violetAccent).toBeChecked();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card front' }),
+  ).toHaveClass(/trainer-card--accent-violet/);
   await page.getByRole('button', { name: 'Save card' }).click();
 
   const card = page.getByRole('article', { name: 'Trainer Card front' });
@@ -535,6 +554,36 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   });
   await page.setViewportSize({ width: 360, height: 800 });
   const mobileRecordsBounds = await recordsCard.boundingBox();
+  const firstCatchBounds = await recordsCard
+    .getByText('First Catch')
+    .evaluate((label) => {
+      const cardBounds = label
+        .closest('.trainer-card')
+        ?.getBoundingClientRect();
+      const labelBounds = label.getBoundingClientRect();
+      const stampBounds = label
+        .closest('.trainer-stamp')
+        ?.getBoundingClientRect();
+      if (!cardBounds || !stampBounds) {
+        throw new Error('Trainer Card stamp bounds are unavailable');
+      }
+      return {
+        bottom: labelBounds.bottom,
+        cardBottom: cardBounds.bottom,
+        stampBottom: stampBounds.bottom,
+        stampTop: stampBounds.top,
+        top: labelBounds.top,
+      };
+    });
+  expect(firstCatchBounds.top).toBeGreaterThanOrEqual(
+    firstCatchBounds.stampTop,
+  );
+  expect(firstCatchBounds.bottom).toBeLessThanOrEqual(
+    firstCatchBounds.stampBottom,
+  );
+  expect(firstCatchBounds.cardBottom - firstCatchBounds.bottom).toBeGreaterThan(
+    4,
+  );
   await page.setViewportSize({ width: 1440, height: 900 });
   const desktopRecordsBounds = await recordsCard.boundingBox();
   if (!mobileRecordsBounds || !desktopRecordsBounds) {

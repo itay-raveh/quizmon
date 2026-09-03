@@ -65,7 +65,8 @@ export const TrainerPassport = ({
   const savedPartner = profile.partnerPokemon
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
-  const imageKey = JSON.stringify({ face, profile, stats });
+  const visibleProfile = editing ? { ...profile, accent } : profile;
+  const imageKey = JSON.stringify({ face, profile: visibleProfile, stats });
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareCard = supportsTrainerCardSharing();
 
@@ -124,6 +125,18 @@ export const TrainerPassport = ({
     void requestPersistentStorage().catch(() => false);
   };
 
+  const toggleEditor = () => {
+    if (editing) {
+      setEditing(false);
+      return;
+    }
+
+    setName(profile.name);
+    setPartner(profile.partnerPokemon);
+    setAccent(profile.accent);
+    setEditing(true);
+  };
+
   const share = async () => {
     if (!image) return;
     setShareNotice(null);
@@ -170,7 +183,7 @@ export const TrainerPassport = ({
         <GameButton
           className="trainer-passport__edit"
           tone="quiet"
-          onClick={() => setEditing((value) => !value)}
+          onClick={toggleEditor}
         >
           {editing ? null : (
             <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -240,7 +253,7 @@ export const TrainerPassport = ({
           face={face}
           partnerDexNumber={savedPartner?.id ?? null}
           partnerSprite={savedPartner?.sprite ?? null}
-          profile={profile}
+          profile={visibleProfile}
           stats={stats}
         />
       </div>

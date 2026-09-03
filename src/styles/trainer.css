@@ -405,7 +405,9 @@
 
 .trainer-stamp {
   display: grid;
+  min-width: 0;
   width: 6.5rem;
+  align-content: center;
   justify-items: center;
   gap: 0.35rem;
   text-align: center;
@@ -426,10 +428,12 @@
 }
 
 .trainer-stamp small {
+  display: block;
+  padding-block: 0.08em;
   color: var(--navy);
   font-size: var(--text-small);
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.15;
 }
 
 .trainer-passport__controls {
@@ -822,7 +826,7 @@
 
   .trainer-card__stamps {
     min-height: 0;
-    padding: 0.2rem 0.5rem;
+    padding: 0 0.5rem 0.65rem;
     gap: 0.2rem;
   }
 
@@ -833,11 +837,11 @@
 
   .trainer-stamp {
     width: 4rem;
-    gap: 0.1rem;
+    gap: 0.05rem;
   }
 
   .trainer-stamp strong {
-    width: 2.25rem;
+    width: 2rem;
   }
 
   .trainer-stamp small {
