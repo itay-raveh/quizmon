@@ -25,12 +25,12 @@ export const SelectionTile = ({
   variant = 'question-type',
   ...props
 }: SelectionTileProps) => {
-  const { playDown, playOff, playOn } = useGameSounds();
+  const { playToggleOff, playToggleOn } = useGameSounds();
   const id = useId();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) playOn();
-    else playOff();
+    if (event.target.checked) playToggleOn();
+    else playToggleOff();
     onChange?.(event);
   };
 
@@ -42,7 +42,6 @@ export const SelectionTile = ({
         aria-labelledby={`${id}-label`}
         checked={checked}
         onChange={handleChange}
-        onPointerDown={() => playDown()}
         type={inputType}
       />
       <span className="selection-tile__surface">

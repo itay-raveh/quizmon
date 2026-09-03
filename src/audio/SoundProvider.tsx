@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import useSound from 'use-sound';
-import popDown from '@/assets/sounds/pop-down.mp3';
-import popOff from '@/assets/sounds/pop-up-off.mp3';
-import popOn from '@/assets/sounds/pop-up-on.mp3';
-import scoreSound from '@/assets/sounds/prize-wheel-spin.mp3';
+import correctSound from '@/assets/sounds/answer-correct.mp3';
+import wrongSound from '@/assets/sounds/answer-wrong.mp3';
+import perfectSound from '@/assets/sounds/perfect.mp3';
+import scoreCountSound from '@/assets/sounds/prize-wheel-spin.mp3';
+import resultsSound from '@/assets/sounds/results.mp3';
+import tapSound from '@/assets/sounds/tap.mp3';
+import toggleOffSound from '@/assets/sounds/toggle-off.mp3';
+import toggleOnSound from '@/assets/sounds/toggle-on.mp3';
 import { SoundContext, type SoundControls } from './sound';
 
 interface SoundProviderProps {
@@ -12,16 +16,46 @@ interface SoundProviderProps {
 }
 
 export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
-  const [playDown] = useSound(popDown, { soundEnabled: enabled, volume: 0.25 });
-  const [playOff] = useSound(popOff, { soundEnabled: enabled, volume: 0.25 });
-  const [playOn] = useSound(popOn, { soundEnabled: enabled, volume: 0.25 });
-  const [playScore, { stop: stopScore }] = useSound(scoreSound, {
-    soundEnabled: enabled,
+  const sharedOptions = { interrupt: true, soundEnabled: enabled };
+  const [playTap] = useSound(tapSound, { ...sharedOptions, volume: 0.16 });
+  const [playToggleOff] = useSound(toggleOffSound, {
+    ...sharedOptions,
+    volume: 0.18,
   });
+  const [playToggleOn] = useSound(toggleOnSound, {
+    ...sharedOptions,
+    volume: 0.18,
+  });
+  const [playCorrect] = useSound(correctSound, {
+    ...sharedOptions,
+    volume: 0.28,
+  });
+  const [playWrong] = useSound(wrongSound, {
+    ...sharedOptions,
+    volume: 0.24,
+  });
+  const [playResults, { stop: stopResults }] = useSound(resultsSound, {
+    ...sharedOptions,
+    volume: 0.32,
+  });
+  const [playPerfect, { stop: stopPerfect }] = useSound(perfectSound, {
+    ...sharedOptions,
+    volume: 0.36,
+  });
+  const [playScoreCount, { stop: stopScoreCount }] = useSound(
+    scoreCountSound,
+    sharedOptions,
+  );
+
+  const stopCelebration = useCallback(() => {
+    stopResults();
+    stopPerfect();
+    stopScoreCount();
+  }, [stopPerfect, stopResults, stopScoreCount]);
 
   useEffect(() => {
-    if (!enabled) stopScore();
-  }, [enabled, stopScore]);
+    if (!enabled) stopCelebration();
+  }, [enabled, stopCelebration]);
 
   const play = useCallback(
     (sound: () => void) => {
@@ -32,15 +66,28 @@ export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
 
   const controls = useMemo<SoundControls>(
     () => ({
-      playCorrect: () => play(playOn),
-      playDown: () => play(playDown),
-      playOff: () => play(playOff),
-      playOn: () => play(playOn),
-      playScore: () => play(playScore),
-      playWrong: () => play(playOff),
-      stopScore,
+      playCorrect: () => play(playCorrect),
+      playPerfect: () => play(playPerfect),
+      playResults: () => play(playResults),
+      playScoreCount: () => play(playScoreCount),
+      playTap: () => play(playTap),
+      playToggleOff: () => play(playToggleOff),
+      playToggleOn: () => play(playToggleOn),
+      playWrong: () => play(playWrong),
+      stopCelebration,
     }),
-    [play, playDown, playOff, playOn, playScore, stopScore],
+    [
+      play,
+      playCorrect,
+      playPerfect,
+      playResults,
+      playScoreCount,
+      playTap,
+      playToggleOff,
+      playToggleOn,
+      playWrong,
+      stopCelebration,
+    ],
   );
 
   return (

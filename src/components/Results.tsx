@@ -41,7 +41,8 @@ export const Results = ({
   result,
   resultSaved,
 }: ResultsProps) => {
-  const { playScore, stopScore } = useGameSounds();
+  const { playPerfect, playResults, playScoreCount, stopCelebration } =
+    useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -49,9 +50,20 @@ export const Results = ({
   }, []);
 
   useEffect(() => {
-    if (result.score > 1) playScore();
-    return stopScore;
-  }, [playScore, result.score, stopScore]);
+    if (result.correctCount === result.questionCount) playPerfect();
+    else if (result.score > 0) playResults();
+
+    if (result.score > 0) playScoreCount();
+    return stopCelebration;
+  }, [
+    playPerfect,
+    playResults,
+    playScoreCount,
+    result.correctCount,
+    result.questionCount,
+    result.score,
+    stopCelebration,
+  ]);
 
   return (
     <section className="results" aria-labelledby="results-title">
