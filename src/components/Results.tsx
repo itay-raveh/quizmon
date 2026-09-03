@@ -9,13 +9,11 @@ import {
   getSpeedBonus,
 } from '@/game/game';
 import type { GameMode, GameResult } from '@/game/types';
-import type { TrainerStats } from '@/game/storage';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
 import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
-import { TrainerCard } from './TrainerCard';
 
 interface ResultsProps {
   bestResult: GameResult;
@@ -23,11 +21,11 @@ interface ResultsProps {
   isNewBest: boolean;
   mode: GameMode;
   onNewGame: () => void;
+  onOpenTrainerCard: () => void;
   onOpenSettings: () => void;
   onTrainAgain: () => void;
   result: GameResult;
   resultSaved: boolean;
-  trainerStats: TrainerStats;
 }
 
 export const Results = ({
@@ -36,11 +34,11 @@ export const Results = ({
   isNewBest,
   mode,
   onNewGame,
+  onOpenTrainerCard,
   onOpenSettings,
   onTrainAgain,
   result,
   resultSaved,
-  trainerStats,
 }: ResultsProps) => {
   const { playScore, stopScore } = useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -132,7 +130,20 @@ export const Results = ({
         </p>
       ) : null}
 
-      <TrainerCard stats={trainerStats} />
+      <GameButton
+        className="trainer-card-update"
+        tone="quiet"
+        onClick={onOpenTrainerCard}
+      >
+        <span className="trainer-card-update__mark" aria-hidden="true">
+          ID
+        </span>
+        <span>
+          <strong>Trainer Card updated</strong>
+          <small>View your profile and records</small>
+        </span>
+        <span aria-hidden="true">›</span>
+      </GameButton>
 
       {mode.kind === 'training' ? (
         <div className="results__actions results__actions--training">

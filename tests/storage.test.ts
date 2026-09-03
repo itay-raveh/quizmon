@@ -3,7 +3,9 @@ import {
   getTrainingRecordKey,
   readDailyResult,
   readDailyStreak,
+  readTrainerProfile,
   readTrainerStats,
+  saveTrainerProfile,
   saveResult,
 } from '@/game/storage';
 import { defaultModifiers } from '@/game/game';
@@ -205,14 +207,14 @@ describe('saved results', () => {
 
     expect(readTrainerStats()).toEqual({
       bestDailyStreak: 3,
+      categories: {
+        identity: { correct: 4, total: 4 },
+        stat: { correct: 1, total: 4 },
+      },
       dailyChallengesCompleted: 3,
       gamesCompleted: 4,
       perfectRounds: 1,
-      strongestCategory: {
-        category: 'identity',
-        correct: 4,
-        total: 4,
-      },
+      specialty: null,
     });
 
     saveResult({ kind: 'training' }, result, defaultModifiers);
@@ -220,6 +222,54 @@ describe('saved results', () => {
       gamesCompleted: 5,
       perfectRounds: 1,
     });
+  });
+
+  it('unlocks a specialty only after enough field research', () => {
+    const identityResult = {
+      ...result,
+      answers: Array.from({ length: 10 }, () => ({
+        category: 'identity' as const,
+        correct: true,
+        points: 1_000,
+      })),
+      correctCount: 10,
+      questionCount: 10,
+    };
+
+    saveResult({ kind: 'training' }, identityResult, defaultModifiers);
+
+    expect(readTrainerStats().specialty).toEqual({
+      category: 'identity',
+      correct: 10,
+      total: 10,
+    });
+  });
+
+  it('creates and saves a versioned local Trainer profile', () => {
+    const profile = readTrainerProfile();
+
+    expect(profile.cardNumber).toMatch(/^QZ-\d{6}$/);
+    expect(profile.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(profile).toMatchObject({
+      hasBeenRevealed: false,
+      name: '',
+      partnerPokemon: null,
+      version: 1,
+    });
+
+    const saved = saveTrainerProfile({
+      ...profile,
+      hasBeenRevealed: true,
+      name: '  Leaf  ',
+      partnerPokemon: 'bulbasaur',
+    });
+
+    expect(saved).toMatchObject({
+      hasBeenRevealed: true,
+      name: 'Leaf',
+      partnerPokemon: 'bulbasaur',
+    });
+    expect(readTrainerProfile()).toEqual(saved);
   });
 
   it('recalculates scores saved under the previous formula', () => {

@@ -161,26 +161,29 @@
 }
 
 .landing__actions {
-  display: contents;
+  position: absolute;
+  top: var(--r-modifiers-y);
+  left: var(--r-daily-action-x);
+  display: grid;
+  width: var(--r-daily-action-w);
+  height: 5.1%;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.18fr);
+  gap: 0.55rem;
 }
 
 .landing__actions .game-button {
-  position: absolute;
-  top: var(--r-modifiers-y);
-  width: var(--r-modifiers-w);
-  height: 5.1%;
+  width: auto;
+  height: 100%;
   min-height: 0;
   padding: 0.25rem 0.5rem;
   font-size: var(--text-brand-control);
 }
 
-.landing__actions .game-button:first-child {
-  left: var(--r-modifiers-x);
-}
-
-.landing__actions .game-button:last-child {
-  left: var(--r-custom-game-x);
-  width: var(--r-custom-game-w);
+.landing__actions .settings-button {
+  width: 3.25rem;
+  min-width: 3.25rem;
+  height: 100%;
+  min-height: 0;
 }
 
 .landing__actions .game-button > span {
@@ -191,6 +194,35 @@
   letter-spacing: normal;
   transform: scaleX(1.12);
   transform-origin: center;
+}
+
+.landing__trainer-button.game-button {
+  display: grid;
+  padding-inline: 0.35rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.25rem;
+}
+
+.landing__trainer-button img {
+  width: 2.7rem;
+  height: 2.7rem;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.landing__trainer-button svg {
+  width: 1.65rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.landing__trainer-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .landing__status {

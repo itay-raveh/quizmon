@@ -396,7 +396,7 @@ test('repeats Training immediately with the same configuration', async ({
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('heading', { name: 'Trainer Card' }),
+    page.getByRole('button', { name: /Trainer Card updated/ }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Train again' }).click();
 
@@ -406,6 +406,38 @@ test('repeats Training immediately with the same configuration', async ({
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 001');
+});
+
+test('keeps a customizable two-sided Trainer Card on this device', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Trainer Card' }).click();
+
+  await expect(page).toHaveURL(/\?trainer=1$/);
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card front' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Customize' }).click();
+  await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
+  await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('Pikachu');
+  await page.getByRole('option', { name: 'Pikachu' }).click();
+  await page.getByRole('button', { name: 'Save card' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
+  await expect(page.getByText('Pikachu')).toBeVisible();
+  await page.getByRole('button', { name: 'View records' }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card records' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card front' }),
+  ).toHaveCount(0);
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
+  await page.getByRole('button', { name: 'Back' }).click();
+  await expect(page).toHaveURL('/');
 });
 
 test('confirms before discarding an in-progress game', async ({ page }) => {

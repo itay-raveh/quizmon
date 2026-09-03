@@ -39,7 +39,8 @@
 }
 
 .app--questions .site-footer,
-.app--results .site-footer {
+.app--results .site-footer,
+.app--trainer .site-footer {
   position: static;
   width: min(42rem, calc(100% - 0.5rem));
   height: auto;
@@ -123,16 +124,12 @@
   }
 
   .landing__actions .game-button {
-    width: 8.5rem;
+    width: auto;
   }
 
-  .landing__actions .game-button:first-child {
-    left: calc(50% - 9rem);
-  }
-
-  .landing__actions .game-button:last-child {
-    left: calc(50% + 0.5rem);
-    width: 8.5rem;
+  .landing__actions {
+    left: calc(50% - 12rem);
+    width: 24rem;
   }
 
   .site-footer {
@@ -205,19 +202,35 @@
   }
 
   .landing__actions .game-button {
-    top: 60%;
-    width: 42%;
-    height: 7.5%;
+    width: auto;
     font-size: var(--text-compact-control);
   }
 
-  .landing__actions .game-button:first-child {
-    left: 6%;
+  .landing__actions {
+    top: 60%;
+    left: 5%;
+    width: 90%;
+    height: 7.5%;
+    gap: 0.38rem;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.12fr);
   }
 
-  .landing__actions .game-button:last-child {
-    left: 52%;
-    width: 42%;
+  .landing__actions .settings-button {
+    width: 3.1rem;
+    min-width: 3.1rem;
+  }
+
+  .landing__trainer-button img {
+    display: none;
+  }
+
+  .landing__trainer-button.game-button {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .landing__trainer-button svg {
+    display: none;
   }
 
   .landing__status {

@@ -122,7 +122,7 @@ components:
 
 The implemented direction is the approved Logo Echo world, seed `ae843a63`. Quizmon starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.
 
-The landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the two Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.
+The landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the Settings, Trainer Card, and Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.
 
 The result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.
 
@@ -194,7 +194,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 
 The landscape is a fixed full-viewport plate with centered cover cropping. Main content is centered within the safe viewport height and uses fluid outer padding from `0.85rem` to `1.75rem`.
 
-The landing page is an open stage, not a card. On desktop, the wordmark, daily strip, and two-button row occupy the center while most of the sky and field remain visible. At the `36rem` breakpoint, the wordmark expands to `90vw`, the daily strip expands to `90%`, and the two actions each use `42%` of the viewport width. Preserve the same vertical story instead of inventing a mobile navigation or stacking extra containers.
+The landing page is an open stage, not a card. On desktop, the wordmark, daily strip, and compact three-control row occupy the center while most of the sky and field remain visible. At the `36rem` breakpoint, the wordmark and action groups expand to `90vw`. Settings becomes a square icon control while Trainer Card and Start training share the remaining width. Preserve the same vertical story instead of inventing a mobile navigation or stacking extra containers.
 
 Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer remains present in normal document flow below questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
@@ -258,6 +258,14 @@ Training exposes every format directly in Settings. Identity includes Pokédex s
 ### Progress and Timer
 
 The progress track is a slim pale-blue bar with a `2px` navy border and yellow fill. The timer is a compact cobalt badge with the same outline and a short yellow lower edge. Both use monospace numeric labels, but neither should introduce a broader HUD frame.
+
+### Trainer Card
+
+The Trainer Card is a first-class local profile reached from the landing screen and results. Its front combines an optional trainer name, cosmetic card number, partner Pokémon, join date, earned rank, and card finish. Its records face contains games completed, Daily clears, perfect rounds, the best Daily Combo, one qualified Specialty, and earned Quizmon stamps. Specialty requires at least ten answered questions in a category so a lucky first answer cannot claim expertise.
+
+Only the visible face exists in the accessibility tree. A labeled control changes faces with a short card turn, and reduced-motion preferences replace the animation with an immediate swap. The card reflows by content on narrow screens instead of fixing both faces to the same height. The first visit receives one reveal animation.
+
+Customization stays optional and local. Saving a name or partner requests persistent browser storage when the platform supports it. Sharing renders the visible face into a deterministic `1200 × 756` PNG from the same profile and progression data. Native file sharing is preferred, with direct PNG download and a copyable Quizmon link as fallbacks.
 
 ### Results Surface
 

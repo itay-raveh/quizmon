@@ -627,91 +627,48 @@
   color: var(--wrong);
 }
 
-.trainer-card {
+.trainer-card-update.game-button {
+  display: grid;
+  width: 100%;
   margin: 0 0 1.2rem;
-  overflow: hidden;
+  padding: 0.65rem 0.8rem;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
   text-align: left;
-  background: var(--paper);
-  border: 2px solid var(--navy);
-  border-radius: 0.5rem;
-  box-shadow: 0 0.18rem 0 var(--yellow);
 }
 
-.trainer-card__header {
-  display: flex;
-  padding: 0.55rem 0.7rem;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6rem;
+.trainer-card-update__mark {
+  display: grid;
+  width: 2.6rem;
+  aspect-ratio: 1;
   color: var(--paper);
   background: var(--blue);
-  border-bottom: 2px solid var(--navy);
-}
-
-.trainer-card__header h2 {
-  margin: 0;
-  font-size: var(--text-control);
-}
-
-.trainer-card__header span {
+  border: 2px solid var(--navy);
+  border-radius: 50%;
   font-family: var(--font-data);
-  font-size: var(--text-tiny);
-  font-weight: 800;
+  font-size: var(--text-mini);
+  place-items: center;
 }
 
-.trainer-card__record {
+.trainer-card-update > span:nth-child(2) {
   display: grid;
-  margin: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.08rem;
 }
 
-.trainer-card__record > div {
-  display: grid;
-  min-width: 0;
-  padding: 0.65rem;
-  align-content: space-between;
-  gap: 0.2rem;
-  border-right: 1px solid rgba(8, 59, 126, 0.22);
-}
-
-.trainer-card__record > div:last-child {
-  border-right: 0;
-}
-
-.trainer-card__record dt,
-.trainer-card__strength span {
-  color: var(--muted);
-  font-size: var(--text-tiny);
-  font-weight: 800;
-}
-
-.trainer-card__record dd {
-  margin: 0;
-  color: var(--navy);
-  font-family: var(--font-data);
-  font-size: var(--text-control);
-  font-weight: 800;
-}
-
-.trainer-card__strength {
-  display: grid;
-  padding: 0.55rem 0.7rem;
-  margin: 0;
-  grid-template-columns: auto 1fr auto;
-  align-items: baseline;
-  gap: 0.5rem;
-  border-top: 1px solid rgba(8, 59, 126, 0.22);
-}
-
-.trainer-card__strength strong {
+.trainer-card-update strong {
   color: var(--navy);
 }
 
-.trainer-card__strength small {
+.trainer-card-update small {
   color: var(--muted);
-  font-family: var(--font-data);
-  font-size: var(--text-tiny);
-  font-weight: 800;
+  font-size: var(--text-small);
+}
+
+.trainer-card-update > span:last-child {
+  color: var(--blue);
+  font-size: var(--text-headline);
+  line-height: 1;
 }
 
 .results__actions {

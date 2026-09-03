@@ -19,11 +19,14 @@ import {
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
+const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
 const LEGACY_KNOWLEDGE_SCALE = 10;
 const LEGACY_SPEED_BONUS_SCALE = 120;
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 1;
+const TRAINER_PROFILE_VERSION = 1;
 const TRAINING_RECORD_VERSION = 2;
+const SPECIALTY_MIN_ANSWERS = 10;
 const questionCategories: readonly QuestionCategory[] = [
   'ability',
   'champion',
@@ -36,7 +39,7 @@ const questionCategories: readonly QuestionCategory[] = [
   'type',
 ];
 
-interface CategoryProgress {
+export interface CategoryProgress {
   correct: number;
   total: number;
 }
@@ -62,10 +65,20 @@ interface SavedResults {
 
 export interface TrainerStats {
   bestDailyStreak: number;
+  categories: Partial<Record<QuestionCategory, CategoryProgress>>;
   dailyChallengesCompleted: number;
   gamesCompleted: number;
   perfectRounds: number;
-  strongestCategory: (CategoryProgress & { category: QuestionCategory }) | null;
+  specialty: (CategoryProgress & { category: QuestionCategory }) | null;
+}
+
+export interface TrainerProfile {
+  cardNumber: string;
+  createdAt: string;
+  hasBeenRevealed: boolean;
+  name: string;
+  partnerPokemon: string | null;
+  version: number;
 }
 
 const emptyProgress = (): TrainerProgress => ({
@@ -354,14 +367,14 @@ const getLongestStreak = (dates: readonly string[]): number => {
 
 export const readTrainerStats = (): TrainerStats => {
   const results = readResults();
-  const strongestCategory =
+  const specialty =
     Object.entries(results.progress.categories)
       .map(([category, progress]) => ({
         category: category as QuestionCategory,
         correct: progress?.correct ?? 0,
         total: progress?.total ?? 0,
       }))
-      .filter(({ total }) => total > 0)
+      .filter(({ total }) => total >= SPECIALTY_MIN_ANSWERS)
       .sort(
         (left, right) =>
           right.correct / right.total - left.correct / left.total ||
@@ -371,11 +384,91 @@ export const readTrainerStats = (): TrainerStats => {
 
   return {
     bestDailyStreak: getLongestStreak(results.streak.creditedDates),
+    categories: results.progress.categories,
     dailyChallengesCompleted: Object.keys(results.daily).length,
     gamesCompleted: results.progress.gamesCompleted,
     perfectRounds: results.progress.perfectRounds,
-    strongestCategory,
+    specialty,
   };
+};
+
+const createCardNumber = (): string => {
+  const values = new Uint32Array(1);
+  crypto.getRandomValues(values);
+  return `QZ-${String((values[0] ?? 0) % 1_000_000).padStart(6, '0')}`;
+};
+
+const createTrainerProfile = (): TrainerProfile => ({
+  cardNumber: createCardNumber(),
+  createdAt: getUtcDate(),
+  hasBeenRevealed: false,
+  name: '',
+  partnerPokemon: null,
+  version: TRAINER_PROFILE_VERSION,
+});
+
+const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
+  if (!value || typeof value !== 'object') return null;
+  const profile = value as Partial<TrainerProfile>;
+  if (
+    profile.version !== TRAINER_PROFILE_VERSION ||
+    typeof profile.cardNumber !== 'string' ||
+    !/^QZ-\d{6}$/.test(profile.cardNumber) ||
+    typeof profile.createdAt !== 'string' ||
+    parseDailyDate(`?daily=${profile.createdAt}`) !== profile.createdAt ||
+    typeof profile.hasBeenRevealed !== 'boolean' ||
+    typeof profile.name !== 'string' ||
+    (profile.partnerPokemon !== null &&
+      typeof profile.partnerPokemon !== 'string')
+  ) {
+    return null;
+  }
+
+  return {
+    cardNumber: profile.cardNumber,
+    createdAt: profile.createdAt,
+    hasBeenRevealed: profile.hasBeenRevealed,
+    name: profile.name.trim().slice(0, 20),
+    partnerPokemon: profile.partnerPokemon,
+    version: TRAINER_PROFILE_VERSION,
+  };
+};
+
+export const readTrainerProfile = (): TrainerProfile => {
+  try {
+    const stored = window.localStorage.getItem(TRAINER_PROFILE_KEY);
+    const profile = stored ? normalizeTrainerProfile(JSON.parse(stored)) : null;
+    if (profile) return profile;
+  } catch {
+    return createTrainerProfile();
+  }
+
+  const profile = createTrainerProfile();
+  try {
+    window.localStorage.setItem(TRAINER_PROFILE_KEY, JSON.stringify(profile));
+  } catch {
+    return profile;
+  }
+  return profile;
+};
+
+export const saveTrainerProfile = (profile: TrainerProfile): TrainerProfile => {
+  const normalized = normalizeTrainerProfile(profile) ?? readTrainerProfile();
+  try {
+    window.localStorage.setItem(
+      TRAINER_PROFILE_KEY,
+      JSON.stringify(normalized),
+    );
+  } catch {
+    return normalized;
+  }
+  return normalized;
+};
+
+export const requestPersistentStorage = async (): Promise<boolean> => {
+  if (!navigator.storage?.persist) return false;
+  if (await navigator.storage.persisted?.()) return true;
+  return navigator.storage.persist();
 };
 
 export const saveResult = (

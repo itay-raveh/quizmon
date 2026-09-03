@@ -10,6 +10,7 @@ import {
 } from '@/components/ModifiersDialog';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
+import { TrainerPassport } from '@/components/TrainerPassport';
 import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { usePokemonCatalog } from '@/game/catalog';
 import { trackGameCompleted } from '@/game/analytics';
@@ -37,10 +38,13 @@ import {
   markGenerationPromptAnswered,
   readDailyResult,
   readDailyStreak,
+  readTrainerProfile,
   readTrainerStats,
+  saveTrainerProfile,
   saveResult,
   shouldShowGenerationPrompt,
   usePersistentModifiers,
+  type TrainerProfile,
 } from '@/game/storage';
 import { useStopwatch } from '@/game/stopwatch';
 import { generations } from '@/game/types';
@@ -67,6 +71,9 @@ export const App = () => {
   );
   const phase = session.phase;
   const [settings, setSettings] = useState<SettingsState | null>(null);
+  const [trainerCardOpen, setTrainerCardOpen] = useState(() =>
+    new URLSearchParams(window.location.search).has('trainer'),
+  );
   const [generationPromptOpen, setGenerationPromptOpen] = useState(false);
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
   const [generationPromptPending, setGenerationPromptPending] = useState(
@@ -76,8 +83,10 @@ export const App = () => {
     parseDailyDate(window.location.search),
   );
   const [dailyDate] = useState(() => linkedDailyDate ?? getUtcDate());
-  const [autoStartDaily] = useState(() =>
-    shouldAutoStartDaily(window.location.search),
+  const [autoStartDaily] = useState(
+    () =>
+      !new URLSearchParams(window.location.search).has('trainer') &&
+      shouldAutoStartDaily(window.location.search),
   );
   const [dailyResult, setDailyResult] = useState<GameResult | null>(() =>
     readDailyResult(linkedDailyDate ?? getUtcDate()),
@@ -87,6 +96,7 @@ export const App = () => {
   );
   const [dailyStreak, setDailyStreak] = useState(readDailyStreak);
   const [trainerStats, setTrainerStats] = useState(readTrainerStats);
+  const [trainerProfile, setTrainerProfile] = useState(readTrainerProfile);
   const [storageAvailable] = useState(canPersistResults);
   const restorationAttempted = useRef(false);
   const {
@@ -107,6 +117,7 @@ export const App = () => {
       }
       setDailyStreak(readDailyStreak());
       setTrainerStats(readTrainerStats());
+      setTrainerProfile(readTrainerProfile());
     };
 
     window.addEventListener('focus', syncDailyResult);
@@ -116,6 +127,43 @@ export const App = () => {
       window.removeEventListener('storage', syncDailyResult);
     };
   }, [dailyDate]);
+
+  useEffect(() => {
+    const syncTrainerRoute = () =>
+      setTrainerCardOpen(
+        new URLSearchParams(window.location.search).has('trainer'),
+      );
+    window.addEventListener('popstate', syncTrainerRoute);
+    return () => window.removeEventListener('popstate', syncTrainerRoute);
+  }, []);
+
+  const openTrainerCard = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('trainer', '1');
+    window.history.pushState({ quizmonTrainerCard: true }, '', url);
+    setTrainerCardOpen(true);
+  }, []);
+
+  const closeTrainerCard = useCallback(() => {
+    const historyState: unknown = window.history.state;
+    if (
+      historyState !== null &&
+      typeof historyState === 'object' &&
+      'quizmonTrainerCard' in historyState &&
+      historyState.quizmonTrainerCard === true
+    ) {
+      window.history.back();
+      return;
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete('trainer');
+    window.history.replaceState(window.history.state, '', url);
+    setTrainerCardOpen(false);
+  }, []);
+
+  const updateTrainerProfile = useCallback((profile: TrainerProfile) => {
+    setTrainerProfile(saveTrainerProfile(profile));
+  }, []);
 
   const startGame = useCallback(
     (
@@ -471,25 +519,43 @@ export const App = () => {
 
   return (
     <SoundProvider enabled={modifiers.soundEnabled}>
-      <div className={`app app--${phase}`}>
+      <div className={`app app--${trainerCardOpen ? 'trainer' : phase}`}>
         <div className="background" aria-hidden="true" />
         <main>
-          {phase === 'landing' ? (
+          {trainerCardOpen && catalogState.status === 'ready' ? (
+            <TrainerPassport
+              catalog={catalogState.catalog}
+              onBack={closeTrainerCard}
+              onProfileChange={updateTrainerProfile}
+              profile={trainerProfile}
+              stats={trainerStats}
+            />
+          ) : null}
+
+          {!trainerCardOpen && phase === 'landing' ? (
             <Landing
               catalogStatus={catalogState.status}
               dailyDate={dailyDate}
               dailyResult={dailyResult}
               dailyResultSaved={dailyResultSaved}
               dailyStreak={dailyDate === getUtcDate() ? dailyStreak : 0}
+              onOpenTrainerCard={openTrainerCard}
               onOpenSettings={() => openSettings('training')}
               onRetryCatalog={catalogState.retry}
               onStart={startCustomGame}
               onStartDaily={startDailyGame}
+              partnerSprite={
+                trainerProfile.partnerPokemon
+                  ? (catalogState.catalog?.pokemon[
+                      trainerProfile.partnerPokemon
+                    ]?.sprite ?? null)
+                  : null
+              }
               storageAvailable={storageAvailable}
             />
           ) : null}
 
-          {session.phase === 'questions' && question ? (
+          {!trainerCardOpen && session.phase === 'questions' && question ? (
             <Question
               key={question.id}
               elapsedMilliseconds={elapsedMilliseconds}
@@ -509,7 +575,7 @@ export const App = () => {
             />
           ) : null}
 
-          {session.phase === 'results' ? (
+          {!trainerCardOpen && session.phase === 'results' ? (
             <Results
               bestResult={session.bestResult}
               dailyStreak={
@@ -521,17 +587,22 @@ export const App = () => {
               isNewBest={session.isNewBest}
               mode={session.mode}
               onNewGame={newGame}
+              onOpenTrainerCard={openTrainerCard}
               onOpenSettings={() => openSettings('experience')}
               onTrainAgain={trainAgain}
               result={session.result}
               resultSaved={session.resultSaved}
-              trainerStats={trainerStats}
             />
           ) : null}
         </main>
 
         <UpdatePrompt
-          visible={phase !== 'questions' && !settings && !generationPromptOpen}
+          visible={
+            phase !== 'questions' &&
+            !trainerCardOpen &&
+            !settings &&
+            !generationPromptOpen
+          }
         />
 
         <Footer />

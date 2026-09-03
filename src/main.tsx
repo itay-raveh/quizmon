@@ -7,6 +7,7 @@ import './styles/landing.css';
 import './styles/game.css';
 import './styles/overlays.css';
 import './styles/settings.css';
+import './styles/trainer.css';
 import './styles/adaptive.css';
 
 const root = document.getElementById('root');
