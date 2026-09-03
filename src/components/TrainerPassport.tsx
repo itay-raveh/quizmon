@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
 import {
   requestPersistentStorage,
+  trainerAccents,
+  type TrainerAccent,
   type TrainerProfile,
   type TrainerStats,
 } from '@/game/storage';
@@ -24,6 +26,11 @@ interface TrainerPassportProps {
   stats: TrainerStats;
 }
 
+interface ShareNotice {
+  message: string;
+  visible: boolean;
+}
+
 export const TrainerPassport = ({
   catalog,
   onBack,
@@ -37,11 +44,12 @@ export const TrainerPassport = ({
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile.name);
   const [partner, setPartner] = useState(profile.partnerPokemon);
+  const [accent, setAccent] = useState<TrainerAccent>(profile.accent);
   const [preparedImage, setPreparedImage] = useState<{
     blob: Blob;
     key: string;
   } | null>(null);
-  const [shareStatus, setShareStatus] = useState('');
+  const [shareNotice, setShareNotice] = useState<ShareNotice | null>(null);
   const cardRef = useRef<HTMLElement>(null);
   const pokemonOptions = useMemo(
     () =>
@@ -54,8 +62,8 @@ export const TrainerPassport = ({
   const partnerSprite = partner
     ? (catalog.pokemon[partner]?.sprite ?? null)
     : null;
-  const savedPartnerSprite = profile.partnerPokemon
-    ? (catalog.pokemon[profile.partnerPokemon]?.sprite ?? null)
+  const savedPartner = profile.partnerPokemon
+    ? catalog.pokemon[profile.partnerPokemon]
     : null;
   const imageKey = JSON.stringify({ face, profile, stats });
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
@@ -83,7 +91,12 @@ export const TrainerPassport = ({
         if (active) setPreparedImage({ blob, key: imageKey });
       })
       .catch(() => {
-        if (active) setShareStatus('Card image could not be prepared.');
+        if (active) {
+          setShareNotice({
+            message: 'Card image could not be prepared.',
+            visible: true,
+          });
+        }
       });
     return () => {
       active = false;
@@ -106,25 +119,31 @@ export const TrainerPassport = ({
 
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onProfileChange({ ...profile, name, partnerPokemon: partner });
+    onProfileChange({ ...profile, accent, name, partnerPokemon: partner });
     setEditing(false);
     void requestPersistentStorage().catch(() => false);
   };
 
   const share = async () => {
     if (!image) return;
-    setShareStatus('');
+    setShareNotice(null);
     try {
       const outcome = await shareTrainerCard(image, face);
       if (outcome === 'unsupported') {
         downloadTrainerCard(image, face);
-        setShareStatus('PNG downloaded. Share it from your photos.');
+        setShareNotice({
+          message: 'PNG downloaded. Share it from your photos.',
+          visible: true,
+        });
       } else if (outcome === 'shared') {
-        setShareStatus('Trainer Card shared.');
+        setShareNotice({ message: 'Trainer Card shared.', visible: false });
       }
     } catch {
       downloadTrainerCard(image, face);
-      setShareStatus('Sharing was unavailable, so the PNG was downloaded.');
+      setShareNotice({
+        message: 'Sharing was unavailable, so the PNG was downloaded.',
+        visible: true,
+      });
     }
   };
 
@@ -148,8 +167,17 @@ export const TrainerPassport = ({
         <div>
           <h1 id="trainer-passport-title">Trainer Card</h1>
         </div>
-        <GameButton tone="quiet" onClick={() => setEditing((value) => !value)}>
-          {editing ? 'Cancel' : 'Customize'}
+        <GameButton
+          className="trainer-passport__edit"
+          tone="quiet"
+          onClick={() => setEditing((value) => !value)}
+        >
+          {editing ? null : (
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m4 20 4.3-1 10.8-10.8a2.1 2.1 0 0 0-3-3L5.3 16 4 20ZM14.8 6.2l3 3" />
+            </svg>
+          )}
+          {editing ? 'Cancel' : 'Edit card'}
         </GameButton>
       </header>
 
@@ -179,6 +207,27 @@ export const TrainerPassport = ({
               <span>?</span>
             )}
           </div>
+          <fieldset className="trainer-customizer__accents">
+            <legend>Accent color</legend>
+            <div>
+              {trainerAccents.map((option) => (
+                <label key={option}>
+                  <input
+                    checked={accent === option}
+                    name="trainer-accent"
+                    onChange={() => setAccent(option)}
+                    type="radio"
+                    value={option}
+                  />
+                  <span
+                    className={`trainer-customizer__swatch trainer-customizer__swatch--${option}`}
+                    aria-hidden="true"
+                  />
+                  {option.charAt(0).toUpperCase() + option.slice(1)}
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <GameButton type="submit">Save card</GameButton>
         </form>
       ) : null}
@@ -189,7 +238,8 @@ export const TrainerPassport = ({
         <TrainerCard
           cardRef={cardRef}
           face={face}
-          partnerSprite={savedPartnerSprite}
+          partnerDexNumber={savedPartner?.id ?? null}
+          partnerSprite={savedPartner?.sprite ?? null}
           profile={profile}
           stats={stats}
         />
@@ -201,6 +251,9 @@ export const TrainerPassport = ({
         </GameButton>
         {canShareCard ? (
           <GameButton disabled={!image} onClick={() => void share()}>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M12 16V3m0 0L7 8m5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+            </svg>
             Share card
           </GameButton>
         ) : (
@@ -208,12 +261,20 @@ export const TrainerPassport = ({
             disabled={!image}
             onClick={() => image && downloadTrainerCard(image, face)}
           >
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M12 3v13m0 0 5-5m-5 5-5-5M5 20h14" />
+            </svg>
             Download PNG
           </GameButton>
         )}
       </div>
-      <p className="trainer-passport__status" aria-live="polite">
-        {shareStatus}
+      <p
+        className={
+          shareNotice?.visible ? 'trainer-passport__status' : 'visually-hidden'
+        }
+        aria-live="polite"
+      >
+        {shareNotice?.message}
       </p>
     </section>
   );

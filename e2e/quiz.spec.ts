@@ -442,20 +442,31 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     .getByRole('button', { name: 'Back' })
     .evaluate((button) => button.getBoundingClientRect().width);
   expect(backWidth).toBeLessThanOrEqual(48);
-  await page.getByRole('button', { name: 'Customize' }).click();
+  const editButton = page.getByRole('button', { name: 'Edit card' });
+  await expect(editButton.locator('svg')).toHaveCount(1);
+  await editButton.click();
   await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
   await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('Pikachu');
   await expect(
     page.getByRole('option', { name: 'Pikachu' }).locator('img'),
   ).toHaveAttribute('src', '/sprites/pokemon/25.png');
   await page.getByRole('option', { name: 'Pikachu' }).click();
+  const violetAccent = page.getByRole('radio', { name: 'Violet' });
+  await page.getByText('Violet', { exact: true }).click();
+  await expect(violetAccent).toBeChecked();
   await page.getByRole('button', { name: 'Save card' }).click();
 
   const card = page.getByRole('article', { name: 'Trainer Card front' });
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await expect(page.getByText('Pikachu')).toBeVisible();
+  await expect(page.getByText('No. 0025')).toBeVisible();
+  await expect(card.getByText('ID No.')).toBeVisible();
+  await expect(card.getByText('Play at')).toBeVisible();
+  await expect(card.getByText('quizmon.raveh.dev')).toBeVisible();
+  await expect(card.getByText(/finish/i)).toHaveCount(0);
   const downloadButton = page.getByRole('button', { name: 'Download PNG' });
   await expect(downloadButton).toBeEnabled();
+  await expect(downloadButton.locator('svg')).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Share card' })).toHaveCount(0);
   const cardBounds = await card.boundingBox();
   const downloadPromise = page.waitForEvent('download');
@@ -477,9 +488,18 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   const mobileFrontRatio = mobileFrontBounds.width / mobileFrontBounds.height;
   const desktopFrontRatio =
     desktopFrontBounds.width / desktopFrontBounds.height;
-  expect(mobileFrontRatio).toBeCloseTo(1.25, 1);
+  expect(mobileFrontRatio).toBeCloseTo(1.5, 1);
   expect(desktopFrontRatio).toBeCloseTo(1.5, 1);
-  expect(desktopFrontRatio - mobileFrontRatio).toBeLessThanOrEqual(0.3);
+  expect(Math.abs(desktopFrontRatio - mobileFrontRatio)).toBeLessThanOrEqual(
+    0.05,
+  );
+  const portraitRatio = await card
+    .locator('.trainer-card__portrait')
+    .evaluate((portrait) => {
+      const bounds = portrait.getBoundingClientRect();
+      return bounds.width / bounds.height;
+    });
+  expect(portraitRatio).toBeCloseTo(1, 1);
 
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'canShare', {
@@ -492,9 +512,15 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     });
   });
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Share card' })).toBeEnabled();
+  const shareButton = page.getByRole('button', { name: 'Share card' });
+  await expect(shareButton).toBeEnabled();
+  await expect(shareButton.locator('svg')).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Download PNG' })).toHaveCount(
     0,
+  );
+  await shareButton.click();
+  await expect(page.getByText('Trainer Card shared.')).toHaveClass(
+    'visually-hidden',
   );
   await page.getByRole('button', { name: 'View records' }).click();
   await expect(
@@ -517,7 +543,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     throw new Error('Responsive Trainer Card record bounds are unavailable');
   }
   expect(mobileRecordsBounds.width / mobileRecordsBounds.height).toBeCloseTo(
-    1.25,
+    1.5,
     1,
   );
   expect(desktopRecordsBounds.width / desktopRecordsBounds.height).toBeCloseTo(

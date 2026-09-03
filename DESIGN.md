@@ -10,6 +10,9 @@ colors:
   soft-sky: '#b7e1fa'
   depth-edge: '#eed23e'
   accent-surface: '#feec99'
+  trainer-leaf: '#286b3f'
+  trainer-ember: '#9b3b24'
+  trainer-violet: '#6846a5'
   game-surface: '#fffbea'
   ink: '#143149'
   muted-ink: '#446078'
@@ -149,6 +152,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 - **Butter Depth Edge** (`colors.depth-edge`): The slim lower edge under controls and surfaces, plus progress fill. It signals game-object depth rather than decoration.
 - **Daily Cream** (`colors.accent-surface`): The daily challenge strip, dialog header and footer, and score band.
 - **Soft Sky** (`colors.soft-sky`): Quiet progress tracks and loading details.
+- **Trainer Leaf, Ember, and Violet** (`colors.trainer-leaf`, `colors.trainer-ember`, `colors.trainer-violet`): Optional Trainer Card accents chosen by the player. These colors remain confined to the card banner and editor swatch.
 
 ### Tertiary
 
@@ -261,11 +265,11 @@ The progress track is a slim pale-blue bar with a `2px` navy border and yellow f
 
 ### Trainer Card
 
-The Trainer Card is a first-class local profile reached from the landing screen and results. Its front combines an optional trainer name, cosmetic card number, partner Pokémon, join date, earned rank, and card finish. Its records face contains games completed, Daily clears, perfect rounds, the best Daily Combo, one qualified Specialty, and earned Quizmon stamps. Specialty requires at least ten answered questions in a category so a lucky first answer cannot claim expertise.
+The Trainer Card is a first-class local profile reached from the landing screen and results. Its front makes the optional trainer name the title, presents the local six-digit number as a game-style `ID No.`, and places the partner Pokémon's name and Pokédex number directly beneath its square portrait. The join date, earned rank, chosen accent, and visible card finish complete the identity without explanatory finish copy. Its records face contains games completed, Daily clears, perfect rounds, the best Daily Combo, one qualified Specialty, and earned Quizmon stamps. Specialty requires at least ten answered questions in a category so a lucky first answer cannot claim expertise.
 
-Only the visible face exists in the accessibility tree. A labeled control changes faces with a short card turn, and reduced-motion preferences replace the animation with an immediate swap. Both faces keep the same landscape silhouette at a given viewport: `3 / 2` on wider screens and a slightly taller `5 / 4` on narrow screens. The smallest supported viewport may grow a few pixels taller to preserve all four earned stamps. Mobile content becomes denser without hiding profile or record information. The first visit receives one reveal animation.
+Only the visible face exists in the accessibility tree. A labeled control changes faces with a short card turn, and reduced-motion preferences replace the animation with an immediate swap. Both faces and their exported images use the same `3 / 2` landscape silhouette at every viewport. Mobile content becomes denser without hiding profile or record information. The first visit receives one reveal animation.
 
-Customization stays optional and local. Saving a name or partner requests persistent browser storage when the platform supports it. Sharing renders the visible face at double its displayed resolution from the same profile and progression data. Native file sharing is preferred, with direct PNG download as the fallback.
+Customization stays optional and local. The editor offers a name, partner, and four curated contrast-safe accent colors. Saving requests persistent browser storage when the platform supports it and migrations preserve an existing Trainer ID. Sharing renders the visible face at double its displayed resolution from the same profile and progression data. Native file sharing is preferred, with direct PNG download as the fallback. The successful native-share message is announced to assistive technology without adding visible confirmation copy.
 
 ### Results Surface
 

@@ -42,15 +42,32 @@
   stroke-width: 2;
 }
 
+.trainer-passport__edit.game-button,
+.trainer-passport__controls .game-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.trainer-passport__edit svg,
+.trainer-passport__controls svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 .trainer-passport__header > div {
   text-align: center;
 }
 
 .trainer-passport__header h1 {
   margin: 0;
-}
-
-.trainer-passport__header h1 {
   color: var(--navy);
   font-size: var(--text-display);
   line-height: 1;
@@ -75,6 +92,8 @@
 }
 
 .trainer-card {
+  --trainer-accent: var(--blue);
+
   position: relative;
   display: grid;
   width: 100%;
@@ -90,6 +109,18 @@
     inset 0 0 0 0.35rem var(--cream),
     0 0.3rem 0 var(--yellow),
     0 0.52rem 0 var(--navy-shadow);
+}
+
+.trainer-card--accent-leaf {
+  --trainer-accent: var(--trainer-leaf);
+}
+
+.trainer-card--accent-ember {
+  --trainer-accent: var(--trainer-ember);
+}
+
+.trainer-card--accent-violet {
+  --trainer-accent: var(--trainer-violet);
 }
 
 .trainer-card--front {
@@ -118,8 +149,7 @@
   opacity: 0.5;
 }
 
-.trainer-card--aurora::after,
-.trainer-card--master::after {
+.trainer-card--aurora::after {
   background: linear-gradient(
     120deg,
     transparent 8%,
@@ -130,6 +160,24 @@
   opacity: 0.72;
 }
 
+.trainer-card--master::after {
+  background:
+    linear-gradient(
+      120deg,
+      transparent 8%,
+      rgba(122, 235, 255, 0.36) 24%,
+      rgba(255, 221, 85, 0.4) 38%,
+      transparent 55%
+    ),
+    linear-gradient(
+      55deg,
+      transparent 52%,
+      rgba(213, 159, 255, 0.28) 64%,
+      transparent 76%
+    );
+  opacity: 0.8;
+}
+
 .trainer-card__banner {
   display: flex;
   min-height: 4.4rem;
@@ -138,7 +186,7 @@
   justify-content: space-between;
   gap: 1rem;
   color: var(--paper);
-  background: var(--blue);
+  background: var(--trainer-accent);
   border-bottom: 4px solid var(--navy);
 }
 
@@ -163,9 +211,17 @@
   gap: 1.4rem;
 }
 
+.trainer-card__partner {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 0.45rem;
+}
+
 .trainer-card__portrait {
   display: grid;
-  min-height: 15rem;
+  width: min(15rem, 100%);
+  aspect-ratio: 1;
   overflow: hidden;
   background:
     linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)),
@@ -181,11 +237,35 @@
 }
 
 .trainer-card__portrait img {
-  width: min(15rem, 100%);
-  height: min(15rem, 100%);
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   filter: drop-shadow(0.3rem 0.4rem 0 rgba(8, 59, 126, 0.24));
   image-rendering: pixelated;
+}
+
+.trainer-card__partner-caption {
+  display: grid;
+  max-width: 100%;
+  justify-items: center;
+  color: var(--navy);
+  line-height: 1;
+  text-align: center;
+}
+
+.trainer-card__partner-caption strong {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--text-label);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trainer-card__partner-caption small {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  font-weight: 800;
 }
 
 .trainer-card__partner-mark {
@@ -199,17 +279,8 @@
   min-width: 0;
 }
 
-.trainer-card__eyebrow {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--text-label);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .trainer-card__identity h2 {
-  margin: 0.05rem 0 1rem;
+  margin: 0 0 1.25rem;
   overflow-wrap: anywhere;
   color: var(--navy);
   font-size: var(--text-display);
@@ -251,13 +322,16 @@
 .trainer-card__footer {
   display: flex;
   padding: 0.65rem 1.3rem 0.85rem;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.35rem;
   color: var(--navy);
-  font-family: var(--font-data);
   font-size: var(--text-small);
   font-weight: 800;
-  text-transform: uppercase;
+}
+
+.trainer-card__footer strong {
+  font-family: var(--font-data);
 }
 
 .trainer-card__record {
@@ -399,7 +473,8 @@
   font-weight: 800;
 }
 
-.trainer-customizer input {
+.trainer-customizer__name input,
+.pokemon-picker input {
   width: 100%;
   min-height: 3rem;
   padding: 0.6rem 0.7rem;
@@ -408,6 +483,83 @@
   border: 3px solid var(--navy);
   border-radius: var(--button-radius);
   font-weight: 700;
+}
+
+.trainer-customizer__accents {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  grid-column: 1 / -1;
+}
+
+.trainer-customizer__accents legend {
+  padding: 0;
+  margin-bottom: 0.35rem;
+  color: var(--navy);
+  font-size: var(--text-label);
+  font-weight: 800;
+}
+
+.trainer-customizer__accents > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.trainer-customizer__accents label {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 2.8rem;
+  padding: 0.4rem 0.55rem;
+  align-items: center;
+  color: var(--navy);
+  background: var(--paper);
+  border: 2px solid color-mix(in srgb, var(--navy) 35%, transparent);
+  border-radius: var(--button-radius);
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.trainer-customizer__accents label:has(input:checked) {
+  border-color: var(--navy);
+  box-shadow: 0 0.16rem 0 var(--yellow);
+}
+
+.trainer-customizer__accents label:focus-within {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.trainer-customizer__accents input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.trainer-customizer__swatch {
+  width: 1.15rem;
+  aspect-ratio: 1;
+  flex: none;
+  background: var(--blue);
+  border: 2px solid var(--navy);
+  border-radius: 50%;
+}
+
+.trainer-customizer__swatch--leaf {
+  background: var(--trainer-leaf);
+}
+
+.trainer-customizer__swatch--ember {
+  background: var(--trainer-ember);
+}
+
+.trainer-customizer__swatch--violet {
+  background: var(--trainer-violet);
 }
 
 .pokemon-picker__field {
@@ -560,11 +712,6 @@
     padding: 0;
   }
 
-  .trainer-card {
-    min-height: 15rem;
-    aspect-ratio: 5 / 4;
-  }
-
   .trainer-card__banner {
     min-height: 2.7rem;
     padding: 0.45rem 0.65rem;
@@ -581,9 +728,12 @@
     gap: 0.6rem;
   }
 
+  .trainer-card__partner {
+    gap: 0.2rem;
+  }
+
   .trainer-card__portrait {
-    height: 100%;
-    min-height: 0;
+    width: 5.75rem;
   }
 
   .trainer-card__portrait img {
@@ -592,8 +742,16 @@
   }
 
   .trainer-card__identity h2 {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.45rem;
     font-size: var(--text-control);
+  }
+
+  .trainer-card__partner-caption strong {
+    font-size: var(--text-small);
+  }
+
+  .trainer-card__partner-caption small {
+    font-size: var(--text-mini);
   }
 
   .trainer-card__identity dl {
@@ -623,8 +781,8 @@
   }
 
   .trainer-card__record > div {
-    min-height: 2.75rem;
-    padding: 0.28rem 0.55rem;
+    min-height: 2.35rem;
+    padding: 0.18rem 0.55rem;
     border-bottom: 2px solid color-mix(in srgb, var(--navy) 22%, transparent);
   }
 
@@ -641,7 +799,7 @@
   }
 
   .trainer-card__specialty {
-    padding: 0.35rem 0.6rem;
+    padding: 0.22rem 0.6rem;
     grid-template-columns: auto 1fr;
     gap: 0.5rem;
   }
@@ -664,7 +822,7 @@
 
   .trainer-card__stamps {
     min-height: 0;
-    padding: 0.35rem 0.5rem;
+    padding: 0.2rem 0.5rem;
     gap: 0.2rem;
   }
 
@@ -693,5 +851,9 @@
   .trainer-customizer__name,
   .trainer-customizer .pokemon-picker {
     grid-column: 1 / -1;
+  }
+
+  .trainer-customizer__accents > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

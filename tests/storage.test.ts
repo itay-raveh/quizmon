@@ -251,10 +251,11 @@ describe('saved results', () => {
     expect(profile.cardNumber).toMatch(/^QZ-\d{6}$/);
     expect(profile.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(profile).toMatchObject({
+      accent: 'cobalt',
       hasBeenRevealed: false,
       name: '',
       partnerPokemon: null,
-      version: 1,
+      version: 2,
     });
 
     const saved = saveTrainerProfile({
@@ -270,6 +271,35 @@ describe('saved results', () => {
       partnerPokemon: 'bulbasaur',
     });
     expect(readTrainerProfile()).toEqual(saved);
+  });
+
+  it('migrates a version 1 Trainer profile without changing its ID', () => {
+    window.localStorage.setItem(
+      'quizmon.trainer-profile.v1',
+      JSON.stringify({
+        cardNumber: 'QZ-654321',
+        createdAt: '2026-09-01',
+        hasBeenRevealed: true,
+        name: 'Blue',
+        partnerPokemon: 'squirtle',
+        version: 1,
+      }),
+    );
+
+    expect(readTrainerProfile()).toEqual({
+      accent: 'cobalt',
+      cardNumber: 'QZ-654321',
+      createdAt: '2026-09-01',
+      hasBeenRevealed: true,
+      name: 'Blue',
+      partnerPokemon: 'squirtle',
+      version: 2,
+    });
+    expect(
+      JSON.parse(
+        window.localStorage.getItem('quizmon.trainer-profile.v1') ?? '{}',
+      ),
+    ).toMatchObject({ cardNumber: 'QZ-654321', version: 2 });
   });
 
   it('recalculates scores saved under the previous formula', () => {

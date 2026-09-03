@@ -24,7 +24,7 @@ const LEGACY_KNOWLEDGE_SCALE = 10;
 const LEGACY_SPEED_BONUS_SCALE = 120;
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 1;
-const TRAINER_PROFILE_VERSION = 1;
+const TRAINER_PROFILE_VERSION = 2;
 const TRAINING_RECORD_VERSION = 2;
 const SPECIALTY_MIN_ANSWERS = 10;
 const questionCategories: readonly QuestionCategory[] = [
@@ -72,7 +72,11 @@ export interface TrainerStats {
   specialty: (CategoryProgress & { category: QuestionCategory }) | null;
 }
 
+export const trainerAccents = ['cobalt', 'leaf', 'ember', 'violet'] as const;
+export type TrainerAccent = (typeof trainerAccents)[number];
+
 export interface TrainerProfile {
+  accent: TrainerAccent;
   cardNumber: string;
   createdAt: string;
   hasBeenRevealed: boolean;
@@ -399,6 +403,7 @@ const createCardNumber = (): string => {
 };
 
 const createTrainerProfile = (): TrainerProfile => ({
+  accent: 'cobalt',
   cardNumber: createCardNumber(),
   createdAt: getUtcDate(),
   hasBeenRevealed: false,
@@ -411,7 +416,7 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
   if (!value || typeof value !== 'object') return null;
   const profile = value as Partial<TrainerProfile>;
   if (
-    profile.version !== TRAINER_PROFILE_VERSION ||
+    (profile.version !== 1 && profile.version !== TRAINER_PROFILE_VERSION) ||
     typeof profile.cardNumber !== 'string' ||
     !/^QZ-\d{6}$/.test(profile.cardNumber) ||
     typeof profile.createdAt !== 'string' ||
@@ -425,6 +430,9 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
   }
 
   return {
+    accent: trainerAccents.includes(profile.accent as TrainerAccent)
+      ? (profile.accent as TrainerAccent)
+      : 'cobalt',
     cardNumber: profile.cardNumber,
     createdAt: profile.createdAt,
     hasBeenRevealed: profile.hasBeenRevealed,
@@ -438,7 +446,17 @@ export const readTrainerProfile = (): TrainerProfile => {
   try {
     const stored = window.localStorage.getItem(TRAINER_PROFILE_KEY);
     const profile = stored ? normalizeTrainerProfile(JSON.parse(stored)) : null;
-    if (profile) return profile;
+    if (profile) {
+      try {
+        window.localStorage.setItem(
+          TRAINER_PROFILE_KEY,
+          JSON.stringify(profile),
+        );
+      } catch {
+        return profile;
+      }
+      return profile;
+    }
   } catch {
     return createTrainerProfile();
   }

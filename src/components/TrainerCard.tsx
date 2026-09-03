@@ -13,6 +13,7 @@ import {
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
   face: TrainerCardFace;
+  partnerDexNumber: number | null;
   partnerSprite: string | null;
   profile: TrainerProfile;
   stats: TrainerStats;
@@ -21,6 +22,7 @@ interface TrainerCardProps {
 export const TrainerCard = ({
   cardRef,
   face,
+  partnerDexNumber,
   partnerSprite,
   profile,
   stats,
@@ -28,11 +30,15 @@ export const TrainerCard = ({
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
   const stamps = getTrainerStamps(stats);
+  const trainerId = profile.cardNumber.replace(/^QZ-/, '');
+  const partnerName = profile.partnerPokemon
+    ? formatPokemonName(profile.partnerPokemon)
+    : 'Choose partner';
 
   return (
     <article
       ref={cardRef}
-      className={`trainer-card trainer-card--${face} trainer-card--${finish}`}
+      className={`trainer-card trainer-card--${face} trainer-card--${finish} trainer-card--accent-${profile.accent}`}
       aria-label={`Trainer Card ${face === 'front' ? 'front' : 'records'}`}
     >
       {face === 'front' ? (
@@ -42,46 +48,45 @@ export const TrainerCard = ({
             <strong>{rank}</strong>
           </header>
           <div className="trainer-card__front">
-            <div className="trainer-card__portrait" aria-hidden="true">
-              {partnerSprite ? (
-                <img src={partnerSprite} alt="" width="96" height="96" />
-              ) : (
-                <span className="trainer-card__partner-mark">?</span>
-              )}
+            <div className="trainer-card__partner">
+              <div className="trainer-card__portrait" aria-hidden="true">
+                {partnerSprite ? (
+                  <img src={partnerSprite} alt="" width="96" height="96" />
+                ) : (
+                  <span className="trainer-card__partner-mark">?</span>
+                )}
+              </div>
+              <div className="trainer-card__partner-caption">
+                <strong>{partnerName}</strong>
+                {partnerDexNumber ? (
+                  <small>No. {String(partnerDexNumber).padStart(4, '0')}</small>
+                ) : null}
+              </div>
             </div>
             <div className="trainer-card__identity">
-              <p className="trainer-card__eyebrow">Trainer</p>
               <h2>{profile.name || 'Quizmon Trainer'}</h2>
               <dl>
                 <div>
-                  <dt>Card No.</dt>
-                  <dd>{profile.cardNumber}</dd>
+                  <dt>ID No.</dt>
+                  <dd>{trainerId}</dd>
                 </div>
                 <div>
                   <dt>Trainer since</dt>
                   <dd>{formatDailyDate(profile.createdAt)}</dd>
                 </div>
-                <div>
-                  <dt>Partner</dt>
-                  <dd>
-                    {profile.partnerPokemon
-                      ? formatPokemonName(profile.partnerPokemon)
-                      : 'Choose a partner'}
-                  </dd>
-                </div>
               </dl>
             </div>
           </div>
           <footer className="trainer-card__footer">
-            <span>{getCardFinish(rank)} finish</span>
-            <span>quizmon.raveh.dev</span>
+            <span>Play at</span>
+            <strong>quizmon.raveh.dev</strong>
           </footer>
         </>
       ) : (
         <>
           <header className="trainer-card__banner">
             <span>Trainer records</span>
-            <strong>{profile.cardNumber}</strong>
+            <strong>ID No. {trainerId}</strong>
           </header>
           <dl className="trainer-card__record">
             <div>

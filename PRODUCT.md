@@ -28,7 +28,7 @@ Players open Quizmon in a browser, take the Daily Challenge once, configure a Tr
 - Builds a versioned local knowledge catalog from PokéAPI through `pokenode-ts`; live rounds do not depend on API requests.
 - Supports one strict daily attempt, repeatable Training, grouped and explained question formats, configurable generations, sound, finite or full-pool rounds, and optional Quick transitions.
 - Restores an unfinished round after a reload in the same browser tab without replaying an answer that was already submitted.
-- Treats the local Trainer Card as a first-class profile with an optional name and partner Pokémon, earned ranks, card finishes, records, qualified specialties, and accomplishment stamps.
+- Treats the local Trainer Card as a first-class profile with an optional name and partner Pokémon, four accent colors, earned ranks, visible card finishes, records, qualified specialties, and accomplishment stamps.
 - Exports either Trainer Card face as a shareable PNG without adding an account or backend identity.
 - Awards 1,000 knowledge points for a standard correct answer, adds a quick-answer bonus that halves every five seconds, and adds a mastery bonus weighted by accuracy. Champion knowledge points decrease as clues are revealed. The interface shows the earned score without presenting a maximum.
 - Must remain responsive, keyboard-operable, and usable without an account.

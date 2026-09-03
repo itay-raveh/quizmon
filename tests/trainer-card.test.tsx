@@ -3,12 +3,13 @@ import { TrainerCard } from '@/components/TrainerCard';
 import type { TrainerProfile, TrainerStats } from '@/game/storage';
 
 const profile: TrainerProfile = {
+  accent: 'violet',
   cardNumber: 'QZ-123456',
   createdAt: '2026-09-03',
   hasBeenRevealed: true,
   name: 'Leaf',
   partnerPokemon: 'bulbasaur',
-  version: 1,
+  version: 2,
 };
 
 const stats: TrainerStats = {
@@ -21,28 +22,11 @@ const stats: TrainerStats = {
 };
 
 describe('Trainer Card', () => {
-  it('renders the identity face without exposing the records face', () => {
-    render(
-      <TrainerCard
-        face="front"
-        partnerSprite="/sprites/pokemon/1.png"
-        profile={profile}
-        stats={stats}
-      />,
-    );
-
-    expect(
-      screen.getByRole('article', { name: 'Trainer Card front' }),
-    ).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Leaf' })).toBeVisible();
-    expect(screen.getByText('Bulbasaur')).toBeVisible();
-    expect(screen.queryByText('Daily clears')).not.toBeInTheDocument();
-  });
-
   it('renders earned records, specialty, and stamps on the back', () => {
     render(
       <TrainerCard
         face="records"
+        partnerDexNumber={null}
         partnerSprite={null}
         profile={profile}
         stats={stats}
