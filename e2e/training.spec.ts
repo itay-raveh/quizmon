@@ -26,8 +26,8 @@ test('plays and shares a complete Training question without a live API call', as
     await route.fulfill({ status: 204 });
   });
 
-  await page.goto('/');
   await seedBrowserRandom(page, 'visual-identity-2');
+  await page.goto('/');
   await expect(page.getByRole('img', { name: /Quizmon/ })).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeVisible();
   await page.getByRole('button', { name: 'Start training' }).click();
@@ -113,8 +113,8 @@ test('keeps reverse-silhouette rounds clear on a phone', async ({ page }) => {
     );
   });
 
-  await page.goto('/');
   await seedBrowserRandom(page, 'mobile-silhouette-match');
+  await page.goto('/');
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(
     page.getByRole('heading', { name: 'Silhouette match' }),
@@ -164,8 +164,8 @@ test('asks new players which generations they know before Training', async ({
 });
 
 test('answers questions with the number keys', async ({ page }) => {
-  await page.goto('/');
   await seedBrowserRandom(page, 'visual-identity-2');
+  await page.goto('/');
   await page.getByRole('button', { name: 'Start training' }).click();
 
   const image = page.getByRole('img', { name: /Pokémon/ });
@@ -189,8 +189,8 @@ test('answers questions with the number keys', async ({ page }) => {
 test('repeats Training immediately with the same configuration', async ({
   page,
 }) => {
-  await page.goto('/');
   await seedBrowserRandom(page, 'training-rematch');
+  await page.goto('/');
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(
     page.getByRole('heading', { name: 'Pokédex scan' }),

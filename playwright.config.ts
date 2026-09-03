@@ -15,6 +15,11 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'webkit-smoke',
+      grep: /@cross-browser/,
+      use: { ...devices['iPhone 13'] },
+    },
   ],
   webServer: {
     command: 'npm run preview -- --host 127.0.0.1',

@@ -35,7 +35,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: npm run commitlint -- --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: mise run check
 
   deploy:
