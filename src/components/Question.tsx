@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useGameSounds } from '@/audio/sound';
 import { getModeLabel } from '@/game/daily';
 import {
   formatDuration,
@@ -35,6 +36,10 @@ interface QuestionProps {
   speedrunMode: boolean;
   total: number;
 }
+
+const QUICK_FEEDBACK_DELAY = 300;
+const DAILY_FEEDBACK_DELAY = 850;
+const TRAINING_FEEDBACK_DELAY = 1_200;
 
 const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
@@ -93,6 +98,7 @@ export const Question = ({
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [answered, setAnswered] = useState(false);
   const [cluesShown, setCluesShown] = useState(1);
+  const { playCorrect, playWrong } = useGameSounds();
   const answerTimeout = useRef<number | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const questionStartedAt = useRef(elapsedMilliseconds);
@@ -122,9 +128,15 @@ export const Question = ({
         answeredAt - questionStartedAt.current,
       );
       const speedBonus = getSpeedBonusPoints(points, responseMilliseconds);
-      const delay = speedrunMode ? 300 : 850;
+      const delay = speedrunMode
+        ? QUICK_FEEDBACK_DELAY
+        : mode.kind === 'daily'
+          ? DAILY_FEEDBACK_DELAY
+          : TRAINING_FEEDBACK_DELAY;
       setSelectedOptions(options);
       setAnswered(true);
+      if (correct) playCorrect();
+      else playWrong();
       answerTimeout.current = window.setTimeout(
         () =>
           onAnswer({
@@ -141,8 +153,11 @@ export const Question = ({
       cluesShown,
       answered,
       interactionPaused,
+      mode.kind,
       onAnswer,
       onFeedbackStart,
+      playCorrect,
+      playWrong,
       question,
       speedrunMode,
     ],
@@ -301,9 +316,14 @@ export const Question = ({
           const visual = question.optionVisuals?.[option];
           const concealed = Boolean(question.concealOptionLabels && !answered);
           const selectionPosition = selectedOptions.indexOf(option) + 1;
-          const selectionMark =
-            question.answer.interaction === 'multi-select' &&
-            selectionPosition > 0
+          const selected = selectionPosition > 0;
+          const selectionMark = answered
+            ? correctOptions.includes(option)
+              ? '✓'
+              : selected
+                ? '×'
+                : index + 1
+            : question.answer.interaction === 'multi-select' && selected
               ? '✓'
               : index + 1;
           return (
@@ -320,6 +340,7 @@ export const Question = ({
                   : selectedOptions.includes(option)
               }
               className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''}`.trim()}
+              clickSound="none"
               disabled={answered}
               key={option}
               onClick={() => selectOption(option)}
@@ -361,6 +382,7 @@ export const Question = ({
       {question.answer.interaction !== 'single-choice' && !answered ? (
         <GameButton
           className="check-answer"
+          clickSound="none"
           disabled={selectedOptions.length === 0}
           onClick={() => finishAnswer(selectedOptions)}
         >

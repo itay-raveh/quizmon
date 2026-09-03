@@ -797,6 +797,17 @@ main {
   filter: none;
 }
 
+.answer--correct kbd,
+.answer--wrong kbd {
+  color: var(--navy);
+  background: var(--paper);
+  border-color: var(--navy);
+  box-shadow: 0 0.12rem 0 var(--yellow);
+  font-size: var(--text-label);
+  font-weight: 800;
+  opacity: 1;
+}
+
 .answer--selected {
   color: var(--navy);
   background: var(--yellow);

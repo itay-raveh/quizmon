@@ -2,10 +2,12 @@ import type { ButtonHTMLAttributes, MouseEvent, PointerEvent } from 'react';
 import { useGameSounds } from '@/audio/sound';
 
 interface GameButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  clickSound?: 'none' | 'on';
   tone?: 'primary' | 'quiet';
 }
 
 export const GameButton = ({
+  clickSound = 'on',
   className = '',
   onClick,
   onPointerDown,
@@ -21,7 +23,7 @@ export const GameButton = ({
   };
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    playOn();
+    if (clickSound === 'on') playOn();
     onClick?.(event);
   };
 

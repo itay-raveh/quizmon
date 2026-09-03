@@ -217,17 +217,36 @@ describe('question transitions', () => {
     fireEvent.click(answer);
 
     expect(answer).toHaveClass('answer--correct');
+    expect(answer.querySelector('kbd')).toHaveTextContent('✓');
     expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
     expect(screen.queryByText(/points/)).not.toBeInTheDocument();
     expect(document.querySelector('.answer-explanation')).toBeNull();
   });
 
+  it('marks both the chosen wrong answer and the correct answer without color', () => {
+    renderQuestion(1);
+
+    const wrong = screen.getByRole('button', { name: 'Eevee' });
+    const correct = screen.getByRole('button', { name: 'Pikachu' });
+    fireEvent.click(wrong);
+
+    expect(wrong).toHaveClass('answer--wrong');
+    expect(wrong.querySelector('kbd')).toHaveTextContent('×');
+    expect(correct).toHaveClass('answer--correct');
+    expect(correct.querySelector('kbd')).toHaveTextContent('✓');
+  });
+
   it.each([
-    { delay: 850, quick: false },
-    { delay: 300, quick: true },
+    { delay: 1_200, mode: { kind: 'training' } as const, quick: false },
+    {
+      delay: 850,
+      mode: { date: '2026-09-03', kind: 'daily' } as const,
+      quick: false,
+    },
+    { delay: 300, mode: { kind: 'training' } as const, quick: true },
   ])(
-    'holds feedback for $delay ms when quick is $quick',
-    ({ delay, quick }) => {
+    'holds feedback for $delay ms in $mode.kind when quick is $quick',
+    ({ delay, mode, quick }) => {
       vi.useFakeTimers();
       const onAnswer = vi.fn();
       const onFeedbackStart = vi.fn(() => 5_000);
@@ -237,7 +256,7 @@ describe('question transitions', () => {
           elapsedMilliseconds={1_000}
           elapsedSeconds={1}
           interactionPaused={false}
-          mode={{ kind: 'training' }}
+          mode={mode}
           number={1}
           onAnswer={onAnswer}
           onFeedbackStart={onFeedbackStart}

@@ -32,10 +32,12 @@ export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
 
   const controls = useMemo<SoundControls>(
     () => ({
+      playCorrect: () => play(playOn),
       playDown: () => play(playDown),
       playOff: () => play(playOff),
       playOn: () => play(playOn),
       playScore: () => play(playScore),
+      playWrong: () => play(playOff),
       stopScore,
     }),
     [play, playDown, playOff, playOn, playScore, stopScore],
