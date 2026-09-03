@@ -1,0 +1,118 @@
+import { readFile } from 'node:fs/promises';
+import { expect, test } from './fixtures';
+
+test('publishes complete, non-duplicated site metadata', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page).toHaveTitle('Quizmon');
+  await expect(page.locator('meta[name="description"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    'https://quizmon.raveh.dev/',
+  );
+  await expect(
+    page.locator('link[rel="alternate"][type="text/markdown"]'),
+  ).toHaveAttribute('href', 'https://quizmon.raveh.dev/index.md');
+  await expect(page.locator('link[rel="describedby"]')).toHaveAttribute(
+    'href',
+    'https://quizmon.raveh.dev/llms.txt',
+  );
+  await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
+  await expect(page.locator('meta[property="og:description"]')).toHaveCount(1);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    'content',
+    'https://quizmon.raveh.dev/assets/images/social-card.png',
+  );
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+    'content',
+    'summary_large_image',
+  );
+  await expect(page.locator('meta[name^="twitter:"]')).toHaveCount(1);
+
+  const footerMetrics = await page
+    .getByRole('contentinfo')
+    .evaluate((footer) => ({
+      fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
+      lineTops: [...footer.children]
+        .filter((child) => !child.classList.contains('visually-hidden'))
+        .map((child) => Math.round(child.getBoundingClientRect().top)),
+    }));
+  expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
+  expect(new Set(footerMetrics.lineTops).size).toBe(1);
+
+  const structuredData: unknown = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ??
+      '{}',
+  );
+  expect(structuredData).toMatchObject({
+    '@type': ['VideoGame', 'WebApplication'],
+    name: 'Quizmon',
+    url: 'https://quizmon.raveh.dev/',
+    applicationCategory: 'GameApplication',
+    isAccessibleForFree: true,
+    offers: { price: 0 },
+  });
+
+  const manifestResponse = await page.request.get('/site.webmanifest');
+  expect(manifestResponse.ok()).toBe(true);
+  expect(manifestResponse.headers()['content-type']).toContain(
+    'application/manifest+json',
+  );
+  await expect(manifestResponse.json()).resolves.toMatchObject({
+    name: 'Quizmon',
+    description:
+      'Take the five-question Pokémon Daily Challenge each day, then practice types, moves, evolutions, stats, and more.',
+    display: 'standalone',
+    icons: [
+      {
+        purpose: 'any',
+        sizes: '192x192',
+        src: '/pwa-192x192.png',
+      },
+      {
+        purpose: 'any',
+        sizes: '512x512',
+        src: '/pwa-512x512.png',
+      },
+      {
+        purpose: 'maskable',
+        sizes: '512x512',
+        src: '/pwa-maskable-512x512.png',
+      },
+    ],
+    theme_color: '#72c3ee',
+  });
+
+  const serviceWorkerResponse = await page.request.get('/sw.js');
+  expect(serviceWorkerResponse.ok()).toBe(true);
+  expect(await serviceWorkerResponse.text()).toContain(
+    'quizmon-pokemon-sprites',
+  );
+
+  const robotsResponse = await page.request.get('/robots.txt');
+  expect(robotsResponse.ok()).toBe(true);
+  expect(await robotsResponse.text()).toBe(
+    'User-agent: *\nAllow: /\n\nSitemap: https://quizmon.raveh.dev/sitemap.xml\n',
+  );
+
+  const sitemapResponse = await page.request.get('/sitemap.xml');
+  expect(sitemapResponse.ok()).toBe(true);
+  expect(await sitemapResponse.text()).toContain(
+    '<loc>https://quizmon.raveh.dev/</loc>',
+  );
+
+  const llmsResponse = await page.request.get('/llms.txt');
+  expect(llmsResponse.ok()).toBe(true);
+  expect(await llmsResponse.text()).toContain(
+    '[Quizmon overview](https://quizmon.raveh.dev/index.md)',
+  );
+
+  const markdownResponse = await page.request.get('/index.md');
+  expect(markdownResponse.ok()).toBe(true);
+  const readme = await readFile(
+    new URL('../README.md', import.meta.url),
+    'utf8',
+  );
+  expect(await markdownResponse.text()).toBe(readme);
+});
