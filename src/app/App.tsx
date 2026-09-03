@@ -3,6 +3,7 @@ import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
 import { GenerationPromptDialog } from '@/components/GenerationPromptDialog';
 import { Landing } from '@/components/Landing';
+import { LeaveGameDialog } from '@/components/LeaveGameDialog';
 import {
   ModifiersDialog,
   type SettingsTab,
@@ -56,6 +57,7 @@ export const App = () => {
   const [phase, setPhase] = useState<Phase>('landing');
   const [settings, setSettings] = useState<SettingsState | null>(null);
   const [generationPromptOpen, setGenerationPromptOpen] = useState(false);
+  const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
   const [generationPromptPending, setGenerationPromptPending] = useState(
     shouldShowGenerationPrompt,
   );
@@ -197,10 +199,26 @@ export const App = () => {
   const newGame = useCallback(() => {
     pause();
     reset();
+    setLeaveConfirmationOpen(false);
     setQuestionIndex(0);
     setAnswers([]);
     setPhase('landing');
   }, [pause, reset]);
+
+  const requestLeaveGame = useCallback(() => {
+    if (answers.length === 0) {
+      newGame();
+      return;
+    }
+
+    pause();
+    setLeaveConfirmationOpen(true);
+  }, [answers.length, newGame, pause]);
+
+  const cancelLeaveGame = useCallback(() => {
+    setLeaveConfirmationOpen(false);
+    start();
+  }, [start]);
 
   const openSettings = useCallback(
     (initialTab: SettingsTab) => {
@@ -319,7 +337,7 @@ export const App = () => {
               number={questionIndex + 1}
               onAnswer={answerQuestion}
               onFeedbackStart={pause}
-              onNewGame={newGame}
+              onNewGame={requestLeaveGame}
               onOpenSettings={() => openSettings('experience')}
               question={question}
               total={questions.length}
@@ -367,6 +385,10 @@ export const App = () => {
             onChooseAll={() => startCustomGameWithGenerations([...generations])}
             onChooseGenOne={() => startCustomGameWithGenerations(['I'])}
           />
+        ) : null}
+
+        {leaveConfirmationOpen ? (
+          <LeaveGameDialog onCancel={cancelLeaveGame} onConfirm={newGame} />
         ) : null}
       </div>
     </SoundProvider>

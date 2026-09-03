@@ -360,6 +360,51 @@ test('answers questions with the number keys', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('confirms before discarding an in-progress game', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'quizmon.training-settings.v2',
+      JSON.stringify({
+        generations: ['I'],
+        questionTypes: ['pokedex-scan'],
+        soundEnabled: false,
+        isLimitActive: true,
+        limit: 2,
+        speedrunMode: true,
+      }),
+    );
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await page.locator('.answer').first().click();
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('002 / 002');
+
+  await page.getByRole('button', { name: 'Leave game' }).click();
+  const confirmation = page.getByRole('dialog', { name: 'Leave this game?' });
+  await expect(confirmation).toBeVisible();
+  await expect(
+    confirmation.getByRole('button', { name: 'Keep playing' }),
+  ).toBeFocused();
+
+  const timer = page.locator('.timer');
+  const pausedAt = await timer.getAttribute('aria-label');
+  await page.waitForTimeout(500);
+  await expect(timer).toHaveAttribute('aria-label', pausedAt!);
+
+  await page.keyboard.press('Escape');
+  await expect(confirmation).toBeHidden();
+  await expect.poll(() => timer.getAttribute('aria-label')).not.toBe(pausedAt);
+
+  await page.getByRole('button', { name: 'Leave game' }).click();
+  await confirmation.getByRole('button', { name: 'Leave game' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Start training' }),
+  ).toBeVisible();
+});
+
 test('keeps grouped settings reachable throughout a game on a phone', async ({
   page,
 }) => {
