@@ -412,6 +412,21 @@ describe('scoring', () => {
     expect(question && getAnswerPoints(question, false)).toBe(0);
   });
 
+  it('reduces Champion points as answer assistance is revealed', () => {
+    const [question] = buildQuestionSequence(
+      catalog,
+      ['champion'],
+      defaultModifiers,
+      createSeededRandom('champion-score'),
+    );
+
+    expect(question && getAnswerPoints(question, true, 0)).toBe(1_000);
+    expect(question && getAnswerPoints(question, true, 1)).toBe(750);
+    expect(question && getAnswerPoints(question, true, 2)).toBe(500);
+    expect(question && getAnswerPoints(question, true, 3)).toBe(250);
+    expect(question && getAnswerPoints(question, true, 8)).toBe(250);
+  });
+
   it('adds a bounded mastery bonus to earned knowledge points', () => {
     const answers = [
       { category: 'identity', correct: true, points: 1_000 },

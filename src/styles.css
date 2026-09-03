@@ -697,6 +697,120 @@ main {
   justify-self: center;
 }
 
+.clue-board--action-only {
+  padding: 0.2rem 0;
+  margin-top: 0.25rem;
+  background: transparent;
+  border-block: 0;
+}
+
+.champion-search {
+  display: grid;
+  width: min(100%, 34rem);
+  margin: 0.15rem 0 0.35rem;
+  gap: 0.35rem;
+}
+
+.champion-search > label {
+  color: var(--navy);
+  font-size: var(--text-label);
+  font-weight: 800;
+}
+
+.champion-search__controls {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.65rem;
+}
+
+.champion-search__combobox {
+  min-width: 0;
+}
+
+.champion-search input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem 0.8rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.2rem 0 var(--yellow);
+  font-weight: 700;
+}
+
+.champion-search input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.champion-search input:disabled {
+  opacity: 1;
+}
+
+.champion-search--correct input {
+  color: #ddfafe;
+  background: var(--correct);
+}
+
+.champion-search--wrong input {
+  color: #ddfafe;
+  background: var(--wrong);
+}
+
+.champion-search__controls > .game-button {
+  min-width: 5.75rem;
+  min-height: 3rem;
+}
+
+.champion-search ul,
+.champion-search__empty {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  left: 0;
+  padding: 0.25rem;
+  margin: 0;
+  overflow-y: auto;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: 0.5rem;
+  box-shadow:
+    0 0.22rem 0 var(--yellow),
+    0 0.42rem 0 var(--navy-shadow);
+}
+
+.champion-search ul {
+  max-height: 13rem;
+  list-style: none;
+}
+
+.champion-search li {
+  display: flex;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.65rem;
+  align-items: center;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.champion-search li:hover,
+.champion-search li[aria-selected='true'] {
+  color: #ddfafe;
+  background: var(--blue);
+}
+
+.champion-search__empty {
+  font-size: var(--text-label);
+  font-weight: 700;
+  text-align: center;
+}
+
 .answers {
   display: grid;
   width: 100%;
@@ -1893,6 +2007,7 @@ main {
   .question--with-media .game-mode,
   .question--with-media .question__prompt,
   .question--with-media .clue-board,
+  .question--with-media .champion-search,
   .question--with-media .new-game {
     grid-column: 1 / -1;
   }

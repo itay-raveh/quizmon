@@ -22,7 +22,7 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
       textPrompt('Name the Pokémon. Reveal fewer clues to earn more points.'),
       {
         kind: 'sprite',
-        revealAt: 4,
+        revealAt: 5,
         silhouette: true,
         src: target.pokemon.sprite,
       },
@@ -33,5 +33,6 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
       `${target.pokemon.types.map(formatPokemonName).join(' / ')} type, introduced in Generation ${target.pokemon.generation}.`,
       `National Pokédex number #${target.pokemon.id}.`,
     ],
+    searchOptions: context.pool.map(({ name }) => name),
   };
 };

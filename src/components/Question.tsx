@@ -16,6 +16,7 @@ import type {
   QuestionData,
   QuestionPrompt as QuestionPromptData,
 } from '@/game/types';
+import { ChampionSearch } from './ChampionSearch';
 import { GameButton } from './GameButton';
 import { Progress } from './Progress';
 import { SettingsButton } from './SettingsButton';
@@ -97,7 +98,7 @@ export const Question = ({
 }: QuestionProps) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [answered, setAnswered] = useState(false);
-  const [cluesShown, setCluesShown] = useState(1);
+  const [cluesShown, setCluesShown] = useState(0);
   const { playCorrect, playWrong } = useGameSounds();
   const answerTimeout = useRef<number | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -191,6 +192,8 @@ export const Question = ({
         event.repeat
       )
         return;
+      if (event.target instanceof HTMLInputElement) return;
+      if (question.category === 'champion' && cluesShown === 0) return;
       const index = Number(event.key) - 1;
       const option = question.options[index];
       if (option) selectOption(option);
@@ -198,7 +201,7 @@ export const Question = ({
 
     window.addEventListener('keydown', answerWithKeyboard);
     return () => window.removeEventListener('keydown', answerWithKeyboard);
-  }, [interactionPaused, question.options, selectOption]);
+  }, [cluesShown, interactionPaused, question, selectOption]);
 
   const answerCorrect =
     answered && isQuestionAnswerCorrect(question, selectedOptions);
@@ -211,7 +214,11 @@ export const Question = ({
     return 'answer answer--muted';
   };
 
+  const isChampion = question.category === 'champion';
+  const championChoicesVisible = isChampion && cluesShown > 0;
+  const visibleChampionClues = Math.max(0, cluesShown - 1);
   const mediaVisible =
+    answered ||
     question.media.kind !== 'sprite' ||
     question.media.revealAt === undefined ||
     cluesShown >= question.media.revealAt;
@@ -221,6 +228,7 @@ export const Question = ({
       ? 'question--with-media'
       : '',
     question.media.kind === 'pixel-sprite' ? 'question--with-portrait' : '',
+    isChampion && !championChoicesVisible ? 'question--champion-search' : '',
     number === 1 ? 'question--enter' : '',
   ]
     .filter(Boolean)
@@ -245,24 +253,43 @@ export const Question = ({
       <p className="game-mode">{getModeLabel(mode)}</p>
       <QuestionPrompt prompt={question.prompt} />
 
-      {question.category === 'champion' && question.clues ? (
-        <div className="clue-board">
-          <ol aria-live="polite">
-            {question.clues.slice(0, cluesShown).map((clue) => (
-              <li key={clue}>{clue}</li>
-            ))}
-          </ol>
-          {cluesShown < question.clues.length && !answered ? (
-            <GameButton
-              className="clue-button"
-              tone="quiet"
-              onClick={() => setCluesShown((current) => current + 1)}
-            >
-              Reveal another clue ·{' '}
-              {getAnswerPoints(question, true, cluesShown + 1)} points
-            </GameButton>
-          ) : null}
-        </div>
+      {isChampion && !championChoicesVisible && question.searchOptions ? (
+        <ChampionSearch
+          answered={answered}
+          correctOption={correctOptions[0] ?? ''}
+          disabled={interactionPaused}
+          onAnswer={(option) => finishAnswer([option])}
+          options={question.searchOptions}
+          selectedOption={selectedOptions[0]}
+        />
+      ) : null}
+
+      {isChampion && question.clues ? (
+        visibleChampionClues > 0 || !answered ? (
+          <div
+            className={`clue-board ${visibleChampionClues === 0 ? 'clue-board--action-only' : ''}`.trim()}
+          >
+            {visibleChampionClues > 0 ? (
+              <ol aria-live="polite">
+                {question.clues.slice(0, visibleChampionClues).map((clue) => (
+                  <li key={clue}>{clue}</li>
+                ))}
+              </ol>
+            ) : null}
+            {cluesShown <= question.clues.length && !answered ? (
+              <GameButton
+                className="clue-button"
+                tone="quiet"
+                onClick={() => setCluesShown((current) => current + 1)}
+              >
+                {cluesShown === 0
+                  ? 'Get a clue · Show 4 choices'
+                  : 'Reveal another clue'}{' '}
+                · {getAnswerPoints(question, true, cluesShown + 1)} points
+              </GameButton>
+            ) : null}
+          </div>
+        ) : null
       ) : null}
 
       {question.media.kind === 'sprite' && mediaVisible ? (
@@ -309,75 +336,79 @@ export const Question = ({
         </div>
       ) : null}
 
-      <div
-        className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''}`.trim()}
-      >
-        {question.options.map((option, index) => {
-          const visual = question.optionVisuals?.[option];
-          const concealed = Boolean(question.concealOptionLabels && !answered);
-          const selectionPosition = selectedOptions.indexOf(option) + 1;
-          const selected = selectionPosition > 0;
-          const selectionMark = answered
-            ? correctOptions.includes(option)
-              ? '✓'
-              : selected
-                ? '×'
-                : index + 1
-            : question.answer.interaction === 'multi-select' && selected
-              ? '✓'
-              : index + 1;
-          return (
-            <GameButton
-              aria-label={
-                concealed
-                  ? `Silhouette ${index + 1}`
-                  : formatPokemonName(option)
-              }
-              aria-keyshortcuts={String(index + 1)}
-              aria-pressed={
-                question.answer.interaction === 'single-choice'
-                  ? undefined
-                  : selectedOptions.includes(option)
-              }
-              className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''}`.trim()}
-              clickSound="none"
-              disabled={answered}
-              key={option}
-              onClick={() => selectOption(option)}
-            >
-              <kbd aria-hidden="true">{selectionMark}</kbd>
-              {visual ? (
-                <>
-                  <span className="answer__sprite-field" aria-hidden="true">
-                    <img
-                      className={`pixel-sprite answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
-                      src={visual.src}
-                      alt=""
-                      decoding="async"
-                      width="96"
-                      height="96"
-                    />
-                  </span>
-                  <span className="answer__nameplate">
-                    {concealed ? (
-                      <span>Silhouette {index + 1}</span>
-                    ) : (
-                      <>
-                        <small aria-hidden="true">
-                          No. {String(visual.dexNumber).padStart(4, '0')}
-                        </small>
-                        <span>{formatPokemonName(option)}</span>
-                      </>
-                    )}
-                  </span>
-                </>
-              ) : (
-                <span>{formatPokemonName(option)}</span>
-              )}
-            </GameButton>
-          );
-        })}
-      </div>
+      {!isChampion || championChoicesVisible ? (
+        <div
+          className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''}`.trim()}
+        >
+          {question.options.map((option, index) => {
+            const visual = question.optionVisuals?.[option];
+            const concealed = Boolean(
+              question.concealOptionLabels && !answered,
+            );
+            const selectionPosition = selectedOptions.indexOf(option) + 1;
+            const selected = selectionPosition > 0;
+            const selectionMark = answered
+              ? correctOptions.includes(option)
+                ? '✓'
+                : selected
+                  ? '×'
+                  : index + 1
+              : question.answer.interaction === 'multi-select' && selected
+                ? '✓'
+                : index + 1;
+            return (
+              <GameButton
+                aria-label={
+                  concealed
+                    ? `Silhouette ${index + 1}`
+                    : formatPokemonName(option)
+                }
+                aria-keyshortcuts={String(index + 1)}
+                aria-pressed={
+                  question.answer.interaction === 'single-choice'
+                    ? undefined
+                    : selectedOptions.includes(option)
+                }
+                className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''}`.trim()}
+                clickSound="none"
+                disabled={answered}
+                key={option}
+                onClick={() => selectOption(option)}
+              >
+                <kbd aria-hidden="true">{selectionMark}</kbd>
+                {visual ? (
+                  <>
+                    <span className="answer__sprite-field" aria-hidden="true">
+                      <img
+                        className={`pixel-sprite answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
+                        src={visual.src}
+                        alt=""
+                        decoding="async"
+                        width="96"
+                        height="96"
+                      />
+                    </span>
+                    <span className="answer__nameplate">
+                      {concealed ? (
+                        <span>Silhouette {index + 1}</span>
+                      ) : (
+                        <>
+                          <small aria-hidden="true">
+                            No. {String(visual.dexNumber).padStart(4, '0')}
+                          </small>
+                          <span>{formatPokemonName(option)}</span>
+                        </>
+                      )}
+                    </span>
+                  </>
+                ) : (
+                  <span>{formatPokemonName(option)}</span>
+                )}
+              </GameButton>
+            );
+          })}
+        </div>
+      ) : null}
 
       {question.answer.interaction !== 'single-choice' && !answered ? (
         <GameButton

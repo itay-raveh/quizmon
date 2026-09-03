@@ -12,6 +12,26 @@ const question: QuestionData = {
   prompt: { kind: 'text', text: 'Which Pokémon has the highest Speed?' },
 };
 
+const championQuestion: QuestionData = {
+  answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
+  category: 'champion',
+  clues: ['An electric mouse.', 'Known for its red cheeks.'],
+  id: 'champion:pikachu:4',
+  media: {
+    kind: 'sprite',
+    revealAt: 3,
+    silhouette: true,
+    src: 'https://example.com/pikachu.png',
+  },
+  options: ['pikachu', 'eevee', 'ditto', 'mew'],
+  pokemonName: 'pikachu',
+  prompt: {
+    kind: 'text',
+    text: 'Name the Pokémon. Reveal fewer clues to earn more points.',
+  },
+  searchOptions: ['bulbasaur', 'ditto', 'eevee', 'mew', 'pikachu', 'raichu'],
+};
+
 const renderQuestion = (number: number) =>
   render(
     <Question
@@ -395,5 +415,80 @@ describe('question transitions', () => {
     expect(rendered.container.querySelector('.pixel-peek')).toHaveClass(
       'pixel-peek--revealed',
     );
+  });
+
+  it('starts the Champion question as a keyboard-operable autocomplete', () => {
+    vi.useFakeTimers();
+    const onAnswer = vi.fn();
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ date: '2026-09-03', kind: 'daily' }}
+        number={5}
+        onAnswer={onAnswer}
+        onFeedbackStart={() => 1_000}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={championQuestion}
+        speedrunMode={false}
+        total={5}
+      />,
+    );
+
+    const search = screen.getByRole('combobox', { name: 'Your answer' });
+    expect(search).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Pikachu' })).toBeNull();
+    fireEvent.change(search, { target: { value: 'pika' } });
+    expect(screen.getByRole('option', { name: 'Pikachu' })).toBeVisible();
+    fireEvent.keyDown(search, { key: 'ArrowDown' });
+    fireEvent.keyDown(search, { key: 'Enter' });
+    expect(search).toHaveValue('Pikachu');
+    fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+    vi.advanceTimersByTime(850);
+
+    expect(onAnswer).toHaveBeenCalledWith(
+      expect.objectContaining({ correct: true, points: 1_000 }),
+    );
+    vi.useRealTimers();
+  });
+
+  it('uses the first Champion clue to reveal four choices', () => {
+    vi.useFakeTimers();
+    const onAnswer = vi.fn();
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ date: '2026-09-03', kind: 'daily' }}
+        number={5}
+        onAnswer={onAnswer}
+        onFeedbackStart={() => 1_000}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={championQuestion}
+        speedrunMode={false}
+        total={5}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Get a clue · Show 4 choices · 750 points',
+      }),
+    );
+    expect(screen.queryByRole('combobox')).toBeNull();
+    expect(
+      screen.getAllByRole('button', { name: /Pikachu|Eevee|Ditto|Mew/ }),
+    ).toHaveLength(4);
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    vi.advanceTimersByTime(850);
+
+    expect(onAnswer).toHaveBeenCalledWith(
+      expect.objectContaining({ correct: true, points: 750 }),
+    );
+    vi.useRealTimers();
   });
 });

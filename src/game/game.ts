@@ -212,13 +212,11 @@ export const buildQuestionSequence = (
 export const getAnswerPoints = (
   question: QuestionData,
   correct: boolean,
-  cluesShown = 1,
+  assistsUsed = 0,
 ): number => {
   if (!correct) return 0;
   if (question.category !== 'champion') return 1_000;
-  return (
-    [1_000, 750, 500, 250][Math.max(0, Math.min(3, cluesShown - 1))] ?? 250
-  );
+  return [1_000, 750, 500, 250][Math.max(0, Math.min(3, assistsUsed))] ?? 250;
 };
 
 export const getKnowledgePoints = (answers: readonly AnswerResult[]): number =>

@@ -68,6 +68,10 @@ describe('Daily Challenge', () => {
       ),
     );
     expect(schedule.at(-1)).toBe('champion');
+    expect(first.at(-1)?.searchOptions).toHaveLength(
+      Object.keys(catalog.pokemon).length,
+    );
+    expect(first.at(-1)?.searchOptions).toContain('cloyster');
     expect(
       schedule
         .slice(0, -1)

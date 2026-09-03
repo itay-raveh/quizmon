@@ -139,6 +139,7 @@ export interface QuestionData {
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   prompt: QuestionPrompt;
+  searchOptions?: string[];
   title?: string;
 }
 
