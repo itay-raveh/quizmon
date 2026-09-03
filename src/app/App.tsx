@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
 import { GenerationPromptDialog } from '@/components/GenerationPromptDialog';
@@ -45,8 +45,8 @@ import type {
   AnswerResult,
   QuestionData,
 } from '@/game/types';
+import { gameSessionReducer, initialGameSession } from './session';
 
-type Phase = 'landing' | 'questions' | 'results';
 interface SettingsState {
   initialTab: SettingsTab;
 }
@@ -54,22 +54,17 @@ interface SettingsState {
 export const App = () => {
   const catalogState = usePokemonCatalog();
   const [modifiers, setModifiers] = usePersistentModifiers();
-  const [phase, setPhase] = useState<Phase>('landing');
+  const [session, dispatchSession] = useReducer(
+    gameSessionReducer,
+    initialGameSession,
+  );
+  const phase = session.phase;
   const [settings, setSettings] = useState<SettingsState | null>(null);
   const [generationPromptOpen, setGenerationPromptOpen] = useState(false);
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
   const [generationPromptPending, setGenerationPromptPending] = useState(
     shouldShowGenerationPrompt,
   );
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<AnswerResult[]>([]);
-  const [questions, setQuestions] = useState<QuestionData[]>([]);
-  const [activeModifiers, setActiveModifiers] = useState<Modifiers>(modifiers);
-  const [mode, setMode] = useState<GameMode>({ kind: 'training' });
-  const [result, setResult] = useState<GameResult | null>(null);
-  const [bestResult, setBestResult] = useState<GameResult | null>(null);
-  const [isNewBest, setIsNewBest] = useState(false);
-  const [resultSaved, setResultSaved] = useState(true);
   const [dailyDate] = useState(
     () => parseDailyDate(window.location.search) ?? getUtcDate(),
   );
@@ -114,18 +109,14 @@ export const App = () => {
       nextModifiers: Modifiers,
       nextMode: GameMode,
     ) => {
-      setQuestions(nextQuestions);
-      setActiveModifiers(nextModifiers);
-      setMode(nextMode);
-      setResult(null);
-      setBestResult(null);
-      setIsNewBest(false);
-      setResultSaved(true);
-      setQuestionIndex(0);
-      setAnswers([]);
+      dispatchSession({
+        mode: nextMode,
+        modifiers: nextModifiers,
+        questions: nextQuestions,
+        type: 'started',
+      });
       reset();
       start();
-      setPhase('questions');
     },
     [reset, start],
   );
@@ -200,20 +191,18 @@ export const App = () => {
     pause();
     reset();
     setLeaveConfirmationOpen(false);
-    setQuestionIndex(0);
-    setAnswers([]);
-    setPhase('landing');
+    dispatchSession({ type: 'returned-to-landing' });
   }, [pause, reset]);
 
   const requestLeaveGame = useCallback(() => {
-    if (answers.length === 0) {
+    if (session.phase !== 'questions' || session.answers.length === 0) {
       newGame();
       return;
     }
 
     pause();
     setLeaveConfirmationOpen(true);
-  }, [answers.length, newGame, pause]);
+  }, [newGame, pause, session]);
 
   const cancelLeaveGame = useCallback(() => {
     setLeaveConfirmationOpen(false);
@@ -241,11 +230,11 @@ export const App = () => {
         setGenerationPromptPending(false);
       }
       if (phase === 'questions') {
-        setActiveModifiers((current) => ({
-          ...current,
+        dispatchSession({
           soundEnabled: nextModifiers.soundEnabled,
           speedrunMode: nextModifiers.speedrunMode,
-        }));
+          type: 'experience-updated',
+        });
       }
       setSettings(null);
       if (phase === 'questions') start();
@@ -255,10 +244,10 @@ export const App = () => {
 
   const answerQuestion = useCallback(
     (answer: AnswerResult) => {
-      const nextAnswers = [...answers, answer];
-      setAnswers(nextAnswers);
+      if (session.phase !== 'questions') return;
+      const nextAnswers = [...session.answers, answer];
 
-      if (questionIndex === questions.length - 1) {
+      if (session.questionIndex === session.questions.length - 1) {
         const nextCorrectCount = nextAnswers.filter(
           ({ correct }) => correct,
         ).length;
@@ -270,40 +259,37 @@ export const App = () => {
               : 0,
           correctCount: nextCorrectCount,
           elapsedSeconds: getResponseTimeSeconds(nextAnswers),
-          questionCount: questions.length,
+          questionCount: session.questions.length,
           score: calculateScore(nextAnswers),
           scoreVersion: SCORE_VERSION,
         };
-        const best = saveResult(mode, nextResult);
-        trackGameCompleted(mode, nextResult);
-        setResult(nextResult);
-        setBestResult(best.best);
-        setIsNewBest(best.isNewBest);
-        setResultSaved(best.isSaved);
-        if (mode.kind === 'daily') {
+        const best = saveResult(session.mode, nextResult);
+        trackGameCompleted(session.mode, nextResult);
+        dispatchSession({
+          bestResult: best.best,
+          isNewBest: best.isNewBest,
+          result: nextResult,
+          resultSaved: best.isSaved,
+          type: 'completed',
+        });
+        if (session.mode.kind === 'daily') {
           setDailyResult(best.best);
           setDailyResultSaved(best.isSaved);
           if (best.isSaved) setDailyStreak(readDailyStreak());
         }
         pause();
-        setPhase('results');
       } else {
-        setQuestionIndex((current) => current + 1);
+        dispatchSession({ answer, type: 'advanced' });
         start();
       }
     },
-    [
-      answers,
-      catalogState,
-      mode,
-      pause,
-      questionIndex,
-      questions.length,
-      start,
-    ],
+    [catalogState, pause, session, start],
   );
 
-  const question = questions[questionIndex];
+  const question =
+    session.phase === 'questions'
+      ? session.questions[session.questionIndex]
+      : undefined;
 
   return (
     <SoundProvider enabled={modifiers.soundEnabled}>
@@ -325,39 +311,40 @@ export const App = () => {
             />
           ) : null}
 
-          {phase === 'questions' && question ? (
+          {session.phase === 'questions' && question ? (
             <Question
               key={question.id}
               elapsedMilliseconds={elapsedMilliseconds}
               elapsedSeconds={elapsedSeconds}
               interactionPaused={Boolean(settings)}
-              mode={mode}
-              speedrunMode={activeModifiers.speedrunMode}
-              nextQuestion={questions[questionIndex + 1]}
-              number={questionIndex + 1}
+              mode={session.mode}
+              speedrunMode={session.modifiers.speedrunMode}
+              nextQuestion={session.questions[session.questionIndex + 1]}
+              number={session.questionIndex + 1}
               onAnswer={answerQuestion}
               onFeedbackStart={pause}
               onNewGame={requestLeaveGame}
               onOpenSettings={() => openSettings('experience')}
               question={question}
-              total={questions.length}
+              total={session.questions.length}
             />
           ) : null}
 
-          {phase === 'results' && result && bestResult ? (
+          {session.phase === 'results' ? (
             <Results
-              bestResult={bestResult}
+              bestResult={session.bestResult}
               dailyStreak={
-                mode.kind === 'daily' && mode.date === getUtcDate()
+                session.mode.kind === 'daily' &&
+                session.mode.date === getUtcDate()
                   ? dailyStreak
                   : 0
               }
-              isNewBest={isNewBest}
-              mode={mode}
+              isNewBest={session.isNewBest}
+              mode={session.mode}
               onNewGame={newGame}
               onOpenSettings={() => openSettings('experience')}
-              result={result}
-              resultSaved={resultSaved}
+              result={session.result}
+              resultSaved={session.resultSaved}
             />
           ) : null}
         </main>
