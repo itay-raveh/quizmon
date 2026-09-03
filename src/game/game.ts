@@ -25,7 +25,6 @@ export const defaultModifiers: Modifiers = {
   generations: [...generations],
   questionTypes: [...questionTypes],
   soundEnabled: true,
-  isLimitActive: true,
   limit: 10,
   speedrunMode: false,
 };
@@ -117,7 +116,6 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
           ? migratedQuestionTypes
           : defaultModifiers.questionTypes,
     soundEnabled: candidate.soundEnabled !== false,
-    isLimitActive: candidate.isLimitActive !== false,
     limit,
     speedrunMode: candidate.speedrunMode === true,
   };
@@ -136,7 +134,6 @@ export const getQuestionCount = (
   modifiers: Modifiers,
 ): number => {
   if (availableCount < 1) return 0;
-  if (!modifiers.isLimitActive) return availableCount;
   return Math.min(Math.max(1, modifiers.limit), availableCount);
 };
 

@@ -313,16 +313,6 @@
     grid-template-columns: 1fr;
   }
 
-  .limit-control {
-    align-items: end;
-    flex-direction: row;
-    gap: 1rem;
-  }
-
-  .number-field {
-    width: 6.5rem;
-  }
-
   .site-footer {
     top: 91%;
     left: 4%;

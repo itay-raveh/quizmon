@@ -26,7 +26,7 @@ Players open Quizmon in a browser, take the Daily Challenge once, configure a Tr
 
 - Covers the default Pokémon species from Generations I through IX.
 - Builds a versioned local knowledge catalog from PokéAPI through `pokenode-ts`; live rounds do not depend on API requests.
-- Supports one strict daily attempt, repeatable Training, grouped and explained question formats, configurable generations, sound, finite or full-pool rounds, and optional Quick transitions.
+- Supports one strict daily attempt, repeatable Training, grouped and explained question formats, configurable generations, 5, 10, or 20-question rounds, sound, and optional Quick transitions.
 - Restores an unfinished round after a reload in the same browser tab without replaying an answer that was already submitted.
 - Treats the local Trainer Card as a first-class profile with an optional name and partner Pokémon, four accent colors, earned ranks, visible card finishes, records, qualified specialties, and accomplishment stamps.
 - Exports either Trainer Card face as a shareable PNG without adding an account or backend identity.

@@ -10,14 +10,16 @@ interface SelectionTileProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   'type'
 > {
+  inputType?: 'checkbox' | 'radio';
   label: ReactNode;
   description?: ReactNode;
-  variant?: 'generation' | 'question-type';
+  variant?: 'generation' | 'question-type' | 'round-length';
 }
 
 export const SelectionTile = ({
   checked,
   description,
+  inputType = 'checkbox',
   label,
   onChange,
   variant = 'question-type',
@@ -41,7 +43,7 @@ export const SelectionTile = ({
         checked={checked}
         onChange={handleChange}
         onPointerDown={() => playDown()}
-        type="checkbox"
+        type={inputType}
       />
       <span className="selection-tile__surface">
         <span className="selection-tile__label" id={`${id}-label`}>

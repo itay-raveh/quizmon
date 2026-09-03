@@ -39,7 +39,6 @@ test.beforeEach(async ({ page }) => {
         generations: ['I'],
         questionTypes: ['pokedex-scan'],
         soundEnabled: false,
-        isLimitActive: true,
         limit: 1,
         speedrunMode: true,
       }),
@@ -317,7 +316,6 @@ test('keeps reverse-silhouette rounds clear on a phone', async ({ page }) => {
         generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
         questionTypes: ['silhouette-match'],
         soundEnabled: false,
-        isLimitActive: true,
         limit: 1,
         speedrunMode: true,
       }),
@@ -592,7 +590,6 @@ test('confirms before discarding an in-progress game', async ({ page }) => {
         generations: ['I'],
         questionTypes: ['pokedex-scan'],
         soundEnabled: false,
-        isLimitActive: true,
         limit: 2,
         speedrunMode: true,
       }),
@@ -639,7 +636,6 @@ test('restores the next unanswered question after a reload', async ({
         generations: ['I'],
         questionTypes: ['pokedex-scan'],
         soundEnabled: false,
-        isLimitActive: true,
         limit: 2,
         speedrunMode: false,
       }),
@@ -680,6 +676,17 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     'aria-selected',
     'true',
   );
+  await expect(
+    dialog.getByRole('radio', { name: '10 Standard' }),
+  ).toBeChecked();
+  await dialog.getByText('Quick', { exact: true }).click();
+  await expect(dialog.getByRole('radio', { name: '5 Quick' })).toBeChecked();
+  await expect(
+    dialog.getByText('Choose which generations can appear.'),
+  ).toHaveCount(0);
+  await expect(
+    dialog.getByText('Pick the formats you want to practice.'),
+  ).toHaveCount(0);
   const selectAllGenerations = dialog.getByRole('button', {
     name: 'Select all generations',
   });
@@ -711,17 +718,41 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await expect(
     dialog.getByRole('group', { name: 'Battle knowledge question types' }),
   ).toBeVisible();
-  await expect(dialog.getByLabel('Battle view')).toBeChecked();
-  await expect(dialog.getByLabel('Counter pick')).toBeChecked();
-  await expect(dialog.getByLabel('Evolution shift')).toBeChecked();
+  await expect(
+    dialog.getByRole('checkbox', { includeHidden: true, name: 'Battle view' }),
+  ).toBeChecked();
+  await expect(
+    dialog.getByRole('checkbox', { includeHidden: true, name: 'Counter pick' }),
+  ).toBeChecked();
+  await expect(
+    dialog.getByRole('checkbox', {
+      includeHidden: true,
+      name: 'Evolution shift',
+    }),
+  ).toBeChecked();
   await expect(dialog.getByLabel('Evolution trail')).toHaveCount(0);
   await expect(dialog.getByLabel('Evolution order')).toHaveCount(0);
-  await expect(dialog.getByLabel('Odd one out')).toBeChecked();
+  await expect(
+    dialog.getByRole('checkbox', { includeHidden: true, name: 'Odd one out' }),
+  ).toBeChecked();
   await expect(dialog.getByLabel('Missing evolution')).toHaveCount(0);
+  await dialog.getByRole('button', { name: 'About Counter pick' }).click();
+  const questionTypeHelp = page.getByRole('note');
+  await expect(questionTypeHelp).toBeVisible();
+  await expect(questionTypeHelp).toContainText(
+    'Pick a Pokémon with a super-effective attack type.',
+  );
+  await page.keyboard.press('Escape');
+  await expect(questionTypeHelp).toBeHidden();
   await dialog
     .getByRole('button', { name: 'Deselect all question types' })
     .click();
-  await expect(dialog.getByLabel('Pokédex scan')).not.toBeChecked();
+  await expect(
+    dialog.getByRole('checkbox', {
+      includeHidden: true,
+      name: 'Pokédex scan',
+    }),
+  ).not.toBeChecked();
   await dialog.getByRole('button', { name: 'Save settings' }).click();
   await expect(
     dialog.getByText('Choose at least one question type.'),
@@ -778,19 +809,20 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     const selectionToggle = element
       .querySelector('.selection-toggle')
       ?.getBoundingClientRect();
-    const numberInput = element
-      .querySelector('.number-field input')
+    const roundLength = element
+      .querySelector('.selection-tile--round-length .selection-tile__surface')
       ?.getBoundingClientRect();
-    const description = element.querySelector('.selection-tile__description');
+    const questionTypeHelp = element
+      .querySelector('.question-type-tile__help')
+      ?.getBoundingClientRect();
     return {
       closeHeight: close?.height,
       closeWidth: close?.width,
-      descriptionFontSize: description
-        ? Number.parseFloat(getComputedStyle(description).fontSize)
-        : undefined,
       dialogHeight: bounds.height,
       dialogWidth: bounds.width,
-      numberInputHeight: numberInput?.height,
+      helpHeight: questionTypeHelp?.height,
+      helpWidth: questionTypeHelp?.width,
+      roundLengthHeight: roundLength?.height,
       selectionToggleHeight: selectionToggle?.height,
     };
   });
@@ -798,9 +830,10 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   expect(mobileControlMetrics.dialogWidth).toBe(320);
   expect(mobileControlMetrics.closeHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.closeWidth).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.descriptionFontSize).toBeGreaterThanOrEqual(12);
+  expect(mobileControlMetrics.helpHeight).toBeGreaterThanOrEqual(24);
+  expect(mobileControlMetrics.helpWidth).toBeGreaterThanOrEqual(24);
+  expect(mobileControlMetrics.roundLengthHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.selectionToggleHeight).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.numberInputHeight).toBeGreaterThanOrEqual(44);
   await dialog.getByRole('button', { name: 'Cancel' }).click();
 
   const footerMetrics = await page

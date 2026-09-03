@@ -33,17 +33,14 @@ interface QuestionDefinition {
 
 export const questionTypeGroups = [
   {
-    description: 'Recognize Pokémon from their artwork and appearance.',
     id: 'identity',
     label: 'Identity',
   },
   {
-    description: 'Recall types, Pokédex entries, and evolution changes.',
     id: 'knowledge',
     label: 'General knowledge',
   },
   {
-    description: 'Use moves, abilities, stats, and type matchups.',
     id: 'battle',
     label: 'Battle knowledge',
   },

@@ -47,7 +47,6 @@ export const getDailyModifiers = (
   ...defaultModifiers,
   generations: [...generations],
   questionTypes: [...defaultModifiers.questionTypes],
-  isLimitActive: true,
   limit: DAILY_QUESTION_COUNT,
   soundEnabled: experience.soundEnabled,
   speedrunMode: experience.speedrunMode,

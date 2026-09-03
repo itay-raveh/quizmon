@@ -96,7 +96,6 @@ const parseModifiers = (value: unknown): Modifiers | null => {
         questionTypes.includes(questionType as (typeof questionTypes)[number]),
     ) ||
     typeof value.soundEnabled !== 'boolean' ||
-    typeof value.isLimitActive !== 'boolean' ||
     typeof value.limit !== 'number' ||
     !Number.isInteger(value.limit) ||
     value.limit < 1 ||

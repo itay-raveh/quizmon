@@ -88,7 +88,6 @@ describe('normalizeModifiers', () => {
       normalizeModifiers({
         generations: ['IX', 'not-a-generation'],
         questionTypes: ['stat-showdown', 'not-a-type'],
-        isLimitActive: true,
         limit: 0,
         speedrunMode: true,
       }),
@@ -96,7 +95,6 @@ describe('normalizeModifiers', () => {
       generations: ['IX'],
       questionTypes: ['stat-showdown'],
       soundEnabled: true,
-      isLimitActive: true,
       limit: 1,
       speedrunMode: true,
     });

@@ -33,6 +33,14 @@ interface ModifiersDialogProps {
 }
 
 const settingsTabs: readonly SettingsTab[] = ['training', 'experience'];
+const roundLengths = [
+  { label: 'Quick', value: 5 },
+  { label: 'Standard', value: 10 },
+  { label: 'Long', value: 20 },
+] as const;
+
+const getRoundLength = (limit: number) =>
+  roundLengths.some(({ value }) => value === limit) ? limit : 10;
 
 const toggleValue = <T,>(values: readonly T[], value: T, checked: boolean) =>
   checked ? [...values, value] : values.filter((current) => current !== value);
@@ -62,16 +70,20 @@ export const ModifiersDialog = ({
   trainingChangesApplyNextGame = false,
 }: ModifiersDialogProps) => {
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
-  const [draft, setDraft] = useState<Modifiers>(modifiers);
+  const [draft, setDraft] = useState<Modifiers>(() => ({
+    ...modifiers,
+    limit: getRoundLength(modifiers.limit),
+  }));
+  const [explainedQuestionType, setExplainedQuestionType] =
+    useState<QuestionType>('pokedex-scan');
   const [expandedGroup, setExpandedGroup] = useState<QuestionTypeGroup | null>(
     () => getInitialExpandedGroup(modifiers.questionTypes),
   );
   const [submitted, setSubmitted] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
-  const generationsHeading = useRef<HTMLLegendElement>(null);
+  const generationsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
-  const quizLengthHeading = useRef<HTMLLegendElement>(null);
   const tabButtons = useRef<Record<SettingsTab, HTMLButtonElement | null>>({
     experience: null,
     training: null,
@@ -88,12 +100,7 @@ export const ModifiersDialog = ({
     draft.generations.length === generations.length;
   const allQuestionTypesSelected =
     draft.questionTypes.length === questionTypes.length;
-  const limitIsValid =
-    !draft.isLimitActive ||
-    (Number.isInteger(draft.limit) &&
-      draft.limit >= 1 &&
-      draft.limit <= matchingCount);
-  const isValid = hasSelections && matchingCount > 0 && limitIsValid;
+  const isValid = hasSelections && matchingCount > 0;
 
   useEffect(() => {
     const element = dialog.current;
@@ -133,9 +140,7 @@ export const ModifiersDialog = ({
       window.setTimeout(() => {
         const target = !generationsAreValid
           ? generationsHeading.current
-          : !questionTypesAreValid || matchingCount === 0
-            ? questionTypesHeading.current
-            : quizLengthHeading.current;
+          : questionTypesHeading.current;
         target?.focus();
         target?.scrollIntoView({ block: 'center' });
       });
@@ -236,21 +241,15 @@ export const ModifiersDialog = ({
               </p>
             ) : null}
 
-            <fieldset
-              aria-describedby={
-                submitted && !generationsAreValid
-                  ? 'generations-error'
-                  : undefined
-              }
-              aria-invalid={submitted && !generationsAreValid}
-            >
-              <legend ref={generationsHeading} tabIndex={-1}>
-                Generations
-              </legend>
-              <div className="field-description-row">
-                <p className="field-description">
-                  Choose which generations can appear.
-                </p>
+            <section className="settings-section">
+              <div className="settings-section__heading">
+                <h3
+                  id="generations-title"
+                  ref={generationsHeading}
+                  tabIndex={-1}
+                >
+                  Generations
+                </h3>
                 <button
                   aria-label={`${allGenerationsSelected ? 'Deselect' : 'Select'} all generations`}
                   className="selection-toggle"
@@ -267,7 +266,17 @@ export const ModifiersDialog = ({
                   {allGenerationsSelected ? 'Deselect all' : 'Select all'}
                 </button>
               </div>
-              <div className="selection-grid selection-grid--generations">
+              <div
+                aria-describedby={
+                  submitted && !generationsAreValid
+                    ? 'generations-error'
+                    : undefined
+                }
+                aria-invalid={submitted && !generationsAreValid}
+                aria-labelledby="generations-title"
+                className="selection-grid selection-grid--generations"
+                role="group"
+              >
                 {generations.map((generation) => (
                   <SelectionTile
                     checked={draft.generations.includes(generation)}
@@ -292,53 +301,31 @@ export const ModifiersDialog = ({
                   Choose at least one generation.
                 </p>
               ) : null}
-            </fieldset>
+            </section>
 
-            <fieldset
-              aria-describedby={
-                submitted && !limitIsValid ? 'quiz-length-error' : undefined
-              }
-              aria-invalid={submitted && !limitIsValid}
-            >
-              <legend ref={quizLengthHeading} tabIndex={-1}>
-                Quiz length
-              </legend>
-              <div className="limit-control">
-                <Checkbox
-                  checked={draft.isLimitActive}
-                  label="Limit questions"
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      isLimitActive: event.target.checked,
-                    }))
-                  }
-                />
-                <label className="number-field">
-                  <span>Questions</span>
-                  <input
-                    aria-invalid={submitted && !limitIsValid}
-                    autoComplete="off"
-                    disabled={!draft.isLimitActive}
-                    max={Math.max(1, matchingCount)}
-                    min="1"
-                    name="question-count"
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        limit: Number(event.target.value),
-                      }))
+            <fieldset className="round-length-settings">
+              <legend>Round length</legend>
+              <div className="selection-grid selection-grid--round-length">
+                {roundLengths.map(({ label, value }) => (
+                  <SelectionTile
+                    checked={draft.limit === value}
+                    inputType="radio"
+                    key={value}
+                    label={
+                      <>
+                        <strong>{value}</strong>
+                        <span>{label}</span>
+                      </>
                     }
-                    type="number"
-                    value={draft.limit}
+                    name="round-length"
+                    onChange={(event) => {
+                      if (!event.target.checked) return;
+                      setDraft((current) => ({ ...current, limit: value }));
+                    }}
+                    variant="round-length"
                   />
-                </label>
+                ))}
               </div>
-              {submitted && !limitIsValid ? (
-                <p className="form-error" id="quiz-length-error" role="alert">
-                  Choose between 1 and {matchingCount} questions.
-                </p>
-              ) : null}
             </fieldset>
 
             <section
@@ -353,19 +340,14 @@ export const ModifiersDialog = ({
                 submitted && (!questionTypesAreValid || matchingCount === 0)
               }
             >
-              <div className="field-description-row">
-                <div>
-                  <h3
-                    id="question-types-title"
-                    ref={questionTypesHeading}
-                    tabIndex={-1}
-                  >
-                    Question types
-                  </h3>
-                  <p className="field-description">
-                    Pick the formats you want to practice.
-                  </p>
-                </div>
+              <div className="settings-section__heading">
+                <h3
+                  id="question-types-title"
+                  ref={questionTypesHeading}
+                  tabIndex={-1}
+                >
+                  Question types
+                </h3>
                 <button
                   aria-label={`${allQuestionTypesSelected ? 'Deselect' : 'Select'} all question types`}
                   className="selection-toggle"
@@ -398,9 +380,6 @@ export const ModifiersDialog = ({
                 const selectedCount = groupedQuestionTypes.filter(
                   (questionType) => draft.questionTypes.includes(questionType),
                 ).length;
-                const allGroupSelected = groupedQuestionTypes.every(
-                  (questionType) => draft.questionTypes.includes(questionType),
-                );
                 const expanded = expandedGroup === group.id;
                 const titleId = `question-type-group-${group.id}-title`;
                 const panelId = `question-type-group-${group.id}-panel`;
@@ -439,59 +418,49 @@ export const ModifiersDialog = ({
                       hidden={!expanded}
                       id={panelId}
                     >
-                      <div className="question-type-group__heading">
-                        <p className="field-description">{group.description}</p>
-                        <button
-                          aria-label={`${allGroupSelected ? 'Deselect' : 'Select'} all ${group.label.toLowerCase()} question types`}
-                          className="selection-toggle selection-toggle--inline"
-                          onClick={() =>
-                            setDraft((current) => ({
-                              ...current,
-                              questionTypes: allGroupSelected
-                                ? current.questionTypes.filter(
-                                    (questionType) =>
-                                      !groupedQuestionTypes.includes(
-                                        questionType,
-                                      ),
-                                  )
-                                : [
-                                    ...new Set([
-                                      ...current.questionTypes,
-                                      ...groupedQuestionTypes,
-                                    ]),
-                                  ],
-                            }))
-                          }
-                          type="button"
-                        >
-                          {allGroupSelected ? 'Deselect all' : 'Select all'}
-                        </button>
-                      </div>
                       <div
                         aria-label={`${group.label} question types`}
                         className="selection-grid selection-grid--question-types"
                         role="group"
                       >
-                        {groupedQuestionTypes.map((questionType) => (
-                          <SelectionTile
-                            checked={draft.questionTypes.includes(questionType)}
-                            description={getQuestionTypeDescription(
-                              questionType,
-                            )}
-                            key={questionType}
-                            label={getQuestionTypeLabel(questionType)}
-                            onChange={(event) =>
-                              setDraft((current) => ({
-                                ...current,
-                                questionTypes: toggleValue<QuestionType>(
-                                  current.questionTypes,
-                                  questionType,
-                                  event.target.checked,
-                                ),
-                              }))
-                            }
-                          />
-                        ))}
+                        {groupedQuestionTypes.map((questionType) => {
+                          const label = getQuestionTypeLabel(questionType);
+                          const checked =
+                            draft.questionTypes.includes(questionType);
+                          return (
+                            <div
+                              className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}`}
+                              key={questionType}
+                            >
+                              <SelectionTile
+                                checked={checked}
+                                label={label}
+                                onChange={(event) =>
+                                  setDraft((current) => ({
+                                    ...current,
+                                    questionTypes: toggleValue<QuestionType>(
+                                      current.questionTypes,
+                                      questionType,
+                                      event.target.checked,
+                                    ),
+                                  }))
+                                }
+                              />
+                              <button
+                                aria-label={`About ${label}`}
+                                className="question-type-tile__help"
+                                onClick={() =>
+                                  setExplainedQuestionType(questionType)
+                                }
+                                popoverTarget="question-type-help"
+                                popoverTargetAction="show"
+                                type="button"
+                              >
+                                <span aria-hidden="true">?</span>
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </section>
@@ -507,9 +476,6 @@ export const ModifiersDialog = ({
           >
             <fieldset>
               <legend>Play experience</legend>
-              <p className="field-description">
-                These changes apply as soon as you save.
-              </p>
               <div className="modifier-list">
                 <Checkbox
                   checked={draft.speedrunMode}
@@ -545,6 +511,27 @@ export const ModifiersDialog = ({
           <GameButton type="submit">Save settings</GameButton>
         </div>
       </form>
+
+      <div
+        className="question-type-help"
+        id="question-type-help"
+        popover="auto"
+        role="note"
+      >
+        <button
+          aria-label="Close question type explanation"
+          className="question-type-help__close"
+          popoverTarget="question-type-help"
+          popoverTargetAction="hide"
+          type="button"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+        <strong>{getQuestionTypeLabel(explainedQuestionType)}</strong>
+        <p>{getQuestionTypeDescription(explainedQuestionType)}</p>
+      </div>
     </dialog>
   );
 };

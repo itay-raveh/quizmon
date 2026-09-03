@@ -84,7 +84,6 @@ export interface Modifiers {
   generations: Generation[];
   questionTypes: QuestionType[];
   soundEnabled: boolean;
-  isLimitActive: boolean;
   limit: number;
   speedrunMode: boolean;
 }
