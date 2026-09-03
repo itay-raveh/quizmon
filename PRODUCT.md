@@ -16,7 +16,7 @@ Quizmon is a charming, complete browser game for testing broad Pokémon knowledg
 
 ## Positioning
 
-Quizmon combines one deterministic daily gauntlet with a configurable training loop. Questions cover identification, Pokédex descriptions, types, matchups, abilities, moves, stats, size, and evolutions, then finish with a progressive-clue Champion question.
+Quizmon combines one deterministic daily gauntlet with a configurable training loop. Questions cover identification, Pokédex descriptions, types, matchups, abilities, moves, stats, and evolution changes, then finish with a progressive-clue Champion question.
 
 ## Operating Context
 
@@ -26,8 +26,8 @@ Players open Quizmon in a browser, take the Daily Challenge once, or configure a
 
 - Covers the default Pokémon species from Generations I through IX.
 - Builds a versioned local knowledge catalog from PokéAPI through `pokenode-ts`; live rounds do not depend on API requests.
-- Supports one strict daily attempt, repeatable Training, configurable question categories and generations, sound, finite or full-pool rounds, and speedrun transitions.
-- Scores each round out of 100 points per question. Time is displayed and breaks equal Training scores, but does not multiply points.
+- Supports one strict daily attempt, repeatable Training, configurable question formats and generations, sound, finite or full-pool rounds, and optional Quick transitions.
+- Awards 1,000 knowledge points for a standard correct answer, adds a quick-answer bonus that halves every five seconds, and adds a mastery bonus weighted by accuracy. Champion knowledge points decrease as clues are revealed. The interface shows the earned score without presenting a maximum.
 - Must remain responsive, keyboard-operable, and usable without an account.
 - Must preserve the existing game mechanics and static-web deployment model during visual work.
 - Must not imply affiliation with Nintendo, Game Freak, or The Pokémon Company.
