@@ -2,24 +2,28 @@ import { createContext, useContext } from 'react';
 
 export interface SoundControls {
   playCorrect: () => void;
-  playDown: () => void;
-  playOff: () => void;
-  playOn: () => void;
-  playScore: () => void;
+  playPerfect: () => void;
+  playResults: () => void;
+  playScoreCount: () => void;
+  playTap: () => void;
+  playToggleOff: () => void;
+  playToggleOn: () => void;
   playWrong: () => void;
-  stopScore: () => void;
+  stopCelebration: () => void;
 }
 
 const noop = () => undefined;
 
 export const SoundContext = createContext<SoundControls>({
   playCorrect: noop,
-  playDown: noop,
-  playOff: noop,
-  playOn: noop,
-  playScore: noop,
+  playPerfect: noop,
+  playResults: noop,
+  playScoreCount: noop,
+  playTap: noop,
+  playToggleOff: noop,
+  playToggleOn: noop,
   playWrong: noop,
-  stopScore: noop,
+  stopCelebration: noop,
 });
 
 export const useGameSounds = () => useContext(SoundContext);

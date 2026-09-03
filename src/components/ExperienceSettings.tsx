@@ -27,7 +27,7 @@ export const ExperienceSettings = ({
       />
       <Checkbox
         checked={draft.soundEnabled}
-        description="Play button and results sounds."
+        description="Play interface and game feedback sounds."
         label="Sound effects"
         onChange={(event) =>
           onChange((current) => ({

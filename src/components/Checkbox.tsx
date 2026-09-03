@@ -16,11 +16,11 @@ export const Checkbox = ({
   onChange,
   ...props
 }: CheckboxProps) => {
-  const { playDown, playOff, playOn } = useGameSounds();
+  const { playToggleOff, playToggleOn } = useGameSounds();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) playOn();
-    else playOff();
+    if (event.target.checked) playToggleOn();
+    else playToggleOff();
     onChange?.(event);
   };
 
@@ -30,7 +30,6 @@ export const Checkbox = ({
         {...props}
         checked={checked}
         onChange={handleChange}
-        onPointerDown={() => playDown()}
         type="checkbox"
       />
       <span className="checkbox__control" aria-hidden="true" />
