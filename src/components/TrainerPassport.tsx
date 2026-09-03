@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { site } from '@/app/site';
 import type { PokemonCatalog } from '@/game/types';
 import {
   requestPersistentStorage,
@@ -123,26 +122,24 @@ export const TrainerPassport = ({
     }
   };
 
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(site.url);
-      setShareStatus('Quizmon link copied.');
-    } catch {
-      setShareStatus('The link could not be copied.');
-    }
-  };
-
   return (
     <section
       className="trainer-passport"
       aria-labelledby="trainer-passport-title"
     >
       <header className="trainer-passport__header">
-        <GameButton tone="quiet" onClick={onBack}>
-          Back
+        <GameButton
+          aria-label="Back"
+          className="trainer-passport__back"
+          title="Back"
+          tone="quiet"
+          onClick={onBack}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m14.5 5-7 7 7 7M8 12h9" />
+          </svg>
         </GameButton>
         <div>
-          <p>Your profile</p>
           <h1 id="trainer-passport-title">Trainer Card</h1>
         </div>
         <GameButton tone="quiet" onClick={() => setEditing((value) => !value)}>
@@ -205,13 +202,6 @@ export const TrainerPassport = ({
         >
           Download PNG
         </GameButton>
-        <button
-          className="trainer-passport__copy-link"
-          onClick={() => void copyLink()}
-          type="button"
-        >
-          Copy Quizmon link
-        </button>
       </div>
       <p className="trainer-passport__status" aria-live="polite">
         {shareStatus}

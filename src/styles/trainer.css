@@ -23,20 +23,30 @@
   justify-self: end;
 }
 
+.trainer-passport__back.game-button {
+  width: 2.8rem;
+  min-width: 2.8rem;
+  height: 2.8rem;
+  min-height: 2.8rem;
+  padding: 0;
+  justify-self: start;
+}
+
+.trainer-passport__back svg {
+  width: 1.45rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 .trainer-passport__header > div {
   text-align: center;
 }
 
-.trainer-passport__header p,
 .trainer-passport__header h1 {
   margin: 0;
-}
-
-.trainer-passport__header p {
-  color: var(--muted);
-  font-size: var(--text-label);
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .trainer-passport__header h1 {
@@ -340,21 +350,6 @@
   gap: 0.7rem;
 }
 
-.trainer-passport__copy-link {
-  grid-column: 1 / -1;
-  justify-self: center;
-  min-height: 2.75rem;
-  padding: 0.45rem 0.8rem;
-  color: var(--navy);
-  background: transparent;
-  border: 0;
-  font-weight: 800;
-  text-decoration: underline;
-  text-decoration-thickness: 0.1rem;
-  text-underline-offset: 0.2rem;
-  cursor: pointer;
-}
-
 .trainer-passport__status {
   min-height: 1.2rem;
   margin: -0.7rem 0 0;
@@ -519,6 +514,12 @@
     min-height: 2.65rem;
     padding-inline: 0.65rem;
     font-size: var(--text-small);
+  }
+
+  .trainer-passport__header .trainer-passport__back {
+    width: 2.65rem;
+    min-width: 2.65rem;
+    padding: 0;
   }
 
   .trainer-card {

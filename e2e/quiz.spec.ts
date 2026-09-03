@@ -434,6 +434,14 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(
     page.getByRole('article', { name: 'Trainer Card front' }),
   ).toBeVisible();
+  await expect(page.getByText('Your profile')).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Copy Quizmon link' }),
+  ).toHaveCount(0);
+  const backWidth = await page
+    .getByRole('button', { name: 'Back' })
+    .evaluate((button) => button.getBoundingClientRect().width);
+  expect(backWidth).toBeLessThanOrEqual(48);
   await page.getByRole('button', { name: 'Customize' }).click();
   await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
   await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('Pikachu');
