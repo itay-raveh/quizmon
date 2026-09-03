@@ -255,7 +255,7 @@ describe('saved results', () => {
       hasBeenRevealed: false,
       name: '',
       partnerPokemon: null,
-      version: 2,
+      version: 1,
     });
 
     const saved = saveTrainerProfile({

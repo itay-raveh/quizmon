@@ -19,12 +19,12 @@ import {
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
-const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v2';
+const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
 const LEGACY_KNOWLEDGE_SCALE = 10;
 const LEGACY_SPEED_BONUS_SCALE = 120;
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 1;
-const TRAINER_PROFILE_VERSION = 2;
+const TRAINER_PROFILE_VERSION = 1;
 const TRAINING_RECORD_VERSION = 2;
 const SPECIALTY_MIN_ANSWERS = 10;
 const questionCategories: readonly QuestionCategory[] = [

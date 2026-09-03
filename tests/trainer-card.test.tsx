@@ -9,7 +9,7 @@ const profile: TrainerProfile = {
   hasBeenRevealed: true,
   name: 'Leaf',
   partnerPokemon: 'bulbasaur',
-  version: 2,
+  version: 1,
 };
 
 const stats: TrainerStats = {
