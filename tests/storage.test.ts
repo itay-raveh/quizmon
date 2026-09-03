@@ -273,35 +273,6 @@ describe('saved results', () => {
     expect(readTrainerProfile()).toEqual(saved);
   });
 
-  it('migrates a version 1 Trainer profile without changing its ID', () => {
-    window.localStorage.setItem(
-      'quizmon.trainer-profile.v1',
-      JSON.stringify({
-        cardNumber: 'QZ-654321',
-        createdAt: '2026-09-01',
-        hasBeenRevealed: true,
-        name: 'Blue',
-        partnerPokemon: 'squirtle',
-        version: 1,
-      }),
-    );
-
-    expect(readTrainerProfile()).toEqual({
-      accent: 'cobalt',
-      cardNumber: 'QZ-654321',
-      createdAt: '2026-09-01',
-      hasBeenRevealed: true,
-      name: 'Blue',
-      partnerPokemon: 'squirtle',
-      version: 2,
-    });
-    expect(
-      JSON.parse(
-        window.localStorage.getItem('quizmon.trainer-profile.v1') ?? '{}',
-      ),
-    ).toMatchObject({ cardNumber: 'QZ-654321', version: 2 });
-  });
-
   it('recalculates scores saved under the previous formula', () => {
     const legacyResult = { ...result, scoreVersion: undefined };
     window.localStorage.setItem(

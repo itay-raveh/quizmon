@@ -269,7 +269,7 @@ The Trainer Card is a first-class local profile reached from the landing screen 
 
 Only the visible face exists in the accessibility tree. A labeled control changes faces with a short card turn, and reduced-motion preferences replace the animation with an immediate swap. Both faces and their exported images use the same `3 / 2` landscape silhouette at every viewport. Mobile content becomes denser without hiding profile or record information. The first visit receives one reveal animation.
 
-Customization stays optional and local. The editor offers a name, partner, and four curated contrast-safe accent colors. Saving requests persistent browser storage when the platform supports it and migrations preserve an existing Trainer ID. Sharing renders the visible face at double its displayed resolution from the same profile and progression data. Native file sharing is preferred, with direct PNG download as the fallback. The successful native-share message is announced to assistive technology without adding visible confirmation copy.
+Customization stays optional and local. The editor offers a name, partner, and four curated contrast-safe accent colors. Saving requests persistent browser storage when the platform supports it. Sharing renders the visible face at double its displayed resolution from the same profile and progression data. Native file sharing is preferred, with direct PNG download as the fallback. The successful native-share message is announced to assistive technology without adding visible confirmation copy.
 
 ### Results Surface
 

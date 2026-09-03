@@ -19,7 +19,7 @@ import {
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
-const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
+const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v2';
 const LEGACY_KNOWLEDGE_SCALE = 10;
 const LEGACY_SPEED_BONUS_SCALE = 120;
 const STREAK_VERSION = 1;
@@ -416,7 +416,7 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
   if (!value || typeof value !== 'object') return null;
   const profile = value as Partial<TrainerProfile>;
   if (
-    (profile.version !== 1 && profile.version !== TRAINER_PROFILE_VERSION) ||
+    profile.version !== TRAINER_PROFILE_VERSION ||
     typeof profile.cardNumber !== 'string' ||
     !/^QZ-\d{6}$/.test(profile.cardNumber) ||
     typeof profile.createdAt !== 'string' ||
@@ -446,17 +446,7 @@ export const readTrainerProfile = (): TrainerProfile => {
   try {
     const stored = window.localStorage.getItem(TRAINER_PROFILE_KEY);
     const profile = stored ? normalizeTrainerProfile(JSON.parse(stored)) : null;
-    if (profile) {
-      try {
-        window.localStorage.setItem(
-          TRAINER_PROFILE_KEY,
-          JSON.stringify(profile),
-        );
-      } catch {
-        return profile;
-      }
-      return profile;
-    }
+    if (profile) return profile;
   } catch {
     return createTrainerProfile();
   }
