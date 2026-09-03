@@ -80,6 +80,13 @@ input[type='checkbox'] {
   -webkit-tap-highlight-color: transparent;
 }
 
+button,
+a,
+.checkbox,
+.selection-tile {
+  touch-action: manipulation;
+}
+
 a {
   color: var(--navy);
   font-weight: 700;
@@ -836,8 +843,8 @@ main {
 }
 
 .new-game {
-  min-height: 2.35rem;
-  padding-block: 0.35rem;
+  min-height: 2.75rem;
+  padding-block: 0.55rem;
   margin-top: 1.05rem;
 }
 
@@ -976,6 +983,7 @@ main {
 .leave-game-dialog,
 .share-dialog {
   width: min(42rem, calc(100% - 1rem));
+  max-width: none;
   max-height: min(48rem, calc(100svh - 1rem));
   padding: 0;
   overflow: hidden;
@@ -983,6 +991,7 @@ main {
   background: var(--paper);
   border: 3px solid var(--navy);
   border-radius: 0.75rem;
+  overscroll-behavior: contain;
   box-shadow:
     0 0.3rem 0 var(--yellow),
     0 0.7rem 0 var(--navy-shadow);
@@ -1217,6 +1226,7 @@ main {
 .dialog-close {
   display: grid;
   width: 2.75rem;
+  min-width: 2.75rem;
   height: 2.75rem;
   padding: 0;
   color: #ddfafe;
@@ -1225,6 +1235,7 @@ main {
   border-radius: 0.35rem;
   box-shadow: 0 0.15rem 0 var(--yellow);
   cursor: pointer;
+  flex: none;
   place-items: center;
 }
 
@@ -1251,6 +1262,7 @@ main {
 .modifiers-form__body {
   padding: 1.05rem 1.2rem 0.45rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modifiers-form fieldset {
@@ -1284,7 +1296,7 @@ main {
 }
 
 .selection-toggle {
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   padding: 0.35rem 0.65rem;
   flex: none;
   color: var(--navy);
@@ -1516,6 +1528,7 @@ main {
 
 .number-field input {
   width: 100%;
+  min-height: 2.75rem;
   padding: 0.48rem 0.6rem;
   color: var(--ink);
   background: white;

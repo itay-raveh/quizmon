@@ -453,7 +453,7 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     .click();
   await dialog.getByRole('tab', { name: 'Experience' }).click();
   await expect(dialog.getByText('Play experience')).toBeVisible();
-  await expect(dialog.getByLabel('Speedrun mode')).toBeVisible();
+  await expect(dialog.getByLabel('Quick transitions')).toBeVisible();
   await dialog.getByRole('tab', { name: 'Experience' }).press('ArrowLeft');
   await expect(dialog.getByRole('tab', { name: 'Training' })).toBeFocused();
 
@@ -483,6 +483,35 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await expect.poll(() => timer.getAttribute('aria-label')).not.toBe(pausedAt);
 
   await page.setViewportSize({ width: 320, height: 844 });
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('tab', { name: 'Training' }).click();
+  const mobileControlMetrics = await dialog.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    const close = element
+      .querySelector('.dialog-close')
+      ?.getBoundingClientRect();
+    const selectionToggle = element
+      .querySelector('.selection-toggle')
+      ?.getBoundingClientRect();
+    const numberInput = element
+      .querySelector('.number-field input')
+      ?.getBoundingClientRect();
+    return {
+      closeHeight: close?.height,
+      closeWidth: close?.width,
+      dialogWidth: bounds.width,
+      numberInputHeight: numberInput?.height,
+      selectionToggleHeight: selectionToggle?.height,
+    };
+  });
+  expect(mobileControlMetrics.dialogWidth).toBeGreaterThanOrEqual(304);
+  expect(mobileControlMetrics.closeHeight).toBeGreaterThanOrEqual(44);
+  expect(mobileControlMetrics.closeWidth).toBeGreaterThanOrEqual(44);
+  expect(mobileControlMetrics.selectionToggleHeight).toBeGreaterThanOrEqual(44);
+  expect(mobileControlMetrics.numberInputHeight).toBeGreaterThanOrEqual(44);
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+
   const footerMetrics = await page
     .getByRole('contentinfo')
     .evaluate((footer) => ({
