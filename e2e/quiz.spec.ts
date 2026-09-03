@@ -494,12 +494,13 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL('/');
+  const settingsButton = page.getByRole('button', { name: 'Settings' });
   const trainerButton = page.getByRole('button', { name: 'Trainer Card' });
   const trainingButton = page.getByRole('button', { name: 'Start training' });
   await expect(trainerButton.locator('img')).toHaveCount(0);
   await page.setViewportSize({ width: 360, height: 720 });
   const controlStyles = await Promise.all(
-    [trainerButton, trainingButton].map((button) =>
+    [settingsButton, trainerButton, trainingButton].map((button) =>
       button.evaluate((element) => {
         const style = getComputedStyle(element);
         const bounds = element.getBoundingClientRect();
@@ -514,6 +515,12 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     ),
   );
   expect(controlStyles[0]).toEqual(controlStyles[1]);
+  expect(controlStyles[1]).toEqual(controlStyles[2]);
+  await page.setViewportSize({ width: 768, height: 900 });
+  const intermediateFontSize = await trainerButton.evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).fontSize),
+  );
+  expect(intermediateFontSize).toBeGreaterThanOrEqual(14);
 });
 
 test('confirms before discarding an in-progress game', async ({ page }) => {

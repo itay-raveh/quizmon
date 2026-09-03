@@ -166,7 +166,7 @@
   left: var(--r-daily-action-x);
   display: grid;
   width: var(--r-daily-action-w);
-  height: 5.1%;
+  height: 3.25rem;
   grid-template-columns: auto repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
 }
@@ -179,7 +179,7 @@
   font-size: var(--text-brand-control);
 }
 
-.landing__actions .settings-button {
+.landing__actions .settings-button.game-button {
   width: 3.25rem;
   min-width: 3.25rem;
   height: 100%;
