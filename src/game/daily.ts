@@ -2,13 +2,13 @@ import { site } from '../app/site';
 import { buildQuestionSequence, defaultModifiers } from './game';
 import {
   generations,
-  questionTypes,
   type GameMode,
   type Modifiers,
   type PokemonCatalog,
   type QuestionData,
   type QuestionType,
 } from './types';
+import { questionTypes } from './questions/registry';
 
 const DAILY_CHALLENGE_VERSION = 8;
 const DAILY_QUESTION_COUNT = 5;
@@ -89,13 +89,20 @@ export const getDailyQuestionTypes = (
 export const buildDailyQuestions = (
   catalog: PokemonCatalog,
   date: string,
-): QuestionData[] =>
-  buildQuestionSequence(
+): QuestionData[] => {
+  const questions = buildQuestionSequence(
     catalog,
     getDailyQuestionTypes(date),
     getDailyModifiers(defaultModifiers),
     createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
   );
+
+  if (questions.length !== DAILY_QUESTION_COUNT) {
+    throw new Error('Daily Challenge must contain exactly five questions');
+  }
+
+  return questions;
+};
 
 export const getModeLabel = (mode: GameMode): string =>
   mode.kind === 'daily'

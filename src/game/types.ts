@@ -12,30 +12,32 @@ export const generations = [
 
 export type Generation = (typeof generations)[number];
 
-export const questionTypeDefinitions = {
-  'pokedex-scan': { category: 'identity', label: 'Pokédex scan' },
-  'silhouette-match': { category: 'identity', label: 'Silhouette match' },
-  'pixel-peek': { category: 'identity', label: 'Pixel peek' },
-  'shiny-spotter': { category: 'identity', label: 'Shiny spotter' },
-  'battle-view': { category: 'identity', label: 'Battle view' },
-  'field-notes': { category: 'description', label: 'Field notes' },
-  'type-check': { category: 'type', label: 'Type check' },
-  'odd-one-out': { category: 'type', label: 'Odd one out' },
-  'type-roundup': { category: 'type', label: 'Type roundup' },
-  'evolution-shift': { category: 'evolution', label: 'Evolution shift' },
-  'ability-check': { category: 'ability', label: 'Ability check' },
-  'move-check': { category: 'move', label: 'Move check' },
-  'stat-showdown': { category: 'stat', label: 'Stat showdown' },
-  'type-matchup': { category: 'matchup', label: 'Type matchup' },
-  'counter-pick': { category: 'matchup', label: 'Counter pick' },
-} as const;
-
-export type QuestionType = keyof typeof questionTypeDefinitions;
-export const questionTypes = Object.keys(
-  questionTypeDefinitions,
-) as QuestionType[];
+export type QuestionType =
+  | 'ability-check'
+  | 'battle-view'
+  | 'counter-pick'
+  | 'evolution-shift'
+  | 'field-notes'
+  | 'move-check'
+  | 'odd-one-out'
+  | 'pixel-peek'
+  | 'pokedex-scan'
+  | 'shiny-spotter'
+  | 'silhouette-match'
+  | 'stat-showdown'
+  | 'type-check'
+  | 'type-matchup'
+  | 'type-roundup';
 export type QuestionCategory =
-  (typeof questionTypeDefinitions)[QuestionType]['category'] | 'champion';
+  | 'ability'
+  | 'champion'
+  | 'description'
+  | 'evolution'
+  | 'identity'
+  | 'matchup'
+  | 'move'
+  | 'stat'
+  | 'type';
 
 export const statNames = [
   'hp',

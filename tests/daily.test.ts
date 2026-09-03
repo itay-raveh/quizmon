@@ -8,12 +8,8 @@ import {
   parseDailyDate,
   shouldAutoStartDaily,
 } from '@/game/daily';
-import {
-  generations,
-  questionTypeDefinitions,
-  questionTypes,
-  type PokemonCatalog,
-} from '@/game/types';
+import { generations, type PokemonCatalog } from '@/game/types';
+import { questionRegistry, questionTypes } from '@/game/questions/registry';
 
 const catalog = catalogData as PokemonCatalog;
 
@@ -25,11 +21,50 @@ describe('Daily Challenge', () => {
 
     expect(first).toEqual(second);
     expect(first).toHaveLength(5);
+    expect(
+      first.map((question) => ({
+        correctOptions: question.answer.correctOptions,
+        id: question.id,
+        pokemonName: question.pokemonName,
+        title: getQuestionTitle(question),
+      })),
+    ).toEqual([
+      {
+        correctOptions: ['charmeleon'],
+        id: 'type:charmeleon:0',
+        pokemonName: 'charmeleon',
+        title: 'Odd one out',
+      },
+      {
+        correctOptions: ['cresselia'],
+        id: 'identity:cresselia:1',
+        pokemonName: 'cresselia',
+        title: 'Pixel peek',
+      },
+      {
+        correctOptions: ['psychic'],
+        id: 'type:beheeyem:2',
+        pokemonName: 'beheeyem',
+        title: 'Type check',
+      },
+      {
+        correctOptions: ['fire'],
+        id: 'type:emboar:3',
+        pokemonName: 'emboar',
+        title: 'Type check',
+      },
+      {
+        correctOptions: ['cloyster'],
+        id: 'champion:cloyster:4',
+        pokemonName: 'cloyster',
+        title: 'Champion question',
+      },
+    ]);
     expect(first.map(getQuestionTitle)).toEqual(
       schedule.map((questionType) =>
         questionType === 'champion'
           ? 'Champion question'
-          : questionTypeDefinitions[questionType].label,
+          : questionRegistry[questionType].label,
       ),
     );
     expect(schedule.at(-1)).toBe('champion');

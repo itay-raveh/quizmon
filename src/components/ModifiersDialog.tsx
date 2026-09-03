@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { filterPokemon, getQuestionTypeLabel } from '@/game/game';
 import {
   generations,
-  questionTypes,
   type Generation,
   type Modifiers,
   type PokemonCatalog,
   type QuestionType,
 } from '@/game/types';
+import { questionTypes } from '@/game/questions/registry';
 import { Checkbox } from './Checkbox';
 import { GameButton } from './GameButton';
 import { SelectionTile } from './SelectionTile';

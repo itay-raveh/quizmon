@@ -2,6 +2,7 @@ import catalogData from '@/game/data/pokemon.json';
 import { createSeededRandom } from '@/game/daily';
 import {
   buildQuestions,
+  buildQuestionSequence,
   calculateScore,
   defaultModifiers,
   filterPokemon,
@@ -21,9 +22,9 @@ import {
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
+import { questionRegistry, questionTypes } from '@/game/questions/registry';
 import {
   generations,
-  questionTypes,
   type PokemonCatalog,
   type PokemonKnowledge,
 } from '@/game/types';
@@ -150,6 +151,17 @@ describe('normalizeModifiers', () => {
 });
 
 describe('question building', () => {
+  it('keeps every selectable format in one complete registry', () => {
+    expect(Object.keys(questionRegistry)).toEqual(questionTypes);
+    expect(
+      questionTypes.every(
+        (questionType) =>
+          questionRegistry[questionType].category &&
+          questionRegistry[questionType].label,
+      ),
+    ).toBe(true);
+  });
+
   it('filters the normalized catalog by generation', () => {
     const names = filterPokemon(catalog, {
       ...defaultModifiers,
@@ -184,6 +196,31 @@ describe('question building', () => {
       );
       expect(new Set(question.options).size).toBe(4);
     }
+  });
+
+  it('fills a requested sequence when its preferred format is unavailable', () => {
+    const syntheticCatalog: PokemonCatalog = {
+      contentVersion: 1,
+      pokemon: Object.fromEntries(
+        [1, 2, 3, 4].map((id) => [
+          `pokemon-${id}`,
+          makeKnowledge(id, { description: '' }),
+        ]),
+      ),
+      typeRelations: {
+        fire: { doubleTo: [], halfTo: [], noneTo: [] },
+      },
+    };
+
+    const questions = buildQuestionSequence(
+      syntheticCatalog,
+      ['field-notes'],
+      defaultModifiers,
+      createSeededRandom('sequence-fallback'),
+    );
+
+    expect(questions).toHaveLength(1);
+    expect(questions[0]?.category).not.toBe('description');
   });
 
   it('prefers plausible Pokémon and property distractors', () => {
