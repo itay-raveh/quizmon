@@ -32,6 +32,11 @@ typography:
     fontFamily: 'Gabarito Variable, system-ui, sans-serif'
     fontSize: '1.75rem'
     fontWeight: 800
+  action-title:
+    fontFamily: 'Gabarito Variable, system-ui, sans-serif'
+    fontSize: 'clamp(1.25rem, 3.3vw, 1.5rem)'
+    fontWeight: 800
+    lineHeight: 1.15
   body:
     fontFamily: 'Gabarito Variable, system-ui, sans-serif'
     fontSize: '1rem'
@@ -180,6 +185,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 
 - **Display** (800, `clamp(1.65rem, 4.5vw, 2.3rem)`, 1.05): Question and results titles.
 - **Headline** (800, `clamp(1.35rem, 4vw, 1.75rem)`): Dialog titles.
+- **Action title** (800, `clamp(1.25rem, 3.3vw, 1.5rem)`, 1.15): The primary label inside the large Daily action.
 - **Body** (400, `1rem`): Instructions, descriptions, and general copy.
 - **Control** (700, `1rem`): Buttons, answers, selection labels, and result values.
 - **Label** (700, `0.82rem`, 1.35): Game modes, helper text, result details, and status copy.
@@ -241,7 +247,7 @@ Buttons are compact physical game controls.
 
 ### Daily Challenge Action
 
-The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. “Daily Challenge” is the primary line, with the date beneath it in compact data type. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button showing “Daily complete” and the score. Do not wrap it in another card or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
+The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. “Daily Challenge” is the primary line, with the date beneath it in compact data type. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button. Its primary label is the explicit action “Share result,” reinforced by a share icon, while “Daily complete” and the score become supporting detail. Do not bury the action inside score metadata, wrap the control in another card, or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
 
 A nonzero Daily Combo adds one capture-ball medallion at the action's right edge. Its large numeric center carries the visual weight, while the small Gabarito label names the combo without turning it into another statistic row. The copy shifts optically left to reserve the medallion's space. Compact and intermediate layouts keep the complete badge inside the action with a clear edge inset; wide layouts permit only a slight controlled overhang. The same medallion replaces the empty left cell in the Daily results header. A challenge earns credit only when completed on its own UTC date. Historical links never repair a combo. Existing consecutive daily results receive legacy credit once.
 

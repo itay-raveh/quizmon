@@ -66,10 +66,15 @@ export const Landing = ({
           result={dailyResult}
         >
           <span className="daily-action__copy">
-            <strong className="daily-action__title">Daily complete</strong>
+            <strong className="daily-action__title daily-action__share-title">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+              </svg>
+              Share result
+            </strong>
             <span className="daily-action__detail">
-              {dailyResult.score.toLocaleString()} points
-              {dailyResultSaved ? ' · Share' : ' · Not saved · Share'}
+              Daily complete · {dailyResult.score.toLocaleString()} points
+              {dailyResultSaved ? '' : ' · Not saved'}
             </span>
           </span>
           <CatchCombo count={dailyStreak} />

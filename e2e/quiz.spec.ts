@@ -840,12 +840,14 @@ test('shows a saved daily score instead of another play button', async ({
   });
 
   await page.goto('/?daily=2026-09-01');
-  await expect(page.getByText('Daily complete')).toBeVisible();
-  await expect(page.getByText('14,400 points · Share')).toBeVisible();
+  await expect(page.getByText('Share result')).toBeVisible();
+  await expect(page.getByText('Daily complete · 14,400 points')).toBeVisible();
   await expect(
     page.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toHaveCount(0);
-  await page.getByRole('button', { name: /Daily complete.*Share/ }).click();
+  await page
+    .getByRole('button', { name: /Share result.*Daily complete/ })
+    .click();
 
   await expect
     .poll(() =>
@@ -864,7 +866,7 @@ test('shows a saved daily score instead of another play button', async ({
   expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01&play=1');
   const { pathname, search } = new URL(sharedUrl!);
   await page.goto(`${pathname}${search}`);
-  await expect(page.getByText('14,400 points · Share')).toBeVisible();
+  await expect(page.getByText('Daily complete · 14,400 points')).toBeVisible();
 });
 
 test('starts the selected daily challenge from a shared link', async ({
