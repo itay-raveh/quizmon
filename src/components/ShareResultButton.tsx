@@ -12,6 +12,7 @@ interface ShareResultButtonProps {
   className?: string;
   mode: GameMode;
   result: GameResult;
+  tone?: 'primary' | 'quiet';
 }
 
 export const ShareResultButton = ({
@@ -19,6 +20,7 @@ export const ShareResultButton = ({
   className,
   mode,
   result,
+  tone = 'primary',
 }: ShareResultButtonProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [status, setStatus] = useState('');
@@ -40,7 +42,11 @@ export const ShareResultButton = ({
 
   return (
     <>
-      <GameButton className={className} onClick={() => void share()}>
+      <GameButton
+        className={className}
+        onClick={() => void share()}
+        tone={tone}
+      >
         {children}
       </GameButton>
       <span className="visually-hidden" aria-live="polite">

@@ -262,6 +262,10 @@ export const getCategoryLabel = (category: QuestionCategory): string =>
 export const getQuestionTypeLabel = (questionType: QuestionType): string =>
   questionRegistry[questionType].label;
 
+export const getQuestionTypeDescription = (
+  questionType: QuestionType,
+): string => questionRegistry[questionType].description;
+
 export const getCorrectOptions = (question: QuestionData): string[] =>
   question.answer.correctOptions;
 

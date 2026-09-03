@@ -54,6 +54,7 @@ describe('gameSessionReducer', () => {
       bestResult: result,
       isNewBest: true,
       mode: { kind: 'training' },
+      modifiers: defaultModifiers,
       phase: 'results',
       result,
       resultSaved: true,
@@ -72,9 +73,13 @@ describe('gameSessionReducer', () => {
       type: 'advanced',
     });
     const updated = gameSessionReducer(advanced, {
-      soundEnabled: false,
-      speedrunMode: true,
-      type: 'experience-updated',
+      modifiers: {
+        ...defaultModifiers,
+        generations: ['IX'],
+        soundEnabled: false,
+        speedrunMode: true,
+      },
+      type: 'settings-updated',
     });
 
     expect(updated).toMatchObject({
@@ -82,6 +87,9 @@ describe('gameSessionReducer', () => {
       modifiers: { soundEnabled: false, speedrunMode: true },
       phase: 'questions',
       questionIndex: 1,
+    });
+    expect(updated).toMatchObject({
+      modifiers: { generations: defaultModifiers.generations },
     });
     expect(gameSessionReducer(updated, { type: 'returned-to-landing' })).toBe(
       initialGameSession,

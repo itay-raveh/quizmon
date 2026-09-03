@@ -7,7 +7,14 @@ import {
   SCORE_VERSION,
 } from './game';
 import { getUtcDate, parseDailyDate } from './daily';
-import type { GameMode, GameResult, Modifiers } from './types';
+import { questionTypes } from './questions/registry';
+import {
+  generations,
+  type GameMode,
+  type GameResult,
+  type Modifiers,
+  type QuestionCategory,
+} from './types';
 
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
@@ -15,6 +22,31 @@ const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 const LEGACY_KNOWLEDGE_SCALE = 10;
 const LEGACY_SPEED_BONUS_SCALE = 120;
 const STREAK_VERSION = 1;
+const TRAINER_PROGRESS_VERSION = 1;
+const TRAINING_RECORD_VERSION = 2;
+const questionCategories: readonly QuestionCategory[] = [
+  'ability',
+  'champion',
+  'description',
+  'evolution',
+  'identity',
+  'matchup',
+  'move',
+  'stat',
+  'type',
+];
+
+interface CategoryProgress {
+  correct: number;
+  total: number;
+}
+
+interface TrainerProgress {
+  categories: Partial<Record<QuestionCategory, CategoryProgress>>;
+  gamesCompleted: number;
+  perfectRounds: number;
+  version: number;
+}
 
 interface DailyStreakState {
   creditedDates: string[];
@@ -23,12 +55,29 @@ interface DailyStreakState {
 
 interface SavedResults {
   daily: Record<string, GameResult>;
+  progress: TrainerProgress;
   streak: DailyStreakState;
   training: Record<string, GameResult>;
 }
 
+export interface TrainerStats {
+  bestDailyStreak: number;
+  dailyChallengesCompleted: number;
+  gamesCompleted: number;
+  perfectRounds: number;
+  strongestCategory: (CategoryProgress & { category: QuestionCategory }) | null;
+}
+
+const emptyProgress = (): TrainerProgress => ({
+  categories: {},
+  gamesCompleted: 0,
+  perfectRounds: 0,
+  version: TRAINER_PROGRESS_VERSION,
+});
+
 const emptyResults = (): SavedResults => ({
   daily: {},
+  progress: emptyProgress(),
   streak: { creditedDates: [], version: STREAK_VERSION },
   training: {},
 });
@@ -91,6 +140,75 @@ const normalizeStreak = (
   };
 };
 
+const addResultToProgress = (
+  progress: TrainerProgress,
+  result: GameResult,
+): TrainerProgress => {
+  const categories = { ...progress.categories };
+  for (const answer of result.answers) {
+    const current = categories[answer.category] ?? { correct: 0, total: 0 };
+    categories[answer.category] = {
+      correct: current.correct + Number(answer.correct),
+      total: current.total + 1,
+    };
+  }
+
+  return {
+    categories,
+    gamesCompleted: progress.gamesCompleted + 1,
+    perfectRounds:
+      progress.perfectRounds +
+      Number(result.correctCount === result.questionCount),
+    version: TRAINER_PROGRESS_VERSION,
+  };
+};
+
+const deriveProgress = (
+  daily: Record<string, GameResult>,
+  training: Record<string, GameResult>,
+): TrainerProgress =>
+  [...Object.values(daily), ...Object.values(training)].reduce(
+    addResultToProgress,
+    emptyProgress(),
+  );
+
+const normalizeProgress = (
+  progress: Partial<TrainerProgress> | undefined,
+  daily: Record<string, GameResult>,
+  training: Record<string, GameResult>,
+): TrainerProgress => {
+  if (
+    progress?.version !== TRAINER_PROGRESS_VERSION ||
+    typeof progress.gamesCompleted !== 'number' ||
+    !Number.isFinite(progress.gamesCompleted) ||
+    typeof progress.perfectRounds !== 'number' ||
+    !Number.isFinite(progress.perfectRounds) ||
+    !progress.categories ||
+    typeof progress.categories !== 'object'
+  ) {
+    return deriveProgress(daily, training);
+  }
+
+  const categories = Object.fromEntries(
+    Object.entries(progress.categories).filter(
+      ([category, value]) =>
+        questionCategories.includes(category as QuestionCategory) &&
+        value &&
+        Number.isFinite(value.correct) &&
+        Number.isFinite(value.total) &&
+        value.correct >= 0 &&
+        value.total >= value.correct,
+    ),
+  ) as TrainerProgress['categories'];
+
+  return {
+    categories,
+    gamesCompleted: Math.max(0, Math.trunc(progress.gamesCompleted)),
+    perfectRounds: Math.max(0, Math.trunc(progress.perfectRounds)),
+    version: TRAINER_PROGRESS_VERSION,
+  };
+};
+
 const readModifiers = (): Modifiers => {
   try {
     const stored = window.localStorage.getItem(SETTINGS_KEY);
@@ -136,27 +254,29 @@ export const markGenerationPromptAnswered = () => {
   }
 };
 
-const getTrainingKey = (questionCount: number): string =>
-  `questions:${questionCount}`;
+export const getTrainingRecordKey = (
+  modifiers: Modifiers,
+  questionCount: number,
+): string => {
+  const selectedGenerations = generations.filter((generation) =>
+    modifiers.generations.includes(generation),
+  );
+  const selectedQuestionTypes = questionTypes.filter((questionType) =>
+    modifiers.questionTypes.includes(questionType),
+  );
+
+  return JSON.stringify({
+    generations: selectedGenerations,
+    questionCount,
+    questionTypes: selectedQuestionTypes,
+    version: TRAINING_RECORD_VERSION,
+  });
+};
 
 const isBetterResult = (candidate: GameResult, previous: GameResult): boolean =>
   candidate.score > previous.score ||
   (candidate.score === previous.score &&
     candidate.elapsedSeconds < previous.elapsedSeconds);
-
-const getTrainingBest = (
-  results: Record<string, GameResult>,
-  questionCount: number,
-): GameResult | undefined =>
-  Object.values(results)
-    .filter(
-      (result) =>
-        result.questionCount === questionCount && Array.isArray(result.answers),
-    )
-    .reduce<GameResult | undefined>(
-      (best, result) => (!best || isBetterResult(result, best) ? result : best),
-      undefined,
-    );
 
 const readResults = (): SavedResults => {
   try {
@@ -164,10 +284,12 @@ const readResults = (): SavedResults => {
     if (!stored) return emptyResults();
     const parsed = JSON.parse(stored) as Partial<SavedResults>;
     const daily = normalizeResultRecord(parsed.daily);
+    const training = normalizeResultRecord(parsed.training);
     return {
       daily,
+      progress: normalizeProgress(parsed.progress, daily, training),
       streak: normalizeStreak(parsed.streak, daily),
-      training: normalizeResultRecord(parsed.training),
+      training,
     };
   } catch {
     return emptyResults();
@@ -216,9 +338,50 @@ export const readDailyStreak = (today = getUtcDate()): number => {
   return streak;
 };
 
+const getLongestStreak = (dates: readonly string[]): number => {
+  let longest = 0;
+  let current = 0;
+  let previous: string | undefined;
+
+  for (const date of [...new Set(dates)].sort()) {
+    current = previous && previousUtcDate(date) === previous ? current + 1 : 1;
+    longest = Math.max(longest, current);
+    previous = date;
+  }
+
+  return longest;
+};
+
+export const readTrainerStats = (): TrainerStats => {
+  const results = readResults();
+  const strongestCategory =
+    Object.entries(results.progress.categories)
+      .map(([category, progress]) => ({
+        category: category as QuestionCategory,
+        correct: progress?.correct ?? 0,
+        total: progress?.total ?? 0,
+      }))
+      .filter(({ total }) => total > 0)
+      .sort(
+        (left, right) =>
+          right.correct / right.total - left.correct / left.total ||
+          right.total - left.total ||
+          left.category.localeCompare(right.category),
+      )[0] ?? null;
+
+  return {
+    bestDailyStreak: getLongestStreak(results.streak.creditedDates),
+    dailyChallengesCompleted: Object.keys(results.daily).length,
+    gamesCompleted: results.progress.gamesCompleted,
+    perfectRounds: results.progress.perfectRounds,
+    strongestCategory,
+  };
+};
+
 export const saveResult = (
   mode: GameMode,
   result: GameResult,
+  modifiers: Modifiers = defaultModifiers,
 ): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
   const results = readResults();
   const normalizedResult = normalizeResult(result);
@@ -229,6 +392,7 @@ export const saveResult = (
       return { best: previous, isNewBest: false, isSaved: true };
     }
     results.daily[mode.date] = normalizedResult;
+    results.progress = addResultToProgress(results.progress, normalizedResult);
     if (
       mode.date === getUtcDate() &&
       !results.streak.creditedDates.includes(mode.date)
@@ -244,22 +408,15 @@ export const saveResult = (
     };
   }
 
-  const key = getTrainingKey(normalizedResult.questionCount);
-  const previous = getTrainingBest(
-    results.training,
-    normalizedResult.questionCount,
-  );
+  const key = getTrainingRecordKey(modifiers, normalizedResult.questionCount);
+  const previous = results.training[key];
   const isNewBest = !previous || isBetterResult(normalizedResult, previous);
-
-  if (!isNewBest) {
-    return { best: previous, isNewBest, isSaved: true };
-  }
-
-  results.training[key] = normalizedResult;
+  results.progress = addResultToProgress(results.progress, normalizedResult);
+  if (isNewBest) results.training[key] = normalizedResult;
   const isSaved = writeResults(results);
   return {
-    best: normalizedResult,
-    isNewBest: isSaved,
+    best: isNewBest ? normalizedResult : previous,
+    isNewBest: isNewBest && isSaved,
     isSaved,
   };
 };

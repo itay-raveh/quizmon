@@ -20,6 +20,7 @@ export type GameSession =
       bestResult: GameResult;
       isNewBest: boolean;
       mode: GameMode;
+      modifiers: Modifiers;
       phase: 'results';
       result: GameResult;
       resultSaved: boolean;
@@ -41,9 +42,8 @@ export type GameSessionAction =
       type: 'completed';
     }
   | {
-      soundEnabled: boolean;
-      speedrunMode: boolean;
-      type: 'experience-updated';
+      modifiers: Modifiers;
+      type: 'settings-updated';
     }
   | { type: 'returned-to-landing' };
 
@@ -77,21 +77,25 @@ export const gameSessionReducer = (
             bestResult: action.bestResult,
             isNewBest: action.isNewBest,
             mode: session.mode,
+            modifiers: session.modifiers,
             phase: 'results',
             result: action.result,
             resultSaved: action.resultSaved,
           }
         : session;
-    case 'experience-updated':
-      return session.phase === 'questions'
-        ? {
-            ...session,
-            modifiers: {
-              ...session.modifiers,
-              soundEnabled: action.soundEnabled,
-              speedrunMode: action.speedrunMode,
-            },
-          }
+    case 'settings-updated':
+      if (session.phase === 'questions') {
+        return {
+          ...session,
+          modifiers: {
+            ...session.modifiers,
+            soundEnabled: action.modifiers.soundEnabled,
+            speedrunMode: action.modifiers.speedrunMode,
+          },
+        };
+      }
+      return session.phase === 'results'
+        ? { ...session, modifiers: action.modifiers }
         : session;
     case 'returned-to-landing':
       return initialGameSession;

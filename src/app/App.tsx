@@ -31,6 +31,7 @@ import {
   markGenerationPromptAnswered,
   readDailyResult,
   readDailyStreak,
+  readTrainerStats,
   saveResult,
   shouldShowGenerationPrompt,
   usePersistentModifiers,
@@ -80,6 +81,7 @@ export const App = () => {
     ),
   );
   const [dailyStreak, setDailyStreak] = useState(readDailyStreak);
+  const [trainerStats, setTrainerStats] = useState(readTrainerStats);
   const [storageAvailable] = useState(canPersistResults);
   const linkedDailyStarted = useRef(false);
   const { elapsedMilliseconds, elapsedSeconds, pause, reset, start } =
@@ -93,6 +95,7 @@ export const App = () => {
         setDailyResultSaved(true);
       }
       setDailyStreak(readDailyStreak());
+      setTrainerStats(readTrainerStats());
     };
 
     window.addEventListener('focus', syncDailyResult);
@@ -194,6 +197,22 @@ export const App = () => {
     dispatchSession({ type: 'returned-to-landing' });
   }, [pause, reset]);
 
+  const trainAgain = useCallback(() => {
+    if (
+      session.phase !== 'results' ||
+      session.mode.kind !== 'training' ||
+      catalogState.status !== 'ready'
+    ) {
+      return;
+    }
+
+    startGame(
+      buildQuestions(catalogState.catalog, session.modifiers),
+      session.modifiers,
+      { kind: 'training' },
+    );
+  }, [catalogState, session, startGame]);
+
   const requestLeaveGame = useCallback(() => {
     if (session.phase !== 'questions' || session.answers.length === 0) {
       newGame();
@@ -229,11 +248,10 @@ export const App = () => {
         markGenerationPromptAnswered();
         setGenerationPromptPending(false);
       }
-      if (phase === 'questions') {
+      if (phase === 'questions' || phase === 'results') {
         dispatchSession({
-          soundEnabled: nextModifiers.soundEnabled,
-          speedrunMode: nextModifiers.speedrunMode,
-          type: 'experience-updated',
+          modifiers: nextModifiers,
+          type: 'settings-updated',
         });
       }
       setSettings(null);
@@ -263,7 +281,8 @@ export const App = () => {
           score: calculateScore(nextAnswers),
           scoreVersion: SCORE_VERSION,
         };
-        const best = saveResult(session.mode, nextResult);
+        const best = saveResult(session.mode, nextResult, session.modifiers);
+        setTrainerStats(readTrainerStats());
         trackGameCompleted(session.mode, nextResult);
         dispatchSession({
           bestResult: best.best,
@@ -343,8 +362,10 @@ export const App = () => {
               mode={session.mode}
               onNewGame={newGame}
               onOpenSettings={() => openSettings('experience')}
+              onTrainAgain={trainAgain}
               result={session.result}
               resultSaved={session.resultSaved}
+              trainerStats={trainerStats}
             />
           ) : null}
         </main>

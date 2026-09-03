@@ -157,6 +157,8 @@ describe('question building', () => {
       questionTypes.every(
         (questionType) =>
           questionRegistry[questionType].category &&
+          questionRegistry[questionType].description &&
+          questionRegistry[questionType].group &&
           questionRegistry[questionType].label,
       ),
     ).toBe(true);

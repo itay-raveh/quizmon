@@ -1,9 +1,12 @@
 import {
   canPersistResults,
+  getTrainingRecordKey,
   readDailyResult,
   readDailyStreak,
+  readTrainerStats,
   saveResult,
 } from '@/game/storage';
+import { defaultModifiers } from '@/game/game';
 import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
@@ -121,9 +124,9 @@ describe('saved results', () => {
     expect(readDailyStreak('2026-01-03')).toBe(0);
   });
 
-  it('keeps the best Training score for each quiz length', () => {
+  it('keeps a separate Training best for each knowledge configuration', () => {
     const mode = { kind: 'training' } as const;
-    saveResult(mode, result);
+    saveResult(mode, result, defaultModifiers);
     const lower = {
       ...result,
       answers: result.answers.map((answer) => ({
@@ -135,9 +138,19 @@ describe('saved results', () => {
       score: 0,
     };
 
-    expect(saveResult(mode, lower)).toEqual({
+    expect(saveResult(mode, lower, defaultModifiers)).toEqual({
       best: result,
       isNewBest: false,
+      isSaved: true,
+    });
+    expect(
+      saveResult(mode, lower, {
+        ...defaultModifiers,
+        generations: ['I'],
+      }),
+    ).toEqual({
+      best: lower,
+      isNewBest: true,
       isSaved: true,
     });
     const longer = {
@@ -149,33 +162,63 @@ describe('saved results', () => {
       correctCount: 2,
       questionCount: 3,
     };
-    expect(saveResult(mode, longer).isNewBest).toBe(true);
+    expect(saveResult(mode, longer, defaultModifiers).isNewBest).toBe(true);
   });
 
-  it('recovers a Training best saved under an obsolete settings key', () => {
+  it('normalizes Training record keys independently of selection order', () => {
+    const reordered = {
+      ...defaultModifiers,
+      generations: [...defaultModifiers.generations].reverse(),
+      questionTypes: [...defaultModifiers.questionTypes].reverse(),
+    };
+
+    expect(getTrainingRecordKey(reordered, 10)).toBe(
+      getTrainingRecordKey(defaultModifiers, 10),
+    );
+  });
+
+  it('builds Trainer Card totals and migrates existing records', () => {
     window.localStorage.setItem(
       'quizmon.results.v2',
       JSON.stringify({
-        daily: {},
+        daily: {
+          '2026-08-31': result,
+          '2026-09-01': result,
+          '2026-09-02': result,
+        },
+        streak: {
+          creditedDates: ['2026-08-31', '2026-09-01', '2026-09-02'],
+          version: 1,
+        },
         training: {
-          '{"generations":["I"],"oldSetting":true}': result,
+          legacy: {
+            ...result,
+            answers: result.answers.map((answer) => ({
+              ...answer,
+              correct: true,
+            })),
+            correctCount: result.questionCount,
+          },
         },
       }),
     );
-    const lower = {
-      ...result,
-      answers: result.answers.map((answer) => ({
-        ...answer,
-        correct: false,
-        points: 0,
-      })),
-      correctCount: 0,
-    };
 
-    expect(saveResult({ kind: 'training' }, lower)).toEqual({
-      best: result,
-      isNewBest: false,
-      isSaved: true,
+    expect(readTrainerStats()).toEqual({
+      bestDailyStreak: 3,
+      dailyChallengesCompleted: 3,
+      gamesCompleted: 4,
+      perfectRounds: 1,
+      strongestCategory: {
+        category: 'identity',
+        correct: 4,
+        total: 4,
+      },
+    });
+
+    saveResult({ kind: 'training' }, result, defaultModifiers);
+    expect(readTrainerStats()).toMatchObject({
+      gamesCompleted: 5,
+      perfectRounds: 1,
     });
   });
 

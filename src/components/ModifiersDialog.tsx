@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { filterPokemon, getQuestionTypeLabel } from '@/game/game';
+import {
+  filterPokemon,
+  getQuestionTypeDescription,
+  getQuestionTypeLabel,
+} from '@/game/game';
 import {
   generations,
   type Generation,
@@ -7,7 +11,11 @@ import {
   type PokemonCatalog,
   type QuestionType,
 } from '@/game/types';
-import { questionTypes } from '@/game/questions/registry';
+import {
+  questionTypeGroups,
+  questionTypes,
+  questionRegistry,
+} from '@/game/questions/registry';
 import { Checkbox } from './Checkbox';
 import { GameButton } from './GameButton';
 import { SelectionTile } from './SelectionTile';
@@ -235,12 +243,17 @@ export const ModifiersDialog = ({
               </div>
             </fieldset>
 
-            <fieldset>
-              <legend>Question types</legend>
+            <section
+              className="question-type-settings"
+              aria-labelledby="question-types-title"
+            >
               <div className="field-description-row">
-                <p className="field-description">
-                  Pick the formats you want to practice.
-                </p>
+                <div>
+                  <h3 id="question-types-title">Question types</h3>
+                  <p className="field-description">
+                    Pick the formats you want to practice.
+                  </p>
+                </div>
                 <button
                   aria-label={`${allQuestionTypesSelected ? 'Deselect' : 'Select'} all question types`}
                   className="selection-toggle"
@@ -257,26 +270,70 @@ export const ModifiersDialog = ({
                   {allQuestionTypesSelected ? 'Deselect all' : 'Select all'}
                 </button>
               </div>
-              <div className="selection-grid selection-grid--question-types">
-                {questionTypes.map((questionType) => (
-                  <SelectionTile
-                    checked={draft.questionTypes.includes(questionType)}
-                    key={questionType}
-                    label={getQuestionTypeLabel(questionType)}
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        questionTypes: toggleValue<QuestionType>(
-                          current.questionTypes,
-                          questionType,
-                          event.target.checked,
-                        ),
-                      }))
-                    }
-                  />
-                ))}
-              </div>
-            </fieldset>
+              {questionTypeGroups.map((group) => {
+                const groupedQuestionTypes = questionTypes.filter(
+                  (questionType) =>
+                    questionRegistry[questionType].group === group.id,
+                );
+                const allGroupSelected = groupedQuestionTypes.every(
+                  (questionType) => draft.questionTypes.includes(questionType),
+                );
+
+                return (
+                  <fieldset className="question-type-group" key={group.id}>
+                    <legend>{group.label}</legend>
+                    <div className="question-type-group__heading">
+                      <p className="field-description">{group.description}</p>
+                      <button
+                        aria-label={`${allGroupSelected ? 'Deselect' : 'Select'} all ${group.label.toLowerCase()} question types`}
+                        className="selection-toggle selection-toggle--group"
+                        onClick={() =>
+                          setDraft((current) => ({
+                            ...current,
+                            questionTypes: allGroupSelected
+                              ? current.questionTypes.filter(
+                                  (questionType) =>
+                                    !groupedQuestionTypes.includes(
+                                      questionType,
+                                    ),
+                                )
+                              : [
+                                  ...new Set([
+                                    ...current.questionTypes,
+                                    ...groupedQuestionTypes,
+                                  ]),
+                                ],
+                          }))
+                        }
+                        type="button"
+                      >
+                        {allGroupSelected ? 'Deselect group' : 'Select group'}
+                      </button>
+                    </div>
+                    <div className="selection-grid selection-grid--question-types">
+                      {groupedQuestionTypes.map((questionType) => (
+                        <SelectionTile
+                          checked={draft.questionTypes.includes(questionType)}
+                          description={getQuestionTypeDescription(questionType)}
+                          key={questionType}
+                          label={getQuestionTypeLabel(questionType)}
+                          onChange={(event) =>
+                            setDraft((current) => ({
+                              ...current,
+                              questionTypes: toggleValue<QuestionType>(
+                                current.questionTypes,
+                                questionType,
+                                event.target.checked,
+                              ),
+                            }))
+                          }
+                        />
+                      ))}
+                    </div>
+                  </fieldset>
+                );
+              })}
+            </section>
 
             <fieldset>
               <legend>Quiz length</legend>

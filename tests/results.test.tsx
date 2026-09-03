@@ -36,8 +36,16 @@ const renderResults = (result: GameResult) =>
       mode={{ kind: 'training' }}
       onNewGame={vi.fn()}
       onOpenSettings={vi.fn()}
+      onTrainAgain={vi.fn()}
       result={result}
       resultSaved
+      trainerStats={{
+        bestDailyStreak: 4,
+        dailyChallengesCompleted: 7,
+        gamesCompleted: 12,
+        perfectRounds: 3,
+        strongestCategory: { category: 'type', correct: 9, total: 10 },
+      }}
     />,
   );
 
@@ -84,8 +92,16 @@ describe('results summary', () => {
         mode={{ kind: 'daily', date: '2026-09-03' }}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
+        onTrainAgain={vi.fn()}
         result={result}
         resultSaved
+        trainerStats={{
+          bestDailyStreak: 7,
+          dailyChallengesCompleted: 7,
+          gamesCompleted: 12,
+          perfectRounds: 3,
+          strongestCategory: { category: 'type', correct: 9, total: 10 },
+        }}
       />,
     );
 
@@ -94,5 +110,15 @@ describe('results summary', () => {
     ).toBeVisible();
     expect(screen.queryByText('Streak')).not.toBeInTheDocument();
     expect(screen.queryByText('Saved on this device.')).not.toBeInTheDocument();
+  });
+
+  it('shows local progression and keeps Training actions distinct', () => {
+    renderResults(makeResult(10, 5));
+
+    expect(screen.getByRole('heading', { name: 'Trainer Card' })).toBeVisible();
+    expect(screen.getByText('12')).toBeVisible();
+    expect(screen.getByText('Types')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Train again' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Back to start' })).toBeVisible();
   });
 });

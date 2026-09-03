@@ -9,11 +9,13 @@ import {
   getSpeedBonus,
 } from '@/game/game';
 import type { GameMode, GameResult } from '@/game/types';
+import type { TrainerStats } from '@/game/storage';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
 import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
+import { TrainerCard } from './TrainerCard';
 
 interface ResultsProps {
   bestResult: GameResult;
@@ -22,8 +24,10 @@ interface ResultsProps {
   mode: GameMode;
   onNewGame: () => void;
   onOpenSettings: () => void;
+  onTrainAgain: () => void;
   result: GameResult;
   resultSaved: boolean;
+  trainerStats: TrainerStats;
 }
 
 export const Results = ({
@@ -33,8 +37,10 @@ export const Results = ({
   mode,
   onNewGame,
   onOpenSettings,
+  onTrainAgain,
   result,
   resultSaved,
+  trainerStats,
 }: ResultsProps) => {
   const { playScore, stopScore } = useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -126,12 +132,24 @@ export const Results = ({
         </p>
       ) : null}
 
-      <div className="results__actions">
-        <ShareResultButton mode={mode} result={result} />
-        <GameButton tone="quiet" onClick={onNewGame}>
-          {mode.kind === 'daily' ? 'Back to start' : 'Train again'}
-        </GameButton>
-      </div>
+      <TrainerCard stats={trainerStats} />
+
+      {mode.kind === 'training' ? (
+        <div className="results__actions results__actions--training">
+          <GameButton onClick={onTrainAgain}>Train again</GameButton>
+          <ShareResultButton mode={mode} result={result} tone="quiet" />
+          <GameButton tone="quiet" onClick={onNewGame}>
+            Back to start
+          </GameButton>
+        </div>
+      ) : (
+        <div className="results__actions">
+          <ShareResultButton mode={mode} result={result} />
+          <GameButton tone="quiet" onClick={onNewGame}>
+            Back to start
+          </GameButton>
+        </div>
+      )}
     </section>
   );
 };

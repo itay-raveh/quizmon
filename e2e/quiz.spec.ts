@@ -362,6 +362,33 @@ test('answers questions with the number keys', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('repeats Training immediately with the same configuration', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await seedBrowserRandom(page, 'training-rematch');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Pokédex scan' }),
+  ).toBeVisible();
+  await page.locator('.answer').first().click();
+
+  await expect(
+    page.getByRole('heading', { name: 'Training complete' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Trainer Card' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Train again' }).click();
+
+  await expect(
+    page.getByRole('heading', { name: 'Pokédex scan' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 001');
+});
+
 test('confirms before discarding an in-progress game', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
@@ -439,6 +466,16 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await dialog
     .getByRole('button', { name: 'Select all question types' })
     .click();
+  await expect(dialog.getByRole('group', { name: 'Identity' })).toBeVisible();
+  await expect(
+    dialog.getByRole('group', { name: 'General knowledge' }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole('group', { name: 'Battle knowledge' }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText('Name a Pokémon from its back sprite.'),
+  ).toBeVisible();
   await expect(dialog.getByLabel('Battle view')).toBeChecked();
   await expect(dialog.getByLabel('Counter pick')).toBeChecked();
   await expect(dialog.getByLabel('Evolution shift')).toBeChecked();

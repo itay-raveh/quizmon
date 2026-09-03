@@ -1089,10 +1089,102 @@ main {
   color: var(--wrong);
 }
 
+.trainer-card {
+  margin: 0 0 1.2rem;
+  overflow: hidden;
+  text-align: left;
+  background: var(--paper);
+  border: 2px solid var(--navy);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.18rem 0 var(--yellow);
+}
+
+.trainer-card__header {
+  display: flex;
+  padding: 0.55rem 0.7rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  color: var(--paper);
+  background: var(--blue);
+  border-bottom: 2px solid var(--navy);
+}
+
+.trainer-card__header h2 {
+  margin: 0;
+  font-size: var(--text-control);
+}
+
+.trainer-card__header span {
+  font-family: var(--font-data);
+  font-size: var(--text-tiny);
+  font-weight: 800;
+}
+
+.trainer-card__record {
+  display: grid;
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.trainer-card__record > div {
+  display: grid;
+  min-width: 0;
+  padding: 0.65rem;
+  align-content: space-between;
+  gap: 0.2rem;
+  border-right: 1px solid rgba(8, 59, 126, 0.22);
+}
+
+.trainer-card__record > div:last-child {
+  border-right: 0;
+}
+
+.trainer-card__record dt,
+.trainer-card__strength span {
+  color: var(--muted);
+  font-size: var(--text-tiny);
+  font-weight: 800;
+}
+
+.trainer-card__record dd {
+  margin: 0;
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: var(--text-control);
+  font-weight: 800;
+}
+
+.trainer-card__strength {
+  display: grid;
+  padding: 0.55rem 0.7rem;
+  margin: 0;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  border-top: 1px solid rgba(8, 59, 126, 0.22);
+}
+
+.trainer-card__strength strong {
+  color: var(--navy);
+}
+
+.trainer-card__strength small {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-tiny);
+  font-weight: 800;
+}
+
 .results__actions {
   display: flex;
   justify-content: center;
   gap: 0.7rem;
+}
+
+.results__actions--training {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .share-status {
@@ -1420,6 +1512,39 @@ main {
   margin: 0;
 }
 
+.question-type-settings {
+  margin-bottom: 1.25rem;
+}
+
+.question-type-settings h3 {
+  margin: 0;
+  color: var(--navy);
+  font-size: inherit;
+}
+
+.question-type-settings > .field-description-row {
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+
+.modifiers-form .question-type-group {
+  padding-top: 0.85rem;
+  margin-bottom: 1rem;
+  border-top: 2px solid rgba(8, 59, 126, 0.18);
+}
+
+.question-type-group__heading {
+  display: flex;
+  margin: 0.2rem 0 0.65rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.question-type-group__heading .field-description {
+  margin: 0;
+}
+
 .selection-toggle {
   min-height: 2.75rem;
   padding: 0.35rem 0.65rem;
@@ -1442,6 +1567,12 @@ main {
 .selection-toggle:active {
   box-shadow: none;
   transform: translateY(0.12rem);
+}
+
+.selection-toggle--group {
+  min-height: 2.2rem;
+  padding-block: 0.2rem;
+  white-space: nowrap;
 }
 
 .selection-grid {
@@ -1477,7 +1608,7 @@ main {
   display: grid;
   min-height: 3.15rem;
   padding: 0.6rem 1.75rem 0.6rem 0.7rem;
-  align-items: center;
+  align-content: center;
   color: var(--navy);
   background: var(--paper);
   border: 2px solid var(--navy);
@@ -1501,8 +1632,27 @@ main {
   line-height: 1.15;
 }
 
+.selection-tile__description {
+  margin-top: 0.22rem;
+  color: var(--muted);
+  font-size: var(--text-tiny);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.selection-tile
+  input:checked
+  + .selection-tile__surface
+  .selection-tile__description {
+  color: var(--primary-text);
+}
+
 .selection-grid--question-types .selection-tile__label {
   font-size: var(--text-compact-control);
+}
+
+.selection-grid--question-types .selection-tile__surface {
+  min-height: 4.65rem;
 }
 
 .selection-tile--generation .selection-tile__label {
@@ -1953,6 +2103,19 @@ main {
 
   .selection-grid--question-types {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .question-type-group__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .selection-toggle--group {
+    align-self: flex-start;
+  }
+
+  .results__actions--training {
+    grid-template-columns: 1fr;
   }
 
   .limit-control {
