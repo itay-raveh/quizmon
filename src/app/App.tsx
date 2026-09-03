@@ -19,13 +19,7 @@ import {
   readActiveGame,
   writeActiveGame,
 } from '@/game/active-game';
-import {
-  buildDailyQuestions,
-  getDailyModifiers,
-  getUtcDate,
-  parseDailyDate,
-  shouldAutoStartDaily,
-} from '@/game/daily';
+import { buildDailyQuestions, getUtcDate } from '@/game/daily';
 import {
   buildQuestions,
   calculateScore,
@@ -33,12 +27,7 @@ import {
   SCORE_VERSION,
 } from '@/game/game';
 import { createRoundSeed, createSeededRandom } from '@/game/random';
-import {
-  canPersistResults,
-  readDailyResult,
-  readDailyStreak,
-  saveResult,
-} from '@/game/storage';
+import { readDailyResult, saveResult } from '@/game/storage';
 import {
   markGenerationPromptAnswered,
   shouldShowGenerationPrompt,
@@ -48,13 +37,13 @@ import { useStopwatch } from '@/game/stopwatch';
 import { generations } from '@/game/types';
 import type {
   GameMode,
-  GameResult,
   Generation,
   Modifiers,
   AnswerResult,
   QuestionData,
 } from '@/game/types';
 import { gameSessionReducer, initialGameSession } from './session';
+import { useDailyChallenge } from './useDailyChallenge';
 import { useTrainerCard } from './useTrainerCard';
 
 interface SettingsState {
@@ -87,23 +76,6 @@ export const App = () => {
     generationPromptPending.current ??= shouldShowGenerationPrompt();
     return generationPromptPending.current;
   };
-  const [linkedDailyDate] = useState(() =>
-    parseDailyDate(window.location.search),
-  );
-  const [dailyDate] = useState(() => linkedDailyDate ?? getUtcDate());
-  const [autoStartDaily] = useState(
-    () =>
-      !new URLSearchParams(window.location.search).has('trainer') &&
-      shouldAutoStartDaily(window.location.search),
-  );
-  const [dailyResult, setDailyResult] = useState<GameResult | null>(() =>
-    readDailyResult(linkedDailyDate ?? getUtcDate()),
-  );
-  const [dailyResultSaved, setDailyResultSaved] = useState(() =>
-    Boolean(readDailyResult(linkedDailyDate ?? getUtcDate())),
-  );
-  const [dailyStreak, setDailyStreak] = useState(readDailyStreak);
-  const [storageAvailable] = useState(canPersistResults);
   const restorationAttempted = useRef(false);
   const {
     elapsedMilliseconds,
@@ -113,25 +85,6 @@ export const App = () => {
     reset,
     start,
   } = useStopwatch();
-
-  useEffect(() => {
-    const syncDailyResult = () => {
-      const saved = readDailyResult(dailyDate);
-      if (saved) {
-        setDailyResult(saved);
-        setDailyResultSaved(true);
-      }
-      setDailyStreak(readDailyStreak());
-      refreshTrainerCard();
-    };
-
-    window.addEventListener('focus', syncDailyResult);
-    window.addEventListener('storage', syncDailyResult);
-    return () => {
-      window.removeEventListener('focus', syncDailyResult);
-      window.removeEventListener('storage', syncDailyResult);
-    };
-  }, [dailyDate, refreshTrainerCard]);
 
   const startGame = useCallback(
     (
@@ -191,32 +144,22 @@ export const App = () => {
     );
   };
 
-  const startDailyGame = useCallback(() => {
-    if (catalogState.status !== 'ready' || dailyResult || !storageAvailable)
-      return;
-
-    const saved = readDailyResult(dailyDate);
-    if (saved) {
-      setDailyResult(saved);
-      setDailyResultSaved(true);
-      return;
-    }
-
-    const dailyModifiers = getDailyModifiers(modifiers);
-    startGame(
-      buildDailyQuestions(catalogState.catalog, dailyDate),
-      dailyModifiers,
-      { kind: 'daily', date: dailyDate },
-      `daily:${dailyDate}`,
-    );
-  }, [
-    catalogState,
-    dailyDate,
-    dailyResult,
-    modifiers,
-    startGame,
+  const {
+    autoStart: autoStartDaily,
+    date: dailyDate,
+    linkedDate: linkedDailyDate,
+    recordCompletion: recordDailyCompletion,
+    result: dailyResult,
+    resultSaved: dailyResultSaved,
+    start: startDailyGame,
     storageAvailable,
-  ]);
+    streak: dailyStreak,
+  } = useDailyChallenge({
+    catalog: catalogState.status === 'ready' ? catalogState.catalog : undefined,
+    modifiers,
+    refreshSavedData: refreshTrainerCard,
+    startGame,
+  });
 
   const newGame = useCallback(() => {
     clearActiveGame();
@@ -329,13 +272,11 @@ export const App = () => {
         type: 'completed',
       });
       if (mode.kind === 'daily') {
-        setDailyResult(best.best);
-        setDailyResultSaved(best.isSaved);
-        if (best.isSaved) setDailyStreak(readDailyStreak());
+        recordDailyCompletion(best.best, best.isSaved);
       }
       pause();
     },
-    [catalogState, pause, refreshTrainerStats],
+    [catalogState, pause, recordDailyCompletion, refreshTrainerStats],
   );
 
   useEffect(() => {
@@ -363,7 +304,9 @@ export const App = () => {
         snapshot.contentVersion !== catalogState.catalog.contentVersion
       ) {
         if (snapshot) clearActiveGame();
-        if (autoStartDaily && phase === 'landing') startDailyGame();
+        if (autoStartDaily && phase === 'landing') {
+          startDailyGame();
+        }
         return;
       }
 
@@ -386,7 +329,9 @@ export const App = () => {
         !answersMatchQuestions
       ) {
         clearActiveGame();
-        if (autoStartDaily && phase === 'landing') startDailyGame();
+        if (autoStartDaily && phase === 'landing') {
+          startDailyGame();
+        }
         return;
       }
 
