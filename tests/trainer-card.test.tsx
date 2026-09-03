@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { TrainerCard } from '@/components/TrainerCard';
-import type { TrainerProfile, TrainerStats } from '@/game/storage';
+import type { TrainerStats } from '@/game/storage';
+import type { TrainerProfile } from '@/game/trainer-profile';
 
 const profile: TrainerProfile = {
   accent: 'violet',

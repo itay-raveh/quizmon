@@ -1,7 +1,8 @@
 import type { Ref } from 'react';
 import { formatDailyDate } from '@/game/daily';
 import { formatPokemonName } from '@/game/format';
-import type { TrainerProfile, TrainerStats } from '@/game/storage';
+import type { TrainerStats } from '@/game/storage';
+import type { TrainerProfile } from '@/game/trainer-profile';
 import {
   getCardFinish,
   getTrainerRank,

@@ -3,9 +3,7 @@ import {
   getTrainingRecordKey,
   readDailyResult,
   readDailyStreak,
-  readTrainerProfile,
   readTrainerStats,
-  saveTrainerProfile,
   saveResult,
 } from '@/game/storage';
 import { defaultModifiers } from '@/game/game';
@@ -205,34 +203,6 @@ describe('saved results', () => {
       correct: 10,
       total: 10,
     });
-  });
-
-  it('creates and saves a versioned local Trainer profile', () => {
-    const profile = readTrainerProfile();
-
-    expect(profile.cardNumber).toMatch(/^QZ-\d{6}$/);
-    expect(profile.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(profile).toMatchObject({
-      accent: 'cobalt',
-      hasBeenRevealed: false,
-      name: '',
-      partnerPokemon: null,
-      version: 1,
-    });
-
-    const saved = saveTrainerProfile({
-      ...profile,
-      hasBeenRevealed: true,
-      name: '  Leaf  ',
-      partnerPokemon: 'bulbasaur',
-    });
-
-    expect(saved).toMatchObject({
-      hasBeenRevealed: true,
-      name: 'Leaf',
-      partnerPokemon: 'bulbasaur',
-    });
-    expect(readTrainerProfile()).toEqual(saved);
   });
 
   it('reports when browser storage cannot persist a result', () => {

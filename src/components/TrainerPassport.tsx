@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
+import type { TrainerStats } from '@/game/storage';
 import {
   requestPersistentStorage,
   trainerAccents,
   type TrainerAccent,
   type TrainerProfile,
-  type TrainerStats,
-} from '@/game/storage';
+} from '@/game/trainer-profile';
 import {
   downloadTrainerCard,
   renderTrainerCardImage,

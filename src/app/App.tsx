@@ -38,14 +38,16 @@ import {
   markGenerationPromptAnswered,
   readDailyResult,
   readDailyStreak,
-  readTrainerProfile,
   readTrainerStats,
-  saveTrainerProfile,
   saveResult,
   shouldShowGenerationPrompt,
   usePersistentModifiers,
-  type TrainerProfile,
 } from '@/game/storage';
+import {
+  readTrainerProfile,
+  saveTrainerProfile,
+  type TrainerProfile,
+} from '@/game/trainer-profile';
 import { useStopwatch } from '@/game/stopwatch';
 import { generations } from '@/game/types';
 import type {
