@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
 import {
   requestPersistentStorage,
@@ -41,6 +41,7 @@ export const TrainerPassport = ({
     key: string;
   } | null>(null);
   const [shareStatus, setShareStatus] = useState('');
+  const cardRef = useRef<HTMLElement>(null);
   const pokemonNames = useMemo(
     () => Object.keys(catalog.pokemon),
     [catalog.pokemon],
@@ -67,13 +68,11 @@ export const TrainerPassport = ({
   }, [revealing]);
 
   useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
     let active = true;
-    void renderTrainerCardImage({
-      face,
-      partnerSprite: savedPartnerSprite,
-      profile,
-      stats,
-    })
+    void renderTrainerCardImage(card)
       .then((blob) => {
         if (active) setPreparedImage({ blob, key: imageKey });
       })
@@ -83,7 +82,7 @@ export const TrainerPassport = ({
     return () => {
       active = false;
     };
-  }, [face, imageKey, profile, savedPartnerSprite, stats]);
+  }, [imageKey]);
 
   const flip = () => {
     if (turn !== 'idle') return;
@@ -181,6 +180,7 @@ export const TrainerPassport = ({
         className={`trainer-passport__card trainer-passport__card--${turn} ${revealing ? 'trainer-passport__card--reveal' : ''}`.trim()}
       >
         <TrainerCard
+          cardRef={cardRef}
           face={face}
           partnerSprite={savedPartnerSprite}
           profile={profile}

@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import { formatDailyDate } from '@/game/daily';
 import { formatPokemonName } from '@/game/format';
 import type { TrainerProfile, TrainerStats } from '@/game/storage';
@@ -10,6 +11,7 @@ import {
 } from '@/game/trainer';
 
 interface TrainerCardProps {
+  cardRef?: Ref<HTMLElement>;
   face: TrainerCardFace;
   partnerSprite: string | null;
   profile: TrainerProfile;
@@ -17,6 +19,7 @@ interface TrainerCardProps {
 }
 
 export const TrainerCard = ({
+  cardRef,
   face,
   partnerSprite,
   profile,
@@ -28,6 +31,7 @@ export const TrainerCard = ({
 
   return (
     <article
+      ref={cardRef}
       className={`trainer-card trainer-card--${face} trainer-card--${finish}`}
       aria-label={`Trainer Card ${face === 'front' ? 'front' : 'records'}`}
     >
