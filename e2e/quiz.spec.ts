@@ -167,6 +167,22 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   expect(await markdownResponse.text()).toBe(readme);
 });
 
+test("keeps today's Daily Challenge action concise", async ({ page }) => {
+  await page.goto('/');
+
+  const today = page.getByRole('button', { name: /Play Daily Challenge/ });
+  await expect(today).toBeVisible();
+  await expect(today.locator('.daily-action__detail')).toHaveCount(0);
+
+  await page.goto('/?daily=2026-09-01');
+  const historical = page.getByRole('button', {
+    name: /Play Daily Challenge for Sep 1, 2026/,
+  });
+  await expect(historical.locator('.daily-action__detail')).toHaveText(
+    'Sep 1, 2026',
+  );
+});
+
 test('loads the installed app shell and catalog offline', async ({
   context,
   page,

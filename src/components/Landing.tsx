@@ -1,4 +1,4 @@
-import { formatDailyDate } from '@/game/daily';
+import { formatDailyDate, getUtcDate } from '@/game/daily';
 import type { GameResult } from '@/game/types';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
@@ -35,6 +35,13 @@ export const Landing = ({
   partnerSprite,
   storageAvailable,
 }: LandingProps) => {
+  const dailyDetail = [
+    dailyDate === getUtcDate() ? null : formatDailyDate(dailyDate),
+    storageAvailable ? null : 'Browser storage required',
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
   return (
     <section className="landing" aria-labelledby="landing-title">
       <h1 id="landing-title" className="visually-hidden">
@@ -78,10 +85,9 @@ export const Landing = ({
         >
           <span className="daily-action__copy">
             <strong className="daily-action__title">Daily Challenge</strong>
-            <span className="daily-action__detail">
-              {formatDailyDate(dailyDate)}
-              {!storageAvailable ? ' · Browser storage required' : ''}
-            </span>
+            {dailyDetail ? (
+              <span className="daily-action__detail">{dailyDetail}</span>
+            ) : null}
           </span>
           <CatchCombo count={dailyStreak} />
         </GameButton>
