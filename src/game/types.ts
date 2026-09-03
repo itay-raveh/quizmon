@@ -51,6 +51,7 @@ export type StatName = (typeof statNames)[number];
 export interface PokemonKnowledge {
   abilities: string[];
   backSprite: string | null;
+  color: string;
   description: string;
   evolvesFrom: string | null;
   evolvesTo: string[];
@@ -58,6 +59,7 @@ export interface PokemonKnowledge {
   genus: string;
   id: number;
   levelMoves: string[];
+  shape: string;
   shinySprite: string | null;
   sprite: string | null;
   stats: Record<StatName, number>;

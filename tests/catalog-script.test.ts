@@ -27,17 +27,23 @@ const makeClient = (): CatalogClient => ({
     return Promise.resolve(
       resources.map((resource) => ({
         name: resourceName(resource),
+        color: { name: 'green' },
         evolution_chain: {
           url: `https://pokeapi.co/api/v2/evolution-chain/${resourceName(resource)}`,
         },
         evolves_from_species: null,
         flavor_text_entries: [
           {
-            flavor_text: `${resourceName(resource)} field notes.`,
+            flavor_text: `${resourceName(resource)} old field notes.`,
+            language: { name: 'en' },
+          },
+          {
+            flavor_text: `${resourceName(resource)} new\u00adest field notes.`,
             language: { name: 'en' },
           },
         ],
         genera: [{ genus: 'Test Pokémon', language: { name: 'en' } }],
+        shape: { name: 'quadruped' },
         varieties: [
           {
             is_default: true,
@@ -123,10 +129,12 @@ describe('catalog generation', () => {
     expect(catalog.pokemon['species-1']).toMatchObject({
       abilities: ['run-away'],
       backSprite: '/sprites/pokemon/back/1.png',
-      description: 'species-1 field notes.',
+      color: 'green',
+      description: 'species-1 newest field notes.',
       generation: 'I',
       genus: 'Test',
       levelMoves: ['tackle'],
+      shape: 'quadruped',
       shinySprite: '/sprites/pokemon/shiny/1.png',
       sprite: '/sprites/pokemon/1.png',
       types: ['normal'],

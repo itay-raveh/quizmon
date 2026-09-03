@@ -68,6 +68,7 @@ export const createCatalogClient = (
 const cleanText = (value: string): string =>
   value
     .replace(/[\n\f]/g, ' ')
+    .replace(/\u00ad/g, '')
     .replace(/pokémon/giu, 'Pokémon')
     .replace(/\s+/g, ' ')
     .trim();
@@ -75,6 +76,10 @@ const cleanText = (value: string): string =>
 const localized = <T extends { language: { name: string } }>(
   values: readonly T[],
 ): T | undefined => values.find(({ language }) => language.name === 'en');
+
+const latestLocalized = <T extends { language: { name: string } }>(
+  values: readonly T[],
+): T | undefined => values.findLast(({ language }) => language.name === 'en');
 
 const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   const values = Object.fromEntries(
@@ -186,13 +191,16 @@ export const buildPokemonCatalog = async (
     if (!species || !generation) {
       throw new Error(`${entry.name} is missing species metadata`);
     }
-    const description = localized(species.flavor_text_entries)?.flavor_text;
+    const description = latestLocalized(
+      species.flavor_text_entries,
+    )?.flavor_text;
     const genus = localized(species.genera)?.genus;
     entries[entry.name] = {
       abilities: entry.abilities
         .sort((left, right) => left.slot - right.slot)
         .map(({ ability }) => ability.name),
       backSprite: getBackSprite(entry),
+      color: species.color.name,
       description: description ? cleanText(description) : '',
       evolvesFrom: species.evolves_from_species?.name ?? null,
       evolvesTo: [...(evolvesTo.get(species.name) ?? [])].sort(),
@@ -200,6 +208,7 @@ export const buildPokemonCatalog = async (
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
       id: entry.id,
       levelMoves: getLevelMoves(entry),
+      shape: species.shape.name,
       shinySprite: getShinySprite(entry),
       sprite: getSprite(entry),
       stats: getStats(entry),
@@ -210,7 +219,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 8,
+    contentVersion: 9,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

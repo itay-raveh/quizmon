@@ -21,9 +21,43 @@ import {
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
-import { generations, questionTypes, type PokemonCatalog } from '@/game/types';
+import {
+  generations,
+  questionTypes,
+  type PokemonCatalog,
+  type PokemonKnowledge,
+} from '@/game/types';
 
 const catalog = catalogData as PokemonCatalog;
+
+const makeKnowledge = (
+  id: number,
+  overrides: Partial<PokemonKnowledge> = {},
+): PokemonKnowledge => ({
+  abilities: [`ability-${id}`],
+  backSprite: `/back/${id}.png`,
+  color: 'red',
+  description: `Entry ${id}`,
+  evolvesFrom: null,
+  evolvesTo: [],
+  generation: 'I',
+  genus: 'Test',
+  id,
+  levelMoves: [`move-${id}`],
+  shape: 'quadruped',
+  shinySprite: `/shiny/${id}.png`,
+  sprite: `/sprite/${id}.png`,
+  stats: {
+    attack: 50,
+    defense: 50,
+    hp: 50,
+    'special-attack': 50,
+    'special-defense': 50,
+    speed: 50,
+  },
+  types: ['fire'],
+  ...overrides,
+});
 
 const attackMultiplier = (
   attackType: string,
@@ -149,6 +183,60 @@ describe('question building', () => {
         expect.arrayContaining(getCorrectOptions(question)),
       );
       expect(new Set(question.options).size).toBe(4);
+    }
+  });
+
+  it('prefers plausible Pokémon and property distractors', () => {
+    const similarNames = ['target', 'peer-one', 'peer-two', 'peer-three'];
+    const syntheticCatalog: PokemonCatalog = {
+      contentVersion: 1,
+      pokemon: {
+        target: makeKnowledge(1, { abilities: ['blaze'] }),
+        'peer-one': makeKnowledge(2),
+        'peer-two': makeKnowledge(3),
+        'peer-three': makeKnowledge(4),
+        'unrelated-one': makeKnowledge(100, {
+          color: 'blue',
+          generation: 'IX',
+          shape: 'blob',
+          types: ['water'],
+        }),
+        'unrelated-two': makeKnowledge(101, {
+          color: 'black',
+          generation: 'VIII',
+          shape: 'wings',
+          types: ['flying'],
+        }),
+        'unrelated-three': makeKnowledge(102, {
+          color: 'white',
+          generation: 'VII',
+          shape: 'fish',
+          types: ['ice'],
+        }),
+      },
+      typeRelations: {
+        fire: { doubleTo: [], halfTo: [], noneTo: [] },
+        flying: { doubleTo: [], halfTo: [], noneTo: [] },
+        ice: { doubleTo: [], halfTo: [], noneTo: [] },
+        water: { doubleTo: [], halfTo: [], noneTo: [] },
+      },
+    };
+
+    const expectedOptions = {
+      'ability-check': ['blaze', 'ability-2', 'ability-3', 'ability-4'],
+      'pokedex-scan': similarNames,
+    } as const;
+
+    for (const questionType of ['pokedex-scan', 'ability-check'] as const) {
+      const [question] = buildQuestions(
+        syntheticCatalog,
+        { ...defaultModifiers, questionTypes: [questionType], limit: 1 },
+        () => 0,
+      );
+      expect(question?.pokemonName).toBe('target');
+      expect(new Set(question?.options)).toEqual(
+        new Set(expectedOptions[questionType]),
+      );
     }
   });
 

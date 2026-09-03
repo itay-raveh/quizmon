@@ -191,15 +191,54 @@ const pickTarget = (
   return target;
 };
 
-const optionSet = (
+const rankedOptionSet = (
   correct: string,
   candidates: readonly string[],
+  score: (candidate: string) => number,
   random: () => number,
 ): string[] => {
   const unique = [...new Set(candidates)].filter(
     (candidate) => candidate !== correct,
   );
-  return shuffle([...shuffle(unique, random).slice(0, 3), correct], random);
+  const ranked = shuffle(unique, random)
+    .map((candidate) => ({ candidate, score: score(candidate) }))
+    .sort((left, right) => right.score - left.score)
+    .map(({ candidate }) => candidate);
+  return shuffle([...ranked.slice(0, 3), correct], random);
+};
+
+const evolutionStage = (pokemon: PokemonKnowledge): number => {
+  if (!pokemon.evolvesFrom && pokemon.evolvesTo.length > 0) return 0;
+  if (pokemon.evolvesFrom && pokemon.evolvesTo.length > 0) return 1;
+  if (pokemon.evolvesFrom) return 2;
+  return 3;
+};
+
+const pokemonSimilarity = (
+  target: PokemonKnowledge,
+  candidate: PokemonKnowledge,
+): number => {
+  const sharedTypes = target.types.filter((type) =>
+    candidate.types.includes(type),
+  ).length;
+  const targetStats = statNames.reduce(
+    (total, stat) => total + target.stats[stat],
+    0,
+  );
+  const candidateStats = statNames.reduce(
+    (total, stat) => total + candidate.stats[stat],
+    0,
+  );
+
+  return (
+    sharedTypes * 12 +
+    (target.shape === candidate.shape ? 8 : 0) +
+    (target.color === candidate.color ? 5 : 0) +
+    (target.generation === candidate.generation ? 4 : 0) +
+    (evolutionStage(target) === evolutionStage(candidate) ? 3 : 0) +
+    Math.max(0, 3 - Math.abs(targetStats - candidateStats) / 80) +
+    Math.max(0, 2 - Math.abs(target.id - candidate.id) / 150)
+  );
 };
 
 const makeQuestion = (
@@ -283,13 +322,31 @@ const pokemonOptions = (
   context: QuestionContext,
   target: Candidate,
   excluded: readonly string[] = [],
+  candidates: readonly Candidate[] = context.pool,
 ) =>
-  optionSet(
+  rankedOptionSet(
     target.name,
-    context.pool
+    candidates
       .filter(({ name }) => name !== target.name && !excluded.includes(name))
       .map(({ name }) => name),
+    (name) => {
+      const candidate = context.catalog.pokemon[name];
+      return candidate ? pokemonSimilarity(target.pokemon, candidate) : 0;
+    },
     context.random,
+  );
+
+const typePlausibility = (
+  context: QuestionContext,
+  target: Candidate,
+  type: string,
+): number =>
+  context.pool.reduce(
+    (best, candidate) =>
+      candidate.pokemon.types.includes(type)
+        ? Math.max(best, pokemonSimilarity(target.pokemon, candidate.pokemon))
+        : best,
+    0,
   );
 
 const buildIdentityQuestion = (
@@ -365,10 +422,10 @@ const buildShinySpotterQuestion = (
     Boolean(shinySprite && sprite),
   );
   if (!target?.pokemon.shinySprite) return undefined;
-  const eligible = context.pool
-    .filter(({ pokemon }) => pokemon.sprite && pokemon.shinySprite)
-    .map(({ name }) => name);
-  const options = optionSet(target.name, eligible, context.random);
+  const eligible = context.pool.filter(
+    ({ pokemon }) => pokemon.sprite && pokemon.shinySprite,
+  );
+  const options = pokemonOptions(context, target, [], eligible);
   if (options.length !== 4) return undefined;
 
   return {
@@ -445,7 +502,12 @@ const buildTypeQuestion = (
     'type',
     target,
     correct,
-    optionSet(correct, candidates, context.random),
+    rankedOptionSet(
+      correct,
+      candidates,
+      (type) => typePlausibility(context, target, type),
+      context.random,
+    ),
     pokemonPrompt(target, 'Which type does ', ' have?'),
   );
 };
@@ -582,9 +644,12 @@ const buildEvolutionShiftQuestion = (
       'evolution',
       target,
       correct,
-      optionSet(
+      rankedOptionSet(
         correct,
-        Object.keys(context.catalog.typeRelations),
+        Object.keys(context.catalog.typeRelations).filter(
+          (type) => !target.pokemon.types.includes(type),
+        ),
+        (type) => typePlausibility(context, target, type),
         context.random,
       ),
       pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
@@ -605,9 +670,17 @@ const buildPropertyQuestion = (
   if (!correct) return undefined;
   const candidates = context.pool.flatMap(({ pokemon }) => pokemon[property]);
   const invalid = new Set(target.pokemon[property]);
-  const options = optionSet(
+  const options = rankedOptionSet(
     correct,
     candidates.filter((candidate) => !invalid.has(candidate)),
+    (candidate) =>
+      context.pool.reduce(
+        (best, owner) =>
+          owner.pokemon[property].includes(candidate)
+            ? Math.max(best, pokemonSimilarity(target.pokemon, owner.pokemon))
+            : best,
+        0,
+      ),
     context.random,
   );
   const subject = category === 'ability' ? 'ability' : 'move by leveling up';
@@ -644,7 +717,16 @@ const buildStatQuestion = (
     'stat',
     target,
     target.name,
-    optionSet(target.name, distractors, context.random),
+    rankedOptionSet(
+      target.name,
+      distractors,
+      (name) =>
+        -Math.abs(
+          target.pokemon.stats[stat] -
+            (context.catalog.pokemon[name]?.stats[stat] ?? 0),
+        ),
+      context.random,
+    ),
     textPrompt(
       `Which Pokémon has the highest base ${formatPokemonName(stat)}?`,
     ),
@@ -699,7 +781,23 @@ const buildMatchupQuestion = (
     'matchup',
     target,
     correct,
-    optionSet(correct, distractors, context.random),
+    rankedOptionSet(
+      correct,
+      distractors,
+      (type) => {
+        const relations = context.catalog.typeRelations[type];
+        const partialAdvantages = target.pokemon.types.filter((targetType) =>
+          relations?.doubleTo.includes(targetType),
+        ).length;
+        return (
+          partialAdvantages * 4 +
+          (attackMultiplier(context.catalog, type, target.pokemon.types) === 1
+            ? 2
+            : 0)
+        );
+      },
+      context.random,
+    ),
     pokemonPrompt(target, 'Which type is super effective against ', '?'),
   );
 };
@@ -729,11 +827,7 @@ const buildCounterPickQuestion = (
     if (counters.length === 0 || distractors.length < 3) continue;
     const correct = pick(counters, context.random);
     if (!correct) continue;
-    const options = optionSet(
-      correct.name,
-      distractors.map(({ name }) => name),
-      context.random,
-    );
+    const options = pokemonOptions(context, correct, [], distractors);
     context.used.add(target.name);
 
     return {
