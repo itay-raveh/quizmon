@@ -428,7 +428,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await page.getByRole('button', { name: 'Open Trainer Card' }).click();
 
   await expect(page).toHaveURL(/\?trainer=1$/);
   await expect(
@@ -445,6 +445,9 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await page.getByRole('button', { name: 'Customize' }).click();
   await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
   await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('Pikachu');
+  await expect(
+    page.getByRole('option', { name: 'Pikachu' }).locator('img'),
+  ).toHaveAttribute('src', '/sprites/pokemon/25.png');
   await page.getByRole('option', { name: 'Pikachu' }).click();
   await page.getByRole('button', { name: 'Save card' }).click();
 
@@ -491,6 +494,15 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL('/');
+  const trainerButton = page.getByRole('button', {
+    name: 'Open Trainer Card',
+  });
+  const trainerLabel = trainerButton.locator('.landing__trainer-label');
+  await expect(trainerLabel.getByText('Trainer')).toBeVisible();
+  await expect(trainerLabel.getByText('Card')).toBeVisible();
+  await expect(trainerButton.locator('img')).toBeVisible();
+  await page.setViewportSize({ width: 360, height: 720 });
+  await expect(trainerButton.locator('img')).toBeVisible();
 });
 
 test('confirms before discarding an in-progress game', async ({ page }) => {

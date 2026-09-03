@@ -425,11 +425,31 @@
 }
 
 .pokemon-picker li {
+  display: flex;
   min-height: 2.5rem;
-  padding: 0.5rem 0.65rem;
+  padding: 0.3rem 0.5rem;
+  align-items: center;
   border-radius: 0.25rem;
   font-weight: 750;
+  gap: 0.5rem;
   cursor: pointer;
+}
+
+.pokemon-picker__sprite {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  background: var(--sky);
+  border-radius: var(--icon-control-radius);
+  place-items: center;
+}
+
+.pokemon-picker__sprite img {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .pokemon-picker li:hover,

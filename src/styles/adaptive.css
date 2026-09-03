@@ -212,7 +212,7 @@
     width: 90%;
     height: 7.5%;
     gap: 0.38rem;
-    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.12fr);
+    grid-template-columns: auto minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
 
   .landing__actions .settings-button {
@@ -220,17 +220,18 @@
     min-width: 3.1rem;
   }
 
-  .landing__trainer-button img {
-    display: none;
-  }
-
   .landing__trainer-button.game-button {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    padding-right: 0.35rem;
   }
 
-  .landing__trainer-button svg {
-    display: none;
+  .landing__trainer-button .landing__trainer-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .landing__trainer-avatar img {
+    width: 2.2rem;
+    height: 2.2rem;
   }
 
   .landing__status {

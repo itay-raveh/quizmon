@@ -98,26 +98,27 @@ export const Landing = ({
           onClick={onOpenSettings}
         />
         <GameButton
+          aria-label="Open Trainer Card"
           className="landing__trainer-button"
           disabled={catalogStatus !== 'ready'}
           tone="quiet"
           onClick={onOpenTrainerCard}
         >
-          {partnerSprite ? (
-            <img
-              aria-hidden="true"
-              src={partnerSprite}
-              width="96"
-              height="96"
-            />
-          ) : (
-            <svg aria-hidden="true" viewBox="0 0 24 24">
-              <rect x="3" y="5" width="18" height="14" rx="2" />
-              <circle cx="8" cy="11" r="2" />
-              <path d="M5.5 16c.7-1.6 1.6-2.4 2.5-2.4s1.8.8 2.5 2.4M13 10h5M13 14h5" />
-            </svg>
-          )}
-          <span>Trainer Card</span>
+          <span aria-hidden="true" className="landing__trainer-avatar">
+            {partnerSprite ? (
+              <img src={partnerSprite} width="40" height="40" />
+            ) : (
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <circle cx="8" cy="11" r="2" />
+                <path d="M5.5 16c.7-1.6 1.6-2.4 2.5-2.4s1.8.8 2.5 2.4M13 10h5M13 14h5" />
+              </svg>
+            )}
+          </span>
+          <span className="landing__trainer-label">
+            <span>Trainer</span>
+            <strong>Card</strong>
+          </span>
         </GameButton>
         <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
           <span>Start training</span>

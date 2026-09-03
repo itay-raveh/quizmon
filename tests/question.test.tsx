@@ -446,7 +446,9 @@ describe('question transitions', () => {
     expect(search).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Pikachu' })).toBeNull();
     fireEvent.change(search, { target: { value: 'pika' } });
-    expect(screen.getByRole('option', { name: 'Pikachu' })).toBeVisible();
+    const suggestion = screen.getByRole('option', { name: 'Pikachu' });
+    expect(suggestion).toBeVisible();
+    expect(suggestion.querySelector('img')).toBeNull();
     fireEvent.keyDown(search, { key: 'ArrowDown' });
     fireEvent.keyDown(search, { key: 'Enter' });
     expect(search).toHaveValue('Pikachu');

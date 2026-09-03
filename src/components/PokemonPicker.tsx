@@ -9,7 +9,10 @@ import { formatPokemonName } from '@/game/format';
 
 interface PokemonPickerProps {
   onChange: (pokemon: string | null) => void;
-  options: readonly string[];
+  options: readonly {
+    name: string;
+    sprite: string | null;
+  }[];
   value: string | null;
 }
 
@@ -30,10 +33,11 @@ export const PokemonPicker = ({
   const [open, setOpen] = useState(false);
   const entries = useMemo(
     () =>
-      options.map((option) => ({
-        label: formatPokemonName(option),
-        normalized: normalizeSearch(option),
-        option,
+      options.map(({ name, sprite }) => ({
+        label: formatPokemonName(name),
+        normalized: normalizeSearch(name),
+        name,
+        sprite,
       })),
     [options],
   );
@@ -52,11 +56,11 @@ export const PokemonPicker = ({
   }, [entries, normalizedQuery]);
   const showSuggestions = open && normalizedQuery.length > 0;
 
-  const choose = (option: string, label: string) => {
+  const choose = (name: string, label: string) => {
     setQuery(label);
     setOpen(false);
     setActiveIndex(-1);
-    onChange(option);
+    onChange(name);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -79,18 +83,18 @@ export const PokemonPicker = ({
       const suggestion = suggestions[activeIndex];
       if (suggestion) {
         event.preventDefault();
-        choose(suggestion.option, suggestion.label);
+        choose(suggestion.name, suggestion.label);
       }
     }
   };
 
   const handlePointerDown = (
     event: PointerEvent<HTMLLIElement>,
-    option: string,
+    name: string,
     label: string,
   ) => {
     event.preventDefault();
-    choose(option, label);
+    choose(name, label);
   };
 
   return (
@@ -129,17 +133,27 @@ export const PokemonPicker = ({
                 <li
                   aria-selected={index === activeIndex}
                   id={`${listboxId}-option-${index}`}
-                  key={suggestion.option}
+                  key={suggestion.name}
                   onPointerDown={(event) =>
-                    handlePointerDown(
-                      event,
-                      suggestion.option,
-                      suggestion.label,
-                    )
+                    handlePointerDown(event, suggestion.name, suggestion.label)
                   }
                   role="option"
                 >
-                  {suggestion.label}
+                  <span aria-hidden="true" className="pokemon-picker__sprite">
+                    {suggestion.sprite ? (
+                      <img
+                        alt=""
+                        decoding="async"
+                        height="32"
+                        onError={(event) => {
+                          event.currentTarget.hidden = true;
+                        }}
+                        src={suggestion.sprite}
+                        width="32"
+                      />
+                    ) : null}
+                  </span>
+                  <span>{suggestion.label}</span>
                 </li>
               ))}
             </ul>

@@ -43,8 +43,12 @@ export const TrainerPassport = ({
   } | null>(null);
   const [shareStatus, setShareStatus] = useState('');
   const cardRef = useRef<HTMLElement>(null);
-  const pokemonNames = useMemo(
-    () => Object.keys(catalog.pokemon),
+  const pokemonOptions = useMemo(
+    () =>
+      Object.entries(catalog.pokemon).map(([name, pokemon]) => ({
+        name,
+        sprite: pokemon.sprite,
+      })),
     [catalog.pokemon],
   );
   const partnerSprite = partner
@@ -165,7 +169,7 @@ export const TrainerPassport = ({
           </div>
           <PokemonPicker
             onChange={setPartner}
-            options={pokemonNames}
+            options={pokemonOptions}
             value={partner}
           />
           <div className="trainer-customizer__preview" aria-hidden="true">
