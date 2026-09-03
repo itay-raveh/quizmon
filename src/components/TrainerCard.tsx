@@ -31,6 +31,7 @@ export const TrainerCard = ({
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
   const stamps = getTrainerStamps(stats);
+  const earnedStampCount = stamps.filter(({ earned }) => earned).length;
   const trainerId = profile.cardNumber.replace(/^QZ-/, '');
   const partnerName = profile.partnerPokemon
     ? formatPokemonName(profile.partnerPokemon)
@@ -125,17 +126,22 @@ export const TrainerCard = ({
               </p>
             )}
           </section>
-          <section className="trainer-card__stamps" aria-label="Trainer stamps">
-            {stamps.length > 0 ? (
-              stamps.slice(0, 4).map((stamp) => (
-                <span className="trainer-stamp" key={stamp.id}>
-                  <strong>{stamp.symbol}</strong>
-                  <small>{stamp.label}</small>
-                </span>
-              ))
-            ) : (
-              <p>Complete a game to earn your first stamp.</p>
-            )}
+          <section
+            className="trainer-card__stamps"
+            aria-label={`Trainer stamps: ${earnedStampCount} of ${stamps.length} earned`}
+          >
+            {stamps.map((stamp) => (
+              <span
+                aria-label={`${stamp.label}: ${stamp.earned ? 'earned' : `locked, ${Math.min(stamp.current, stamp.goal)} of ${stamp.goal}`}. ${stamp.requirement}.`}
+                className={`trainer-stamp trainer-stamp--${stamp.earned ? 'earned' : 'locked'}`}
+                key={stamp.id}
+                role="img"
+                title={`${stamp.label}: ${stamp.requirement}`}
+              >
+                <strong aria-hidden="true">{stamp.symbol}</strong>
+                <small aria-hidden="true">{stamp.label}</small>
+              </span>
+            ))}
           </section>
         </>
       )}

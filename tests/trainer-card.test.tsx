@@ -41,6 +41,16 @@ describe('Trainer Card', () => {
     expect(screen.getByText('Types')).toBeVisible();
     expect(screen.getByText('Perfect Form')).toBeVisible();
     expect(
+      screen.getByRole('region', {
+        name: 'Trainer stamps: 4 of 5 earned',
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('img', {
+        name: /Well Rounded: locked, 1 of 3/,
+      }),
+    ).toBeVisible();
+    expect(
       screen.queryByRole('heading', { name: 'Leaf' }),
     ).not.toBeInTheDocument();
   });

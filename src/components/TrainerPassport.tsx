@@ -13,10 +13,11 @@ import {
   shareTrainerCard,
   supportsTrainerCardSharing,
 } from '@/game/trainer-card-image';
-import type { TrainerCardFace } from '@/game/trainer';
+import { getTrainerStamps, type TrainerCardFace } from '@/game/trainer';
 import { GameButton } from './GameButton';
 import { PokemonPicker } from './PokemonPicker';
 import { TrainerCard } from './TrainerCard';
+import { TrainerStampCase } from './TrainerStampCase';
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
@@ -69,6 +70,7 @@ export const TrainerPassport = ({
   const imageKey = JSON.stringify({ face, profile: visibleProfile, stats });
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareCard = supportsTrainerCardSharing();
+  const stamps = getTrainerStamps(stats);
 
   useEffect(() => {
     if (!profile.hasBeenRevealed) {
@@ -281,6 +283,7 @@ export const TrainerPassport = ({
           </GameButton>
         )}
       </div>
+      {face === 'records' ? <TrainerStampCase stamps={stamps} /> : null}
       <p
         className={
           shareNotice?.visible ? 'trainer-passport__status' : 'visually-hidden'
