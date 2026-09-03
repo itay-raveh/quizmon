@@ -131,6 +131,11 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   const recordsCard = page.getByRole('article', {
     name: 'Trainer Card records',
   });
+  await expect(page.getByRole('heading', { name: 'Stamp case' })).toBeVisible();
+  await expect(page.getByText('1 / 5 earned')).toBeVisible();
+  await expect(
+    recordsCard.getByRole('img', { name: /Well Rounded: locked/ }),
+  ).toBeVisible();
   await page.setViewportSize({ width: 360, height: 800 });
   const mobileRecordsBounds = await recordsCard.boundingBox();
   const firstCatchBounds = await recordsCard

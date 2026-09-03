@@ -18,8 +18,12 @@ export type CardFinish = 'Classic' | 'Shimmer' | 'Aurora' | 'Master';
 export type TrainerCardFace = 'front' | 'records';
 
 export interface TrainerStamp {
+  current: number;
+  earned: boolean;
+  goal: number;
   id: string;
   label: string;
+  requirement: string;
   symbol: string;
 }
 
@@ -47,24 +51,55 @@ export const getCardFinish = (rank: TrainerRank): CardFinish => {
 };
 
 export const getTrainerStamps = (stats: TrainerStats): TrainerStamp[] => {
-  const stamps: TrainerStamp[] = [];
-  if (stats.gamesCompleted >= 1) {
-    stamps.push({ id: 'first-catch', label: 'First Catch', symbol: '01' });
-  }
-  if (stats.dailyChallengesCompleted >= 7) {
-    stamps.push({ id: 'daily-regular', label: 'Daily Regular', symbol: 'D7' });
-  }
-  if (stats.perfectRounds >= 3) {
-    stamps.push({ id: 'perfect-form', label: 'Perfect Form', symbol: '10' });
-  }
-  if (stats.bestDailyStreak >= 7) {
-    stamps.push({ id: 'combo-keeper', label: 'Combo Keeper', symbol: 'C7' });
-  }
-  if (
-    Object.values(stats.categories).filter((progress) => progress.total >= 10)
-      .length >= 3
-  ) {
-    stamps.push({ id: 'well-rounded', label: 'Well Rounded', symbol: 'ALL' });
-  }
-  return stamps;
+  const studiedFields = Object.values(stats.categories).filter(
+    (progress) => progress.total >= 10,
+  ).length;
+
+  return [
+    {
+      current: stats.gamesCompleted,
+      earned: stats.gamesCompleted >= 1,
+      goal: 1,
+      id: 'first-catch',
+      label: 'First Catch',
+      requirement: 'Complete 1 game',
+      symbol: '01',
+    },
+    {
+      current: stats.dailyChallengesCompleted,
+      earned: stats.dailyChallengesCompleted >= 7,
+      goal: 7,
+      id: 'daily-regular',
+      label: 'Daily Regular',
+      requirement: 'Clear 7 Daily Challenges',
+      symbol: 'D7',
+    },
+    {
+      current: stats.perfectRounds,
+      earned: stats.perfectRounds >= 3,
+      goal: 3,
+      id: 'perfect-form',
+      label: 'Perfect Form',
+      requirement: 'Finish 3 perfect rounds',
+      symbol: 'P3',
+    },
+    {
+      current: stats.bestDailyStreak,
+      earned: stats.bestDailyStreak >= 7,
+      goal: 7,
+      id: 'combo-keeper',
+      label: 'Combo Keeper',
+      requirement: 'Reach a 7-day Daily Combo',
+      symbol: 'C7',
+    },
+    {
+      current: studiedFields,
+      earned: studiedFields >= 3,
+      goal: 3,
+      id: 'well-rounded',
+      label: 'Well Rounded',
+      requirement: 'Answer 10 questions in 3 fields',
+      symbol: 'K3',
+    },
+  ];
 };
