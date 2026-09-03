@@ -42,6 +42,14 @@ const renderResults = (result: GameResult) =>
   );
 
 describe('results summary', () => {
+  it('moves focus to the result heading', () => {
+    renderResults(makeResult(10, 5));
+
+    expect(
+      screen.getByRole('heading', { name: 'Training complete' }),
+    ).toHaveFocus();
+  });
+
   it('uses the answer trail as the only accuracy summary for ten questions or fewer', () => {
     renderResults(makeResult(10, 5));
 

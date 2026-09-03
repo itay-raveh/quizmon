@@ -294,9 +294,11 @@ export const ModifiersDialog = ({
                 <label className="number-field">
                   <span>Questions</span>
                   <input
+                    autoComplete="off"
                     disabled={!draft.isLimitActive}
                     max={Math.max(1, matchingCount)}
                     min="1"
+                    name="question-count"
                     onChange={(event) =>
                       setDraft((current) => ({
                         ...current,
@@ -332,8 +334,8 @@ export const ModifiersDialog = ({
               <div className="modifier-list">
                 <Checkbox
                   checked={draft.speedrunMode}
-                  description="Move to the next question immediately."
-                  label="Speedrun mode"
+                  description="Shorten the answer reveal before the next question."
+                  label="Quick transitions"
                   onChange={(event) =>
                     setDraft((current) => ({
                       ...current,

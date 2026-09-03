@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useGameSounds } from '@/audio/sound';
 import { getModeLabel } from '@/game/daily';
 import {
@@ -37,6 +37,11 @@ export const Results = ({
   resultSaved,
 }: ResultsProps) => {
   const { playScore, stopScore } = useGameSounds();
+  const heading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    heading.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (result.score > 1) playScore();
@@ -57,7 +62,7 @@ export const Results = ({
         ) : (
           <span aria-hidden="true" />
         )}
-        <h1 id="results-title">
+        <h1 id="results-title" ref={heading} tabIndex={-1}>
           {mode.kind === 'daily' ? 'Daily complete' : 'Training complete'}
         </h1>
         <SettingsButton onClick={onOpenSettings} />

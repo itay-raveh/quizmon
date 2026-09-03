@@ -19,7 +19,12 @@ import {
   parseDailyDate,
   shouldAutoStartDaily,
 } from '@/game/daily';
-import { buildQuestions, calculateScore, SCORE_VERSION } from '@/game/game';
+import {
+  buildQuestions,
+  calculateScore,
+  getResponseTimeSeconds,
+  SCORE_VERSION,
+} from '@/game/game';
 import {
   canPersistResults,
   markGenerationPromptAnswered,
@@ -246,7 +251,7 @@ export const App = () => {
               ? catalogState.catalog.contentVersion
               : 0,
           correctCount: nextCorrectCount,
-          elapsedSeconds,
+          elapsedSeconds: getResponseTimeSeconds(nextAnswers),
           questionCount: questions.length,
           score: calculateScore(nextAnswers),
           scoreVersion: SCORE_VERSION,
@@ -266,16 +271,17 @@ export const App = () => {
         setPhase('results');
       } else {
         setQuestionIndex((current) => current + 1);
+        start();
       }
     },
     [
       answers,
       catalogState,
-      elapsedSeconds,
       mode,
       pause,
       questionIndex,
       questions.length,
+      start,
     ],
   );
 
@@ -312,6 +318,7 @@ export const App = () => {
               nextQuestion={questions[questionIndex + 1]}
               number={questionIndex + 1}
               onAnswer={answerQuestion}
+              onFeedbackStart={pause}
               onNewGame={newGame}
               onOpenSettings={() => openSettings('experience')}
               question={question}

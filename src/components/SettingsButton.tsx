@@ -1,13 +1,15 @@
 import { GameButton } from './GameButton';
 
 interface SettingsButtonProps {
+  disabled?: boolean;
   onClick: () => void;
 }
 
-export const SettingsButton = ({ onClick }: SettingsButtonProps) => (
+export const SettingsButton = ({ disabled, onClick }: SettingsButtonProps) => (
   <GameButton
     aria-label="Settings"
     className="settings-button"
+    disabled={disabled}
     onClick={onClick}
     title="Settings"
     tone="quiet"

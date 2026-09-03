@@ -21,6 +21,7 @@ const renderQuestion = (number: number) =>
       mode={{ kind: 'training' }}
       number={number}
       onAnswer={vi.fn()}
+      onFeedbackStart={() => 0}
       onNewGame={vi.fn()}
       onOpenSettings={vi.fn()}
       question={question}
@@ -30,6 +31,14 @@ const renderQuestion = (number: number) =>
   );
 
 describe('question transitions', () => {
+  it('moves focus to each new question heading', () => {
+    renderQuestion(1);
+
+    expect(
+      screen.getByRole('heading', { name: 'Stat showdown' }),
+    ).toHaveFocus();
+  });
+
   it('animates the first question only', () => {
     const first = renderQuestion(1);
     expect(first.container.firstElementChild).toHaveClass('question--enter');
@@ -48,6 +57,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={{
@@ -85,6 +95,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={{
@@ -133,6 +144,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={{
@@ -170,6 +182,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={question}
@@ -192,6 +205,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 3_000}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={question}
@@ -208,6 +222,44 @@ describe('question transitions', () => {
     expect(document.querySelector('.answer-explanation')).toBeNull();
   });
 
+  it.each([
+    { delay: 850, quick: false },
+    { delay: 300, quick: true },
+  ])(
+    'holds feedback for $delay ms when quick is $quick',
+    ({ delay, quick }) => {
+      vi.useFakeTimers();
+      const onAnswer = vi.fn();
+      const onFeedbackStart = vi.fn(() => 5_000);
+
+      render(
+        <Question
+          elapsedMilliseconds={1_000}
+          elapsedSeconds={1}
+          interactionPaused={false}
+          mode={{ kind: 'training' }}
+          number={1}
+          onAnswer={onAnswer}
+          onFeedbackStart={onFeedbackStart}
+          onNewGame={vi.fn()}
+          onOpenSettings={vi.fn()}
+          question={question}
+          speedrunMode={quick}
+          total={10}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+      expect(onFeedbackStart).toHaveBeenCalledOnce();
+      expect(onAnswer).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(delay);
+      expect(onAnswer).toHaveBeenCalledWith(
+        expect.objectContaining({ responseMilliseconds: 4_000 }),
+      );
+      vi.useRealTimers();
+    },
+  );
+
   it('checks every selected answer in a multi-select question', () => {
     render(
       <Question
@@ -217,6 +269,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={{
@@ -256,6 +309,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={{
@@ -298,6 +352,7 @@ describe('question transitions', () => {
         mode={{ kind: 'training' }}
         number={1}
         onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
         onNewGame={vi.fn()}
         onOpenSettings={vi.fn()}
         question={{

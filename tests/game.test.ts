@@ -15,6 +15,7 @@ import {
   getQuestionPromptText,
   getQuestionTitle,
   getQuestionTypeLabel,
+  getResponseTimeSeconds,
   getSpeedBonus,
   getSpeedBonusPoints,
   normalizeModifiers,
@@ -334,5 +335,24 @@ describe('utilities', () => {
   it('formats durations and API names', () => {
     expect(formatDuration(3661)).toBe('01:01:01');
     expect(formatPokemonName('special-attack')).toBe('Special Attack');
+  });
+
+  it('totals only active answer time', () => {
+    expect(
+      getResponseTimeSeconds([
+        {
+          category: 'identity',
+          correct: true,
+          points: 1_000,
+          responseMilliseconds: 1_900,
+        },
+        {
+          category: 'type',
+          correct: false,
+          points: 0,
+          responseMilliseconds: 2_600,
+        },
+      ]),
+    ).toBe(4);
   });
 });

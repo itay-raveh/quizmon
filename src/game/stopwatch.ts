@@ -28,12 +28,13 @@ export const useStopwatch = () => {
     setRunning(true);
   }, []);
 
-  const pause = useCallback(() => {
-    if (!running) return;
+  const pause = useCallback((): number => {
+    if (!running) return accumulatedMilliseconds.current;
     accumulatedMilliseconds.current += performance.now() - startedAt.current;
     setRunning(false);
     setElapsedMilliseconds(accumulatedMilliseconds.current);
     setElapsedSeconds(Math.floor(accumulatedMilliseconds.current / 1000));
+    return accumulatedMilliseconds.current;
   }, [running]);
 
   const reset = useCallback(() => {

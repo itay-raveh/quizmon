@@ -28,6 +28,7 @@ interface QuestionProps {
   nextQuestion?: QuestionData;
   number: number;
   onAnswer: (answer: AnswerResult) => void;
+  onFeedbackStart: () => number;
   onNewGame: () => void;
   onOpenSettings: () => void;
   question: QuestionData;
@@ -82,6 +83,7 @@ export const Question = ({
   nextQuestion,
   number,
   onAnswer,
+  onFeedbackStart,
   onNewGame,
   onOpenSettings,
   question,
@@ -92,7 +94,12 @@ export const Question = ({
   const [answered, setAnswered] = useState(false);
   const [cluesShown, setCluesShown] = useState(1);
   const answerTimeout = useRef<number | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
   const questionStartedAt = useRef(elapsedMilliseconds);
+
+  useEffect(() => {
+    heading.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (nextQuestion) preloadQuestionImages(nextQuestion);
@@ -109,12 +116,13 @@ export const Question = ({
 
       const correct = isQuestionAnswerCorrect(question, options);
       const points = getAnswerPoints(question, correct, cluesShown);
+      const answeredAt = onFeedbackStart();
       const responseMilliseconds = Math.max(
         0,
-        elapsedMilliseconds - questionStartedAt.current,
+        answeredAt - questionStartedAt.current,
       );
       const speedBonus = getSpeedBonusPoints(points, responseMilliseconds);
-      const delay = speedrunMode ? 80 : correct ? 900 : 1700;
+      const delay = speedrunMode ? 300 : 850;
       setSelectedOptions(options);
       setAnswered(true);
       answerTimeout.current = window.setTimeout(
@@ -132,9 +140,9 @@ export const Question = ({
     [
       cluesShown,
       answered,
-      elapsedMilliseconds,
       interactionPaused,
       onAnswer,
+      onFeedbackStart,
       question,
       speedrunMode,
     ],
@@ -213,10 +221,12 @@ export const Question = ({
         >
           {formatDuration(elapsedSeconds)}
         </span>
-        <SettingsButton onClick={onOpenSettings} />
+        <SettingsButton disabled={answered} onClick={onOpenSettings} />
       </div>
 
-      <h1 id="question-title">{getQuestionTitle(question)}</h1>
+      <h1 id="question-title" ref={heading} tabIndex={-1}>
+        {getQuestionTitle(question)}
+      </h1>
       <p className="game-mode">{getModeLabel(mode)}</p>
       <QuestionPrompt prompt={question.prompt} />
 
@@ -366,7 +376,12 @@ export const Question = ({
             : ''}
       </span>
 
-      <GameButton className="new-game" tone="quiet" onClick={onNewGame}>
+      <GameButton
+        className="new-game"
+        disabled={answered}
+        tone="quiet"
+        onClick={onNewGame}
+      >
         Leave game
       </GameButton>
     </section>

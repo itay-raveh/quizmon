@@ -973,6 +973,16 @@ export const getQuestionPromptText = (prompt: QuestionPrompt): string =>
     ? prompt.text
     : `${prompt.before}${formatPokemonName(prompt.name)}${prompt.after}`;
 
+export const getResponseTimeSeconds = (
+  answers: readonly AnswerResult[],
+): number =>
+  Math.floor(
+    answers.reduce(
+      (total, answer) => total + (answer.responseMilliseconds ?? 0),
+      0,
+    ) / 1_000,
+  );
+
 export const formatDuration = (elapsedSeconds: number): string => {
   const hours = Math.floor(elapsedSeconds / 3600);
   const minutes = Math.floor((elapsedSeconds % 3600) / 60);
