@@ -35,14 +35,16 @@ import {
 import { createRoundSeed, createSeededRandom } from '@/game/random';
 import {
   canPersistResults,
-  markGenerationPromptAnswered,
   readDailyResult,
   readDailyStreak,
   readTrainerStats,
   saveResult,
+} from '@/game/storage';
+import {
+  markGenerationPromptAnswered,
   shouldShowGenerationPrompt,
   usePersistentModifiers,
-} from '@/game/storage';
+} from '@/game/settings-storage';
 import {
   readTrainerProfile,
   saveTrainerProfile,

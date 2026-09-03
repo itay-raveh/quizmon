@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { defaultModifiers, normalizeModifiers } from './game';
+import { defaultModifiers } from './game';
 import { getUtcDate, parseDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import {
@@ -10,9 +9,7 @@ import {
   type QuestionCategory,
 } from './types';
 
-const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
-const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 1;
 const TRAINING_RECORD_VERSION = 2;
@@ -161,51 +158,6 @@ const normalizeProgress = (
     perfectRounds: Math.max(0, Math.trunc(progress.perfectRounds)),
     version: TRAINER_PROGRESS_VERSION,
   };
-};
-
-const readModifiers = (): Modifiers => {
-  try {
-    const stored = window.localStorage.getItem(SETTINGS_KEY);
-    return stored ? normalizeModifiers(JSON.parse(stored)) : defaultModifiers;
-  } catch {
-    return defaultModifiers;
-  }
-};
-
-export const usePersistentModifiers = () => {
-  const [modifiers, setModifiersState] = useState<Modifiers>(readModifiers);
-
-  const setModifiers = (nextModifiers: Modifiers) => {
-    const normalized = normalizeModifiers(nextModifiers);
-    setModifiersState(normalized);
-
-    try {
-      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(normalized));
-    } catch {
-      // The game still works when storage is unavailable.
-    }
-  };
-
-  return [modifiers, setModifiers] as const;
-};
-
-export const shouldShowGenerationPrompt = (): boolean => {
-  try {
-    return (
-      !window.localStorage.getItem(SETTINGS_KEY) &&
-      !window.localStorage.getItem(GENERATION_PROMPT_KEY)
-    );
-  } catch {
-    return true;
-  }
-};
-
-export const markGenerationPromptAnswered = () => {
-  try {
-    window.localStorage.setItem(GENERATION_PROMPT_KEY, '1');
-  } catch {
-    return;
-  }
 };
 
 export const getTrainingRecordKey = (
