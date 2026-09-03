@@ -14,6 +14,11 @@ import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { usePokemonCatalog } from '@/game/catalog';
 import { trackGameCompleted } from '@/game/analytics';
 import {
+  clearActiveGame,
+  readActiveGame,
+  writeActiveGame,
+} from '@/game/active-game';
+import {
   buildDailyQuestions,
   getDailyModifiers,
   getUtcDate,
@@ -26,6 +31,7 @@ import {
   getResponseTimeSeconds,
   SCORE_VERSION,
 } from '@/game/game';
+import { createRoundSeed, createSeededRandom } from '@/game/random';
 import {
   canPersistResults,
   markGenerationPromptAnswered,
@@ -66,26 +72,31 @@ export const App = () => {
   const [generationPromptPending, setGenerationPromptPending] = useState(
     shouldShowGenerationPrompt,
   );
-  const [dailyDate] = useState(
-    () => parseDailyDate(window.location.search) ?? getUtcDate(),
+  const [linkedDailyDate] = useState(() =>
+    parseDailyDate(window.location.search),
   );
+  const [dailyDate] = useState(() => linkedDailyDate ?? getUtcDate());
   const [autoStartDaily] = useState(() =>
     shouldAutoStartDaily(window.location.search),
   );
   const [dailyResult, setDailyResult] = useState<GameResult | null>(() =>
-    readDailyResult(parseDailyDate(window.location.search) ?? getUtcDate()),
+    readDailyResult(linkedDailyDate ?? getUtcDate()),
   );
   const [dailyResultSaved, setDailyResultSaved] = useState(() =>
-    Boolean(
-      readDailyResult(parseDailyDate(window.location.search) ?? getUtcDate()),
-    ),
+    Boolean(readDailyResult(linkedDailyDate ?? getUtcDate())),
   );
   const [dailyStreak, setDailyStreak] = useState(readDailyStreak);
   const [trainerStats, setTrainerStats] = useState(readTrainerStats);
   const [storageAvailable] = useState(canPersistResults);
-  const linkedDailyStarted = useRef(false);
-  const { elapsedMilliseconds, elapsedSeconds, pause, reset, start } =
-    useStopwatch();
+  const restorationAttempted = useRef(false);
+  const {
+    elapsedMilliseconds,
+    elapsedSeconds,
+    getElapsedMilliseconds,
+    pause,
+    reset,
+    start,
+  } = useStopwatch();
 
   useEffect(() => {
     const syncDailyResult = () => {
@@ -111,11 +122,13 @@ export const App = () => {
       nextQuestions: QuestionData[],
       nextModifiers: Modifiers,
       nextMode: GameMode,
+      seed: string,
     ) => {
       dispatchSession({
         mode: nextMode,
         modifiers: nextModifiers,
         questions: nextQuestions,
+        seed,
         type: 'started',
       });
       reset();
@@ -132,10 +145,16 @@ export const App = () => {
     markGenerationPromptAnswered();
     setGenerationPromptPending(false);
     setGenerationPromptOpen(false);
+    const seed = createRoundSeed();
     startGame(
-      buildQuestions(catalogState.catalog, nextModifiers),
+      buildQuestions(
+        catalogState.catalog,
+        nextModifiers,
+        createSeededRandom(seed),
+      ),
       nextModifiers,
       { kind: 'training' },
+      seed,
     );
   };
 
@@ -147,9 +166,13 @@ export const App = () => {
       return;
     }
 
-    startGame(buildQuestions(catalogState.catalog, modifiers), modifiers, {
-      kind: 'training',
-    });
+    const seed = createRoundSeed();
+    startGame(
+      buildQuestions(catalogState.catalog, modifiers, createSeededRandom(seed)),
+      modifiers,
+      { kind: 'training' },
+      seed,
+    );
   };
 
   const startDailyGame = useCallback(() => {
@@ -168,6 +191,7 @@ export const App = () => {
       buildDailyQuestions(catalogState.catalog, dailyDate),
       dailyModifiers,
       { kind: 'daily', date: dailyDate },
+      `daily:${dailyDate}`,
     );
   }, [
     catalogState,
@@ -178,19 +202,8 @@ export const App = () => {
     storageAvailable,
   ]);
 
-  useEffect(() => {
-    if (
-      !autoStartDaily ||
-      linkedDailyStarted.current ||
-      catalogState.status !== 'ready'
-    )
-      return;
-
-    linkedDailyStarted.current = true;
-    startDailyGame();
-  }, [autoStartDaily, catalogState.status, startDailyGame]);
-
   const newGame = useCallback(() => {
+    clearActiveGame();
     pause();
     reset();
     setLeaveConfirmationOpen(false);
@@ -206,10 +219,16 @@ export const App = () => {
       return;
     }
 
+    const seed = createRoundSeed();
     startGame(
-      buildQuestions(catalogState.catalog, session.modifiers),
+      buildQuestions(
+        catalogState.catalog,
+        session.modifiers,
+        createSeededRandom(seed),
+      ),
       session.modifiers,
       { kind: 'training' },
+      seed,
     );
   }, [catalogState, session, startGame]);
 
@@ -260,49 +279,189 @@ export const App = () => {
     [generationPromptPending, phase, setModifiers, start],
   );
 
+  const completeGame = useCallback(
+    (
+      nextAnswers: AnswerResult[],
+      mode: GameMode,
+      gameModifiers: Modifiers,
+      questionCount: number,
+    ) => {
+      const nextCorrectCount = nextAnswers.filter(
+        ({ correct }) => correct,
+      ).length;
+      const nextResult = {
+        answers: nextAnswers,
+        contentVersion:
+          catalogState.status === 'ready'
+            ? catalogState.catalog.contentVersion
+            : 0,
+        correctCount: nextCorrectCount,
+        elapsedSeconds: getResponseTimeSeconds(nextAnswers),
+        questionCount,
+        score: calculateScore(nextAnswers),
+        scoreVersion: SCORE_VERSION,
+      };
+      const best = saveResult(mode, nextResult, gameModifiers);
+      clearActiveGame();
+      setTrainerStats(readTrainerStats());
+      trackGameCompleted(mode, nextResult);
+      dispatchSession({
+        bestResult: best.best,
+        isNewBest: best.isNewBest,
+        result: nextResult,
+        resultSaved: best.isSaved,
+        type: 'completed',
+      });
+      if (mode.kind === 'daily') {
+        setDailyResult(best.best);
+        setDailyResultSaved(best.isSaved);
+        if (best.isSaved) setDailyStreak(readDailyStreak());
+      }
+      pause();
+    },
+    [catalogState, pause],
+  );
+
+  useEffect(() => {
+    if (catalogState.status !== 'ready' || restorationAttempted.current) return;
+    const timeoutId = window.setTimeout(() => {
+      if (restorationAttempted.current) return;
+      restorationAttempted.current = true;
+
+      const snapshot = readActiveGame();
+      const conflictsWithDailyLink =
+        linkedDailyDate !== null &&
+        (snapshot?.mode.kind !== 'daily' ||
+          snapshot.mode.date !== linkedDailyDate);
+      const staleDaily =
+        snapshot?.mode.kind === 'daily' && snapshot.mode.date !== dailyDate;
+      const completedDaily =
+        snapshot?.mode.kind === 'daily' &&
+        Boolean(readDailyResult(snapshot.mode.date));
+
+      if (
+        !snapshot ||
+        conflictsWithDailyLink ||
+        staleDaily ||
+        completedDaily ||
+        snapshot.contentVersion !== catalogState.catalog.contentVersion
+      ) {
+        if (snapshot) clearActiveGame();
+        if (autoStartDaily && phase === 'landing') startDailyGame();
+        return;
+      }
+
+      const questions =
+        snapshot.mode.kind === 'daily'
+          ? buildDailyQuestions(catalogState.catalog, snapshot.mode.date)
+          : buildQuestions(
+              catalogState.catalog,
+              snapshot.modifiers,
+              createSeededRandom(snapshot.seed),
+            );
+      const answersMatchQuestions = snapshot.answers.every(
+        (answer, index) => answer.category === questions[index]?.category,
+      );
+
+      if (
+        questions.length !== snapshot.questionCount ||
+        !answersMatchQuestions
+      ) {
+        clearActiveGame();
+        if (autoStartDaily && phase === 'landing') startDailyGame();
+        return;
+      }
+
+      dispatchSession({
+        answers: snapshot.answers,
+        mode: snapshot.mode,
+        modifiers: snapshot.modifiers,
+        questions,
+        seed: snapshot.seed,
+        type: 'restored',
+      });
+      reset(snapshot.elapsedMilliseconds);
+
+      if (snapshot.answers.length === questions.length) {
+        completeGame(
+          snapshot.answers,
+          snapshot.mode,
+          snapshot.modifiers,
+          questions.length,
+        );
+      } else {
+        start();
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    autoStartDaily,
+    catalogState,
+    completeGame,
+    dailyDate,
+    linkedDailyDate,
+    phase,
+    reset,
+    start,
+    startDailyGame,
+  ]);
+
+  const persistActiveGame = useCallback(() => {
+    if (catalogState.status !== 'ready' || session.phase !== 'questions') {
+      return;
+    }
+
+    writeActiveGame({
+      answers: session.answers,
+      contentVersion: catalogState.catalog.contentVersion,
+      elapsedMilliseconds: getElapsedMilliseconds(),
+      mode: session.mode,
+      modifiers: session.modifiers,
+      questionCount: session.questions.length,
+      seed: session.seed,
+    });
+  }, [catalogState, getElapsedMilliseconds, session]);
+
+  useEffect(() => {
+    persistActiveGame();
+  }, [elapsedSeconds, persistActiveGame]);
+
+  useEffect(() => {
+    const saveWhenHidden = () => {
+      if (document.visibilityState === 'hidden') persistActiveGame();
+    };
+
+    document.addEventListener('visibilitychange', saveWhenHidden);
+    return () =>
+      document.removeEventListener('visibilitychange', saveWhenHidden);
+  }, [persistActiveGame]);
+
+  const recordAnswer = useCallback((answer: AnswerResult) => {
+    dispatchSession({ answer, type: 'answer-recorded' });
+  }, []);
+
   const answerQuestion = useCallback(
     (answer: AnswerResult) => {
       if (session.phase !== 'questions') return;
-      const nextAnswers = [...session.answers, answer];
+      const nextAnswers =
+        session.answers.length === session.questionIndex
+          ? [...session.answers, answer]
+          : session.answers;
 
       if (session.questionIndex === session.questions.length - 1) {
-        const nextCorrectCount = nextAnswers.filter(
-          ({ correct }) => correct,
-        ).length;
-        const nextResult = {
-          answers: nextAnswers,
-          contentVersion:
-            catalogState.status === 'ready'
-              ? catalogState.catalog.contentVersion
-              : 0,
-          correctCount: nextCorrectCount,
-          elapsedSeconds: getResponseTimeSeconds(nextAnswers),
-          questionCount: session.questions.length,
-          score: calculateScore(nextAnswers),
-          scoreVersion: SCORE_VERSION,
-        };
-        const best = saveResult(session.mode, nextResult, session.modifiers);
-        setTrainerStats(readTrainerStats());
-        trackGameCompleted(session.mode, nextResult);
-        dispatchSession({
-          bestResult: best.best,
-          isNewBest: best.isNewBest,
-          result: nextResult,
-          resultSaved: best.isSaved,
-          type: 'completed',
-        });
-        if (session.mode.kind === 'daily') {
-          setDailyResult(best.best);
-          setDailyResultSaved(best.isSaved);
-          if (best.isSaved) setDailyStreak(readDailyStreak());
-        }
-        pause();
+        completeGame(
+          nextAnswers,
+          session.mode,
+          session.modifiers,
+          session.questions.length,
+        );
       } else {
         dispatchSession({ answer, type: 'advanced' });
         start();
       }
     },
-    [catalogState, pause, session, start],
+    [completeGame, session, start],
   );
 
   const question =
@@ -341,6 +500,7 @@ export const App = () => {
               nextQuestion={session.questions[session.questionIndex + 1]}
               number={session.questionIndex + 1}
               onAnswer={answerQuestion}
+              onAnswerRecorded={recordAnswer}
               onFeedbackStart={pause}
               onNewGame={requestLeaveGame}
               onOpenSettings={() => openSettings('experience')}

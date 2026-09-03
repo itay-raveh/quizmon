@@ -269,6 +269,7 @@ describe('question transitions', () => {
     ({ delay, mode, quick }) => {
       vi.useFakeTimers();
       const onAnswer = vi.fn();
+      const onAnswerRecorded = vi.fn();
       const onFeedbackStart = vi.fn(() => 5_000);
 
       render(
@@ -279,6 +280,7 @@ describe('question transitions', () => {
           mode={mode}
           number={1}
           onAnswer={onAnswer}
+          onAnswerRecorded={onAnswerRecorded}
           onFeedbackStart={onFeedbackStart}
           onNewGame={vi.fn()}
           onOpenSettings={vi.fn()}
@@ -290,6 +292,9 @@ describe('question transitions', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
       expect(onFeedbackStart).toHaveBeenCalledOnce();
+      expect(onAnswerRecorded).toHaveBeenCalledWith(
+        expect.objectContaining({ responseMilliseconds: 4_000 }),
+      );
       expect(onAnswer).not.toHaveBeenCalled();
       vi.advanceTimersByTime(delay);
       expect(onAnswer).toHaveBeenCalledWith(

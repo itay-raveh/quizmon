@@ -37,13 +37,31 @@ export const useStopwatch = () => {
     return accumulatedMilliseconds.current;
   }, [running]);
 
-  const reset = useCallback(() => {
-    accumulatedMilliseconds.current = 0;
+  const reset = useCallback((elapsedMilliseconds = 0) => {
+    const normalizedMilliseconds = Math.max(0, elapsedMilliseconds);
+    accumulatedMilliseconds.current = normalizedMilliseconds;
     startedAt.current = performance.now();
-    setElapsedMilliseconds(0);
-    setElapsedSeconds(0);
+    setElapsedMilliseconds(normalizedMilliseconds);
+    setElapsedSeconds(Math.floor(normalizedMilliseconds / 1000));
     setRunning(false);
   }, []);
 
-  return { elapsedMilliseconds, elapsedSeconds, pause, reset, start };
+  const getElapsedMilliseconds = useCallback(
+    () =>
+      running
+        ? accumulatedMilliseconds.current +
+          performance.now() -
+          startedAt.current
+        : accumulatedMilliseconds.current,
+    [running],
+  );
+
+  return {
+    elapsedMilliseconds,
+    elapsedSeconds,
+    getElapsedMilliseconds,
+    pause,
+    reset,
+    start,
+  };
 };

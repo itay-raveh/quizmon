@@ -1,5 +1,5 @@
 import catalogData from '@/game/data/pokemon.json';
-import { createSeededRandom } from '@/game/daily';
+import { createSeededRandom } from '@/game/random';
 import {
   buildQuestions,
   buildQuestionSequence,

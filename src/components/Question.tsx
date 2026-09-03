@@ -29,6 +29,7 @@ interface QuestionProps {
   mode: GameMode;
   nextQuestion?: QuestionData;
   number: number;
+  onAnswerRecorded?: (answer: AnswerResult) => void;
   onAnswer: (answer: AnswerResult) => void;
   onFeedbackStart: () => number;
   onNewGame: () => void;
@@ -88,6 +89,7 @@ export const Question = ({
   mode,
   nextQuestion,
   number,
+  onAnswerRecorded,
   onAnswer,
   onFeedbackStart,
   onNewGame,
@@ -138,17 +140,15 @@ export const Question = ({
       setAnswered(true);
       if (correct) playCorrect();
       else playWrong();
-      answerTimeout.current = window.setTimeout(
-        () =>
-          onAnswer({
-            category: question.category,
-            correct,
-            points,
-            responseMilliseconds,
-            speedBonus,
-          }),
-        delay,
-      );
+      const answer = {
+        category: question.category,
+        correct,
+        points,
+        responseMilliseconds,
+        speedBonus,
+      };
+      onAnswerRecorded?.(answer);
+      answerTimeout.current = window.setTimeout(() => onAnswer(answer), delay);
     },
     [
       cluesShown,
@@ -156,6 +156,7 @@ export const Question = ({
       interactionPaused,
       mode.kind,
       onAnswer,
+      onAnswerRecorded,
       onFeedbackStart,
       playCorrect,
       playWrong,

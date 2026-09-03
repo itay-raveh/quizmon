@@ -34,6 +34,7 @@ describe('gameSessionReducer', () => {
       mode: { kind: 'training' },
       modifiers: defaultModifiers,
       questions: [question],
+      seed: 'round-1',
       type: 'started',
     });
     expect(started).toMatchObject({
@@ -66,9 +67,14 @@ describe('gameSessionReducer', () => {
       mode: { kind: 'training' },
       modifiers: defaultModifiers,
       questions: [question, { ...question, id: 'identity:eevee:1' }],
+      seed: 'round-2',
       type: 'started',
     });
-    const advanced = gameSessionReducer(started, {
+    const recorded = gameSessionReducer(started, {
+      answer,
+      type: 'answer-recorded',
+    });
+    const advanced = gameSessionReducer(recorded, {
       answer,
       type: 'advanced',
     });
@@ -94,6 +100,24 @@ describe('gameSessionReducer', () => {
     expect(gameSessionReducer(updated, { type: 'returned-to-landing' })).toBe(
       initialGameSession,
     );
+  });
+
+  it('restores at the first unanswered question', () => {
+    const restored = gameSessionReducer(initialGameSession, {
+      answers: [answer],
+      mode: { kind: 'training' },
+      modifiers: defaultModifiers,
+      questions: [question, { ...question, id: 'identity:eevee:1' }],
+      seed: 'saved-round',
+      type: 'restored',
+    });
+
+    expect(restored).toMatchObject({
+      answers: [answer],
+      phase: 'questions',
+      questionIndex: 1,
+      seed: 'saved-round',
+    });
   });
 
   it('ignores phase-specific actions outside an active game', () => {

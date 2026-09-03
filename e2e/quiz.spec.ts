@@ -434,6 +434,39 @@ test('confirms before discarding an in-progress game', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('restores the next unanswered question after a reload', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'quizmon.training-settings.v2',
+      JSON.stringify({
+        generations: ['I'],
+        questionTypes: ['pokedex-scan'],
+        soundEnabled: false,
+        isLimitActive: true,
+        limit: 2,
+        speedrunMode: false,
+      }),
+    );
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 002');
+
+  await page.locator('.answer').first().click();
+  await page.reload();
+
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('002 / 002');
+  await expect(page.getByText('Training', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Leave game' })).toBeVisible();
+});
+
 test('keeps grouped settings reachable throughout a game on a phone', async ({
   page,
 }) => {

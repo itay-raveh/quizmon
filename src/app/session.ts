@@ -15,6 +15,7 @@ export type GameSession =
       phase: 'questions';
       questionIndex: number;
       questions: QuestionData[];
+      seed: string;
     }
   | {
       bestResult: GameResult;
@@ -31,8 +32,18 @@ export type GameSessionAction =
       mode: GameMode;
       modifiers: Modifiers;
       questions: QuestionData[];
+      seed: string;
       type: 'started';
     }
+  | {
+      answers: AnswerResult[];
+      mode: GameMode;
+      modifiers: Modifiers;
+      questions: QuestionData[];
+      seed: string;
+      type: 'restored';
+    }
+  | { answer: AnswerResult; type: 'answer-recorded' }
   | { answer: AnswerResult; type: 'advanced' }
   | {
       bestResult: GameResult;
@@ -62,12 +73,35 @@ export const gameSessionReducer = (
         phase: 'questions',
         questionIndex: 0,
         questions: action.questions,
+        seed: action.seed,
       };
+    case 'restored':
+      return {
+        answers: action.answers,
+        mode: action.mode,
+        modifiers: action.modifiers,
+        phase: 'questions',
+        questionIndex: Math.min(
+          action.answers.length,
+          action.questions.length - 1,
+        ),
+        questions: action.questions,
+        seed: action.seed,
+      };
+    case 'answer-recorded':
+      return session.phase === 'questions' &&
+        session.answers.length === session.questionIndex
+        ? { ...session, answers: [...session.answers, action.answer] }
+        : session;
     case 'advanced':
-      return session.phase === 'questions'
+      if (session.phase !== 'questions') return session;
+      return session.questionIndex < session.questions.length - 1
         ? {
             ...session,
-            answers: [...session.answers, action.answer],
+            answers:
+              session.answers.length === session.questionIndex
+                ? [...session.answers, action.answer]
+                : session.answers,
             questionIndex: session.questionIndex + 1,
           }
         : session;
