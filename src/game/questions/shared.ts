@@ -1,4 +1,4 @@
-import { shuffle } from '../random';
+import { createSeededRandom, shuffle } from '../random';
 import {
   statNames,
   type PokemonCatalog,
@@ -47,14 +47,23 @@ export const rankedOptionSet = (
   score: (candidate: string) => number,
   random: () => number,
 ): string[] => {
+  const ranked = rankCandidates(correct, candidates, score, random);
+  return shuffle([...ranked.slice(0, 3), correct], random);
+};
+
+const rankCandidates = (
+  correct: string,
+  candidates: readonly string[],
+  score: (candidate: string) => number,
+  random: () => number,
+): string[] => {
   const unique = [...new Set(candidates)].filter(
     (candidate) => candidate !== correct,
   );
-  const ranked = shuffle(unique, random)
+  return shuffle(unique, random)
     .map((candidate) => ({ candidate, score: score(candidate) }))
     .sort((left, right) => right.score - left.score)
     .map(({ candidate }) => candidate);
-  return shuffle([...ranked.slice(0, 3), correct], random);
 };
 
 const evolutionStage = (pokemon: PokemonKnowledge): number => {
@@ -86,8 +95,7 @@ export const pokemonSimilarity = (
     (target.color === candidate.color ? 5 : 0) +
     (target.generation === candidate.generation ? 4 : 0) +
     (evolutionStage(target) === evolutionStage(candidate) ? 3 : 0) +
-    Math.max(0, 3 - Math.abs(targetStats - candidateStats) / 80) +
-    Math.max(0, 2 - Math.abs(target.id - candidate.id) / 150)
+    Math.max(0, 3 - Math.abs(targetStats - candidateStats) / 80)
   );
 };
 
@@ -191,18 +199,72 @@ export const pokemonOptions = (
   target: Candidate,
   excluded: readonly string[] = [],
   candidates: readonly Candidate[] = context.pool,
-): string[] =>
-  rankedOptionSet(
+): string[] => {
+  const similarityFor = (name: string) => {
+    const candidate = context.catalog.pokemon[name];
+    return candidate ? pokemonSimilarity(target.pokemon, candidate) : 0;
+  };
+  const ranked = rankCandidates(
     target.name,
     candidates
       .filter(({ name }) => name !== target.name && !excluded.includes(name))
       .map(({ name }) => name),
-    (name) => {
-      const candidate = context.catalog.pokemon[name];
-      return candidate ? pokemonSimilarity(target.pokemon, candidate) : 0;
-    },
+    similarityFor,
     context.random,
   );
+  const bestScore = similarityFor(ranked[0] ?? '');
+  const semanticBand = ranked
+    .filter((name) => similarityFor(name) >= bestScore * 0.6)
+    .slice(0, 15);
+  const shortlist =
+    ranked.length >= 15
+      ? ranked.slice(0, 15)
+      : semanticBand.length >= 3
+        ? semanticBand
+        : ranked.slice(0, 3);
+  const optionRandom = createSeededRandom(
+    [
+      target.name,
+      ...Array.from({ length: Math.min(3, ranked.length) }, () =>
+        context.random().toString(36),
+      ),
+    ].join(':'),
+  );
+  const selected = shuffle(shortlist, optionRandom).slice(0, 3);
+  const spreadBand = [...shortlist]
+    .sort((left, right) => {
+      const leftId = context.catalog.pokemon[left]?.id ?? target.pokemon.id;
+      const rightId = context.catalog.pokemon[right]?.id ?? target.pokemon.id;
+      return (
+        Math.abs(rightId - target.pokemon.id) -
+        Math.abs(leftId - target.pokemon.id)
+      );
+    })
+    .slice(0, Math.ceil(shortlist.length / 3));
+
+  if (
+    selected.length === 3 &&
+    !selected.some((name) => spreadBand.includes(name))
+  ) {
+    const spreadCandidate = pick(spreadBand, optionRandom);
+    if (spreadCandidate) {
+      const closestIndex = selected.reduce((closest, name, index) => {
+        const closestId =
+          context.catalog.pokemon[selected[closest] ?? '']?.id ??
+          target.pokemon.id;
+        const candidateId =
+          context.catalog.pokemon[name]?.id ?? target.pokemon.id;
+        return Math.abs(candidateId - target.pokemon.id) <
+          Math.abs(closestId - target.pokemon.id)
+          ? index
+          : closest;
+      }, 0);
+      selected[closestIndex] = spreadCandidate;
+    }
+  }
+
+  return shuffle([...selected, target.name], optionRandom);
+};
 
 export const redactName = (description: string, name: string): string => {
   const escapeRegExp = (value: string) =>

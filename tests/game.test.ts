@@ -23,6 +23,7 @@ import {
 } from '@/game/game';
 import { formatPokemonName } from '@/game/format';
 import { questionRegistry, questionTypes } from '@/game/questions/registry';
+import { pokemonOptions, pokemonSimilarity } from '@/game/questions/shared';
 import {
   generations,
   type PokemonCatalog,
@@ -236,6 +237,75 @@ describe('question building', () => {
       expect(new Set(question?.options)).toEqual(
         new Set(expectedOptions[questionType]),
       );
+    }
+  });
+
+  it('does not treat nearby Pokédex numbers as semantic similarity', () => {
+    const target = makeKnowledge(500);
+
+    expect(pokemonSimilarity(target, makeKnowledge(501))).toBe(
+      pokemonSimilarity(target, makeKnowledge(1_000)),
+    );
+  });
+
+  it('varies plausible Pokémon distractors and includes numerical spread', () => {
+    const closeIds = Array.from({ length: 10 }, (_, index) => 501 + index);
+    const distantIds = [900, 1_000, 1_100, 1_200, 1_300];
+    const syntheticCatalog: PokemonCatalog = {
+      contentVersion: 1,
+      pokemon: {
+        target: makeKnowledge(500),
+        ...Object.fromEntries(
+          [...closeIds, ...distantIds].map((id) => [
+            `similar-${id}`,
+            makeKnowledge(id),
+          ]),
+        ),
+        ...Object.fromEntries(
+          [1_400, 1_500, 1_600].map((id) => [
+            `unrelated-${id}`,
+            makeKnowledge(id, {
+              color: 'blue',
+              generation: 'IX',
+              shape: 'fish',
+              types: ['water'],
+            }),
+          ]),
+        ),
+      },
+      typeRelations: {},
+    };
+    const pool = Object.entries(syntheticCatalog.pokemon).map(
+      ([name, pokemon]) => ({ name, pokemon }),
+    );
+    const target = pool.find(({ name }) => name === 'target')!;
+    const optionSets = Array.from({ length: 6 }, (_, index) =>
+      pokemonOptions(
+        {
+          catalog: syntheticCatalog,
+          pool,
+          random: createSeededRandom(`distractor-spread-${index}`),
+          used: new Set(),
+        },
+        target,
+      ),
+    );
+    const distractors = optionSets.flatMap((options) =>
+      options.filter((name) => name !== target.name),
+    );
+
+    expect(new Set(distractors).size).toBeGreaterThan(3);
+    expect(distractors.every((name) => name.startsWith('similar-'))).toBe(true);
+    for (const options of optionSets) {
+      expect(options).toHaveLength(4);
+      expect(options).toContain(target.name);
+      expect(
+        Math.max(
+          ...options.map((name) =>
+            Math.abs(syntheticCatalog.pokemon[name]!.id - target.pokemon.id),
+          ),
+        ),
+      ).toBeGreaterThanOrEqual(400);
     }
   });
 
