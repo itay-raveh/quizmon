@@ -12,6 +12,7 @@
   --text-control: 1rem;
   --text-label: 0.82rem;
   --text-status: 0.85rem;
+  --text-footer: 0.875rem;
   --text-compact-control: 0.88rem;
   --text-small: 0.78rem;
   --text-micro: 0.72rem;
@@ -48,9 +49,7 @@
   --r-modifiers-w: 11.85%;
   --r-custom-game-x: 50.5%;
   --r-custom-game-w: 11.8%;
-  --r-footer-credit-x: 35.07%;
   --r-footer-credit-y: 95.56%;
-  --r-footer-credit-w: 29.86%;
   --r-footer-credit-h: 2.22%;
 }
 

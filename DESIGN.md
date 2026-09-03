@@ -183,6 +183,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 - **Body** (400, `1rem`): Instructions, descriptions, and general copy.
 - **Control** (700, `1rem`): Buttons, answers, selection labels, and result values.
 - **Label** (700, `0.82rem`, 1.35): Game modes, helper text, result details, and status copy.
+- **Footer** (700, `0.875rem`, 1.25): Source attribution at a readable compact size.
 - **Numeric** (800, `0.76rem`, `0.04em` letter spacing): Question progress and elapsed time. Large score figures may use the same monospace family at a larger responsive size.
 
 **The No-Pixel-Font Rule.** Do not use bitmap or novelty pixel fonts. Pixel character comes from the landscape, not from reduced text legibility.
@@ -272,7 +273,7 @@ Dialogs use one cream header and a paper body. Settings keeps a cream action foo
 
 Serve the wordmark and landscape through AVIF and WebP sources, with the checked-in provenance-bearing PNG plates as fallbacks. Keep the wordmark proportions and the landscape's crisp pixel edges. Use cover cropping for the background without blur, gradients, overlays, or added scenery.
 
-The visible footer remains unboxed and comp-faithful: “Wordmark made with TextStudio · Data from PokéAPI · Open source on GitHub”. Each named source is linked. It aligns to the landscape artwork on the landing screen and moves into normal document flow below questions and results so it never covers gameplay. Keep the Nintendo trademark sentence visually hidden and noninteractive.
+The visible footer remains unboxed and comp-faithful: “Wordmark made with TextStudio · Data from PokéAPI · Open source on GitHub”. Each named source is linked. Whenever the artwork-aligned slot cannot hold that line, it uses the precise compact wording “Logo: TextStudio · Data: PokéAPI · GitHub” so the 14px metadata stays readable and on one line. It aligns to the landscape artwork on the landing screen and moves into normal document flow below questions and results so it never covers gameplay. Keep the Nintendo trademark sentence visually hidden and noninteractive.
 
 ### Motion
 

@@ -1,9 +1,9 @@
 .site-footer {
   position: absolute;
   top: var(--r-footer-credit-y);
-  left: var(--r-footer-credit-x);
+  left: 25%;
   display: flex;
-  width: var(--r-footer-credit-w);
+  width: 50%;
   height: var(--r-footer-credit-h);
   padding: 0;
   align-items: center;
@@ -12,14 +12,30 @@
   color: #1b3e40;
   background: transparent;
   border: 0;
-  font-size: var(--text-small);
+  font-size: var(--text-footer);
   font-weight: 700;
+  line-height: 1.25;
   text-align: center;
+  white-space: nowrap;
   transform: translateY(0.36rem);
+}
+
+.site-footer__label--compact {
+  display: none;
 }
 
 .site-footer a {
   color: inherit;
+}
+
+@media (max-width: 60rem) {
+  .site-footer__label--full {
+    display: none;
+  }
+
+  .site-footer__label--compact {
+    display: inline;
+  }
 }
 
 .app--questions .site-footer,
@@ -30,8 +46,7 @@
   padding: 0.4rem 0 max(0.55rem, env(safe-area-inset-bottom));
   justify-self: center;
   flex-wrap: nowrap;
-  gap: 0.1rem;
-  font-size: var(--text-tiny);
+  gap: 0.2rem;
   white-space: nowrap;
   transform: none;
 }
@@ -126,7 +141,6 @@
     width: 90%;
     height: auto;
     flex-wrap: nowrap;
-    font-size: var(--text-tiny);
     transform: none;
   }
 }
@@ -292,8 +306,8 @@
     left: 4%;
     width: 92%;
     height: auto;
-    flex-wrap: wrap;
-    font-size: var(--text-tiny);
+    flex-wrap: nowrap;
+    gap: 0.16rem;
     transform: none;
   }
 }

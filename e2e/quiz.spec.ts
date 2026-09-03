@@ -80,6 +80,17 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   );
   await expect(page.locator('meta[name^="twitter:"]')).toHaveCount(1);
 
+  const footerMetrics = await page
+    .getByRole('contentinfo')
+    .evaluate((footer) => ({
+      fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
+      lineTops: [...footer.children]
+        .filter((child) => !child.classList.contains('visually-hidden'))
+        .map((child) => Math.round(child.getBoundingClientRect().top)),
+    }));
+  expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
+  expect(new Set(footerMetrics.lineTops).size).toBe(1);
+
   const structuredData: unknown = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ??
       '{}',
@@ -588,15 +599,26 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     .getByRole('contentinfo')
     .evaluate((footer) => ({
       clientWidth: footer.clientWidth,
+      fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
       scrollWidth: footer.scrollWidth,
       childTops: [...footer.children]
         .filter((child) => !child.classList.contains('visually-hidden'))
         .map((child) => Math.round(child.getBoundingClientRect().top)),
     }));
   expect(new Set(footerMetrics.childTops).size).toBe(1);
+  expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
   expect(footerMetrics.scrollWidth).toBeLessThanOrEqual(
     footerMetrics.clientWidth,
   );
+  const renderedFooterText = await page
+    .getByRole('contentinfo')
+    .evaluate((footer) =>
+      [...footer.children]
+        .filter((child) => !child.classList.contains('visually-hidden'))
+        .map((child) => (child as HTMLElement).innerText.trim())
+        .join(' '),
+    );
+  expect(renderedFooterText).toBe('Logo: TextStudio · Data: PokéAPI · GitHub');
 });
 
 test('shows a saved daily score instead of another play button', async ({
