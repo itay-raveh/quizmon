@@ -30,6 +30,9 @@ export const Footer = () => (
       <span className="site-footer__label site-footer__label--full">
         Open source on{' '}
       </span>
+      <span className="site-footer__label site-footer__label--compact">
+        Code:{' '}
+      </span>
       GitHub
     </a>
     <span className="visually-hidden">Pokémon is a trademark of Nintendo.</span>

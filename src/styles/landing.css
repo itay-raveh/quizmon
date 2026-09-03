@@ -62,24 +62,6 @@
   line-height: 1.15;
 }
 
-.daily-action__share-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
-  font-size: var(--text-action-title);
-  white-space: nowrap;
-}
-
-.daily-action__share-title svg {
-  width: 1em;
-  height: 1em;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.4;
-}
-
 .daily-action__detail {
   color: inherit;
   font-family: var(--font-data);

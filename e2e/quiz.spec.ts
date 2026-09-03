@@ -800,7 +800,9 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
         .map((child) => (child as HTMLElement).innerText.trim())
         .join(' '),
     );
-  expect(renderedFooterText).toBe('Logo: TextStudio · Data: PokéAPI · GitHub');
+  expect(renderedFooterText).toBe(
+    'Logo: TextStudio · Data: PokéAPI · Code: GitHub',
+  );
 });
 
 test('shows a saved daily score instead of another play button', async ({
@@ -841,12 +843,12 @@ test('shows a saved daily score instead of another play button', async ({
 
   await page.goto('/?daily=2026-09-01');
   await expect(page.getByText('Share result')).toBeVisible();
-  await expect(page.getByText('Daily complete · 14,400 points')).toBeVisible();
+  await expect(page.getByText('14,400 points')).toBeVisible();
   await expect(
     page.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toHaveCount(0);
   await page
-    .getByRole('button', { name: /Share result.*Daily complete/ })
+    .getByRole('button', { name: /Share result.*14,400 points/ })
     .click();
 
   await expect
@@ -866,7 +868,7 @@ test('shows a saved daily score instead of another play button', async ({
   expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01&play=1');
   const { pathname, search } = new URL(sharedUrl!);
   await page.goto(`${pathname}${search}`);
-  await expect(page.getByText('Daily complete · 14,400 points')).toBeVisible();
+  await expect(page.getByText('14,400 points')).toBeVisible();
 });
 
 test('starts the selected daily challenge from a shared link', async ({
@@ -987,7 +989,7 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
     );
   });
 
-  await expect(otherPage.getByText('Daily complete')).toBeVisible();
+  await expect(otherPage.getByText('Share result')).toBeVisible();
   await expect(
     otherPage.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toHaveCount(0);
