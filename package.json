@@ -7,8 +7,11 @@
   "type": "module",
   "scripts": {
     "build": "tsc --noEmit && vite build",
+    "check:dead-code": "knip",
     "commitlint": "commitlint",
     "data:update": "node scripts/update-pokemon-data.ts",
+    "deploy": "wrangler deploy",
+    "deploy:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
     "dev": "vite",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -44,6 +47,7 @@
     "eslint-plugin-react-refresh": "0.5.5",
     "globals": "17.11.0",
     "jsdom": "30.0.1",
+    "knip": "6.34.0",
     "pokenode-ts": "2.3.0",
     "prettier": "3.9.6",
     "typescript": "6.0.3",
@@ -63,6 +67,12 @@
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
+    ]
+  },
+  "knip": {
+    "ignoreDependencies": [
+      "@fontsource-variable/gabarito",
+      "@fontsource-variable/martian-mono"
     ]
   },
   "prettier": {

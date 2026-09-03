@@ -24,11 +24,12 @@ description = "Run every repository check without modifying files"
 run = [
   "npm run format:check",
   "npm run lint",
+  "npm run check:dead-code",
   "npm test",
   "npm run build",
   "npm run test:e2e",
   "prek validate-config prek.toml",
-  "npx --no-install wrangler deploy --dry-run --outdir .wrangler/dry-run",
+  "npm run deploy:dry-run",
   "actionlint",
   "zizmor --offline .github/workflows",
   "lychee --offline --include-fragments --root-dir \"$PWD/dist\" dist/index.html",
@@ -39,5 +40,5 @@ run = [
 description = "Build and deploy Quizmon to Cloudflare Workers"
 run = [
   "npm run build",
-  "npx --no-install wrangler deploy",
+  "npm run deploy",
 ]

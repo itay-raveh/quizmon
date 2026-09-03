@@ -26,12 +26,25 @@ export default defineConfig({
       registerType: 'prompt',
       workbox: {
         cleanupOutdatedCaches: true,
-        globIgnores: ['assets/images/**'],
-        globPatterns: [
-          '**/*.{js,css,html,ico,png,webp,avif,woff2,mp3,json,webmanifest}',
-        ],
+        globPatterns: ['**/*.{js,css,html,woff2,json,webmanifest}'],
         navigateFallback: '/index.html',
         runtimeCaching: [
+          {
+            urlPattern: ({ sameOrigin, url }) =>
+              sameOrigin &&
+              /\/assets\/build\/.*\.(?:avif|ico|mp3|png|webp)$/.test(
+                url.pathname,
+              ),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'quizmon-static-media-v1',
+              cacheableResponse: { statuses: [200] },
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 90,
+                maxEntries: 20,
+              },
+            },
+          },
           {
             urlPattern: ({ sameOrigin, url }) =>
               sameOrigin && url.pathname.startsWith('/sprites/pokemon/'),
