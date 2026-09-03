@@ -74,8 +74,8 @@ export const Landing = ({
           <span className="daily-action__copy">
             <strong className="daily-action__title">Daily Challenge</strong>
             <span className="daily-action__detail">
-              {formatDailyDate(dailyDate)} ·{' '}
-              {storageAvailable ? '5 questions' : 'Browser storage required'}
+              {formatDailyDate(dailyDate)}
+              {!storageAvailable ? ' · Browser storage required' : ''}
             </span>
           </span>
           <CatchCombo count={dailyStreak} />

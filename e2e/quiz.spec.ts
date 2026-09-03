@@ -179,9 +179,11 @@ test('loads the installed app shell and catalog offline', async ({
   try {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { name: 'Quizmon' })).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: /Play Daily Challenge/ }),
-    ).toBeEnabled();
+    const dailyChallenge = page.getByRole('button', {
+      name: /Play Daily Challenge/,
+    });
+    await expect(dailyChallenge).toBeEnabled();
+    await expect(dailyChallenge).not.toContainText('5 questions');
   } finally {
     await context.setOffline(false);
   }
