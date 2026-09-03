@@ -135,7 +135,7 @@
 
 .timer {
   padding: 0.35rem 0.58rem;
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--blue);
   border: 2px solid var(--navy);
   border-radius: 0.3rem;
@@ -289,12 +289,12 @@
 }
 
 .champion-search--correct input {
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--correct);
 }
 
 .champion-search--wrong input {
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--wrong);
 }
 
@@ -339,7 +339,7 @@
 
 .champion-search li:hover,
 .champion-search li[aria-selected='true'] {
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--blue);
 }
 
@@ -423,7 +423,7 @@
   align-self: stretch;
   padding: 0.75rem;
   align-content: center;
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--blue);
   border-left: 2px solid var(--navy);
   text-align: left;

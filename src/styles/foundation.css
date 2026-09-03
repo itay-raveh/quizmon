@@ -1,6 +1,6 @@
 :root {
-  color: #143149;
-  background: #72c3ee;
+  color: var(--ink);
+  background: var(--page-background);
   font-family: var(--font-interface);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -27,6 +27,7 @@
   --surface-radius: 0.75rem;
   --button-radius: 0.5rem;
   --icon-control-radius: 0.35rem;
+  --page-background: #72c3ee;
   --navy: #083b7e;
   --navy-shadow: #123f76;
   --blue: #0d6be6;
@@ -182,7 +183,7 @@ main {
 .game-button {
   min-height: 2.8rem;
   padding: 0.62rem 1.1rem;
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--blue);
   border: 3px solid var(--navy);
   border-radius: 0.5rem;
