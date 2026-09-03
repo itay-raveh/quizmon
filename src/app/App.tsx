@@ -544,13 +544,6 @@ export const App = () => {
               onRetryCatalog={catalogState.retry}
               onStart={startCustomGame}
               onStartDaily={startDailyGame}
-              partnerSprite={
-                trainerProfile.partnerPokemon
-                  ? (catalogState.catalog?.pokemon[
-                      trainerProfile.partnerPokemon
-                    ]?.sprite ?? null)
-                  : null
-              }
               storageAvailable={storageAvailable}
             />
           ) : null}

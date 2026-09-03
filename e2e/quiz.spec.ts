@@ -428,7 +428,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Open Trainer Card' }).click();
+  await page.getByRole('button', { name: 'Trainer Card' }).click();
 
   await expect(page).toHaveURL(/\?trainer=1$/);
   await expect(
@@ -494,15 +494,26 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL('/');
-  const trainerButton = page.getByRole('button', {
-    name: 'Open Trainer Card',
-  });
-  const trainerLabel = trainerButton.locator('.landing__trainer-label');
-  await expect(trainerLabel.getByText('Trainer')).toBeVisible();
-  await expect(trainerLabel.getByText('Card')).toBeVisible();
-  await expect(trainerButton.locator('img')).toBeVisible();
+  const trainerButton = page.getByRole('button', { name: 'Trainer Card' });
+  const trainingButton = page.getByRole('button', { name: 'Start training' });
+  await expect(trainerButton.locator('img')).toHaveCount(0);
   await page.setViewportSize({ width: 360, height: 720 });
-  await expect(trainerButton.locator('img')).toBeVisible();
+  const controlStyles = await Promise.all(
+    [trainerButton, trainingButton].map((button) =>
+      button.evaluate((element) => {
+        const style = getComputedStyle(element);
+        const bounds = element.getBoundingClientRect();
+        return {
+          fontFamily: style.fontFamily,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+          height: bounds.height,
+          top: bounds.top,
+        };
+      }),
+    ),
+  );
+  expect(controlStyles[0]).toEqual(controlStyles[1]);
 });
 
 test('confirms before discarding an in-progress game', async ({ page }) => {

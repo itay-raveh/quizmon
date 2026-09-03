@@ -212,26 +212,12 @@
     width: 90%;
     height: 7.5%;
     gap: 0.38rem;
-    grid-template-columns: auto minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: auto repeat(2, minmax(0, 1fr));
   }
 
   .landing__actions .settings-button {
     width: 3.1rem;
     min-width: 3.1rem;
-  }
-
-  .landing__trainer-button.game-button {
-    padding-right: 0.35rem;
-  }
-
-  .landing__trainer-button .landing__trainer-avatar {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
-
-  .landing__trainer-avatar img {
-    width: 2.2rem;
-    height: 2.2rem;
   }
 
   .landing__status {
