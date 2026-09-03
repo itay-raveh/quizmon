@@ -9,6 +9,7 @@ import {
   downloadTrainerCard,
   renderTrainerCardImage,
   shareTrainerCard,
+  supportsTrainerCardSharing,
 } from '@/game/trainer-card-image';
 import type { TrainerCardFace } from '@/game/trainer';
 import { GameButton } from './GameButton';
@@ -54,6 +55,7 @@ export const TrainerPassport = ({
     : null;
   const imageKey = JSON.stringify({ face, profile, stats });
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
+  const canShareCard = supportsTrainerCardSharing();
 
   useEffect(() => {
     if (!profile.hasBeenRevealed) {
@@ -117,7 +119,8 @@ export const TrainerPassport = ({
         setShareStatus('Trainer Card shared.');
       }
     } catch {
-      setShareStatus('Sharing was unavailable. Try downloading the PNG.');
+      downloadTrainerCard(image, face);
+      setShareStatus('Sharing was unavailable, so the PNG was downloaded.');
     }
   };
 
@@ -192,16 +195,18 @@ export const TrainerPassport = ({
         <GameButton tone="quiet" onClick={flip}>
           {face === 'front' ? 'View records' : 'View front'}
         </GameButton>
-        <GameButton disabled={!image} onClick={() => void share()}>
-          Share card
-        </GameButton>
-        <GameButton
-          disabled={!image}
-          tone="quiet"
-          onClick={() => image && downloadTrainerCard(image, face)}
-        >
-          Download PNG
-        </GameButton>
+        {canShareCard ? (
+          <GameButton disabled={!image} onClick={() => void share()}>
+            Share card
+          </GameButton>
+        ) : (
+          <GameButton
+            disabled={!image}
+            onClick={() => image && downloadTrainerCard(image, face)}
+          >
+            Download PNG
+          </GameButton>
+        )}
       </div>
       <p className="trainer-passport__status" aria-live="polite">
         {shareStatus}

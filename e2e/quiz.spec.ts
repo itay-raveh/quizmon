@@ -453,6 +453,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByText('Pikachu')).toBeVisible();
   const downloadButton = page.getByRole('button', { name: 'Download PNG' });
   await expect(downloadButton).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Share card' })).toHaveCount(0);
   const cardBounds = await card.boundingBox();
   const downloadPromise = page.waitForEvent('download');
   await downloadButton.click();
@@ -462,6 +463,22 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   const png = await readFile(downloadPath);
   expect(png.subarray(1, 4).toString()).toBe('PNG');
   expect(Math.abs(png.readUInt32BE(16) - cardBounds.width * 2)).toBeLessThan(4);
+
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'canShare', {
+      configurable: true,
+      value: ({ files }: ShareData) => Boolean(files?.length),
+    });
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: () => Promise.resolve(),
+    });
+  });
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Share card' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Download PNG' })).toHaveCount(
+    0,
+  );
   await page.getByRole('button', { name: 'View records' }).click();
   await expect(
     page.getByRole('article', { name: 'Trainer Card records' }),

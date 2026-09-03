@@ -33,15 +33,28 @@ export const downloadTrainerCard = (blob: Blob, face: TrainerCardFace) => {
   URL.revokeObjectURL(url);
 };
 
+export const supportsTrainerCardSharing = () => {
+  if (!navigator.share || !navigator.canShare || typeof File === 'undefined') {
+    return false;
+  }
+
+  try {
+    return navigator.canShare({
+      files: [new File([], 'quizmon-trainer-card.png', { type: 'image/png' })],
+    });
+  } catch {
+    return false;
+  }
+};
+
 export const shareTrainerCard = async (
   blob: Blob,
   face: TrainerCardFace,
 ): Promise<'cancelled' | 'shared' | 'unsupported'> => {
-  if (!navigator.share || !navigator.canShare) return 'unsupported';
+  if (!supportsTrainerCardSharing()) return 'unsupported';
   const file = new File([blob], `quizmon-trainer-card-${face}.png`, {
     type: 'image/png',
   });
-  if (!navigator.canShare({ files: [file] })) return 'unsupported';
 
   try {
     await navigator.share({

@@ -346,7 +346,7 @@
 
 .trainer-passport__controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.7rem;
 }
 
@@ -626,14 +626,6 @@
 
   .trainer-stamp small {
     font-size: var(--text-mini);
-  }
-
-  .trainer-passport__controls {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .trainer-passport__controls > .game-button:nth-child(3) {
-    grid-column: 1 / -1;
   }
 
   .trainer-customizer {
