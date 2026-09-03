@@ -1,0 +1,359 @@
+.site-footer {
+  position: absolute;
+  top: var(--r-footer-credit-y);
+  left: var(--r-footer-credit-x);
+  display: flex;
+  width: var(--r-footer-credit-w);
+  height: var(--r-footer-credit-h);
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  color: #1b3e40;
+  background: transparent;
+  border: 0;
+  font-size: var(--text-small);
+  font-weight: 700;
+  text-align: center;
+  transform: translateY(0.36rem);
+}
+
+.site-footer a {
+  color: inherit;
+}
+
+.app--questions .site-footer,
+.app--results .site-footer {
+  position: static;
+  width: min(42rem, calc(100% - 0.5rem));
+  height: auto;
+  padding: 0.4rem 0 max(0.55rem, env(safe-area-inset-bottom));
+  justify-self: center;
+  flex-wrap: nowrap;
+  gap: 0.1rem;
+  font-size: var(--text-tiny);
+  white-space: nowrap;
+  transform: none;
+}
+
+@keyframes surface-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.45rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes combo-lock {
+  from {
+    filter: brightness(1.18);
+    transform: scale(0.78) rotate(-10deg);
+  }
+
+  72% {
+    transform: scale(1.08) rotate(2deg);
+  }
+
+  to {
+    filter: brightness(1);
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes combo-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.68);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.24);
+  }
+}
+
+.catch-combo--celebrate .catch-combo__ball {
+  animation: combo-lock 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.catch-combo--celebrate .catch-combo__ring {
+  animation: combo-ring 520ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (min-width: 36.01rem) and (max-width: 60rem) {
+  .logo-picture {
+    left: calc(50% - 10rem);
+    width: 20rem;
+  }
+
+  .daily-action {
+    left: calc(50% - 9rem);
+    width: 18rem;
+  }
+
+  .daily-action__detail {
+    font-size: var(--text-small);
+  }
+
+  .daily-action--with-combo .daily-action__copy {
+    padding-right: 4.5rem;
+  }
+
+  .daily-action > .catch-combo {
+    right: 1.15rem;
+  }
+
+  .landing__actions .game-button {
+    width: 8.5rem;
+  }
+
+  .landing__actions .game-button:first-child {
+    left: calc(50% - 9rem);
+  }
+
+  .landing__actions .game-button:last-child {
+    left: calc(50% + 0.5rem);
+    width: 8.5rem;
+  }
+
+  .site-footer {
+    top: 91%;
+    left: 5%;
+    width: 90%;
+    height: auto;
+    flex-wrap: nowrap;
+    font-size: var(--text-tiny);
+    transform: none;
+  }
+}
+
+@media (max-width: 36rem) {
+  main {
+    padding: 0.6rem;
+  }
+
+  .update-prompt {
+    right: 0.6rem;
+    left: 0.6rem;
+    justify-content: space-between;
+  }
+
+  .logo-picture {
+    top: 13%;
+    left: 5%;
+    width: 90%;
+    height: 30%;
+  }
+
+  .daily-action {
+    top: 43%;
+    left: 5%;
+    width: 90%;
+    height: 13%;
+  }
+
+  .daily-action__detail {
+    font-size: var(--text-small);
+  }
+
+  .question__prompt {
+    min-height: 4.35em;
+  }
+
+  .daily-action--with-combo .daily-action__copy {
+    padding-right: 4.5rem;
+  }
+
+  .daily-action > .catch-combo {
+    right: 1.15rem;
+  }
+
+  .landing__actions .game-button {
+    top: 60%;
+    width: 42%;
+    height: 7.5%;
+    font-size: var(--text-compact-control);
+  }
+
+  .landing__actions .game-button:first-child {
+    left: 6%;
+  }
+
+  .landing__actions .game-button:last-child {
+    left: 52%;
+    width: 42%;
+  }
+
+  .landing__status {
+    top: 71%;
+  }
+
+  .question,
+  .results {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 0.55rem;
+  }
+
+  .question h1 {
+    margin-top: 0.65rem;
+  }
+
+  .sprite-frame {
+    width: min(14rem, 61vw);
+  }
+
+  .answers {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .answers--pokemon {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .share-targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .share-target,
+  .share-target:nth-last-child(-n + 2) {
+    grid-column: span 1;
+  }
+
+  .share-target:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .generation-prompt__choices {
+    grid-template-columns: 1fr;
+  }
+
+  .answer {
+    min-height: 2.75rem;
+  }
+
+  .answer--pokemon {
+    min-height: 7rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: 4.55rem minmax(2.45rem, auto);
+  }
+
+  .answer__sprite {
+    width: 4.7rem;
+    height: 4.7rem;
+  }
+
+  .answer__nameplate {
+    padding: 0.3rem 0.35rem 0.4rem;
+    align-content: center;
+    border-top: 2px solid var(--navy);
+    border-left: 0;
+    text-align: center;
+  }
+
+  .answer__nameplate small {
+    font-size: var(--text-tiny);
+  }
+
+  .answer__nameplate > span {
+    font-size: var(--text-label);
+  }
+
+  .selection-grid--question-types {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .question-type-group__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .selection-toggle--group {
+    align-self: flex-start;
+  }
+
+  .results__actions--training {
+    grid-template-columns: 1fr;
+  }
+
+  .limit-control {
+    align-items: start;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .site-footer {
+    top: 91%;
+    left: 4%;
+    width: 92%;
+    height: auto;
+    flex-wrap: wrap;
+    font-size: var(--text-tiny);
+    transform: none;
+  }
+}
+
+@media (max-width: 36rem) and (max-height: 50rem) {
+  main {
+    padding: 0.4rem;
+  }
+
+  .question {
+    padding: 0.7rem;
+  }
+
+  .question h1 {
+    margin-top: 0.45rem;
+  }
+
+  .question__prompt {
+    min-height: 2.9em;
+    margin-block: 0.5rem;
+  }
+
+  .sprite-frame {
+    width: min(12rem, 50vw, 28svh);
+    margin-block: 0.15rem;
+  }
+}
+
+@media (max-height: 43rem) and (min-width: 36.01rem) {
+  .question--with-media {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.2rem;
+  }
+
+  .question--with-media .question__topline,
+  .question--with-media h1,
+  .question--with-media .game-mode,
+  .question--with-media .question__prompt,
+  .question--with-media .clue-board,
+  .question--with-media .champion-search,
+  .question--with-media .new-game {
+    grid-column: 1 / -1;
+  }
+
+  .sprite-frame {
+    width: min(14rem, 38vh);
+  }
+
+  .answers {
+    align-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

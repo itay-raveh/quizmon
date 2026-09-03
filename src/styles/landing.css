@@ -1,0 +1,212 @@
+.landing {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+
+.logo-picture {
+  position: absolute;
+  top: var(--r-wordmark-y);
+  left: var(--r-wordmark-x);
+  display: block;
+  width: var(--r-wordmark-w);
+  height: var(--r-wordmark-h);
+}
+
+.logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.daily-action {
+  position: absolute;
+  top: var(--r-daily-action-y);
+  left: var(--r-daily-action-x);
+  display: flex;
+  width: var(--r-daily-action-w);
+  height: var(--r-daily-action-h);
+  min-height: 0;
+  padding: 0.4rem 0.8rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  color: var(--paper);
+  text-align: center;
+}
+
+.daily-action__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+}
+
+.daily-action--with-combo .daily-action__copy {
+  width: 100%;
+  padding-right: 4.25rem;
+}
+
+.daily-action--complete {
+  color: var(--navy);
+  background: var(--cream);
+}
+
+.daily-action__title {
+  color: inherit;
+  font-size: var(--text-headline);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.daily-action__detail {
+  color: inherit;
+  font-family: var(--font-data);
+  font-size: var(--text-brand-detail);
+  font-weight: 800;
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+.catch-combo {
+  display: grid;
+  width: 4.1rem;
+  flex: none;
+  justify-items: center;
+  color: var(--paper);
+  pointer-events: none;
+}
+
+.catch-combo__ball {
+  position: relative;
+  display: grid;
+  width: 3.8rem;
+  aspect-ratio: 1;
+  background: linear-gradient(
+    to bottom,
+    var(--blue) 0 43%,
+    var(--navy) 43% 57%,
+    var(--paper) 57% 100%
+  );
+  border: 3px solid var(--navy);
+  border-radius: 50%;
+  box-shadow:
+    0 0.18rem 0 var(--yellow),
+    0 0.3rem 0 var(--navy-shadow);
+  place-items: center;
+}
+
+.catch-combo__ball::before {
+  position: absolute;
+  width: 2.05rem;
+  aspect-ratio: 1;
+  background: var(--yellow);
+  border: 3px solid var(--navy);
+  border-radius: 50%;
+  content: '';
+}
+
+.catch-combo__ball strong {
+  position: relative;
+  z-index: 1;
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.catch-combo__ball strong[data-digits='3'] {
+  font-size: 0.78rem;
+}
+
+.catch-combo__ball strong[data-digits='4'] {
+  font-size: var(--text-mini);
+}
+
+.catch-combo__ring {
+  position: absolute;
+  inset: -0.45rem;
+  border: 0.22rem solid var(--yellow);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.catch-combo__label {
+  position: relative;
+  z-index: 1;
+  padding: 0.08rem 0.34rem 0.12rem;
+  margin-top: -0.18rem;
+  color: var(--paper);
+  background: var(--navy);
+  border: 2px solid var(--yellow);
+  border-radius: 0.22rem;
+  font-size: var(--text-mini);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.daily-action > .catch-combo {
+  position: absolute;
+  top: 50%;
+  right: 0.25rem;
+  transform: translateY(-50%);
+}
+
+.landing__actions {
+  display: contents;
+}
+
+.landing__actions .game-button {
+  position: absolute;
+  top: var(--r-modifiers-y);
+  width: var(--r-modifiers-w);
+  height: 5.1%;
+  min-height: 0;
+  padding: 0.25rem 0.5rem;
+  font-size: var(--text-brand-control);
+}
+
+.landing__actions .game-button:first-child {
+  left: var(--r-modifiers-x);
+}
+
+.landing__actions .game-button:last-child {
+  left: var(--r-custom-game-x);
+  width: var(--r-custom-game-w);
+}
+
+.landing__actions .game-button > span {
+  position: static;
+  display: inline-block;
+  color: inherit;
+  font: inherit;
+  letter-spacing: normal;
+  transform: scaleX(1.12);
+  transform-origin: center;
+}
+
+.landing__status {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  width: min(28rem, 90vw);
+  margin: 0;
+  color: var(--navy);
+  font-weight: 800;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.landing__status--error {
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+}
