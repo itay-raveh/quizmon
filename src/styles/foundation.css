@@ -27,6 +27,7 @@
   --navy: #083b7e;
   --navy-shadow: #123f76;
   --blue: #0d6be6;
+  --primary-text: #ddfafe;
   --sky: #b7e1fa;
   --yellow: #eed23e;
   --cream: #feec99;
@@ -36,6 +37,10 @@
   --correct: #18763a;
   --wrong: #a92843;
   --focus: #083b7e;
+  --disabled-surface: #e5ebed;
+  --error-ink: #8b1e31;
+  --error-surface: #fff0f3;
+  --modal-scrim: rgba(8, 35, 73, 0.8);
   --r-wordmark-x: 34.05%;
   --r-wordmark-y: 25.2%;
   --r-wordmark-w: 33.42%;

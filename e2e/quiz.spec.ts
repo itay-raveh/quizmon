@@ -487,12 +487,11 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
 
   const dialog = page.getByRole('dialog', { name: 'Settings' });
   await expect(dialog).toBeVisible();
-  await expect(
-    dialog.getByRole('button', { name: 'Close settings' }),
-  ).toBeFocused();
+  await expect(dialog.getByRole('heading', { name: 'Settings' })).toBeFocused();
   await expect(
     dialog.getByRole('button', { name: 'Save settings' }),
   ).toBeVisible();
+  await expect(dialog.getByRole('contentinfo')).toHaveCount(0);
   await expect(dialog.getByRole('tab', { name: 'Training' })).toHaveAttribute(
     'aria-selected',
     'true',
@@ -510,15 +509,23 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await dialog
     .getByRole('button', { name: 'Select all question types' })
     .click();
-  await expect(dialog.getByRole('group', { name: 'Identity' })).toBeVisible();
+  const identityGroup = dialog.getByRole('button', {
+    name: 'Identity 5 / 5 selected',
+  });
+  const knowledgeGroup = dialog.getByRole('button', {
+    name: 'General knowledge 5 / 5 selected',
+  });
+  const battleGroup = dialog.getByRole('button', {
+    name: 'Battle knowledge 5 / 5 selected',
+  });
+  await expect(identityGroup).toHaveAttribute('aria-expanded', 'true');
+  await expect(knowledgeGroup).toHaveAttribute('aria-expanded', 'false');
+  await expect(battleGroup).toHaveAttribute('aria-expanded', 'false');
+  await battleGroup.click();
+  await expect(identityGroup).toHaveAttribute('aria-expanded', 'false');
+  await expect(battleGroup).toHaveAttribute('aria-expanded', 'true');
   await expect(
-    dialog.getByRole('group', { name: 'General knowledge' }),
-  ).toBeVisible();
-  await expect(
-    dialog.getByRole('group', { name: 'Battle knowledge' }),
-  ).toBeVisible();
-  await expect(
-    dialog.getByText('Name a Pokémon from its back sprite.'),
+    dialog.getByRole('group', { name: 'Battle knowledge question types' }),
   ).toBeVisible();
   await expect(dialog.getByLabel('Battle view')).toBeChecked();
   await expect(dialog.getByLabel('Counter pick')).toBeChecked();
@@ -531,9 +538,19 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     .getByRole('button', { name: 'Deselect all question types' })
     .click();
   await expect(dialog.getByLabel('Pokédex scan')).not.toBeChecked();
+  await dialog.getByRole('button', { name: 'Save settings' }).click();
+  await expect(
+    dialog.getByText('Choose at least one question type.'),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole('heading', { name: 'Question types' }),
+  ).toBeFocused();
   await dialog
     .getByRole('button', { name: 'Select all question types' })
     .click();
+  await expect(
+    dialog.getByText('Choose at least one question type.'),
+  ).toHaveCount(0);
   await dialog.getByRole('tab', { name: 'Experience' }).click();
   await expect(dialog.getByText('Play experience')).toBeVisible();
   await expect(dialog.getByLabel('Quick transitions')).toBeVisible();
@@ -580,17 +597,24 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     const numberInput = element
       .querySelector('.number-field input')
       ?.getBoundingClientRect();
+    const description = element.querySelector('.selection-tile__description');
     return {
       closeHeight: close?.height,
       closeWidth: close?.width,
+      descriptionFontSize: description
+        ? Number.parseFloat(getComputedStyle(description).fontSize)
+        : undefined,
+      dialogHeight: bounds.height,
       dialogWidth: bounds.width,
       numberInputHeight: numberInput?.height,
       selectionToggleHeight: selectionToggle?.height,
     };
   });
-  expect(mobileControlMetrics.dialogWidth).toBeGreaterThanOrEqual(304);
+  expect(mobileControlMetrics.dialogHeight).toBe(844);
+  expect(mobileControlMetrics.dialogWidth).toBe(320);
   expect(mobileControlMetrics.closeHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.closeWidth).toBeGreaterThanOrEqual(44);
+  expect(mobileControlMetrics.descriptionFontSize).toBeGreaterThanOrEqual(12);
   expect(mobileControlMetrics.selectionToggleHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.numberInputHeight).toBeGreaterThanOrEqual(44);
   await dialog.getByRole('button', { name: 'Cancel' }).click();

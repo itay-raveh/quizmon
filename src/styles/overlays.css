@@ -51,7 +51,7 @@
 .generation-prompt::backdrop,
 .leave-game-dialog::backdrop,
 .share-dialog::backdrop {
-  background: rgba(8, 35, 73, 0.8);
+  background: var(--modal-scrim);
 }
 
 .modifiers-dialog__header,
@@ -171,7 +171,7 @@
 }
 
 .settings-tab[aria-selected='true'] {
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--blue);
   box-shadow: 0 0.16rem 0 var(--yellow);
 }
@@ -257,7 +257,7 @@
   min-width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  color: #ddfafe;
+  color: var(--primary-text);
   background: var(--blue);
   border: 2px solid var(--navy);
   border-radius: 0.35rem;
