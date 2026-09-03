@@ -119,16 +119,12 @@ export const Results = ({
           {isNewBest ? <strong>New best!</strong> : 'Best'}{' '}
           {formatScore(bestResult.score)} points
         </p>
-      ) : (
-        <p
-          className={`personal-best ${resultSaved ? '' : 'personal-best--warning'}`.trim()}
-          role={resultSaved ? undefined : 'alert'}
-        >
-          {resultSaved
-            ? 'Saved on this device.'
-            : 'This result could not be saved. Keep this tab open or enable browser storage.'}
+      ) : !resultSaved ? (
+        <p className="personal-best personal-best--warning" role="alert">
+          This result could not be saved. Keep this tab open or enable browser
+          storage.
         </p>
-      )}
+      ) : null}
 
       <div className="results__actions">
         <ShareResultButton mode={mode} result={result} />

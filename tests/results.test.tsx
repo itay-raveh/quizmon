@@ -93,5 +93,6 @@ describe('results summary', () => {
       screen.getByRole('img', { name: '7-day Daily Combo' }),
     ).toBeVisible();
     expect(screen.queryByText('Streak')).not.toBeInTheDocument();
+    expect(screen.queryByText('Saved on this device.')).not.toBeInTheDocument();
   });
 });
