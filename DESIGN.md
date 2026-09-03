@@ -263,9 +263,9 @@ The progress track is a slim pale-blue bar with a `2px` navy border and yellow f
 
 The Trainer Card is a first-class local profile reached from the landing screen and results. Its front combines an optional trainer name, cosmetic card number, partner Pokémon, join date, earned rank, and card finish. Its records face contains games completed, Daily clears, perfect rounds, the best Daily Combo, one qualified Specialty, and earned Quizmon stamps. Specialty requires at least ten answered questions in a category so a lucky first answer cannot claim expertise.
 
-Only the visible face exists in the accessibility tree. A labeled control changes faces with a short card turn, and reduced-motion preferences replace the animation with an immediate swap. The card reflows by content on narrow screens instead of fixing both faces to the same height. The first visit receives one reveal animation.
+Only the visible face exists in the accessibility tree. A labeled control changes faces with a short card turn, and reduced-motion preferences replace the animation with an immediate swap. Both faces keep the same landscape silhouette at a given viewport: `3 / 2` on wider screens and a slightly taller `5 / 4` on narrow screens. The smallest supported viewport may grow a few pixels taller to preserve all four earned stamps. Mobile content becomes denser without hiding profile or record information. The first visit receives one reveal animation.
 
-Customization stays optional and local. Saving a name or partner requests persistent browser storage when the platform supports it. Sharing renders the visible face into a deterministic `1200 × 756` PNG from the same profile and progression data. Native file sharing is preferred, with direct PNG download and a copyable Quizmon link as fallbacks.
+Customization stays optional and local. Saving a name or partner requests persistent browser storage when the platform supports it. Sharing renders the visible face at double its displayed resolution from the same profile and progression data. Native file sharing is preferred, with direct PNG download as the fallback.
 
 ### Results Surface
 

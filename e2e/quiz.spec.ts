@@ -467,6 +467,20 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   expect(png.subarray(1, 4).toString()).toBe('PNG');
   expect(Math.abs(png.readUInt32BE(16) - cardBounds.width * 2)).toBeLessThan(4);
 
+  await page.setViewportSize({ width: 360, height: 800 });
+  const mobileFrontBounds = await card.boundingBox();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const desktopFrontBounds = await card.boundingBox();
+  if (!mobileFrontBounds || !desktopFrontBounds) {
+    throw new Error('Responsive Trainer Card bounds are unavailable');
+  }
+  const mobileFrontRatio = mobileFrontBounds.width / mobileFrontBounds.height;
+  const desktopFrontRatio =
+    desktopFrontBounds.width / desktopFrontBounds.height;
+  expect(mobileFrontRatio).toBeCloseTo(1.25, 1);
+  expect(desktopFrontRatio).toBeCloseTo(1.5, 1);
+  expect(desktopFrontRatio - mobileFrontRatio).toBeLessThanOrEqual(0.3);
+
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'canShare', {
       configurable: true,
@@ -489,6 +503,27 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(
     page.getByRole('article', { name: 'Trainer Card front' }),
   ).toHaveCount(0);
+  await expect(page.locator('.trainer-passport__card')).toHaveClass(
+    /trainer-passport__card--idle/,
+  );
+  const recordsCard = page.getByRole('article', {
+    name: 'Trainer Card records',
+  });
+  await page.setViewportSize({ width: 360, height: 800 });
+  const mobileRecordsBounds = await recordsCard.boundingBox();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const desktopRecordsBounds = await recordsCard.boundingBox();
+  if (!mobileRecordsBounds || !desktopRecordsBounds) {
+    throw new Error('Responsive Trainer Card record bounds are unavailable');
+  }
+  expect(mobileRecordsBounds.width / mobileRecordsBounds.height).toBeCloseTo(
+    1.25,
+    1,
+  );
+  expect(desktopRecordsBounds.width / desktopRecordsBounds.height).toBeCloseTo(
+    1.5,
+    1,
+  );
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
