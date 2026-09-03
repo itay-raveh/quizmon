@@ -204,6 +204,7 @@ test('plays and shares a complete Training question without a live API call', as
   context,
   page,
 }) => {
+  await page.setViewportSize({ width: 360, height: 640 });
   await context.grantPermissions(['clipboard-write']);
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'share', { value: undefined });
@@ -228,6 +229,13 @@ test('plays and shares a complete Training question without a live API call', as
   await expect(
     page.getByRole('heading', { name: 'Pokédex scan' }),
   ).toBeVisible();
+  const spriteFrame = await page.locator('.sprite-frame').boundingBox();
+  const leaveGame = await page
+    .getByRole('button', { name: 'Leave game' })
+    .boundingBox();
+  expect(spriteFrame?.height).toBeLessThanOrEqual(161);
+  expect(leaveGame?.y).toBeGreaterThan(0);
+  expect(leaveGame!.y + leaveGame!.height).toBeLessThanOrEqual(640);
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 001');

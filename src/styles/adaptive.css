@@ -236,7 +236,11 @@
   }
 
   .sprite-frame {
-    width: min(14rem, 61vw);
+    width: min(12rem, 54vw);
+  }
+
+  .sprite {
+    transform: scale(1.06);
   }
 
   .answers {
@@ -330,6 +334,10 @@
 }
 
 @media (max-width: 36rem) and (max-height: 50rem) {
+  .app--questions main {
+    padding-top: 0.4rem;
+  }
+
   main {
     padding: 0.4rem;
   }
@@ -348,8 +356,12 @@
   }
 
   .sprite-frame {
-    width: min(12rem, 50vw, 28svh);
+    width: min(10.5rem, 48vw, 25svh);
     margin-block: 0.15rem;
+  }
+
+  .sprite {
+    transform: scale(1.08);
   }
 }
 
