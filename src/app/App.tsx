@@ -37,7 +37,6 @@ import {
   canPersistResults,
   readDailyResult,
   readDailyStreak,
-  readTrainerStats,
   saveResult,
 } from '@/game/storage';
 import {
@@ -45,11 +44,6 @@ import {
   shouldShowGenerationPrompt,
   usePersistentModifiers,
 } from '@/game/settings-storage';
-import {
-  readTrainerProfile,
-  saveTrainerProfile,
-  type TrainerProfile,
-} from '@/game/trainer-profile';
 import { useStopwatch } from '@/game/stopwatch';
 import { generations } from '@/game/types';
 import type {
@@ -61,6 +55,7 @@ import type {
   QuestionData,
 } from '@/game/types';
 import { gameSessionReducer, initialGameSession } from './session';
+import { useTrainerCard } from './useTrainerCard';
 
 interface SettingsState {
   initialTab: SettingsTab;
@@ -75,9 +70,16 @@ export const App = () => {
   );
   const phase = session.phase;
   const [settings, setSettings] = useState<SettingsState | null>(null);
-  const [trainerCardOpen, setTrainerCardOpen] = useState(() =>
-    new URLSearchParams(window.location.search).has('trainer'),
-  );
+  const {
+    close: closeTrainerCard,
+    isOpen: trainerCardOpen,
+    open: openTrainerCard,
+    profile: trainerProfile,
+    refresh: refreshTrainerCard,
+    refreshStats: refreshTrainerStats,
+    stats: trainerStats,
+    updateProfile: updateTrainerProfile,
+  } = useTrainerCard();
   const [generationPromptOpen, setGenerationPromptOpen] = useState(false);
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
   const generationPromptPending = useRef<boolean | null>(null);
@@ -101,8 +103,6 @@ export const App = () => {
     Boolean(readDailyResult(linkedDailyDate ?? getUtcDate())),
   );
   const [dailyStreak, setDailyStreak] = useState(readDailyStreak);
-  const [trainerStats, setTrainerStats] = useState(readTrainerStats);
-  const [trainerProfile, setTrainerProfile] = useState(readTrainerProfile);
   const [storageAvailable] = useState(canPersistResults);
   const restorationAttempted = useRef(false);
   const {
@@ -122,8 +122,7 @@ export const App = () => {
         setDailyResultSaved(true);
       }
       setDailyStreak(readDailyStreak());
-      setTrainerStats(readTrainerStats());
-      setTrainerProfile(readTrainerProfile());
+      refreshTrainerCard();
     };
 
     window.addEventListener('focus', syncDailyResult);
@@ -132,44 +131,7 @@ export const App = () => {
       window.removeEventListener('focus', syncDailyResult);
       window.removeEventListener('storage', syncDailyResult);
     };
-  }, [dailyDate]);
-
-  useEffect(() => {
-    const syncTrainerRoute = () =>
-      setTrainerCardOpen(
-        new URLSearchParams(window.location.search).has('trainer'),
-      );
-    window.addEventListener('popstate', syncTrainerRoute);
-    return () => window.removeEventListener('popstate', syncTrainerRoute);
-  }, []);
-
-  const openTrainerCard = useCallback(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('trainer', '1');
-    window.history.pushState({ quizmonTrainerCard: true }, '', url);
-    setTrainerCardOpen(true);
-  }, []);
-
-  const closeTrainerCard = useCallback(() => {
-    const historyState: unknown = window.history.state;
-    if (
-      historyState !== null &&
-      typeof historyState === 'object' &&
-      'quizmonTrainerCard' in historyState &&
-      historyState.quizmonTrainerCard === true
-    ) {
-      window.history.back();
-      return;
-    }
-    const url = new URL(window.location.href);
-    url.searchParams.delete('trainer');
-    window.history.replaceState(window.history.state, '', url);
-    setTrainerCardOpen(false);
-  }, []);
-
-  const updateTrainerProfile = useCallback((profile: TrainerProfile) => {
-    setTrainerProfile(saveTrainerProfile(profile));
-  }, []);
+  }, [dailyDate, refreshTrainerCard]);
 
   const startGame = useCallback(
     (
@@ -357,7 +319,7 @@ export const App = () => {
       };
       const best = saveResult(mode, nextResult, gameModifiers);
       clearActiveGame();
-      setTrainerStats(readTrainerStats());
+      refreshTrainerStats();
       trackGameCompleted(mode, nextResult);
       dispatchSession({
         bestResult: best.best,
@@ -373,7 +335,7 @@ export const App = () => {
       }
       pause();
     },
-    [catalogState, pause],
+    [catalogState, pause, refreshTrainerStats],
   );
 
   useEffect(() => {
