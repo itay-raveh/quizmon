@@ -1,13 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useGameSounds } from '@/audio/sound';
+import { useEffect, useRef } from 'react';
 import { getModeLabel } from '@/game/daily';
 import {
   formatDuration,
-  getAnswerPoints,
   getCorrectOptions,
   getQuestionTitle,
-  isQuestionAnswerCorrect,
-  getSpeedBonusPoints,
 } from '@/game/game';
 import { formatPokemonName } from '@/game/format';
 import type {
@@ -19,8 +15,11 @@ import type {
 import { ChampionSearch } from './ChampionSearch';
 import { GameButton } from './GameButton';
 import { Progress } from './Progress';
+import { QuestionAnswers } from './QuestionAnswers';
+import { QuestionArtwork } from './QuestionArtwork';
+import { QuestionClues } from './QuestionClues';
 import { SettingsButton } from './SettingsButton';
-import { Sprite } from './Sprite';
+import { useQuestionAnswer } from './useQuestionAnswer';
 
 interface QuestionProps {
   elapsedMilliseconds: number;
@@ -38,24 +37,6 @@ interface QuestionProps {
   speedrunMode: boolean;
   total: number;
 }
-
-const QUICK_FEEDBACK_DELAY = 300;
-const DAILY_FEEDBACK_DELAY = 850;
-const TRAINING_FEEDBACK_DELAY = 1_200;
-
-const preloadQuestionImages = (question: QuestionData) => {
-  const sources = [
-    ...(question.media.kind === 'none' ? [] : [question.media.src]),
-    ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
-  ];
-
-  for (const src of sources) {
-    const image = new Image();
-    image.decoding = 'async';
-    image.fetchPriority = 'low';
-    image.src = src;
-  }
-};
 
 const QuestionPrompt = ({ prompt }: { prompt: QuestionPromptData }) => (
   <p className="question__prompt">
@@ -98,131 +79,34 @@ export const Question = ({
   speedrunMode,
   total,
 }: QuestionProps) => {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const [answered, setAnswered] = useState(false);
-  const [cluesShown, setCluesShown] = useState(0);
-  const { playCorrect, playWrong } = useGameSounds();
-  const answerTimeout = useRef<number | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
-  const questionStartedAt = useRef(elapsedMilliseconds);
+  const {
+    answerCorrect,
+    answered,
+    cluesShown,
+    correctOptions,
+    finishAnswer,
+    revealClue,
+    selectedOptions,
+    selectOption,
+  } = useQuestionAnswer({
+    elapsedMilliseconds,
+    interactionPaused,
+    mode,
+    nextQuestion,
+    onAnswer,
+    onAnswerRecorded,
+    onFeedbackStart,
+    question,
+    speedrunMode,
+  });
 
   useEffect(() => {
     heading.current?.focus();
   }, []);
 
-  useEffect(() => {
-    if (nextQuestion) preloadQuestionImages(nextQuestion);
-    return () => {
-      if (answerTimeout.current !== null) {
-        window.clearTimeout(answerTimeout.current);
-      }
-    };
-  }, [nextQuestion]);
-
-  const finishAnswer = useCallback(
-    (options: string[]) => {
-      if (interactionPaused || answered) return;
-
-      const correct = isQuestionAnswerCorrect(question, options);
-      const points = getAnswerPoints(question, correct, cluesShown);
-      const answeredAt = onFeedbackStart();
-      const responseMilliseconds = Math.max(
-        0,
-        answeredAt - questionStartedAt.current,
-      );
-      const speedBonus = getSpeedBonusPoints(points, responseMilliseconds);
-      const delay = speedrunMode
-        ? QUICK_FEEDBACK_DELAY
-        : mode.kind === 'daily'
-          ? DAILY_FEEDBACK_DELAY
-          : TRAINING_FEEDBACK_DELAY;
-      setSelectedOptions(options);
-      setAnswered(true);
-      if (correct) playCorrect();
-      else playWrong();
-      const answer = {
-        category: question.category,
-        correct,
-        points,
-        responseMilliseconds,
-        speedBonus,
-      };
-      onAnswerRecorded?.(answer);
-      answerTimeout.current = window.setTimeout(() => onAnswer(answer), delay);
-    },
-    [
-      cluesShown,
-      answered,
-      interactionPaused,
-      mode.kind,
-      onAnswer,
-      onAnswerRecorded,
-      onFeedbackStart,
-      playCorrect,
-      playWrong,
-      question,
-      speedrunMode,
-    ],
-  );
-
-  const selectOption = useCallback(
-    (option: string) => {
-      if (interactionPaused || answered) return;
-      if (question.answer.interaction === 'single-choice') {
-        finishAnswer([option]);
-        return;
-      }
-
-      setSelectedOptions((current) => {
-        if (current.includes(option)) {
-          return current.filter((selected) => selected !== option);
-        }
-        return [...current, option];
-      });
-    },
-    [answered, finishAnswer, interactionPaused, question.answer],
-  );
-
-  useEffect(() => {
-    const answerWithKeyboard = (event: KeyboardEvent) => {
-      if (
-        interactionPaused ||
-        event.altKey ||
-        event.ctrlKey ||
-        event.metaKey ||
-        event.repeat
-      )
-        return;
-      if (event.target instanceof HTMLInputElement) return;
-      if (question.category === 'champion' && cluesShown === 0) return;
-      const index = Number(event.key) - 1;
-      const option = question.options[index];
-      if (option) selectOption(option);
-    };
-
-    window.addEventListener('keydown', answerWithKeyboard);
-    return () => window.removeEventListener('keydown', answerWithKeyboard);
-  }, [cluesShown, interactionPaused, question, selectOption]);
-
-  const answerCorrect =
-    answered && isQuestionAnswerCorrect(question, selectedOptions);
-  const correctOptions = getCorrectOptions(question);
-  const optionClassName = (option: string) => {
-    const selected = selectedOptions.includes(option);
-    if (!answered) return selected ? 'answer answer--selected' : 'answer';
-    if (correctOptions.includes(option)) return 'answer answer--correct';
-    if (selected) return 'answer answer--wrong';
-    return 'answer answer--muted';
-  };
-
   const isChampion = question.category === 'champion';
   const championChoicesVisible = isChampion && cluesShown > 0;
-  const visibleChampionClues = Math.max(0, cluesShown - 1);
-  const mediaVisible =
-    answered ||
-    question.media.kind !== 'sprite' ||
-    question.media.revealAt === undefined ||
-    cluesShown >= question.media.revealAt;
   const className = [
     'question',
     question.media.kind === 'sprite' || question.media.kind === 'pixel-peek'
@@ -265,150 +149,29 @@ export const Question = ({
         />
       ) : null}
 
-      {isChampion && question.clues ? (
-        visibleChampionClues > 0 || !answered ? (
-          <div
-            className={`clue-board ${visibleChampionClues === 0 ? 'clue-board--action-only' : ''}`.trim()}
-          >
-            {visibleChampionClues > 0 ? (
-              <ol aria-live="polite">
-                {question.clues.slice(0, visibleChampionClues).map((clue) => (
-                  <li key={clue}>{clue}</li>
-                ))}
-              </ol>
-            ) : null}
-            {cluesShown <= question.clues.length && !answered ? (
-              <GameButton
-                className="clue-button"
-                tone="quiet"
-                onClick={() => setCluesShown((current) => current + 1)}
-              >
-                {cluesShown === 0
-                  ? 'Get a clue · Show 4 choices'
-                  : 'Reveal another clue'}{' '}
-                · {getAnswerPoints(question, true, cluesShown + 1)} points
-              </GameButton>
-            ) : null}
-          </div>
-        ) : null
-      ) : null}
-
-      {question.media.kind === 'sprite' && mediaVisible ? (
-        <Sprite
-          silhouette={question.media.silhouette && !answered}
-          src={question.media.src}
+      {isChampion ? (
+        <QuestionClues
+          answered={answered}
+          cluesShown={cluesShown}
+          onReveal={revealClue}
+          question={question}
         />
       ) : null}
 
-      {question.media.kind === 'pixel-peek' ? (
-        <div
-          className={`pixel-peek ${answered ? 'pixel-peek--revealed' : ''}`.trim()}
-        >
-          <img
-            className="pixel-sprite pixel-peek__image"
-            src={question.media.src}
-            alt={
-              answered
-                ? formatPokemonName(question.pokemonName)
-                : 'Cropped Pokémon sprite'
-            }
-            decoding="async"
-            fetchPriority="high"
-            style={{
-              transformOrigin: `${question.media.focusX}% ${question.media.focusY}%`,
-            }}
-            width="96"
-            height="96"
-          />
-        </div>
-      ) : null}
-
-      {question.media.kind === 'pixel-sprite' ? (
-        <div className="question__portrait" aria-hidden="true">
-          <img
-            className="pixel-sprite"
-            src={question.media.src}
-            alt=""
-            decoding="async"
-            fetchPriority="high"
-            width="96"
-            height="96"
-          />
-        </div>
-      ) : null}
+      <QuestionArtwork
+        answered={answered}
+        cluesShown={cluesShown}
+        question={question}
+      />
 
       {!isChampion || championChoicesVisible ? (
-        <div
-          className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''}`.trim()}
-        >
-          {question.options.map((option, index) => {
-            const visual = question.optionVisuals?.[option];
-            const concealed = Boolean(
-              question.concealOptionLabels && !answered,
-            );
-            const selectionPosition = selectedOptions.indexOf(option) + 1;
-            const selected = selectionPosition > 0;
-            const selectionMark = answered
-              ? correctOptions.includes(option)
-                ? '✓'
-                : selected
-                  ? '×'
-                  : index + 1
-              : question.answer.interaction === 'multi-select' && selected
-                ? '✓'
-                : index + 1;
-            return (
-              <GameButton
-                aria-label={
-                  concealed
-                    ? `Silhouette ${index + 1}`
-                    : formatPokemonName(option)
-                }
-                aria-keyshortcuts={String(index + 1)}
-                aria-pressed={
-                  question.answer.interaction === 'single-choice'
-                    ? undefined
-                    : selectedOptions.includes(option)
-                }
-                className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''}`.trim()}
-                clickSound="none"
-                disabled={answered}
-                key={option}
-                onClick={() => selectOption(option)}
-              >
-                <kbd aria-hidden="true">{selectionMark}</kbd>
-                {visual ? (
-                  <>
-                    <span className="answer__sprite-field" aria-hidden="true">
-                      <img
-                        className={`pixel-sprite answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
-                        src={visual.src}
-                        alt=""
-                        decoding="async"
-                        width="96"
-                        height="96"
-                      />
-                    </span>
-                    <span className="answer__nameplate">
-                      {concealed ? (
-                        <span>Silhouette {index + 1}</span>
-                      ) : (
-                        <>
-                          <small aria-hidden="true">
-                            No. {String(visual.dexNumber).padStart(4, '0')}
-                          </small>
-                          <span>{formatPokemonName(option)}</span>
-                        </>
-                      )}
-                    </span>
-                  </>
-                ) : (
-                  <span>{formatPokemonName(option)}</span>
-                )}
-              </GameButton>
-            );
-          })}
-        </div>
+        <QuestionAnswers
+          answered={answered}
+          correctOptions={correctOptions}
+          onSelect={selectOption}
+          question={question}
+          selectedOptions={selectedOptions}
+        />
       ) : null}
 
       {question.answer.interaction !== 'single-choice' && !answered ? (
