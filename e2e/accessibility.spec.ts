@@ -3,6 +3,11 @@ import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 
 const expectNoAccessibilityViolations = async (page: Page) => {
+  await page.evaluate(async () => {
+    await Promise.allSettled(
+      document.getAnimations().map((animation) => animation.finished),
+    );
+  });
   const results = await new AxeBuilder({ page }).analyze();
   expect(
     results.violations,
