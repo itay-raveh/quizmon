@@ -68,7 +68,7 @@ export interface PokemonKnowledge {
   types: string[];
 }
 
-export interface TypeRelations {
+interface TypeRelations {
   doubleTo: string[];
   halfTo: string[];
   noneTo: string[];
@@ -88,7 +88,7 @@ export interface Modifiers {
   speedrunMode: boolean;
 }
 
-export type QuestionMedia =
+type QuestionMedia =
   | {
       kind: 'sprite';
       revealAt?: number;
@@ -110,9 +110,9 @@ export interface PokemonOptionVisual {
   src: string;
 }
 
-export type QuestionInteraction = 'single-choice' | 'multi-select';
+type QuestionInteraction = 'single-choice' | 'multi-select';
 
-export interface QuestionAnswer {
+interface QuestionAnswer {
   correctOptions: string[];
   interaction: QuestionInteraction;
 }

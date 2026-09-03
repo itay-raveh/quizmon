@@ -76,9 +76,11 @@ export const App = () => {
   );
   const [generationPromptOpen, setGenerationPromptOpen] = useState(false);
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
-  const [generationPromptPending, setGenerationPromptPending] = useState(
-    shouldShowGenerationPrompt,
-  );
+  const generationPromptPending = useRef<boolean | null>(null);
+  const isGenerationPromptPending = () => {
+    generationPromptPending.current ??= shouldShowGenerationPrompt();
+    return generationPromptPending.current;
+  };
   const [linkedDailyDate] = useState(() =>
     parseDailyDate(window.location.search),
   );
@@ -191,7 +193,7 @@ export const App = () => {
     const nextModifiers = { ...modifiers, generations };
     setModifiers(nextModifiers);
     markGenerationPromptAnswered();
-    setGenerationPromptPending(false);
+    generationPromptPending.current = false;
     setGenerationPromptOpen(false);
     const seed = createRoundSeed();
     startGame(
@@ -209,7 +211,7 @@ export const App = () => {
   const startCustomGame = () => {
     if (catalogState.status !== 'ready') return;
 
-    if (generationPromptPending) {
+    if (isGenerationPromptPending()) {
       setGenerationPromptOpen(true);
       return;
     }
@@ -311,9 +313,9 @@ export const App = () => {
   const saveSettings = useCallback(
     (nextModifiers: Modifiers) => {
       setModifiers(nextModifiers);
-      if (generationPromptPending) {
+      if (isGenerationPromptPending()) {
         markGenerationPromptAnswered();
-        setGenerationPromptPending(false);
+        generationPromptPending.current = false;
       }
       if (phase === 'questions' || phase === 'results') {
         dispatchSession({
@@ -324,7 +326,7 @@ export const App = () => {
       setSettings(null);
       if (phase === 'questions') start();
     },
-    [generationPromptPending, phase, setModifiers, start],
+    [phase, setModifiers, start],
   );
 
   const completeGame = useCallback(
@@ -407,9 +409,11 @@ export const App = () => {
               snapshot.modifiers,
               createSeededRandom(snapshot.seed),
             );
-      const answersMatchQuestions = snapshot.answers.every(
-        (answer, index) => answer.category === questions[index]?.category,
-      );
+      const answersMatchQuestions =
+        snapshot.answers.length <= questions.length &&
+        snapshot.answers.every(
+          (answer, index) => answer.category === questions[index]?.category,
+        );
 
       if (
         questions.length !== snapshot.questionCount ||

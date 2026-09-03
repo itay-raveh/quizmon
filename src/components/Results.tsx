@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGameSounds } from '@/audio/sound';
 import { getModeLabel } from '@/game/daily';
 import {
@@ -8,6 +8,7 @@ import {
   getMasteryBonus,
   getSpeedBonus,
 } from '@/game/game';
+import { formatScore } from '@/game/format';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
@@ -51,12 +52,6 @@ export const Results = ({
     if (result.score > 1) playScore();
     return stopScore;
   }, [playScore, result.score, stopScore]);
-
-  const formatScore = useCallback(
-    (value: number) =>
-      Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(value),
-    [],
-  );
 
   return (
     <section className="results" aria-labelledby="results-title">

@@ -938,15 +938,23 @@ test('shows a saved daily score instead of another play button', async ({
             answers: Array.from({ length: 10 }, (_, index) => ({
               category: index === 9 ? 'champion' : 'identity',
               correct: index < 8,
-              points: index < 8 ? 100 : 0,
+              points: index < 8 ? 1_000 : 0,
             })),
             contentVersion: 2,
             correctCount: 8,
             elapsedSeconds: 90,
             questionCount: 10,
-            score: 800,
+            score: 14_400,
+            scoreVersion: 2,
           },
         },
+        progress: {
+          categories: {},
+          gamesCompleted: 1,
+          perfectRounds: 0,
+          version: 1,
+        },
+        streak: { creditedDates: ['2026-09-01'], version: 1 },
         training: {},
       }),
     );
@@ -993,7 +1001,7 @@ test('starts the selected daily challenge from a shared link', async ({
   await expect(page.getByText('Daily Challenge · Sep 1, 2026')).toBeVisible();
 });
 
-test("shows a legacy Daily Combo on today's challenge", async ({ page }) => {
+test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
   const yesterday = new Date();
   yesterday.setUTCDate(yesterday.getUTCDate() - 1);
   const date = yesterday.toISOString().slice(0, 10);
@@ -1016,6 +1024,13 @@ test("shows a legacy Daily Combo on today's challenge", async ({ page }) => {
               scoreVersion: 2,
             },
           },
+          progress: {
+            categories: {},
+            gamesCompleted: 1,
+            perfectRounds: 0,
+            version: 1,
+          },
+          streak: { creditedDates: [dailyDate], version: 1 },
           training: {},
         }),
       );

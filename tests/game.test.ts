@@ -7,7 +7,6 @@ import {
   defaultModifiers,
   filterPokemon,
   formatDuration,
-  formatPokemonName,
   getAnswerPoints,
   getCorrectOptions,
   getKnowledgePoints,
@@ -22,6 +21,7 @@ import {
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
+import { formatPokemonName } from '@/game/format';
 import { questionRegistry, questionTypes } from '@/game/questions/registry';
 import {
   generations,
@@ -115,36 +115,6 @@ describe('normalizeModifiers', () => {
         questionTypes: ['evolution-order', 'evolution-trail', 'type-check'],
       }).questionTypes,
     ).toEqual(['type-check']);
-  });
-
-  it('adds new formats to a previously complete selection', () => {
-    const previousQuestionTypes = questionTypes.filter(
-      (questionType) =>
-        !['battle-view', 'evolution-shift', 'counter-pick'].includes(
-          questionType,
-        ),
-    );
-
-    expect(
-      normalizeModifiers({ questionTypes: previousQuestionTypes })
-        .questionTypes,
-    ).toEqual(questionTypes);
-  });
-
-  it('migrates broad topic settings to their concrete question types', () => {
-    expect(
-      normalizeModifiers({
-        generations: ['I'],
-        knowledgeCategories: ['identity', 'evolution'],
-      }).questionTypes,
-    ).toEqual([
-      'pokedex-scan',
-      'silhouette-match',
-      'pixel-peek',
-      'shiny-spotter',
-      'battle-view',
-      'evolution-shift',
-    ]);
   });
 });
 

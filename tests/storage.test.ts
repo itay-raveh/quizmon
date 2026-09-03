@@ -61,22 +61,6 @@ describe('saved results', () => {
     expect(readDailyResult(mode.date)).toEqual(result);
   });
 
-  it('credits a consecutive legacy daily history once', () => {
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {
-          '2026-08-31': result,
-          '2026-09-01': result,
-          '2026-09-02': result,
-        },
-        training: {},
-      }),
-    );
-
-    expect(readDailyStreak('2026-09-03')).toBe(3);
-  });
-
   it('only credits new results completed on their UTC challenge date', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-03T12:00:00.000Z'));
@@ -179,47 +163,25 @@ describe('saved results', () => {
     );
   });
 
-  it('builds Trainer Card totals and migrates existing records', () => {
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {
-          '2026-08-31': result,
-          '2026-09-01': result,
-          '2026-09-02': result,
-        },
-        streak: {
-          creditedDates: ['2026-08-31', '2026-09-01', '2026-09-02'],
-          version: 1,
-        },
-        training: {
-          legacy: {
-            ...result,
-            answers: result.answers.map((answer) => ({
-              ...answer,
-              correct: true,
-            })),
-            correctCount: result.questionCount,
-          },
-        },
-      }),
-    );
+  it('builds Trainer Card totals from completed games', () => {
+    const perfect = {
+      ...result,
+      answers: result.answers.map((answer) => ({
+        ...answer,
+        correct: true,
+        points: 1_000,
+      })),
+      correctCount: result.questionCount,
+    };
 
-    expect(readTrainerStats()).toEqual({
-      bestDailyStreak: 3,
-      categories: {
-        identity: { correct: 4, total: 4 },
-        stat: { correct: 1, total: 4 },
-      },
-      dailyChallengesCompleted: 3,
-      gamesCompleted: 4,
-      perfectRounds: 1,
-      specialty: null,
-    });
+    saveResult({ kind: 'training' }, perfect, defaultModifiers);
 
-    saveResult({ kind: 'training' }, result, defaultModifiers);
     expect(readTrainerStats()).toMatchObject({
-      gamesCompleted: 5,
+      categories: {
+        identity: { correct: 1, total: 1 },
+        stat: { correct: 1, total: 1 },
+      },
+      gamesCompleted: 1,
       perfectRounds: 1,
     });
   });
@@ -271,41 +233,6 @@ describe('saved results', () => {
       partnerPokemon: 'bulbasaur',
     });
     expect(readTrainerProfile()).toEqual(saved);
-  });
-
-  it('recalculates scores saved under the previous formula', () => {
-    const legacyResult = { ...result, scoreVersion: undefined };
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {
-          '2026-09-01': {
-            ...legacyResult,
-            answers: [
-              {
-                category: 'identity',
-                correct: true,
-                points: 100,
-                responseMilliseconds: 5_000,
-                speedBonus: 16,
-              },
-              { category: 'stat', correct: false, points: 0 },
-            ],
-            score: 100,
-          },
-        },
-        training: {},
-      }),
-    );
-
-    expect(readDailyResult('2026-09-01')).toMatchObject({
-      answers: [
-        { points: 1_000, speedBonus: 1_500 },
-        { points: 0, speedBonus: 0 },
-      ],
-      score: 3_000,
-      scoreVersion: 2,
-    });
   });
 
   it('reports when browser storage cannot persist a result', () => {

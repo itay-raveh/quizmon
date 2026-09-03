@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  calculateScore,
-  defaultModifiers,
-  getSpeedBonusPoints,
-  normalizeModifiers,
-  SCORE_VERSION,
-} from './game';
+import { defaultModifiers, normalizeModifiers } from './game';
 import { getUtcDate, parseDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import {
@@ -20,8 +14,6 @@ const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const RESULTS_KEY = 'quizmon.results.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
-const LEGACY_KNOWLEDGE_SCALE = 10;
-const LEGACY_SPEED_BONUS_SCALE = 120;
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 1;
 const TRAINER_PROFILE_VERSION = 1;
@@ -39,7 +31,7 @@ const questionCategories: readonly QuestionCategory[] = [
   'type',
 ];
 
-export interface CategoryProgress {
+interface CategoryProgress {
   correct: number;
   total: number;
 }
@@ -99,39 +91,10 @@ const emptyResults = (): SavedResults => ({
   training: {},
 });
 
-const migrateLegacyAnswer = (answer: GameResult['answers'][number]) => {
-  const points = answer.points * LEGACY_KNOWLEDGE_SCALE;
-  const speedBonus =
-    answer.responseMilliseconds === undefined
-      ? Math.round((answer.speedBonus ?? 0) * LEGACY_SPEED_BONUS_SCALE)
-      : getSpeedBonusPoints(points, answer.responseMilliseconds);
-  return { ...answer, points, speedBonus };
-};
-
-const normalizeResult = (result: GameResult): GameResult => {
-  if (!Array.isArray(result.answers)) return result;
-
-  const answers =
-    result.scoreVersion === SCORE_VERSION
-      ? result.answers
-      : result.answers.map(migrateLegacyAnswer);
-  return {
-    ...result,
-    answers,
-    score: calculateScore(answers),
-    scoreVersion: SCORE_VERSION,
-  };
-};
-
-const normalizeResultRecord = (
-  results: Record<string, GameResult> | undefined,
-): Record<string, GameResult> =>
-  Object.fromEntries(
-    Object.entries(results ?? {}).map(([key, result]) => [
-      key,
-      normalizeResult(result),
-    ]),
-  );
+const readResultRecord = (value: unknown): Record<string, GameResult> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, GameResult>)
+    : {};
 
 const normalizeStreak = (
   streak: Partial<DailyStreakState> | undefined,
@@ -140,7 +103,7 @@ const normalizeStreak = (
   const creditedDates =
     streak?.version === STREAK_VERSION && Array.isArray(streak.creditedDates)
       ? streak.creditedDates
-      : Object.keys(daily);
+      : [];
 
   return {
     creditedDates: [
@@ -180,19 +143,8 @@ const addResultToProgress = (
   };
 };
 
-const deriveProgress = (
-  daily: Record<string, GameResult>,
-  training: Record<string, GameResult>,
-): TrainerProgress =>
-  [...Object.values(daily), ...Object.values(training)].reduce(
-    addResultToProgress,
-    emptyProgress(),
-  );
-
 const normalizeProgress = (
   progress: Partial<TrainerProgress> | undefined,
-  daily: Record<string, GameResult>,
-  training: Record<string, GameResult>,
 ): TrainerProgress => {
   if (
     progress?.version !== TRAINER_PROGRESS_VERSION ||
@@ -203,7 +155,7 @@ const normalizeProgress = (
     !progress.categories ||
     typeof progress.categories !== 'object'
   ) {
-    return deriveProgress(daily, training);
+    return emptyProgress();
   }
 
   const categories = Object.fromEntries(
@@ -300,11 +252,11 @@ const readResults = (): SavedResults => {
     const stored = window.localStorage.getItem(RESULTS_KEY);
     if (!stored) return emptyResults();
     const parsed = JSON.parse(stored) as Partial<SavedResults>;
-    const daily = normalizeResultRecord(parsed.daily);
-    const training = normalizeResultRecord(parsed.training);
+    const daily = readResultRecord(parsed.daily);
+    const training = readResultRecord(parsed.training);
     return {
       daily,
-      progress: normalizeProgress(parsed.progress, daily, training),
+      progress: normalizeProgress(parsed.progress),
       streak: normalizeStreak(parsed.streak, daily),
       training,
     };
@@ -485,15 +437,13 @@ export const saveResult = (
   modifiers: Modifiers = defaultModifiers,
 ): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
   const results = readResults();
-  const normalizedResult = normalizeResult(result);
-
   if (mode.kind === 'daily') {
     const previous = results.daily[mode.date];
     if (previous) {
       return { best: previous, isNewBest: false, isSaved: true };
     }
-    results.daily[mode.date] = normalizedResult;
-    results.progress = addResultToProgress(results.progress, normalizedResult);
+    results.daily[mode.date] = result;
+    results.progress = addResultToProgress(results.progress, result);
     if (
       mode.date === getUtcDate() &&
       !results.streak.creditedDates.includes(mode.date)
@@ -503,20 +453,20 @@ export const saveResult = (
     }
     const isSaved = writeResults(results);
     return {
-      best: normalizedResult,
+      best: result,
       isNewBest: isSaved,
       isSaved,
     };
   }
 
-  const key = getTrainingRecordKey(modifiers, normalizedResult.questionCount);
+  const key = getTrainingRecordKey(modifiers, result.questionCount);
   const previous = results.training[key];
-  const isNewBest = !previous || isBetterResult(normalizedResult, previous);
-  results.progress = addResultToProgress(results.progress, normalizedResult);
-  if (isNewBest) results.training[key] = normalizedResult;
+  const isNewBest = !previous || isBetterResult(result, previous);
+  results.progress = addResultToProgress(results.progress, result);
+  if (isNewBest) results.training[key] = result;
   const isSaved = writeResults(results);
   return {
-    best: isNewBest ? normalizedResult : previous,
+    best: isNewBest ? result : previous,
     isNewBest: isNewBest && isSaved,
     isSaved,
   };

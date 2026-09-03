@@ -1,8 +1,9 @@
 import { formatDailyDate, getDailyUrl } from './daily';
+import { formatScore } from './format';
 import { site } from '../app/site';
 import type { GameMode, GameResult } from './types';
 
-export interface ShareContent {
+interface ShareContent {
   text: string;
   title: string;
   url: string;
@@ -12,15 +13,12 @@ export const buildShareContent = (
   mode: GameMode,
   result: GameResult,
 ): ShareContent => {
-  const score = Intl.NumberFormat(undefined, {
-    maximumFractionDigits: 0,
-  }).format(result.score);
   const pattern = result.answers
     .map(({ correct }) => (correct ? '🟩' : '🟥'))
     .join('');
 
   return {
-    text: [`${score} points`, pattern].join('\n'),
+    text: [`${formatScore(result.score)} points`, pattern].join('\n'),
     title: `Quizmon · ${mode.kind === 'daily' ? formatDailyDate(mode.date) : 'Training'}`,
     url: mode.kind === 'daily' ? getDailyUrl(mode.date) : site.url,
   };

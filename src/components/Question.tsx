@@ -3,13 +3,13 @@ import { useGameSounds } from '@/audio/sound';
 import { getModeLabel } from '@/game/daily';
 import {
   formatDuration,
-  formatPokemonName,
   getAnswerPoints,
   getCorrectOptions,
   getQuestionTitle,
   isQuestionAnswerCorrect,
   getSpeedBonusPoints,
 } from '@/game/game';
+import { formatPokemonName } from '@/game/format';
 import type {
   AnswerResult,
   GameMode,

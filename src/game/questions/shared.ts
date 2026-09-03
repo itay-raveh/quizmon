@@ -204,19 +204,6 @@ export const pokemonOptions = (
     context.random,
   );
 
-export const typePlausibility = (
-  context: QuestionContext,
-  target: Candidate,
-  type: string,
-): number =>
-  context.pool.reduce(
-    (best, candidate) =>
-      candidate.pokemon.types.includes(type)
-        ? Math.max(best, pokemonSimilarity(target.pokemon, candidate.pokemon))
-        : best,
-    0,
-  );
-
 export const redactName = (description: string, name: string): string => {
   const escapeRegExp = (value: string) =>
     value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

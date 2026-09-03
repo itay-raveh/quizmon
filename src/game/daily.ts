@@ -15,6 +15,12 @@ const DAILY_CHALLENGE_VERSION = 8;
 const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'UTC',
+  year: 'numeric',
+});
 
 export const getUtcDate = (date = new Date()): string =>
   date.toISOString().slice(0, 10);
@@ -34,12 +40,7 @@ export const shouldAutoStartDaily = (search: string): boolean =>
   new URLSearchParams(search).get('play') === '1';
 
 export const formatDailyDate = (date: string): string =>
-  new Intl.DateTimeFormat('en-US', {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
-    year: 'numeric',
-  }).format(new Date(`${date}T00:00:00.000Z`));
+  dailyDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
 
 export const getDailyModifiers = (
   experience: Pick<Modifiers, 'soundEnabled' | 'speedrunMode'>,

@@ -6,7 +6,7 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
-import { formatPokemonName } from '@/game/game';
+import { formatPokemonName } from '@/game/format';
 import { GameButton } from './GameButton';
 
 interface ChampionSearchProps {

@@ -18,7 +18,6 @@ import {
 import type { Candidate, QuestionContext } from './questions/shared';
 import { shuffle } from './random';
 
-export { formatPokemonName } from './format';
 export { shuffle } from './random';
 
 export const defaultModifiers: Modifiers = {
@@ -47,57 +46,16 @@ const isGeneration = (value: unknown): value is Generation =>
 const isQuestionType = (value: unknown): value is QuestionType =>
   typeof value === 'string' && questionTypes.includes(value as QuestionType);
 
-const legacyKnowledgeCategories = [
-  'identity',
-  'description',
-  'type',
-  'evolution',
-  'ability',
-  'move',
-  'stat',
-  'matchup',
-] as const;
-
-const newlyAddedQuestionTypes: readonly QuestionType[] = [
-  'battle-view',
-  'evolution-shift',
-  'counter-pick',
-];
-
-type LegacyKnowledgeCategory = (typeof legacyKnowledgeCategories)[number];
-
-const isLegacyKnowledgeCategory = (
-  value: unknown,
-): value is LegacyKnowledgeCategory =>
-  typeof value === 'string' &&
-  legacyKnowledgeCategories.includes(value as LegacyKnowledgeCategory);
-
-type StoredModifiers = Partial<Modifiers> & {
-  knowledgeCategories?: unknown;
-};
-
 export const normalizeModifiers = (value: unknown): Modifiers => {
   if (!value || typeof value !== 'object') return defaultModifiers;
 
-  const candidate = value as StoredModifiers;
+  const candidate = value as Partial<Modifiers>;
   const selectedGenerations = Array.isArray(candidate.generations)
     ? candidate.generations.filter(isGeneration)
     : [];
   const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
     ? candidate.questionTypes.filter(isQuestionType)
     : [];
-  const previousQuestionTypes = questionTypes.filter(
-    (questionType) => !newlyAddedQuestionTypes.includes(questionType),
-  );
-  const hadEveryPreviousQuestionType = previousQuestionTypes.every(
-    (questionType) => selectedQuestionTypes.includes(questionType),
-  );
-  const legacyCategories = Array.isArray(candidate.knowledgeCategories)
-    ? candidate.knowledgeCategories.filter(isLegacyKnowledgeCategory)
-    : [];
-  const migratedQuestionTypes = questionTypes.filter((questionType) =>
-    legacyCategories.includes(questionRegistry[questionType].category),
-  );
   const limit = Number.isFinite(candidate.limit)
     ? Math.max(1, Math.trunc(candidate.limit as number))
     : defaultModifiers.limit;
@@ -109,12 +67,8 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
         : defaultModifiers.generations,
     questionTypes:
       selectedQuestionTypes.length > 0
-        ? hadEveryPreviousQuestionType
-          ? [...questionTypes]
-          : selectedQuestionTypes
-        : migratedQuestionTypes.length > 0
-          ? migratedQuestionTypes
-          : defaultModifiers.questionTypes,
+        ? selectedQuestionTypes
+        : defaultModifiers.questionTypes,
     soundEnabled: candidate.soundEnabled !== false,
     limit,
     speedrunMode: candidate.speedrunMode === true,
