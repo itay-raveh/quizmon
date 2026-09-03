@@ -6,7 +6,6 @@ import { roundLengths } from './trainingSettingsModel';
 
 interface TrainingSettingsValidation {
   generationsAreValid: boolean;
-  isValid: boolean;
   matchingCount: number;
   questionTypesAreValid: boolean;
 }

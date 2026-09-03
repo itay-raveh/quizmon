@@ -187,7 +187,9 @@ export const ModifiersDialog = ({
               questionTypesHeading={questionTypesHeading}
               submitted={submitted}
               trainingChangesApplyNextGame={trainingChangesApplyNextGame}
-              {...validation}
+              generationsAreValid={validation.generationsAreValid}
+              matchingCount={validation.matchingCount}
+              questionTypesAreValid={validation.questionTypesAreValid}
             />
           </div>
           <div

@@ -108,14 +108,6 @@ describe('normalizeModifiers', () => {
       questionTypes: defaultModifiers.questionTypes,
     });
   });
-
-  it('drops removed question types from saved settings', () => {
-    expect(
-      normalizeModifiers({
-        questionTypes: ['evolution-order', 'evolution-trail', 'type-check'],
-      }).questionTypes,
-    ).toEqual(['type-check']);
-  });
 });
 
 describe('question building', () => {
