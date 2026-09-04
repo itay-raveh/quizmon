@@ -155,7 +155,7 @@ input {
   background-image: image-set(
     url('../assets/images/bg.avif') type('image/avif'),
     url('../assets/images/bg.webp') type('image/webp'),
-    url('../../assets/plates/background.png') type('image/png')
+    url('../assets/images/background.png') type('image/png')
   );
   background-position: center;
   background-size: cover;
