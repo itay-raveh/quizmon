@@ -18,6 +18,7 @@ import type {
   PokemonCatalog,
   QuestionData,
 } from '@/game/types';
+import { parseTrainerRoute } from './trainer-route';
 
 interface DailyChallengeOptions {
   catalog?: PokemonCatalog;
@@ -35,9 +36,7 @@ const getDailyRoute = () => {
   const search = window.location.search;
   const linkedDate = parseDailyDate(search);
   return {
-    autoStart:
-      !new URLSearchParams(search).has('trainer') &&
-      shouldAutoStartDaily(search),
+    autoStart: !parseTrainerRoute(search) && shouldAutoStartDaily(search),
     date: linkedDate ?? getUtcDate(),
     linkedDate,
   };

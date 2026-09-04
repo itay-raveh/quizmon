@@ -23,7 +23,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await page.goto('/');
   await page.getByRole('button', { name: 'Trainer Card' }).click();
 
-  await expect(page).toHaveURL(/\?trainer=1$/);
+  await expect(page).toHaveURL(/\?trainer=front$/);
   await expect(
     page.getByRole('article', { name: 'Trainer Card front' }),
   ).toBeVisible();
@@ -108,7 +108,10 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     });
     Object.defineProperty(navigator, 'share', {
       configurable: true,
-      value: () => Promise.resolve(),
+      value: (data: ShareData) => {
+        Object.assign(window, { sharedTrainerCardUrl: data.url });
+        return Promise.resolve();
+      },
     });
   });
   await page.reload();
@@ -119,13 +122,30 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     0,
   );
   await shareButton.click();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as typeof window & { sharedTrainerCardUrl?: string })
+          .sharedTrainerCardUrl,
+    ),
+  ).toBe('https://quizmon.raveh.dev/?trainer=front');
   await expect(page.getByText('Trainer Card shared.')).toHaveClass(
     'visually-hidden',
   );
   await page.getByRole('button', { name: 'View records' }).click();
+  await expect(page).toHaveURL(/\?trainer=back$/);
   await expect(
     page.getByRole('article', { name: 'Trainer Card records' }),
   ).toBeVisible();
+  await expect(shareButton).toBeEnabled();
+  await shareButton.click();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as typeof window & { sharedTrainerCardUrl?: string })
+          .sharedTrainerCardUrl,
+    ),
+  ).toBe('https://quizmon.raveh.dev/?trainer=back');
   await expect(
     page.getByRole('article', { name: 'Trainer Card front' }),
   ).toHaveCount(0);
@@ -214,4 +234,24 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     Number.parseFloat(getComputedStyle(element).fontSize),
   );
   expect(intermediateFontSize).toBeGreaterThanOrEqual(14);
+});
+
+test('opens a back-face link by turning the card from its front', async ({
+  page,
+}) => {
+  await page.goto('/?trainer=back');
+
+  await expect(page).toHaveURL(/\?trainer=back$/);
+  await expect(page.locator('.trainer-passport__card')).toHaveClass(
+    /trainer-passport__card--out/,
+  );
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card records' }),
+  ).toBeVisible();
+
+  await page.getByRole('button', { name: 'View front' }).click();
+  await expect(page).toHaveURL(/\?trainer=front$/);
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card front' }),
+  ).toBeVisible();
 });

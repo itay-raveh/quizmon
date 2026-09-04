@@ -5,26 +5,34 @@ import {
   saveTrainerProfile,
   type TrainerProfile,
 } from '@/game/trainer-profile';
-
-const hasTrainerRoute = () =>
-  new URLSearchParams(window.location.search).has('trainer');
+import type { TrainerCardFace } from '@/game/trainer';
+import { parseTrainerRoute, setTrainerRoute } from './trainer-route';
 
 export const useTrainerCard = () => {
-  const [isOpen, setIsOpen] = useState(hasTrainerRoute);
+  const [face, setFace] = useState<TrainerCardFace | null>(() =>
+    parseTrainerRoute(window.location.search),
+  );
   const [profile, setProfile] = useState(readTrainerProfile);
   const [stats, setStats] = useState(readTrainerStats);
 
   useEffect(() => {
-    const syncRoute = () => setIsOpen(hasTrainerRoute());
+    const syncRoute = () => setFace(parseTrainerRoute(window.location.search));
     window.addEventListener('popstate', syncRoute);
     return () => window.removeEventListener('popstate', syncRoute);
   }, []);
 
-  const open = useCallback(() => {
+  const open = useCallback((nextFace: TrainerCardFace) => {
     const url = new URL(window.location.href);
-    url.searchParams.set('trainer', '1');
+    setTrainerRoute(url, nextFace);
     window.history.pushState({ quizmonTrainerCard: true }, '', url);
-    setIsOpen(true);
+    setFace(nextFace);
+  }, []);
+
+  const showFace = useCallback((nextFace: TrainerCardFace) => {
+    const url = new URL(window.location.href);
+    setTrainerRoute(url, nextFace);
+    window.history.replaceState(window.history.state, '', url);
+    setFace(nextFace);
   }, []);
 
   const close = useCallback(() => {
@@ -42,7 +50,7 @@ export const useTrainerCard = () => {
     const url = new URL(window.location.href);
     url.searchParams.delete('trainer');
     window.history.replaceState(window.history.state, '', url);
-    setIsOpen(false);
+    setFace(null);
   }, []);
 
   const updateProfile = useCallback((nextProfile: TrainerProfile) => {
@@ -60,11 +68,13 @@ export const useTrainerCard = () => {
 
   return {
     close,
-    isOpen,
+    face: face ?? 'front',
+    isOpen: face !== null,
     open,
     profile,
     refresh,
     refreshStats,
+    showFace,
     stats,
     updateProfile,
   };
