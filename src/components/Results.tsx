@@ -9,17 +9,14 @@ import {
   getSpeedBonus,
 } from '@/game/game';
 import { formatScore } from '@/game/format';
-import {
-  formatTrainerStampTier,
-  type TrainerStampChange,
-} from '@/game/trainer';
+import { type TrainerBadgeChange } from '@/game/trainer';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
 import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
-import { TrainerStampMark } from './TrainerStampMark';
+import { TrainerBadgeMark } from './TrainerBadgeMark';
 
 interface ResultsProps {
   bestResult: GameResult;
@@ -32,7 +29,7 @@ interface ResultsProps {
   onTrainAgain: () => void;
   result: GameResult;
   resultSaved: boolean;
-  stampChanges: TrainerStampChange[];
+  badgeChanges: TrainerBadgeChange[];
 }
 
 export const Results = ({
@@ -46,12 +43,12 @@ export const Results = ({
   onTrainAgain,
   result,
   resultSaved,
-  stampChanges,
+  badgeChanges,
 }: ResultsProps) => {
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
-  const primaryStampChange = stampChanges[0];
+  const primaryBadgeChange = badgeChanges[0];
 
   useEffect(() => {
     heading.current?.focus();
@@ -145,23 +142,20 @@ export const Results = ({
         </p>
       ) : null}
 
-      {primaryStampChange ? (
+      {primaryBadgeChange ? (
         <GameButton
           className="trainer-card-update"
           tone="quiet"
           onClick={onOpenTrainerCard}
         >
-          <TrainerStampMark
-            id={primaryStampChange.id}
-            tier={primaryStampChange.tier}
-          />
+          <TrainerBadgeMark earned id={primaryBadgeChange.id} />
           <span>
             <strong>
-              {stampChanges.length > 1
-                ? `${stampChanges.length} League stamps advanced`
-                : `${primaryStampChange.label} reached ${formatTrainerStampTier(primaryStampChange.tier)}`}
+              {badgeChanges.length > 1
+                ? `${badgeChanges.length} League Badges earned`
+                : `${primaryBadgeChange.label} Badge earned`}
             </strong>
-            <small>See your new mark and next challenge</small>
+            <small>See your new badge and next challenge</small>
           </span>
           <span aria-hidden="true">›</span>
         </GameButton>

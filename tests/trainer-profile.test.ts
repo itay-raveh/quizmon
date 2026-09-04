@@ -13,6 +13,7 @@ describe('Trainer profile storage', () => {
       hasBeenRevealed: false,
       name: '',
       partnerPokemon: null,
+      specialty: null,
       version: 1,
     });
 
@@ -21,12 +22,14 @@ describe('Trainer profile storage', () => {
       hasBeenRevealed: true,
       name: '  Leaf  ',
       partnerPokemon: 'bulbasaur',
+      specialty: 'identity',
     });
 
     expect(saved).toMatchObject({
       hasBeenRevealed: true,
       name: 'Leaf',
       partnerPokemon: 'bulbasaur',
+      specialty: 'identity',
     });
     expect(readTrainerProfile()).toEqual(saved);
   });

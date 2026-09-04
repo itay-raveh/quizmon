@@ -1,9 +1,10 @@
 import {
   getCardFinish,
-  getEarnedTrainerTierCount,
+  getEarnedTrainerBadgeCount,
+  getQualifiedTrainerSpecialties,
+  getTrainerBadgeChanges,
+  getTrainerBadges,
   getTrainerRank,
-  getTrainerStampChanges,
-  getTrainerStamps,
 } from '@/game/trainer';
 import type { TrainerStats } from '@/game/storage';
 import { generations, type QuestionType } from '@/game/types';
@@ -19,7 +20,6 @@ const stats = (overrides: Partial<TrainerStats> = {}): TrainerStats => ({
   gamesCompleted: 0,
   masteryRounds: 0,
   perfectRounds: 0,
-  specialty: null,
   ...overrides,
 });
 
@@ -34,80 +34,78 @@ const masteredGenerations = (count: number) =>
   ) as TrainerStats['correctGenerations'];
 
 describe('Trainer Card progression', () => {
-  it('gives five distinct League stamps three meaningful tiers each', () => {
-    const stamps = getTrainerStamps(
+  it('awards five distinct League Badges for meaningful accomplishments', () => {
+    const badges = getTrainerBadges(
       stats({
         bestDailyStreak: 7,
         championAnswersWithoutClues: 5,
-        correctGenerations: masteredGenerations(6),
+        correctGenerations: masteredGenerations(9),
         correctQuestionTypes: masteredQuestionTypes(10),
         masteryRounds: 3,
       }),
     );
 
-    expect(stamps).toHaveLength(5);
-    expect(stamps.map(({ id }) => id)).toEqual([
+    expect(badges).toHaveLength(5);
+    expect(badges.map(({ id }) => id)).toEqual([
       'perfect-form',
       'many-paths',
       'world-tour',
       'champions-instinct',
       'daily-resolve',
     ]);
-    expect(stamps.every(({ tier }) => tier === 2)).toBe(true);
-    expect(getEarnedTrainerTierCount(stats())).toBe(0);
+    expect(badges.every(({ earned }) => earned)).toBe(true);
+    expect(getEarnedTrainerBadgeCount(stats())).toBe(0);
   });
 
-  it('derives rank and finish from the combined stamp tiers', () => {
-    const researcher = stats({
-      championAnswersWithoutClues: 1,
-      correctGenerations: masteredGenerations(3),
-      masteryRounds: 1,
-    });
-    const ace = stats({
-      bestDailyStreak: 7,
+  it('derives canonical Trainer ranks and card finishes from earned badges', () => {
+    const risingStar = stats({ championAnswersWithoutClues: 5 });
+    const aceTrainer = stats({
       championAnswersWithoutClues: 5,
-      correctGenerations: masteredGenerations(6),
-      correctQuestionTypes: masteredQuestionTypes(10),
+      correctGenerations: masteredGenerations(9),
+      masteryRounds: 3,
     });
     const champion = stats({
-      bestDailyStreak: 30,
-      championAnswersWithoutClues: 15,
+      bestDailyStreak: 7,
+      championAnswersWithoutClues: 5,
       correctGenerations: masteredGenerations(9),
-      correctQuestionTypes: masteredQuestionTypes(15),
-      masteryRounds: 10,
+      correctQuestionTypes: masteredQuestionTypes(10),
+      masteryRounds: 3,
     });
 
-    expect(getTrainerRank(stats())).toBe('New Trainer');
-    expect(getTrainerRank(researcher)).toBe('Researcher');
-    expect(getTrainerRank(ace)).toBe('Ace');
+    expect(getTrainerRank(stats())).toBe('Youngster');
+    expect(getTrainerRank(risingStar)).toBe('Rising Star');
+    expect(getTrainerRank(aceTrainer)).toBe('Ace Trainer');
     expect(getTrainerRank(champion)).toBe('Champion');
-    expect(getCardFinish(getTrainerRank(researcher))).toBe('Shimmer');
-    expect(getCardFinish(getTrainerRank(ace))).toBe('Aurora');
+    expect(getCardFinish(getTrainerRank(risingStar))).toBe('Shimmer');
+    expect(getCardFinish(getTrainerRank(aceTrainer))).toBe('Aurora');
     expect(getCardFinish(getTrainerRank(champion))).toBe('Master');
   });
 
-  it('reports every stamp that advances after a round', () => {
-    const changes = getTrainerStampChanges(
+  it('reports every League Badge newly earned after a round', () => {
+    const changes = getTrainerBadgeChanges(
       stats(),
       stats({
-        championAnswersWithoutClues: 1,
-        correctGenerations: masteredGenerations(3),
+        championAnswersWithoutClues: 5,
+        correctGenerations: masteredGenerations(9),
       }),
     );
 
     expect(changes).toEqual([
-      {
-        fromTier: 0,
-        id: 'world-tour',
-        label: 'World Tour',
-        tier: 1,
-      },
-      {
-        fromTier: 0,
-        id: 'champions-instinct',
-        label: "Champion's Instinct",
-        tier: 1,
-      },
+      { id: 'world-tour', label: 'World Tour' },
+      { id: 'champions-instinct', label: "Champion's Instinct" },
     ]);
+  });
+
+  it('qualifies specialties through correct answers without selecting one', () => {
+    expect(
+      getQualifiedTrainerSpecialties(
+        stats({
+          categories: {
+            identity: { correct: 10, total: 12 },
+            type: { correct: 9, total: 10 },
+          },
+        }),
+      ),
+    ).toEqual(['identity']);
   });
 });

@@ -640,7 +640,7 @@
   text-align: left;
 }
 
-.trainer-card-update > .trainer-stamp-mark {
+.trainer-card-update > .trainer-badge-mark {
   width: 2.6rem;
   flex: none;
 }

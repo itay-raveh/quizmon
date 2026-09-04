@@ -10,12 +10,13 @@ const profile: TrainerProfile = {
   hasBeenRevealed: true,
   name: 'Leaf',
   partnerPokemon: 'bulbasaur',
+  specialty: 'type',
   version: 1,
 };
 
 const stats: TrainerStats = {
   bestDailyStreak: 7,
-  categories: { type: { correct: 9, total: 10 } },
+  categories: { type: { correct: 10, total: 11 } },
   championAnswersWithoutClues: 1,
   correctGenerations: { I: 2, II: 1, III: 1 },
   correctQuestionTypes: {},
@@ -23,11 +24,25 @@ const stats: TrainerStats = {
   gamesCompleted: 25,
   masteryRounds: 3,
   perfectRounds: 3,
-  specialty: { category: 'type', correct: 9, total: 10 },
 };
 
 describe('Trainer Card', () => {
-  it('renders earned records, specialty, and stamps on the back', () => {
+  it('renders the selected specialty as a title on the front', () => {
+    render(
+      <TrainerCard
+        face="front"
+        partnerDexNumber={1}
+        partnerSprite="/sprites/pokemon/1.png"
+        profile={profile}
+        stats={stats}
+      />,
+    );
+
+    expect(screen.getByRole('heading', { name: 'Leaf' })).toBeVisible();
+    expect(screen.getByText('Type Specialist')).toBeVisible();
+  });
+
+  it('renders records and one-time League Badges on the back', () => {
     render(
       <TrainerCard
         face="records"
@@ -42,15 +57,14 @@ describe('Trainer Card', () => {
       screen.getByRole('article', { name: 'Trainer Card records' }),
     ).toBeVisible();
     expect(screen.getByText('Daily clears')).toBeVisible();
-    expect(screen.getByText('Types')).toBeVisible();
     expect(
       screen.getByRole('region', {
-        name: 'League stamps: 6 of 15 tiers earned',
+        name: 'League badges: 2 of 5 earned',
       }),
     ).toBeVisible();
     expect(
       screen.getByRole('img', {
-        name: /Many Paths: Unmarked\. 0 of 5/,
+        name: /Many Paths: Locked\. 0 of 10/,
       }),
     ).toBeVisible();
     expect(

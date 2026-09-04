@@ -15,7 +15,6 @@ const RESULTS_KEY = 'quizmon.results.v2';
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 1;
 const TRAINING_RECORD_VERSION = 2;
-const SPECIALTY_MIN_ANSWERS = 10;
 const questionCategories: readonly QuestionCategory[] = [
   'ability',
   'champion',
@@ -66,7 +65,6 @@ export interface TrainerStats {
   gamesCompleted: number;
   masteryRounds: number;
   perfectRounds: number;
-  specialty: (CategoryProgress & { category: QuestionCategory }) | null;
 }
 
 const emptyProgress = (): TrainerProgress => ({
@@ -332,21 +330,6 @@ const getLongestStreak = (dates: readonly string[]): number => {
 
 export const readTrainerStats = (): TrainerStats => {
   const results = readResults();
-  const specialty =
-    Object.entries(results.progress.categories)
-      .map(([category, progress]) => ({
-        category: category as QuestionCategory,
-        correct: progress?.correct ?? 0,
-        total: progress?.total ?? 0,
-      }))
-      .filter(({ total }) => total >= SPECIALTY_MIN_ANSWERS)
-      .sort(
-        (left, right) =>
-          right.correct / right.total - left.correct / left.total ||
-          right.total - left.total ||
-          left.category.localeCompare(right.category),
-      )[0] ?? null;
-
   return {
     bestDailyStreak: getLongestStreak(results.streak.creditedDates),
     categories: results.progress.categories,
@@ -357,7 +340,6 @@ export const readTrainerStats = (): TrainerStats => {
     gamesCompleted: results.progress.gamesCompleted,
     masteryRounds: results.progress.masteryRounds,
     perfectRounds: results.progress.perfectRounds,
-    specialty,
   };
 };
 

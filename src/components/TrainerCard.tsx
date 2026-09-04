@@ -4,15 +4,14 @@ import { formatPokemonName } from '@/game/format';
 import type { TrainerStats } from '@/game/storage';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import {
-  formatTrainerStampTier,
   getCardFinish,
-  getEarnedTrainerTierCount,
+  getEarnedTrainerBadgeCount,
   getTrainerRank,
-  getTrainerStamps,
-  trainerCategoryLabels,
+  getTrainerBadges,
+  trainerSpecialtyLabels,
   type TrainerCardFace,
 } from '@/game/trainer';
-import { TrainerStampMark } from './TrainerStampMark';
+import { TrainerBadgeMark } from './TrainerBadgeMark';
 
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
@@ -33,8 +32,8 @@ export const TrainerCard = ({
 }: TrainerCardProps) => {
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
-  const stamps = getTrainerStamps(stats);
-  const earnedTierCount = getEarnedTrainerTierCount(stats);
+  const badges = getTrainerBadges(stats);
+  const earnedBadgeCount = getEarnedTrainerBadgeCount(stats);
   const trainerId = profile.cardNumber.replace(/^QZ-/, '');
   const partnerName = profile.partnerPokemon
     ? formatPokemonName(profile.partnerPokemon)
@@ -70,6 +69,11 @@ export const TrainerCard = ({
             </div>
             <div className="trainer-card__identity">
               <h2>{profile.name || 'Quizmon Trainer'}</h2>
+              {profile.specialty ? (
+                <p className="trainer-card__title">
+                  {trainerSpecialtyLabels[profile.specialty]}
+                </p>
+              ) : null}
               <dl>
                 <div>
                   <dt>ID No.</dt>
@@ -111,37 +115,19 @@ export const TrainerCard = ({
               <dd>{stats.bestDailyStreak.toLocaleString()}</dd>
             </div>
           </dl>
-          <section className="trainer-card__specialty" aria-label="Specialty">
-            <span>Specialty</span>
-            {stats.specialty ? (
-              <p>
-                <strong>
-                  {trainerCategoryLabels[stats.specialty.category]}
-                </strong>
-                <small>
-                  {stats.specialty.correct} / {stats.specialty.total}
-                </small>
-              </p>
-            ) : (
-              <p>
-                <strong>Field research underway</strong>
-                <small>10 answers unlock a specialty</small>
-              </p>
-            )}
-          </section>
           <section
-            className="trainer-card__stamps"
-            aria-label={`League stamps: ${earnedTierCount} of 15 tiers earned`}
+            className="trainer-card__badges"
+            aria-label={`League badges: ${earnedBadgeCount} of 5 earned`}
           >
-            {stamps.map((stamp) => (
+            {badges.map((badge) => (
               <span
-                aria-label={`${stamp.label}: ${formatTrainerStampTier(stamp.tier)}. ${stamp.mastered ? 'Mastered.' : `${Math.min(stamp.current, stamp.goal)} of ${stamp.goal}. ${stamp.requirement}.`}`}
-                className={`trainer-stamp trainer-stamp--tier-${stamp.tier}`}
-                key={stamp.id}
+                aria-label={`${badge.label}: ${badge.earned ? 'Earned.' : `Locked. ${Math.min(badge.current, badge.goal)} of ${badge.goal}. ${badge.requirement}.`}`}
+                className="trainer-badge"
+                key={badge.id}
                 role="img"
-                title={`${stamp.label}: ${stamp.requirement}`}
+                title={`${badge.label}: ${badge.requirement}`}
               >
-                <TrainerStampMark id={stamp.id} tier={stamp.tier} />
+                <TrainerBadgeMark earned={badge.earned} id={badge.id} />
               </span>
             ))}
           </section>
