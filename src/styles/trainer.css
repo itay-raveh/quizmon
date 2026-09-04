@@ -958,6 +958,8 @@
   .trainer-stamp small {
     font-size: var(--text-tiny);
     line-height: 1;
+    min-height: 2em;
+    padding-block: 0;
   }
 
   .trainer-stamp-case ul {
