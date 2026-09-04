@@ -10,6 +10,7 @@ const question: QuestionData = {
   media: { kind: 'none' },
   options: ['pikachu'],
   pokemonName: 'pikachu',
+  pokemonTypes: ['electric'],
   prompt: { kind: 'text', text: 'Who is this Pokémon?' },
   questionType: 'pokedex-scan',
 };

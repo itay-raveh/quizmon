@@ -437,11 +437,43 @@
   opacity: 0.78;
 }
 
-.answer__nameplate > span {
+.answer__name {
   overflow-wrap: anywhere;
   font-size: var(--text-answer);
   line-height: 1.08;
   text-shadow: 0.08rem 0.08rem 0 var(--navy);
+}
+
+.type-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.answer__types {
+  min-width: 0;
+  margin-top: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.type-badge {
+  width: 3.125rem;
+  height: 1.25rem;
+  image-rendering: pixelated;
+}
+
+.answer__type-choice,
+.question__types {
+  justify-content: center;
+}
+
+.answer__type-choice .type-badge {
+  width: 4.6875rem;
+  height: 1.875rem;
+}
+
+.question__types {
+  margin: -0.2rem 0 0.55rem;
 }
 
 .answer--correct {

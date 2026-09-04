@@ -357,6 +357,12 @@ describe('question building', () => {
       questions.map((question) => [question.category, question]),
     );
 
+    for (const question of questions) {
+      expect(question.pokemonTypes).toEqual(
+        catalog.pokemon[question.pokemonName]?.types,
+      );
+    }
+
     for (const category of ['description', 'stat']) {
       const question = byCategory[category];
       expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);

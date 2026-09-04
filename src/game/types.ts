@@ -108,6 +108,7 @@ export interface PokemonOptionVisual {
   dexNumber: number;
   silhouette?: boolean;
   src: string;
+  types: string[];
 }
 
 type QuestionInteraction = 'single-choice' | 'multi-select';
@@ -138,6 +139,7 @@ export interface QuestionData {
   options: string[];
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
+  pokemonTypes: string[];
   prompt: QuestionPrompt;
   questionType: QuestionType | 'champion';
   searchOptions?: string[];

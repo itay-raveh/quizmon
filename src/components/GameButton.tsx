@@ -1,10 +1,10 @@
-import type { ButtonHTMLAttributes, MouseEvent } from 'react';
+import type { ComponentPropsWithRef, MouseEvent } from 'react';
 import { useGameSounds } from '@/audio/sound';
 
-interface GameButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type GameButtonProps = ComponentPropsWithRef<'button'> & {
   clickSound?: 'none' | 'on';
   tone?: 'primary' | 'quiet';
-}
+};
 
 export const GameButton = ({
   clickSound = 'on',

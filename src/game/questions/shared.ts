@@ -118,6 +118,7 @@ export const makeQuestion = (
   media,
   options,
   pokemonName: target.name,
+  pokemonTypes: target.pokemon.types,
   prompt,
 });
 
@@ -151,7 +152,12 @@ export const getOptionVisuals = (
       const pokemon = context.catalog.pokemon[option];
       const src = pokemon ? getSource(pokemon, option) : null;
       return pokemon && src
-        ? [[option, { dexNumber: pokemon.id, silhouette, src }] as const]
+        ? [
+            [
+              option,
+              { dexNumber: pokemon.id, silhouette, src, types: pokemon.types },
+            ] as const,
+          ]
         : [];
     }),
   );
