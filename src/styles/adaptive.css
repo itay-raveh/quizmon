@@ -242,6 +242,32 @@
     margin-top: 0.65rem;
   }
 
+  .question__topline {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .question__leave {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .question__topline > .settings-button {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .question__topline > .progress {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .question__topline > .timer {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
   .sprite-frame {
     width: min(12rem, 54vw);
   }

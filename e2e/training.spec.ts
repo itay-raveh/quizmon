@@ -130,9 +130,9 @@ test('keeps reverse-silhouette rounds clear on a phone', async ({ page }) => {
   expect(promptBox?.width).toBeGreaterThan(300);
   expect(answersBox).not.toBeNull();
   expect(leaveBox).not.toBeNull();
-  expect(leaveBox!.y - (answersBox!.y + answersBox!.height)).toBeGreaterThan(
-    12,
-  );
+  expect(leaveBox!.y).toBeLessThan(promptBox!.y);
+  expect(leaveBox!.width).toBeGreaterThanOrEqual(44);
+  expect(leaveBox!.height).toBeGreaterThanOrEqual(44);
 
   await page.getByRole('button', { name: 'Silhouette 1' }).click();
   await expect(page.locator('.answer-explanation')).toHaveCount(0);
