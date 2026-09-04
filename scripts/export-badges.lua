@@ -3,11 +3,31 @@ local root = app.params["root"]
 if not root then error("root script parameter is required") end
 
 local expected = {
-  { slug = "daily-resolve", group = "Daily Resolve" },
-  { slug = "many-paths", group = "Many Paths" },
-  { slug = "world-tour", group = "World Tour" },
-  { slug = "champions-instinct", group = "Champion's Instinct" },
-  { slug = "perfect-form", group = "Perfect Form" },
+  {
+    slug = "daily-resolve",
+    group = "Daily Resolve",
+    layers = { "Pedestal", "Sun", "Outline" },
+  },
+  {
+    slug = "many-paths",
+    group = "Many Paths",
+    layers = { "Color", "Outline" },
+  },
+  {
+    slug = "world-tour",
+    group = "World Tour",
+    layers = { "Compass", "Ring", "Outline" },
+  },
+  {
+    slug = "champions-instinct",
+    group = "Champion's Instinct",
+    layers = { "Crest", "Eye", "Outline" },
+  },
+  {
+    slug = "perfect-form",
+    group = "Perfect Form",
+    layers = { "Color", "Outline" },
+  },
 }
 
 local sourcePath = root .. "/art/badges.aseprite"
@@ -31,8 +51,13 @@ for _, slice in ipairs(sprite.slices) do slices[slice.name] = slice end
 for index, badge in ipairs(expected) do
   local group = sprite.layers[index]
   local slice = slices[badge.slug]
-  if not group.isGroup or group.name ~= badge.group or #group.layers ~= 6 then
-    error(badge.group .. " must be an ordered group of six layers")
+  if not group.isGroup or group.name ~= badge.group or #group.layers ~= #badge.layers then
+    error(badge.group .. " has an unexpected layer structure")
+  end
+  for layerIndex, layerName in ipairs(badge.layers) do
+    if group.layers[layerIndex].name ~= layerName then
+      error(badge.group .. " layer " .. layerIndex .. " must be named " .. layerName)
+    end
   end
   if not slice then error("Missing slice " .. badge.slug) end
   local bounds = slice.bounds
@@ -41,7 +66,7 @@ for index, badge in ipairs(expected) do
   end
 end
 
-if #sprite.palettes[1] ~= 25 then error("Badge palette must contain exactly 25 entries") end
+if #sprite.palettes[1] ~= 51 then error("Badge palette must contain exactly 51 entries") end
 
 for _, badge in ipairs(expected) do
   app.command.SaveFileCopyAs {
