@@ -382,28 +382,22 @@
 }
 
 .trainer-badge-mark {
-  position: relative;
   display: grid;
   width: 4.4rem;
   aspect-ratio: 1;
-  color: var(--muted);
-  background: color-mix(in srgb, var(--paper) 62%, var(--cream));
-  border: 3px solid color-mix(in srgb, var(--navy) 42%, var(--paper));
-  border-radius: 50%;
   place-items: center;
 }
 
-.trainer-badge-mark[data-earned='true'] {
-  color: var(--paper);
-  background: var(--trainer-accent);
-  border-color: var(--navy);
-  box-shadow: 0 0.18rem 0 var(--yellow);
+.trainer-badge-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
 }
 
-.trainer-badge-mark svg {
-  width: 56%;
-  height: 56%;
-  fill: currentcolor;
+.trainer-badge-mark[data-earned='false'] img {
+  filter: brightness(0);
+  opacity: 0.28;
 }
 
 .trainer-passport__controls {
