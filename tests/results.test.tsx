@@ -105,12 +105,12 @@ describe('results summary', () => {
     expect(screen.queryByText('Saved on this device.')).not.toBeInTheDocument();
   });
 
-  it('shows local progression and keeps Training actions distinct', () => {
+  it('keeps routine Trainer Card progress out of the result actions', () => {
     renderResults(makeResult(10, 5));
 
     expect(
-      screen.getByRole('button', { name: /View Trainer Card/ }),
-    ).toBeVisible();
+      screen.queryByRole('button', { name: /Trainer Card/ }),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Train again' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Back to start' })).toBeVisible();
   });

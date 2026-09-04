@@ -645,19 +645,6 @@
   flex: none;
 }
 
-.trainer-card-update__mark {
-  display: grid;
-  width: 2.6rem;
-  aspect-ratio: 1;
-  color: var(--paper);
-  background: var(--blue);
-  border: 2px solid var(--navy);
-  border-radius: 50%;
-  font-family: var(--font-data);
-  font-size: var(--text-mini);
-  place-items: center;
-}
-
 .trainer-card-update > span:nth-child(2) {
   display: grid;
   gap: 0.08rem;

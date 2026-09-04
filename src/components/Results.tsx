@@ -145,37 +145,27 @@ export const Results = ({
         </p>
       ) : null}
 
-      <GameButton
-        className={`trainer-card-update${primaryStampChange ? ' trainer-card-update--stamp' : ''}`}
-        tone="quiet"
-        onClick={onOpenTrainerCard}
-      >
-        {primaryStampChange ? (
+      {primaryStampChange ? (
+        <GameButton
+          className="trainer-card-update"
+          tone="quiet"
+          onClick={onOpenTrainerCard}
+        >
           <TrainerStampMark
             id={primaryStampChange.id}
             tier={primaryStampChange.tier}
           />
-        ) : (
-          <span className="trainer-card-update__mark" aria-hidden="true">
-            ID
+          <span>
+            <strong>
+              {stampChanges.length > 1
+                ? `${stampChanges.length} League stamps advanced`
+                : `${primaryStampChange.label} reached ${formatTrainerStampTier(primaryStampChange.tier)}`}
+            </strong>
+            <small>See your new mark and next challenge</small>
           </span>
-        )}
-        <span>
-          <strong>
-            {stampChanges.length > 1
-              ? `${stampChanges.length} League stamps advanced`
-              : primaryStampChange
-                ? `${primaryStampChange.label} reached ${formatTrainerStampTier(primaryStampChange.tier)}`
-                : 'View Trainer Card'}
-          </strong>
-          <small>
-            {primaryStampChange
-              ? 'See your new mark and next challenge'
-              : 'Profile, records, and League stamps'}
-          </small>
-        </span>
-        <span aria-hidden="true">›</span>
-      </GameButton>
+          <span aria-hidden="true">›</span>
+        </GameButton>
+      ) : null}
 
       {mode.kind === 'training' ? (
         <div className="results__actions results__actions--training">
