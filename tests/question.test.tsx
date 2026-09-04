@@ -22,7 +22,7 @@ const championQuestion: QuestionData = {
   id: 'champion:pikachu:4',
   media: {
     kind: 'sprite',
-    revealAt: 3,
+    revealAt: 2,
     silhouette: true,
     src: 'https://example.com/pikachu.png',
   },
@@ -30,7 +30,7 @@ const championQuestion: QuestionData = {
   pokemonName: 'pikachu',
   prompt: {
     kind: 'text',
-    text: 'Name the Pokémon. Reveal fewer clues to earn more points.',
+    text: '“It has small electric sacs on both its cheeks.”',
   },
   questionType: 'champion',
   searchOptions: ['bulbasaur', 'ditto', 'eevee', 'mew', 'pikachu', 'raichu'],
@@ -448,6 +448,9 @@ describe('question transitions', () => {
 
     const search = screen.getByRole('combobox', { name: 'Your answer' });
     expect(search).toBeVisible();
+    expect(
+      screen.getByText('“It has small electric sacs on both its cheeks.”'),
+    ).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Pikachu' })).toBeNull();
     fireEvent.change(search, { target: { value: 'pika' } });
     const suggestion = screen.getByRole('option', { name: 'Pikachu' });
@@ -487,7 +490,7 @@ describe('question transitions', () => {
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: 'Get a clue · Show 4 choices · 750 points',
+        name: 'Show 4 choices · 750 points',
       }),
     );
     expect(screen.queryByRole('combobox')).toBeNull();
