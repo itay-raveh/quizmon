@@ -6,7 +6,7 @@
   <a href="https://quizmon.raveh.dev/">Play Quizmon</a>
 </p>
 
-Quizmon is a browser-local game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc'
+Quizmon is a browser-local game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc.
 
 ## Run Quizmon locally
 
@@ -30,9 +30,7 @@ npm run data:update
 Quizmon is available under the [MIT License](https://github.com/itay-raveh/quizmon/blob/main/LICENSE).
 
 The wordmark was made with [TextStudio](https://www.textstudio.co).
-The Trainer Card sparkle animation comes from
-[“Sparkles” by Julien Jorge](https://opengameart.org/content/sparkles), licensed
-under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The
-sprite sheet is used unchanged.
+
+The Trainer Card sparkle animation comes from [“Sparkles” by Julien Jorge](https://opengameart.org/content/sparkles).
 
 Quizmon is not affiliated with Nintendo, Game Freak, or The Pokémon Company. Pokémon and related trademarks belong to their respective owners.
