@@ -168,6 +168,14 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   expect(firstCatchBounds.cardBottom - firstCatchBounds.bottom).toBeGreaterThan(
     4,
   );
+  const mobileStampTops = await recordsCard
+    .locator('.trainer-stamp > strong')
+    .evaluateAll((stamps) =>
+      stamps.map((stamp) => stamp.getBoundingClientRect().top),
+    );
+  expect(
+    Math.max(...mobileStampTops) - Math.min(...mobileStampTops),
+  ).toBeLessThanOrEqual(0.5);
   await page.setViewportSize({ width: 1440, height: 900 });
   const desktopRecordsBounds = await recordsCard.boundingBox();
   if (!mobileRecordsBounds || !desktopRecordsBounds) {
