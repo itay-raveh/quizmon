@@ -244,30 +244,6 @@ describe('saved results', () => {
     });
   });
 
-  it('unlocks a specialty only after enough field research', () => {
-    const identityResult = {
-      ...result,
-      answers: Array.from({ length: 10 }, () => ({
-        category: 'identity' as const,
-        cluesUsed: 0,
-        correct: true,
-        generation: 'I' as const,
-        points: 1_000,
-        questionType: 'pokedex-scan' as const,
-      })),
-      correctCount: 10,
-      questionCount: 10,
-    };
-
-    saveResult({ kind: 'training' }, identityResult, defaultModifiers);
-
-    expect(readTrainerStats().specialty).toEqual({
-      category: 'identity',
-      correct: 10,
-      total: 10,
-    });
-  });
-
   it('reports when browser storage cannot persist a result', () => {
     const setItem = vi
       .spyOn(Storage.prototype, 'setItem')

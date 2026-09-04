@@ -13,11 +13,17 @@ import {
   shareTrainerCard,
   supportsTrainerCardSharing,
 } from '@/game/trainer-card-image';
-import { getTrainerStamps, type TrainerCardFace } from '@/game/trainer';
+import {
+  getQualifiedTrainerSpecialties,
+  getTrainerBadges,
+  trainerSpecialtyLabels,
+  type TrainerCardFace,
+  type TrainerSpecialty,
+} from '@/game/trainer';
 import { GameButton } from './GameButton';
 import { PokemonPicker } from './PokemonPicker';
+import { TrainerBadgeCase } from './TrainerBadgeCase';
 import { TrainerCard } from './TrainerCard';
-import { TrainerStampCase } from './TrainerStampCase';
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
@@ -46,6 +52,17 @@ export const TrainerPassport = ({
   const [name, setName] = useState(profile.name);
   const [partner, setPartner] = useState(profile.partnerPokemon);
   const [accent, setAccent] = useState<TrainerAccent>(profile.accent);
+  const qualifiedSpecialties = useMemo(
+    () => getQualifiedTrainerSpecialties(stats),
+    [stats],
+  );
+  const savedSpecialty =
+    profile.specialty && qualifiedSpecialties.includes(profile.specialty)
+      ? profile.specialty
+      : null;
+  const [specialty, setSpecialty] = useState<TrainerSpecialty | null>(
+    savedSpecialty,
+  );
   const [preparedImage, setPreparedImage] = useState<{
     blob: Blob;
     key: string;
@@ -66,11 +83,13 @@ export const TrainerPassport = ({
   const savedPartner = profile.partnerPokemon
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
-  const visibleProfile = editing ? { ...profile, accent } : profile;
+  const visibleProfile = editing
+    ? { ...profile, accent, specialty }
+    : { ...profile, specialty: savedSpecialty };
   const imageKey = JSON.stringify({ face, profile: visibleProfile, stats });
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareCard = supportsTrainerCardSharing();
-  const stamps = getTrainerStamps(stats);
+  const badges = getTrainerBadges(stats);
 
   useEffect(() => {
     if (!profile.hasBeenRevealed) {
@@ -122,7 +141,13 @@ export const TrainerPassport = ({
 
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onProfileChange({ ...profile, accent, name, partnerPokemon: partner });
+    onProfileChange({
+      ...profile,
+      accent,
+      name,
+      partnerPokemon: partner,
+      specialty,
+    });
     setEditing(false);
     void requestPersistentStorage().catch(() => false);
   };
@@ -136,6 +161,7 @@ export const TrainerPassport = ({
     setName(profile.name);
     setPartner(profile.partnerPokemon);
     setAccent(profile.accent);
+    setSpecialty(savedSpecialty);
     setEditing(true);
   };
 
@@ -215,6 +241,28 @@ export const TrainerPassport = ({
             options={pokemonOptions}
             value={partner}
           />
+          <div className="trainer-customizer__specialty">
+            <label htmlFor="trainer-specialty">Trainer title</label>
+            <select
+              disabled={qualifiedSpecialties.length === 0}
+              id="trainer-specialty"
+              onChange={(event) =>
+                setSpecialty((event.target.value as TrainerSpecialty) || null)
+              }
+              value={specialty ?? ''}
+            >
+              <option value="">
+                {qualifiedSpecialties.length === 0
+                  ? 'Earn 10 correct answers in one field'
+                  : 'No title'}
+              </option>
+              {qualifiedSpecialties.map((option) => (
+                <option key={option} value={option}>
+                  {trainerSpecialtyLabels[option]}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="trainer-customizer__preview" aria-hidden="true">
             {partnerSprite ? (
               <img src={partnerSprite} alt="" width="96" height="96" />
@@ -283,7 +331,7 @@ export const TrainerPassport = ({
           </GameButton>
         )}
       </div>
-      {face === 'records' ? <TrainerStampCase stamps={stamps} /> : null}
+      {face === 'records' ? <TrainerBadgeCase badges={badges} /> : null}
       <p
         className={
           shareNotice?.visible ? 'trainer-passport__status' : 'visually-hidden'

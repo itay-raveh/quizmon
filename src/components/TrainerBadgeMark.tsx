@@ -1,11 +1,11 @@
-import type { TrainerStampId, TrainerStampTier } from '@/game/trainer';
+import type { TrainerBadgeId } from '@/game/trainer';
 
-interface TrainerStampMarkProps {
-  id: TrainerStampId;
-  tier: TrainerStampTier;
+interface TrainerBadgeMarkProps {
+  earned: boolean;
+  id: TrainerBadgeId;
 }
 
-const StampMotif = ({ id }: Pick<TrainerStampMarkProps, 'id'>) => {
+const BadgeMotif = ({ id }: Pick<TrainerBadgeMarkProps, 'id'>) => {
   if (id === 'perfect-form') {
     return <path d="m16 2 4 9h10l-8 6 3 11-9-6-9 6 3-11-8-6h10l4-9Z" />;
   }
@@ -38,18 +38,10 @@ const StampMotif = ({ id }: Pick<TrainerStampMarkProps, 'id'>) => {
   );
 };
 
-export const TrainerStampMark = ({ id, tier }: TrainerStampMarkProps) => (
-  <span className="trainer-stamp-mark" data-tier={tier}>
+export const TrainerBadgeMark = ({ earned, id }: TrainerBadgeMarkProps) => (
+  <span className="trainer-badge-mark" data-earned={earned}>
     <svg aria-hidden="true" shapeRendering="crispEdges" viewBox="0 0 32 32">
-      <StampMotif id={id} />
+      <BadgeMotif id={id} />
     </svg>
-    <span className="trainer-stamp-mark__tiers" aria-hidden="true">
-      {[1, 2, 3].map((level) => (
-        <span
-          className={level <= tier ? 'trainer-stamp-mark__tier--earned' : ''}
-          key={level}
-        />
-      ))}
-    </span>
   </span>
 );

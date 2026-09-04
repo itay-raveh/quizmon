@@ -130,7 +130,7 @@
 }
 
 .trainer-card--records {
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto auto 1fr;
 }
 
 .trainer-card::after {
@@ -289,6 +289,13 @@
   line-height: 1;
 }
 
+.trainer-card__title {
+  margin: -0.8rem 0 1.05rem;
+  color: var(--trainer-accent);
+  font-size: var(--text-label);
+  font-weight: 800;
+}
+
 .trainer-card__identity dl,
 .trainer-card__record {
   margin: 0;
@@ -304,8 +311,7 @@
   border-bottom: 2px solid color-mix(in srgb, var(--navy) 18%, transparent);
 }
 
-.trainer-card dt,
-.trainer-card__specialty > span {
+.trainer-card dt {
   color: var(--muted);
   font-size: var(--text-small);
   font-weight: 800;
@@ -360,37 +366,7 @@
   font-size: var(--text-headline);
 }
 
-.trainer-card__specialty {
-  display: grid;
-  padding: 0.8rem 1.3rem;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 1rem;
-  background: var(--cream);
-  border-bottom: 3px solid var(--navy);
-}
-
-.trainer-card__specialty p {
-  display: flex;
-  min-width: 0;
-  margin: 0;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.trainer-card__specialty strong {
-  color: var(--navy);
-}
-
-.trainer-card__specialty small {
-  color: var(--muted);
-  font-family: var(--font-data);
-  font-size: var(--text-small);
-  font-weight: 800;
-}
-
-.trainer-card__stamps {
+.trainer-card__badges {
   display: grid;
   min-height: 9.6rem;
   padding: 1rem 1.3rem 1.3rem;
@@ -399,13 +375,13 @@
   gap: 0.8rem;
 }
 
-.trainer-stamp {
+.trainer-badge {
   display: grid;
   min-width: 0;
   place-items: center;
 }
 
-.trainer-stamp-mark {
+.trainer-badge-mark {
   position: relative;
   display: grid;
   width: 4.4rem;
@@ -417,47 +393,17 @@
   place-items: center;
 }
 
-.trainer-stamp-mark[data-tier='1'],
-.trainer-stamp-mark[data-tier='2'],
-.trainer-stamp-mark[data-tier='3'] {
+.trainer-badge-mark[data-earned='true'] {
   color: var(--paper);
   background: var(--trainer-accent);
   border-color: var(--navy);
   box-shadow: 0 0.18rem 0 var(--yellow);
 }
 
-.trainer-stamp-mark[data-tier='3'] {
-  box-shadow:
-    inset 0 0 0 0.16rem var(--paper),
-    0 0.18rem 0 var(--yellow);
-}
-
-.trainer-stamp-mark svg {
+.trainer-badge-mark svg {
   width: 56%;
   height: 56%;
   fill: currentcolor;
-}
-
-.trainer-stamp-mark__tiers {
-  position: absolute;
-  right: 0;
-  bottom: -0.08rem;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  gap: 0.18rem;
-}
-
-.trainer-stamp-mark__tiers > span {
-  width: 0.45rem;
-  aspect-ratio: 1;
-  background: var(--paper);
-  border: 1px solid var(--navy);
-  transform: rotate(45deg);
-}
-
-.trainer-stamp-mark__tiers > .trainer-stamp-mark__tier--earned {
-  background: var(--yellow);
 }
 
 .trainer-passport__controls {
@@ -475,34 +421,34 @@
   text-align: center;
 }
 
-.trainer-stamp-case {
+.trainer-badge-case {
   display: grid;
   padding-top: 0.2rem;
   gap: 0.75rem;
   border-top: 3px solid color-mix(in srgb, var(--navy) 20%, transparent);
 }
 
-.trainer-stamp-case > header {
+.trainer-badge-case > header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.trainer-stamp-case h2 {
+.trainer-badge-case h2 {
   margin: 0;
   color: var(--navy);
   font-size: var(--text-headline);
 }
 
-.trainer-stamp-case > header span {
+.trainer-badge-case > header span {
   color: var(--muted);
   font-family: var(--font-data);
   font-size: var(--text-small);
   font-weight: 800;
 }
 
-.trainer-stamp-case ul {
+.trainer-badge-case ul {
   display: grid;
   margin: 0;
   padding: 0;
@@ -511,7 +457,7 @@
   gap: 0 1.25rem;
 }
 
-.trainer-stamp-case li {
+.trainer-badge-case li {
   display: grid;
   min-width: 0;
   padding: 0.75rem 0;
@@ -521,32 +467,32 @@
   border-bottom: 2px solid color-mix(in srgb, var(--navy) 14%, transparent);
 }
 
-.trainer-stamp-case li > .trainer-stamp-mark {
+.trainer-badge-case li > .trainer-badge-mark {
   width: 2.8rem;
   grid-row: 1 / 3;
 }
 
-.trainer-stamp-case__copy {
+.trainer-badge-case__copy {
   display: grid;
   min-width: 0;
   color: var(--navy);
   line-height: 1.15;
 }
 
-.trainer-stamp-case__copy small {
+.trainer-badge-case__copy small {
   color: var(--muted);
   font-size: var(--text-mini);
   font-weight: 700;
 }
 
-.trainer-stamp-case__progress {
+.trainer-badge-case__progress {
   color: var(--trainer-accent);
   font-family: var(--font-data);
   font-size: var(--text-mini);
   font-weight: 800;
 }
 
-.trainer-stamp-case progress {
+.trainer-badge-case progress {
   width: 100%;
   height: 0.35rem;
   overflow: hidden;
@@ -557,15 +503,15 @@
   border-radius: 0;
 }
 
-.trainer-stamp-case progress::-webkit-progress-bar {
+.trainer-badge-case progress::-webkit-progress-bar {
   background: color-mix(in srgb, var(--navy) 10%, transparent);
 }
 
-.trainer-stamp-case progress::-webkit-progress-value {
+.trainer-badge-case progress::-webkit-progress-value {
   background: var(--trainer-accent);
 }
 
-.trainer-stamp-case progress::-moz-progress-bar {
+.trainer-badge-case progress::-moz-progress-bar {
   background: var(--trainer-accent);
 }
 
@@ -577,15 +523,36 @@
   border: 3px solid var(--navy);
   border-radius: var(--surface-radius);
   box-shadow: 0 0.2rem 0 var(--yellow);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    'name partner preview'
+    'specialty specialty save'
+    'accents accents accents';
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 0.8rem;
 }
 
 .trainer-customizer__name,
+.trainer-customizer__specialty,
 .pokemon-picker {
   display: grid;
   min-width: 0;
   gap: 0.3rem;
+}
+
+.trainer-customizer__name {
+  grid-area: name;
+}
+
+.trainer-customizer__specialty {
+  grid-area: specialty;
+}
+
+.trainer-customizer > .pokemon-picker {
+  grid-area: partner;
+}
+
+.trainer-customizer > .game-button {
+  grid-area: save;
 }
 
 .trainer-customizer label,
@@ -596,6 +563,7 @@
 }
 
 .trainer-customizer__name input,
+.trainer-customizer__specialty select,
 .pokemon-picker input {
   width: 100%;
   min-height: 3rem;
@@ -607,12 +575,17 @@
   font-weight: 700;
 }
 
+.trainer-customizer__specialty select:disabled {
+  color: var(--muted);
+  background: var(--disabled-surface);
+}
+
 .trainer-customizer__accents {
   min-width: 0;
   padding: 0;
   margin: 0;
   border: 0;
-  grid-column: 1 / -1;
+  grid-area: accents;
 }
 
 .trainer-customizer__accents legend {
@@ -762,6 +735,7 @@
   border-radius: var(--icon-control-radius);
   font-family: var(--font-data);
   font-weight: 800;
+  grid-area: preview;
   place-items: center;
 }
 
@@ -868,6 +842,12 @@
     font-size: var(--text-control);
   }
 
+  .trainer-card__title {
+    margin: -0.2rem 0 0.4rem;
+    font-size: var(--text-mini);
+    line-height: 1.1;
+  }
+
   .trainer-card__partner-caption strong {
     font-size: var(--text-small);
   }
@@ -920,53 +900,36 @@
     font-size: var(--text-label);
   }
 
-  .trainer-card__specialty {
-    padding: 0.16rem 0.6rem;
-    grid-template-columns: auto 1fr;
-    gap: 0.5rem;
-  }
-
-  .trainer-card__specialty p {
-    align-items: start;
-    flex-direction: column;
-    gap: 0.05rem;
-  }
-
-  .trainer-card__specialty strong {
-    font-size: var(--text-small);
-    line-height: 1;
-  }
-
-  .trainer-card__specialty small {
-    font-size: var(--text-mini);
-    line-height: 1;
-  }
-
-  .trainer-card__stamps {
+  .trainer-card__badges {
     min-height: 0;
     padding: 0 0.5rem 0.65rem;
     gap: 0.1rem;
   }
 
-  .trainer-stamp {
+  .trainer-badge {
     min-height: 2.25rem;
   }
 
-  .trainer-stamp > .trainer-stamp-mark {
+  .trainer-badge > .trainer-badge-mark {
     width: 2.15rem;
   }
 
-  .trainer-stamp-case ul {
+  .trainer-badge-case ul {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .trainer-customizer {
+    grid-template-areas:
+      'name preview'
+      'partner partner'
+      'specialty specialty'
+      'accents accents'
+      'save save';
     grid-template-columns: 1fr auto;
   }
 
-  .trainer-customizer__name,
-  .trainer-customizer .pokemon-picker {
-    grid-column: 1 / -1;
+  .trainer-customizer > .game-button {
+    width: 100%;
   }
 
   .trainer-customizer__accents > div {

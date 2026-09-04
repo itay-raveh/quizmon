@@ -5,7 +5,7 @@ import type {
   Modifiers,
   QuestionData,
 } from '@/game/types';
-import type { TrainerStampChange } from '@/game/trainer';
+import type { TrainerBadgeChange } from '@/game/trainer';
 
 export type GameSession =
   | { phase: 'landing' }
@@ -26,7 +26,7 @@ export type GameSession =
       phase: 'results';
       result: GameResult;
       resultSaved: boolean;
-      stampChanges: TrainerStampChange[];
+      badgeChanges: TrainerBadgeChange[];
     };
 
 export type GameSessionAction =
@@ -52,7 +52,7 @@ export type GameSessionAction =
       isNewBest: boolean;
       result: GameResult;
       resultSaved: boolean;
-      stampChanges: TrainerStampChange[];
+      badgeChanges: TrainerBadgeChange[];
       type: 'completed';
     }
   | {
@@ -118,7 +118,7 @@ export const gameSessionReducer = (
             phase: 'results',
             result: action.result,
             resultSaved: action.resultSaved,
-            stampChanges: action.stampChanges,
+            badgeChanges: action.badgeChanges,
           }
         : session;
     case 'settings-updated':

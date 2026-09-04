@@ -160,7 +160,7 @@ const AppScreen = ({
       onTrainAgain={training.trainAgain}
       result={session.result}
       resultSaved={session.resultSaved}
-      stampChanges={session.stampChanges}
+      badgeChanges={session.badgeChanges}
     />
   );
 };

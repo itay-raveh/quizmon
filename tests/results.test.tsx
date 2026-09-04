@@ -43,7 +43,7 @@ const renderResults = (result: GameResult) =>
       onTrainAgain={vi.fn()}
       result={result}
       resultSaved
-      stampChanges={[]}
+      badgeChanges={[]}
     />,
   );
 
@@ -94,7 +94,7 @@ describe('results summary', () => {
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
-        stampChanges={[]}
+        badgeChanges={[]}
       />,
     );
 
@@ -115,7 +115,7 @@ describe('results summary', () => {
     expect(screen.getByRole('button', { name: 'Back to start' })).toBeVisible();
   });
 
-  it('names a newly advanced League stamp', () => {
+  it('names a newly earned League Badge', () => {
     const result = makeResult(10, 10);
     const rendered = renderResults(result);
     rendered.rerender(
@@ -130,12 +130,10 @@ describe('results summary', () => {
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
-        stampChanges={[
+        badgeChanges={[
           {
-            fromTier: 0,
             id: 'perfect-form',
             label: 'Perfect Form',
-            tier: 1,
           },
         ]}
       />,
@@ -143,7 +141,7 @@ describe('results summary', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /Perfect Form reached Tier I.*See your new mark/,
+        name: /Perfect Form Badge earned.*See your new badge/,
       }),
     ).toBeVisible();
   });

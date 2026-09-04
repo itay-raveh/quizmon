@@ -10,7 +10,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
       JSON.stringify({
         daily: {},
         progress: {
-          categories: {},
+          categories: { type: { correct: 10, total: 12 } },
           gamesCompleted: 1,
           perfectRounds: 0,
           version: 1,
@@ -44,6 +44,9 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     page.getByRole('option', { name: 'Pikachu' }).locator('img'),
   ).toHaveAttribute('src', '/sprites/pokemon/25.png');
   await page.getByRole('option', { name: 'Pikachu' }).click();
+  await page
+    .getByLabel('Trainer title')
+    .selectOption({ label: 'Type Specialist' });
   const violetAccent = page.getByRole('radio', { name: 'Violet' });
   await page.getByText('Violet', { exact: true }).click();
   await expect(violetAccent).toBeChecked();
@@ -56,6 +59,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await expect(page.getByText('Pikachu')).toBeVisible();
   await expect(page.getByText('No. 0025')).toBeVisible();
+  await expect(page.getByText('Type Specialist')).toBeVisible();
   await expect(card.getByText('ID No.')).toBeVisible();
   await expect(card.getByText('Play at')).toBeVisible();
   await expect(card.getByText('quizmon.raveh.dev')).toBeVisible();
@@ -131,14 +135,14 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   const recordsCard = page.getByRole('article', {
     name: 'Trainer Card records',
   });
-  await expect(page.getByRole('heading', { name: 'Stamp case' })).toBeVisible();
-  await expect(page.getByText('0 / 15 tiers')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Badge case' })).toBeVisible();
+  await expect(page.getByText('0 / 5 earned')).toBeVisible();
   await expect(
-    recordsCard.getByRole('img', { name: /Many Paths: Unmarked/ }),
+    recordsCard.getByRole('img', { name: /Many Paths: Locked/ }),
   ).toBeVisible();
   await page.setViewportSize({ width: 360, height: 800 });
   const mobileRecordsBounds = await recordsCard.boundingBox();
-  const firstStampBounds = await recordsCard
+  const firstBadgeBounds = await recordsCard
     .getByRole('img', { name: /Perfect Form/ })
     .evaluate((stamp) => {
       const cardBounds = stamp
@@ -146,7 +150,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
         ?.getBoundingClientRect();
       const stampBounds = stamp.getBoundingClientRect();
       if (!cardBounds) {
-        throw new Error('Trainer Card stamp bounds are unavailable');
+        throw new Error('Trainer Card badge bounds are unavailable');
       }
       return {
         cardBottom: cardBounds.bottom,
@@ -155,15 +159,15 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
       };
     });
   expect(
-    firstStampBounds.cardBottom - firstStampBounds.stampBottom,
+    firstBadgeBounds.cardBottom - firstBadgeBounds.stampBottom,
   ).toBeGreaterThan(4);
-  const mobileStampTops = await recordsCard
-    .locator('.trainer-stamp > .trainer-stamp-mark')
-    .evaluateAll((stamps) =>
-      stamps.map((stamp) => stamp.getBoundingClientRect().top),
+  const mobileBadgeTops = await recordsCard
+    .locator('.trainer-badge > .trainer-badge-mark')
+    .evaluateAll((badges) =>
+      badges.map((badge) => badge.getBoundingClientRect().top),
     );
   expect(
-    Math.max(...mobileStampTops) - Math.min(...mobileStampTops),
+    Math.max(...mobileBadgeTops) - Math.min(...mobileBadgeTops),
   ).toBeLessThanOrEqual(0.5);
   await page.setViewportSize({ width: 1440, height: 900 });
   const desktopRecordsBounds = await recordsCard.boundingBox();

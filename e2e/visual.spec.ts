@@ -44,6 +44,7 @@ test('matches the Trainer Card at both responsive sizes', async ({ page }) => {
         hasBeenRevealed: true,
         name: 'Leaf',
         partnerPokemon: 'pikachu',
+        specialty: null,
         version: 1,
       }),
     );

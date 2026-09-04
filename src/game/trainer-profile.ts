@@ -1,4 +1,5 @@
 import { getUtcDate, parseDailyDate } from './daily';
+import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
 
 const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
 const TRAINER_PROFILE_VERSION = 1;
@@ -13,6 +14,7 @@ export interface TrainerProfile {
   hasBeenRevealed: boolean;
   name: string;
   partnerPokemon: string | null;
+  specialty: TrainerSpecialty | null;
   version: number;
 }
 
@@ -29,6 +31,7 @@ const createTrainerProfile = (): TrainerProfile => ({
   hasBeenRevealed: false,
   name: '',
   partnerPokemon: null,
+  specialty: null,
   version: TRAINER_PROFILE_VERSION,
 });
 
@@ -44,7 +47,9 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
     typeof profile.hasBeenRevealed !== 'boolean' ||
     typeof profile.name !== 'string' ||
     (profile.partnerPokemon !== null &&
-      typeof profile.partnerPokemon !== 'string')
+      typeof profile.partnerPokemon !== 'string') ||
+    (profile.specialty !== null &&
+      !Object.hasOwn(trainerSpecialtyLabels, profile.specialty ?? ''))
   ) {
     return null;
   }
@@ -58,6 +63,7 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
     hasBeenRevealed: profile.hasBeenRevealed,
     name: profile.name.trim().slice(0, 20),
     partnerPokemon: profile.partnerPokemon,
+    specialty: profile.specialty as TrainerSpecialty | null,
     version: TRAINER_PROFILE_VERSION,
   };
 };
