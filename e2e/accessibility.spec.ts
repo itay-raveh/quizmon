@@ -15,6 +15,50 @@ const expectNoAccessibilityViolations = async (page: Page) => {
   ).toEqual([]);
 };
 
+const expectNoHorizontalOverflow = async (page: Page) => {
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    ),
+  ).toBeLessThanOrEqual(1);
+};
+
+const expectNoHorizontalClipping = async (page: Page) => {
+  const offenders = await page.evaluate(() =>
+    [...document.body.querySelectorAll<HTMLElement>('*')]
+      .filter((element) => {
+        if (element.closest('.visually-hidden,[hidden]')) return false;
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return (
+          style.display !== 'none' &&
+          style.visibility !== 'hidden' &&
+          rect.width > 1 &&
+          rect.height > 1 &&
+          (rect.left < -1 || rect.right > window.innerWidth + 1)
+        );
+      })
+      .map((element) => ({
+        className: element.className,
+        tagName: element.tagName,
+        text: element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 80),
+      })),
+  );
+
+  expect(offenders, JSON.stringify(offenders, null, 2)).toEqual([]);
+};
+
+const expectCardContentToFit = async (page: Page) => {
+  const card = page.locator('.trainer-card');
+  expect(
+    await card.evaluate(
+      (element) => element.scrollHeight - element.clientHeight,
+    ),
+  ).toBeLessThanOrEqual(1);
+};
+
 test('keeps the landing screen accessible', async ({ page }) => {
   await page.goto('/');
   await expect(
@@ -37,6 +81,8 @@ test('keeps questions and results accessible', async ({ page }) => {
   await expectNoAccessibilityViolations(page);
 
   await page.locator('.answer').first().click();
+  const checkAnswer = page.getByRole('button', { name: 'Check answers' });
+  if (await checkAnswer.isVisible()) await checkAnswer.click();
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
@@ -50,4 +96,49 @@ test('keeps the Trainer Card accessible', async ({ page }) => {
     page.getByRole('article', { name: 'Trainer Card front' }),
   ).toBeVisible();
   await expectNoAccessibilityViolations(page);
+});
+
+test('reflows when text is enlarged to 200%', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '200%';
+  });
+  await expectNoHorizontalOverflow(page);
+  await expectNoHorizontalClipping(page);
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await expectNoHorizontalClipping(page);
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(page.locator('.question')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await expectNoHorizontalClipping(page);
+
+  await page.locator('.answer').first().click();
+  await expect(page.locator('.results')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await expectNoHorizontalClipping(page);
+
+  await page.goto('/');
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '200%';
+  });
+  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card front' }),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await expectNoHorizontalClipping(page);
+  await expectCardContentToFit(page);
+
+  await page.getByRole('button', { name: 'View records' }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card records' }),
+  ).toBeVisible();
+  await expectNoHorizontalClipping(page);
+  await expectCardContentToFit(page);
 });

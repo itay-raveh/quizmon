@@ -25,7 +25,7 @@ const iconProps = {
   'aria-hidden': true,
   bgStyle: { fill: 'transparent' },
   borderRadius: 4,
-  iconFillColor: '#083b7e',
+  iconFillColor: 'currentColor',
   size: 28,
 } as const;
 

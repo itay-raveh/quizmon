@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import useSound from 'use-sound';
 import correctSound from '@/assets/sounds/answer-correct.mp3';
 import wrongSound from '@/assets/sounds/answer-wrong.mp3';
@@ -13,9 +19,46 @@ import { SoundContext, type SoundControls } from './sound';
 interface SoundProviderProps {
   children: ReactNode;
   enabled: boolean;
+  prepareScoreCount: boolean;
 }
 
-export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
+interface ScoreCountControls {
+  play: () => void;
+  stop: () => void;
+}
+
+const silentScoreCount: ScoreCountControls = {
+  play: () => undefined,
+  stop: () => undefined,
+};
+
+const ScoreCountSound = ({
+  onReady,
+}: {
+  onReady: (controls: ScoreCountControls) => void;
+}) => {
+  const [play, { stop }] = useSound(scoreCountSound, {
+    interrupt: true,
+  });
+
+  useEffect(() => {
+    onReady({ play, stop });
+    return () => {
+      stop();
+      onReady(silentScoreCount);
+    };
+  }, [onReady, play, stop]);
+
+  return null;
+};
+
+export const SoundProvider = ({
+  children,
+  enabled,
+  prepareScoreCount,
+}: SoundProviderProps) => {
+  const [scoreCountControls, setScoreCountControls] =
+    useState<ScoreCountControls>(silentScoreCount);
   const sharedOptions = { interrupt: true, soundEnabled: enabled };
   const [playTap] = useSound(tapSound, { ...sharedOptions, volume: 0.16 });
   const [playToggleOff] = useSound(toggleOffSound, {
@@ -42,16 +85,12 @@ export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
     ...sharedOptions,
     volume: 0.36,
   });
-  const [playScoreCount, { stop: stopScoreCount }] = useSound(
-    scoreCountSound,
-    sharedOptions,
-  );
 
   const stopCelebration = useCallback(() => {
     stopResults();
     stopPerfect();
-    stopScoreCount();
-  }, [stopPerfect, stopResults, stopScoreCount]);
+    scoreCountControls.stop();
+  }, [scoreCountControls, stopPerfect, stopResults]);
 
   useEffect(() => {
     if (!enabled) stopCelebration();
@@ -69,7 +108,7 @@ export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
       playCorrect: () => play(playCorrect),
       playPerfect: () => play(playPerfect),
       playResults: () => play(playResults),
-      playScoreCount: () => play(playScoreCount),
+      playScoreCount: () => play(scoreCountControls.play),
       playTap: () => play(playTap),
       playToggleOff: () => play(playToggleOff),
       playToggleOn: () => play(playToggleOn),
@@ -81,7 +120,7 @@ export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
       playCorrect,
       playPerfect,
       playResults,
-      playScoreCount,
+      scoreCountControls,
       playTap,
       playToggleOff,
       playToggleOn,
@@ -91,6 +130,11 @@ export const SoundProvider = ({ children, enabled }: SoundProviderProps) => {
   );
 
   return (
-    <SoundContext.Provider value={controls}>{children}</SoundContext.Provider>
+    <SoundContext.Provider value={controls}>
+      {children}
+      {enabled && prepareScoreCount ? (
+        <ScoreCountSound onReady={setScoreCountControls} />
+      ) : null}
+    </SoundContext.Provider>
   );
 };

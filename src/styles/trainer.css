@@ -1,8 +1,13 @@
+.app--trainer main {
+  container-type: inline-size;
+}
+
 .trainer-passport {
   --trainer-accent: var(--blue);
 
   display: grid;
   width: min(48rem, calc(100vw - 2rem));
+  min-width: 0;
   padding: clamp(1rem, 2.4vw, 1.5rem);
   grid-template-columns: minmax(0, 1fr);
   color: var(--ink);
@@ -186,6 +191,7 @@
   padding: 0.9rem 1.3rem;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1rem;
   color: var(--paper);
   background: var(--trainer-accent);
@@ -436,7 +442,7 @@
 }
 
 .trainer-badge-case > header span {
-  color: var(--muted);
+  color: var(--navy);
   font-family: var(--font-data);
   font-size: var(--text-small);
   font-weight: 800;
@@ -474,15 +480,15 @@
 }
 
 .trainer-badge-case__copy small {
-  color: var(--muted);
-  font-size: var(--text-mini);
+  color: var(--navy);
+  font-size: var(--text-micro);
   font-weight: 700;
 }
 
 .trainer-badge-case__progress {
   color: var(--trainer-accent);
   font-family: var(--font-data);
-  font-size: var(--text-mini);
+  font-size: var(--text-micro);
   font-weight: 800;
 }
 
@@ -783,7 +789,17 @@
   }
 
   .trainer-passport__header {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .trainer-passport__header > div {
+    min-width: 0;
+    flex: 1 1 5rem;
+  }
+
+  .trainer-passport__header > :last-child {
+    margin-left: auto;
   }
 
   .trainer-passport__header h1 {
@@ -838,7 +854,7 @@
 
   .trainer-card__title {
     margin: -0.2rem 0 0.4rem;
-    font-size: var(--text-mini);
+    font-size: var(--text-micro);
     line-height: 1.1;
   }
 
@@ -847,7 +863,7 @@
   }
 
   .trainer-card__partner-caption small {
-    font-size: var(--text-mini);
+    font-size: var(--text-micro);
   }
 
   .trainer-card__identity dl {
@@ -859,17 +875,23 @@
   }
 
   .trainer-card dt {
-    font-size: var(--text-mini);
+    font-size: var(--text-micro);
   }
 
   .trainer-card dd {
     margin-top: 0.04rem;
-    font-size: var(--text-mini);
+    font-size: var(--text-micro);
   }
 
   .trainer-card__footer {
     padding: 0.3rem 0.65rem 0.4rem;
-    font-size: var(--text-mini);
+    flex-wrap: wrap;
+    font-size: var(--text-micro);
+  }
+
+  .trainer-card__footer strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .trainer-card__record {
@@ -906,6 +928,15 @@
 
   .trainer-badge > .trainer-badge-mark {
     width: 2.15rem;
+    max-width: 100%;
+  }
+
+  .trainer-passport__controls {
+    grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
+  }
+
+  .trainer-badge-case > header {
+    flex-wrap: wrap;
   }
 
   .trainer-badge-case ul {
@@ -928,5 +959,31 @@
 
   .trainer-customizer__accents > div {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 12rem) {
+  .trainer-card {
+    min-height: 13rem;
+    aspect-ratio: auto;
+  }
+
+  .trainer-card__front {
+    min-height: min-content;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trainer-badge-case li > .trainer-badge-mark {
+    grid-row: 1 / 4;
+  }
+
+  .trainer-badge-case__progress {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .trainer-badge-case progress {
+    grid-column: 2;
+    grid-row: 3;
   }
 }
