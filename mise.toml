@@ -37,6 +37,10 @@ run = [
   "lychee --offline --include-fragments README.md",
 ]
 
+[tasks."badges:export"]
+description = "Export trainer badge PNGs from the Aseprite master"
+run = "aseprite --batch --script-param root=\"$PWD\" --script scripts/export-badges.lua"
+
 [tasks.deploy]
 description = "Build and deploy Quizmon to Cloudflare Workers"
 run = [
