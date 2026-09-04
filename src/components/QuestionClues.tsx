@@ -32,10 +32,8 @@ export const QuestionClues = ({
       ) : null}
       {cluesShown <= clues.length && !answered ? (
         <GameButton className="clue-button" tone="quiet" onClick={onReveal}>
-          {cluesShown === 0
-            ? 'Get a clue · Show 4 choices'
-            : 'Reveal another clue'}{' '}
-          · {getAnswerPoints(question, true, cluesShown + 1)} points
+          {cluesShown === 0 ? 'Show 4 choices' : 'Reveal another clue'} ·{' '}
+          {getAnswerPoints(question, true, cluesShown + 1)} points
         </GameButton>
       ) : null}
     </div>

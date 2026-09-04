@@ -161,7 +161,7 @@ export const questionTypes = Object.keys(questionRegistry) as QuestionType[];
 const championDefinition: QuestionDefinition = {
   build: buildChampionQuestion,
   category: 'champion',
-  description: 'Name a Pokémon before revealing optional clues.',
+  description: 'Name a Pokémon from one clue before revealing extra help.',
   group: 'identity',
   label: 'Champion question',
 };

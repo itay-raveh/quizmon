@@ -23,7 +23,11 @@ import {
 } from '@/game/game';
 import { formatPokemonName } from '@/game/format';
 import { questionRegistry, questionTypes } from '@/game/questions/registry';
-import { pokemonOptions, pokemonSimilarity } from '@/game/questions/shared';
+import {
+  pokemonOptions,
+  pokemonSimilarity,
+  redactName,
+} from '@/game/questions/shared';
 import {
   generations,
   type PokemonCatalog,
@@ -184,6 +188,26 @@ describe('question building', () => {
 
     expect(questions).toHaveLength(1);
     expect(questions[0]?.category).not.toBe('description');
+  });
+
+  it('starts the Champion question with a Pokédex clue before paid assists', () => {
+    const [question] = buildQuestionSequence(
+      catalog,
+      ['champion'],
+      defaultModifiers,
+      createSeededRandom('champion-opening-clue'),
+    );
+    const target = question && catalog.pokemon[question.pokemonName];
+
+    expect(question).toBeDefined();
+    expect(target).toBeDefined();
+    expect(getQuestionPromptText(question!.prompt)).toBe(
+      `“${redactName(target!.description, question!.pokemonName)}”`,
+    );
+    expect(question!.clues).not.toContain(
+      redactName(target!.description, question!.pokemonName),
+    );
+    expect(question!.media).toMatchObject({ kind: 'sprite', revealAt: 4 });
   });
 
   it('prefers plausible Pokémon and property distractors', () => {
