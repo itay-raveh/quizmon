@@ -10,10 +10,14 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
       JSON.stringify({
         daily: {},
         progress: {
-          categories: { type: { correct: 10, total: 12 } },
-          gamesCompleted: 1,
-          perfectRounds: 0,
-          version: 1,
+          championAnswersWithoutClues: 0,
+          correctCategories: { type: 10 },
+          correctGenerations: {},
+          correctPokemon: [],
+          correctQuestionTypes: {},
+          masteryRounds: 0,
+          quickAttackCompleted: false,
+          version: 2,
         },
         streak: { creditedDates: [], version: 1 },
         training: {},
@@ -132,10 +136,10 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByText('Trainer Card shared.')).toHaveClass(
     'visually-hidden',
   );
-  await page.getByRole('button', { name: 'View records' }).click();
+  await page.getByRole('button', { name: 'View badge case' }).click();
   await expect(page).toHaveURL(/\?trainer=back$/);
   await expect(
-    page.getByRole('article', { name: 'Trainer Card records' }),
+    page.getByRole('article', { name: 'Trainer Card badge case' }),
   ).toBeVisible();
   await expect(shareButton).toBeEnabled();
   await shareButton.click();
@@ -152,18 +156,26 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.locator('.trainer-passport__card')).toHaveClass(
     /trainer-passport__card--idle/,
   );
-  const recordsCard = page.getByRole('article', {
-    name: 'Trainer Card records',
+  const badgeCaseCard = page.getByRole('article', {
+    name: 'Trainer Card badge case',
   });
-  await expect(page.getByRole('heading', { name: 'Badge case' })).toBeVisible();
-  await expect(page.getByText('0 / 5 earned')).toBeVisible();
+  await expect(badgeCaseCard.getByText('League Badge Case')).toBeVisible();
+  await expect(badgeCaseCard.getByText('0 / 8')).toBeVisible();
   await expect(
-    recordsCard.getByRole('img', { name: /Many Paths: Locked/ }),
+    badgeCaseCard.getByRole('button', { name: /Many Paths\. Locked/ }),
   ).toBeVisible();
+  await badgeCaseCard
+    .getByRole('button', { name: /Many Paths\. Locked/ })
+    .click();
+  await expect(
+    page.getByRole('dialog').getByRole('heading', { name: 'Many Paths' }),
+  ).toBeVisible();
+  await expect(page.getByRole('dialog').getByText('0 / 10')).toBeVisible();
+  await page.getByRole('button', { name: 'Close badge details' }).click();
   await page.setViewportSize({ width: 360, height: 800 });
-  const mobileRecordsBounds = await recordsCard.boundingBox();
-  const firstBadgeBounds = await recordsCard
-    .getByRole('img', { name: /Perfect Form/ })
+  const mobileBadgeCaseBounds = await badgeCaseCard.boundingBox();
+  const firstBadgeBounds = await badgeCaseCard
+    .getByRole('button', { name: /Perfect Form/ })
     .evaluate((stamp) => {
       const cardBounds = stamp
         .closest('.trainer-card')
@@ -181,27 +193,25 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   expect(
     firstBadgeBounds.cardBottom - firstBadgeBounds.stampBottom,
   ).toBeGreaterThan(4);
-  const mobileBadgeTops = await recordsCard
+  const mobileBadgeTops = await badgeCaseCard
     .locator('.trainer-badge > .trainer-badge-mark')
     .evaluateAll((badges) =>
       badges.map((badge) => badge.getBoundingClientRect().top),
     );
   expect(
     Math.max(...mobileBadgeTops) - Math.min(...mobileBadgeTops),
-  ).toBeLessThanOrEqual(0.5);
+  ).toBeGreaterThan(40);
   await page.setViewportSize({ width: 1440, height: 900 });
-  const desktopRecordsBounds = await recordsCard.boundingBox();
-  if (!mobileRecordsBounds || !desktopRecordsBounds) {
-    throw new Error('Responsive Trainer Card record bounds are unavailable');
+  const desktopBadgeCaseBounds = await badgeCaseCard.boundingBox();
+  if (!mobileBadgeCaseBounds || !desktopBadgeCaseBounds) {
+    throw new Error('Responsive Trainer Card badge bounds are unavailable');
   }
-  expect(mobileRecordsBounds.width / mobileRecordsBounds.height).toBeCloseTo(
-    1.5,
-    1,
-  );
-  expect(desktopRecordsBounds.width / desktopRecordsBounds.height).toBeCloseTo(
-    1.5,
-    1,
-  );
+  expect(
+    mobileBadgeCaseBounds.width / mobileBadgeCaseBounds.height,
+  ).toBeCloseTo(1.5, 1);
+  expect(
+    desktopBadgeCaseBounds.width / desktopBadgeCaseBounds.height,
+  ).toBeCloseTo(1.5, 1);
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
@@ -246,8 +256,11 @@ test('opens a back-face link by turning the card from its front', async ({
     /trainer-passport__card--out/,
   );
   await expect(
-    page.getByRole('article', { name: 'Trainer Card records' }),
+    page.getByRole('article', { name: 'Trainer Card badge case' }),
   ).toBeVisible();
+  await expect(page.locator('.trainer-passport__card')).toHaveClass(
+    /trainer-passport__card--idle/,
+  );
 
   await page.getByRole('button', { name: 'View front' }).click();
   await expect(page).toHaveURL(/\?trainer=front$/);

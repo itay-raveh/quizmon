@@ -28,6 +28,21 @@ local expected = {
     group = "Perfect Form",
     layers = { "Color", "Outline" },
   },
+  {
+    slug = "pokedex-trail",
+    group = "Pokédex Trail",
+    layers = { "Guide", "Trail", "Outline" },
+  },
+  {
+    slug = "quick-attack",
+    group = "Quick Attack",
+    layers = { "Speed", "Highlights", "Outline" },
+  },
+  {
+    slug = "true-calling",
+    group = "True Calling",
+    layers = { "Facets", "Star", "Outline" },
+  },
 }
 
 local sourcePath = root .. "/art/badges.aseprite"
@@ -35,14 +50,14 @@ local outputPath = root .. "/src/assets/images/badges/"
 local sprite = app.open(sourcePath)
 
 if not sprite then error("Could not open " .. sourcePath) end
-if sprite.width ~= 160 or sprite.height ~= 32 or sprite.colorMode ~= ColorMode.INDEXED then
-  error("badges.aseprite must be a 160x32 indexed sprite")
+if sprite.width ~= 256 or sprite.height ~= 32 or sprite.colorMode ~= ColorMode.INDEXED then
+  error("badges.aseprite must be a 256x32 indexed sprite")
 end
 if #sprite.frames ~= 1 or #sprite.palettes ~= 1 then
   error("badges.aseprite must contain one frame and one palette")
 end
 if #sprite.layers ~= #expected or #sprite.slices ~= #expected then
-  error("badges.aseprite must contain five layer groups and five slices")
+  error("badges.aseprite must contain eight layer groups and eight slices")
 end
 
 local slices = {}

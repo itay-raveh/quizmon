@@ -24,12 +24,13 @@ import {
   getQualifiedTrainerSpecialties,
   getTrainerBadges,
   trainerSpecialtyLabels,
+  type TrainerBadgeId,
   type TrainerCardFace,
   type TrainerSpecialty,
 } from '@/game/trainer';
 import { GameButton } from './GameButton';
 import { PokemonPicker } from './PokemonPicker';
-import { TrainerBadgeCase } from './TrainerBadgeCase';
+import { TrainerBadgeDialog } from './TrainerBadgeDialog';
 import { TrainerCard } from './TrainerCard';
 
 interface TrainerPassportProps {
@@ -81,6 +82,9 @@ export const TrainerPassport = ({
     key: string;
   } | null>(null);
   const [shareNotice, setShareNotice] = useState<ShareNotice | null>(null);
+  const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
+    null,
+  );
   const cardRef = useRef<HTMLElement>(null);
   const pokemonOptions = useMemo(
     () =>
@@ -103,6 +107,7 @@ export const TrainerPassport = ({
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareCard = supportsTrainerCardSharing();
   const badges = getTrainerBadges(stats);
+  const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
   const turnTimeouts = useRef<number[]>([]);
 
   useEffect(() => {
@@ -176,7 +181,8 @@ export const TrainerPassport = ({
 
   const flip = () => {
     if (turn !== 'idle') return;
-    onFaceChange(face === 'front' ? 'records' : 'front');
+    setSelectedBadgeId(null);
+    onFaceChange(face === 'front' ? 'badges' : 'front');
   };
 
   const save = (event: FormEvent<HTMLFormElement>) => {
@@ -341,6 +347,7 @@ export const TrainerPassport = ({
         <TrainerCard
           cardRef={cardRef}
           face={face}
+          onBadgeSelect={(badge) => setSelectedBadgeId(badge.id)}
           partnerDexNumber={savedPartner?.id ?? null}
           partnerSprite={savedPartner?.sprite ?? null}
           profile={visibleProfile}
@@ -349,8 +356,8 @@ export const TrainerPassport = ({
       </div>
 
       <div className="trainer-passport__controls">
-        <GameButton tone="quiet" onClick={flip}>
-          {face === 'front' ? 'View records' : 'View front'}
+        <GameButton disabled={turn !== 'idle'} tone="quiet" onClick={flip}>
+          {face === 'front' ? 'View badge case' : 'View front'}
         </GameButton>
         {canShareCard ? (
           <GameButton disabled={!image} onClick={() => void share()}>
@@ -371,7 +378,12 @@ export const TrainerPassport = ({
           </GameButton>
         )}
       </div>
-      {face === 'records' ? <TrainerBadgeCase badges={badges} /> : null}
+      {selectedBadge ? (
+        <TrainerBadgeDialog
+          badge={selectedBadge}
+          onClose={() => setSelectedBadgeId(null)}
+        />
+      ) : null}
       <p
         className={
           shareNotice?.visible ? 'trainer-passport__status' : 'visually-hidden'

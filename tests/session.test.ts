@@ -20,6 +20,7 @@ const answer: AnswerResult = {
   cluesUsed: 0,
   correct: true,
   generation: 'I',
+  pokemonName: 'pikachu',
   points: 1_000,
   questionType: 'pokedex-scan',
 };

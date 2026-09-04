@@ -16,6 +16,7 @@ const result: GameResult = {
       cluesUsed: 0,
       correct: true,
       generation: 'I',
+      pokemonName: 'pikachu',
       points: 1_000,
       questionType: 'pokedex-scan',
     },
@@ -24,6 +25,7 @@ const result: GameResult = {
       cluesUsed: 0,
       correct: false,
       generation: 'II',
+      pokemonName: 'sudowoodo',
       points: 0,
       questionType: 'stat-showdown',
     },
@@ -160,6 +162,7 @@ describe('saved results', () => {
           cluesUsed: 0,
           correct: true,
           generation: 'III' as const,
+          pokemonName: 'rayquaza',
           points: 1_000,
           questionType: 'type-check' as const,
         },
@@ -182,7 +185,7 @@ describe('saved results', () => {
     );
   });
 
-  it('builds Trainer Card totals from completed games', () => {
+  it('builds Trainer progression from correct answers', () => {
     const perfect = {
       ...result,
       answers: result.answers.map((answer) => ({
@@ -196,13 +199,13 @@ describe('saved results', () => {
     saveResult({ kind: 'training' }, perfect, defaultModifiers);
 
     expect(readTrainerStats()).toMatchObject({
-      categories: {
-        identity: { correct: 1, total: 1 },
-        stat: { correct: 1, total: 1 },
+      correctCategories: {
+        identity: 1,
+        stat: 1,
       },
-      gamesCompleted: 1,
+      correctPokemon: ['pikachu', 'sudowoodo'],
       masteryRounds: 0,
-      perfectRounds: 1,
+      quickAttackCompleted: false,
     });
   });
 
@@ -212,6 +215,7 @@ describe('saved results', () => {
       cluesUsed: 0,
       correct: true,
       generation: index % 2 === 0 ? ('I' as const) : ('II' as const),
+      pokemonName: `pokemon-${index}`,
       points: 1_000,
       questionType:
         index === 9 ? ('champion' as const) : ('pokedex-scan' as const),
@@ -239,9 +243,56 @@ describe('saved results', () => {
     expect(readTrainerStats()).toMatchObject({
       championAnswersWithoutClues: 1,
       correctGenerations: { I: 8, II: 7 },
+      correctPokemon: perfectAnswers.map(({ pokemonName }) => pokemonName),
       correctQuestionTypes: { 'pokedex-scan': 14 },
       masteryRounds: 1,
+      quickAttackCompleted: true,
     });
+  });
+
+  it('requires both speed and accuracy for Quick Attack', () => {
+    const answers = Array.from({ length: 10 }, (_, index) => ({
+      category: 'identity' as const,
+      cluesUsed: 0,
+      correct: index < 8,
+      generation: 'I' as const,
+      pokemonName: `pokemon-${index}`,
+      points: index < 8 ? 1_000 : 0,
+      questionType: 'pokedex-scan' as const,
+    }));
+    const standard = {
+      ...result,
+      answers,
+      correctCount: 8,
+      elapsedSeconds: 59,
+      questionCount: 10,
+    };
+
+    saveResult(
+      { kind: 'training' },
+      { ...standard, elapsedSeconds: 60 },
+      defaultModifiers,
+    );
+    expect(readTrainerStats().quickAttackCompleted).toBe(false);
+
+    saveResult(
+      { kind: 'training' },
+      {
+        ...standard,
+        answers: answers.map((answer, index) => ({
+          ...answer,
+          correct: index < 7,
+          points: index < 7 ? 1_000 : 0,
+        })),
+        correctCount: 7,
+      },
+      defaultModifiers,
+    );
+    expect(readTrainerStats().quickAttackCompleted).toBe(false);
+
+    saveResult({ kind: 'training' }, standard, defaultModifiers);
+
+    expect(readTrainerStats().quickAttackCompleted).toBe(true);
   });
 
   it('reports when browser storage cannot persist a result', () => {

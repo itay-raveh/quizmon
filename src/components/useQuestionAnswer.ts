@@ -90,6 +90,7 @@ export const useQuestionAnswer = ({
         cluesUsed: cluesShown,
         correct,
         generation: question.generation,
+        pokemonName: question.pokemonName,
         points,
         questionType: question.questionType,
         responseMilliseconds,

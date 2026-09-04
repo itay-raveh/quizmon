@@ -66,6 +66,8 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
     typeof value.correct !== 'boolean' ||
     typeof value.generation !== 'string' ||
     !generations.includes(value.generation as Generation) ||
+    typeof value.pokemonName !== 'string' ||
+    value.pokemonName.length === 0 ||
     !isFiniteNonnegative(value.points) ||
     (value.questionType !== 'champion' &&
       (typeof value.questionType !== 'string' ||
@@ -82,6 +84,7 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
     cluesUsed: value.cluesUsed,
     correct: value.correct,
     generation: value.generation as Generation,
+    pokemonName: value.pokemonName,
     points: value.points,
     questionType: value.questionType as QuestionType | 'champion',
     ...(value.responseMilliseconds === undefined

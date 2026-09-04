@@ -13,6 +13,7 @@ const makeResult = (
       cluesUsed: 0,
       correct: index < correctCount,
       generation: 'I',
+      pokemonName: `pokemon-${index}`,
       points: index < correctCount ? 1_000 : 0,
       questionType: 'pokedex-scan',
       speedBonus: index < correctCount ? 1_500 : 0,
@@ -142,15 +143,15 @@ describe('results summary', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /Perfect Form Badge earned.*See your new badge/,
+        name: /Perfect Form Badge earned.*Open your League Badge Case/,
       }),
     ).toBeVisible();
 
     screen
       .getByRole('button', {
-        name: /Perfect Form Badge earned.*See your new badge/,
+        name: /Perfect Form Badge earned.*Open your League Badge Case/,
       })
       .click();
-    expect(onOpenTrainerCard).toHaveBeenCalledWith('records');
+    expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });
 });

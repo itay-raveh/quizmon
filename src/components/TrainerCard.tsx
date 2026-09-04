@@ -10,6 +10,7 @@ import {
   getTrainerRank,
   getTrainerBadges,
   trainerSpecialtyLabels,
+  type TrainerBadge,
   type TrainerCardFace,
 } from '@/game/trainer';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
@@ -20,6 +21,7 @@ interface TrainerCardProps {
   face: TrainerCardFace;
   partnerDexNumber: number | null;
   partnerSprite: string | null;
+  onBadgeSelect?: (badge: TrainerBadge) => void;
   profile: TrainerProfile;
   stats: TrainerStats;
 }
@@ -27,6 +29,7 @@ interface TrainerCardProps {
 export const TrainerCard = ({
   cardRef,
   face,
+  onBadgeSelect,
   partnerDexNumber,
   partnerSprite,
   profile,
@@ -45,7 +48,7 @@ export const TrainerCard = ({
     <article
       ref={cardRef}
       className={`trainer-card trainer-card--${face} trainer-card--${finish.toLowerCase()} trainer-card--accent-${profile.accent}`}
-      aria-label={`Trainer Card ${face === 'front' ? 'front' : 'records'}`}
+      aria-label={`Trainer Card ${face === 'front' ? 'front' : 'badge case'}`}
     >
       <TrainerCardFinishEffects finish={finish} />
       {face === 'front' ? (
@@ -97,41 +100,25 @@ export const TrainerCard = ({
       ) : (
         <>
           <header className="trainer-card__banner">
-            <span>Trainer records</span>
-            <strong>ID No. {trainerId}</strong>
+            <span>League Badge Case</span>
+            <strong>
+              {earnedBadgeCount} / {badges.length}
+            </strong>
           </header>
-          <dl className="trainer-card__record">
-            <div>
-              <dt>Games</dt>
-              <dd>{stats.gamesCompleted.toLocaleString()}</dd>
-            </div>
-            <div>
-              <dt>Daily clears</dt>
-              <dd>{stats.dailyChallengesCompleted.toLocaleString()}</dd>
-            </div>
-            <div>
-              <dt>Perfect rounds</dt>
-              <dd>{stats.perfectRounds.toLocaleString()}</dd>
-            </div>
-            <div>
-              <dt>Best Daily Combo</dt>
-              <dd>{stats.bestDailyStreak.toLocaleString()}</dd>
-            </div>
-          </dl>
           <section
             className="trainer-card__badges"
-            aria-label={`League badges: ${earnedBadgeCount} of 5 earned`}
+            aria-label={`League Badge Case: ${earnedBadgeCount} of ${badges.length} earned`}
           >
             {badges.map((badge) => (
-              <span
-                aria-label={`${badge.label}: ${badge.earned ? 'Earned.' : `Locked. ${Math.min(badge.current, badge.goal)} of ${badge.goal}. ${badge.requirement}.`}`}
+              <button
+                aria-label={`${badge.label}. ${badge.earned ? 'Earned' : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}
                 className="trainer-badge"
                 key={badge.id}
-                role="img"
-                title={`${badge.label}: ${badge.requirement}`}
+                onClick={() => onBadgeSelect?.(badge)}
+                type="button"
               >
                 <TrainerBadgeMark earned={badge.earned} id={badge.id} />
-              </span>
+              </button>
             ))}
           </section>
         </>
