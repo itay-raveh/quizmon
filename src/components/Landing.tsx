@@ -1,3 +1,4 @@
+import { site } from '@/app/site';
 import { formatDailyDate, getUtcDate } from '@/game/daily';
 import type { GameResult } from '@/game/types';
 import { CatchCombo } from './CatchCombo';
@@ -43,7 +44,7 @@ export const Landing = ({
   return (
     <section className="landing" aria-labelledby="landing-title">
       <h1 id="landing-title" className="visually-hidden">
-        Quizmon
+        {site.title}
       </h1>
       <Logo />
       {catalogStatus === 'loading' ? (
