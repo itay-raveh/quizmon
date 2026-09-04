@@ -1,0 +1,630 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-04T11:24:00Z",
+  "title": "Design System: Quizmon",
+  "extensions": {
+    "colorMeta": {
+      "landscape-sky": {
+        "role": "secondary",
+        "displayName": "Landscape Sky",
+        "canonical": "#72c3ee",
+        "description": "The open pixel-art sky behind the landing screen and game surfaces.",
+        "tonalRamp": [
+          "oklch(15% 0.100 233.3)",
+          "oklch(25% 0.100 233.3)",
+          "oklch(37% 0.100 233.3)",
+          "oklch(49% 0.100 233.3)",
+          "oklch(61% 0.100 233.3)",
+          "oklch(73% 0.100 233.3)",
+          "oklch(85% 0.100 233.3)",
+          "oklch(95% 0.100 233.3)"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Battle Cobalt",
+        "canonical": "#0d6be6",
+        "description": "Primary actions, selected tiles, answer choices, and the timer.",
+        "tonalRamp": [
+          "oklch(15% 0.203 258.6)",
+          "oklch(25% 0.203 258.6)",
+          "oklch(37% 0.203 258.6)",
+          "oklch(49% 0.203 258.6)",
+          "oklch(61% 0.203 258.6)",
+          "oklch(73% 0.203 258.6)",
+          "oklch(85% 0.203 258.6)",
+          "oklch(95% 0.203 258.6)"
+        ]
+      },
+      "primary-text": {
+        "role": "neutral",
+        "displayName": "Pale Button Ink",
+        "canonical": "#e8fcff",
+        "description": "Text on cobalt controls.",
+        "tonalRamp": [
+          "oklch(15% 0.021 207.6)",
+          "oklch(25% 0.021 207.6)",
+          "oklch(37% 0.021 207.6)",
+          "oklch(49% 0.021 207.6)",
+          "oklch(61% 0.021 207.6)",
+          "oklch(73% 0.021 207.6)",
+          "oklch(85% 0.021 207.6)",
+          "oklch(95% 0.021 207.6)"
+        ]
+      },
+      "outline": {
+        "role": "primary",
+        "displayName": "Deep Game Navy",
+        "canonical": "#083b7e",
+        "description": "Control outlines, headings, progress borders, links, and high-emphasis labels.",
+        "tonalRamp": [
+          "oklch(15% 0.125 257.9)",
+          "oklch(25% 0.125 257.9)",
+          "oklch(37% 0.125 257.9)",
+          "oklch(49% 0.125 257.9)",
+          "oklch(61% 0.125 257.9)",
+          "oklch(73% 0.125 257.9)",
+          "oklch(85% 0.125 257.9)",
+          "oklch(95% 0.125 257.9)"
+        ]
+      },
+      "hard-shadow": {
+        "role": "neutral",
+        "displayName": "Hard Navy Shadow",
+        "canonical": "#123f76",
+        "description": "The dark lower layer under compact controls and contained surfaces.",
+        "tonalRamp": [
+          "oklch(15% 0.106 255.8)",
+          "oklch(25% 0.106 255.8)",
+          "oklch(37% 0.106 255.8)",
+          "oklch(49% 0.106 255.8)",
+          "oklch(61% 0.106 255.8)",
+          "oklch(73% 0.106 255.8)",
+          "oklch(85% 0.106 255.8)",
+          "oklch(95% 0.106 255.8)"
+        ]
+      },
+      "soft-sky": {
+        "role": "secondary",
+        "displayName": "Soft Sky",
+        "canonical": "#b7e1fa",
+        "description": "Quiet progress tracks and loading details.",
+        "tonalRamp": [
+          "oklch(15% 0.056 234.4)",
+          "oklch(25% 0.056 234.4)",
+          "oklch(37% 0.056 234.4)",
+          "oklch(49% 0.056 234.4)",
+          "oklch(61% 0.056 234.4)",
+          "oklch(73% 0.056 234.4)",
+          "oklch(85% 0.056 234.4)",
+          "oklch(95% 0.056 234.4)"
+        ]
+      },
+      "depth-edge": {
+        "role": "secondary",
+        "displayName": "Butter Depth Edge",
+        "canonical": "#eed23e",
+        "description": "The slim lower edge under controls and surfaces, plus progress fill.",
+        "tonalRamp": [
+          "oklch(15% 0.160 98.0)",
+          "oklch(25% 0.160 98.0)",
+          "oklch(37% 0.160 98.0)",
+          "oklch(49% 0.160 98.0)",
+          "oklch(61% 0.160 98.0)",
+          "oklch(73% 0.160 98.0)",
+          "oklch(85% 0.160 98.0)",
+          "oklch(95% 0.160 98.0)"
+        ]
+      },
+      "accent-surface": {
+        "role": "secondary",
+        "displayName": "Daily Cream",
+        "canonical": "#feec99",
+        "description": "The daily challenge strip, dialog header and footer, and score band.",
+        "tonalRamp": [
+          "oklch(15% 0.105 97.4)",
+          "oklch(25% 0.105 97.4)",
+          "oklch(37% 0.105 97.4)",
+          "oklch(49% 0.105 97.4)",
+          "oklch(61% 0.105 97.4)",
+          "oklch(73% 0.105 97.4)",
+          "oklch(85% 0.105 97.4)",
+          "oklch(95% 0.105 97.4)"
+        ]
+      },
+      "trainer-leaf": {
+        "role": "tertiary",
+        "displayName": "Trainer Leaf",
+        "canonical": "#286b3f",
+        "description": "A player-selected Trainer Card accent, confined to profile surfaces.",
+        "tonalRamp": [
+          "oklch(15% 0.098 152.0)",
+          "oklch(25% 0.098 152.0)",
+          "oklch(37% 0.098 152.0)",
+          "oklch(49% 0.098 152.0)",
+          "oklch(61% 0.098 152.0)",
+          "oklch(73% 0.098 152.0)",
+          "oklch(85% 0.098 152.0)",
+          "oklch(95% 0.098 152.0)"
+        ]
+      },
+      "trainer-ember": {
+        "role": "tertiary",
+        "displayName": "Trainer Ember",
+        "canonical": "#9b3b24",
+        "description": "A player-selected Trainer Card accent, confined to profile surfaces.",
+        "tonalRamp": [
+          "oklch(15% 0.134 34.7)",
+          "oklch(25% 0.134 34.7)",
+          "oklch(37% 0.134 34.7)",
+          "oklch(49% 0.134 34.7)",
+          "oklch(61% 0.134 34.7)",
+          "oklch(73% 0.134 34.7)",
+          "oklch(85% 0.134 34.7)",
+          "oklch(95% 0.134 34.7)"
+        ]
+      },
+      "trainer-violet": {
+        "role": "tertiary",
+        "displayName": "Trainer Violet",
+        "canonical": "#6846a5",
+        "description": "A player-selected Trainer Card accent, confined to profile surfaces.",
+        "tonalRamp": [
+          "oklch(15% 0.147 297.0)",
+          "oklch(25% 0.147 297.0)",
+          "oklch(37% 0.147 297.0)",
+          "oklch(49% 0.147 297.0)",
+          "oklch(61% 0.147 297.0)",
+          "oklch(73% 0.147 297.0)",
+          "oklch(85% 0.147 297.0)",
+          "oklch(95% 0.147 297.0)"
+        ]
+      },
+      "game-surface": {
+        "role": "neutral",
+        "displayName": "Warm Game Paper",
+        "canonical": "#fffbea",
+        "description": "Question, results, dialog, quiet buttons, and fields.",
+        "tonalRamp": [
+          "oklch(15% 0.023 96.0)",
+          "oklch(25% 0.023 96.0)",
+          "oklch(37% 0.023 96.0)",
+          "oklch(49% 0.023 96.0)",
+          "oklch(61% 0.023 96.0)",
+          "oklch(73% 0.023 96.0)",
+          "oklch(85% 0.023 96.0)",
+          "oklch(95% 0.023 96.0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Landscape Ink",
+        "canonical": "#143149",
+        "description": "Main copy on warm surfaces.",
+        "tonalRamp": [
+          "oklch(15% 0.056 246.1)",
+          "oklch(25% 0.056 246.1)",
+          "oklch(37% 0.056 246.1)",
+          "oklch(49% 0.056 246.1)",
+          "oklch(61% 0.056 246.1)",
+          "oklch(73% 0.056 246.1)",
+          "oklch(85% 0.056 246.1)",
+          "oklch(95% 0.056 246.1)"
+        ]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Blue Ink",
+        "canonical": "#446078",
+        "description": "Supporting descriptions, mode labels, details, and status text.",
+        "tonalRamp": [
+          "oklch(15% 0.051 245.0)",
+          "oklch(25% 0.051 245.0)",
+          "oklch(37% 0.051 245.0)",
+          "oklch(49% 0.051 245.0)",
+          "oklch(61% 0.051 245.0)",
+          "oklch(73% 0.051 245.0)",
+          "oklch(85% 0.051 245.0)",
+          "oklch(95% 0.051 245.0)"
+        ]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Correct Forest",
+        "canonical": "#18763a",
+        "description": "Correct-answer feedback only.",
+        "tonalRamp": [
+          "oklch(15% 0.126 150.3)",
+          "oklch(25% 0.126 150.3)",
+          "oklch(37% 0.126 150.3)",
+          "oklch(49% 0.126 150.3)",
+          "oklch(61% 0.126 150.3)",
+          "oklch(73% 0.126 150.3)",
+          "oklch(85% 0.126 150.3)",
+          "oklch(95% 0.126 150.3)"
+        ]
+      },
+      "error": {
+        "role": "tertiary",
+        "displayName": "Wrong Berry",
+        "canonical": "#a92843",
+        "description": "Incorrect-answer and error feedback only.",
+        "tonalRamp": [
+          "oklch(15% 0.164 14.2)",
+          "oklch(25% 0.164 14.2)",
+          "oklch(37% 0.164 14.2)",
+          "oklch(49% 0.164 14.2)",
+          "oklch(61% 0.164 14.2)",
+          "oklch(73% 0.164 14.2)",
+          "oklch(85% 0.164 14.2)",
+          "oklch(95% 0.164 14.2)"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "Focus Navy",
+        "canonical": "#083b7e",
+        "description": "Keyboard focus outlines separated from controls by a light offset gap.",
+        "tonalRamp": [
+          "oklch(15% 0.125 257.9)",
+          "oklch(25% 0.125 257.9)",
+          "oklch(37% 0.125 257.9)",
+          "oklch(49% 0.125 257.9)",
+          "oklch(61% 0.125 257.9)",
+          "oklch(73% 0.125 257.9)",
+          "oklch(85% 0.125 257.9)",
+          "oklch(95% 0.125 257.9)"
+        ]
+      },
+      "footer-ink": {
+        "role": "neutral",
+        "displayName": "Field Footer Ink",
+        "canonical": "#1b3e40",
+        "description": "The small unboxed credit line over the landscape.",
+        "tonalRamp": [
+          "oklch(15% 0.041 200.4)",
+          "oklch(25% 0.041 200.4)",
+          "oklch(37% 0.041 200.4)",
+          "oklch(49% 0.041 200.4)",
+          "oklch(61% 0.041 200.4)",
+          "oklch(73% 0.041 200.4)",
+          "oklch(85% 0.041 200.4)",
+          "oklch(95% 0.041 200.4)"
+        ]
+      },
+      "control-shine": {
+        "role": "neutral",
+        "displayName": "Control Shine",
+        "canonical": "rgba(255, 255, 255, 0.12)",
+        "description": "A restrained inset highlight on tactile controls.",
+        "tonalRamp": [
+          "oklch(15% 0.000 0 / 0.12)",
+          "oklch(25% 0.000 0 / 0.12)",
+          "oklch(37% 0.000 0 / 0.12)",
+          "oklch(49% 0.000 0 / 0.12)",
+          "oklch(61% 0.000 0 / 0.12)",
+          "oklch(73% 0.000 0 / 0.12)",
+          "oklch(85% 0.000 0 / 0.12)",
+          "oklch(95% 0.000 0 / 0.12)"
+        ]
+      },
+      "modal-scrim": {
+        "role": "neutral",
+        "displayName": "Modal Scrim",
+        "canonical": "rgba(8, 35, 73, 0.8)",
+        "description": "The dark navy dialog backdrop that separates overlays without blurring the landscape.",
+        "tonalRamp": [
+          "oklch(15% 0.078 257.8 / 0.8)",
+          "oklch(25% 0.078 257.8 / 0.8)",
+          "oklch(37% 0.078 257.8 / 0.8)",
+          "oklch(49% 0.078 257.8 / 0.8)",
+          "oklch(61% 0.078 257.8 / 0.8)",
+          "oklch(73% 0.078 257.8 / 0.8)",
+          "oklch(85% 0.078 257.8 / 0.8)",
+          "oklch(95% 0.078 257.8 / 0.8)"
+        ]
+      },
+      "disabled-surface": {
+        "role": "neutral",
+        "displayName": "Disabled Surface",
+        "canonical": "#e5ebed",
+        "description": "A quiet inactive surface used with reduced saturation and no depth.",
+        "tonalRamp": [
+          "oklch(15% 0.007 219.6)",
+          "oklch(25% 0.007 219.6)",
+          "oklch(37% 0.007 219.6)",
+          "oklch(49% 0.007 219.6)",
+          "oklch(61% 0.007 219.6)",
+          "oklch(73% 0.007 219.6)",
+          "oklch(85% 0.007 219.6)",
+          "oklch(95% 0.007 219.6)"
+        ]
+      },
+      "error-ink": {
+        "role": "tertiary",
+        "displayName": "Error Ink",
+        "canonical": "#8b1e31",
+        "description": "Readable error copy on pale error surfaces.",
+        "tonalRamp": [
+          "oklch(15% 0.143 16.6)",
+          "oklch(25% 0.143 16.6)",
+          "oklch(37% 0.143 16.6)",
+          "oklch(49% 0.143 16.6)",
+          "oklch(61% 0.143 16.6)",
+          "oklch(73% 0.143 16.6)",
+          "oklch(85% 0.143 16.6)",
+          "oklch(95% 0.143 16.6)"
+        ]
+      },
+      "error-surface": {
+        "role": "tertiary",
+        "displayName": "Error Surface",
+        "canonical": "#fff0f3",
+        "description": "A pale field for validation and recoverable error states.",
+        "tonalRamp": [
+          "oklch(15% 0.017 3.6)",
+          "oklch(25% 0.017 3.6)",
+          "oklch(37% 0.017 3.6)",
+          "oklch(49% 0.017 3.6)",
+          "oklch(61% 0.017 3.6)",
+          "oklch(73% 0.017 3.6)",
+          "oklch(85% 0.017 3.6)",
+          "oklch(95% 0.017 3.6)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Question and result titles."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Dialog titles and high-emphasis section headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Instructions, descriptions, and general copy."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "Buttons, answers, selection labels, and result values."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Game modes, helper text, result details, and status copy."
+      },
+      "numeric": {
+        "displayName": "Numeric",
+        "purpose": "Question progress, elapsed time, Pokédex numbers, and scores."
+      }
+    },
+    "shadows": [
+      {
+        "name": "Control Rest",
+        "value": "inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.22rem 0 #eed23e, 0 0.3rem 0 #123f76",
+        "purpose": "Primary buttons and answer controls."
+      },
+      {
+        "name": "Quiet Control Rest",
+        "value": "inset 0 0.1rem 0 #ffffff, inset 0 -0.14rem 0 rgba(8, 59, 126, 0.1), 0 0.22rem 0 #eed23e, 0 0.3rem 0 #123f76",
+        "purpose": "Cream secondary actions."
+      },
+      {
+        "name": "Game Surface",
+        "value": "0 0.28rem 0 #eed23e, 0 0.62rem 0 #123f76",
+        "purpose": "Question and results panels."
+      },
+      {
+        "name": "Dialog Surface",
+        "value": "0 0.3rem 0 #eed23e, 0 0.7rem 0 #123f76",
+        "purpose": "The modal surface over its dark navy backdrop."
+      },
+      {
+        "name": "Trainer Card",
+        "value": "inset 0 0 0 0.35rem #feec99, 0 0.3rem 0 #eed23e, 0 0.52rem 0 #123f76",
+        "purpose": "The compact layered edge of the shareable Trainer Card."
+      }
+    ],
+    "motion": [
+      {
+        "name": "surface-in",
+        "value": "180ms ease-out",
+        "purpose": "One transform-and-opacity entrance for the first question and results."
+      },
+      {
+        "name": "dialog-in",
+        "value": "160ms ease-out",
+        "purpose": "The single entrance used when a dialog opens."
+      },
+      {
+        "name": "control-state",
+        "value": "100ms ease",
+        "purpose": "Pressed, hover, shadow, and brightness feedback on tactile controls."
+      },
+      {
+        "name": "progress-fill",
+        "value": "240ms ease",
+        "purpose": "A restrained transform-only update between questions."
+      },
+      {
+        "name": "pixel-reveal",
+        "value": "260ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The short zoom reset that reveals concealed artwork after an answer."
+      },
+      {
+        "name": "trainer-turn",
+        "value": "160ms ease-in / 160ms ease-out",
+        "purpose": "A short two-stage turn between the accessible Trainer Card faces."
+      },
+      {
+        "name": "trainer-reveal",
+        "value": "520ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The one-time first-visit Trainer Card reveal."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone-width",
+        "value": "36rem"
+      },
+      {
+        "name": "trainer-compact-width",
+        "value": "42rem"
+      },
+      {
+        "name": "wide-layout-width",
+        "value": "60rem"
+      },
+      {
+        "name": "compact-phone-height",
+        "value": "50rem"
+      },
+      {
+        "name": "short-wide-height",
+        "value": "43rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The default compact, physical game action.",
+      "html": "<button class=\"ds-button ds-button-primary\">Start training</button>",
+      "css": ".ds-button { min-height: 2.8rem; padding: 0.62rem 1.1rem; border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-button-primary { color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); } .ds-button:hover { filter: brightness(1.07); transform: translateY(-1px); } .ds-button:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; } .ds-button:active { box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.08rem 0 var(--yellow, #eed23e), 0 0.12rem 0 var(--navy-shadow, #123f76); transform: translateY(0.22rem); }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "The cream secondary action with the same physical depth and geometry.",
+      "html": "<button class=\"ds-button ds-button-quiet\">Settings</button>",
+      "css": ".ds-button { min-height: 2.8rem; padding: 0.62rem 1.1rem; color: var(--navy, #083b7e); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: inset 0 0.1rem 0 #fff, inset 0 -0.14rem 0 rgba(8, 59, 126, 0.1), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-button:hover { filter: brightness(1.03); transform: translateY(-1px); } .ds-button:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; } .ds-button:active { box-shadow: inset 0 0.1rem 0 #fff, 0 0.08rem 0 var(--yellow, #eed23e), 0 0.12rem 0 var(--navy-shadow, #123f76); transform: translateY(0.22rem); }"
+    },
+    {
+      "name": "Daily Challenge Action",
+      "kind": "button",
+      "refersTo": "daily-action",
+      "description": "The landing screen's dominant action, with one title and an optional compact detail line.",
+      "html": "<button class=\"ds-daily\"><strong>Daily Challenge</strong></button>",
+      "css": ".ds-daily { display: flex; min-width: 18rem; min-height: 4.5rem; padding: 0.4rem 0.8rem; flex-direction: column; align-items: center; justify-content: center; gap: 0.18rem; color: var(--paper, #fffbea); background: var(--blue, #0d6be6); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); cursor: pointer; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-daily strong { font-size: 1.75rem; font-weight: 800; line-height: 1.15; } .ds-daily:hover { filter: brightness(1.07); transform: translateY(-1px); } .ds-daily:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; } .ds-daily:active { box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.08rem 0 var(--yellow, #eed23e), 0 0.12rem 0 var(--navy-shadow, #123f76); transform: translateY(0.22rem); }"
+    },
+    {
+      "name": "Pokémon Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "The Champion question and Trainer Card autocomplete field.",
+      "html": "<label class=\"ds-field\"><span>Your answer</span><input placeholder=\"Type a Pokémon name\" /></label>",
+      "css": ".ds-field { display: grid; width: min(100%, 30rem); gap: 0.35rem; color: var(--navy, #083b7e); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); font-size: 0.82rem; font-weight: 800; } .ds-field input { width: 100%; min-height: 3rem; padding: 0.65rem 0.8rem; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: 0 0.2rem 0 var(--yellow, #eed23e); font: inherit; font-size: 1rem; font-weight: 700; caret-color: var(--blue, #0d6be6); } .ds-field input::placeholder { color: var(--muted, #446078); opacity: 1; } .ds-field input:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; }"
+    },
+    {
+      "name": "Question Type Tile",
+      "kind": "chip",
+      "refersTo": "selection-tile-selected",
+      "description": "A full-hit-area multi-select tile with explicit native checkbox semantics.",
+      "html": "<label class=\"ds-tile\"><input type=\"checkbox\" checked /><span class=\"ds-tile-surface\"><span class=\"ds-tile-check\">✓</span><strong>Silhouette match</strong></span></label>",
+      "css": ".ds-tile { position: relative; display: block; min-width: 13rem; color: var(--primary-text, #e8fcff); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); cursor: pointer; } .ds-tile input { position: absolute; width: 1px; height: 1px; opacity: 0; } .ds-tile-surface { display: grid; min-height: 3.15rem; padding: 0.55rem 2.55rem 0.55rem 0.65rem; align-items: center; background: var(--blue, #0d6be6); border: 2px solid var(--navy, #083b7e); border-radius: 0.38rem; box-shadow: 0 0.16rem 0 var(--yellow, #eed23e), 0 0.28rem 0 var(--navy-shadow, #123f76); grid-template-columns: 1rem minmax(0, 1fr); gap: 0.5rem; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-tile-check { display: grid; width: 1rem; height: 1rem; border: 2px solid currentColor; border-radius: 0.2rem; color: var(--yellow, #eed23e); font-size: 0.72rem; line-height: 1; place-items: center; } .ds-tile strong { font-size: 0.88rem; font-weight: 800; line-height: 1.15; } .ds-tile:hover .ds-tile-surface { filter: brightness(1.03); } .ds-tile input:focus-visible + .ds-tile-surface { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.16rem; } .ds-tile:active .ds-tile-surface { box-shadow: 0 0.08rem 0 var(--navy-shadow, #123f76); transform: translateY(0.12rem); }"
+    },
+    {
+      "name": "Question Surface",
+      "kind": "card",
+      "refersTo": "game-panel",
+      "description": "The single warm reading and interaction surface used during a round.",
+      "html": "<section class=\"ds-game-panel\"><div class=\"ds-topline\"><span>001 / 010</span><span class=\"ds-timer\">00:00:08</span></div><h2>Pokédex scan</h2><p>Who is this Pokémon?</p></section>",
+      "css": ".ds-game-panel { display: grid; width: min(32rem, 94vw); padding: clamp(1rem, 2.4vw, 1.5rem); justify-items: center; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: 0 0.28rem 0 var(--yellow, #eed23e), 0 0.62rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); } .ds-topline { display: flex; width: 100%; align-items: center; justify-content: space-between; color: var(--navy, #083b7e); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em; } .ds-timer { padding: 0.35rem 0.58rem; color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); border: 2px solid var(--navy, #083b7e); border-radius: 0.3rem; box-shadow: 0 0.16rem 0 var(--yellow, #eed23e); } .ds-game-panel h2 { margin: 0.85rem 0 0; color: var(--navy, #083b7e); font-size: clamp(1.65rem, 4.5vw, 2.3rem); font-weight: 800; line-height: 1.05; } .ds-game-panel p { margin: 0.8rem 0; font-weight: 650; line-height: 1.45; }"
+    },
+    {
+      "name": "Pokémon Answer",
+      "kind": "card",
+      "refersTo": "answer-pokemon",
+      "description": "A compact sprite field paired with a cobalt Pokédex nameplate.",
+      "html": "<button class=\"ds-answer\"><kbd>1</kbd><span class=\"ds-sprite\">025</span><span class=\"ds-nameplate\"><small>No. 0025</small><strong>Pikachu</strong></span></button>",
+      "css": ".ds-answer { position: relative; display: grid; min-width: 16rem; min-height: 6.4rem; padding: 0; overflow: hidden; color: var(--navy, #083b7e); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); grid-template-columns: 5.5rem minmax(0, 1fr); cursor: pointer; } .ds-answer kbd { position: absolute; z-index: 1; top: 0.42rem; left: 0.42rem; display: grid; width: 1.45rem; height: 1.45rem; color: var(--navy, #083b7e); background: rgba(255, 251, 234, 0.92); border: 1px solid currentColor; border-radius: 0.2rem; font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; place-items: center; } .ds-sprite { display: grid; align-self: stretch; color: var(--muted, #446078); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 1.2rem; font-weight: 800; place-items: center; } .ds-nameplate { display: grid; min-width: 0; padding: 0.75rem; align-content: center; color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); border-left: 2px solid var(--navy, #083b7e); text-align: left; } .ds-nameplate small { font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em; opacity: 0.78; } .ds-nameplate strong { font-size: 1.08rem; line-height: 1.08; text-shadow: 0.08rem 0.08rem 0 var(--navy, #083b7e); } .ds-answer:hover { filter: brightness(1.03); transform: translateY(-1px); } .ds-answer:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; }"
+    },
+    {
+      "name": "Progress and Timer",
+      "kind": "custom",
+      "refersTo": "progress-track",
+      "description": "A compact numeric label, slim progress track, and standalone timer without a surrounding HUD.",
+      "html": "<div class=\"ds-progress\"><strong>004 / 010</strong><span class=\"ds-track\"><i></i></span><time>00:00:33</time></div>",
+      "css": ".ds-progress { display: flex; min-width: 20rem; align-items: center; gap: 0.75rem; color: var(--navy, #083b7e); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em; } .ds-progress strong { white-space: nowrap; } .ds-track { height: 0.65rem; flex: 1; overflow: hidden; background: var(--sky, #b7e1fa); border: 2px solid var(--navy, #083b7e); border-radius: 0.2rem; } .ds-track i { display: block; width: 40%; height: 100%; background: var(--yellow, #eed23e); border-right: 2px solid var(--navy, #083b7e); } .ds-progress time { padding: 0.35rem 0.58rem; color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); border: 2px solid var(--navy, #083b7e); border-radius: 0.3rem; box-shadow: 0 0.16rem 0 var(--yellow, #eed23e); white-space: nowrap; }"
+    },
+    {
+      "name": "Trainer Card",
+      "kind": "card",
+      "refersTo": "trainer-card",
+      "description": "The 3:2 local profile card with a player-selected accent and layered game-object depth.",
+      "html": "<article class=\"ds-trainer\"><header><span>Quizmon League</span><strong>ID No. 002531</strong></header><div><div class=\"ds-portrait\">025</div><section><h2>Trainer</h2><p>Ace Trainer</p><dl><div><dt>Partner</dt><dd>Pikachu · No. 0025</dd></div><div><dt>Joined</dt><dd>Sep 2026</dd></div></dl></section></div><footer>QUIZMON.RAVEH.DEV</footer></article>",
+      "css": ".ds-trainer { --ds-accent: var(--blue, #0d6be6); display: grid; width: min(34rem, 94vw); aspect-ratio: 3 / 2; overflow: hidden; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 4px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: inset 0 0 0 0.35rem var(--cream, #feec99), 0 0.3rem 0 var(--yellow, #eed23e), 0 0.52rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); grid-template-rows: auto 1fr auto; } .ds-trainer header { display: flex; min-height: 3.4rem; padding: 0.65rem 1rem; align-items: center; justify-content: space-between; color: var(--paper, #fffbea); background: var(--ds-accent); border-bottom: 4px solid var(--navy, #083b7e); } .ds-trainer header span { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; } .ds-trainer header strong, .ds-trainer dd, .ds-trainer footer { font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; } .ds-trainer > div { display: grid; padding: 1rem; grid-template-columns: 8rem 1fr; align-items: center; gap: 1rem; } .ds-portrait { display: grid; aspect-ratio: 1; color: var(--navy, #083b7e); background: var(--cream, #feec99); border: 3px solid var(--navy, #083b7e); border-radius: 0.75rem; font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 1.5rem; font-weight: 800; place-items: center; } .ds-trainer h2 { margin: 0; color: var(--navy, #083b7e); font-size: 2rem; line-height: 1; } .ds-trainer p { margin: 0.3rem 0 0.8rem; color: var(--ds-accent); font-size: 0.82rem; font-weight: 800; } .ds-trainer dl { display: grid; margin: 0; gap: 0.45rem; } .ds-trainer dl > div { padding-bottom: 0.35rem; border-bottom: 2px solid color-mix(in srgb, var(--navy, #083b7e) 18%, transparent); } .ds-trainer dt { color: var(--muted, #446078); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; } .ds-trainer dd { margin: 0.1rem 0 0; color: var(--navy, #083b7e); } .ds-trainer footer { padding: 0.4rem 1rem 0.65rem; color: var(--navy, #083b7e); text-align: right; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Logo Echo",
+    "overview": "Quizmon's Logo Echo world starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.\n\nThe landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the Settings, Trainer Card, and Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.\n\nThe result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.",
+    "keyCharacteristics": [
+      "Exact wordmark and crisp landscape remain the primary identity.",
+      "Cream, cobalt, navy, and yellow controls echo the wordmark in restrained doses.",
+      "Dense game information stays clear through Gabarito and small Martian Mono numeric labels.",
+      "Hard-edged depth makes controls feel physical without adding ornamental framing.",
+      "One short transform-and-opacity entrance opens a round and its results."
+    ],
+    "rules": [
+      {
+        "name": "The Logo-First Rule",
+        "body": "Cobalt and yellow echo the wordmark. They do not compete with it by filling large decorative regions.",
+        "section": "colors"
+      },
+      {
+        "name": "The State-Color Rule",
+        "body": "Green and rose communicate answer or error state only. Do not use them as general accents.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Pixel-Font Rule",
+        "body": "Do not use bitmap or novelty pixel fonts. Pixel character comes from the landscape, not from reduced text legibility.",
+        "section": "typography"
+      },
+      {
+        "name": "The Wordmark-Is-Art Rule",
+        "body": "Render the approved wordmark asset. Never recreate or approximate it with live type.",
+        "section": "typography"
+      },
+      {
+        "name": "The Open-Landing Rule",
+        "body": "Do not place the wordmark and landing actions inside a full-page card or simulated device frame.",
+        "section": "layout"
+      },
+      {
+        "name": "The Modest-Hard-Shadow Rule",
+        "body": "Keep depth short, opaque, and downward. Do not replace it with diffuse elevation or a glow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Compact-Corner Rule",
+        "body": "Corners should feel friendly but controlled. Avoid pills, circles for rectangular actions, and broad soft cards.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do preserve the exact wordmark and crisp pixel-art landscape.",
+      "Do keep landing controls small and let open scenery dominate the first viewport.",
+      "Do use Gabarito for interface text and reserve Martian Mono for compact data and scores.",
+      "Do use classic front-facing pixel sprites as compact gameplay information and preserve their hard edges when scaled.",
+      "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
+      "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",
+      "Do prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.",
+      "Do keep the three concise footer credits linked and preserve the visually hidden trademark sentence."
+    ],
+    "donts": [
+      "Don't build a giant HUD, simulated handheld frame, or full-page landing card.",
+      "Don't use glass panels, blurred scenery, gradients, or diffuse floating-card shadows.",
+      "Don't introduce pixel-font overkill, oversized uppercase labels, or decorative game glyphs.",
+      "Don't force Pokémon sprites onto type, move, or ability choices that do not represent Pokémon.",
+      "Don't add navigation, marketing copy, characters, badges, ornamental frames, or ball symbols beyond the functional Daily Combo medallion to fill open space.",
+      "Don't redesign, redraw, crop, blur, or place the wordmark inside another container.",
+      "Don't let decoration obscure answers, progress, score, modifiers, or keyboard focus."
+    ]
+  }
+}
