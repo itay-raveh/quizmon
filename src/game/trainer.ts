@@ -17,13 +17,16 @@ export const trainerSpecialtyLabels = {
 export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
 export type TrainerRank = 'Youngster' | 'Ace' | 'Veteran' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
-export type TrainerCardFace = 'front' | 'records';
+export type TrainerCardFace = 'front' | 'badges';
 export type TrainerBadgeId =
-  | 'perfect-form'
   | 'many-paths'
+  | 'pokedex-trail'
   | 'world-tour'
-  | 'champions-instinct'
-  | 'daily-resolve';
+  | 'true-calling'
+  | 'quick-attack'
+  | 'perfect-form'
+  | 'daily-resolve'
+  | 'champions-instinct';
 
 export interface TrainerBadge {
   current: number;
@@ -44,7 +47,7 @@ interface BadgeDefinition {
   goal: number;
   id: TrainerBadgeId;
   label: string;
-  requirement: (goal: number) => string;
+  requirement: string;
 }
 
 const makeBadge = (definition: BadgeDefinition): TrainerBadge => ({
@@ -53,7 +56,7 @@ const makeBadge = (definition: BadgeDefinition): TrainerBadge => ({
   goal: definition.goal,
   id: definition.id,
   label: definition.label,
-  requirement: definition.requirement(definition.goal),
+  requirement: definition.requirement,
 });
 
 export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] => {
@@ -63,45 +66,70 @@ export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] => {
   const generationsMastered = Object.values(stats.correctGenerations).filter(
     (correct) => correct > 0,
   ).length;
+  const specialtyMastery = Math.max(
+    0,
+    ...(Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).map(
+      (category) => stats.correctCategories[category] ?? 0,
+    ),
+  );
 
   return [
-    makeBadge({
-      current: stats.masteryRounds,
-      goal: 3,
-      id: 'perfect-form',
-      label: 'Perfect Form',
-      requirement: (goal) =>
-        `Finish ${goal} perfect Standard or Long Training rounds`,
-    }),
     makeBadge({
       current: questionTypesMastered,
       goal: 10,
       id: 'many-paths',
       label: 'Many Paths',
-      requirement: (goal) =>
-        `Answer correctly in ${goal} different question formats`,
+      requirement: 'Answer correctly in 10 different question formats',
+    }),
+    makeBadge({
+      current: stats.correctPokemon.length,
+      goal: 151,
+      id: 'pokedex-trail',
+      label: 'Pokédex Trail',
+      requirement: 'Answer correctly about 151 different Pokémon',
     }),
     makeBadge({
       current: generationsMastered,
       goal: 9,
       id: 'world-tour',
       label: 'World Tour',
-      requirement: (goal) =>
-        `Answer correctly across all ${goal} Pokémon generations`,
+      requirement: 'Answer correctly across all 9 Pokémon generations',
     }),
     makeBadge({
-      current: stats.championAnswersWithoutClues,
-      goal: 5,
-      id: 'champions-instinct',
-      label: "Champion's Instinct",
-      requirement: (goal) => `Solve ${goal} Champion questions without clues`,
+      current: specialtyMastery,
+      goal: 50,
+      id: 'true-calling',
+      label: 'True Calling',
+      requirement: 'Answer 50 questions correctly in one Trainer specialty',
+    }),
+    makeBadge({
+      current: Number(stats.quickAttackCompleted),
+      goal: 1,
+      id: 'quick-attack',
+      label: 'Quick Attack',
+      requirement:
+        'Finish Standard Training in under 60 seconds with at least 8 correct answers',
+    }),
+    makeBadge({
+      current: stats.masteryRounds,
+      goal: 3,
+      id: 'perfect-form',
+      label: 'Perfect Form',
+      requirement: 'Finish 3 perfect Standard or Long Training rounds',
     }),
     makeBadge({
       current: stats.bestDailyStreak,
       goal: 7,
       id: 'daily-resolve',
       label: 'Daily Resolve',
-      requirement: (goal) => `Reach a ${goal}-day Daily Combo`,
+      requirement: 'Reach a 7-day Daily Combo',
+    }),
+    makeBadge({
+      current: stats.championAnswersWithoutClues,
+      goal: 5,
+      id: 'champions-instinct',
+      label: "Champion's Instinct",
+      requirement: 'Solve 5 Champion questions without clues',
     }),
   ];
 };
@@ -114,14 +142,14 @@ export const getQualifiedTrainerSpecialties = (
 ): TrainerSpecialty[] =>
   (Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).filter(
     (category) =>
-      (stats.categories[category]?.correct ?? 0) >= TRAINER_SPECIALTY_GOAL,
+      (stats.correctCategories[category] ?? 0) >= TRAINER_SPECIALTY_GOAL,
   );
 
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
   const earnedBadges = getEarnedTrainerBadgeCount(stats);
-  if (earnedBadges === 5) return 'Champion';
-  if (earnedBadges >= 3) return 'Veteran';
-  if (earnedBadges >= 1) return 'Ace';
+  if (earnedBadges === 8) return 'Champion';
+  if (earnedBadges >= 5) return 'Veteran';
+  if (earnedBadges >= 2) return 'Ace';
   return 'Youngster';
 };
 

@@ -3,7 +3,7 @@ import type { TrainerCardFace } from '@/game/trainer';
 export const parseTrainerRoute = (search: string): TrainerCardFace | null => {
   const value = new URLSearchParams(search).get('trainer');
   if (value === 'front') return 'front';
-  if (value === 'back') return 'records';
+  if (value === 'back') return 'badges';
   return null;
 };
 

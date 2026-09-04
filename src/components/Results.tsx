@@ -146,7 +146,7 @@ export const Results = ({
         <GameButton
           className="trainer-card-update"
           tone="quiet"
-          onClick={() => onOpenTrainerCard('records')}
+          onClick={() => onOpenTrainerCard('badges')}
         >
           <TrainerBadgeMark earned id={primaryBadgeChange.id} />
           <span>
@@ -155,7 +155,7 @@ export const Results = ({
                 ? `${badgeChanges.length} League Badges earned`
                 : `${primaryBadgeChange.label} Badge earned`}
             </strong>
-            <small>See your new badge and next challenge</small>
+            <small>Open your League Badge Case</small>
           </span>
           <span aria-hidden="true">›</span>
         </GameButton>

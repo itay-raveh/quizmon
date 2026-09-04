@@ -12,6 +12,7 @@ const snapshot = {
       cluesUsed: 0,
       correct: true,
       generation: 'I' as const,
+      pokemonName: 'pikachu',
       points: 1_000,
       questionType: 'pokedex-scan' as const,
       responseMilliseconds: 2_500,

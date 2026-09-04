@@ -13,7 +13,7 @@ import {
 
 const RESULTS_KEY = 'quizmon.results.v2';
 const STREAK_VERSION = 1;
-const TRAINER_PROGRESS_VERSION = 1;
+const TRAINER_PROGRESS_VERSION = 2;
 const TRAINING_RECORD_VERSION = 2;
 const questionCategories: readonly QuestionCategory[] = [
   'ability',
@@ -27,19 +27,14 @@ const questionCategories: readonly QuestionCategory[] = [
   'type',
 ];
 
-interface CategoryProgress {
-  correct: number;
-  total: number;
-}
-
 interface TrainerProgress {
-  categories: Partial<Record<QuestionCategory, CategoryProgress>>;
   championAnswersWithoutClues: number;
+  correctCategories: Partial<Record<QuestionCategory, number>>;
   correctGenerations: Partial<Record<Generation, number>>;
+  correctPokemon: string[];
   correctQuestionTypes: Partial<Record<QuestionType, number>>;
-  gamesCompleted: number;
   masteryRounds: number;
-  perfectRounds: number;
+  quickAttackCompleted: boolean;
   version: number;
 }
 
@@ -57,24 +52,23 @@ interface SavedResults {
 
 export interface TrainerStats {
   bestDailyStreak: number;
-  categories: Partial<Record<QuestionCategory, CategoryProgress>>;
   championAnswersWithoutClues: number;
+  correctCategories: Partial<Record<QuestionCategory, number>>;
   correctGenerations: Partial<Record<Generation, number>>;
+  correctPokemon: string[];
   correctQuestionTypes: Partial<Record<QuestionType, number>>;
-  dailyChallengesCompleted: number;
-  gamesCompleted: number;
   masteryRounds: number;
-  perfectRounds: number;
+  quickAttackCompleted: boolean;
 }
 
 const emptyProgress = (): TrainerProgress => ({
-  categories: {},
   championAnswersWithoutClues: 0,
+  correctCategories: {},
   correctGenerations: {},
+  correctPokemon: [],
   correctQuestionTypes: {},
-  gamesCompleted: 0,
   masteryRounds: 0,
-  perfectRounds: 0,
+  quickAttackCompleted: false,
   version: TRAINER_PROGRESS_VERSION,
 });
 
@@ -118,21 +112,20 @@ const addResultToProgress = (
   progress: TrainerProgress,
   result: GameResult,
   mode: GameMode,
+  modifiers: Modifiers,
 ): TrainerProgress => {
-  const categories = { ...progress.categories };
+  const correctCategories = { ...progress.correctCategories };
   const correctGenerations = { ...progress.correctGenerations };
+  const correctPokemon = new Set(progress.correctPokemon);
   const correctQuestionTypes = { ...progress.correctQuestionTypes };
   let championAnswersWithoutClues = progress.championAnswersWithoutClues;
 
   for (const answer of result.answers) {
-    const current = categories[answer.category] ?? { correct: 0, total: 0 };
-    categories[answer.category] = {
-      correct: current.correct + Number(answer.correct),
-      total: current.total + 1,
-    };
-
     if (!answer.correct) continue;
 
+    correctCategories[answer.category] =
+      (correctCategories[answer.category] ?? 0) + 1;
+    correctPokemon.add(answer.pokemonName);
     correctGenerations[answer.generation] =
       (correctGenerations[answer.generation] ?? 0) + 1;
     if (answer.questionType === 'champion') {
@@ -146,17 +139,23 @@ const addResultToProgress = (
   const isPerfect = result.correctCount === result.questionCount;
 
   return {
-    categories,
     championAnswersWithoutClues,
+    correctCategories,
     correctGenerations,
+    correctPokemon: [...correctPokemon],
     correctQuestionTypes,
-    gamesCompleted: progress.gamesCompleted + 1,
     masteryRounds:
       progress.masteryRounds +
       Number(
         mode.kind === 'training' && result.questionCount >= 10 && isPerfect,
       ),
-    perfectRounds: progress.perfectRounds + Number(isPerfect),
+    quickAttackCompleted:
+      progress.quickAttackCompleted ||
+      (mode.kind === 'training' &&
+        modifiers.limit === 10 &&
+        result.questionCount === 10 &&
+        result.correctCount >= 8 &&
+        result.elapsedSeconds < 60),
     version: TRAINER_PROGRESS_VERSION,
   };
 };
@@ -182,50 +181,45 @@ const normalizeProgress = (
 ): TrainerProgress => {
   if (
     progress?.version !== TRAINER_PROGRESS_VERSION ||
-    typeof progress.gamesCompleted !== 'number' ||
-    !Number.isFinite(progress.gamesCompleted) ||
-    typeof progress.perfectRounds !== 'number' ||
-    !Number.isFinite(progress.perfectRounds) ||
-    !progress.categories ||
-    typeof progress.categories !== 'object'
+    !Array.isArray(progress.correctPokemon) ||
+    typeof progress.quickAttackCompleted !== 'boolean' ||
+    !progress.correctCategories ||
+    typeof progress.correctCategories !== 'object'
   ) {
     return emptyProgress();
   }
 
-  const categories = Object.fromEntries(
-    Object.entries(progress.categories).filter(
-      ([category, value]) =>
-        questionCategories.includes(category as QuestionCategory) &&
-        value &&
-        Number.isFinite(value.correct) &&
-        Number.isFinite(value.total) &&
-        value.correct >= 0 &&
-        value.total >= value.correct,
-    ),
-  ) as TrainerProgress['categories'];
-
   return {
-    categories,
     championAnswersWithoutClues:
       typeof progress.championAnswersWithoutClues === 'number' &&
       Number.isFinite(progress.championAnswersWithoutClues)
         ? Math.max(0, Math.trunc(progress.championAnswersWithoutClues))
         : 0,
+    correctCategories: normalizeCounts(
+      progress.correctCategories,
+      questionCategories,
+    ),
     correctGenerations: normalizeCounts(
       progress.correctGenerations,
       generations,
     ),
+    correctPokemon: [
+      ...new Set(
+        progress.correctPokemon.filter(
+          (name) => typeof name === 'string' && name.length > 0,
+        ),
+      ),
+    ],
     correctQuestionTypes: normalizeCounts(
       progress.correctQuestionTypes,
       questionTypes,
     ),
-    gamesCompleted: Math.max(0, Math.trunc(progress.gamesCompleted)),
     masteryRounds:
       typeof progress.masteryRounds === 'number' &&
       Number.isFinite(progress.masteryRounds)
         ? Math.max(0, Math.trunc(progress.masteryRounds))
         : 0,
-    perfectRounds: Math.max(0, Math.trunc(progress.perfectRounds)),
+    quickAttackCompleted: progress.quickAttackCompleted,
     version: TRAINER_PROGRESS_VERSION,
   };
 };
@@ -332,14 +326,13 @@ export const readTrainerStats = (): TrainerStats => {
   const results = readResults();
   return {
     bestDailyStreak: getLongestStreak(results.streak.creditedDates),
-    categories: results.progress.categories,
     championAnswersWithoutClues: results.progress.championAnswersWithoutClues,
+    correctCategories: results.progress.correctCategories,
     correctGenerations: results.progress.correctGenerations,
+    correctPokemon: results.progress.correctPokemon,
     correctQuestionTypes: results.progress.correctQuestionTypes,
-    dailyChallengesCompleted: Object.keys(results.daily).length,
-    gamesCompleted: results.progress.gamesCompleted,
     masteryRounds: results.progress.masteryRounds,
-    perfectRounds: results.progress.perfectRounds,
+    quickAttackCompleted: results.progress.quickAttackCompleted,
   };
 };
 
@@ -355,7 +348,12 @@ export const saveResult = (
       return { best: previous, isNewBest: false, isSaved: true };
     }
     results.daily[mode.date] = result;
-    results.progress = addResultToProgress(results.progress, result, mode);
+    results.progress = addResultToProgress(
+      results.progress,
+      result,
+      mode,
+      modifiers,
+    );
     if (
       mode.date === getUtcDate() &&
       !results.streak.creditedDates.includes(mode.date)
@@ -374,7 +372,12 @@ export const saveResult = (
   const key = getTrainingRecordKey(modifiers, result.questionCount);
   const previous = results.training[key];
   const isNewBest = !previous || isBetterResult(result, previous);
-  results.progress = addResultToProgress(results.progress, result, mode);
+  results.progress = addResultToProgress(
+    results.progress,
+    result,
+    mode,
+    modifiers,
+  );
   if (isNewBest) results.training[key] = result;
   const isSaved = writeResults(results);
   return {

@@ -18,14 +18,13 @@ const profile: TrainerProfile = {
 
 const stats: TrainerStats = {
   bestDailyStreak: 7,
-  categories: { type: { correct: 10, total: 11 } },
   championAnswersWithoutClues: 1,
+  correctCategories: { type: 10 },
   correctGenerations: { I: 2, II: 1, III: 1 },
+  correctPokemon: ['bulbasaur'],
   correctQuestionTypes: {},
-  dailyChallengesCompleted: 8,
-  gamesCompleted: 25,
   masteryRounds: 3,
-  perfectRounds: 3,
+  quickAttackCompleted: false,
 };
 
 describe('Trainer Card', () => {
@@ -52,13 +51,20 @@ describe('Trainer Card', () => {
   it('adds sourced pixel sparkles only to a Champion card', () => {
     const championStats: TrainerStats = {
       ...stats,
+      bestDailyStreak: 7,
+      correctCategories: { type: 50 },
       championAnswersWithoutClues: 5,
       correctGenerations: Object.fromEntries(
         generations.map((generation) => [generation, 1]),
       ),
+      correctPokemon: Array.from(
+        { length: 151 },
+        (_, index) => `pokemon-${index}`,
+      ),
       correctQuestionTypes: Object.fromEntries(
         questionTypes.slice(0, 10).map((questionType) => [questionType, 1]),
       ),
+      quickAttackCompleted: true,
     };
     const { container } = render(
       <TrainerCard
@@ -79,10 +85,12 @@ describe('Trainer Card', () => {
     );
   });
 
-  it('renders records and one-time League Badges on the back', () => {
+  it('renders an interactive eight-slot League Badge Case on the back', () => {
+    const onBadgeSelect = vi.fn();
     render(
       <TrainerCard
-        face="records"
+        face="badges"
+        onBadgeSelect={onBadgeSelect}
         partnerDexNumber={null}
         partnerSprite={null}
         profile={profile}
@@ -91,19 +99,22 @@ describe('Trainer Card', () => {
     );
 
     expect(
-      screen.getByRole('article', { name: 'Trainer Card records' }),
+      screen.getByRole('article', { name: 'Trainer Card badge case' }),
     ).toBeVisible();
-    expect(screen.getByText('Daily clears')).toBeVisible();
+    expect(screen.getByText('League Badge Case')).toBeVisible();
     expect(
       screen.getByRole('region', {
-        name: 'League badges: 2 of 5 earned',
+        name: 'League Badge Case: 2 of 8 earned',
       }),
     ).toBeVisible();
-    expect(
-      screen.getByRole('img', {
-        name: /Many Paths: Locked\. 0 of 10/,
-      }),
-    ).toBeVisible();
+    const badge = screen.getByRole('button', {
+      name: /Many Paths\. Locked, 0 of 10\. Open badge details/,
+    });
+    expect(badge).toBeVisible();
+    badge.click();
+    expect(onBadgeSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'many-paths' }),
+    );
     expect(
       screen.queryByRole('heading', { name: 'Leaf' }),
     ).not.toBeInTheDocument();

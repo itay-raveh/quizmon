@@ -153,6 +153,7 @@ export interface AnswerResult {
   cluesUsed: number;
   correct: boolean;
   generation: Generation;
+  pokemonName: string;
   points: number;
   questionType: QuestionType | 'champion';
   responseMilliseconds?: number;

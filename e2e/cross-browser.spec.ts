@@ -36,9 +36,9 @@ test(
     await expect(
       page.getByRole('article', { name: 'Trainer Card front' }),
     ).toBeVisible();
-    await page.getByRole('button', { name: 'View records' }).click();
+    await page.getByRole('button', { name: 'View badge case' }).click();
     await expect(
-      page.getByRole('article', { name: 'Trainer Card records' }),
+      page.getByRole('article', { name: 'Trainer Card badge case' }),
     ).toBeVisible();
   },
 );

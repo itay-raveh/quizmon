@@ -12,14 +12,13 @@ import { questionTypes } from '@/game/questions/registry';
 
 const stats = (overrides: Partial<TrainerStats> = {}): TrainerStats => ({
   bestDailyStreak: 0,
-  categories: {},
   championAnswersWithoutClues: 0,
+  correctCategories: {},
   correctGenerations: {},
+  correctPokemon: [],
   correctQuestionTypes: {},
-  dailyChallengesCompleted: 0,
-  gamesCompleted: 0,
   masteryRounds: 0,
-  perfectRounds: 0,
+  quickAttackCompleted: false,
   ...overrides,
 });
 
@@ -34,49 +33,103 @@ const masteredGenerations = (count: number) =>
   ) as TrainerStats['correctGenerations'];
 
 describe('Trainer Card progression', () => {
-  it('awards five distinct League Badges for meaningful accomplishments', () => {
+  it('awards eight distinct League Badges for meaningful accomplishments', () => {
     const badges = getTrainerBadges(
       stats({
         bestDailyStreak: 7,
+        correctCategories: { identity: 50 },
         championAnswersWithoutClues: 5,
         correctGenerations: masteredGenerations(9),
+        correctPokemon: Array.from(
+          { length: 151 },
+          (_, index) => `pokemon-${index}`,
+        ),
         correctQuestionTypes: masteredQuestionTypes(10),
         masteryRounds: 3,
+        quickAttackCompleted: true,
       }),
     );
 
-    expect(badges).toHaveLength(5);
+    expect(badges).toHaveLength(8);
     expect(badges.map(({ id }) => id)).toEqual([
-      'perfect-form',
       'many-paths',
+      'pokedex-trail',
       'world-tour',
-      'champions-instinct',
+      'true-calling',
+      'quick-attack',
+      'perfect-form',
       'daily-resolve',
+      'champions-instinct',
     ]);
     expect(badges.every(({ earned }) => earned)).toBe(true);
     expect(getEarnedTrainerBadgeCount(stats())).toBe(0);
   });
 
   it('derives canonical Trainer ranks and card finishes from earned badges', () => {
-    const ace = stats({ championAnswersWithoutClues: 5 });
-    const veteran = stats({
-      championAnswersWithoutClues: 5,
-      correctGenerations: masteredGenerations(9),
-      masteryRounds: 3,
+    const oneBadge = stats({
+      correctQuestionTypes: masteredQuestionTypes(10),
     });
-    const champion = stats({
-      bestDailyStreak: 7,
-      championAnswersWithoutClues: 5,
+    const ace = stats({
+      correctPokemon: Array.from(
+        { length: 151 },
+        (_, index) => `pokemon-${index}`,
+      ),
+      correctQuestionTypes: masteredQuestionTypes(10),
+    });
+    const fourBadges = stats({
+      correctCategories: { identity: 50 },
       correctGenerations: masteredGenerations(9),
+      correctPokemon: Array.from(
+        { length: 151 },
+        (_, index) => `pokemon-${index}`,
+      ),
+      correctQuestionTypes: masteredQuestionTypes(10),
+    });
+    const veteran = stats({
+      correctCategories: { identity: 50 },
+      correctGenerations: masteredGenerations(9),
+      correctPokemon: Array.from(
+        { length: 151 },
+        (_, index) => `pokemon-${index}`,
+      ),
       correctQuestionTypes: masteredQuestionTypes(10),
       masteryRounds: 3,
     });
+    const sevenBadges = stats({
+      bestDailyStreak: 7,
+      correctCategories: { identity: 50 },
+      correctGenerations: masteredGenerations(9),
+      correctPokemon: Array.from(
+        { length: 151 },
+        (_, index) => `pokemon-${index}`,
+      ),
+      correctQuestionTypes: masteredQuestionTypes(10),
+      masteryRounds: 3,
+      quickAttackCompleted: true,
+    });
+    const champion = stats({
+      bestDailyStreak: 7,
+      correctCategories: { identity: 50 },
+      championAnswersWithoutClues: 5,
+      correctGenerations: masteredGenerations(9),
+      correctPokemon: Array.from(
+        { length: 151 },
+        (_, index) => `pokemon-${index}`,
+      ),
+      correctQuestionTypes: masteredQuestionTypes(10),
+      masteryRounds: 3,
+      quickAttackCompleted: true,
+    });
 
     expect(getTrainerRank(stats())).toBe('Youngster');
+    expect(getTrainerRank(oneBadge)).toBe('Youngster');
     expect(getTrainerRank(ace)).toBe('Ace');
+    expect(getTrainerRank(fourBadges)).toBe('Ace');
     expect(getTrainerRank(veteran)).toBe('Veteran');
+    expect(getTrainerRank(sevenBadges)).toBe('Veteran');
     expect(getTrainerRank(champion)).toBe('Champion');
     expect(getCardFinish(getTrainerRank(stats()))).toBe('Classic');
+    expect(getCardFinish(getTrainerRank(oneBadge))).toBe('Classic');
     expect(getCardFinish(getTrainerRank(ace))).toBe('Bronze');
     expect(getCardFinish(getTrainerRank(veteran))).toBe('Silver');
     expect(getCardFinish(getTrainerRank(champion))).toBe('Gold');
@@ -101,9 +154,9 @@ describe('Trainer Card progression', () => {
     expect(
       getQualifiedTrainerSpecialties(
         stats({
-          categories: {
-            identity: { correct: 10, total: 12 },
-            type: { correct: 9, total: 10 },
+          correctCategories: {
+            identity: 10,
+            type: 9,
           },
         }),
       ),

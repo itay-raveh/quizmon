@@ -19,7 +19,7 @@ npm run dev
 
 ## Pokémon data
 
-Quizmon builds a versioned catalog from [PokéAPI](https://pokeapi.co/) and ships it as a hashed static asset. 
+Quizmon builds a versioned catalog from [PokéAPI](https://pokeapi.co/) and ships it as a hashed static asset.
 
 ```sh
 npm run data:update
