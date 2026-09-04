@@ -9,14 +9,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.28rem;
-  color: #1b3e40;
+  color: var(--ink);
   background: transparent;
   border: 0;
   font-size: var(--text-footer);
   font-weight: 700;
   line-height: 1.25;
   text-align: center;
-  white-space: nowrap;
+  flex-wrap: wrap;
   transform: translateY(0.36rem);
 }
 
@@ -25,7 +25,14 @@
 }
 
 .site-footer a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
   color: inherit;
+}
+
+.site-footer > span:not(.visually-hidden) {
+  white-space: nowrap;
 }
 
 @media (max-width: 60rem) {
@@ -46,9 +53,8 @@
   height: auto;
   padding: 0.4rem 0 max(0.55rem, env(safe-area-inset-bottom));
   justify-self: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 0.2rem;
-  white-space: nowrap;
   transform: none;
 }
 
@@ -206,14 +212,19 @@
     top: 60%;
     left: 5%;
     width: 90%;
-    height: 3.1rem;
+    min-height: 3.1rem;
     gap: 0.38rem;
-    grid-template-columns: auto repeat(2, minmax(0, 1fr));
+  }
+
+  .landing__actions .game-button {
+    min-height: 3.1rem;
   }
 
   .landing__actions .settings-button.game-button {
     width: 3.1rem;
     min-width: 3.1rem;
+    height: 3.1rem;
+    min-height: 3.1rem;
   }
 
   .landing__status {
@@ -245,7 +256,7 @@
   }
 
   .answers--pokemon {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
   }
 
   .share-targets {
@@ -301,11 +312,15 @@
   }
 
   .selection-grid--question-types {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
   }
 
   .selection-grid--generations {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .selection-grid--round-length {
+    grid-template-columns: repeat(auto-fit, minmax(min(5rem, 100%), 1fr));
   }
 
   .results__actions--training {
@@ -317,7 +332,7 @@
     left: 4%;
     width: 92%;
     height: auto;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 0.16rem;
     transform: none;
   }

@@ -220,7 +220,10 @@ const AppOverlays = ({
 );
 
 export const AppView = (props: AppViewProps) => (
-  <SoundProvider enabled={props.modifiers.soundEnabled}>
+  <SoundProvider
+    enabled={props.modifiers.soundEnabled}
+    prepareScoreCount={props.session.phase !== 'landing'}
+  >
     <div
       className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
     >

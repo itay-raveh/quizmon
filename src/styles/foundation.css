@@ -72,7 +72,7 @@
 html,
 body,
 #root {
-  min-width: 18rem;
+  min-width: 288px;
   min-height: 100%;
 }
 
@@ -125,8 +125,13 @@ input {
 .app {
   position: relative;
   isolation: isolate;
+  min-width: 0;
   min-height: 100svh;
   overflow-x: clip;
+}
+
+.app--landing main {
+  min-height: max(100svh, 32rem);
 }
 
 .app--questions,
@@ -164,8 +169,11 @@ input {
 main {
   position: relative;
   display: grid;
+  width: 100%;
+  min-width: 0;
   min-height: 100svh;
   padding: clamp(0.85rem, 2.5vw, 1.75rem);
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
 }
 
@@ -254,7 +262,7 @@ main {
 }
 
 .update-prompt .game-button {
-  min-height: 2.2rem;
+  min-height: 2.75rem;
   padding: 0.35rem 0.65rem;
   font-family: var(--font-interface);
   font-size: var(--text-small);

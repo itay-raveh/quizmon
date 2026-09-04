@@ -58,12 +58,19 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
     .getByRole('contentinfo')
     .evaluate((footer) => ({
       fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
-      lineTops: [...footer.children]
+      linkHeights: [...footer.querySelectorAll('a')].map(
+        (link) => link.getBoundingClientRect().height,
+      ),
+      lineCenters: [...footer.children]
         .filter((child) => !child.classList.contains('visually-hidden'))
-        .map((child) => Math.round(child.getBoundingClientRect().top)),
+        .map((child) => {
+          const bounds = child.getBoundingClientRect();
+          return Math.round(bounds.top + bounds.height / 2);
+        }),
     }));
   expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
-  expect(new Set(footerMetrics.lineTops).size).toBe(1);
+  expect(footerMetrics.linkHeights.every((height) => height >= 44)).toBe(true);
+  expect(new Set(footerMetrics.lineCenters).size).toBe(1);
 
   const structuredData: unknown = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ??

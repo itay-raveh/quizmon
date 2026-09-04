@@ -169,16 +169,17 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
   await page.setViewportSize({ width: 591, height: 844 });
   await expect(page.locator('.daily-action')).toHaveCSS('width', '288px');
 
-  const footerLines = await page
-    .locator('.site-footer')
-    .evaluate(
-      (footer) =>
-        new Set(
-          [...footer.children]
-            .filter((child) => !child.classList.contains('visually-hidden'))
-            .map((child) => Math.round(child.getBoundingClientRect().top)),
-        ).size,
-    );
+  const footerLines = await page.locator('.site-footer').evaluate(
+    (footer) =>
+      new Set(
+        [...footer.children]
+          .filter((child) => !child.classList.contains('visually-hidden'))
+          .map((child) => {
+            const bounds = child.getBoundingClientRect();
+            return Math.round(bounds.top + bounds.height / 2);
+          }),
+      ).size,
+  );
   expect(footerLines).toBe(1);
 });
 

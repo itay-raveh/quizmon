@@ -35,6 +35,7 @@
   margin-bottom: 0.75rem;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -333,23 +334,32 @@
 .question-type-tile__help {
   position: absolute;
   z-index: 1;
-  top: 0.62rem;
-  right: 0.55rem;
+  top: 0.2rem;
+  right: 0.08rem;
   display: grid;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   color: var(--navy);
-  background: var(--paper);
-  border: 2px solid currentColor;
-  border-radius: 0.3rem;
+  background: transparent;
+  border: 0;
   font: inherit;
   font-weight: 800;
   cursor: help;
   place-items: center;
 }
 
-.question-type-tile--selected .question-type-tile__help {
+.question-type-tile__help > span {
+  display: grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  background: var(--paper);
+  border: 2px solid currentColor;
+  border-radius: 0.3rem;
+  place-items: center;
+}
+
+.question-type-tile--selected .question-type-tile__help > span {
   color: var(--primary-text);
   background: color-mix(in srgb, var(--navy) 18%, transparent);
 }
@@ -389,11 +399,11 @@
 
 .question-type-help__close {
   position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
+  top: 0.25rem;
+  right: 0.25rem;
   display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   color: var(--navy);
   background: transparent;
@@ -495,6 +505,7 @@
   display: flex;
   padding: 0.85rem 1.2rem 1rem;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 0.65rem;
   background: var(--cream);
   border-top: 2px solid var(--navy);

@@ -172,8 +172,8 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   expect(mobileControlMetrics.dialogWidth).toBe(320);
   expect(mobileControlMetrics.closeHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.closeWidth).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.helpHeight).toBeGreaterThanOrEqual(24);
-  expect(mobileControlMetrics.helpWidth).toBeGreaterThanOrEqual(24);
+  expect(mobileControlMetrics.helpHeight).toBeGreaterThanOrEqual(44);
+  expect(mobileControlMetrics.helpWidth).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.roundLengthHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.selectionToggleHeight).toBeGreaterThanOrEqual(44);
   await dialog.getByRole('button', { name: 'Cancel' }).click();
@@ -184,11 +184,14 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
       clientWidth: footer.clientWidth,
       fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
       scrollWidth: footer.scrollWidth,
-      childTops: [...footer.children]
+      childCenters: [...footer.children]
         .filter((child) => !child.classList.contains('visually-hidden'))
-        .map((child) => Math.round(child.getBoundingClientRect().top)),
+        .map((child) => {
+          const bounds = child.getBoundingClientRect();
+          return Math.round(bounds.top + bounds.height / 2);
+        }),
     }));
-  expect(new Set(footerMetrics.childTops).size).toBe(1);
+  expect(new Set(footerMetrics.childCenters).size).toBe(1);
   expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
   expect(footerMetrics.scrollWidth).toBeLessThanOrEqual(
     footerMetrics.clientWidth,
