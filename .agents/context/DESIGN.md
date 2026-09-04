@@ -318,7 +318,7 @@ Dialogs use one cream header and a paper body. Settings keeps a cream action foo
 
 Serve the wordmark and landscape through AVIF and WebP sources, with the checked-in provenance-bearing PNG plates as fallbacks. Keep the wordmark proportions and the landscape's crisp pixel edges. Use cover cropping for the background without blur, gradients, overlays, or added scenery.
 
-The visible footer remains unboxed and comp-faithful: “Wordmark made with TextStudio · Data from PokéAPI · Open source on GitHub”. Each named source is linked. Whenever the artwork-aligned slot cannot hold that line, it uses the precise compact wording “Logo: TextStudio · Data: PokéAPI · Code: GitHub” so every source has a clear prefix while the 14px metadata stays readable and on one line. It aligns to the landscape artwork on the landing screen and moves into normal document flow below questions and results so it never covers gameplay. Keep the Nintendo trademark sentence visually hidden and noninteractive.
+The visible footer remains unboxed and comp-faithful. It uses two balanced credit lines: “Wordmark made with TextStudio · Custom art: @beresteyskaya” and “Data from PokéAPI · Open source on GitHub”. Each named source is linked. Compact layouts shorten the labels to “Logo”, “Art”, “Data”, and “Code” while preserving the same two creative and technical groups. The 14px metadata stays readable, each line remains internally aligned, and the footer never relies on uncontrolled wrapping. It sits at the bottom of the landscape on the landing screen and moves into normal document flow below questions and results so it never covers gameplay. Keep the Nintendo trademark sentence visually hidden and noninteractive.
 
 ### Motion
 
@@ -335,7 +335,7 @@ The first question and the result surface use one `180ms` ease-out entrance from
 - **Do** give buttons a physical pressed state through synchronized translation and compressed lower shadows.
 - **Do** animate the start and finish of a round, keep its question surface stable, and honor reduced motion.
 - **Do** prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.
-- **Do** keep the three concise footer credits linked and preserve the visually hidden trademark sentence.
+- **Do** keep the four concise footer credits linked in creative and technical groups, and preserve the visually hidden trademark sentence.
 
 ### Don't:
 

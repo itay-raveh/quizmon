@@ -184,14 +184,17 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
       clientWidth: footer.clientWidth,
       fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
       scrollWidth: footer.scrollWidth,
-      childCenters: [...footer.children]
-        .filter((child) => !child.classList.contains('visually-hidden'))
-        .map((child) => {
-          const bounds = child.getBoundingClientRect();
-          return Math.round(bounds.top + bounds.height / 2);
-        }),
+      groupLineCenters: [...footer.querySelectorAll('.site-footer__group')].map(
+        (group) =>
+          new Set(
+            [...group.children].map((child) => {
+              const bounds = child.getBoundingClientRect();
+              return Math.round(bounds.top + bounds.height / 2);
+            }),
+          ).size,
+      ),
     }));
-  expect(new Set(footerMetrics.childCenters).size).toBe(1);
+  expect(footerMetrics.groupLineCenters).toEqual([1, 1]);
   expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
   expect(footerMetrics.scrollWidth).toBeLessThanOrEqual(
     footerMetrics.clientWidth,
@@ -199,14 +202,18 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   const renderedFooterText = await page
     .getByRole('contentinfo')
     .evaluate((footer) =>
-      [...footer.children]
-        .filter((child) => !child.classList.contains('visually-hidden'))
-        .map((child) => (child as HTMLElement).innerText.trim())
+      [...footer.querySelectorAll('.site-footer__group')]
+        .map((group) =>
+          (group as HTMLElement).innerText.replace(/\s+/g, ' ').trim(),
+        )
         .join(' '),
     );
   expect(renderedFooterText).toBe(
-    'Logo: TextStudio · Data: PokéAPI · Code: GitHub',
+    'Logo: TextStudio · Custom art: @beresteyskaya Data: PokéAPI · Code: GitHub',
   );
+  await expect(
+    page.getByRole('contentinfo').getByRole('link', { name: '@beresteyskaya' }),
+  ).toHaveAttribute('href', 'https://www.fiverr.com/beresteyskaya');
   await expect(
     page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' }),
   ).toHaveAttribute('href', 'https://github.com/itay-raveh/quizmon');
