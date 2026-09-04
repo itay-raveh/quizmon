@@ -128,11 +128,6 @@
     font-size: var(--text-compact-control);
   }
 
-  .landing__actions {
-    left: calc(50% - 12rem);
-    width: 24rem;
-  }
-
   .site-footer {
     top: 91%;
     left: 5%;

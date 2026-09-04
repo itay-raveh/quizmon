@@ -163,9 +163,9 @@
 .landing__actions {
   position: absolute;
   top: var(--r-modifiers-y);
-  left: var(--r-daily-action-x);
+  left: calc(50% - 12rem);
   display: grid;
-  width: var(--r-daily-action-w);
+  width: 24rem;
   height: 3.25rem;
   grid-template-columns: auto repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
