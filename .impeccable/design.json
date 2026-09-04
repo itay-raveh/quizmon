@@ -280,7 +280,7 @@
         "role": "neutral",
         "displayName": "Field Footer Ink",
         "canonical": "#1b3e40",
-        "description": "The small unboxed credit line over the landscape.",
+        "description": "The compact unboxed credit ledger over the landscape.",
         "tonalRamp": [
           "oklch(15% 0.041 200.4)",
           "oklch(25% 0.041 200.4)",
@@ -622,7 +622,7 @@
       "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
       "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",
       "Do prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.",
-      "Do keep the three concise footer credits linked and preserve the visually hidden trademark sentence."
+      "Do keep the four concise footer credits linked in creative and technical groups, and preserve the visually hidden trademark sentence."
     ],
     "donts": [
       "Don't build a giant HUD, simulated handheld frame, or full-page landing card.",
