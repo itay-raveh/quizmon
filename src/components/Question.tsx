@@ -134,6 +134,18 @@ export const Question = ({
   return (
     <section className={className} aria-labelledby="question-title">
       <div className="question__topline">
+        <GameButton
+          aria-label="Leave game"
+          className="question__leave"
+          disabled={answered}
+          onClick={onNewGame}
+          title="Leave game"
+          tone="quiet"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </GameButton>
         <Progress current={number} total={total} />
         <span
           className="timer"
@@ -223,16 +235,7 @@ export const Question = ({
         >
           {number === total ? 'See results' : 'Next question'}
         </GameButton>
-      ) : (
-        <GameButton
-          className="new-game"
-          disabled={answered}
-          tone="quiet"
-          onClick={onNewGame}
-        >
-          Leave game
-        </GameButton>
-      )}
+      ) : null}
     </section>
   );
 };

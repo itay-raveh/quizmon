@@ -70,13 +70,14 @@
 }
 
 .question__topline {
-  display: flex;
+  display: grid;
   width: 100%;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  flex-wrap: wrap;
   gap: 1rem;
 }
 
+.question__leave.game-button,
 .settings-button.game-button {
   display: grid;
   width: 2.8rem;
@@ -87,6 +88,7 @@
   place-items: center;
 }
 
+.question__leave svg,
 .settings-button svg {
   width: 1.45rem;
   height: 1.45rem;
@@ -94,6 +96,10 @@
   stroke: currentColor;
   stroke-linecap: round;
   stroke-width: 2;
+}
+
+.question__leave svg {
+  stroke-width: 2.4;
 }
 
 .progress {
@@ -711,9 +717,16 @@
 }
 
 @container (max-width: 12rem) {
-  .question__topline .progress {
-    flex-basis: 8rem;
+  .question .question__topline > .progress {
+    grid-column: 1 / -1;
+    grid-row: 2;
     flex-wrap: wrap;
+  }
+
+  .question .question__topline > .timer {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
   }
 
   .question__topline .progress__track {
