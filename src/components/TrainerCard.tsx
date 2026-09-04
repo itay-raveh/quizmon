@@ -4,12 +4,15 @@ import { formatPokemonName } from '@/game/format';
 import type { TrainerStats } from '@/game/storage';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import {
+  formatTrainerStampTier,
   getCardFinish,
+  getEarnedTrainerTierCount,
   getTrainerRank,
   getTrainerStamps,
   trainerCategoryLabels,
   type TrainerCardFace,
 } from '@/game/trainer';
+import { TrainerStampMark } from './TrainerStampMark';
 
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
@@ -31,7 +34,7 @@ export const TrainerCard = ({
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
   const stamps = getTrainerStamps(stats);
-  const earnedStampCount = stamps.filter(({ earned }) => earned).length;
+  const earnedTierCount = getEarnedTrainerTierCount(stats);
   const trainerId = profile.cardNumber.replace(/^QZ-/, '');
   const partnerName = profile.partnerPokemon
     ? formatPokemonName(profile.partnerPokemon)
@@ -128,18 +131,17 @@ export const TrainerCard = ({
           </section>
           <section
             className="trainer-card__stamps"
-            aria-label={`Trainer stamps: ${earnedStampCount} of ${stamps.length} earned`}
+            aria-label={`League stamps: ${earnedTierCount} of 15 tiers earned`}
           >
             {stamps.map((stamp) => (
               <span
-                aria-label={`${stamp.label}: ${stamp.earned ? 'earned' : `locked, ${Math.min(stamp.current, stamp.goal)} of ${stamp.goal}`}. ${stamp.requirement}.`}
-                className={`trainer-stamp trainer-stamp--${stamp.earned ? 'earned' : 'locked'}`}
+                aria-label={`${stamp.label}: ${formatTrainerStampTier(stamp.tier)}. ${stamp.mastered ? 'Mastered.' : `${Math.min(stamp.current, stamp.goal)} of ${stamp.goal}. ${stamp.requirement}.`}`}
+                className={`trainer-stamp trainer-stamp--tier-${stamp.tier}`}
                 key={stamp.id}
                 role="img"
                 title={`${stamp.label}: ${stamp.requirement}`}
               >
-                <strong aria-hidden="true">{stamp.symbol}</strong>
-                <small aria-hidden="true">{stamp.label}</small>
+                <TrainerStampMark id={stamp.id} tier={stamp.tier} />
               </span>
             ))}
           </section>

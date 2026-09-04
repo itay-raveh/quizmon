@@ -132,12 +132,14 @@ export interface QuestionData {
   category: QuestionCategory;
   clues?: string[];
   concealOptionLabels?: boolean;
+  generation: Generation;
   id: string;
   media: QuestionMedia;
   options: string[];
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   prompt: QuestionPrompt;
+  questionType: QuestionType | 'champion';
   searchOptions?: string[];
   title?: string;
 }
@@ -146,8 +148,11 @@ export type GameMode = { kind: 'training' } | { kind: 'daily'; date: string };
 
 export interface AnswerResult {
   category: QuestionCategory;
+  cluesUsed: number;
   correct: boolean;
+  generation: Generation;
   points: number;
+  questionType: QuestionType | 'champion';
   responseMilliseconds?: number;
   speedBonus?: number;
 }

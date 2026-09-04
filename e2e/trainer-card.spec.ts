@@ -132,44 +132,33 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
     name: 'Trainer Card records',
   });
   await expect(page.getByRole('heading', { name: 'Stamp case' })).toBeVisible();
-  await expect(page.getByText('1 / 5 earned')).toBeVisible();
+  await expect(page.getByText('0 / 15 tiers')).toBeVisible();
   await expect(
-    recordsCard.getByRole('img', { name: /Well Rounded: locked/ }),
+    recordsCard.getByRole('img', { name: /Many Paths: Unmarked/ }),
   ).toBeVisible();
   await page.setViewportSize({ width: 360, height: 800 });
   const mobileRecordsBounds = await recordsCard.boundingBox();
-  const firstCatchBounds = await recordsCard
-    .getByText('First Catch')
-    .evaluate((label) => {
-      const cardBounds = label
+  const firstStampBounds = await recordsCard
+    .getByRole('img', { name: /Perfect Form/ })
+    .evaluate((stamp) => {
+      const cardBounds = stamp
         .closest('.trainer-card')
         ?.getBoundingClientRect();
-      const labelBounds = label.getBoundingClientRect();
-      const stampBounds = label
-        .closest('.trainer-stamp')
-        ?.getBoundingClientRect();
-      if (!cardBounds || !stampBounds) {
+      const stampBounds = stamp.getBoundingClientRect();
+      if (!cardBounds) {
         throw new Error('Trainer Card stamp bounds are unavailable');
       }
       return {
-        bottom: labelBounds.bottom,
         cardBottom: cardBounds.bottom,
         stampBottom: stampBounds.bottom,
         stampTop: stampBounds.top,
-        top: labelBounds.top,
       };
     });
-  expect(firstCatchBounds.top).toBeGreaterThanOrEqual(
-    firstCatchBounds.stampTop,
-  );
-  expect(firstCatchBounds.bottom).toBeLessThanOrEqual(
-    firstCatchBounds.stampBottom,
-  );
-  expect(firstCatchBounds.cardBottom - firstCatchBounds.bottom).toBeGreaterThan(
-    4,
-  );
+  expect(
+    firstStampBounds.cardBottom - firstStampBounds.stampBottom,
+  ).toBeGreaterThan(4);
   const mobileStampTops = await recordsCard
-    .locator('.trainer-stamp > strong')
+    .locator('.trainer-stamp > .trainer-stamp-mark')
     .evaluateAll((stamps) =>
       stamps.map((stamp) => stamp.getBoundingClientRect().top),
     );

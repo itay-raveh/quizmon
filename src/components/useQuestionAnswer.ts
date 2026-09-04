@@ -83,8 +83,11 @@ export const useQuestionAnswer = ({
       );
       const answer = {
         category: question.category,
+        cluesUsed: cluesShown,
         correct,
+        generation: question.generation,
         points,
+        questionType: question.questionType,
         responseMilliseconds,
         speedBonus: getSpeedBonusPoints(points, responseMilliseconds),
       };

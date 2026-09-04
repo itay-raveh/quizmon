@@ -628,6 +628,8 @@
 }
 
 .trainer-card-update.game-button {
+  --trainer-accent: var(--blue);
+
   display: grid;
   width: 100%;
   margin: 0 0 1.2rem;
@@ -636,6 +638,11 @@
   align-items: center;
   gap: 0.7rem;
   text-align: left;
+}
+
+.trainer-card-update > .trainer-stamp-mark {
+  width: 2.6rem;
+  flex: none;
 }
 
 .trainer-card-update__mark {

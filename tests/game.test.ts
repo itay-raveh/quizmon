@@ -461,9 +461,30 @@ describe('scoring', () => {
 
   it('adds a bounded mastery bonus to earned knowledge points', () => {
     const answers = [
-      { category: 'identity', correct: true, points: 1_000 },
-      { category: 'stat', correct: false, points: 0 },
-      { category: 'champion', correct: true, points: 500 },
+      {
+        category: 'identity',
+        cluesUsed: 0,
+        correct: true,
+        generation: 'I',
+        points: 1_000,
+        questionType: 'pokedex-scan',
+      },
+      {
+        category: 'stat',
+        cluesUsed: 0,
+        correct: false,
+        generation: 'II',
+        points: 0,
+        questionType: 'stat-showdown',
+      },
+      {
+        category: 'champion',
+        cluesUsed: 2,
+        correct: true,
+        generation: 'III',
+        points: 500,
+        questionType: 'champion',
+      },
     ] as const;
 
     expect(getKnowledgePoints(answers)).toBe(1_500);
@@ -484,8 +505,11 @@ describe('scoring', () => {
   it('combines knowledge, speed, and mastery for a perfect round', () => {
     const perfect = Array.from({ length: 10 }, () => ({
       category: 'identity' as const,
+      cluesUsed: 0,
       correct: true,
+      generation: 'I' as const,
       points: 1_000,
+      questionType: 'pokedex-scan' as const,
       responseMilliseconds: 0,
       speedBonus: 3_000,
     }));
@@ -514,14 +538,20 @@ describe('utilities', () => {
       getResponseTimeSeconds([
         {
           category: 'identity',
+          cluesUsed: 0,
           correct: true,
+          generation: 'I',
           points: 1_000,
+          questionType: 'pokedex-scan',
           responseMilliseconds: 1_900,
         },
         {
           category: 'type',
+          cluesUsed: 0,
           correct: false,
+          generation: 'II',
           points: 0,
+          questionType: 'type-check',
           responseMilliseconds: 2_600,
         },
       ]),

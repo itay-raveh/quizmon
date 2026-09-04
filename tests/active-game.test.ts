@@ -9,8 +9,11 @@ const snapshot = {
   answers: [
     {
       category: 'identity' as const,
+      cluesUsed: 0,
       correct: true,
+      generation: 'I' as const,
       points: 1_000,
+      questionType: 'pokedex-scan' as const,
       responseMilliseconds: 2_500,
       speedBonus: 2_120,
     },

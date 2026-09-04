@@ -8,8 +8,22 @@ import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
   answers: [
-    { category: 'identity', correct: true, points: 1_000 },
-    { category: 'stat', correct: false, points: 0 },
+    {
+      category: 'identity',
+      cluesUsed: 0,
+      correct: true,
+      generation: 'I',
+      points: 1_000,
+      questionType: 'pokedex-scan',
+    },
+    {
+      category: 'stat',
+      cluesUsed: 0,
+      correct: false,
+      generation: 'II',
+      points: 0,
+      questionType: 'stat-showdown',
+    },
   ],
   contentVersion: 2,
   correctCount: 1,

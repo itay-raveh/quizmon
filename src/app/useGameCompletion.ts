@@ -6,7 +6,8 @@ import {
   getResponseTimeSeconds,
   SCORE_VERSION,
 } from '@/game/game';
-import { saveResult } from '@/game/storage';
+import { readTrainerStats, saveResult } from '@/game/storage';
+import { getTrainerStampChanges } from '@/game/trainer';
 import type {
   AnswerResult,
   GameMode,
@@ -50,7 +51,11 @@ export const useGameCompletion = ({
         score: calculateScore(answers),
         scoreVersion: SCORE_VERSION,
       };
+      const previousTrainerStats = readTrainerStats();
       const best = saveResult(mode, result, modifiers);
+      const stampChanges = best.isSaved
+        ? getTrainerStampChanges(previousTrainerStats, readTrainerStats())
+        : [];
       clearActiveGame();
       refreshTrainerStats();
       trackGameCompleted(mode, result);
@@ -59,6 +64,7 @@ export const useGameCompletion = ({
         isNewBest: best.isNewBest,
         result,
         resultSaved: best.isSaved,
+        stampChanges,
         type: 'completed',
       });
       if (mode.kind === 'daily') {

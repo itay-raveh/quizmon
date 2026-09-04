@@ -10,8 +10,11 @@ const makeResult = (
     { length: questionCount },
     (_, index) => ({
       category: 'identity',
+      cluesUsed: 0,
       correct: index < correctCount,
+      generation: 'I',
       points: index < correctCount ? 1_000 : 0,
+      questionType: 'pokedex-scan',
       speedBonus: index < correctCount ? 1_500 : 0,
     }),
   );
@@ -40,6 +43,7 @@ const renderResults = (result: GameResult) =>
       onTrainAgain={vi.fn()}
       result={result}
       resultSaved
+      stampChanges={[]}
     />,
   );
 
@@ -90,6 +94,7 @@ describe('results summary', () => {
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
+        stampChanges={[]}
       />,
     );
 
@@ -104,9 +109,42 @@ describe('results summary', () => {
     renderResults(makeResult(10, 5));
 
     expect(
-      screen.getByRole('button', { name: /Trainer Card updated/ }),
+      screen.getByRole('button', { name: /View Trainer Card/ }),
     ).toBeVisible();
     expect(screen.getByRole('button', { name: 'Train again' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Back to start' })).toBeVisible();
+  });
+
+  it('names a newly advanced League stamp', () => {
+    const result = makeResult(10, 10);
+    const rendered = renderResults(result);
+    rendered.rerender(
+      <Results
+        bestResult={result}
+        dailyStreak={0}
+        isNewBest={false}
+        mode={{ kind: 'training' }}
+        onNewGame={vi.fn()}
+        onOpenTrainerCard={vi.fn()}
+        onOpenSettings={vi.fn()}
+        onTrainAgain={vi.fn()}
+        result={result}
+        resultSaved
+        stampChanges={[
+          {
+            fromTier: 0,
+            id: 'perfect-form',
+            label: 'Perfect Form',
+            tier: 1,
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByRole('button', {
+        name: /Perfect Form reached Tier I.*See your new mark/,
+      }),
+    ).toBeVisible();
   });
 });

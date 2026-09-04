@@ -4,8 +4,10 @@ import { questionTypes } from './questions/registry';
 import type {
   AnswerResult,
   GameMode,
+  Generation,
   Modifiers,
   QuestionCategory,
+  QuestionType,
 } from './types';
 import { generations } from './types';
 
@@ -58,8 +60,16 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
     !isRecord(value) ||
     typeof value.category !== 'string' ||
     !questionCategories.includes(value.category as QuestionCategory) ||
+    typeof value.cluesUsed !== 'number' ||
+    !Number.isInteger(value.cluesUsed) ||
+    !isFiniteNonnegative(value.cluesUsed) ||
     typeof value.correct !== 'boolean' ||
+    typeof value.generation !== 'string' ||
+    !generations.includes(value.generation as Generation) ||
     !isFiniteNonnegative(value.points) ||
+    (value.questionType !== 'champion' &&
+      (typeof value.questionType !== 'string' ||
+        !questionTypes.includes(value.questionType as QuestionType))) ||
     (value.responseMilliseconds !== undefined &&
       !isFiniteNonnegative(value.responseMilliseconds)) ||
     (value.speedBonus !== undefined && !isFiniteNonnegative(value.speedBonus))
@@ -69,8 +79,11 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
 
   return {
     category: value.category as QuestionCategory,
+    cluesUsed: value.cluesUsed,
     correct: value.correct,
+    generation: value.generation as Generation,
     points: value.points,
+    questionType: value.questionType as QuestionType | 'champion',
     ...(value.responseMilliseconds === undefined
       ? {}
       : { responseMilliseconds: value.responseMilliseconds }),

@@ -5,17 +5,20 @@ import type { QuestionData } from '@/game/types';
 const question: QuestionData = {
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'stat',
+  generation: 'I',
   id: 'stat:pikachu:0',
   media: { kind: 'none' },
   options: ['pikachu', 'eevee', 'ditto', 'mew'],
   pokemonName: 'pikachu',
   prompt: { kind: 'text', text: 'Which Pokémon has the highest Speed?' },
+  questionType: 'stat-showdown',
 };
 
 const championQuestion: QuestionData = {
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'champion',
   clues: ['An electric mouse.', 'Known for its red cheeks.'],
+  generation: 'I',
   id: 'champion:pikachu:4',
   media: {
     kind: 'sprite',
@@ -29,6 +32,7 @@ const championQuestion: QuestionData = {
     kind: 'text',
     text: 'Name the Pokémon. Reveal fewer clues to earn more points.',
   },
+  questionType: 'champion',
   searchOptions: ['bulbasaur', 'ditto', 'eevee', 'mew', 'pikachu', 'raichu'],
 };
 
