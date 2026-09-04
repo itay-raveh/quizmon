@@ -13,6 +13,7 @@ import {
   type TrainerCardFace,
 } from '@/game/trainer';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
+import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
@@ -32,7 +33,7 @@ export const TrainerCard = ({
   stats,
 }: TrainerCardProps) => {
   const rank = getTrainerRank(stats);
-  const finish = getCardFinish(rank).toLowerCase();
+  const finish = getCardFinish(rank);
   const badges = getTrainerBadges(stats);
   const earnedBadgeCount = getEarnedTrainerBadgeCount(stats);
   const trainerId = profile.cardNumber.replace(/^QZ-/, '');
@@ -43,9 +44,10 @@ export const TrainerCard = ({
   return (
     <article
       ref={cardRef}
-      className={`trainer-card trainer-card--${face} trainer-card--${finish} trainer-card--accent-${profile.accent}`}
+      className={`trainer-card trainer-card--${face} trainer-card--${finish.toLowerCase()} trainer-card--accent-${profile.accent}`}
       aria-label={`Trainer Card ${face === 'front' ? 'front' : 'records'}`}
     >
+      <TrainerCardFinishEffects finish={finish} />
       {face === 'front' ? (
         <>
           <header className="trainer-card__banner">

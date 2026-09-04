@@ -30,6 +30,9 @@ npm run data:update
 Quizmon is available under the [MIT License](https://github.com/itay-raveh/quizmon/blob/main/LICENSE).
 
 The wordmark was made with [TextStudio](https://www.textstudio.co).
+The Trainer Card sparkle animation comes from
+[“Sparkles” by Julien Jorge](https://opengameart.org/content/sparkles), licensed
+under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The
+sprite sheet is used unchanged.
 
 Quizmon is not affiliated with Nintendo, Game Freak, or The Pokémon Company. Pokémon and related trademarks belong to their respective owners.
-
