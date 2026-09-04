@@ -1,6 +1,6 @@
 ---
 name: Quizmon
-description: A restrained Logo Echo interface for a quick, charming Pokémon knowledge game.
+description: A charming Logo Echo interface for a quick, tactile Pokémon knowledge game.
 colors:
   landscape-sky: '#72c3ee'
   primary: '#0d6be6'
@@ -28,12 +28,12 @@ colors:
 typography:
   display:
     fontFamily: 'Gabarito Variable, system-ui, sans-serif'
-    fontSize: '2.3rem'
+    fontSize: 'clamp(1.65rem, 4.5vw, 2.3rem)'
     fontWeight: 800
     lineHeight: 1.05
   headline:
     fontFamily: 'Gabarito Variable, system-ui, sans-serif'
-    fontSize: '1.75rem'
+    fontSize: 'clamp(1.35rem, 4vw, 1.75rem)'
     fontWeight: 800
   body:
     fontFamily: 'Gabarito Variable, system-ui, sans-serif'
@@ -58,6 +58,7 @@ rounded:
   field: '0.25rem'
   control: '0.3rem'
   icon-control: '0.35rem'
+  tile: '0.38rem'
   button: '0.5rem'
   mobile-surface: '0.55rem'
   surface: '0.75rem'
@@ -87,6 +88,7 @@ components:
     textColor: '{colors.game-surface}'
     typography: '{typography.control}'
     rounded: '{rounded.button}'
+    padding: '0.4rem 0.8rem'
   game-panel:
     backgroundColor: '{colors.game-surface}'
     textColor: '{colors.ink}'
@@ -115,6 +117,35 @@ components:
     typography: '{typography.control}'
     rounded: '{rounded.button}'
     padding: '0.62rem 1.1rem'
+  answer-pokemon:
+    backgroundColor: '{colors.game-surface}'
+    textColor: '{colors.outline}'
+    typography: '{typography.control}'
+    rounded: '{rounded.button}'
+    height: '6.4rem'
+  search-field:
+    backgroundColor: '{colors.game-surface}'
+    textColor: '{colors.ink}'
+    typography: '{typography.control}'
+    rounded: '{rounded.button}'
+    padding: '0.65rem 0.8rem'
+    height: '3rem'
+  selection-tile-selected:
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.primary-text}'
+    typography: '{typography.control}'
+    rounded: '{rounded.tile}'
+    height: '3.15rem'
+  dialog:
+    backgroundColor: '{colors.game-surface}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.surface}'
+    width: 'min(42rem, calc(100% - 1rem))'
+  trainer-card:
+    backgroundColor: '{colors.game-surface}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.surface}'
+    width: '100%'
 ---
 
 # Design System: Quizmon
@@ -123,7 +154,7 @@ components:
 
 **Creative North Star: "Logo Echo"**
 
-The implemented direction is the approved Logo Echo world, seed `ae843a63`. Quizmon starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.
+Quizmon's Logo Echo world starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.
 
 The landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the Settings, Trainer Card, and Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.
 
@@ -245,9 +276,9 @@ Buttons are compact physical game controls.
 
 ### Daily Challenge Action
 
-The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. “Daily Challenge” is the primary line, with the date beneath it in compact data type. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button with only the explicit action “Share result” and the score. The completed state is already evident from the available action and cream treatment, so do not repeat it in the copy or add an icon. Do not bury the action inside score metadata, wrap the control in another card, or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
+The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. The current Daily Challenge shows only that primary line. A historical challenge may add its date in compact data type, and unavailable browser storage may add a short requirement. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button with only the explicit action “Share result” and the score. The completed state is already evident from the available action and cream treatment, so do not repeat it in the copy or add an icon. Do not bury the action inside score metadata, wrap the control in another card, or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
 
-A nonzero Daily Combo adds one capture-ball medallion at the action's right edge. Its large numeric center carries the visual weight, while the small Gabarito label names the combo without turning it into another statistic row. The copy shifts optically left to reserve the medallion's space. Compact and intermediate layouts keep the complete badge inside the action with a clear edge inset; wide layouts permit only a slight controlled overhang. The same medallion replaces the empty left cell in the Daily results header. A challenge earns credit only when completed on its own UTC date. Historical links never repair a combo. Existing consecutive daily results receive legacy credit once.
+A nonzero Daily Combo adds one capture-ball medallion at the action's right edge. Its large numeric center carries the visual weight, while the small Gabarito label names the combo without turning it into another statistic row. The copy shifts optically left to reserve the medallion's space. Compact and intermediate layouts keep the complete badge inside the action with a clear edge inset; wide layouts permit only a slight controlled overhang. The same medallion replaces the empty left cell in the Daily results header. A challenge earns combo credit only when completed on its own UTC date. Historical links never repair a combo.
 
 ### Question Surface
 
@@ -267,7 +298,7 @@ The progress track is a slim pale-blue bar with a `2px` navy border and yellow f
 
 The Trainer Card is a first-class local profile reached from the landing screen and results. Its front makes the optional trainer name the title, presents the local six-digit number as a game-style `ID No.`, and places the partner Pokémon's name and Pokédex number directly beneath its square portrait. A qualified player-selected specialty may appear as a title beneath the trainer name. The join date, earned rank, chosen accent, and visible card finish complete the identity without explanatory finish copy. Its records face contains games completed, Daily clears, perfect rounds, the best Daily Combo, and five one-time League Badges. Perfect Form requires three perfect Standard or Long Training rounds. Many Paths requires correct answers across ten question formats. World Tour requires correct answers across all nine generations. Champion's Instinct requires five Champion answers without clues. Daily Resolve requires a seven-day Daily Combo.
 
-The compact records face shows the five existing pixel-cut badge motifs without labels or internal codes. Each badge is either locked or earned, with no secondary tier markers. The matching Badge case beneath the records face names every badge, states its requirement, and shows progress. Earned marks and progress use the chosen card accent. Locked marks remain visible, but no badge is awarded merely for completing a game. Earning a badge adds one result callout with its name and a route to the Badge case. Badge count determines the canonical Trainer rank: Youngster with none, Rising Star with one or two, Ace Trainer with three or four, and Champion with all five. Rank silently determines the card finish. A specialty qualifies after ten correct answers in its knowledge field, remains separate from rank, and becomes an optional title the player selects while editing the card.
+The compact records face shows five circular badge marks without labels or internal codes. Each badge is either locked or earned, with no secondary tier markers. The matching Badge case beneath the records face names every badge, states its requirement, and shows progress. Earned marks and progress use the chosen card accent. Locked marks remain visible, but no badge is awarded merely for completing a game. Earning a badge adds one result callout with its name and a route to the Badge case. Badge count determines the canonical Trainer rank: Youngster with none, Rising Star with one or two, Ace Trainer with three or four, and Champion with all five. Rank silently determines the card finish. A specialty qualifies after ten correct answers in its knowledge field, remains separate from rank, and becomes an optional title the player selects while editing the card.
 
 Only the visible face exists in the accessibility tree. A labeled control changes faces with a short card turn, and reduced-motion preferences replace the animation with an immediate swap. Both faces and their exported images use the same `3 / 2` landscape silhouette at every viewport. Mobile content becomes denser without hiding profile or record information. The first visit receives one reveal animation.
 
