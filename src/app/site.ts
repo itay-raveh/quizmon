@@ -13,6 +13,6 @@ export const site = {
     type: 'image/png',
     width: 1200,
     height: 630,
-    alt: 'Quizmon: The Ultimate Pokémon Knowledge Test',
+    alt: 'Quizmon: The Ultimate Pokémon Knowledge Test. Play now.',
   },
 } as const;
