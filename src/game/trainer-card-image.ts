@@ -1,4 +1,5 @@
 import { site } from '@/app/site';
+import { setTrainerRoute } from '@/app/trainer-route';
 import type { TrainerCardFace } from './trainer';
 
 const waitForRenderedAssets = async (element: HTMLElement) => {
@@ -55,13 +56,14 @@ export const shareTrainerCard = async (
   const file = new File([blob], `quizmon-trainer-card-${face}.png`, {
     type: 'image/png',
   });
+  const cardUrl = setTrainerRoute(new URL(site.url), face);
 
   try {
     await navigator.share({
       files: [file],
       text: `My ${site.name} Trainer Card`,
       title: `${site.name} Trainer Card`,
-      url: site.url,
+      url: cardUrl.href,
     });
     return 'shared';
   } catch (error) {

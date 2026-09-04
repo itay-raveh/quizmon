@@ -9,7 +9,7 @@ import {
   getSpeedBonus,
 } from '@/game/game';
 import { formatScore } from '@/game/format';
-import { type TrainerBadgeChange } from '@/game/trainer';
+import { type TrainerBadgeChange, type TrainerCardFace } from '@/game/trainer';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
@@ -24,7 +24,7 @@ interface ResultsProps {
   isNewBest: boolean;
   mode: GameMode;
   onNewGame: () => void;
-  onOpenTrainerCard: () => void;
+  onOpenTrainerCard: (face: TrainerCardFace) => void;
   onOpenSettings: () => void;
   onTrainAgain: () => void;
   result: GameResult;
@@ -146,7 +146,7 @@ export const Results = ({
         <GameButton
           className="trainer-card-update"
           tone="quiet"
-          onClick={onOpenTrainerCard}
+          onClick={() => onOpenTrainerCard('records')}
         >
           <TrainerBadgeMark earned id={primaryBadgeChange.id} />
           <span>

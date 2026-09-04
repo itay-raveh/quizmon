@@ -14,6 +14,7 @@ import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { getUtcDate } from '@/game/daily';
 import type { usePokemonCatalog } from '@/game/catalog';
 import type { TrainerStats } from '@/game/storage';
+import type { TrainerCardFace } from '@/game/trainer';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import type { AnswerResult, GameResult, Modifiers } from '@/game/types';
 import type { GameSession } from './session';
@@ -53,9 +54,11 @@ interface SettingsView {
 
 interface TrainerView {
   close: () => void;
+  face: TrainerCardFace;
   isOpen: boolean;
-  open: () => void;
+  open: (face: TrainerCardFace) => void;
   profile: TrainerProfile;
+  showFace: (face: TrainerCardFace) => void;
   stats: TrainerStats;
   updateProfile: (profile: TrainerProfile) => void;
 }
@@ -96,8 +99,10 @@ const AppScreen = ({
       <TrainerPassport
         catalog={catalogState.catalog}
         onBack={trainer.close}
+        onFaceChange={trainer.showFace}
         onProfileChange={trainer.updateProfile}
         profile={trainer.profile}
+        requestedFace={trainer.face}
         stats={trainer.stats}
       />
     );
@@ -112,7 +117,7 @@ const AppScreen = ({
         dailyResultSaved={daily.resultSaved}
         dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
         onOpenSettings={() => settings.open('training')}
-        onOpenTrainerCard={trainer.open}
+        onOpenTrainerCard={() => trainer.open('front')}
         onRetryCatalog={catalogState.retry}
         onStart={training.start}
         onStartDaily={daily.start}

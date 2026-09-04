@@ -22,11 +22,13 @@ export const App = () => {
   );
   const {
     close: closeTrainerCard,
+    face: trainerCardFace,
     isOpen: trainerCardOpen,
     open: openTrainerCard,
     profile: trainerProfile,
     refresh: refreshTrainerCard,
     refreshStats: refreshTrainerStats,
+    showFace: showTrainerCardFace,
     stats: trainerStats,
     updateProfile: updateTrainerProfile,
   } = useTrainerCard();
@@ -183,10 +185,12 @@ export const App = () => {
       }}
       trainer={{
         close: closeTrainerCard,
+        face: trainerCardFace,
         isOpen: trainerCardOpen,
         open: openTrainerCard,
         profile: trainerProfile,
         stats: trainerStats,
+        showFace: showTrainerCardFace,
         updateProfile: updateTrainerProfile,
       }}
       training={{

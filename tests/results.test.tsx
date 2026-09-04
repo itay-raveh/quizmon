@@ -117,6 +117,7 @@ describe('results summary', () => {
 
   it('names a newly earned League Badge', () => {
     const result = makeResult(10, 10);
+    const onOpenTrainerCard = vi.fn();
     const rendered = renderResults(result);
     rendered.rerender(
       <Results
@@ -125,7 +126,7 @@ describe('results summary', () => {
         isNewBest={false}
         mode={{ kind: 'training' }}
         onNewGame={vi.fn()}
-        onOpenTrainerCard={vi.fn()}
+        onOpenTrainerCard={onOpenTrainerCard}
         onOpenSettings={vi.fn()}
         onTrainAgain={vi.fn()}
         result={result}
@@ -144,5 +145,12 @@ describe('results summary', () => {
         name: /Perfect Form Badge earned.*See your new badge/,
       }),
     ).toBeVisible();
+
+    screen
+      .getByRole('button', {
+        name: /Perfect Form Badge earned.*See your new badge/,
+      })
+      .click();
+    expect(onOpenTrainerCard).toHaveBeenCalledWith('records');
   });
 });

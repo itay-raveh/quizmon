@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from 'react';
 import type { PokemonCatalog } from '@/game/types';
 import type { TrainerStats } from '@/game/storage';
 import {
@@ -28,8 +35,10 @@ import { TrainerCard } from './TrainerCard';
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
   onBack: () => void;
+  onFaceChange: (face: TrainerCardFace) => void;
   onProfileChange: (profile: TrainerProfile) => void;
   profile: TrainerProfile;
+  requestedFace: TrainerCardFace;
   stats: TrainerStats;
 }
 
@@ -41,13 +50,17 @@ interface ShareNotice {
 export const TrainerPassport = ({
   catalog,
   onBack,
+  onFaceChange,
   onProfileChange,
   profile,
+  requestedFace,
   stats,
 }: TrainerPassportProps) => {
   const [face, setFace] = useState<TrainerCardFace>('front');
   const [turn, setTurn] = useState<'idle' | 'out' | 'in'>('idle');
-  const [revealing, setRevealing] = useState(!profile.hasBeenRevealed);
+  const [revealing, setRevealing] = useState(
+    !profile.hasBeenRevealed && requestedFace === 'front',
+  );
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile.name);
   const [partner, setPartner] = useState(profile.partnerPokemon);
@@ -90,6 +103,7 @@ export const TrainerPassport = ({
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareCard = supportsTrainerCardSharing();
   const badges = getTrainerBadges(stats);
+  const turnTimeouts = useRef<number[]>([]);
 
   useEffect(() => {
     if (!profile.hasBeenRevealed) {
@@ -102,6 +116,41 @@ export const TrainerPassport = ({
     const timeoutId = window.setTimeout(() => setRevealing(false), 560);
     return () => window.clearTimeout(timeoutId);
   }, [revealing]);
+
+  const turnTo = useCallback(
+    (nextFace: TrainerCardFace) => {
+      if (turn !== 'idle' || face === nextFace) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setFace(nextFace);
+        return;
+      }
+
+      setTurn('out');
+      const swapTimeout = window.setTimeout(() => {
+        setFace(nextFace);
+        setTurn('in');
+        const settleTimeout = window.setTimeout(() => setTurn('idle'), 160);
+        turnTimeouts.current.push(settleTimeout);
+      }, 160);
+      turnTimeouts.current.push(swapTimeout);
+    },
+    [face, turn],
+  );
+
+  useEffect(() => {
+    if (requestedFace === face || turn !== 'idle') return;
+    const timeoutId = window.setTimeout(() => turnTo(requestedFace), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [face, requestedFace, turn, turnTo]);
+
+  useEffect(
+    () => () => {
+      turnTimeouts.current.forEach((timeoutId) =>
+        window.clearTimeout(timeoutId),
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
     const card = cardRef.current;
@@ -127,16 +176,7 @@ export const TrainerPassport = ({
 
   const flip = () => {
     if (turn !== 'idle') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setFace((current) => (current === 'front' ? 'records' : 'front'));
-      return;
-    }
-    setTurn('out');
-    window.setTimeout(() => {
-      setFace((current) => (current === 'front' ? 'records' : 'front'));
-      setTurn('in');
-      window.setTimeout(() => setTurn('idle'), 160);
-    }, 160);
+    onFaceChange(face === 'front' ? 'records' : 'front');
   };
 
   const save = (event: FormEvent<HTMLFormElement>) => {
