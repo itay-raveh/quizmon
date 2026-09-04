@@ -58,8 +58,8 @@ describe('Trainer Card progression', () => {
   });
 
   it('derives canonical Trainer ranks and card finishes from earned badges', () => {
-    const risingStar = stats({ championAnswersWithoutClues: 5 });
-    const aceTrainer = stats({
+    const ace = stats({ championAnswersWithoutClues: 5 });
+    const veteran = stats({
       championAnswersWithoutClues: 5,
       correctGenerations: masteredGenerations(9),
       masteryRounds: 3,
@@ -73,12 +73,13 @@ describe('Trainer Card progression', () => {
     });
 
     expect(getTrainerRank(stats())).toBe('Youngster');
-    expect(getTrainerRank(risingStar)).toBe('Rising Star');
-    expect(getTrainerRank(aceTrainer)).toBe('Ace Trainer');
+    expect(getTrainerRank(ace)).toBe('Ace');
+    expect(getTrainerRank(veteran)).toBe('Veteran');
     expect(getTrainerRank(champion)).toBe('Champion');
-    expect(getCardFinish(getTrainerRank(risingStar))).toBe('Shimmer');
-    expect(getCardFinish(getTrainerRank(aceTrainer))).toBe('Aurora');
-    expect(getCardFinish(getTrainerRank(champion))).toBe('Master');
+    expect(getCardFinish(getTrainerRank(stats()))).toBe('Classic');
+    expect(getCardFinish(getTrainerRank(ace))).toBe('Bronze');
+    expect(getCardFinish(getTrainerRank(veteran))).toBe('Silver');
+    expect(getCardFinish(getTrainerRank(champion))).toBe('Gold');
   });
 
   it('reports every League Badge newly earned after a round', () => {

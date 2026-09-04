@@ -15,9 +15,8 @@ export const trainerSpecialtyLabels = {
 } as const satisfies Partial<Record<QuestionCategory, string>>;
 
 export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
-export type TrainerRank =
-  'Youngster' | 'Rising Star' | 'Ace Trainer' | 'Champion';
-export type CardFinish = 'Classic' | 'Shimmer' | 'Aurora' | 'Master';
+export type TrainerRank = 'Youngster' | 'Ace' | 'Veteran' | 'Champion';
+export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
 export type TrainerCardFace = 'front' | 'records';
 export type TrainerBadgeId =
   | 'perfect-form'
@@ -121,15 +120,15 @@ export const getQualifiedTrainerSpecialties = (
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
   const earnedBadges = getEarnedTrainerBadgeCount(stats);
   if (earnedBadges === 5) return 'Champion';
-  if (earnedBadges >= 3) return 'Ace Trainer';
-  if (earnedBadges >= 1) return 'Rising Star';
+  if (earnedBadges >= 3) return 'Veteran';
+  if (earnedBadges >= 1) return 'Ace';
   return 'Youngster';
 };
 
 export const getCardFinish = (rank: TrainerRank): CardFinish => {
-  if (rank === 'Champion') return 'Master';
-  if (rank === 'Ace Trainer') return 'Aurora';
-  if (rank === 'Rising Star') return 'Shimmer';
+  if (rank === 'Champion') return 'Gold';
+  if (rank === 'Veteran') return 'Silver';
+  if (rank === 'Ace') return 'Bronze';
   return 'Classic';
 };
 
