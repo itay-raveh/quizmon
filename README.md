@@ -6,22 +6,11 @@
   <a href="https://quizmon.raveh.dev/">Play Quizmon</a>
 </p>
 
-Quizmon is a quick browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats,
-and identity across Generations I through IX.
-
-- Play the daily challenge. You get
-  one attempt, saved in your browser.
-- Play custom games around the generations and question types you want.
-- Finish with a progressive-clue question worth more when you solve it
-  early.
-
-Quizmon can be installed from supported browsers. Its app shell and Pokémon
-catalog work offline, while sprite art is cached as you encounter it.
+Quizmon is a browser-local game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc'
 
 ## Run Quizmon locally
 
-[mise](https://mise.jdx.dev/) installs the pinned tools and exposes one setup task
-for a fresh clone:
+[mise](https://mise.jdx.dev/) installs the pinned tools and exposes one setup task for a fresh clone:
 
 ```sh
 mise run setup
@@ -30,24 +19,17 @@ npm run dev
 
 ## Pokémon data
 
-Quizmon builds a versioned catalog from [PokéAPI](https://pokeapi.co/) and ships it
-as a hashed static asset. Live rounds do not call the PokéAPI service. They load
-the catalog and classic sprite images directly, so the game needs no account or
-application backend. Settings, daily results, and Training bests stay in browser
-storage.
-
-Refresh the checked-in catalog with:
+Quizmon builds a versioned catalog from [PokéAPI](https://pokeapi.co/) and ships it as a hashed static asset. 
 
 ```sh
 npm run data:update
 ```
 
-The wordmark was made with [TextStudio](https://www.textstudio.co).
-
-Quizmon is not
-affiliated with Nintendo, Game Freak, or The Pokémon Company. Pokémon and related
-trademarks belong to their respective owners.
-
 ## License
 
 Quizmon is available under the [MIT License](https://github.com/itay-raveh/quizmon/blob/main/LICENSE).
+
+The wordmark was made with [TextStudio](https://www.textstudio.co).
+
+Quizmon is not affiliated with Nintendo, Game Freak, or The Pokémon Company. Pokémon and related trademarks belong to their respective owners.
+
