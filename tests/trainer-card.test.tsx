@@ -16,8 +16,12 @@ const profile: TrainerProfile = {
 const stats: TrainerStats = {
   bestDailyStreak: 7,
   categories: { type: { correct: 9, total: 10 } },
+  championAnswersWithoutClues: 1,
+  correctGenerations: { I: 2, II: 1, III: 1 },
+  correctQuestionTypes: {},
   dailyChallengesCompleted: 8,
   gamesCompleted: 25,
+  masteryRounds: 3,
   perfectRounds: 3,
   specialty: { category: 'type', correct: 9, total: 10 },
 };
@@ -39,15 +43,14 @@ describe('Trainer Card', () => {
     ).toBeVisible();
     expect(screen.getByText('Daily clears')).toBeVisible();
     expect(screen.getByText('Types')).toBeVisible();
-    expect(screen.getByText('Perfect Form')).toBeVisible();
     expect(
       screen.getByRole('region', {
-        name: 'Trainer stamps: 4 of 5 earned',
+        name: 'League stamps: 6 of 15 tiers earned',
       }),
     ).toBeVisible();
     expect(
       screen.getByRole('img', {
-        name: /Well Rounded: locked, 1 of 3/,
+        name: /Many Paths: Unmarked\. 0 of 5/,
       }),
     ).toBeVisible();
     expect(

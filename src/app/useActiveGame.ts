@@ -83,7 +83,10 @@ const resolveRestoration = (
   const answersMatchQuestions =
     snapshot.answers.length <= questions.length &&
     snapshot.answers.every(
-      (answer, index) => answer.category === questions[index]?.category,
+      (answer, index) =>
+        answer.category === questions[index]?.category &&
+        answer.generation === questions[index]?.generation &&
+        answer.questionType === questions[index]?.questionType,
     );
 
   return questions.length === snapshot.questionCount && answersMatchQuestions

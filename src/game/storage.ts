@@ -5,8 +5,10 @@ import {
   generations,
   type GameMode,
   type GameResult,
+  type Generation,
   type Modifiers,
   type QuestionCategory,
+  type QuestionType,
 } from './types';
 
 const RESULTS_KEY = 'quizmon.results.v2';
@@ -33,7 +35,11 @@ interface CategoryProgress {
 
 interface TrainerProgress {
   categories: Partial<Record<QuestionCategory, CategoryProgress>>;
+  championAnswersWithoutClues: number;
+  correctGenerations: Partial<Record<Generation, number>>;
+  correctQuestionTypes: Partial<Record<QuestionType, number>>;
   gamesCompleted: number;
+  masteryRounds: number;
   perfectRounds: number;
   version: number;
 }
@@ -53,15 +59,23 @@ interface SavedResults {
 export interface TrainerStats {
   bestDailyStreak: number;
   categories: Partial<Record<QuestionCategory, CategoryProgress>>;
+  championAnswersWithoutClues: number;
+  correctGenerations: Partial<Record<Generation, number>>;
+  correctQuestionTypes: Partial<Record<QuestionType, number>>;
   dailyChallengesCompleted: number;
   gamesCompleted: number;
+  masteryRounds: number;
   perfectRounds: number;
   specialty: (CategoryProgress & { category: QuestionCategory }) | null;
 }
 
 const emptyProgress = (): TrainerProgress => ({
   categories: {},
+  championAnswersWithoutClues: 0,
+  correctGenerations: {},
+  correctQuestionTypes: {},
   gamesCompleted: 0,
+  masteryRounds: 0,
   perfectRounds: 0,
   version: TRAINER_PROGRESS_VERSION,
 });
@@ -105,25 +119,65 @@ const normalizeStreak = (
 const addResultToProgress = (
   progress: TrainerProgress,
   result: GameResult,
+  mode: GameMode,
 ): TrainerProgress => {
   const categories = { ...progress.categories };
+  const correctGenerations = { ...progress.correctGenerations };
+  const correctQuestionTypes = { ...progress.correctQuestionTypes };
+  let championAnswersWithoutClues = progress.championAnswersWithoutClues;
+
   for (const answer of result.answers) {
     const current = categories[answer.category] ?? { correct: 0, total: 0 };
     categories[answer.category] = {
       correct: current.correct + Number(answer.correct),
       total: current.total + 1,
     };
+
+    if (!answer.correct) continue;
+
+    correctGenerations[answer.generation] =
+      (correctGenerations[answer.generation] ?? 0) + 1;
+    if (answer.questionType === 'champion') {
+      championAnswersWithoutClues += Number(answer.cluesUsed === 0);
+    } else {
+      correctQuestionTypes[answer.questionType] =
+        (correctQuestionTypes[answer.questionType] ?? 0) + 1;
+    }
   }
+
+  const isPerfect = result.correctCount === result.questionCount;
 
   return {
     categories,
+    championAnswersWithoutClues,
+    correctGenerations,
+    correctQuestionTypes,
     gamesCompleted: progress.gamesCompleted + 1,
-    perfectRounds:
-      progress.perfectRounds +
-      Number(result.correctCount === result.questionCount),
+    masteryRounds:
+      progress.masteryRounds +
+      Number(
+        mode.kind === 'training' && result.questionCount >= 10 && isPerfect,
+      ),
+    perfectRounds: progress.perfectRounds + Number(isPerfect),
     version: TRAINER_PROGRESS_VERSION,
   };
 };
+
+const normalizeCounts = <Key extends string>(
+  value: unknown,
+  allowedKeys: readonly Key[],
+): Partial<Record<Key, number>> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (Object.fromEntries(
+        Object.entries(value).filter(
+          ([key, count]) =>
+            allowedKeys.includes(key as Key) &&
+            typeof count === 'number' &&
+            Number.isFinite(count) &&
+            count >= 0,
+        ),
+      ) as Partial<Record<Key, number>>)
+    : {};
 
 const normalizeProgress = (
   progress: Partial<TrainerProgress> | undefined,
@@ -154,7 +208,25 @@ const normalizeProgress = (
 
   return {
     categories,
+    championAnswersWithoutClues:
+      typeof progress.championAnswersWithoutClues === 'number' &&
+      Number.isFinite(progress.championAnswersWithoutClues)
+        ? Math.max(0, Math.trunc(progress.championAnswersWithoutClues))
+        : 0,
+    correctGenerations: normalizeCounts(
+      progress.correctGenerations,
+      generations,
+    ),
+    correctQuestionTypes: normalizeCounts(
+      progress.correctQuestionTypes,
+      questionTypes,
+    ),
     gamesCompleted: Math.max(0, Math.trunc(progress.gamesCompleted)),
+    masteryRounds:
+      typeof progress.masteryRounds === 'number' &&
+      Number.isFinite(progress.masteryRounds)
+        ? Math.max(0, Math.trunc(progress.masteryRounds))
+        : 0,
     perfectRounds: Math.max(0, Math.trunc(progress.perfectRounds)),
     version: TRAINER_PROGRESS_VERSION,
   };
@@ -278,8 +350,12 @@ export const readTrainerStats = (): TrainerStats => {
   return {
     bestDailyStreak: getLongestStreak(results.streak.creditedDates),
     categories: results.progress.categories,
+    championAnswersWithoutClues: results.progress.championAnswersWithoutClues,
+    correctGenerations: results.progress.correctGenerations,
+    correctQuestionTypes: results.progress.correctQuestionTypes,
     dailyChallengesCompleted: Object.keys(results.daily).length,
     gamesCompleted: results.progress.gamesCompleted,
+    masteryRounds: results.progress.masteryRounds,
     perfectRounds: results.progress.perfectRounds,
     specialty,
   };
@@ -297,7 +373,7 @@ export const saveResult = (
       return { best: previous, isNewBest: false, isSaved: true };
     }
     results.daily[mode.date] = result;
-    results.progress = addResultToProgress(results.progress, result);
+    results.progress = addResultToProgress(results.progress, result, mode);
     if (
       mode.date === getUtcDate() &&
       !results.streak.creditedDates.includes(mode.date)
@@ -316,7 +392,7 @@ export const saveResult = (
   const key = getTrainingRecordKey(modifiers, result.questionCount);
   const previous = results.training[key];
   const isNewBest = !previous || isBetterResult(result, previous);
-  results.progress = addResultToProgress(results.progress, result);
+  results.progress = addResultToProgress(results.progress, result, mode);
   if (isNewBest) results.training[key] = result;
   const isSaved = writeResults(results);
   return {

@@ -16,30 +16,129 @@ export const trainerCategoryLabels: Record<QuestionCategory, string> = {
 export type TrainerRank = 'New Trainer' | 'Researcher' | 'Ace' | 'Champion';
 export type CardFinish = 'Classic' | 'Shimmer' | 'Aurora' | 'Master';
 export type TrainerCardFace = 'front' | 'records';
+export type TrainerStampId =
+  | 'perfect-form'
+  | 'many-paths'
+  | 'world-tour'
+  | 'champions-instinct'
+  | 'daily-resolve';
+export type TrainerStampTier = 0 | 1 | 2 | 3;
 
 export interface TrainerStamp {
   current: number;
-  earned: boolean;
   goal: number;
-  id: string;
+  id: TrainerStampId;
   label: string;
+  mastered: boolean;
   requirement: string;
-  symbol: string;
+  tier: TrainerStampTier;
 }
 
+export interface TrainerStampChange {
+  fromTier: TrainerStampTier;
+  id: TrainerStampId;
+  label: string;
+  tier: Exclude<TrainerStampTier, 0>;
+}
+
+interface StampDefinition {
+  current: number;
+  id: TrainerStampId;
+  label: string;
+  requirement: (goal: number) => string;
+  thresholds: readonly [number, number, number];
+}
+
+const getTier = (
+  current: number,
+  thresholds: StampDefinition['thresholds'],
+): TrainerStampTier =>
+  thresholds.reduce<TrainerStampTier>(
+    (tier, threshold) =>
+      current >= threshold ? ((tier + 1) as TrainerStampTier) : tier,
+    0,
+  );
+
+const makeStamp = (definition: StampDefinition): TrainerStamp => {
+  const tier = getTier(definition.current, definition.thresholds);
+  const mastered = tier === 3;
+  const goal = definition.thresholds[Math.min(tier, 2)]!;
+
+  return {
+    current: definition.current,
+    goal,
+    id: definition.id,
+    label: definition.label,
+    mastered,
+    requirement: mastered
+      ? 'All three tiers earned'
+      : definition.requirement(goal),
+    tier,
+  };
+};
+
+export const getTrainerStamps = (stats: TrainerStats): TrainerStamp[] => {
+  const questionTypesMastered = Object.values(
+    stats.correctQuestionTypes,
+  ).filter((correct) => correct > 0).length;
+  const generationsMastered = Object.values(stats.correctGenerations).filter(
+    (correct) => correct > 0,
+  ).length;
+
+  return [
+    makeStamp({
+      current: stats.masteryRounds,
+      id: 'perfect-form',
+      label: 'Perfect Form',
+      requirement: (goal) =>
+        `Finish ${goal} perfect Standard or Long Training ${goal === 1 ? 'round' : 'rounds'}`,
+      thresholds: [1, 3, 10],
+    }),
+    makeStamp({
+      current: questionTypesMastered,
+      id: 'many-paths',
+      label: 'Many Paths',
+      requirement: (goal) =>
+        `Answer correctly in ${goal} different question formats`,
+      thresholds: [5, 10, 15],
+    }),
+    makeStamp({
+      current: generationsMastered,
+      id: 'world-tour',
+      label: 'World Tour',
+      requirement: (goal) =>
+        `Answer correctly across ${goal} Pokémon generations`,
+      thresholds: [3, 6, 9],
+    }),
+    makeStamp({
+      current: stats.championAnswersWithoutClues,
+      id: 'champions-instinct',
+      label: "Champion's Instinct",
+      requirement: (goal) =>
+        `Solve ${goal} Champion ${goal === 1 ? 'question' : 'questions'} without clues`,
+      thresholds: [1, 5, 15],
+    }),
+    makeStamp({
+      current: stats.bestDailyStreak,
+      id: 'daily-resolve',
+      label: 'Daily Resolve',
+      requirement: (goal) => `Reach a ${goal}-day Daily Combo`,
+      thresholds: [3, 7, 30],
+    }),
+  ];
+};
+
+export const getEarnedTrainerTierCount = (stats: TrainerStats): number =>
+  getTrainerStamps(stats).reduce((total, stamp) => total + stamp.tier, 0);
+
+export const formatTrainerStampTier = (tier: TrainerStampTier): string =>
+  ['Unmarked', 'Tier I', 'Tier II', 'Tier III'][tier] ?? 'Unmarked';
+
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
-  if (
-    stats.gamesCompleted >= 100 &&
-    stats.dailyChallengesCompleted >= 30 &&
-    stats.perfectRounds >= 10 &&
-    stats.bestDailyStreak >= 7
-  ) {
-    return 'Champion';
-  }
-  if (stats.gamesCompleted >= 25 && stats.perfectRounds >= 2) return 'Ace';
-  if (stats.gamesCompleted >= 5 || stats.dailyChallengesCompleted >= 3) {
-    return 'Researcher';
-  }
+  const earnedTiers = getEarnedTrainerTierCount(stats);
+  if (earnedTiers === 15) return 'Champion';
+  if (earnedTiers >= 8) return 'Ace';
+  if (earnedTiers >= 3) return 'Researcher';
   return 'New Trainer';
 };
 
@@ -50,56 +149,25 @@ export const getCardFinish = (rank: TrainerRank): CardFinish => {
   return 'Classic';
 };
 
-export const getTrainerStamps = (stats: TrainerStats): TrainerStamp[] => {
-  const studiedFields = Object.values(stats.categories).filter(
-    (progress) => progress.total >= 10,
-  ).length;
+export const getTrainerStampChanges = (
+  before: TrainerStats,
+  after: TrainerStats,
+): TrainerStampChange[] => {
+  const previousTiers = new Map(
+    getTrainerStamps(before).map((stamp) => [stamp.id, stamp.tier]),
+  );
 
-  return [
-    {
-      current: stats.gamesCompleted,
-      earned: stats.gamesCompleted >= 1,
-      goal: 1,
-      id: 'first-catch',
-      label: 'First Catch',
-      requirement: 'Complete 1 game',
-      symbol: '01',
-    },
-    {
-      current: stats.dailyChallengesCompleted,
-      earned: stats.dailyChallengesCompleted >= 7,
-      goal: 7,
-      id: 'daily-regular',
-      label: 'Daily Regular',
-      requirement: 'Clear 7 Daily Challenges',
-      symbol: 'D7',
-    },
-    {
-      current: stats.perfectRounds,
-      earned: stats.perfectRounds >= 3,
-      goal: 3,
-      id: 'perfect-form',
-      label: 'Perfect Form',
-      requirement: 'Finish 3 perfect rounds',
-      symbol: 'P3',
-    },
-    {
-      current: stats.bestDailyStreak,
-      earned: stats.bestDailyStreak >= 7,
-      goal: 7,
-      id: 'combo-keeper',
-      label: 'Combo Keeper',
-      requirement: 'Reach a 7-day Daily Combo',
-      symbol: 'C7',
-    },
-    {
-      current: studiedFields,
-      earned: studiedFields >= 3,
-      goal: 3,
-      id: 'well-rounded',
-      label: 'Well Rounded',
-      requirement: 'Answer 10 questions in 3 fields',
-      symbol: 'K3',
-    },
-  ];
+  return getTrainerStamps(after).flatMap((stamp) => {
+    const fromTier = previousTiers.get(stamp.id) ?? 0;
+    return stamp.tier > fromTier
+      ? [
+          {
+            fromTier,
+            id: stamp.id,
+            label: stamp.label,
+            tier: stamp.tier as Exclude<TrainerStampTier, 0>,
+          },
+        ]
+      : [];
+  });
 };

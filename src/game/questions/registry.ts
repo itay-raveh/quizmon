@@ -175,5 +175,14 @@ export const buildQuestionType = (
       ? championDefinition
       : questionRegistry[questionType];
   const question = definition.build(context);
-  return question ? addQuestionVisuals(context, question) : undefined;
+  if (!question) return undefined;
+
+  const generation = context.catalog.pokemon[question.pokemonName]?.generation;
+  if (!generation) return undefined;
+
+  return {
+    ...addQuestionVisuals(context, question),
+    generation,
+    questionType,
+  };
 };

@@ -164,7 +164,7 @@ export const TrainerPassport = ({
 
   return (
     <section
-      className="trainer-passport"
+      className={`trainer-passport trainer-card--accent-${visibleProfile.accent}`}
       aria-labelledby="trainer-passport-title"
     >
       <header className="trainer-passport__header">

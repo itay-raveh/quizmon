@@ -21,9 +21,11 @@ export interface QuestionContext {
   used: Set<string>;
 }
 
+export type QuestionDraft = Omit<QuestionData, 'generation' | 'questionType'>;
+
 export type QuestionBuilder = (
   context: QuestionContext,
-) => QuestionData | undefined;
+) => QuestionDraft | undefined;
 
 export const pick = <T>(
   values: readonly T[],
@@ -105,8 +107,8 @@ export const makeQuestion = (
   correctOption: string,
   options: string[],
   prompt: QuestionPrompt,
-  media: QuestionData['media'] = { kind: 'none' },
-): QuestionData => ({
+  media: QuestionDraft['media'] = { kind: 'none' },
+): QuestionDraft => ({
   answer: {
     correctOptions: [correctOption],
     interaction: 'single-choice',
@@ -169,8 +171,8 @@ const targetSpriteCategories: readonly QuestionCategory[] = [
 
 export const addQuestionVisuals = (
   context: QuestionContext,
-  question: QuestionData,
-): QuestionData => {
+  question: QuestionDraft,
+): QuestionDraft => {
   if (question.optionVisuals) return question;
   if (question.media.kind !== 'none') return question;
 

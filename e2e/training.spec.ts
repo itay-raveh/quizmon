@@ -201,7 +201,9 @@ test('repeats Training immediately with the same configuration', async ({
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('button', { name: /Trainer Card updated/ }),
+    page.getByRole('button', {
+      name: /View Trainer Card|League stamps advanced|reached Tier/,
+    }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Train again' }).click();
 

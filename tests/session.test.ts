@@ -5,17 +5,22 @@ import type { AnswerResult, GameResult, QuestionData } from '@/game/types';
 const question: QuestionData = {
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'identity',
+  generation: 'I',
   id: 'identity:pikachu:0',
   media: { kind: 'none' },
   options: ['pikachu'],
   pokemonName: 'pikachu',
   prompt: { kind: 'text', text: 'Who is this Pokémon?' },
+  questionType: 'pokedex-scan',
 };
 
 const answer: AnswerResult = {
   category: 'identity',
+  cluesUsed: 0,
   correct: true,
+  generation: 'I',
   points: 1_000,
+  questionType: 'pokedex-scan',
 };
 
 const result: GameResult = {
@@ -49,6 +54,7 @@ describe('gameSessionReducer', () => {
       isNewBest: true,
       result,
       resultSaved: true,
+      stampChanges: [],
       type: 'completed',
     });
     expect(completed).toEqual({
@@ -59,6 +65,7 @@ describe('gameSessionReducer', () => {
       phase: 'results',
       result,
       resultSaved: true,
+      stampChanges: [],
     });
   });
 

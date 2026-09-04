@@ -9,12 +9,17 @@ import {
   getSpeedBonus,
 } from '@/game/game';
 import { formatScore } from '@/game/format';
+import {
+  formatTrainerStampTier,
+  type TrainerStampChange,
+} from '@/game/trainer';
 import type { GameMode, GameResult } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
 import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
+import { TrainerStampMark } from './TrainerStampMark';
 
 interface ResultsProps {
   bestResult: GameResult;
@@ -27,6 +32,7 @@ interface ResultsProps {
   onTrainAgain: () => void;
   result: GameResult;
   resultSaved: boolean;
+  stampChanges: TrainerStampChange[];
 }
 
 export const Results = ({
@@ -40,10 +46,12 @@ export const Results = ({
   onTrainAgain,
   result,
   resultSaved,
+  stampChanges,
 }: ResultsProps) => {
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
+  const primaryStampChange = stampChanges[0];
 
   useEffect(() => {
     heading.current?.focus();
@@ -138,16 +146,33 @@ export const Results = ({
       ) : null}
 
       <GameButton
-        className="trainer-card-update"
+        className={`trainer-card-update${primaryStampChange ? ' trainer-card-update--stamp' : ''}`}
         tone="quiet"
         onClick={onOpenTrainerCard}
       >
-        <span className="trainer-card-update__mark" aria-hidden="true">
-          ID
-        </span>
+        {primaryStampChange ? (
+          <TrainerStampMark
+            id={primaryStampChange.id}
+            tier={primaryStampChange.tier}
+          />
+        ) : (
+          <span className="trainer-card-update__mark" aria-hidden="true">
+            ID
+          </span>
+        )}
         <span>
-          <strong>Trainer Card updated</strong>
-          <small>View your profile and records</small>
+          <strong>
+            {stampChanges.length > 1
+              ? `${stampChanges.length} League stamps advanced`
+              : primaryStampChange
+                ? `${primaryStampChange.label} reached ${formatTrainerStampTier(primaryStampChange.tier)}`
+                : 'View Trainer Card'}
+          </strong>
+          <small>
+            {primaryStampChange
+              ? 'See your new mark and next challenge'
+              : 'Profile, records, and League stamps'}
+          </small>
         </span>
         <span aria-hidden="true">›</span>
       </GameButton>

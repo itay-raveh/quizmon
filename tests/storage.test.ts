@@ -11,8 +11,22 @@ import type { GameResult } from '@/game/types';
 
 const result: GameResult = {
   answers: [
-    { category: 'identity', correct: true, points: 1_000 },
-    { category: 'stat', correct: false, points: 0 },
+    {
+      category: 'identity',
+      cluesUsed: 0,
+      correct: true,
+      generation: 'I',
+      points: 1_000,
+      questionType: 'pokedex-scan',
+    },
+    {
+      category: 'stat',
+      cluesUsed: 0,
+      correct: false,
+      generation: 'II',
+      points: 0,
+      questionType: 'stat-showdown',
+    },
   ],
   contentVersion: 2,
   correctCount: 1,
@@ -141,7 +155,14 @@ describe('saved results', () => {
       ...result,
       answers: [
         ...result.answers,
-        { category: 'type' as const, correct: true, points: 1_000 },
+        {
+          category: 'type' as const,
+          cluesUsed: 0,
+          correct: true,
+          generation: 'III' as const,
+          points: 1_000,
+          questionType: 'type-check' as const,
+        },
       ],
       correctCount: 2,
       questionCount: 3,
@@ -180,7 +201,46 @@ describe('saved results', () => {
         stat: { correct: 1, total: 1 },
       },
       gamesCompleted: 1,
+      masteryRounds: 0,
       perfectRounds: 1,
+    });
+  });
+
+  it('tracks League mastery without rewarding perfect Quick rounds', () => {
+    const perfectAnswers = Array.from({ length: 10 }, (_, index) => ({
+      category: index === 9 ? ('champion' as const) : ('identity' as const),
+      cluesUsed: 0,
+      correct: true,
+      generation: index % 2 === 0 ? ('I' as const) : ('II' as const),
+      points: 1_000,
+      questionType:
+        index === 9 ? ('champion' as const) : ('pokedex-scan' as const),
+    }));
+    const standard = {
+      ...result,
+      answers: perfectAnswers,
+      correctCount: 10,
+      questionCount: 10,
+    };
+    const quick = {
+      ...standard,
+      answers: perfectAnswers.slice(0, 5),
+      correctCount: 5,
+      questionCount: 5,
+    };
+
+    saveResult({ kind: 'training' }, quick, {
+      ...defaultModifiers,
+      limit: 5,
+    });
+    expect(readTrainerStats().masteryRounds).toBe(0);
+
+    saveResult({ kind: 'training' }, standard, defaultModifiers);
+    expect(readTrainerStats()).toMatchObject({
+      championAnswersWithoutClues: 1,
+      correctGenerations: { I: 8, II: 7 },
+      correctQuestionTypes: { 'pokedex-scan': 14 },
+      masteryRounds: 1,
     });
   });
 
@@ -189,8 +249,11 @@ describe('saved results', () => {
       ...result,
       answers: Array.from({ length: 10 }, () => ({
         category: 'identity' as const,
+        cluesUsed: 0,
         correct: true,
+        generation: 'I' as const,
         points: 1_000,
+        questionType: 'pokedex-scan' as const,
       })),
       correctCount: 10,
       questionCount: 10,
