@@ -1,11 +1,9 @@
 import { readFileSync } from 'node:fs';
-import { site } from '../src/app/site.ts';
+import { absoluteSiteUrl, site } from '../src/app/site.ts';
 
-const absoluteUrl = (path: string) => new URL(path, site.url).href;
-
-export const markdownUrl = absoluteUrl('/index.md');
-export const llmsUrl = absoluteUrl('/llms.txt');
-const sitemapUrl = absoluteUrl('/sitemap.xml');
+export const markdownUrl = absoluteSiteUrl('/index.md');
+export const llmsUrl = absoluteSiteUrl('/llms.txt');
+const sitemapUrl = absoluteSiteUrl('/sitemap.xml');
 
 const manifest = `${JSON.stringify(
   {
@@ -68,12 +66,12 @@ const llms = `# ${site.name}
 
 > ${site.description}
 
-Quizmon is a free, unofficial browser game. It has no accounts or application backend, and player settings and results remain on the device.
+${site.name} is a free, unofficial browser game. It has no accounts or application backend, and player settings and results remain on the device.
 
 ## Game
 
-- [Quizmon overview](${markdownUrl}): Game modes, question coverage, data use, offline behavior, and attribution.
-- [Play Quizmon](${site.url}): The interactive game.
+- [${site.name} overview](${markdownUrl}): Game modes, question coverage, data use, offline behavior, and attribution.
+- [Play ${site.name}](${site.url}): The interactive game.
 
 ## Project
 
@@ -82,7 +80,7 @@ Quizmon is a free, unofficial browser game. It has no accounts or application ba
 
 ## Optional
 
-- [MIT License](${site.repositoryUrl}/blob/main/LICENSE): License for Quizmon's source code.
+- [MIT License](${site.repositoryUrl}/blob/main/LICENSE): License for ${site.name}'s source code.
 `;
 
 export const structuredData = JSON.stringify({
@@ -91,7 +89,7 @@ export const structuredData = JSON.stringify({
   name: site.name,
   description: site.description,
   url: site.url,
-  image: absoluteUrl(site.socialImage.path),
+  image: absoluteSiteUrl(site.socialImage.path),
   inLanguage: site.language,
   applicationCategory: 'GameApplication',
   operatingSystem: 'Any',

@@ -59,8 +59,8 @@ export const shareTrainerCard = async (
   try {
     await navigator.share({
       files: [file],
-      text: 'My Quizmon Trainer Card',
-      title: 'Quizmon Trainer Card',
+      text: `My ${site.name} Trainer Card`,
+      title: `${site.name} Trainer Card`,
       url: site.url,
     });
     return 'shared';

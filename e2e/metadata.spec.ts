@@ -5,7 +5,13 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page).toHaveTitle('Quizmon');
+  await expect(page).toHaveTitle(
+    'Quizmon: The Ultimate Pokémon Knowledge Test',
+  );
+  await expect(page.locator('h1')).toHaveCount(1);
+  await expect(page.locator('h1')).toHaveText(
+    'Quizmon: The Ultimate Pokémon Knowledge Test',
+  );
   await expect(page.locator('meta[name="description"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
@@ -18,7 +24,10 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
     'href',
     'https://quizmon.raveh.dev/llms.txt',
   );
-  await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+    'content',
+    'Quizmon: The Ultimate Pokémon Knowledge Test',
+  );
   await expect(page.locator('meta[property="og:description"]')).toHaveCount(1);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     'content',
@@ -29,6 +38,21 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
     'summary_large_image',
   );
   await expect(page.locator('meta[name^="twitter:"]')).toHaveCount(1);
+
+  const documentResponse = await page.request.get('/');
+  expect(await documentResponse.text()).toContain(
+    '<div id="root"><h1 id="landing-title" class="visually-hidden">Quizmon: The Ultimate Pokémon Knowledge Test</h1></div>',
+  );
+
+  const faviconResponse = await page.request.get('/favicon.ico');
+  expect(faviconResponse.ok()).toBe(true);
+  expect(faviconResponse.headers()['content-type']).toContain('image/x-icon');
+
+  const socialImageResponse = await page.request.get(
+    '/assets/images/social-card.png',
+  );
+  expect(socialImageResponse.ok()).toBe(true);
+  expect((await socialImageResponse.body()).byteLength).toBeLessThan(500_000);
 
   const footerMetrics = await page
     .getByRole('contentinfo')

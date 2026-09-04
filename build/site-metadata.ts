@@ -1,13 +1,11 @@
 import type { HtmlTagDescriptor, Plugin } from 'vite';
-import { site } from '../src/app/site.ts';
+import { absoluteSiteUrl, site } from '../src/app/site.ts';
 import {
   generatedAssets,
   llmsUrl,
   markdownUrl,
   structuredData,
 } from './site-assets.ts';
-
-const absoluteUrl = (path: string) => new URL(path, site.url).href;
 
 const meta = (
   attribute: 'name' | 'property',
@@ -20,7 +18,7 @@ const meta = (
 });
 
 const tags: HtmlTagDescriptor[] = [
-  { tag: 'title', children: site.name, injectTo: 'head' },
+  { tag: 'title', children: site.title, injectTo: 'head' },
   meta('name', 'description', site.description),
   meta('name', 'theme-color', site.themeColor),
   {
@@ -40,11 +38,11 @@ const tags: HtmlTagDescriptor[] = [
   },
   meta('property', 'og:type', 'website'),
   meta('property', 'og:site_name', site.name),
-  meta('property', 'og:title', site.name),
+  meta('property', 'og:title', site.title),
   meta('property', 'og:description', site.description),
   meta('property', 'og:url', site.url),
   meta('property', 'og:locale', site.locale),
-  meta('property', 'og:image', absoluteUrl(site.socialImage.path)),
+  meta('property', 'og:image', absoluteSiteUrl(site.socialImage.path)),
   meta('property', 'og:image:type', site.socialImage.type),
   meta('property', 'og:image:width', site.socialImage.width),
   meta('property', 'og:image:height', site.socialImage.height),
@@ -86,7 +84,12 @@ export const siteMetadata = (): Plugin => ({
   },
   transformIndexHtml(html) {
     return {
-      html: html.replace('<html>', `<html lang="${site.language}">`),
+      html: html
+        .replace('<html>', `<html lang="${site.language}">`)
+        .replace(
+          '<div id="root"></div>',
+          `<div id="root"><h1 id="landing-title" class="visually-hidden">${site.title}</h1></div>`,
+        ),
       tags,
     };
   },

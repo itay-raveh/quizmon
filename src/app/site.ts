@@ -1,6 +1,11 @@
+const name = 'Quizmon';
+const tagline = 'The Ultimate Pokémon Knowledge Test';
+const title = `${name}: ${tagline}`;
+
 export const site = {
-  name: 'Quizmon',
-  tagline: 'The Ultimate Pokémon Knowledge Test',
+  name,
+  tagline,
+  title,
   description:
     'Take the five-question Pokémon Daily Challenge each day, then practice types, moves, evolutions, stats, and more.',
   url: 'https://quizmon.raveh.dev/',
@@ -13,6 +18,9 @@ export const site = {
     type: 'image/png',
     width: 1200,
     height: 630,
-    alt: 'Quizmon: The Ultimate Pokémon Knowledge Test. Play now.',
+    alt: `${title}. Play now.`,
   },
 } as const;
+
+export const absoluteSiteUrl = (path: string) => new URL(path, site.url).href;
+export const siteHostname = new URL(site.url).hostname;

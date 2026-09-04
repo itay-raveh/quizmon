@@ -19,7 +19,7 @@ export const buildShareContent = (
 
   return {
     text: [`${formatScore(result.score)} points`, pattern].join('\n'),
-    title: `Quizmon · ${mode.kind === 'daily' ? formatDailyDate(mode.date) : 'Training'}`,
+    title: `${site.name} · ${mode.kind === 'daily' ? formatDailyDate(mode.date) : 'Training'}`,
     url: mode.kind === 'daily' ? getDailyUrl(mode.date) : site.url,
   };
 };

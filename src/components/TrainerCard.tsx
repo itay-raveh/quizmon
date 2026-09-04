@@ -1,4 +1,5 @@
 import type { Ref } from 'react';
+import { site, siteHostname } from '@/app/site';
 import { formatDailyDate } from '@/game/daily';
 import { formatPokemonName } from '@/game/format';
 import type { TrainerStats } from '@/game/storage';
@@ -48,7 +49,7 @@ export const TrainerCard = ({
       {face === 'front' ? (
         <>
           <header className="trainer-card__banner">
-            <span>Quizmon League</span>
+            <span>{site.name} League</span>
             <strong>{rank}</strong>
           </header>
           <div className="trainer-card__front">
@@ -68,7 +69,7 @@ export const TrainerCard = ({
               </div>
             </div>
             <div className="trainer-card__identity">
-              <h2>{profile.name || 'Quizmon Trainer'}</h2>
+              <h2>{profile.name || `${site.name} Trainer`}</h2>
               {profile.specialty ? (
                 <p className="trainer-card__title">
                   {trainerSpecialtyLabels[profile.specialty]}
@@ -88,7 +89,7 @@ export const TrainerCard = ({
           </div>
           <footer className="trainer-card__footer">
             <span>Play at</span>
-            <strong>quizmon.raveh.dev</strong>
+            <strong>{siteHostname}</strong>
           </footer>
         </>
       ) : (
