@@ -6,6 +6,19 @@
 /playwright-report/
 /test-results/
 
+# Track only durable Impeccable project context.
+/.impeccable/*
+!/.impeccable/config.json
+!/.impeccable/design.json
+!/.impeccable/surfaces/
+!/.impeccable/surfaces/**
+!/.impeccable/critique/
+/.impeccable/critique/*
+!/.impeccable/critique/ignore.md
+!/.impeccable/live/
+/.impeccable/live/*
+!/.impeccable/live/config.json
+
 .DS_Store
 *.tsbuildinfo
 npm-debug.log*
