@@ -12,12 +12,11 @@ import {
   getSpeedBonusPoints,
   isQuestionAnswerCorrect,
 } from '@/game/game';
-import type { AnswerResult, GameMode, QuestionData } from '@/game/types';
+import type { AnswerResult, QuestionData } from '@/game/types';
 
 interface UseQuestionAnswerOptions {
   elapsedMilliseconds: number;
   interactionPaused: boolean;
-  mode: GameMode;
   nextQuestion?: QuestionData;
   onAnswer: (answer: AnswerResult) => void;
   onAnswerRecorded?: (answer: AnswerResult) => void;
@@ -27,8 +26,6 @@ interface UseQuestionAnswerOptions {
 }
 
 const QUICK_FEEDBACK_DELAY = 300;
-const DAILY_FEEDBACK_DELAY = 850;
-const TRAINING_FEEDBACK_DELAY = 1_200;
 
 const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
@@ -47,7 +44,6 @@ const preloadQuestionImages = (question: QuestionData) => {
 export const useQuestionAnswer = ({
   elapsedMilliseconds,
   interactionPaused,
-  mode,
   nextQuestion,
   onAnswer,
   onAnswerRecorded,
@@ -57,8 +53,10 @@ export const useQuestionAnswer = ({
 }: UseQuestionAnswerOptions) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [answered, setAnswered] = useState(false);
+  const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
   const [cluesShown, setCluesShown] = useState(0);
   const { playCorrect, playWrong } = useGameSounds();
+  const answerAdvanced = useRef(false);
   const answerTimeout = useRef<number | null>(null);
   const questionStartedAt = useRef(elapsedMilliseconds);
 
@@ -70,6 +68,12 @@ export const useQuestionAnswer = ({
       }
     };
   }, [nextQuestion]);
+
+  const advanceAnswer = useCallback(() => {
+    if (!answerResult || answerAdvanced.current) return;
+    answerAdvanced.current = true;
+    onAnswer(answerResult);
+  }, [answerResult, onAnswer]);
 
   const finishAnswer = useCallback(
     (options: string[]) => {
@@ -91,24 +95,24 @@ export const useQuestionAnswer = ({
         responseMilliseconds,
         speedBonus: getSpeedBonusPoints(points, responseMilliseconds),
       };
-      const delay = speedrunMode
-        ? QUICK_FEEDBACK_DELAY
-        : mode.kind === 'daily'
-          ? DAILY_FEEDBACK_DELAY
-          : TRAINING_FEEDBACK_DELAY;
-
       setSelectedOptions(options);
       setAnswered(true);
+      setAnswerResult(answer);
       if (correct) playCorrect();
       else playWrong();
       onAnswerRecorded?.(answer);
-      answerTimeout.current = window.setTimeout(() => onAnswer(answer), delay);
+      if (speedrunMode) {
+        answerTimeout.current = window.setTimeout(() => {
+          if (answerAdvanced.current) return;
+          answerAdvanced.current = true;
+          onAnswer(answer);
+        }, QUICK_FEEDBACK_DELAY);
+      }
     },
     [
       answered,
       cluesShown,
       interactionPaused,
-      mode.kind,
       onAnswer,
       onAnswerRecorded,
       onFeedbackStart,
@@ -162,6 +166,7 @@ export const useQuestionAnswer = ({
     answerCorrect:
       answered && isQuestionAnswerCorrect(question, selectedOptions),
     answered,
+    advanceAnswer,
     cluesShown,
     correctOptions: getCorrectOptions(question),
     finishAnswer,

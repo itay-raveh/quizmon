@@ -5,7 +5,7 @@ import {
   getCorrectOptions,
   getQuestionTitle,
 } from '@/game/game';
-import { formatPokemonName } from '@/game/format';
+import { formatPokemonName, formatPokemonTypes } from '@/game/format';
 import type {
   AnswerResult,
   GameMode,
@@ -19,7 +19,14 @@ import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionClues } from './QuestionClues';
 import { SettingsButton } from './SettingsButton';
+import { TypeBadges } from './TypeBadge';
 import { useQuestionAnswer } from './useQuestionAnswer';
+
+const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
+  'counter-pick',
+  'type-check',
+  'type-matchup',
+]);
 
 interface QuestionProps {
   elapsedMilliseconds: number;
@@ -80,9 +87,11 @@ export const Question = ({
   total,
 }: QuestionProps) => {
   const heading = useRef<HTMLHeadingElement>(null);
+  const advanceButton = useRef<HTMLButtonElement>(null);
   const {
     answerCorrect,
     answered,
+    advanceAnswer,
     cluesShown,
     correctOptions,
     finishAnswer,
@@ -92,7 +101,6 @@ export const Question = ({
   } = useQuestionAnswer({
     elapsedMilliseconds,
     interactionPaused,
-    mode,
     nextQuestion,
     onAnswer,
     onAnswerRecorded,
@@ -104,6 +112,10 @@ export const Question = ({
   useEffect(() => {
     heading.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (answered && !speedrunMode) advanceButton.current?.focus();
+  }, [answered, speedrunMode]);
 
   const isChampion = question.category === 'champion';
   const championChoicesVisible = isChampion && cluesShown > 0;
@@ -164,6 +176,16 @@ export const Question = ({
         question={question}
       />
 
+      {answered &&
+      question.pokemonTypes.length > 0 &&
+      subjectTypeRevealQuestionTypes.has(question.questionType) ? (
+        <TypeBadges
+          className="question__types"
+          label={`${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`}
+          types={question.pokemonTypes}
+        />
+      ) : null}
+
       {!isChampion || championChoicesVisible ? (
         <QuestionAnswers
           answered={answered}
@@ -193,14 +215,24 @@ export const Question = ({
             : ''}
       </span>
 
-      <GameButton
-        className="new-game"
-        disabled={answered}
-        tone="quiet"
-        onClick={onNewGame}
-      >
-        Leave game
-      </GameButton>
+      {answered && !speedrunMode ? (
+        <GameButton
+          className="new-game"
+          onClick={advanceAnswer}
+          ref={advanceButton}
+        >
+          {number === total ? 'See results' : 'Next question'}
+        </GameButton>
+      ) : (
+        <GameButton
+          className="new-game"
+          disabled={answered}
+          tone="quiet"
+          onClick={onNewGame}
+        >
+          Leave game
+        </GameButton>
+      )}
     </section>
   );
 };

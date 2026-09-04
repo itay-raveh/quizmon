@@ -1,6 +1,19 @@
-import { formatPokemonName } from '@/game/format';
+import { formatPokemonName, formatPokemonTypes } from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
+import { TypeBadges } from './TypeBadge';
+
+const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
+  'evolution-shift',
+  'type-check',
+  'type-matchup',
+]);
+
+const optionTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
+  'counter-pick',
+  'odd-one-out',
+  'type-roundup',
+]);
 
 interface QuestionAnswersProps {
   answered: boolean;
@@ -19,6 +32,11 @@ export const QuestionAnswers = ({
 }: QuestionAnswersProps) => {
   const correct = new Set(correctOptions);
   const selected = new Set(selectedOptions);
+  const hasTypeOptionBadges = typeOptionQuestionTypes.has(
+    question.questionType,
+  );
+  const revealsOptionTypes =
+    answered && optionTypeRevealQuestionTypes.has(question.questionType);
 
   const optionClassName = (option: string) => {
     if (!answered) {
@@ -31,12 +49,22 @@ export const QuestionAnswers = ({
 
   return (
     <div
-      className={`answers ${question.optionVisuals ? 'answers--pokemon' : ''}`.trim()}
+      className={[
+        'answers',
+        question.optionVisuals ? 'answers--pokemon' : '',
+        hasTypeOptionBadges ? 'answers--type-options' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {question.options.map((option, index) => {
         const visual = question.optionVisuals?.[option];
         const concealed = Boolean(question.concealOptionLabels && !answered);
         const optionSelected = selected.has(option);
+        const typeAnnouncement =
+          revealsOptionTypes && visual
+            ? `. ${visual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(visual.types)}.`
+            : '';
         const selectionMark = answered
           ? correct.has(option)
             ? '✓'
@@ -50,7 +78,9 @@ export const QuestionAnswers = ({
         return (
           <GameButton
             aria-label={
-              concealed ? `Silhouette ${index + 1}` : formatPokemonName(option)
+              concealed
+                ? `Silhouette ${index + 1}`
+                : `${formatPokemonName(option)}${typeAnnouncement}`
             }
             aria-keyshortcuts={String(index + 1)}
             aria-pressed={
@@ -79,17 +109,27 @@ export const QuestionAnswers = ({
                 </span>
                 <span className="answer__nameplate">
                   {concealed ? (
-                    <span>Silhouette {index + 1}</span>
+                    <span className="answer__name">Silhouette {index + 1}</span>
                   ) : (
                     <>
                       <small aria-hidden="true">
                         No. {String(visual.dexNumber).padStart(4, '0')}
                       </small>
-                      <span>{formatPokemonName(option)}</span>
+                      <span className="answer__name">
+                        {formatPokemonName(option)}
+                      </span>
+                      {revealsOptionTypes ? (
+                        <TypeBadges
+                          className="answer__types"
+                          types={visual.types}
+                        />
+                      ) : null}
                     </>
                   )}
                 </span>
               </>
+            ) : hasTypeOptionBadges ? (
+              <TypeBadges className="answer__type-choice" types={[option]} />
             ) : (
               <span>{formatPokemonName(option)}</span>
             )}

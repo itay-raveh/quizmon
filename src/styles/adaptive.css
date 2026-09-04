@@ -292,8 +292,12 @@
     font-size: var(--text-tiny);
   }
 
-  .answer__nameplate > span {
+  .answer__name {
     font-size: var(--text-label);
+  }
+
+  .answer__types {
+    justify-content: center;
   }
 
   .selection-grid--question-types {

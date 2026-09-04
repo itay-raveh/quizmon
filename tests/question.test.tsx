@@ -10,6 +10,7 @@ const question: QuestionData = {
   media: { kind: 'none' },
   options: ['pikachu', 'eevee', 'ditto', 'mew'],
   pokemonName: 'pikachu',
+  pokemonTypes: ['electric'],
   prompt: { kind: 'text', text: 'Which Pokémon has the highest Speed?' },
   questionType: 'stat-showdown',
 };
@@ -28,6 +29,7 @@ const championQuestion: QuestionData = {
   },
   options: ['pikachu', 'eevee', 'ditto', 'mew'],
   pokemonName: 'pikachu',
+  pokemonTypes: ['electric'],
   prompt: {
     kind: 'text',
     text: '“It has small electric sacs on both its cheeks.”',
@@ -92,6 +94,7 @@ describe('question transitions', () => {
               {
                 dexNumber: index + 1,
                 src: `https://example.com/${option}.png`,
+                types: ['electric'],
               },
             ]),
           ),
@@ -109,6 +112,63 @@ describe('question transitions', () => {
     );
     expect(screen.getByText('No. 0001')).toBeInTheDocument();
   });
+
+  it.each(['odd-one-out', 'type-roundup', 'counter-pick'] as const)(
+    'reveals each Pokémon option type after an answer in %s',
+    (questionType) => {
+      const rendered = render(
+        <Question
+          elapsedMilliseconds={0}
+          elapsedSeconds={0}
+          interactionPaused={false}
+          mode={{ kind: 'training' }}
+          number={1}
+          onAnswer={vi.fn()}
+          onFeedbackStart={() => 0}
+          onNewGame={vi.fn()}
+          onOpenSettings={vi.fn()}
+          question={{
+            ...question,
+            category: 'type',
+            optionVisuals: Object.fromEntries(
+              question.options.map((option, index) => [
+                option,
+                {
+                  dexNumber: index + 1,
+                  src: `https://example.com/${option}.png`,
+                  types:
+                    option === 'pikachu' ? ['electric'] : ['normal', 'fairy'],
+                },
+              ]),
+            ),
+            questionType,
+          }}
+          speedrunMode={false}
+          total={10}
+        />,
+      );
+
+      expect(rendered.container.querySelectorAll('.type-badge')).toHaveLength(
+        0,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+
+      expect(
+        rendered.container.querySelectorAll('.answer__types .type-badge'),
+      ).toHaveLength(7);
+      expect(
+        screen.getByRole('button', {
+          name: 'Pikachu. Type: Electric.',
+        }),
+      ).toHaveClass('answer--correct');
+      expect(
+        screen.getByRole('button', {
+          name: 'Eevee. Types: Normal and Fairy.',
+        }),
+      ).toBeDisabled();
+    },
+  );
 
   it('renders one compact portrait for text-valued answers', () => {
     const rendered = render(
@@ -141,6 +201,7 @@ describe('question transitions', () => {
             kind: 'pokemon',
             name: 'pikachu',
           },
+          questionType: 'type-check',
         }}
         speedrunMode={false}
         total={10}
@@ -157,6 +218,16 @@ describe('question transitions', () => {
     expect(screen.getByText('(No. 0025)')).toHaveClass(
       'question__subject-number',
     );
+    expect(
+      rendered.container.querySelectorAll('.answer__type-choice .type-badge'),
+    ).toHaveLength(4);
+    expect(screen.queryByRole('img', { name: /Pikachu type/ })).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Electric' }));
+
+    expect(
+      screen.getByRole('img', { name: 'Pikachu type: Electric.' }),
+    ).toBeVisible();
   });
 
   it('reveals a silhouette after an answer is selected', () => {
@@ -261,52 +332,84 @@ describe('question transitions', () => {
   });
 
   it.each([
-    { delay: 1_200, mode: { kind: 'training' } as const, quick: false },
     {
-      delay: 850,
+      label: 'Next question',
+      mode: { kind: 'training' } as const,
+      number: 1,
+      total: 10,
+    },
+    {
+      label: 'See results',
       mode: { date: '2026-09-03', kind: 'daily' } as const,
-      quick: false,
+      number: 5,
+      total: 5,
     },
-    { delay: 300, mode: { kind: 'training' } as const, quick: true },
-  ])(
-    'holds feedback for $delay ms in $mode.kind when quick is $quick',
-    ({ delay, mode, quick }) => {
-      vi.useFakeTimers();
-      const onAnswer = vi.fn();
-      const onAnswerRecorded = vi.fn();
-      const onFeedbackStart = vi.fn(() => 5_000);
+  ])('waits for $label in $mode.kind', ({ label, mode, number, total }) => {
+    const onAnswer = vi.fn();
+    const onAnswerRecorded = vi.fn();
+    const onFeedbackStart = vi.fn(() => 5_000);
 
-      render(
-        <Question
-          elapsedMilliseconds={1_000}
-          elapsedSeconds={1}
-          interactionPaused={false}
-          mode={mode}
-          number={1}
-          onAnswer={onAnswer}
-          onAnswerRecorded={onAnswerRecorded}
-          onFeedbackStart={onFeedbackStart}
-          onNewGame={vi.fn()}
-          onOpenSettings={vi.fn()}
-          question={question}
-          speedrunMode={quick}
-          total={10}
-        />,
-      );
+    render(
+      <Question
+        elapsedMilliseconds={1_000}
+        elapsedSeconds={1}
+        interactionPaused={false}
+        mode={mode}
+        number={number}
+        onAnswer={onAnswer}
+        onAnswerRecorded={onAnswerRecorded}
+        onFeedbackStart={onFeedbackStart}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={question}
+        speedrunMode={false}
+        total={total}
+      />,
+    );
 
-      fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-      expect(onFeedbackStart).toHaveBeenCalledOnce();
-      expect(onAnswerRecorded).toHaveBeenCalledWith(
-        expect.objectContaining({ responseMilliseconds: 4_000 }),
-      );
-      expect(onAnswer).not.toHaveBeenCalled();
-      vi.advanceTimersByTime(delay);
-      expect(onAnswer).toHaveBeenCalledWith(
-        expect.objectContaining({ responseMilliseconds: 4_000 }),
-      );
-      vi.useRealTimers();
-    },
-  );
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    expect(onFeedbackStart).toHaveBeenCalledOnce();
+    expect(onAnswerRecorded).toHaveBeenCalledWith(
+      expect.objectContaining({ responseMilliseconds: 4_000 }),
+    );
+    expect(onAnswer).not.toHaveBeenCalled();
+    const advance = screen.getByRole('button', { name: label });
+    expect(advance).toHaveFocus();
+    fireEvent.click(advance);
+    expect(onAnswer).toHaveBeenCalledWith(
+      expect.objectContaining({ responseMilliseconds: 4_000 }),
+    );
+  });
+
+  it('keeps the 300 ms automatic advance in Quick mode', () => {
+    vi.useFakeTimers();
+    const onAnswer = vi.fn();
+
+    render(
+      <Question
+        elapsedMilliseconds={1_000}
+        elapsedSeconds={1}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={onAnswer}
+        onFeedbackStart={() => 5_000}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={question}
+        speedrunMode
+        total={10}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    expect(screen.queryByRole('button', { name: 'Next question' })).toBeNull();
+    vi.advanceTimersByTime(299);
+    expect(onAnswer).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(onAnswer).toHaveBeenCalledOnce();
+    vi.useRealTimers();
+  });
 
   it('checks every selected answer in a multi-select question', () => {
     render(
@@ -370,6 +473,7 @@ describe('question transitions', () => {
                 dexNumber: index + 1,
                 silhouette: true,
                 src: `https://example.com/${option}.png`,
+                types: ['electric'],
               },
             ]),
           ),
@@ -427,7 +531,6 @@ describe('question transitions', () => {
   });
 
   it('starts the Champion question as a keyboard-operable autocomplete', () => {
-    vi.useFakeTimers();
     const onAnswer = vi.fn();
     render(
       <Question
@@ -460,16 +563,14 @@ describe('question transitions', () => {
     fireEvent.keyDown(search, { key: 'Enter' });
     expect(search).toHaveValue('Pikachu');
     fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
-    vi.advanceTimersByTime(850);
+    fireEvent.click(screen.getByRole('button', { name: 'See results' }));
 
     expect(onAnswer).toHaveBeenCalledWith(
       expect.objectContaining({ correct: true, points: 1_000 }),
     );
-    vi.useRealTimers();
   });
 
   it('uses the first Champion clue to reveal four choices', () => {
-    vi.useFakeTimers();
     const onAnswer = vi.fn();
     render(
       <Question
@@ -498,11 +599,10 @@ describe('question transitions', () => {
       screen.getAllByRole('button', { name: /Pikachu|Eevee|Ditto|Mew/ }),
     ).toHaveLength(4);
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-    vi.advanceTimersByTime(850);
+    fireEvent.click(screen.getByRole('button', { name: 'See results' }));
 
     expect(onAnswer).toHaveBeenCalledWith(
       expect.objectContaining({ correct: true, points: 750 }),
     );
-    vi.useRealTimers();
   });
 });
