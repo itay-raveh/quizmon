@@ -1,7 +1,37 @@
 import type { GameMode, GameResult } from './types';
 
-export const trackGameCompleted = (mode: GameMode, result: GameResult) => {
-  const payload = {
+type AnalyticsEvent =
+  | { type: 'page_view' }
+  | {
+      mode: GameMode['kind'];
+      questionCount: number;
+      type: 'game_started';
+    }
+  | ({
+      mode: GameMode['kind'];
+      type: 'game_completed';
+    } & Omit<GameResult, 'answers'>);
+
+const trackEvent = (event: AnalyticsEvent) => {
+  void fetch('/api/events', {
+    body: JSON.stringify(event),
+    headers: { 'Content-Type': 'application/json' },
+    keepalive: true,
+    method: 'POST',
+  }).catch(() => undefined);
+};
+
+export const trackPageViewed = () => trackEvent({ type: 'page_view' });
+
+export const trackGameStarted = (mode: GameMode, questionCount: number) =>
+  trackEvent({
+    mode: mode.kind,
+    questionCount,
+    type: 'game_started',
+  });
+
+export const trackGameCompleted = (mode: GameMode, result: GameResult) =>
+  trackEvent({
     contentVersion: result.contentVersion,
     correctCount: result.correctCount,
     elapsedSeconds: result.elapsedSeconds,
@@ -9,12 +39,5 @@ export const trackGameCompleted = (mode: GameMode, result: GameResult) => {
     questionCount: result.questionCount,
     score: result.score,
     scoreVersion: result.scoreVersion,
-  };
-
-  void fetch('/api/events/game-completed', {
-    body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'application/json' },
-    keepalive: true,
-    method: 'POST',
-  }).catch(() => undefined);
-};
+    type: 'game_completed',
+  });

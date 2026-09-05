@@ -56,13 +56,17 @@ test('plays and shares a complete Training round without a live API call', async
     Object.defineProperty(navigator, 'share', { value: undefined });
   });
   let apiCalls = 0;
-  const completionEvents: unknown[] = [];
+  const analyticsEvents: Record<string, unknown>[] = [];
   await page.route('https://pokeapi.co/api/v2/**', async (route) => {
     apiCalls += 1;
     await route.abort();
   });
-  await page.route('**/api/events/game-completed', async (route) => {
-    completionEvents.push(route.request().postDataJSON());
+  await page.route('**/api/events', async (route) => {
+    const event = route.request().postDataJSON() as unknown;
+    if (!event || typeof event !== 'object' || Array.isArray(event)) {
+      throw new Error('Expected an analytics event object.');
+    }
+    analyticsEvents.push(event as Record<string, unknown>);
     await route.fulfill({ status: 204 });
   });
 
@@ -91,6 +95,15 @@ test('plays and shares a complete Training round without a live API call', async
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
+  await expect
+    .poll(() => analyticsEvents.filter(({ type }) => type === 'page_view'))
+    .toHaveLength(1);
+  await expect
+    .poll(() => analyticsEvents.filter(({ type }) => type === 'game_started'))
+    .toHaveLength(1);
+  const completionEvents = analyticsEvents.filter(
+    ({ type }) => type === 'game_completed',
+  );
   await expect.poll(() => completionEvents).toHaveLength(1);
   expect(completionEvents[0]).toMatchObject({
     contentVersion: catalogData.contentVersion,
@@ -98,6 +111,7 @@ test('plays and shares a complete Training round without a live API call', async
     mode: 'training',
     questionCount: 10,
     scoreVersion: 2,
+    type: 'game_completed',
   });
   await expect(page.getByRole('contentinfo')).toBeVisible();
   expect(apiCalls).toBe(0);

@@ -3,13 +3,13 @@ const SPRITE_PATH =
 const SPRITE_SOURCE =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites';
 const SPRITE_CACHE_SECONDS = 60 * 60 * 24 * 30;
-const GAME_COMPLETED_PATH = '/api/events/game-completed';
+const ANALYTICS_PATH = '/api/events';
 const MAX_EVENT_BODY_LENGTH = 1_024;
 
 interface AnalyticsEngineDataset {
   writeDataPoint(event: {
-    blobs: string[];
-    doubles: number[];
+    blobs?: string[];
+    doubles?: number[];
     indexes: string[];
   }): void;
 }
@@ -55,15 +55,25 @@ const fetchSprite = async (request: Request, url: URL): Promise<Response> => {
   });
 };
 
-interface GameCompletedEvent {
-  contentVersion: number;
-  correctCount: number;
-  elapsedSeconds: number;
-  mode: 'daily' | 'league' | 'training';
-  questionCount: number;
-  score: number;
-  scoreVersion: number;
-}
+type GameMode = 'daily' | 'league' | 'training';
+
+type AnalyticsEvent =
+  | { type: 'page_view' }
+  | {
+      mode: GameMode;
+      questionCount: number;
+      type: 'game_started';
+    }
+  | {
+      contentVersion: number;
+      correctCount: number;
+      elapsedSeconds: number;
+      mode: GameMode;
+      questionCount: number;
+      score: number;
+      scoreVersion: number;
+      type: 'game_completed';
+    };
 
 const isIntegerBetween = (value: unknown, minimum: number, maximum: number) =>
   Number.isInteger(value) &&
@@ -71,14 +81,22 @@ const isIntegerBetween = (value: unknown, minimum: number, maximum: number) =>
   value >= minimum &&
   value <= maximum;
 
-const isGameCompletedEvent = (value: unknown): value is GameCompletedEvent => {
+const isGameMode = (value: unknown): value is GameMode =>
+  value === 'daily' || value === 'league' || value === 'training';
+
+const isAnalyticsEvent = (value: unknown): value is AnalyticsEvent => {
   if (!value || typeof value !== 'object') return false;
 
   const event = value as Record<string, unknown>;
+  if (event.type === 'page_view') return true;
+  if (event.type === 'game_started') {
+    return (
+      isGameMode(event.mode) && isIntegerBetween(event.questionCount, 1, 100)
+    );
+  }
   return (
-    (event.mode === 'daily' ||
-      event.mode === 'league' ||
-      event.mode === 'training') &&
+    event.type === 'game_completed' &&
+    isGameMode(event.mode) &&
     isIntegerBetween(event.questionCount, 1, 100) &&
     isIntegerBetween(event.correctCount, 0, event.questionCount as number) &&
     isIntegerBetween(event.score, 0, 1_000_000_000) &&
@@ -90,7 +108,7 @@ const isGameCompletedEvent = (value: unknown): value is GameCompletedEvent => {
 
 const noStoreHeaders = { 'Cache-Control': 'no-store' };
 
-const recordGameCompleted = async (
+const recordAnalyticsEvent = async (
   request: Request,
   env: Env,
 ): Promise<Response> => {
@@ -136,25 +154,35 @@ const recordGameCompleted = async (
     });
   }
 
-  if (!isGameCompletedEvent(event)) {
+  if (!isAnalyticsEvent(event)) {
     return new Response('Invalid event', {
       headers: noStoreHeaders,
       status: 400,
     });
   }
 
-  env.ANALYTICS.writeDataPoint({
-    blobs: [event.mode],
-    doubles: [
-      event.questionCount,
-      event.correctCount,
-      event.score,
-      event.elapsedSeconds,
-      event.contentVersion,
-      event.scoreVersion,
-    ],
-    indexes: ['game_completed'],
-  });
+  if (event.type === 'page_view') {
+    env.ANALYTICS.writeDataPoint({ indexes: [event.type] });
+  } else if (event.type === 'game_started') {
+    env.ANALYTICS.writeDataPoint({
+      blobs: [event.mode],
+      doubles: [event.questionCount],
+      indexes: [event.type],
+    });
+  } else {
+    env.ANALYTICS.writeDataPoint({
+      blobs: [event.mode],
+      doubles: [
+        event.questionCount,
+        event.correctCount,
+        event.score,
+        event.elapsedSeconds,
+        event.contentVersion,
+        event.scoreVersion,
+      ],
+      indexes: [event.type],
+    });
+  }
 
   return new Response(null, { headers: noStoreHeaders, status: 204 });
 };
@@ -162,8 +190,8 @@ const recordGameCompleted = async (
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname === GAME_COMPLETED_PATH) {
-      return recordGameCompleted(request, env);
+    if (url.pathname === ANALYTICS_PATH) {
+      return recordAnalyticsEvent(request, env);
     }
 
     if (
