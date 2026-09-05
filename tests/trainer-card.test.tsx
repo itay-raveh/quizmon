@@ -42,6 +42,9 @@ describe('Trainer Card', () => {
     expect(screen.getByText('Type Specialist')).toBeVisible();
     expect(screen.getByText('Ace')).toBeVisible();
     expect(
+      container.querySelector('.trainer-card__partner-caption'),
+    ).toHaveTextContent('No. 0001Bulbasaur');
+    expect(
       screen.getByRole('article', { name: 'Trainer Card front' }),
     ).toHaveClass('trainer-card--bronze');
     expect(

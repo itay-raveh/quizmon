@@ -324,27 +324,15 @@
 }
 
 .trainer-card__partner-caption {
-  display: grid;
   max-width: 100%;
-  justify-items: center;
-  color: var(--navy);
-  line-height: 1;
   text-align: center;
 }
 
-.trainer-card__partner-caption strong {
+.trainer-card__partner-caption .pokemon-identity__name {
   max-width: 100%;
   overflow: hidden;
-  font-size: var(--text-label);
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.trainer-card__partner-caption small {
-  color: var(--muted);
-  font-family: var(--font-data);
-  font-size: var(--text-small);
-  font-weight: 800;
 }
 
 .trainer-card__partner-mark {
@@ -1028,7 +1016,7 @@
   }
 
   .trainer-card__partner {
-    gap: 0.12rem;
+    gap: 0;
   }
 
   .trainer-card__portrait {
@@ -1050,16 +1038,6 @@
     margin: 0 0 0.3rem;
     font-size: var(--text-micro);
     line-height: 1.05;
-  }
-
-  .trainer-card__partner-caption strong {
-    font-size: var(--text-small);
-  }
-
-  .trainer-card__partner-caption small {
-    font-size: var(--text-micro);
-    line-height: 1;
-    white-space: nowrap;
   }
 
   .trainer-card__identity dl {
