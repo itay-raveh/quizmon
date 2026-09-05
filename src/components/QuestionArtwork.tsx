@@ -129,7 +129,10 @@ export const QuestionArtwork = ({
     const { evolution, gainedType } = question.visual;
     const retainedTypes = evolution.types.filter((type) => type !== gainedType);
     return (
-      <div className="question-visual question-relation" aria-hidden="true">
+      <div
+        className="question-visual question-relation question-relation--evolution"
+        aria-hidden="true"
+      >
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
           <span className="question-visual__subject-name">
