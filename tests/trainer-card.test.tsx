@@ -23,6 +23,7 @@ const stats: TrainerStats = {
   correctGenerations: { I: 2, II: 1, III: 1 },
   correctPokemon: ['bulbasaur'],
   correctQuestionTypes: {},
+  leagueCompleted: false,
   masteryRounds: 3,
   quickAttackCompleted: false,
 };
@@ -64,6 +65,7 @@ describe('Trainer Card', () => {
       correctQuestionTypes: Object.fromEntries(
         questionTypes.slice(0, 10).map((questionType) => [questionType, 1]),
       ),
+      leagueCompleted: true,
       quickAttackCompleted: true,
     };
     const { container } = render(

@@ -421,6 +421,60 @@
   transition: transform 240ms ease;
 }
 
+.league-progress {
+  position: relative;
+  display: grid;
+  width: min(20rem, 82%);
+  padding: 0;
+  margin: 0.8rem 0 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  list-style: none;
+}
+
+.league-progress::before {
+  position: absolute;
+  top: calc(50% - 1px);
+  right: 8%;
+  left: 8%;
+  height: 2px;
+  background: var(--sky);
+  content: '';
+}
+
+.league-progress__stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 1.9rem;
+  aspect-ratio: 1;
+  justify-self: center;
+  color: var(--muted);
+  background: var(--paper);
+  border: 2px solid var(--sky);
+  border-radius: 0.28rem;
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+  place-items: center;
+}
+
+.league-progress__stage--complete {
+  color: var(--primary-text);
+  background: var(--blue);
+  border-color: var(--navy);
+}
+
+.league-progress__stage--current {
+  color: var(--navy);
+  background: var(--yellow);
+  border-color: var(--navy);
+  box-shadow: 0 0.14rem 0 var(--navy-shadow);
+}
+
+.question--league h1 {
+  margin-top: 0.55rem;
+}
+
 .timer {
   padding: 0.35rem 0.58rem;
   color: var(--primary-text);
@@ -1015,6 +1069,21 @@
 .trainer-card-update > .trainer-badge-mark {
   width: 2.6rem;
   flex: none;
+}
+
+.trainer-card-update__hall-mark {
+  display: grid;
+  width: 2.6rem;
+  aspect-ratio: 1;
+  color: var(--navy);
+  background: var(--yellow);
+  border: 2px solid var(--navy);
+  border-radius: 0.28rem;
+  box-shadow: 0 0.14rem 0 var(--navy-shadow);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+  place-items: center;
 }
 
 .trainer-card-update > span:nth-child(2) {

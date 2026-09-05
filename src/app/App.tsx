@@ -9,6 +9,7 @@ import { useActiveGame } from './useActiveGame';
 import { useDailyChallenge } from './useDailyChallenge';
 import { useGameCompletion } from './useGameCompletion';
 import { useGameNavigation } from './useGameNavigation';
+import { useLeagueChallenge } from './useLeagueChallenge';
 import { useSettingsDialog } from './useSettingsDialog';
 import { useTrainerCard } from './useTrainerCard';
 import { useTrainingGame } from './useTrainingGame';
@@ -74,6 +75,13 @@ export const App = () => {
     modifiers,
     session,
     setModifiers,
+    startGame,
+  });
+
+  const { retry: retryLeague, start: startLeague } = useLeagueChallenge({
+    catalog: catalogState.status === 'ready' ? catalogState.catalog : undefined,
+    modifiers,
+    session,
     startGame,
   });
 
@@ -163,6 +171,7 @@ export const App = () => {
         streak: dailyStreak,
       }}
       modifiers={modifiers}
+      league={{ retry: retryLeague, start: startLeague }}
       navigation={{
         cancelLeave: cancelLeaveGame,
         leaveConfirmationOpen,

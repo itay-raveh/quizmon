@@ -19,7 +19,13 @@ export const buildShareContent = (
 
   return {
     text: [`${formatScore(result.score)} points`, pattern].join('\n'),
-    title: `${site.name} · ${mode.kind === 'daily' ? formatDailyDate(mode.date) : 'Training'}`,
+    title: `${site.name} · ${
+      mode.kind === 'daily'
+        ? formatDailyDate(mode.date)
+        : mode.kind === 'league'
+          ? 'Quizmon League'
+          : 'Training'
+    }`,
     url: mode.kind === 'daily' ? getDailyUrl(mode.date) : site.url,
   };
 };

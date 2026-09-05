@@ -52,4 +52,10 @@ describe('active game storage', () => {
 
     expect(readActiveGame()).toBeNull();
   });
+
+  it('accepts a resumable League challenge', () => {
+    writeActiveGame({ ...snapshot, mode: { kind: 'league' } });
+
+    expect(readActiveGame()?.mode).toEqual({ kind: 'league' });
+  });
 });

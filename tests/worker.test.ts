@@ -47,6 +47,23 @@ describe('game completion analytics endpoint', () => {
     });
   });
 
+  it('accepts Quizmon League completions', async () => {
+    const { env, writeDataPoint } = makeEnv();
+    const response = await worker.fetch(
+      new Request('https://quizmon.raveh.dev/api/events/game-completed', {
+        body: JSON.stringify({ ...validEvent, mode: 'league' }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      }),
+      env,
+    );
+
+    expect(response.status).toBe(204);
+    expect(writeDataPoint).toHaveBeenCalledWith(
+      expect.objectContaining({ blobs: ['league'] }),
+    );
+  });
+
   it.each([
     ['a GET request', undefined, {}, 405],
     [

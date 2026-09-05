@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T09:16:11Z",
+  "generatedAt": "2026-09-05T10:19:27Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -579,7 +579,7 @@
   ],
   "narrative": {
     "northStar": "Logo Echo",
-    "overview": "Quizmon's Logo Echo world starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.\n\nThe landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the Settings, Trainer Card, and Training controls stay small beneath it. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.\n\nThe result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.",
+    "overview": "Quizmon's Logo Echo world starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.\n\nThe landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the Settings, Trainer Card, and Training controls stay small beneath it. After the player earns every League Badge, one quiet Quizmon League action appears below that compact row without competing with the daily. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.\n\nThe result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.",
     "keyCharacteristics": [
       "Exact wordmark and crisp landscape remain the primary identity.",
       "Cream, cobalt, navy, and yellow controls echo the wordmark in restrained doses.",
@@ -629,9 +629,8 @@
       "Do keep landing controls small and let open scenery dominate the first viewport.",
       "Do use Gabarito for interface text and reserve Martian Mono for compact data and scores.",
       "Do use curated in-game pixel sprites as gameplay information and preserve their hard edges when scaled.",
-      "Do turn changing question data into one compact diagram while keeping the complete text prompt available to assistive technology.",
       "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
-      "Do animate the start and finish of a round, reserve revealed type and next-action footprints, and honor reduced motion.",
+      "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",
       "Do prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.",
       "Do keep the four concise footer credits linked in creative and technical groups, and preserve the visually hidden trademark sentence."
     ],
@@ -640,8 +639,7 @@
       "Don't use glass panels, blurred scenery, gradients, or diffuse floating-card shadows.",
       "Don't introduce pixel-font overkill, oversized uppercase labels, or decorative game glyphs.",
       "Don't force Pokémon sprites onto type, move, or ability choices that do not represent Pokémon.",
-      "Don't repeat a type name in visible question copy when the adjacent type artwork already communicates it.",
-      "Don't add navigation, marketing copy, characters, badges, ornamental frames, or ball symbols beyond the functional Daily Combo medallion to fill open space.",
+      "Don't add navigation, marketing copy, characters, ornamental frames, or ball symbols beyond functional game progression to fill open space.",
       "Don't redesign, redraw, crop, blur, or place the wordmark inside another container.",
       "Don't let decoration obscure answers, progress, score, modifiers, or keyboard focus."
     ]

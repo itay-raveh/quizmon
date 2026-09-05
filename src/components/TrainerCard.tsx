@@ -50,7 +50,10 @@ export const TrainerCard = ({
       className={`trainer-card trainer-card--${face} trainer-card--${finish.toLowerCase()} trainer-card--accent-${profile.accent}`}
       aria-label={`Trainer Card ${face === 'front' ? 'front' : 'badge case'}`}
     >
-      <TrainerCardFinishEffects finish={finish} />
+      <TrainerCardFinishEffects
+        finish={finish}
+        sparkles={rank === 'Champion'}
+      />
       {face === 'front' ? (
         <>
           <header className="trainer-card__banner">
@@ -100,9 +103,13 @@ export const TrainerCard = ({
       ) : (
         <>
           <header className="trainer-card__banner">
-            <span>League Badge Case</span>
+            <span>
+              {stats.leagueCompleted ? 'Hall of Fame' : 'League Badge Case'}
+            </span>
             <strong>
-              {earnedBadgeCount} / {badges.length}
+              {stats.leagueCompleted
+                ? 'Champion'
+                : `${earnedBadgeCount} / ${badges.length}`}
             </strong>
           </header>
           <section

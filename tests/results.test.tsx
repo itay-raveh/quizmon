@@ -41,6 +41,7 @@ const renderResults = (result: GameResult) =>
       onNewGame={vi.fn()}
       onOpenTrainerCard={vi.fn()}
       onOpenSettings={vi.fn()}
+      onRetryLeague={vi.fn()}
       onTrainAgain={vi.fn()}
       result={result}
       resultSaved
@@ -92,6 +93,7 @@ describe('results summary', () => {
         onNewGame={vi.fn()}
         onOpenTrainerCard={vi.fn()}
         onOpenSettings={vi.fn()}
+        onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
@@ -129,6 +131,7 @@ describe('results summary', () => {
         onNewGame={vi.fn()}
         onOpenTrainerCard={onOpenTrainerCard}
         onOpenSettings={vi.fn()}
+        onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
@@ -151,6 +154,63 @@ describe('results summary', () => {
       .getByRole('button', {
         name: /Perfect Form Badge earned.*Open your League Badge Case/,
       })
+      .click();
+    expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
+  });
+
+  it('shows a direct retry after a failed League challenge', () => {
+    const result = makeResult(15, 14);
+    const onRetryLeague = vi.fn();
+    render(
+      <Results
+        bestResult={result}
+        dailyStreak={0}
+        isNewBest={false}
+        mode={{ kind: 'league' }}
+        onNewGame={vi.fn()}
+        onOpenTrainerCard={vi.fn()}
+        onOpenSettings={vi.fn()}
+        onRetryLeague={onRetryLeague}
+        onTrainAgain={vi.fn()}
+        result={result}
+        resultSaved
+        badgeChanges={[]}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'League challenge ended' }),
+    ).toBeVisible();
+    expect(screen.getByText('Champion')).toBeVisible();
+    screen.getByRole('button', { name: 'Retry League' }).click();
+    expect(onRetryLeague).toHaveBeenCalledOnce();
+  });
+
+  it('links a League victory directly to the Hall of Fame badge case', () => {
+    const result = makeResult(15, 15);
+    const onOpenTrainerCard = vi.fn();
+    render(
+      <Results
+        bestResult={result}
+        dailyStreak={0}
+        isNewBest
+        mode={{ kind: 'league' }}
+        onNewGame={vi.fn()}
+        onOpenTrainerCard={onOpenTrainerCard}
+        onOpenSettings={vi.fn()}
+        onRetryLeague={vi.fn()}
+        onTrainAgain={vi.fn()}
+        result={result}
+        resultSaved
+        badgeChanges={[]}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'League Champion' }),
+    ).toBeVisible();
+    screen
+      .getByRole('button', { name: /Trainer Card updated.*Hall of Fame/ })
       .click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });

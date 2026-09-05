@@ -45,6 +45,7 @@ const isFiniteNonnegative = (value: unknown): value is number =>
 const parseMode = (value: unknown): GameMode | null => {
   if (!isRecord(value)) return null;
   if (value.kind === 'training') return { kind: 'training' };
+  if (value.kind === 'league') return { kind: 'league' };
   if (
     value.kind === 'daily' &&
     typeof value.date === 'string' &&

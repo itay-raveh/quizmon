@@ -13,11 +13,13 @@ interface LandingProps {
   dailyResult: GameResult | null;
   dailyResultSaved: boolean;
   dailyStreak: number;
+  leagueUnlocked: boolean;
   onOpenTrainerCard: () => void;
   onOpenSettings: () => void;
   onRetryCatalog: () => void;
   onStart: () => void;
   onStartDaily: () => void;
+  onStartLeague: () => void;
   storageAvailable: boolean;
 }
 
@@ -27,11 +29,13 @@ export const Landing = ({
   dailyResult,
   dailyResultSaved,
   dailyStreak,
+  leagueUnlocked,
   onOpenTrainerCard,
   onOpenSettings,
   onRetryCatalog,
   onStart,
   onStartDaily,
+  onStartLeague,
   storageAvailable,
 }: LandingProps) => {
   const dailyDetail = [
@@ -108,6 +112,16 @@ export const Landing = ({
           <span>Start training</span>
         </GameButton>
       </div>
+      {leagueUnlocked ? (
+        <GameButton
+          className="landing__league-button"
+          disabled={catalogStatus !== 'ready'}
+          tone="quiet"
+          onClick={onStartLeague}
+        >
+          Quizmon League
+        </GameButton>
+      ) : null}
     </section>
   );
 };

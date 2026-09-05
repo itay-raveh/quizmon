@@ -67,6 +67,7 @@ describe('gameSessionReducer', () => {
       phase: 'results',
       result,
       resultSaved: true,
+      seed: 'round-1',
       badgeChanges: [],
     });
   });

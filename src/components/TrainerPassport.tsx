@@ -23,12 +23,14 @@ import {
 import {
   getQualifiedTrainerSpecialties,
   getTrainerBadges,
+  isLeagueUnlocked,
   trainerSpecialtyLabels,
   type TrainerBadgeId,
   type TrainerCardFace,
   type TrainerSpecialty,
 } from '@/game/trainer';
 import { GameButton } from './GameButton';
+import { LeagueGateway } from './LeagueGateway';
 import { PokemonPicker } from './PokemonPicker';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';
 import { TrainerCard } from './TrainerCard';
@@ -38,6 +40,7 @@ interface TrainerPassportProps {
   onBack: () => void;
   onFaceChange: (face: TrainerCardFace) => void;
   onProfileChange: (profile: TrainerProfile) => void;
+  onStartLeague: () => void;
   profile: TrainerProfile;
   requestedFace: TrainerCardFace;
   stats: TrainerStats;
@@ -53,6 +56,7 @@ export const TrainerPassport = ({
   onBack,
   onFaceChange,
   onProfileChange,
+  onStartLeague,
   profile,
   requestedFace,
   stats,
@@ -107,6 +111,7 @@ export const TrainerPassport = ({
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareCard = supportsTrainerCardSharing();
   const badges = getTrainerBadges(stats);
+  const leagueUnlocked = isLeagueUnlocked(stats);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
   const turnTimeouts = useRef<number[]>([]);
 
@@ -354,6 +359,13 @@ export const TrainerPassport = ({
           stats={stats}
         />
       </div>
+
+      {face === 'badges' && leagueUnlocked ? (
+        <LeagueGateway
+          completed={stats.leagueCompleted}
+          onStart={onStartLeague}
+        />
+      ) : null}
 
       <div className="trainer-passport__controls">
         <GameButton disabled={turn !== 'idle'} tone="quiet" onClick={flip}>
