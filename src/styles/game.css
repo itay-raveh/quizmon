@@ -501,6 +501,9 @@
   width: min(14rem, 52vw);
   aspect-ratio: 1;
   margin: 0.35rem 0;
+  overflow: hidden;
+  background: var(--paper);
+  isolation: isolate;
   place-items: center;
 }
 
@@ -511,6 +514,15 @@
   object-fit: contain;
   image-rendering: pixelated;
   filter: drop-shadow(0 0.45rem 0.45rem rgba(8, 59, 126, 0.42));
+}
+
+.sprite--smooth {
+  image-rendering: auto;
+}
+
+.sprite--opaque-canvas {
+  mix-blend-mode: multiply;
+  filter: none;
 }
 
 .sprite--silhouette {

@@ -14,6 +14,11 @@ const findPokemonForSprite = (src: string | null) =>
     ([, entry]) =>
       entry.sprite === src ||
       entry.identitySprites.currentBack === src ||
+      entry.identitySprites.dreamWorld === src ||
+      entry.identitySprites.home === src ||
+      entry.identitySprites.officialArtwork === src ||
+      entry.identitySprites.showdownBack === src ||
+      entry.identitySprites.showdownFront === src ||
       entry.identitySprites.historicalFront.some(
         (candidate) => candidate === src,
       ) ||

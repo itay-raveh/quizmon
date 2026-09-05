@@ -56,8 +56,13 @@ export type StatName = (typeof statNames)[number];
 
 export interface PokemonIdentitySprites {
   currentBack: string | null;
+  dreamWorld: string | null;
   historicalBack: string[];
   historicalFront: string[];
+  home: string | null;
+  officialArtwork: string | null;
+  showdownBack: string | null;
+  showdownFront: string | null;
 }
 
 export interface PokemonKnowledge {

@@ -119,7 +119,7 @@ describe('analytics endpoint', () => {
     expect(writeDataPoint).not.toHaveBeenCalled();
   });
 
-  it('proxies curated historical sprite paths', async () => {
+  it('proxies supported sprite families with matching content types', async () => {
     const upstream = vi.fn().mockResolvedValue(
       new Response(new Uint8Array([1]), {
         headers: { 'Content-Type': 'image/png' },
@@ -128,19 +128,30 @@ describe('analytics endpoint', () => {
     );
     vi.stubGlobal('fetch', upstream);
     const { env } = makeEnv();
-    const path = '/sprites/pokemon/versions/generation-ii/crystal/back/25.png';
-    const response = await worker.fetch(
-      new Request(`https://quizmon.raveh.dev${path}`),
-      env,
-    );
+    const examples = [
+      [
+        '/sprites/pokemon/versions/generation-ii/crystal/back/25.png',
+        'image/png',
+      ],
+      ['/sprites/pokemon/other/official-artwork/25.png', 'image/png'],
+      ['/sprites/pokemon/other/dream-world/25.svg', 'image/svg+xml'],
+      ['/sprites/pokemon/other/showdown/25.gif', 'image/gif'],
+    ] as const;
 
-    expect(response.status).toBe(200);
-    expect(response.headers.get('Content-Type')).toBe('image/png');
-    expect(upstream).toHaveBeenCalledWith(
-      `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites${path.slice('/sprites'.length)}`,
-      expect.objectContaining({
-        cf: { cacheEverything: true, cacheTtl: 2_592_000 },
-      }),
-    );
+    for (const [path, contentType] of examples) {
+      const response = await worker.fetch(
+        new Request(`https://quizmon.raveh.dev${path}`),
+        env,
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toBe(contentType);
+      expect(upstream).toHaveBeenCalledWith(
+        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites${path.slice('/sprites'.length)}`,
+        expect.objectContaining({
+          cf: { cacheEverything: true, cacheTtl: 2_592_000 },
+        }),
+      );
+    }
   });
 });

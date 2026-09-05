@@ -52,8 +52,13 @@ const makeKnowledge = (
   id,
   identitySprites: {
     currentBack: `/back/${id}.png`,
+    dreamWorld: `/dream-world/${id}.svg`,
     historicalBack: [`/classic/back/${id}.png`],
     historicalFront: [`/classic/front/${id}.png`],
+    home: `/home/${id}.png`,
+    officialArtwork: `/official-artwork/${id}.png`,
+    showdownBack: `/showdown/back/${id}.gif`,
+    showdownFront: `/showdown/${id}.gif`,
   },
   levelMoves: [`move-${id}`],
   shape: 'quadruped',
@@ -582,7 +587,7 @@ describe('question building', () => {
     });
   });
 
-  it('varies Pokédex Scan between current, classic, front, and back sprites', () => {
+  it('varies Pokédex Scan across game sprite and artwork families', () => {
     const sources = new Set(
       Array.from({ length: 80 }, (_, index) => {
         const question = buildSingleQuestion(
@@ -616,6 +621,18 @@ describe('question building', () => {
         (source) => source.includes('/versions/') && source.includes('/back/'),
       ),
     ).toBe(true);
+    for (const family of [
+      'dream-world',
+      'home',
+      'official-artwork',
+      'showdown',
+    ]) {
+      expect(
+        [...sources].some((source) =>
+          source.includes(`/sprites/pokemon/other/${family}/`),
+        ),
+      ).toBe(true);
+    }
   });
 });
 

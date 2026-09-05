@@ -1,5 +1,5 @@
 const SPRITE_PATH =
-  /^\/sprites\/pokemon\/(?:(?:back\/|shiny\/)?[1-9]\d{0,3}|versions\/generation-(?:i|ii|iii|iv)\/(?:red-blue|crystal|firered-leafgreen|platinum)\/(?:back\/)?[1-9]\d{0,3})\.png$/;
+  /^\/sprites\/pokemon\/(?:(?:(?:back\/|shiny\/)?[1-9]\d{0,3}|versions\/generation-(?:i|ii|iii|iv)\/(?:red-blue|crystal|firered-leafgreen|platinum)\/(?:back\/)?[1-9]\d{0,3})\.png|other\/(?:(?:home|official-artwork)\/[1-9]\d{0,3}\.png|dream-world\/[1-9]\d{0,3}\.svg|showdown\/(?:back\/)?[1-9]\d{0,3}\.gif))$/;
 const SPRITE_SOURCE =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites';
 const SPRITE_CACHE_SECONDS = 60 * 60 * 24 * 30;
@@ -45,7 +45,11 @@ const fetchSprite = async (request: Request, url: URL): Promise<Response> => {
 
   const headers = new Headers({
     'Cache-Control': `public, max-age=${SPRITE_CACHE_SECONDS}, immutable`,
-    'Content-Type': 'image/png',
+    'Content-Type': url.pathname.endsWith('.gif')
+      ? 'image/gif'
+      : url.pathname.endsWith('.svg')
+        ? 'image/svg+xml'
+        : 'image/png',
     'X-Content-Type-Options': 'nosniff',
   });
 

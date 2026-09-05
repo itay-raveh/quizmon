@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T21:19:27Z",
+  "generatedAt": "2026-09-05T22:40:00Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -659,7 +659,7 @@
       "Do preserve the exact wordmark and crisp pixel-art landscape.",
       "Do keep landing controls small and let open scenery dominate the first viewport.",
       "Do use Gabarito for interface text and reserve Martian Mono for compact data and scores.",
-      "Do use curated in-game pixel sprites as gameplay information and preserve their hard edges when scaled.",
+      "Do preserve hard edges on pixel sprites and natural rendering on illustrated Pokémon artwork.",
       "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
       "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",
       "Do prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.",

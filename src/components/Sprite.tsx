@@ -10,10 +10,24 @@ export const Sprite = ({ silhouette, src }: SpriteProps) => {
     );
   }
 
+  const isSmoothArtwork =
+    /\/other\/(?:dream-world|home|official-artwork)\//.test(src);
+  const hasOpaqueCanvas =
+    /\/versions\/generation-(?:i|ii)\//.test(src) &&
+    !src.includes('/transparent/');
+  const className = [
+    'sprite',
+    silhouette ? 'sprite--silhouette' : '',
+    isSmoothArtwork ? 'sprite--smooth' : '',
+    hasOpaqueCanvas ? 'sprite--opaque-canvas' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div className="sprite-frame">
       <img
-        className={`sprite ${silhouette ? 'sprite--silhouette' : ''}`}
+        className={className}
         src={src}
         alt={silhouette ? 'Mystery Pokémon silhouette' : 'Pokémon to identify'}
         decoding="async"

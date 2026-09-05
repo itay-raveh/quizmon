@@ -114,6 +114,7 @@ interface CuratedSpriteSet {
 
 const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
   const versions = pokemon.sprites.versions;
+  const other = pokemon.sprites.other;
   const curated: readonly (CuratedSpriteSet | undefined)[] = [
     versions?.['generation-i']?.['red-blue'],
     versions?.['generation-ii']?.crystal,
@@ -132,8 +133,15 @@ const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
 
   return {
     currentBack: normalizeSpriteUrl(pokemon.sprites.back_default),
+    dreamWorld: normalizeSpriteUrl(other?.dream_world.front_default ?? null),
     historicalBack,
     historicalFront,
+    home: normalizeSpriteUrl(other?.home.front_default ?? null),
+    officialArtwork: normalizeSpriteUrl(
+      other?.['official-artwork'].front_default ?? null,
+    ),
+    showdownBack: normalizeSpriteUrl(other?.showdown.back_default ?? null),
+    showdownFront: normalizeSpriteUrl(other?.showdown.front_default ?? null),
   };
 };
 
@@ -253,7 +261,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 10,
+    contentVersion: 11,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

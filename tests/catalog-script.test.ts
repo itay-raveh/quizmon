@@ -82,7 +82,25 @@ const makeClient = (): CatalogClient => ({
             back_default: spriteUrl(`pokemon/back/${id}.png`),
             front_default: spriteUrl(`pokemon/${id}.png`),
             front_shiny: spriteUrl(`pokemon/shiny/${id}.png`),
-            other: {},
+            other: {
+              dream_world: {
+                front_default: spriteUrl(`pokemon/other/dream-world/${id}.svg`),
+              },
+              home: {
+                front_default: spriteUrl(`pokemon/other/home/${id}.png`),
+              },
+              'official-artwork': {
+                front_default: spriteUrl(
+                  `pokemon/other/official-artwork/${id}.png`,
+                ),
+              },
+              showdown: {
+                back_default: spriteUrl(
+                  `pokemon/other/showdown/back/${id}.gif`,
+                ),
+                front_default: spriteUrl(`pokemon/other/showdown/${id}.gif`),
+              },
+            },
             versions: {
               'generation-i': {
                 'red-blue': {
@@ -172,6 +190,7 @@ describe('catalog generation', () => {
       genus: 'Test',
       identitySprites: {
         currentBack: '/sprites/pokemon/back/1.png',
+        dreamWorld: '/sprites/pokemon/other/dream-world/1.svg',
         historicalBack: [
           '/sprites/pokemon/versions/generation-i/red-blue/back/1.png',
         ],
@@ -179,6 +198,10 @@ describe('catalog generation', () => {
           '/sprites/pokemon/versions/generation-i/red-blue/1.png',
           '/sprites/pokemon/versions/generation-ii/crystal/1.png',
         ],
+        home: '/sprites/pokemon/other/home/1.png',
+        officialArtwork: '/sprites/pokemon/other/official-artwork/1.png',
+        showdownBack: '/sprites/pokemon/other/showdown/back/1.gif',
+        showdownFront: '/sprites/pokemon/other/showdown/1.gif',
       },
       levelMoves: ['tackle'],
       shape: 'quadruped',

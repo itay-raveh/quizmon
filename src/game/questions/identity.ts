@@ -10,43 +10,27 @@ import {
 } from './shared';
 import type { PokemonKnowledge } from '../types';
 
-interface SpriteBucket {
-  candidates: readonly string[];
-  weight: number;
-}
-
 const pickScanSprite = (
   pokemon: PokemonKnowledge,
   random: () => number,
 ): string | null => {
   if (!pokemon.sprite) return null;
 
-  const buckets: SpriteBucket[] = [
-    { candidates: [pokemon.sprite], weight: 45 },
-    {
-      candidates: pokemon.identitySprites.historicalFront,
-      weight: 30,
-    },
-    {
-      candidates: pokemon.identitySprites.currentBack
-        ? [pokemon.identitySprites.currentBack]
-        : [],
-      weight: 15,
-    },
-    {
-      candidates: pokemon.identitySprites.historicalBack,
-      weight: 10,
-    },
-  ].filter(({ candidates }) => candidates.length > 0);
-  const totalWeight = buckets.reduce((total, { weight }) => total + weight, 0);
-  let selection = random() * totalWeight;
-  const bucket =
-    buckets.find(({ weight }) => {
-      selection -= weight;
-      return selection < 0;
-    }) ?? buckets[0];
+  const { identitySprites } = pokemon;
+  const families = [
+    [pokemon.sprite],
+    identitySprites.currentBack ? [identitySprites.currentBack] : [],
+    identitySprites.historicalFront,
+    identitySprites.historicalBack,
+    identitySprites.home ? [identitySprites.home] : [],
+    identitySprites.officialArtwork ? [identitySprites.officialArtwork] : [],
+    identitySprites.dreamWorld ? [identitySprites.dreamWorld] : [],
+    identitySprites.showdownFront ? [identitySprites.showdownFront] : [],
+    identitySprites.showdownBack ? [identitySprites.showdownBack] : [],
+  ].filter((family) => family.length > 0);
+  const family = pick(families, random);
 
-  return pick(bucket?.candidates ?? [pokemon.sprite], random) ?? pokemon.sprite;
+  return pick(family ?? [pokemon.sprite], random) ?? pokemon.sprite;
 };
 
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
