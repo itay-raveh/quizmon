@@ -3,10 +3,7 @@ import type { Modifiers, PokemonCatalog } from '@/game/types';
 import { ExperienceSettings } from './ExperienceSettings';
 import { GameButton } from './GameButton';
 import { TrainingSettings } from './TrainingSettings';
-import {
-  getRoundLength,
-  getTrainingSettingsValidation,
-} from './trainingSettingsModel';
+import { getTrainingSettingsValidation } from './trainingSettingsModel';
 
 export type SettingsTab = 'training' | 'experience';
 
@@ -31,7 +28,7 @@ export const ModifiersDialog = ({
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
   const [draft, setDraft] = useState<Modifiers>(() => ({
     ...modifiers,
-    limit: getRoundLength(modifiers.limit),
+    limit: 10,
   }));
   const [submitted, setSubmitted] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);

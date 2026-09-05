@@ -12,6 +12,8 @@ export const generations = [
 
 export type Generation = (typeof generations)[number];
 
+export type TrainingMode = 'league' | 'custom';
+
 export type QuestionType =
   | 'ability-check'
   | 'counter-pick'
@@ -91,6 +93,7 @@ export interface Modifiers {
   soundEnabled: boolean;
   limit: number;
   speedrunMode: boolean;
+  trainingMode: TrainingMode;
 }
 
 type QuestionMedia =

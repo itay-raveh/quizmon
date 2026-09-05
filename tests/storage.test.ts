@@ -186,6 +186,12 @@ describe('saved results', () => {
     );
   });
 
+  it('keeps League and Custom Training records separate', () => {
+    expect(
+      getTrainingRecordKey({ ...defaultModifiers, trainingMode: 'custom' }, 10),
+    ).not.toBe(getTrainingRecordKey(defaultModifiers, 10));
+  });
+
   it('builds Trainer progression from correct answers', () => {
     const perfect = {
       ...result,
@@ -272,6 +278,7 @@ describe('saved results', () => {
     saveResult({ kind: 'training' }, perfect, {
       ...defaultModifiers,
       questionTypes: ['pokedex-scan'],
+      trainingMode: 'custom',
     });
 
     expect(readTrainerStats()).toMatchObject({

@@ -262,6 +262,7 @@ export const getTrainingRecordKey = (
     generations: selectedGenerations,
     questionCount,
     questionTypes: selectedQuestionTypes,
+    trainingMode: modifiers.trainingMode,
     version: TRAINING_RECORD_VERSION,
   });
 };

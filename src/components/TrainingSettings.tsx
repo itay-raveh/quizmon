@@ -1,9 +1,13 @@
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import { isLeagueTraining, withLeagueTrainingRules } from '@/game/game';
-import { generations, type Generation, type Modifiers } from '@/game/types';
+import { isLeagueTraining } from '@/game/game';
+import {
+  generations,
+  type Generation,
+  type Modifiers,
+  type TrainingMode,
+} from '@/game/types';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
 import { SelectionTile } from './SelectionTile';
-import { roundLengths } from './trainingSettingsModel';
 
 interface TrainingSettingsValidation {
   generationsAreValid: boolean;
@@ -22,6 +26,8 @@ interface TrainingSettingsProps extends TrainingSettingsValidation {
 
 const toggleValue = <T,>(values: readonly T[], value: T, checked: boolean) =>
   checked ? [...values, value] : values.filter((current) => current !== value);
+
+const trainingModes: readonly TrainingMode[] = ['league', 'custom'];
 
 export const TrainingSettings = ({
   draft,
@@ -46,27 +52,34 @@ export const TrainingSettings = ({
         </p>
       ) : null}
 
-      <div className="league-training-status" aria-live="polite">
-        <span className="league-training-status__copy">
-          <strong>
-            {leagueTraining ? 'League Training' : 'Custom Training'}
-          </strong>
-          <span>
-            {leagueTraining
-              ? 'Quick Attack and Perfect Form can be earned.'
-              : 'Quick Attack and Perfect Form require League rules.'}
-          </span>
-        </span>
-        {!leagueTraining ? (
-          <button
-            className="selection-toggle"
-            onClick={() => onChange(withLeagueTrainingRules)}
-            type="button"
-          >
-            Use League rules
-          </button>
-        ) : null}
-      </div>
+      <fieldset className="training-mode-settings">
+        <legend>Training mode</legend>
+        <div className="training-mode-control">
+          {trainingModes.map((mode) => (
+            <SelectionTile
+              checked={draft.trainingMode === mode}
+              inputType="radio"
+              key={mode}
+              label={mode === 'league' ? 'League' : 'Custom'}
+              name="training-mode"
+              onChange={(event) => {
+                if (!event.target.checked) return;
+                onChange((current) => ({
+                  ...current,
+                  limit: 10,
+                  trainingMode: mode,
+                }));
+              }}
+              variant="training-mode"
+            />
+          ))}
+        </div>
+        <p className="training-mode-settings__description" aria-live="polite">
+          {leagueTraining
+            ? '10 questions with every question type. Quick Attack and Perfect Form can be earned.'
+            : '10 questions using the question types you choose.'}
+        </p>
+      </fieldset>
 
       <section className="settings-section">
         <div className="settings-section__heading">
@@ -122,39 +135,16 @@ export const TrainingSettings = ({
         ) : null}
       </section>
 
-      <fieldset className="round-length-settings">
-        <legend>Round length</legend>
-        <div className="selection-grid selection-grid--round-length">
-          {roundLengths.map(({ label, value }) => (
-            <SelectionTile
-              checked={draft.limit === value}
-              inputType="radio"
-              key={value}
-              label={
-                <>
-                  <strong>{value}</strong>
-                  <span>{label}</span>
-                </>
-              }
-              name="round-length"
-              onChange={(event) => {
-                if (!event.target.checked) return;
-                onChange((current) => ({ ...current, limit: value }));
-              }}
-              variant="round-length"
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <QuestionTypeSettings
-        draft={draft}
-        heading={questionTypesHeading}
-        matchingCount={matchingCount}
-        onChange={onChange}
-        questionTypesAreValid={questionTypesAreValid}
-        submitted={submitted}
-      />
+      {leagueTraining ? null : (
+        <QuestionTypeSettings
+          draft={draft}
+          heading={questionTypesHeading}
+          matchingCount={matchingCount}
+          onChange={onChange}
+          questionTypesAreValid={questionTypesAreValid}
+          submitted={submitted}
+        />
+      )}
     </>
   );
 };

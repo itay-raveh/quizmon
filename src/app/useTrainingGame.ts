@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { buildQuestions } from '@/game/game';
+import { buildQuestions, getTrainingModifiers } from '@/game/game';
 import { createRoundSeed, createSeededRandom } from '@/game/random';
 import {
   markGenerationPromptAnswered,
@@ -62,9 +62,10 @@ export const useTrainingGame = ({
       generationPromptPending.current = false;
       setGenerationPromptOpen(false);
       const seed = createRoundSeed();
+      const gameModifiers = getTrainingModifiers(nextModifiers);
       startGame(
-        buildQuestions(catalog, nextModifiers, createSeededRandom(seed)),
-        nextModifiers,
+        buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
+        gameModifiers,
         { kind: 'training' },
         seed,
       );
@@ -80,9 +81,10 @@ export const useTrainingGame = ({
     }
 
     const seed = createRoundSeed();
+    const gameModifiers = getTrainingModifiers(modifiers);
     startGame(
-      buildQuestions(catalog, modifiers, createSeededRandom(seed)),
-      modifiers,
+      buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
+      gameModifiers,
       { kind: 'training' },
       seed,
     );
@@ -98,9 +100,10 @@ export const useTrainingGame = ({
     }
 
     const seed = createRoundSeed();
+    const gameModifiers = getTrainingModifiers(session.modifiers);
     startGame(
-      buildQuestions(catalog, session.modifiers, createSeededRandom(seed)),
-      session.modifiers,
+      buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
+      gameModifiers,
       { kind: 'training' },
       seed,
     );
