@@ -10,22 +10,24 @@ export const Footer = () => {
           <span className="site-footer__credit">
             © {currentYear} {site.authorName}
           </span>
-          <a
-            aria-label={`Email Quizmon at ${site.contactEmail}`}
-            className="site-footer__credit"
-            href={`mailto:${site.contactEmail}`}
-          >
-            {site.contactEmail}
-          </a>
-          <a
-            aria-label="Quizmon source code and issue tracker on GitHub"
-            className="site-footer__credit"
-            href={site.repositoryUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            GitHub
-          </a>
+          <span className="site-footer__credit">
+            <a
+              aria-label={`Email Quizmon at ${site.contactEmail}`}
+              href={`mailto:${site.contactEmail}`}
+            >
+              {site.contactEmail}
+            </a>
+          </span>
+          <span className="site-footer__credit">
+            <a
+              aria-label="Quizmon source code and issue tracker on GitHub"
+              href={site.repositoryUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              GitHub
+            </a>
+          </span>
         </li>
         <li className="site-footer__group site-footer__group--credits">
           <span className="site-footer__credit">

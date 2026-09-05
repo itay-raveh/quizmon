@@ -31,6 +31,52 @@ test('matches the desktop landing layout', async ({ page }) => {
   );
 });
 
+test('balances the completed Daily action and combo', async ({ page }) => {
+  await page.addInitScript(() => {
+    const today = new Date();
+    const creditedDates = Array.from({ length: 4 }, (_, index) => {
+      const creditedDate = new Date(today);
+      creditedDate.setUTCDate(today.getUTCDate() - index);
+      return creditedDate.toISOString().slice(0, 10);
+    });
+
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: Object.fromEntries(
+          creditedDates.map((creditedDate) => [
+            creditedDate,
+            {
+              answers: Array.from({ length: 5 }, (_, index) => ({
+                category: index === 4 ? 'champion' : 'identity',
+                correct: index < 4,
+                points: index < 4 ? 1_000 : 0,
+              })),
+              contentVersion: 2,
+              correctCount: 4,
+              elapsedSeconds: 42,
+              questionCount: 5,
+              score: 14_920,
+              scoreVersion: 2,
+            },
+          ]),
+        ),
+        streak: { creditedDates, version: 1 },
+        training: {},
+      }),
+    );
+  });
+
+  await page.goto('/');
+  await expect(
+    page.getByRole('button', { name: /Share result.*14,920 points/ }),
+  ).toBeVisible();
+  await expect(page.locator('.app--landing')).toHaveScreenshot(
+    'daily-result-combo-mobile.webp',
+    { animations: 'disabled' },
+  );
+});
+
 test('matches the compact question layout', async ({ page }) => {
   await seedBrowserRandom(page, 'visual-baseline');
   await page.goto('/');
