@@ -51,12 +51,10 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await page
     .getByLabel('Trainer title')
     .selectOption({ label: 'Type Specialist' });
-  const violetAccent = page.getByRole('radio', { name: 'Violet' });
-  await page.getByText('Violet', { exact: true }).click();
-  await expect(violetAccent).toBeChecked();
+  await expect(page.getByText('Accent color')).toHaveCount(0);
   await expect(
     page.getByRole('article', { name: 'Trainer Card front' }),
-  ).toHaveClass(/trainer-card--accent-violet/);
+  ).toHaveClass(/trainer-card--classic/);
   await page.getByRole('button', { name: 'Save card' }).click();
 
   const card = page.getByRole('article', { name: 'Trainer Card front' });

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T10:19:27Z",
+  "generatedAt": "2026-09-05T12:02:40Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -132,52 +132,52 @@
           "oklch(95% 0.105 97.4)"
         ]
       },
-      "trainer-leaf": {
+      "trainer-bronze": {
         "role": "tertiary",
-        "displayName": "Trainer Leaf",
-        "canonical": "#286b3f",
-        "description": "A player-selected Trainer Card accent, confined to profile surfaces.",
+        "displayName": "Trainer Bronze",
+        "canonical": "#ed9147",
+        "description": "The automatic Trainer Card accent for Ace rank.",
         "tonalRamp": [
-          "oklch(15% 0.098 152.0)",
-          "oklch(25% 0.098 152.0)",
-          "oklch(37% 0.098 152.0)",
-          "oklch(49% 0.098 152.0)",
-          "oklch(61% 0.098 152.0)",
-          "oklch(73% 0.098 152.0)",
-          "oklch(85% 0.098 152.0)",
-          "oklch(95% 0.098 152.0)"
+          "oklch(15% 0.142 56.8)",
+          "oklch(25% 0.142 56.8)",
+          "oklch(37% 0.142 56.8)",
+          "oklch(49% 0.142 56.8)",
+          "oklch(61% 0.142 56.8)",
+          "oklch(73% 0.142 56.8)",
+          "oklch(85% 0.142 56.8)",
+          "oklch(95% 0.142 56.8)"
         ]
       },
-      "trainer-ember": {
+      "trainer-silver": {
         "role": "tertiary",
-        "displayName": "Trainer Ember",
-        "canonical": "#9b3b24",
-        "description": "A player-selected Trainer Card accent, confined to profile surfaces.",
+        "displayName": "Trainer Silver",
+        "canonical": "#b8cbd2",
+        "description": "The automatic Trainer Card accent for Veteran rank.",
         "tonalRamp": [
-          "oklch(15% 0.134 34.7)",
-          "oklch(25% 0.134 34.7)",
-          "oklch(37% 0.134 34.7)",
-          "oklch(49% 0.134 34.7)",
-          "oklch(61% 0.134 34.7)",
-          "oklch(73% 0.134 34.7)",
-          "oklch(85% 0.134 34.7)",
-          "oklch(95% 0.134 34.7)"
+          "oklch(15% 0.023 221.9)",
+          "oklch(25% 0.023 221.9)",
+          "oklch(37% 0.023 221.9)",
+          "oklch(49% 0.023 221.9)",
+          "oklch(61% 0.023 221.9)",
+          "oklch(73% 0.023 221.9)",
+          "oklch(85% 0.023 221.9)",
+          "oklch(95% 0.023 221.9)"
         ]
       },
-      "trainer-violet": {
+      "trainer-gold": {
         "role": "tertiary",
-        "displayName": "Trainer Violet",
-        "canonical": "#6846a5",
-        "description": "A player-selected Trainer Card accent, confined to profile surfaces.",
+        "displayName": "Trainer Gold",
+        "canonical": "#f0c51f",
+        "description": "The automatic Trainer Card accent for League Challenger and Champion ranks.",
         "tonalRamp": [
-          "oklch(15% 0.147 297.0)",
-          "oklch(25% 0.147 297.0)",
-          "oklch(37% 0.147 297.0)",
-          "oklch(49% 0.147 297.0)",
-          "oklch(61% 0.147 297.0)",
-          "oklch(73% 0.147 297.0)",
-          "oklch(85% 0.147 297.0)",
-          "oklch(95% 0.147 297.0)"
+          "oklch(15% 0.166 92.2)",
+          "oklch(25% 0.166 92.2)",
+          "oklch(37% 0.166 92.2)",
+          "oklch(49% 0.166 92.2)",
+          "oklch(61% 0.166 92.2)",
+          "oklch(73% 0.166 92.2)",
+          "oklch(85% 0.166 92.2)",
+          "oklch(95% 0.166 92.2)"
         ]
       },
       "game-surface": {
@@ -572,9 +572,9 @@
       "name": "Trainer Card",
       "kind": "card",
       "refersTo": "trainer-card",
-      "description": "The 3:2 local profile card with a player-selected banner, layered game-object depth, and cream, bronze, silver, or gold rank finish.",
+      "description": "The 3:2 local profile card with an automatic rank-colored banner, layered game-object depth, and cream, bronze, silver, or gold finish.",
       "html": "<article class=\"ds-trainer ds-trainer--gold\"><header><span>Quizmon League</span><strong>Champion</strong></header><div><div class=\"ds-portrait\">025</div><section><h2>Trainer</h2><p>Type Specialist</p><dl><div><dt>ID No.</dt><dd>002531</dd></div><div><dt>Partner</dt><dd>Pikachu · No. 0025</dd></div></dl></section></div><footer>QUIZMON.RAVEH.DEV</footer></article>",
-      "css": ".ds-trainer { --ds-accent: var(--blue, #0d6be6); --ds-rank-accent: var(--yellow, #eed23e); --ds-rank-strong: #c58c00; --ds-rank-surface: #fff0a0; --ds-rank-rule: #efd36d; display: grid; width: min(34rem, 94vw); aspect-ratio: 3 / 2; overflow: hidden; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 4px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: inset 0 0 0 0.35rem var(--cream, #feec99), 0 0.3rem 0 var(--ds-rank-accent), 0 0.52rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); grid-template-rows: auto 1fr auto; } .ds-trainer header { display: flex; min-height: 3.4rem; padding: 0.65rem 1rem; align-items: center; justify-content: space-between; color: var(--paper, #fffbea); background: var(--ds-accent); border-bottom: 7px solid var(--ds-rank-strong); } .ds-trainer header span { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; } .ds-trainer header strong { min-width: 5rem; padding: 0.4rem 0.65rem 0.45rem; color: var(--navy, #083b7e); background: var(--ds-rank-accent); border-radius: 0.25rem; box-shadow: 0 0.2rem 0 var(--ds-rank-strong); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; text-align: center; } .ds-trainer > div { display: grid; padding: 1rem; grid-template-columns: 8rem 1fr; align-items: center; gap: 1rem; } .ds-portrait { display: grid; aspect-ratio: 1; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border: 4px solid var(--ds-rank-strong); border-radius: 0.75rem; box-shadow: inset 0 -0.75rem 0 var(--ds-rank-rule); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 1.5rem; font-weight: 800; place-items: center; } .ds-trainer h2 { margin: 0; color: var(--navy, #083b7e); font-size: 2rem; line-height: 1; } .ds-trainer p { margin: 0.3rem 0 0.8rem; color: var(--ds-accent); font-size: 0.82rem; font-weight: 800; } .ds-trainer dl { display: grid; margin: 0; gap: 0.45rem; } .ds-trainer dl > div { padding-bottom: 0.35rem; border-bottom: 2px solid var(--ds-rank-rule); } .ds-trainer dt { color: var(--muted, #446078); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; } .ds-trainer dd, .ds-trainer footer { font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; } .ds-trainer dd { margin: 0.1rem 0 0; color: var(--navy, #083b7e); } .ds-trainer footer { padding: 0.4rem 1rem 0.65rem; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border-top: 4px solid var(--ds-rank-strong); text-align: right; }"
+      "css": ".ds-trainer { --ds-rank-accent: #f0c51f; --ds-rank-strong: #c58c00; --ds-rank-surface: #fff0a0; --ds-rank-rule: #efd36d; display: grid; width: min(34rem, 94vw); aspect-ratio: 3 / 2; overflow: hidden; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 4px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: inset 0 0 0 0.35rem var(--cream, #feec99), 0 0.3rem 0 var(--ds-rank-accent), 0 0.52rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); grid-template-rows: auto 1fr auto; } .ds-trainer header { display: flex; min-height: 3.4rem; padding: 0.65rem 1rem; align-items: center; justify-content: space-between; color: var(--navy, #083b7e); background: var(--ds-rank-accent); border-bottom: 7px solid var(--ds-rank-strong); } .ds-trainer header span { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; } .ds-trainer header strong { min-width: 5rem; padding: 0.4rem 0.65rem 0.45rem; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border: 2px solid var(--ds-rank-strong); border-radius: 0.25rem; box-shadow: 0 0.2rem 0 var(--ds-rank-strong); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; text-align: center; } .ds-trainer > div { display: grid; padding: 1rem; grid-template-columns: 8rem 1fr; align-items: center; gap: 1rem; } .ds-portrait { display: grid; aspect-ratio: 1; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border: 4px solid var(--ds-rank-strong); border-radius: 0.75rem; box-shadow: inset 0 -0.75rem 0 var(--ds-rank-rule); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 1.5rem; font-weight: 800; place-items: center; } .ds-trainer h2 { margin: 0; color: var(--navy, #083b7e); font-size: 2rem; line-height: 1; } .ds-trainer p { margin: 0.3rem 0 0.8rem; color: var(--navy, #083b7e); font-size: 0.82rem; font-weight: 800; } .ds-trainer dl { display: grid; margin: 0; gap: 0.45rem; } .ds-trainer dl > div { padding-bottom: 0.35rem; border-bottom: 2px solid var(--ds-rank-rule); } .ds-trainer dt { color: var(--muted, #446078); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; } .ds-trainer dd, .ds-trainer footer { font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; } .ds-trainer dd { margin: 0.1rem 0 0; color: var(--navy, #083b7e); } .ds-trainer footer { padding: 0.4rem 1rem 0.65rem; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border-top: 4px solid var(--ds-rank-strong); text-align: right; }"
     }
   ],
   "narrative": {

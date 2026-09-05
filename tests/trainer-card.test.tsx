@@ -6,7 +6,6 @@ import type { TrainerProfile } from '@/game/trainer-profile';
 import { generations } from '@/game/types';
 
 const profile: TrainerProfile = {
-  accent: 'violet',
   cardNumber: 'QZ-123456',
   createdAt: '2026-09-03',
   hasBeenRevealed: true,
@@ -46,6 +45,9 @@ describe('Trainer Card', () => {
     expect(
       screen.getByRole('article', { name: 'Trainer Card front' }),
     ).toHaveClass('trainer-card--bronze');
+    expect(
+      screen.getByRole('article', { name: 'Trainer Card front' }).className,
+    ).not.toContain('trainer-card--accent-');
     expect(container.querySelector('.trainer-card__sheen')).toBeInTheDocument();
   });
 

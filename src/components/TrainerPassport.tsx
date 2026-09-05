@@ -10,8 +10,6 @@ import type { PokemonCatalog } from '@/game/types';
 import type { TrainerStats } from '@/game/storage';
 import {
   requestPersistentStorage,
-  trainerAccents,
-  type TrainerAccent,
   type TrainerProfile,
 } from '@/game/trainer-profile';
 import {
@@ -21,8 +19,10 @@ import {
   supportsTrainerCardSharing,
 } from '@/game/trainer-card-image';
 import {
+  getCardFinish,
   getQualifiedTrainerSpecialties,
   getTrainerBadges,
+  getTrainerRank,
   isLeagueUnlocked,
   trainerSpecialtyLabels,
   type TrainerBadgeId,
@@ -69,7 +69,6 @@ export const TrainerPassport = ({
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile.name);
   const [partner, setPartner] = useState(profile.partnerPokemon);
-  const [accent, setAccent] = useState<TrainerAccent>(profile.accent);
   const qualifiedSpecialties = useMemo(
     () => getQualifiedTrainerSpecialties(stats),
     [stats],
@@ -105,8 +104,9 @@ export const TrainerPassport = ({
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
   const visibleProfile = editing
-    ? { ...profile, accent, specialty }
+    ? { ...profile, specialty }
     : { ...profile, specialty: savedSpecialty };
+  const finish = getCardFinish(getTrainerRank(stats)).toLowerCase();
   const imageKey = JSON.stringify({ face, profile: visibleProfile, stats });
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareCard = supportsTrainerCardSharing();
@@ -194,7 +194,6 @@ export const TrainerPassport = ({
     event.preventDefault();
     onProfileChange({
       ...profile,
-      accent,
       name,
       partnerPokemon: partner,
       specialty,
@@ -211,7 +210,6 @@ export const TrainerPassport = ({
 
     setName(profile.name);
     setPartner(profile.partnerPokemon);
-    setAccent(profile.accent);
     setSpecialty(savedSpecialty);
     setEditing(true);
   };
@@ -241,7 +239,7 @@ export const TrainerPassport = ({
 
   return (
     <section
-      className={`trainer-passport trainer-card--accent-${visibleProfile.accent}`}
+      className={`trainer-passport trainer-passport--${finish}`}
       aria-labelledby="trainer-passport-title"
     >
       <header className="trainer-passport__header">
@@ -321,27 +319,6 @@ export const TrainerPassport = ({
               <span>?</span>
             )}
           </div>
-          <fieldset className="trainer-customizer__accents">
-            <legend>Accent color</legend>
-            <div>
-              {trainerAccents.map((option) => (
-                <label key={option}>
-                  <input
-                    checked={accent === option}
-                    name="trainer-accent"
-                    onChange={() => setAccent(option)}
-                    type="radio"
-                    value={option}
-                  />
-                  <span
-                    className={`trainer-customizer__swatch trainer-customizer__swatch--${option}`}
-                    aria-hidden="true"
-                  />
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </label>
-              ))}
-            </div>
-          </fieldset>
           <GameButton type="submit">Save card</GameButton>
         </form>
       ) : null}
