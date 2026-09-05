@@ -129,6 +129,11 @@ export const Question = ({
 
   const isChampion = question.category === 'champion';
   const isLeague = mode.kind === 'league';
+  const modeLabel = isLeague
+    ? getLeagueStageLabel(number)
+    : mode.kind === 'daily'
+      ? getModeLabel(mode)
+      : null;
   const championChoicesVisible = isChampion && cluesShown > 0;
   const checkAnswerAction =
     question.answer.interaction !== 'single-choice' && !answered ? (
@@ -189,9 +194,7 @@ export const Question = ({
       <h1 id="question-title" ref={heading} tabIndex={-1}>
         {getQuestionTitle(question)}
       </h1>
-      <p className="game-mode">
-        {isLeague ? getLeagueStageLabel(number) : getModeLabel(mode)}
-      </p>
+      {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       <QuestionPrompt
         className={question.visual ? 'visually-hidden' : 'question__prompt'}
         id="question-prompt"

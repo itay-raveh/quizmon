@@ -127,11 +127,14 @@ export const QuestionArtwork = ({
         className="question-visual question-visual--stack"
         aria-hidden="true"
       >
-        <p className="question-visual__prompt">Select every Pokémon.</p>
-        <TypeBadges
-          className="question-visual__roundup-type"
-          types={[question.visual.type]}
-        />
+        <p className="question-visual__prompt question-visual__prompt--roundup">
+          <span>Select every</span>
+          <TypeBadges
+            className="question-visual__roundup-type"
+            types={[question.visual.type]}
+          />
+          <span>Pokémon</span>
+        </p>
       </div>
     );
   }
