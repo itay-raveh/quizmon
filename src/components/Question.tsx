@@ -49,12 +49,10 @@ const QuestionPrompt = ({
   className,
   id,
   prompt,
-  showSubjectNumber,
 }: {
   className: string;
   id: string;
   prompt: QuestionPromptData;
-  showSubjectNumber: boolean;
 }) => (
   <p className={className} id={id}>
     {prompt.kind === 'text' ? (
@@ -63,15 +61,10 @@ const QuestionPrompt = ({
       <>
         {prompt.before}
         <span className="question__subject">
-          <b>{formatPokemonName(prompt.name)}</b>
-          {showSubjectNumber ? (
-            <>
-              {' '}
-              <span className="question__subject-number">
-                (No. {String(prompt.dexNumber).padStart(4, '0')})
-              </span>
-            </>
-          ) : null}
+          <b>{formatPokemonName(prompt.name)}</b>{' '}
+          <span className="question__subject-number">
+            (No. {String(prompt.dexNumber).padStart(4, '0')})
+          </span>
         </span>
         {prompt.after}
       </>
@@ -195,7 +188,6 @@ export const Question = ({
         className={question.visual ? 'visually-hidden' : 'question__prompt'}
         id="question-prompt"
         prompt={question.prompt}
-        showSubjectNumber={question.questionType !== 'silhouette-match'}
       />
 
       {isChampion && !championChoicesVisible && question.searchOptions ? (

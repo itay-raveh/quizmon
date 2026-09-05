@@ -21,7 +21,7 @@ import {
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
-import { formatPokemonName } from '@/game/format';
+import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import { questionRegistry, questionTypes } from '@/game/questions/registry';
 import {
   pokemonOptions,
@@ -212,6 +212,14 @@ describe('question building', () => {
       redactName(target!.description, question!.pokemonName),
     );
     expect(question!.media).toMatchObject({ kind: 'sprite', revealAt: 4 });
+    expect(question!.searchOptions).toEqual(
+      expect.arrayContaining([
+        {
+          dexNumber: target!.id,
+          name: question!.pokemonName,
+        },
+      ]),
+    );
   });
 
   it('prefers plausible Pokémon and property distractors', () => {
@@ -404,6 +412,29 @@ describe('question building', () => {
     expect(getQuestionPromptText(byCategory.description!.prompt)).not.toContain(
       'belongs to',
     );
+  });
+
+  it('attaches a Pokédex number to every Pokémon answer option', () => {
+    for (const questionType of questionTypes) {
+      const [question] = buildQuestions(
+        catalog,
+        {
+          ...defaultModifiers,
+          generations: [...generations],
+          limit: 1,
+          questionTypes: [questionType],
+        },
+        createSeededRandom(`numbered-${questionType}`),
+      );
+
+      expect(question).toBeDefined();
+      for (const option of question!.options) {
+        const pokemon = catalog.pokemon[option];
+        if (pokemon) {
+          expect(question!.optionDexNumbers?.[option]).toBe(pokemon.id);
+        }
+      }
+    }
   });
 
   it('builds an exact multi-select answer key', () => {
@@ -675,6 +706,7 @@ describe('utilities', () => {
   it('formats durations and API names', () => {
     expect(formatDuration(3661)).toBe('01:01:01');
     expect(formatPokemonName('special-attack')).toBe('Special Attack');
+    expect(formatPokedexNumber(25)).toBe('No. 0025');
   });
 
   it('totals only active answer time', () => {

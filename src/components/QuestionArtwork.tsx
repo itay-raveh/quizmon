@@ -1,4 +1,4 @@
-import { formatPokemonName } from '@/game/format';
+import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { Sprite } from './Sprite';
 import { MysteryTypeBadge, TypeBadges } from './TypeBadge';
@@ -78,7 +78,7 @@ const PokemonSubjectName = ({
   <span className="question-visual__subject-name">
     {dexNumber === undefined ? null : (
       <small className="question-visual__subject-number">
-        {revealed ? `No. ${String(dexNumber).padStart(4, '0')}` : '\u00a0'}
+        {revealed ? formatPokedexNumber(dexNumber) : '\u00a0'}
       </small>
     )}
     <span>{revealed ? formatPokemonName(name) : '\u00a0'}</span>
@@ -103,7 +103,15 @@ export const QuestionArtwork = ({
       >
         <p className="question-visual__prompt">
           Which type does{' '}
-          <strong>{formatPokemonName(question.pokemonName)}</strong> have?
+          <strong>
+            {formatPokemonName(question.pokemonName)}{' '}
+            {subjectDexNumber === undefined ? null : (
+              <small className="question__subject-number">
+                ({formatPokedexNumber(subjectDexNumber)})
+              </small>
+            )}
+          </strong>{' '}
+          have?
         </p>
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />

@@ -1,4 +1,8 @@
-import { formatPokemonName, formatPokemonTypes } from '@/game/format';
+import {
+  formatPokedexNumber,
+  formatPokemonName,
+  formatPokemonTypes,
+} from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
 import { TypeBadges } from './TypeBadge';
@@ -61,6 +65,8 @@ export const QuestionAnswers = ({
     >
       {question.options.map((option, index) => {
         const visual = question.optionVisuals?.[option];
+        const dexNumber =
+          question.optionDexNumbers?.[option] ?? visual?.dexNumber;
         const concealed = Boolean(question.concealOptionLabels && !answered);
         const optionSelected = selected.has(option);
         const typeAnnouncement =
@@ -112,7 +118,7 @@ export const QuestionAnswers = ({
                 {concealed ? null : (
                   <span className="answer__nameplate">
                     <small aria-hidden="true">
-                      No. {String(visual.dexNumber).padStart(4, '0')}
+                      {formatPokedexNumber(visual.dexNumber)}
                     </small>
                     <span className="answer__name">
                       {formatPokemonName(option)}
@@ -128,6 +134,13 @@ export const QuestionAnswers = ({
               </>
             ) : hasTypeOptionBadges ? (
               <TypeBadges className="answer__type-choice" types={[option]} />
+            ) : dexNumber !== undefined ? (
+              <span className="answer__identity">
+                <small aria-hidden="true">
+                  {formatPokedexNumber(dexNumber)}
+                </small>
+                <span>{formatPokemonName(option)}</span>
+              </span>
             ) : (
               <span>{formatPokemonName(option)}</span>
             )}

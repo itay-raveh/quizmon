@@ -34,6 +34,9 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
       `${target.pokemon.types.map(formatPokemonName).join(' / ')} type, introduced in Generation ${target.pokemon.generation}.`,
       `National Pokédex number #${target.pokemon.id}.`,
     ],
-    searchOptions: context.pool.map(({ name }) => name),
+    searchOptions: context.pool.map(({ name, pokemon }) => ({
+      dexNumber: pokemon.id,
+      name,
+    })),
   };
 };

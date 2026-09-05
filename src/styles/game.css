@@ -620,9 +620,18 @@
   min-height: 2.5rem;
   padding: 0.5rem 0.65rem;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   border-radius: 0.25rem;
   cursor: pointer;
   font-weight: 750;
+}
+
+.champion-search li small {
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .champion-search li:hover,
@@ -736,6 +745,21 @@
   font-size: var(--text-answer);
   line-height: 1.08;
   text-shadow: 0.08rem 0.08rem 0 var(--navy);
+}
+
+.answer__identity {
+  display: grid;
+  min-width: 0;
+  justify-items: start;
+  gap: 0.03rem;
+  line-height: 1.08;
+}
+
+.answer__identity small {
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .type-badges {
