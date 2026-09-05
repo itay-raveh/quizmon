@@ -47,7 +47,7 @@ export const TrainerCard = ({
   return (
     <article
       ref={cardRef}
-      className={`trainer-card trainer-card--${face} trainer-card--${finish.toLowerCase()} trainer-card--accent-${profile.accent}`}
+      className={`trainer-card trainer-card--${face} trainer-card--${finish.toLowerCase()}`}
       aria-label={`Trainer Card ${face === 'front' ? 'front' : 'badge case'}`}
     >
       <TrainerCardFinishEffects

@@ -5,11 +5,7 @@ import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
 const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
 const TRAINER_PROFILE_VERSION = 1;
 
-export const trainerAccents = ['cobalt', 'leaf', 'ember', 'violet'] as const;
-export type TrainerAccent = (typeof trainerAccents)[number];
-
 export interface TrainerProfile {
-  accent: TrainerAccent;
   cardNumber: string;
   createdAt: string;
   hasBeenRevealed: boolean;
@@ -26,7 +22,6 @@ const createCardNumber = (): string => {
 };
 
 const createTrainerProfile = (): TrainerProfile => ({
-  accent: 'cobalt',
   cardNumber: createCardNumber(),
   createdAt: getUtcDate(),
   hasBeenRevealed: false,
@@ -56,9 +51,6 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
   }
 
   return {
-    accent: trainerAccents.includes(profile.accent as TrainerAccent)
-      ? (profile.accent as TrainerAccent)
-      : 'cobalt',
     cardNumber: profile.cardNumber,
     createdAt: profile.createdAt,
     hasBeenRevealed: profile.hasBeenRevealed,

@@ -9,7 +9,6 @@ describe('Trainer profile storage', () => {
     expect(profile.cardNumber).toMatch(/^QZ-\d{6}$/);
     expect(profile.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(profile).toMatchObject({
-      accent: 'cobalt',
       hasBeenRevealed: false,
       name: '',
       partnerPokemon: null,
@@ -31,6 +30,12 @@ describe('Trainer profile storage', () => {
       partnerPokemon: 'bulbasaur',
       specialty: 'identity',
     });
+    expect(readTrainerProfile()).toEqual(saved);
+
+    window.localStorage.setItem(
+      'quizmon.trainer-profile.v1',
+      JSON.stringify({ ...saved, accent: 'violet' }),
+    );
     expect(readTrainerProfile()).toEqual(saved);
   });
 });
