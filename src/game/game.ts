@@ -69,12 +69,6 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
   const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
     ? candidate.questionTypes.filter(isQuestionType)
     : [];
-  const legacyLeagueTraining =
-    candidate.limit === 10 &&
-    selectedQuestionTypes.length === questionTypes.length &&
-    questionTypes.every((questionType) =>
-      selectedQuestionTypes.includes(questionType),
-    );
   const limit = Number.isFinite(candidate.limit)
     ? Math.max(1, Math.trunc(candidate.limit as number))
     : defaultModifiers.limit;
@@ -94,9 +88,7 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
     trainingMode:
       candidate.trainingMode === 'league' || candidate.trainingMode === 'custom'
         ? candidate.trainingMode
-        : legacyLeagueTraining
-          ? 'league'
-          : 'custom',
+        : defaultModifiers.trainingMode,
   };
 };
 

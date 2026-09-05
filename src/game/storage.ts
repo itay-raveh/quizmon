@@ -267,48 +267,12 @@ const getBestResult = (
     undefined,
   );
 
-const getLegacyTrainingMode = (key: string): TrainingHighScoreKey => {
-  if (key === 'league' || key === 'custom') return key;
-
-  try {
-    const parsed = JSON.parse(key) as {
-      questionCount?: unknown;
-      questionTypes?: unknown;
-      trainingMode?: unknown;
-    };
-    if (parsed.trainingMode === 'league' || parsed.trainingMode === 'custom') {
-      return parsed.trainingMode;
-    }
-    const selectedQuestionTypes = Array.isArray(parsed.questionTypes)
-      ? parsed.questionTypes.filter(
-          (questionType): questionType is string =>
-            typeof questionType === 'string',
-        )
-      : [];
-    return parsed.questionCount === 10 &&
-      selectedQuestionTypes.length === questionTypes.length &&
-      questionTypes.every((questionType) =>
-        selectedQuestionTypes.includes(questionType),
-      )
-      ? 'league'
-      : 'custom';
-  } catch {
-    return 'custom';
-  }
-};
-
 const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
   const records = readResultRecord(value);
-  return Object.entries(records).reduce<SavedResults['training']>(
-    (normalized, [key, result]) => {
-      const mode = getLegacyTrainingMode(key);
-      const current = normalized[mode];
-      if (!current || isBetterResult(result, current))
-        normalized[mode] = result;
-      return normalized;
-    },
-    {},
-  );
+  return {
+    ...(records.custom ? { custom: records.custom } : {}),
+    ...(records.league ? { league: records.league } : {}),
+  };
 };
 
 const readResults = (): SavedResults => {
