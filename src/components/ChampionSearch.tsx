@@ -7,6 +7,7 @@ import {
   type PointerEvent,
 } from 'react';
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
+import { findSearchMatches, normalizeSearch } from '@/game/search';
 import type { PokemonSearchOption } from '@/game/types';
 import { GameButton } from './GameButton';
 
@@ -18,12 +19,6 @@ interface ChampionSearchProps {
   options: readonly PokemonSearchOption[];
   selectedOption?: string;
 }
-
-const normalizeSearch = (value: string): string =>
-  value
-    .normalize('NFKD')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '');
 
 export const ChampionSearch = ({
   answered,
@@ -56,17 +51,8 @@ export const ChampionSearch = ({
   );
   const suggestions = useMemo(() => {
     if (!normalizedQuery || exactMatch) return [];
-
-    return entries
-      .filter(({ normalized }) => normalized.includes(normalizedQuery))
-      .sort((left, right) => {
-        const leftStarts = left.normalized.startsWith(normalizedQuery);
-        const rightStarts = right.normalized.startsWith(normalizedQuery);
-        if (leftStarts !== rightStarts) return leftStarts ? -1 : 1;
-        return left.label.localeCompare(right.label);
-      })
-      .slice(0, 6);
-  }, [entries, exactMatch, normalizedQuery]);
+    return findSearchMatches(entries, query);
+  }, [entries, exactMatch, normalizedQuery, query]);
   const showSuggestions = open && !answered && normalizedQuery.length > 0;
   const result = answered
     ? selectedOption === correctOption

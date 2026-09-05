@@ -6,6 +6,7 @@ import {
   type PointerEvent,
 } from 'react';
 import { formatPokemonName } from '@/game/format';
+import { findSearchMatches, normalizeSearch } from '@/game/search';
 
 interface PokemonPickerProps {
   onChange: (pokemon: string | null) => void;
@@ -15,12 +16,6 @@ interface PokemonPickerProps {
   }[];
   value: string | null;
 }
-
-const normalizeSearch = (value: string): string =>
-  value
-    .normalize('NFKD')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '');
 
 export const PokemonPicker = ({
   onChange,
@@ -43,17 +38,8 @@ export const PokemonPicker = ({
   );
   const normalizedQuery = normalizeSearch(query);
   const suggestions = useMemo(() => {
-    if (!normalizedQuery) return [];
-    return entries
-      .filter(({ normalized }) => normalized.includes(normalizedQuery))
-      .sort((left, right) => {
-        const leftStarts = left.normalized.startsWith(normalizedQuery);
-        const rightStarts = right.normalized.startsWith(normalizedQuery);
-        if (leftStarts !== rightStarts) return leftStarts ? -1 : 1;
-        return left.label.localeCompare(right.label);
-      })
-      .slice(0, 6);
-  }, [entries, normalizedQuery]);
+    return findSearchMatches(entries, query);
+  }, [entries, query]);
   const showSuggestions = open && normalizedQuery.length > 0;
 
   const choose = (name: string, label: string) => {
