@@ -1017,27 +1017,29 @@
 
 .results-list {
   display: grid;
-  margin: 1.3rem 0;
-  border-top: 2px solid rgba(8, 59, 126, 0.22);
+  margin: 1rem 0 1.15rem;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.65rem 0.8rem;
 }
 
 .results-list > div {
   display: grid;
-  padding: 0.75rem 0;
-  grid-template-columns: 1fr 1fr;
-  align-items: baseline;
-  border-bottom: 2px solid rgba(8, 59, 126, 0.22);
+  min-width: 0;
+  gap: 0.08rem;
 }
 
 .results-list dt {
-  color: var(--navy);
-  text-align: left;
+  color: var(--muted);
+  font-size: var(--text-micro);
+  font-weight: 800;
 }
 
 .results-list dd {
   margin: 0;
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: var(--text-status);
   font-weight: 800;
-  text-align: right;
 }
 
 .score {
@@ -1102,14 +1104,12 @@
 }
 
 .trainer-progress-summary.game-button {
-  --trainer-accent: var(--blue);
-
   display: grid;
   width: 100%;
   margin: 0 0 1.2rem;
-  padding: 0.8rem;
+  padding: 0.75rem;
   align-items: center;
-  gap: 0.65rem 0.8rem;
+  gap: 0.7rem;
   text-align: left;
 }
 
@@ -1135,12 +1135,21 @@
 .trainer-progress-summary__heading small {
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
+  gap: 0.2rem;
 }
 
 .trainer-progress-summary__changes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem 1rem;
+}
+
+.trainer-progress-summary__earned {
+  display: grid;
+  grid-column: 1 / -1;
+  padding: 0.55rem 0.65rem;
+  background: var(--cream);
+  border-radius: 0.35rem;
   gap: 0.55rem;
 }
 
@@ -1157,7 +1166,35 @@
 
 .trainer-progress-change > span:last-child {
   display: grid;
-  gap: 0.03rem;
+  min-width: 0;
+  gap: 0.12rem;
+}
+
+.trainer-progress-change > span:last-child > small {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.trainer-progress-change__delta {
+  color: var(--blue);
+  font-family: var(--font-data);
+  font-weight: 800;
+}
+
+.trainer-progress-change__track {
+  display: block;
+  height: 0.28rem;
+  overflow: hidden;
+  background: var(--sky);
+  border-radius: 0.2rem;
+}
+
+.trainer-progress-change__track > span {
+  display: block;
+  height: 100%;
+  background: var(--blue);
 }
 
 .trainer-progress-change__hall-mark,
@@ -1182,7 +1219,39 @@
 }
 
 .trainer-progress-change__specialty-mark[data-earned='true'] {
-  background: var(--yellow);
+  color: var(--primary-text);
+  background: var(--blue);
+  box-shadow: 0 0.14rem 0 var(--navy-shadow);
+}
+
+.trainer-progress-change--earned {
+  grid-template-columns: 2.7rem minmax(0, 1fr);
+  gap: 0.7rem;
+}
+
+.trainer-progress-change--earned > .trainer-badge-mark,
+.trainer-progress-change--earned .trainer-progress-change__hall-mark,
+.trainer-progress-change--earned .trainer-progress-change__specialty-mark {
+  width: 2.7rem;
+}
+
+.trainer-progress-change--earned > span:last-child {
+  align-content: center;
+  gap: 0;
+}
+
+.trainer-progress-change--earned > span:last-child > small {
+  display: block;
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.trainer-progress-change--earned strong {
+  font-size: var(--text-control);
 }
 
 .trainer-progress-summary__heading .trainer-progress-summary__chevron {
@@ -1220,13 +1289,15 @@
   stroke-width: 2;
 }
 
+@container (max-width: 19rem) {
+  .trainer-progress-summary__changes {
+    grid-template-columns: 1fr;
+  }
+}
+
 @container (max-width: 12rem) {
   .answer-trail {
     flex-wrap: wrap;
-  }
-
-  .trainer-progress-summary__changes {
-    grid-template-columns: 1fr;
   }
 
   .question .question__topline > .progress {
