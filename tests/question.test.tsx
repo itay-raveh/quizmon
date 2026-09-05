@@ -35,7 +35,14 @@ const championQuestion: QuestionData = {
     text: '“It has small electric sacs on both its cheeks.”',
   },
   questionType: 'champion',
-  searchOptions: ['bulbasaur', 'ditto', 'eevee', 'mew', 'pikachu', 'raichu'],
+  searchOptions: [
+    { dexNumber: 1, name: 'bulbasaur' },
+    { dexNumber: 132, name: 'ditto' },
+    { dexNumber: 133, name: 'eevee' },
+    { dexNumber: 151, name: 'mew' },
+    { dexNumber: 25, name: 'pikachu' },
+    { dexNumber: 26, name: 'raichu' },
+  ],
 };
 
 const renderQuestion = (number: number) =>
@@ -115,6 +122,39 @@ describe('question transitions', () => {
       4,
     );
     expect(screen.getByText('No. 0001')).toBeInTheDocument();
+  });
+
+  it('renders Pokémon answers with their numbers even without artwork', () => {
+    const rendered = render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          optionDexNumbers: {
+            ditto: 132,
+            eevee: 133,
+            mew: 151,
+            pikachu: 25,
+          },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(
+      rendered.container.querySelectorAll('.answer__identity'),
+    ).toHaveLength(4);
+    expect(screen.getByText('No. 0025')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
 
   it.each(['odd-one-out', 'type-roundup', 'counter-pick'] as const)(
@@ -254,12 +294,16 @@ describe('question transitions', () => {
     expect(rendered.container.querySelector('.answers')).not.toHaveClass(
       'answers--pokemon',
     );
-    expect(screen.getByText('(No. 0025)')).toHaveClass(
-      'question__subject-number',
+    const hiddenNumber = rendered.container.querySelector(
+      '#question-prompt .question__subject-number',
     );
-    expect(screen.getByText('(No. 0025)').closest('p')).toHaveClass(
-      'visually-hidden',
+    const visibleNumber = rendered.container.querySelector(
+      '.question-visual__prompt .question__subject-number',
     );
+    expect(hiddenNumber).toHaveTextContent('(No. 0025)');
+    expect(hiddenNumber?.closest('p')).toHaveClass('visually-hidden');
+    expect(visibleNumber).toHaveTextContent('(No. 0025)');
+    expect(visibleNumber).toBeVisible();
     expect(
       rendered.container.querySelectorAll('.answer__type-choice .type-badge'),
     ).toHaveLength(4);
@@ -825,6 +869,37 @@ describe('question transitions', () => {
     ).toHaveLength(0);
   });
 
+  it('includes the number in every visible Pokémon prompt', () => {
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          prompt: {
+            after: '',
+            before: 'Find ',
+            dexNumber: 25,
+            kind: 'pokemon',
+            name: 'pikachu',
+          },
+          questionType: 'silhouette-match',
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(screen.getByText('(No. 0025)')).toBeVisible();
+  });
+
   it('reveals the full sprite after a pixel peek answer', () => {
     const rendered = render(
       <Question
@@ -858,6 +933,32 @@ describe('question transitions', () => {
     expect(rendered.container.querySelector('.pixel-peek')).toHaveClass(
       'pixel-peek--revealed',
     );
+  });
+
+  it('shows Pokédex numbers in Champion search suggestions', () => {
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ date: '2026-09-03', kind: 'daily' }}
+        number={5}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 1_000}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={championQuestion}
+        speedrunMode={false}
+        total={5}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole('combobox', { name: 'Your answer' }), {
+      target: { value: 'pika' },
+    });
+
+    expect(screen.getByRole('option', { name: 'Pikachu' })).toBeVisible();
+    expect(screen.getByText('No. 0025')).toBeVisible();
   });
 
   it('starts the Champion question as a keyboard-operable autocomplete', () => {

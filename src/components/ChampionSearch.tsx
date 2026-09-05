@@ -6,7 +6,8 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
-import { formatPokemonName } from '@/game/format';
+import { formatPokedexNumber, formatPokemonName } from '@/game/format';
+import type { PokemonSearchOption } from '@/game/types';
 import { GameButton } from './GameButton';
 
 interface ChampionSearchProps {
@@ -14,7 +15,7 @@ interface ChampionSearchProps {
   correctOption: string;
   disabled: boolean;
   onAnswer: (option: string) => void;
-  options: readonly string[];
+  options: readonly PokemonSearchOption[];
   selectedOption?: string;
 }
 
@@ -38,9 +39,14 @@ export const ChampionSearch = ({
   const [open, setOpen] = useState(false);
   const entries = useMemo(
     () =>
-      options.map((option) => {
-        const label = formatPokemonName(option);
-        return { label, normalized: normalizeSearch(label), option };
+      options.map(({ dexNumber, name }) => {
+        const label = formatPokemonName(name);
+        return {
+          dexNumber,
+          label,
+          normalized: normalizeSearch(label),
+          option: name,
+        };
       }),
     [options],
   );
@@ -173,7 +179,10 @@ export const ChampionSearch = ({
                     }
                     role="option"
                   >
-                    {suggestion.label}
+                    <span>{suggestion.label}</span>
+                    <small aria-hidden="true">
+                      {formatPokedexNumber(suggestion.dexNumber)}
+                    </small>
                   </li>
                 ))}
               </ul>

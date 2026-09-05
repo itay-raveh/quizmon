@@ -162,6 +162,17 @@ export const getOptionVisuals = (
     }),
   );
 
+const getOptionDexNumbers = (
+  context: QuestionContext,
+  options: readonly string[],
+): Record<string, number> =>
+  Object.fromEntries(
+    options.flatMap((option) => {
+      const pokemon = context.catalog.pokemon[option];
+      return pokemon ? [[option, pokemon.id] as const] : [];
+    }),
+  );
+
 const pokemonOptionCategories: readonly QuestionCategory[] = [
   'description',
   'evolution',
@@ -179,27 +190,37 @@ export const addQuestionVisuals = (
   context: QuestionContext,
   question: QuestionDraft,
 ): QuestionDraft => {
-  if (question.optionVisuals) return question;
-  if (question.media.kind !== 'none') return question;
+  const detectedDexNumbers = getOptionDexNumbers(context, question.options);
+  const optionDexNumbers = {
+    ...question.optionDexNumbers,
+    ...detectedDexNumbers,
+  };
+  const preparedQuestion =
+    Object.keys(optionDexNumbers).length > 0
+      ? { ...question, optionDexNumbers }
+      : question;
 
-  if (pokemonOptionCategories.includes(question.category)) {
+  if (preparedQuestion.optionVisuals) return preparedQuestion;
+  if (preparedQuestion.media.kind !== 'none') return preparedQuestion;
+
+  if (pokemonOptionCategories.includes(preparedQuestion.category)) {
     return {
-      ...question,
-      optionVisuals: getOptionVisuals(context, question.options),
+      ...preparedQuestion,
+      optionVisuals: getOptionVisuals(context, preparedQuestion.options),
     };
   }
 
-  if (targetSpriteCategories.includes(question.category)) {
-    const target = context.catalog.pokemon[question.pokemonName];
+  if (targetSpriteCategories.includes(preparedQuestion.category)) {
+    const target = context.catalog.pokemon[preparedQuestion.pokemonName];
     if (target?.sprite) {
       return {
-        ...question,
+        ...preparedQuestion,
         media: { kind: 'pixel-sprite', src: target.sprite },
       };
     }
   }
 
-  return question;
+  return preparedQuestion;
 };
 
 export const pokemonOptions = (

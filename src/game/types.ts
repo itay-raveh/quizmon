@@ -116,6 +116,11 @@ export interface PokemonOptionVisual {
   types: string[];
 }
 
+export interface PokemonSearchOption {
+  dexNumber: number;
+  name: string;
+}
+
 type QuestionVisual =
   | { kind: 'type-check' }
   | { kind: 'type-roundup'; type: string }
@@ -158,12 +163,13 @@ export interface QuestionData {
   id: string;
   media: QuestionMedia;
   options: string[];
+  optionDexNumbers?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   pokemonTypes: string[];
   prompt: QuestionPrompt;
   questionType: QuestionType | 'champion';
-  searchOptions?: string[];
+  searchOptions?: PokemonSearchOption[];
   title?: string;
   visual?: QuestionVisual;
 }

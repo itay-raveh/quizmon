@@ -71,7 +71,10 @@ describe('Daily Challenge', () => {
     expect(first.at(-1)?.searchOptions).toHaveLength(
       Object.keys(catalog.pokemon).length,
     );
-    expect(first.at(-1)?.searchOptions).toContain('nidoran-m');
+    expect(first.at(-1)?.searchOptions).toContainEqual({
+      dexNumber: 32,
+      name: 'nidoran-m',
+    });
     expect(
       schedule
         .slice(0, -1)
