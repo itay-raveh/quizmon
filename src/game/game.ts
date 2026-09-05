@@ -24,10 +24,11 @@ export const defaultModifiers: Modifiers = {
   generations: [...generations],
   questionTypes: [...questionTypes],
   soundEnabled: true,
-  limit: 10,
   speedrunMode: false,
   trainingMode: 'league',
 };
+
+export const TRAINING_QUESTION_COUNT = 10;
 
 export const isLeagueTraining = (
   modifiers: Pick<Modifiers, 'trainingMode'>,
@@ -35,7 +36,6 @@ export const isLeagueTraining = (
 
 export const getTrainingModifiers = (modifiers: Modifiers): Modifiers => ({
   ...modifiers,
-  limit: 10,
   questionTypes: isLeagueTraining(modifiers)
     ? [...questionTypes]
     : [...modifiers.questionTypes],
@@ -69,10 +69,6 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
   const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
     ? candidate.questionTypes.filter(isQuestionType)
     : [];
-  const limit = Number.isFinite(candidate.limit)
-    ? Math.max(1, Math.trunc(candidate.limit as number))
-    : defaultModifiers.limit;
-
   return {
     generations:
       selectedGenerations.length > 0
@@ -83,7 +79,6 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
         ? selectedQuestionTypes
         : defaultModifiers.questionTypes,
     soundEnabled: candidate.soundEnabled !== false,
-    limit,
     speedrunMode: candidate.speedrunMode === true,
     trainingMode:
       candidate.trainingMode === 'league' || candidate.trainingMode === 'custom'
@@ -102,21 +97,22 @@ export const filterPokemon = (
 
 export const getQuestionCount = (
   availableCount: number,
-  modifiers: Modifiers,
+  requestedCount = TRAINING_QUESTION_COUNT,
 ): number => {
   if (availableCount < 1) return 0;
-  return Math.min(Math.max(1, modifiers.limit), availableCount);
+  return Math.min(Math.max(1, requestedCount), availableCount);
 };
 
 export const buildQuestions = (
   catalog: PokemonCatalog,
   modifiers: Modifiers,
   random: () => number = Math.random,
+  requestedCount = TRAINING_QUESTION_COUNT,
 ): QuestionData[] => {
   const pool = filterPokemon(catalog, modifiers)
     .map((name) => ({ name, pokemon: catalog.pokemon[name] }))
     .filter((candidate): candidate is Candidate => Boolean(candidate.pokemon));
-  const count = getQuestionCount(pool.length, modifiers);
+  const count = getQuestionCount(pool.length, requestedCount);
   const context: QuestionContext = { catalog, pool, random, used: new Set() };
   const questionTypeDeck = shuffle(modifiers.questionTypes, random);
   const questions: QuestionData[] = [];

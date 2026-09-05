@@ -1,4 +1,4 @@
-import { useEffect, useRef, type PointerEvent } from 'react';
+import { useEffect, useRef, type PointerEvent, type RefObject } from 'react';
 
 export const isDialogBackdropPointerDown = (
   event: PointerEvent<HTMLDialogElement>,
@@ -12,16 +12,19 @@ export const isDialogBackdropPointerDown = (
   );
 };
 
-export const useModalDialog = () => {
+export const useModalDialog = (
+  initialFocus?: RefObject<HTMLElement | null>,
+) => {
   const dialog = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     const element = dialog.current;
     element?.showModal();
+    initialFocus?.current?.focus();
     return () => {
       if (element?.open) element.close();
     };
-  }, []);
+  }, [initialFocus]);
 
   return dialog;
 };

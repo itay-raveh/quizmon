@@ -66,7 +66,6 @@ export const getLeagueModifiers = (
 ): Modifiers => ({
   ...defaultModifiers,
   generations: [...generations],
-  limit: LEAGUE_QUESTION_COUNT,
   soundEnabled: experience.soundEnabled,
   speedrunMode: experience.speedrunMode,
 });

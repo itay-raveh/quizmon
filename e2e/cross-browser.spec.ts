@@ -14,7 +14,7 @@ test(
 );
 
 test(
-  'completes a Training round',
+  'answers a Training question',
   { tag: '@cross-browser' },
   async ({ page }) => {
     await page.goto('/');
@@ -22,8 +22,8 @@ test(
     await expect(page.locator('.question')).toBeVisible();
     await page.locator('.answer').first().click();
     await expect(
-      page.getByRole('heading', { name: 'Training complete' }),
-    ).toBeVisible();
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toHaveText('002 / 010');
   },
 );
 

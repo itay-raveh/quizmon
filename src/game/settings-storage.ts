@@ -11,10 +11,8 @@ import type { Modifiers } from './types';
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 
-const normalizeTrainingSettings = (value: unknown): Modifiers => ({
-  ...normalizeModifiers(value),
-  limit: 10,
-});
+const normalizeTrainingSettings = (value: unknown): Modifiers =>
+  normalizeModifiers(value);
 
 const readModifiers = (): Modifiers =>
   normalizeTrainingSettings(

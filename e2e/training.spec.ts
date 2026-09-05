@@ -5,6 +5,7 @@ import {
   seedBrowserRandom,
   test,
 } from './fixtures';
+import type { Page } from '@playwright/test';
 
 type PokemonName = keyof typeof catalogData.pokemon;
 
@@ -21,7 +22,31 @@ const findPokemonForSprite = (src: string | null) =>
       ),
   )?.[0] as PokemonName | undefined;
 
-test('plays and shares a complete Training question without a live API call', async ({
+const answerPokedexQuestion = async (page: Page) => {
+  const src = await page
+    .getByRole('img', { name: /Pokémon/ })
+    .getAttribute('src');
+  const pokemon = findPokemonForSprite(src);
+  if (!pokemon) throw new Error(`No Pokémon found for sprite ${src}.`);
+
+  const answer = page.getByRole('button', {
+    name: formatName(pokemon),
+    exact: true,
+  });
+  await answer.click();
+  return answer;
+};
+
+const completePokedexRound = async (page: Page) => {
+  for (let number = 1; number <= 10; number += 1) {
+    await expect(
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toHaveText(`${String(number).padStart(3, '0')} / 010`);
+    await answerPokedexQuestion(page);
+  }
+};
+
+test('plays and shares a complete Training round without a live API call', async ({
   context,
   page,
 }) => {
@@ -59,30 +84,26 @@ test('plays and shares a complete Training question without a live API call', as
   expect(leaveGame!.y + leaveGame!.height).toBeLessThanOrEqual(640);
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 001');
+  ).toHaveText('001 / 010');
   await expect(page.getByRole('contentinfo')).toBeVisible();
-  const src = await page
-    .getByRole('img', { name: /Pokémon/ })
-    .getAttribute('src');
-  const pokemon = findPokemonForSprite(src);
-  expect(pokemon).toBeTruthy();
-
-  const answer = page.getByRole('button', {
-    name: formatName(pokemon!),
-    exact: true,
-  });
-  await answer.click();
+  const answer = await answerPokedexQuestion(page);
   await expect(answer).toHaveClass(/answer--correct/);
   await expect(page.getByText(/\+[\d,]+ points/)).toHaveCount(0);
+  for (let number = 2; number <= 10; number += 1) {
+    await expect(
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toHaveText(`${String(number).padStart(3, '0')} / 010`);
+    await answerPokedexQuestion(page);
+  }
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
   await expect.poll(() => completionEvents).toHaveLength(1);
   expect(completionEvents[0]).toMatchObject({
     contentVersion: catalogData.contentVersion,
-    correctCount: 1,
+    correctCount: 10,
     mode: 'training',
-    questionCount: 1,
+    questionCount: 10,
     scoreVersion: 2,
   });
   await expect(page.getByRole('contentinfo')).toBeVisible();
@@ -120,8 +141,8 @@ test('keeps reverse-silhouette rounds clear on a phone', async ({ page }) => {
         generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
         questionTypes: ['silhouette-match'],
         soundEnabled: false,
-        limit: 1,
         speedrunMode: true,
+        trainingMode: 'custom',
       }),
     );
   });
@@ -163,8 +184,8 @@ for (const textScale of ['100%', '200%'] as const) {
           generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
           questionTypes: ['type-roundup'],
           soundEnabled: false,
-          limit: 1,
           speedrunMode: false,
+          trainingMode: 'custom',
         }),
       );
     });
@@ -228,7 +249,7 @@ for (const textScale of ['100%', '200%'] as const) {
 
     await page.getByRole('button', { name: 'Check answers' }).click();
     await expect(
-      page.getByRole('button', { name: 'See results' }),
+      page.getByRole('button', { name: 'Next question' }),
     ).toBeVisible();
     for (const typeRow of await typeRows.all()) {
       await expect(typeRow).toBeVisible();
@@ -296,8 +317,8 @@ test('answers questions with the number keys', async ({ page }) => {
   await page.keyboard.press(shortcut!);
 
   await expect(
-    page.getByRole('heading', { name: 'Training complete' }),
-  ).toBeVisible();
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('002 / 010');
 });
 
 test('repeats Training immediately with the same configuration', async ({
@@ -309,7 +330,7 @@ test('repeats Training immediately with the same configuration', async ({
   await expect(
     page.getByRole('heading', { name: 'Pokédex scan' }),
   ).toBeVisible();
-  await page.locator('.answer').first().click();
+  await completePokedexRound(page);
 
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
@@ -321,7 +342,7 @@ test('repeats Training immediately with the same configuration', async ({
   ).toBeVisible();
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 001');
+  ).toHaveText('001 / 010');
 });
 
 test('confirms before discarding an in-progress game', async ({ page }) => {
@@ -332,8 +353,8 @@ test('confirms before discarding an in-progress game', async ({ page }) => {
         generations: ['I'],
         questionTypes: ['pokedex-scan'],
         soundEnabled: false,
-        limit: 2,
         speedrunMode: true,
+        trainingMode: 'custom',
       }),
     );
   });
@@ -343,7 +364,7 @@ test('confirms before discarding an in-progress game', async ({ page }) => {
   await page.locator('.answer').first().click();
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('002 / 002');
+  ).toHaveText('002 / 010');
 
   await page.getByRole('button', { name: 'Leave game' }).click();
   const confirmation = page.getByRole('dialog', { name: 'Leave this game?' });
@@ -378,8 +399,8 @@ test('restores the next unanswered question after a reload', async ({
         generations: ['I'],
         questionTypes: ['pokedex-scan'],
         soundEnabled: false,
-        limit: 2,
         speedrunMode: false,
+        trainingMode: 'custom',
       }),
     );
   });
@@ -388,14 +409,14 @@ test('restores the next unanswered question after a reload', async ({
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 002');
+  ).toHaveText('001 / 010');
 
   await page.locator('.answer').first().click();
   await page.reload();
 
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('002 / 002');
+  ).toHaveText('002 / 010');
   await expect(page.getByText('Training', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Leave game' })).toBeVisible();
 });

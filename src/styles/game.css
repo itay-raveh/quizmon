@@ -1194,6 +1194,14 @@
 }
 
 @container (max-width: 12rem) {
+  .answer-trail {
+    flex-wrap: wrap;
+  }
+
+  .trainer-progress-summary__changes {
+    grid-template-columns: 1fr;
+  }
+
   .question .question__topline > .progress {
     grid-column: 1 / -1;
     grid-row: 2;

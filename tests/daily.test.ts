@@ -105,7 +105,6 @@ describe('Daily Challenge', () => {
       getDailyModifiers({ soundEnabled: false, speedrunMode: true }),
     ).toMatchObject({
       generations: [...generations],
-      limit: 5,
       soundEnabled: false,
       speedrunMode: true,
     });

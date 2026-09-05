@@ -265,10 +265,7 @@ describe('saved results', () => {
       questionCount: 5,
     };
 
-    saveResult({ kind: 'training' }, quick, {
-      ...defaultModifiers,
-      limit: 5,
-    });
+    saveResult({ kind: 'training' }, quick, defaultModifiers);
     expect(readTrainerStats().masteryRounds).toBe(0);
 
     saveResult({ kind: 'training' }, standard, defaultModifiers);

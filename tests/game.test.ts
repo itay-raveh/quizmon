@@ -33,6 +33,7 @@ import {
   generations,
   type PokemonCatalog,
   type PokemonKnowledge,
+  type QuestionType,
 } from '@/game/types';
 
 const catalog = catalogData as PokemonCatalog;
@@ -84,6 +85,14 @@ const attackMultiplier = (
   }, 1);
 };
 
+const buildSingleQuestion = (questionType: QuestionType, seed: string) =>
+  buildQuestions(
+    catalog,
+    { ...defaultModifiers, questionTypes: [questionType] },
+    createSeededRandom(seed),
+    1,
+  )[0];
+
 describe('normalizeModifiers', () => {
   it('enables every generation by default', () => {
     expect(defaultModifiers.generations).toEqual(generations);
@@ -93,19 +102,17 @@ describe('normalizeModifiers', () => {
     expect(normalizeModifiers('broken')).toEqual(defaultModifiers);
   });
 
-  it('keeps valid selections and repairs an invalid limit', () => {
+  it('keeps valid selections and discards unknown values', () => {
     expect(
       normalizeModifiers({
         generations: ['IX', 'not-a-generation'],
         questionTypes: ['stat-showdown', 'not-a-type'],
-        limit: 0,
         speedrunMode: true,
       }),
     ).toEqual({
       generations: ['IX'],
       questionTypes: ['stat-showdown'],
       soundEnabled: true,
-      limit: 1,
       speedrunMode: true,
       trainingMode: 'league',
     });
@@ -120,27 +127,23 @@ describe('normalizeModifiers', () => {
     ).toBe('custom');
   });
 
-  it('always prepares ten-question Training rounds', () => {
+  it('uses every question type for League Training', () => {
     expect(
       getTrainingModifiers({
         ...defaultModifiers,
-        limit: 5,
         questionTypes: ['evolution-shift'],
       }),
     ).toMatchObject({
-      limit: 10,
       questionTypes,
       trainingMode: 'league',
     });
     expect(
       getTrainingModifiers({
         ...defaultModifiers,
-        limit: 20,
         questionTypes: ['evolution-shift'],
         trainingMode: 'custom',
       }),
     ).toMatchObject({
-      limit: 10,
       questionTypes: ['evolution-shift'],
       trainingMode: 'custom',
     });
@@ -189,9 +192,9 @@ describe('question building', () => {
         ...defaultModifiers,
         generations: [...generations],
         questionTypes: [...questionTypes],
-        limit: questionTypes.length,
       },
       createSeededRandom('all-categories'),
+      questionTypes.length,
     );
 
     expect(questions).toHaveLength(questionTypes.length);
@@ -303,8 +306,9 @@ describe('question building', () => {
     for (const questionType of ['pokedex-scan', 'ability-check'] as const) {
       const [question] = buildQuestions(
         syntheticCatalog,
-        { ...defaultModifiers, questionTypes: [questionType], limit: 1 },
+        { ...defaultModifiers, questionTypes: [questionType] },
         () => 0,
+        1,
       );
       expect(question?.pokemonName).toBe('target');
       expect(new Set(question?.options)).toEqual(
@@ -398,9 +402,9 @@ describe('question building', () => {
           'evolution-shift',
           'type-check',
         ],
-        limit: 8,
       },
       createSeededRandom('question-visuals'),
+      8,
     );
     const byCategory = Object.fromEntries(
       questions.map((question) => [question.category, question]),
@@ -453,15 +457,9 @@ describe('question building', () => {
 
   it('attaches a Pokédex number to every Pokémon answer option', () => {
     for (const questionType of questionTypes) {
-      const [question] = buildQuestions(
-        catalog,
-        {
-          ...defaultModifiers,
-          generations: [...generations],
-          limit: 1,
-          questionTypes: [questionType],
-        },
-        createSeededRandom(`numbered-${questionType}`),
+      const question = buildSingleQuestion(
+        questionType,
+        `numbered-${questionType}`,
       );
 
       expect(question).toBeDefined();
@@ -475,11 +473,7 @@ describe('question building', () => {
   });
 
   it('builds an exact multi-select answer key', () => {
-    const [multiSelect] = buildQuestions(
-      catalog,
-      { ...defaultModifiers, questionTypes: ['type-roundup'], limit: 1 },
-      createSeededRandom('multi-select'),
-    );
+    const multiSelect = buildSingleQuestion('type-roundup', 'multi-select');
     expect(multiSelect?.answer.correctOptions.length).toBeGreaterThan(1);
     expect(multiSelect?.options).toHaveLength(4);
     expect(multiSelect?.visual).toMatchObject({ kind: 'type-roundup' });
@@ -491,12 +485,9 @@ describe('question building', () => {
       (_, index) =>
         buildQuestions(
           catalog,
-          {
-            ...defaultModifiers,
-            questionTypes: ['stat-showdown'],
-            limit: 1,
-          },
+          { ...defaultModifiers, questionTypes: ['stat-showdown'] },
           createSeededRandom(`stat-direction-${index}`),
+          1,
         )[0],
     ).filter((candidate) => candidate !== undefined);
     const directions = new Set(
@@ -532,11 +523,7 @@ describe('question building', () => {
   });
 
   it('uses an exact two-times weakness for the Type Matchup diagram', () => {
-    const [question] = buildQuestions(
-      catalog,
-      { ...defaultModifiers, questionTypes: ['type-matchup'], limit: 1 },
-      createSeededRandom('type-matchup-visual'),
-    );
+    const question = buildSingleQuestion('type-matchup', 'type-matchup-visual');
     const attackType = getCorrectOptions(question!)[0]!;
     const defender = catalog.pokemon[question!.pokemonName]!;
 
@@ -548,11 +535,7 @@ describe('question building', () => {
   });
 
   it('builds Counter Pick with one genuine type advantage', () => {
-    const [question] = buildQuestions(
-      catalog,
-      { ...defaultModifiers, questionTypes: ['counter-pick'], limit: 1 },
-      createSeededRandom('counter-pick'),
-    );
+    const question = buildSingleQuestion('counter-pick', 'counter-pick');
     expect(question?.title).toBe('Counter pick');
     expect(question?.media.kind).toBe('pixel-sprite');
     expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
@@ -578,11 +561,7 @@ describe('question building', () => {
   });
 
   it('builds Evolution Shift from a real typing change', () => {
-    const [question] = buildQuestions(
-      catalog,
-      { ...defaultModifiers, questionTypes: ['evolution-shift'], limit: 1 },
-      createSeededRandom('evolution-shift'),
-    );
+    const question = buildSingleQuestion('evolution-shift', 'evolution-shift');
     expect(question?.title).toBe('Evolution shift');
     expect(question?.media.kind).toBe('pixel-sprite');
 
@@ -606,10 +585,9 @@ describe('question building', () => {
   it('varies Pokédex Scan between current, classic, front, and back sprites', () => {
     const sources = new Set(
       Array.from({ length: 80 }, (_, index) => {
-        const [question] = buildQuestions(
-          catalog,
-          { ...defaultModifiers, questionTypes: ['pokedex-scan'], limit: 1 },
-          createSeededRandom(`pokedex-scan-${index}`),
+        const question = buildSingleQuestion(
+          'pokedex-scan',
+          `pokedex-scan-${index}`,
         );
         expect(getQuestionPromptText(question!.prompt)).toBe(
           'Who is this Pokémon?',
@@ -643,11 +621,7 @@ describe('question building', () => {
 
 describe('scoring', () => {
   it('awards 1,000 points for a normal correct answer', () => {
-    const [question] = buildQuestions(
-      catalog,
-      { ...defaultModifiers, questionTypes: ['stat-showdown'], limit: 1 },
-      createSeededRandom('score'),
-    );
+    const question = buildSingleQuestion('stat-showdown', 'score');
     expect(question && getAnswerPoints(question, true)).toBe(1_000);
     expect(question && getAnswerPoints(question, false)).toBe(0);
   });
@@ -734,7 +708,7 @@ describe('scoring', () => {
 
 describe('utilities', () => {
   it('clamps question counts and does not mutate shuffled input', () => {
-    expect(getQuestionCount(4, { ...defaultModifiers, limit: 100 })).toBe(4);
+    expect(getQuestionCount(4, 100)).toBe(4);
     const input = [1, 2, 3];
     expect(shuffle(input, () => 0)).toEqual([2, 3, 1]);
     expect(input).toEqual([1, 2, 3]);

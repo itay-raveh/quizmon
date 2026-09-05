@@ -28,13 +28,10 @@ export const ModifiersDialog = ({
   trainingChangesApplyNextGame = false,
 }: ModifiersDialogProps) => {
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
-  const [draft, setDraft] = useState<Modifiers>(() => ({
-    ...modifiers,
-    limit: 10,
-  }));
+  const [draft, setDraft] = useState<Modifiers>(modifiers);
   const [submitted, setSubmitted] = useState(false);
-  const dialog = useModalDialog();
   const dialogTitle = useRef<HTMLHeadingElement>(null);
+  const dialog = useModalDialog(dialogTitle);
   const generationsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Record<SettingsTab, HTMLButtonElement | null>>({
