@@ -272,7 +272,7 @@ describe('question transitions', () => {
   });
 
   it('shows the Type Roundup instruction without repeating the pictured type', () => {
-    renderQuestion({
+    const rendered = renderQuestion({
       question: {
         ...question,
         answer: {
@@ -289,7 +289,12 @@ describe('question transitions', () => {
       },
     });
 
-    expect(screen.getByText('Select every Pokémon.')).toBeVisible();
+    const visiblePrompt = rendered.container.querySelector(
+      '.question-visual__prompt--roundup',
+    );
+    expect(screen.getByText('Select every')).toBeVisible();
+    expect(screen.getByText('Pokémon')).toBeVisible();
+    expect(visiblePrompt?.querySelector('.type-badge')).toBeVisible();
     expect(screen.getByText('Select every Electric-type Pokémon.')).toHaveClass(
       'visually-hidden',
     );
@@ -641,6 +646,35 @@ describe('question transitions', () => {
       'answer--correct',
     );
     expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
+  });
+
+  it('distinguishes wrong picks from missed correct multi-select answers', () => {
+    renderQuestion({
+      question: {
+        ...question,
+        answer: {
+          correctOptions: ['pikachu', 'eevee'],
+          interaction: 'multi-select',
+        },
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Ditto' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check answers' }));
+
+    const wrongPick = screen.getByRole('button', {
+      name: 'Ditto Wrong pick.',
+    });
+    const missed = screen.getByRole('button', {
+      name: 'Eevee Correct answer, not selected.',
+    });
+    expect(
+      wrongPick.querySelector('.answer__result-marker--wrong'),
+    ).toHaveTextContent('Wrong pick');
+    expect(
+      missed.querySelector('.answer__result-marker--missed'),
+    ).toHaveTextContent('Missed');
   });
 
   it('reveals reverse-silhouette choices after an answer', () => {

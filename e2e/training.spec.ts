@@ -427,6 +427,6 @@ test('restores the next unanswered question after a reload', async ({
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('002 / 010');
-  await expect(page.getByText('Training', { exact: true })).toBeVisible();
+  await expect(page.getByText('Training', { exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Leave game' })).toBeVisible();
 });

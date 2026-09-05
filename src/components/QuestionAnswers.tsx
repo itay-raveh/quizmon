@@ -43,6 +43,7 @@ export const QuestionAnswers = ({
     question.questionType,
   );
   const revealsOptionTypes = answered && reservesOptionTypes;
+  const multiSelect = question.answer.interaction === 'multi-select';
 
   const optionClassName = (option: string) => {
     if (!answered) {
@@ -69,12 +70,27 @@ export const QuestionAnswers = ({
           question.optionDexNumbers?.[option] ?? visual?.dexNumber;
         const concealed = Boolean(question.concealOptionLabels && !answered);
         const optionSelected = selected.has(option);
+        const optionCorrect = correct.has(option);
+        const resultMarker =
+          answered && multiSelect
+            ? optionCorrect && !optionSelected
+              ? 'missed'
+              : !optionCorrect && optionSelected
+                ? 'wrong'
+                : null
+            : null;
         const typeAnnouncement =
           revealsOptionTypes && visual
             ? `. ${visual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(visual.types)}.`
             : '';
+        const resultAnnouncement =
+          resultMarker === 'missed'
+            ? ' Correct answer, not selected.'
+            : resultMarker === 'wrong'
+              ? ' Wrong pick.'
+              : '';
         const selectionMark = answered
-          ? correct.has(option)
+          ? optionCorrect
             ? '✓'
             : optionSelected
               ? '×'
@@ -88,7 +104,7 @@ export const QuestionAnswers = ({
             aria-label={
               concealed
                 ? `Silhouette ${index + 1}`
-                : `${formatPokemonName(option)}${typeAnnouncement}`
+                : `${formatPokemonName(option)}${typeAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={String(index + 1)}
             aria-pressed={
@@ -103,6 +119,14 @@ export const QuestionAnswers = ({
             onClick={() => onSelect(option)}
           >
             <kbd aria-hidden="true">{selectionMark}</kbd>
+            {resultMarker ? (
+              <span
+                aria-hidden="true"
+                className={`answer__result-marker answer__result-marker--${resultMarker}`}
+              >
+                {resultMarker === 'missed' ? 'Missed' : 'Wrong pick'}
+              </span>
+            ) : null}
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
