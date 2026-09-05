@@ -23,15 +23,15 @@ export const App = () => {
   );
   const {
     close: closeTrainerCard,
-    face: trainerCardFace,
     isOpen: trainerCardOpen,
     open: openTrainerCard,
     profile: trainerProfile,
     refresh: refreshTrainerCard,
     refreshStats: refreshTrainerStats,
-    showFace: showTrainerCardFace,
+    showView: showTrainerView,
     stats: trainerStats,
     updateProfile: updateTrainerProfile,
+    view: trainerView,
   } = useTrainerCard();
   const {
     elapsedMilliseconds,
@@ -194,13 +194,13 @@ export const App = () => {
       }}
       trainer={{
         close: closeTrainerCard,
-        face: trainerCardFace,
         isOpen: trainerCardOpen,
         open: openTrainerCard,
         profile: trainerProfile,
         stats: trainerStats,
-        showFace: showTrainerCardFace,
+        showView: showTrainerView,
         updateProfile: updateTrainerProfile,
+        view: trainerView,
       }}
       training={{
         chooseAllGenerations,

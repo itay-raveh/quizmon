@@ -107,7 +107,7 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   await page.getByRole('button', { name: 'Leave game' }).click();
 
   await page.getByRole('button', { name: 'Trainer Card' }).click();
-  await page.getByRole('button', { name: 'View badges' }).click();
+  await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Start League challenge' }),
   ).toBeVisible();
@@ -126,7 +126,7 @@ test('shows Champion and Hall of Fame after clearing the League', async ({
   await page.getByRole('button', { name: 'Trainer Card' }).click();
 
   await expect(page.getByText('Champion')).toBeVisible();
-  await page.getByRole('button', { name: 'View badges' }).click();
+  await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Hall of Fame' }),
   ).toBeVisible();

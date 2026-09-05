@@ -16,7 +16,7 @@ test(
     await expect(
       page.getByRole('article', { name: 'Trainer Card front' }),
     ).toBeVisible();
-    await page.getByRole('button', { name: 'View badges' }).click();
+    await page.getByRole('button', { name: 'Badges', exact: true }).click();
     await expect(
       page.getByRole('article', { name: 'Trainer Card badge case' }),
     ).toBeVisible();

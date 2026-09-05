@@ -1,9 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from './fixtures';
 
-test('customizes, exports, shares, and turns the Trainer Card', async ({
-  page,
-}) => {
+test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
       'quizmon.results.v2',
@@ -69,8 +67,7 @@ test('customizes, exports, shares, and turns the Trainer Card', async ({
   });
   await page.reload();
 
-  const shareButton = page.getByRole('button', { name: 'Share card' });
-  await shareButton.click();
+  await page.getByRole('button', { name: 'Share card' }).click();
   expect(
     await page.evaluate(
       () =>
@@ -79,13 +76,13 @@ test('customizes, exports, shares, and turns the Trainer Card', async ({
     ),
   ).toBe('https://quizmon.raveh.dev/?trainer=front');
 
-  await page.getByRole('button', { name: 'View badges' }).click();
+  await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(page).toHaveURL(/\?trainer=back$/);
   const badgeCase = page.getByRole('article', {
     name: 'Trainer Card badge case',
   });
   await expect(badgeCase).toBeVisible();
-  await shareButton.click();
+  await page.getByRole('button', { name: 'Share case' }).click();
   expect(
     await page.evaluate(
       () =>
@@ -102,9 +99,28 @@ test('customizes, exports, shares, and turns the Trainer Card', async ({
   await expect(page.getByRole('dialog').getByText('0 / 10')).toBeVisible();
   await page.getByRole('button', { name: 'Close badge details' }).click();
 
+  await page.getByRole('button', { name: 'Titles', exact: true }).click();
+  await expect(page).toHaveURL(/\?trainer=titles$/);
+  const titles = page.getByRole('article', {
+    name: 'Trainer Titles collection',
+  });
+  await expect(titles).toBeVisible();
+  await expect(titles.getByText('1 / 8 earned')).toBeVisible();
+  await expect(
+    titles.getByRole('button', { name: /Type Specialist.*Equipped/ }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Share titles' }).click();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as typeof window & { sharedTrainerCardUrl?: string })
+          .sharedTrainerCardUrl,
+    ),
+  ).toBe('https://quizmon.raveh.dev/?trainer=titles');
+
   await page.reload();
-  await expect(badgeCase).toBeVisible();
-  await page.getByRole('button', { name: 'View front' }).click();
+  await expect(titles).toBeVisible();
+  await page.getByRole('button', { name: 'Card', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL('/');

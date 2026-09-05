@@ -113,11 +113,13 @@ export const TrainerCard = ({
               <button
                 aria-label={`${badge.label}. ${badge.earned ? 'Earned' : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}
                 className="trainer-badge"
+                data-earned={badge.earned}
                 key={badge.id}
                 onClick={() => onBadgeSelect?.(badge)}
                 type="button"
               >
                 <TrainerBadgeMark earned={badge.earned} id={badge.id} />
+                <span className="trainer-badge__label">{badge.label}</span>
               </button>
             ))}
           </section>

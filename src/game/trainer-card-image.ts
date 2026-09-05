@@ -1,6 +1,21 @@
 import { site } from '@/app/site';
 import { setTrainerRoute } from '@/app/trainer-route';
-import type { TrainerCardFace } from './trainer';
+import type { TrainerView } from './trainer';
+
+const artifactDetails = {
+  badges: {
+    filename: 'quizmon-league-badge-case.png',
+    label: 'League Badge Case',
+  },
+  front: {
+    filename: 'quizmon-trainer-card-front.png',
+    label: 'Trainer Card',
+  },
+  titles: {
+    filename: 'quizmon-trainer-titles.png',
+    label: 'Trainer Titles',
+  },
+} satisfies Record<TrainerView, { filename: string; label: string }>;
 
 const waitForRenderedAssets = async (element: HTMLElement) => {
   await document.fonts?.ready;
@@ -10,7 +25,7 @@ const waitForRenderedAssets = async (element: HTMLElement) => {
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 };
 
-export const renderTrainerCardImage = async (
+export const renderTrainerArtifactImage = async (
   element: HTMLElement,
 ): Promise<Blob> => {
   await waitForRenderedAssets(element);
@@ -25,16 +40,17 @@ export const renderTrainerCardImage = async (
   });
 };
 
-export const downloadTrainerCard = (blob: Blob, face: TrainerCardFace) => {
+export const downloadTrainerArtifact = (blob: Blob, view: TrainerView) => {
+  const details = artifactDetails[view];
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `quizmon-trainer-card-${face}.png`;
+  link.download = details.filename;
   link.click();
   URL.revokeObjectURL(url);
 };
 
-export const supportsTrainerCardSharing = () => {
+export const supportsTrainerArtifactSharing = () => {
   if (!navigator.share || !navigator.canShare || typeof File === 'undefined') {
     return false;
   }
@@ -48,22 +64,23 @@ export const supportsTrainerCardSharing = () => {
   }
 };
 
-export const shareTrainerCard = async (
+export const shareTrainerArtifact = async (
   blob: Blob,
-  face: TrainerCardFace,
+  view: TrainerView,
 ): Promise<'cancelled' | 'shared' | 'unsupported'> => {
-  if (!supportsTrainerCardSharing()) return 'unsupported';
-  const file = new File([blob], `quizmon-trainer-card-${face}.png`, {
+  if (!supportsTrainerArtifactSharing()) return 'unsupported';
+  const details = artifactDetails[view];
+  const file = new File([blob], details.filename, {
     type: 'image/png',
   });
-  const cardUrl = setTrainerRoute(new URL(site.url), face);
+  const artifactUrl = setTrainerRoute(new URL(site.url), view);
 
   try {
     await navigator.share({
       files: [file],
-      text: `My ${site.name} Trainer Card`,
-      title: `${site.name} Trainer Card`,
-      url: cardUrl.href,
+      text: `My ${site.name} ${details.label}`,
+      title: `${site.name} ${details.label}`,
+      url: artifactUrl.href,
     });
     return 'shared';
   } catch (error) {

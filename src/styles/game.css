@@ -1160,8 +1160,14 @@
   gap: 0.6rem;
 }
 
-.trainer-progress-change > .trainer-badge-mark {
+.trainer-progress-change > .trainer-badge-mark,
+.trainer-progress-change > .trainer-title-mark {
   width: 2.35rem;
+}
+
+.trainer-progress-change > .trainer-title-mark {
+  border-width: 2px;
+  font-size: var(--text-small);
 }
 
 .trainer-progress-change > span:last-child {
@@ -1197,8 +1203,7 @@
   background: var(--blue);
 }
 
-.trainer-progress-change__hall-mark,
-.trainer-progress-change__specialty-mark {
+.trainer-progress-change__hall-mark {
   display: grid;
   width: 2.35rem;
   aspect-ratio: 1;
@@ -1214,16 +1219,6 @@
   place-items: center;
 }
 
-.trainer-progress-change__specialty-mark {
-  background: var(--cream);
-}
-
-.trainer-progress-change__specialty-mark[data-earned='true'] {
-  color: var(--primary-text);
-  background: var(--blue);
-  box-shadow: 0 0.14rem 0 var(--navy-shadow);
-}
-
 .trainer-progress-change--earned {
   grid-template-columns: 2.7rem minmax(0, 1fr);
   gap: 0.7rem;
@@ -1231,7 +1226,7 @@
 
 .trainer-progress-change--earned > .trainer-badge-mark,
 .trainer-progress-change--earned .trainer-progress-change__hall-mark,
-.trainer-progress-change--earned .trainer-progress-change__specialty-mark {
+.trainer-progress-change--earned > .trainer-title-mark {
   width: 2.7rem;
 }
 

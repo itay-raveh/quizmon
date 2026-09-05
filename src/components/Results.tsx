@@ -11,7 +11,7 @@ import {
 import { getLeagueStage, isLeagueVictory } from '@/game/league';
 import { formatScore } from '@/game/format';
 import { getHighScoreKey } from '@/game/storage';
-import type { TrainerCardFace, TrainerProgressChange } from '@/game/trainer';
+import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import type { GameMode, GameResult, Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
@@ -27,7 +27,7 @@ interface ResultsProps {
   mode: GameMode;
   modifiers: Modifiers;
   onNewGame: () => void;
-  onOpenTrainerCard: (face: TrainerCardFace) => void;
+  onOpenTrainerCard: (view: TrainerView) => void;
   onOpenSettings: () => void;
   onTrainAgain: () => void;
   onRetryLeague: () => void;

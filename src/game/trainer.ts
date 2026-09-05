@@ -19,6 +19,7 @@ export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
 export type TrainerCardFace = 'front' | 'badges';
+export type TrainerView = TrainerCardFace | 'titles';
 export type TrainerBadgeId =
   | 'many-paths'
   | 'pokedex-trail'
@@ -36,6 +37,15 @@ export interface TrainerBadge {
   id: TrainerBadgeId;
   label: string;
   requirement: string;
+}
+
+export interface TrainerTitle {
+  current: number;
+  earned: boolean;
+  equipped: boolean;
+  goal: number;
+  label: string;
+  specialty: TrainerSpecialty;
 }
 
 interface TrainerBadgeChange {
@@ -164,6 +174,24 @@ export const getQualifiedTrainerSpecialties = (
   (Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).filter(
     (category) =>
       (stats.correctCategories[category] ?? 0) >= TRAINER_SPECIALTY_GOAL,
+  );
+
+export const getTrainerTitles = (
+  stats: TrainerStats,
+  equipped: TrainerSpecialty | null,
+): TrainerTitle[] =>
+  (Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).map(
+    (specialty) => {
+      const current = stats.correctCategories[specialty] ?? 0;
+      return {
+        current,
+        earned: current >= TRAINER_SPECIALTY_GOAL,
+        equipped: specialty === equipped,
+        goal: TRAINER_SPECIALTY_GOAL,
+        label: trainerSpecialtyLabels[specialty],
+        specialty,
+      };
+    },
   );
 
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {

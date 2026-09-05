@@ -11,6 +11,7 @@
   display: grid;
   width: min(42rem, calc(100vw - 2rem));
   min-width: 0;
+  container-type: inline-size;
   padding: clamp(1rem, 2.4vw, 1.5rem);
   grid-template-columns: minmax(0, 1fr);
   color: var(--ink);
@@ -81,6 +82,52 @@
   color: var(--navy);
   font-size: var(--text-display);
   line-height: 1;
+}
+
+.trainer-passport__header-space {
+  width: 5.8rem;
+}
+
+.trainer-passport__views {
+  display: grid;
+  overflow: hidden;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--navy);
+  border: 3px solid var(--navy);
+  border-radius: 0.45rem;
+  box-shadow:
+    0 0.2rem 0 var(--yellow),
+    0 0.42rem 0 var(--navy-shadow);
+  gap: 2px;
+}
+
+.trainer-passport__view {
+  min-width: 0;
+  min-height: 2.8rem;
+  padding: 0.45rem 0.6rem;
+  color: var(--navy);
+  background: var(--paper);
+  border: 0;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.trainer-passport__view[aria-pressed='true'] {
+  color: var(--paper);
+  background: var(--blue);
+}
+
+.trainer-passport__view:disabled {
+  cursor: wait;
+}
+
+.trainer-passport__view:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
 }
 
 .trainer-passport__card {
@@ -409,12 +456,16 @@
 }
 
 .trainer-card__badges {
+  position: relative;
   display: grid;
   min-height: 0;
-  padding: 0.45rem 0.65rem 0.75rem;
+  padding: 0.55rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 0.2rem 0.35rem;
+  background: var(--trainer-rank-accent-strong);
+  border: 0.45rem solid var(--trainer-rank-accent);
+  box-shadow: inset 0 0 0 3px var(--navy);
+  gap: 3px;
 }
 
 .trainer-badge {
@@ -422,13 +473,14 @@
   display: grid;
   min-width: 0;
   min-height: 0;
-  padding: 0.1rem;
+  padding: 0.35rem 0.2rem 0.3rem;
   appearance: none;
   color: var(--navy);
-  background: transparent;
-  border: 0;
-  border-radius: 0.5rem;
+  background: var(--trainer-rank-surface);
+  border: 2px solid var(--navy);
+  border-radius: 0.25rem;
   cursor: pointer;
+  grid-template-rows: minmax(0, 1fr) auto;
   place-items: center;
 }
 
@@ -481,13 +533,244 @@
 }
 
 .trainer-card__badges .trainer-badge-mark {
-  width: min(9.75rem, 100%);
+  width: min(6.8rem, 78%);
   max-width: 100%;
+}
+
+.trainer-badge__label {
+  max-width: 100%;
+  font-size: var(--text-mini);
+  font-weight: 900;
+  line-height: 0.95;
+  overflow-wrap: anywhere;
+  text-align: center;
+  white-space: normal;
+}
+
+.trainer-badge[data-earned='false'] .trainer-badge__label {
+  color: var(--muted);
+}
+
+.trainer-titles {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-width: 0;
+  color: var(--navy);
+  background: var(--paper);
+  border: 4px solid var(--navy);
+  border-radius: var(--surface-radius);
+  box-shadow:
+    inset 0 0 0 0.35rem var(--cream),
+    0 0.3rem 0 var(--trainer-card-step, var(--yellow)),
+    0 0.52rem 0 var(--navy-shadow);
+}
+
+.trainer-titles__banner {
+  display: flex;
+  min-height: 4rem;
+  padding: 0.8rem 1.15rem;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--trainer-rank-ink);
+  background: var(--trainer-rank-accent);
+  border-bottom: 4px solid var(--trainer-rank-accent-strong);
+  gap: 1rem;
+}
+
+.trainer-titles__banner > span {
+  font-size: var(--text-headline);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.trainer-titles__banner > strong {
+  padding: 0.35rem 0.55rem;
+  color: var(--navy);
+  background: var(--trainer-rank-surface);
+  border: 2px solid var(--trainer-rank-accent-strong);
+  border-radius: 0.25rem;
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  white-space: nowrap;
+}
+
+.trainer-titles__current {
+  display: grid;
+  min-height: 5.4rem;
+  padding: 0.8rem 1.15rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  background: var(--trainer-rank-surface);
+  border-bottom: 3px solid var(--navy);
+  gap: 0.75rem;
+}
+
+.trainer-titles__current > span:not(.trainer-title-mark) {
+  display: grid;
+  min-width: 0;
+}
+
+.trainer-titles__current small,
+.trainer-title__copy small,
+.trainer-titles__empty > span {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+}
+
+.trainer-titles__current strong {
+  font-size: var(--text-control);
+  line-height: 1.05;
+}
+
+.trainer-titles__lifetime {
+  justify-items: end;
+  text-align: right;
+}
+
+.trainer-titles__lifetime strong {
+  font-family: var(--font-data);
+  font-size: var(--text-headline);
+}
+
+.trainer-titles__empty {
+  grid-column: 1 / -1;
+}
+
+.trainer-titles__collection {
+  display: grid;
+  margin: 0.8rem;
+  overflow: hidden;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: var(--navy);
+  border: 3px solid var(--navy);
+  border-radius: 0.35rem;
+  gap: 2px;
+}
+
+.trainer-title {
+  display: grid;
+  min-width: 0;
+  min-height: 6.1rem;
+  padding: 0.65rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  appearance: none;
+  color: var(--navy);
+  background: var(--paper);
+  border: 0;
+  font: inherit;
+  text-align: left;
+  gap: 0.6rem;
+}
+
+.trainer-title[data-earned='true'] {
+  cursor: pointer;
+}
+
+.trainer-title[data-equipped='true'] {
+  background: var(--trainer-rank-surface);
+}
+
+.trainer-title[data-earned='true']:hover {
+  background: color-mix(in srgb, var(--trainer-rank-surface) 74%, var(--paper));
+}
+
+.trainer-title:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.trainer-title-mark {
+  display: grid;
+  width: 3.25rem;
+  aspect-ratio: 1;
+  color: var(--paper);
+  background: var(--blue);
+  border: 3px solid var(--navy);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.18rem 0 var(--yellow);
+  font-family: var(--font-data);
+  font-size: var(--text-headline);
+  font-weight: 900;
+  place-items: center;
+}
+
+.trainer-title-mark[data-earned='false'] {
+  color: var(--muted);
+  background: var(--cream);
+  border-color: var(--muted);
+  box-shadow: none;
+}
+
+.trainer-title__copy {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  gap: 0.25rem;
+}
+
+.trainer-title__copy > strong {
+  font-size: var(--text-label);
+  line-height: 1.05;
+}
+
+.trainer-title__track {
+  display: block;
+  overflow: hidden;
+  height: 0.45rem;
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: 999px;
+}
+
+.trainer-title__track > span {
+  display: block;
+  height: 100%;
+  background: var(--yellow);
+}
+
+.trainer-title__state {
+  padding: 0.2rem 0.3rem;
+  color: var(--navy);
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: 0.2rem;
+  font-size: var(--text-mini);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.trainer-title[data-equipped='true'] .trainer-title__state {
+  color: var(--paper);
+  background: var(--blue);
+}
+
+.trainer-titles__footer {
+  display: flex;
+  padding: 0.55rem 1rem 0.7rem;
+  align-items: baseline;
+  justify-content: center;
+  background: var(--trainer-rank-surface);
+  border-top: 3px solid var(--navy);
+  font-size: var(--text-small);
+  font-weight: 800;
+  gap: 0.35rem;
+}
+
+.trainer-titles__footer strong {
+  font-family: var(--font-data);
 }
 
 .trainer-passport__controls {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.7rem;
 }
 
@@ -983,6 +1266,16 @@
     padding: 0;
   }
 
+  .trainer-passport__header-space {
+    width: 2.75rem;
+  }
+
+  .trainer-passport__view {
+    min-height: 2.55rem;
+    padding-inline: 0.35rem;
+    font-size: var(--text-small);
+  }
+
   .trainer-card__banner {
     min-height: 2.3rem;
     padding: 0.25rem 0.65rem;
@@ -1079,8 +1372,94 @@
 
   .trainer-card__badges {
     min-height: 0;
-    padding: 0.2rem 0.35rem 0.4rem;
-    gap: 0.05rem 0.15rem;
+    padding: 0.25rem;
+    border-width: 0.28rem;
+    gap: 2px;
+  }
+
+  .trainer-badge {
+    padding: 0.15rem 0.08rem;
+    border-width: 1px;
+  }
+
+  .trainer-card__badges .trainer-badge-mark {
+    width: min(3.65rem, 72%);
+  }
+
+  .trainer-badge__label {
+    font-size: 0.56rem;
+    line-height: 0.9;
+  }
+
+  .trainer-titles__banner {
+    min-height: 2.8rem;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .trainer-titles__banner > span {
+    font-size: var(--text-small);
+  }
+
+  .trainer-titles__banner > strong {
+    padding: 0.2rem 0.35rem;
+    font-size: var(--text-mini);
+  }
+
+  .trainer-titles__current {
+    min-height: 4.4rem;
+    padding: 0.55rem 0.65rem;
+    gap: 0.5rem;
+  }
+
+  .trainer-titles__current .trainer-title-mark {
+    width: 2.6rem;
+  }
+
+  .trainer-titles__current strong {
+    font-size: var(--text-label);
+  }
+
+  .trainer-titles__lifetime strong {
+    font-size: var(--text-control);
+  }
+
+  .trainer-titles__collection {
+    margin: 0.45rem;
+  }
+
+  .trainer-title {
+    min-height: 5.3rem;
+    padding: 0.45rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: center;
+    gap: 0.35rem 0.45rem;
+  }
+
+  .trainer-title-mark {
+    width: 2.6rem;
+    border-width: 2px;
+    font-size: var(--text-control);
+  }
+
+  .trainer-title__copy > strong {
+    font-size: var(--text-small);
+  }
+
+  .trainer-title__copy small {
+    font-size: 0.55rem;
+  }
+
+  .trainer-title__state {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    padding: 0.15rem;
+    font-size: 0.52rem;
+    text-align: center;
+  }
+
+  .trainer-titles__footer {
+    padding: 0.35rem 0.65rem 0.45rem;
+    font-size: var(--text-mini);
   }
 
   .trainer-passport__controls {
@@ -1129,6 +1508,36 @@
 
   .trainer-customizer > .game-button {
     width: 100%;
+  }
+}
+
+@container (max-width: 19.5rem) {
+  .trainer-titles__banner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .trainer-titles__current {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .trainer-titles__lifetime {
+    grid-column: 2;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .trainer-titles__collection {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trainer-titles__footer {
+    flex-wrap: wrap;
+  }
+
+  .trainer-titles__footer strong {
+    overflow-wrap: anywhere;
   }
 }
 
