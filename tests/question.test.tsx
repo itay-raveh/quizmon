@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import type { ComponentProps } from 'react';
 import { Question } from '@/components/Question';
 import type { QuestionData } from '@/game/types';
 
@@ -45,14 +46,16 @@ const championQuestion: QuestionData = {
   ],
 };
 
-const renderQuestion = (number: number) =>
+type QuestionProps = ComponentProps<typeof Question>;
+
+const renderQuestion = (overrides: Partial<QuestionProps> = {}) =>
   render(
     <Question
       elapsedMilliseconds={0}
       elapsedSeconds={0}
       interactionPaused={false}
       mode={{ kind: 'training' }}
-      number={number}
+      number={1}
       onAnswer={vi.fn()}
       onFeedbackStart={() => 0}
       onNewGame={vi.fn()}
@@ -60,6 +63,7 @@ const renderQuestion = (number: number) =>
       question={question}
       speedrunMode={false}
       total={10}
+      {...overrides}
     />,
   );
 
@@ -69,7 +73,7 @@ describe('question transitions', () => {
   });
 
   it('moves focus to each new question heading', () => {
-    renderQuestion(1);
+    renderQuestion();
 
     expect(
       screen.getByRole('heading', { name: 'Stat showdown' }),
@@ -77,43 +81,30 @@ describe('question transitions', () => {
   });
 
   it('animates the first question only', () => {
-    const first = renderQuestion(1);
+    const first = renderQuestion();
     expect(first.container.firstElementChild).toHaveClass('question--enter');
     first.unmount();
 
-    const next = renderQuestion(2);
+    const next = renderQuestion({ number: 2 });
     expect(next.container.firstElementChild).not.toHaveClass('question--enter');
   });
 
   it('renders Pokémon answers as numbered sprite nameplates', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          optionVisuals: Object.fromEntries(
-            question.options.map((option, index) => [
-              option,
-              {
-                dexNumber: index + 1,
-                src: `https://example.com/${option}.png`,
-                types: ['electric'],
-              },
-            ]),
-          ),
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        optionVisuals: Object.fromEntries(
+          question.options.map((option, index) => [
+            option,
+            {
+              dexNumber: index + 1,
+              src: `https://example.com/${option}.png`,
+              types: ['electric'],
+            },
+          ]),
+        ),
+      },
+    });
 
     expect(screen.getByRole('button', { name: 'Pikachu' })).toHaveClass(
       'answer--pokemon',
@@ -125,30 +116,17 @@ describe('question transitions', () => {
   });
 
   it('renders Pokémon answers with their numbers even without artwork', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          optionDexNumbers: {
-            ditto: 132,
-            eevee: 133,
-            mew: 151,
-            pikachu: 25,
-          },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        optionDexNumbers: {
+          ditto: 132,
+          eevee: 133,
+          mew: 151,
+          pikachu: 25,
+        },
+      },
+    });
 
     expect(
       rendered.container.querySelectorAll('.answer__identity'),
@@ -160,37 +138,24 @@ describe('question transitions', () => {
   it.each(['odd-one-out', 'type-roundup', 'counter-pick'] as const)(
     'reveals each Pokémon option type after an answer in %s',
     (questionType) => {
-      const rendered = render(
-        <Question
-          elapsedMilliseconds={0}
-          elapsedSeconds={0}
-          interactionPaused={false}
-          mode={{ kind: 'training' }}
-          number={1}
-          onAnswer={vi.fn()}
-          onFeedbackStart={() => 0}
-          onNewGame={vi.fn()}
-          onOpenSettings={vi.fn()}
-          question={{
-            ...question,
-            category: 'type',
-            optionVisuals: Object.fromEntries(
-              question.options.map((option, index) => [
-                option,
-                {
-                  dexNumber: index + 1,
-                  src: `https://example.com/${option}.png`,
-                  types:
-                    option === 'pikachu' ? ['electric'] : ['normal', 'fairy'],
-                },
-              ]),
-            ),
-            questionType,
-          }}
-          speedrunMode={false}
-          total={10}
-        />,
-      );
+      const rendered = renderQuestion({
+        question: {
+          ...question,
+          category: 'type',
+          optionVisuals: Object.fromEntries(
+            question.options.map((option, index) => [
+              option,
+              {
+                dexNumber: index + 1,
+                src: `https://example.com/${option}.png`,
+                types:
+                  option === 'pikachu' ? ['electric'] : ['normal', 'fairy'],
+              },
+            ]),
+          ),
+          questionType,
+        },
+      });
 
       expect(
         rendered.container.querySelectorAll(
@@ -228,7 +193,7 @@ describe('question transitions', () => {
   );
 
   it('reserves the normal-mode action row before an answer', () => {
-    renderQuestion(1);
+    renderQuestion();
 
     const actionSlot = document.querySelector('.question__action-slot');
     expect(actionSlot?.querySelector('button')).toBeNull();
@@ -244,43 +209,30 @@ describe('question transitions', () => {
   });
 
   it('renders Type Check as a visual prompt and reveals the subject types', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          category: 'type',
-          answer: {
-            correctOptions: ['electric'],
-            interaction: 'single-choice',
-          },
-          media: {
-            kind: 'pixel-sprite',
-            src: 'https://example.com/pikachu.png',
-          },
-          options: ['electric', 'fire', 'grass', 'water'],
-          prompt: {
-            after: ' have?',
-            before: 'Which type does ',
-            dexNumber: 25,
-            kind: 'pokemon',
-            name: 'pikachu',
-          },
-          questionType: 'type-check',
-          visual: { kind: 'type-check' },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        category: 'type',
+        answer: {
+          correctOptions: ['electric'],
+          interaction: 'single-choice',
+        },
+        media: {
+          kind: 'pixel-sprite',
+          src: 'https://example.com/pikachu.png',
+        },
+        options: ['electric', 'fire', 'grass', 'water'],
+        prompt: {
+          after: ' have?',
+          before: 'Which type does ',
+          dexNumber: 25,
+          kind: 'pokemon',
+          name: 'pikachu',
+        },
+        questionType: 'type-check',
+        visual: { kind: 'type-check' },
+      },
+    });
 
     expect(
       rendered.container.querySelectorAll('.question__portrait'),
@@ -320,35 +272,22 @@ describe('question transitions', () => {
   });
 
   it('shows the Type Roundup instruction without repeating the pictured type', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          answer: {
-            correctOptions: ['pikachu', 'eevee'],
-            interaction: 'multi-select',
-          },
-          category: 'type',
-          prompt: {
-            kind: 'text',
-            text: 'Select every Electric-type Pokémon.',
-          },
-          questionType: 'type-roundup',
-          visual: { kind: 'type-roundup', type: 'electric' },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    renderQuestion({
+      question: {
+        ...question,
+        answer: {
+          correctOptions: ['pikachu', 'eevee'],
+          interaction: 'multi-select',
+        },
+        category: 'type',
+        prompt: {
+          kind: 'text',
+          text: 'Select every Electric-type Pokémon.',
+        },
+        questionType: 'type-roundup',
+        visual: { kind: 'type-roundup', type: 'electric' },
+      },
+    });
 
     expect(screen.getByText('Select every Pokémon.')).toBeVisible();
     expect(screen.getByText('Select every Electric-type Pokémon.')).toHaveClass(
@@ -360,45 +299,32 @@ describe('question transitions', () => {
   });
 
   it('reveals both ends of a Type Matchup diagram after answering', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          answer: {
-            correctOptions: ['ground'],
-            interaction: 'single-choice',
-          },
-          category: 'matchup',
-          media: {
-            kind: 'pixel-sprite',
-            src: 'https://example.com/pikachu.png',
-          },
-          options: ['electric', 'normal', 'ground', 'fire'],
-          pokemonName: 'pikachu',
-          pokemonTypes: ['electric'],
-          prompt: {
-            after: '?',
-            before: 'Which type is super effective against ',
-            dexNumber: 25,
-            kind: 'pokemon',
-            name: 'pikachu',
-          },
-          questionType: 'type-matchup',
-          visual: { kind: 'type-matchup', multiplier: 2 },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        answer: {
+          correctOptions: ['ground'],
+          interaction: 'single-choice',
+        },
+        category: 'matchup',
+        media: {
+          kind: 'pixel-sprite',
+          src: 'https://example.com/pikachu.png',
+        },
+        options: ['electric', 'normal', 'ground', 'fire'],
+        pokemonName: 'pikachu',
+        pokemonTypes: ['electric'],
+        prompt: {
+          after: '?',
+          before: 'Which type is super effective against ',
+          dexNumber: 25,
+          kind: 'pokemon',
+          name: 'pikachu',
+        },
+        questionType: 'type-matchup',
+        visual: { kind: 'type-matchup', multiplier: 2 },
+      },
+    });
 
     expect(screen.getByText('×2')).toBeVisible();
     expect(screen.getByText('No. 0025')).toBeVisible();
@@ -424,30 +350,17 @@ describe('question transitions', () => {
   });
 
   it('renders the Stat Showdown direction as part of the visual prompt', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          prompt: { kind: 'text', text: 'Which Pokémon has the lowest Speed?' },
-          visual: {
-            direction: 'lowest',
-            kind: 'stat-showdown',
-            stat: 'speed',
-          },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        prompt: { kind: 'text', text: 'Which Pokémon has the lowest Speed?' },
+        visual: {
+          direction: 'lowest',
+          kind: 'stat-showdown',
+          stat: 'speed',
+        },
+      },
+    });
 
     expect(
       rendered.container.querySelector('.question-visual__prompt'),
@@ -461,50 +374,37 @@ describe('question transitions', () => {
   });
 
   it('reveals the attacking Pokémon in Counter Pick', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          category: 'matchup',
-          media: {
-            kind: 'pixel-sprite',
-            src: 'https://example.com/squirtle.png',
-          },
-          optionVisuals: Object.fromEntries(
-            question.options.map((option, index) => [
-              option,
-              {
-                dexNumber: index + 1,
-                src: `https://example.com/${option}.png`,
-                types: option === 'pikachu' ? ['electric'] : ['normal'],
-              },
-            ]),
-          ),
-          pokemonName: 'squirtle',
-          pokemonTypes: ['water'],
-          prompt: {
-            after: ' super effectively?',
-            before: 'Who can hit ',
-            dexNumber: 7,
-            kind: 'pokemon',
-            name: 'squirtle',
-          },
-          questionType: 'counter-pick',
-          visual: { kind: 'counter-pick', multiplier: 2 },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        category: 'matchup',
+        media: {
+          kind: 'pixel-sprite',
+          src: 'https://example.com/squirtle.png',
+        },
+        optionVisuals: Object.fromEntries(
+          question.options.map((option, index) => [
+            option,
+            {
+              dexNumber: index + 1,
+              src: `https://example.com/${option}.png`,
+              types: option === 'pikachu' ? ['electric'] : ['normal'],
+            },
+          ]),
+        ),
+        pokemonName: 'squirtle',
+        pokemonTypes: ['water'],
+        prompt: {
+          after: ' super effectively?',
+          before: 'Who can hit ',
+          dexNumber: 7,
+          kind: 'pokemon',
+          name: 'squirtle',
+        },
+        questionType: 'counter-pick',
+        visual: { kind: 'counter-pick', multiplier: 2 },
+      },
+    });
 
     expect(screen.getByText('×2')).toBeVisible();
     expect(screen.getByText('No. 0007')).toBeVisible();
@@ -538,54 +438,41 @@ describe('question transitions', () => {
     }
     vi.stubGlobal('Image', PreloadImage);
 
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          answer: {
-            correctOptions: ['steel'],
-            interaction: 'single-choice',
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        answer: {
+          correctOptions: ['steel'],
+          interaction: 'single-choice',
+        },
+        category: 'evolution',
+        media: {
+          kind: 'pixel-sprite',
+          src: 'https://example.com/onix.png',
+        },
+        options: ['electric', 'steel', 'fighting', 'normal'],
+        pokemonName: 'onix',
+        pokemonTypes: ['rock', 'ground'],
+        prompt: {
+          after: ' gain after evolving?',
+          before: 'Which type can ',
+          dexNumber: 95,
+          kind: 'pokemon',
+          name: 'onix',
+        },
+        questionType: 'evolution-shift',
+        visual: {
+          evolution: {
+            dexNumber: 208,
+            name: 'steelix',
+            src: 'https://example.com/steelix.png',
+            types: ['steel', 'ground'],
           },
-          category: 'evolution',
-          media: {
-            kind: 'pixel-sprite',
-            src: 'https://example.com/onix.png',
-          },
-          options: ['electric', 'steel', 'fighting', 'normal'],
-          pokemonName: 'onix',
-          pokemonTypes: ['rock', 'ground'],
-          prompt: {
-            after: ' gain after evolving?',
-            before: 'Which type can ',
-            dexNumber: 95,
-            kind: 'pokemon',
-            name: 'onix',
-          },
-          questionType: 'evolution-shift',
-          visual: {
-            evolution: {
-              dexNumber: 208,
-              name: 'steelix',
-              src: 'https://example.com/steelix.png',
-              types: ['steel', 'ground'],
-            },
-            gainedType: 'steel',
-            kind: 'evolution-shift',
-          },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+          gainedType: 'steel',
+          kind: 'evolution-shift',
+        },
+      },
+    });
 
     expect(screen.getByText('?')).toBeVisible();
     expect(screen.getByText('No. 0095')).toBeVisible();
@@ -603,34 +490,21 @@ describe('question transitions', () => {
   });
 
   it('reveals a silhouette after an answer is selected', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          category: 'identity',
-          media: {
-            kind: 'sprite',
-            silhouette: true,
-            src: 'https://example.com/pikachu.png',
-          },
-          prompt: {
-            kind: 'text',
-            text: 'Who is hiding in this silhouette?',
-          },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    renderQuestion({
+      question: {
+        ...question,
+        category: 'identity',
+        media: {
+          kind: 'sprite',
+          silhouette: true,
+          src: 'https://example.com/pikachu.png',
+        },
+        prompt: {
+          kind: 'text',
+          text: 'Who is hiding in this silhouette?',
+        },
+      },
+    });
 
     const sprite = screen.getByRole('img', { name: /silhouette/ });
     expect(sprite).toHaveClass('sprite--silhouette');
@@ -641,22 +515,7 @@ describe('question transitions', () => {
   });
 
   it('ignores answer shortcuts while settings are open', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={question}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    renderQuestion({ interactionPaused: true });
 
     fireEvent.keyDown(window, { key: '1' });
 
@@ -664,22 +523,11 @@ describe('question transitions', () => {
   });
 
   it('keeps answer feedback visual and assistive-only', () => {
-    render(
-      <Question
-        elapsedMilliseconds={3_000}
-        elapsedSeconds={3}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 3_000}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={question}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    renderQuestion({
+      elapsedMilliseconds: 3_000,
+      elapsedSeconds: 3,
+      onFeedbackStart: () => 3_000,
+    });
     const answer = screen.getByRole('button', { name: 'Pikachu' });
     fireEvent.click(answer);
 
@@ -691,7 +539,7 @@ describe('question transitions', () => {
   });
 
   it('marks both the chosen wrong answer and the correct answer without color', () => {
-    renderQuestion(1);
+    renderQuestion();
 
     const wrong = screen.getByRole('button', { name: 'Eevee' });
     const correct = screen.getByRole('button', { name: 'Pikachu' });
@@ -721,23 +569,16 @@ describe('question transitions', () => {
     const onAnswerRecorded = vi.fn();
     const onFeedbackStart = vi.fn(() => 5_000);
 
-    render(
-      <Question
-        elapsedMilliseconds={1_000}
-        elapsedSeconds={1}
-        interactionPaused={false}
-        mode={mode}
-        number={number}
-        onAnswer={onAnswer}
-        onAnswerRecorded={onAnswerRecorded}
-        onFeedbackStart={onFeedbackStart}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={question}
-        speedrunMode={false}
-        total={total}
-      />,
-    );
+    renderQuestion({
+      elapsedMilliseconds: 1_000,
+      elapsedSeconds: 1,
+      mode,
+      number,
+      onAnswer,
+      onAnswerRecorded,
+      onFeedbackStart,
+      total,
+    });
 
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     expect(onFeedbackStart).toHaveBeenCalledOnce();
@@ -757,22 +598,13 @@ describe('question transitions', () => {
     vi.useFakeTimers();
     const onAnswer = vi.fn();
 
-    render(
-      <Question
-        elapsedMilliseconds={1_000}
-        elapsedSeconds={1}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={onAnswer}
-        onFeedbackStart={() => 5_000}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={question}
-        speedrunMode
-        total={10}
-      />,
-    );
+    renderQuestion({
+      elapsedMilliseconds: 1_000,
+      elapsedSeconds: 1,
+      onAnswer,
+      onFeedbackStart: () => 5_000,
+      speedrunMode: true,
+    });
 
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     expect(screen.queryByRole('button', { name: 'Next question' })).toBeNull();
@@ -785,28 +617,15 @@ describe('question transitions', () => {
   });
 
   it('checks every selected answer in a multi-select question', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          answer: {
-            correctOptions: ['pikachu', 'eevee'],
-            interaction: 'multi-select',
-          },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    renderQuestion({
+      question: {
+        ...question,
+        answer: {
+          correctOptions: ['pikachu', 'eevee'],
+          interaction: 'multi-select',
+        },
+      },
+    });
 
     const check = screen.getByRole('button', { name: 'Check answers' });
     expect(check).toBeDisabled();
@@ -825,36 +644,23 @@ describe('question transitions', () => {
   });
 
   it('reveals reverse-silhouette choices after an answer', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          concealOptionLabels: true,
-          optionVisuals: Object.fromEntries(
-            question.options.map((option, index) => [
-              option,
-              {
-                dexNumber: index + 1,
-                silhouette: true,
-                src: `https://example.com/${option}.png`,
-                types: ['electric'],
-              },
-            ]),
-          ),
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    renderQuestion({
+      question: {
+        ...question,
+        concealOptionLabels: true,
+        optionVisuals: Object.fromEntries(
+          question.options.map((option, index) => [
+            option,
+            {
+              dexNumber: index + 1,
+              silhouette: true,
+              src: `https://example.com/${option}.png`,
+              types: ['electric'],
+            },
+          ]),
+        ),
+      },
+    });
 
     expect(screen.queryByText('Pikachu')).not.toBeInTheDocument();
     expect(screen.queryByText('Silhouette 1')).not.toBeInTheDocument();
@@ -870,61 +676,35 @@ describe('question transitions', () => {
   });
 
   it('includes the number in every visible Pokémon prompt', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          prompt: {
-            after: '',
-            before: 'Find ',
-            dexNumber: 25,
-            kind: 'pokemon',
-            name: 'pikachu',
-          },
-          questionType: 'silhouette-match',
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    renderQuestion({
+      question: {
+        ...question,
+        prompt: {
+          after: '',
+          before: 'Find ',
+          dexNumber: 25,
+          kind: 'pokemon',
+          name: 'pikachu',
+        },
+        questionType: 'silhouette-match',
+      },
+    });
 
     expect(screen.getByText('(No. 0025)')).toBeVisible();
   });
 
   it('reveals the full sprite after a pixel peek answer', () => {
-    const rendered = render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'training' }}
-        number={1}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 0}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={{
-          ...question,
-          media: {
-            focusX: 25,
-            focusY: 75,
-            kind: 'pixel-peek',
-            src: 'https://example.com/pikachu.png',
-          },
-        }}
-        speedrunMode={false}
-        total={10}
-      />,
-    );
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        media: {
+          focusX: 25,
+          focusY: 75,
+          kind: 'pixel-peek',
+          src: 'https://example.com/pikachu.png',
+        },
+      },
+    });
 
     expect(rendered.container.querySelector('.pixel-peek')).not.toHaveClass(
       'pixel-peek--revealed',
@@ -936,22 +716,13 @@ describe('question transitions', () => {
   });
 
   it('shows Pokédex numbers in Champion search suggestions', () => {
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ date: '2026-09-03', kind: 'daily' }}
-        number={5}
-        onAnswer={vi.fn()}
-        onFeedbackStart={() => 1_000}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={championQuestion}
-        speedrunMode={false}
-        total={5}
-      />,
-    );
+    renderQuestion({
+      mode: { date: '2026-09-03', kind: 'daily' },
+      number: 5,
+      onFeedbackStart: () => 1_000,
+      question: championQuestion,
+      total: 5,
+    });
 
     fireEvent.change(screen.getByRole('combobox', { name: 'Your answer' }), {
       target: { value: 'pika' },
@@ -963,22 +734,14 @@ describe('question transitions', () => {
 
   it('starts the Champion question as a keyboard-operable autocomplete', () => {
     const onAnswer = vi.fn();
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ date: '2026-09-03', kind: 'daily' }}
-        number={5}
-        onAnswer={onAnswer}
-        onFeedbackStart={() => 1_000}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={championQuestion}
-        speedrunMode={false}
-        total={5}
-      />,
-    );
+    renderQuestion({
+      mode: { date: '2026-09-03', kind: 'daily' },
+      number: 5,
+      onAnswer,
+      onFeedbackStart: () => 1_000,
+      question: championQuestion,
+      total: 5,
+    });
 
     const search = screen.getByRole('combobox', { name: 'Your answer' });
     expect(search).toBeVisible();
@@ -1003,22 +766,14 @@ describe('question transitions', () => {
 
   it('uses the first Champion clue to reveal four choices', () => {
     const onAnswer = vi.fn();
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ date: '2026-09-03', kind: 'daily' }}
-        number={5}
-        onAnswer={onAnswer}
-        onFeedbackStart={() => 1_000}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={championQuestion}
-        speedrunMode={false}
-        total={5}
-      />,
-    );
+    renderQuestion({
+      mode: { date: '2026-09-03', kind: 'daily' },
+      number: 5,
+      onAnswer,
+      onFeedbackStart: () => 1_000,
+      question: championQuestion,
+      total: 5,
+    });
 
     fireEvent.click(
       screen.getByRole('button', {
@@ -1039,22 +794,14 @@ describe('question transitions', () => {
 
   it('keeps the League Champion question search-only and ends on a miss', () => {
     const onAnswer = vi.fn();
-    render(
-      <Question
-        elapsedMilliseconds={0}
-        elapsedSeconds={0}
-        interactionPaused={false}
-        mode={{ kind: 'league' }}
-        number={15}
-        onAnswer={onAnswer}
-        onFeedbackStart={() => 1_000}
-        onNewGame={vi.fn()}
-        onOpenSettings={vi.fn()}
-        question={championQuestion}
-        speedrunMode={false}
-        total={15}
-      />,
-    );
+    renderQuestion({
+      mode: { kind: 'league' },
+      number: 15,
+      onAnswer,
+      onFeedbackStart: () => 1_000,
+      question: championQuestion,
+      total: 15,
+    });
 
     expect(
       screen.getByRole('list', {
