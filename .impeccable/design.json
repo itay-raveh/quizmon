@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T08:45:52Z",
+  "generatedAt": "2026-09-05T08:55:49Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -628,7 +628,7 @@
       "Do preserve the exact wordmark and crisp pixel-art landscape.",
       "Do keep landing controls small and let open scenery dominate the first viewport.",
       "Do use Gabarito for interface text and reserve Martian Mono for compact data and scores.",
-      "Do use classic front-facing pixel sprites as compact gameplay information and preserve their hard edges when scaled.",
+      "Do use curated in-game pixel sprites as gameplay information and preserve their hard edges when scaled.",
       "Do turn changing question data into one compact diagram while keeping the complete text prompt available to assistive technology.",
       "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
       "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",

@@ -41,7 +41,6 @@ const makeKnowledge = (
   overrides: Partial<PokemonKnowledge> = {},
 ): PokemonKnowledge => ({
   abilities: [`ability-${id}`],
-  backSprite: `/back/${id}.png`,
   color: 'red',
   description: `Entry ${id}`,
   evolvesFrom: null,
@@ -49,6 +48,11 @@ const makeKnowledge = (
   generation: 'I',
   genus: 'Test',
   id,
+  identitySprites: {
+    currentBack: `/back/${id}.png`,
+    historicalBack: [`/classic/back/${id}.png`],
+    historicalFront: [`/classic/front/${id}.png`],
+  },
   levelMoves: [`move-${id}`],
   shape: 'quadruped',
   shinySprite: `/shiny/${id}.png`,
@@ -531,18 +535,41 @@ describe('question building', () => {
     });
   });
 
-  it('builds Battle View from the target back sprite', () => {
-    const [question] = buildQuestions(
-      catalog,
-      { ...defaultModifiers, questionTypes: ['battle-view'], limit: 1 },
-      createSeededRandom('battle-view'),
+  it('varies Pokédex Scan between current, classic, front, and back sprites', () => {
+    const sources = new Set(
+      Array.from({ length: 80 }, (_, index) => {
+        const [question] = buildQuestions(
+          catalog,
+          { ...defaultModifiers, questionTypes: ['pokedex-scan'], limit: 1 },
+          createSeededRandom(`pokedex-scan-${index}`),
+        );
+        expect(getQuestionPromptText(question!.prompt)).toBe(
+          'Who is this Pokémon?',
+        );
+        return question?.media.kind === 'sprite' ? question.media.src : '';
+      }),
     );
-    expect(question?.title).toBe('Battle view');
-    expect(question?.media).toEqual({
-      kind: 'sprite',
-      silhouette: false,
-      src: catalog.pokemon[question!.pokemonName]?.backSprite,
-    });
+
+    expect(
+      [...sources].some((source) =>
+        /^\/sprites\/pokemon\/\d+\.png$/.test(source),
+      ),
+    ).toBe(true);
+    expect(
+      [...sources].some((source) =>
+        /^\/sprites\/pokemon\/back\/\d+\.png$/.test(source),
+      ),
+    ).toBe(true);
+    expect(
+      [...sources].some(
+        (source) => source.includes('/versions/') && !source.includes('/back/'),
+      ),
+    ).toBe(true);
+    expect(
+      [...sources].some(
+        (source) => source.includes('/versions/') && source.includes('/back/'),
+      ),
+    ).toBe(true);
   });
 });
 

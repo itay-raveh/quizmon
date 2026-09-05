@@ -6,6 +6,19 @@ import {
   test,
 } from './fixtures';
 
+const findPokemonForSprite = (src: string | null) =>
+  Object.entries(catalogData.pokemon).find(
+    ([, entry]) =>
+      entry.sprite === src ||
+      entry.identitySprites.currentBack === src ||
+      entry.identitySprites.historicalFront.some(
+        (candidate) => candidate === src,
+      ) ||
+      entry.identitySprites.historicalBack.some(
+        (candidate) => candidate === src,
+      ),
+  )?.[0];
+
 test('plays and shares a complete Training question without a live API call', async ({
   context,
   page,
@@ -49,9 +62,7 @@ test('plays and shares a complete Training question without a live API call', as
   const src = await page
     .getByRole('img', { name: /Pokémon/ })
     .getAttribute('src');
-  const pokemon = Object.entries(catalogData.pokemon).find(
-    ([, entry]) => entry.sprite === src,
-  )?.[0];
+  const pokemon = findPokemonForSprite(src);
   expect(pokemon).toBeTruthy();
 
   const answer = page.getByRole('button', {
@@ -170,9 +181,7 @@ test('answers questions with the number keys', async ({ page }) => {
 
   const image = page.getByRole('img', { name: /Pokémon/ });
   const src = await image.getAttribute('src');
-  const pokemon = Object.entries(catalogData.pokemon).find(
-    ([, entry]) => entry.sprite === src,
-  )?.[0];
+  const pokemon = findPokemonForSprite(src);
   const answer = page.getByRole('button', {
     name: formatName(pokemon!),
     exact: true,

@@ -30,33 +30,33 @@ describe('Daily Challenge', () => {
       })),
     ).toEqual([
       {
-        correctOptions: ['charmeleon'],
-        id: 'type:charmeleon:0',
-        pokemonName: 'charmeleon',
+        correctOptions: ['gible'],
+        id: 'type:gible:0',
+        pokemonName: 'gible',
         title: 'Odd one out',
       },
       {
-        correctOptions: ['cresselia'],
-        id: 'identity:cresselia:1',
-        pokemonName: 'cresselia',
-        title: 'Pixel peek',
-      },
-      {
-        correctOptions: ['psychic'],
-        id: 'type:beheeyem:2',
-        pokemonName: 'beheeyem',
-        title: 'Type check',
-      },
-      {
-        correctOptions: ['fire'],
-        id: 'type:emboar:3',
+        correctOptions: ['emboar'],
+        id: 'stat:emboar:1',
         pokemonName: 'emboar',
-        title: 'Type check',
+        title: 'Stat showdown',
       },
       {
-        correctOptions: ['cloyster'],
-        id: 'champion:cloyster:4',
-        pokemonName: 'cloyster',
+        correctOptions: ['rock'],
+        id: 'matchup:pelipper:2',
+        pokemonName: 'pelipper',
+        title: 'Type matchup',
+      },
+      {
+        correctOptions: ['dark'],
+        id: 'evolution:torracat:3',
+        pokemonName: 'torracat',
+        title: 'Evolution shift',
+      },
+      {
+        correctOptions: ['nidoran-m'],
+        id: 'champion:nidoran-m:4',
+        pokemonName: 'nidoran-m',
         title: 'Champion question',
       },
     ]);
@@ -71,7 +71,7 @@ describe('Daily Challenge', () => {
     expect(first.at(-1)?.searchOptions).toHaveLength(
       Object.keys(catalog.pokemon).length,
     );
-    expect(first.at(-1)?.searchOptions).toContain('cloyster');
+    expect(first.at(-1)?.searchOptions).toContain('nidoran-m');
     expect(
       schedule
         .slice(0, -1)
@@ -93,7 +93,7 @@ describe('Daily Challenge', () => {
   });
 
   it('allows question types to repeat before the Champion finale', () => {
-    const standard = getDailyQuestionTypes('2026-09-01').slice(0, -1);
+    const standard = getDailyQuestionTypes('2026-09-02').slice(0, -1);
     expect(new Set(standard).size).toBeLessThan(standard.length);
   });
 
