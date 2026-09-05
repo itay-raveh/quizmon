@@ -66,6 +66,25 @@ const SubjectTypes = ({
     <span className="question-visual__type-space" />
   );
 
+const PokemonSubjectName = ({
+  dexNumber,
+  name,
+  revealed = true,
+}: {
+  dexNumber?: number;
+  name: string;
+  revealed?: boolean;
+}) => (
+  <span className="question-visual__subject-name">
+    {dexNumber === undefined ? null : (
+      <small className="question-visual__subject-number">
+        {revealed ? `No. ${String(dexNumber).padStart(4, '0')}` : '\u00a0'}
+      </small>
+    )}
+    <span>{revealed ? formatPokemonName(name) : '\u00a0'}</span>
+  </span>
+);
+
 export const QuestionArtwork = ({
   answered,
   cluesShown,
@@ -73,6 +92,8 @@ export const QuestionArtwork = ({
 }: QuestionArtworkProps) => {
   const { media } = question;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : null;
+  const subjectDexNumber =
+    question.prompt.kind === 'pokemon' ? question.prompt.dexNumber : undefined;
 
   if (question.visual?.kind === 'type-check' && pixelSprite) {
     return (
@@ -135,9 +156,10 @@ export const QuestionArtwork = ({
       >
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
-          <span className="question-visual__subject-name">
-            {formatPokemonName(question.pokemonName)}
-          </span>
+          <PokemonSubjectName
+            dexNumber={subjectDexNumber}
+            name={question.pokemonName}
+          />
           <TypeBadges types={question.pokemonTypes} />
         </div>
         <RelationArrow />
@@ -149,9 +171,11 @@ export const QuestionArtwork = ({
               <span className="question-visual__question-mark">?</span>
             )}
           </span>
-          <span className="question-visual__subject-name">
-            {answered ? formatPokemonName(evolution.name) : '\u00a0'}
-          </span>
+          <PokemonSubjectName
+            dexNumber={evolution.dexNumber}
+            name={evolution.name}
+            revealed={answered}
+          />
           <span className="question-visual__evolution-types">
             {retainedTypes.length > 0 ? (
               <TypeBadges types={retainedTypes} />
@@ -183,9 +207,10 @@ export const QuestionArtwork = ({
         </span>
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
-          <span className="question-visual__subject-name">
-            {formatPokemonName(question.pokemonName)}
-          </span>
+          <PokemonSubjectName
+            dexNumber={subjectDexNumber}
+            name={question.pokemonName}
+          />
           <SubjectTypes answered={answered} types={question.pokemonTypes} />
         </div>
       </div>
@@ -213,9 +238,10 @@ export const QuestionArtwork = ({
         </span>
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
-          <span className="question-visual__subject-name">
-            {formatPokemonName(question.pokemonName)}
-          </span>
+          <PokemonSubjectName
+            dexNumber={subjectDexNumber}
+            name={question.pokemonName}
+          />
           <SubjectTypes answered={answered} types={question.pokemonTypes} />
         </div>
       </div>

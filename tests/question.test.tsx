@@ -357,6 +357,7 @@ describe('question transitions', () => {
     );
 
     expect(screen.getByText('×2')).toBeVisible();
+    expect(screen.getByText('No. 0025')).toBeVisible();
     expect(
       rendered.container.querySelectorAll('.type-badge--mystery'),
     ).toHaveLength(1);
@@ -462,6 +463,7 @@ describe('question transitions', () => {
     );
 
     expect(screen.getByText('×2')).toBeVisible();
+    expect(screen.getByText('No. 0007')).toBeVisible();
     expect(
       rendered.container.querySelector('.question-visual__unknown-pokemon img'),
     ).toBeNull();
@@ -542,10 +544,13 @@ describe('question transitions', () => {
     );
 
     expect(screen.getByText('?')).toBeVisible();
+    expect(screen.getByText('No. 0095')).toBeVisible();
+    expect(screen.queryByText('No. 0208')).toBeNull();
     expect(screen.queryByText('Steelix')).toBeNull();
     expect(preloadedSources).toContain('https://example.com/steelix.png');
     fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
     expect(screen.getByText('Steelix')).toBeVisible();
+    expect(screen.getByText('No. 0208')).toBeVisible();
     expect(
       rendered.container.querySelector(
         'img[src="https://example.com/steelix.png"]',
