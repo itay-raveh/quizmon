@@ -54,12 +54,12 @@ export const Footer = () => {
               @beresteyskaya
             </a>
           </span>
-          <span className="site-footer__credit site-footer__credit--legal">
-            Pokémon ©{' '}
-            <a href={site.pokemonLegalUrl} rel="noreferrer" target="_blank">
-              Nintendo / The Pokémon Company
-            </a>
-          </span>
+        </li>
+        <li className="site-footer__group site-footer__group--legal">
+          <span>Pokémon © </span>
+          <a href={site.pokemonLegalUrl} rel="noreferrer" target="_blank">
+            Nintendo / The Pokémon Company
+          </a>
         </li>
       </ul>
     </footer>

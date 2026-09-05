@@ -51,77 +51,81 @@ export const Landing = ({
         {site.title}
       </h1>
       <Logo />
-      {catalogStatus === 'loading' ? (
-        <p className="landing__status" role="status">
-          Loading Daily Challenge…
-        </p>
-      ) : null}
-      {catalogStatus === 'error' ? (
-        <div className="landing__status landing__status--error" role="alert">
-          <span>The Daily Challenge could not be loaded.</span>
-          <GameButton tone="quiet" onClick={onRetryCatalog}>
-            Try again
+      <div className="landing__primary">
+        {catalogStatus === 'loading' ? (
+          <p className="landing__status" role="status">
+            Loading Daily Challenge…
+          </p>
+        ) : null}
+        {catalogStatus === 'error' ? (
+          <div className="landing__status landing__status--error" role="alert">
+            <span>The Daily Challenge could not be loaded.</span>
+            <GameButton tone="quiet" onClick={onRetryCatalog}>
+              Try again
+            </GameButton>
+          </div>
+        ) : null}
+        {dailyResult ? (
+          <ShareResultButton
+            className={`daily-action daily-action--complete ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
+            mode={{ kind: 'daily', date: dailyDate }}
+            result={dailyResult}
+          >
+            <span className="daily-action__copy">
+              <strong className="daily-action__title">Share result</strong>
+              <span className="daily-action__detail">
+                {dailyResult.score.toLocaleString()} points
+                {dailyResultSaved ? '' : ' · Not saved'}
+              </span>
+            </span>
+            <CatchCombo count={dailyStreak} />
+          </ShareResultButton>
+        ) : (
+          <GameButton
+            aria-label={`Play Daily Challenge for ${formatDailyDate(dailyDate)}${dailyStreak > 0 ? `. ${dailyStreak}-day Daily Combo.` : ''}`}
+            className={`daily-action ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
+            disabled={catalogStatus !== 'ready' || !storageAvailable}
+            onClick={onStartDaily}
+          >
+            <span className="daily-action__copy">
+              <strong className="daily-action__title">Daily Challenge</strong>
+              {dailyDetail ? (
+                <span className="daily-action__detail">{dailyDetail}</span>
+              ) : null}
+            </span>
+            <CatchCombo count={dailyStreak} />
+          </GameButton>
+        )}
+      </div>
+      <div className="landing__control-stack">
+        <div className="landing__actions" aria-label="Play and profile">
+          <SettingsButton
+            disabled={catalogStatus !== 'ready'}
+            onClick={onOpenSettings}
+          />
+          <GameButton
+            className="landing__trainer-button"
+            disabled={catalogStatus !== 'ready'}
+            tone="quiet"
+            onClick={onOpenTrainerCard}
+          >
+            <span>Trainer Card</span>
+          </GameButton>
+          <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
+            <span>Start training</span>
           </GameButton>
         </div>
-      ) : null}
-      {dailyResult ? (
-        <ShareResultButton
-          className={`daily-action daily-action--complete ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
-          mode={{ kind: 'daily', date: dailyDate }}
-          result={dailyResult}
-        >
-          <span className="daily-action__copy">
-            <strong className="daily-action__title">Share result</strong>
-            <span className="daily-action__detail">
-              {dailyResult.score.toLocaleString()} points
-              {dailyResultSaved ? '' : ' · Not saved'}
-            </span>
-          </span>
-          <CatchCombo count={dailyStreak} />
-        </ShareResultButton>
-      ) : (
-        <GameButton
-          aria-label={`Play Daily Challenge for ${formatDailyDate(dailyDate)}${dailyStreak > 0 ? `. ${dailyStreak}-day Daily Combo.` : ''}`}
-          className={`daily-action ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
-          disabled={catalogStatus !== 'ready' || !storageAvailable}
-          onClick={onStartDaily}
-        >
-          <span className="daily-action__copy">
-            <strong className="daily-action__title">Daily Challenge</strong>
-            {dailyDetail ? (
-              <span className="daily-action__detail">{dailyDetail}</span>
-            ) : null}
-          </span>
-          <CatchCombo count={dailyStreak} />
-        </GameButton>
-      )}
-      <div className="landing__actions" aria-label="Play and profile">
-        <SettingsButton
-          disabled={catalogStatus !== 'ready'}
-          onClick={onOpenSettings}
-        />
-        <GameButton
-          className="landing__trainer-button"
-          disabled={catalogStatus !== 'ready'}
-          tone="quiet"
-          onClick={onOpenTrainerCard}
-        >
-          <span>Trainer Card</span>
-        </GameButton>
-        <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
-          <span>Start training</span>
-        </GameButton>
+        {leagueUnlocked ? (
+          <GameButton
+            className="landing__league-button"
+            disabled={catalogStatus !== 'ready'}
+            tone="quiet"
+            onClick={onStartLeague}
+          >
+            Quizmon League
+          </GameButton>
+        ) : null}
       </div>
-      {leagueUnlocked ? (
-        <GameButton
-          className="landing__league-button"
-          disabled={catalogStatus !== 'ready'}
-          tone="quiet"
-          onClick={onStartLeague}
-        >
-          Quizmon League
-        </GameButton>
-      ) : null}
     </section>
   );
 };

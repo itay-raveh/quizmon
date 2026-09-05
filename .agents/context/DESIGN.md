@@ -88,7 +88,7 @@ components:
     textColor: '{colors.game-surface}'
     typography: '{typography.control}'
     rounded: '{rounded.button}'
-    padding: '0.4rem 0.8rem'
+    padding: '0.65rem 1rem'
   game-panel:
     backgroundColor: '{colors.game-surface}'
     textColor: '{colors.ink}'
@@ -229,7 +229,9 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 
 The landscape is a fixed full-viewport plate with centered cover cropping. Main content is centered within the safe viewport height and uses fluid outer padding from `0.85rem` to `1.75rem`.
 
-The landing page is an open stage, not a card. On desktop, the wordmark, daily strip, and compact three-control row occupy the center while most of the sky and field remain visible. Once unlocked, the quiet Quizmon League action sits centered below the row as a separate secondary destination. At the `36rem` breakpoint, the wordmark and action groups expand to `90vw`. Settings becomes a square icon control while Trainer Card and Start training share the remaining width. Preserve the same vertical story instead of inventing a mobile navigation or stacking extra containers.
+The landing page is an open stage, not a card. A responsive grid keeps the wordmark, daily strip, and compact control stack in normal reading order and centers the complete composition within the space above the footer. Intrinsic row sizing preserves the hierarchy without percentage-based coordinates or content-dependent shifts. The wordmark caps at `31rem`, the daily strip at `26rem`, and the controls at `24rem`, while each can shrink to `90vw`. Settings remains a square icon control while Trainer Card and Start training share the remaining row. The Daily Combo medallion decisively overlaps the daily strip's upper-right edge instead of sitting inside its content. Once unlocked, the quiet Quizmon League action sits centered below the row as a separate secondary destination.
+
+The footer stays in document flow and uses three explicit tiers: ownership and contact, production credits, then the smaller Pokémon legal credit. Each tier controls its own wrapping so the footer reads as a hierarchy rather than one dense paragraph.
 
 Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer remains present in normal document flow below questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
@@ -276,9 +278,9 @@ Buttons are compact physical game controls.
 
 ### Daily Challenge Action
 
-The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. The current Daily Challenge shows only that primary line. A historical challenge may add its date in compact data type, and unavailable browser storage may add a short requirement. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button with only the explicit action “Share result” and the score. The completed state is already evident from the available action and cream treatment, so do not repeat it in the copy or add an icon. Do not bury the action inside score metadata, wrap the control in another card, or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
+The landing signature is one large cobalt button with a navy outline, a short yellow edge, and a modest navy shadow. The current Daily Challenge shows only that primary line. A historical challenge may add its date in compact data type, and unavailable browser storage may add a short requirement. The entire surface starts the challenge. After completion, the same footprint becomes a cream share button with a share icon, the explicit action “Share result”, and the score. The completed state is already evident from the available action and cream treatment, so do not repeat it in the copy. Do not bury the action inside score metadata, wrap the control in another card, or place a smaller button inside it. Each UTC date deterministically selects four standard question types with repeats allowed, then ends with one Champion question.
 
-A nonzero Daily Combo adds one capture-ball medallion at the action's right edge. Its large numeric center carries the visual weight, while the small Gabarito label names the combo without turning it into another statistic row. The copy shifts optically left to reserve the medallion's space. Compact and intermediate layouts keep the complete badge inside the action with a clear edge inset; wide layouts permit only a slight controlled overhang. The same medallion replaces the empty left cell in the Daily results header. A challenge earns combo credit only when completed on its own UTC date. Historical links never repair a combo.
+A nonzero Daily Combo adds one capture-ball medallion that overlaps the action's upper-right edge. Its large numeric center carries the visual weight, while the small Gabarito label names the combo without turning it into another statistic row. The badge stays fully inside the viewport at every width and remains visually separate from the action copy. The same medallion replaces the empty left cell in the Daily results header. A challenge earns combo credit only when completed on its own UTC date. Historical links never repair a combo.
 
 ### Question Surface
 
@@ -324,7 +326,7 @@ Dialogs use one cream header and a paper body. Settings keeps a cream action foo
 
 Serve the wordmark and landscape through AVIF and WebP sources, with the checked-in provenance-bearing PNG plates as fallbacks. Keep the wordmark proportions and the landscape's crisp pixel edges. Use cover cropping for the background without blur, gradients, overlays, or added scenery.
 
-The visible footer remains unboxed and comp-faithful. It uses two balanced credit lines: “Wordmark made with TextStudio · Custom art: @beresteyskaya” and “Data from PokéAPI · Open source on GitHub”. Each named source is linked. Compact layouts shorten the labels to “Logo”, “Art”, “Data”, and “Code” while preserving the same two creative and technical groups. The 14px metadata stays readable, each line remains internally aligned, and the footer never relies on uncontrolled wrapping. It sits at the bottom of the landscape on the landing screen and moves into normal document flow below questions and results so it never covers gameplay. Keep the Nintendo trademark sentence visually hidden and noninteractive.
+The visible footer remains unboxed and uses three controlled tiers. The first line contains copyright, the project email, and GitHub. The second credits TextStudio, PokéAPI, and @beresteyskaya. The smaller third line carries the visible Nintendo and The Pokémon Company credit. Every named source is linked, each tier controls its own wrapping, and the footer stays in normal document flow so it never covers gameplay.
 
 ### Motion
 
@@ -341,7 +343,7 @@ The first question and the result surface use one `180ms` ease-out entrance from
 - **Do** give buttons a physical pressed state through synchronized translation and compressed lower shadows.
 - **Do** animate the start and finish of a round, keep its question surface stable, and honor reduced motion.
 - **Do** prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.
-- **Do** keep the four concise footer credits linked in creative and technical groups, and preserve the visually hidden trademark sentence.
+- **Do** keep ownership, production credits, and the visible Pokémon legal credit in three concise linked tiers.
 
 ### Don't:
 

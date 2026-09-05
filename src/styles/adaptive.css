@@ -1,24 +1,21 @@
 .site-footer {
-  position: absolute;
-  bottom: max(0.25rem, env(safe-area-inset-bottom));
-  left: 18%;
-  width: 64%;
-  height: auto;
-  padding: 0;
-  color: var(--ink);
+  width: min(48rem, calc(100% - 1rem));
+  padding: 0.65rem 0 max(0.7rem, env(safe-area-inset-bottom));
+  color: var(--footer-ink);
   background: transparent;
   border: 0;
-  font-size: var(--text-footer);
+  font-size: clamp(var(--text-micro), 1.7vw, var(--text-footer));
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
   text-align: center;
+  justify-self: center;
 }
 
 .site-footer__groups {
   display: grid;
   margin: 0;
   padding: 0;
-  grid-template-rows: repeat(2, minmax(44px, auto));
+  gap: 0.3rem;
   list-style: none;
 }
 
@@ -31,7 +28,7 @@
 .site-footer__group {
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0 0.34rem;
+  gap: 0 0.3rem;
 }
 
 .site-footer__group--primary {
@@ -39,12 +36,18 @@
 }
 
 .site-footer__group--credits {
-  font-size: 0.92em;
+  font-size: 0.9em;
+  font-weight: 650;
+}
+
+.site-footer__group--legal {
+  font-size: 0.82em;
   font-weight: 600;
 }
 
 .site-footer a {
   color: inherit;
+  text-decoration-thickness: 1px;
 }
 
 .site-footer__credit {
@@ -53,18 +56,8 @@
 }
 
 .site-footer__credit + .site-footer__credit::before {
-  margin-right: 0.18rem;
+  margin-right: 0.14rem;
   content: '·';
-}
-
-.app--questions .site-footer,
-.app--results .site-footer,
-.app--trainer .site-footer {
-  position: static;
-  width: min(42rem, calc(100% - 0.5rem));
-  height: auto;
-  padding: 0.4rem 0 max(0.55rem, env(safe-area-inset-bottom));
-  justify-self: center;
 }
 
 @keyframes surface-in {
@@ -115,61 +108,7 @@
   animation: combo-ring 520ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@media (min-width: 36.01rem) and (max-width: 60rem) {
-  .logo-picture {
-    left: calc(50% - 10rem);
-    width: 20rem;
-  }
-
-  .daily-action {
-    left: calc(50% - 9rem);
-    width: 18rem;
-  }
-
-  .daily-action__detail {
-    font-size: var(--text-small);
-  }
-
-  .daily-action--with-combo .daily-action__copy {
-    padding-right: 4.5rem;
-  }
-
-  .daily-action > .catch-combo {
-    right: 1.15rem;
-  }
-
-  .landing__actions .game-button {
-    width: auto;
-    font-size: var(--text-compact-control);
-  }
-
-  .site-footer {
-    bottom: max(0.25rem, env(safe-area-inset-bottom));
-    left: 5%;
-    width: 90%;
-    height: auto;
-  }
-}
-
 @media (max-width: 36rem) {
-  .app--landing {
-    display: grid;
-    min-height: 100svh;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(32rem, 1fr) auto;
-  }
-
-  .app--landing main {
-    min-height: 0;
-  }
-
-  .app--landing .site-footer {
-    position: static;
-    width: calc(100% - 1rem);
-    padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
-    justify-self: center;
-  }
-
   main {
     padding: 0.6rem;
   }
@@ -196,20 +135,6 @@
     right: 0.6rem;
     left: 0.6rem;
     justify-content: space-between;
-  }
-
-  .logo-picture {
-    top: 13%;
-    left: 5%;
-    width: 90%;
-    height: 30%;
-  }
-
-  .daily-action {
-    top: 43%;
-    left: 5%;
-    width: 90%;
-    height: 13%;
   }
 
   .daily-action__detail {
@@ -252,29 +177,18 @@
     width: 2.9rem;
   }
 
-  .daily-action--with-combo .daily-action__copy {
-    padding-right: 4.5rem;
-  }
-
-  .daily-action > .catch-combo {
-    right: 1.15rem;
-  }
-
   .landing__actions .game-button {
-    width: auto;
     font-size: var(--text-compact-control);
   }
 
-  .landing__actions {
-    top: 60%;
-    left: 5%;
-    width: 90%;
-    min-height: 3.1rem;
-    gap: 0.38rem;
-  }
-
+  .landing__actions,
   .landing__actions .game-button {
     min-height: 3.1rem;
+  }
+
+  .landing__actions {
+    grid-template-columns: 3.1rem repeat(2, minmax(0, 1fr));
+    gap: 0.38rem;
   }
 
   .landing__actions .settings-button.game-button {
@@ -282,10 +196,6 @@
     min-width: 3.1rem;
     height: 3.1rem;
     min-height: 3.1rem;
-  }
-
-  .landing__status {
-    top: 71%;
   }
 
   .question,
@@ -408,31 +318,6 @@
 
   .results__actions--training {
     grid-template-columns: 1fr;
-  }
-
-  .site-footer {
-    bottom: max(0.2rem, env(safe-area-inset-bottom));
-    left: 2%;
-    width: 96%;
-    height: auto;
-  }
-
-  .site-footer__group {
-    gap: 0.22rem 0.68rem;
-  }
-
-  .site-footer__credit {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .site-footer__credit + .site-footer__credit::before {
-    display: none;
-  }
-
-  .site-footer__credit--legal {
-    flex-basis: 100%;
-    white-space: normal;
   }
 }
 

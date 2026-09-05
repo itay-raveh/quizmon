@@ -141,21 +141,29 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
     const action = document
       .querySelector('.daily-action')
       ?.getBoundingClientRect();
-    const label = document
-      .querySelector('.daily-action .catch-combo__label')
+    const combo = document
+      .querySelector('.daily-action .catch-combo')
       ?.getBoundingClientRect();
 
-    return action && label
-      ? { actionRight: action.right, labelRight: label.right }
+    return action && combo
+      ? {
+          actionRight: action.right,
+          actionTop: action.top,
+          comboRight: combo.right,
+          comboTop: combo.top,
+          viewportWidth: window.innerWidth,
+        }
       : null;
   });
   expect(mobileBounds).not.toBeNull();
-  expect(mobileBounds!.actionRight - mobileBounds!.labelRight).toBeGreaterThan(
-    8,
+  expect(mobileBounds!.comboTop).toBeLessThan(mobileBounds!.actionTop);
+  expect(mobileBounds!.comboRight).toBeGreaterThan(mobileBounds!.actionRight);
+  expect(mobileBounds!.comboRight).toBeLessThanOrEqual(
+    mobileBounds!.viewportWidth,
   );
 
   await page.setViewportSize({ width: 591, height: 844 });
-  await expect(page.locator('.daily-action')).toHaveCSS('width', '288px');
+  await expect(page.locator('.daily-action')).toHaveCSS('width', '416px');
 });
 
 test('syncs a completed daily across open tabs', async ({ context, page }) => {

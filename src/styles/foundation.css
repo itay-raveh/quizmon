@@ -37,6 +37,7 @@
   --cream: #feec99;
   --paper: #fffbea;
   --ink: #143149;
+  --footer-ink: #1b3e40;
   --muted: #446078;
   --correct: #18763a;
   --wrong: #a92843;
@@ -45,21 +46,6 @@
   --error-ink: #8b1e31;
   --error-surface: #fff0f3;
   --modal-scrim: rgba(8, 35, 73, 0.8);
-  --r-wordmark-x: 34.05%;
-  --r-wordmark-y: 25.2%;
-  --r-wordmark-w: 33.42%;
-  --r-wordmark-h: 23.2%;
-  --r-daily-action-x: 35.56%;
-  --r-daily-action-y: 51.81%;
-  --r-daily-action-w: 28.81%;
-  --r-daily-action-h: 8.57%;
-  --r-modifiers-x: 37.83%;
-  --r-modifiers-y: 62.6%;
-  --r-modifiers-w: 11.85%;
-  --r-custom-game-x: 50.5%;
-  --r-custom-game-w: 11.8%;
-  --r-footer-credit-y: 95.56%;
-  --r-footer-credit-h: 2.22%;
 }
 
 * {
@@ -127,10 +113,7 @@ input {
   overflow-x: clip;
 }
 
-.app--landing main {
-  min-height: max(100svh, 32rem);
-}
-
+.app--landing,
 .app--questions,
 .app--results,
 .app--trainer {
@@ -139,6 +122,7 @@ input {
   grid-template-rows: 1fr auto;
 }
 
+.app--landing main,
 .app--questions main,
 .app--results main,
 .app--trainer main {
