@@ -1,10 +1,7 @@
-import {
-  formatPokedexNumber,
-  formatPokemonName,
-  formatPokemonTypes,
-} from '@/game/format';
+import { formatPokemonName, formatPokemonTypes } from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
+import { PokemonIdentity } from './PokemonIdentity';
 import { TypeBadges } from './TypeBadge';
 
 const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
@@ -140,31 +137,31 @@ export const QuestionAnswers = ({
                   />
                 </span>
                 {concealed ? null : (
-                  <span className="answer__nameplate">
-                    <small aria-hidden="true">
-                      {formatPokedexNumber(visual.dexNumber)}
-                    </small>
-                    <span className="answer__name">
-                      {formatPokemonName(option)}
-                    </span>
+                  <PokemonIdentity
+                    className="answer__nameplate"
+                    dexNumber={visual.dexNumber}
+                    hideNumberFromAccessibility
+                    name={option}
+                    nameClassName="answer__name"
+                  >
                     {reservesOptionTypes ? (
                       <TypeBadges
                         className={`answer__types ${answered ? '' : 'answer__types--reserved'}`.trim()}
                         types={visual.types}
                       />
                     ) : null}
-                  </span>
+                  </PokemonIdentity>
                 )}
               </>
             ) : hasTypeOptionBadges ? (
               <TypeBadges className="answer__type-choice" types={[option]} />
             ) : dexNumber !== undefined ? (
-              <span className="answer__identity">
-                <small aria-hidden="true">
-                  {formatPokedexNumber(dexNumber)}
-                </small>
-                <span>{formatPokemonName(option)}</span>
-              </span>
+              <PokemonIdentity
+                className="answer__identity"
+                dexNumber={dexNumber}
+                hideNumberFromAccessibility
+                name={option}
+              />
             ) : (
               <span>{formatPokemonName(option)}</span>
             )}

@@ -61,6 +61,9 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await expect(page.getByText('Pikachu')).toBeVisible();
   await expect(page.getByText('No. 0025')).toBeVisible();
+  await expect(card.locator('.trainer-card__partner-caption')).toHaveText(
+    'No. 0025Pikachu',
+  );
   await expect(page.getByText('Type Specialist')).toBeVisible();
   await expect(card.getByText('ID No.')).toHaveCount(0);
   await expect(card.getByText('Play at')).toBeVisible();

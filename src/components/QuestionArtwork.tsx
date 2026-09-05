@@ -1,5 +1,6 @@
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import type { QuestionData } from '@/game/types';
+import { PokemonIdentity } from './PokemonIdentity';
 import { Sprite } from './Sprite';
 import { MysteryTypeBadge, TypeBadges } from './TypeBadge';
 
@@ -65,25 +66,6 @@ const SubjectTypes = ({
   ) : (
     <span className="question-visual__type-space" />
   );
-
-const PokemonSubjectName = ({
-  dexNumber,
-  name,
-  revealed = true,
-}: {
-  dexNumber?: number;
-  name: string;
-  revealed?: boolean;
-}) => (
-  <span className="question-visual__subject-name">
-    {dexNumber === undefined ? null : (
-      <small className="question-visual__subject-number">
-        {revealed ? formatPokedexNumber(dexNumber) : '\u00a0'}
-      </small>
-    )}
-    <span>{revealed ? formatPokemonName(name) : '\u00a0'}</span>
-  </span>
-);
 
 export const QuestionArtwork = ({
   answered,
@@ -167,9 +149,11 @@ export const QuestionArtwork = ({
       >
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
-          <PokemonSubjectName
+          <PokemonIdentity
+            className="question-visual__subject-name"
             dexNumber={subjectDexNumber}
             name={question.pokemonName}
+            numberClassName="question-visual__subject-number"
           />
           <TypeBadges types={question.pokemonTypes} />
         </div>
@@ -182,9 +166,11 @@ export const QuestionArtwork = ({
               <span className="question-visual__question-mark">?</span>
             )}
           </span>
-          <PokemonSubjectName
+          <PokemonIdentity
+            className="question-visual__subject-name"
             dexNumber={evolution.dexNumber}
             name={evolution.name}
+            numberClassName="question-visual__subject-number"
             revealed={answered}
           />
           <span className="question-visual__evolution-types">
@@ -218,9 +204,11 @@ export const QuestionArtwork = ({
         </span>
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
-          <PokemonSubjectName
+          <PokemonIdentity
+            className="question-visual__subject-name"
             dexNumber={subjectDexNumber}
             name={question.pokemonName}
+            numberClassName="question-visual__subject-number"
           />
           <SubjectTypes answered={answered} types={question.pokemonTypes} />
         </div>
@@ -249,9 +237,11 @@ export const QuestionArtwork = ({
         </span>
         <div className="question-visual__subject">
           <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
-          <PokemonSubjectName
+          <PokemonIdentity
+            className="question-visual__subject-name"
             dexNumber={subjectDexNumber}
             name={question.pokemonName}
+            numberClassName="question-visual__subject-number"
           />
           <SubjectTypes answered={answered} types={question.pokemonTypes} />
         </div>

@@ -1,7 +1,6 @@
 import type { Ref } from 'react';
 import { site, siteHostname } from '@/app/site';
 import { formatDailyDate } from '@/game/daily';
-import { formatPokemonName } from '@/game/format';
 import type { TrainerStats } from '@/game/storage';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import {
@@ -15,6 +14,7 @@ import {
 } from '@/game/trainer';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
+import { PokemonIdentity } from './PokemonIdentity';
 
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
@@ -39,9 +39,7 @@ export const TrainerCard = ({
   const finish = getCardFinish(rank);
   const badges = getTrainerBadges(stats);
   const earnedBadgeCount = getEarnedTrainerBadgeCount(stats);
-  const partnerName = profile.partnerPokemon
-    ? formatPokemonName(profile.partnerPokemon)
-    : 'Choose partner';
+  const partnerName = profile.partnerPokemon ?? 'Choose partner';
 
   return (
     <article
@@ -68,12 +66,12 @@ export const TrainerCard = ({
                   <span className="trainer-card__partner-mark">?</span>
                 )}
               </div>
-              <div className="trainer-card__partner-caption">
-                <strong>{partnerName}</strong>
-                {partnerDexNumber ? (
-                  <small>No. {String(partnerDexNumber).padStart(4, '0')}</small>
-                ) : null}
-              </div>
+              <PokemonIdentity
+                className="trainer-card__partner-caption question-visual__subject-name"
+                dexNumber={partnerDexNumber ?? undefined}
+                name={partnerName}
+                numberClassName="question-visual__subject-number"
+              />
             </div>
             <div className="trainer-card__identity">
               <h2>{profile.name || `${site.name} Trainer`}</h2>
