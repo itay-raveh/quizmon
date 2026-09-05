@@ -1,3 +1,8 @@
+import {
+  readStoredJson,
+  removeStoredValue,
+  writeStoredJson,
+} from './browser-storage';
 import { normalizeModifiers } from './game';
 import { parseDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
@@ -9,22 +14,11 @@ import type {
   QuestionCategory,
   QuestionType,
 } from './types';
-import { generations } from './types';
+import { generations, questionCategories } from './types';
+import { isFiniteNonnegative, isRecord } from './validation';
 
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 const ACTIVE_GAME_VERSION = 1;
-const questionCategories: readonly QuestionCategory[] = [
-  'ability',
-  'champion',
-  'description',
-  'evolution',
-  'identity',
-  'matchup',
-  'move',
-  'stat',
-  'type',
-];
-
 export interface ActiveGameSnapshot {
   answers: AnswerResult[];
   contentVersion: number;
@@ -35,12 +29,6 @@ export interface ActiveGameSnapshot {
   seed: string;
   version: number;
 }
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-
-const isFiniteNonnegative = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
 const parseMode = (value: unknown): GameMode | null => {
   if (!isRecord(value)) return null;
@@ -161,34 +149,22 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
 };
 
 export const readActiveGame = (): ActiveGameSnapshot | null => {
-  try {
-    const stored = window.sessionStorage.getItem(ACTIVE_GAME_KEY);
-    if (!stored) return null;
-    const snapshot = parseSnapshot(JSON.parse(stored));
-    if (!snapshot) window.sessionStorage.removeItem(ACTIVE_GAME_KEY);
-    return snapshot;
-  } catch {
-    return null;
-  }
+  const snapshot = parseSnapshot(
+    readStoredJson('sessionStorage', ACTIVE_GAME_KEY),
+  );
+  if (!snapshot) removeStoredValue('sessionStorage', ACTIVE_GAME_KEY);
+  return snapshot;
 };
 
 export const writeActiveGame = (
   snapshot: Omit<ActiveGameSnapshot, 'version'>,
 ): void => {
-  try {
-    window.sessionStorage.setItem(
-      ACTIVE_GAME_KEY,
-      JSON.stringify({ ...snapshot, version: ACTIVE_GAME_VERSION }),
-    );
-  } catch {
-    return;
-  }
+  writeStoredJson('sessionStorage', ACTIVE_GAME_KEY, {
+    ...snapshot,
+    version: ACTIVE_GAME_VERSION,
+  });
 };
 
 export const clearActiveGame = (): void => {
-  try {
-    window.sessionStorage.removeItem(ACTIVE_GAME_KEY);
-  } catch {
-    return;
-  }
+  removeStoredValue('sessionStorage', ACTIVE_GAME_KEY);
 };

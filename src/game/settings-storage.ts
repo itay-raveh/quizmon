@@ -1,4 +1,10 @@
 import { useState } from 'react';
+import {
+  readStoredJson,
+  readStoredValue,
+  writeStoredJson,
+  writeStoredValue,
+} from './browser-storage';
 import { defaultModifiers, normalizeModifiers } from './game';
 import type { Modifiers } from './types';
 
@@ -10,16 +16,10 @@ const normalizeTrainingSettings = (value: unknown): Modifiers => ({
   limit: 10,
 });
 
-const readModifiers = (): Modifiers => {
-  try {
-    const stored = window.localStorage.getItem(SETTINGS_KEY);
-    return stored
-      ? normalizeTrainingSettings(JSON.parse(stored))
-      : defaultModifiers;
-  } catch {
-    return defaultModifiers;
-  }
-};
+const readModifiers = (): Modifiers =>
+  normalizeTrainingSettings(
+    readStoredJson('localStorage', SETTINGS_KEY) ?? defaultModifiers,
+  );
 
 export const usePersistentModifiers = () => {
   const [modifiers, setModifiersState] = useState<Modifiers>(readModifiers);
@@ -28,31 +28,16 @@ export const usePersistentModifiers = () => {
     const normalized = normalizeTrainingSettings(nextModifiers);
     setModifiersState(normalized);
 
-    try {
-      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(normalized));
-    } catch {
-      // The game still works when storage is unavailable.
-    }
+    writeStoredJson('localStorage', SETTINGS_KEY, normalized);
   };
 
   return [modifiers, setModifiers] as const;
 };
 
-export const shouldShowGenerationPrompt = (): boolean => {
-  try {
-    return (
-      !window.localStorage.getItem(SETTINGS_KEY) &&
-      !window.localStorage.getItem(GENERATION_PROMPT_KEY)
-    );
-  } catch {
-    return true;
-  }
-};
+export const shouldShowGenerationPrompt = (): boolean =>
+  !readStoredValue('localStorage', SETTINGS_KEY) &&
+  !readStoredValue('localStorage', GENERATION_PROMPT_KEY);
 
 export const markGenerationPromptAnswered = () => {
-  try {
-    window.localStorage.setItem(GENERATION_PROMPT_KEY, '1');
-  } catch {
-    return;
-  }
+  writeStoredValue('localStorage', GENERATION_PROMPT_KEY, '1');
 };

@@ -1,3 +1,4 @@
+import { readStoredJson, writeStoredJson } from './browser-storage';
 import { getUtcDate, parseDailyDate } from './daily';
 import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
 
@@ -69,33 +70,19 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
 };
 
 export const readTrainerProfile = (): TrainerProfile => {
-  try {
-    const stored = window.localStorage.getItem(TRAINER_PROFILE_KEY);
-    const profile = stored ? normalizeTrainerProfile(JSON.parse(stored)) : null;
-    if (profile) return profile;
-  } catch {
-    return createTrainerProfile();
-  }
+  const profile = normalizeTrainerProfile(
+    readStoredJson('localStorage', TRAINER_PROFILE_KEY),
+  );
+  if (profile) return profile;
 
-  const profile = createTrainerProfile();
-  try {
-    window.localStorage.setItem(TRAINER_PROFILE_KEY, JSON.stringify(profile));
-  } catch {
-    return profile;
-  }
-  return profile;
+  const created = createTrainerProfile();
+  writeStoredJson('localStorage', TRAINER_PROFILE_KEY, created);
+  return created;
 };
 
 export const saveTrainerProfile = (profile: TrainerProfile): TrainerProfile => {
   const normalized = normalizeTrainerProfile(profile) ?? readTrainerProfile();
-  try {
-    window.localStorage.setItem(
-      TRAINER_PROFILE_KEY,
-      JSON.stringify(normalized),
-    );
-  } catch {
-    return normalized;
-  }
+  writeStoredJson('localStorage', TRAINER_PROFILE_KEY, normalized);
   return normalized;
 };
 
