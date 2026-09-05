@@ -6,7 +6,6 @@ import type { TrainerProfile } from '@/game/trainer-profile';
 import { generations } from '@/game/types';
 
 const profile: TrainerProfile = {
-  cardNumber: 'QZ-123456',
   createdAt: '2026-09-03',
   hasBeenRevealed: true,
   name: 'Leaf',

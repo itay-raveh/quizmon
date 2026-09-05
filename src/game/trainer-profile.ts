@@ -7,7 +7,6 @@ const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
 const TRAINER_PROFILE_VERSION = 1;
 
 export interface TrainerProfile {
-  cardNumber: string;
   createdAt: string;
   hasBeenRevealed: boolean;
   name: string;
@@ -16,14 +15,7 @@ export interface TrainerProfile {
   version: number;
 }
 
-const createCardNumber = (): string => {
-  const values = new Uint32Array(1);
-  crypto.getRandomValues(values);
-  return `QZ-${String((values[0] ?? 0) % 1_000_000).padStart(6, '0')}`;
-};
-
 const createTrainerProfile = (): TrainerProfile => ({
-  cardNumber: createCardNumber(),
   createdAt: getUtcDate(),
   hasBeenRevealed: false,
   name: '',
@@ -37,8 +29,6 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
   const profile = value as Partial<TrainerProfile>;
   if (
     profile.version !== TRAINER_PROFILE_VERSION ||
-    typeof profile.cardNumber !== 'string' ||
-    !/^QZ-\d{6}$/.test(profile.cardNumber) ||
     typeof profile.createdAt !== 'string' ||
     parseDailyDate(`?daily=${profile.createdAt}`) !== profile.createdAt ||
     typeof profile.hasBeenRevealed !== 'boolean' ||
@@ -52,7 +42,6 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
   }
 
   return {
-    cardNumber: profile.cardNumber,
     createdAt: profile.createdAt,
     hasBeenRevealed: profile.hasBeenRevealed,
     name: profile.name.trim().slice(0, 20),
@@ -63,10 +52,14 @@ const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
 };
 
 export const readTrainerProfile = (): TrainerProfile => {
-  const profile = normalizeTrainerProfile(
-    readStoredJson('localStorage', TRAINER_PROFILE_KEY),
-  );
-  if (profile) return profile;
+  const stored = readStoredJson('localStorage', TRAINER_PROFILE_KEY);
+  const profile = normalizeTrainerProfile(stored);
+  if (profile) {
+    if (isRecord(stored) && Object.hasOwn(stored, 'cardNumber')) {
+      writeStoredJson('localStorage', TRAINER_PROFILE_KEY, profile);
+    }
+    return profile;
+  }
 
   const created = createTrainerProfile();
   writeStoredJson('localStorage', TRAINER_PROFILE_KEY, created);

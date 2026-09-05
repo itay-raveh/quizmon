@@ -39,7 +39,6 @@ export const TrainerCard = ({
   const finish = getCardFinish(rank);
   const badges = getTrainerBadges(stats);
   const earnedBadgeCount = getEarnedTrainerBadgeCount(stats);
-  const trainerId = profile.cardNumber.replace(/^QZ-/, '');
   const partnerName = profile.partnerPokemon
     ? formatPokemonName(profile.partnerPokemon)
     : 'Choose partner';
@@ -84,10 +83,6 @@ export const TrainerCard = ({
                 </p>
               ) : null}
               <dl>
-                <div>
-                  <dt>ID No.</dt>
-                  <dd>{trainerId}</dd>
-                </div>
                 <div>
                   <dt>Trainer since</dt>
                   <dd>{formatDailyDate(profile.createdAt)}</dd>
