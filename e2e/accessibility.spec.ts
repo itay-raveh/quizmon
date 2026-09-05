@@ -135,7 +135,7 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   await expectNoHorizontalClipping(page);
   await expectCardContentToFit(page);
 
-  await page.getByRole('button', { name: 'View badge case' }).click();
+  await page.getByRole('button', { name: 'View badges' }).click();
   await expect(
     page.getByRole('article', { name: 'Trainer Card badge case' }),
   ).toBeVisible();
