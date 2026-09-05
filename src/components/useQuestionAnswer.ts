@@ -55,9 +55,9 @@ export const useQuestionAnswer = ({
   speedrunMode,
 }: UseQuestionAnswerOptions) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const [answered, setAnswered] = useState(false);
   const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
   const [cluesShown, setCluesShown] = useState(0);
+  const answered = answerResult !== null;
   const { playCorrect, playWrong } = useGameSounds();
   const answerAdvanced = useRef(false);
   const answerTimeout = useRef<number | null>(null);
@@ -101,7 +101,6 @@ export const useQuestionAnswer = ({
         speedBonus: getSpeedBonusPoints(points, responseMilliseconds),
       };
       setSelectedOptions(options);
-      setAnswered(true);
       setAnswerResult(answer);
       if (correct) playCorrect();
       else playWrong();
@@ -168,8 +167,7 @@ export const useQuestionAnswer = ({
   }, []);
 
   return {
-    answerCorrect:
-      answered && isQuestionAnswerCorrect(question, selectedOptions),
+    answerCorrect: answerResult?.correct === true,
     answered,
     advanceAnswer,
     cluesShown,
