@@ -12,6 +12,7 @@ import {
   type QuestionTypeGroup,
 } from '@/game/questions/registry';
 import type { Modifiers, QuestionType } from '@/game/types';
+import { CaretDownIcon, QuestionIcon, XIcon } from './icons';
 import { SelectionTile } from './SelectionTile';
 
 interface QuestionTypeSettingsProps {
@@ -143,9 +144,7 @@ export const QuestionTypeSettings = ({
                     {selectedCount} / {groupedQuestionTypes.length}
                     <span className="visually-hidden"> selected</span>
                   </span>
-                  <svg aria-hidden="true" viewBox="0 0 24 24">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
+                  <CaretDownIcon aria-hidden="true" weight="bold" />
                 </button>
               </h4>
               <div
@@ -187,7 +186,9 @@ export const QuestionTypeSettings = ({
                           popoverTargetAction="show"
                           type="button"
                         >
-                          <span aria-hidden="true">?</span>
+                          <span aria-hidden="true">
+                            <QuestionIcon weight="bold" />
+                          </span>
                         </button>
                       </div>
                     );
@@ -212,9 +213,7 @@ export const QuestionTypeSettings = ({
           popoverTargetAction="hide"
           type="button"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <XIcon aria-hidden="true" weight="bold" />
         </button>
         <strong>{getQuestionTypeLabel(explainedQuestionType)}</strong>
         <p>{getQuestionTypeDescription(explainedQuestionType)}</p>

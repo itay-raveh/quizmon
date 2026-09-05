@@ -15,6 +15,7 @@ import type {
 } from '@/game/types';
 import { ChampionSearch } from './ChampionSearch';
 import { GameButton } from './GameButton';
+import { XIcon } from './icons';
 import { LeagueProgress } from './LeagueProgress';
 import { Progress } from './Progress';
 import { QuestionAnswers } from './QuestionAnswers';
@@ -175,9 +176,7 @@ export const Question = ({
           title="Leave game"
           tone="quiet"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <XIcon aria-hidden="true" weight="bold" />
         </GameButton>
         <Progress current={number} total={total} />
         <span

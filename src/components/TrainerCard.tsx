@@ -109,6 +109,22 @@ export const TrainerCard = ({
             className="trainer-card__badges"
             aria-label={`League Badge Case: ${earnedBadgeCount} of ${badges.length} earned`}
           >
+            <span
+              aria-hidden="true"
+              className="trainer-card__case-rivet trainer-card__case-rivet--top-left"
+            />
+            <span
+              aria-hidden="true"
+              className="trainer-card__case-rivet trainer-card__case-rivet--top-right"
+            />
+            <span
+              aria-hidden="true"
+              className="trainer-card__case-rivet trainer-card__case-rivet--bottom-left"
+            />
+            <span
+              aria-hidden="true"
+              className="trainer-card__case-rivet trainer-card__case-rivet--bottom-right"
+            />
             {badges.map((badge) => (
               <button
                 aria-label={`${badge.label}. ${badge.earned ? 'Earned' : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}
@@ -119,7 +135,6 @@ export const TrainerCard = ({
                 type="button"
               >
                 <TrainerBadgeMark earned={badge.earned} id={badge.id} />
-                <span className="trainer-badge__label">{badge.label}</span>
               </button>
             ))}
           </section>

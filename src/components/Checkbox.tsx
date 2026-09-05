@@ -1,5 +1,6 @@
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { useGameSounds } from '@/audio/sound';
+import { CheckIcon } from './icons';
 
 interface CheckboxProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -32,7 +33,9 @@ export const Checkbox = ({
         onChange={handleChange}
         type="checkbox"
       />
-      <span className="checkbox__control" aria-hidden="true" />
+      <span className="checkbox__control" aria-hidden="true">
+        <CheckIcon weight="bold" />
+      </span>
       <span className="checkbox__copy">
         <span className="checkbox__label">{label}</span>
         {description ? (

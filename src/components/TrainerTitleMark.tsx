@@ -1,4 +1,15 @@
+import type { Icon } from '@phosphor-icons/react';
 import type { TrainerSpecialty } from '@/game/trainer';
+import {
+  ArrowsClockwiseIcon,
+  BinocularsIcon,
+  ChartBarIcon,
+  IdentificationCardIcon,
+  LightningIcon,
+  PuzzlePieceIcon,
+  ShapesIcon,
+  SwordIcon,
+} from './icons';
 
 interface TrainerTitleMarkProps {
   earned: boolean;
@@ -6,26 +17,30 @@ interface TrainerTitleMarkProps {
 }
 
 const titleMarks = {
-  ability: 'A',
-  description: 'F',
-  evolution: 'E',
-  identity: 'P',
-  matchup: 'B',
-  move: 'M',
-  stat: 'S',
-  type: 'T',
-} satisfies Record<TrainerSpecialty, string>;
+  ability: PuzzlePieceIcon,
+  description: BinocularsIcon,
+  evolution: ArrowsClockwiseIcon,
+  identity: IdentificationCardIcon,
+  matchup: SwordIcon,
+  move: LightningIcon,
+  stat: ChartBarIcon,
+  type: ShapesIcon,
+} satisfies Record<TrainerSpecialty, Icon>;
 
 export const TrainerTitleMark = ({
   earned,
   specialty,
-}: TrainerTitleMarkProps) => (
-  <span
-    aria-hidden="true"
-    className="trainer-title-mark"
-    data-earned={earned}
-    data-specialty={specialty}
-  >
-    {titleMarks[specialty]}
-  </span>
-);
+}: TrainerTitleMarkProps) => {
+  const Mark = titleMarks[specialty];
+
+  return (
+    <span
+      aria-hidden="true"
+      className="trainer-title-mark"
+      data-earned={earned}
+      data-specialty={specialty}
+    >
+      <Mark weight="bold" />
+    </span>
+  );
+};

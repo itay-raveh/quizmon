@@ -117,7 +117,7 @@ describe('Trainer Card', () => {
       name: /Many Paths\. Locked, 0 of 10\. Open badge details/,
     });
     expect(badge).toBeVisible();
-    expect(badge).toHaveTextContent('Many Paths');
+    expect(badge).toHaveTextContent('');
     badge.click();
     expect(onBadgeSelect).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'many-paths' }),

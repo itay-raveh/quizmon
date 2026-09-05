@@ -16,6 +16,7 @@ import type { GameMode, GameResult, Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
+import { CheckIcon, XIcon } from './icons';
 import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
 import { TrainerProgressSummary } from './TrainerProgressSummary';
@@ -98,9 +99,7 @@ export const Results = ({
           title="Back to start"
           tone="quiet"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
+          <XIcon aria-hidden="true" weight="bold" />
         </GameButton>
         <h1 id="results-title" ref={heading} tabIndex={-1}>
           {resultTitle}
@@ -157,7 +156,13 @@ export const Results = ({
               key={`${answer.category}-${index}`}
               title={`${getCategoryLabel(answer.category)}: ${answer.correct ? 'correct' : 'incorrect'}`}
             >
-              <span aria-hidden="true">{answer.correct ? '✓' : '×'}</span>
+              <span aria-hidden="true">
+                {answer.correct ? (
+                  <CheckIcon weight="bold" />
+                ) : (
+                  <XIcon weight="bold" />
+                )}
+              </span>
               <span className="visually-hidden">
                 {getCategoryLabel(answer.category)}:{' '}
                 {answer.correct ? 'correct' : 'incorrect'}

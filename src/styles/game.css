@@ -200,10 +200,11 @@
   background: var(--blue);
   border: 3px solid var(--navy);
   border-radius: 0.3rem;
-  font-family: var(--font-data);
-  font-size: var(--text-display);
-  font-weight: 850;
-  line-height: 1;
+}
+
+.question-visual__stat > span svg {
+  width: 1.9rem;
+  height: 1.9rem;
 }
 
 .question-relation {
@@ -379,14 +380,6 @@
 .settings-button svg {
   width: 1.45rem;
   height: 1.45rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-width: 2;
-}
-
-.question__leave svg {
-  stroke-width: 2.4;
 }
 
 .progress {
@@ -745,6 +738,11 @@
   place-items: center;
 }
 
+.answer kbd svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
 .answer--pokemon {
   min-height: 6.4rem;
   padding: 0;
@@ -988,10 +986,6 @@
 .results__close svg {
   width: 1.45rem;
   height: 1.45rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-width: 2.4;
 }
 
 .results__header > :last-child {
@@ -1070,6 +1064,11 @@
   border-radius: 0.2rem;
   font-weight: 800;
   place-items: center;
+}
+
+.answer-trail svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .answer-trail .answer-trail--correct {
@@ -1212,11 +1211,7 @@
   border: 2px solid var(--navy);
   border-radius: 0.28rem;
   box-shadow: 0 0.14rem 0 var(--navy-shadow);
-  font-family: var(--font-data);
-  font-size: var(--text-mini);
-  font-weight: 800;
-  text-transform: uppercase;
-  place-items: center;
+  padding: 0.35rem;
 }
 
 .trainer-progress-change--earned {
@@ -1250,9 +1245,9 @@
 }
 
 .trainer-progress-summary__heading .trainer-progress-summary__chevron {
+  width: 1rem;
+  height: 1rem;
   color: var(--blue);
-  font-size: var(--text-body);
-  line-height: 1;
 }
 
 .results__actions {
@@ -1277,11 +1272,6 @@
   width: 1.2rem;
   height: 1.2rem;
   flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
 }
 
 @container (max-width: 19rem) {
