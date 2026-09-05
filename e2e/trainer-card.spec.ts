@@ -69,6 +69,14 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(card.getByText('Play at')).toBeVisible();
   await expect(card.getByText('quizmon.raveh.dev')).toBeVisible();
   await expect(card.getByText(/finish/i)).toHaveCount(0);
+  await expect(card.locator('.trainer-card__portrait')).toHaveCSS(
+    'background-image',
+    'none',
+  );
+  await expect(card.locator('.trainer-card__portrait')).toHaveCSS(
+    'box-shadow',
+    'none',
+  );
   const downloadButton = page.getByRole('button', { name: 'Download PNG' });
   await expect(downloadButton).toBeEnabled();
   await expect(downloadButton.locator('svg')).toHaveCount(1);
@@ -84,6 +92,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   expect(Math.abs(png.readUInt32BE(16) - cardBounds.width * 2)).toBeLessThan(4);
 
   await page.setViewportSize({ width: 360, height: 800 });
+  const mobileFrontBounds = await card.boundingBox();
   await page.evaluate(() => {
     document.documentElement.style.fontSize = '125%';
   });
@@ -119,7 +128,6 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   expect(mobileContentBounds.identityBottom).toBeLessThanOrEqual(
     mobileContentBounds.footerTop,
   );
-  const mobileFrontBounds = await card.boundingBox();
   await page.evaluate(() => {
     document.documentElement.style.fontSize = '100%';
   });
