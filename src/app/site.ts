@@ -1,15 +1,19 @@
 const name = 'Quizmon';
 const tagline = 'The Ultimate Pokémon Knowledge Test';
 const title = `${name}: ${tagline}`;
+const repositoryUrl = 'https://github.com/itay-raveh/quizmon';
 
 export const site = {
   name,
   tagline,
   title,
+  authorName: 'Itay Raveh',
+  contactEmail: 'quizmon@raveh.dev',
   description:
     'Take the five-question Pokémon Daily Challenge each day, then practice types, moves, evolutions, stats, and more.',
   url: 'https://quizmon.raveh.dev/',
-  repositoryUrl: 'https://github.com/itay-raveh/quizmon',
+  repositoryUrl,
+  pokemonLegalUrl: 'https://www.pokemon.com/us/legal/information',
   language: 'en',
   locale: 'en_US',
   themeColor: '#72c3ee',

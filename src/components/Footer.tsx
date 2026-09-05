@@ -1,63 +1,61 @@
 import { site } from '@/app/site';
 
-export const Footer = () => (
-  <footer className="site-footer">
-    <ul className="site-footer__groups" role="list">
-      <li className="site-footer__group">
-        <span className="site-footer__credit">
-          <span className="site-footer__label site-footer__label--full">
-            Wordmark made with{' '}
+export const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="site-footer">
+      <ul className="site-footer__groups" role="list">
+        <li className="site-footer__group">
+          <span className="site-footer__credit">
+            © {currentYear} {site.authorName}
           </span>
-          <span className="site-footer__label site-footer__label--compact">
+          <span className="site-footer__credit">
+            Contact:{' '}
+            <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+          </span>
+          <span className="site-footer__credit">
+            Code and issues:{' '}
+            <a href={site.repositoryUrl} rel="noreferrer" target="_blank">
+              GitHub
+            </a>
+          </span>
+        </li>
+        <li className="site-footer__group">
+          <span className="site-footer__credit">
             Logo:{' '}
+            <a
+              href="https://www.textstudio.co"
+              rel="noreferrer"
+              target="_blank"
+            >
+              TextStudio
+            </a>
           </span>
-          <a href="https://www.textstudio.co" rel="noreferrer" target="_blank">
-            TextStudio
-          </a>
-        </span>
-        <span aria-hidden="true">·</span>
-        <span className="site-footer__credit">
-          <span className="site-footer__label site-footer__label--full">
-            Custom art:{' '}
-          </span>
-          <span className="site-footer__label site-footer__label--compact">
-            Custom art:{' '}
-          </span>
-          <a
-            href="https://www.fiverr.com/beresteyskaya"
-            rel="noreferrer"
-            target="_blank"
-          >
-            @beresteyskaya
-          </a>
-        </span>
-      </li>
-      <li className="site-footer__group">
-        <span className="site-footer__credit">
-          <span className="site-footer__label site-footer__label--full">
-            Data from{' '}
-          </span>
-          <span className="site-footer__label site-footer__label--compact">
+          <span className="site-footer__credit">
             Data:{' '}
+            <a href="https://pokeapi.co" rel="noreferrer" target="_blank">
+              PokéAPI
+            </a>
           </span>
-          <a href="https://pokeapi.co" rel="noreferrer" target="_blank">
-            PokéAPI
-          </a>
-        </span>
-        <span aria-hidden="true">·</span>
-        <span className="site-footer__credit">
-          <span className="site-footer__label site-footer__label--full">
-            Open source on{' '}
+          <span className="site-footer__credit">
+            Pokémon:{' '}
+            <a href={site.pokemonLegalUrl} rel="noreferrer" target="_blank">
+              Nintendo / The Pokémon Company
+            </a>
           </span>
-          <span className="site-footer__label site-footer__label--compact">
-            Code:{' '}
+          <span className="site-footer__credit">
+            Custom art:{' '}
+            <a
+              href="https://www.fiverr.com/beresteyskaya"
+              rel="noreferrer"
+              target="_blank"
+            >
+              @beresteyskaya
+            </a>
           </span>
-          <a href={site.repositoryUrl} rel="noreferrer" target="_blank">
-            GitHub
-          </a>
-        </span>
-      </li>
-    </ul>
-    <span className="visually-hidden">Pokémon is a trademark of Nintendo.</span>
-  </footer>
-);
+        </li>
+      </ul>
+    </footer>
+  );
+};
