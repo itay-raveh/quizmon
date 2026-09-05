@@ -21,6 +21,10 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await expect(
     dialog.getByRole('radio', { name: '10 Standard' }),
   ).toBeChecked();
+  await expect(dialog.getByText('Custom Training')).toBeVisible();
+  await expect(
+    dialog.getByText('Quick Attack and Perfect Form require League rules.'),
+  ).toBeVisible();
   await dialog.getByText('Quick', { exact: true }).click();
   await expect(dialog.getByRole('radio', { name: '5 Quick' })).toBeChecked();
   await expect(
@@ -108,6 +112,14 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await expect(
     dialog.getByText('Choose at least one question type.'),
   ).toHaveCount(0);
+  await dialog.getByRole('button', { name: 'Use League rules' }).click();
+  await expect(dialog.getByText('League Training')).toBeVisible();
+  await expect(
+    dialog.getByText('Quick Attack and Perfect Form can be earned.'),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole('radio', { name: '10 Standard' }),
+  ).toBeChecked();
   await dialog.getByRole('tab', { name: 'Experience' }).click();
   await expect(dialog.getByText('Play experience')).toBeVisible();
   await expect(dialog.getByLabel('Quick transitions')).toBeVisible();

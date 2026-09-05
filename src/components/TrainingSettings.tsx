@@ -1,4 +1,5 @@
 import type { Dispatch, RefObject, SetStateAction } from 'react';
+import { isLeagueTraining, withLeagueTrainingRules } from '@/game/game';
 import { generations, type Generation, type Modifiers } from '@/game/types';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
 import { SelectionTile } from './SelectionTile';
@@ -35,6 +36,7 @@ export const TrainingSettings = ({
 }: TrainingSettingsProps) => {
   const allGenerationsSelected =
     draft.generations.length === generations.length;
+  const leagueTraining = isLeagueTraining(draft);
 
   return (
     <>
@@ -43,6 +45,28 @@ export const TrainingSettings = ({
           Training changes apply to your next game.
         </p>
       ) : null}
+
+      <div className="league-training-status" aria-live="polite">
+        <span className="league-training-status__copy">
+          <strong>
+            {leagueTraining ? 'League Training' : 'Custom Training'}
+          </strong>
+          <span>
+            {leagueTraining
+              ? 'Quick Attack and Perfect Form can be earned.'
+              : 'Quick Attack and Perfect Form require League rules.'}
+          </span>
+        </span>
+        {!leagueTraining ? (
+          <button
+            className="selection-toggle"
+            onClick={() => onChange(withLeagueTrainingRules)}
+            type="button"
+          >
+            Use League rules
+          </button>
+        ) : null}
+      </div>
 
       <section className="settings-section">
         <div className="settings-section__heading">
