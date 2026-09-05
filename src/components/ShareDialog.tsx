@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   BlueskyIcon,
   BlueskyShareButton,
@@ -13,7 +13,9 @@ import {
 } from 'react-share';
 import { buildShareContent, copyResult } from '@/game/share';
 import type { GameMode, GameResult } from '@/game/types';
+import { DialogCloseButton } from './DialogCloseButton';
 import { GameButton } from './GameButton';
+import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
 
 interface ShareDialogProps {
   mode: GameMode;
@@ -31,17 +33,9 @@ const iconProps = {
 
 export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
   const [copyStatus, setCopyStatus] = useState('');
-  const dialog = useRef<HTMLDialogElement>(null);
+  const dialog = useModalDialog();
   const content = buildShareContent(mode, result);
   const message = `${content.title}\n${content.text}`;
-
-  useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    return () => {
-      if (element?.open) element.close();
-    };
-  }, []);
 
   const closeDialog = () => {
     dialog.current?.close();
@@ -67,28 +61,16 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
         closeDialog();
       }}
       onPointerDown={(event) => {
-        const bounds = event.currentTarget.getBoundingClientRect();
-        const outside =
-          event.clientX < bounds.left ||
-          event.clientX > bounds.right ||
-          event.clientY < bounds.top ||
-          event.clientY > bounds.bottom;
-        if (outside) closeDialog();
+        if (isDialogBackdropPointerDown(event)) closeDialog();
       }}
     >
       <header className="share-dialog__header">
         <h2 id="share-title">Share result</h2>
-        <button
-          className="dialog-close"
-          aria-label="Close share options"
+        <DialogCloseButton
           autoFocus
+          label="Close share options"
           onClick={closeDialog}
-          type="button"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
-        </button>
+        />
       </header>
 
       <div className="share-dialog__body">

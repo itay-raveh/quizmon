@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { DialogCloseButton } from './DialogCloseButton';
 import { GameButton } from './GameButton';
+import { useModalDialog } from './dialog';
 
 interface GenerationPromptDialogProps {
   onCancel: () => void;
@@ -12,15 +13,7 @@ export const GenerationPromptDialog = ({
   onChooseAll,
   onChooseGenOne,
 }: GenerationPromptDialogProps) => {
-  const dialog = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    return () => {
-      if (element?.open) element.close();
-    };
-  }, []);
+  const dialog = useModalDialog();
 
   const cancel = () => {
     dialog.current?.close();
@@ -40,16 +33,7 @@ export const GenerationPromptDialog = ({
     >
       <header className="generation-prompt__header">
         <h2 id="generation-prompt-title">Which Pokémon do you know?</h2>
-        <button
-          aria-label="Close generation choice"
-          className="dialog-close"
-          onClick={cancel}
-          type="button"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
-        </button>
+        <DialogCloseButton label="Close generation choice" onClick={cancel} />
       </header>
 
       <div className="generation-prompt__body">
