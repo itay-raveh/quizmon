@@ -31,17 +31,17 @@ local expected = {
   {
     slug = "pokedex-trail",
     group = "Pokédex Trail",
-    layers = { "Guide", "Trail", "Outline" },
+    layers = { "Guide", "Specimen", "Outline" },
   },
   {
     slug = "quick-attack",
     group = "Quick Attack",
-    layers = { "Speed", "Highlights", "Outline" },
+    layers = { "Pennant", "Lightning", "Outline" },
   },
   {
     slug = "true-calling",
     group = "True Calling",
-    layers = { "Facets", "Star", "Outline" },
+    layers = { "Compass", "Needle", "Outline" },
   },
 }
 
