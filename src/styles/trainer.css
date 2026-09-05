@@ -668,17 +668,6 @@
   flex: none;
 }
 
-.trainer-titles__banner > strong {
-  padding: 0.35rem 0.55rem;
-  color: var(--navy);
-  background: var(--paper);
-  border: 2px solid var(--title-wood-dark);
-  border-radius: 0.25rem;
-  font-family: var(--font-data);
-  font-size: var(--text-small);
-  white-space: nowrap;
-}
-
 .trainer-titles__current {
   display: grid;
   min-height: 4.9rem;
@@ -1580,11 +1569,6 @@
     height: 1.1rem;
   }
 
-  .trainer-titles__banner > strong {
-    padding: 0.2rem 0.35rem;
-    font-size: var(--text-mini);
-  }
-
   .trainer-titles__current {
     min-height: 4.15rem;
     padding: 0.45rem 0.65rem;
@@ -1757,12 +1741,6 @@
     padding: 0.3rem;
     flex-direction: column;
     gap: 0.15rem;
-  }
-
-  .trainer-titles__banner {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.3rem;
   }
 
   .trainer-titles__current {

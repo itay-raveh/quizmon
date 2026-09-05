@@ -99,11 +99,7 @@ export const TrainerCard = ({
             <span>
               {stats.leagueCompleted ? 'Hall of Fame' : 'League Badge Case'}
             </span>
-            <strong>
-              {stats.leagueCompleted
-                ? 'Champion'
-                : `${earnedBadgeCount} / ${badges.length}`}
-            </strong>
+            {stats.leagueCompleted ? <strong>Champion</strong> : null}
           </header>
           <section
             className="trainer-card__badges"

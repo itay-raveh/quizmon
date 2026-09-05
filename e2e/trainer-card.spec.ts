@@ -91,7 +91,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
     ),
   ).toBe('https://quizmon.raveh.dev/?trainer=back');
 
-  await expect(badgeCase.getByText('0 / 8')).toBeVisible();
+  await expect(badgeCase.getByText('0 / 8', { exact: true })).toHaveCount(0);
   await badgeCase.getByRole('button', { name: /Many Paths\. Locked/ }).click();
   await expect(
     page.getByRole('dialog').getByRole('heading', { name: 'Many Paths' }),
@@ -105,7 +105,9 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
     name: 'Trainer Titles collection',
   });
   await expect(titles).toBeVisible();
-  await expect(titles.getByText('1 / 8 earned')).toBeVisible();
+  await expect(titles.getByText('1 / 8 earned', { exact: true })).toHaveCount(
+    0,
+  );
   await expect(
     titles.getByRole('button', { name: /Type Specialist.*Equipped/ }),
   ).toBeVisible();

@@ -60,9 +60,6 @@ export const TrainerTitles = ({
           <CertificateIcon aria-hidden="true" weight="bold" />
           Trainer Titles
         </span>
-        <strong>
-          {earnedCount} / {titles.length} earned
-        </strong>
       </header>
 
       <section
