@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { Results } from '@/components/Results';
+import { defaultModifiers } from '@/game/game';
 import type { AnswerResult, GameResult } from '@/game/types';
 
 const makeResult = (
@@ -38,6 +39,7 @@ const renderResults = (result: GameResult) =>
       dailyStreak={0}
       isNewBest={false}
       mode={{ kind: 'training' }}
+      modifiers={defaultModifiers}
       onNewGame={vi.fn()}
       onOpenTrainerCard={vi.fn()}
       onOpenSettings={vi.fn()}
@@ -45,7 +47,7 @@ const renderResults = (result: GameResult) =>
       onTrainAgain={vi.fn()}
       result={result}
       resultSaved
-      badgeChanges={[]}
+      progressChanges={[]}
     />,
   );
 
@@ -68,7 +70,8 @@ describe('results summary', () => {
       screen.getByRole('list', { name: 'Question results' }),
     ).toBeVisible();
     expect(screen.getAllByRole('listitem')).toHaveLength(10);
-    expect(screen.getByText(/7,500 speed/)).toBeVisible();
+    expect(screen.getByText('Speed')).toBeVisible();
+    expect(screen.getByText('7,500')).toBeVisible();
   });
 
   it('replaces the answer trail with a correct count for longer games', () => {
@@ -90,6 +93,7 @@ describe('results summary', () => {
         dailyStreak={7}
         isNewBest={false}
         mode={{ kind: 'daily', date: '2026-09-03' }}
+        modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={vi.fn()}
         onOpenSettings={vi.fn()}
@@ -97,7 +101,7 @@ describe('results summary', () => {
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
-        badgeChanges={[]}
+        progressChanges={[]}
       />,
     );
 
@@ -108,14 +112,65 @@ describe('results summary', () => {
     expect(screen.queryByText('Saved on this device.')).not.toBeInTheDocument();
   });
 
-  it('keeps routine Trainer Card progress out of the result actions', () => {
-    renderResults(makeResult(10, 5));
+  it('uses header navigation and identifies the high-score key', () => {
+    const rendered = renderResults(makeResult(10, 5));
 
-    expect(
-      screen.queryByRole('button', { name: /Trainer Card/ }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Training$/)).not.toBeInTheDocument();
+    expect(screen.getByText(/League best/)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Train again' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Back to start' })).toBeVisible();
+    expect(screen.queryByText('Back to start')).not.toBeInTheDocument();
+    expect(
+      rendered.container.querySelector('.share-result-button__icon'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows every badge and specialty that progressed', () => {
+    const result = makeResult(10, 5);
+    const onOpenTrainerCard = vi.fn();
+    render(
+      <Results
+        bestResult={result}
+        dailyStreak={0}
+        isNewBest={false}
+        mode={{ kind: 'training' }}
+        modifiers={defaultModifiers}
+        onNewGame={vi.fn()}
+        onOpenTrainerCard={onOpenTrainerCard}
+        onOpenSettings={vi.fn()}
+        onRetryLeague={vi.fn()}
+        onTrainAgain={vi.fn()}
+        result={result}
+        resultSaved
+        progressChanges={[
+          {
+            current: 6,
+            delta: 2,
+            earned: false,
+            goal: 10,
+            id: 'many-paths',
+            kind: 'badge',
+            label: 'Many Paths',
+          },
+          {
+            current: 10,
+            delta: 1,
+            earned: true,
+            goal: 10,
+            kind: 'specialty',
+            label: 'Type Specialist',
+            specialty: 'type',
+          },
+        ]}
+      />,
+    );
+
+    const progress = screen.getByRole('button', {
+      name: /Trainer progress.*Many Paths.*6 \/ 10.*\+2.*Type Specialist.*Specialty earned/,
+    });
+    expect(progress).toBeVisible();
+    progress.click();
+    expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });
 
   it('names a newly earned League Badge', () => {
@@ -128,6 +183,7 @@ describe('results summary', () => {
         dailyStreak={0}
         isNewBest={false}
         mode={{ kind: 'training' }}
+        modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={onOpenTrainerCard}
         onOpenSettings={vi.fn()}
@@ -135,9 +191,14 @@ describe('results summary', () => {
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
-        badgeChanges={[
+        progressChanges={[
           {
+            current: 3,
+            delta: 1,
+            earned: true,
+            goal: 3,
             id: 'perfect-form',
+            kind: 'badge',
             label: 'Perfect Form',
           },
         ]}
@@ -146,13 +207,13 @@ describe('results summary', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /Perfect Form Badge earned.*Open your League Badge Case/,
+        name: /Trainer progress.*Perfect Form.*Badge earned/,
       }),
     ).toBeVisible();
 
     screen
       .getByRole('button', {
-        name: /Perfect Form Badge earned.*Open your League Badge Case/,
+        name: /Trainer progress.*Perfect Form.*Badge earned/,
       })
       .click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
@@ -167,6 +228,7 @@ describe('results summary', () => {
         dailyStreak={0}
         isNewBest={false}
         mode={{ kind: 'league' }}
+        modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={vi.fn()}
         onOpenSettings={vi.fn()}
@@ -174,7 +236,7 @@ describe('results summary', () => {
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
-        badgeChanges={[]}
+        progressChanges={[]}
       />,
     );
 
@@ -195,6 +257,7 @@ describe('results summary', () => {
         dailyStreak={0}
         isNewBest
         mode={{ kind: 'league' }}
+        modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={onOpenTrainerCard}
         onOpenSettings={vi.fn()}
@@ -202,7 +265,7 @@ describe('results summary', () => {
         onTrainAgain={vi.fn()}
         result={result}
         resultSaved
-        badgeChanges={[]}
+        progressChanges={[]}
       />,
     );
 
@@ -210,7 +273,7 @@ describe('results summary', () => {
       screen.getByRole('heading', { name: 'League Champion' }),
     ).toBeVisible();
     screen
-      .getByRole('button', { name: /Trainer Card updated.*Hall of Fame/ })
+      .getByRole('button', { name: /Trainer progress.*Hall of Fame.*Earned/ })
       .click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useGameSounds } from '@/audio/sound';
-import { getModeLabel } from '@/game/daily';
+import { formatDailyDate } from '@/game/daily';
 import {
   formatDuration,
   getCategoryLabel,
@@ -10,20 +10,22 @@ import {
 } from '@/game/game';
 import { getLeagueStage, isLeagueVictory } from '@/game/league';
 import { formatScore } from '@/game/format';
-import { type TrainerBadgeChange, type TrainerCardFace } from '@/game/trainer';
-import type { GameMode, GameResult } from '@/game/types';
+import { getHighScoreKey } from '@/game/storage';
+import type { TrainerCardFace, TrainerProgressChange } from '@/game/trainer';
+import type { GameMode, GameResult, Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
 import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
-import { TrainerBadgeMark } from './TrainerBadgeMark';
+import { TrainerProgressSummary } from './TrainerProgressSummary';
 
 interface ResultsProps {
   bestResult: GameResult;
   dailyStreak: number;
   isNewBest: boolean;
   mode: GameMode;
+  modifiers: Modifiers;
   onNewGame: () => void;
   onOpenTrainerCard: (face: TrainerCardFace) => void;
   onOpenSettings: () => void;
@@ -31,7 +33,7 @@ interface ResultsProps {
   onRetryLeague: () => void;
   result: GameResult;
   resultSaved: boolean;
-  badgeChanges: TrainerBadgeChange[];
+  progressChanges: TrainerProgressChange[];
 }
 
 export const Results = ({
@@ -39,6 +41,7 @@ export const Results = ({
   dailyStreak,
   isNewBest,
   mode,
+  modifiers,
   onNewGame,
   onOpenTrainerCard,
   onOpenSettings,
@@ -46,13 +49,16 @@ export const Results = ({
   onRetryLeague,
   result,
   resultSaved,
-  badgeChanges,
+  progressChanges,
 }: ResultsProps) => {
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
-  const primaryBadgeChange = badgeChanges[0];
   const leagueVictory = mode.kind === 'league' && isLeagueVictory(result);
+  const highScoreKey = getHighScoreKey(mode, modifiers);
+  const highScoreLabel = highScoreKey
+    ? { custom: 'Custom', daily: 'Daily', league: 'League' }[highScoreKey]
+    : null;
   const resultTitle =
     mode.kind === 'daily'
       ? 'Daily complete'
@@ -85,17 +91,30 @@ export const Results = ({
   return (
     <section className="results" aria-labelledby="results-title">
       <div className="results__header">
-        {mode.kind === 'daily' && dailyStreak > 0 ? (
-          <CatchCombo celebrate count={dailyStreak} />
-        ) : (
-          <span aria-hidden="true" />
-        )}
+        <GameButton
+          aria-label="Back to start"
+          className="results__close"
+          onClick={onNewGame}
+          title="Back to start"
+          tone="quiet"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </GameButton>
         <h1 id="results-title" ref={heading} tabIndex={-1}>
           {resultTitle}
         </h1>
         <SettingsButton onClick={onOpenSettings} />
       </div>
-      <p className="game-mode">{getModeLabel(mode)}</p>
+      {mode.kind === 'daily' ? (
+        <div className="results__daily-meta">
+          <p className="game-mode">{formatDailyDate(mode.date)}</p>
+          {dailyStreak > 0 ? (
+            <CatchCombo celebrate count={dailyStreak} />
+          ) : null}
+        </div>
+      ) : null}
 
       <dl className="results-list">
         {mode.kind === 'league' && !leagueVictory ? (
@@ -115,6 +134,18 @@ export const Results = ({
         <div>
           <dt>Time</dt>
           <dd>{formatDuration(result.elapsedSeconds)}</dd>
+        </div>
+        <div>
+          <dt>Knowledge</dt>
+          <dd>{formatScore(getKnowledgePoints(result.answers))}</dd>
+        </div>
+        <div>
+          <dt>Speed</dt>
+          <dd>{formatScore(getSpeedBonus(result.answers))}</dd>
+        </div>
+        <div>
+          <dt>Mastery</dt>
+          <dd>{formatScore(getMasteryBonus(result.answers))}</dd>
         </div>
       </dl>
 
@@ -141,82 +172,44 @@ export const Results = ({
         <strong>
           <AnimatedScore format={formatScore} value={result.score} />
         </strong>
-        <small className="score__breakdown">
-          {formatScore(getKnowledgePoints(result.answers))} knowledge +{' '}
-          {formatScore(getSpeedBonus(result.answers))} speed +{' '}
-          {formatScore(getMasteryBonus(result.answers))} mastery
-        </small>
       </div>
 
-      {mode.kind === 'training' ? (
-        <p className="personal-best">
-          {isNewBest ? <strong>New best!</strong> : 'Best'}{' '}
-          {formatScore(bestResult.score)} points
-        </p>
-      ) : (mode.kind === 'daily' || leagueVictory) && !resultSaved ? (
+      {!resultSaved ? (
         <p className="personal-best personal-best--warning" role="alert">
           This result could not be saved. Keep this tab open or enable browser
           storage.
         </p>
+      ) : highScoreLabel ? (
+        <p className="personal-best">
+          {isNewBest ? (
+            <strong>New {highScoreLabel} best!</strong>
+          ) : (
+            `${highScoreLabel} best`
+          )}{' '}
+          {formatScore(bestResult.score)} points
+        </p>
       ) : null}
 
-      {leagueVictory ? (
-        <GameButton
-          className="trainer-card-update"
-          tone="quiet"
-          onClick={() => onOpenTrainerCard('badges')}
-        >
-          <span className="trainer-card-update__hall-mark" aria-hidden="true">
-            HOF
-          </span>
-          <span>
-            <strong>Trainer Card updated</strong>
-            <small>Open your Hall of Fame badge case</small>
-          </span>
-          <span aria-hidden="true">›</span>
-        </GameButton>
-      ) : primaryBadgeChange ? (
-        <GameButton
-          className="trainer-card-update"
-          tone="quiet"
-          onClick={() => onOpenTrainerCard('badges')}
-        >
-          <TrainerBadgeMark earned id={primaryBadgeChange.id} />
-          <span>
-            <strong>
-              {badgeChanges.length > 1
-                ? `${badgeChanges.length} League Badges earned`
-                : `${primaryBadgeChange.label} Badge earned`}
-            </strong>
-            <small>Open your League Badge Case</small>
-          </span>
-          <span aria-hidden="true">›</span>
-        </GameButton>
-      ) : null}
+      <TrainerProgressSummary
+        leagueVictory={leagueVictory}
+        onOpenTrainerCard={onOpenTrainerCard}
+        progressChanges={progressChanges}
+      />
 
       {mode.kind === 'training' ? (
         <div className="results__actions results__actions--training">
           <GameButton onClick={onTrainAgain}>Train again</GameButton>
           <ShareResultButton mode={mode} result={result} tone="quiet" />
-          <GameButton tone="quiet" onClick={onNewGame}>
-            Back to start
-          </GameButton>
         </div>
       ) : mode.kind === 'league' ? (
         <div className="results__actions">
           <GameButton onClick={onRetryLeague}>
             {leagueVictory ? 'League rematch' : 'Retry League'}
           </GameButton>
-          <GameButton tone="quiet" onClick={onNewGame}>
-            Back to start
-          </GameButton>
         </div>
       ) : (
         <div className="results__actions">
           <ShareResultButton mode={mode} result={result} />
-          <GameButton tone="quiet" onClick={onNewGame}>
-            Back to start
-          </GameButton>
         </div>
       )}
     </section>

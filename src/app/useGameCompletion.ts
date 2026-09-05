@@ -7,7 +7,7 @@ import {
   SCORE_VERSION,
 } from '@/game/game';
 import { readTrainerStats, saveResult } from '@/game/storage';
-import { getTrainerBadgeChanges } from '@/game/trainer';
+import { getTrainerProgressChanges } from '@/game/trainer';
 import type {
   AnswerResult,
   GameMode,
@@ -53,8 +53,8 @@ export const useGameCompletion = ({
       };
       const previousTrainerStats = readTrainerStats();
       const best = saveResult(mode, result, modifiers);
-      const badgeChanges = best.isSaved
-        ? getTrainerBadgeChanges(previousTrainerStats, readTrainerStats())
+      const progressChanges = best.isSaved
+        ? getTrainerProgressChanges(previousTrainerStats, readTrainerStats())
         : [];
       clearActiveGame();
       refreshTrainerStats();
@@ -64,11 +64,11 @@ export const useGameCompletion = ({
         isNewBest: best.isNewBest,
         result,
         resultSaved: best.isSaved,
-        badgeChanges,
+        progressChanges,
         type: 'completed',
       });
       if (mode.kind === 'daily') {
-        recordDailyCompletion(best.best, best.isSaved);
+        recordDailyCompletion(result, best.isSaved);
       }
       pauseTimer();
     },

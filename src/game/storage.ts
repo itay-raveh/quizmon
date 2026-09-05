@@ -16,7 +16,6 @@ import {
 const RESULTS_KEY = 'quizmon.results.v2';
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 2;
-const TRAINING_RECORD_VERSION = 2;
 const questionCategories: readonly QuestionCategory[] = [
   'ability',
   'champion',
@@ -50,12 +49,15 @@ interface LeagueState {
   seed: string | null;
 }
 
+type HighScoreKey = 'daily' | 'league' | 'custom';
+type TrainingHighScoreKey = Exclude<HighScoreKey, 'daily'>;
+
 interface SavedResults {
   daily: Record<string, GameResult>;
   league: LeagueState;
   progress: TrainerProgress;
   streak: DailyStreakState;
-  training: Record<string, GameResult>;
+  training: Partial<Record<TrainingHighScoreKey, GameResult>>;
 }
 
 export interface TrainerStats {
@@ -247,30 +249,72 @@ const normalizeProgress = (
   };
 };
 
-export const getTrainingRecordKey = (
-  modifiers: Modifiers,
-  questionCount: number,
-): string => {
-  const selectedGenerations = generations.filter((generation) =>
-    modifiers.generations.includes(generation),
-  );
-  const selectedQuestionTypes = questionTypes.filter((questionType) =>
-    modifiers.questionTypes.includes(questionType),
-  );
-
-  return JSON.stringify({
-    generations: selectedGenerations,
-    questionCount,
-    questionTypes: selectedQuestionTypes,
-    trainingMode: modifiers.trainingMode,
-    version: TRAINING_RECORD_VERSION,
-  });
-};
+export const getHighScoreKey = (
+  mode: GameMode,
+  modifiers: Pick<Modifiers, 'trainingMode'>,
+): HighScoreKey | null =>
+  mode.kind === 'daily'
+    ? 'daily'
+    : mode.kind === 'training'
+      ? modifiers.trainingMode
+      : null;
 
 const isBetterResult = (candidate: GameResult, previous: GameResult): boolean =>
   candidate.score > previous.score ||
   (candidate.score === previous.score &&
     candidate.elapsedSeconds < previous.elapsedSeconds);
+
+const getBestResult = (
+  results: readonly GameResult[],
+): GameResult | undefined =>
+  results.reduce<GameResult | undefined>(
+    (best, result) => (!best || isBetterResult(result, best) ? result : best),
+    undefined,
+  );
+
+const getLegacyTrainingMode = (key: string): TrainingHighScoreKey => {
+  if (key === 'league' || key === 'custom') return key;
+
+  try {
+    const parsed = JSON.parse(key) as {
+      questionCount?: unknown;
+      questionTypes?: unknown;
+      trainingMode?: unknown;
+    };
+    if (parsed.trainingMode === 'league' || parsed.trainingMode === 'custom') {
+      return parsed.trainingMode;
+    }
+    const selectedQuestionTypes = Array.isArray(parsed.questionTypes)
+      ? parsed.questionTypes.filter(
+          (questionType): questionType is string =>
+            typeof questionType === 'string',
+        )
+      : [];
+    return parsed.questionCount === 10 &&
+      selectedQuestionTypes.length === questionTypes.length &&
+      questionTypes.every((questionType) =>
+        selectedQuestionTypes.includes(questionType),
+      )
+      ? 'league'
+      : 'custom';
+  } catch {
+    return 'custom';
+  }
+};
+
+const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
+  const records = readResultRecord(value);
+  return Object.entries(records).reduce<SavedResults['training']>(
+    (normalized, [key, result]) => {
+      const mode = getLegacyTrainingMode(key);
+      const current = normalized[mode];
+      if (!current || isBetterResult(result, current))
+        normalized[mode] = result;
+      return normalized;
+    },
+    {},
+  );
+};
 
 const readResults = (): SavedResults => {
   try {
@@ -278,7 +322,7 @@ const readResults = (): SavedResults => {
     if (!stored) return emptyResults();
     const parsed = JSON.parse(stored) as Partial<SavedResults>;
     const daily = readResultRecord(parsed.daily);
-    const training = readResultRecord(parsed.training);
+    const training = normalizeTrainingRecords(parsed.training);
     return {
       daily,
       league: normalizeLeague(parsed.league),
@@ -383,6 +427,8 @@ export const saveResult = (
     if (previous) {
       return { best: previous, isNewBest: false, isSaved: true };
     }
+    const previousBest = getBestResult(Object.values(results.daily));
+    const isNewBest = !previousBest || isBetterResult(result, previousBest);
     results.daily[mode.date] = result;
     results.progress = addResultToProgress(
       results.progress,
@@ -399,8 +445,8 @@ export const saveResult = (
     }
     const isSaved = writeResults(results);
     return {
-      best: result,
-      isNewBest: isSaved,
+      best: isNewBest ? result : previousBest,
+      isNewBest: isNewBest && isSaved,
       isSaved,
     };
   }
@@ -423,7 +469,7 @@ export const saveResult = (
     };
   }
 
-  const key = getTrainingRecordKey(modifiers, result.questionCount);
+  const key = modifiers.trainingMode;
   const previous = results.training[key];
   const isNewBest = !previous || isBetterResult(result, previous);
   results.progress = addResultToProgress(

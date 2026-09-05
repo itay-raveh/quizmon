@@ -55,6 +55,22 @@
   background: var(--cream);
 }
 
+.daily-action--complete > .share-result-button__icon {
+  position: absolute;
+  left: 1rem;
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.daily-action--complete .daily-action__copy {
+  width: 100%;
+  padding-inline: 2.8rem;
+}
+
+.daily-action--complete.daily-action--with-combo .daily-action__copy {
+  padding-right: 4.25rem;
+}
+
 .daily-action__title {
   color: inherit;
   font-size: var(--text-headline);

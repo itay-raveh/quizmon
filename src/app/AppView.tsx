@@ -172,6 +172,7 @@ const AppScreen = ({
       }
       isNewBest={session.isNewBest}
       mode={session.mode}
+      modifiers={session.modifiers}
       onNewGame={navigation.returnToLanding}
       onOpenSettings={() => settings.open('experience')}
       onOpenTrainerCard={trainer.open}
@@ -179,7 +180,7 @@ const AppScreen = ({
       onTrainAgain={training.trainAgain}
       result={session.result}
       resultSaved={session.resultSaved}
-      badgeChanges={session.badgeChanges}
+      progressChanges={session.progressChanges}
     />
   );
 };
