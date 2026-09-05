@@ -112,11 +112,24 @@
 }
 
 .question-visual__subject-name {
-  min-height: 1.15rem;
+  display: grid;
+  min-height: 1.85rem;
+  align-content: center;
+  justify-items: center;
+  gap: 0.03rem;
   color: var(--navy);
   font-size: var(--text-label);
   font-weight: 850;
   line-height: 1.15;
+}
+
+.question-visual__subject-number {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
 .question-visual__mystery-type {
