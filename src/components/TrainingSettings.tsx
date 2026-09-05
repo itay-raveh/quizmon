@@ -52,32 +52,6 @@ export const TrainingSettings = ({
         </p>
       ) : null}
 
-      <fieldset
-        aria-describedby="training-mode-description"
-        className="training-mode-settings"
-      >
-        <legend>Training mode</legend>
-        <div className="training-mode-control">
-          {trainingModes.map((mode) => (
-            <SelectionTile
-              checked={draft.trainingMode === mode}
-              inputType="radio"
-              key={mode}
-              label={mode === 'league' ? 'League' : 'Custom'}
-              name="training-mode"
-              onChange={(event) => {
-                if (!event.target.checked) return;
-                onChange((current) => ({
-                  ...current,
-                  trainingMode: mode,
-                }));
-              }}
-              variant="training-mode"
-            />
-          ))}
-        </div>
-      </fieldset>
-
       <section className="settings-section">
         <div className="settings-section__heading">
           <h3 id="generations-title" ref={generationsHeading} tabIndex={-1}>
@@ -140,6 +114,32 @@ export const TrainingSettings = ({
             : `${TRAINING_QUESTION_COUNT} questions using the question types you choose.`}
         </p>
       </section>
+
+      <fieldset
+        aria-describedby="training-mode-description"
+        className="training-mode-settings"
+      >
+        <legend>Training mode</legend>
+        <div className="training-mode-control">
+          {trainingModes.map((mode) => (
+            <SelectionTile
+              checked={draft.trainingMode === mode}
+              inputType="radio"
+              key={mode}
+              label={mode === 'league' ? 'League' : 'Custom'}
+              name="training-mode"
+              onChange={(event) => {
+                if (!event.target.checked) return;
+                onChange((current) => ({
+                  ...current,
+                  trainingMode: mode,
+                }));
+              }}
+              variant="training-mode"
+            />
+          ))}
+        </div>
+      </fieldset>
 
       {leagueTraining ? null : (
         <QuestionTypeSettings

@@ -31,7 +31,8 @@ describe('Training settings', () => {
   it('uses a League or Custom control with no round-length setting', () => {
     render(<TrainingSettingsHarness initial={defaultModifiers} />);
 
-    expect(screen.getByRole('group', { name: 'Training mode' })).toBeVisible();
+    const trainingMode = screen.getByRole('group', { name: 'Training mode' });
+    expect(trainingMode).toBeVisible();
     expect(screen.getByRole('radio', { name: 'League' })).toBeChecked();
     expect(screen.getByRole('radio', { name: 'Custom' })).not.toBeChecked();
     expect(
@@ -49,6 +50,9 @@ describe('Training settings', () => {
 
     expect(modeDescription).toBeVisible();
     expect(generationsPicker.nextElementSibling).toBe(modeDescription);
+    expect(
+      generationsPicker.closest('.settings-section')?.nextElementSibling,
+    ).toBe(trainingMode);
   });
 
   it('shows question types only in Custom and preserves the selection', () => {
