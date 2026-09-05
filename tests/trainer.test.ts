@@ -2,7 +2,7 @@ import {
   getCardFinish,
   getEarnedTrainerBadgeCount,
   getQualifiedTrainerSpecialties,
-  getTrainerBadgeChanges,
+  getTrainerProgressChanges,
   getTrainerBadges,
   getTrainerRank,
 } from '@/game/trainer';
@@ -139,18 +139,57 @@ describe('Trainer Card progression', () => {
     expect(getCardFinish(getTrainerRank(champion))).toBe('Gold');
   });
 
-  it('reports every League Badge newly earned after a round', () => {
-    const changes = getTrainerBadgeChanges(
-      stats(),
+  it('reports badge and specialty progress, including newly earned rewards', () => {
+    const changes = getTrainerProgressChanges(
+      stats({
+        championAnswersWithoutClues: 4,
+        correctCategories: { identity: 8 },
+        correctGenerations: masteredGenerations(8),
+      }),
       stats({
         championAnswersWithoutClues: 5,
+        correctCategories: { identity: 10 },
         correctGenerations: masteredGenerations(9),
       }),
     );
 
     expect(changes).toEqual([
-      { id: 'world-tour', label: 'World Tour' },
-      { id: 'champions-instinct', label: "Champion's Instinct" },
+      {
+        current: 9,
+        delta: 1,
+        earned: true,
+        goal: 9,
+        id: 'world-tour',
+        kind: 'badge',
+        label: 'World Tour',
+      },
+      {
+        current: 10,
+        delta: 2,
+        earned: false,
+        goal: 50,
+        id: 'true-calling',
+        kind: 'badge',
+        label: 'True Calling',
+      },
+      {
+        current: 5,
+        delta: 1,
+        earned: true,
+        goal: 5,
+        id: 'champions-instinct',
+        kind: 'badge',
+        label: "Champion's Instinct",
+      },
+      {
+        current: 10,
+        delta: 2,
+        earned: true,
+        goal: 10,
+        kind: 'specialty',
+        label: 'Pokédex Specialist',
+        specialty: 'identity',
+      },
     ]);
   });
 

@@ -43,10 +43,17 @@ export const ShareResultButton = ({
   return (
     <>
       <GameButton
-        className={className}
+        className={`share-result-button ${className ?? ''}`.trim()}
         onClick={() => void share()}
         tone={tone}
       >
+        <svg
+          className="share-result-button__icon"
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+        >
+          <path d="M12 15V4m0 0L8 8m4-4 4 4M5 13v6h14v-6" />
+        </svg>
         {children}
       </GameButton>
       <span className="visually-hidden" aria-live="polite">

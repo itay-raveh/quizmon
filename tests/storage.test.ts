@@ -1,7 +1,7 @@
 import {
   canPersistResults,
   getLeagueChallengeSeed,
-  getTrainingRecordKey,
+  getHighScoreKey,
   readDailyResult,
   readDailyStreak,
   readTrainerStats,
@@ -76,6 +76,17 @@ describe('saved results', () => {
     expect(readDailyResult(mode.date)).toEqual(result);
   });
 
+  it('keeps one Daily best across challenge dates', () => {
+    saveResult({ kind: 'daily', date: '2026-09-01' }, result);
+    const lower = { ...result, score: 500 };
+
+    expect(saveResult({ kind: 'daily', date: '2026-09-02' }, lower)).toEqual({
+      best: result,
+      isNewBest: false,
+      isSaved: true,
+    });
+  });
+
   it('only credits new results completed on their UTC challenge date', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-03T12:00:00.000Z'));
@@ -125,7 +136,7 @@ describe('saved results', () => {
     expect(readDailyStreak('2026-01-03')).toBe(0);
   });
 
-  it('keeps a separate Training best for each knowledge configuration', () => {
+  it('keeps one League Training best across knowledge configurations', () => {
     const mode = { kind: 'training' } as const;
     saveResult(mode, result, defaultModifiers);
     const lower = {
@@ -150,8 +161,8 @@ describe('saved results', () => {
         generations: ['I'],
       }),
     ).toEqual({
-      best: lower,
-      isNewBest: true,
+      best: result,
+      isNewBest: false,
       isSaved: true,
     });
     const longer = {
@@ -171,25 +182,62 @@ describe('saved results', () => {
       correctCount: 2,
       questionCount: 3,
     };
-    expect(saveResult(mode, longer, defaultModifiers).isNewBest).toBe(true);
+    expect(saveResult(mode, longer, defaultModifiers).isNewBest).toBe(false);
   });
 
-  it('normalizes Training record keys independently of selection order', () => {
-    const reordered = {
-      ...defaultModifiers,
-      generations: [...defaultModifiers.generations].reverse(),
-      questionTypes: [...defaultModifiers.questionTypes].reverse(),
-    };
-
-    expect(getTrainingRecordKey(reordered, 10)).toBe(
-      getTrainingRecordKey(defaultModifiers, 10),
-    );
-  });
-
-  it('keeps League and Custom Training records separate', () => {
+  it('uses only Daily, League, and Custom high-score keys', () => {
     expect(
-      getTrainingRecordKey({ ...defaultModifiers, trainingMode: 'custom' }, 10),
-    ).not.toBe(getTrainingRecordKey(defaultModifiers, 10));
+      getHighScoreKey({ kind: 'daily', date: '2026-09-05' }, defaultModifiers),
+    ).toBe('daily');
+    expect(getHighScoreKey({ kind: 'training' }, defaultModifiers)).toBe(
+      'league',
+    );
+    expect(
+      getHighScoreKey(
+        { kind: 'training' },
+        { ...defaultModifiers, trainingMode: 'custom' },
+      ),
+    ).toBe('custom');
+    expect(getHighScoreKey({ kind: 'league' }, defaultModifiers)).toBeNull();
+  });
+
+  it('keeps League and Custom Training bests separate', () => {
+    saveResult({ kind: 'training' }, result, defaultModifiers);
+    const customResult = { ...result, score: 500 };
+
+    expect(
+      saveResult({ kind: 'training' }, customResult, {
+        ...defaultModifiers,
+        trainingMode: 'custom',
+      }),
+    ).toEqual({
+      best: customResult,
+      isNewBest: true,
+      isSaved: true,
+    });
+  });
+
+  it('folds configuration-specific Training records into the three-key model', () => {
+    const legacyKey = JSON.stringify({
+      generations: defaultModifiers.generations,
+      questionCount: 10,
+      questionTypes: defaultModifiers.questionTypes,
+      version: 2,
+    });
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {},
+        training: { [legacyKey]: result },
+      }),
+    );
+    const lower = { ...result, score: 500 };
+
+    expect(saveResult({ kind: 'training' }, lower, defaultModifiers)).toEqual({
+      best: result,
+      isNewBest: false,
+      isSaved: true,
+    });
   });
 
   it('builds Trainer progression from correct answers', () => {

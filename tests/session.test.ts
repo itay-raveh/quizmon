@@ -56,7 +56,7 @@ describe('gameSessionReducer', () => {
       isNewBest: true,
       result,
       resultSaved: true,
-      badgeChanges: [],
+      progressChanges: [],
       type: 'completed',
     });
     expect(completed).toEqual({
@@ -68,7 +68,7 @@ describe('gameSessionReducer', () => {
       result,
       resultSaved: true,
       seed: 'round-1',
-      badgeChanges: [],
+      progressChanges: [],
     });
   });
 

@@ -5,7 +5,7 @@ import type {
   Modifiers,
   QuestionData,
 } from '@/game/types';
-import type { TrainerBadgeChange } from '@/game/trainer';
+import type { TrainerProgressChange } from '@/game/trainer';
 
 export type GameSession =
   | { phase: 'landing' }
@@ -26,7 +26,7 @@ export type GameSession =
       phase: 'results';
       result: GameResult;
       resultSaved: boolean;
-      badgeChanges: TrainerBadgeChange[];
+      progressChanges: TrainerProgressChange[];
       seed: string;
     };
 
@@ -53,7 +53,7 @@ export type GameSessionAction =
       isNewBest: boolean;
       result: GameResult;
       resultSaved: boolean;
-      badgeChanges: TrainerBadgeChange[];
+      progressChanges: TrainerProgressChange[];
       type: 'completed';
     }
   | {
@@ -120,7 +120,7 @@ export const gameSessionReducer = (
             result: action.result,
             resultSaved: action.resultSaved,
             seed: session.seed,
-            badgeChanges: action.badgeChanges,
+            progressChanges: action.progressChanges,
           }
         : session;
     case 'settings-updated':
