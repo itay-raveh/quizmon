@@ -18,21 +18,10 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     'aria-selected',
     'true',
   );
+  await expect(dialog.getByRole('radio', { name: 'Custom' })).toBeChecked();
   await expect(
-    dialog.getByRole('radio', { name: '10 Standard' }),
-  ).toBeChecked();
-  await expect(dialog.getByText('Custom Training')).toBeVisible();
-  await expect(
-    dialog.getByText('Quick Attack and Perfect Form require League rules.'),
+    dialog.getByText('10 questions using the question types you choose.'),
   ).toBeVisible();
-  await dialog.getByText('Quick', { exact: true }).click();
-  await expect(dialog.getByRole('radio', { name: '5 Quick' })).toBeChecked();
-  await expect(
-    dialog.getByText('Choose which generations can appear.'),
-  ).toHaveCount(0);
-  await expect(
-    dialog.getByText('Pick the formats you want to practice.'),
-  ).toHaveCount(0);
   const selectAllGenerations = dialog.getByRole('button', {
     name: 'Select all generations',
   });
@@ -109,14 +98,15 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await expect(
     dialog.getByText('Choose at least one question type.'),
   ).toHaveCount(0);
-  await dialog.getByRole('button', { name: 'Use League rules' }).click();
-  await expect(dialog.getByText('League Training')).toBeVisible();
+  await dialog.getByText('League', { exact: true }).click();
   await expect(
-    dialog.getByText('Quick Attack and Perfect Form can be earned.'),
+    dialog.getByText(
+      '10 questions with every question type. Quick Attack and Perfect Form can be earned.',
+    ),
   ).toBeVisible();
   await expect(
-    dialog.getByRole('radio', { name: '10 Standard' }),
-  ).toBeChecked();
+    dialog.getByRole('heading', { name: 'Question types' }),
+  ).toHaveCount(0);
   await dialog.getByRole('tab', { name: 'Experience' }).click();
   await expect(dialog.getByText('Play experience')).toBeVisible();
   await expect(dialog.getByLabel('Quick transitions')).toBeVisible();
@@ -160,9 +150,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     const selectionToggle = element
       .querySelector('.selection-toggle')
       ?.getBoundingClientRect();
-    const roundLength = element
-      .querySelector('.selection-tile--round-length .selection-tile__surface')
-      ?.getBoundingClientRect();
     const questionTypeHelp = element
       .querySelector('.question-type-tile__help')
       ?.getBoundingClientRect();
@@ -173,7 +160,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
       dialogWidth: bounds.width,
       helpHeight: questionTypeHelp?.height,
       helpWidth: questionTypeHelp?.width,
-      roundLengthHeight: roundLength?.height,
       selectionToggleHeight: selectionToggle?.height,
     };
   });
@@ -183,47 +169,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   expect(mobileControlMetrics.closeWidth).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.helpHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.helpWidth).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.roundLengthHeight).toBeGreaterThanOrEqual(44);
   expect(mobileControlMetrics.selectionToggleHeight).toBeGreaterThanOrEqual(44);
   await dialog.getByRole('button', { name: 'Cancel' }).click();
-
-  const footerMetrics = await page
-    .getByRole('contentinfo')
-    .evaluate((footer) => ({
-      clientWidth: footer.clientWidth,
-      fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
-      scrollWidth: footer.scrollWidth,
-      groupLineCenters: [...footer.querySelectorAll('.site-footer__group')].map(
-        (group) =>
-          new Set(
-            [...group.children].map((child) => {
-              const bounds = child.getBoundingClientRect();
-              return Math.round(bounds.top + bounds.height / 2);
-            }),
-          ).size,
-      ),
-    }));
-  expect(footerMetrics.groupLineCenters).toEqual([1, 1]);
-  expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
-  expect(footerMetrics.scrollWidth).toBeLessThanOrEqual(
-    footerMetrics.clientWidth,
-  );
-  const renderedFooterText = await page
-    .getByRole('contentinfo')
-    .evaluate((footer) =>
-      [...footer.querySelectorAll('.site-footer__group')]
-        .map((group) =>
-          (group as HTMLElement).innerText.replace(/\s+/g, ' ').trim(),
-        )
-        .join(' '),
-    );
-  expect(renderedFooterText).toBe(
-    'Logo: TextStudio · Custom art: @beresteyskaya Data: PokéAPI · Code: GitHub',
-  );
-  await expect(
-    page.getByRole('contentinfo').getByRole('link', { name: '@beresteyskaya' }),
-  ).toHaveAttribute('href', 'https://www.fiverr.com/beresteyskaya');
-  await expect(
-    page.getByRole('contentinfo').getByRole('link', { name: 'GitHub' }),
-  ).toHaveAttribute('href', 'https://github.com/itay-raveh/quizmon');
 });

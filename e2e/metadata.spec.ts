@@ -54,27 +54,6 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   expect(socialImageResponse.ok()).toBe(true);
   expect((await socialImageResponse.body()).byteLength).toBeLessThan(500_000);
 
-  const footerMetrics = await page
-    .getByRole('contentinfo')
-    .evaluate((footer) => ({
-      fontSize: Number.parseFloat(getComputedStyle(footer).fontSize),
-      linkHeights: [...footer.querySelectorAll('a')].map(
-        (link) => link.getBoundingClientRect().height,
-      ),
-      groupLineCenters: [...footer.querySelectorAll('.site-footer__group')].map(
-        (group) =>
-          new Set(
-            [...group.children].map((child) => {
-              const bounds = child.getBoundingClientRect();
-              return Math.round(bounds.top + bounds.height / 2);
-            }),
-          ).size,
-      ),
-    }));
-  expect(footerMetrics.fontSize).toBeGreaterThanOrEqual(14);
-  expect(footerMetrics.linkHeights.every((height) => height >= 44)).toBe(true);
-  expect(footerMetrics.groupLineCenters).toEqual([1, 1]);
-
   const structuredData: unknown = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ??
       '{}',

@@ -31,6 +31,21 @@ export const seedBrowserRandom = (page: Page, seed: string) =>
     };
   }, seed);
 
+export const completeTrainingRound = async (page: Page) => {
+  const progress = page.getByRole('progressbar', { name: 'Quiz progress' });
+
+  for (let number = 1; number <= 10; number += 1) {
+    await expect(progress).toHaveText(
+      `${String(number).padStart(3, '0')} / 010`,
+    );
+    await page.locator('.answer:not(:disabled)').first().click();
+  }
+
+  await expect(
+    page.getByRole('heading', { name: 'Training complete' }),
+  ).toBeVisible();
+};
+
 export const test = base.extend({
   page: async ({ page }, run) => {
     await page.addInitScript(() => {
@@ -41,8 +56,8 @@ export const test = base.extend({
           generations: ['I'],
           questionTypes: ['pokedex-scan'],
           soundEnabled: false,
-          limit: 1,
           speedrunMode: true,
+          trainingMode: 'custom',
         }),
       );
     });

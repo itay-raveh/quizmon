@@ -100,10 +100,8 @@ const parseModifiers = (value: unknown): Modifiers | null => {
         typeof questionType === 'string' &&
         questionTypes.includes(questionType as (typeof questionTypes)[number]),
     ) ||
+    (value.trainingMode !== 'league' && value.trainingMode !== 'custom') ||
     typeof value.soundEnabled !== 'boolean' ||
-    typeof value.limit !== 'number' ||
-    !Number.isInteger(value.limit) ||
-    value.limit < 1 ||
     typeof value.speedrunMode !== 'boolean'
   ) {
     return null;

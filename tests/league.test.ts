@@ -50,7 +50,6 @@ describe('Quizmon League', () => {
       getLeagueModifiers({ soundEnabled: false, speedrunMode: true }),
     ).toMatchObject({
       generations: [...generations],
-      limit: LEAGUE_QUESTION_COUNT,
       soundEnabled: false,
       speedrunMode: true,
     });

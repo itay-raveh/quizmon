@@ -94,7 +94,6 @@ export interface Modifiers {
   generations: Generation[];
   questionTypes: QuestionType[];
   soundEnabled: boolean;
-  limit: number;
   speedrunMode: boolean;
   trainingMode: TrainingMode;
 }

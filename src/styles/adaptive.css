@@ -152,6 +152,24 @@
 }
 
 @media (max-width: 36rem) {
+  .app--landing {
+    display: grid;
+    min-height: 100svh;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(32rem, 1fr) auto;
+  }
+
+  .app--landing main {
+    min-height: 0;
+  }
+
+  .app--landing .site-footer {
+    position: static;
+    width: calc(100% - 1rem);
+    padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
+    justify-self: center;
+  }
+
   main {
     padding: 0.6rem;
   }
@@ -414,6 +432,7 @@
 
   .site-footer__credit--legal {
     flex-basis: 100%;
+    white-space: normal;
   }
 }
 

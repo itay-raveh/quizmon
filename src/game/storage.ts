@@ -4,7 +4,11 @@ import {
   writeStoredJson,
   writeStoredValue,
 } from './browser-storage';
-import { defaultModifiers, isLeagueTraining } from './game';
+import {
+  defaultModifiers,
+  isLeagueTraining,
+  TRAINING_QUESTION_COUNT,
+} from './game';
 import { getUtcDate, parseDailyDate } from './daily';
 import { isLeagueVictory } from './league';
 import { questionTypes } from './questions/registry';
@@ -163,7 +167,7 @@ const addResultToProgress = (
   const isPerfect = result.correctCount === result.questionCount;
   const isLeagueRound =
     mode.kind === 'training' &&
-    result.questionCount === 10 &&
+    result.questionCount === TRAINING_QUESTION_COUNT &&
     isLeagueTraining(modifiers);
 
   return {

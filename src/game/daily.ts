@@ -48,7 +48,6 @@ export const getDailyModifiers = (
   ...defaultModifiers,
   generations: [...generations],
   questionTypes: [...defaultModifiers.questionTypes],
-  limit: DAILY_QUESTION_COUNT,
   soundEnabled: experience.soundEnabled,
   speedrunMode: experience.speedrunMode,
 });

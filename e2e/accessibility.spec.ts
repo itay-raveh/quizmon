@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
-import { expect, test } from './fixtures';
+import { completeTrainingRound, expect, test } from './fixtures';
 
 const expectNoAccessibilityViolations = async (page: Page) => {
   await page.evaluate(async () => {
@@ -80,12 +80,7 @@ test('keeps questions and results accessible', async ({ page }) => {
   await expect(page.locator('.question')).toBeVisible();
   await expectNoAccessibilityViolations(page);
 
-  await page.locator('.answer').first().click();
-  const checkAnswer = page.getByRole('button', { name: 'Check answers' });
-  if (await checkAnswer.isVisible()) await checkAnswer.click();
-  await expect(
-    page.getByRole('heading', { name: 'Training complete' }),
-  ).toBeVisible();
+  await completeTrainingRound(page);
   await expectNoAccessibilityViolations(page);
 });
 
@@ -118,7 +113,7 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   await expectNoHorizontalOverflow(page);
   await expectNoHorizontalClipping(page);
 
-  await page.locator('.answer').first().click();
+  await completeTrainingRound(page);
   await expect(page.locator('.results')).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await expectNoHorizontalClipping(page);

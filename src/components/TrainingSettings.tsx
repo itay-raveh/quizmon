@@ -1,5 +1,5 @@
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import { isLeagueTraining } from '@/game/game';
+import { isLeagueTraining, TRAINING_QUESTION_COUNT } from '@/game/game';
 import {
   generations,
   type Generation,
@@ -66,7 +66,6 @@ export const TrainingSettings = ({
                 if (!event.target.checked) return;
                 onChange((current) => ({
                   ...current,
-                  limit: 10,
                   trainingMode: mode,
                 }));
               }}
@@ -76,8 +75,8 @@ export const TrainingSettings = ({
         </div>
         <p className="training-mode-settings__description" aria-live="polite">
           {leagueTraining
-            ? '10 questions with every question type. Quick Attack and Perfect Form can be earned.'
-            : '10 questions using the question types you choose.'}
+            ? `${TRAINING_QUESTION_COUNT} questions with every question type. Quick Attack and Perfect Form can be earned.`
+            : `${TRAINING_QUESTION_COUNT} questions using the question types you choose.`}
         </p>
       </fieldset>
 
