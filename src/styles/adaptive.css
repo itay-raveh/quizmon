@@ -204,6 +204,38 @@
     min-height: 4.35em;
   }
 
+  .question-visual {
+    min-height: 9rem;
+    margin-block: 0.5rem 0.75rem;
+  }
+
+  .question-visual__subject {
+    min-width: 5.75rem;
+  }
+
+  .question-visual__pokemon {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+
+  .question-relation {
+    gap: 0.55rem;
+  }
+
+  .question-visual__unknown-pokemon {
+    width: 5.75rem;
+    height: 5.75rem;
+  }
+
+  .question-relation--matchup .question-visual__mystery-type {
+    width: 5.25rem;
+    height: 2.1rem;
+  }
+
+  .question-relation__arrow {
+    width: 2.9rem;
+  }
+
   .daily-action--with-combo .daily-action__copy {
     padding-right: 4.5rem;
   }
@@ -321,6 +353,10 @@
     grid-template-rows: 4.55rem minmax(2.45rem, auto);
   }
 
+  .answer--concealed {
+    grid-template-rows: 1fr;
+  }
+
   .answer__sprite {
     width: 4.7rem;
     height: 4.7rem;
@@ -402,6 +438,25 @@
     margin-block: 0.5rem;
   }
 
+  .question-visual {
+    min-height: 8rem;
+    margin-block: 0.35rem 0.6rem;
+  }
+
+  .question-visual__prompt {
+    font-size: var(--text-body);
+  }
+
+  .question-visual__pokemon {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .question-visual__unknown-pokemon {
+    width: 5.25rem;
+    height: 5.25rem;
+  }
+
   .sprite-frame {
     width: min(10.5rem, 48vw, 25svh);
     margin-block: 0.15rem;
@@ -434,6 +489,23 @@
 
   .answers {
     align-content: center;
+  }
+}
+
+@media (max-width: 22rem) {
+  .question-visual__evolution-types {
+    gap: 0.15rem;
+  }
+
+  .question-visual__evolution-types > .type-badges .type-badge,
+  .question-visual__evolution-types .question-visual__type-answer .type-badge,
+  .question-visual__evolution-types .question-visual__mystery-type {
+    width: 2.625rem;
+    height: 1.125rem;
+  }
+
+  .question-visual__type-plus {
+    font-size: var(--text-small);
   }
 }
 

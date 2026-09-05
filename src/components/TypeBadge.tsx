@@ -15,6 +15,7 @@ import poison from '@/assets/types/poison.png';
 import psychic from '@/assets/types/psychic.png';
 import rock from '@/assets/types/rock.png';
 import steel from '@/assets/types/steel.png';
+import unknown from '@/assets/types/unknown.png';
 import water from '@/assets/types/water.png';
 
 const typeBadgeSources: Record<string, string> = {
@@ -48,6 +49,10 @@ interface TypeBadgesProps {
   types: readonly string[];
 }
 
+interface MysteryTypeBadgeProps {
+  className?: string;
+}
+
 const TypeBadge = ({ type }: TypeBadgeProps) => {
   const src = typeBadgeSources[type];
   if (!src) return null;
@@ -63,6 +68,17 @@ const TypeBadge = ({ type }: TypeBadgeProps) => {
     />
   );
 };
+
+export const MysteryTypeBadge = ({ className = '' }: MysteryTypeBadgeProps) => (
+  <img
+    aria-hidden="true"
+    className={`type-badge type-badge--mystery ${className}`.trim()}
+    src={unknown}
+    alt=""
+    width="32"
+    height="14"
+  />
+);
 
 export const TypeBadges = ({
   className = '',

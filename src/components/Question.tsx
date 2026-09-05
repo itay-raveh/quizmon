@@ -45,18 +45,33 @@ interface QuestionProps {
   total: number;
 }
 
-const QuestionPrompt = ({ prompt }: { prompt: QuestionPromptData }) => (
-  <p className="question__prompt">
+const QuestionPrompt = ({
+  className,
+  id,
+  prompt,
+  showSubjectNumber,
+}: {
+  className: string;
+  id: string;
+  prompt: QuestionPromptData;
+  showSubjectNumber: boolean;
+}) => (
+  <p className={className} id={id}>
     {prompt.kind === 'text' ? (
       prompt.text
     ) : (
       <>
         {prompt.before}
         <span className="question__subject">
-          <b>{formatPokemonName(prompt.name)}</b>{' '}
-          <span className="question__subject-number">
-            (No. {String(prompt.dexNumber).padStart(4, '0')})
-          </span>
+          <b>{formatPokemonName(prompt.name)}</b>
+          {showSubjectNumber ? (
+            <>
+              {' '}
+              <span className="question__subject-number">
+                (No. {String(prompt.dexNumber).padStart(4, '0')})
+              </span>
+            </>
+          ) : null}
         </span>
         {prompt.after}
       </>
@@ -125,6 +140,7 @@ export const Question = ({
       ? 'question--with-media'
       : '',
     question.media.kind === 'pixel-sprite' ? 'question--with-portrait' : '',
+    question.visual ? 'question--with-visual' : '',
     isChampion && !championChoicesVisible ? 'question--champion-search' : '',
     number === 1 ? 'question--enter' : '',
   ]
@@ -132,7 +148,11 @@ export const Question = ({
     .join(' ');
 
   return (
-    <section className={className} aria-labelledby="question-title">
+    <section
+      className={className}
+      aria-describedby="question-prompt"
+      aria-labelledby="question-title"
+    >
       <div className="question__topline">
         <GameButton
           aria-label="Leave game"
@@ -160,7 +180,12 @@ export const Question = ({
         {getQuestionTitle(question)}
       </h1>
       <p className="game-mode">{getModeLabel(mode)}</p>
-      <QuestionPrompt prompt={question.prompt} />
+      <QuestionPrompt
+        className={question.visual ? 'visually-hidden' : 'question__prompt'}
+        id="question-prompt"
+        prompt={question.prompt}
+        showSubjectNumber={question.questionType !== 'silhouette-match'}
+      />
 
       {isChampion && !championChoicesVisible && question.searchOptions ? (
         <ChampionSearch
@@ -192,7 +217,7 @@ export const Question = ({
       question.pokemonTypes.length > 0 &&
       subjectTypeRevealQuestionTypes.has(question.questionType) ? (
         <TypeBadges
-          className="question__types"
+          className={question.visual ? 'visually-hidden' : 'question__types'}
           label={`${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`}
           types={question.pokemonTypes}
         />

@@ -35,16 +35,26 @@ const hasTypeAdvantage = (
     (type) => attackMultiplier(catalog, type, defenderTypes) > 1,
   );
 
+const hasDoubleTypeAdvantage = (
+  catalog: PokemonCatalog,
+  attackerTypes: readonly string[],
+  defenderTypes: readonly string[],
+): boolean =>
+  attackerTypes.some(
+    (type) => attackMultiplier(catalog, type, defenderTypes) === 2,
+  );
+
 export const buildMatchupQuestion: QuestionBuilder = (context) => {
   const attackTypes = Object.keys(context.catalog.typeRelations);
   const target = pickTarget(context, ({ types }) =>
     attackTypes.some(
-      (type) => attackMultiplier(context.catalog, type, types) > 1,
+      (type) => attackMultiplier(context.catalog, type, types) === 2,
     ),
   );
   if (!target) return undefined;
   const strong = attackTypes.filter(
-    (type) => attackMultiplier(context.catalog, type, target.pokemon.types) > 1,
+    (type) =>
+      attackMultiplier(context.catalog, type, target.pokemon.types) === 2,
   );
   const correct = pick(strong, context.random);
   if (!correct) return undefined;
@@ -53,29 +63,32 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
       type !== correct &&
       attackMultiplier(context.catalog, type, target.pokemon.types) <= 1,
   );
-  return makeQuestion(
-    'matchup',
-    target,
-    correct,
-    rankedOptionSet(
+  return {
+    ...makeQuestion(
+      'matchup',
+      target,
       correct,
-      distractors,
-      (type) => {
-        const relations = context.catalog.typeRelations[type];
-        const partialAdvantages = target.pokemon.types.filter((targetType) =>
-          relations?.doubleTo.includes(targetType),
-        ).length;
-        return (
-          partialAdvantages * 4 +
-          (attackMultiplier(context.catalog, type, target.pokemon.types) === 1
-            ? 2
-            : 0)
-        );
-      },
-      context.random,
+      rankedOptionSet(
+        correct,
+        distractors,
+        (type) => {
+          const relations = context.catalog.typeRelations[type];
+          const partialAdvantages = target.pokemon.types.filter((targetType) =>
+            relations?.doubleTo.includes(targetType),
+          ).length;
+          return (
+            partialAdvantages * 4 +
+            (attackMultiplier(context.catalog, type, target.pokemon.types) === 1
+              ? 2
+              : 0)
+          );
+        },
+        context.random,
+      ),
+      pokemonPrompt(target, 'Which type is super effective against ', '?'),
     ),
-    pokemonPrompt(target, 'Which type is super effective against ', '?'),
-  );
+    visual: { kind: 'type-matchup', multiplier: 2 },
+  };
 };
 
 export const buildCounterPickQuestion: QuestionBuilder = (context) => {
@@ -92,7 +105,11 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
       ({ name, pokemon }) => name !== target.name && Boolean(pokemon.sprite),
     );
     const counters = candidates.filter(({ pokemon }) =>
-      hasTypeAdvantage(context.catalog, pokemon.types, target.pokemon.types),
+      hasDoubleTypeAdvantage(
+        context.catalog,
+        pokemon.types,
+        target.pokemon.types,
+      ),
     );
     const distractors = candidates.filter(
       ({ pokemon }) =>
@@ -111,9 +128,11 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
         correct.name,
         options,
         pokemonPrompt(target, 'Who can hit ', ' super effectively?'),
+        { kind: 'pixel-sprite', src: target.pokemon.sprite },
       ),
       optionVisuals: getOptionVisuals(context, options),
       title: 'Counter pick',
+      visual: { kind: 'counter-pick', multiplier: 2 },
     };
   }
 

@@ -111,6 +111,22 @@ export interface PokemonOptionVisual {
   types: string[];
 }
 
+type QuestionVisual =
+  | { kind: 'type-check' }
+  | { kind: 'type-roundup'; type: string }
+  | {
+      evolution: PokemonOptionVisual & { name: string };
+      gainedType: string;
+      kind: 'evolution-shift';
+    }
+  | {
+      direction: 'highest' | 'lowest';
+      kind: 'stat-showdown';
+      stat: StatName;
+    }
+  | { kind: 'type-matchup'; multiplier: number }
+  | { kind: 'counter-pick'; multiplier: number };
+
 type QuestionInteraction = 'single-choice' | 'multi-select';
 
 interface QuestionAnswer {
@@ -144,6 +160,7 @@ export interface QuestionData {
   questionType: QuestionType | 'champion';
   searchOptions?: string[];
   title?: string;
+  visual?: QuestionVisual;
 }
 
 export type GameMode = { kind: 'training' } | { kind: 'daily'; date: string };

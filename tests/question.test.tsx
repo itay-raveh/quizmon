@@ -170,7 +170,7 @@ describe('question transitions', () => {
     },
   );
 
-  it('renders one compact portrait for text-valued answers', () => {
+  it('renders Type Check as a visual prompt and reveals the subject types', () => {
     const rendered = render(
       <Question
         elapsedMilliseconds={0}
@@ -202,6 +202,7 @@ describe('question transitions', () => {
             name: 'pikachu',
           },
           questionType: 'type-check',
+          visual: { kind: 'type-check' },
         }}
         speedrunMode={false}
         total={10}
@@ -210,13 +211,21 @@ describe('question transitions', () => {
 
     expect(
       rendered.container.querySelectorAll('.question__portrait'),
+    ).toHaveLength(0);
+    expect(
+      rendered.container.querySelectorAll('.question-visual__pokemon'),
+    ).toHaveLength(1);
+    expect(
+      rendered.container.querySelectorAll('.type-badge--mystery'),
     ).toHaveLength(1);
     expect(rendered.container.querySelector('.answers')).not.toHaveClass(
       'answers--pokemon',
     );
-    expect(screen.getByText('Pikachu').tagName).toBe('B');
     expect(screen.getByText('(No. 0025)')).toHaveClass(
       'question__subject-number',
+    );
+    expect(screen.getByText('(No. 0025)').closest('p')).toHaveClass(
+      'visually-hidden',
     );
     expect(
       rendered.container.querySelectorAll('.answer__type-choice .type-badge'),
@@ -226,8 +235,277 @@ describe('question transitions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Electric' }));
 
     expect(
+      rendered.container.querySelectorAll('.type-badge--mystery'),
+    ).toHaveLength(0);
+    expect(
       screen.getByRole('img', { name: 'Pikachu type: Electric.' }),
-    ).toBeVisible();
+    ).toHaveClass('visually-hidden');
+  });
+
+  it('shows the Type Roundup instruction without repeating the pictured type', () => {
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          answer: {
+            correctOptions: ['pikachu', 'eevee'],
+            interaction: 'multi-select',
+          },
+          category: 'type',
+          prompt: {
+            kind: 'text',
+            text: 'Select every Electric-type Pokémon.',
+          },
+          questionType: 'type-roundup',
+          visual: { kind: 'type-roundup', type: 'electric' },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(screen.getByText('Select every Pokémon.')).toBeVisible();
+    expect(screen.getByText('Select every Electric-type Pokémon.')).toHaveClass(
+      'visually-hidden',
+    );
+    expect(
+      document.querySelectorAll('.question-visual .type-badge'),
+    ).toHaveLength(1);
+  });
+
+  it('reveals both ends of a Type Matchup diagram after answering', () => {
+    const rendered = render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          answer: {
+            correctOptions: ['ground'],
+            interaction: 'single-choice',
+          },
+          category: 'matchup',
+          media: {
+            kind: 'pixel-sprite',
+            src: 'https://example.com/pikachu.png',
+          },
+          options: ['electric', 'normal', 'ground', 'fire'],
+          pokemonName: 'pikachu',
+          pokemonTypes: ['electric'],
+          prompt: {
+            after: '?',
+            before: 'Which type is super effective against ',
+            dexNumber: 25,
+            kind: 'pokemon',
+            name: 'pikachu',
+          },
+          questionType: 'type-matchup',
+          visual: { kind: 'type-matchup', multiplier: 2 },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(screen.getByText('×2')).toBeVisible();
+    expect(
+      rendered.container.querySelectorAll('.type-badge--mystery'),
+    ).toHaveLength(1);
+    expect(
+      rendered.container.querySelectorAll(
+        '.question-visual__subject-types .type-badge',
+      ),
+    ).toHaveLength(0);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ground' }));
+
+    expect(
+      rendered.container.querySelectorAll('.type-badge--mystery'),
+    ).toHaveLength(0);
+    expect(
+      rendered.container.querySelectorAll(
+        '.question-visual__subject-types .type-badge',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('renders the Stat Showdown direction as part of the visual prompt', () => {
+    const rendered = render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          prompt: { kind: 'text', text: 'Which Pokémon has the lowest Speed?' },
+          visual: {
+            direction: 'lowest',
+            kind: 'stat-showdown',
+            stat: 'speed',
+          },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(
+      rendered.container.querySelector('.question-visual__prompt'),
+    ).toHaveTextContent('Which one has the lowest:');
+    expect(
+      rendered.container.querySelector('.question-visual__stat'),
+    ).toHaveTextContent('Speed↓');
+    expect(screen.getByText('Which Pokémon has the lowest Speed?')).toHaveClass(
+      'visually-hidden',
+    );
+  });
+
+  it('reveals the attacking Pokémon in Counter Pick', () => {
+    const rendered = render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          category: 'matchup',
+          media: {
+            kind: 'pixel-sprite',
+            src: 'https://example.com/squirtle.png',
+          },
+          optionVisuals: Object.fromEntries(
+            question.options.map((option, index) => [
+              option,
+              {
+                dexNumber: index + 1,
+                src: `https://example.com/${option}.png`,
+                types: option === 'pikachu' ? ['electric'] : ['normal'],
+              },
+            ]),
+          ),
+          pokemonName: 'squirtle',
+          pokemonTypes: ['water'],
+          prompt: {
+            after: ' super effectively?',
+            before: 'Who can hit ',
+            dexNumber: 7,
+            kind: 'pokemon',
+            name: 'squirtle',
+          },
+          questionType: 'counter-pick',
+          visual: { kind: 'counter-pick', multiplier: 2 },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(screen.getByText('×2')).toBeVisible();
+    expect(
+      rendered.container.querySelector('.question-visual__unknown-pokemon img'),
+    ).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+
+    expect(
+      rendered.container.querySelector(
+        '.question-visual__unknown-pokemon img[src="https://example.com/pikachu.png"]',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      rendered.container.querySelectorAll(
+        '.question-visual__subject-types .type-badge',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('reveals the evolved Pokémon in Evolution Shift', () => {
+    const rendered = render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'training' }}
+        number={1}
+        onAnswer={vi.fn()}
+        onFeedbackStart={() => 0}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={{
+          ...question,
+          answer: {
+            correctOptions: ['steel'],
+            interaction: 'single-choice',
+          },
+          category: 'evolution',
+          media: {
+            kind: 'pixel-sprite',
+            src: 'https://example.com/onix.png',
+          },
+          options: ['electric', 'steel', 'fighting', 'normal'],
+          pokemonName: 'onix',
+          pokemonTypes: ['rock', 'ground'],
+          prompt: {
+            after: ' gain after evolving?',
+            before: 'Which type can ',
+            dexNumber: 95,
+            kind: 'pokemon',
+            name: 'onix',
+          },
+          questionType: 'evolution-shift',
+          visual: {
+            evolution: {
+              dexNumber: 208,
+              name: 'steelix',
+              src: 'https://example.com/steelix.png',
+              types: ['steel', 'ground'],
+            },
+            gainedType: 'steel',
+            kind: 'evolution-shift',
+          },
+        }}
+        speedrunMode={false}
+        total={10}
+      />,
+    );
+
+    expect(screen.getByText('?')).toBeVisible();
+    expect(screen.queryByText('Steelix')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
+    expect(screen.getByText('Steelix')).toBeVisible();
+    expect(
+      rendered.container.querySelector(
+        'img[src="https://example.com/steelix.png"]',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('reveals a silhouette after an answer is selected', () => {
@@ -484,6 +762,7 @@ describe('question transitions', () => {
     );
 
     expect(screen.queryByText('Pikachu')).not.toBeInTheDocument();
+    expect(screen.queryByText('Silhouette 1')).not.toBeInTheDocument();
     expect(
       document.querySelectorAll('.answer__sprite--silhouette'),
     ).toHaveLength(4);

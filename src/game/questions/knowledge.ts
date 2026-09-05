@@ -37,28 +37,31 @@ export const buildTypeQuestion: QuestionBuilder = (context) => {
   const candidates = Object.keys(context.catalog.typeRelations).filter(
     (type) => !target.pokemon.types.includes(type),
   );
-  return makeQuestion(
-    'type',
-    target,
-    correct,
-    rankedOptionSet(
+  return {
+    ...makeQuestion(
+      'type',
+      target,
       correct,
-      candidates,
-      (type) =>
-        context.pool.reduce(
-          (best, candidate) =>
-            candidate.pokemon.types.includes(type)
-              ? Math.max(
-                  best,
-                  pokemonSimilarity(target.pokemon, candidate.pokemon),
-                )
-              : best,
-          0,
-        ),
-      context.random,
+      rankedOptionSet(
+        correct,
+        candidates,
+        (type) =>
+          context.pool.reduce(
+            (best, candidate) =>
+              candidate.pokemon.types.includes(type)
+                ? Math.max(
+                    best,
+                    pokemonSimilarity(target.pokemon, candidate.pokemon),
+                  )
+                : best,
+            0,
+          ),
+        context.random,
+      ),
+      pokemonPrompt(target, 'Which type does ', ' have?'),
     ),
-    pokemonPrompt(target, 'Which type does ', ' have?'),
-  );
+    visual: { kind: 'type-check' },
+  };
 };
 
 const getTypePuzzlePool = (
@@ -154,6 +157,7 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
     answer: { correctOptions, interaction: 'multi-select' },
     optionVisuals: getOptionVisuals(context, options),
     title: 'Type roundup',
+    visual: { kind: 'type-roundup', type },
   };
 };
 
@@ -180,7 +184,7 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
   const correct = evolution?.types.find(
     (type) => !target.pokemon.types.includes(type),
   );
-  if (!correct || !evolutionName) return undefined;
+  if (!correct || !evolutionName || !evolution?.sprite) return undefined;
 
   return {
     ...makeQuestion(
@@ -209,6 +213,16 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
       { kind: 'pixel-sprite', src: target.pokemon.sprite },
     ),
     title: 'Evolution shift',
+    visual: {
+      evolution: {
+        dexNumber: evolution.id,
+        name: evolutionName,
+        src: evolution.sprite,
+        types: evolution.types,
+      },
+      gainedType: correct,
+      kind: 'evolution-shift',
+    },
   };
 };
 
@@ -250,12 +264,15 @@ export const buildPropertyQuestion =
 
 export const buildStatQuestion: QuestionBuilder = (context) => {
   const stat = pick(statNames, context.random) as StatName;
+  const direction = context.random() < 0.5 ? 'highest' : 'lowest';
   const candidates = shuffle(context.pool, context.random);
   const target = candidates.find(({ pokemon }) => {
-    const lower = candidates.filter(
-      ({ pokemon: other }) => other.stats[stat] < pokemon.stats[stat],
+    const eligibleDistractors = candidates.filter(({ pokemon: other }) =>
+      direction === 'highest'
+        ? other.stats[stat] < pokemon.stats[stat]
+        : other.stats[stat] > pokemon.stats[stat],
     );
-    return lower.length >= 3;
+    return eligibleDistractors.length >= 3;
   });
   if (!target) return undefined;
   context.used.add(target.name);
@@ -263,25 +280,30 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
     .filter(
       ({ name, pokemon }) =>
         name !== target.name &&
-        pokemon.stats[stat] < target.pokemon.stats[stat],
+        (direction === 'highest'
+          ? pokemon.stats[stat] < target.pokemon.stats[stat]
+          : pokemon.stats[stat] > target.pokemon.stats[stat]),
     )
     .map(({ name }) => name);
-  return makeQuestion(
-    'stat',
-    target,
-    target.name,
-    rankedOptionSet(
+  return {
+    ...makeQuestion(
+      'stat',
+      target,
       target.name,
-      distractors,
-      (name) =>
-        -Math.abs(
-          target.pokemon.stats[stat] -
-            (context.catalog.pokemon[name]?.stats[stat] ?? 0),
-        ),
-      context.random,
+      rankedOptionSet(
+        target.name,
+        distractors,
+        (name) =>
+          -Math.abs(
+            target.pokemon.stats[stat] -
+              (context.catalog.pokemon[name]?.stats[stat] ?? 0),
+          ),
+        context.random,
+      ),
+      textPrompt(
+        `Which Pokémon has the ${direction} ${formatPokemonName(stat)}?`,
+      ),
     ),
-    textPrompt(
-      `Which Pokémon has the highest base ${formatPokemonName(stat)}?`,
-    ),
-  );
+    visual: { direction, kind: 'stat-showdown', stat },
+  };
 };
