@@ -56,7 +56,6 @@ export interface TrainerTitle {
   equipped: boolean;
   goal: number;
   label: string;
-  requirement: string;
   specialty: TrainerSpecialty;
 }
 
@@ -202,7 +201,6 @@ export const getTrainerTitles = (
         equipped: specialty === equipped,
         goal: TRAINER_SPECIALTY_GOAL,
         label: trainerSpecialtyLabels[specialty],
-        requirement: `Answer ${TRAINER_SPECIALTY_GOAL} questions correctly in this field.`,
         specialty,
       };
     },

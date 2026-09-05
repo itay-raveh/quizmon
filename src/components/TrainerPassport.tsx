@@ -94,9 +94,6 @@ export const TrainerPassport = ({
     profile.specialty && qualifiedSpecialties.includes(profile.specialty)
       ? profile.specialty
       : null;
-  const [specialty, setSpecialty] = useState<TrainerSpecialty | null>(
-    savedSpecialty,
-  );
   const [preparedImage, setPreparedImage] = useState<{
     blob: Blob;
     key: string;
@@ -121,9 +118,7 @@ export const TrainerPassport = ({
   const savedPartner = profile.partnerPokemon
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
-  const visibleProfile = editing
-    ? { ...profile, specialty }
-    : { ...profile, specialty: savedSpecialty };
+  const visibleProfile = { ...profile, specialty: savedSpecialty };
   const finish = getCardFinish(getTrainerRank(stats)).toLowerCase();
   const imageKey = JSON.stringify({ profile: visibleProfile, stats, view });
   const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
@@ -179,7 +174,6 @@ export const TrainerPassport = ({
       ...profile,
       name,
       partnerPokemon: partner,
-      specialty,
     });
     setEditing(false);
     void requestPersistentStorage().catch(() => false);
@@ -193,15 +187,22 @@ export const TrainerPassport = ({
 
     setName(profile.name);
     setPartner(profile.partnerPokemon);
-    setSpecialty(savedSpecialty);
     setEditing(true);
   };
 
   const equipTitle = (nextSpecialty: TrainerSpecialty) => {
-    setSpecialty(nextSpecialty);
     onProfileChange({ ...profile, specialty: nextSpecialty });
     setShareNotice({
       message: `${trainerSpecialtyLabels[nextSpecialty]} equipped.`,
+      visible: true,
+    });
+    void requestPersistentStorage().catch(() => false);
+  };
+
+  const unequipTitle = () => {
+    onProfileChange({ ...profile, specialty: null });
+    setShareNotice({
+      message: 'Trainer title unequipped.',
       visible: true,
     });
     void requestPersistentStorage().catch(() => false);
@@ -309,28 +310,6 @@ export const TrainerPassport = ({
             options={pokemonOptions}
             value={partner}
           />
-          <div className="trainer-customizer__specialty">
-            <label htmlFor="trainer-specialty">Trainer title</label>
-            <select
-              disabled={qualifiedSpecialties.length === 0}
-              id="trainer-specialty"
-              onChange={(event) =>
-                setSpecialty((event.target.value as TrainerSpecialty) || null)
-              }
-              value={specialty ?? ''}
-            >
-              <option value="">
-                {qualifiedSpecialties.length === 0
-                  ? 'Earn 10 correct answers in one field'
-                  : 'No title'}
-              </option>
-              {qualifiedSpecialties.map((option) => (
-                <option key={option} value={option}>
-                  {trainerSpecialtyLabels[option]}
-                </option>
-              ))}
-            </select>
-          </div>
           <div className="trainer-customizer__preview" aria-hidden="true">
             {partnerSprite ? (
               <img src={partnerSprite} alt="" width="96" height="96" />
@@ -402,6 +381,7 @@ export const TrainerPassport = ({
         <TrainerTitleDialog
           onClose={() => setSelectedTitle(null)}
           onEquip={(title) => equipTitle(title.specialty)}
+          onUnequip={unequipTitle}
           title={selectedTitle}
         />
       ) : null}

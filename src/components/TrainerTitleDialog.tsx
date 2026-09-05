@@ -7,12 +7,14 @@ import { TrainerTitleMark } from './TrainerTitleMark';
 interface TrainerTitleDialogProps {
   onClose: () => void;
   onEquip: (title: TrainerTitle) => void;
+  onUnequip: () => void;
   title: TrainerTitle;
 }
 
 export const TrainerTitleDialog = ({
   onClose,
   onEquip,
+  onUnequip,
   title,
 }: TrainerTitleDialogProps) => {
   const dialog = useModalDialog();
@@ -55,9 +57,8 @@ export const TrainerTitleDialog = ({
                 : 'Title locked'}
           </strong>
           <p>{title.description}</p>
-          <small>{title.requirement}</small>
           <div className="trainer-title-dialog__progress-label">
-            <span>{title.earned ? 'Lifetime correct' : 'Progress'}</span>
+            <span>{title.earned ? 'Correct' : 'Progress'}</span>
             <strong>
               {title.earned
                 ? title.current.toLocaleString()
@@ -69,7 +70,17 @@ export const TrainerTitleDialog = ({
             max={title.goal}
             value={progress}
           />
-          {title.earned && !title.equipped ? (
+          {title.equipped ? (
+            <GameButton
+              tone="quiet"
+              onClick={() => {
+                onUnequip();
+                closeDialog();
+              }}
+            >
+              Unequip title
+            </GameButton>
+          ) : title.earned ? (
             <GameButton
               onClick={() => {
                 onEquip(title);

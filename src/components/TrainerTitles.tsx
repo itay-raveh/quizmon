@@ -2,7 +2,7 @@
 THESIS: Trainer Titles are a visible collection to pursue and display, not a settings option hidden in a form.
 OWN-WORLD: A warm wood display board holds cream title plaques, brass fasteners, and cobalt earned marks.
 STORY: See every title and its progress, open one for its meaning, equip an earned title, then share the board.
-FIRST VIEWPORT: A compact current-title plaque leads into all eight icon-led title records.
+FIRST VIEWPORT: All eight icon-led title records appear together without repeated headings or status panels.
 FORM: The wood board is one physical collection surface, not a table or a dashboard of cards.
 */
 import type { Ref } from 'react';
@@ -13,7 +13,6 @@ import {
   type TrainerSpecialty,
   type TrainerTitle,
 } from '@/game/trainer';
-import { CertificateIcon, CheckCircleIcon, LockSimpleIcon } from './icons';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitlesProps {
@@ -31,7 +30,6 @@ export const TrainerTitles = ({
 }: TrainerTitlesProps) => {
   const titles = getTrainerTitles(stats, equipped);
   const earnedCount = titles.filter(({ earned }) => earned).length;
-  const currentTitle = titles.find(({ equipped: isEquipped }) => isEquipped);
 
   return (
     <article
@@ -55,42 +53,6 @@ export const TrainerTitles = ({
         aria-hidden="true"
         className="trainer-titles__fastener trainer-titles__fastener--bottom-right"
       />
-      <header className="trainer-titles__banner">
-        <span>
-          <CertificateIcon aria-hidden="true" weight="bold" />
-          Trainer Titles
-        </span>
-      </header>
-
-      <section
-        aria-label="Current Trainer title"
-        className="trainer-titles__current"
-      >
-        {currentTitle ? (
-          <>
-            <TrainerTitleMark earned specialty={currentTitle.specialty} />
-            <span>
-              <small>Current title</small>
-              <strong>{currentTitle.label}</strong>
-            </span>
-            <span className="trainer-titles__lifetime">
-              <strong>{currentTitle.current.toLocaleString()}</strong>
-              <small>lifetime</small>
-            </span>
-          </>
-        ) : (
-          <span className="trainer-titles__empty">
-            <small>Current title</small>
-            <strong>No title equipped</strong>
-            <span>
-              {earnedCount > 0
-                ? 'Choose an earned title below.'
-                : 'Earn 10 correct answers in a field to unlock one.'}
-            </span>
-          </span>
-        )}
-      </section>
-
       <section
         aria-label={`${earnedCount} of ${titles.length} Trainer Titles earned`}
         className="trainer-titles__collection"
@@ -103,18 +65,13 @@ export const TrainerTitles = ({
               ? 'Earned'
               : 'Locked';
           const progressLabel = title.earned
-            ? `${title.current.toLocaleString()} lifetime correct`
-            : `${progress} / ${title.goal}`;
-          const visibleProgressLabel = title.earned
-            ? `${title.current.toLocaleString()} lifetime`
-            : progressLabel;
+            ? `${title.current.toLocaleString()} correct`
+            : `${progress} / ${title.goal} correct`;
 
           return (
             <button
               aria-label={`${title.label}. ${progressLabel}. ${state}. Open title details.`}
-              aria-pressed={title.equipped}
               className="trainer-title"
-              data-earned={title.earned}
               data-equipped={title.equipped}
               key={title.specialty}
               onClick={() => onSelect(title)}
@@ -126,18 +83,7 @@ export const TrainerTitles = ({
               />
               <span className="trainer-title__copy">
                 <strong>{title.label}</strong>
-                <small>{visibleProgressLabel}</small>
-              </span>
-              <span
-                aria-hidden="true"
-                className="trainer-title__state"
-                data-state={title.earned ? 'earned' : 'locked'}
-              >
-                {title.earned ? (
-                  <CheckCircleIcon weight="fill" />
-                ) : (
-                  <LockSimpleIcon weight="bold" />
-                )}
+                <small>{progressLabel}</small>
               </span>
             </button>
           );

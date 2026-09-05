@@ -6,6 +6,7 @@ import {
   ChartBarIcon,
   IdentificationCardIcon,
   LightningIcon,
+  LockSimpleIcon,
   PuzzlePieceIcon,
   ShapesIcon,
   SwordIcon,
@@ -31,7 +32,7 @@ export const TrainerTitleMark = ({
   earned,
   specialty,
 }: TrainerTitleMarkProps) => {
-  const Mark = titleMarks[specialty];
+  const Mark = earned ? titleMarks[specialty] : LockSimpleIcon;
 
   return (
     <span

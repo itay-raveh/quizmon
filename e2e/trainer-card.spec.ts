@@ -30,13 +30,21 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
     page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();
 
+  await page.getByRole('button', { name: 'Titles', exact: true }).click();
+  const initialTitles = page.getByRole('article', {
+    name: 'Trainer Titles collection',
+  });
+  await initialTitles
+    .getByRole('button', { name: /Type Specialist.*Earned/ })
+    .click();
+  await page.getByRole('button', { name: 'Equip title' }).click();
+  await page.getByRole('button', { name: 'Card', exact: true }).click();
+
   await page.getByRole('button', { name: 'Edit card' }).click();
+  await expect(page.getByLabel('Trainer title')).toHaveCount(0);
   await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
   await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('Pikachu');
   await page.getByRole('option', { name: 'Pikachu' }).click();
-  await page
-    .getByLabel('Trainer title')
-    .selectOption({ label: 'Type Specialist' });
   await page.getByRole('button', { name: 'Save card' }).click();
 
   const card = page.getByRole('article', { name: 'Trainer Card' });
@@ -44,7 +52,12 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(card.locator('.trainer-card__partner-caption')).toHaveText(
     'No. 0025Pikachu',
   );
-  await expect(page.getByText('Type Specialist')).toBeVisible();
+  await expect(
+    page.getByText('Type Specialist', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    card.locator('.trainer-card__title .trainer-title-mark'),
+  ).toBeVisible();
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download PNG' }).click();
@@ -107,12 +120,20 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
     name: 'Trainer Titles collection',
   });
   await expect(titles).toBeVisible();
+  await expect(titles.getByText('Trainer Titles')).toHaveCount(0);
+  await expect(titles.getByText(/lifetime/i)).toHaveCount(0);
   await expect(titles.getByText('1 / 8 earned', { exact: true })).toHaveCount(
     0,
   );
+  const equippedTitle = titles.getByRole('button', {
+    name: /Type Specialist.*Equipped/,
+  });
+  await expect(equippedTitle).toBeVisible();
+  await equippedTitle.click();
   await expect(
-    titles.getByRole('button', { name: /Type Specialist.*Equipped/ }),
+    page.getByRole('button', { name: 'Unequip title' }),
   ).toBeVisible();
+  await page.getByRole('button', { name: 'Close title details' }).click();
   await titles.getByRole('button', { name: /Ability Specialist/ }).click();
   const titleDialog = page.getByRole('dialog');
   await expect(
@@ -121,6 +142,9 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(
     titleDialog.getByText('Know which abilities a Pokémon can have.'),
   ).toBeVisible();
+  await expect(
+    titleDialog.getByText('Answer 10 questions correctly in this field.'),
+  ).toHaveCount(0);
   await page.getByRole('button', { name: 'Close title details' }).click();
   await page.getByRole('button', { name: 'Share titles' }).click();
   expect(

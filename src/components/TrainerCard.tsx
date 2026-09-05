@@ -9,6 +9,7 @@ import {
   trainerSpecialtyLabels,
 } from '@/game/trainer';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
+import { TrainerTitleMark } from './TrainerTitleMark';
 import { PokemonIdentity } from './PokemonIdentity';
 
 interface TrainerCardProps {
@@ -64,7 +65,8 @@ export const TrainerCard = ({
           <h2>{profile.name || `${site.name} Trainer`}</h2>
           {profile.specialty ? (
             <p className="trainer-card__title">
-              {trainerSpecialtyLabels[profile.specialty]}
+              <TrainerTitleMark earned specialty={profile.specialty} />
+              <span>{trainerSpecialtyLabels[profile.specialty]}</span>
             </p>
           ) : null}
           <dl>

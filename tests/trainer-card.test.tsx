@@ -41,6 +41,9 @@ describe('Trainer profile artifacts', () => {
 
     expect(screen.getByRole('heading', { name: 'Leaf' })).toBeVisible();
     expect(screen.getByText('Type Specialist')).toBeVisible();
+    expect(
+      container.querySelector('.trainer-card__title .trainer-title-mark'),
+    ).toBeVisible();
     expect(screen.getByText('Ace')).toBeVisible();
     expect(
       container.querySelector('.trainer-card__partner-caption'),
