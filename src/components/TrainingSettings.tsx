@@ -52,7 +52,10 @@ export const TrainingSettings = ({
         </p>
       ) : null}
 
-      <fieldset className="training-mode-settings">
+      <fieldset
+        aria-describedby="training-mode-description"
+        className="training-mode-settings"
+      >
         <legend>Training mode</legend>
         <div className="training-mode-control">
           {trainingModes.map((mode) => (
@@ -73,11 +76,6 @@ export const TrainingSettings = ({
             />
           ))}
         </div>
-        <p className="training-mode-settings__description" aria-live="polite">
-          {leagueTraining
-            ? `${TRAINING_QUESTION_COUNT} questions with every question type. Quick Attack and Perfect Form can be earned.`
-            : `${TRAINING_QUESTION_COUNT} questions using the question types you choose.`}
-        </p>
       </fieldset>
 
       <section className="settings-section">
@@ -132,6 +130,15 @@ export const TrainingSettings = ({
             Choose at least one generation.
           </p>
         ) : null}
+        <p
+          aria-live="polite"
+          className="training-settings__description"
+          id="training-mode-description"
+        >
+          {leagueTraining
+            ? `${TRAINING_QUESTION_COUNT} questions with every question type. Quick Attack and Perfect Form can be earned.`
+            : `${TRAINING_QUESTION_COUNT} questions using the question types you choose.`}
+        </p>
       </section>
 
       {leagueTraining ? null : (

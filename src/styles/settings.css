@@ -30,7 +30,7 @@
   margin-bottom: 1.25rem;
 }
 
-.training-mode-settings__description {
+.training-settings__description {
   margin: 0.65rem 0 0;
   color: var(--muted);
   font-size: var(--text-label);

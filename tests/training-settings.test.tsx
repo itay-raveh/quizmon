@@ -40,9 +40,15 @@ describe('Training settings', () => {
     expect(
       screen.queryByRole('heading', { name: 'Question types' }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByText(/10 questions with every question type/),
-    ).toBeVisible();
+    const generationsPicker = screen.getByRole('group', {
+      name: 'Generations',
+    });
+    const modeDescription = screen.getByText(
+      /10 questions with every question type/,
+    );
+
+    expect(modeDescription).toBeVisible();
+    expect(generationsPicker.nextElementSibling).toBe(modeDescription);
   });
 
   it('shows question types only in Custom and preserves the selection', () => {
