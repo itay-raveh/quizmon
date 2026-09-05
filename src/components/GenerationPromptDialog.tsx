@@ -8,6 +8,34 @@ interface GenerationPromptDialogProps {
   onChooseGenOne: () => void;
 }
 
+const genOnePreview = [
+  '/sprites/pokemon/25.png',
+  '/sprites/pokemon/6.png',
+  '/sprites/pokemon/94.png',
+];
+
+const allGenerationsPreview = [
+  '/sprites/pokemon/25.png',
+  '/sprites/pokemon/823.png',
+  '/sprites/pokemon/959.png',
+];
+
+const PokemonPreview = ({ sprites }: { sprites: string[] }) => (
+  <span aria-hidden="true" className="generation-prompt__preview">
+    {sprites.map((sprite) => (
+      <img
+        alt=""
+        className="generation-prompt__sprite"
+        decoding="async"
+        height="96"
+        key={sprite}
+        src={sprite}
+        width="96"
+      />
+    ))}
+  </span>
+);
+
 export const GenerationPromptDialog = ({
   onCancel,
   onChooseAll,
@@ -43,11 +71,11 @@ export const GenerationPromptDialog = ({
         <div className="generation-prompt__choices">
           <GameButton autoFocus onClick={onChooseGenOne}>
             <strong>Gen I only</strong>
-            <span>The original 151</span>
+            <PokemonPreview sprites={genOnePreview} />
           </GameButton>
           <GameButton onClick={onChooseAll} tone="quiet">
             <strong>All generations</strong>
-            <span>Generations I–IX</span>
+            <PokemonPreview sprites={allGenerationsPreview} />
           </GameButton>
         </div>
         <p className="generation-prompt__note" id="generation-prompt-note">

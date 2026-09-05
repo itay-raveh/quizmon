@@ -288,6 +288,16 @@ test('asks new players which generations they know before Training', async ({
   await expect(
     prompt.getByText('You can change this later in Settings.'),
   ).toBeVisible();
+  await expect(prompt.locator('.generation-prompt__sprite')).toHaveCount(6);
+  await expect(
+    prompt.locator('img[src="/sprites/pokemon/25.png"]'),
+  ).toHaveCount(2);
+  await expect(
+    prompt.locator('img[src="/sprites/pokemon/823.png"]'),
+  ).toHaveCount(1);
+  await expect(
+    prompt.locator('img[src="/sprites/pokemon/959.png"]'),
+  ).toHaveCount(1);
 
   await prompt.getByRole('button', { name: /Gen I only/ }).click();
   await expect(prompt).toBeHidden();

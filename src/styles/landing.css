@@ -1,34 +1,45 @@
 .landing {
-  position: absolute;
-  inset: 0;
+  display: grid;
   width: 100%;
+  min-height: 0;
+  align-self: stretch;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(1.15rem, 3.5svh, 2.35rem);
 }
 
 .logo-picture {
-  position: absolute;
-  top: var(--r-wordmark-y);
-  left: var(--r-wordmark-x);
   display: block;
-  width: var(--r-wordmark-w);
-  height: var(--r-wordmark-h);
+  width: min(90vw, clamp(20rem, 34vw, 31rem));
+  aspect-ratio: 992 / 456;
 }
 
 .logo {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
 }
 
+.landing__primary,
+.landing__control-stack {
+  display: grid;
+  width: min(90vw, 26rem);
+  justify-items: stretch;
+  gap: 0.8rem;
+}
+
+.landing__control-stack {
+  width: min(90vw, 24rem);
+  justify-items: center;
+}
+
 .daily-action {
-  position: absolute;
-  top: var(--r-daily-action-y);
-  left: var(--r-daily-action-x);
+  position: relative;
   display: flex;
-  width: var(--r-daily-action-w);
-  height: var(--r-daily-action-h);
-  min-height: 0;
-  padding: 0.4rem 0.8rem;
+  width: 100%;
+  min-height: clamp(4.8rem, 9svh, 5.7rem);
+  padding: 0.65rem 1rem;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -45,30 +56,27 @@
   gap: 0.18rem;
 }
 
-.daily-action--with-combo .daily-action__copy {
-  width: 100%;
-  padding-right: 4.25rem;
-}
-
 .daily-action--complete {
+  display: grid;
   color: var(--navy);
   background: var(--cream);
+  grid-template-columns: auto minmax(0, auto);
+  align-content: center;
+  justify-content: center;
+  column-gap: 0.6rem;
 }
 
 .daily-action--complete > .share-result-button__icon {
-  position: absolute;
-  left: 1rem;
   width: 1.45rem;
   height: 1.45rem;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
 }
 
 .daily-action--complete .daily-action__copy {
-  width: 100%;
-  padding-inline: 2.8rem;
-}
-
-.daily-action--complete.daily-action--with-combo .daily-action__copy {
-  padding-right: 4.25rem;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .daily-action__title {
@@ -171,28 +179,23 @@
 
 .daily-action > .catch-combo {
   position: absolute;
-  top: 50%;
-  right: 0.25rem;
-  transform: translateY(-50%);
+  top: -1rem;
+  right: -0.4rem;
 }
 
 .landing__actions {
-  position: absolute;
-  top: var(--r-modifiers-y);
-  left: calc(50% - 12rem);
-  display: flex;
-  width: 24rem;
+  display: grid;
+  width: 100%;
   min-height: 3.25rem;
-  flex-wrap: wrap;
+  grid-template-columns: 3.25rem repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
 }
 
 .landing__actions .game-button {
-  width: auto;
+  width: 100%;
   min-width: 0;
   min-height: 3.25rem;
   padding: 0.25rem 0.5rem;
-  flex: 1 1 6rem;
   font-size: var(--text-brand-control);
   overflow-wrap: anywhere;
 }
@@ -202,7 +205,6 @@
   min-width: 3.25rem;
   height: 3.25rem;
   min-height: 3.25rem;
-  flex: none;
 }
 
 .landing__actions .game-button > span {
@@ -212,32 +214,16 @@
 }
 
 .landing__league-button.game-button {
-  position: absolute;
-  top: 70%;
-  left: 50%;
-  width: 15rem;
+  width: min(15rem, 100%);
   min-height: 3rem;
-  transform: translateX(-50%);
-}
-
-.landing__league-button.game-button:hover:not(:disabled) {
-  transform: translate(-50%, -1px);
-}
-
-.landing__league-button.game-button:active:not(:disabled) {
-  transform: translate(-50%, 0.22rem);
 }
 
 .landing__status {
-  position: absolute;
-  top: 70%;
-  left: 50%;
-  width: min(28rem, 90vw);
+  width: 100%;
   margin: 0;
   color: var(--navy);
   font-weight: 800;
   text-align: center;
-  transform: translateX(-50%);
 }
 
 .landing__status--error {

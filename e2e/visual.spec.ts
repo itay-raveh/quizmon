@@ -7,7 +7,7 @@ test('matches the mobile landing and Settings layouts', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toBeEnabled();
-  await expect(page.locator('.landing')).toHaveScreenshot(
+  await expect(page.locator('.app--landing')).toHaveScreenshot(
     'landing-mobile.webp',
     { animations: 'disabled' },
   );
@@ -15,6 +15,18 @@ test('matches the mobile landing and Settings layouts', async ({ page }) => {
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('dialog', { name: 'Settings' })).toHaveScreenshot(
     'settings-mobile.webp',
+    { animations: 'disabled' },
+  );
+});
+
+test('matches the desktop landing layout', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await expect(
+    page.getByRole('button', { name: /Play Daily Challenge/ }),
+  ).toBeEnabled();
+  await expect(page.locator('.app--landing')).toHaveScreenshot(
+    'landing-desktop.webp',
     { animations: 'disabled' },
   );
 });

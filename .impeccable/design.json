@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T12:02:40Z",
+  "generatedAt": "2026-09-05T12:42:06Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -519,7 +519,7 @@
       "refersTo": "daily-action",
       "description": "The landing screen's dominant action, with one title and an optional compact detail line.",
       "html": "<button class=\"ds-daily\"><strong>Daily Challenge</strong></button>",
-      "css": ".ds-daily { display: flex; min-width: 18rem; min-height: 4.5rem; padding: 0.4rem 0.8rem; flex-direction: column; align-items: center; justify-content: center; gap: 0.18rem; color: var(--paper, #fffbea); background: var(--blue, #0d6be6); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); cursor: pointer; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-daily strong { font-size: 1.75rem; font-weight: 800; line-height: 1.15; } .ds-daily:hover { filter: brightness(1.07); transform: translateY(-1px); } .ds-daily:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; } .ds-daily:active { box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.08rem 0 var(--yellow, #eed23e), 0 0.12rem 0 var(--navy-shadow, #123f76); transform: translateY(0.22rem); }"
+      "css": ".ds-daily { display: flex; width: min(26rem, 90vw); min-height: 4.8rem; padding: 0.65rem 1rem; flex-direction: column; align-items: center; justify-content: center; gap: 0.18rem; color: var(--paper, #fffbea); background: var(--blue, #0d6be6); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); cursor: pointer; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-daily strong { font-size: 1.75rem; font-weight: 800; line-height: 1.15; } .ds-daily:hover { filter: brightness(1.07); transform: translateY(-1px); } .ds-daily:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; } .ds-daily:active { box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.08rem 0 var(--yellow, #eed23e), 0 0.12rem 0 var(--navy-shadow, #123f76); transform: translateY(0.22rem); }"
     },
     {
       "name": "Pokémon Search Field",
@@ -632,7 +632,7 @@
       "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
       "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",
       "Do prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.",
-      "Do keep the four concise footer credits linked in creative and technical groups, and preserve the visually hidden trademark sentence."
+      "Do keep ownership, production credits, and the visible Pokémon legal credit in three concise linked tiers."
     ],
     "donts": [
       "Don't build a giant HUD, simulated handheld frame, or full-page landing card.",
