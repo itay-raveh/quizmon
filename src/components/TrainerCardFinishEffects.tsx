@@ -28,9 +28,9 @@ const firstSheenFrame = sheenFrames[0];
 const staticSheenFrame = sheenFrames[5];
 
 const motionByFinish = {
-  Bronze: { frameMs: 76, initialDelayMs: 150 },
-  Gold: { frameMs: 54, initialDelayMs: 710 },
-  Silver: { frameMs: 64, initialDelayMs: 430 },
+  Bronze: { frameMs: 68, initialDelayMs: 150 },
+  Gold: { frameMs: 49, initialDelayMs: 710 },
+  Silver: { frameMs: 58, initialDelayMs: 430 },
 } as const;
 
 const loopGapMs = 1100;
