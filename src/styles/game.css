@@ -869,7 +869,8 @@
   visibility: hidden;
 }
 
-.answer__nameplate small {
+.answer__nameplate small,
+.answer__identity small {
   font-family: var(--font-data);
   font-size: var(--text-mini);
   font-weight: 800;
@@ -889,13 +890,6 @@
   justify-items: start;
   gap: 0.03rem;
   line-height: 1.08;
-}
-
-.answer__identity small {
-  font-family: var(--font-data);
-  font-size: var(--text-mini);
-  font-weight: 800;
-  letter-spacing: 0.04em;
 }
 
 .type-badges {

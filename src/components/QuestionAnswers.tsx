@@ -185,6 +185,7 @@ export const QuestionAnswers = ({
                 dexNumber={dexNumber}
                 hideNumberFromAccessibility
                 name={option}
+                nameClassName="answer__name"
               >
                 {hasStatValue ? (
                   <span

@@ -132,6 +132,7 @@ describe('question transitions', () => {
       rendered.container.querySelectorAll('.answer__identity'),
     ).toHaveLength(4);
     expect(screen.getByText('No. 0025')).toBeVisible();
+    expect(screen.getByText('Pikachu')).toHaveClass('answer__name');
     expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
 
