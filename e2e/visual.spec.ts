@@ -96,7 +96,6 @@ test('matches the Trainer Card at both responsive sizes', async ({ page }) => {
     window.localStorage.setItem(
       'quizmon.trainer-profile.v1',
       JSON.stringify({
-        cardNumber: 'QZ-025151',
         createdAt: '2026-09-01',
         hasBeenRevealed: true,
         name: 'Leaf',

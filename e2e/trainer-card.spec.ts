@@ -62,7 +62,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByText('Pikachu')).toBeVisible();
   await expect(page.getByText('No. 0025')).toBeVisible();
   await expect(page.getByText('Type Specialist')).toBeVisible();
-  await expect(card.getByText('ID No.')).toBeVisible();
+  await expect(card.getByText('ID No.')).toHaveCount(0);
   await expect(card.getByText('Play at')).toBeVisible();
   await expect(card.getByText('quizmon.raveh.dev')).toBeVisible();
   await expect(card.getByText(/finish/i)).toHaveCount(0);
@@ -81,7 +81,45 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   expect(Math.abs(png.readUInt32BE(16) - cardBounds.width * 2)).toBeLessThan(4);
 
   await page.setViewportSize({ width: 360, height: 800 });
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '125%';
+  });
+  const mobileContentBounds = await card.evaluate((element) => {
+    const partner = element
+      .querySelector('.trainer-card__partner')
+      ?.getBoundingClientRect();
+    const identity = element
+      .querySelector('.trainer-card__identity')
+      ?.getBoundingClientRect();
+    const footer = element
+      .querySelector('.trainer-card__footer')
+      ?.getBoundingClientRect();
+    const portrait = element
+      .querySelector('.trainer-card__portrait')
+      ?.getBoundingClientRect();
+    if (!partner || !identity || !footer || !portrait) {
+      throw new Error('Trainer Card content bounds are unavailable');
+    }
+    return {
+      cardWidth: element.getBoundingClientRect().width,
+      footerTop: footer.top,
+      identityBottom: identity.bottom,
+      partnerBottom: partner.bottom,
+      partnerHeight: partner.height,
+      portraitHeight: portrait.height,
+    };
+  });
+  expect(
+    mobileContentBounds.partnerBottom,
+    JSON.stringify(mobileContentBounds),
+  ).toBeLessThanOrEqual(mobileContentBounds.footerTop);
+  expect(mobileContentBounds.identityBottom).toBeLessThanOrEqual(
+    mobileContentBounds.footerTop,
+  );
   const mobileFrontBounds = await card.boundingBox();
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '100%';
+  });
   await page.setViewportSize({ width: 1440, height: 900 });
   const desktopFrontBounds = await card.boundingBox();
   if (!mobileFrontBounds || !desktopFrontBounds) {
