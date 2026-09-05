@@ -90,11 +90,7 @@
 
 .question-type-group__disclosure svg {
   width: 1.25rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+  height: 1.25rem;
   transition: transform 120ms ease;
 }
 
@@ -237,20 +233,20 @@
   transform: none;
 }
 
+.selection-grid--question-types .selection-tile__check svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  opacity: 0;
+}
+
 .selection-grid--question-types
   .selection-tile
   input:checked
   + .selection-tile__surface
-  .selection-tile__check::after {
-  position: absolute;
-  top: 0.05rem;
-  left: 0.26rem;
-  width: 0.28rem;
-  height: 0.55rem;
-  content: '';
-  border: solid var(--yellow);
-  border-width: 0 0.14rem 0.14rem 0;
-  transform: rotate(45deg);
+  .selection-tile__check
+  svg {
+  color: var(--yellow);
+  opacity: 1;
 }
 
 .selection-tile--generation .selection-tile__label {
@@ -262,21 +258,25 @@
   top: auto;
   right: 0.42rem;
   bottom: 0.38rem;
-  width: 0.34rem;
-  height: 0.6rem;
-  border-width: 0 0.12rem 0.12rem 0;
+  width: 0.8rem;
+  height: 0.8rem;
 }
 
 .selection-tile__check {
   position: absolute;
   top: 0.52rem;
   right: 0.55rem;
-  width: 0.48rem;
-  height: 0.82rem;
+  display: grid;
+  width: 1rem;
+  height: 1rem;
   opacity: 0;
-  border: solid var(--yellow);
-  border-width: 0 0.16rem 0.16rem 0;
-  transform: translateY(-0.08rem) rotate(45deg);
+  color: var(--yellow);
+  place-items: center;
+}
+
+.selection-tile__check svg {
+  width: 100%;
+  height: 100%;
 }
 
 .selection-tile input:checked + .selection-tile__surface {
@@ -366,6 +366,11 @@
   place-items: center;
 }
 
+.question-type-tile__help svg {
+  width: 1rem;
+  height: 1rem;
+}
+
 .question-type-tile--selected .question-type-tile__help > span {
   color: var(--primary-text);
   background: color-mix(in srgb, var(--navy) 18%, transparent);
@@ -421,10 +426,7 @@
 
 .question-type-help__close svg {
   width: 1.25rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-width: 2;
+  height: 1.25rem;
 }
 
 .modifier-list {
@@ -466,13 +468,15 @@
   background: var(--blue);
 }
 
-.checkbox input:checked + .checkbox__control::after {
-  width: 0.38rem;
-  height: 0.7rem;
-  content: '';
-  border: solid white;
-  border-width: 0 0.15rem 0.15rem 0;
-  transform: translateY(-0.05rem) rotate(45deg);
+.checkbox__control svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  color: white;
+  opacity: 0;
+}
+
+.checkbox input:checked + .checkbox__control svg {
+  opacity: 1;
 }
 
 .checkbox input:focus-visible + .checkbox__control {

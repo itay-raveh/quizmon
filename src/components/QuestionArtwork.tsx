@@ -1,5 +1,6 @@
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import type { QuestionData } from '@/game/types';
+import { ArrowDownIcon, ArrowUpIcon } from './icons';
 import { PokemonIdentity } from './PokemonIdentity';
 import { Sprite } from './Sprite';
 import { MysteryTypeBadge, TypeBadges } from './TypeBadge';
@@ -133,7 +134,13 @@ export const QuestionArtwork = ({
         </p>
         <div className="question-visual__stat">
           <strong>{formatPokemonName(stat)}</strong>
-          <span>{direction === 'highest' ? '↑' : '↓'}</span>
+          <span>
+            {direction === 'highest' ? (
+              <ArrowUpIcon weight="bold" />
+            ) : (
+              <ArrowDownIcon weight="bold" />
+            )}
+          </span>
         </div>
       </div>
     );

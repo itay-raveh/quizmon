@@ -27,13 +27,24 @@ import {
   trainerSpecialtyLabels,
   type TrainerBadgeId,
   type TrainerSpecialty,
+  type TrainerTitle,
   type TrainerView,
 } from '@/game/trainer';
 import { GameButton } from './GameButton';
+import {
+  ArrowLeftIcon,
+  CardholderIcon,
+  CertificateIcon,
+  DownloadSimpleIcon,
+  MedalIcon,
+  PencilSimpleIcon,
+  ShareNetworkIcon,
+} from './icons';
 import { LeagueGateway } from './LeagueGateway';
 import { PokemonPicker } from './PokemonPicker';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';
 import { TrainerCard } from './TrainerCard';
+import { TrainerTitleDialog } from './TrainerTitleDialog';
 import { TrainerTitles } from './TrainerTitles';
 
 interface TrainerPassportProps {
@@ -101,6 +112,7 @@ export const TrainerPassport = ({
   const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
     null,
   );
+  const [selectedTitle, setSelectedTitle] = useState<TrainerTitle | null>(null);
   const artifactRef = useRef<HTMLElement>(null);
   const pokemonOptions = useMemo(
     () =>
@@ -203,6 +215,7 @@ export const TrainerPassport = ({
 
   const selectView = (nextView: TrainerView) => {
     setSelectedBadgeId(null);
+    setSelectedTitle(null);
     setEditing(false);
     onViewChange(nextView);
   };
@@ -280,9 +293,7 @@ export const TrainerPassport = ({
           tone="quiet"
           onClick={onBack}
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="m14.5 5-7 7 7 7M8 12h9" />
-          </svg>
+          <ArrowLeftIcon aria-hidden="true" weight="bold" />
         </GameButton>
         <div>
           <h1 id="trainer-passport-title">{viewLabels[view]}</h1>
@@ -294,9 +305,7 @@ export const TrainerPassport = ({
             onClick={toggleEditor}
           >
             {editing ? null : (
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <path d="m4 20 4.3-1 10.8-10.8a2.1 2.1 0 0 0-3-3L5.3 16 4 20ZM14.8 6.2l3 3" />
-              </svg>
+              <PencilSimpleIcon aria-hidden="true" weight="bold" />
             )}
             {editing ? 'Cancel' : 'Edit card'}
           </GameButton>
@@ -309,11 +318,11 @@ export const TrainerPassport = ({
         <nav aria-label="Trainer profile" className="trainer-passport__views">
           {(
             [
-              ['front', 'Card'],
-              ['badges', 'Badges'],
-              ['titles', 'Titles'],
+              ['front', 'Card', CardholderIcon],
+              ['badges', 'Badges', MedalIcon],
+              ['titles', 'Titles', CertificateIcon],
             ] as const
-          ).map(([nextView, label]) => (
+          ).map(([nextView, label, ViewIcon]) => (
             <button
               aria-pressed={view === nextView}
               className="trainer-passport__view"
@@ -322,6 +331,7 @@ export const TrainerPassport = ({
               onClick={() => selectView(nextView)}
               type="button"
             >
+              <ViewIcon aria-hidden="true" weight="bold" />
               {label}
             </button>
           ))}
@@ -387,7 +397,7 @@ export const TrainerPassport = ({
           <TrainerTitles
             collectionRef={artifactRef}
             equipped={savedSpecialty}
-            onEquip={equipTitle}
+            onSelect={setSelectedTitle}
             stats={stats}
           />
         ) : (
@@ -413,9 +423,7 @@ export const TrainerPassport = ({
       <div className="trainer-passport__controls">
         {canShareArtifact ? (
           <GameButton disabled={!image} onClick={() => void share()}>
-            <svg aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M12 16V3m0 0L7 8m5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
-            </svg>
+            <ShareNetworkIcon aria-hidden="true" weight="bold" />
             Share {shareLabels[view]}
           </GameButton>
         ) : (
@@ -423,9 +431,7 @@ export const TrainerPassport = ({
             disabled={!image}
             onClick={() => image && downloadTrainerArtifact(image, view)}
           >
-            <svg aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M12 3v13m0 0 5-5m-5 5-5-5M5 20h14" />
-            </svg>
+            <DownloadSimpleIcon aria-hidden="true" weight="bold" />
             Download PNG
           </GameButton>
         )}
@@ -434,6 +440,13 @@ export const TrainerPassport = ({
         <TrainerBadgeDialog
           badge={selectedBadge}
           onClose={() => setSelectedBadgeId(null)}
+        />
+      ) : null}
+      {selectedTitle ? (
+        <TrainerTitleDialog
+          onClose={() => setSelectedTitle(null)}
+          onEquip={(title) => equipTitle(title.specialty)}
+          title={selectedTitle}
         />
       ) : null}
       <p

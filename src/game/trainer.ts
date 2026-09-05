@@ -14,6 +14,17 @@ export const trainerSpecialtyLabels = {
   type: 'Type Specialist',
 } as const satisfies Partial<Record<QuestionCategory, string>>;
 
+const trainerSpecialtyDescriptions = {
+  ability: 'Know which abilities a Pokémon can have.',
+  description: 'Match Pokédex entries to their Pokémon.',
+  evolution: 'Track how Pokémon types change through evolution.',
+  identity: 'Identify Pokémon from sprites, silhouettes, crops, and colors.',
+  matchup: 'Solve super-effective type and Pokémon matchups.',
+  move: 'Know which moves Pokémon learn by leveling up.',
+  stat: 'Compare Pokémon stats to find the highest or lowest.',
+  type: 'Recognize Pokémon types and hidden type patterns.',
+} as const satisfies Record<keyof typeof trainerSpecialtyLabels, string>;
+
 export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
 export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
@@ -41,10 +52,12 @@ export interface TrainerBadge {
 
 export interface TrainerTitle {
   current: number;
+  description: string;
   earned: boolean;
   equipped: boolean;
   goal: number;
   label: string;
+  requirement: string;
   specialty: TrainerSpecialty;
 }
 
@@ -185,10 +198,12 @@ export const getTrainerTitles = (
       const current = stats.correctCategories[specialty] ?? 0;
       return {
         current,
+        description: trainerSpecialtyDescriptions[specialty],
         earned: current >= TRAINER_SPECIALTY_GOAL,
         equipped: specialty === equipped,
         goal: TRAINER_SPECIALTY_GOAL,
         label: trainerSpecialtyLabels[specialty],
+        requirement: `Answer ${TRAINER_SPECIALTY_GOAL} questions correctly in this field.`,
         specialty,
       };
     },

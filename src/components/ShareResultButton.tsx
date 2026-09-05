@@ -2,6 +2,7 @@ import { lazy, Suspense, useState, type ReactNode } from 'react';
 import { shareResult } from '@/game/share';
 import type { GameMode, GameResult } from '@/game/types';
 import { GameButton } from './GameButton';
+import { ShareNetworkIcon } from './icons';
 
 const ShareDialog = lazy(() =>
   import('./ShareDialog').then((module) => ({ default: module.ShareDialog })),
@@ -47,13 +48,11 @@ export const ShareResultButton = ({
         onClick={() => void share()}
         tone={tone}
       >
-        <svg
+        <ShareNetworkIcon
           className="share-result-button__icon"
           aria-hidden="true"
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 15V4m0 0L8 8m4-4 4 4M5 13v6h14v-6" />
-        </svg>
+          weight="bold"
+        />
         {children}
       </GameButton>
       <span className="visually-hidden" aria-live="polite">

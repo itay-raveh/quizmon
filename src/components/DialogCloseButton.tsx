@@ -1,3 +1,5 @@
+import { XIcon } from './icons';
+
 interface DialogCloseButtonProps {
   autoFocus?: boolean;
   label: string;
@@ -16,8 +18,6 @@ export const DialogCloseButton = ({
     onClick={onClick}
     type="button"
   >
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
+    <XIcon aria-hidden="true" weight="bold" />
   </button>
 );

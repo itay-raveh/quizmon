@@ -109,6 +109,15 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(
     titles.getByRole('button', { name: /Type Specialist.*Equipped/ }),
   ).toBeVisible();
+  await titles.getByRole('button', { name: /Ability Specialist/ }).click();
+  const titleDialog = page.getByRole('dialog');
+  await expect(
+    titleDialog.getByRole('heading', { name: 'Ability Specialist' }),
+  ).toBeVisible();
+  await expect(
+    titleDialog.getByText('Know which abilities a Pokémon can have.'),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Close title details' }).click();
   await page.getByRole('button', { name: 'Share titles' }).click();
   expect(
     await page.evaluate(

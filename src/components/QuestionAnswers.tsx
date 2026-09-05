@@ -1,6 +1,7 @@
 import { formatPokemonName, formatPokemonTypes } from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
+import { CheckIcon, XIcon } from './icons';
 import { PokemonIdentity } from './PokemonIdentity';
 import { TypeBadges } from './TypeBadge';
 
@@ -86,15 +87,19 @@ export const QuestionAnswers = ({
             : resultMarker === 'wrong'
               ? ' Wrong pick.'
               : '';
-        const selectionMark = answered
-          ? optionCorrect
-            ? '✓'
-            : optionSelected
-              ? '×'
-              : index + 1
-          : question.answer.interaction === 'multi-select' && optionSelected
-            ? '✓'
-            : index + 1;
+        const selectionMark = answered ? (
+          optionCorrect ? (
+            <CheckIcon weight="bold" />
+          ) : optionSelected ? (
+            <XIcon weight="bold" />
+          ) : (
+            index + 1
+          )
+        ) : question.answer.interaction === 'multi-select' && optionSelected ? (
+          <CheckIcon weight="bold" />
+        ) : (
+          index + 1
+        );
 
         return (
           <GameButton

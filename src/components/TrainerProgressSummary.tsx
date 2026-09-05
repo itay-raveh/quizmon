@@ -1,5 +1,6 @@
 import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import { GameButton } from './GameButton';
+import { CaretRightIcon, TrophyIcon } from './icons';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
@@ -42,12 +43,11 @@ export const TrainerProgressSummary = ({
         <strong>Trainer progress</strong>
         <small>
           {destinationLabel}{' '}
-          <span
-            className="trainer-progress-summary__chevron"
+          <CaretRightIcon
             aria-hidden="true"
-          >
-            ›
-          </span>
+            className="trainer-progress-summary__chevron"
+            weight="bold"
+          />
         </small>
       </span>
       <span className="trainer-progress-summary__changes">
@@ -55,12 +55,11 @@ export const TrainerProgressSummary = ({
           <span className="trainer-progress-summary__earned">
             {leagueVictory ? (
               <span className="trainer-progress-change trainer-progress-change--earned">
-                <span
+                <TrophyIcon
                   className="trainer-progress-change__hall-mark"
                   aria-hidden="true"
-                >
-                  HOF
-                </span>
+                  weight="bold"
+                />
                 <span>
                   <small>Milestone earned</small>
                   <strong>Hall of Fame</strong>

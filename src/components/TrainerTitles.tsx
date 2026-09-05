@@ -1,27 +1,32 @@
 /*
 THESIS: Trainer Titles are a visible collection to pursue and display, not a settings option hidden in a form.
-OWN-WORLD: One cream league board uses cobalt plates, navy structure, yellow depth, and compact mono progress.
-STORY: See every title, understand the next unlock, equip an earned title, then share the complete record.
-FIRST VIEWPORT: A current-title strip leads into all eight titles in a dense two-column collection.
-FORM: The approved Collection Board keeps the whole collection visible and makes the board itself the artifact.
+OWN-WORLD: A warm wood display board holds cream title plaques, brass fasteners, and cobalt earned marks.
+STORY: See every title and its progress, open one for its meaning, equip an earned title, then share the board.
+FIRST VIEWPORT: A compact current-title plaque leads into all eight icon-led title records.
+FORM: The wood board is one physical collection surface, not a table or a dashboard of cards.
 */
 import type { Ref } from 'react';
 import { siteHostname } from '@/app/site';
 import type { TrainerStats } from '@/game/storage';
-import { getTrainerTitles, type TrainerSpecialty } from '@/game/trainer';
+import {
+  getTrainerTitles,
+  type TrainerSpecialty,
+  type TrainerTitle,
+} from '@/game/trainer';
+import { CertificateIcon, CheckCircleIcon, LockSimpleIcon } from './icons';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitlesProps {
   collectionRef?: Ref<HTMLElement>;
   equipped: TrainerSpecialty | null;
-  onEquip: (specialty: TrainerSpecialty) => void;
+  onSelect: (title: TrainerTitle) => void;
   stats: TrainerStats;
 }
 
 export const TrainerTitles = ({
   collectionRef,
   equipped,
-  onEquip,
+  onSelect,
   stats,
 }: TrainerTitlesProps) => {
   const titles = getTrainerTitles(stats, equipped);
@@ -34,8 +39,27 @@ export const TrainerTitles = ({
       aria-label="Trainer Titles collection"
       className="trainer-titles"
     >
+      <span
+        aria-hidden="true"
+        className="trainer-titles__fastener trainer-titles__fastener--top-left"
+      />
+      <span
+        aria-hidden="true"
+        className="trainer-titles__fastener trainer-titles__fastener--top-right"
+      />
+      <span
+        aria-hidden="true"
+        className="trainer-titles__fastener trainer-titles__fastener--bottom-left"
+      />
+      <span
+        aria-hidden="true"
+        className="trainer-titles__fastener trainer-titles__fastener--bottom-right"
+      />
       <header className="trainer-titles__banner">
-        <span>Trainer Titles</span>
+        <span>
+          <CertificateIcon aria-hidden="true" weight="bold" />
+          Trainer Titles
+        </span>
         <strong>
           {earnedCount} / {titles.length} earned
         </strong>
@@ -54,7 +78,7 @@ export const TrainerTitles = ({
             </span>
             <span className="trainer-titles__lifetime">
               <strong>{currentTitle.current.toLocaleString()}</strong>
-              <small>lifetime correct</small>
+              <small>lifetime</small>
             </span>
           </>
         ) : (
@@ -79,24 +103,24 @@ export const TrainerTitles = ({
           const state = title.equipped
             ? 'Equipped'
             : title.earned
-              ? 'Equip'
+              ? 'Earned'
               : 'Locked';
           const progressLabel = title.earned
             ? `${title.current.toLocaleString()} lifetime correct`
-            : `${progress} / ${title.goal} correct`;
+            : `${progress} / ${title.goal}`;
+          const visibleProgressLabel = title.earned
+            ? `${title.current.toLocaleString()} lifetime`
+            : progressLabel;
 
           return (
             <button
-              aria-label={`${title.label}. ${progressLabel}. ${state}.`}
+              aria-label={`${title.label}. ${progressLabel}. ${state}. Open title details.`}
               aria-pressed={title.equipped}
               className="trainer-title"
               data-earned={title.earned}
               data-equipped={title.equipped}
-              disabled={!title.earned}
               key={title.specialty}
-              onClick={() => {
-                if (title.earned) onEquip(title.specialty);
-              }}
+              onClick={() => onSelect(title)}
               type="button"
             >
               <TrainerTitleMark
@@ -105,14 +129,19 @@ export const TrainerTitles = ({
               />
               <span className="trainer-title__copy">
                 <strong>{title.label}</strong>
-                <small>{progressLabel}</small>
-                <span className="trainer-title__track" aria-hidden="true">
-                  <span
-                    style={{ width: `${(progress / title.goal) * 100}%` }}
-                  />
-                </span>
+                <small>{visibleProgressLabel}</small>
               </span>
-              <span className="trainer-title__state">{state}</span>
+              <span
+                aria-hidden="true"
+                className="trainer-title__state"
+                data-state={title.earned ? 'earned' : 'locked'}
+              >
+                {title.earned ? (
+                  <CheckCircleIcon weight="fill" />
+                ) : (
+                  <LockSimpleIcon weight="bold" />
+                )}
+              </span>
             </button>
           );
         })}

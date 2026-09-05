@@ -46,11 +46,7 @@
 
 .trainer-passport__back svg {
   width: 1.45rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+  height: 1.45rem;
 }
 
 .trainer-passport__edit.game-button,
@@ -66,11 +62,6 @@
   width: 1.15rem;
   height: 1.15rem;
   flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
 }
 
 .trainer-passport__header > div {
@@ -102,9 +93,12 @@
 }
 
 .trainer-passport__view {
+  display: inline-flex;
   min-width: 0;
   min-height: 2.8rem;
   padding: 0.45rem 0.6rem;
+  align-items: center;
+  justify-content: center;
   color: var(--navy);
   background: var(--paper);
   border: 0;
@@ -112,6 +106,13 @@
   font-size: var(--text-label);
   font-weight: 900;
   cursor: pointer;
+  gap: 0.35rem;
+}
+
+.trainer-passport__view svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
 }
 
 .trainer-passport__view[aria-pressed='true'] {
@@ -178,7 +179,28 @@
 }
 
 .trainer-card--badges {
+  --case-metal: #c7d7dc;
+  --case-metal-dark: #607b87;
+  --case-inset: #173a54;
+
   grid-template-rows: auto minmax(0, 1fr);
+  background: var(--case-metal);
+  box-shadow:
+    inset 0 0 0 0.35rem #e8f0f1,
+    0 0.3rem 0 var(--case-metal-dark),
+    0 0.52rem 0 var(--navy-shadow);
+}
+
+.trainer-card--badges .trainer-card__banner {
+  color: var(--navy);
+  background: var(--case-metal);
+  border-bottom: 5px solid var(--case-metal-dark);
+}
+
+.trainer-card--badges .trainer-card__banner strong {
+  background: #edf3f2;
+  border-color: var(--case-metal-dark);
+  box-shadow: 0 0.2rem 0 var(--case-metal-dark);
 }
 
 .trainer-passport--bronze,
@@ -459,13 +481,53 @@
   position: relative;
   display: grid;
   min-height: 0;
-  padding: 0.55rem;
+  padding: 0.9rem 1rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  background: var(--trainer-rank-accent-strong);
-  border: 0.45rem solid var(--trainer-rank-accent);
-  box-shadow: inset 0 0 0 3px var(--navy);
-  gap: 3px;
+  background: var(--case-inset);
+  border: 0.55rem solid var(--case-metal);
+  box-shadow:
+    inset 0 0 0 3px var(--navy),
+    inset 0.35rem 0.35rem 0 var(--navy-shadow);
+  gap: 0.55rem;
+}
+
+.trainer-card__case-rivet,
+.trainer-titles__fastener {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 0.55rem;
+  aspect-ratio: 1;
+  background: var(--yellow);
+  border: 2px solid var(--navy);
+  border-radius: 50%;
+  box-shadow: 0 0.08rem 0 var(--navy-shadow);
+  pointer-events: none;
+}
+
+.trainer-card__case-rivet--top-left,
+.trainer-titles__fastener--top-left {
+  top: 0.2rem;
+  left: 0.2rem;
+}
+
+.trainer-card__case-rivet--top-right,
+.trainer-titles__fastener--top-right {
+  top: 0.2rem;
+  right: 0.2rem;
+}
+
+.trainer-card__case-rivet--bottom-left,
+.trainer-titles__fastener--bottom-left {
+  bottom: 0.2rem;
+  left: 0.2rem;
+}
+
+.trainer-card__case-rivet--bottom-right,
+.trainer-titles__fastener--bottom-right {
+  right: 0.2rem;
+  bottom: 0.2rem;
 }
 
 .trainer-badge {
@@ -473,15 +535,27 @@
   display: grid;
   min-width: 0;
   min-height: 0;
-  padding: 0.35rem 0.2rem 0.3rem;
+  padding: 0.25rem;
   appearance: none;
-  color: var(--navy);
-  background: var(--trainer-rank-surface);
-  border: 2px solid var(--navy);
-  border-radius: 0.25rem;
+  color: var(--paper);
+  background: #254d67;
+  border: 3px solid var(--case-metal-dark);
+  border-radius: 0.38rem;
+  box-shadow:
+    inset 0 0 0 2px var(--navy),
+    0 0.16rem 0 #091f34;
   cursor: pointer;
-  grid-template-rows: minmax(0, 1fr) auto;
   place-items: center;
+}
+
+.trainer-badge:hover {
+  background: #2c5976;
+  border-color: #dfe9ea;
+}
+
+.trainer-badge:active {
+  box-shadow: inset 0 0 0 2px var(--navy);
+  transform: translateY(0.12rem);
 }
 
 .trainer-badge:hover .trainer-badge-mark img {
@@ -533,63 +607,63 @@
 }
 
 .trainer-card__badges .trainer-badge-mark {
-  width: min(6.8rem, 78%);
+  width: min(7.4rem, 88%);
   max-width: 100%;
-}
-
-.trainer-badge__label {
-  max-width: 100%;
-  font-size: var(--text-mini);
-  font-weight: 900;
-  line-height: 0.95;
-  overflow-wrap: anywhere;
-  text-align: center;
-  white-space: normal;
-}
-
-.trainer-badge[data-earned='false'] .trainer-badge__label {
-  color: var(--muted);
 }
 
 .trainer-titles {
+  --title-wood: #bd7438;
+  --title-wood-dark: #78411f;
+
   position: relative;
   display: grid;
   overflow: hidden;
   min-width: 0;
+  padding: 0.65rem;
   color: var(--navy);
-  background: var(--paper);
+  background: var(--title-wood);
   border: 4px solid var(--navy);
   border-radius: var(--surface-radius);
   box-shadow:
-    inset 0 0 0 0.35rem var(--cream),
-    0 0.3rem 0 var(--trainer-card-step, var(--yellow)),
+    inset 0 0 0 0.25rem var(--title-wood-dark),
+    0 0.3rem 0 var(--yellow),
     0 0.52rem 0 var(--navy-shadow);
+  gap: 0.55rem;
 }
 
 .trainer-titles__banner {
   display: flex;
-  min-height: 4rem;
-  padding: 0.8rem 1.15rem;
+  min-height: 3.65rem;
+  padding: 0.65rem 1rem;
   align-items: center;
   justify-content: space-between;
-  color: var(--trainer-rank-ink);
-  background: var(--trainer-rank-accent);
-  border-bottom: 4px solid var(--trainer-rank-accent-strong);
+  color: var(--navy);
+  background: var(--cream);
+  border: 3px solid var(--title-wood-dark);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.18rem 0 var(--title-wood-dark);
   gap: 1rem;
 }
 
 .trainer-titles__banner > span {
+  display: inline-flex;
+  align-items: center;
   font-size: var(--text-headline);
   font-weight: 900;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  gap: 0.45rem;
+}
+
+.trainer-titles__banner > span svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
 }
 
 .trainer-titles__banner > strong {
   padding: 0.35rem 0.55rem;
   color: var(--navy);
-  background: var(--trainer-rank-surface);
-  border: 2px solid var(--trainer-rank-accent-strong);
+  background: var(--paper);
+  border: 2px solid var(--title-wood-dark);
   border-radius: 0.25rem;
   font-family: var(--font-data);
   font-size: var(--text-small);
@@ -598,12 +672,14 @@
 
 .trainer-titles__current {
   display: grid;
-  min-height: 5.4rem;
-  padding: 0.8rem 1.15rem;
+  min-height: 4.9rem;
+  padding: 0.65rem 1rem;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  background: var(--trainer-rank-surface);
-  border-bottom: 3px solid var(--navy);
+  background: var(--cream);
+  border: 3px solid var(--title-wood-dark);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.18rem 0 var(--title-wood-dark);
   gap: 0.75rem;
 }
 
@@ -642,41 +718,42 @@
 
 .trainer-titles__collection {
   display: grid;
-  margin: 0.8rem;
-  overflow: hidden;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  background: var(--navy);
-  border: 3px solid var(--navy);
-  border-radius: 0.35rem;
-  gap: 2px;
+  gap: 0.55rem;
 }
 
 .trainer-title {
   display: grid;
   min-width: 0;
-  min-height: 6.1rem;
-  padding: 0.65rem;
+  min-height: 5.15rem;
+  padding: 0.55rem 0.65rem;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   appearance: none;
   color: var(--navy);
   background: var(--paper);
-  border: 0;
+  border: 3px solid var(--title-wood-dark);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.18rem 0 var(--title-wood-dark);
   font: inherit;
   text-align: left;
-  gap: 0.6rem;
-}
-
-.trainer-title[data-earned='true'] {
   cursor: pointer;
+  gap: 0.55rem;
 }
 
 .trainer-title[data-equipped='true'] {
-  background: var(--trainer-rank-surface);
+  background: var(--cream);
+  border-color: var(--navy);
 }
 
-.trainer-title[data-earned='true']:hover {
-  background: color-mix(in srgb, var(--trainer-rank-surface) 74%, var(--paper));
+.trainer-title:hover {
+  background: var(--cream);
+  transform: translateY(-1px);
+}
+
+.trainer-title:active {
+  box-shadow: none;
+  transform: translateY(0.15rem);
 }
 
 .trainer-title:focus-visible {
@@ -695,10 +772,12 @@
   border: 3px solid var(--navy);
   border-radius: 0.35rem;
   box-shadow: 0 0.18rem 0 var(--yellow);
-  font-family: var(--font-data);
-  font-size: var(--text-headline);
-  font-weight: 900;
   place-items: center;
+}
+
+.trainer-title-mark svg {
+  width: 1.85rem;
+  height: 1.85rem;
 }
 
 .trainer-title-mark[data-earned='false'] {
@@ -720,45 +799,27 @@
   line-height: 1.05;
 }
 
-.trainer-title__track {
-  display: block;
-  overflow: hidden;
-  height: 0.45rem;
-  background: var(--cream);
-  border: 2px solid var(--navy);
-  border-radius: 999px;
-}
-
-.trainer-title__track > span {
-  display: block;
-  height: 100%;
-  background: var(--yellow);
-}
-
 .trainer-title__state {
-  padding: 0.2rem 0.3rem;
-  color: var(--navy);
-  background: var(--cream);
-  border: 2px solid var(--navy);
-  border-radius: 0.2rem;
-  font-size: var(--text-mini);
-  font-weight: 900;
-  line-height: 1;
-  text-transform: uppercase;
+  display: grid;
+  color: var(--muted);
+  place-items: center;
 }
 
-.trainer-title[data-equipped='true'] .trainer-title__state {
-  color: var(--paper);
-  background: var(--blue);
+.trainer-title__state svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.trainer-title__state[data-state='earned'] {
+  color: var(--blue);
 }
 
 .trainer-titles__footer {
   display: flex;
-  padding: 0.55rem 1rem 0.7rem;
+  padding: 0.35rem 0.65rem 0.45rem;
   align-items: baseline;
   justify-content: center;
-  background: var(--trainer-rank-surface);
-  border-top: 3px solid var(--navy);
+  color: var(--paper);
   font-size: var(--text-small);
   font-weight: 800;
   gap: 0.35rem;
@@ -848,7 +909,8 @@
   text-align: center;
 }
 
-.trainer-badge-dialog {
+.trainer-badge-dialog,
+.trainer-title-dialog {
   width: min(31rem, calc(100% - 1rem));
   max-width: none;
   padding: 0;
@@ -862,17 +924,20 @@
     0 0.7rem 0 var(--navy-shadow);
 }
 
-.trainer-badge-dialog[open] {
+.trainer-badge-dialog[open],
+.trainer-title-dialog[open] {
   display: flex;
   flex-direction: column;
   animation: surface-in 160ms ease-out both;
 }
 
-.trainer-badge-dialog::backdrop {
+.trainer-badge-dialog::backdrop,
+.trainer-title-dialog::backdrop {
   background: var(--modal-scrim);
 }
 
-.trainer-badge-dialog > header {
+.trainer-badge-dialog > header,
+.trainer-title-dialog > header {
   display: flex;
   padding: 0.85rem 1rem;
   align-items: center;
@@ -882,7 +947,8 @@
   border-bottom: 3px solid var(--navy);
 }
 
-.trainer-badge-dialog h2 {
+.trainer-badge-dialog h2,
+.trainer-title-dialog h2 {
   margin: 0;
   color: var(--navy);
   font-size: var(--text-headline);
@@ -953,6 +1019,92 @@
 
 .trainer-badge-dialog progress::-moz-progress-bar {
   background: var(--trainer-rank-accent);
+}
+
+.trainer-title-dialog__body {
+  display: grid;
+  padding: 1.1rem;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.trainer-title-dialog__body > .trainer-title-mark {
+  width: 7.5rem;
+  justify-self: center;
+  border-width: 4px;
+  border-radius: 0.55rem;
+  box-shadow: 0 0.28rem 0 var(--yellow);
+}
+
+.trainer-title-dialog__body > .trainer-title-mark svg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.trainer-title-dialog__details {
+  display: grid;
+  min-width: 0;
+  gap: 0.65rem;
+}
+
+.trainer-title-dialog__state {
+  color: var(--navy);
+  font-size: var(--text-control);
+}
+
+.trainer-title-dialog__details p,
+.trainer-title-dialog__details small {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.trainer-title-dialog__details small {
+  font-size: var(--text-small);
+}
+
+.trainer-title-dialog__progress-label {
+  display: flex;
+  margin-top: 0.1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  color: var(--navy);
+  font-size: var(--text-small);
+  font-weight: 800;
+  gap: 1rem;
+}
+
+.trainer-title-dialog__progress-label strong {
+  font-family: var(--font-data);
+}
+
+.trainer-title-dialog progress {
+  width: 100%;
+  height: 0.55rem;
+  overflow: hidden;
+  appearance: none;
+  background: var(--sky);
+  border: 2px solid var(--navy);
+  border-radius: 0;
+}
+
+.trainer-title-dialog progress::-webkit-progress-bar {
+  background: var(--sky);
+}
+
+.trainer-title-dialog progress::-webkit-progress-value {
+  background: var(--yellow);
+}
+
+.trainer-title-dialog progress::-moz-progress-bar {
+  background: var(--yellow);
+}
+
+.trainer-title-dialog__details .game-button {
+  width: 100%;
+  margin-top: 0.1rem;
 }
 
 .trainer-customizer {
@@ -1372,32 +1524,38 @@
 
   .trainer-card__badges {
     min-height: 0;
-    padding: 0.25rem;
-    border-width: 0.28rem;
-    gap: 2px;
+    padding: 0.5rem 0.6rem;
+    border-width: 0.38rem;
+    gap: 0.3rem;
   }
 
   .trainer-badge {
-    padding: 0.15rem 0.08rem;
-    border-width: 1px;
+    padding: 0.12rem;
+    border-width: 2px;
   }
 
   .trainer-card__badges .trainer-badge-mark {
-    width: min(3.65rem, 72%);
+    width: min(4.15rem, 86%);
   }
 
-  .trainer-badge__label {
-    font-size: 0.56rem;
-    line-height: 0.9;
+  .trainer-titles {
+    padding: 0.45rem;
+    gap: 0.4rem;
   }
 
   .trainer-titles__banner {
-    min-height: 2.8rem;
-    padding: 0.45rem 0.65rem;
+    min-height: 2.9rem;
+    padding: 0.4rem 0.65rem;
   }
 
   .trainer-titles__banner > span {
+    gap: 0.3rem;
     font-size: var(--text-small);
+  }
+
+  .trainer-titles__banner > span svg {
+    width: 1.1rem;
+    height: 1.1rem;
   }
 
   .trainer-titles__banner > strong {
@@ -1406,8 +1564,8 @@
   }
 
   .trainer-titles__current {
-    min-height: 4.4rem;
-    padding: 0.55rem 0.65rem;
+    min-height: 4.15rem;
+    padding: 0.45rem 0.65rem;
     gap: 0.5rem;
   }
 
@@ -1424,13 +1582,13 @@
   }
 
   .trainer-titles__collection {
-    margin: 0.45rem;
+    gap: 0.4rem;
   }
 
   .trainer-title {
-    min-height: 5.3rem;
-    padding: 0.45rem;
-    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 4.5rem;
+    padding: 0.4rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-content: center;
     gap: 0.35rem 0.45rem;
   }
@@ -1438,7 +1596,11 @@
   .trainer-title-mark {
     width: 2.6rem;
     border-width: 2px;
-    font-size: var(--text-control);
+  }
+
+  .trainer-title-mark svg {
+    width: 1.45rem;
+    height: 1.45rem;
   }
 
   .trainer-title__copy > strong {
@@ -1450,11 +1612,7 @@
   }
 
   .trainer-title__state {
-    grid-column: 1 / -1;
-    justify-self: stretch;
-    padding: 0.15rem;
-    font-size: 0.52rem;
-    text-align: center;
+    grid-column: auto;
   }
 
   .trainer-titles__footer {
@@ -1491,10 +1649,29 @@
     margin: auto auto 0.5rem;
   }
 
+  .trainer-title-dialog {
+    margin: auto auto 0.5rem;
+  }
+
   .trainer-badge-dialog__body {
     padding: 0.85rem;
     grid-template-columns: 6.75rem minmax(0, 1fr);
     gap: 0.8rem;
+  }
+
+  .trainer-title-dialog__body {
+    padding: 0.85rem;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+
+  .trainer-title-dialog__body > .trainer-title-mark {
+    width: 5.5rem;
+  }
+
+  .trainer-title-dialog__body > .trainer-title-mark svg {
+    width: 3rem;
+    height: 3rem;
   }
 
   .trainer-customizer {

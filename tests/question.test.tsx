@@ -372,7 +372,10 @@ describe('question transitions', () => {
     ).toHaveTextContent('Which one has the lowest:');
     expect(
       rendered.container.querySelector('.question-visual__stat'),
-    ).toHaveTextContent('Speed↓');
+    ).toHaveTextContent('Speed');
+    expect(
+      rendered.container.querySelector('.question-visual__stat svg'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Which Pokémon has the lowest Speed?')).toHaveClass(
       'visually-hidden',
     );
@@ -537,7 +540,7 @@ describe('question transitions', () => {
     fireEvent.click(answer);
 
     expect(answer).toHaveClass('answer--correct');
-    expect(answer.querySelector('kbd')).toHaveTextContent('✓');
+    expect(answer.querySelector('kbd svg')).toBeInTheDocument();
     expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
     expect(screen.queryByText(/points/)).not.toBeInTheDocument();
     expect(document.querySelector('.answer-explanation')).toBeNull();
@@ -551,9 +554,9 @@ describe('question transitions', () => {
     fireEvent.click(wrong);
 
     expect(wrong).toHaveClass('answer--wrong');
-    expect(wrong.querySelector('kbd')).toHaveTextContent('×');
+    expect(wrong.querySelector('kbd svg')).toBeInTheDocument();
     expect(correct).toHaveClass('answer--correct');
-    expect(correct.querySelector('kbd')).toHaveTextContent('✓');
+    expect(correct.querySelector('kbd svg')).toBeInTheDocument();
   });
 
   it.each([

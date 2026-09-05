@@ -5,6 +5,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useGameSounds } from '@/audio/sound';
+import { CheckIcon } from './icons';
 
 interface SelectionTileProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -56,7 +57,9 @@ export const SelectionTile = ({
             {description}
           </span>
         ) : null}
-        <span className="selection-tile__check" aria-hidden="true" />
+        <span className="selection-tile__check" aria-hidden="true">
+          <CheckIcon weight="bold" />
+        </span>
       </span>
     </label>
   );
