@@ -28,6 +28,25 @@ export const defaultModifiers: Modifiers = {
   speedrunMode: false,
 };
 
+export const isLeagueTraining = (
+  modifiers: Pick<Modifiers, 'limit' | 'questionTypes'>,
+): boolean => {
+  const selectedQuestionTypes = new Set(modifiers.questionTypes);
+  return (
+    modifiers.limit === 10 &&
+    selectedQuestionTypes.size === questionTypes.length &&
+    questionTypes.every((questionType) =>
+      selectedQuestionTypes.has(questionType),
+    )
+  );
+};
+
+export const withLeagueTrainingRules = (modifiers: Modifiers): Modifiers => ({
+  ...modifiers,
+  limit: 10,
+  questionTypes: [...questionTypes],
+});
+
 const categoryLabels: Record<QuestionCategory, string> = {
   ability: 'Ability check',
   champion: 'Champion question',

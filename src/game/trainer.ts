@@ -108,14 +108,14 @@ export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] => {
       id: 'quick-attack',
       label: 'Quick Attack',
       requirement:
-        'Finish Standard Training in under 60 seconds with at least 8 correct answers',
+        'Finish League Training in under 60 seconds with at least 8 correct answers',
     }),
     makeBadge({
       current: stats.masteryRounds,
       goal: 3,
       id: 'perfect-form',
       label: 'Perfect Form',
-      requirement: 'Finish 3 perfect Standard or Long Training rounds',
+      requirement: 'Finish 3 perfect League Training rounds',
     }),
     makeBadge({
       current: stats.bestDailyStreak,

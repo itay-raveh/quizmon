@@ -250,6 +250,36 @@ describe('saved results', () => {
     });
   });
 
+  it('keeps knowledge progress but pauses performance badges under custom rules', () => {
+    const answers = Array.from({ length: 10 }, (_, index) => ({
+      category: 'identity' as const,
+      cluesUsed: 0,
+      correct: true,
+      generation: 'I' as const,
+      pokemonName: `pokemon-${index}`,
+      points: 1_000,
+      questionType: 'pokedex-scan' as const,
+    }));
+    const perfect = {
+      ...result,
+      answers,
+      correctCount: 10,
+      elapsedSeconds: 30,
+      questionCount: 10,
+    };
+
+    saveResult({ kind: 'training' }, perfect, {
+      ...defaultModifiers,
+      questionTypes: ['pokedex-scan'],
+    });
+
+    expect(readTrainerStats()).toMatchObject({
+      correctPokemon: answers.map(({ pokemonName }) => pokemonName),
+      masteryRounds: 0,
+      quickAttackCompleted: false,
+    });
+  });
+
   it('requires both speed and accuracy for Quick Attack', () => {
     const answers = Array.from({ length: 10 }, (_, index) => ({
       category: 'identity' as const,

@@ -1,4 +1,4 @@
-import { defaultModifiers } from './game';
+import { defaultModifiers, isLeagueTraining } from './game';
 import { getUtcDate, parseDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import {
@@ -137,6 +137,10 @@ const addResultToProgress = (
   }
 
   const isPerfect = result.correctCount === result.questionCount;
+  const isLeagueRound =
+    mode.kind === 'training' &&
+    result.questionCount === 10 &&
+    isLeagueTraining(modifiers);
 
   return {
     championAnswersWithoutClues,
@@ -144,18 +148,10 @@ const addResultToProgress = (
     correctGenerations,
     correctPokemon: [...correctPokemon],
     correctQuestionTypes,
-    masteryRounds:
-      progress.masteryRounds +
-      Number(
-        mode.kind === 'training' && result.questionCount >= 10 && isPerfect,
-      ),
+    masteryRounds: progress.masteryRounds + Number(isLeagueRound && isPerfect),
     quickAttackCompleted:
       progress.quickAttackCompleted ||
-      (mode.kind === 'training' &&
-        modifiers.limit === 10 &&
-        result.questionCount === 10 &&
-        result.correctCount >= 8 &&
-        result.elapsedSeconds < 60),
+      (isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60),
     version: TRAINER_PROGRESS_VERSION,
   };
 };
