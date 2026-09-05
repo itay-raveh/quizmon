@@ -1,5 +1,5 @@
 default_stages = ["pre-commit"]
-default_install_hook_types = ["pre-commit", "commit-msg"]
+default_install_hook_types = ["pre-commit", "commit-msg", "pre-push"]
 
 [[repos]]
 repo = "builtin"
@@ -40,3 +40,12 @@ entry = "npm run commitlint -- --edit"
 language = "system"
 always_run = true
 stages = ["commit-msg"]
+
+[[repos.hooks]]
+id = "full-check"
+name = "full check"
+entry = "mise run check"
+language = "system"
+pass_filenames = false
+always_run = true
+stages = ["pre-push"]
