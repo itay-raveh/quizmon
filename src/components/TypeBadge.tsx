@@ -75,8 +75,8 @@ export const MysteryTypeBadge = ({ className = '' }: MysteryTypeBadgeProps) => (
     className={`type-badge type-badge--mystery ${className}`.trim()}
     src={unknown}
     alt=""
-    width="32"
-    height="14"
+    width="50"
+    height="20"
   />
 );
 

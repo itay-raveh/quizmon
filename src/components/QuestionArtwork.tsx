@@ -155,7 +155,9 @@ export const QuestionArtwork = ({
         aria-hidden="true"
       >
         <div className="question-visual__subject">
-          <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
+          <span className="question-visual__pokemon-slot">
+            <PixelSprite src={pixelSprite} />
+          </span>
           <PokemonIdentity
             className="question-visual__subject-name"
             dexNumber={subjectDexNumber}
@@ -166,7 +168,7 @@ export const QuestionArtwork = ({
         </div>
         <RelationArrow />
         <div className="question-visual__subject">
-          <span className="question-visual__unknown-pokemon">
+          <span className="question-visual__pokemon-slot question-visual__unknown-pokemon">
             {answered ? (
               <PixelSprite src={evolution.src} />
             ) : (
@@ -231,7 +233,7 @@ export const QuestionArtwork = ({
         className="question-visual question-relation question-relation--matchup"
         aria-hidden="true"
       >
-        <span className="question-visual__unknown-pokemon">
+        <span className="question-visual__pokemon-slot question-visual__unknown-pokemon">
           {answered && answerVisual ? (
             <PixelSprite src={answerVisual.src} />
           ) : (

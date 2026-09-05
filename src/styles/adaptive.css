@@ -163,9 +163,13 @@
     gap: 0.55rem;
   }
 
-  .question-visual__unknown-pokemon {
+  .question-visual__pokemon-slot {
     width: 5.75rem;
     height: 5.75rem;
+  }
+
+  .question-relation--evolution {
+    --evolution-portrait-size: 5.75rem;
   }
 
   .question-relation--matchup .question-visual__mystery-type {
@@ -357,9 +361,13 @@
     height: 5rem;
   }
 
-  .question-visual__unknown-pokemon {
+  .question-visual__pokemon-slot {
     width: 5.25rem;
     height: 5.25rem;
+  }
+
+  .question-relation--evolution {
+    --evolution-portrait-size: 5.25rem;
   }
 
   .sprite-frame {
