@@ -4,7 +4,7 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
 } from 'react';
-import { useGameSounds } from '@/audio/sound';
+import { useInteractionSound } from '@/audio/sound';
 import { CheckIcon } from './icons';
 
 interface SelectionTileProps extends Omit<
@@ -26,12 +26,11 @@ export const SelectionTile = ({
   variant = 'question-type',
   ...props
 }: SelectionTileProps) => {
-  const { playToggleOff, playToggleOn } = useGameSounds();
+  const playInteractionSound = useInteractionSound();
   const id = useId();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) playToggleOn();
-    else playToggleOff();
+    playInteractionSound(event.target.checked ? 'toggle-on' : 'toggle-off');
     onChange?.(event);
   };
 

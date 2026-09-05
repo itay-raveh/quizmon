@@ -8,6 +8,7 @@ import {
 } from '@/game/types';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
 import { SelectionTile } from './SelectionTile';
+import { SoundButton } from './SoundButton';
 
 interface TrainingSettingsValidation {
   generationsAreValid: boolean;
@@ -57,7 +58,7 @@ export const TrainingSettings = ({
           <h3 id="generations-title" ref={generationsHeading} tabIndex={-1}>
             Generations
           </h3>
-          <button
+          <SoundButton
             aria-label={`${allGenerationsSelected ? 'Deselect' : 'Select'} all generations`}
             className="selection-toggle"
             onClick={() =>
@@ -66,10 +67,10 @@ export const TrainingSettings = ({
                 generations: allGenerationsSelected ? [] : [...generations],
               }))
             }
-            type="button"
+            sound={allGenerationsSelected ? 'toggle-off' : 'toggle-on'}
           >
             {allGenerationsSelected ? 'Deselect all' : 'Select all'}
-          </button>
+          </SoundButton>
         </div>
         <div
           aria-describedby={

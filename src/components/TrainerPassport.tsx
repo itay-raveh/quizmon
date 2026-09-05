@@ -35,6 +35,7 @@ import {
 } from './icons';
 import { LeagueGateway } from './LeagueGateway';
 import { PokemonPicker } from './PokemonPicker';
+import { SoundButton } from './SoundButton';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';
 import { TrainerBadgeCase } from './TrainerBadgeCase';
 import { TrainerCard } from './TrainerCard';
@@ -277,16 +278,15 @@ export const TrainerPassport = ({
               ['titles', 'Titles', CertificateIcon],
             ] as const
           ).map(([nextView, label, ViewIcon]) => (
-            <button
+            <SoundButton
               aria-pressed={view === nextView}
               className="trainer-passport__view"
               key={nextView}
               onClick={() => selectView(nextView)}
-              type="button"
             >
               <ViewIcon aria-hidden="true" weight="bold" />
               {label}
-            </button>
+            </SoundButton>
           ))}
         </nav>
       ) : null}

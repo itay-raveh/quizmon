@@ -5,6 +5,7 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
+import { useInteractionSound } from '@/audio/sound';
 import { formatPokemonName } from '@/game/format';
 import { findSearchMatches, normalizeSearch } from '@/game/search';
 
@@ -23,6 +24,7 @@ export const PokemonPicker = ({
   value,
 }: PokemonPickerProps) => {
   const listboxId = useId();
+  const playInteractionSound = useInteractionSound();
   const [query, setQuery] = useState(value ? formatPokemonName(value) : '');
   const [activeIndex, setActiveIndex] = useState(-1);
   const [open, setOpen] = useState(false);
@@ -43,6 +45,7 @@ export const PokemonPicker = ({
   const showSuggestions = open && normalizedQuery.length > 0;
 
   const choose = (name: string, label: string) => {
+    playInteractionSound('toggle-on');
     setQuery(label);
     setOpen(false);
     setActiveIndex(-1);

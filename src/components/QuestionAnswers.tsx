@@ -115,10 +115,10 @@ export const QuestionAnswers = ({
                 : optionSelected
             }
             className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
-            clickSound="none"
             disabled={answered}
             key={option}
             onClick={() => onSelect(option)}
+            sound="none"
           >
             <kbd aria-hidden="true">{selectionMark}</kbd>
             {resultMarker ? (

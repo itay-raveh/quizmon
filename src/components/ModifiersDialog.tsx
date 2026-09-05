@@ -4,6 +4,7 @@ import { DialogCloseButton } from './DialogCloseButton';
 import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
 import { ExperienceSettings } from './ExperienceSettings';
 import { GameButton } from './GameButton';
+import { SoundButton } from './SoundButton';
 import { TrainingSettings } from './TrainingSettings';
 import { getTrainingSettingsValidation } from './trainingSettingsModel';
 
@@ -109,7 +110,7 @@ export const ModifiersDialog = ({
         role="tablist"
       >
         {settingsTabs.map((tab) => (
-          <button
+          <SoundButton
             ref={(element) => {
               tabButtons.current[tab] = element;
             }}
@@ -131,10 +132,9 @@ export const ModifiersDialog = ({
             }}
             role="tab"
             tabIndex={activeTab === tab ? 0 : -1}
-            type="button"
           >
             {tab === 'training' ? 'Training' : 'Experience'}
-          </button>
+          </SoundButton>
         ))}
       </div>
 

@@ -6,6 +6,7 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
+import { useInteractionSound } from '@/audio/sound';
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import { findSearchMatches, normalizeSearch } from '@/game/search';
 import type { PokemonSearchOption } from '@/game/types';
@@ -29,6 +30,7 @@ export const ChampionSearch = ({
   selectedOption,
 }: ChampionSearchProps) => {
   const listboxId = useId();
+  const playInteractionSound = useInteractionSound();
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(-1);
   const [open, setOpen] = useState(false);
@@ -61,6 +63,7 @@ export const ChampionSearch = ({
     : null;
 
   const chooseSuggestion = (option: string, label: string) => {
+    playInteractionSound('tap');
     setQuery(label);
     setActiveIndex(-1);
     setOpen(false);
@@ -181,8 +184,8 @@ export const ChampionSearch = ({
         </div>
 
         <GameButton
-          clickSound="none"
           disabled={disabled || answered || !exactMatch}
+          sound="none"
           type="submit"
         >
           Guess

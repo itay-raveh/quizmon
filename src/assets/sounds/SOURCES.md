@@ -1,6 +1,6 @@
 # Sound sources
 
-These sounds come from Kenney's [Interface Sounds](https://kenney.nl/assets/interface-sounds) pack, released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). The original Ogg Vorbis files were converted to MP3 for Quizmon.
+The interface, selection, answer, and completion sounds listed below come from Kenney's [Interface Sounds](https://kenney.nl/assets/interface-sounds) pack, released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). The original Ogg Vorbis files were converted to MP3 for Quizmon.
 
 | Quizmon file         | Original file          |
 | -------------------- | ---------------------- |

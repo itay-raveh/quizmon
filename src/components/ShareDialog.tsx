@@ -11,6 +11,7 @@ import {
   XIcon,
   XShareButton,
 } from 'react-share';
+import { useInteractionSound } from '@/audio/sound';
 import { buildShareContent, copyResult } from '@/game/share';
 import type { GameMode, GameResult } from '@/game/types';
 import { DialogCloseButton } from './DialogCloseButton';
@@ -34,8 +35,10 @@ const iconProps = {
 export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
   const [copyStatus, setCopyStatus] = useState('');
   const dialog = useModalDialog();
+  const playInteractionSound = useInteractionSound();
   const content = buildShareContent(mode, result);
   const message = `${content.title}\n${content.text}`;
+  const playTap = () => playInteractionSound('tap');
 
   const closeDialog = () => {
     dialog.current?.close();
@@ -78,6 +81,7 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
         <div className="share-targets">
           <WhatsappShareButton
             className="share-target"
+            onClick={playTap}
             resetButtonStyle={false}
             title={message}
             url={content.url}
@@ -87,6 +91,7 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
           </WhatsappShareButton>
           <TelegramShareButton
             className="share-target"
+            onClick={playTap}
             resetButtonStyle={false}
             title={message}
             url={content.url}
@@ -96,6 +101,7 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
           </TelegramShareButton>
           <XShareButton
             className="share-target"
+            onClick={playTap}
             resetButtonStyle={false}
             title={message}
             url={content.url}
@@ -105,6 +111,7 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
           </XShareButton>
           <BlueskyShareButton
             className="share-target"
+            onClick={playTap}
             resetButtonStyle={false}
             title={message}
             url={content.url}
@@ -114,6 +121,7 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
           </BlueskyShareButton>
           <RedditShareButton
             className="share-target"
+            onClick={playTap}
             resetButtonStyle={false}
             title={message}
             url={content.url}

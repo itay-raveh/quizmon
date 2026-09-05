@@ -13,6 +13,7 @@ import {
   type TrainerSpecialty,
   type TrainerTitle,
 } from '@/game/trainer';
+import { SoundButton } from './SoundButton';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitlesProps {
@@ -69,13 +70,12 @@ export const TrainerTitles = ({
             : `${progress} / ${title.goal} correct`;
 
           return (
-            <button
+            <SoundButton
               aria-label={`${title.label}. ${progressLabel}. ${state}. Open title details.`}
               className="trainer-title"
               data-equipped={title.equipped}
               key={title.specialty}
               onClick={() => onSelect(title)}
-              type="button"
             >
               <TrainerTitleMark
                 earned={title.earned}
@@ -85,7 +85,7 @@ export const TrainerTitles = ({
                 <strong>{title.label}</strong>
                 <small>{progressLabel}</small>
               </span>
-            </button>
+            </SoundButton>
           );
         })}
       </section>

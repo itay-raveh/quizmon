@@ -33,4 +33,6 @@ The wordmark was made with [TextStudio](https://www.textstudio.co).
 
 The Trainer Card sparkle animation by [Julien Jorge](https://opengameart.org/content/sparkles).
 
+Button, selection, answer, and completion sounds come from Kenney's [Interface Sounds](https://kenney.nl/assets/interface-sounds) pack, released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). See the [sound source manifest](src/assets/sounds/SOURCES.md) for the file mapping.
+
 Quizmon is not affiliated with Nintendo, Game Freak, or The Pokémon Company. Pokémon and related trademarks belong to their respective owners.

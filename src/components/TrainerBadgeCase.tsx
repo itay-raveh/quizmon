@@ -1,6 +1,7 @@
 import type { Ref } from 'react';
 import { siteHostname } from '@/app/site';
 import type { TrainerBadge } from '@/game/trainer';
+import { SoundButton } from './SoundButton';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 
 interface TrainerBadgeCaseProps {
@@ -43,16 +44,15 @@ export const TrainerBadgeCase = ({
           className="trainer-badge-case__rivet trainer-badge-case__rivet--bottom-right"
         />
         {badges.map((badge) => (
-          <button
+          <SoundButton
             aria-label={`${badge.label}. ${badge.earned ? 'Earned' : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}
             className="trainer-badge"
             data-earned={badge.earned}
             key={badge.id}
             onClick={() => onSelect(badge)}
-            type="button"
           >
             <TrainerBadgeMark earned={badge.earned} id={badge.id} />
-          </button>
+          </SoundButton>
         ))}
       </section>
       <footer className="trainer-badge-case__footer">

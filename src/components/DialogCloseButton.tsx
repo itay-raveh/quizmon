@@ -1,4 +1,5 @@
 import { XIcon } from './icons';
+import { SoundButton } from './SoundButton';
 
 interface DialogCloseButtonProps {
   autoFocus?: boolean;
@@ -11,13 +12,12 @@ export const DialogCloseButton = ({
   label,
   onClick,
 }: DialogCloseButtonProps) => (
-  <button
+  <SoundButton
     aria-label={label}
     autoFocus={autoFocus}
     className="dialog-close"
     onClick={onClick}
-    type="button"
   >
     <XIcon aria-hidden="true" weight="bold" />
-  </button>
+  </SoundButton>
 );

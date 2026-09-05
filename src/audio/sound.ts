@@ -1,4 +1,6 @@
-import { createContext, useContext } from 'react';
+import { createContext, useCallback, useContext } from 'react';
+
+export type InteractionSound = 'none' | 'tap' | 'toggle-off' | 'toggle-on';
 
 export interface SoundControls {
   playCorrect: () => void;
@@ -27,3 +29,16 @@ export const SoundContext = createContext<SoundControls>({
 });
 
 export const useGameSounds = () => useContext(SoundContext);
+
+export const useInteractionSound = () => {
+  const { playTap, playToggleOff, playToggleOn } = useGameSounds();
+
+  return useCallback(
+    (sound: InteractionSound) => {
+      if (sound === 'tap') playTap();
+      else if (sound === 'toggle-off') playToggleOff();
+      else if (sound === 'toggle-on') playToggleOn();
+    },
+    [playTap, playToggleOff, playToggleOn],
+  );
+};

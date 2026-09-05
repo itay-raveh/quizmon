@@ -72,6 +72,7 @@ export const TrainerTitleDialog = ({
           />
           {title.equipped ? (
             <GameButton
+              sound="toggle-off"
               tone="quiet"
               onClick={() => {
                 onUnequip();
@@ -82,6 +83,7 @@ export const TrainerTitleDialog = ({
             </GameButton>
           ) : title.earned ? (
             <GameButton
+              sound="toggle-on"
               onClick={() => {
                 onEquip(title);
                 closeDialog();

@@ -140,9 +140,9 @@ export const Question = ({
     question.answer.interaction !== 'single-choice' && !answered ? (
       <GameButton
         className="check-answer"
-        clickSound="none"
         disabled={selectedOptions.length === 0}
         onClick={() => finishAnswer(selectedOptions)}
+        sound="none"
       >
         Check answers
       </GameButton>

@@ -14,6 +14,7 @@ import {
 import type { Modifiers, QuestionType } from '@/game/types';
 import { CaretDownIcon, QuestionIcon, XIcon } from './icons';
 import { SelectionTile } from './SelectionTile';
+import { SoundButton } from './SoundButton';
 
 interface QuestionTypeSettingsProps {
   draft: Modifiers;
@@ -90,7 +91,7 @@ export const QuestionTypeSettings = ({
           <h3 id="question-types-title" ref={heading} tabIndex={-1}>
             Question types
           </h3>
-          <button
+          <SoundButton
             aria-label={`${allSelected ? 'Deselect' : 'Select'} all question types`}
             className="selection-toggle"
             onClick={() =>
@@ -99,10 +100,10 @@ export const QuestionTypeSettings = ({
                 questionTypes: allSelected ? [] : [...questionTypes],
               }))
             }
-            type="button"
+            sound={allSelected ? 'toggle-off' : 'toggle-on'}
           >
             {allSelected ? 'Deselect all' : 'Select all'}
-          </button>
+          </SoundButton>
         </div>
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
@@ -127,7 +128,7 @@ export const QuestionTypeSettings = ({
               key={group.id}
             >
               <h4>
-                <button
+                <SoundButton
                   aria-controls={panelId}
                   aria-expanded={expanded}
                   className="question-type-group__disclosure"
@@ -137,7 +138,6 @@ export const QuestionTypeSettings = ({
                       current === group.id ? null : group.id,
                     )
                   }
-                  type="button"
                 >
                   <span>{group.label}</span>
                   <span className="question-type-group__count">
@@ -145,7 +145,7 @@ export const QuestionTypeSettings = ({
                     <span className="visually-hidden"> selected</span>
                   </span>
                   <CaretDownIcon aria-hidden="true" weight="bold" />
-                </button>
+                </SoundButton>
               </h4>
               <div
                 className="question-type-group__panel"
@@ -178,18 +178,17 @@ export const QuestionTypeSettings = ({
                             )
                           }
                         />
-                        <button
+                        <SoundButton
                           aria-label={`About ${label}`}
                           className="question-type-tile__help"
                           onClick={() => setExplainedQuestionType(questionType)}
                           popoverTarget="question-type-help"
                           popoverTargetAction="show"
-                          type="button"
                         >
                           <span aria-hidden="true">
                             <QuestionIcon weight="bold" />
                           </span>
-                        </button>
+                        </SoundButton>
                       </div>
                     );
                   })}
@@ -206,15 +205,14 @@ export const QuestionTypeSettings = ({
         popover="auto"
         role="note"
       >
-        <button
+        <SoundButton
           aria-label="Close question type explanation"
           className="question-type-help__close"
           popoverTarget="question-type-help"
           popoverTargetAction="hide"
-          type="button"
         >
           <XIcon aria-hidden="true" weight="bold" />
-        </button>
+        </SoundButton>
         <strong>{getQuestionTypeLabel(explainedQuestionType)}</strong>
         <p>{getQuestionTypeDescription(explainedQuestionType)}</p>
       </div>
