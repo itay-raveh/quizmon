@@ -390,10 +390,6 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .selection-grid--round-length {
-    grid-template-columns: repeat(auto-fit, minmax(min(5rem, 100%), 1fr));
-  }
-
   .results__actions--training {
     grid-template-columns: 1fr;
   }

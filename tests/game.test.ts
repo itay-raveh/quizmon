@@ -18,6 +18,7 @@ import {
   getResponseTimeSeconds,
   getSpeedBonus,
   getSpeedBonusPoints,
+  getTrainingModifiers,
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
@@ -106,6 +107,42 @@ describe('normalizeModifiers', () => {
       soundEnabled: true,
       limit: 1,
       speedrunMode: true,
+      trainingMode: 'custom',
+    });
+  });
+
+  it('keeps an explicit Custom mode when every question type is selected', () => {
+    expect(
+      normalizeModifiers({
+        ...defaultModifiers,
+        trainingMode: 'custom',
+      }).trainingMode,
+    ).toBe('custom');
+  });
+
+  it('always prepares ten-question Training rounds', () => {
+    expect(
+      getTrainingModifiers({
+        ...defaultModifiers,
+        limit: 5,
+        questionTypes: ['evolution-shift'],
+      }),
+    ).toMatchObject({
+      limit: 10,
+      questionTypes,
+      trainingMode: 'league',
+    });
+    expect(
+      getTrainingModifiers({
+        ...defaultModifiers,
+        limit: 20,
+        questionTypes: ['evolution-shift'],
+        trainingMode: 'custom',
+      }),
+    ).toMatchObject({
+      limit: 10,
+      questionTypes: ['evolution-shift'],
+      trainingMode: 'custom',
     });
   });
 

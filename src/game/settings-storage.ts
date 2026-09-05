@@ -5,10 +5,17 @@ import type { Modifiers } from './types';
 const SETTINGS_KEY = 'quizmon.training-settings.v2';
 const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 
+const normalizeTrainingSettings = (value: unknown): Modifiers => ({
+  ...normalizeModifiers(value),
+  limit: 10,
+});
+
 const readModifiers = (): Modifiers => {
   try {
     const stored = window.localStorage.getItem(SETTINGS_KEY);
-    return stored ? normalizeModifiers(JSON.parse(stored)) : defaultModifiers;
+    return stored
+      ? normalizeTrainingSettings(JSON.parse(stored))
+      : defaultModifiers;
   } catch {
     return defaultModifiers;
   }
@@ -18,7 +25,7 @@ export const usePersistentModifiers = () => {
   const [modifiers, setModifiersState] = useState<Modifiers>(readModifiers);
 
   const setModifiers = (nextModifiers: Modifiers) => {
-    const normalized = normalizeModifiers(nextModifiers);
+    const normalized = normalizeTrainingSettings(nextModifiers);
     setModifiersState(normalized);
 
     try {

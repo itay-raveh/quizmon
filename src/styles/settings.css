@@ -30,34 +30,24 @@
   margin-bottom: 1.25rem;
 }
 
-.league-training-status {
-  display: flex;
-  padding: 0.7rem 0;
-  margin-bottom: 1.25rem;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  border-block: 2px solid color-mix(in srgb, var(--navy) 24%, transparent);
-}
-
-.league-training-status__copy {
-  display: grid;
-  min-width: min(12rem, 100%);
-  flex: 1;
-  gap: 0.08rem;
-}
-
-.league-training-status__copy strong {
-  color: var(--navy);
-  font-weight: 800;
-}
-
-.league-training-status__copy span {
+.training-mode-settings__description {
+  margin: 0.65rem 0 0;
   color: var(--muted);
   font-size: var(--text-label);
   font-weight: 700;
   line-height: 1.3;
+}
+
+.training-mode-control {
+  display: grid;
+  padding: 0.25rem;
+  margin-top: 0.7rem;
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  box-shadow: 0 0.16rem 0 var(--navy-shadow);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem;
 }
 
 .settings-section__heading {
@@ -158,11 +148,6 @@
 }
 
 .selection-grid--question-types {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.selection-grid--round-length {
-  margin-top: 0.7rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -329,30 +314,22 @@
   opacity: 0.6;
 }
 
-.selection-tile--round-length .selection-tile__surface {
-  min-height: 3.65rem;
-  padding: 0.5rem;
+.selection-tile--training-mode .selection-tile__surface {
+  min-height: 3rem;
+  padding: 0.55rem 0.7rem;
   justify-items: center;
-  gap: 0.05rem;
+  background: transparent;
+  border: 0;
+  border-radius: 0.25rem;
+  box-shadow: none;
   text-align: center;
 }
 
-.selection-tile--round-length .selection-tile__label {
-  display: grid;
-  gap: 0.05rem;
+.selection-tile--training-mode input:checked + .selection-tile__surface {
+  box-shadow: inset 0 -0.2rem 0 var(--yellow);
 }
 
-.selection-tile--round-length .selection-tile__label strong {
-  font-family: var(--font-data);
-  font-size: var(--text-body);
-}
-
-.selection-tile--round-length .selection-tile__label span {
-  font-size: var(--text-small);
-  font-weight: 700;
-}
-
-.selection-tile--round-length .selection-tile__check {
+.selection-tile--training-mode .selection-tile__check {
   display: none;
 }
 

@@ -26,25 +26,19 @@ export const defaultModifiers: Modifiers = {
   soundEnabled: true,
   limit: 10,
   speedrunMode: false,
+  trainingMode: 'league',
 };
 
 export const isLeagueTraining = (
-  modifiers: Pick<Modifiers, 'limit' | 'questionTypes'>,
-): boolean => {
-  const selectedQuestionTypes = new Set(modifiers.questionTypes);
-  return (
-    modifiers.limit === 10 &&
-    selectedQuestionTypes.size === questionTypes.length &&
-    questionTypes.every((questionType) =>
-      selectedQuestionTypes.has(questionType),
-    )
-  );
-};
+  modifiers: Pick<Modifiers, 'trainingMode'>,
+): boolean => modifiers.trainingMode === 'league';
 
-export const withLeagueTrainingRules = (modifiers: Modifiers): Modifiers => ({
+export const getTrainingModifiers = (modifiers: Modifiers): Modifiers => ({
   ...modifiers,
   limit: 10,
-  questionTypes: [...questionTypes],
+  questionTypes: isLeagueTraining(modifiers)
+    ? [...questionTypes]
+    : [...modifiers.questionTypes],
 });
 
 const categoryLabels: Record<QuestionCategory, string> = {
@@ -75,6 +69,12 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
   const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
     ? candidate.questionTypes.filter(isQuestionType)
     : [];
+  const legacyLeagueTraining =
+    candidate.limit === 10 &&
+    selectedQuestionTypes.length === questionTypes.length &&
+    questionTypes.every((questionType) =>
+      selectedQuestionTypes.includes(questionType),
+    );
   const limit = Number.isFinite(candidate.limit)
     ? Math.max(1, Math.trunc(candidate.limit as number))
     : defaultModifiers.limit;
@@ -91,6 +91,12 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
     soundEnabled: candidate.soundEnabled !== false,
     limit,
     speedrunMode: candidate.speedrunMode === true,
+    trainingMode:
+      candidate.trainingMode === 'league' || candidate.trainingMode === 'custom'
+        ? candidate.trainingMode
+        : legacyLeagueTraining
+          ? 'league'
+          : 'custom',
   };
 };
 
