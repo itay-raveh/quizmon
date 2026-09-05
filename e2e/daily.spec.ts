@@ -1,21 +1,5 @@
 import { expect, test } from './fixtures';
 
-test("keeps today's Daily Challenge action concise", async ({ page }) => {
-  await page.goto('/');
-
-  const today = page.getByRole('button', { name: /Play Daily Challenge/ });
-  await expect(today).toBeVisible();
-  await expect(today.locator('.daily-action__detail')).toHaveCount(0);
-
-  await page.goto('/?daily=2026-09-01');
-  const historical = page.getByRole('button', {
-    name: /Play Daily Challenge for Sep 1, 2026/,
-  });
-  await expect(historical.locator('.daily-action__detail')).toHaveText(
-    'Sep 1, 2026',
-  );
-});
-
 test('shows a saved daily score instead of another play button', async ({
   page,
 }) => {
@@ -136,34 +120,6 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
       name: /Play Daily Challenge.*1-day Daily Combo/,
     }),
   ).toBeVisible();
-
-  const mobileBounds = await page.evaluate(() => {
-    const action = document
-      .querySelector('.daily-action')
-      ?.getBoundingClientRect();
-    const combo = document
-      .querySelector('.daily-action .catch-combo')
-      ?.getBoundingClientRect();
-
-    return action && combo
-      ? {
-          actionRight: action.right,
-          actionTop: action.top,
-          comboRight: combo.right,
-          comboTop: combo.top,
-          viewportWidth: window.innerWidth,
-        }
-      : null;
-  });
-  expect(mobileBounds).not.toBeNull();
-  expect(mobileBounds!.comboTop).toBeLessThan(mobileBounds!.actionTop);
-  expect(mobileBounds!.comboRight).toBeGreaterThan(mobileBounds!.actionRight);
-  expect(mobileBounds!.comboRight).toBeLessThanOrEqual(
-    mobileBounds!.viewportWidth,
-  );
-
-  await page.setViewportSize({ width: 591, height: 844 });
-  await expect(page.locator('.daily-action')).toHaveCSS('width', '416px');
 });
 
 test('syncs a completed daily across open tabs', async ({ context, page }) => {

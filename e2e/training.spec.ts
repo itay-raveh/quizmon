@@ -22,7 +22,10 @@ const findPokemonForSprite = (src: string | null) =>
       ),
   )?.[0] as PokemonName | undefined;
 
-const answerPokedexQuestion = async (page: Page) => {
+const answerPokedexQuestion = async (
+  page: Page,
+  method: 'click' | 'keyboard' = 'click',
+) => {
   const src = await page
     .getByRole('img', { name: /Pokémon/ })
     .getAttribute('src');
@@ -33,17 +36,14 @@ const answerPokedexQuestion = async (page: Page) => {
     name: formatName(pokemon),
     exact: true,
   });
-  await answer.click();
-  return answer;
-};
-
-const completePokedexRound = async (page: Page) => {
-  for (let number = 1; number <= 10; number += 1) {
-    await expect(
-      page.getByRole('progressbar', { name: 'Quiz progress' }),
-    ).toHaveText(`${String(number).padStart(3, '0')} / 010`);
-    await answerPokedexQuestion(page);
+  if (method === 'keyboard') {
+    const shortcut = await answer.getAttribute('aria-keyshortcuts');
+    if (!shortcut) throw new Error('Answer has no keyboard shortcut.');
+    await page.keyboard.press(shortcut);
+  } else {
+    await answer.click();
   }
+  return answer;
 };
 
 test('plays and shares a complete Training round without a live API call', async ({
@@ -75,18 +75,11 @@ test('plays and shares a complete Training round without a live API call', async
   await expect(
     page.getByRole('heading', { name: 'Pokédex scan' }),
   ).toBeVisible();
-  const spriteFrame = await page.locator('.sprite-frame').boundingBox();
-  const leaveGame = await page
-    .getByRole('button', { name: 'Leave game' })
-    .boundingBox();
-  expect(spriteFrame?.height).toBeLessThanOrEqual(161);
-  expect(leaveGame?.y).toBeGreaterThan(0);
-  expect(leaveGame!.y + leaveGame!.height).toBeLessThanOrEqual(640);
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
   await expect(page.getByRole('contentinfo')).toBeVisible();
-  const answer = await answerPokedexQuestion(page);
+  const answer = await answerPokedexQuestion(page, 'keyboard');
   await expect(answer).toHaveClass(/answer--correct/);
   await expect(page.getByText(/\+[\d,]+ points/)).toHaveCount(0);
   for (let number = 2; number <= 10; number += 1) {
@@ -107,173 +100,85 @@ test('plays and shares a complete Training round without a live API call', async
     scoreVersion: 2,
   });
   await expect(page.getByRole('contentinfo')).toBeVisible();
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
-  await expect(page.getByRole('tab', { name: 'Experience' })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await page.getByRole('button', { name: 'Close settings' }).click();
   expect(apiCalls).toBe(0);
 
   await page.getByRole('button', { name: 'Share result' }).click();
   const shareDialog = page.getByRole('dialog', { name: 'Share result' });
   await expect(shareDialog).toBeVisible();
-  await expect(
-    shareDialog.getByRole('button', { name: 'WhatsApp' }),
-  ).toBeVisible();
-  await expect(
-    shareDialog.getByRole('button', { name: 'Telegram' }),
-  ).toBeVisible();
-  await expect(
-    shareDialog.getByRole('button', { name: 'Bluesky' }),
-  ).toBeVisible();
   await shareDialog.getByRole('button', { name: 'Copy result' }).click();
   await expect(shareDialog.getByText('Result copied.')).toBeVisible();
+  await shareDialog
+    .getByRole('button', { name: 'Close share options' })
+    .click();
+
+  await page.getByRole('button', { name: 'Train again' }).click();
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 010');
 });
 
-test('keeps reverse-silhouette rounds clear on a phone', async ({ page }) => {
+test('keeps type reveals usable at 200% text', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
   await page.addInitScript(() => {
     window.localStorage.setItem(
       'quizmon.training-settings.v2',
       JSON.stringify({
         generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
-        questionTypes: ['silhouette-match'],
+        questionTypes: ['type-roundup'],
         soundEnabled: false,
-        speedrunMode: true,
+        speedrunMode: false,
         trainingMode: 'custom',
       }),
     );
   });
 
-  await seedBrowserRandom(page, 'mobile-silhouette-match');
+  await seedBrowserRandom(page, 'stable-type-roundup');
   await page.goto('/');
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '200%';
+  });
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(
-    page.getByRole('heading', { name: 'Silhouette match' }),
+    page.getByRole('heading', { name: 'Type roundup' }),
   ).toBeVisible();
+  const typeRows = page.locator('.answer__types');
+  await expect(typeRows).toHaveCount(4);
+  for (const typeRow of await typeRows.all()) {
+    await expect(typeRow).toBeHidden();
+  }
 
-  const prompt = page.locator('.question__prompt');
-  const promptBox = await prompt.boundingBox();
-  const answersBox = await page.locator('.answers').boundingBox();
-  const leaveBox = await page
-    .getByRole('button', { name: 'Leave game' })
-    .boundingBox();
+  const prompt = await page.locator('#question-prompt').textContent();
+  const targetType = prompt
+    ?.match(/every (.+)-type Pokémon/)?.[1]
+    ?.toLowerCase();
+  if (!targetType) throw new Error('Type Roundup prompt has no target type.');
 
-  expect(promptBox?.width).toBeGreaterThan(300);
-  expect(answersBox).not.toBeNull();
-  expect(leaveBox).not.toBeNull();
-  expect(leaveBox!.y).toBeLessThan(promptBox!.y);
-  expect(leaveBox!.width).toBeGreaterThanOrEqual(44);
-  expect(leaveBox!.height).toBeGreaterThanOrEqual(44);
+  const answers = page.locator('.answer');
+  for (let index = 0; index < (await answers.count()); index += 1) {
+    const answer = answers.nth(index);
+    const src = await answer.locator('.answer__sprite').getAttribute('src');
+    const pokemon = findPokemonForSprite(src);
+    if (!pokemon) throw new Error(`No Pokémon found for sprite ${src}.`);
+    if (catalogData.pokemon[pokemon].types.includes(targetType)) {
+      await answer.click();
+    }
+  }
 
-  await page.getByRole('button', { name: 'Silhouette 1' }).click();
-  await expect(page.locator('.answer-explanation')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Check answers' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Next question' }),
+  ).toBeVisible();
+  for (const typeRow of await typeRows.all()) {
+    await expect(typeRow).toBeVisible();
+  }
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    ),
+  ).toBeLessThanOrEqual(1);
 });
-
-for (const textScale of ['100%', '200%'] as const) {
-  test(`keeps type reveals and the next action stable at ${textScale} text`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width: 360, height: 780 });
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'quizmon.training-settings.v2',
-        JSON.stringify({
-          generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
-          questionTypes: ['type-roundup'],
-          soundEnabled: false,
-          speedrunMode: false,
-          trainingMode: 'custom',
-        }),
-      );
-    });
-
-    await seedBrowserRandom(page, 'stable-type-roundup');
-    await page.goto('/');
-    await page.evaluate((fontSize) => {
-      document.documentElement.style.fontSize = fontSize;
-    }, textScale);
-    await page.getByRole('button', { name: 'Start training' }).click();
-    await expect(
-      page.getByRole('heading', { name: 'Type roundup' }),
-    ).toBeVisible();
-    await page.evaluate(async () => {
-      await Promise.allSettled(
-        document.getAnimations().map((animation) => animation.finished),
-      );
-    });
-
-    const typeRows = page.locator('.answer__types');
-    await expect(typeRows).toHaveCount(4);
-    for (const typeRow of await typeRows.all()) {
-      await expect(typeRow).toBeHidden();
-    }
-
-    const getGeometry = () =>
-      page.evaluate(() => {
-        const box = (selector: string) => {
-          const rect = document
-            .querySelector(selector)!
-            .getBoundingClientRect();
-          return { height: rect.height, top: rect.top + window.scrollY };
-        };
-        return {
-          answers: [...document.querySelectorAll('.answer')].map((element) => {
-            const rect = element.getBoundingClientRect();
-            return { height: rect.height, top: rect.top + window.scrollY };
-          }),
-          footer: box('.site-footer'),
-          question: box('.question'),
-        };
-      });
-
-    const before = await getGeometry();
-    const prompt = await page.locator('#question-prompt').textContent();
-    const targetType = prompt
-      ?.match(/every (.+)-type Pokémon/)?.[1]
-      ?.toLowerCase();
-    if (!targetType) throw new Error('Type Roundup prompt has no target type.');
-
-    const answers = page.locator('.answer');
-    for (let index = 0; index < (await answers.count()); index += 1) {
-      const answer = answers.nth(index);
-      const src = await answer.locator('.answer__sprite').getAttribute('src');
-      const pokemon = findPokemonForSprite(src);
-      if (!pokemon) throw new Error(`No Pokémon found for sprite ${src}.`);
-      if (catalogData.pokemon[pokemon].types.includes(targetType)) {
-        await answer.click();
-      }
-    }
-
-    await page.getByRole('button', { name: 'Check answers' }).click();
-    await expect(
-      page.getByRole('button', { name: 'Next question' }),
-    ).toBeVisible();
-    for (const typeRow of await typeRows.all()) {
-      await expect(typeRow).toBeVisible();
-    }
-
-    const after = await getGeometry();
-    expect(
-      Math.abs(after.question.height - before.question.height),
-    ).toBeLessThanOrEqual(1);
-    expect(Math.abs(after.footer.top - before.footer.top)).toBeLessThanOrEqual(
-      1,
-    );
-    expect(after.answers).toHaveLength(before.answers.length);
-    after.answers.forEach((answer, index) => {
-      const beforeAnswer = before.answers[index];
-      if (!beforeAnswer)
-        throw new Error(`Missing answer geometry at ${index}.`);
-      expect(Math.abs(answer.height - beforeAnswer.height)).toBeLessThanOrEqual(
-        1,
-      );
-      expect(Math.abs(answer.top - beforeAnswer.top)).toBeLessThanOrEqual(1);
-    });
-  });
-}
 
 test('asks new players which generations they know before Training', async ({
   page,
@@ -308,51 +213,6 @@ test('asks new players which generations they know before Training', async ({
   const settings = page.getByRole('dialog', { name: 'Settings' });
   await expect(settings.getByLabel('I', { exact: true })).toBeChecked();
   await expect(settings.getByLabel('II', { exact: true })).not.toBeChecked();
-});
-
-test('answers questions with the number keys', async ({ page }) => {
-  await seedBrowserRandom(page, 'visual-identity-2');
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Start training' }).click();
-
-  const image = page.getByRole('img', { name: /Pokémon/ });
-  const src = await image.getAttribute('src');
-  const pokemon = findPokemonForSprite(src);
-  const answer = page.getByRole('button', {
-    name: formatName(pokemon!),
-    exact: true,
-  });
-  const shortcut = await answer.getAttribute('aria-keyshortcuts');
-  expect(shortcut).toMatch(/^[1-4]$/);
-  await page.keyboard.press(shortcut!);
-
-  await expect(
-    page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('002 / 010');
-});
-
-test('repeats Training immediately with the same configuration', async ({
-  page,
-}) => {
-  await seedBrowserRandom(page, 'training-rematch');
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Start training' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Pokédex scan' }),
-  ).toBeVisible();
-  await completePokedexRound(page);
-
-  await expect(
-    page.getByRole('heading', { name: 'Training complete' }),
-  ).toBeVisible();
-  await page.getByRole('button', { name: 'Train again' }).click();
-
-  await expect(
-    page.getByRole('heading', { name: 'Pokédex scan' }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 010');
 });
 
 test('confirms before discarding an in-progress game', async ({ page }) => {

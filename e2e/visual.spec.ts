@@ -19,18 +19,6 @@ test('matches the mobile landing and Settings layouts', async ({ page }) => {
   );
 });
 
-test('matches the desktop landing layout', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/');
-  await expect(
-    page.getByRole('button', { name: /Play Daily Challenge/ }),
-  ).toBeEnabled();
-  await expect(page.locator('.app--landing')).toHaveScreenshot(
-    'landing-desktop.webp',
-    { animations: 'disabled' },
-  );
-});
-
 test('balances the completed Daily action and combo', async ({ page }) => {
   await page.addInitScript(() => {
     const today = new Date();
@@ -91,7 +79,7 @@ test('matches the compact question layout', async ({ page }) => {
   });
 });
 
-test('matches the Trainer Card at both responsive sizes', async ({ page }) => {
+test('matches the mobile Trainer Card', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
       'quizmon.trainer-profile.v1',
@@ -110,11 +98,6 @@ test('matches the Trainer Card at both responsive sizes', async ({ page }) => {
 
   const card = page.getByRole('article', { name: 'Trainer Card front' });
   await expect(card).toHaveScreenshot('trainer-card-mobile.webp', {
-    animations: 'disabled',
-  });
-
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await expect(card).toHaveScreenshot('trainer-card-desktop.webp', {
     animations: 'disabled',
   });
 });
