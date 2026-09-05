@@ -16,6 +16,7 @@ import {
   statNames,
   type Generation,
   type PokemonCatalog,
+  type PokemonIdentitySprites,
   type PokemonKnowledge,
   type StatName,
 } from '../src/game/types.ts';
@@ -33,6 +34,8 @@ const GENERATIONS: readonly Generation[] = [
   'IX',
 ];
 const CONCURRENCY = 4;
+const SPRITE_REPOSITORY_PREFIX =
+  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/';
 
 export interface CatalogClient {
   getGenerationById(id: number): Promise<ApiGeneration>;
@@ -90,18 +93,49 @@ const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   ) as Record<StatName, number>;
 };
 
-const getSprite = (pokemon: Pokemon): string | null =>
-  pokemon.sprites.front_default ? `/sprites/pokemon/${pokemon.id}.png` : null;
+const normalizeSpriteUrl = (spriteUrl: string | null): string | null => {
+  if (!spriteUrl) return null;
+  if (!spriteUrl.startsWith(SPRITE_REPOSITORY_PREFIX)) {
+    throw new Error(`Unexpected PokéAPI sprite URL: ${spriteUrl}`);
+  }
+  return `/sprites/${spriteUrl.slice(SPRITE_REPOSITORY_PREFIX.length)}`;
+};
 
-const getBackSprite = (pokemon: Pokemon): string | null =>
-  pokemon.sprites.back_default
-    ? `/sprites/pokemon/back/${pokemon.id}.png`
-    : null;
+const getSprite = (pokemon: Pokemon): string | null =>
+  normalizeSpriteUrl(pokemon.sprites.front_default);
 
 const getShinySprite = (pokemon: Pokemon): string | null =>
-  pokemon.sprites.front_shiny
-    ? `/sprites/pokemon/shiny/${pokemon.id}.png`
-    : null;
+  normalizeSpriteUrl(pokemon.sprites.front_shiny);
+
+interface CuratedSpriteSet {
+  back_default?: string | null;
+  front_default?: string | null;
+}
+
+const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
+  const versions = pokemon.sprites.versions;
+  const curated: readonly (CuratedSpriteSet | undefined)[] = [
+    versions?.['generation-i']?.['red-blue'],
+    versions?.['generation-ii']?.crystal,
+    versions?.['generation-iii']?.['firered-leafgreen'],
+    versions?.['generation-iv']?.platinum,
+  ];
+  const historicalBack: string[] = [];
+  const historicalFront: string[] = [];
+
+  for (const sprites of curated) {
+    const front = normalizeSpriteUrl(sprites?.front_default ?? null);
+    const back = normalizeSpriteUrl(sprites?.back_default ?? null);
+    if (front) historicalFront.push(front);
+    if (back) historicalBack.push(back);
+  }
+
+  return {
+    currentBack: normalizeSpriteUrl(pokemon.sprites.back_default),
+    historicalBack,
+    historicalFront,
+  };
+};
 
 const getLevelMoves = (pokemon: Pokemon): string[] =>
   [
@@ -199,7 +233,6 @@ export const buildPokemonCatalog = async (
       abilities: entry.abilities
         .sort((left, right) => left.slot - right.slot)
         .map(({ ability }) => ability.name),
-      backSprite: getBackSprite(entry),
       color: species.color.name,
       description: description ? cleanText(description) : '',
       evolvesFrom: species.evolves_from_species?.name ?? null,
@@ -207,6 +240,7 @@ export const buildPokemonCatalog = async (
       generation,
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
       id: entry.id,
+      identitySprites: getIdentitySprites(entry),
       levelMoves: getLevelMoves(entry),
       shape: species.shape.name,
       shinySprite: getShinySprite(entry),
@@ -219,7 +253,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 9,
+    contentVersion: 10,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

@@ -2,7 +2,6 @@ import type { QuestionCategory, QuestionData, QuestionType } from '../types';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
 import {
-  buildBattleViewQuestion,
   buildPixelPeekQuestion,
   buildPokedexScanQuestion,
   buildShinySpotterQuestion,
@@ -52,7 +51,7 @@ export const questionRegistry = {
   'pokedex-scan': {
     build: buildPokedexScanQuestion,
     category: 'identity',
-    description: 'Name a Pokémon from its front sprite.',
+    description: 'Identify Pokémon across generations of game sprites.',
     group: 'identity',
     label: 'Pokédex scan',
   },
@@ -76,13 +75,6 @@ export const questionRegistry = {
     description: 'Find the Pokémon shown in shiny colors.',
     group: 'identity',
     label: 'Shiny spotter',
-  },
-  'battle-view': {
-    build: buildBattleViewQuestion,
-    category: 'identity',
-    description: 'Name a Pokémon from its back sprite.',
-    group: 'identity',
-    label: 'Battle view',
   },
   'field-notes': {
     build: buildDescriptionQuestion,

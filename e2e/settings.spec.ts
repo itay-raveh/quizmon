@@ -47,7 +47,7 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     .getByRole('button', { name: 'Select all question types' })
     .click();
   const identityGroup = dialog.getByRole('button', {
-    name: 'Identity 5 / 5 selected',
+    name: 'Identity 4 / 4 selected',
   });
   const knowledgeGroup = dialog.getByRole('button', {
     name: 'General knowledge 5 / 5 selected',
@@ -64,9 +64,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await expect(
     dialog.getByRole('group', { name: 'Battle knowledge question types' }),
   ).toBeVisible();
-  await expect(
-    dialog.getByRole('checkbox', { includeHidden: true, name: 'Battle view' }),
-  ).toBeChecked();
   await expect(
     dialog.getByRole('checkbox', { includeHidden: true, name: 'Counter pick' }),
   ).toBeChecked();

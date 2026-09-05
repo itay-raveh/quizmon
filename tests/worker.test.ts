@@ -22,6 +22,10 @@ const makeEnv = () => {
 };
 
 describe('game completion analytics endpoint', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('records one aggregate event without identifying data', async () => {
     const { env, writeDataPoint } = makeEnv();
     const response = await worker.fetch(
@@ -69,5 +73,30 @@ describe('game completion analytics endpoint', () => {
 
     expect(response.status).toBe(status);
     expect(writeDataPoint).not.toHaveBeenCalled();
+  });
+
+  it('proxies curated historical sprite paths', async () => {
+    const upstream = vi.fn().mockResolvedValue(
+      new Response(new Uint8Array([1]), {
+        headers: { 'Content-Type': 'image/png' },
+        status: 200,
+      }),
+    );
+    vi.stubGlobal('fetch', upstream);
+    const { env } = makeEnv();
+    const path = '/sprites/pokemon/versions/generation-ii/crystal/back/25.png';
+    const response = await worker.fetch(
+      new Request(`https://quizmon.raveh.dev${path}`),
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(upstream).toHaveBeenCalledWith(
+      `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites${path.slice('/sprites'.length)}`,
+      expect.objectContaining({
+        cf: { cacheEverything: true, cacheTtl: 2_592_000 },
+      }),
+    );
   });
 });

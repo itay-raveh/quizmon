@@ -1,5 +1,5 @@
 const SPRITE_PATH =
-  /^\/sprites\/pokemon\/(?:back\/|shiny\/)?[1-9]\d{0,3}\.png$/;
+  /^\/sprites\/pokemon\/(?:(?:back\/|shiny\/)?[1-9]\d{0,3}|versions\/generation-(?:i|ii|iii|iv)\/(?:red-blue|crystal|firered-leafgreen|platinum)\/(?:back\/)?[1-9]\d{0,3})\.png$/;
 const SPRITE_SOURCE =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites';
 const SPRITE_CACHE_SECONDS = 60 * 60 * 24 * 30;

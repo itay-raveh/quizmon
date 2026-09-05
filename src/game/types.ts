@@ -14,7 +14,6 @@ export type Generation = (typeof generations)[number];
 
 export type QuestionType =
   | 'ability-check'
-  | 'battle-view'
   | 'counter-pick'
   | 'evolution-shift'
   | 'field-notes'
@@ -50,9 +49,14 @@ export const statNames = [
 
 export type StatName = (typeof statNames)[number];
 
+export interface PokemonIdentitySprites {
+  currentBack: string | null;
+  historicalBack: string[];
+  historicalFront: string[];
+}
+
 export interface PokemonKnowledge {
   abilities: string[];
-  backSprite: string | null;
   color: string;
   description: string;
   evolvesFrom: string | null;
@@ -60,6 +64,7 @@ export interface PokemonKnowledge {
   generation: Generation;
   genus: string;
   id: number;
+  identitySprites: PokemonIdentitySprites;
   levelMoves: string[];
   shape: string;
   shinySprite: string | null;
