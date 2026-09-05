@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T20:28:11Z",
+  "generatedAt": "2026-09-05T21:19:27Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -487,11 +487,6 @@
         "name": "pixel-reveal",
         "value": "260ms cubic-bezier(0.16, 1, 0.3, 1)",
         "purpose": "The short zoom reset that reveals concealed artwork after an answer."
-      },
-      {
-        "name": "trainer-turn",
-        "value": "160ms ease-in / 160ms ease-out",
-        "purpose": "A short two-stage turn between the accessible Trainer Card faces."
       },
       {
         "name": "trainer-reveal",

@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
+import { TrainerBadgeCase } from '@/components/TrainerBadgeCase';
 import { TrainerCard } from '@/components/TrainerCard';
 import { questionTypes } from '@/game/questions/registry';
 import type { TrainerStats } from '@/game/storage';
 import type { TrainerProfile } from '@/game/trainer-profile';
+import { getTrainerBadges } from '@/game/trainer';
 import { generations } from '@/game/types';
 
 const profile: TrainerProfile = {
@@ -26,11 +28,10 @@ const stats: TrainerStats = {
   quickAttackCompleted: false,
 };
 
-describe('Trainer Card', () => {
+describe('Trainer profile artifacts', () => {
   it('renders the selected specialty and earned finish on the front', () => {
     const { container } = render(
       <TrainerCard
-        face="front"
         partnerDexNumber={1}
         partnerSprite="/sprites/pokemon/1.png"
         profile={profile}
@@ -44,11 +45,11 @@ describe('Trainer Card', () => {
     expect(
       container.querySelector('.trainer-card__partner-caption'),
     ).toHaveTextContent('No. 0001Bulbasaur');
+    expect(screen.getByRole('article', { name: 'Trainer Card' })).toHaveClass(
+      'trainer-card--bronze',
+    );
     expect(
-      screen.getByRole('article', { name: 'Trainer Card front' }),
-    ).toHaveClass('trainer-card--bronze');
-    expect(
-      screen.getByRole('article', { name: 'Trainer Card front' }).className,
+      screen.getByRole('article', { name: 'Trainer Card' }).className,
     ).not.toContain('trainer-card--accent-');
     expect(container.querySelector('.trainer-card__sheen')).toBeInTheDocument();
   });
@@ -74,7 +75,6 @@ describe('Trainer Card', () => {
     };
     const { container } = render(
       <TrainerCard
-        face="front"
         partnerDexNumber={1}
         partnerSprite="/sprites/pokemon/1.png"
         profile={profile}
@@ -83,34 +83,32 @@ describe('Trainer Card', () => {
     );
 
     expect(screen.getByText('Champion')).toBeVisible();
-    expect(
-      screen.getByRole('article', { name: 'Trainer Card front' }),
-    ).toHaveClass('trainer-card--gold');
+    expect(screen.getByRole('article', { name: 'Trainer Card' })).toHaveClass(
+      'trainer-card--gold',
+    );
     expect(container.querySelectorAll('.trainer-card__sparkle')).toHaveLength(
       3,
     );
   });
 
-  it('renders an interactive eight-slot League Badge Case on the back', () => {
+  it('renders a standalone, interactive eight-slot League Badge Case', () => {
     const onBadgeSelect = vi.fn();
     render(
-      <TrainerCard
-        face="badges"
-        onBadgeSelect={onBadgeSelect}
-        partnerDexNumber={null}
-        partnerSprite={null}
-        profile={profile}
-        stats={stats}
+      <TrainerBadgeCase
+        badges={getTrainerBadges(stats)}
+        onSelect={onBadgeSelect}
       />,
     );
 
     expect(
-      screen.getByRole('article', { name: 'Trainer Card badge case' }),
+      screen.getByRole('article', { name: 'League Badge Case' }),
     ).toBeVisible();
-    expect(screen.getByText('League Badge Case')).toBeVisible();
+    expect(screen.queryByText('League Badge Case')).not.toBeInTheDocument();
+    expect(screen.getByText('Play at')).toBeVisible();
+    expect(screen.getByText('quizmon.raveh.dev')).toBeVisible();
     expect(
       screen.getByRole('region', {
-        name: 'League Badge Case: 2 of 8 earned',
+        name: '2 of 8 League Badges earned',
       }),
     ).toBeVisible();
     const badge = screen.getByRole('button', {

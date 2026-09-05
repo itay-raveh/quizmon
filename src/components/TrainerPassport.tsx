@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type FormEvent,
-} from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
 import type { TrainerStats } from '@/game/storage';
 import {
@@ -43,6 +36,7 @@ import {
 import { LeagueGateway } from './LeagueGateway';
 import { PokemonPicker } from './PokemonPicker';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';
+import { TrainerBadgeCase } from './TrainerBadgeCase';
 import { TrainerCard } from './TrainerCard';
 import { TrainerTitleDialog } from './TrainerTitleDialog';
 import { TrainerTitles } from './TrainerTitles';
@@ -85,8 +79,7 @@ export const TrainerPassport = ({
   requestedView,
   stats,
 }: TrainerPassportProps) => {
-  const [view, setView] = useState<TrainerView>(requestedView);
-  const [turn, setTurn] = useState<'idle' | 'out' | 'in'>('idle');
+  const view = requestedView;
   const [revealing, setRevealing] = useState(
     !profile.hasBeenRevealed && requestedView === 'front',
   );
@@ -138,7 +131,6 @@ export const TrainerPassport = ({
   const badges = getTrainerBadges(stats);
   const leagueUnlocked = isLeagueUnlocked(stats);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
-  const turnTimeouts = useRef<number[]>([]);
 
   useEffect(() => {
     if (!profile.hasBeenRevealed) {
@@ -151,45 +143,6 @@ export const TrainerPassport = ({
     const timeoutId = window.setTimeout(() => setRevealing(false), 560);
     return () => window.clearTimeout(timeoutId);
   }, [revealing]);
-
-  const showView = useCallback(
-    (nextView: TrainerView) => {
-      if (turn !== 'idle' || view === nextView) return;
-      if (
-        view === 'titles' ||
-        nextView === 'titles' ||
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      ) {
-        setView(nextView);
-        return;
-      }
-
-      setTurn('out');
-      const swapTimeout = window.setTimeout(() => {
-        setView(nextView);
-        setTurn('in');
-        const settleTimeout = window.setTimeout(() => setTurn('idle'), 160);
-        turnTimeouts.current.push(settleTimeout);
-      }, 160);
-      turnTimeouts.current.push(swapTimeout);
-    },
-    [turn, view],
-  );
-
-  useEffect(() => {
-    if (requestedView === view || turn !== 'idle') return;
-    const timeoutId = window.setTimeout(() => showView(requestedView), 0);
-    return () => window.clearTimeout(timeoutId);
-  }, [requestedView, showView, turn, view]);
-
-  useEffect(
-    () => () => {
-      turnTimeouts.current.forEach((timeoutId) =>
-        window.clearTimeout(timeoutId),
-      );
-    },
-    [],
-  );
 
   useEffect(() => {
     const artifact = artifactRef.current;
@@ -326,7 +279,6 @@ export const TrainerPassport = ({
             <button
               aria-pressed={view === nextView}
               className="trainer-passport__view"
-              disabled={turn !== 'idle'}
               key={nextView}
               onClick={() => selectView(nextView)}
               type="button"
@@ -391,9 +343,15 @@ export const TrainerPassport = ({
       ) : null}
 
       <div
-        className={`trainer-passport__card trainer-passport__card--${turn} ${revealing ? 'trainer-passport__card--reveal' : ''}`.trim()}
+        className={`trainer-passport__artifact ${view === 'front' && revealing ? 'trainer-passport__artifact--reveal' : ''}`.trim()}
       >
-        {view === 'titles' ? (
+        {view === 'badges' ? (
+          <TrainerBadgeCase
+            badges={badges}
+            caseRef={artifactRef}
+            onSelect={(badge) => setSelectedBadgeId(badge.id)}
+          />
+        ) : view === 'titles' ? (
           <TrainerTitles
             collectionRef={artifactRef}
             equipped={savedSpecialty}
@@ -403,8 +361,6 @@ export const TrainerPassport = ({
         ) : (
           <TrainerCard
             cardRef={artifactRef}
-            face={view}
-            onBadgeSelect={(badge) => setSelectedBadgeId(badge.id)}
             partnerDexNumber={savedPartner?.id ?? null}
             partnerSprite={savedPartner?.sprite ?? null}
             profile={visibleProfile}

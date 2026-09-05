@@ -25,9 +25,9 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Trainer Card' }).click();
-  await expect(page).toHaveURL(/\?trainer=front$/);
+  await expect(page).toHaveURL(/\?trainer=card$/);
   await expect(
-    page.getByRole('article', { name: 'Trainer Card front' }),
+    page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();
 
   await page.getByRole('button', { name: 'Edit card' }).click();
@@ -39,7 +39,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
     .selectOption({ label: 'Type Specialist' });
   await page.getByRole('button', { name: 'Save card' }).click();
 
-  const card = page.getByRole('article', { name: 'Trainer Card front' });
+  const card = page.getByRole('article', { name: 'Trainer Card' });
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await expect(card.locator('.trainer-card__partner-caption')).toHaveText(
     'No. 0025Pikachu',
@@ -74,14 +74,16 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
         (window as typeof window & { sharedTrainerCardUrl?: string })
           .sharedTrainerCardUrl,
     ),
-  ).toBe('https://quizmon.raveh.dev/?trainer=front');
+  ).toBe('https://quizmon.raveh.dev/?trainer=card');
 
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
-  await expect(page).toHaveURL(/\?trainer=back$/);
+  await expect(page).toHaveURL(/\?trainer=badges$/);
   const badgeCase = page.getByRole('article', {
-    name: 'Trainer Card badge case',
+    name: 'League Badge Case',
   });
   await expect(badgeCase).toBeVisible();
+  await expect(badgeCase.getByText('Play at')).toBeVisible();
+  await expect(badgeCase.getByText('quizmon.raveh.dev')).toBeVisible();
   await page.getByRole('button', { name: 'Share case' }).click();
   expect(
     await page.evaluate(
@@ -89,7 +91,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
         (window as typeof window & { sharedTrainerCardUrl?: string })
           .sharedTrainerCardUrl,
     ),
-  ).toBe('https://quizmon.raveh.dev/?trainer=back');
+  ).toBe('https://quizmon.raveh.dev/?trainer=badges');
 
   await expect(badgeCase.getByText('0 / 8', { exact: true })).toHaveCount(0);
   await badgeCase.getByRole('button', { name: /Many Paths\. Locked/ }).click();
@@ -131,7 +133,13 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
 
   await page.reload();
   await expect(titles).toBeVisible();
+
+  await page.goto('/?trainer=back');
+  await expect(
+    page.getByRole('article', { name: 'League Badge Case' }),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'Card', exact: true }).click();
+  await expect(page).toHaveURL(/\?trainer=card$/);
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL('/');

@@ -14,11 +14,11 @@ test(
 
     await page.getByRole('button', { name: 'Trainer Card' }).click();
     await expect(
-      page.getByRole('article', { name: 'Trainer Card front' }),
+      page.getByRole('article', { name: 'Trainer Card' }),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Badges', exact: true }).click();
     await expect(
-      page.getByRole('article', { name: 'Trainer Card badge case' }),
+      page.getByRole('article', { name: 'League Badge Case' }),
     ).toBeVisible();
 
     await page.goto('/');

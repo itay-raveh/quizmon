@@ -51,7 +51,7 @@ const expectNoHorizontalClipping = async (page: Page) => {
 };
 
 const expectCardContentToFit = async (page: Page) => {
-  const card = page.locator('.trainer-card');
+  const card = page.locator('.trainer-card, .trainer-badge-case');
   expect(
     await card.evaluate(
       (element) => element.scrollHeight - element.clientHeight,
@@ -129,7 +129,7 @@ test('keeps the core experience accessible', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Trainer Card' }).click();
   await expect(
-    page.getByRole('article', { name: 'Trainer Card front' }),
+    page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();
   await expectNoAccessibilityViolations(page);
   await page.getByRole('button', { name: 'Card', exact: true }).focus();
@@ -143,7 +143,7 @@ test('keeps the core experience accessible', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
-    page.getByRole('article', { name: 'Trainer Card badge case' }),
+    page.getByRole('article', { name: 'League Badge Case' }),
   ).toBeVisible();
   await expectNoAccessibilityViolations(page);
   const badge = page.locator('.trainer-badge').first();
@@ -195,7 +195,7 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   });
   await page.getByRole('button', { name: 'Trainer Card' }).click();
   await expect(
-    page.getByRole('article', { name: 'Trainer Card front' }),
+    page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await expectNoHorizontalClipping(page);
@@ -204,7 +204,7 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
-    page.getByRole('article', { name: 'Trainer Card badge case' }),
+    page.getByRole('article', { name: 'League Badge Case' }),
   ).toBeVisible();
   await expectNoHorizontalClipping(page);
   await expectCardContentToFit(page);

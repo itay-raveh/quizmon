@@ -8,7 +8,7 @@ const artifactDetails = {
     label: 'League Badge Case',
   },
   front: {
-    filename: 'quizmon-trainer-card-front.png',
+    filename: 'quizmon-trainer-card.png',
     label: 'Trainer Card',
   },
   titles: {

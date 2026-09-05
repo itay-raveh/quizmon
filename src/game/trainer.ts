@@ -29,8 +29,7 @@ export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
 export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
-export type TrainerCardFace = 'front' | 'badges';
-export type TrainerView = TrainerCardFace | 'titles';
+export type TrainerView = 'front' | 'badges' | 'titles';
 export type TrainerBadgeId =
   | 'many-paths'
   | 'pokedex-trail'
