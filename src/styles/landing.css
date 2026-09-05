@@ -60,23 +60,31 @@
   display: grid;
   color: var(--navy);
   background: var(--cream);
-  grid-template-columns: auto minmax(0, auto);
+  grid-template-columns: 3.5rem minmax(0, 1fr) 3.5rem;
   align-content: center;
-  justify-content: center;
-  column-gap: 0.6rem;
+}
+
+.daily-action--complete::after {
+  width: 100%;
+  content: '';
+  grid-column: 3;
+  grid-row: 1;
 }
 
 .daily-action--complete > .share-result-button__icon {
-  width: 1.45rem;
-  height: 1.45rem;
+  width: 2.25rem;
+  height: 2.25rem;
   grid-column: 1;
   grid-row: 1;
   align-self: center;
+  justify-self: center;
+  stroke-width: 2.25;
 }
 
 .daily-action--complete .daily-action__copy {
   grid-column: 2;
   grid-row: 1;
+  justify-self: center;
 }
 
 .daily-action__title {
