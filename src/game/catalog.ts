@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import catalogUrl from './data/pokemon.json?url';
 import type { PokemonCatalog } from './types';
+import { isRecord } from './validation';
 
 type CatalogState =
   | { status: 'loading'; catalog?: never }
@@ -8,9 +9,6 @@ type CatalogState =
   | { status: 'error'; catalog?: never };
 
 let catalogPromise: Promise<PokemonCatalog> | undefined;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
 export const parsePokemonCatalog = (value: unknown): PokemonCatalog => {
   if (

@@ -29,16 +29,19 @@ export type QuestionType =
   | 'type-check'
   | 'type-matchup'
   | 'type-roundup';
-export type QuestionCategory =
-  | 'ability'
-  | 'champion'
-  | 'description'
-  | 'evolution'
-  | 'identity'
-  | 'matchup'
-  | 'move'
-  | 'stat'
-  | 'type';
+export const questionCategories = [
+  'ability',
+  'champion',
+  'description',
+  'evolution',
+  'identity',
+  'matchup',
+  'move',
+  'stat',
+  'type',
+] as const;
+
+export type QuestionCategory = (typeof questionCategories)[number];
 
 export const statNames = [
   'hp',

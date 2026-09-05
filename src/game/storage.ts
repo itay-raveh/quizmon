@@ -1,3 +1,9 @@
+import {
+  readStoredJson,
+  removeStoredValue,
+  writeStoredJson,
+  writeStoredValue,
+} from './browser-storage';
 import { defaultModifiers, isLeagueTraining } from './game';
 import { getUtcDate, parseDailyDate } from './daily';
 import { isLeagueVictory } from './league';
@@ -5,6 +11,7 @@ import { questionTypes } from './questions/registry';
 import { createRoundSeed } from './random';
 import {
   generations,
+  questionCategories,
   type GameMode,
   type GameResult,
   type Generation,
@@ -16,18 +23,6 @@ import {
 const RESULTS_KEY = 'quizmon.results.v2';
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 2;
-const questionCategories: readonly QuestionCategory[] = [
-  'ability',
-  'champion',
-  'description',
-  'evolution',
-  'identity',
-  'matchup',
-  'move',
-  'stat',
-  'type',
-];
-
 interface TrainerProgress {
   championAnswersWithoutClues: number;
   correctCategories: Partial<Record<QuestionCategory, number>>;
@@ -317,42 +312,32 @@ const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
 };
 
 const readResults = (): SavedResults => {
-  try {
-    const stored = window.localStorage.getItem(RESULTS_KEY);
-    if (!stored) return emptyResults();
-    const parsed = JSON.parse(stored) as Partial<SavedResults>;
-    const daily = readResultRecord(parsed.daily);
-    const training = normalizeTrainingRecords(parsed.training);
-    return {
-      daily,
-      league: normalizeLeague(parsed.league),
-      progress: normalizeProgress(parsed.progress),
-      streak: normalizeStreak(parsed.streak, daily),
-      training,
-    };
-  } catch {
+  const value = readStoredJson('localStorage', RESULTS_KEY);
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return emptyResults();
   }
+
+  const parsed = value as Partial<SavedResults>;
+  const daily = readResultRecord(parsed.daily);
+  const training = normalizeTrainingRecords(parsed.training);
+  return {
+    daily,
+    league: normalizeLeague(parsed.league),
+    progress: normalizeProgress(parsed.progress),
+    streak: normalizeStreak(parsed.streak, daily),
+    training,
+  };
 };
 
-const writeResults = (results: SavedResults): boolean => {
-  try {
-    window.localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
-    return true;
-  } catch {
-    return false;
-  }
-};
+const writeResults = (results: SavedResults): boolean =>
+  writeStoredJson('localStorage', RESULTS_KEY, results);
 
 export const canPersistResults = (): boolean => {
   const probeKey = `${RESULTS_KEY}.probe`;
-  try {
-    window.localStorage.setItem(probeKey, '1');
-    window.localStorage.removeItem(probeKey);
-    return true;
-  } catch {
-    return false;
-  }
+  return (
+    writeStoredValue('localStorage', probeKey, '1') &&
+    removeStoredValue('localStorage', probeKey)
+  );
 };
 
 export const readDailyResult = (date: string): GameResult | null =>
