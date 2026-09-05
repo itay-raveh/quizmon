@@ -834,6 +834,41 @@
   text-align: left;
 }
 
+.answer__nameplate--stat,
+.answer__identity--stat {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'number stat'
+    'name name';
+  column-gap: 0.45rem;
+}
+
+.answer__nameplate--stat .pokemon-identity__number,
+.answer__identity--stat .pokemon-identity__number {
+  grid-area: number;
+}
+
+.answer__nameplate--stat .pokemon-identity__name,
+.answer__identity--stat .pokemon-identity__name {
+  grid-area: name;
+}
+
+.answer__stat {
+  min-width: 2ch;
+  grid-area: stat;
+  align-self: baseline;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  line-height: 1;
+  text-align: right;
+}
+
+.answer__stat--reserved {
+  visibility: hidden;
+}
+
 .answer__nameplate small {
   font-family: var(--font-data);
   font-size: var(--text-mini);

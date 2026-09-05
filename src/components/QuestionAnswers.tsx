@@ -42,6 +42,10 @@ export const QuestionAnswers = ({
   );
   const revealsOptionTypes = answered && reservesOptionTypes;
   const multiSelect = question.answer.interaction === 'multi-select';
+  const showdownStat =
+    question.visual?.kind === 'stat-showdown'
+      ? question.visual.stat
+      : undefined;
 
   const optionClassName = (option: string) => {
     if (!answered) {
@@ -87,6 +91,13 @@ export const QuestionAnswers = ({
             : resultMarker === 'wrong'
               ? ' Wrong pick.'
               : '';
+        const statValue = question.optionStats?.[option];
+        const hasStatValue =
+          showdownStat !== undefined && statValue !== undefined;
+        const revealsStat = answered && hasStatValue;
+        const statAnnouncement = revealsStat
+          ? `. ${formatPokemonName(showdownStat)}: ${statValue}.`
+          : '';
         const selectionMark = answered ? (
           optionCorrect ? (
             <CheckIcon weight="bold" />
@@ -106,7 +117,7 @@ export const QuestionAnswers = ({
             aria-label={
               concealed
                 ? `Silhouette ${index + 1}`
-                : `${formatPokemonName(option)}${typeAnnouncement}${resultAnnouncement}`
+                : `${formatPokemonName(option)}${typeAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={String(index + 1)}
             aria-pressed={
@@ -143,7 +154,7 @@ export const QuestionAnswers = ({
                 </span>
                 {concealed ? null : (
                   <PokemonIdentity
-                    className="answer__nameplate"
+                    className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
                     dexNumber={visual.dexNumber}
                     hideNumberFromAccessibility
                     name={option}
@@ -155,6 +166,14 @@ export const QuestionAnswers = ({
                         types={visual.types}
                       />
                     ) : null}
+                    {hasStatValue ? (
+                      <span
+                        aria-hidden="true"
+                        className={`answer__stat ${revealsStat ? '' : 'answer__stat--reserved'}`.trim()}
+                      >
+                        {statValue}
+                      </span>
+                    ) : null}
                   </PokemonIdentity>
                 )}
               </>
@@ -162,11 +181,20 @@ export const QuestionAnswers = ({
               <TypeBadges className="answer__type-choice" types={[option]} />
             ) : dexNumber !== undefined ? (
               <PokemonIdentity
-                className="answer__identity"
+                className={`answer__identity ${hasStatValue ? 'answer__identity--stat' : ''}`.trim()}
                 dexNumber={dexNumber}
                 hideNumberFromAccessibility
                 name={option}
-              />
+              >
+                {hasStatValue ? (
+                  <span
+                    aria-hidden="true"
+                    className={`answer__stat ${revealsStat ? '' : 'answer__stat--reserved'}`.trim()}
+                  >
+                    {statValue}
+                  </span>
+                ) : null}
+              </PokemonIdentity>
             ) : (
               <span>{formatPokemonName(option)}</span>
             )}

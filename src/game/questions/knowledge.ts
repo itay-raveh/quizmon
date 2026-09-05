@@ -285,25 +285,34 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
           : pokemon.stats[stat] > target.pokemon.stats[stat]),
     )
     .map(({ name }) => name);
+  const options = rankedOptionSet(
+    target.name,
+    distractors,
+    (name) =>
+      -Math.abs(
+        target.pokemon.stats[stat] -
+          (context.catalog.pokemon[name]?.stats[stat] ?? 0),
+      ),
+    context.random,
+  );
+  const optionStats = Object.fromEntries(
+    options.flatMap((name) => {
+      const pokemon = context.catalog.pokemon[name];
+      return pokemon ? [[name, pokemon.stats[stat]] as const] : [];
+    }),
+  );
+
   return {
     ...makeQuestion(
       'stat',
       target,
       target.name,
-      rankedOptionSet(
-        target.name,
-        distractors,
-        (name) =>
-          -Math.abs(
-            target.pokemon.stats[stat] -
-              (context.catalog.pokemon[name]?.stats[stat] ?? 0),
-          ),
-        context.random,
-      ),
+      options,
       textPrompt(
         `Which Pokémon has the ${direction} ${formatPokemonName(stat)}?`,
       ),
     ),
+    optionStats,
     visual: { direction, kind: 'stat-showdown', stat },
   };
 };

@@ -381,6 +381,50 @@ describe('question transitions', () => {
     );
   });
 
+  it('reveals every Stat Showdown value after answering', () => {
+    const rendered = renderQuestion({
+      question: {
+        ...question,
+        optionStats: { ditto: 48, eevee: 55, mew: 100, pikachu: 90 },
+        optionVisuals: Object.fromEntries(
+          question.options.map((option, index) => [
+            option,
+            {
+              dexNumber: index + 1,
+              src: `https://example.com/${option}.png`,
+              types: ['normal'],
+            },
+          ]),
+        ),
+        visual: {
+          direction: 'highest',
+          kind: 'stat-showdown',
+          stat: 'speed',
+        },
+      },
+    });
+
+    expect(
+      rendered.container.querySelectorAll('.answer__stat--reserved'),
+    ).toHaveLength(4);
+    expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+
+    expect(
+      rendered.container.querySelectorAll('.answer__stat--reserved'),
+    ).toHaveLength(0);
+    expect(
+      screen.getByRole('button', { name: 'Pikachu. Speed: 90.' }),
+    ).toHaveClass('answer--correct');
+    expect(
+      screen.getByRole('button', { name: 'Eevee. Speed: 55.' }),
+    ).toBeDisabled();
+    expect(rendered.container.querySelectorAll('.answer__stat')).toHaveLength(
+      4,
+    );
+  });
+
   it('reveals the attacking Pokémon in Counter Pick', () => {
     const rendered = renderQuestion({
       question: {

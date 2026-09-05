@@ -514,6 +514,11 @@ describe('question building', () => {
         .filter((option) => option !== correct)
         .map((option) => catalog.pokemon[option]!.stats[stat]);
 
+      for (const option of candidate.options) {
+        expect(candidate.optionStats?.[option]).toBe(
+          catalog.pokemon[option]!.stats[stat],
+        );
+      }
       expect(getQuestionPromptText(candidate.prompt)).not.toContain('base');
       if (candidate.visual.direction === 'highest') {
         expect(distractorValues.every((value) => value < correctValue)).toBe(

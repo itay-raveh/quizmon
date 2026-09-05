@@ -174,6 +174,7 @@ export interface QuestionData {
   media: QuestionMedia;
   options: string[];
   optionDexNumbers?: Record<string, number>;
+  optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;
   pokemonTypes: string[];
