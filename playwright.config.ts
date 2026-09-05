@@ -13,6 +13,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      grepInvert: /@cross-browser/,
       use: { ...devices['Desktop Chrome'] },
     },
     {

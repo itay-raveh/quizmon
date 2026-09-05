@@ -59,32 +59,25 @@ const expectCardContentToFit = async (page: Page) => {
   ).toBeLessThanOrEqual(1);
 };
 
-test('keeps the landing screen accessible', async ({ page }) => {
+test('keeps the core experience accessible', async ({ page }) => {
   await page.goto('/');
   await expect(
     page.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toBeEnabled();
   await expectNoAccessibilityViolations(page);
-});
 
-test('keeps Settings accessible', async ({ page }) => {
-  await page.goto('/');
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
   await expectNoAccessibilityViolations(page);
-});
+  await page.getByRole('button', { name: 'Cancel' }).click();
 
-test('keeps questions and results accessible', async ({ page }) => {
-  await page.goto('/');
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(page.locator('.question')).toBeVisible();
   await expectNoAccessibilityViolations(page);
 
   await completeTrainingRound(page);
   await expectNoAccessibilityViolations(page);
-});
 
-test('keeps the Trainer Card accessible', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Trainer Card' }).click();
   await expect(
