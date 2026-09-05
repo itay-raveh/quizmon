@@ -128,7 +128,7 @@ describe('results summary', () => {
   it('shows every badge and specialty that progressed', () => {
     const result = makeResult(10, 5);
     const onOpenTrainerCard = vi.fn();
-    render(
+    const rendered = render(
       <Results
         bestResult={result}
         dailyStreak={0}
@@ -166,9 +166,12 @@ describe('results summary', () => {
     );
 
     const progress = screen.getByRole('button', {
-      name: /Trainer progress.*Many Paths.*6 \/ 10.*\+2.*Type Specialist.*Specialty earned/,
+      name: /Trainer progress.*Specialty unlocked.*Type Specialist.*Many Paths.*6 \/ 10.*\+2/,
     });
     expect(progress).toBeVisible();
+    expect(
+      rendered.container.querySelector('.trainer-progress-change--earned'),
+    ).toHaveTextContent('Type Specialist');
     progress.click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });
@@ -207,13 +210,13 @@ describe('results summary', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /Trainer progress.*Perfect Form.*Badge earned/,
+        name: /Trainer progress.*League Badge earned.*Perfect Form/,
       }),
     ).toBeVisible();
 
     screen
       .getByRole('button', {
-        name: /Trainer progress.*Perfect Form.*Badge earned/,
+        name: /Trainer progress.*League Badge earned.*Perfect Form/,
       })
       .click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
@@ -273,7 +276,9 @@ describe('results summary', () => {
       screen.getByRole('heading', { name: 'League Champion' }),
     ).toBeVisible();
     screen
-      .getByRole('button', { name: /Trainer progress.*Hall of Fame.*Earned/ })
+      .getByRole('button', {
+        name: /Trainer progress.*Milestone earned.*Hall of Fame/,
+      })
       .click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });
