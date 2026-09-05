@@ -7,6 +7,7 @@ import {
 } from '@/game/active-game';
 import { buildDailyQuestions } from '@/game/daily';
 import { buildQuestions } from '@/game/game';
+import { buildLeagueQuestions } from '@/game/league';
 import { createSeededRandom } from '@/game/random';
 import { readDailyResult } from '@/game/storage';
 import type {
@@ -75,11 +76,13 @@ const resolveRestoration = (
   const questions =
     snapshot.mode.kind === 'daily'
       ? buildDailyQuestions(catalog, snapshot.mode.date)
-      : buildQuestions(
-          catalog,
-          snapshot.modifiers,
-          createSeededRandom(snapshot.seed),
-        );
+      : snapshot.mode.kind === 'league'
+        ? buildLeagueQuestions(catalog, snapshot.seed, snapshot.modifiers)
+        : buildQuestions(
+            catalog,
+            snapshot.modifiers,
+            createSeededRandom(snapshot.seed),
+          );
   const answersMatchQuestions =
     snapshot.answers.length <= questions.length &&
     snapshot.answers.every(
@@ -139,7 +142,11 @@ export const useActiveGame = ({
       });
       resetTimer(snapshot.elapsedMilliseconds);
 
-      if (snapshot.answers.length === questions.length) {
+      if (
+        snapshot.answers.length === questions.length ||
+        (snapshot.mode.kind === 'league' &&
+          snapshot.answers.some(({ correct }) => !correct))
+      ) {
         completeGame(
           snapshot.answers,
           snapshot.mode,

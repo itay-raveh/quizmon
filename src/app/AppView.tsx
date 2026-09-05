@@ -14,7 +14,7 @@ import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { getUtcDate } from '@/game/daily';
 import type { usePokemonCatalog } from '@/game/catalog';
 import type { TrainerStats } from '@/game/storage';
-import type { TrainerCardFace } from '@/game/trainer';
+import { isLeagueUnlocked, type TrainerCardFace } from '@/game/trainer';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import type { AnswerResult, GameResult, Modifiers } from '@/game/types';
 import type { GameSession } from './session';
@@ -35,6 +35,11 @@ interface NavigationView {
   leaveConfirmationOpen: boolean;
   requestLeave: () => void;
   returnToLanding: () => void;
+}
+
+interface LeagueView {
+  retry: () => void;
+  start: () => void;
 }
 
 interface QuestionView {
@@ -75,6 +80,7 @@ interface TrainingView {
 interface AppViewProps {
   catalogState: CatalogState;
   daily: DailyView;
+  league: LeagueView;
   modifiers: Modifiers;
   navigation: NavigationView;
   question: QuestionView;
@@ -87,6 +93,7 @@ interface AppViewProps {
 const AppScreen = ({
   catalogState,
   daily,
+  league,
   navigation,
   question,
   session,
@@ -101,6 +108,10 @@ const AppScreen = ({
         onBack={trainer.close}
         onFaceChange={trainer.showFace}
         onProfileChange={trainer.updateProfile}
+        onStartLeague={() => {
+          trainer.close();
+          league.start();
+        }}
         profile={trainer.profile}
         requestedFace={trainer.face}
         stats={trainer.stats}
@@ -116,11 +127,13 @@ const AppScreen = ({
         dailyResult={daily.result}
         dailyResultSaved={daily.resultSaved}
         dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
+        leagueUnlocked={isLeagueUnlocked(trainer.stats)}
         onOpenSettings={() => settings.open('training')}
         onOpenTrainerCard={() => trainer.open('front')}
         onRetryCatalog={catalogState.retry}
         onStart={training.start}
         onStartDaily={daily.start}
+        onStartLeague={league.start}
         storageAvailable={daily.storageAvailable}
       />
     );
@@ -162,6 +175,7 @@ const AppScreen = ({
       onNewGame={navigation.returnToLanding}
       onOpenSettings={() => settings.open('experience')}
       onOpenTrainerCard={trainer.open}
+      onRetryLeague={league.retry}
       onTrainAgain={training.trainAgain}
       result={session.result}
       resultSaved={session.resultSaved}

@@ -1,5 +1,6 @@
 import {
   canPersistResults,
+  getLeagueChallengeSeed,
   getTrainingRecordKey,
   readDailyResult,
   readDailyStreak,
@@ -323,6 +324,53 @@ describe('saved results', () => {
     saveResult({ kind: 'training' }, standard, defaultModifiers);
 
     expect(readTrainerStats().quickAttackCompleted).toBe(true);
+  });
+
+  it('keeps one League lineup until a perfect challenge clears it', () => {
+    const seed = getLeagueChallengeSeed();
+    const answers = Array.from({ length: 15 }, (_, index) => ({
+      category: 'identity' as const,
+      cluesUsed: 0,
+      correct: true,
+      generation: 'I' as const,
+      pokemonName: `league-${index}`,
+      points: 1_000,
+      questionType: 'pokedex-scan' as const,
+    }));
+    const leagueResult = {
+      ...result,
+      answers,
+      correctCount: 15,
+      questionCount: 15,
+    };
+
+    saveResult(
+      { kind: 'league' },
+      {
+        ...leagueResult,
+        answers: [answers[0]!, { ...answers[1]!, correct: false, points: 0 }],
+        correctCount: 1,
+      },
+      defaultModifiers,
+    );
+    expect(getLeagueChallengeSeed()).toBe(seed);
+    expect(readTrainerStats().leagueCompleted).toBe(false);
+
+    saveResult(
+      { kind: 'league' },
+      {
+        ...leagueResult,
+        answers: answers.slice(0, 14),
+        correctCount: 14,
+        questionCount: 14,
+      },
+      defaultModifiers,
+    );
+    expect(readTrainerStats().leagueCompleted).toBe(false);
+
+    saveResult({ kind: 'league' }, leagueResult, defaultModifiers);
+    expect(readTrainerStats().leagueCompleted).toBe(true);
+    expect(getLeagueChallengeSeed()).not.toBe(seed);
   });
 
   it('reports when browser storage cannot persist a result', () => {

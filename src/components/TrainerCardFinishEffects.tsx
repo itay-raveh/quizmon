@@ -37,10 +37,12 @@ const loopGapMs = 1100;
 
 interface TrainerCardFinishEffectsProps {
   finish: CardFinish;
+  sparkles?: boolean;
 }
 
 export const TrainerCardFinishEffects = ({
   finish,
+  sparkles = false,
 }: TrainerCardFinishEffectsProps) => {
   const effectsRef = useRef<HTMLDivElement>(null);
   const sheenRef = useRef<HTMLImageElement>(null);
@@ -156,7 +158,7 @@ export const TrainerCardFinishEffects = ({
         draggable="false"
         src={firstSheenFrame}
       />
-      {finish === 'Gold' ? (
+      {sparkles ? (
         <>
           <span className="trainer-card__sparkle trainer-card__sparkle--one" />
           <span className="trainer-card__sparkle trainer-card__sparkle--two" />

@@ -15,7 +15,8 @@ export const trainerSpecialtyLabels = {
 } as const satisfies Partial<Record<QuestionCategory, string>>;
 
 export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
-export type TrainerRank = 'Youngster' | 'Ace' | 'Veteran' | 'Champion';
+export type TrainerRank =
+  'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
 export type TrainerCardFace = 'front' | 'badges';
 export type TrainerBadgeId =
@@ -137,6 +138,9 @@ export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] => {
 export const getEarnedTrainerBadgeCount = (stats: TrainerStats): number =>
   getTrainerBadges(stats).filter(({ earned }) => earned).length;
 
+export const isLeagueUnlocked = (stats: TrainerStats): boolean =>
+  getEarnedTrainerBadgeCount(stats) === 8;
+
 export const getQualifiedTrainerSpecialties = (
   stats: TrainerStats,
 ): TrainerSpecialty[] =>
@@ -147,14 +151,15 @@ export const getQualifiedTrainerSpecialties = (
 
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
   const earnedBadges = getEarnedTrainerBadgeCount(stats);
-  if (earnedBadges === 8) return 'Champion';
+  if (stats.leagueCompleted) return 'Champion';
+  if (earnedBadges === 8) return 'League Challenger';
   if (earnedBadges >= 5) return 'Veteran';
   if (earnedBadges >= 2) return 'Ace';
   return 'Youngster';
 };
 
 export const getCardFinish = (rank: TrainerRank): CardFinish => {
-  if (rank === 'Champion') return 'Gold';
+  if (rank === 'Champion' || rank === 'League Challenger') return 'Gold';
   if (rank === 'Veteran') return 'Silver';
   if (rank === 'Ace') return 'Bronze';
   return 'Classic';

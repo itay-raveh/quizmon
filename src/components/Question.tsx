@@ -5,6 +5,7 @@ import {
   getCorrectOptions,
   getQuestionTitle,
 } from '@/game/game';
+import { getLeagueStageLabel } from '@/game/league';
 import { formatPokemonName, formatPokemonTypes } from '@/game/format';
 import type {
   AnswerResult,
@@ -14,6 +15,7 @@ import type {
 } from '@/game/types';
 import { ChampionSearch } from './ChampionSearch';
 import { GameButton } from './GameButton';
+import { LeagueProgress } from './LeagueProgress';
 import { Progress } from './Progress';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionArtwork } from './QuestionArtwork';
@@ -126,6 +128,7 @@ export const Question = ({
   }, [answered, speedrunMode]);
 
   const isChampion = question.category === 'champion';
+  const isLeague = mode.kind === 'league';
   const championChoicesVisible = isChampion && cluesShown > 0;
   const checkAnswerAction =
     question.answer.interaction !== 'single-choice' && !answered ? (
@@ -145,6 +148,7 @@ export const Question = ({
       : '',
     question.media.kind === 'pixel-sprite' ? 'question--with-portrait' : '',
     question.visual ? 'question--with-visual' : '',
+    isLeague ? 'question--league' : '',
     isChampion && !championChoicesVisible ? 'question--champion-search' : '',
     number === 1 ? 'question--enter' : '',
   ]
@@ -180,10 +184,14 @@ export const Question = ({
         <SettingsButton disabled={answered} onClick={onOpenSettings} />
       </div>
 
+      {isLeague ? <LeagueProgress currentQuestion={number} /> : null}
+
       <h1 id="question-title" ref={heading} tabIndex={-1}>
         {getQuestionTitle(question)}
       </h1>
-      <p className="game-mode">{getModeLabel(mode)}</p>
+      <p className="game-mode">
+        {isLeague ? getLeagueStageLabel(number) : getModeLabel(mode)}
+      </p>
       <QuestionPrompt
         className={question.visual ? 'visually-hidden' : 'question__prompt'}
         id="question-prompt"
@@ -201,7 +209,7 @@ export const Question = ({
         />
       ) : null}
 
-      {isChampion ? (
+      {isChampion && !isLeague ? (
         <QuestionClues
           answered={answered}
           cluesShown={cluesShown}
@@ -261,7 +269,13 @@ export const Question = ({
               onClick={advanceAnswer}
               ref={advanceButton}
             >
-              {number === total ? 'See results' : 'Next question'}
+              {isLeague
+                ? number === total || !answerCorrect
+                  ? 'See result'
+                  : 'Next question'
+                : number === total
+                  ? 'See results'
+                  : 'Next question'}
             </GameButton>
           ) : null}
         </div>

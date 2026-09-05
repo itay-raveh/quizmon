@@ -195,6 +195,23 @@
   letter-spacing: normal;
 }
 
+.landing__league-button.game-button {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  width: 15rem;
+  min-height: 3rem;
+  transform: translateX(-50%);
+}
+
+.landing__league-button.game-button:hover:not(:disabled) {
+  transform: translate(-50%, -1px);
+}
+
+.landing__league-button.game-button:active:not(:disabled) {
+  transform: translate(-50%, 0.22rem);
+}
+
 .landing__status {
   position: absolute;
   top: 70%;

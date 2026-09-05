@@ -59,7 +59,7 @@ interface GameCompletedEvent {
   contentVersion: number;
   correctCount: number;
   elapsedSeconds: number;
-  mode: 'daily' | 'training';
+  mode: 'daily' | 'league' | 'training';
   questionCount: number;
   score: number;
   scoreVersion: number;
@@ -76,7 +76,9 @@ const isGameCompletedEvent = (value: unknown): value is GameCompletedEvent => {
 
   const event = value as Record<string, unknown>;
   return (
-    (event.mode === 'daily' || event.mode === 'training') &&
+    (event.mode === 'daily' ||
+      event.mode === 'league' ||
+      event.mode === 'training') &&
     isIntegerBetween(event.questionCount, 1, 100) &&
     isIntegerBetween(event.correctCount, 0, event.questionCount as number) &&
     isIntegerBetween(event.score, 0, 1_000_000_000) &&

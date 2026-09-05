@@ -88,7 +88,9 @@ export const buildDailyQuestions = (
 export const getModeLabel = (mode: GameMode): string =>
   mode.kind === 'daily'
     ? `Daily Challenge · ${formatDailyDate(mode.date)}`
-    : 'Training';
+    : mode.kind === 'league'
+      ? 'Quizmon League'
+      : 'Training';
 
 export const getDailyUrl = (date: string): string => {
   const url = new URL(site.url);

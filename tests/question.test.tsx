@@ -1036,4 +1036,43 @@ describe('question transitions', () => {
       expect.objectContaining({ correct: true, points: 750 }),
     );
   });
+
+  it('keeps the League Champion question search-only and ends on a miss', () => {
+    const onAnswer = vi.fn();
+    render(
+      <Question
+        elapsedMilliseconds={0}
+        elapsedSeconds={0}
+        interactionPaused={false}
+        mode={{ kind: 'league' }}
+        number={15}
+        onAnswer={onAnswer}
+        onFeedbackStart={() => 1_000}
+        onNewGame={vi.fn()}
+        onOpenSettings={vi.fn()}
+        question={championQuestion}
+        speedrunMode={false}
+        total={15}
+      />,
+    );
+
+    expect(
+      screen.getByRole('list', {
+        name: /Quizmon League progress.*Champion, Final Trial/,
+      }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole('button', { name: /Show 4 choices/ }),
+    ).not.toBeInTheDocument();
+
+    const search = screen.getByRole('combobox', { name: 'Your answer' });
+    fireEvent.change(search, { target: { value: 'bulb' } });
+    fireEvent.pointerDown(screen.getByRole('option', { name: 'Bulbasaur' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+    fireEvent.click(screen.getByRole('button', { name: 'See result' }));
+
+    expect(onAnswer).toHaveBeenCalledWith(
+      expect.objectContaining({ correct: false }),
+    );
+  });
 });

@@ -27,6 +27,7 @@ export type GameSession =
       result: GameResult;
       resultSaved: boolean;
       badgeChanges: TrainerBadgeChange[];
+      seed: string;
     };
 
 export type GameSessionAction =
@@ -118,6 +119,7 @@ export const gameSessionReducer = (
             phase: 'results',
             result: action.result,
             resultSaved: action.resultSaved,
+            seed: session.seed,
             badgeChanges: action.badgeChanges,
           }
         : session;

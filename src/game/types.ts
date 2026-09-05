@@ -174,7 +174,8 @@ export interface QuestionData {
   visual?: QuestionVisual;
 }
 
-export type GameMode = { kind: 'training' } | { kind: 'daily'; date: string };
+export type GameMode =
+  { kind: 'training' } | { kind: 'daily'; date: string } | { kind: 'league' };
 
 export interface AnswerResult {
   category: QuestionCategory;

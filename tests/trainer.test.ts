@@ -17,6 +17,7 @@ const stats = (overrides: Partial<TrainerStats> = {}): TrainerStats => ({
   correctGenerations: {},
   correctPokemon: [],
   correctQuestionTypes: {},
+  leagueCompleted: false,
   masteryRounds: 0,
   quickAttackCompleted: false,
   ...overrides,
@@ -107,7 +108,7 @@ describe('Trainer Card progression', () => {
       masteryRounds: 3,
       quickAttackCompleted: true,
     });
-    const champion = stats({
+    const leagueChallenger = stats({
       bestDailyStreak: 7,
       correctCategories: { identity: 50 },
       championAnswersWithoutClues: 5,
@@ -120,6 +121,7 @@ describe('Trainer Card progression', () => {
       masteryRounds: 3,
       quickAttackCompleted: true,
     });
+    const champion = stats({ ...leagueChallenger, leagueCompleted: true });
 
     expect(getTrainerRank(stats())).toBe('Youngster');
     expect(getTrainerRank(oneBadge)).toBe('Youngster');
@@ -127,11 +129,13 @@ describe('Trainer Card progression', () => {
     expect(getTrainerRank(fourBadges)).toBe('Ace');
     expect(getTrainerRank(veteran)).toBe('Veteran');
     expect(getTrainerRank(sevenBadges)).toBe('Veteran');
+    expect(getTrainerRank(leagueChallenger)).toBe('League Challenger');
     expect(getTrainerRank(champion)).toBe('Champion');
     expect(getCardFinish(getTrainerRank(stats()))).toBe('Classic');
     expect(getCardFinish(getTrainerRank(oneBadge))).toBe('Classic');
     expect(getCardFinish(getTrainerRank(ace))).toBe('Bronze');
     expect(getCardFinish(getTrainerRank(veteran))).toBe('Silver');
+    expect(getCardFinish(getTrainerRank(leagueChallenger))).toBe('Gold');
     expect(getCardFinish(getTrainerRank(champion))).toBe('Gold');
   });
 

@@ -1,6 +1,8 @@
 import { defaultModifiers, isLeagueTraining } from './game';
 import { getUtcDate, parseDailyDate } from './daily';
+import { isLeagueVictory } from './league';
 import { questionTypes } from './questions/registry';
+import { createRoundSeed } from './random';
 import {
   generations,
   type GameMode,
@@ -43,8 +45,14 @@ interface DailyStreakState {
   version: number;
 }
 
+interface LeagueState {
+  completed: boolean;
+  seed: string | null;
+}
+
 interface SavedResults {
   daily: Record<string, GameResult>;
+  league: LeagueState;
   progress: TrainerProgress;
   streak: DailyStreakState;
   training: Record<string, GameResult>;
@@ -57,6 +65,7 @@ export interface TrainerStats {
   correctGenerations: Partial<Record<Generation, number>>;
   correctPokemon: string[];
   correctQuestionTypes: Partial<Record<QuestionType, number>>;
+  leagueCompleted: boolean;
   masteryRounds: number;
   quickAttackCompleted: boolean;
 }
@@ -74,10 +83,28 @@ const emptyProgress = (): TrainerProgress => ({
 
 const emptyResults = (): SavedResults => ({
   daily: {},
+  league: { completed: false, seed: null },
   progress: emptyProgress(),
   streak: { creditedDates: [], version: STREAK_VERSION },
   training: {},
 });
+
+const normalizeLeague = (value: unknown): LeagueState => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { completed: false, seed: null };
+  }
+
+  const league = value as Partial<LeagueState>;
+  return {
+    completed: league.completed === true,
+    seed:
+      typeof league.seed === 'string' &&
+      league.seed.length > 0 &&
+      league.seed.length <= 200
+        ? league.seed
+        : null,
+  };
+};
 
 const readResultRecord = (value: unknown): Record<string, GameResult> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -253,6 +280,7 @@ const readResults = (): SavedResults => {
     const training = readResultRecord(parsed.training);
     return {
       daily,
+      league: normalizeLeague(parsed.league),
       progress: normalizeProgress(parsed.progress),
       streak: normalizeStreak(parsed.streak, daily),
       training,
@@ -327,9 +355,20 @@ export const readTrainerStats = (): TrainerStats => {
     correctGenerations: results.progress.correctGenerations,
     correctPokemon: results.progress.correctPokemon,
     correctQuestionTypes: results.progress.correctQuestionTypes,
+    leagueCompleted: results.league.completed,
     masteryRounds: results.progress.masteryRounds,
     quickAttackCompleted: results.progress.quickAttackCompleted,
   };
+};
+
+export const getLeagueChallengeSeed = (): string => {
+  const results = readResults();
+  if (results.league.seed) return results.league.seed;
+
+  const seed = createRoundSeed();
+  results.league.seed = seed;
+  writeResults(results);
+  return seed;
 };
 
 export const saveResult = (
@@ -361,6 +400,24 @@ export const saveResult = (
     return {
       best: result,
       isNewBest: isSaved,
+      isSaved,
+    };
+  }
+
+  if (mode.kind === 'league') {
+    results.progress = addResultToProgress(
+      results.progress,
+      result,
+      mode,
+      modifiers,
+    );
+    const completed = isLeagueVictory(result);
+    results.league.completed = results.league.completed || completed;
+    if (completed) results.league.seed = null;
+    const isSaved = writeResults(results);
+    return {
+      best: result,
+      isNewBest: completed && isSaved,
       isSaved,
     };
   }

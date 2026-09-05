@@ -96,7 +96,10 @@ export const useGameCompletion = ({
           ? [...session.answers, answer]
           : session.answers;
 
-      if (session.questionIndex === session.questions.length - 1) {
+      if (
+        session.questionIndex === session.questions.length - 1 ||
+        (session.mode.kind === 'league' && !answer.correct)
+      ) {
         complete(
           nextAnswers,
           session.mode,
