@@ -357,7 +357,7 @@ export const TrainerPassport = ({
 
       <div className="trainer-passport__controls">
         <GameButton disabled={turn !== 'idle'} tone="quiet" onClick={flip}>
-          {face === 'front' ? 'View badge case' : 'View front'}
+          {face === 'front' ? 'View badges' : 'View front'}
         </GameButton>
         {canShareCard ? (
           <GameButton disabled={!image} onClick={() => void share()}>

@@ -136,7 +136,7 @@ test('keeps a customizable two-sided Trainer Card on this device', async ({
   await expect(page.getByText('Trainer Card shared.')).toHaveClass(
     'visually-hidden',
   );
-  await page.getByRole('button', { name: 'View badge case' }).click();
+  await page.getByRole('button', { name: 'View badges' }).click();
   await expect(page).toHaveURL(/\?trainer=back$/);
   await expect(
     page.getByRole('article', { name: 'Trainer Card badge case' }),

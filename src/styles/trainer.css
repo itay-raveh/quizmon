@@ -470,29 +470,29 @@
   appearance: none;
   color: var(--navy);
   background: transparent;
-  border: 2px solid transparent;
+  border: 0;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition:
-    transform 100ms ease,
-    filter 100ms ease,
-    background-color 100ms ease;
   place-items: center;
 }
 
-.trainer-badge:hover {
-  background: color-mix(in srgb, var(--trainer-rank-surface) 64%, transparent);
-  filter: brightness(1.04);
-  transform: translateY(-0.1rem) scale(1.025);
+.trainer-badge:hover .trainer-badge-mark img {
+  --trainer-badge-depth: drop-shadow(0.09rem 0.13rem 0 var(--yellow))
+    drop-shadow(0.23rem 0.3rem 0 var(--navy-shadow));
+
+  transform: translate(-0.06rem, -0.12rem) scale(1.025);
 }
 
-.trainer-badge:active {
-  transform: translateY(0.08rem) scale(0.99);
+.trainer-badge:active .trainer-badge-mark img {
+  --trainer-badge-depth: drop-shadow(0.02rem 0.04rem 0 var(--yellow))
+    drop-shadow(0.05rem 0.1rem 0 var(--navy-shadow));
+
+  transform: translate(0.08rem, 0.1rem) scale(0.99);
 }
 
 .trainer-badge:focus-visible {
   outline: 3px solid var(--trainer-accent);
-  outline-offset: -2px;
+  outline-offset: 2px;
 }
 
 .trainer-badge-mark {
@@ -503,15 +503,25 @@
 }
 
 .trainer-badge-mark img {
+  --trainer-badge-tone: saturate(1);
+  --trainer-badge-depth: drop-shadow(0.06rem 0.09rem 0 var(--yellow))
+    drop-shadow(0.16rem 0.22rem 0 var(--navy-shadow));
+
   display: block;
   width: 100%;
   height: 100%;
+  filter: var(--trainer-badge-tone) var(--trainer-badge-depth);
   image-rendering: pixelated;
+  transform: translate(-0.03rem, -0.04rem);
+  transition:
+    filter 100ms ease,
+    transform 100ms ease;
 }
 
 .trainer-badge-mark[data-earned='false'] img {
-  filter: brightness(0);
-  opacity: 0.28;
+  --trainer-badge-tone: brightness(0);
+
+  opacity: 0.48;
 }
 
 .trainer-card__badges .trainer-badge-mark {
