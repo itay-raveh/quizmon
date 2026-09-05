@@ -8,6 +8,7 @@ const validEvent = {
   questionCount: 5,
   score: 12_345,
   scoreVersion: 2,
+  type: 'game_completed',
 };
 
 const makeEnv = () => {
@@ -21,7 +22,7 @@ const makeEnv = () => {
   };
 };
 
-describe('game completion analytics endpoint', () => {
+describe('analytics endpoint', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -29,7 +30,7 @@ describe('game completion analytics endpoint', () => {
   it('records one aggregate event without identifying data', async () => {
     const { env, writeDataPoint } = makeEnv();
     const response = await worker.fetch(
-      new Request('https://quizmon.raveh.dev/api/events/game-completed', {
+      new Request('https://quizmon.raveh.dev/api/events', {
         body: JSON.stringify(validEvent),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -47,10 +48,36 @@ describe('game completion analytics endpoint', () => {
     });
   });
 
+  it.each([
+    ['a page view', { type: 'page_view' }, { indexes: ['page_view'] }],
+    [
+      'a game start',
+      { mode: 'training', questionCount: 10, type: 'game_started' },
+      {
+        blobs: ['training'],
+        doubles: [10],
+        indexes: ['game_started'],
+      },
+    ],
+  ])('records %s', async (_name, event, dataPoint) => {
+    const { env, writeDataPoint } = makeEnv();
+    const response = await worker.fetch(
+      new Request('https://quizmon.raveh.dev/api/events', {
+        body: JSON.stringify(event),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      }),
+      env,
+    );
+
+    expect(response.status).toBe(204);
+    expect(writeDataPoint).toHaveBeenCalledWith(dataPoint);
+  });
+
   it('accepts Quizmon League completions', async () => {
     const { env, writeDataPoint } = makeEnv();
     const response = await worker.fetch(
-      new Request('https://quizmon.raveh.dev/api/events/game-completed', {
+      new Request('https://quizmon.raveh.dev/api/events', {
         body: JSON.stringify({ ...validEvent, mode: 'league' }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -81,7 +108,7 @@ describe('game completion analytics endpoint', () => {
   ])('rejects %s', async (_name, body, init, status) => {
     const { env, writeDataPoint } = makeEnv();
     const response = await worker.fetch(
-      new Request('https://quizmon.raveh.dev/api/events/game-completed', {
+      new Request('https://quizmon.raveh.dev/api/events', {
         body,
         ...init,
       }),

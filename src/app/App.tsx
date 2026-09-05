@@ -1,4 +1,5 @@
 import { useCallback, useReducer } from 'react';
+import { trackGameStarted } from '@/game/analytics';
 import { usePokemonCatalog } from '@/game/catalog';
 import { usePersistentModifiers } from '@/game/settings-storage';
 import { useStopwatch } from '@/game/stopwatch';
@@ -49,6 +50,7 @@ export const App = () => {
       nextMode: GameMode,
       seed: string,
     ) => {
+      trackGameStarted(nextMode, nextQuestions.length);
       dispatchSession({
         mode: nextMode,
         modifiers: nextModifiers,
