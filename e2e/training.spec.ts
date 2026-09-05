@@ -6,6 +6,8 @@ import {
   test,
 } from './fixtures';
 
+type PokemonName = keyof typeof catalogData.pokemon;
+
 const findPokemonForSprite = (src: string | null) =>
   Object.entries(catalogData.pokemon).find(
     ([, entry]) =>
@@ -17,7 +19,7 @@ const findPokemonForSprite = (src: string | null) =>
       entry.identitySprites.historicalBack.some(
         (candidate) => candidate === src,
       ),
-  )?.[0];
+  )?.[0] as PokemonName | undefined;
 
 test('plays and shares a complete Training question without a live API call', async ({
   context,
@@ -148,6 +150,109 @@ test('keeps reverse-silhouette rounds clear on a phone', async ({ page }) => {
   await page.getByRole('button', { name: 'Silhouette 1' }).click();
   await expect(page.locator('.answer-explanation')).toHaveCount(0);
 });
+
+for (const textScale of ['100%', '200%'] as const) {
+  test(`keeps type reveals and the next action stable at ${textScale} text`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'quizmon.training-settings.v2',
+        JSON.stringify({
+          generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
+          questionTypes: ['type-roundup'],
+          soundEnabled: false,
+          limit: 1,
+          speedrunMode: false,
+        }),
+      );
+    });
+
+    await seedBrowserRandom(page, 'stable-type-roundup');
+    await page.goto('/');
+    await page.evaluate((fontSize) => {
+      document.documentElement.style.fontSize = fontSize;
+    }, textScale);
+    await page.getByRole('button', { name: 'Start training' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Type roundup' }),
+    ).toBeVisible();
+    await page.evaluate(async () => {
+      await Promise.allSettled(
+        document.getAnimations().map((animation) => animation.finished),
+      );
+    });
+
+    const typeRows = page.locator('.answer__types');
+    await expect(typeRows).toHaveCount(4);
+    for (const typeRow of await typeRows.all()) {
+      await expect(typeRow).toBeHidden();
+    }
+
+    const getGeometry = () =>
+      page.evaluate(() => {
+        const box = (selector: string) => {
+          const rect = document
+            .querySelector(selector)!
+            .getBoundingClientRect();
+          return { height: rect.height, top: rect.top + window.scrollY };
+        };
+        return {
+          answers: [...document.querySelectorAll('.answer')].map((element) => {
+            const rect = element.getBoundingClientRect();
+            return { height: rect.height, top: rect.top + window.scrollY };
+          }),
+          footer: box('.site-footer'),
+          question: box('.question'),
+        };
+      });
+
+    const before = await getGeometry();
+    const prompt = await page.locator('#question-prompt').textContent();
+    const targetType = prompt
+      ?.match(/every (.+)-type Pokémon/)?.[1]
+      ?.toLowerCase();
+    if (!targetType) throw new Error('Type Roundup prompt has no target type.');
+
+    const answers = page.locator('.answer');
+    for (let index = 0; index < (await answers.count()); index += 1) {
+      const answer = answers.nth(index);
+      const src = await answer.locator('.answer__sprite').getAttribute('src');
+      const pokemon = findPokemonForSprite(src);
+      if (!pokemon) throw new Error(`No Pokémon found for sprite ${src}.`);
+      if (catalogData.pokemon[pokemon].types.includes(targetType)) {
+        await answer.click();
+      }
+    }
+
+    await page.getByRole('button', { name: 'Check answers' }).click();
+    await expect(
+      page.getByRole('button', { name: 'See results' }),
+    ).toBeVisible();
+    for (const typeRow of await typeRows.all()) {
+      await expect(typeRow).toBeVisible();
+    }
+
+    const after = await getGeometry();
+    expect(
+      Math.abs(after.question.height - before.question.height),
+    ).toBeLessThanOrEqual(1);
+    expect(Math.abs(after.footer.top - before.footer.top)).toBeLessThanOrEqual(
+      1,
+    );
+    expect(after.answers).toHaveLength(before.answers.length);
+    after.answers.forEach((answer, index) => {
+      const beforeAnswer = before.answers[index];
+      if (!beforeAnswer)
+        throw new Error(`Missing answer geometry at ${index}.`);
+      expect(Math.abs(answer.height - beforeAnswer.height)).toBeLessThanOrEqual(
+        1,
+      );
+      expect(Math.abs(answer.top - beforeAnswer.top)).toBeLessThanOrEqual(1);
+    });
+  });
+}
 
 test('asks new players which generations they know before Training', async ({
   page,

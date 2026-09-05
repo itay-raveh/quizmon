@@ -134,6 +134,17 @@ export const Question = ({
 
   const isChampion = question.category === 'champion';
   const championChoicesVisible = isChampion && cluesShown > 0;
+  const checkAnswerAction =
+    question.answer.interaction !== 'single-choice' && !answered ? (
+      <GameButton
+        className="check-answer"
+        clickSound="none"
+        disabled={selectedOptions.length === 0}
+        onClick={() => finishAnswer(selectedOptions)}
+      >
+        Check answers
+      </GameButton>
+    ) : null;
   const className = [
     'question',
     question.media.kind === 'sprite' || question.media.kind === 'pixel-peek'
@@ -233,17 +244,6 @@ export const Question = ({
         />
       ) : null}
 
-      {question.answer.interaction !== 'single-choice' && !answered ? (
-        <GameButton
-          className="check-answer"
-          clickSound="none"
-          disabled={selectedOptions.length === 0}
-          onClick={() => finishAnswer(selectedOptions)}
-        >
-          Check answers
-        </GameButton>
-      ) : null}
-
       <span className="visually-hidden" aria-live="polite">
         {answerCorrect
           ? 'Correct.'
@@ -252,15 +252,28 @@ export const Question = ({
             : ''}
       </span>
 
-      {answered && !speedrunMode ? (
-        <GameButton
-          className="new-game"
-          onClick={advanceAnswer}
-          ref={advanceButton}
-        >
-          {number === total ? 'See results' : 'Next question'}
-        </GameButton>
-      ) : null}
+      {speedrunMode ? (
+        checkAnswerAction
+      ) : (
+        <div className="question__action-slot">
+          <span
+            aria-hidden="true"
+            className="game-button question__action-reserve"
+          >
+            Check answers
+          </span>
+          {checkAnswerAction}
+          {answered ? (
+            <GameButton
+              className="new-game"
+              onClick={advanceAnswer}
+              ref={advanceButton}
+            >
+              {number === total ? 'See results' : 'Next question'}
+            </GameButton>
+          ) : null}
+        </div>
+      )}
     </section>
   );
 };

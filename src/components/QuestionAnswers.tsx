@@ -35,8 +35,10 @@ export const QuestionAnswers = ({
   const hasTypeOptionBadges = typeOptionQuestionTypes.has(
     question.questionType,
   );
-  const revealsOptionTypes =
-    answered && optionTypeRevealQuestionTypes.has(question.questionType);
+  const reservesOptionTypes = optionTypeRevealQuestionTypes.has(
+    question.questionType,
+  );
+  const revealsOptionTypes = answered && reservesOptionTypes;
 
   const optionClassName = (option: string) => {
     if (!answered) {
@@ -115,9 +117,9 @@ export const QuestionAnswers = ({
                     <span className="answer__name">
                       {formatPokemonName(option)}
                     </span>
-                    {revealsOptionTypes ? (
+                    {reservesOptionTypes ? (
                       <TypeBadges
-                        className="answer__types"
+                        className={`answer__types ${answered ? '' : 'answer__types--reserved'}`.trim()}
                         types={visual.types}
                       />
                     ) : null}
