@@ -3,7 +3,7 @@ import type { TrainerView } from '@/game/trainer';
 export const parseTrainerRoute = (search: string): TrainerView | null => {
   const value = new URLSearchParams(search).get('trainer');
   if (value === 'card' || value === 'front') return 'front';
-  if (value === 'badges' || value === 'back') return 'badges';
+  if (value === 'badges') return 'badges';
   if (value === 'titles') return 'titles';
   return null;
 };

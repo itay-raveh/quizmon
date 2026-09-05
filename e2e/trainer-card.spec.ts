@@ -158,10 +158,6 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await page.reload();
   await expect(titles).toBeVisible();
 
-  await page.goto('/?trainer=back');
-  await expect(
-    page.getByRole('article', { name: 'League Badge Case' }),
-  ).toBeVisible();
   await page.getByRole('button', { name: 'Card', exact: true }).click();
   await expect(page).toHaveURL(/\?trainer=card$/);
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
