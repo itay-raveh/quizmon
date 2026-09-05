@@ -1,4 +1,5 @@
-import { useCallback, useReducer } from 'react';
+import { useCallback, useReducer, useState } from 'react';
+import { readActiveGame } from '@/game/active-game';
 import { trackGameStarted } from '@/game/analytics';
 import { usePokemonCatalog } from '@/game/catalog';
 import { usePersistentModifiers } from '@/game/settings-storage';
@@ -16,7 +17,12 @@ import { useTrainerCard } from './useTrainerCard';
 import { useTrainingGame } from './useTrainingGame';
 
 export const App = () => {
-  const catalogState = usePokemonCatalog();
+  const [loadCatalogImmediately] = useState(
+    () => window.location.search.length > 0 || readActiveGame() !== null,
+  );
+  const catalogState = usePokemonCatalog({
+    loadImmediately: loadCatalogImmediately,
+  });
   const [modifiers, setModifiers] = usePersistentModifiers();
   const [session, dispatchSession] = useReducer(
     gameSessionReducer,

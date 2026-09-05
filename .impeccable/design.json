@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T12:42:06Z",
+  "generatedAt": "2026-09-05T20:28:11Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -180,6 +180,38 @@
           "oklch(95% 0.166 92.2)"
         ]
       },
+      "badge-recess": {
+        "role": "neutral",
+        "displayName": "Badge Recess",
+        "canonical": "#254d67",
+        "description": "The dark blue-green wells that seat badges inside the metal case.",
+        "tonalRamp": [
+          "oklch(15% 0.063 239.4)",
+          "oklch(25% 0.063 239.4)",
+          "oklch(37% 0.063 239.4)",
+          "oklch(49% 0.063 239.4)",
+          "oklch(61% 0.063 239.4)",
+          "oklch(73% 0.063 239.4)",
+          "oklch(85% 0.063 239.4)",
+          "oklch(95% 0.063 239.4)"
+        ]
+      },
+      "badge-recess-hover": {
+        "role": "neutral",
+        "displayName": "Badge Recess Hover",
+        "canonical": "#2c5976",
+        "description": "A brighter version of the badge recess used only during interaction.",
+        "tonalRamp": [
+          "oklch(15% 0.069 239.1)",
+          "oklch(25% 0.069 239.1)",
+          "oklch(37% 0.069 239.1)",
+          "oklch(49% 0.069 239.1)",
+          "oklch(61% 0.069 239.1)",
+          "oklch(73% 0.069 239.1)",
+          "oklch(85% 0.069 239.1)",
+          "oklch(95% 0.069 239.1)"
+        ]
+      },
       "game-surface": {
         "role": "neutral",
         "displayName": "Warm Game Paper",
@@ -264,7 +296,7 @@
         "role": "neutral",
         "displayName": "Focus Navy",
         "canonical": "#083b7e",
-        "description": "Keyboard focus outlines separated from controls by a light offset gap.",
+        "description": "The default keyboard focus outline on pale surfaces. Selected cobalt tabs and controls inside the dark Badge Case switch to paper for visible contrast.",
         "tonalRamp": [
           "oklch(15% 0.125 257.9)",
           "oklch(25% 0.125 257.9)",
@@ -393,6 +425,10 @@
       "label": {
         "displayName": "Label",
         "purpose": "Game modes, helper text, result details, and status copy."
+      },
+      "mini": {
+        "displayName": "Mini",
+        "purpose": "The smallest readable progress and state labels inside compact Trainer collection layouts."
       },
       "numeric": {
         "displayName": "Numeric",

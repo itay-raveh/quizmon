@@ -5,7 +5,6 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import useSound from 'use-sound';
 import correctSound from '@/assets/sounds/answer-correct.mp3';
 import wrongSound from '@/assets/sounds/answer-wrong.mp3';
 import perfectSound from '@/assets/sounds/perfect.mp3';
@@ -27,15 +26,31 @@ interface ScoreCountControls {
   stop: () => void;
 }
 
+type UseSound = (typeof import('use-sound'))['default'];
+
 const silentScoreCount: ScoreCountControls = {
   play: () => undefined,
   stop: () => undefined,
 };
 
+const silentControls: SoundControls = {
+  playCorrect: () => undefined,
+  playPerfect: () => undefined,
+  playResults: () => undefined,
+  playScoreCount: () => undefined,
+  playTap: () => undefined,
+  playToggleOff: () => undefined,
+  playToggleOn: () => undefined,
+  playWrong: () => undefined,
+  stopCelebration: () => undefined,
+};
+
 const ScoreCountSound = ({
   onReady,
+  useSound,
 }: {
   onReady: (controls: ScoreCountControls) => void;
+  useSound: UseSound;
 }) => {
   const [play, { stop }] = useSound(scoreCountSound, {
     interrupt: true,
@@ -52,14 +67,18 @@ const ScoreCountSound = ({
   return null;
 };
 
-export const SoundProvider = ({
-  children,
-  enabled,
+const SoundEngine = ({
+  onReady,
   prepareScoreCount,
-}: SoundProviderProps) => {
+  useSound,
+}: {
+  onReady: (controls: SoundControls) => void;
+  prepareScoreCount: boolean;
+  useSound: UseSound;
+}) => {
   const [scoreCountControls, setScoreCountControls] =
     useState<ScoreCountControls>(silentScoreCount);
-  const sharedOptions = { interrupt: true, soundEnabled: enabled };
+  const sharedOptions = { interrupt: true };
   const [playTap] = useSound(tapSound, { ...sharedOptions, volume: 0.16 });
   const [playToggleOff] = useSound(toggleOffSound, {
     ...sharedOptions,
@@ -93,15 +112,10 @@ export const SoundProvider = ({
   }, [scoreCountControls, stopPerfect, stopResults]);
 
   useEffect(() => {
-    if (!enabled) stopCelebration();
-  }, [enabled, stopCelebration]);
+    return stopCelebration;
+  }, [stopCelebration]);
 
-  const play = useCallback(
-    (sound: () => void) => {
-      if (enabled) sound();
-    },
-    [enabled],
-  );
+  const play = useCallback((sound: () => void) => sound(), []);
 
   const controls = useMemo<SoundControls>(
     () => ({
@@ -129,11 +143,70 @@ export const SoundProvider = ({
     ],
   );
 
+  useEffect(() => {
+    onReady(controls);
+    return () => onReady(silentControls);
+  }, [controls, onReady]);
+
   return (
-    <SoundContext.Provider value={controls}>
+    <>
+      {prepareScoreCount ? (
+        <ScoreCountSound onReady={setScoreCountControls} useSound={useSound} />
+      ) : null}
+    </>
+  );
+};
+
+export const SoundProvider = ({
+  children,
+  enabled,
+  prepareScoreCount,
+}: SoundProviderProps) => {
+  const [controls, setControls] = useState<SoundControls>(silentControls);
+  const [useSound, setUseSound] = useState<UseSound | null>(null);
+
+  useEffect(() => {
+    if (!enabled || useSound) return;
+
+    let active = true;
+    let loading = false;
+    const prepare = () => {
+      if (loading) return;
+      loading = true;
+      void import('use-sound')
+        .then((module) => {
+          if (active) setUseSound(() => module.default);
+        })
+        .catch(() => {
+          loading = false;
+        });
+    };
+
+    if (prepareScoreCount) {
+      prepare();
+      return () => {
+        active = false;
+      };
+    }
+
+    const events = ['keydown', 'pointerdown'] as const;
+    for (const event of events) document.addEventListener(event, prepare);
+
+    return () => {
+      active = false;
+      for (const event of events) document.removeEventListener(event, prepare);
+    };
+  }, [enabled, prepareScoreCount, useSound]);
+
+  return (
+    <SoundContext.Provider value={enabled ? controls : silentControls}>
       {children}
-      {enabled && prepareScoreCount ? (
-        <ScoreCountSound onReady={setScoreCountControls} />
+      {enabled && useSound ? (
+        <SoundEngine
+          onReady={setControls}
+          prepareScoreCount={prepareScoreCount}
+          useSound={useSound}
+        />
       ) : null}
     </SoundContext.Provider>
   );

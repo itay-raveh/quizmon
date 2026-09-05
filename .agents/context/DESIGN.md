@@ -13,6 +13,8 @@ colors:
   trainer-bronze: '#ed9147'
   trainer-silver: '#b8cbd2'
   trainer-gold: '#f0c51f'
+  badge-recess: '#254d67'
+  badge-recess-hover: '#2c5976'
   game-surface: '#fffbea'
   ink: '#143149'
   muted-ink: '#446078'
@@ -48,6 +50,11 @@ typography:
     fontSize: '0.82rem'
     fontWeight: 700
     lineHeight: 1.35
+  mini:
+    fontFamily: 'Gabarito Variable, system-ui, sans-serif'
+    fontSize: '0.65rem'
+    fontWeight: 700
+    lineHeight: 1.2
   numeric:
     fontFamily: 'Martian Mono Variable, ui-monospace, monospace'
     fontSize: '0.76rem'
@@ -196,7 +203,9 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 - **Landscape Ink** (`colors.ink`): Main copy on warm surfaces.
 - **Muted Blue Ink** (`colors.muted-ink`): Supporting descriptions, mode labels, details, and status text.
 - **Hard Navy Shadow** (`colors.hard-shadow`): The dark lower layer under compact controls and contained surfaces.
-- **Focus Navy** (`colors.focus`): Keyboard focus outlines separated from controls by a light offset gap.
+- **Badge Recess** (`colors.badge-recess`): The dark blue-green wells that seat badges inside the metal case.
+- **Badge Recess Hover** (`colors.badge-recess-hover`): A brighter version of the same material used only while a badge well is interactive.
+- **Focus Navy** (`colors.focus`): The default keyboard focus outline on pale surfaces. Selected cobalt tabs and controls inside the dark Badge Case switch to Warm Game Paper for visible contrast.
 - **Field Footer Ink** (`colors.footer-ink`): The small unboxed credit line over the landscape.
 
 **The Logo-First Rule.** Cobalt and yellow echo the wordmark. They do not compete with it by filling large decorative regions.
@@ -218,6 +227,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 - **Body** (400, `1rem`): Instructions, descriptions, and general copy.
 - **Control** (700, `1rem`): Buttons, answers, selection labels, and result values.
 - **Label** (700, `0.82rem`, 1.35): Game modes, helper text, result details, and status copy.
+- **Mini** (700, `0.65rem`, 1.2): The smallest readable progress and state labels inside compact Trainer collection layouts.
 - **Footer** (700, `0.875rem`, 1.25): Source attribution at a readable compact size.
 - **Numeric** (800, `0.76rem`, `0.04em` letter spacing): Question progress and elapsed time. Large score figures may use the same monospace family at a larger responsive size.
 
@@ -235,7 +245,7 @@ The footer stays in document flow and uses three explicit tiers: ownership and c
 
 Question and result panels use `min(42rem, 94vw)`. Text answer choices form two equal columns on desktop and one column at `36rem` and below. Pokémon answer choices remain a two-by-two field on phones so their compact sprite tiles do not turn the round into a long scrolling list. On phones no taller than `50rem`, the round tightens its outer padding, prompt spacing, and sprite size while preserving touch targets. The footer remains present in normal document flow below questions and results, and vertical scrolling remains a safety fallback. On short, wide screens below `43rem` in height, identification questions may split artwork and answers into two columns while progress, title, feedback, and the leave-game action span both columns.
 
-The Settings dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. On phones it becomes an edge-to-edge, full-height sheet so the title, content, and actions use the available viewport instead of nesting inside another frame. Its action footer remains visible. Training presents generations first, round length second, and question types last. Round length is one radio choice between Quick (5), Standard (10), and Long (20), with Standard as the default. A compact status above the controls identifies League Training or Custom Training and states whether the two performance badges can be earned. Custom configurations offer one action that restores ten questions and every question format without changing the selected generations or experience settings. Identity, General knowledge, and Battle knowledge split the formats into collapsible semantic groups. Only one group opens at a time, and each heading reports its selected count so collapsed groups remain understandable. Question-type tiles show only their titles and selected state. A compact help button opens the selected format's explanation in a light-dismissable popover without hiding its selection. One select-all control serves the complete question-type set instead of repeating bulk actions inside every group. Validation appears beside the invalid section and moves focus there. Experience contains Quick transitions and sound effects. A two-control tab strip separates the sections without introducing another card layer. Settings remain reachable from the landing screen, every question, and results. Multi-select options use full-tile hit areas with native checkbox semantics. On narrow screens, generations form a three-column grid and question types form a wider two-column grid.
+The Settings dialog uses `min(42rem, calc(100% - 1rem))`, caps its height to the safe viewport, and scrolls only its body. On phones it becomes an edge-to-edge, full-height sheet so the title, content, and actions use the available viewport instead of nesting inside another frame. Its action footer remains visible. Every Training round contains ten questions. A two-choice control switches between League and Custom Training before the generation picker. The concise mode description sits beneath the generations: League enables every question type and permits its two performance badges, while Custom uses only the formats the player chooses. Only Custom reveals the question-type controls. Identity, General knowledge, and Battle knowledge split those formats into collapsible semantic groups. Only one group opens at a time, and each heading reports its selected count so collapsed groups remain understandable. Question-type tiles show only their titles and selected state. A compact help button opens the selected format's explanation in a light-dismissable popover without hiding its selection. One select-all control serves the complete question-type set instead of repeating bulk actions inside every group. Validation appears beside the invalid section and moves focus there. Experience contains Quick transitions and sound effects. A two-control tab strip separates the sections without introducing another card layer. Settings remain reachable from the landing screen, every question, and results. Multi-select options use full-tile hit areas with native checkbox semantics. On narrow screens, generations form a three-column grid and question types form a wider two-column grid.
 
 Spacing is compact and regular. Most internal gaps sit near `0.7rem`, contained surfaces use `1rem` to `1.5rem` of padding, and controls remain large enough for touch without becoming oversized.
 
@@ -273,7 +283,7 @@ Buttons are compact physical game controls.
 - **Quiet:** Warm paper with navy text and the same outline, depth edge, and geometry.
 - **Hover:** Brighten slightly and rise by `1px`.
 - **Active:** Translate down by `0.22rem` while compressing the yellow and navy lower shadows. The button must visibly depress.
-- **Focus:** Use a `0.2rem` focus-yellow outline with a `0.2rem` offset.
+- **Focus:** Use a `0.2rem` navy outline with a `0.2rem` offset on pale surfaces. Selected cobalt tabs and controls inside the dark Badge Case use a paper outline instead.
 - **Disabled:** Remove the shadow, reduce saturation, set opacity to `0.65`, and keep the cursor neutral.
 
 ### Daily Challenge Action
@@ -316,7 +326,7 @@ Customization stays optional and local. The editor offers a name, partner, and a
 
 Results use the same contained surface as questions. Time appears once as a formatted clock without a repeated seconds count. Rounds of ten questions or fewer use only the compact answer trail to communicate accuracy. Longer rounds replace the trail with one `correct / total` summary and never add a percentage. The score sits in a full-width cream band with navy rules at the top and bottom. A standard correct answer earns 1,000 knowledge points. A Champion search answer earns 1,000 knowledge points. Revealing choices reduces it to 750, and later clues reduce it to 500 and then 250. A speed bonus adds `round-to-10(knowledge × 3 × 2^(-answer milliseconds / 5000))`, so it starts at three times the answer's knowledge value and halves every five seconds. The mastery bonus is `round(total knowledge² / (question count × 1000))`, so accuracy has visible weight. The band shows knowledge, speed, and mastery separately, while the interface never presents a maximum score.
 
-A Trainer Card callout follows the score only when one or more League Badges are earned. Routine specialty and badge progress does not compete with the result actions. A failed League result names the reached trial and offers Retry League with the preserved lineup. A perfect clear names the player League Champion, links directly to the Hall of Fame Badge Case, and offers a rematch with a new lineup. Neither League state adds promotional copy or social sharing. Training bests compare only rounds with the same generations, question formats, and question count. Train again is the primary Training action and immediately starts a fresh round with the current saved configuration. Sharing opens the native system sheet when available and otherwise offers direct service targets in a compact Quizmon dialog. Daily shares use the date without repeating the in-game mode label, and green or red squares communicate each result. Clipboard copy is always labelled as a separate action.
+A Trainer Card callout follows the score only when one or more League Badges are earned. Routine specialty and badge progress does not compete with the result actions. A failed League result names the reached trial and offers Retry League with the preserved lineup. A perfect clear names the player League Champion, links directly to the Hall of Fame Badge Case, and offers a rematch with a new lineup. Neither League state adds promotional copy or social sharing. Best scores use only three durable keys: Daily, League Training, and Custom Training. Train again is the primary Training action and immediately starts a fresh round with the current saved configuration. Sharing opens the native system sheet when available and otherwise offers direct service targets in a compact Quizmon dialog. Daily shares use the date without repeating the in-game mode label, and green or red squares communicate each result. Clipboard copy is always labelled as a separate action.
 
 ### Dialogs and Fields
 

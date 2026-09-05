@@ -59,6 +59,54 @@ const expectCardContentToFit = async (page: Page) => {
   ).toBeLessThanOrEqual(1);
 };
 
+const expectContentToFitHorizontally = async (page: Page, selector: string) => {
+  const offenders = await page.locator(selector).evaluate((container) => {
+    const bounds = container.getBoundingClientRect();
+
+    return [...container.querySelectorAll<HTMLElement>('*')]
+      .filter((element) => {
+        const style = getComputedStyle(element);
+        if (style.display === 'none' || style.visibility === 'hidden') {
+          return false;
+        }
+
+        const rect = element.getBoundingClientRect();
+        return (
+          rect.width > 1 &&
+          rect.height > 1 &&
+          (rect.left < bounds.left - 1 || rect.right > bounds.right + 1)
+        );
+      })
+      .map((element) => ({
+        className: element.className,
+        tagName: element.tagName,
+        text: element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 80),
+      }));
+  });
+
+  expect(offenders, JSON.stringify(offenders, null, 2)).toEqual([]);
+};
+
+const expectControlsToContainTheirContent = async (
+  page: Page,
+  selector: string,
+) => {
+  const offenders = await page.locator(selector).evaluateAll((controls) =>
+    controls
+      .filter(
+        (control) =>
+          control.scrollWidth - control.clientWidth > 1 ||
+          control.scrollHeight - control.clientHeight > 1,
+      )
+      .map((control) => ({
+        className: control.getAttribute('class'),
+        text: control.textContent?.trim().replace(/\s+/g, ' ').slice(0, 80),
+      })),
+  );
+
+  expect(offenders, JSON.stringify(offenders, null, 2)).toEqual([]);
+};
+
 test('keeps the core experience accessible', async ({ page }) => {
   await page.goto('/');
   await expect(
@@ -83,6 +131,36 @@ test('keeps the core experience accessible', async ({ page }) => {
   await expect(
     page.getByRole('article', { name: 'Trainer Card front' }),
   ).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+  await page.getByRole('button', { name: 'Card', exact: true }).focus();
+  await expect(
+    page.getByRole('button', { name: 'Card', exact: true }),
+  ).toHaveCSS('outline-color', 'rgb(255, 251, 234)');
+  await page.getByRole('button', { name: 'Badges', exact: true }).focus();
+  await expect(
+    page.getByRole('button', { name: 'Badges', exact: true }),
+  ).toHaveCSS('outline-color', 'rgb(8, 59, 126)');
+
+  await page.getByRole('button', { name: 'Badges', exact: true }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card badge case' }),
+  ).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+  const badge = page.locator('.trainer-badge').first();
+  await badge.focus();
+  await expect(badge).toHaveCSS('outline-color', 'rgb(255, 251, 234)');
+  await badge.click();
+  await expect(page.locator('.trainer-badge-dialog')).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+  await page.getByRole('button', { name: 'Close badge details' }).click();
+
+  await page.getByRole('button', { name: 'Titles', exact: true }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Titles collection' }),
+  ).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+  await page.locator('.trainer-title').first().click();
+  await expect(page.locator('.trainer-title-dialog')).toBeVisible();
   await expectNoAccessibilityViolations(page);
 });
 
@@ -122,6 +200,7 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   await expectNoHorizontalOverflow(page);
   await expectNoHorizontalClipping(page);
   await expectCardContentToFit(page);
+  await expectControlsToContainTheirContent(page, '.trainer-passport__view');
 
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
@@ -129,6 +208,12 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   ).toBeVisible();
   await expectNoHorizontalClipping(page);
   await expectCardContentToFit(page);
+  await expectControlsToContainTheirContent(page, '.trainer-passport__view');
+  await page.locator('.trainer-badge').first().click();
+  await expect(page.locator('.trainer-badge-dialog')).toBeVisible();
+  await expectNoHorizontalClipping(page);
+  await expectContentToFitHorizontally(page, '.trainer-badge-dialog');
+  await page.getByRole('button', { name: 'Close badge details' }).click();
 
   await page.getByRole('button', { name: 'Titles', exact: true }).click();
   await expect(
@@ -136,4 +221,9 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await expectNoHorizontalClipping(page);
+  await expectControlsToContainTheirContent(page, '.trainer-passport__view');
+  await page.locator('.trainer-title').first().click();
+  await expect(page.locator('.trainer-title-dialog')).toBeVisible();
+  await expectNoHorizontalClipping(page);
+  await expectContentToFitHorizontally(page, '.trainer-title-dialog');
 });

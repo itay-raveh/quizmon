@@ -8,6 +8,10 @@ type CatalogState =
   | { status: 'ready'; catalog: PokemonCatalog }
   | { status: 'error'; catalog?: never };
 
+interface PokemonCatalogOptions {
+  loadImmediately?: boolean;
+}
+
 let catalogPromise: Promise<PokemonCatalog> | undefined;
 
 export const parsePokemonCatalog = (value: unknown): PokemonCatalog => {
@@ -38,25 +42,44 @@ const loadCatalog = () => {
   return catalogPromise;
 };
 
-export const usePokemonCatalog = () => {
+const scheduleIdleCatalogLoad = (load: () => void) => {
+  if (typeof window.requestIdleCallback === 'function') {
+    const idleId = window.requestIdleCallback(load, { timeout: 1500 });
+    return () => window.cancelIdleCallback?.(idleId);
+  }
+
+  const timeoutId = window.setTimeout(load, 0);
+  return () => window.clearTimeout(timeoutId);
+};
+
+export const usePokemonCatalog = ({
+  loadImmediately = false,
+}: PokemonCatalogOptions = {}) => {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<CatalogState>({ status: 'loading' });
 
   useEffect(() => {
     let active = true;
 
-    void loadCatalog()
-      .then((catalog) => {
-        if (active) setState({ status: 'ready', catalog });
-      })
-      .catch(() => {
-        if (active) setState({ status: 'error' });
-      });
+    const load = () => {
+      void loadCatalog()
+        .then((catalog) => {
+          if (active) setState({ status: 'ready', catalog });
+        })
+        .catch(() => {
+          if (active) setState({ status: 'error' });
+        });
+    };
+
+    let cancelScheduledLoad: () => void = () => undefined;
+    if (loadImmediately || attempt > 0) load();
+    else cancelScheduledLoad = scheduleIdleCatalogLoad(load);
 
     return () => {
       active = false;
+      cancelScheduledLoad();
     };
-  }, [attempt]);
+  }, [attempt, loadImmediately]);
 
   const retry = useCallback(() => {
     catalogPromise = undefined;

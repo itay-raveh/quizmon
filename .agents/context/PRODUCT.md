@@ -20,13 +20,13 @@ Quizmon combines one deterministic daily gauntlet with a configurable training l
 
 ## Operating Context
 
-Players open Quizmon in a browser, take the Daily Challenge once, configure a Training round by generation and question type, or visit their Trainer Card. Earning all eight League Badges unlocks the Quizmon League from both the landing screen and Badge Case. They answer with pointer, touch, or number keys and receive an immediately shareable, spoiler-free result. Training can immediately repeat the same configuration. Settings, completed dailies, configuration-specific Training bests, League progress, and the customizable Trainer Card stay in the browser. No account or hosted application backend is required.
+Players open Quizmon in a browser, take the Daily Challenge once, configure a ten-question Training round by mode and generation, or visit their Trainer Card. League Training uses every question type, while Custom Training lets the player choose formats. Earning all eight League Badges unlocks the Quizmon League from both the landing screen and Badge Case. They answer with pointer, touch, or number keys and receive an immediately shareable, spoiler-free result. Training can immediately repeat the same configuration. Settings, completed dailies, separate League and Custom Training bests, League progress, and the customizable Trainer Card stay in the browser. No account or hosted application backend is required.
 
 ## Capabilities and Constraints
 
 - Covers the default Pokémon species from Generations I through IX.
 - Builds a versioned local knowledge catalog from PokéAPI through `pokenode-ts`; live rounds do not depend on API requests.
-- Supports one strict daily attempt, repeatable Training, grouped and explained question formats, configurable generations, 5, 10, or 20-question rounds, sound, and optional Quick transitions.
+- Supports one strict daily attempt, repeatable ten-question Training, a League or Custom mode switch, configurable generations, sound, and optional Quick transitions. League Training enables every question type; only Custom Training exposes the grouped and explained question-type picker.
 - Unlocks one strict 15-question Quizmon League after all eight League Badges are earned. The run covers all 14 standard formats once across all generations, ends with a clue-free Champion question, and ends immediately after one wrong answer.
 - Keeps the same League lineup across reloads and failed retries until the first perfect clear. Champion rematches receive a fresh lineup.
 - Counts broad knowledge progress in both Daily and Training. Quick Attack and Perfect Form require ten-question League Training with every question format enabled; generation choices remain flexible.
