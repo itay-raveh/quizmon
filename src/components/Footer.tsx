@@ -6,22 +6,28 @@ export const Footer = () => {
   return (
     <footer className="site-footer">
       <ul className="site-footer__groups" role="list">
-        <li className="site-footer__group">
+        <li className="site-footer__group site-footer__group--primary">
           <span className="site-footer__credit">
             © {currentYear} {site.authorName}
           </span>
-          <span className="site-footer__credit">
-            Contact:{' '}
-            <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
-          </span>
-          <span className="site-footer__credit">
-            Code and issues:{' '}
-            <a href={site.repositoryUrl} rel="noreferrer" target="_blank">
-              GitHub
-            </a>
-          </span>
+          <a
+            aria-label={`Email Quizmon at ${site.contactEmail}`}
+            className="site-footer__credit"
+            href={`mailto:${site.contactEmail}`}
+          >
+            {site.contactEmail}
+          </a>
+          <a
+            aria-label="Quizmon source code and issue tracker on GitHub"
+            className="site-footer__credit"
+            href={site.repositoryUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            GitHub
+          </a>
         </li>
-        <li className="site-footer__group">
+        <li className="site-footer__group site-footer__group--credits">
           <span className="site-footer__credit">
             Logo:{' '}
             <a
@@ -39,19 +45,19 @@ export const Footer = () => {
             </a>
           </span>
           <span className="site-footer__credit">
-            Pokémon:{' '}
-            <a href={site.pokemonLegalUrl} rel="noreferrer" target="_blank">
-              Nintendo / The Pokémon Company
-            </a>
-          </span>
-          <span className="site-footer__credit">
-            Custom art:{' '}
+            Art:{' '}
             <a
               href="https://www.fiverr.com/beresteyskaya"
               rel="noreferrer"
               target="_blank"
             >
               @beresteyskaya
+            </a>
+          </span>
+          <span className="site-footer__credit site-footer__credit--legal">
+            Pokémon ©{' '}
+            <a href={site.pokemonLegalUrl} rel="noreferrer" target="_blank">
+              Nintendo / The Pokémon Company
             </a>
           </span>
         </li>
