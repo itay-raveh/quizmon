@@ -479,7 +479,7 @@
   .question--with-media .question__prompt,
   .question--with-media .clue-board,
   .question--with-media .champion-search,
-  .question--with-media .new-game {
+  .question--with-media .question__action-slot {
     grid-column: 1 / -1;
   }
 

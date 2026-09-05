@@ -694,6 +694,10 @@
   flex-wrap: wrap;
 }
 
+.answer__types--reserved {
+  visibility: hidden;
+}
+
 .type-badge {
   width: 3.125rem;
   height: 1.25rem;
@@ -773,6 +777,23 @@
 
 .check-answer {
   margin-top: 0.7rem;
+}
+
+.question__action-slot {
+  display: grid;
+  width: 100%;
+  padding-top: 1.05rem;
+}
+
+.question__action-slot > .game-button {
+  grid-area: 1 / 1;
+  margin-top: 0;
+  place-self: start center;
+}
+
+.question__action-reserve {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .new-game {

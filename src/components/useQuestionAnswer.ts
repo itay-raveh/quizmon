@@ -64,13 +64,14 @@ export const useQuestionAnswer = ({
   const questionStartedAt = useRef(elapsedMilliseconds);
 
   useEffect(() => {
+    preloadQuestionImages(question);
     if (nextQuestion) preloadQuestionImages(nextQuestion);
     return () => {
       if (answerTimeout.current !== null) {
         window.clearTimeout(answerTimeout.current);
       }
     };
-  }, [nextQuestion]);
+  }, [nextQuestion, question]);
 
   const advanceAnswer = useCallback(() => {
     if (!answerResult || answerAdvanced.current) return;

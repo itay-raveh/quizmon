@@ -57,6 +57,10 @@ const renderQuestion = (number: number) =>
   );
 
 describe('question transitions', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('moves focus to each new question heading', () => {
     renderQuestion(1);
 
@@ -148,12 +152,25 @@ describe('question transitions', () => {
         />,
       );
 
-      expect(rendered.container.querySelectorAll('.type-badge')).toHaveLength(
-        0,
-      );
+      expect(
+        rendered.container.querySelectorAll(
+          '.answer__types--reserved .type-badge',
+        ),
+      ).toHaveLength(7);
+      expect(
+        rendered.container.querySelectorAll('.answer__types--reserved'),
+      ).toHaveLength(4);
+      expect(
+        screen.getByRole('button', {
+          name: 'Pikachu',
+        }),
+      ).toHaveAccessibleName('Pikachu');
 
       fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
 
+      expect(
+        rendered.container.querySelectorAll('.answer__types--reserved'),
+      ).toHaveLength(0);
       expect(
         rendered.container.querySelectorAll('.answer__types .type-badge'),
       ).toHaveLength(7);
@@ -169,6 +186,22 @@ describe('question transitions', () => {
       ).toBeDisabled();
     },
   );
+
+  it('reserves the normal-mode action row before an answer', () => {
+    renderQuestion(1);
+
+    const actionSlot = document.querySelector('.question__action-slot');
+    expect(actionSlot?.querySelector('button')).toBeNull();
+    expect(
+      actionSlot?.querySelector('.question__action-reserve'),
+    ).not.toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+
+    expect(actionSlot).toContainElement(
+      screen.getByRole('button', { name: 'Next question' }),
+    );
+  });
 
   it('renders Type Check as a visual prompt and reveals the subject types', () => {
     const rendered = render(
@@ -447,7 +480,18 @@ describe('question transitions', () => {
     ).toHaveLength(1);
   });
 
-  it('reveals the evolved Pokémon in Evolution Shift', () => {
+  it('preloads and reveals the evolved Pokémon in Evolution Shift', () => {
+    const preloadedSources: string[] = [];
+    class PreloadImage {
+      decoding = 'auto';
+      fetchPriority = 'auto';
+
+      set src(value: string) {
+        preloadedSources.push(value);
+      }
+    }
+    vi.stubGlobal('Image', PreloadImage);
+
     const rendered = render(
       <Question
         elapsedMilliseconds={0}
@@ -499,6 +543,7 @@ describe('question transitions', () => {
 
     expect(screen.getByText('?')).toBeVisible();
     expect(screen.queryByText('Steelix')).toBeNull();
+    expect(preloadedSources).toContain('https://example.com/steelix.png');
     fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
     expect(screen.getByText('Steelix')).toBeVisible();
     expect(
@@ -682,6 +727,7 @@ describe('question transitions', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     expect(screen.queryByRole('button', { name: 'Next question' })).toBeNull();
+    expect(document.querySelector('.question__action-slot')).toBeNull();
     vi.advanceTimersByTime(299);
     expect(onAnswer).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
