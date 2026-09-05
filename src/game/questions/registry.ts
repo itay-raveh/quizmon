@@ -136,7 +136,7 @@ export const questionRegistry = {
   'stat-showdown': {
     build: buildStatQuestion,
     category: 'stat',
-    description: 'Find the highest base stat among four Pokémon.',
+    description: 'Find the highest or lowest stat among four Pokémon.',
     group: 'battle',
     label: 'Stat showdown',
   },

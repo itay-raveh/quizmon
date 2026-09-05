@@ -36,7 +36,7 @@ export const buildSilhouetteMatchQuestion: QuestionBuilder = (context) => {
       target,
       target.name,
       options,
-      pokemonPrompt(target, 'Which silhouette belongs to ', '?'),
+      pokemonPrompt(target, 'Find ', ''),
     ),
     concealOptionLabels: true,
     optionVisuals: getOptionVisuals(context, options, undefined, true),

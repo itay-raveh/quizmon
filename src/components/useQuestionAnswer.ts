@@ -30,6 +30,9 @@ const QUICK_FEEDBACK_DELAY = 300;
 const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
     ...(question.media.kind === 'none' ? [] : [question.media.src]),
+    ...(question.visual?.kind === 'evolution-shift'
+      ? [question.visual.evolution.src]
+      : []),
     ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
   ];
 

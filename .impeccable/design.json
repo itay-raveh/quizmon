@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T08:02:23Z",
+  "generatedAt": "2026-09-05T08:45:52Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -541,8 +541,8 @@
       "name": "Question Surface",
       "kind": "card",
       "refersTo": "game-panel",
-      "description": "The single warm reading and interaction surface used during a round.",
-      "html": "<section class=\"ds-game-panel\"><div class=\"ds-topline\"><span>001 / 010</span><span class=\"ds-timer\">00:00:08</span></div><h2>Pokédex scan</h2><p>Who is this Pokémon?</p></section>",
+      "description": "The single warm interaction surface used for direct prompts and compact visual questions during a round.",
+      "html": "<section class=\"ds-game-panel\"><div class=\"ds-topline\"><span>001 / 010</span><span class=\"ds-timer\">00:00:08</span></div><h2>Stat showdown</h2><p>Which one has the highest:</p><strong>Speed ↑</strong></section>",
       "css": ".ds-game-panel { display: grid; width: min(32rem, 94vw); padding: clamp(1rem, 2.4vw, 1.5rem); justify-items: center; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: 0 0.28rem 0 var(--yellow, #eed23e), 0 0.62rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); } .ds-topline { display: flex; width: 100%; align-items: center; justify-content: space-between; color: var(--navy, #083b7e); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em; } .ds-timer { padding: 0.35rem 0.58rem; color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); border: 2px solid var(--navy, #083b7e); border-radius: 0.3rem; box-shadow: 0 0.16rem 0 var(--yellow, #eed23e); } .ds-game-panel h2 { margin: 0.85rem 0 0; color: var(--navy, #083b7e); font-size: clamp(1.65rem, 4.5vw, 2.3rem); font-weight: 800; line-height: 1.05; } .ds-game-panel p { margin: 0.8rem 0; font-weight: 650; line-height: 1.45; }"
     },
     {
@@ -629,6 +629,7 @@
       "Do keep landing controls small and let open scenery dominate the first viewport.",
       "Do use Gabarito for interface text and reserve Martian Mono for compact data and scores.",
       "Do use classic front-facing pixel sprites as compact gameplay information and preserve their hard edges when scaled.",
+      "Do turn changing question data into one compact diagram while keeping the complete text prompt available to assistive technology.",
       "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
       "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",
       "Do prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.",
@@ -639,6 +640,7 @@
       "Don't use glass panels, blurred scenery, gradients, or diffuse floating-card shadows.",
       "Don't introduce pixel-font overkill, oversized uppercase labels, or decorative game glyphs.",
       "Don't force Pokémon sprites onto type, move, or ability choices that do not represent Pokémon.",
+      "Don't repeat a type name in visible question copy when the adjacent type artwork already communicates it.",
       "Don't add navigation, marketing copy, characters, badges, ornamental frames, or ball symbols beyond the functional Daily Combo medallion to fill open space.",
       "Don't redesign, redraw, crop, blur, or place the wordmark inside another container.",
       "Don't let decoration obscure answers, progress, score, modifiers, or keyboard focus."

@@ -88,7 +88,7 @@ export const QuestionAnswers = ({
                 ? undefined
                 : optionSelected
             }
-            className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''}`.trim()}
+            className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             clickSound="none"
             disabled={answered}
             key={option}
@@ -107,26 +107,22 @@ export const QuestionAnswers = ({
                     height="96"
                   />
                 </span>
-                <span className="answer__nameplate">
-                  {concealed ? (
-                    <span className="answer__name">Silhouette {index + 1}</span>
-                  ) : (
-                    <>
-                      <small aria-hidden="true">
-                        No. {String(visual.dexNumber).padStart(4, '0')}
-                      </small>
-                      <span className="answer__name">
-                        {formatPokemonName(option)}
-                      </span>
-                      {revealsOptionTypes ? (
-                        <TypeBadges
-                          className="answer__types"
-                          types={visual.types}
-                        />
-                      ) : null}
-                    </>
-                  )}
-                </span>
+                {concealed ? null : (
+                  <span className="answer__nameplate">
+                    <small aria-hidden="true">
+                      No. {String(visual.dexNumber).padStart(4, '0')}
+                    </small>
+                    <span className="answer__name">
+                      {formatPokemonName(option)}
+                    </span>
+                    {revealsOptionTypes ? (
+                      <TypeBadges
+                        className="answer__types"
+                        types={visual.types}
+                      />
+                    ) : null}
+                  </span>
+                )}
               </>
             ) : hasTypeOptionBadges ? (
               <TypeBadges className="answer__type-choice" types={[option]} />

@@ -410,6 +410,69 @@ describe('question building', () => {
     );
     expect(multiSelect?.answer.correctOptions.length).toBeGreaterThan(1);
     expect(multiSelect?.options).toHaveLength(4);
+    expect(multiSelect?.visual).toMatchObject({ kind: 'type-roundup' });
+  });
+
+  it('builds both Stat Showdown directions with a unique extreme answer', () => {
+    const questions = Array.from(
+      { length: 40 },
+      (_, index) =>
+        buildQuestions(
+          catalog,
+          {
+            ...defaultModifiers,
+            questionTypes: ['stat-showdown'],
+            limit: 1,
+          },
+          createSeededRandom(`stat-direction-${index}`),
+        )[0],
+    ).filter((candidate) => candidate !== undefined);
+    const directions = new Set(
+      questions.map((candidate) =>
+        candidate.visual?.kind === 'stat-showdown'
+          ? candidate.visual.direction
+          : undefined,
+      ),
+    );
+
+    expect(directions).toEqual(new Set(['highest', 'lowest']));
+    for (const candidate of questions) {
+      expect(candidate.visual?.kind).toBe('stat-showdown');
+      if (candidate.visual?.kind !== 'stat-showdown') continue;
+      const stat = candidate.visual.stat;
+      const correct = getCorrectOptions(candidate)[0]!;
+      const correctValue = catalog.pokemon[correct]!.stats[stat];
+      const distractorValues = candidate.options
+        .filter((option) => option !== correct)
+        .map((option) => catalog.pokemon[option]!.stats[stat]);
+
+      expect(getQuestionPromptText(candidate.prompt)).not.toContain('base');
+      if (candidate.visual.direction === 'highest') {
+        expect(distractorValues.every((value) => value < correctValue)).toBe(
+          true,
+        );
+      } else {
+        expect(distractorValues.every((value) => value > correctValue)).toBe(
+          true,
+        );
+      }
+    }
+  });
+
+  it('uses an exact two-times weakness for the Type Matchup diagram', () => {
+    const [question] = buildQuestions(
+      catalog,
+      { ...defaultModifiers, questionTypes: ['type-matchup'], limit: 1 },
+      createSeededRandom('type-matchup-visual'),
+    );
+    const attackType = getCorrectOptions(question!)[0]!;
+    const defender = catalog.pokemon[question!.pokemonName]!;
+
+    expect(question?.visual).toEqual({
+      kind: 'type-matchup',
+      multiplier: 2,
+    });
+    expect(attackMultiplier(attackType, defender.types)).toBe(2);
   });
 
   it('builds Counter Pick with one genuine type advantage', () => {
@@ -419,7 +482,12 @@ describe('question building', () => {
       createSeededRandom('counter-pick'),
     );
     expect(question?.title).toBe('Counter pick');
+    expect(question?.media.kind).toBe('pixel-sprite');
     expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
+    expect(question?.visual).toEqual({
+      kind: 'counter-pick',
+      multiplier: 2,
+    });
 
     const defender = catalog.pokemon[question!.pokemonName]!;
     const correct = getCorrectOptions(question!)[0];
@@ -430,6 +498,11 @@ describe('question building', () => {
       );
       expect(hasAdvantage).toBe(option === correct);
     }
+    expect(
+      catalog.pokemon[correct!]!.types.some(
+        (type) => attackMultiplier(type, defender.types) === 2,
+      ),
+    ).toBe(true);
   });
 
   it('builds Evolution Shift from a real typing change', () => {
@@ -446,6 +519,16 @@ describe('question building', () => {
     const correct = getCorrectOptions(question!)[0]!;
     expect(target.types).not.toContain(correct);
     expect(evolution.types).toContain(correct);
+    expect(question?.visual).toEqual({
+      evolution: {
+        dexNumber: evolution.id,
+        name: target.evolvesTo[0],
+        src: evolution.sprite,
+        types: evolution.types,
+      },
+      gainedType: correct,
+      kind: 'evolution-shift',
+    });
   });
 
   it('builds Battle View from the target back sprite', () => {
