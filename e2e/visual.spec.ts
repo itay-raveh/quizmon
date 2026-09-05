@@ -88,8 +88,35 @@ test('matches the mobile Trainer Card', async ({ page }) => {
         hasBeenRevealed: true,
         name: 'Leaf',
         partnerPokemon: 'pikachu',
-        specialty: null,
+        specialty: 'type',
         version: 1,
+      }),
+    );
+    window.localStorage.setItem(
+      'quizmon.results.v2',
+      JSON.stringify({
+        daily: {},
+        progress: {
+          championAnswersWithoutClues: 0,
+          correctCategories: {
+            ability: 13,
+            description: 4,
+            evolution: 7,
+            identity: 8,
+            matchup: 2,
+            move: 6,
+            stat: 9,
+            type: 46,
+          },
+          correctGenerations: {},
+          correctPokemon: [],
+          correctQuestionTypes: {},
+          masteryRounds: 0,
+          quickAttackCompleted: false,
+          version: 2,
+        },
+        streak: { creditedDates: [], version: 1 },
+        training: {},
       }),
     );
   });
@@ -98,6 +125,20 @@ test('matches the mobile Trainer Card', async ({ page }) => {
 
   const card = page.getByRole('article', { name: 'Trainer Card front' });
   await expect(card).toHaveScreenshot('trainer-card-mobile.webp', {
+    animations: 'disabled',
+  });
+
+  await page.getByRole('button', { name: 'Badges', exact: true }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Card badge case' }),
+  ).toHaveScreenshot('trainer-badge-case-mobile.webp', {
+    animations: 'disabled',
+  });
+
+  await page.getByRole('button', { name: 'Titles', exact: true }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Titles collection' }),
+  ).toHaveScreenshot('trainer-titles-mobile.webp', {
     animations: 'disabled',
   });
 });

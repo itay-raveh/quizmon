@@ -14,7 +14,10 @@ import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { getUtcDate } from '@/game/daily';
 import type { usePokemonCatalog } from '@/game/catalog';
 import type { TrainerStats } from '@/game/storage';
-import { isLeagueUnlocked, type TrainerCardFace } from '@/game/trainer';
+import {
+  isLeagueUnlocked,
+  type TrainerView as TrainerDestination,
+} from '@/game/trainer';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import type { AnswerResult, GameResult, Modifiers } from '@/game/types';
 import type { GameSession } from './session';
@@ -57,15 +60,15 @@ interface SettingsView {
   state: { initialTab: SettingsTab } | null;
 }
 
-interface TrainerView {
+interface TrainerViewState {
   close: () => void;
-  face: TrainerCardFace;
   isOpen: boolean;
-  open: (face: TrainerCardFace) => void;
+  open: (view: TrainerDestination) => void;
   profile: TrainerProfile;
-  showFace: (face: TrainerCardFace) => void;
+  showView: (view: TrainerDestination) => void;
   stats: TrainerStats;
   updateProfile: (profile: TrainerProfile) => void;
+  view: TrainerDestination;
 }
 
 interface TrainingView {
@@ -86,7 +89,7 @@ interface AppViewProps {
   question: QuestionView;
   session: GameSession;
   settings: SettingsView;
-  trainer: TrainerView;
+  trainer: TrainerViewState;
   training: TrainingView;
 }
 
@@ -106,14 +109,14 @@ const AppScreen = ({
       <TrainerPassport
         catalog={catalogState.catalog}
         onBack={trainer.close}
-        onFaceChange={trainer.showFace}
+        onViewChange={trainer.showView}
         onProfileChange={trainer.updateProfile}
         onStartLeague={() => {
           trainer.close();
           league.start();
         }}
         profile={trainer.profile}
-        requestedFace={trainer.face}
+        requestedView={trainer.view}
         stats={trainer.stats}
       />
     );

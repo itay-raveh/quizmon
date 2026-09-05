@@ -166,7 +166,7 @@ describe('results summary', () => {
     );
 
     const progress = screen.getByRole('button', {
-      name: /Trainer progress.*Specialty unlocked.*Type Specialist.*Many Paths.*6 \/ 10.*\+2/,
+      name: /Trainer progress.*Trainer Title unlocked.*Type Specialist.*Many Paths.*6 \/ 10.*\+2/,
     });
     expect(progress).toBeVisible();
     expect(
@@ -174,6 +174,40 @@ describe('results summary', () => {
     ).toHaveTextContent('Type Specialist');
     progress.click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
+
+    rendered.rerender(
+      <Results
+        bestResult={result}
+        dailyStreak={0}
+        isNewBest={false}
+        mode={{ kind: 'training' }}
+        modifiers={defaultModifiers}
+        onNewGame={vi.fn()}
+        onOpenTrainerCard={onOpenTrainerCard}
+        onOpenSettings={vi.fn()}
+        onRetryLeague={vi.fn()}
+        onTrainAgain={vi.fn()}
+        result={result}
+        resultSaved
+        progressChanges={[
+          {
+            current: 10,
+            delta: 1,
+            earned: true,
+            goal: 10,
+            kind: 'specialty',
+            label: 'Type Specialist',
+            specialty: 'type',
+          },
+        ]}
+      />,
+    );
+    screen
+      .getByRole('button', {
+        name: /Trainer progress.*Open Trainer Titles.*Type Specialist/,
+      })
+      .click();
+    expect(onOpenTrainerCard).toHaveBeenLastCalledWith('titles');
   });
 
   it('names a newly earned League Badge', () => {

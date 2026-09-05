@@ -123,10 +123,17 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   await expectNoHorizontalClipping(page);
   await expectCardContentToFit(page);
 
-  await page.getByRole('button', { name: 'View badges' }).click();
+  await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
     page.getByRole('article', { name: 'Trainer Card badge case' }),
   ).toBeVisible();
   await expectNoHorizontalClipping(page);
   await expectCardContentToFit(page);
+
+  await page.getByRole('button', { name: 'Titles', exact: true }).click();
+  await expect(
+    page.getByRole('article', { name: 'Trainer Titles collection' }),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await expectNoHorizontalClipping(page);
 });

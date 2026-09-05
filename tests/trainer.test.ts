@@ -2,6 +2,7 @@ import {
   getCardFinish,
   getEarnedTrainerBadgeCount,
   getQualifiedTrainerSpecialties,
+  getTrainerTitles,
   getTrainerProgressChanges,
   getTrainerBadges,
   getTrainerRank,
@@ -194,15 +195,33 @@ describe('Trainer Card progression', () => {
   });
 
   it('qualifies specialties through correct answers without selecting one', () => {
-    expect(
-      getQualifiedTrainerSpecialties(
-        stats({
-          correctCategories: {
-            identity: 10,
-            type: 9,
-          },
+    const specialtyStats = stats({
+      correctCategories: {
+        identity: 10,
+        type: 9,
+      },
+    });
+
+    expect(getQualifiedTrainerSpecialties(specialtyStats)).toEqual([
+      'identity',
+    ]);
+    expect(getTrainerTitles(specialtyStats, 'identity')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          current: 10,
+          earned: true,
+          equipped: true,
+          label: 'Pokédex Specialist',
+          specialty: 'identity',
         }),
-      ),
-    ).toEqual(['identity']);
+        expect.objectContaining({
+          current: 9,
+          earned: false,
+          equipped: false,
+          label: 'Type Specialist',
+          specialty: 'type',
+        }),
+      ]),
+    );
   });
 });

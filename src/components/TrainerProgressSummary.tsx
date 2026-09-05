@@ -1,10 +1,11 @@
-import type { TrainerCardFace, TrainerProgressChange } from '@/game/trainer';
+import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import { GameButton } from './GameButton';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
+import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerProgressSummaryProps {
   leagueVictory: boolean;
-  onOpenTrainerCard: (face: TrainerCardFace) => void;
+  onOpenTrainerCard: (view: TrainerView) => void;
   progressChanges: TrainerProgressChange[];
 }
 
@@ -17,34 +18,30 @@ export const TrainerProgressSummary = ({
 
   const earnedChanges = progressChanges.filter(({ earned }) => earned);
   const ongoingChanges = progressChanges.filter(({ earned }) => !earned);
-  const face =
+  const view: TrainerView =
     leagueVictory || progressChanges.some(({ kind }) => kind === 'badge')
       ? 'badges'
-      : 'front';
+      : 'titles';
+  const destinationLabel =
+    view === 'badges' ? 'Open badge case' : 'Open Trainer Titles';
 
   const renderMark = (change: TrainerProgressChange) =>
     change.kind === 'badge' ? (
       <TrainerBadgeMark earned={change.earned} id={change.id} />
     ) : (
-      <span
-        className="trainer-progress-change__specialty-mark"
-        data-earned={change.earned}
-        aria-hidden="true"
-      >
-        Title
-      </span>
+      <TrainerTitleMark earned={change.earned} specialty={change.specialty} />
     );
 
   return (
     <GameButton
       className="trainer-progress-summary"
-      onClick={() => onOpenTrainerCard(face)}
+      onClick={() => onOpenTrainerCard(view)}
       tone="quiet"
     >
       <span className="trainer-progress-summary__heading">
         <strong>Trainer progress</strong>
         <small>
-          Open Trainer Card{' '}
+          {destinationLabel}{' '}
           <span
             className="trainer-progress-summary__chevron"
             aria-hidden="true"
@@ -80,7 +77,7 @@ export const TrainerProgressSummary = ({
                   <small>
                     {change.kind === 'badge'
                       ? 'League Badge earned'
-                      : 'Specialty unlocked'}
+                      : 'Trainer Title unlocked'}
                   </small>
                   <strong>{change.label}</strong>
                 </span>
