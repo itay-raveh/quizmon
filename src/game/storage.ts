@@ -23,6 +23,7 @@ import {
   type QuestionCategory,
   type QuestionType,
 } from './types';
+import { isFiniteNonnegative, isRecord } from './validation';
 
 const RESULTS_KEY = 'quizmon.results.v2';
 const STREAK_VERSION = 1;
@@ -91,7 +92,7 @@ const emptyResults = (): SavedResults => ({
 });
 
 const normalizeLeague = (value: unknown): LeagueState => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+  if (!isRecord(value)) {
     return { completed: false, seed: null };
   }
 
@@ -108,9 +109,7 @@ const normalizeLeague = (value: unknown): LeagueState => {
 };
 
 const readResultRecord = (value: unknown): Record<string, GameResult> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, GameResult>)
-    : {};
+  isRecord(value) ? (value as Record<string, GameResult>) : {};
 
 const normalizeStreak = (
   streak: Partial<DailyStreakState> | undefined,
@@ -188,14 +187,11 @@ const normalizeCounts = <Key extends string>(
   value: unknown,
   allowedKeys: readonly Key[],
 ): Partial<Record<Key, number>> =>
-  value && typeof value === 'object' && !Array.isArray(value)
+  isRecord(value)
     ? (Object.fromEntries(
         Object.entries(value).filter(
           ([key, count]) =>
-            allowedKeys.includes(key as Key) &&
-            typeof count === 'number' &&
-            Number.isFinite(count) &&
-            count >= 0,
+            allowedKeys.includes(key as Key) && isFiniteNonnegative(count),
         ),
       ) as Partial<Record<Key, number>>)
     : {};
@@ -207,18 +203,17 @@ const normalizeProgress = (
     progress?.version !== TRAINER_PROGRESS_VERSION ||
     !Array.isArray(progress.correctPokemon) ||
     typeof progress.quickAttackCompleted !== 'boolean' ||
-    !progress.correctCategories ||
-    typeof progress.correctCategories !== 'object'
+    !isRecord(progress.correctCategories)
   ) {
     return emptyProgress();
   }
 
   return {
-    championAnswersWithoutClues:
-      typeof progress.championAnswersWithoutClues === 'number' &&
-      Number.isFinite(progress.championAnswersWithoutClues)
-        ? Math.max(0, Math.trunc(progress.championAnswersWithoutClues))
-        : 0,
+    championAnswersWithoutClues: isFiniteNonnegative(
+      progress.championAnswersWithoutClues,
+    )
+      ? Math.max(0, Math.trunc(progress.championAnswersWithoutClues))
+      : 0,
     correctCategories: normalizeCounts(
       progress.correctCategories,
       questionCategories,
@@ -238,11 +233,9 @@ const normalizeProgress = (
       progress.correctQuestionTypes,
       questionTypes,
     ),
-    masteryRounds:
-      typeof progress.masteryRounds === 'number' &&
-      Number.isFinite(progress.masteryRounds)
-        ? Math.max(0, Math.trunc(progress.masteryRounds))
-        : 0,
+    masteryRounds: isFiniteNonnegative(progress.masteryRounds)
+      ? Math.max(0, Math.trunc(progress.masteryRounds))
+      : 0,
     quickAttackCompleted: progress.quickAttackCompleted,
     version: TRAINER_PROGRESS_VERSION,
   };
@@ -281,7 +274,7 @@ const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
 
 const readResults = (): SavedResults => {
   const value = readStoredJson('localStorage', RESULTS_KEY);
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+  if (!isRecord(value)) {
     return emptyResults();
   }
 

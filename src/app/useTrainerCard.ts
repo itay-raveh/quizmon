@@ -6,6 +6,7 @@ import {
   type TrainerProfile,
 } from '@/game/trainer-profile';
 import type { TrainerCardFace } from '@/game/trainer';
+import { isRecord } from '@/game/validation';
 import { parseTrainerRoute, setTrainerRoute } from './trainer-route';
 
 export const useTrainerCard = () => {
@@ -37,12 +38,7 @@ export const useTrainerCard = () => {
 
   const close = useCallback(() => {
     const historyState: unknown = window.history.state;
-    if (
-      historyState !== null &&
-      typeof historyState === 'object' &&
-      'quizmonTrainerCard' in historyState &&
-      historyState.quizmonTrainerCard === true
-    ) {
+    if (isRecord(historyState) && historyState.quizmonTrainerCard === true) {
       window.history.back();
       return;
     }
