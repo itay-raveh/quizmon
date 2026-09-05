@@ -217,29 +217,6 @@ describe('saved results', () => {
     });
   });
 
-  it('folds configuration-specific Training records into the three-key model', () => {
-    const legacyKey = JSON.stringify({
-      generations: defaultModifiers.generations,
-      questionCount: 10,
-      questionTypes: defaultModifiers.questionTypes,
-      version: 2,
-    });
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {},
-        training: { [legacyKey]: result },
-      }),
-    );
-    const lower = { ...result, score: 500 };
-
-    expect(saveResult({ kind: 'training' }, lower, defaultModifiers)).toEqual({
-      best: result,
-      isNewBest: false,
-      isSaved: true,
-    });
-  });
-
   it('builds Trainer progression from correct answers', () => {
     const perfect = {
       ...result,

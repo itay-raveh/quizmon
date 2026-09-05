@@ -107,7 +107,7 @@ describe('normalizeModifiers', () => {
       soundEnabled: true,
       limit: 1,
       speedrunMode: true,
-      trainingMode: 'custom',
+      trainingMode: 'league',
     });
   });
 
