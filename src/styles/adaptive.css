@@ -492,23 +492,6 @@
   }
 }
 
-@media (max-width: 22rem) {
-  .question-visual__evolution-types {
-    gap: 0.15rem;
-  }
-
-  .question-visual__evolution-types > .type-badges .type-badge,
-  .question-visual__evolution-types .question-visual__type-answer .type-badge,
-  .question-visual__evolution-types .question-visual__mystery-type {
-    width: 2.625rem;
-    height: 1.125rem;
-  }
-
-  .question-visual__type-plus {
-    font-size: var(--text-small);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
