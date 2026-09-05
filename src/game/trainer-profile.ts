@@ -1,6 +1,7 @@
 import { readStoredJson, writeStoredJson } from './browser-storage';
 import { getUtcDate, parseDailyDate } from './daily';
 import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
+import { isRecord } from './validation';
 
 const TRAINER_PROFILE_KEY = 'quizmon.trainer-profile.v1';
 const TRAINER_PROFILE_VERSION = 1;
@@ -32,7 +33,7 @@ const createTrainerProfile = (): TrainerProfile => ({
 });
 
 const normalizeTrainerProfile = (value: unknown): TrainerProfile | null => {
-  if (!value || typeof value !== 'object') return null;
+  if (!isRecord(value)) return null;
   const profile = value as Partial<TrainerProfile>;
   if (
     profile.version !== TRAINER_PROFILE_VERSION ||
