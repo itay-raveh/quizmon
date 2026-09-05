@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { GameButton } from './GameButton';
+import { useModalDialog } from './dialog';
 
 interface LeaveGameDialogProps {
   onCancel: () => void;
@@ -10,15 +10,7 @@ export const LeaveGameDialog = ({
   onCancel,
   onConfirm,
 }: LeaveGameDialogProps) => {
-  const dialog = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    return () => {
-      if (element?.open) element.close();
-    };
-  }, []);
+  const dialog = useModalDialog();
 
   const cancel = () => {
     dialog.current?.close();

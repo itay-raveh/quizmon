@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
+import { DialogCloseButton } from './DialogCloseButton';
+import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
 import { ExperienceSettings } from './ExperienceSettings';
 import { GameButton } from './GameButton';
 import { TrainingSettings } from './TrainingSettings';
@@ -31,7 +33,7 @@ export const ModifiersDialog = ({
     limit: 10,
   }));
   const [submitted, setSubmitted] = useState(false);
-  const dialog = useRef<HTMLDialogElement>(null);
+  const dialog = useModalDialog();
   const dialogTitle = useRef<HTMLHeadingElement>(null);
   const generationsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
@@ -44,15 +46,6 @@ export const ModifiersDialog = ({
     () => getTrainingSettingsValidation(catalog, draft),
     [catalog, draft],
   );
-
-  useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    dialogTitle.current?.focus();
-    return () => {
-      if (element?.open) element.close();
-    };
-  }, []);
 
   const closeDialog = () => {
     dialog.current?.close();
@@ -103,29 +96,14 @@ export const ModifiersDialog = ({
         closeDialog();
       }}
       onPointerDown={(event) => {
-        const bounds = event.currentTarget.getBoundingClientRect();
-        const outside =
-          event.clientX < bounds.left ||
-          event.clientX > bounds.right ||
-          event.clientY < bounds.top ||
-          event.clientY > bounds.bottom;
-        if (outside) closeDialog();
+        if (isDialogBackdropPointerDown(event)) closeDialog();
       }}
     >
       <header className="modifiers-dialog__header">
         <h2 id="modifiers-title" ref={dialogTitle} tabIndex={-1}>
           Settings
         </h2>
-        <button
-          className="dialog-close"
-          aria-label="Close settings"
-          onClick={closeDialog}
-          type="button"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
-        </button>
+        <DialogCloseButton label="Close settings" onClick={closeDialog} />
       </header>
 
       <div

@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
 import type { TrainerBadge } from '@/game/trainer';
+import { DialogCloseButton } from './DialogCloseButton';
+import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 
 interface TrainerBadgeDialogProps {
@@ -11,16 +12,8 @@ export const TrainerBadgeDialog = ({
   badge,
   onClose,
 }: TrainerBadgeDialogProps) => {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const dialog = useModalDialog();
   const progress = Math.min(badge.current, badge.goal);
-
-  useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    return () => {
-      if (element?.open) element.close();
-    };
-  }, []);
 
   const closeDialog = () => {
     dialog.current?.close();
@@ -37,28 +30,16 @@ export const TrainerBadgeDialog = ({
         closeDialog();
       }}
       onPointerDown={(event) => {
-        const bounds = event.currentTarget.getBoundingClientRect();
-        const outside =
-          event.clientX < bounds.left ||
-          event.clientX > bounds.right ||
-          event.clientY < bounds.top ||
-          event.clientY > bounds.bottom;
-        if (outside) closeDialog();
+        if (isDialogBackdropPointerDown(event)) closeDialog();
       }}
     >
       <header>
         <h2 id="trainer-badge-title">{badge.label}</h2>
-        <button
+        <DialogCloseButton
           autoFocus
-          aria-label="Close badge details"
-          className="dialog-close"
+          label="Close badge details"
           onClick={closeDialog}
-          type="button"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M6 6l12 12M18 6 6 18" />
-          </svg>
-        </button>
+        />
       </header>
       <div className="trainer-badge-dialog__body">
         <TrainerBadgeMark earned={badge.earned} id={badge.id} />
