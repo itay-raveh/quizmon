@@ -27,10 +27,6 @@ npm run data:update
 
 ## Daily reminders
 
-After a player finishes their first Daily, Quizmon offers an optional reminder for 8:00 AM in their time zone. The browser permission request only appears after the player chooses **Remind me**.
-
-Each enabled browser stores an anonymous push subscription, its time zone, and the last completed Daily in a Cloudflare Durable Object. Quizmon does not require an account, name, or email address. Players can turn reminders off in **Settings → Experience** or in their browser settings.
-
 The private VAPID key is stored as `VAPID_PRIVATE_KEY` in GitHub's `production` environment. CI passes it to Wrangler only during deployment, while the matching public key stays in [`src/notifications/config.ts`](src/notifications/config.ts).
 
 ## License
