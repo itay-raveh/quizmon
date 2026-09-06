@@ -24,6 +24,9 @@ test('public information is readable and linked without JavaScript', async ({
     'href',
     'https://quizmon.raveh.dev/about',
   );
+  await expect(
+    page.locator('link[rel="alternate"][type="text/markdown"]'),
+  ).toHaveAttribute('href', 'https://quizmon.raveh.dev/index.md');
   await page.getByRole('link', { name: 'Privacy', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Privacy and Cookies', exact: true }),
@@ -33,6 +36,47 @@ test('public information is readable and linked without JavaScript', async ({
     page.getByRole('heading', { name: 'Terms of Use', exact: true }),
   ).toBeVisible();
   await context.close();
+});
+
+test('information pages keep distinct metadata and canonical URLs with query parameters', async ({
+  page,
+}) => {
+  const descriptions = new Set<string>();
+  for (const [path, title] of [
+    ['/about', 'About & How to Play'],
+    ['/privacy', 'Privacy and Cookies'],
+    ['/terms', 'Terms of Use'],
+  ] as const) {
+    await page.goto(`${path}?ref=share`);
+    await expect(page.locator('title')).toHaveCount(1);
+    await expect(page).toHaveTitle(`${title} | Quizmon`);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('meta[name="description"]')).toHaveCount(1);
+    const description = await page
+      .locator('meta[name="description"]')
+      .getAttribute('content');
+    expect(description).toBeTruthy();
+    descriptions.add(description ?? '');
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://quizmon.raveh.dev${path}`,
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      'content',
+      `https://quizmon.raveh.dev${path}`,
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      `${title} | Quizmon`,
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await expect(page.locator('nav a[aria-current="page"]')).toHaveAttribute(
+      'href',
+      path,
+    );
+  }
+  expect(descriptions.size).toBe(3);
 });
 
 test('offline navigation preserves content pages, game links, and missing-page status', async ({
@@ -68,6 +112,12 @@ test('offline navigation preserves content pages, game links, and missing-page s
   await expect(
     page.getByRole('heading', { name: 'Page not found', exact: true }),
   ).toBeVisible();
+  await expect(page).toHaveTitle('Page Not Found | Quizmon');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    'content',
+    'noindex',
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
   await page.goto('/?trainer=card');
   await expect(page.locator('#root')).not.toBeEmpty();
   await expect(

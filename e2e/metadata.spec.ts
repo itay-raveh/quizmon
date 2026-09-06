@@ -4,12 +4,10 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page).toHaveTitle(
-    'Quizmon: The Ultimate Pokémon Knowledge Test',
-  );
+  await expect(page).toHaveTitle('Quizmon: Pokémon Quiz & Daily Challenge');
   await expect(page.locator('h1')).toHaveCount(1);
   await expect(page.locator('h1')).toHaveText(
-    'Quizmon: The Ultimate Pokémon Knowledge Test',
+    'Quizmon: Pokémon Quiz & Daily Challenge',
   );
   await expect(page.locator('meta[name="description"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
@@ -18,14 +16,14 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   );
   await expect(
     page.locator('link[rel="alternate"][type="text/markdown"]'),
-  ).toHaveAttribute('href', 'https://quizmon.raveh.dev/index.md');
+  ).toHaveCount(0);
   await expect(page.locator('link[rel="describedby"]')).toHaveAttribute(
     'href',
     'https://quizmon.raveh.dev/llms.txt',
   );
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     'content',
-    'Quizmon: The Ultimate Pokémon Knowledge Test',
+    'Quizmon: Pokémon Quiz & Daily Challenge',
   );
   await expect(page.locator('meta[property="og:description"]')).toHaveCount(1);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
@@ -40,7 +38,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
 
   const documentResponse = await page.request.get('/');
   expect(await documentResponse.text()).toContain(
-    '<div id="root"><h1 id="landing-title" class="visually-hidden">Quizmon: The Ultimate Pokémon Knowledge Test</h1></div>',
+    '<div id="root"><h1 id="landing-title" class="visually-hidden">Quizmon: Pokémon Quiz & Daily Challenge</h1></div>',
   );
 
   const faviconResponse = await page.request.get('/favicon.ico');
@@ -58,12 +56,26 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
       '{}',
   );
   expect(structuredData).toMatchObject({
-    '@type': ['VideoGame', 'WebApplication'],
-    name: 'Quizmon',
-    url: 'https://quizmon.raveh.dev/',
-    applicationCategory: 'GameApplication',
-    isAccessibleForFree: true,
-    offers: { price: 0 },
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': 'https://quizmon.raveh.dev/#website',
+        name: 'Quizmon',
+        url: 'https://quizmon.raveh.dev/',
+        about: { '@id': 'https://quizmon.raveh.dev/#game' },
+      },
+      {
+        '@type': ['VideoGame', 'WebApplication'],
+        '@id': 'https://quizmon.raveh.dev/#game',
+        name: 'Quizmon',
+        url: 'https://quizmon.raveh.dev/',
+        applicationCategory: 'GameApplication',
+        isAccessibleForFree: true,
+        playMode: 'https://schema.org/SinglePlayer',
+        offers: { price: 0 },
+      },
+    ],
   });
 
   const manifestResponse = await page.request.get('/site.webmanifest');
@@ -74,7 +86,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   await expect(manifestResponse.json()).resolves.toMatchObject({
     name: 'Quizmon',
     description:
-      'Take the five-question Pokémon Daily Challenge each day, then practice types, moves, evolutions, stats, and more.',
+      'Play a free Pokémon quiz with a five-question Daily Challenge and unlimited Training. Test types, evolutions, moves, and more. No account needed.',
     display: 'standalone',
     icons: [
       {

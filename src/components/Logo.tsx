@@ -20,7 +20,7 @@ export const Logo = () => (
     <img
       className="logo"
       src={wordmark}
-      alt={site.title}
+      alt={`${site.name}: ${site.tagline}`}
       fetchPriority="high"
       height="456"
       width="992"

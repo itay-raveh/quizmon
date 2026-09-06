@@ -98,21 +98,34 @@ ${site.name} is a free, unofficial browser game with no accounts. Player setting
 
 export const structuredData = JSON.stringify({
   '@context': 'https://schema.org',
-  '@type': ['VideoGame', 'WebApplication'],
-  name: site.name,
-  description: site.description,
-  url: site.url,
-  image: absoluteSiteUrl(site.socialImage.path),
-  inLanguage: site.language,
-  applicationCategory: 'GameApplication',
-  operatingSystem: 'Any',
-  playMode: 'SinglePlayer',
-  isAccessibleForFree: true,
-  offers: {
-    '@type': 'Offer',
-    price: 0,
-    priceCurrency: 'USD',
-  },
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': absoluteSiteUrl('/#website'),
+      name: site.name,
+      url: site.url,
+      inLanguage: site.language,
+      about: { '@id': absoluteSiteUrl('/#game') },
+    },
+    {
+      '@type': ['VideoGame', 'WebApplication'],
+      '@id': absoluteSiteUrl('/#game'),
+      name: site.name,
+      description: site.description,
+      url: site.url,
+      image: absoluteSiteUrl(site.socialImage.path),
+      inLanguage: site.language,
+      applicationCategory: 'GameApplication',
+      operatingSystem: 'Any',
+      playMode: 'https://schema.org/SinglePlayer',
+      isAccessibleForFree: true,
+      offers: {
+        '@type': 'Offer',
+        price: 0,
+        priceCurrency: 'USD',
+      },
+    },
+  ],
 });
 
 export const generatedAssets = [

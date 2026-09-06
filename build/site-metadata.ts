@@ -49,11 +49,6 @@ const tags: HtmlTagDescriptor[] = [
   meta('name', 'theme-color', site.themeColor),
   {
     tag: 'link',
-    attrs: { rel: 'alternate', type: 'text/markdown', href: markdownUrl },
-    injectTo: 'head',
-  },
-  {
-    tag: 'link',
     attrs: { rel: 'describedby', type: 'text/markdown', href: llmsUrl },
     injectTo: 'head',
   },
@@ -105,7 +100,26 @@ export const siteMetadata = (): Plugin => ({
                 { tag: 'title', children: title, injectTo: 'head' },
                 meta('name', 'robots', 'noindex'),
               ]
-            : pageTags(title, page.description, absoluteSiteUrl(page.path)),
+            : [
+                ...pageTags(
+                  title,
+                  page.description,
+                  absoluteSiteUrl(page.path),
+                ),
+                ...(page.path === '/about'
+                  ? [
+                      {
+                        tag: 'link',
+                        attrs: {
+                          rel: 'alternate',
+                          type: 'text/markdown',
+                          href: markdownUrl,
+                        },
+                        injectTo: 'head' as const,
+                      },
+                    ]
+                  : []),
+              ],
         };
       }
       return {
