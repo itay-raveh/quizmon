@@ -41,7 +41,11 @@ run = [
 
 [tasks."badges:export"]
 description = "Export trainer badge PNGs from the Aseprite master"
-run = "aseprite --batch --script-param root=\"$PWD\" --script scripts/export-badges.lua"
+usage = '''
+flag "--source <path>" help="Aseprite source file" default="art/badges.aseprite"
+flag "--output <pattern>" help="PNG output pattern" default="src/assets/images/badges/{slice}.png"
+'''
+run = 'aseprite --batch "{{usage.source}}" --save-as "{{usage.output}}"'
 
 [tasks.deploy]
 description = "Build and deploy Quizmon to Cloudflare Workers"

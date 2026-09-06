@@ -106,14 +106,10 @@ describe('Trainer profile artifacts', () => {
     );
   });
 
-  it('renders a standalone, interactive eight-slot League Badge Case', () => {
+  it('renders a standalone, interactive League Badge Case', () => {
     const onBadgeSelect = vi.fn();
-    render(
-      <TrainerBadgeCase
-        badges={getTrainerBadges(stats)}
-        onSelect={onBadgeSelect}
-      />,
-    );
+    const badges = getTrainerBadges(stats);
+    render(<TrainerBadgeCase badges={badges} onSelect={onBadgeSelect} />);
 
     expect(
       screen.getByRole('article', { name: 'League Badge Case' }),
@@ -123,7 +119,7 @@ describe('Trainer profile artifacts', () => {
     expect(screen.queryByText('quizmon.raveh.dev')).not.toBeInTheDocument();
     expect(
       screen.getByRole('region', {
-        name: '2 of 8 League Badges earned',
+        name: `2 of ${badges.length} League Badges earned`,
       }),
     ).toBeVisible();
     const badge = screen.getByRole('button', {

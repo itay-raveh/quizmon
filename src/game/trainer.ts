@@ -30,15 +30,87 @@ export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
 export type TrainerView = 'front' | 'badges' | 'titles';
-export type TrainerBadgeId =
-  | 'many-paths'
-  | 'pokedex-trail'
-  | 'world-tour'
-  | 'true-calling'
-  | 'quick-attack'
-  | 'perfect-form'
-  | 'daily-resolve'
-  | 'champions-instinct';
+
+interface TrainerBadgeDefinition {
+  getCurrent: (stats: TrainerStats) => number;
+  goal: number;
+  id: string;
+  label: string;
+  requirement: string;
+}
+
+const trainerBadgeDefinitions = [
+  {
+    getCurrent: (stats) =>
+      Object.values(stats.correctQuestionTypes).filter((correct) => correct > 0)
+        .length,
+    goal: 10,
+    id: 'many-paths',
+    label: 'Many Paths',
+    requirement: 'Answer correctly in 10 different question formats',
+  },
+  {
+    getCurrent: (stats) => stats.correctPokemon.length,
+    goal: 151,
+    id: 'pokedex-trail',
+    label: 'Pokédex Trail',
+    requirement: 'Answer correctly about 151 different Pokémon',
+  },
+  {
+    getCurrent: (stats) =>
+      Object.values(stats.correctGenerations).filter((correct) => correct > 0)
+        .length,
+    goal: 9,
+    id: 'world-tour',
+    label: 'World Tour',
+    requirement: 'Answer correctly across all 9 Pokémon generations',
+  },
+  {
+    getCurrent: (stats) =>
+      Math.max(
+        0,
+        ...(Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).map(
+          (category) => stats.correctCategories[category] ?? 0,
+        ),
+      ),
+    goal: 50,
+    id: 'true-calling',
+    label: 'True Calling',
+    requirement: 'Answer 50 questions correctly in one Trainer specialty',
+  },
+  {
+    getCurrent: (stats) => Number(stats.quickAttackCompleted),
+    goal: 1,
+    id: 'quick-attack',
+    label: 'Quick Attack',
+    requirement:
+      'Finish League Training in under 60 seconds with at least 8 correct answers',
+  },
+  {
+    getCurrent: (stats) => stats.masteryRounds,
+    goal: 3,
+    id: 'perfect-form',
+    label: 'Perfect Form',
+    requirement: 'Finish 3 perfect League Training rounds',
+  },
+  {
+    getCurrent: (stats) => stats.bestDailyStreak,
+    goal: 7,
+    id: 'daily-resolve',
+    label: 'Daily Resolve',
+    requirement: 'Reach a 7-day Daily Combo',
+  },
+  {
+    getCurrent: (stats) => stats.championAnswersWithoutClues,
+    goal: 5,
+    id: 'champions-instinct',
+    label: "Champion's Instinct",
+    requirement: 'Solve 5 Champion questions without clues',
+  },
+] as const satisfies readonly TrainerBadgeDefinition[];
+
+export type TrainerBadgeId = (typeof trainerBadgeDefinitions)[number]['id'];
+const TRAINER_BADGE_COUNT = trainerBadgeDefinitions.length;
 
 export interface TrainerBadge {
   current: number;
@@ -99,85 +171,16 @@ const makeBadge = (definition: BadgeDefinition): TrainerBadge => ({
 });
 
 export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] => {
-  const questionTypesMastered = Object.values(
-    stats.correctQuestionTypes,
-  ).filter((correct) => correct > 0).length;
-  const generationsMastered = Object.values(stats.correctGenerations).filter(
-    (correct) => correct > 0,
-  ).length;
-  const specialtyMastery = Math.max(
-    0,
-    ...(Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).map(
-      (category) => stats.correctCategories[category] ?? 0,
-    ),
+  return trainerBadgeDefinitions.map(({ getCurrent, ...definition }) =>
+    makeBadge({ ...definition, current: getCurrent(stats) }),
   );
-
-  return [
-    makeBadge({
-      current: questionTypesMastered,
-      goal: 10,
-      id: 'many-paths',
-      label: 'Many Paths',
-      requirement: 'Answer correctly in 10 different question formats',
-    }),
-    makeBadge({
-      current: stats.correctPokemon.length,
-      goal: 151,
-      id: 'pokedex-trail',
-      label: 'Pokédex Trail',
-      requirement: 'Answer correctly about 151 different Pokémon',
-    }),
-    makeBadge({
-      current: generationsMastered,
-      goal: 9,
-      id: 'world-tour',
-      label: 'World Tour',
-      requirement: 'Answer correctly across all 9 Pokémon generations',
-    }),
-    makeBadge({
-      current: specialtyMastery,
-      goal: 50,
-      id: 'true-calling',
-      label: 'True Calling',
-      requirement: 'Answer 50 questions correctly in one Trainer specialty',
-    }),
-    makeBadge({
-      current: Number(stats.quickAttackCompleted),
-      goal: 1,
-      id: 'quick-attack',
-      label: 'Quick Attack',
-      requirement:
-        'Finish League Training in under 60 seconds with at least 8 correct answers',
-    }),
-    makeBadge({
-      current: stats.masteryRounds,
-      goal: 3,
-      id: 'perfect-form',
-      label: 'Perfect Form',
-      requirement: 'Finish 3 perfect League Training rounds',
-    }),
-    makeBadge({
-      current: stats.bestDailyStreak,
-      goal: 7,
-      id: 'daily-resolve',
-      label: 'Daily Resolve',
-      requirement: 'Reach a 7-day Daily Combo',
-    }),
-    makeBadge({
-      current: stats.championAnswersWithoutClues,
-      goal: 5,
-      id: 'champions-instinct',
-      label: "Champion's Instinct",
-      requirement: 'Solve 5 Champion questions without clues',
-    }),
-  ];
 };
 
 export const getEarnedTrainerBadgeCount = (stats: TrainerStats): number =>
   getTrainerBadges(stats).filter(({ earned }) => earned).length;
 
 export const isLeagueUnlocked = (stats: TrainerStats): boolean =>
-  getEarnedTrainerBadgeCount(stats) === 8;
+  getEarnedTrainerBadgeCount(stats) === TRAINER_BADGE_COUNT;
 
 export const getQualifiedTrainerSpecialties = (
   stats: TrainerStats,
@@ -209,7 +212,7 @@ export const getTrainerTitles = (
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
   const earnedBadges = getEarnedTrainerBadgeCount(stats);
   if (stats.leagueCompleted) return 'Champion';
-  if (earnedBadges === 8) return 'League Challenger';
+  if (earnedBadges === TRAINER_BADGE_COUNT) return 'League Challenger';
   if (earnedBadges >= 5) return 'Veteran';
   if (earnedBadges >= 2) return 'Ace';
   return 'Youngster';

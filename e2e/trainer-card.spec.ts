@@ -127,7 +127,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
       text: 'My Quizmon League Badge Case\nhttps://quizmon.raveh.dev/',
     });
 
-  await expect(badgeCase.getByText('0 / 8', { exact: true })).toHaveCount(0);
+  await expect(badgeCase.getByText(/^0 \/ \d+$/)).toHaveCount(0);
   await badgeCase.getByRole('button', { name: /Many Paths\. Locked/ }).click();
   await expect(
     page.getByRole('dialog').getByRole('heading', { name: 'Many Paths' }),
@@ -144,9 +144,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(titles.getByText('Play at')).toHaveCount(0);
   await expect(titles.getByText('Trainer Titles')).toHaveCount(0);
   await expect(titles.getByText(/lifetime/i)).toHaveCount(0);
-  await expect(titles.getByText('1 / 8 earned', { exact: true })).toHaveCount(
-    0,
-  );
+  await expect(titles.getByText(/^\d+ \/ \d+ earned$/)).toHaveCount(0);
   const equippedTitle = titles.getByRole('button', {
     name: /Type Specialist.*Equipped/,
   });

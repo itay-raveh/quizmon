@@ -35,7 +35,7 @@ const masteredGenerations = (count: number) =>
   ) as TrainerStats['correctGenerations'];
 
 describe('Trainer Card progression', () => {
-  it('awards eight distinct League Badges for meaningful accomplishments', () => {
+  it('awards every distinct League Badge for meaningful accomplishments', () => {
     const badges = getTrainerBadges(
       stats({
         bestDailyStreak: 7,
@@ -52,7 +52,6 @@ describe('Trainer Card progression', () => {
       }),
     );
 
-    expect(badges).toHaveLength(8);
     expect(badges.map(({ id }) => id)).toEqual([
       'many-paths',
       'pokedex-trail',
