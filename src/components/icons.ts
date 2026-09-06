@@ -3,6 +3,7 @@ export { ArrowLeftIcon } from '@phosphor-icons/react/dist/icons/ArrowLeft';
 export { ArrowUpIcon } from '@phosphor-icons/react/dist/icons/ArrowUp';
 export { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/icons/ArrowsClockwise';
 export { BinocularsIcon } from '@phosphor-icons/react/dist/icons/Binoculars';
+export { BellSimpleRingingIcon } from '@phosphor-icons/react/dist/icons/BellSimpleRinging';
 export { CardholderIcon } from '@phosphor-icons/react/dist/icons/Cardholder';
 export { CaretDownIcon } from '@phosphor-icons/react/dist/icons/CaretDown';
 export { CaretRightIcon } from '@phosphor-icons/react/dist/icons/CaretRight';

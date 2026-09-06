@@ -1,5 +1,5 @@
 import { readStoredJson, writeStoredJson } from './browser-storage';
-import { getUtcDate, parseDailyDate } from './daily';
+import { getLocalDate, parseDailyDate } from './daily';
 import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
 import { isRecord } from './validation';
 
@@ -16,7 +16,7 @@ export interface TrainerProfile {
 }
 
 const createTrainerProfile = (): TrainerProfile => ({
-  createdAt: getUtcDate(),
+  createdAt: getLocalDate(),
   hasBeenRevealed: false,
   name: '',
   partnerPokemon: null,

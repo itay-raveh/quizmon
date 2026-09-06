@@ -22,15 +22,18 @@ const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
 });
 
-export const getUtcDate = (date = new Date()): string =>
-  date.toISOString().slice(0, 10);
+export const getLocalDate = (date = new Date()): string =>
+  [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+    .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
+    .join('-');
 
 export const parseDailyDate = (search: string): string | null => {
   const value = new URLSearchParams(search).get('daily');
   if (!value || !DATE_PATTERN.test(value)) return null;
 
   const parsed = new Date(`${value}T00:00:00.000Z`);
-  return Number.isNaN(parsed.valueOf()) || getUtcDate(parsed) !== value
+  return Number.isNaN(parsed.valueOf()) ||
+    parsed.toISOString().slice(0, 10) !== value
     ? null
     : value;
 };

@@ -81,8 +81,14 @@ test('starts the selected daily challenge from a shared link', async ({
 
 test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
   const yesterday = new Date();
-  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-  const date = yesterday.toISOString().slice(0, 10);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const date = [
+    yesterday.getFullYear(),
+    yesterday.getMonth() + 1,
+    yesterday.getDate(),
+  ]
+    .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
+    .join('-');
 
   await page.setViewportSize({ width: 320, height: 700 });
 

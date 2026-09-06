@@ -9,7 +9,7 @@ import {
   isLeagueTraining,
   TRAINING_QUESTION_COUNT,
 } from './game';
-import { getUtcDate, parseDailyDate } from './daily';
+import { getLocalDate, parseDailyDate } from './daily';
 import { isLeagueVictory } from './league';
 import { questionTypes } from './questions/registry';
 import { createRoundSeed } from './random';
@@ -307,20 +307,23 @@ export const canPersistResults = (): boolean => {
 export const readDailyResult = (date: string): GameResult | null =>
   readResults().daily[date] ?? null;
 
-const previousUtcDate = (date: string): string => {
+export const readCompletedDailyCount = (): number =>
+  Object.keys(readResults().daily).length;
+
+const previousDailyDate = (date: string): string => {
   const previous = new Date(`${date}T00:00:00.000Z`);
   previous.setUTCDate(previous.getUTCDate() - 1);
-  return getUtcDate(previous);
+  return previous.toISOString().slice(0, 10);
 };
 
-export const readDailyStreak = (today = getUtcDate()): number => {
+export const readDailyStreak = (today = getLocalDate()): number => {
   const creditedDates = new Set(readResults().streak.creditedDates);
-  let date = creditedDates.has(today) ? today : previousUtcDate(today);
+  let date = creditedDates.has(today) ? today : previousDailyDate(today);
   let streak = 0;
 
   while (creditedDates.has(date)) {
     streak += 1;
-    date = previousUtcDate(date);
+    date = previousDailyDate(date);
   }
 
   return streak;
@@ -332,7 +335,8 @@ const getLongestStreak = (dates: readonly string[]): number => {
   let previous: string | undefined;
 
   for (const date of [...new Set(dates)].sort()) {
-    current = previous && previousUtcDate(date) === previous ? current + 1 : 1;
+    current =
+      previous && previousDailyDate(date) === previous ? current + 1 : 1;
     longest = Math.max(longest, current);
     previous = date;
   }
@@ -386,7 +390,7 @@ export const saveResult = (
       modifiers,
     );
     if (
-      mode.date === getUtcDate() &&
+      mode.date === getLocalDate() &&
       !results.streak.creditedDates.includes(mode.date)
     ) {
       results.streak.creditedDates.push(mode.date);

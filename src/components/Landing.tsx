@@ -1,5 +1,5 @@
 import { site } from '@/app/site';
-import { formatDailyDate, getUtcDate } from '@/game/daily';
+import { formatDailyDate, getLocalDate } from '@/game/daily';
 import type { GameResult } from '@/game/types';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';
@@ -39,7 +39,7 @@ export const Landing = ({
   storageAvailable,
 }: LandingProps) => {
   const dailyDetail = [
-    dailyDate === getUtcDate() ? null : formatDailyDate(dailyDate),
+    dailyDate === getLocalDate() ? null : formatDailyDate(dailyDate),
     storageAvailable ? null : 'Browser storage required',
   ]
     .filter(Boolean)

@@ -6,7 +6,7 @@
   <a href="https://quizmon.raveh.dev/">Play Quizmon</a>
 </p>
 
-Quizmon is a browser-local game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc.
+Quizmon is a browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc. Scores and Trainer progress stay in the browser.
 
 ## Run Quizmon locally
 
@@ -24,6 +24,14 @@ Quizmon builds a versioned catalog from [PokéAPI](https://pokeapi.co/) and ship
 ```sh
 npm run data:update
 ```
+
+## Daily reminders
+
+After a player finishes their first Daily, Quizmon offers an optional reminder for 8:00 AM in their time zone. The browser permission request only appears after the player chooses **Remind me**.
+
+Each enabled browser stores an anonymous push subscription, its time zone, and the last completed Daily in a Cloudflare Durable Object. Quizmon does not require an account, name, or email address. Players can turn reminders off in **Settings → Experience** or in their browser settings.
+
+Production deployment requires the `VAPID_PRIVATE_KEY` GitHub Actions secret that matches the public key in [`src/notifications/config.ts`](src/notifications/config.ts). To rotate the pair, generate new VAPID keys, update both values, and redeploy.
 
 ## License
 

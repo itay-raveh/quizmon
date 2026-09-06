@@ -4,17 +4,21 @@ import {
   buildDailyQuestions,
   getDailyModifiers,
   getDailyQuestionTypes,
-  getUtcDate,
+  getLocalDate,
   parseDailyDate,
   shouldAutoStartDaily,
 } from '@/game/daily';
 import { generations, type PokemonCatalog } from '@/game/types';
 import { questionRegistry, questionTypes } from '@/game/questions/registry';
+import {
+  markDailyReminderOffered,
+  shouldOfferDailyReminder,
+} from '@/notifications/daily-reminder-storage';
 
 const catalog = catalogData as PokemonCatalog;
 
 describe('Daily Challenge', () => {
-  it('builds the same seeded five-question challenge for a UTC date', () => {
+  it('builds the same seeded five-question challenge for a date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');
     const schedule = getDailyQuestionTypes('2026-09-01');
@@ -119,8 +123,8 @@ describe('Daily Challenge', () => {
 });
 
 describe('daily dates', () => {
-  it('uses UTC and accepts only real ISO dates from the query string', () => {
-    expect(getUtcDate(new Date('2026-09-01T23:59:59.000Z'))).toBe('2026-09-01');
+  it('uses the local calendar and accepts only real ISO dates from the query string', () => {
+    expect(getLocalDate(new Date(2026, 8, 1, 23, 59, 59))).toBe('2026-09-01');
     expect(parseDailyDate('?daily=2024-02-29')).toBe('2024-02-29');
     expect(parseDailyDate('?daily=2026-02-29')).toBeNull();
     expect(parseDailyDate('?daily=September-1')).toBeNull();
@@ -132,5 +136,17 @@ describe('daily dates', () => {
     expect(shouldAutoStartDaily('?daily=2026-09-01&play=0')).toBe(false);
     expect(shouldAutoStartDaily('?daily=2026-02-29&play=1')).toBe(false);
     expect(shouldAutoStartDaily('?play=1')).toBe(false);
+  });
+});
+
+describe('Daily reminder prompt', () => {
+  beforeEach(() => window.localStorage.clear());
+
+  it('offers after the first Daily and waits three more before asking again', () => {
+    expect(shouldOfferDailyReminder(1)).toBe(true);
+    markDailyReminderOffered(1);
+    expect(shouldOfferDailyReminder(2)).toBe(false);
+    expect(shouldOfferDailyReminder(3)).toBe(false);
+    expect(shouldOfferDailyReminder(4)).toBe(true);
   });
 });

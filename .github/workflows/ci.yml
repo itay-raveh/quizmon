@@ -57,4 +57,12 @@ jobs:
         with:
           install_args: node
       - run: npm ci
-      - run: mise run deploy
+      - name: Deploy
+        env:
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+        run: |
+          test -n "$VAPID_PRIVATE_KEY"
+          secrets_file="$RUNNER_TEMP/quizmon-secrets.env"
+          printf 'VAPID_PRIVATE_KEY=%s\n' "$VAPID_PRIVATE_KEY" > "$secrets_file"
+          npm run build
+          npm run deploy -- --secrets-file "$secrets_file"

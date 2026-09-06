@@ -416,6 +416,17 @@
   outline-offset: 0.1rem;
 }
 
+.experience-status {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-label);
+  line-height: 1.35;
+}
+
+.experience-status--error {
+  color: var(--error-ink);
+}
+
 .question-type-tile {
   position: relative;
   min-width: 0;

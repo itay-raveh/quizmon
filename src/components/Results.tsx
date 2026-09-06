@@ -16,6 +16,7 @@ import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import type { GameMode, GameResult, Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
+import { DailyReminderPrompt } from './DailyReminderPrompt';
 import { GameButton } from './GameButton';
 import { CheckIcon, XIcon } from './icons';
 import { SettingsButton } from './SettingsButton';
@@ -206,6 +207,10 @@ export const Results = ({
         onOpenTrainerCard={onOpenTrainerCard}
         progressChanges={progressChanges}
       />
+
+      {mode.kind === 'daily' && resultSaved ? (
+        <DailyReminderPrompt dailyDate={mode.date} />
+      ) : null}
 
       {mode.kind === 'training' ? (
         <div className="results__actions results__actions--training">

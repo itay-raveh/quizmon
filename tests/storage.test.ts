@@ -87,7 +87,7 @@ describe('saved results', () => {
     });
   });
 
-  it('only credits new results completed on their UTC challenge date', () => {
+  it('only credits new results completed on their local challenge date', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-03T12:00:00.000Z'));
     window.localStorage.setItem(

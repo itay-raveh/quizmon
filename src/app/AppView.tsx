@@ -8,11 +8,12 @@ import {
   type SettingsTab,
 } from '@/components/ModifiersDialog';
 import { MotionProvider } from '@/components/MotionProvider';
+import { DailyReminderProvider } from '@/notifications/DailyReminderProvider';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
 import { TrainerPassport } from '@/components/TrainerPassport';
 import { UpdatePrompt } from '@/components/UpdatePrompt';
-import { getUtcDate } from '@/game/daily';
+import { getLocalDate } from '@/game/daily';
 import type { usePokemonCatalog } from '@/game/catalog';
 import type { TrainerStats } from '@/game/storage';
 import {
@@ -130,7 +131,7 @@ const AppScreen = ({
         dailyDate={daily.date}
         dailyResult={daily.result}
         dailyResultSaved={daily.resultSaved}
-        dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
+        dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
         leagueUnlocked={isLeagueUnlocked(trainer.stats)}
         onOpenSettings={() => settings.open('training')}
         onOpenTrainerCard={() => trainer.open('front')}
@@ -171,7 +172,7 @@ const AppScreen = ({
     <Results
       bestResult={session.bestResult}
       dailyStreak={
-        session.mode.kind === 'daily' && session.mode.date === getUtcDate()
+        session.mode.kind === 'daily' && session.mode.date === getLocalDate()
           ? daily.streak
           : 0
       }
@@ -250,15 +251,17 @@ export const AppView = (props: AppViewProps) => (
       prepareScoreCount={props.session.phase !== 'landing'}
       volume={props.modifiers.soundVolume}
     >
-      <div
-        className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
-      >
-        <div className="background" aria-hidden="true" />
-        <main>
-          <AppScreen {...props} />
-        </main>
-        <AppOverlays {...props} />
-      </div>
+      <DailyReminderProvider>
+        <div
+          className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
+        >
+          <div className="background" aria-hidden="true" />
+          <main>
+            <AppScreen {...props} />
+          </main>
+          <AppOverlays {...props} />
+        </div>
+      </DailyReminderProvider>
     </SoundProvider>
   </MotionProvider>
 );

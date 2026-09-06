@@ -1,4 +1,5 @@
 import worker from '../worker/index';
+import { getNextReminderAt } from '../worker/reminder-time';
 
 const validEvent = {
   contentVersion: 3,
@@ -13,14 +14,63 @@ const validEvent = {
 
 const makeEnv = () => {
   const writeDataPoint = vi.fn();
+  const reminderFetch = vi
+    .fn()
+    .mockResolvedValue(new Response(null, { status: 204 }));
   return {
     env: {
       ANALYTICS: { writeDataPoint },
       ASSETS: { fetch: vi.fn() },
+      DAILY_REMINDERS: {
+        getByName: vi.fn(() => ({ fetch: reminderFetch })),
+      },
+      VAPID_PRIVATE_KEY: 'test-private-key',
     },
+    reminderFetch,
     writeDataPoint,
   };
 };
+
+describe('Daily reminders', () => {
+  it('schedules 8:00 AM in the saved time zone across a DST change', () => {
+    expect(
+      new Date(
+        getNextReminderAt(
+          'America/New_York',
+          Date.parse('2026-10-31T13:00:00.000Z'),
+        ),
+      ).toISOString(),
+    ).toBe('2026-11-01T13:00:00.000Z');
+  });
+
+  it('only forwards reminder changes made by the app origin', async () => {
+    const { env, reminderFetch } = makeEnv();
+    const sameOrigin = await worker.fetch(
+      new Request(
+        'https://quizmon.raveh.dev/api/daily-reminders/3c29978c-0c0a-4c95-a19d-9d2cf5e36493',
+        {
+          headers: { Origin: 'https://quizmon.raveh.dev' },
+          method: 'DELETE',
+        },
+      ),
+      env,
+    );
+    const crossOrigin = await worker.fetch(
+      new Request(
+        'https://quizmon.raveh.dev/api/daily-reminders/3c29978c-0c0a-4c95-a19d-9d2cf5e36493',
+        {
+          headers: { Origin: 'https://example.com' },
+          method: 'DELETE',
+        },
+      ),
+      env,
+    );
+
+    expect(sameOrigin.status).toBe(204);
+    expect(crossOrigin.status).toBe(403);
+    expect(reminderFetch).toHaveBeenCalledOnce();
+  });
+});
 
 describe('analytics endpoint', () => {
   afterEach(() => {

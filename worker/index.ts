@@ -1,3 +1,9 @@
+import {
+  DailyReminder,
+  handleDailyReminderRequest,
+  type DailyReminderEnv,
+} from './daily-reminder';
+
 const SPRITE_PATH =
   /^\/sprites\/pokemon\/(?:(?:(?:back\/|shiny\/)?[1-9]\d{0,3}|versions\/generation-(?:i|ii|iii|iv)\/(?:red-blue|crystal|firered-leafgreen|platinum)\/(?:back\/)?[1-9]\d{0,3})\.png|other\/(?:(?:home|official-artwork)\/[1-9]\d{0,3}\.png|dream-world\/[1-9]\d{0,3}\.svg|showdown\/(?:back\/)?[1-9]\d{0,3}\.gif))$/;
 const SPRITE_SOURCE =
@@ -14,7 +20,7 @@ interface AnalyticsEngineDataset {
   }): void;
 }
 
-interface Env {
+interface Env extends DailyReminderEnv {
   ANALYTICS: AnalyticsEngineDataset;
   ASSETS: {
     fetch(request: Request): Promise<Response>;
@@ -194,6 +200,13 @@ const recordAnalyticsEvent = async (
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    const dailyReminderResponse = await handleDailyReminderRequest(
+      request,
+      env,
+      url,
+    );
+    if (dailyReminderResponse) return dailyReminderResponse;
+
     if (url.pathname === ANALYTICS_PATH) {
       return recordAnalyticsEvent(request, env);
     }
@@ -208,3 +221,5 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+export { DailyReminder };

@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { AnswerFlow, Modifiers, TimerDisplay } from '@/game/types';
 import { Checkbox } from './Checkbox';
+import { DailyReminderSetting } from './DailyReminderSetting';
 import { SelectionTile } from './SelectionTile';
 
 interface ExperienceSettingsProps {
@@ -111,6 +112,11 @@ export const ExperienceSettings = ({
             }))
           }
         />
+      </fieldset>
+
+      <fieldset className="experience-setting">
+        <legend>Daily reminder</legend>
+        <DailyReminderSetting />
       </fieldset>
     </div>
   );

@@ -1305,6 +1305,55 @@
   color: var(--blue);
 }
 
+.daily-reminder-offer {
+  display: grid;
+  margin: 0 0 1.2rem;
+  padding: 0.8rem 0;
+  align-items: center;
+  color: var(--navy);
+  border-block: 2px solid var(--navy);
+  grid-template-columns: 2.3rem minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  text-align: left;
+}
+
+.daily-reminder-offer > svg {
+  width: 2rem;
+  height: 2rem;
+  color: var(--blue);
+}
+
+.daily-reminder-offer__copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.12rem;
+}
+
+.daily-reminder-offer__copy strong {
+  font-size: var(--text-control);
+}
+
+.daily-reminder-offer__copy > span {
+  color: var(--muted);
+  font-size: var(--text-small);
+  line-height: 1.25;
+}
+
+.daily-reminder-offer__copy > [role='alert'] {
+  color: var(--error-ink);
+}
+
+.daily-reminder-offer__actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.daily-reminder-offer__actions .game-button {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.7rem;
+  font-size: var(--text-compact-control);
+}
+
 .results__actions {
   display: flex;
   justify-content: center;
@@ -1332,6 +1381,23 @@
 @container (max-width: 19rem) {
   .trainer-progress-summary__changes {
     grid-template-columns: 1fr;
+  }
+
+  .daily-reminder-offer {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  .daily-reminder-offer > svg {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .daily-reminder-offer__actions {
+    grid-column: 1 / -1;
+  }
+
+  .daily-reminder-offer__actions .game-button {
+    flex: 1;
   }
 }
 

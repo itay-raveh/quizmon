@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   buildDailyQuestions,
   getDailyModifiers,
-  getUtcDate,
+  getLocalDate,
   parseDailyDate,
   shouldAutoStartDaily,
 } from '@/game/daily';
@@ -37,7 +37,7 @@ const getDailyRoute = () => {
   const linkedDate = parseDailyDate(search);
   return {
     autoStart: !parseTrainerRoute(search) && shouldAutoStartDaily(search),
-    date: linkedDate ?? getUtcDate(),
+    date: linkedDate ?? getLocalDate(),
     linkedDate,
   };
 };

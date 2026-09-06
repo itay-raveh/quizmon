@@ -21,45 +21,15 @@ export default defineConfig({
     react(),
     siteMetadata(),
     VitePWA({
+      filename: 'sw.ts',
       injectRegister: 'auto',
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,woff2,json,webmanifest}'],
+      },
       manifest: false,
       registerType: 'prompt',
-      workbox: {
-        cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,html,woff2,json,webmanifest}'],
-        navigateFallback: '/index.html',
-        runtimeCaching: [
-          {
-            urlPattern: ({ sameOrigin, url }) =>
-              sameOrigin &&
-              /\/assets\/build\/.*\.(?:avif|ico|mp3|png|webp)$/.test(
-                url.pathname,
-              ),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'quizmon-static-media-v1',
-              cacheableResponse: { statuses: [200] },
-              expiration: {
-                maxAgeSeconds: 60 * 60 * 24 * 90,
-                maxEntries: 20,
-              },
-            },
-          },
-          {
-            urlPattern: ({ sameOrigin, url }) =>
-              sameOrigin && url.pathname.startsWith('/sprites/pokemon/'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'quizmon-pokemon-sprites-v2',
-              cacheableResponse: { statuses: [200] },
-              expiration: {
-                maxAgeSeconds: 60 * 60 * 24 * 90,
-                maxEntries: 400,
-              },
-            },
-          },
-        ],
-      },
+      srcDir: 'src',
+      strategies: 'injectManifest',
     }),
   ],
   resolve: {
@@ -74,6 +44,11 @@ export default defineConfig({
     proxy: spriteProxy,
   },
   test: {
+    alias: {
+      'cloudflare:workers': fileURLToPath(
+        new URL('./tests/cloudflare-workers.ts', import.meta.url),
+      ),
+    },
     environment: 'jsdom',
     exclude: ['e2e/**', 'node_modules/**'],
     globals: true,
