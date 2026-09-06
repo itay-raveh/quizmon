@@ -6,6 +6,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
   "preview_urls": false,
+  "secrets": {
+    "required": ["VAPID_PRIVATE_KEY"],
+  },
   "exports": {
     "DailyReminder": {
       "type": "durable-object",
