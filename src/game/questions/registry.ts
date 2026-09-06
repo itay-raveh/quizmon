@@ -129,8 +129,7 @@ export const questionRegistry = {
   'generation-roundup': {
     build: buildGenerationRoundupQuestion,
     category: 'identity',
-    description:
-      'Select every Pokémon introduced in the named generation. Requires at least two selected generations.',
+    description: 'Select every Pokémon introduced in the named generation.',
     group: 'knowledge',
     label: 'Generation roundup',
   },

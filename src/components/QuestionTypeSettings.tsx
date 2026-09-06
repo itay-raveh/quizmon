@@ -71,8 +71,14 @@ export const QuestionTypeSettings = ({
   const [expandedGroup, setExpandedGroup] = useState<QuestionTypeGroup | null>(
     () => getInitialExpandedGroup(draft.questionTypes),
   );
-  const selectedQuestionTypes = new Set(draft.questionTypes);
-  const allSelected = draft.questionTypes.length === questionTypes.length;
+  const availableQuestionTypes = questionTypes.filter(
+    (type) => type !== 'generation-roundup' || draft.generations.length >= 2,
+  );
+  const selectedQuestionTypes = new Set(
+    availableQuestionTypes.filter((type) => draft.questionTypes.includes(type)),
+  );
+  const allSelected =
+    selectedQuestionTypes.size === availableQuestionTypes.length;
   const hasError = submitted && (!questionTypesAreValid || matchingCount === 0);
   const visibleExpandedGroup =
     submitted && !questionTypesAreValid
@@ -97,7 +103,7 @@ export const QuestionTypeSettings = ({
             onClick={() =>
               onChange((current) => ({
                 ...current,
-                questionTypes: allSelected ? [] : [...questionTypes],
+                questionTypes: allSelected ? [] : availableQuestionTypes,
               }))
             }
             sound={allSelected ? 'toggle-off' : 'toggle-on'}
@@ -173,6 +179,9 @@ export const QuestionTypeSettings = ({
                       >
                         <SelectionTile
                           checked={checked}
+                          disabled={
+                            !availableQuestionTypes.includes(questionType)
+                          }
                           label={label}
                           onChange={(event) =>
                             onChange((current) =>
