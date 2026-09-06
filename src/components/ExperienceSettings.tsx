@@ -38,6 +38,11 @@ export const ExperienceSettings = ({
   return (
     <div className="experience-settings">
       <fieldset className="experience-setting">
+        <legend>Daily Challenge Reminder</legend>
+        <DailyReminderSetting />
+      </fieldset>
+
+      <fieldset className="experience-setting">
         <legend>Answer flow</legend>
         <div className="experience-options experience-options--flow">
           {answerFlows.map(({ description, label, value }) => (
@@ -112,11 +117,6 @@ export const ExperienceSettings = ({
             }))
           }
         />
-      </fieldset>
-
-      <fieldset className="experience-setting">
-        <legend>Daily reminder</legend>
-        <DailyReminderSetting />
       </fieldset>
     </div>
   );

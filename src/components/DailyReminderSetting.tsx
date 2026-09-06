@@ -27,9 +27,8 @@ export const DailyReminderSetting = () => {
     <>
       <Checkbox
         checked={status === 'enabled'}
-        description="When the next Daily is ready."
         disabled={busy || status === 'checking'}
-        label="Remind me at 8:00 AM"
+        label="Remind me each morning"
         onChange={(event) => void (event.target.checked ? enable() : disable())}
       />
       {error ? (
