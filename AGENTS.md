@@ -58,7 +58,7 @@ Pull requests and pushes to `main` run `.github/workflows/ci.yml`. A push to `ma
 deploys to Cloudflare Workers only after the checks pass. The workflow builds
 `dist/`, then Wrangler uploads the Worker and its static assets.
 
-`wrangler.jsonc` configures SPA fallback, the `quizmon_events` Analytics Engine
+`wrangler.jsonc` configures static pages with a 404 fallback, the `quizmon_events` Analytics Engine
 dataset, the `DAILY_REMINDERS` Durable Object, and the required
 `VAPID_PRIVATE_KEY`. Production credentials live in GitHub's `production`
 environment as `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and

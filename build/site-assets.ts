@@ -55,6 +55,9 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <loc>${site.url}</loc>
   </url>
   <url>
+    <loc>${absoluteSiteUrl('/about')}</loc>
+  </url>
+  <url>
     <loc>${absoluteSiteUrl('/privacy')}</loc>
   </url>
   <url>
@@ -64,18 +67,22 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 `;
 
 const pageMarkdown = readFileSync(
-  new URL('../README.md', import.meta.url),
+  new URL('../ABOUT.md', import.meta.url),
   'utf8',
-);
+)
+  .replaceAll('(PRIVACY.md)', `(${absoluteSiteUrl('/privacy')})`)
+  .replaceAll('(TERMS.md)', `(${absoluteSiteUrl('/terms')})`)
+  .replaceAll('](/)', `](${site.url})`);
 
 const llms = `# ${site.name}
 
 > ${site.description}
 
-${site.name} is a free, unofficial browser game. It has no accounts or application backend, and player settings and results remain on the device.
+${site.name} is a free, unofficial browser game with no accounts. Player settings and saved results remain on the device. Cloudflare handles hosting, analytics, and optional daily reminders.
 
 ## Game
 
+- [How to play](${absoluteSiteUrl('/about')}): Daily Challenge, Training, scoring, badges, and the Quizmon League.
 - [${site.name} overview](${markdownUrl}): Game modes, question coverage, data use, offline behavior, and attribution.
 - [Play ${site.name}](${site.url}): The interactive game.
 

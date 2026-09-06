@@ -17,7 +17,13 @@ export default defineConfig({
   build: {
     assetsDir: 'assets/build',
     rolldownOptions: {
-      input: ['index.html', 'privacy.html', 'terms.html'],
+      input: [
+        'index.html',
+        'about.html',
+        'privacy.html',
+        'terms.html',
+        '404.html',
+      ],
     },
   },
   plugins: [

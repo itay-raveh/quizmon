@@ -1,6 +1,6 @@
 import type { HtmlTagDescriptor, Plugin } from 'vite';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
-import { renderLegalPage } from './legal-pages.ts';
+import { renderContentPage } from './content-pages.ts';
 import {
   generatedAssets,
   llmsUrl,
@@ -18,15 +18,35 @@ const meta = (
   injectTo: 'head',
 });
 
-const tags: HtmlTagDescriptor[] = [
-  { tag: 'title', children: site.title, injectTo: 'head' },
-  meta('name', 'description', site.description),
-  meta('name', 'theme-color', site.themeColor),
+const pageTags = (
+  title: string,
+  description: string,
+  url: string,
+): HtmlTagDescriptor[] => [
+  { tag: 'title', children: title, injectTo: 'head' },
+  meta('name', 'description', description),
+  meta('property', 'og:type', 'website'),
+  meta('property', 'og:site_name', site.name),
+  meta('property', 'og:title', title),
+  meta('property', 'og:description', description),
+  meta('property', 'og:url', url),
+  meta('property', 'og:locale', site.locale),
+  meta('property', 'og:image', absoluteSiteUrl(site.socialImage.path)),
+  meta('property', 'og:image:type', site.socialImage.type),
+  meta('property', 'og:image:width', site.socialImage.width),
+  meta('property', 'og:image:height', site.socialImage.height),
+  meta('property', 'og:image:alt', site.socialImage.alt),
+  meta('name', 'twitter:card', 'summary_large_image'),
   {
     tag: 'link',
-    attrs: { rel: 'canonical', href: site.url },
+    attrs: { rel: 'canonical', href: url },
     injectTo: 'head',
   },
+];
+
+const tags: HtmlTagDescriptor[] = [
+  ...pageTags(site.title, site.description, site.url),
+  meta('name', 'theme-color', site.themeColor),
   {
     tag: 'link',
     attrs: { rel: 'alternate', type: 'text/markdown', href: markdownUrl },
@@ -37,18 +57,6 @@ const tags: HtmlTagDescriptor[] = [
     attrs: { rel: 'describedby', type: 'text/markdown', href: llmsUrl },
     injectTo: 'head',
   },
-  meta('property', 'og:type', 'website'),
-  meta('property', 'og:site_name', site.name),
-  meta('property', 'og:title', site.title),
-  meta('property', 'og:description', site.description),
-  meta('property', 'og:url', site.url),
-  meta('property', 'og:locale', site.locale),
-  meta('property', 'og:image', absoluteSiteUrl(site.socialImage.path)),
-  meta('property', 'og:image:type', site.socialImage.type),
-  meta('property', 'og:image:width', site.socialImage.width),
-  meta('property', 'og:image:height', site.socialImage.height),
-  meta('property', 'og:image:alt', site.socialImage.alt),
-  meta('name', 'twitter:card', 'summary_large_image'),
   {
     tag: 'script',
     attrs: { type: 'application/ld+json' },
@@ -83,34 +91,32 @@ export const siteMetadata = (): Plugin => ({
       });
     }
   },
-  transformIndexHtml(html, context) {
-    const legalPage = renderLegalPage(context.path);
-    if (legalPage) {
+  transformIndexHtml: {
+    // Expand the shared shell before Vite bundles its stylesheet.
+    order: 'pre',
+    handler(html, context) {
+      const page = renderContentPage(context.path, html);
+      if (page) {
+        const title = `${page.title} | ${site.name}`;
+        return {
+          html: page.html,
+          tags: page.noindex
+            ? [
+                { tag: 'title', children: title, injectTo: 'head' },
+                meta('name', 'robots', 'noindex'),
+              ]
+            : pageTags(title, page.description, absoluteSiteUrl(page.path)),
+        };
+      }
       return {
-        html: html.replace('<!-- legal-content -->', legalPage.html),
-        tags: [
-          {
-            tag: 'title',
-            children: `${legalPage.title} | ${site.name}`,
-            injectTo: 'head',
-          },
-          meta('name', 'description', `${legalPage.title} for ${site.name}.`),
-          {
-            tag: 'link',
-            attrs: { rel: 'canonical', href: absoluteSiteUrl(legalPage.path) },
-            injectTo: 'head',
-          },
-        ],
+        html: html
+          .replace('<html>', `<html lang="${site.language}">`)
+          .replace(
+            '<div id="root"></div>',
+            `<div id="root"><h1 id="landing-title" class="visually-hidden">${site.title}</h1></div>`,
+          ),
+        tags,
       };
-    }
-    return {
-      html: html
-        .replace('<html>', `<html lang="${site.language}">`)
-        .replace(
-          '<div id="root"></div>',
-          `<div id="root"><h1 id="landing-title" class="visually-hidden">${site.title}</h1></div>`,
-        ),
-      tags,
-    };
+    },
   },
 });

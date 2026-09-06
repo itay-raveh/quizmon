@@ -29,6 +29,9 @@ export const Footer = () => {
             </a>
           </span>
           <span className="site-footer__credit">
+            <a href="/about">How to play</a>
+          </span>
+          <span className="site-footer__credit">
             <a href="/privacy">Privacy</a>
             <span aria-hidden="true">·</span>
             <a href="/terms">Terms</a>

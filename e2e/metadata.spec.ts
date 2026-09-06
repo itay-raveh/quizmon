@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import { expect, test } from './fixtures';
 
 test('publishes complete, non-duplicated site metadata', async ({ page }) => {
@@ -116,6 +115,9 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   expect(await sitemapResponse.text()).toContain(
     '<loc>https://quizmon.raveh.dev/</loc>',
   );
+  expect(await sitemapResponse.text()).toContain(
+    '<loc>https://quizmon.raveh.dev/about</loc>',
+  );
 
   const llmsResponse = await page.request.get('/llms.txt');
   expect(llmsResponse.ok()).toBe(true);
@@ -125,9 +127,13 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
 
   const markdownResponse = await page.request.get('/index.md');
   expect(markdownResponse.ok()).toBe(true);
-  const readme = await readFile(
-    new URL('../README.md', import.meta.url),
-    'utf8',
+  const overview = await markdownResponse.text();
+  expect(overview).toContain('# About & How to Play');
+  expect(overview).toContain('## Daily Challenge');
+  expect(overview).toContain(
+    '[Privacy policy](https://quizmon.raveh.dev/privacy)',
   );
-  expect(await markdownResponse.text()).toBe(readme);
+  expect(overview).toContain('[Terms of Use](https://quizmon.raveh.dev/terms)');
+  expect(overview).not.toContain('(PRIVACY.md)');
+  expect(overview).not.toContain('(TERMS.md)');
 });

@@ -1,6 +1,11 @@
 @import '../fonts.css';
 @import './foundation.css';
 
+html:has(.legal-page),
+.legal-page {
+  min-width: 0;
+}
+
 .legal-page {
   position: relative;
   isolation: isolate;
@@ -80,6 +85,12 @@
 .legal-content > p:last-child {
   color: var(--muted);
   font-size: var(--text-footer);
+}
+
+.about-content > p:first-of-type,
+.about-content > p:last-child {
+  color: inherit;
+  font-size: inherit;
 }
 
 @media print {

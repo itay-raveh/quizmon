@@ -42,13 +42,20 @@ precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
 registerRoute(
-  new NavigationRoute((options) => {
-    const legalPage = /^\/(privacy|terms)(?:\/|\.html)?$/.exec(
+  new NavigationRoute(async (options) => {
+    const contentPage = /^\/(about|privacy|terms)(?:\/|\.html)?$/.exec(
       options.url.pathname,
     )?.[1];
-    return createHandlerBoundToURL(
-      legalPage ? `/${legalPage}.html` : '/index.html',
-    )(options);
+    const isGame = /^\/(?:index\.html)?$/.test(options.url.pathname);
+    const page = contentPage
+      ? `/${contentPage}.html`
+      : isGame
+        ? '/index.html'
+        : '/404.html';
+    const response = await createHandlerBoundToURL(page)(options);
+    return page === '/404.html'
+      ? new Response(response.body, { status: 404, headers: response.headers })
+      : response;
   }),
 );
 
