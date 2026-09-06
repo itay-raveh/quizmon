@@ -1,11 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import { TrainerBadgeCase } from '@/components/TrainerBadgeCase';
 import { TrainerCard } from '@/components/TrainerCard';
+import { TrainerTitles } from '@/components/TrainerTitles';
 import { questionTypes } from '@/game/questions/registry';
 import type { TrainerStats } from '@/game/storage';
+import { renderTrainerArtifactImage } from '@/game/trainer-card-image';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import { getTrainerBadges } from '@/game/trainer';
 import { generations } from '@/game/types';
+
+const snapdomToBlob = vi.hoisted(() => vi.fn());
+
+vi.mock('@zumer/snapdom', () => ({
+  snapdom: { toBlob: snapdomToBlob },
+}));
 
 const profile: TrainerProfile = {
   createdAt: '2026-09-03',
@@ -29,6 +37,10 @@ const stats: TrainerStats = {
 };
 
 describe('Trainer profile artifacts', () => {
+  beforeEach(() => {
+    snapdomToBlob.mockReset();
+  });
+
   it('renders the selected specialty and earned finish on the front', () => {
     const { container } = render(
       <TrainerCard
@@ -107,8 +119,8 @@ describe('Trainer profile artifacts', () => {
       screen.getByRole('article', { name: 'League Badge Case' }),
     ).toBeVisible();
     expect(screen.queryByText('League Badge Case')).not.toBeInTheDocument();
-    expect(screen.getByText('Play at')).toBeVisible();
-    expect(screen.getByText('quizmon.raveh.dev')).toBeVisible();
+    expect(screen.getByText('Play at')).not.toBeVisible();
+    expect(screen.getByText('quizmon.raveh.dev')).not.toBeVisible();
     expect(
       screen.getByRole('region', {
         name: '2 of 8 League Badges earned',
@@ -126,5 +138,30 @@ describe('Trainer profile artifacts', () => {
     expect(
       screen.queryByRole('heading', { name: 'Leaf' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows the shared attribution only in the exported artifact', async () => {
+    const blob = new Blob(['trainer'], { type: 'image/png' });
+    const { container } = render(
+      <TrainerTitles equipped="type" onSelect={vi.fn()} stats={stats} />,
+    );
+    const artifact = screen.getByRole('article', {
+      name: 'Trainer Titles collection',
+    });
+    const attribution = container.querySelector('.trainer-share-attribution');
+
+    expect(attribution).toHaveAttribute('hidden');
+    snapdomToBlob.mockImplementation((capture: HTMLElement) => {
+      expect(capture).not.toBe(artifact);
+      expect(
+        capture.querySelector('.trainer-share-attribution'),
+      ).not.toHaveAttribute('hidden');
+      expect(capture.parentElement).toHaveClass('trainer-share-capture');
+      return Promise.resolve(blob);
+    });
+
+    await expect(renderTrainerArtifactImage(artifact)).resolves.toBe(blob);
+    expect(attribution).toHaveAttribute('hidden');
+    expect(document.querySelector('.trainer-share-capture')).toBeNull();
   });
 });

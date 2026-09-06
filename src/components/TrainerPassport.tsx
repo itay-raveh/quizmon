@@ -95,10 +95,7 @@ export const TrainerPassport = ({
     profile.specialty && qualifiedSpecialties.includes(profile.specialty)
       ? profile.specialty
       : null;
-  const [preparedImage, setPreparedImage] = useState<{
-    blob: Blob;
-    key: string;
-  } | null>(null);
+  const [preparingArtifact, setPreparingArtifact] = useState(false);
   const [shareNotice, setShareNotice] = useState<ShareNotice | null>(null);
   const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
     null,
@@ -121,8 +118,6 @@ export const TrainerPassport = ({
     : null;
   const visibleProfile = { ...profile, specialty: savedSpecialty };
   const finish = getCardFinish(getTrainerRank(stats)).toLowerCase();
-  const imageKey = JSON.stringify({ profile: visibleProfile, stats, view });
-  const image = preparedImage?.key === imageKey ? preparedImage.blob : null;
   const canShareArtifact = supportsTrainerArtifactSharing();
   const badges = getTrainerBadges(stats);
   const leagueUnlocked = isLeagueUnlocked(stats);
@@ -139,28 +134,6 @@ export const TrainerPassport = ({
     const timeoutId = window.setTimeout(() => setRevealing(false), 560);
     return () => window.clearTimeout(timeoutId);
   }, [revealing]);
-
-  useEffect(() => {
-    const artifact = artifactRef.current;
-    if (!artifact) return;
-
-    let active = true;
-    void renderTrainerArtifactImage(artifact)
-      .then((blob) => {
-        if (active) setPreparedImage({ blob, key: imageKey });
-      })
-      .catch(() => {
-        if (active) {
-          setShareNotice({
-            message: 'Image could not be prepared.',
-            visible: true,
-          });
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [imageKey]);
 
   const selectView = (nextView: TrainerView) => {
     setSelectedBadgeId(null);
@@ -209,29 +182,47 @@ export const TrainerPassport = ({
     void requestPersistentStorage().catch(() => false);
   };
 
-  const share = async () => {
-    if (!image) return;
+  const exportArtifact = async () => {
+    const artifact = artifactRef.current;
+    if (!artifact || preparingArtifact) return;
+
+    setPreparingArtifact(true);
     setShareNotice(null);
     try {
-      const outcome = await shareTrainerArtifact(image, view);
-      if (outcome === 'unsupported') {
+      const image = await renderTrainerArtifactImage(artifact);
+      if (!canShareArtifact) {
+        downloadTrainerArtifact(image, view);
+        return;
+      }
+
+      try {
+        const outcome = await shareTrainerArtifact(image, view);
+        if (outcome === 'unsupported') {
+          downloadTrainerArtifact(image, view);
+          setShareNotice({
+            message: 'PNG downloaded. Share it from your photos.',
+            visible: true,
+          });
+        } else if (outcome === 'shared') {
+          setShareNotice({
+            message: `${viewLabels[view]} shared.`,
+            visible: false,
+          });
+        }
+      } catch {
         downloadTrainerArtifact(image, view);
         setShareNotice({
-          message: 'PNG downloaded. Share it from your photos.',
+          message: 'Sharing was unavailable, so the PNG was downloaded.',
           visible: true,
-        });
-      } else if (outcome === 'shared') {
-        setShareNotice({
-          message: `${viewLabels[view]} shared.`,
-          visible: false,
         });
       }
     } catch {
-      downloadTrainerArtifact(image, view);
       setShareNotice({
-        message: 'Sharing was unavailable, so the PNG was downloaded.',
+        message: 'Image could not be prepared.',
         visible: true,
       });
+    } finally {
+      setPreparingArtifact(false);
     }
   };
 
@@ -357,17 +348,24 @@ export const TrainerPassport = ({
 
       <div className="trainer-passport__controls">
         {canShareArtifact ? (
-          <GameButton disabled={!image} onClick={() => void share()}>
+          <GameButton
+            aria-busy={preparingArtifact}
+            disabled={preparingArtifact}
+            onClick={() => void exportArtifact()}
+          >
             <ShareNetworkIcon aria-hidden="true" weight="bold" />
-            Share {shareLabels[view]}
+            {preparingArtifact
+              ? 'Preparing PNG…'
+              : `Share ${shareLabels[view]}`}
           </GameButton>
         ) : (
           <GameButton
-            disabled={!image}
-            onClick={() => image && downloadTrainerArtifact(image, view)}
+            aria-busy={preparingArtifact}
+            disabled={preparingArtifact}
+            onClick={() => void exportArtifact()}
           >
             <DownloadSimpleIcon aria-hidden="true" weight="bold" />
-            Download PNG
+            {preparingArtifact ? 'Preparing PNG…' : 'Download PNG'}
           </GameButton>
         )}
       </div>

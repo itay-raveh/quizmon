@@ -198,6 +198,44 @@
   isolation: isolate;
 }
 
+.trainer-share-attribution {
+  display: flex;
+  width: max-content;
+  max-width: calc(100% - 1rem);
+  margin: 0.35rem auto 0.55rem;
+  padding: 0.3rem 0.6rem 0.4rem;
+  align-items: baseline;
+  justify-content: center;
+  justify-self: center;
+  color: var(--navy);
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.12rem 0 var(--yellow);
+  font-size: var(--text-small);
+  font-weight: 800;
+  gap: 0.35rem;
+}
+
+.trainer-share-attribution[hidden] {
+  display: none;
+}
+
+.trainer-share-attribution strong {
+  min-width: 0;
+  font-family: var(--font-data);
+  overflow-wrap: anywhere;
+}
+
+.trainer-share-capture {
+  position: fixed;
+  top: 0;
+  left: -100000px;
+  z-index: -1;
+  container-type: inline-size;
+  pointer-events: none;
+}
+
 .trainer-passport--bronze,
 .trainer-card--bronze {
   --trainer-card-step: #ed9147;
@@ -462,31 +500,6 @@
   font-weight: 800;
 }
 
-.trainer-card__footer {
-  display: flex;
-  padding: 0.65rem 1.3rem 0.85rem;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.35rem;
-  color: var(--navy);
-  font-size: var(--text-label);
-  font-weight: 800;
-}
-
-.trainer-card:is(
-    .trainer-card--bronze,
-    .trainer-card--silver,
-    .trainer-card--gold
-  )
-  .trainer-card__footer {
-  background: var(--trainer-rank-surface);
-  border-top: 4px solid var(--trainer-rank-accent-strong);
-}
-
-.trainer-card__footer strong {
-  font-family: var(--font-data);
-}
-
 .trainer-badge-case__badges {
   position: relative;
   display: grid;
@@ -621,23 +634,6 @@
   max-width: 100%;
 }
 
-.trainer-badge-case__footer {
-  display: flex;
-  padding: 0.55rem 1rem 0.7rem;
-  align-items: baseline;
-  justify-content: center;
-  color: var(--navy);
-  background: var(--case-metal);
-  border-top: 4px solid var(--case-metal-dark);
-  font-size: var(--text-small);
-  font-weight: 800;
-  gap: 0.35rem;
-}
-
-.trainer-badge-case__footer strong {
-  font-family: var(--font-data);
-}
-
 .trainer-titles {
   --title-wood: #bd7438;
   --title-wood-dark: #78411f;
@@ -749,25 +745,6 @@
 .trainer-title__copy > strong {
   font-size: var(--text-label);
   line-height: 1.05;
-}
-
-.trainer-titles__footer {
-  display: flex;
-  padding: 0.35rem 0.65rem 0.45rem;
-  align-items: baseline;
-  justify-content: center;
-  color: var(--navy);
-  background: var(--cream);
-  border: 2px solid var(--title-wood-dark);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.12rem 0 var(--title-wood-dark);
-  font-size: var(--text-small);
-  font-weight: 800;
-  gap: 0.35rem;
-}
-
-.trainer-titles__footer strong {
-  font-family: var(--font-data);
 }
 
 .trainer-passport__controls {
@@ -1428,17 +1405,6 @@ html[data-reduce-motion]
     line-height: 1.05;
   }
 
-  .trainer-card__footer {
-    padding: 0.25rem 0.65rem 0.35rem;
-    flex-wrap: wrap;
-    font-size: var(--text-micro);
-  }
-
-  .trainer-card__footer strong {
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
   .trainer-badge-case__badges {
     min-height: 0;
     padding: 0.5rem 0.6rem;
@@ -1453,17 +1419,6 @@ html[data-reduce-motion]
 
   .trainer-badge-case__badges .trainer-badge-mark {
     width: min(4.15rem, 86%);
-  }
-
-  .trainer-badge-case__footer {
-    padding: 0.35rem 0.65rem 0.45rem;
-    flex-wrap: wrap;
-    font-size: var(--text-mini);
-  }
-
-  .trainer-badge-case__footer strong {
-    min-width: 0;
-    overflow-wrap: anywhere;
   }
 
   .trainer-titles {
@@ -1501,8 +1456,10 @@ html[data-reduce-motion]
     font-size: var(--text-mini);
   }
 
-  .trainer-titles__footer {
-    padding: 0.35rem 0.65rem 0.45rem;
+  .trainer-share-attribution {
+    max-width: calc(100% - 0.7rem);
+    margin: 0.25rem auto 0.4rem;
+    padding: 0.25rem 0.5rem 0.3rem;
     font-size: var(--text-mini);
   }
 
@@ -1626,12 +1583,8 @@ html[data-reduce-motion]
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .trainer-titles__footer {
+  .trainer-share-attribution {
     flex-wrap: wrap;
-  }
-
-  .trainer-titles__footer strong {
-    overflow-wrap: anywhere;
   }
 }
 

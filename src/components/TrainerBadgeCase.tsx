@@ -1,8 +1,8 @@
 import type { Ref } from 'react';
-import { siteHostname } from '@/app/site';
 import type { TrainerBadge } from '@/game/trainer';
 import { SoundButton } from './SoundButton';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
+import { TrainerShareAttribution } from './TrainerShareAttribution';
 
 interface TrainerBadgeCaseProps {
   badges: TrainerBadge[];
@@ -55,10 +55,7 @@ export const TrainerBadgeCase = ({
           </SoundButton>
         ))}
       </section>
-      <footer className="trainer-badge-case__footer">
-        <span>Play at</span>
-        <strong>{siteHostname}</strong>
-      </footer>
+      <TrainerShareAttribution />
     </article>
   );
 };

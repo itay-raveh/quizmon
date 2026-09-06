@@ -25,19 +25,43 @@ const waitForRenderedAssets = async (element: HTMLElement) => {
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 };
 
+const createCaptureClone = (element: HTMLElement) => {
+  const host = document.createElement('div');
+  const clone = element.cloneNode(true) as HTMLElement;
+  const width = element.getBoundingClientRect().width;
+
+  host.className = 'trainer-share-capture';
+  host.setAttribute('aria-hidden', 'true');
+  host.setAttribute('inert', '');
+  host.style.width = `${width}px`;
+  clone
+    .querySelectorAll<HTMLElement>('.trainer-share-attribution')
+    .forEach((attribution) => attribution.removeAttribute('hidden'));
+  host.appendChild(clone);
+  document.body.appendChild(host);
+
+  return { clone, host };
+};
+
 export const renderTrainerArtifactImage = async (
   element: HTMLElement,
 ): Promise<Blob> => {
-  await waitForRenderedAssets(element);
-  const { snapdom } = await import('@zumer/snapdom');
+  const { clone, host } = createCaptureClone(element);
 
-  return snapdom.toBlob(element, {
-    dpr: 2,
-    embedFonts: true,
-    outerShadows: true,
-    reconcile: true,
-    type: 'png',
-  });
+  try {
+    await waitForRenderedAssets(clone);
+    const { snapdom } = await import('@zumer/snapdom');
+
+    return await snapdom.toBlob(clone, {
+      dpr: 2,
+      embedFonts: true,
+      outerShadows: true,
+      reconcile: true,
+      type: 'png',
+    });
+  } finally {
+    host.remove();
+  }
 };
 
 export const downloadTrainerArtifact = (blob: Blob, view: TrainerView) => {

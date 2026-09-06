@@ -6,7 +6,6 @@ FIRST VIEWPORT: All eight icon-led title records appear together without repeate
 FORM: The wood board is one physical collection surface, not a table or a dashboard of cards.
 */
 import type { Ref } from 'react';
-import { siteHostname } from '@/app/site';
 import type { TrainerStats } from '@/game/storage';
 import {
   getTrainerTitles,
@@ -14,6 +13,7 @@ import {
   type TrainerTitle,
 } from '@/game/trainer';
 import { SoundButton } from './SoundButton';
+import { TrainerShareAttribution } from './TrainerShareAttribution';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitlesProps {
@@ -90,10 +90,7 @@ export const TrainerTitles = ({
         })}
       </section>
 
-      <footer className="trainer-titles__footer">
-        <span>Play at</span>
-        <strong>{siteHostname}</strong>
-      </footer>
+      <TrainerShareAttribution />
     </article>
   );
 };

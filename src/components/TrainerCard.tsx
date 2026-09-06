@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import { site, siteHostname } from '@/app/site';
+import { site } from '@/app/site';
 import { formatDailyDate } from '@/game/daily';
 import type { TrainerStats } from '@/game/storage';
 import type { TrainerProfile } from '@/game/trainer-profile';
@@ -9,6 +9,7 @@ import {
   trainerSpecialtyLabels,
 } from '@/game/trainer';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
+import { TrainerShareAttribution } from './TrainerShareAttribution';
 import { TrainerTitleMark } from './TrainerTitleMark';
 import { PokemonIdentity } from './PokemonIdentity';
 
@@ -77,10 +78,7 @@ export const TrainerCard = ({
           </dl>
         </div>
       </div>
-      <footer className="trainer-card__footer">
-        <span>Play at</span>
-        <strong>{siteHostname}</strong>
-      </footer>
+      <TrainerShareAttribution />
     </article>
   );
 };
