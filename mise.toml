@@ -6,6 +6,7 @@ lockfile_platforms = ["linux-x64", "macos-arm64"]
 
 [tools]
 actionlint = "1.7.12"
+betterleaks = "1.8.1"
 lychee = "0.24.2"
 node = "24.20.0"
 prek = "0.5.0"
@@ -25,6 +26,7 @@ description = "Run every repository check without modifying files"
 run = [
   "npm run format:check",
   "npm run lint",
+  "betterleaks git --redact --no-banner --no-color .",
   "npm run check:dead-code",
   "npm test",
   "npm run build",

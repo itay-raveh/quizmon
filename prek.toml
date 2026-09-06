@@ -20,6 +20,13 @@ hooks = [
 repo = "local"
 
 [[repos.hooks]]
+id = "betterleaks"
+name = "detect hardcoded secrets"
+entry = "betterleaks git --pre-commit --staged --redact --no-banner --no-color ."
+language = "system"
+pass_filenames = false
+
+[[repos.hooks]]
 id = "format"
 name = "format"
 entry = "npm run format:check"
