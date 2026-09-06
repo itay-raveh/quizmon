@@ -553,15 +553,13 @@
 }
 
 .trainer-badge:hover .trainer-badge-mark img {
-  --trainer-badge-depth: drop-shadow(0.09rem 0.13rem 0 var(--yellow))
-    drop-shadow(0.23rem 0.3rem 0 var(--navy-shadow));
+  --trainer-badge-depth: drop-shadow(0.23rem 0.3rem 0 var(--navy-shadow));
 
   transform: translate(-0.06rem, -0.12rem) scale(1.025);
 }
 
 .trainer-badge:active .trainer-badge-mark img {
-  --trainer-badge-depth: drop-shadow(0.02rem 0.04rem 0 var(--yellow))
-    drop-shadow(0.05rem 0.1rem 0 var(--navy-shadow));
+  --trainer-badge-depth: drop-shadow(0.05rem 0.1rem 0 var(--navy-shadow));
 
   transform: translate(0.08rem, 0.1rem) scale(0.99);
 }
@@ -580,8 +578,7 @@
 
 .trainer-badge-mark img {
   --trainer-badge-tone: saturate(1);
-  --trainer-badge-depth: drop-shadow(0.06rem 0.09rem 0 var(--yellow))
-    drop-shadow(0.16rem 0.22rem 0 var(--navy-shadow));
+  --trainer-badge-depth: drop-shadow(0.16rem 0.22rem 0 var(--navy-shadow));
 
   display: block;
   width: 100%;
