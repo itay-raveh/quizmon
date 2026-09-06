@@ -80,7 +80,7 @@ describe('Training settings', () => {
     ).toBeChecked();
   });
 
-  it('disables Generation roundup below two generations and restores its selection when available', () => {
+  it('keeps Generation roundup selectable when fewer than two generations are selected', () => {
     render(
       <TrainingSettingsHarness
         initial={{
@@ -95,64 +95,10 @@ describe('Training settings', () => {
     const roundup = screen.getByRole('checkbox', {
       name: 'Generation roundup',
     });
-    expect(roundup).toBeEnabled();
-    expect(roundup).toBeChecked();
-
-    fireEvent.click(screen.getByRole('checkbox', { name: 'II' }));
-    expect(roundup).toBeDisabled();
-    expect(roundup).not.toBeChecked();
-    expect(
-      screen.getByRole('button', {
-        name: /General knowledge\s*0 \/ 9\s*selected/,
-      }),
-    ).toBeVisible();
-
-    fireEvent.click(screen.getByRole('checkbox', { name: 'I' }));
-    expect(roundup).toBeDisabled();
-    fireEvent.click(screen.getByRole('checkbox', { name: 'I' }));
-    expect(roundup).toBeDisabled();
     fireEvent.click(screen.getByRole('checkbox', { name: 'II' }));
     expect(roundup).toBeEnabled();
     expect(roundup).toBeChecked();
-  });
-
-  it('selects only available question types with Select all', () => {
-    render(
-      <TrainingSettingsHarness
-        initial={{
-          ...defaultModifiers,
-          generations: ['I'],
-          trainingMode: 'custom',
-          questionTypes: [],
-        }}
-      />,
-    );
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Select all question types' }),
-    );
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: /General knowledge\s*8 \/ 9\s*selected/,
-      }),
-    );
-    const roundup = screen.getByRole('checkbox', {
-      name: 'Generation roundup',
-    });
-    expect(roundup).toBeDisabled();
-    expect(roundup).not.toBeChecked();
-    expect(
-      screen.getByRole('checkbox', { name: 'Evolution link' }),
-    ).toBeChecked();
-
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Deselect all question types' }),
-    );
-    expect(
-      screen.getByRole('checkbox', { name: 'Evolution link' }),
-    ).not.toBeChecked();
-    fireEvent.click(screen.getByRole('checkbox', { name: 'II' }));
-    expect(roundup).toBeEnabled();
+    fireEvent.click(roundup);
     expect(roundup).not.toBeChecked();
     fireEvent.click(
       screen.getByRole('button', { name: 'Select all question types' }),

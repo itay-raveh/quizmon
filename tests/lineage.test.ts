@@ -140,7 +140,7 @@ describe('Generation roundup', () => {
     ).toBe(true);
   });
 
-  it('rejects a Custom setup that cannot generate any roundup questions', () => {
+  it('requires two generations whenever Custom includes Generation roundup', () => {
     const modifiers = {
       ...defaultModifiers,
       generations: ['I'] as Generation[],
@@ -164,6 +164,19 @@ describe('Generation roundup', () => {
       getTrainingSettingsValidation(catalog, {
         ...modifiers,
         questionTypes: ['generation-roundup', 'evolution-link'],
+      }).isValid,
+    ).toBe(false);
+    expect(
+      getTrainingSettingsValidation(catalog, {
+        ...modifiers,
+        questionTypes: ['evolution-link'],
+      }).isValid,
+    ).toBe(true);
+    expect(
+      getTrainingSettingsValidation(catalog, {
+        ...modifiers,
+        questionTypes: ['generation-roundup'],
+        trainingMode: 'league',
       }).isValid,
     ).toBe(true);
   });

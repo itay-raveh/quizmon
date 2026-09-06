@@ -1,3 +1,4 @@
+import type { Modifiers } from '../src/game/types';
 import { expect, test } from './fixtures';
 
 test('keeps grouped settings reachable throughout a game on a phone', async ({
@@ -174,3 +175,51 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   expect(mobileControlMetrics.selectionToggleHeight).toBeGreaterThanOrEqual(44);
   await dialog.getByRole('button', { name: 'Cancel' }).click();
 });
+
+for (const repair of ['add generation', 'remove roundup'] as const) {
+  test(`rejects saving single-generation roundup settings until corrected: ${repair}`, async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Settings' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Settings' });
+    const savedBefore = await page.evaluate(() =>
+      localStorage.getItem('quizmon.training-settings.v2'),
+    );
+    await dialog.getByRole('button', { name: /General knowledge/ }).click();
+    await dialog.getByText('Generation roundup', { exact: true }).click();
+    await dialog.getByRole('button', { name: 'Save settings' }).click();
+
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('alert')).toHaveText(
+      'Select at least two generations for Generation roundup.',
+    );
+    expect(
+      await page.evaluate(() =>
+        localStorage.getItem('quizmon.training-settings.v2'),
+      ),
+    ).toBe(savedBefore);
+
+    if (repair === 'add generation') {
+      await dialog.getByText('II', { exact: true }).click();
+    } else {
+      await dialog.getByText('Generation roundup', { exact: true }).click();
+    }
+    await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await expect(dialog).toBeHidden();
+    const saved = await page.evaluate(
+      () =>
+        JSON.parse(
+          localStorage.getItem('quizmon.training-settings.v2')!,
+        ) as Pick<Modifiers, 'generations' | 'questionTypes'>,
+    );
+    expect(saved.generations).toEqual(
+      repair === 'add generation' ? ['I', 'II'] : ['I'],
+    );
+    expect(saved.questionTypes).toEqual(
+      repair === 'add generation'
+        ? ['pokedex-scan', 'generation-roundup']
+        : ['pokedex-scan'],
+    );
+  });
+}

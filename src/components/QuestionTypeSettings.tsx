@@ -71,19 +71,9 @@ export const QuestionTypeSettings = ({
   const [expandedGroup, setExpandedGroup] = useState<QuestionTypeGroup | null>(
     () => getInitialExpandedGroup(draft.questionTypes),
   );
-  const availableQuestionTypes = questionTypes.filter(
-    (type) => type !== 'generation-roundup' || draft.generations.length >= 2,
-  );
-  const selectedQuestionTypes = new Set(
-    availableQuestionTypes.filter((type) => draft.questionTypes.includes(type)),
-  );
-  const allSelected =
-    selectedQuestionTypes.size === availableQuestionTypes.length;
+  const selectedQuestionTypes = new Set(draft.questionTypes);
+  const allSelected = draft.questionTypes.length === questionTypes.length;
   const hasError = submitted && (!questionTypesAreValid || matchingCount === 0);
-  const visibleExpandedGroup =
-    submitted && !questionTypesAreValid
-      ? questionTypeGroups[0].id
-      : expandedGroup;
 
   return (
     <>
@@ -103,7 +93,7 @@ export const QuestionTypeSettings = ({
             onClick={() =>
               onChange((current) => ({
                 ...current,
-                questionTypes: allSelected ? [] : availableQuestionTypes,
+                questionTypes: allSelected ? [] : [...questionTypes],
               }))
             }
             sound={allSelected ? 'toggle-off' : 'toggle-on'}
@@ -114,9 +104,7 @@ export const QuestionTypeSettings = ({
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
             {draft.questionTypes.length > 0 &&
-            draft.questionTypes.every(
-              (type) => type === 'generation-roundup',
-            ) &&
+            draft.questionTypes.includes('generation-roundup') &&
             draft.generations.length < 2
               ? 'Select at least two generations for Generation roundup.'
               : questionTypesAreValid
@@ -129,7 +117,7 @@ export const QuestionTypeSettings = ({
           const selectedCount = groupedQuestionTypes.filter((questionType) =>
             selectedQuestionTypes.has(questionType),
           ).length;
-          const expanded = visibleExpandedGroup === group.id;
+          const expanded = expandedGroup === group.id;
           const titleId = `question-type-group-${group.id}-title`;
           const panelId = `question-type-group-${group.id}-panel`;
 
@@ -179,9 +167,6 @@ export const QuestionTypeSettings = ({
                       >
                         <SelectionTile
                           checked={checked}
-                          disabled={
-                            !availableQuestionTypes.includes(questionType)
-                          }
                           label={label}
                           onChange={(event) =>
                             onChange((current) =>

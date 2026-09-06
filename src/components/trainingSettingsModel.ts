@@ -10,9 +10,8 @@ export const getTrainingSettingsValidation = (
     isLeagueTraining(modifiers) ||
     (modifiers.questionTypes.length > 0 &&
       !(
-        modifiers.questionTypes.every(
-          (type) => type === 'generation-roundup',
-        ) && modifiers.generations.length < 2
+        modifiers.questionTypes.includes('generation-roundup') &&
+        modifiers.generations.length < 2
       ));
   const matchingCount = filterPokemon(catalog, modifiers).length;
   return {
