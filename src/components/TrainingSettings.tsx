@@ -1,5 +1,5 @@
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import { isLeagueTraining, TRAINING_QUESTION_COUNT } from '@/game/game';
+import { isLeagueTraining } from '@/game/game';
 import {
   generations,
   type Generation,
@@ -105,21 +105,9 @@ export const TrainingSettings = ({
             Choose at least one generation.
           </p>
         ) : null}
-        <p
-          aria-live="polite"
-          className="training-settings__description"
-          id="training-mode-description"
-        >
-          {leagueTraining
-            ? `${TRAINING_QUESTION_COUNT} questions with every question type. Quick Attack and Perfect Form can be earned.`
-            : `${TRAINING_QUESTION_COUNT} questions using the question types you choose.`}
-        </p>
       </section>
 
-      <fieldset
-        aria-describedby="training-mode-description"
-        className="training-mode-settings"
-      >
+      <fieldset className="training-mode-settings">
         <legend>Training mode</legend>
         <div className="training-mode-control">
           {trainingModes.map((mode) => (

@@ -44,15 +44,11 @@ describe('Training settings', () => {
     const generationsPicker = screen.getByRole('group', {
       name: 'Generations',
     });
-    const modeDescription = screen.getByText(
-      /10 questions with every question type/,
-    );
 
-    expect(modeDescription).toBeVisible();
-    expect(generationsPicker.nextElementSibling).toBe(modeDescription);
     expect(
       generationsPicker.closest('.settings-section')?.nextElementSibling,
     ).toBe(trainingMode);
+    expect(screen.queryByText(/10 questions/)).not.toBeInTheDocument();
   });
 
   it('shows question types only in Custom and preserves the selection', () => {

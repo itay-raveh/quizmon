@@ -19,9 +19,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     'true',
   );
   await expect(dialog.getByRole('radio', { name: 'Custom' })).toBeChecked();
-  await expect(
-    dialog.getByText('10 questions using the question types you choose.'),
-  ).toBeVisible();
   const selectAllGenerations = dialog.getByRole('button', {
     name: 'Select all generations',
   });
@@ -99,11 +96,6 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     dialog.getByText('Choose at least one question type.'),
   ).toHaveCount(0);
   await dialog.getByText('League', { exact: true }).click();
-  await expect(
-    dialog.getByText(
-      '10 questions with every question type. Quick Attack and Perfect Form can be earned.',
-    ),
-  ).toBeVisible();
   await expect(
     dialog.getByRole('heading', { name: 'Question types' }),
   ).toHaveCount(0);
