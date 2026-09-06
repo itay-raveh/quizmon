@@ -13,7 +13,6 @@ import {
   type TrainerTitle,
 } from '@/game/trainer';
 import { SoundButton } from './SoundButton';
-import { TrainerShareAttribution } from './TrainerShareAttribution';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitlesProps {
@@ -89,8 +88,6 @@ export const TrainerTitles = ({
           );
         })}
       </section>
-
-      <TrainerShareAttribution />
     </article>
   );
 };

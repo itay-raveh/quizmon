@@ -27,4 +27,3 @@ export const site = {
 } as const;
 
 export const absoluteSiteUrl = (path: string) => new URL(path, site.url).href;
-export const siteHostname = new URL(site.url).hostname;

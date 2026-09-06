@@ -160,7 +160,7 @@
   aspect-ratio: 3 / 2;
   overflow: hidden;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   text-align: left;
   background: var(--paper);
   border: 4px solid var(--navy);
@@ -186,7 +186,7 @@
   aspect-ratio: 3 / 2;
   overflow: hidden;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
   color: var(--navy);
   background: var(--case-metal);
   border: 4px solid var(--navy);
@@ -196,35 +196,6 @@
     0 0.3rem 0 var(--case-metal-dark),
     0 0.52rem 0 var(--navy-shadow);
   isolation: isolate;
-}
-
-.trainer-share-attribution {
-  display: flex;
-  width: max-content;
-  max-width: calc(100% - 1rem);
-  margin: 0.35rem auto 0.55rem;
-  padding: 0.3rem 0.6rem 0.4rem;
-  align-items: baseline;
-  justify-content: center;
-  justify-self: center;
-  color: var(--navy);
-  background: var(--cream);
-  border: 2px solid var(--navy);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.12rem 0 var(--yellow);
-  font-size: var(--text-small);
-  font-weight: 800;
-  gap: 0.35rem;
-}
-
-.trainer-share-attribution[hidden] {
-  display: none;
-}
-
-.trainer-share-attribution strong {
-  min-width: 0;
-  font-family: var(--font-data);
-  overflow-wrap: anywhere;
 }
 
 .trainer-share-capture {
@@ -1456,13 +1427,6 @@ html[data-reduce-motion]
     font-size: var(--text-mini);
   }
 
-  .trainer-share-attribution {
-    max-width: calc(100% - 0.7rem);
-    margin: 0.25rem auto 0.4rem;
-    padding: 0.25rem 0.5rem 0.3rem;
-    font-size: var(--text-mini);
-  }
-
   .trainer-passport__controls {
     grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
   }
@@ -1581,10 +1545,6 @@ html[data-reduce-motion]
 
   .trainer-titles__collection {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .trainer-share-attribution {
-    flex-wrap: wrap;
   }
 }
 

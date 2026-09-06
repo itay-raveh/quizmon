@@ -1,5 +1,4 @@
 import { site } from '@/app/site';
-import { setTrainerRoute } from '@/app/trainer-route';
 import type { TrainerView } from './trainer';
 
 const artifactDetails = {
@@ -34,9 +33,6 @@ const createCaptureClone = (element: HTMLElement) => {
   host.setAttribute('aria-hidden', 'true');
   host.setAttribute('inert', '');
   host.style.width = `${width}px`;
-  clone
-    .querySelectorAll<HTMLElement>('.trainer-share-attribution')
-    .forEach((attribution) => attribution.removeAttribute('hidden'));
   host.appendChild(clone);
   document.body.appendChild(host);
 
@@ -97,14 +93,12 @@ export const shareTrainerArtifact = async (
   const file = new File([blob], details.filename, {
     type: 'image/png',
   });
-  const artifactUrl = setTrainerRoute(new URL(site.url), view);
 
   try {
     await navigator.share({
       files: [file],
-      text: `My ${site.name} ${details.label}`,
+      text: `My ${site.name} ${details.label}\n${site.url}`,
       title: `${site.name} ${details.label}`,
-      url: artifactUrl.href,
     });
     return 'shared';
   } catch (error) {

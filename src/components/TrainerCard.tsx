@@ -9,7 +9,6 @@ import {
   trainerSpecialtyLabels,
 } from '@/game/trainer';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
-import { TrainerShareAttribution } from './TrainerShareAttribution';
 import { TrainerTitleMark } from './TrainerTitleMark';
 import { PokemonIdentity } from './PokemonIdentity';
 
@@ -78,7 +77,6 @@ export const TrainerCard = ({
           </dl>
         </div>
       </div>
-      <TrainerShareAttribution />
     </article>
   );
 };

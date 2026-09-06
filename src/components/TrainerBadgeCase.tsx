@@ -2,7 +2,6 @@ import type { Ref } from 'react';
 import type { TrainerBadge } from '@/game/trainer';
 import { SoundButton } from './SoundButton';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
-import { TrainerShareAttribution } from './TrainerShareAttribution';
 
 interface TrainerBadgeCaseProps {
   badges: TrainerBadge[];
@@ -55,7 +54,6 @@ export const TrainerBadgeCase = ({
           </SoundButton>
         ))}
       </section>
-      <TrainerShareAttribution />
     </article>
   );
 };

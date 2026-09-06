@@ -119,8 +119,8 @@ describe('Trainer profile artifacts', () => {
       screen.getByRole('article', { name: 'League Badge Case' }),
     ).toBeVisible();
     expect(screen.queryByText('League Badge Case')).not.toBeInTheDocument();
-    expect(screen.getByText('Play at')).not.toBeVisible();
-    expect(screen.getByText('quizmon.raveh.dev')).not.toBeVisible();
+    expect(screen.queryByText('Play at')).not.toBeInTheDocument();
+    expect(screen.queryByText('quizmon.raveh.dev')).not.toBeInTheDocument();
     expect(
       screen.getByRole('region', {
         name: '2 of 8 League Badges earned',
@@ -140,28 +140,21 @@ describe('Trainer profile artifacts', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('shows the shared attribution only in the exported artifact', async () => {
+  it('captures a detached copy of the selected artifact', async () => {
     const blob = new Blob(['trainer'], { type: 'image/png' });
-    const { container } = render(
-      <TrainerTitles equipped="type" onSelect={vi.fn()} stats={stats} />,
-    );
+    render(<TrainerTitles equipped="type" onSelect={vi.fn()} stats={stats} />);
     const artifact = screen.getByRole('article', {
       name: 'Trainer Titles collection',
     });
-    const attribution = container.querySelector('.trainer-share-attribution');
-
-    expect(attribution).toHaveAttribute('hidden');
     snapdomToBlob.mockImplementation((capture: HTMLElement) => {
       expect(capture).not.toBe(artifact);
-      expect(
-        capture.querySelector('.trainer-share-attribution'),
-      ).not.toHaveAttribute('hidden');
+      expect(capture.textContent).not.toContain('Play at');
+      expect(capture.textContent).not.toContain('quizmon.raveh.dev');
       expect(capture.parentElement).toHaveClass('trainer-share-capture');
       return Promise.resolve(blob);
     });
 
     await expect(renderTrainerArtifactImage(artifact)).resolves.toBe(blob);
-    expect(attribution).toHaveAttribute('hidden');
     expect(document.querySelector('.trainer-share-capture')).toBeNull();
   });
 });
