@@ -14,33 +14,60 @@ const sameTypes = (left: readonly string[], right: readonly string[]) =>
 
 export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
+  const families = new Map(
+    pool.map(({ name }) => {
+      let root = name;
+      let parent = context.catalog.pokemon[root]?.evolvesFrom;
+      while (parent) {
+        root = parent;
+        parent = context.catalog.pokemon[root]?.evolvesFrom;
+      }
+      return [name, root];
+    }),
+  );
   const typePairKey = (types: readonly string[]) => [...types].sort().join('|');
   const pairCounts = new Map<string, number>();
-  for (const { pokemon } of pool) {
+  const familyCounts = new Map<string, number>();
+  const familyPairCounts = new Map<string, number>();
+  for (const { name, pokemon } of pool) {
+    const family = families.get(name)!;
+    familyCounts.set(family, (familyCounts.get(family) ?? 0) + 1);
     if (pokemon.types.length !== 2) continue;
     const key = typePairKey(pokemon.types);
     pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1);
+    const familyPair = `${family}|${key}`;
+    familyPairCounts.set(
+      familyPair,
+      (familyPairCounts.get(familyPair) ?? 0) + 1,
+    );
   }
-  const targets = pool.filter(({ pokemon }) => {
+  const targets = pool.filter(({ name, pokemon }) => {
     if (pokemon.types.length !== 2) return false;
-    const count = pairCounts.get(typePairKey(pokemon.types)) ?? 0;
-    return count >= 2 && pool.length - count >= 3;
+    const family = families.get(name)!;
+    const key = typePairKey(pokemon.types);
+    const matches =
+      (pairCounts.get(key) ?? 0) -
+      (familyPairCounts.get(`${family}|${key}`) ?? 0);
+    const unrelated = pool.length - (familyCounts.get(family) ?? 0);
+    return matches >= 1 && unrelated - matches >= 3;
   });
   const fresh = targets.filter(({ name }) => !context.used.has(name));
   const target = pick(fresh.length > 0 ? fresh : targets, context.random);
   if (!target?.pokemon.sprite) return undefined;
+  const candidates = pool.filter(
+    ({ name }) => families.get(name) !== families.get(target.name),
+  );
   const correct = pick(
-    pool.filter(
-      ({ name, pokemon }) =>
-        name !== target.name && sameTypes(target.pokemon.types, pokemon.types),
+    candidates.filter(({ pokemon }) =>
+      sameTypes(target.pokemon.types, pokemon.types),
     ),
     context.random,
   );
   if (!correct) return undefined;
-  const distractors = pool.filter(
+  const distractors = candidates.filter(
     ({ pokemon }) => !sameTypes(target.pokemon.types, pokemon.types),
   );
-  const options = pokemonOptions(context, correct, [target.name], distractors);
+  const options = pokemonOptions(context, correct, [], distractors);
   context.used.add(target.name);
   return {
     ...makeQuestion(

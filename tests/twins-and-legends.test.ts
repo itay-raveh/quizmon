@@ -83,6 +83,60 @@ describe('Type twins', () => {
     );
     expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
   });
+
+  it('skips type pairs that only exist within one evolution family', () => {
+    const current = context('ludicolo');
+    current.pool = current.pool.filter(({ name }) =>
+      ['lotad', 'lombre', 'ludicolo', 'bellsprout', 'abra', 'paras'].includes(
+        name,
+      ),
+    );
+    expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
+  });
+
+  it.each([
+    {
+      target: 'bulbasaur',
+      relatives: ['ivysaur', 'venusaur'],
+      alternatives: ['bellsprout', 'abra', 'ponyta', 'geodude'],
+    },
+    {
+      target: 'charizard',
+      relatives: ['charmander', 'charmeleon'],
+      alternatives: ['moltres', 'abra', 'ponyta', 'geodude'],
+    },
+    {
+      target: 'mothim',
+      relatives: ['wormadam'],
+      alternatives: ['butterfree', 'abra', 'ponyta', 'geodude'],
+    },
+  ])(
+    'excludes the entire family of $target from every answer',
+    ({ target, relatives, alternatives }) => {
+      for (let seed = 0; seed < 10; seed += 1) {
+        const current = context(`family-${seed}`);
+        current.pool = current.pool.filter(({ name }) =>
+          [target, ...relatives, ...alternatives].includes(name),
+        );
+        current.used = new Set(
+          current.pool
+            .map(({ name }) => name)
+            .filter((name) => name !== target),
+        );
+        const question = buildQuestionType(current, 'type-twins');
+        expect(question?.pokemonName).toBe(target);
+        expect(new Set(question?.options)).toEqual(new Set(alternatives));
+      }
+    },
+  );
+
+  it('skips targets when excluding relatives leaves fewer than three distractors', () => {
+    const current = context('few-unrelated');
+    current.pool = current.pool.filter(({ name }) =>
+      ['mothim', 'butterfree', 'burmy', 'caterpie', 'ponyta'].includes(name),
+    );
+    expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
+  });
 });
 
 describe('Legend hunt', () => {
