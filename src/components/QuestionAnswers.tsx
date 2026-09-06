@@ -162,9 +162,10 @@ export const QuestionAnswers = ({
                     height="96"
                   />
                 </span>
-                {concealed ? null : (
+                {
                   <PokemonIdentity
                     className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
+                    revealed={!concealed}
                     dexNumber={dexNumber}
                     hideNumberFromAccessibility
                     name={option}
@@ -201,7 +202,7 @@ export const QuestionAnswers = ({
                       </span>
                     ) : null}
                   </PokemonIdentity>
-                )}
+                }
               </>
             ) : hasTypeOptionBadges ? (
               <TypeBadges className="answer__type-choice" types={[option]} />

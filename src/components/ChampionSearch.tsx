@@ -55,7 +55,8 @@ export const ChampionSearch = ({
     if (!normalizedQuery || exactMatch) return [];
     return findSearchMatches(entries, query);
   }, [entries, exactMatch, normalizedQuery, query]);
-  const showSuggestions = open && !answered && normalizedQuery.length > 0;
+  const showSuggestions =
+    open && !answered && !exactMatch && normalizedQuery.length > 0;
   const result = answered
     ? selectedOption === correctOption
       ? 'correct'
@@ -129,8 +130,10 @@ export const ChampionSearch = ({
                 : undefined
             }
             aria-autocomplete="list"
-            aria-controls={listboxId}
-            aria-expanded={showSuggestions}
+            aria-controls={
+              showSuggestions && suggestions.length > 0 ? listboxId : undefined
+            }
+            aria-expanded={showSuggestions && suggestions.length > 0}
             aria-invalid={result === 'wrong' ? true : undefined}
             autoCapitalize="none"
             autoComplete="off"

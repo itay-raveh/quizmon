@@ -53,6 +53,7 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
       ),
     ),
     title: 'Generation roundup',
+    visual: { kind: 'generation-roundup', generation },
     answer: { correctOptions, interaction: 'multi-select' },
     optionGenerations: Object.fromEntries(
       [...matching, ...others].map(({ name, pokemon }) => [
@@ -117,6 +118,11 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
       ),
     ),
     title: 'Evolution link',
-    visual: { kind: 'evolution-link', before, after },
+    visual: {
+      kind: 'evolution-link',
+      before,
+      after,
+      stages: getOptionVisuals(context, [before, target.name, after]),
+    },
   };
 };

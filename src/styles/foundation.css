@@ -272,3 +272,7 @@ main {
   font-family: var(--font-interface);
   font-size: var(--text-small);
 }
+
+html:has(.app--questions) {
+  scrollbar-gutter: stable;
+}

@@ -141,7 +141,13 @@ export interface PokemonSearchOption {
 }
 
 type QuestionVisual =
-  | { kind: 'evolution-link'; before: string; after: string }
+  | {
+      kind: 'evolution-link';
+      before: string;
+      after: string;
+      stages: Record<string, PokemonOptionVisual>;
+    }
+  | { kind: 'generation-roundup'; generation: Generation }
   | { kind: 'type-check' }
   | { kind: 'type-twins' }
   | { kind: 'type-roundup'; type: string }

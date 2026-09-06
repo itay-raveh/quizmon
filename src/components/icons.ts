@@ -1,6 +1,4 @@
-export { ArrowDownIcon } from '@phosphor-icons/react/dist/icons/ArrowDown';
 export { ArrowLeftIcon } from '@phosphor-icons/react/dist/icons/ArrowLeft';
-export { ArrowUpIcon } from '@phosphor-icons/react/dist/icons/ArrowUp';
 export { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/icons/ArrowsClockwise';
 export { BinocularsIcon } from '@phosphor-icons/react/dist/icons/Binoculars';
 export { BellSimpleRingingIcon } from '@phosphor-icons/react/dist/icons/BellSimpleRinging';

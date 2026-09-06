@@ -3,6 +3,7 @@ import { getModeLabel } from '@/game/daily';
 import {
   formatDuration,
   formatDurationMilliseconds,
+  getAnswerPoints,
   getCorrectOptions,
   getQuestionTitle,
 } from '@/game/game';
@@ -24,6 +25,7 @@ import { Progress } from './Progress';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionClues } from './QuestionClues';
+import { QuestionInstruction } from './QuestionInstruction';
 import { SettingsButton } from './SettingsButton';
 import { TypeBadges } from './TypeBadge';
 import { useQuestionAnswer } from './useQuestionAnswer';
@@ -135,6 +137,10 @@ export const Question = ({
   }, [answerFlow, answered]);
 
   const isChampion = question.category === 'champion';
+  const visualInstruction =
+    Boolean(question.visual) ||
+    question.questionType === 'ability-check' ||
+    question.questionType === 'move-check';
   const isLeague = mode.kind === 'league';
   const modeLabel = isLeague
     ? getLeagueStageLabel(number)
@@ -159,13 +165,8 @@ export const Question = ({
     ) : null;
   const className = [
     'question',
-    question.media.kind === 'sprite' || question.media.kind === 'pixel-peek'
-      ? 'question--with-media'
-      : '',
-    question.media.kind === 'pixel-sprite' ? 'question--with-portrait' : '',
-    question.visual ? 'question--with-visual' : '',
+    isChampion ? 'question--champion' : '',
     isLeague ? 'question--league' : '',
-    isChampion && !championChoicesVisible ? 'question--champion-search' : '',
     number === 1 ? 'question--enter' : '',
   ]
     .filter(Boolean)
@@ -207,37 +208,39 @@ export const Question = ({
         {getQuestionTitle(question)}
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
-      <QuestionPrompt
-        className={question.visual ? 'visually-hidden' : 'question__prompt'}
-        id="question-prompt"
-        prompt={question.prompt}
-      />
-
-      {isChampion && !championChoicesVisible && question.searchOptions ? (
-        <ChampionSearch
-          answered={answered}
-          correctOption={correctOptions[0] ?? ''}
-          disabled={interactionPaused}
-          onAnswer={(option) => finishAnswer([option])}
-          options={question.searchOptions}
-          selectedOption={selectedOptions[0]}
+      {visualInstruction ? (
+        <QuestionPrompt
+          className="visually-hidden"
+          id="question-prompt"
+          prompt={question.prompt}
         />
       ) : null}
-
-      {isChampion && !isLeague ? (
-        <QuestionClues
-          answered={answered}
-          cluesShown={cluesShown}
-          onReveal={revealClue}
-          question={question}
-        />
-      ) : null}
-
-      <QuestionArtwork
-        answered={answered}
-        cluesShown={cluesShown}
-        question={question}
-      />
+      <div className="question__context">
+        <div
+          className="question__instruction"
+          aria-hidden={visualInstruction || undefined}
+        >
+          {visualInstruction ? (
+            <QuestionInstruction question={question} />
+          ) : (
+            <QuestionPrompt
+              className="question__prompt"
+              id="question-prompt"
+              prompt={question.prompt}
+            />
+          )}
+        </div>
+        <div className="question__stimulus">
+          {isChampion && !isLeague ? (
+            <QuestionClues cluesShown={cluesShown} question={question} />
+          ) : null}
+          <QuestionArtwork
+            answered={answered}
+            cluesShown={cluesShown}
+            question={question}
+          />
+        </div>
+      </div>
 
       {answered &&
       question.pokemonTypes.length > 0 &&
@@ -249,15 +252,26 @@ export const Question = ({
         />
       ) : null}
 
-      {!isChampion || championChoicesVisible ? (
-        <QuestionAnswers
-          answered={answered}
-          correctOptions={correctOptions}
-          onSelect={selectOption}
-          question={question}
-          selectedOptions={selectedOptions}
-        />
-      ) : null}
+      <div className="question__response">
+        {isChampion && !championChoicesVisible && question.searchOptions ? (
+          <ChampionSearch
+            answered={answered}
+            correctOption={correctOptions[0] ?? ''}
+            disabled={interactionPaused}
+            onAnswer={(option) => finishAnswer([option])}
+            options={question.searchOptions}
+            selectedOption={selectedOptions[0]}
+          />
+        ) : (
+          <QuestionAnswers
+            answered={answered}
+            correctOptions={correctOptions}
+            onSelect={selectOption}
+            question={question}
+            selectedOptions={selectedOptions}
+          />
+        )}
+      </div>
 
       <span className="visually-hidden" aria-live="polite">
         {answerCorrect
@@ -267,34 +281,40 @@ export const Question = ({
             : ''}
       </span>
 
-      {answerFlow === 'instant' ? (
-        checkAnswerAction
-      ) : (
-        <div className="question__action-slot">
-          <span
-            aria-hidden="true"
-            className="game-button question__action-reserve"
+      <div className="question__action-slot">
+        <span
+          aria-hidden="true"
+          className="game-button question__action-reserve"
+        >
+          Check answers
+        </span>
+        {checkAnswerAction}
+        {isChampion &&
+        !isLeague &&
+        !answered &&
+        question.clues &&
+        cluesShown <= question.clues.length ? (
+          <GameButton className="clue-button" tone="quiet" onClick={revealClue}>
+            {cluesShown === 0 ? 'Show 4 choices' : 'Reveal another clue'} ·{' '}
+            {getAnswerPoints(question, true, cluesShown + 1)} points
+          </GameButton>
+        ) : null}
+        {answered && answerFlow !== 'instant' ? (
+          <GameButton
+            className="new-game"
+            onClick={advanceAnswer}
+            ref={advanceButton}
           >
-            Check answers
-          </span>
-          {checkAnswerAction}
-          {answered ? (
-            <GameButton
-              className="new-game"
-              onClick={advanceAnswer}
-              ref={advanceButton}
-            >
-              {isLeague
-                ? number === total || !answerCorrect
-                  ? 'See result'
-                  : 'Next question'
-                : number === total
-                  ? 'See results'
-                  : 'Next question'}
-            </GameButton>
-          ) : null}
-        </div>
-      )}
+            {isLeague
+              ? number === total || !answerCorrect
+                ? 'See result'
+                : 'Next question'
+              : number === total
+                ? 'See results'
+                : 'Next question'}
+          </GameButton>
+        ) : null}
+      </div>
     </section>
   );
 };

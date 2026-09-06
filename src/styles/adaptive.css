@@ -114,7 +114,7 @@
   }
 
   .modifiers-dialog {
-    width: 100%;
+    width: 100vw;
     height: 100svh;
     max-height: none;
     margin: 0;
@@ -141,35 +141,8 @@
     font-size: var(--text-small);
   }
 
-  .question__prompt {
-    min-height: 4.35em;
-  }
-
-  .question-visual {
-    min-height: 9rem;
-    margin-block: 0.5rem 0.75rem;
-  }
-
-  .question-visual__subject {
-    min-width: 5.75rem;
-  }
-
-  .question-visual__pokemon {
-    width: 5.5rem;
-    height: 5.5rem;
-  }
-
   .question-relation {
     gap: 0.55rem;
-  }
-
-  .question-visual__pokemon-slot {
-    width: 5.75rem;
-    height: 5.75rem;
-  }
-
-  .question-relation--evolution {
-    --evolution-portrait-size: 5.75rem;
   }
 
   .question-relation--matchup .question-visual__mystery-type {
@@ -239,12 +212,12 @@
     grid-row: 2;
   }
 
-  .sprite-frame {
-    width: min(12rem, 54vw);
-  }
-
   .sprite {
     transform: scale(1.06);
+  }
+
+  .question {
+    --question-response-size: 17.25rem;
   }
 
   .answers {
@@ -253,7 +226,7 @@
   }
 
   .answers--pokemon {
-    grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .share-targets {
@@ -280,16 +253,12 @@
   .answer--pokemon {
     min-height: 7rem;
     grid-template-columns: 1fr;
-    grid-template-rows: 4.55rem minmax(2.45rem, auto);
-  }
-
-  .answer--concealed {
-    grid-template-rows: 1fr;
+    grid-template-rows: 4rem minmax(3.5rem, auto);
   }
 
   .answer__sprite {
-    width: 4.7rem;
-    height: 4.7rem;
+    width: 4rem;
+    height: 4rem;
   }
 
   .answer__nameplate {
@@ -342,66 +311,25 @@
     margin-top: 0.45rem;
   }
 
-  .question__prompt {
-    min-height: 2.9em;
-    margin-block: 0.5rem;
-  }
-
-  .question-visual {
-    min-height: 8rem;
-    margin-block: 0.35rem 0.6rem;
-  }
-
-  .question-visual__prompt {
-    font-size: var(--text-body);
-  }
-
-  .question-visual__pokemon {
-    width: 5rem;
-    height: 5rem;
-  }
-
-  .question-visual__pokemon-slot {
-    width: 5.25rem;
-    height: 5.25rem;
-  }
-
-  .question-relation--evolution {
-    --evolution-portrait-size: 5.25rem;
-  }
-
-  .sprite-frame {
-    width: min(10.5rem, 48vw, 25svh);
-    margin-block: 0.15rem;
-  }
-
   .sprite {
     transform: scale(1.08);
   }
 }
 
 @media (max-height: 43rem) and (min-width: 36.01rem) {
-  .question--with-media {
-    grid-template-columns: 1fr 1fr;
-    column-gap: 1.2rem;
+  .app--questions main {
+    padding-top: 0.75rem;
   }
 
-  .question--with-media .question__topline,
-  .question--with-media h1,
-  .question--with-media .game-mode,
-  .question--with-media .question__prompt,
-  .question--with-media .clue-board,
-  .question--with-media .champion-search,
-  .question--with-media .question__action-slot {
-    grid-column: 1 / -1;
+  .question {
+    --question-stimulus-size: 8rem;
+    --question-response-size: 13.5rem;
   }
+}
 
-  .sprite-frame {
-    width: min(14rem, 38vh);
-  }
-
-  .answers {
-    align-content: center;
+@media (max-width: 22rem) {
+  .question__context {
+    min-height: 12.5rem;
   }
 }
 

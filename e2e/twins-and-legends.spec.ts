@@ -38,7 +38,7 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
       let targetTypes: string[] = [];
       if (questionType === 'type-twins') {
         const name = await page
-          .locator('.question-visual__prompt strong')
+          .locator('.question-visual__subject-name .pokemon-identity__name')
           .textContent();
         const target = Object.entries(catalogData.pokemon).find(
           ([key]) => formatName(key) === name,
@@ -48,7 +48,7 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
         expect(targetTypes).toHaveLength(2);
         await expect(
           page.locator('.question-visual__subject-types'),
-        ).toHaveCount(0);
+        ).toBeHidden();
       }
       const options = [];
       for (const answer of await answers.all()) {

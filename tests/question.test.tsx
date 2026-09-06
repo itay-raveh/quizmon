@@ -252,11 +252,11 @@ describe('question transitions', () => {
       '#question-prompt .question__subject-number',
     );
     const visibleNumber = rendered.container.querySelector(
-      '.question-visual__prompt .question__subject-number',
+      '.question-visual__subject-number',
     );
     expect(hiddenNumber).toHaveTextContent('(No. 0025)');
     expect(hiddenNumber?.closest('p')).toHaveClass('visually-hidden');
-    expect(visibleNumber).toHaveTextContent('(No. 0025)');
+    expect(visibleNumber).toHaveTextContent('No. 0025');
     expect(visibleNumber).toBeVisible();
     expect(
       rendered.container.querySelectorAll('.answer__type-choice .type-badge'),
@@ -292,10 +292,11 @@ describe('question transitions', () => {
     });
 
     const visiblePrompt = rendered.container.querySelector(
-      '.question-visual__prompt--roundup',
+      '.question-visual__roundup-type',
     );
-    expect(screen.getByText('Select every')).toBeVisible();
-    expect(screen.getByText('Pokémon')).toBeVisible();
+    expect(
+      screen.getByText('Select every Pokémon with this type'),
+    ).toBeVisible();
     expect(visiblePrompt?.querySelector('.type-badge')).toBeVisible();
     expect(screen.getByText('Select every Electric-type Pokémon.')).toHaveClass(
       'visually-hidden',
@@ -339,10 +340,8 @@ describe('question transitions', () => {
       rendered.container.querySelectorAll('.type-badge--mystery'),
     ).toHaveLength(1);
     expect(
-      rendered.container.querySelectorAll(
-        '.question-visual__subject-types .type-badge',
-      ),
-    ).toHaveLength(0);
+      rendered.container.querySelector('.question-visual__subject-types'),
+    ).not.toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'Ground' }));
 
@@ -370,8 +369,8 @@ describe('question transitions', () => {
     });
 
     expect(
-      rendered.container.querySelector('.question-visual__prompt'),
-    ).toHaveTextContent('Which one has the lowest:');
+      rendered.container.querySelector('.question__instruction'),
+    ).toHaveTextContent('Which Pokémon has the lowest stat?');
     expect(
       rendered.container.querySelector('.question-visual__stat'),
     ).toHaveTextContent('Speed');
@@ -479,14 +478,16 @@ describe('question transitions', () => {
     expect(screen.getByText('×2')).toBeVisible();
     expect(screen.getByText('No. 0007')).toBeVisible();
     expect(
-      rendered.container.querySelector('.question-visual__unknown-pokemon img'),
+      rendered.container.querySelector(
+        '.question-relation--matchup > .question-visual__pokemon-slot img',
+      ),
     ).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
 
     expect(
       rendered.container.querySelector(
-        '.question-visual__unknown-pokemon img[src="https://example.com/pikachu.png"]',
+        '.question-relation--matchup > .question-visual__pokemon-slot img[src="https://example.com/pikachu.png"]',
       ),
     ).toBeInTheDocument();
     expect(
@@ -546,8 +547,8 @@ describe('question transitions', () => {
 
     expect(screen.getByText('?')).toBeVisible();
     expect(screen.getByText('No. 0095')).toBeVisible();
-    expect(screen.queryByText('No. 0208')).toBeNull();
-    expect(screen.queryByText('Steelix')).toBeNull();
+    expect(screen.queryByText('No. 0208')).not.toBeVisible();
+    expect(screen.queryByText('Steelix')).not.toBeVisible();
     expect(preloadedSources).toContain('https://example.com/steelix.png');
     fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
     expect(screen.getByText('Steelix')).toBeVisible();
@@ -604,7 +605,9 @@ describe('question transitions', () => {
     expect(answer).toHaveClass('answer--correct');
     expect(answer.querySelector('kbd svg')).toBeInTheDocument();
     expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
-    expect(screen.queryByText(/points/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /points/ }),
+    ).not.toBeInTheDocument();
     expect(document.querySelector('.answer-explanation')).toBeNull();
   });
 
@@ -678,7 +681,9 @@ describe('question transitions', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     expect(screen.queryByRole('button', { name: 'Next question' })).toBeNull();
-    expect(document.querySelector('.question__action-slot')).toBeNull();
+    expect(
+      document.querySelector('.question__action-slot'),
+    ).toBeInTheDocument();
     vi.advanceTimersByTime(299);
     expect(onAnswer).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
@@ -761,7 +766,7 @@ describe('question transitions', () => {
       },
     });
 
-    expect(screen.queryByText('Pikachu')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pikachu')).not.toBeVisible();
     expect(screen.queryByText('Silhouette 1')).not.toBeInTheDocument();
     expect(
       document.querySelectorAll('.answer__sprite--silhouette'),
@@ -924,7 +929,7 @@ describe('question transitions', () => {
 });
 
 it.each(['Ivysaur', 'Bayleef'])(
-  'keeps Evolution link text-only before and after choosing %s',
+  'renders Evolution link portraits with text-only choices before and after choosing %s',
   (answer) => {
     const { container } = renderQuestion({
       question: {
@@ -943,20 +948,36 @@ it.each(['Ivysaur', 'Bayleef'])(
           kind: 'evolution-link',
           before: 'bulbasaur',
           after: 'venusaur',
+          stages: Object.fromEntries(
+            ['bulbasaur', 'ivysaur', 'venusaur'].map((name, index) => [
+              name,
+              {
+                dexNumber: index + 1,
+                src: `/sprites/pokemon/${index + 1}.png`,
+                types: ['grass', 'poison'],
+              },
+            ]),
+          ),
         },
       },
     });
     const chain = container.querySelector('.question-evolution-link');
-    expect(chain).toHaveTextContent('Bulbasaur→?→Venusaur');
-    expect(container.querySelectorAll('img')).toHaveLength(0);
+    expect(chain).toHaveAttribute('aria-hidden', 'true');
+    expect(chain?.querySelectorAll('img')).toHaveLength(2);
+    expect(chain?.querySelectorAll('.question-relation__arrow')).toHaveLength(
+      2,
+    );
     expect(
-      container.querySelectorAll('.pokemon-identity__number'),
+      container.querySelector('.answers')?.querySelectorAll('img'),
     ).toHaveLength(0);
+    const hiddenIdentity = chain?.querySelectorAll('.pokemon-identity')[1];
+    expect(hiddenIdentity).not.toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: answer }));
-    expect(chain).toHaveTextContent('Bulbasaur→Ivysaur→Venusaur');
-    expect(container.querySelectorAll('img')).toHaveLength(0);
+    expect(chain?.querySelectorAll('img')).toHaveLength(3);
+    expect(hiddenIdentity).toBeVisible();
+    expect(hiddenIdentity).toHaveTextContent('Ivysaur');
     expect(
-      container.querySelectorAll('.pokemon-identity__number'),
+      container.querySelector('.answers')?.querySelectorAll('img'),
     ).toHaveLength(0);
   },
 );
@@ -1019,4 +1040,17 @@ it.each([
       }),
     ).toBeDisabled();
   }
+});
+
+it('does not announce a missing Pokémon for an exact Champion answer', () => {
+  renderQuestion({ question: championQuestion });
+  const input = screen.getByRole('combobox', { name: 'Your answer' });
+  fireEvent.change(input, { target: { value: 'Pikachu' } });
+  expect(screen.queryByText('No Pokémon found')).not.toBeInTheDocument();
+  expect(input).toHaveAttribute('aria-expanded', 'false');
+  expect(input).not.toHaveAttribute('aria-controls');
+  expect(screen.getByRole('button', { name: 'Guess' })).toBeEnabled();
+  fireEvent.change(input, { target: { value: 'zzzzzz' } });
+  expect(screen.getByText('No Pokémon found')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'Guess' })).toBeDisabled();
 });

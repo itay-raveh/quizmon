@@ -33,6 +33,9 @@ const feedbackDelay: Record<Exclude<AnswerFlow, 'manual'>, number> = {
 const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
     ...(question.media.kind === 'none' ? [] : [question.media.src]),
+    ...(question.visual?.kind === 'evolution-link'
+      ? Object.values(question.visual.stages).map(({ src }) => src)
+      : []),
     ...(question.visual?.kind === 'evolution-shift'
       ? [question.visual.evolution.src]
       : []),

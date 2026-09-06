@@ -37,18 +37,22 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
       ).toBeVisible();
       const answers = page.locator('.answer');
       await expect(answers).toHaveCount(4);
-      await expect(
-        page.locator('.question .pokemon-identity__number'),
-      ).toHaveCount(0);
+      await expect(answers.locator('.pokemon-identity__number')).toHaveCount(0);
       if (questionType === 'evolution-link') {
         const chain = page.locator('.question-evolution-link');
-        const before = await chain.locator('span').first().textContent();
+        const subjects = chain.locator('.question-visual__subject');
+        const before = await subjects
+          .first()
+          .locator('.pokemon-identity__name')
+          .textContent();
         const first = Object.entries(catalogData.pokemon).find(
           ([name]) => formatName(name) === before,
         )?.[1];
         if (!first) throw new Error('Missing first evolution');
         const correct = first.evolvesTo[0]!;
-        await expect(page.locator('.question img')).toHaveCount(0);
+        await expect(chain.locator('img')).toHaveCount(2);
+        await expect(subjects.nth(1).locator('.pokemon-identity')).toBeHidden();
+        await expect(answers.locator('img')).toHaveCount(0);
         for (const answer of await answers.all()) {
           const name = await answer.getAttribute('aria-label');
           if ((name === formatName(correct)) === (outcome === 'correct')) {
@@ -56,8 +60,14 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
             break;
           }
         }
-        await expect(chain.locator('strong')).toHaveText(formatName(correct));
-        await expect(page.locator('.question img')).toHaveCount(0);
+        await expect(
+          subjects.nth(1).locator('.pokemon-identity'),
+        ).toBeVisible();
+        await expect(
+          subjects.nth(1).locator('.pokemon-identity__name'),
+        ).toHaveText(formatName(correct));
+        await expect(chain.locator('img')).toHaveCount(3);
+        await expect(answers.locator('img')).toHaveCount(0);
       } else {
         const prompt = await page.locator('#question-prompt').textContent();
         const generation = prompt?.match(/Generation ([IVX]+)\./)?.[1];
@@ -87,9 +97,7 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
       await expect(
         page.getByRole('button', { name: 'Next question' }),
       ).toBeVisible();
-      await expect(
-        page.locator('.question .pokemon-identity__number'),
-      ).toHaveCount(0);
+      await expect(answers.locator('.pokemon-identity__number')).toHaveCount(0);
       if (outcome === 'correct')
         await expect(page.locator('.answer--wrong')).toHaveCount(0);
       else

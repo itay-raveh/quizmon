@@ -22,17 +22,21 @@ export const PokemonIdentity = ({
   numberClassName = '',
   revealed = true,
 }: PokemonIdentityProps) => (
-  <span className={`pokemon-identity ${className}`.trim()}>
+  <span
+    className={`pokemon-identity ${className}`.trim()}
+    aria-hidden={!revealed || undefined}
+    style={{ visibility: revealed ? undefined : 'hidden' }}
+  >
     {dexNumber === undefined ? null : (
       <small
         aria-hidden={hideNumberFromAccessibility || undefined}
         className={`pokemon-identity__number ${numberClassName}`.trim()}
       >
-        {revealed ? formatPokedexNumber(dexNumber) : '\u00a0'}
+        {formatPokedexNumber(dexNumber)}
       </small>
     )}
     <span className={`pokemon-identity__name ${nameClassName}`.trim()}>
-      {revealed ? formatPokemonName(name) : '\u00a0'}
+      {formatPokemonName(name)}
     </span>
     {children}
   </span>
