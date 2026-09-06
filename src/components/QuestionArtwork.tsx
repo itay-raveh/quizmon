@@ -212,7 +212,10 @@ export const QuestionArtwork = ({
         <Subject {...subject} framed>
           <TypeBadges types={question.pokemonTypes} />
         </Subject>
-        <RelationArrow />
+        <div className="question-relation__effect">
+          <RelationArrow />
+          <span className="question-relation__caption">evolves into</span>
+        </div>
         <Subject {...evolution} concealed={!answered} framed>
           <span className="question-visual__evolution-types">
             {retainedTypes.length > 0 ? (
