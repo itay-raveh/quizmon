@@ -93,6 +93,26 @@
   text-wrap: balance;
 }
 
+.question-evolution-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin: 0;
+  font-size: clamp(1rem, 3.5vw, 1.5rem);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.answer__generation {
+  font-size: 0.85em;
+}
+
+.answer__generation--reserved {
+  visibility: hidden;
+}
+
 .question-visual__prompt strong {
   color: var(--blue);
   font-weight: 850;

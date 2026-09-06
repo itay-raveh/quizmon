@@ -14,6 +14,7 @@ import {
 import { formatPokemonName } from './format';
 import {
   buildQuestionType,
+  coreQuestionTypes,
   questionRegistry,
   questionTypes,
 } from './questions/registry';
@@ -41,7 +42,7 @@ export const isLeagueTraining = (
 export const getTrainingModifiers = (modifiers: Modifiers): Modifiers => ({
   ...modifiers,
   questionTypes: isLeagueTraining(modifiers)
-    ? [...questionTypes]
+    ? [...coreQuestionTypes]
     : [...modifiers.questionTypes],
 });
 
@@ -184,7 +185,9 @@ export const buildQuestionSequence = (
 
     if (!question && questionType !== 'champion') {
       for (const fallbackType of shuffle(
-        questionTypes.filter((candidate) => candidate !== questionType),
+        modifiers.questionTypes.filter(
+          (candidate) => candidate !== questionType,
+        ),
         random,
       )) {
         question = buildQuestionType(context, fallbackType);

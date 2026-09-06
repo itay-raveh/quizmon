@@ -7,7 +7,6 @@ import {
   isLeagueVictory,
   LEAGUE_QUESTION_COUNT,
 } from '@/game/league';
-import { questionTypes } from '@/game/questions/registry';
 import {
   generations,
   type GameResult,
@@ -17,7 +16,7 @@ import {
 const catalog = catalogData as PokemonCatalog;
 
 describe('Quizmon League', () => {
-  it('builds one deterministic question from every format', () => {
+  it('builds the deterministic 15-format championship lineup', () => {
     const first = buildLeagueQuestions(catalog, 'league-lineup', {
       answerFlow: 'manual',
       reduceMotion: false,
@@ -34,7 +33,7 @@ describe('Quizmon League', () => {
     expect(first).toEqual(second);
     expect(first).toHaveLength(LEAGUE_QUESTION_COUNT);
     expect(new Set(first.map(({ questionType }) => questionType))).toEqual(
-      new Set([...questionTypes, 'champion']),
+      new Set(getLeagueQuestionTypes('league-lineup')),
     );
     expect(first.at(-1)?.questionType).toBe('champion');
   });

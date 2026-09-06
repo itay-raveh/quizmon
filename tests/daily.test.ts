@@ -34,33 +34,33 @@ describe('Daily Challenge', () => {
       })),
     ).toEqual([
       {
-        correctOptions: ['gible'],
-        id: 'type:gible:0',
-        pokemonName: 'gible',
-        title: 'Odd one out',
+        correctOptions: ['mareep'],
+        id: 'identity:mareep:0',
+        pokemonName: 'mareep',
+        title: 'Silhouette match',
       },
       {
-        correctOptions: ['emboar'],
-        id: 'stat:emboar:1',
-        pokemonName: 'emboar',
-        title: 'Stat showdown',
+        correctOptions: ['rock'],
+        id: 'type:onix:1',
+        pokemonName: 'onix',
+        title: 'Type check',
       },
       {
-        correctOptions: ['steel'],
-        id: 'matchup:cottonee:2',
-        pokemonName: 'cottonee',
+        correctOptions: ['fighting'],
+        id: 'matchup:tapu-lele:2',
+        pokemonName: 'tapu-lele',
         title: 'Type matchup',
       },
       {
-        correctOptions: ['water'],
-        id: 'evolution:azurill:3',
-        pokemonName: 'azurill',
-        title: 'Evolution shift',
+        correctOptions: ['vespiquen'],
+        id: 'identity:vespiquen:3',
+        pokemonName: 'vespiquen',
+        title: 'Pokédex scan',
       },
       {
-        correctOptions: ['nidorino'],
-        id: 'champion:nidorino:4',
-        pokemonName: 'nidorino',
+        correctOptions: ['skarmory'],
+        id: 'champion:skarmory:4',
+        pokemonName: 'skarmory',
         title: 'Champion question',
       },
     ]);
@@ -100,8 +100,14 @@ describe('Daily Challenge', () => {
   });
 
   it('allows question types to repeat before the Champion finale', () => {
-    const standard = getDailyQuestionTypes('2026-09-02').slice(0, -1);
-    expect(new Set(standard).size).toBeLessThan(standard.length);
+    const schedules = Array.from({ length: 30 }, (_, day) =>
+      getDailyQuestionTypes(
+        `2026-09-${String(day + 1).padStart(2, '0')}`,
+      ).slice(0, -1),
+    );
+    expect(
+      schedules.some((standard) => new Set(standard).size < standard.length),
+    ).toBe(true);
   });
 
   it('uses all generations and a fixed five-question length', () => {
@@ -119,6 +125,26 @@ describe('Daily Challenge', () => {
       soundVolume: 0,
       timerDisplay: 'milliseconds',
     });
+  });
+
+  it('excludes advanced formats from both the schedule and generated questions', () => {
+    const excluded = ['ability-check', 'move-check', 'stat-showdown'];
+    const seen = new Set<string>();
+    for (let day = 1; day <= 30; day += 1) {
+      const date = `2026-09-${String(day).padStart(2, '0')}`;
+      const schedule = getDailyQuestionTypes(date);
+      const questions = buildDailyQuestions(catalog, date);
+      expect(questions).toHaveLength(5);
+      expect(questions.at(-1)?.questionType).toBe('champion');
+      for (const type of [
+        ...schedule,
+        ...questions.map((question) => question.questionType),
+      ]) {
+        expect(excluded).not.toContain(type);
+        seen.add(type);
+      }
+    }
+    expect(seen.size).toBe(14);
   });
 });
 

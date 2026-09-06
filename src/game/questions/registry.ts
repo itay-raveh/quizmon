@@ -2,6 +2,10 @@ import type { QuestionCategory, QuestionData, QuestionType } from '../types';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
 import {
+  buildEvolutionLinkQuestion,
+  buildGenerationRoundupQuestion,
+} from './lineage';
+import {
   buildPixelPeekQuestion,
   buildPokedexScanQuestion,
   buildShinySpotterQuestion,
@@ -104,6 +108,21 @@ export const questionRegistry = {
     group: 'knowledge',
     label: 'Type roundup',
   },
+  'generation-roundup': {
+    build: buildGenerationRoundupQuestion,
+    category: 'identity',
+    description:
+      'Select every Pokémon introduced in the named generation. Requires at least two selected generations.',
+    group: 'knowledge',
+    label: 'Generation roundup',
+  },
+  'evolution-link': {
+    build: buildEvolutionLinkQuestion,
+    category: 'evolution',
+    description: 'Complete an evolution chain using four name-only choices.',
+    group: 'knowledge',
+    label: 'Evolution link',
+  },
   'evolution-shift': {
     build: buildEvolutionShiftQuestion,
     category: 'evolution',
@@ -149,6 +168,10 @@ export const questionRegistry = {
 } satisfies Record<QuestionType, QuestionDefinition>;
 
 export const questionTypes = Object.keys(questionRegistry) as QuestionType[];
+
+export const coreQuestionTypes = questionTypes.filter(
+  (type) => !['ability-check', 'move-check', 'stat-showdown'].includes(type),
+);
 
 const championDefinition: QuestionDefinition = {
   build: buildChampionQuestion,

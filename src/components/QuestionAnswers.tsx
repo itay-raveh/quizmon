@@ -68,8 +68,9 @@ export const QuestionAnswers = ({
     >
       {question.options.map((option, index) => {
         const visual = question.optionVisuals?.[option];
-        const dexNumber =
-          question.optionDexNumbers?.[option] ?? visual?.dexNumber;
+        const dexNumber = question.optionGenerations
+          ? undefined
+          : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
         const concealed = Boolean(question.concealOptionLabels && !answered);
         const optionSelected = selected.has(option);
         const optionCorrect = correct.has(option);
@@ -91,6 +92,9 @@ export const QuestionAnswers = ({
             : resultMarker === 'wrong'
               ? ' Wrong pick.'
               : '';
+        const generation = question.optionGenerations?.[option];
+        const generationAnnouncement =
+          answered && generation ? `. Generation ${generation}.` : '';
         const statValue = question.optionStats?.[option];
         const hasStatValue =
           showdownStat !== undefined && statValue !== undefined;
@@ -117,7 +121,7 @@ export const QuestionAnswers = ({
             aria-label={
               concealed
                 ? `Silhouette ${index + 1}`
-                : `${formatPokemonName(option)}${typeAnnouncement}${statAnnouncement}${resultAnnouncement}`
+                : `${formatPokemonName(option)}${typeAnnouncement}${generationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={String(index + 1)}
             aria-pressed={
@@ -155,7 +159,7 @@ export const QuestionAnswers = ({
                 {concealed ? null : (
                   <PokemonIdentity
                     className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
-                    dexNumber={visual.dexNumber}
+                    dexNumber={dexNumber}
                     hideNumberFromAccessibility
                     name={option}
                     nameClassName="answer__name"
@@ -165,6 +169,14 @@ export const QuestionAnswers = ({
                         className={`answer__types ${answered ? '' : 'answer__types--reserved'}`.trim()}
                         types={visual.types}
                       />
+                    ) : null}
+                    {generation ? (
+                      <span
+                        aria-hidden="true"
+                        className={`answer__generation ${answered ? '' : 'answer__generation--reserved'}`.trim()}
+                      >
+                        Generation {generation}
+                      </span>
                     ) : null}
                     {hasStatValue ? (
                       <span

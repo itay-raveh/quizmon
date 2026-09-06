@@ -7,7 +7,13 @@ export const getTrainingSettingsValidation = (
 ) => {
   const generationsAreValid = modifiers.generations.length > 0;
   const questionTypesAreValid =
-    isLeagueTraining(modifiers) || modifiers.questionTypes.length > 0;
+    isLeagueTraining(modifiers) ||
+    (modifiers.questionTypes.length > 0 &&
+      !(
+        modifiers.questionTypes.every(
+          (type) => type === 'generation-roundup',
+        ) && modifiers.generations.length < 2
+      ));
   const matchingCount = filterPokemon(catalog, modifiers).length;
   return {
     generationsAreValid,

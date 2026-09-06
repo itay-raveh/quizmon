@@ -383,49 +383,65 @@ describe('question transitions', () => {
     );
   });
 
-  it('reveals every Stat Showdown value after answering', () => {
-    const rendered = renderQuestion({
-      question: {
-        ...question,
-        optionStats: { ditto: 48, eevee: 55, mew: 100, pikachu: 90 },
-        optionVisuals: Object.fromEntries(
-          question.options.map((option, index) => [
-            option,
-            {
-              dexNumber: index + 1,
-              src: `https://example.com/${option}.png`,
-              types: ['normal'],
-            },
-          ]),
-        ),
-        visual: {
-          direction: 'highest',
-          kind: 'stat-showdown',
-          stat: 'speed',
+  it.each(['Mew', 'Pikachu'])(
+    'reveals every Stat Showdown value after choosing %s',
+    (choice) => {
+      const rendered = renderQuestion({
+        question: {
+          ...question,
+          answer: { correctOptions: ['mew'], interaction: 'single-choice' },
+          optionStats: { ditto: 48, eevee: 55, mew: 100, pikachu: 90 },
+          optionVisuals: Object.fromEntries(
+            question.options.map((option, index) => [
+              option,
+              {
+                dexNumber: index + 1,
+                src: `https://example.com/${option}.png`,
+                types: ['normal'],
+              },
+            ]),
+          ),
+          visual: {
+            direction: 'highest',
+            kind: 'stat-showdown',
+            stat: 'speed',
+          },
         },
-      },
-    });
+      });
 
-    expect(
-      rendered.container.querySelectorAll('.answer__stat--reserved'),
-    ).toHaveLength(4);
-    expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
+      expect(
+        rendered.container.querySelectorAll('.answer__stat--reserved'),
+      ).toHaveLength(4);
+      expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+      fireEvent.click(screen.getByRole('button', { name: choice }));
 
-    expect(
-      rendered.container.querySelectorAll('.answer__stat--reserved'),
-    ).toHaveLength(0);
-    expect(
-      screen.getByRole('button', { name: 'Pikachu. Speed: 90.' }),
-    ).toHaveClass('answer--correct');
-    expect(
-      screen.getByRole('button', { name: 'Eevee. Speed: 55.' }),
-    ).toBeDisabled();
-    expect(rendered.container.querySelectorAll('.answer__stat')).toHaveLength(
-      4,
-    );
-  });
+      expect(
+        rendered.container.querySelectorAll('.answer__stat--reserved'),
+      ).toHaveLength(0);
+      expect(
+        screen.getByRole('button', { name: 'Mew. Speed: 100.' }),
+      ).toHaveClass('answer--correct');
+      for (const [name, value] of [
+        ['Pikachu', 90],
+        ['Eevee', 55],
+        ['Ditto', 48],
+        ['Mew', 100],
+      ] as const) {
+        const answer = screen.getByRole('button', {
+          name: `${name}. Speed: ${value}.`,
+        });
+        expect(answer).toBeDisabled();
+        expect(answer.querySelector('.answer__stat')).toHaveTextContent(
+          String(value),
+        );
+        expect(answer.querySelector('.answer__stat')).toBeVisible();
+      }
+      expect(rendered.container.querySelectorAll('.answer__stat')).toHaveLength(
+        4,
+      );
+    },
+  );
 
   it('reveals the attacking Pokémon in Counter Pick', () => {
     const rendered = renderQuestion({
@@ -905,4 +921,102 @@ describe('question transitions', () => {
       expect.objectContaining({ correct: false }),
     );
   });
+});
+
+it.each(['Ivysaur', 'Bayleef'])(
+  'keeps Evolution link text-only before and after choosing %s',
+  (answer) => {
+    const { container } = renderQuestion({
+      question: {
+        ...question,
+        answer: { correctOptions: ['ivysaur'], interaction: 'single-choice' },
+        category: 'evolution',
+        options: ['ivysaur', 'bayleef', 'grovyle', 'gloom'],
+        pokemonName: 'ivysaur',
+        prompt: {
+          kind: 'text',
+          text: 'Complete the evolution chain: Bulbasaur → ? → Venusaur.',
+        },
+        questionType: 'evolution-link',
+        title: 'Evolution link',
+        visual: {
+          kind: 'evolution-link',
+          before: 'bulbasaur',
+          after: 'venusaur',
+        },
+      },
+    });
+    const chain = container.querySelector('.question-evolution-link');
+    expect(chain).toHaveTextContent('Bulbasaur→?→Venusaur');
+    expect(container.querySelectorAll('img')).toHaveLength(0);
+    expect(
+      container.querySelectorAll('.pokemon-identity__number'),
+    ).toHaveLength(0);
+    fireEvent.click(screen.getByRole('button', { name: answer }));
+    expect(chain).toHaveTextContent('Bulbasaur→Ivysaur→Venusaur');
+    expect(container.querySelectorAll('img')).toHaveLength(0);
+    expect(
+      container.querySelectorAll('.pokemon-identity__number'),
+    ).toHaveLength(0);
+  },
+);
+
+it.each([
+  ['pikachu', 'eevee'],
+  ['pikachu', 'chikorita'],
+])('reveals all generations after a roundup submission %j', (...selected) => {
+  const options = ['pikachu', 'eevee', 'chikorita', 'mareep'];
+  const optionGenerations = {
+    pikachu: 'I',
+    eevee: 'I',
+    chikorita: 'II',
+    mareep: 'II',
+  } as const;
+  const { container } = renderQuestion({
+    question: {
+      ...question,
+      answer: {
+        correctOptions: ['pikachu', 'eevee'],
+        interaction: 'multi-select',
+      },
+      category: 'identity',
+      options,
+      optionGenerations,
+      optionVisuals: Object.fromEntries(
+        options.map((name, index) => [
+          name,
+          { src: `/sprites/${name}.png`, dexNumber: index + 1, types: [] },
+        ]),
+      ),
+      prompt: {
+        kind: 'text',
+        text: 'Select every Pokémon introduced in Generation I.',
+      },
+      questionType: 'generation-roundup',
+      title: 'Generation roundup',
+    },
+  });
+  expect(container.querySelectorAll('.pokemon-identity__number')).toHaveLength(
+    0,
+  );
+  expect(
+    container.querySelectorAll('.answer__generation--reserved'),
+  ).toHaveLength(4);
+  for (const option of selected)
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: option[0]!.toUpperCase() + option.slice(1),
+      }),
+    );
+  fireEvent.click(screen.getByRole('button', { name: 'Check answers' }));
+  expect(
+    container.querySelectorAll('.answer__generation--reserved'),
+  ).toHaveLength(0);
+  for (const [name, generation] of Object.entries(optionGenerations)) {
+    expect(
+      screen.getByRole('button', {
+        name: new RegExp(`${name}.*Generation ${generation}\\.`, 'i'),
+      }),
+    ).toBeDisabled();
+  }
 });

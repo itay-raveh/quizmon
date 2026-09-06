@@ -108,6 +108,23 @@ export const QuestionArtwork = ({
     );
   }
 
+  if (question.visual?.kind === 'evolution-link') {
+    return (
+      <div className="question-visual question-visual--stack">
+        <p className="question-visual__prompt">Complete the evolution chain</p>
+        <p className="question-evolution-link">
+          <span>{formatPokemonName(question.visual.before)}</span>
+          <span aria-hidden="true">→</span>
+          <strong>
+            {answered ? formatPokemonName(question.pokemonName) : '?'}
+          </strong>
+          <span aria-hidden="true">→</span>
+          <span>{formatPokemonName(question.visual.after)}</span>
+        </p>
+      </div>
+    );
+  }
+
   if (question.visual?.kind === 'type-roundup') {
     return (
       <div

@@ -23,7 +23,11 @@ import {
   shuffle,
 } from '@/game/game';
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
-import { questionRegistry, questionTypes } from '@/game/questions/registry';
+import {
+  coreQuestionTypes,
+  questionRegistry,
+  questionTypes,
+} from '@/game/questions/registry';
 import { buildCounterPickQuestion } from '@/game/questions/battle';
 import {
   pokemonOptions,
@@ -134,24 +138,28 @@ describe('normalizeModifiers', () => {
     ).toBe('custom');
   });
 
-  it('uses every question type for League Training', () => {
+  it('excludes advanced formats from League Training but preserves Custom choices', () => {
     expect(
       getTrainingModifiers({
         ...defaultModifiers,
         questionTypes: ['evolution-shift'],
       }),
     ).toMatchObject({
-      questionTypes,
+      questionTypes: coreQuestionTypes,
       trainingMode: 'league',
     });
+    expect(coreQuestionTypes).toHaveLength(13);
+    for (const advanced of ['ability-check', 'move-check', 'stat-showdown']) {
+      expect(coreQuestionTypes).not.toContain(advanced);
+    }
     expect(
       getTrainingModifiers({
         ...defaultModifiers,
-        questionTypes: ['evolution-shift'],
+        questionTypes: ['ability-check', 'move-check', 'stat-showdown'],
         trainingMode: 'custom',
       }),
     ).toMatchObject({
-      questionTypes: ['evolution-shift'],
+      questionTypes: ['ability-check', 'move-check', 'stat-showdown'],
       trainingMode: 'custom',
     });
   });
@@ -167,6 +175,23 @@ describe('normalizeModifiers', () => {
 });
 
 describe('question building', () => {
+  it('keeps advanced formats out of generated League Training rounds', () => {
+    const modifiers = getTrainingModifiers(defaultModifiers);
+    for (let index = 0; index < 20; index += 1) {
+      const questions = buildQuestions(
+        catalog,
+        modifiers,
+        createSeededRandom(`core-training-${index}`),
+      );
+      expect(questions).toHaveLength(10);
+      for (const question of questions) {
+        expect(['ability-check', 'move-check', 'stat-showdown']).not.toContain(
+          question.questionType,
+        );
+      }
+    }
+  });
+
   it('keeps every selectable format in one complete registry', () => {
     expect(Object.keys(questionRegistry)).toEqual(questionTypes);
     expect(
@@ -233,12 +258,12 @@ describe('question building', () => {
     const questions = buildQuestionSequence(
       syntheticCatalog,
       ['field-notes'],
-      defaultModifiers,
+      { ...defaultModifiers, questionTypes: ['field-notes', 'pokedex-scan'] },
       createSeededRandom('sequence-fallback'),
     );
 
     expect(questions).toHaveLength(1);
-    expect(questions[0]?.category).not.toBe('description');
+    expect(questions[0]?.questionType).toBe('pokedex-scan');
   });
 
   it('starts the Champion question with a Pokédex clue before paid assists', () => {
@@ -467,7 +492,7 @@ describe('question building', () => {
     );
   });
 
-  it('attaches a Pokédex number to every Pokémon answer option', () => {
+  it('numbers Pokémon choices except formats where numbers expose the answer', () => {
     for (const questionType of questionTypes) {
       const question = buildSingleQuestion(
         questionType,
@@ -477,7 +502,12 @@ describe('question building', () => {
       expect(question).toBeDefined();
       for (const option of question!.options) {
         const pokemon = catalog.pokemon[option];
-        if (pokemon) {
+        if (
+          questionType === 'evolution-link' ||
+          questionType === 'generation-roundup'
+        ) {
+          expect(question!.optionDexNumbers).toBeUndefined();
+        } else if (pokemon) {
           expect(question!.optionDexNumbers?.[option]).toBe(pokemon.id);
         }
       }

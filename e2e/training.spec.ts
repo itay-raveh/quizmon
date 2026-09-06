@@ -9,6 +9,71 @@ import type { Page } from '@playwright/test';
 
 type PokemonName = keyof typeof catalogData.pokemon;
 
+for (const outcome of ['correct', 'incorrect'] as const) {
+  test(`reveals every stat after a mobile Stat Showdown answer (${outcome})`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'quizmon.training-settings.v2',
+        JSON.stringify({
+          generations: ['I'],
+          questionTypes: ['stat-showdown'],
+          soundEnabled: false,
+          speedrunMode: false,
+          trainingMode: 'custom',
+        }),
+      );
+    });
+    await seedBrowserRandom(page, 'stat-reveal');
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start training' }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Stat showdown' }),
+    ).toBeVisible();
+    const label = await page
+      .locator('.question-visual__stat strong')
+      .textContent();
+    const stat = (
+      Object.keys(
+        catalogData.pokemon.pikachu.stats,
+      ) as (keyof typeof catalogData.pokemon.pikachu.stats)[]
+    ).find((key) => formatName(key) === label);
+    if (!stat) throw new Error('Missing showdown stat');
+    const answers = page.locator('.answer');
+    const values: number[] = [];
+    for (const answer of await answers.all()) {
+      await expect(answer.locator('.answer__stat')).toBeHidden();
+      const pokemon = findPokemonForSprite(
+        await answer.locator('.answer__sprite').getAttribute('src'),
+      );
+      if (!pokemon) throw new Error('Missing showdown Pokémon');
+      values.push(catalogData.pokemon[pokemon].stats[stat]);
+    }
+    expect(values).toHaveLength(4);
+    const prompt = await page.locator('#question-prompt').textContent();
+    const best = prompt?.includes('highest')
+      ? Math.max(...values)
+      : Math.min(...values);
+    const selected = values.findIndex((value) =>
+      outcome === 'correct' ? value === best : value !== best,
+    );
+    await answers.nth(selected).click();
+    await expect(
+      page.getByRole('button', { name: 'Next question' }),
+    ).toBeVisible();
+    for (let index = 0; index < values.length; index += 1) {
+      const value = answers.nth(index).locator('.answer__stat');
+      await expect(value).toBeVisible();
+      await expect(value).toHaveText(String(values[index]));
+    }
+    await expect(answers.nth(selected)).toHaveClass(
+      outcome === 'correct' ? /answer--correct/ : /answer--wrong/,
+    );
+  });
+}
+
 const findPokemonForSprite = (src: string | null) =>
   Object.entries(catalogData.pokemon).find(
     ([, entry]) =>

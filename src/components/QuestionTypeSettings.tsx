@@ -107,9 +107,15 @@ export const QuestionTypeSettings = ({
         </div>
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
-            {questionTypesAreValid
-              ? 'Choose a different generation or question type combination.'
-              : 'Choose at least one question type.'}
+            {draft.questionTypes.length > 0 &&
+            draft.questionTypes.every(
+              (type) => type === 'generation-roundup',
+            ) &&
+            draft.generations.length < 2
+              ? 'Select at least two generations for Generation roundup.'
+              : questionTypesAreValid
+                ? 'Choose a different generation or question type combination.'
+                : 'Choose at least one question type.'}
           </p>
         ) : null}
         {questionTypeGroups.map((group) => {

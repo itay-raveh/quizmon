@@ -201,6 +201,8 @@ export const addQuestionVisuals = (
   context: QuestionContext,
   question: QuestionDraft,
 ): QuestionDraft => {
+  if (question.visual?.kind === 'evolution-link' || question.optionGenerations)
+    return question;
   const detectedDexNumbers = getOptionDexNumbers(context, question.options);
   const optionDexNumbers = {
     ...question.optionDexNumbers,

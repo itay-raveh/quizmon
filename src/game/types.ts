@@ -19,6 +19,8 @@ export type TimerDisplay = 'hidden' | 'seconds' | 'milliseconds';
 export type QuestionType =
   | 'ability-check'
   | 'counter-pick'
+  | 'evolution-link'
+  | 'generation-roundup'
   | 'evolution-shift'
   | 'field-notes'
   | 'move-check'
@@ -135,6 +137,7 @@ export interface PokemonSearchOption {
 }
 
 type QuestionVisual =
+  | { kind: 'evolution-link'; before: string; after: string }
   | { kind: 'type-check' }
   | { kind: 'type-roundup'; type: string }
   | {
@@ -177,6 +180,7 @@ export interface QuestionData {
   media: QuestionMedia;
   options: string[];
   optionDexNumbers?: Record<string, number>;
+  optionGenerations?: Record<string, Generation>;
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
   pokemonName: string;

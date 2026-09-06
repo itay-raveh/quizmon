@@ -8,10 +8,10 @@ import {
   type QuestionData,
   type QuestionType,
 } from './types';
-import { questionTypes } from './questions/registry';
+import { coreQuestionTypes } from './questions/registry';
 import { createSeededRandom } from './random';
 
-const DAILY_CHALLENGE_VERSION = 9;
+const DAILY_CHALLENGE_VERSION = 10;
 const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -54,7 +54,7 @@ export const getDailyModifiers = (
   ...defaultModifiers,
   answerFlow: experience.answerFlow,
   generations: [...generations],
-  questionTypes: [...defaultModifiers.questionTypes],
+  questionTypes: [...coreQuestionTypes],
   reduceMotion: experience.reduceMotion,
   soundVolume: experience.soundVolume,
   timerDisplay: experience.timerDisplay,
@@ -67,8 +67,8 @@ export const getDailyQuestionTypes = (
     `quizmon-daily-question-types-v${DAILY_CHALLENGE_VERSION}:${date}`,
   );
   const standard = Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, () => {
-    const index = Math.floor(random() * questionTypes.length);
-    return questionTypes[index] ?? 'pokedex-scan';
+    const index = Math.floor(random() * coreQuestionTypes.length);
+    return coreQuestionTypes[index] ?? 'pokedex-scan';
   });
 
   return [...standard, 'champion'];
