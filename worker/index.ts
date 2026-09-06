@@ -5,7 +5,22 @@ import {
 } from './daily-reminder';
 
 const SPRITE_PATH =
-  /^\/sprites\/pokemon\/(?:(?:(?:back\/|shiny\/)?[1-9]\d{0,3}|versions\/generation-(?:i|ii|iii|iv)\/(?:red-blue|crystal|firered-leafgreen|platinum)\/(?:back\/)?[1-9]\d{0,3})\.png|other\/(?:(?:home|official-artwork)\/[1-9]\d{0,3}\.png|dream-world\/[1-9]\d{0,3}\.svg|showdown\/(?:back\/)?[1-9]\d{0,3}\.gif))$/;
+  /^\/sprites\/pokemon\/(?:(?:back\/|shiny\/)?[1-9]\d{0,3}\.png|other\/(?:(?:home|official-artwork)\/[1-9]\d{0,3}\.png|dream-world\/[1-9]\d{0,3}\.svg|showdown\/(?:back\/)?[1-9]\d{0,3}\.gif))$/;
+const VERSION_SPRITE_PATH = new RegExp(
+  '^/sprites/pokemon/versions/generation-(?:' +
+    [
+      'i/(?:red-blue|yellow)',
+      'ii/(?:crystal|gold|silver)',
+      'iii/(?:emerald|firered-leafgreen|ruby-sapphire)',
+      'iv/(?:diamond-pearl|heartgold-soulsilver|platinum)',
+      'v/black-white',
+      'vi/(?:omegaruby-alphasapphire|x-y)',
+      'vii/ultra-sun-ultra-moon',
+      'viii/brilliant-diamond-shining-pearl',
+      'ix/scarlet-violet',
+    ].join('|') +
+    ')/(?:back/)?[1-9]\\d{0,3}\\.png$',
+);
 const SPRITE_SOURCE =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites';
 const SPRITE_CACHE_SECONDS = 60 * 60 * 24 * 30;
@@ -213,9 +228,16 @@ export default {
 
     if (
       (request.method === 'GET' || request.method === 'HEAD') &&
-      SPRITE_PATH.test(url.pathname)
+      (SPRITE_PATH.test(url.pathname) || VERSION_SPRITE_PATH.test(url.pathname))
     ) {
       return fetchSprite(request, url);
+    }
+
+    if (url.pathname.startsWith('/sprites/')) {
+      return new Response('Sprite unavailable', {
+        headers: noStoreHeaders,
+        status: 404,
+      });
     }
 
     return env.ASSETS.fetch(request);

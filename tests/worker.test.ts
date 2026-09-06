@@ -1,5 +1,6 @@
 import worker from '../worker/index';
 import { getNextReminderAt } from '../worker/reminder-time';
+import catalog from '../src/game/data/pokemon.json';
 
 const validEvent = {
   contentVersion: 3,
@@ -203,5 +204,67 @@ describe('analytics endpoint', () => {
         }),
       );
     }
+  });
+
+  it('proxies every version and orientation used by the shipped catalog', async () => {
+    const upstream = vi.fn().mockImplementation(() =>
+      Promise.resolve(
+        new Response(new Uint8Array([1]), {
+          headers: { 'Content-Type': 'image/png' },
+        }),
+      ),
+    );
+    vi.stubGlobal('fetch', upstream);
+    const { env } = makeEnv();
+    const paths = new Map<string, string>();
+    for (const pokemon of Object.values(catalog.pokemon)) {
+      for (const generation of pokemon.identitySprites.generations) {
+        for (const orientation of ['front', 'back'] as const) {
+          for (const version of generation[orientation]) {
+            const family = `generation-${generation.generation.toLowerCase()}/${version}/${orientation === 'back' ? 'back/' : ''}`;
+            paths.set(
+              family,
+              `/sprites/pokemon/versions/${family}${pokemon.id}.png`,
+            );
+          }
+        }
+      }
+    }
+
+    for (const path of paths.values()) {
+      const response = await worker.fetch(
+        new Request(`https://example.com${path}`),
+        env,
+      );
+      expect(response, path).toBeDefined();
+      expect(response.status, path).toBe(200);
+      expect(response.headers.get('Content-Type'), path).toBe('image/png');
+      expect(upstream).toHaveBeenLastCalledWith(
+        `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites${path.slice('/sprites'.length)}`,
+        expect.any(Object),
+      );
+    }
+    expect(env.ASSETS.fetch).not.toHaveBeenCalled();
+  });
+
+  it('does not serve SPA HTML for unsupported sprite paths', async () => {
+    const upstream = vi.fn();
+    vi.stubGlobal('fetch', upstream);
+    const { env } = makeEnv();
+    for (const path of [
+      '/sprites/pokemon/versions/generation-i/black-white/83.png',
+      '/sprites/pokemon/versions/generation-v/black-white/83.html',
+      '/sprites/pokemon/versions/generation-v/black-white/0.png',
+      '/sprites/pokemon/unknown/83.png',
+    ]) {
+      const response = await worker.fetch(
+        new Request(`https://example.com${path}`),
+        env,
+      );
+      expect(response.status).toBe(404);
+      expect(response.headers.get('Cache-Control')).toBe('no-store');
+    }
+    expect(upstream).not.toHaveBeenCalled();
+    expect(env.ASSETS.fetch).not.toHaveBeenCalled();
   });
 });

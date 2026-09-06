@@ -9,6 +9,7 @@ import {
 } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
+import { spriteCachePlugin } from './sprite-cache';
 
 declare const self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: string[];
@@ -64,7 +65,7 @@ registerRoute(
   new CacheFirst({
     cacheName: 'quizmon-pokemon-sprites-v2',
     plugins: [
-      new CacheableResponsePlugin({ statuses: [200] }),
+      spriteCachePlugin,
       new ExpirationPlugin({
         maxAgeSeconds: 60 * 60 * 24 * 90,
         maxEntries: 400,
