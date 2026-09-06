@@ -53,6 +53,17 @@ export const rankedOptionSet = (
   return shuffle([...ranked.slice(0, 3), correct], random);
 };
 
+export const randomOptionSet = (
+  correct: string,
+  candidates: readonly string[],
+  random: () => number,
+): string[] => {
+  const unique = [...new Set(candidates)].filter(
+    (candidate) => candidate !== correct,
+  );
+  return shuffle([...shuffle(unique, random).slice(0, 3), correct], random);
+};
+
 const rankCandidates = (
   correct: string,
   candidates: readonly string[],

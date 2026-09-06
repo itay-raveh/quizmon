@@ -9,6 +9,7 @@ import {
   pokemonOptions,
   pokemonPrompt,
   pokemonSimilarity,
+  randomOptionSet,
   rankedOptionSet,
   redactName,
   textPrompt,
@@ -239,17 +240,9 @@ export const buildPropertyQuestion =
     if (!correct) return undefined;
     const candidates = context.pool.flatMap(({ pokemon }) => pokemon[property]);
     const invalid = new Set(target.pokemon[property]);
-    const options = rankedOptionSet(
+    const options = randomOptionSet(
       correct,
       candidates.filter((candidate) => !invalid.has(candidate)),
-      (candidate) =>
-        context.pool.reduce(
-          (best, owner) =>
-            owner.pokemon[property].includes(candidate)
-              ? Math.max(best, pokemonSimilarity(target.pokemon, owner.pokemon))
-              : best,
-          0,
-        ),
       context.random,
     );
     const subject = category === 'ability' ? 'ability' : 'move by leveling up';
@@ -285,16 +278,7 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
           : pokemon.stats[stat] > target.pokemon.stats[stat]),
     )
     .map(({ name }) => name);
-  const options = rankedOptionSet(
-    target.name,
-    distractors,
-    (name) =>
-      -Math.abs(
-        target.pokemon.stats[stat] -
-          (context.catalog.pokemon[name]?.stats[stat] ?? 0),
-      ),
-    context.random,
-  );
+  const options = randomOptionSet(target.name, distractors, context.random);
   const optionStats = Object.fromEntries(
     options.flatMap((name) => {
       const pokemon = context.catalog.pokemon[name];

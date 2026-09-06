@@ -267,7 +267,7 @@ describe('question building', () => {
     );
   });
 
-  it('prefers plausible Pokémon and property distractors', () => {
+  it('keeps Pokémon distractors plausible but randomizes property distractors', () => {
     const similarNames = ['target', 'peer-one', 'peer-two', 'peer-three'];
     const syntheticCatalog: PokemonCatalog = {
       contentVersion: 1,
@@ -304,11 +304,16 @@ describe('question building', () => {
     };
 
     const expectedOptions = {
-      'ability-check': ['blaze', 'ability-2', 'ability-3', 'ability-4'],
+      'ability-check': ['blaze', 'ability-3', 'ability-4', 'ability-100'],
+      'move-check': ['move-1', 'move-3', 'move-4', 'move-100'],
       'pokedex-scan': similarNames,
     } as const;
 
-    for (const questionType of ['pokedex-scan', 'ability-check'] as const) {
+    for (const questionType of [
+      'pokedex-scan',
+      'ability-check',
+      'move-check',
+    ] as const) {
       const [question] = buildQuestions(
         syntheticCatalog,
         { ...defaultModifiers, questionTypes: [questionType] },
