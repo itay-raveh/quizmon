@@ -107,41 +107,71 @@ const getSprite = (pokemon: Pokemon): string | null =>
 const getShinySprite = (pokemon: Pokemon): string | null =>
   normalizeSpriteUrl(pokemon.sprites.front_shiny);
 
-interface CuratedSpriteSet {
-  back_default?: string | null;
-  front_default?: string | null;
+interface VersionSpriteSet {
+  back_default?: unknown;
+  front_default?: unknown;
 }
 
-const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
-  const versions = pokemon.sprites.versions;
-  const other = pokemon.sprites.other;
-  const curated: readonly (CuratedSpriteSet | undefined)[] = [
-    versions?.['generation-i']?.['red-blue'],
-    versions?.['generation-ii']?.crystal,
-    versions?.['generation-iii']?.['firered-leafgreen'],
-    versions?.['generation-iv']?.platinum,
-  ];
-  const historicalBack: string[] = [];
-  const historicalFront: string[] = [];
-
-  for (const sprites of curated) {
-    const front = normalizeSpriteUrl(sprites?.front_default ?? null);
-    const back = normalizeSpriteUrl(sprites?.back_default ?? null);
-    if (front) historicalFront.push(front);
-    if (back) historicalBack.push(back);
+const getSpriteVersion = (
+  value: unknown,
+  generation: Generation,
+  version: string,
+  orientation: 'back' | 'front',
+  pokemonId: number,
+): string | null => {
+  if (typeof value !== 'string') return null;
+  const path = normalizeSpriteUrl(value);
+  const expectedPath = `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/${orientation === 'back' ? 'back/' : ''}${pokemonId}.png`;
+  if (path !== expectedPath) {
+    throw new Error(`Unexpected version sprite path: ${path}`);
   }
+  return version;
+};
 
+const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
   return {
-    currentBack: normalizeSpriteUrl(pokemon.sprites.back_default),
-    dreamWorld: normalizeSpriteUrl(other?.dream_world.front_default ?? null),
-    historicalBack,
-    historicalFront,
-    home: normalizeSpriteUrl(other?.home.front_default ?? null),
-    officialArtwork: normalizeSpriteUrl(
-      other?.['official-artwork'].front_default ?? null,
-    ),
-    showdownBack: normalizeSpriteUrl(other?.showdown.back_default ?? null),
-    showdownFront: normalizeSpriteUrl(other?.showdown.front_default ?? null),
+    generations: GENERATIONS.flatMap((generation) => {
+      const versions = pokemon.sprites.versions as unknown as Record<
+        string,
+        Record<string, VersionSpriteSet>
+      >;
+      const generationSprites =
+        versions[`generation-${generation.toLowerCase()}`];
+      const front = new Set<string>();
+      const back = new Set<string>();
+
+      for (const [version, sprites] of Object.entries(
+        generationSprites ?? {},
+      )) {
+        if (version === 'icons') continue;
+        const frontVersion = getSpriteVersion(
+          sprites.front_default,
+          generation,
+          version,
+          'front',
+          pokemon.id,
+        );
+        const backVersion = getSpriteVersion(
+          sprites.back_default,
+          generation,
+          version,
+          'back',
+          pokemon.id,
+        );
+        if (frontVersion) front.add(frontVersion);
+        if (backVersion) back.add(backVersion);
+      }
+
+      return front.size > 0 || back.size > 0
+        ? [
+            {
+              back: [...back].sort(),
+              front: [...front].sort(),
+              generation,
+            },
+          ]
+        : [];
+    }),
   };
 };
 
@@ -261,7 +291,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 11,
+    contentVersion: 12,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

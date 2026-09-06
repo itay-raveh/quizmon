@@ -16,21 +16,23 @@ const pickScanSprite = (
 ): string | null => {
   if (!pokemon.sprite) return null;
 
-  const { identitySprites } = pokemon;
-  const families = [
-    [pokemon.sprite],
-    identitySprites.currentBack ? [identitySprites.currentBack] : [],
-    identitySprites.historicalFront,
-    identitySprites.historicalBack,
-    identitySprites.home ? [identitySprites.home] : [],
-    identitySprites.officialArtwork ? [identitySprites.officialArtwork] : [],
-    identitySprites.dreamWorld ? [identitySprites.dreamWorld] : [],
-    identitySprites.showdownFront ? [identitySprites.showdownFront] : [],
-    identitySprites.showdownBack ? [identitySprites.showdownBack] : [],
-  ].filter((family) => family.length > 0);
-  const family = pick(families, random);
+  const generation = pick(pokemon.identitySprites.generations, random);
+  if (!generation) return pokemon.sprite;
+  const preferFront = random() < 0.75;
+  const versions = preferFront
+    ? generation.front.length > 0
+      ? generation.front
+      : generation.back
+    : generation.back.length > 0
+      ? generation.back
+      : generation.front;
+  const version = pick(versions, random);
+  if (!version) return pokemon.sprite;
+  const usesBack =
+    generation.back.includes(version) &&
+    (!preferFront || generation.front.length === 0);
 
-  return pick(family ?? [pokemon.sprite], random) ?? pokemon.sprite;
+  return `/sprites/pokemon/versions/generation-${generation.generation.toLowerCase()}/${version}/${usesBack ? 'back/' : ''}${pokemon.id}.png`;
 };
 
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {

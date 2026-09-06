@@ -51,14 +51,13 @@ const makeKnowledge = (
   genus: 'Test',
   id,
   identitySprites: {
-    currentBack: `/back/${id}.png`,
-    dreamWorld: `/dream-world/${id}.svg`,
-    historicalBack: [`/classic/back/${id}.png`],
-    historicalFront: [`/classic/front/${id}.png`],
-    home: `/home/${id}.png`,
-    officialArtwork: `/official-artwork/${id}.png`,
-    showdownBack: `/showdown/back/${id}.gif`,
-    showdownFront: `/showdown/${id}.gif`,
+    generations: [
+      {
+        back: ['red-blue'],
+        front: ['red-blue'],
+        generation: 'I',
+      },
+    ],
   },
   levelMoves: [`move-${id}`],
   shape: 'quadruped',
@@ -622,7 +621,7 @@ describe('question building', () => {
     });
   });
 
-  it('varies Pokédex Scan across game sprite and artwork families', () => {
+  it('uses only versioned front and back sprites for Pokédex Scan', () => {
     const sources = new Set(
       Array.from({ length: 80 }, (_, index) => {
         const question = buildSingleQuestion(
@@ -637,16 +636,6 @@ describe('question building', () => {
     );
 
     expect(
-      [...sources].some((source) =>
-        /^\/sprites\/pokemon\/\d+\.png$/.test(source),
-      ),
-    ).toBe(true);
-    expect(
-      [...sources].some((source) =>
-        /^\/sprites\/pokemon\/back\/\d+\.png$/.test(source),
-      ),
-    ).toBe(true);
-    expect(
       [...sources].some(
         (source) => source.includes('/versions/') && !source.includes('/back/'),
       ),
@@ -656,18 +645,12 @@ describe('question building', () => {
         (source) => source.includes('/versions/') && source.includes('/back/'),
       ),
     ).toBe(true);
-    for (const family of [
-      'dream-world',
-      'home',
-      'official-artwork',
-      'showdown',
-    ]) {
-      expect(
-        [...sources].some((source) =>
-          source.includes(`/sprites/pokemon/other/${family}/`),
-        ),
-      ).toBe(true);
-    }
+    expect([...sources].every((source) => source.includes('/versions/'))).toBe(
+      true,
+    );
+    expect([...sources].every((source) => !source.includes('/other/'))).toBe(
+      true,
+    );
   });
 });
 

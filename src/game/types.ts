@@ -54,15 +54,14 @@ export const statNames = [
 
 export type StatName = (typeof statNames)[number];
 
+export interface PokemonIdentitySpriteGeneration {
+  back: string[];
+  front: string[];
+  generation: Generation;
+}
+
 export interface PokemonIdentitySprites {
-  currentBack: string | null;
-  dreamWorld: string | null;
-  historicalBack: string[];
-  historicalFront: string[];
-  home: string | null;
-  officialArtwork: string | null;
-  showdownBack: string | null;
-  showdownFront: string | null;
+  generations: PokemonIdentitySpriteGeneration[];
 }
 
 export interface PokemonKnowledge {

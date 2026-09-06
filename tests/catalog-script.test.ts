@@ -103,12 +103,25 @@ const makeClient = (): CatalogClient => ({
             },
             versions: {
               'generation-i': {
+                icons: {
+                  front_default: spriteUrl(
+                    `pokemon/versions/generation-i/icons/${id}.png`,
+                  ),
+                },
                 'red-blue': {
                   back_default: spriteUrl(
                     `pokemon/versions/generation-i/red-blue/back/${id}.png`,
                   ),
                   front_default: spriteUrl(
                     `pokemon/versions/generation-i/red-blue/${id}.png`,
+                  ),
+                },
+                yellow: {
+                  back_default: spriteUrl(
+                    `pokemon/versions/generation-i/yellow/back/${id}.png`,
+                  ),
+                  front_default: spriteUrl(
+                    `pokemon/versions/generation-i/yellow/${id}.png`,
                   ),
                 },
               },
@@ -189,19 +202,18 @@ describe('catalog generation', () => {
       generation: 'I',
       genus: 'Test',
       identitySprites: {
-        currentBack: '/sprites/pokemon/back/1.png',
-        dreamWorld: '/sprites/pokemon/other/dream-world/1.svg',
-        historicalBack: [
-          '/sprites/pokemon/versions/generation-i/red-blue/back/1.png',
+        generations: [
+          {
+            back: ['red-blue', 'yellow'],
+            front: ['red-blue', 'yellow'],
+            generation: 'I',
+          },
+          {
+            back: [],
+            front: ['crystal'],
+            generation: 'II',
+          },
         ],
-        historicalFront: [
-          '/sprites/pokemon/versions/generation-i/red-blue/1.png',
-          '/sprites/pokemon/versions/generation-ii/crystal/1.png',
-        ],
-        home: '/sprites/pokemon/other/home/1.png',
-        officialArtwork: '/sprites/pokemon/other/official-artwork/1.png',
-        showdownBack: '/sprites/pokemon/other/showdown/back/1.gif',
-        showdownFront: '/sprites/pokemon/other/showdown/1.gif',
       },
       levelMoves: ['tackle'],
       shape: 'quadruped',

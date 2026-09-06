@@ -13,17 +13,17 @@ const findPokemonForSprite = (src: string | null) =>
   Object.entries(catalogData.pokemon).find(
     ([, entry]) =>
       entry.sprite === src ||
-      entry.identitySprites.currentBack === src ||
-      entry.identitySprites.dreamWorld === src ||
-      entry.identitySprites.home === src ||
-      entry.identitySprites.officialArtwork === src ||
-      entry.identitySprites.showdownBack === src ||
-      entry.identitySprites.showdownFront === src ||
-      entry.identitySprites.historicalFront.some(
-        (candidate) => candidate === src,
-      ) ||
-      entry.identitySprites.historicalBack.some(
-        (candidate) => candidate === src,
+      entry.identitySprites.generations.some(({ back, front, generation }) =>
+        [
+          ...front.map(
+            (version) =>
+              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/${entry.id}.png`,
+          ),
+          ...back.map(
+            (version) =>
+              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/back/${entry.id}.png`,
+          ),
+        ].includes(src ?? ''),
       ),
   )?.[0] as PokemonName | undefined;
 
