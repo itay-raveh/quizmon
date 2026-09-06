@@ -190,7 +190,7 @@ export const QuestionAnswers = ({
                         aria-hidden="true"
                         className={`answer__generation ${answered ? '' : 'answer__generation--reserved'}`.trim()}
                       >
-                        Generation {generation}
+                        Generation <span>{generation}</span>
                       </span>
                     ) : null}
                     {hasStatValue ? (

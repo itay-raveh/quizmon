@@ -130,10 +130,18 @@
   line-height: 1;
 }
 
-.question-generation > span:last-child {
+.question-generation > span:last-child,
+.answer__generation > span {
   font-family: var(--font-data);
-  font-size: var(--text-display);
   font-weight: 850;
+}
+
+.question-generation > span:last-child {
+  font-size: var(--text-display);
+}
+
+.answer__generation > span {
+  font-size: 1.15em;
 }
 
 .answer__classification,
