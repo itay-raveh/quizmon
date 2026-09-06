@@ -76,7 +76,12 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   const questions = buildLeagueQuestions(
     catalogData as PokemonCatalog,
     leagueSeed,
-    { soundEnabled: false, speedrunMode: false },
+    {
+      answerFlow: 'manual',
+      reduceMotion: false,
+      soundVolume: 0,
+      timerDisplay: 'seconds',
+    },
   );
   const first = questions[0]!;
   await expect(
@@ -106,7 +111,7 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   ).toBeVisible();
   await page.getByRole('button', { name: 'Leave game' }).click();
 
-  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await page.getByRole('button', { name: 'Trainer profile' }).click();
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Start League challenge' }),
@@ -123,7 +128,7 @@ test('shows Champion and Hall of Fame after clearing the League', async ({
 }) => {
   await page.addInitScript(unlockLeague, true);
   await page.goto('/');
-  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await page.getByRole('button', { name: 'Trainer profile' }).click();
 
   await expect(page.getByText('Champion')).toBeVisible();
   await page.getByRole('button', { name: 'Badges', exact: true }).click();

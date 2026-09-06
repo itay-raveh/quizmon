@@ -2,16 +2,19 @@ import { useEffect, useRef } from 'react';
 import { getModeLabel } from '@/game/daily';
 import {
   formatDuration,
+  formatDurationMilliseconds,
   getCorrectOptions,
   getQuestionTitle,
 } from '@/game/game';
 import { getLeagueStageLabel } from '@/game/league';
 import { formatPokemonName, formatPokemonTypes } from '@/game/format';
 import type {
+  AnswerFlow,
   AnswerResult,
   GameMode,
   QuestionData,
   QuestionPrompt as QuestionPromptData,
+  TimerDisplay,
 } from '@/game/types';
 import { ChampionSearch } from './ChampionSearch';
 import { GameButton } from './GameButton';
@@ -32,6 +35,7 @@ const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
 ]);
 
 interface QuestionProps {
+  answerFlow: AnswerFlow;
   elapsedMilliseconds: number;
   elapsedSeconds: number;
   interactionPaused: boolean;
@@ -44,7 +48,7 @@ interface QuestionProps {
   onNewGame: () => void;
   onOpenSettings: () => void;
   question: QuestionData;
-  speedrunMode: boolean;
+  timerDisplay: TimerDisplay;
   total: number;
 }
 
@@ -82,6 +86,7 @@ const formatCorrectAnswer = (question: QuestionData): string => {
 };
 
 export const Question = ({
+  answerFlow,
   elapsedMilliseconds,
   elapsedSeconds,
   interactionPaused,
@@ -94,7 +99,7 @@ export const Question = ({
   onNewGame,
   onOpenSettings,
   question,
-  speedrunMode,
+  timerDisplay,
   total,
 }: QuestionProps) => {
   const heading = useRef<HTMLHeadingElement>(null);
@@ -110,6 +115,7 @@ export const Question = ({
     selectedOptions,
     selectOption,
   } = useQuestionAnswer({
+    answerFlow,
     elapsedMilliseconds,
     interactionPaused,
     nextQuestion,
@@ -117,7 +123,6 @@ export const Question = ({
     onAnswerRecorded,
     onFeedbackStart,
     question,
-    speedrunMode,
   });
 
   useEffect(() => {
@@ -125,8 +130,8 @@ export const Question = ({
   }, []);
 
   useEffect(() => {
-    if (answered && !speedrunMode) advanceButton.current?.focus();
-  }, [answered, speedrunMode]);
+    if (answered && answerFlow !== 'instant') advanceButton.current?.focus();
+  }, [answerFlow, answered]);
 
   const isChampion = question.category === 'champion';
   const isLeague = mode.kind === 'league';
@@ -136,6 +141,10 @@ export const Question = ({
       ? getModeLabel(mode)
       : null;
   const championChoicesVisible = isChampion && cluesShown > 0;
+  const timerText =
+    timerDisplay === 'milliseconds'
+      ? formatDurationMilliseconds(elapsedMilliseconds)
+      : formatDuration(elapsedSeconds);
   const checkAnswerAction =
     question.answer.interaction !== 'single-choice' && !answered ? (
       <GameButton
@@ -180,10 +189,13 @@ export const Question = ({
         </GameButton>
         <Progress current={number} total={total} />
         <span
-          className="timer"
-          aria-label={`Elapsed time ${formatDuration(elapsedSeconds)}`}
+          className={`timer ${timerDisplay === 'hidden' ? 'timer--hidden' : ''}`.trim()}
+          aria-hidden={timerDisplay === 'hidden'}
+          aria-label={
+            timerDisplay === 'hidden' ? undefined : `Elapsed time ${timerText}`
+          }
         >
-          {formatDuration(elapsedSeconds)}
+          {timerText}
         </span>
         <SettingsButton disabled={answered} onClick={onOpenSettings} />
       </div>
@@ -254,7 +266,7 @@ export const Question = ({
             : ''}
       </span>
 
-      {speedrunMode ? (
+      {answerFlow === 'instant' ? (
         checkAnswerAction
       ) : (
         <div className="question__action-slot">

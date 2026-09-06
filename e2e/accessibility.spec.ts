@@ -127,7 +127,7 @@ test('keeps the core experience accessible', async ({ page }) => {
   await expectNoAccessibilityViolations(page);
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await page.getByRole('button', { name: 'Trainer profile' }).click();
   await expect(
     page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();
@@ -193,7 +193,7 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   await page.evaluate(() => {
     document.documentElement.style.fontSize = '200%';
   });
-  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await page.getByRole('button', { name: 'Trainer profile' }).click();
   await expect(
     page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();

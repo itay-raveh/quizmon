@@ -12,9 +12,10 @@ import {
   getSpeedBonusPoints,
   isQuestionAnswerCorrect,
 } from '@/game/game';
-import type { AnswerResult, QuestionData } from '@/game/types';
+import type { AnswerFlow, AnswerResult, QuestionData } from '@/game/types';
 
 interface UseQuestionAnswerOptions {
+  answerFlow: AnswerFlow;
   elapsedMilliseconds: number;
   interactionPaused: boolean;
   nextQuestion?: QuestionData;
@@ -22,10 +23,12 @@ interface UseQuestionAnswerOptions {
   onAnswerRecorded?: (answer: AnswerResult) => void;
   onFeedbackStart: () => number;
   question: QuestionData;
-  speedrunMode: boolean;
 }
 
-const QUICK_FEEDBACK_DELAY = 300;
+const feedbackDelay: Record<Exclude<AnswerFlow, 'manual'>, number> = {
+  auto: 2_000,
+  instant: 300,
+};
 
 const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
@@ -45,6 +48,7 @@ const preloadQuestionImages = (question: QuestionData) => {
 };
 
 export const useQuestionAnswer = ({
+  answerFlow,
   elapsedMilliseconds,
   interactionPaused,
   nextQuestion,
@@ -52,7 +56,6 @@ export const useQuestionAnswer = ({
   onAnswerRecorded,
   onFeedbackStart,
   question,
-  speedrunMode,
 }: UseQuestionAnswerOptions) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
@@ -105,15 +108,16 @@ export const useQuestionAnswer = ({
       if (correct) playCorrect();
       else playWrong();
       onAnswerRecorded?.(answer);
-      if (speedrunMode) {
+      if (answerFlow !== 'manual') {
         answerTimeout.current = window.setTimeout(() => {
           if (answerAdvanced.current) return;
           answerAdvanced.current = true;
           onAnswer(answer);
-        }, QUICK_FEEDBACK_DELAY);
+        }, feedbackDelay[answerFlow]);
       }
     },
     [
+      answerFlow,
       answered,
       cluesShown,
       interactionPaused,
@@ -123,7 +127,6 @@ export const useQuestionAnswer = ({
       playCorrect,
       playWrong,
       question,
-      speedrunMode,
     ],
   );
 
@@ -154,6 +157,20 @@ export const useQuestionAnswer = ({
       event.target instanceof HTMLInputElement ||
       (question.category === 'champion' && cluesShown === 0)
     ) {
+      return;
+    }
+
+    if (
+      event.key === 'Enter' &&
+      question.answer.interaction === 'multi-select' &&
+      selectedOptions.length > 0 &&
+      (!(event.target instanceof HTMLElement) ||
+        !event.target.closest(
+          'button, input, select, textarea, [contenteditable]',
+        ))
+    ) {
+      event.preventDefault();
+      finishAnswer(selectedOptions);
       return;
     }
 

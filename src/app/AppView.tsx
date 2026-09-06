@@ -7,6 +7,7 @@ import {
   ModifiersDialog,
   type SettingsTab,
 } from '@/components/ModifiersDialog';
+import { MotionProvider } from '@/components/MotionProvider';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
 import { TrainerPassport } from '@/components/TrainerPassport';
@@ -146,6 +147,7 @@ const AppScreen = ({
     const currentQuestion = session.questions[session.questionIndex];
     return currentQuestion ? (
       <Question
+        answerFlow={session.modifiers.answerFlow}
         key={currentQuestion.id}
         elapsedMilliseconds={question.elapsedMilliseconds}
         elapsedSeconds={question.elapsedSeconds}
@@ -159,7 +161,7 @@ const AppScreen = ({
         onNewGame={navigation.requestLeave}
         onOpenSettings={() => settings.open('experience')}
         question={currentQuestion}
-        speedrunMode={session.modifiers.speedrunMode}
+        timerDisplay={session.modifiers.timerDisplay}
         total={session.questions.length}
       />
     ) : null;
@@ -243,18 +245,20 @@ const AppOverlays = ({
 );
 
 export const AppView = (props: AppViewProps) => (
-  <SoundProvider
-    enabled={props.modifiers.soundEnabled}
-    prepareScoreCount={props.session.phase !== 'landing'}
-  >
-    <div
-      className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
+  <MotionProvider reduceMotion={props.modifiers.reduceMotion}>
+    <SoundProvider
+      prepareScoreCount={props.session.phase !== 'landing'}
+      volume={props.modifiers.soundVolume}
     >
-      <div className="background" aria-hidden="true" />
-      <main>
-        <AppScreen {...props} />
-      </main>
-      <AppOverlays {...props} />
-    </div>
-  </SoundProvider>
+      <div
+        className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
+      >
+        <div className="background" aria-hidden="true" />
+        <main>
+          <AppScreen {...props} />
+        </main>
+        <AppOverlays {...props} />
+      </div>
+    </SoundProvider>
+  </MotionProvider>
 );

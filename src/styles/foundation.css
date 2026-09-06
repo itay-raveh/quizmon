@@ -52,6 +52,29 @@
   box-sizing: border-box;
 }
 
+html[data-reduce-motion] *,
+html[data-reduce-motion] *::before,
+html[data-reduce-motion] *::after {
+  scroll-behavior: auto !important;
+  transition: none !important;
+}
+
+html[data-reduce-motion] .question--enter,
+html[data-reduce-motion] .results,
+html[data-reduce-motion] .update-prompt,
+html[data-reduce-motion] .modifiers-dialog[open],
+html[data-reduce-motion] .generation-prompt[open],
+html[data-reduce-motion] .leave-game-dialog[open],
+html[data-reduce-motion] .share-dialog[open],
+html[data-reduce-motion] .trainer-passport__artifact--reveal,
+html[data-reduce-motion] .trainer-badge-dialog[open],
+html[data-reduce-motion] .trainer-title-dialog[open],
+html[data-reduce-motion] .trainer-card__sparkle,
+html[data-reduce-motion] .catch-combo--celebrate .catch-combo__ball,
+html[data-reduce-motion] .catch-combo--celebrate .catch-combo__ring {
+  animation: none !important;
+}
+
 html,
 body,
 #root {

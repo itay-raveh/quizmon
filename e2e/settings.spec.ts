@@ -108,8 +108,18 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     dialog.getByRole('heading', { name: 'Question types' }),
   ).toHaveCount(0);
   await dialog.getByRole('tab', { name: 'Experience' }).click();
-  await expect(dialog.getByText('Play experience')).toBeVisible();
-  await expect(dialog.getByLabel('Quick transitions')).toBeVisible();
+  await expect(
+    dialog.getByRole('group', { name: 'Answer flow' }),
+  ).toBeVisible();
+  await expect(dialog.getByRole('radio', { name: /Instant/ })).toBeChecked();
+  await expect(dialog.getByRole('group', { name: 'Timer' })).toBeVisible();
+  await expect(
+    dialog.getByRole('radio', { name: 'Seconds', exact: true }),
+  ).toBeChecked();
+  await expect(
+    dialog.getByRole('slider', { name: 'Sound effects' }),
+  ).toHaveValue('0');
+  await expect(dialog.getByLabel('Reduce motion')).not.toBeChecked();
   await dialog.getByRole('tab', { name: 'Experience' }).press('ArrowLeft');
   await expect(dialog.getByRole('tab', { name: 'Training' })).toBeFocused();
 

@@ -413,6 +413,10 @@
   white-space: nowrap;
 }
 
+.timer--hidden {
+  visibility: hidden;
+}
+
 .progress__track {
   height: 0.65rem;
   flex: 1;

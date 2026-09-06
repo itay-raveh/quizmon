@@ -3,6 +3,7 @@ import { clearActiveGame } from '@/game/active-game';
 import { trackGameCompleted } from '@/game/analytics';
 import {
   calculateScore,
+  getResponseTimeMilliseconds,
   getResponseTimeSeconds,
   SCORE_VERSION,
 } from '@/game/game';
@@ -46,6 +47,7 @@ export const useGameCompletion = ({
         answers,
         contentVersion,
         correctCount: answers.filter(({ correct }) => correct).length,
+        elapsedMilliseconds: getResponseTimeMilliseconds(answers),
         elapsedSeconds: getResponseTimeSeconds(answers),
         questionCount,
         score: calculateScore(answers),

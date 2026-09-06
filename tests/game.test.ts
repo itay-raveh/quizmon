@@ -114,10 +114,12 @@ describe('normalizeModifiers', () => {
         speedrunMode: true,
       }),
     ).toEqual({
+      answerFlow: 'instant',
       generations: ['IX'],
       questionTypes: ['stat-showdown'],
-      soundEnabled: true,
-      speedrunMode: true,
+      reduceMotion: false,
+      soundVolume: 1,
+      timerDisplay: 'seconds',
       trainingMode: 'league',
     });
   });

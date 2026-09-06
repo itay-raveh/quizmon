@@ -410,8 +410,22 @@
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition: none !important;
+  }
+
+  .question--enter,
+  .results,
+  .update-prompt,
+  .modifiers-dialog[open],
+  .generation-prompt[open],
+  .leave-game-dialog[open],
+  .share-dialog[open],
+  .trainer-passport__artifact--reveal,
+  .trainer-badge-dialog[open],
+  .trainer-title-dialog[open],
+  .trainer-card__sparkle,
+  .catch-combo--celebrate .catch-combo__ball,
+  .catch-combo--celebrate .catch-combo__ring {
+    animation: none !important;
   }
 }

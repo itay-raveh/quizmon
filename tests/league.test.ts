@@ -19,12 +19,16 @@ const catalog = catalogData as PokemonCatalog;
 describe('Quizmon League', () => {
   it('builds one deterministic question from every format', () => {
     const first = buildLeagueQuestions(catalog, 'league-lineup', {
-      soundEnabled: false,
-      speedrunMode: false,
+      answerFlow: 'manual',
+      reduceMotion: false,
+      soundVolume: 0,
+      timerDisplay: 'seconds',
     });
     const second = buildLeagueQuestions(catalog, 'league-lineup', {
-      soundEnabled: true,
-      speedrunMode: true,
+      answerFlow: 'instant',
+      reduceMotion: true,
+      soundVolume: 1,
+      timerDisplay: 'milliseconds',
     });
 
     expect(first).toEqual(second);
@@ -47,11 +51,18 @@ describe('Quizmon League', () => {
 
   it('uses every generation and requires a complete perfect result', () => {
     expect(
-      getLeagueModifiers({ soundEnabled: false, speedrunMode: true }),
+      getLeagueModifiers({
+        answerFlow: 'instant',
+        reduceMotion: true,
+        soundVolume: 0,
+        timerDisplay: 'hidden',
+      }),
     ).toMatchObject({
       generations: [...generations],
-      soundEnabled: false,
-      speedrunMode: true,
+      answerFlow: 'instant',
+      reduceMotion: true,
+      soundVolume: 0,
+      timerDisplay: 'hidden',
     });
 
     const answers = Array.from({ length: LEAGUE_QUESTION_COUNT }, () => ({

@@ -17,8 +17,8 @@ import { SoundContext, type SoundControls } from './sound';
 
 interface SoundProviderProps {
   children: ReactNode;
-  enabled: boolean;
   prepareScoreCount: boolean;
+  volume: number;
 }
 
 interface ScoreCountControls {
@@ -48,12 +48,15 @@ const silentControls: SoundControls = {
 const ScoreCountSound = ({
   onReady,
   useSound,
+  volume,
 }: {
   onReady: (controls: ScoreCountControls) => void;
   useSound: UseSound;
+  volume: number;
 }) => {
   const [play, { stop }] = useSound(scoreCountSound, {
     interrupt: true,
+    volume: 0.24 * volume,
   });
 
   useEffect(() => {
@@ -71,38 +74,43 @@ const SoundEngine = ({
   onReady,
   prepareScoreCount,
   useSound,
+  volume,
 }: {
   onReady: (controls: SoundControls) => void;
   prepareScoreCount: boolean;
   useSound: UseSound;
+  volume: number;
 }) => {
   const [scoreCountControls, setScoreCountControls] =
     useState<ScoreCountControls>(silentScoreCount);
   const sharedOptions = { interrupt: true };
-  const [playTap] = useSound(tapSound, { ...sharedOptions, volume: 0.16 });
+  const [playTap] = useSound(tapSound, {
+    ...sharedOptions,
+    volume: 0.16 * volume,
+  });
   const [playToggleOff] = useSound(toggleOffSound, {
     ...sharedOptions,
-    volume: 0.18,
+    volume: 0.18 * volume,
   });
   const [playToggleOn] = useSound(toggleOnSound, {
     ...sharedOptions,
-    volume: 0.18,
+    volume: 0.18 * volume,
   });
   const [playCorrect] = useSound(correctSound, {
     ...sharedOptions,
-    volume: 0.28,
+    volume: 0.28 * volume,
   });
   const [playWrong] = useSound(wrongSound, {
     ...sharedOptions,
-    volume: 0.24,
+    volume: 0.24 * volume,
   });
   const [playResults, { stop: stopResults }] = useSound(resultsSound, {
     ...sharedOptions,
-    volume: 0.32,
+    volume: 0.32 * volume,
   });
   const [playPerfect, { stop: stopPerfect }] = useSound(perfectSound, {
     ...sharedOptions,
-    volume: 0.36,
+    volume: 0.36 * volume,
   });
 
   const stopCelebration = useCallback(() => {
@@ -151,7 +159,11 @@ const SoundEngine = ({
   return (
     <>
       {prepareScoreCount ? (
-        <ScoreCountSound onReady={setScoreCountControls} useSound={useSound} />
+        <ScoreCountSound
+          onReady={setScoreCountControls}
+          useSound={useSound}
+          volume={volume}
+        />
       ) : null}
     </>
   );
@@ -159,14 +171,14 @@ const SoundEngine = ({
 
 export const SoundProvider = ({
   children,
-  enabled,
   prepareScoreCount,
+  volume,
 }: SoundProviderProps) => {
   const [controls, setControls] = useState<SoundControls>(silentControls);
   const [useSound, setUseSound] = useState<UseSound | null>(null);
 
   useEffect(() => {
-    if (!enabled || useSound) return;
+    if (volume <= 0 || useSound) return;
 
     let active = true;
     let loading = false;
@@ -196,16 +208,17 @@ export const SoundProvider = ({
       active = false;
       for (const event of events) document.removeEventListener(event, prepare);
     };
-  }, [enabled, prepareScoreCount, useSound]);
+  }, [prepareScoreCount, useSound, volume]);
 
   return (
-    <SoundContext.Provider value={enabled ? controls : silentControls}>
+    <SoundContext.Provider value={volume > 0 ? controls : silentControls}>
       {children}
-      {enabled && useSound ? (
+      {volume > 0 && useSound ? (
         <SoundEngine
           onReady={setControls}
           prepareScoreCount={prepareScoreCount}
           useSound={useSound}
+          volume={volume}
         />
       ) : null}
     </SoundContext.Provider>

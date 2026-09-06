@@ -47,7 +47,7 @@ export const App = () => {
     pause,
     reset,
     start,
-  } = useStopwatch();
+  } = useStopwatch(modifiers.timerDisplay === 'milliseconds');
 
   const startGame = useCallback(
     (

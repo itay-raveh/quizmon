@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export const useStopwatch = () => {
+export const useStopwatch = (showMilliseconds = false) => {
   const [elapsedMilliseconds, setElapsedMilliseconds] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [running, setRunning] = useState(false);
@@ -19,9 +19,12 @@ export const useStopwatch = () => {
     if (!running) return;
 
     updateElapsed();
-    const interval = window.setInterval(updateElapsed, 250);
+    const interval = window.setInterval(
+      updateElapsed,
+      showMilliseconds ? 50 : 250,
+    );
     return () => window.clearInterval(interval);
-  }, [running, updateElapsed]);
+  }, [running, showMilliseconds, updateElapsed]);
 
   const start = useCallback(() => {
     startedAt.current = performance.now();

@@ -3,6 +3,7 @@ import { useGameSounds } from '@/audio/sound';
 import { formatDailyDate } from '@/game/daily';
 import {
   formatDuration,
+  formatDurationMilliseconds,
   getCategoryLabel,
   getKnowledgePoints,
   getMasteryBonus,
@@ -132,7 +133,12 @@ export const Results = ({
         ) : null}
         <div>
           <dt>Time</dt>
-          <dd>{formatDuration(result.elapsedSeconds)}</dd>
+          <dd>
+            {modifiers.timerDisplay === 'milliseconds' &&
+            result.elapsedMilliseconds !== undefined
+              ? formatDurationMilliseconds(result.elapsedMilliseconds)
+              : formatDuration(result.elapsedSeconds)}
+          </dd>
         </div>
         <div>
           <dt>Knowledge</dt>

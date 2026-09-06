@@ -51,6 +51,7 @@ type QuestionProps = ComponentProps<typeof Question>;
 const renderQuestion = (overrides: Partial<QuestionProps> = {}) =>
   render(
     <Question
+      answerFlow="manual"
       elapsedMilliseconds={0}
       elapsedSeconds={0}
       interactionPaused={false}
@@ -61,7 +62,7 @@ const renderQuestion = (overrides: Partial<QuestionProps> = {}) =>
       onNewGame={vi.fn()}
       onOpenSettings={vi.fn()}
       question={question}
-      speedrunMode={false}
+      timerDisplay="seconds"
       total={10}
       {...overrides}
     />,
@@ -647,7 +648,7 @@ describe('question transitions', () => {
     );
   });
 
-  it('keeps the 300 ms automatic advance in Quick mode', () => {
+  it('keeps the 300 ms automatic advance in Instant mode', () => {
     vi.useFakeTimers();
     const onAnswer = vi.fn();
 
@@ -656,7 +657,7 @@ describe('question transitions', () => {
       elapsedSeconds: 1,
       onAnswer,
       onFeedbackStart: () => 5_000,
-      speedrunMode: true,
+      answerFlow: 'instant',
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
@@ -685,7 +686,7 @@ describe('question transitions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     fireEvent.click(screen.getByRole('button', { name: 'Eevee' }));
     expect(check).toBeEnabled();
-    fireEvent.click(check);
+    fireEvent.keyDown(window, { key: 'Enter' });
 
     expect(screen.getByRole('button', { name: 'Pikachu' })).toHaveClass(
       'answer--correct',

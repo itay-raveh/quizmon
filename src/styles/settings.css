@@ -6,7 +6,9 @@
 }
 
 .modifiers-form__body {
+  min-height: 0;
   padding: 1.05rem 1.2rem 0.45rem;
+  flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -331,6 +333,87 @@
 
 .selection-tile--training-mode .selection-tile__check {
   display: none;
+}
+
+.experience-settings {
+  display: grid;
+}
+
+.modifiers-form .experience-setting {
+  padding-bottom: 1.1rem;
+  border-bottom: 2px solid color-mix(in srgb, var(--navy) 18%, transparent);
+}
+
+.modifiers-form .experience-setting:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.experience-options {
+  display: grid;
+  margin-top: 0.7rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.selection-tile--experience .selection-tile__surface {
+  min-height: 4.5rem;
+  padding: 0.55rem 0.4rem;
+  align-content: center;
+  justify-items: center;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.selection-tile--experience .selection-tile__check {
+  display: none;
+}
+
+.selection-tile--experience .selection-tile__label {
+  font-size: var(--text-compact-control);
+}
+
+.selection-tile--experience .selection-tile__description {
+  margin: 0;
+  font-size: var(--text-mini);
+  line-height: 1.2;
+}
+
+.experience-options--timer .selection-tile__surface {
+  min-height: 3rem;
+}
+
+.volume-control {
+  display: grid;
+  min-height: 3.75rem;
+  margin-top: 0.55rem;
+  align-items: center;
+  color: var(--ink);
+  font-weight: 700;
+  cursor: pointer;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.75rem;
+}
+
+.volume-control output {
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 800;
+}
+
+.volume-control input {
+  width: 100%;
+  height: 2rem;
+  margin: 0;
+  accent-color: var(--blue);
+  cursor: pointer;
+  grid-column: 1 / -1;
+}
+
+.volume-control input:focus-visible {
+  outline: 0.2rem solid var(--focus);
+  outline-offset: 0.1rem;
 }
 
 .question-type-tile {

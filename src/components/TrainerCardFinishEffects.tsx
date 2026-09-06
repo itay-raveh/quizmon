@@ -10,6 +10,7 @@ import sheen08 from '@/assets/images/trainer-card/sheen-08.png';
 import sheen09 from '@/assets/images/trainer-card/sheen-09.png';
 import sheen10 from '@/assets/images/trainer-card/sheen-10.png';
 import type { CardFinish } from '@/game/trainer';
+import { useReducedMotion } from './motion';
 
 const sheenFrames = [
   sheen01,
@@ -44,6 +45,7 @@ export const TrainerCardFinishEffects = ({
   finish,
   sparkles = false,
 }: TrainerCardFinishEffectsProps) => {
+  const reduceMotion = useReducedMotion();
   const effectsRef = useRef<HTMLDivElement>(null);
   const sheenRef = useRef<HTMLImageElement>(null);
 
@@ -59,9 +61,6 @@ export const TrainerCardFinishEffects = ({
       image.src = src;
     });
 
-    const reducedMotion = window.matchMedia?.(
-      '(prefers-reduced-motion: reduce)',
-    );
     const motion = motionByFinish[finish];
     let isIntersecting = true;
     let timer: number | undefined;
@@ -86,7 +85,7 @@ export const TrainerCardFinishEffects = ({
     };
 
     const playPass = () => {
-      if (document.hidden || !isIntersecting || reducedMotion?.matches) return;
+      if (document.hidden || !isIntersecting || reduceMotion) return;
 
       let frame = 0;
       effects.classList.add('is-motion-active');
@@ -112,7 +111,7 @@ export const TrainerCardFinishEffects = ({
     const updateMotion = () => {
       reset();
       if (document.hidden || !isIntersecting) return;
-      if (reducedMotion?.matches) {
+      if (reduceMotion) {
         showStaticFinish();
         return;
       }
@@ -132,16 +131,14 @@ export const TrainerCardFinishEffects = ({
 
     observer?.observe(effects);
     document.addEventListener('visibilitychange', updateMotion);
-    reducedMotion?.addEventListener('change', updateMotion);
     updateMotion();
 
     return () => {
       reset();
       observer?.disconnect();
       document.removeEventListener('visibilitychange', updateMotion);
-      reducedMotion?.removeEventListener('change', updateMotion);
     };
-  }, [finish]);
+  }, [finish, reduceMotion]);
 
   if (finish === 'Classic') return null;
 

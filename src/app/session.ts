@@ -129,8 +129,10 @@ export const gameSessionReducer = (
           ...session,
           modifiers: {
             ...session.modifiers,
-            soundEnabled: action.modifiers.soundEnabled,
-            speedrunMode: action.modifiers.speedrunMode,
+            answerFlow: action.modifiers.answerFlow,
+            reduceMotion: action.modifiers.reduceMotion,
+            soundVolume: action.modifiers.soundVolume,
+            timerDisplay: action.modifiers.timerDisplay,
           },
         };
       }

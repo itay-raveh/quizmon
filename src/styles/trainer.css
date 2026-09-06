@@ -1292,6 +1292,13 @@
   }
 }
 
+html[data-reduce-motion]
+  .trainer-card__finish-effects.is-static
+  .trainer-card__sparkle {
+  background-position: -64px -32px;
+  opacity: 0.8;
+}
+
 @media (max-width: 42rem) {
   .trainer-passport {
     width: calc(100vw - 1.2rem);

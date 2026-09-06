@@ -102,11 +102,18 @@ describe('Daily Challenge', () => {
 
   it('uses all generations and a fixed five-question length', () => {
     expect(
-      getDailyModifiers({ soundEnabled: false, speedrunMode: true }),
+      getDailyModifiers({
+        answerFlow: 'instant',
+        reduceMotion: true,
+        soundVolume: 0,
+        timerDisplay: 'milliseconds',
+      }),
     ).toMatchObject({
       generations: [...generations],
-      soundEnabled: false,
-      speedrunMode: true,
+      answerFlow: 'instant',
+      reduceMotion: true,
+      soundVolume: 0,
+      timerDisplay: 'milliseconds',
     });
   });
 });

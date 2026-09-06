@@ -43,13 +43,18 @@ export const formatDailyDate = (date: string): string =>
   dailyDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
 
 export const getDailyModifiers = (
-  experience: Pick<Modifiers, 'soundEnabled' | 'speedrunMode'>,
+  experience: Pick<
+    Modifiers,
+    'answerFlow' | 'reduceMotion' | 'soundVolume' | 'timerDisplay'
+  >,
 ): Modifiers => ({
   ...defaultModifiers,
+  answerFlow: experience.answerFlow,
   generations: [...generations],
   questionTypes: [...defaultModifiers.questionTypes],
-  soundEnabled: experience.soundEnabled,
-  speedrunMode: experience.speedrunMode,
+  reduceMotion: experience.reduceMotion,
+  soundVolume: experience.soundVolume,
+  timerDisplay: experience.timerDisplay,
 });
 
 export const getDailyQuestionTypes = (

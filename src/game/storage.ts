@@ -254,7 +254,10 @@ export const getHighScoreKey = (
 const isBetterResult = (candidate: GameResult, previous: GameResult): boolean =>
   candidate.score > previous.score ||
   (candidate.score === previous.score &&
-    candidate.elapsedSeconds < previous.elapsedSeconds);
+    getResultDuration(candidate) < getResultDuration(previous));
+
+const getResultDuration = (result: GameResult): number =>
+  result.elapsedMilliseconds ?? (result.elapsedSeconds + 1) * 1_000 - 1;
 
 const getBestResult = (
   results: readonly GameResult[],

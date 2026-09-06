@@ -62,12 +62,17 @@ const stageQuestionTypes: readonly (readonly QuestionType[])[] = [
 ];
 
 export const getLeagueModifiers = (
-  experience: Pick<Modifiers, 'soundEnabled' | 'speedrunMode'>,
+  experience: Pick<
+    Modifiers,
+    'answerFlow' | 'reduceMotion' | 'soundVolume' | 'timerDisplay'
+  >,
 ): Modifiers => ({
   ...defaultModifiers,
+  answerFlow: experience.answerFlow,
   generations: [...generations],
-  soundEnabled: experience.soundEnabled,
-  speedrunMode: experience.speedrunMode,
+  reduceMotion: experience.reduceMotion,
+  soundVolume: experience.soundVolume,
+  timerDisplay: experience.timerDisplay,
 });
 
 export const getLeagueQuestionTypes = (
@@ -93,7 +98,10 @@ export const getLeagueQuestionTypes = (
 export const buildLeagueQuestions = (
   catalog: PokemonCatalog,
   seed: string,
-  experience: Pick<Modifiers, 'soundEnabled' | 'speedrunMode'>,
+  experience: Pick<
+    Modifiers,
+    'answerFlow' | 'reduceMotion' | 'soundVolume' | 'timerDisplay'
+  >,
 ): QuestionData[] => {
   const modifiers = getLeagueModifiers(experience);
   const questions = buildQuestionSequence(

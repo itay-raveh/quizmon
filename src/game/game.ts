@@ -1,5 +1,6 @@
 import {
   generations,
+  type AnswerFlow,
   type AnswerResult,
   type Generation,
   type Modifiers,
@@ -8,6 +9,7 @@ import {
   type QuestionData,
   type QuestionPrompt,
   type QuestionType,
+  type TimerDisplay,
 } from './types';
 import { formatPokemonName } from './format';
 import {
@@ -21,10 +23,12 @@ import { shuffle } from './random';
 export { shuffle } from './random';
 
 export const defaultModifiers: Modifiers = {
+  answerFlow: 'manual',
   generations: [...generations],
   questionTypes: [...questionTypes],
-  soundEnabled: true,
-  speedrunMode: false,
+  reduceMotion: false,
+  soundVolume: 1,
+  timerDisplay: 'seconds',
   trainingMode: 'league',
 };
 
@@ -59,10 +63,19 @@ const isGeneration = (value: unknown): value is Generation =>
 const isQuestionType = (value: unknown): value is QuestionType =>
   typeof value === 'string' && questionTypes.includes(value as QuestionType);
 
+const isAnswerFlow = (value: unknown): value is AnswerFlow =>
+  value === 'manual' || value === 'auto' || value === 'instant';
+
+const isTimerDisplay = (value: unknown): value is TimerDisplay =>
+  value === 'hidden' || value === 'seconds' || value === 'milliseconds';
+
 export const normalizeModifiers = (value: unknown): Modifiers => {
   if (!value || typeof value !== 'object') return defaultModifiers;
 
-  const candidate = value as Partial<Modifiers>;
+  const candidate = value as Partial<Modifiers> & {
+    soundEnabled?: unknown;
+    speedrunMode?: unknown;
+  };
   const selectedGenerations = Array.isArray(candidate.generations)
     ? candidate.generations.filter(isGeneration)
     : [];
@@ -70,6 +83,11 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
     ? candidate.questionTypes.filter(isQuestionType)
     : [];
   return {
+    answerFlow: isAnswerFlow(candidate.answerFlow)
+      ? candidate.answerFlow
+      : candidate.speedrunMode === true
+        ? 'instant'
+        : defaultModifiers.answerFlow,
     generations:
       selectedGenerations.length > 0
         ? selectedGenerations
@@ -78,8 +96,17 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
       selectedQuestionTypes.length > 0
         ? selectedQuestionTypes
         : defaultModifiers.questionTypes,
-    soundEnabled: candidate.soundEnabled !== false,
-    speedrunMode: candidate.speedrunMode === true,
+    reduceMotion: candidate.reduceMotion === true,
+    soundVolume:
+      typeof candidate.soundVolume === 'number' &&
+      Number.isFinite(candidate.soundVolume)
+        ? Math.min(1, Math.max(0, candidate.soundVolume))
+        : candidate.soundEnabled === false
+          ? 0
+          : defaultModifiers.soundVolume,
+    timerDisplay: isTimerDisplay(candidate.timerDisplay)
+      ? candidate.timerDisplay
+      : defaultModifiers.timerDisplay,
     trainingMode:
       candidate.trainingMode === 'league' || candidate.trainingMode === 'custom'
         ? candidate.trainingMode
@@ -254,12 +281,14 @@ export const getQuestionPromptText = (prompt: QuestionPrompt): string =>
 
 export const getResponseTimeSeconds = (
   answers: readonly AnswerResult[],
+): number => Math.floor(getResponseTimeMilliseconds(answers) / 1_000);
+
+export const getResponseTimeMilliseconds = (
+  answers: readonly AnswerResult[],
 ): number =>
-  Math.floor(
-    answers.reduce(
-      (total, answer) => total + (answer.responseMilliseconds ?? 0),
-      0,
-    ) / 1_000,
+  answers.reduce(
+    (total, answer) => total + (answer.responseMilliseconds ?? 0),
+    0,
   );
 
 export const formatDuration = (elapsedSeconds: number): string => {
@@ -271,3 +300,10 @@ export const formatDuration = (elapsedSeconds: number): string => {
     .map((part) => String(part).padStart(2, '0'))
     .join(':');
 };
+
+export const formatDurationMilliseconds = (
+  elapsedMilliseconds: number,
+): string =>
+  `${formatDuration(Math.floor(elapsedMilliseconds / 1000))}.${String(
+    Math.floor(elapsedMilliseconds % 1000),
+  ).padStart(3, '0')}`;

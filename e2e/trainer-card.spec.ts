@@ -24,7 +24,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'Trainer Card' }).click();
+  await page.getByRole('button', { name: 'Trainer profile' }).click();
   await expect(page).toHaveURL(/\?trainer=card$/);
   await expect(
     page.getByRole('article', { name: 'Trainer Card' }),

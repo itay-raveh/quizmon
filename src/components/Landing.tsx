@@ -109,7 +109,7 @@ export const Landing = ({
             tone="quiet"
             onClick={onOpenTrainerCard}
           >
-            <span>Trainer Card</span>
+            <span>Trainer profile</span>
           </GameButton>
           <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
             <span>Start training</span>

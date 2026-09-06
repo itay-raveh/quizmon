@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { AnimatedScore } from '@/components/AnimatedScore';
+import { MotionProvider } from '@/components/MotionProvider';
 
 describe('AnimatedScore', () => {
   it('shows the final score immediately when reduced motion is requested', () => {
@@ -12,7 +13,11 @@ describe('AnimatedScore', () => {
       value: vi.fn().mockReturnValue({ matches: true }),
     });
 
-    render(<AnimatedScore format={String} value={750} />);
+    render(
+      <MotionProvider reduceMotion={false}>
+        <AnimatedScore format={String} value={750} />
+      </MotionProvider>,
+    );
     expect(screen.getByText('750')).toBeInTheDocument();
 
     if (originalMatchMedia) {

@@ -13,6 +13,8 @@ export const generations = [
 export type Generation = (typeof generations)[number];
 
 export type TrainingMode = 'league' | 'custom';
+export type AnswerFlow = 'manual' | 'auto' | 'instant';
+export type TimerDisplay = 'hidden' | 'seconds' | 'milliseconds';
 
 export type QuestionType =
   | 'ability-check'
@@ -54,7 +56,7 @@ export const statNames = [
 
 export type StatName = (typeof statNames)[number];
 
-export interface PokemonIdentitySpriteGeneration {
+interface PokemonIdentitySpriteGeneration {
   back: string[];
   front: string[];
   generation: Generation;
@@ -95,10 +97,12 @@ export interface PokemonCatalog {
 }
 
 export interface Modifiers {
+  answerFlow: AnswerFlow;
   generations: Generation[];
   questionTypes: QuestionType[];
-  soundEnabled: boolean;
-  speedrunMode: boolean;
+  reduceMotion: boolean;
+  soundVolume: number;
+  timerDisplay: TimerDisplay;
   trainingMode: TrainingMode;
 }
 
@@ -203,6 +207,7 @@ export interface GameResult {
   answers: AnswerResult[];
   contentVersion: number;
   correctCount: number;
+  elapsedMilliseconds?: number;
   elapsedSeconds: number;
   questionCount: number;
   score: number;

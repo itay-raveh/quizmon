@@ -91,16 +91,23 @@ describe('gameSessionReducer', () => {
     const updated = gameSessionReducer(advanced, {
       modifiers: {
         ...defaultModifiers,
+        answerFlow: 'instant',
         generations: ['IX'],
-        soundEnabled: false,
-        speedrunMode: true,
+        reduceMotion: true,
+        soundVolume: 0,
+        timerDisplay: 'milliseconds',
       },
       type: 'settings-updated',
     });
 
     expect(updated).toMatchObject({
       answers: [answer],
-      modifiers: { soundEnabled: false, speedrunMode: true },
+      modifiers: {
+        answerFlow: 'instant',
+        reduceMotion: true,
+        soundVolume: 0,
+        timerDisplay: 'milliseconds',
+      },
       phase: 'questions',
       questionIndex: 1,
     });

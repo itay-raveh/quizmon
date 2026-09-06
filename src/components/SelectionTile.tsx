@@ -14,7 +14,7 @@ interface SelectionTileProps extends Omit<
   inputType?: 'checkbox' | 'radio';
   label: ReactNode;
   description?: ReactNode;
-  variant?: 'generation' | 'question-type' | 'training-mode';
+  variant?: 'experience' | 'generation' | 'question-type' | 'training-mode';
 }
 
 export const SelectionTile = ({
