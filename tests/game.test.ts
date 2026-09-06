@@ -537,42 +537,67 @@ describe('question building', () => {
     }
   });
 
-  it('uses an exact two-times weakness for the Type Matchup diagram', () => {
-    const question = buildSingleQuestion('type-matchup', 'type-matchup-visual');
-    const attackType = getCorrectOptions(question!)[0]!;
-    const defender = catalog.pokemon[question!.pokemonName]!;
+  it('uses exact quarter-, half-, double-, and quadruple-damage matchups', () => {
+    for (const questionType of ['type-matchup', 'counter-pick'] as const) {
+      const questions = Array.from({ length: 24 }, (_, index) =>
+        buildSingleQuestion(questionType, `${questionType}-${index}`),
+      ).filter((question) => question !== undefined);
+      const multipliers = new Set(
+        questions.flatMap((question) =>
+          question.visual?.kind === 'type-matchup' ||
+          question.visual?.kind === 'counter-pick'
+            ? [question.visual.multiplier]
+            : [],
+        ),
+      );
 
-    expect(question?.visual).toEqual({
-      kind: 'type-matchup',
-      multiplier: 2,
-    });
-    expect(attackMultiplier(attackType, defender.types)).toBe(2);
+      expect(multipliers).toEqual(new Set([0.25, 0.5, 2, 4]));
+      for (const question of questions) {
+        const defender = catalog.pokemon[question.pokemonName]!;
+        const correct = getCorrectOptions(question)[0]!;
+        const visual = question.visual;
+        expect(['type-matchup', 'counter-pick']).toContain(visual?.kind);
+        if (
+          visual?.kind !== 'type-matchup' &&
+          visual?.kind !== 'counter-pick'
+        ) {
+          continue;
+        }
+        const multiplier = visual.multiplier;
+
+        if (questionType === 'type-matchup') {
+          expect(attackMultiplier(correct, defender.types)).toBe(multiplier);
+        } else {
+          expect(
+            catalog.pokemon[correct]!.types.some(
+              (type) => attackMultiplier(type, defender.types) === multiplier,
+            ),
+          ).toBe(true);
+        }
+      }
+    }
   });
 
-  it('builds Counter Pick with one genuine type advantage', () => {
+  it('builds Counter Pick with exactly one matching answer', () => {
     const question = buildSingleQuestion('counter-pick', 'counter-pick');
     expect(question?.title).toBe('Counter pick');
     expect(question?.media.kind).toBe('pixel-sprite');
     expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
-    expect(question?.visual).toEqual({
-      kind: 'counter-pick',
-      multiplier: 2,
-    });
+    expect(question?.visual?.kind).toBe('counter-pick');
 
     const defender = catalog.pokemon[question!.pokemonName]!;
     const correct = getCorrectOptions(question!)[0];
+    const multiplier =
+      question?.visual?.kind === 'counter-pick'
+        ? question.visual.multiplier
+        : undefined;
     for (const option of question!.options) {
       const attacker = catalog.pokemon[option]!;
-      const hasAdvantage = attacker.types.some(
-        (type) => attackMultiplier(type, defender.types) > 1,
+      const hasMatchup = attacker.types.some(
+        (type) => attackMultiplier(type, defender.types) === multiplier,
       );
-      expect(hasAdvantage).toBe(option === correct);
+      expect(hasMatchup).toBe(option === correct);
     }
-    expect(
-      catalog.pokemon[correct!]!.types.some(
-        (type) => attackMultiplier(type, defender.types) === 2,
-      ),
-    ).toBe(true);
   });
 
   it('builds Evolution Shift from a real typing change', () => {

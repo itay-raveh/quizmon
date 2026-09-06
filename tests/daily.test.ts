@@ -42,21 +42,21 @@ describe('Daily Challenge', () => {
         title: 'Stat showdown',
       },
       {
-        correctOptions: ['rock'],
-        id: 'matchup:pelipper:2',
-        pokemonName: 'pelipper',
+        correctOptions: ['steel'],
+        id: 'matchup:cottonee:2',
+        pokemonName: 'cottonee',
         title: 'Type matchup',
       },
       {
-        correctOptions: ['dark'],
-        id: 'evolution:torracat:3',
-        pokemonName: 'torracat',
+        correctOptions: ['water'],
+        id: 'evolution:azurill:3',
+        pokemonName: 'azurill',
         title: 'Evolution shift',
       },
       {
-        correctOptions: ['nidoran-m'],
-        id: 'champion:nidoran-m:4',
-        pokemonName: 'nidoran-m',
+        correctOptions: ['nidorino'],
+        id: 'champion:nidorino:4',
+        pokemonName: 'nidorino',
         title: 'Champion question',
       },
     ]);
@@ -72,8 +72,8 @@ describe('Daily Challenge', () => {
       Object.keys(catalog.pokemon).length,
     );
     expect(first.at(-1)?.searchOptions).toContainEqual({
-      dexNumber: 32,
-      name: 'nidoran-m',
+      dexNumber: 33,
+      name: 'nidorino',
     });
     expect(
       schedule

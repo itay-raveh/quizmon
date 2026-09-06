@@ -14,5 +14,8 @@ export const formatPokedexNumber = (dexNumber: number): string =>
 export const formatPokemonTypes = (types: readonly string[]): string =>
   types.map(formatPokemonName).join(' and ');
 
+export const formatTypeMultiplier = (multiplier: number): string =>
+  ({ 0.25: '¼', 0.5: '½' })[multiplier] ?? String(multiplier);
+
 export const formatScore = (score: number): string =>
   scoreFormatter.format(score);

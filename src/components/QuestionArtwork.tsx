@@ -1,4 +1,8 @@
-import { formatPokedexNumber, formatPokemonName } from '@/game/format';
+import {
+  formatPokedexNumber,
+  formatPokemonName,
+  formatTypeMultiplier,
+} from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { ArrowDownIcon, ArrowUpIcon } from './icons';
 import { PokemonIdentity } from './PokemonIdentity';
@@ -208,7 +212,7 @@ export const QuestionArtwork = ({
           types={answerType ? [answerType] : []}
         />
         <span className="question-relation__effect">
-          <strong>×{question.visual.multiplier}</strong>
+          <strong>×{formatTypeMultiplier(question.visual.multiplier)}</strong>
           <RelationArrow />
         </span>
         <div className="question-visual__subject">
@@ -241,7 +245,7 @@ export const QuestionArtwork = ({
           )}
         </span>
         <span className="question-relation__effect">
-          <strong>×{question.visual.multiplier}</strong>
+          <strong>×{formatTypeMultiplier(question.visual.multiplier)}</strong>
           <RelationArrow />
         </span>
         <div className="question-visual__subject">
