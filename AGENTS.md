@@ -14,18 +14,22 @@ and daily push reminders.
 
 ## Repository structure
 
-| Path                             | Purpose                                                        |
-| -------------------------------- | -------------------------------------------------------------- |
-| `src/app/`                       | Application orchestration, routes, and game-session hooks      |
-| `src/components/`                | React UI and shared controls                                   |
-| `src/game/`                      | Quiz generation, scoring, persistence, sharing, and analytics  |
-| `src/notifications/`             | Browser push-reminder client                                   |
-| `src/styles/`                    | Shared CSS foundations and surface-specific styles             |
-| `worker/`                        | Cloudflare Worker routes and the daily-reminder Durable Object |
-| `build/`                         | Vite-time metadata and site-asset generation                   |
-| `scripts/`                       | Pokémon catalog maintenance                                    |
-| `art/`, `src/assets/`, `public/` | Source art and shipped static assets                           |
-| `tests/`, `e2e/`                 | Vitest coverage and Playwright browser tests                   |
+| Path                              | Purpose                                                        |
+| --------------------------------- | -------------------------------------------------------------- |
+| `src/main.tsx`, `src/app/`        | Browser entry point, orchestration, routes, and session hooks  |
+| `src/components/`                 | React UI and shared controls                                   |
+| `src/game/`                       | Quiz generation, scoring, persistence, sharing, and analytics  |
+| `src/sw.ts`, `src/notifications/` | PWA service worker and browser push-reminder client            |
+| `src/styles/`                     | Shared CSS foundations and surface-specific styles             |
+| `worker/`                         | Cloudflare Worker routes and the daily-reminder Durable Object |
+| `build/`, `scripts/`              | Build-time metadata, site assets, and catalog maintenance      |
+| `art/`, `src/assets/`, `public/`  | Source art and shipped static assets                           |
+| `tests/`, `e2e/`                  | Vitest coverage and Playwright browser tests                   |
+
+`src/main.tsx` mounts `src/app/App.tsx`, whose hooks connect the UI to the game
+and persistence modules. `worker/index.ts` handles analytics, reminder, and
+sprite routes, then delegates other requests to the static asset binding.
+`src/sw.ts` supplies offline navigation, media caching, and push handling.
 
 ## Commands
 
@@ -37,7 +41,9 @@ Run commands from the repository root.
 | Start Vite                  | `npm run dev`                              |
 | Run one unit test           | `npm test -- tests/game.test.ts`           |
 | Run one browser spec        | `npm run test:e2e -- e2e/training.spec.ts` |
+| Lint all source             | `npm run lint`                             |
 | Build production output     | `npm run build`                            |
+| Validate the Worker bundle  | `npm run deploy:dry-run`                   |
 | Run the complete local gate | `mise run check`                           |
 | Refresh Pokémon data        | `npm run data:update`                      |
 | Export badge art            | `mise run badges:export`                   |
@@ -48,7 +54,7 @@ messages.
 
 ## Deployment
 
-Pull requests and pushes run `.github/workflows/ci.yml`. A push to `main`
+Pull requests and pushes to `main` run `.github/workflows/ci.yml`. A push to `main`
 deploys to Cloudflare Workers only after the checks pass. The workflow builds
 `dist/`, then Wrangler uploads the Worker and its static assets.
 
@@ -56,8 +62,10 @@ deploys to Cloudflare Workers only after the checks pass. The workflow builds
 dataset, the `DAILY_REMINDERS` Durable Object, and the required
 `VAPID_PRIVATE_KEY`. Production credentials live in GitHub's `production`
 environment as `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and
-`VAPID_PRIVATE_KEY`. Never commit their values. `mise run deploy` is the manual
-equivalent for an authenticated environment.
+`VAPID_PRIVATE_KEY`. CI writes the VAPID secret to a temporary runner file and
+passes it to Wrangler with `--secrets-file`. Never commit secret values or
+secret files. `mise run deploy` requires Wrangler authentication and an
+existing `VAPID_PRIVATE_KEY` binding; CI is the production deployment path.
 
 ## Generated and durable files
 
@@ -68,4 +76,7 @@ equivalent for an authenticated environment.
 - Keep browser behavior independent of live PokéAPI requests. The shipped
   catalog is the gameplay data source; the Worker proxies supported sprite
   assets separately.
+- `npm run dev` proxies sprite requests only. It does not emulate the Worker
+  APIs; verify Worker changes with `tests/worker.test.ts` and
+  `npm run deploy:dry-run`.
 - Preserve unrelated working-tree changes and stage task files explicitly.
