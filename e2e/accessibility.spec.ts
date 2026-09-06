@@ -108,6 +108,8 @@ const expectControlsToContainTheirContent = async (
 };
 
 test('keeps the core experience accessible', async ({ page }) => {
+  // This walkthrough runs a full round and multiple full-page axe scans.
+  test.slow();
   await page.goto('/');
   await expect(
     page.getByRole('button', { name: /Play Daily Challenge/ }),
