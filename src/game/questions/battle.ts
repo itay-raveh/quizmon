@@ -34,9 +34,11 @@ const hasExactMatchup = (
   defenderTypes: readonly string[],
   multiplier: number,
 ): boolean =>
-  attackerTypes.some(
-    (type) => attackMultiplier(catalog, type, defenderTypes) === multiplier,
-  );
+  Math.max(
+    ...attackerTypes.map((type) =>
+      attackMultiplier(catalog, type, defenderTypes),
+    ),
+  ) === multiplier;
 
 export const buildMatchupQuestion: QuestionBuilder = (context) => {
   const attackTypes = Object.keys(context.catalog.typeRelations);
@@ -146,7 +148,7 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
           options,
           pokemonPrompt(
             target,
-            `Who has a ×${formatTypeMultiplier(multiplier)} type matchup against `,
+            `Whose strongest attack type has a ×${formatTypeMultiplier(multiplier)} matchup against `,
             '?',
           ),
           { kind: 'pixel-sprite', src: targetSprite },

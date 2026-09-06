@@ -24,6 +24,7 @@ import {
 } from '@/game/game';
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import { questionRegistry, questionTypes } from '@/game/questions/registry';
+import { buildCounterPickQuestion } from '@/game/questions/battle';
 import {
   pokemonOptions,
   pokemonSimilarity,
@@ -570,10 +571,12 @@ describe('question building', () => {
           expect(attackMultiplier(correct, defender.types)).toBe(multiplier);
         } else {
           expect(
-            catalog.pokemon[correct]!.types.some(
-              (type) => attackMultiplier(type, defender.types) === multiplier,
+            Math.max(
+              ...catalog.pokemon[correct]!.types.map((type) =>
+                attackMultiplier(type, defender.types),
+              ),
             ),
-          ).toBe(true);
+          ).toBe(multiplier);
         }
       }
     }
@@ -594,11 +597,55 @@ describe('question building', () => {
         : undefined;
     for (const option of question!.options) {
       const attacker = catalog.pokemon[option]!;
-      const hasMatchup = attacker.types.some(
-        (type) => attackMultiplier(type, defender.types) === multiplier,
+      const strongestMatchup = Math.max(
+        ...attacker.types.map((type) => attackMultiplier(type, defender.types)),
       );
-      expect(hasMatchup).toBe(option === correct);
+      expect(strongestMatchup === multiplier).toBe(option === correct);
     }
+  });
+
+  it('treats Venusaur as a ×4 attacker against Golem, never ×¼', () => {
+    const matchups: Record<string, number> = {
+      venusaur: 4,
+      exeggcute: 4,
+      arbok: 0.25,
+      jolteon: 0,
+      arcanine: 0.5,
+    };
+    const pool = ['golem', ...Object.keys(matchups)].map((name) => ({
+      name,
+      pokemon: catalog.pokemon[name]!,
+    }));
+    const observed = new Set<number>();
+    let venusaurCorrect = false;
+    for (let index = 0; index < 64; index += 1) {
+      const question = buildCounterPickQuestion({
+        catalog,
+        pool,
+        random: createSeededRandom(`golem-counter-${index}`),
+        used: new Set(Object.keys(matchups)),
+      });
+      if (
+        question?.pokemonName !== 'golem' ||
+        question.visual?.kind !== 'counter-pick'
+      )
+        continue;
+      const { multiplier } = question.visual;
+      const correct = question.answer.correctOptions[0];
+      observed.add(multiplier);
+      for (const option of question.options) {
+        expect(
+          matchups[option] === multiplier,
+          `${option} against Golem at ×${multiplier}`,
+        ).toBe(option === correct);
+      }
+      if (correct === 'venusaur') {
+        venusaurCorrect = true;
+        expect(multiplier).toBe(4);
+      }
+    }
+    expect(observed).toEqual(new Set([4, 0.5, 0.25]));
+    expect(venusaurCorrect).toBe(true);
   });
 
   it('builds Evolution Shift from a real typing change', () => {
