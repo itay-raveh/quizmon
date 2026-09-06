@@ -2,6 +2,10 @@ import type { QuestionCategory, QuestionData, QuestionType } from '../types';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
 import {
+  buildTypeTwinsQuestion,
+  buildLegendHuntQuestion,
+} from './twins-and-legends';
+import {
   buildEvolutionLinkQuestion,
   buildGenerationRoundupQuestion,
 } from './lineage';
@@ -107,6 +111,20 @@ export const questionRegistry = {
     description: 'Select every Pokémon with the named type.',
     group: 'knowledge',
     label: 'Type roundup',
+  },
+  'type-twins': {
+    build: buildTypeTwinsQuestion,
+    category: 'type',
+    description: 'Match both types of a dual-type Pokémon.',
+    group: 'knowledge',
+    label: 'Type twins',
+  },
+  'legend-hunt': {
+    build: buildLegendHuntQuestion,
+    category: 'identity',
+    description: 'Select every Legendary or Mythical Pokémon.',
+    group: 'knowledge',
+    label: 'Legend hunt',
   },
   'generation-roundup': {
     build: buildGenerationRoundupQuestion,

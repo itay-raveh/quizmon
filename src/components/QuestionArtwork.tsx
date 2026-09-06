@@ -108,6 +108,24 @@ export const QuestionArtwork = ({
     );
   }
 
+  if (question.visual?.kind === 'type-twins' && pixelSprite) {
+    return (
+      <div
+        className="question-visual question-visual--stack"
+        aria-hidden="true"
+      >
+        <p className="question-visual__prompt">
+          Which Pokémon has the same two types as{' '}
+          <strong>{formatPokemonName(question.pokemonName)}</strong>?
+        </p>
+        <div className="question-visual__subject">
+          <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
+          <SubjectTypes answered={answered} types={question.pokemonTypes} />
+        </div>
+      </div>
+    );
+  }
+
   if (question.visual?.kind === 'evolution-link') {
     return (
       <div className="question-visual question-visual--stack">

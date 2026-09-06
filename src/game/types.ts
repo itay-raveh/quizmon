@@ -32,7 +32,9 @@ export type QuestionType =
   | 'stat-showdown'
   | 'type-check'
   | 'type-matchup'
-  | 'type-roundup';
+  | 'type-roundup'
+  | 'type-twins'
+  | 'legend-hunt';
 export const questionCategories = [
   'ability',
   'champion',
@@ -78,6 +80,8 @@ export interface PokemonKnowledge {
   genus: string;
   id: number;
   identitySprites: PokemonIdentitySprites;
+  isLegendary: boolean;
+  isMythical: boolean;
   levelMoves: string[];
   shape: string;
   shinySprite: string | null;
@@ -139,6 +143,7 @@ export interface PokemonSearchOption {
 type QuestionVisual =
   | { kind: 'evolution-link'; before: string; after: string }
   | { kind: 'type-check' }
+  | { kind: 'type-twins' }
   | { kind: 'type-roundup'; type: string }
   | {
       evolution: PokemonOptionVisual & { name: string };
@@ -180,6 +185,7 @@ export interface QuestionData {
   media: QuestionMedia;
   options: string[];
   optionDexNumbers?: Record<string, number>;
+  optionClassifications?: Record<string, 'Legendary' | 'Mythical' | 'Neither'>;
   optionGenerations?: Record<string, Generation>;
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;

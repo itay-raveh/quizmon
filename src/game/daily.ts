@@ -11,7 +11,7 @@ import {
 import { coreQuestionTypes } from './questions/registry';
 import { createSeededRandom } from './random';
 
-const DAILY_CHALLENGE_VERSION = 10;
+const DAILY_CHALLENGE_VERSION = 11;
 const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;

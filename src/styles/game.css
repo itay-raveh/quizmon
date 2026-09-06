@@ -105,10 +105,12 @@
   overflow-wrap: anywhere;
 }
 
+.answer__classification,
 .answer__generation {
   font-size: 0.85em;
 }
 
+.answer__classification--reserved,
 .answer__generation--reserved {
   visibility: hidden;
 }

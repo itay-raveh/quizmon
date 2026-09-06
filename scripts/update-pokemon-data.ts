@@ -279,6 +279,8 @@ export const buildPokemonCatalog = async (
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
       id: entry.id,
       identitySprites: getIdentitySprites(entry),
+      isLegendary: species.is_legendary,
+      isMythical: species.is_mythical,
       levelMoves: getLevelMoves(entry),
       shape: species.shape.name,
       shinySprite: getShinySprite(entry),
@@ -291,7 +293,7 @@ export const buildPokemonCatalog = async (
   }
 
   return {
-    contentVersion: 12,
+    contentVersion: 13,
     pokemon: sortRecord(entries),
     typeRelations: sortRecord(typeRelations),
   };

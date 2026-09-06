@@ -31,6 +31,7 @@ import { useQuestionAnswer } from './useQuestionAnswer';
 const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
   'counter-pick',
   'type-check',
+  'type-twins',
   'type-matchup',
 ]);
 

@@ -36,7 +36,7 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
     name: 'Identity 4 / 4 selected',
   });
   const knowledgeGroup = dialog.getByRole('button', {
-    name: 'General knowledge 7 / 7 selected',
+    name: 'General knowledge 9 / 9 selected',
   });
   const battleGroup = dialog.getByRole('button', {
     name: 'Battle knowledge 5 / 5 selected',

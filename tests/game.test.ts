@@ -64,6 +64,8 @@ const makeKnowledge = (
       },
     ],
   },
+  isLegendary: false,
+  isMythical: false,
   levelMoves: [`move-${id}`],
   shape: 'quadruped',
   shinySprite: `/shiny/${id}.png`,
@@ -148,7 +150,7 @@ describe('normalizeModifiers', () => {
       questionTypes: coreQuestionTypes,
       trainingMode: 'league',
     });
-    expect(coreQuestionTypes).toHaveLength(13);
+    expect(coreQuestionTypes).toHaveLength(15);
     for (const advanced of ['ability-check', 'move-check', 'stat-showdown']) {
       expect(coreQuestionTypes).not.toContain(advanced);
     }

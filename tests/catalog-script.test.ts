@@ -31,6 +31,8 @@ const makeClient = (): CatalogClient => ({
       resources.map((resource) => ({
         name: resourceName(resource),
         color: { name: 'green' },
+        is_legendary: resourceName(resource) === 'species-1',
+        is_mythical: resourceName(resource) === 'species-2',
         evolution_chain: {
           url: `https://pokeapi.co/api/v2/evolution-chain/${resourceName(resource)}`,
         },
@@ -215,11 +217,21 @@ describe('catalog generation', () => {
           },
         ],
       },
+      isLegendary: true,
+      isMythical: false,
       levelMoves: ['tackle'],
       shape: 'quadruped',
       shinySprite: '/sprites/pokemon/shiny/1.png',
       sprite: '/sprites/pokemon/1.png',
       types: ['normal'],
+    });
+    expect(catalog.pokemon['species-2']).toMatchObject({
+      isLegendary: false,
+      isMythical: true,
+    });
+    expect(catalog.pokemon['species-3']).toMatchObject({
+      isLegendary: false,
+      isMythical: false,
     });
     expect(catalog.pokemon['species-9']?.generation).toBe('IX');
     expect(catalog.typeRelations.normal).toEqual({

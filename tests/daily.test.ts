@@ -34,33 +34,33 @@ describe('Daily Challenge', () => {
       })),
     ).toEqual([
       {
-        correctOptions: ['mareep'],
-        id: 'identity:mareep:0',
-        pokemonName: 'mareep',
-        title: 'Silhouette match',
+        correctOptions: ['moltres', 'charmeleon', 'infernape'],
+        id: 'type:moltres:0',
+        pokemonName: 'moltres',
+        title: 'Type roundup',
       },
       {
-        correctOptions: ['rock'],
-        id: 'type:onix:1',
-        pokemonName: 'onix',
-        title: 'Type check',
+        correctOptions: ['seadra'],
+        id: 'type:seadra:1',
+        pokemonName: 'seadra',
+        title: 'Odd one out',
       },
       {
-        correctOptions: ['fighting'],
-        id: 'matchup:tapu-lele:2',
-        pokemonName: 'tapu-lele',
-        title: 'Type matchup',
+        correctOptions: ['cosmog', 'necrozma', 'thundurus-incarnate'],
+        id: 'identity:cosmog:2',
+        pokemonName: 'cosmog',
+        title: 'Legend hunt',
       },
       {
-        correctOptions: ['vespiquen'],
-        id: 'identity:vespiquen:3',
-        pokemonName: 'vespiquen',
-        title: 'Pokédex scan',
+        correctOptions: ['happiny'],
+        id: 'identity:happiny:3',
+        pokemonName: 'happiny',
+        title: 'Shiny spotter',
       },
       {
-        correctOptions: ['skarmory'],
-        id: 'champion:skarmory:4',
-        pokemonName: 'skarmory',
+        correctOptions: ['toxtricity-amped'],
+        id: 'champion:toxtricity-amped:4',
+        pokemonName: 'toxtricity-amped',
         title: 'Champion question',
       },
     ]);
@@ -144,7 +144,7 @@ describe('Daily Challenge', () => {
         seen.add(type);
       }
     }
-    expect(seen.size).toBe(14);
+    expect(seen.size).toBe(16);
   });
 });
 

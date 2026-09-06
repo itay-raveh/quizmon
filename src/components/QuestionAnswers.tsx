@@ -15,6 +15,7 @@ const optionTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
   'counter-pick',
   'odd-one-out',
   'type-roundup',
+  'type-twins',
 ]);
 
 interface QuestionAnswersProps {
@@ -92,6 +93,11 @@ export const QuestionAnswers = ({
             : resultMarker === 'wrong'
               ? ' Wrong pick.'
               : '';
+        const classification = question.optionClassifications?.[option];
+        const classificationAnnouncement =
+          answered && classification
+            ? `. ${classification === 'Neither' ? 'Neither Legendary nor Mythical' : classification}.`
+            : '';
         const generation = question.optionGenerations?.[option];
         const generationAnnouncement =
           answered && generation ? `. Generation ${generation}.` : '';
@@ -121,7 +127,7 @@ export const QuestionAnswers = ({
             aria-label={
               concealed
                 ? `Silhouette ${index + 1}`
-                : `${formatPokemonName(option)}${typeAnnouncement}${generationAnnouncement}${statAnnouncement}${resultAnnouncement}`
+                : `${formatPokemonName(option)}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={String(index + 1)}
             aria-pressed={
@@ -169,6 +175,14 @@ export const QuestionAnswers = ({
                         className={`answer__types ${answered ? '' : 'answer__types--reserved'}`.trim()}
                         types={visual.types}
                       />
+                    ) : null}
+                    {classification ? (
+                      <span
+                        aria-hidden="true"
+                        className={`answer__classification ${answered ? '' : 'answer__classification--reserved'}`.trim()}
+                      >
+                        {classification}
+                      </span>
                     ) : null}
                     {generation ? (
                       <span
