@@ -28,12 +28,15 @@ export const Footer = () => {
               GitHub
             </a>
           </span>
+        </li>
+        <li className="site-footer__group">
           <span className="site-footer__credit">
             <a href="/about">How to play</a>
           </span>
           <span className="site-footer__credit">
             <a href="/privacy">Privacy</a>
-            <span aria-hidden="true">·</span>
+          </span>
+          <span className="site-footer__credit">
             <a href="/terms">Terms</a>
           </span>
         </li>
