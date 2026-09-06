@@ -16,6 +16,9 @@ const spriteProxy = {
 export default defineConfig({
   build: {
     assetsDir: 'assets/build',
+    rolldownOptions: {
+      input: ['index.html', 'privacy.html', 'terms.html'],
+    },
   },
   plugins: [
     react(),

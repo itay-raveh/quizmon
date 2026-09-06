@@ -41,7 +41,16 @@ const readPushPayload = (event: PushEvent): DailyPushPayload => {
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
-registerRoute(new NavigationRoute(createHandlerBoundToURL('/index.html')));
+registerRoute(
+  new NavigationRoute((options) => {
+    const legalPage = /^\/(privacy|terms)(?:\/|\.html)?$/.exec(
+      options.url.pathname,
+    )?.[1];
+    return createHandlerBoundToURL(
+      legalPage ? `/${legalPage}.html` : '/index.html',
+    )(options);
+  }),
+);
 
 registerRoute(
   ({ sameOrigin, url }) =>

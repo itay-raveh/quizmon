@@ -54,6 +54,12 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
   <url>
     <loc>${site.url}</loc>
   </url>
+  <url>
+    <loc>${absoluteSiteUrl('/privacy')}</loc>
+  </url>
+  <url>
+    <loc>${absoluteSiteUrl('/terms')}</loc>
+  </url>
 </urlset>
 `;
 

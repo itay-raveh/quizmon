@@ -1,5 +1,6 @@
 import type { HtmlTagDescriptor, Plugin } from 'vite';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
+import { renderLegalPage } from './legal-pages.ts';
 import {
   generatedAssets,
   llmsUrl,
@@ -82,7 +83,26 @@ export const siteMetadata = (): Plugin => ({
       });
     }
   },
-  transformIndexHtml(html) {
+  transformIndexHtml(html, context) {
+    const legalPage = renderLegalPage(context.path);
+    if (legalPage) {
+      return {
+        html: html.replace('<!-- legal-content -->', legalPage.html),
+        tags: [
+          {
+            tag: 'title',
+            children: `${legalPage.title} | ${site.name}`,
+            injectTo: 'head',
+          },
+          meta('name', 'description', `${legalPage.title} for ${site.name}.`),
+          {
+            tag: 'link',
+            attrs: { rel: 'canonical', href: absoluteSiteUrl(legalPage.path) },
+            injectTo: 'head',
+          },
+        ],
+      };
+    }
     return {
       html: html
         .replace('<html>', `<html lang="${site.language}">`)

@@ -33,9 +33,15 @@ The private VAPID key is stored as `VAPID_PRIVATE_KEY` in GitHub's `production` 
 
 Quizmon is available under the [MIT License](https://github.com/itay-raveh/quizmon/blob/main/LICENSE).
 
+The [Privacy](PRIVACY.md) and [Terms](TERMS.md) text is adapted from Automattic
+and licensed separately under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
 Wordmark was made with [TextStudio](https://www.textstudio.co).
 
-Card sparkle animation from [Julien Jorge](https://opengameart.org/content/sparkles).
+Card animation uses [Sparkles](https://opengameart.org/content/sparkles),
+© 2005-2013 Julien Jorge <julien.jorge@stuff-o-matic.com>, under
+[CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+The sprite sheet is unmodified and is not covered by Quizmon's MIT license.
 
 Sound effects from [Kenney](https://kenney.nl/assets/interface-sounds).
 
