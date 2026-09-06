@@ -60,7 +60,6 @@ const renderQuestion = (overrides: Partial<QuestionProps> = {}) =>
       onAnswer={vi.fn()}
       onFeedbackStart={() => 0}
       onNewGame={vi.fn()}
-      onOpenSettings={vi.fn()}
       question={question}
       timerDisplay="seconds"
       total={10}

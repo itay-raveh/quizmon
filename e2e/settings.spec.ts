@@ -1,7 +1,7 @@
 import type { Modifiers } from '../src/game/types';
 import { expect, test } from './fixtures';
 
-test('keeps grouped settings reachable throughout a game on a phone', async ({
+test('keeps grouped settings reachable outside active questions on a phone', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -125,21 +125,8 @@ test('keeps grouped settings reachable throughout a game on a phone', async ({
   await expect
     .poll(() => timer.getAttribute('aria-label'))
     .not.toBe('Elapsed time 00:00:00');
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('tab', { name: 'Experience' })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  const pausedAt = await timer.getAttribute('aria-label');
-  await page.waitForTimeout(1100);
-  await expect(timer).toHaveAttribute('aria-label', pausedAt!);
-  await dialog.getByRole('tab', { name: 'Training' }).click();
-  await expect(
-    dialog.getByText('Training changes apply to your next game.'),
-  ).toBeVisible();
-  await dialog.getByRole('button', { name: 'Cancel' }).click();
-  await expect.poll(() => timer.getAttribute('aria-label')).not.toBe(pausedAt);
+  await expect(page.getByRole('button', { name: 'Settings' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Leave game' }).click();
 
   await page.setViewportSize({ width: 320, height: 844 });
   await page.getByRole('button', { name: 'Settings' }).click();

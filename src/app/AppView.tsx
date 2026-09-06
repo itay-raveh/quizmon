@@ -160,7 +160,6 @@ const AppScreen = ({
         onAnswerRecorded={question.recordAnswer}
         onFeedbackStart={question.pauseTimer}
         onNewGame={navigation.requestLeave}
-        onOpenSettings={() => settings.open('experience')}
         question={currentQuestion}
         timerDisplay={session.modifiers.timerDisplay}
         total={session.questions.length}

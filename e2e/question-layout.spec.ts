@@ -50,7 +50,7 @@ const assertFits = async (page: Page) => {
     ),
   ).toBe(true);
   const clipped = await page
-    .locator('.answer__name, .question__instruction')
+    .locator('.answer__name, .question__instruction, .progress__label, .timer')
     .evaluateAll((elements) =>
       elements
         .filter((element) => {
@@ -94,6 +94,7 @@ for (const viewport of [
           questionTypes: [new URL(location.href).searchParams.get('auditType')],
           soundEnabled: false,
           speedrunMode: false,
+          timerDisplay: 'milliseconds',
           trainingMode: 'custom',
         }),
       );

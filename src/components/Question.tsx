@@ -26,7 +26,6 @@ import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionClues } from './QuestionClues';
 import { QuestionInstruction } from './QuestionInstruction';
-import { SettingsButton } from './SettingsButton';
 import { TypeBadges } from './TypeBadge';
 import { useQuestionAnswer } from './useQuestionAnswer';
 
@@ -49,7 +48,6 @@ interface QuestionProps {
   onAnswer: (answer: AnswerResult) => void;
   onFeedbackStart: () => number;
   onNewGame: () => void;
-  onOpenSettings: () => void;
   question: QuestionData;
   timerDisplay: TimerDisplay;
   total: number;
@@ -100,7 +98,6 @@ export const Question = ({
   onAnswer,
   onFeedbackStart,
   onNewGame,
-  onOpenSettings,
   question,
   timerDisplay,
   total,
@@ -199,7 +196,6 @@ export const Question = ({
         >
           {timerText}
         </span>
-        <SettingsButton disabled={answered} onClick={onOpenSettings} />
       </div>
 
       {isLeague ? <LeagueProgress currentQuestion={number} /> : null}
