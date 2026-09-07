@@ -58,11 +58,13 @@ const makeClient = (): CatalogClient => ({
             language: { name: 'en' },
           },
           {
-            flavor_text: `${resourceName(resource)} new\u00adest field notes.`,
+            flavor_text: `${resourceName(resource)}\tnew\u00adest\nfield\fnotes.`,
             language: { name: 'en' },
           },
+          { flavor_text: 'Ignored entry.', language: { name: 'EN' } },
+          { flavor_text: 'Ignored entry.', language: { name: 'ja' } },
         ],
-        genera: [{ genus: 'Test Pokémon', language: { name: 'en' } }],
+        genera: [{ genus: 'Test\nPokémon', language: { name: 'en' } }],
         shape: { name: 'quadruped' },
         varieties: [
           {

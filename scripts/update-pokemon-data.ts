@@ -78,19 +78,13 @@ export const createCatalogClient = (
 
 const cleanText = (value: string): string =>
   value
-    .replace(/[\n\f]/g, ' ')
     .replace(/\u00ad/g, '')
     .replace(/pokémon/giu, 'Pokémon')
     .replace(/\s+/g, ' ')
     .trim();
 
-const localized = <T extends { language: { name: string } }>(
-  values: readonly T[],
-): T | undefined => values.find(({ language }) => language.name === 'en');
-
-const latestLocalized = <T extends { language: { name: string } }>(
-  values: readonly T[],
-): T | undefined => values.findLast(({ language }) => language.name === 'en');
+const isEnglish = ({ language }: { language: { name: string } }): boolean =>
+  language.name === 'en';
 
 const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   const values = Object.fromEntries(
@@ -262,10 +256,9 @@ export const buildPokemonCatalog = async (
     if (!species || !generation) {
       throw new Error(`${entry.name} is missing species metadata`);
     }
-    const description = latestLocalized(
-      species.flavor_text_entries,
-    )?.flavor_text;
-    const genus = localized(species.genera)?.genus;
+    const description =
+      species.flavor_text_entries.findLast(isEnglish)?.flavor_text;
+    const genus = species.genera.find(isEnglish)?.genus;
     entries[entry.name] = {
       abilities: entry.abilities
         .sort((left, right) => left.slot - right.slot)
