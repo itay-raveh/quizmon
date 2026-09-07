@@ -161,3 +161,46 @@ test('restoring in one tab stops a stale round in another tab', async ({
   ).toBeNull();
   await other.close();
 });
+
+for (const browser of ['', '@cross-browser']) {
+  test(`keeps Daily playable after migrating historical results ${browser}`, async ({
+    page,
+  }) => {
+    const historical = {
+      answers: [{ category: 'identity', correct: true, points: 1000 }],
+      contentVersion: 1,
+      correctCount: 1,
+      elapsedSeconds: 12,
+      questionCount: 1,
+      score: 1000,
+    };
+    await page.addInitScript((result) => {
+      if (!localStorage.getItem('quizmon.player')) {
+        localStorage.setItem(
+          'quizmon.results.v2',
+          JSON.stringify({
+            daily: { '2026-09-01': result },
+          }),
+        );
+      }
+    }, historical);
+    await page.goto('/');
+    const daily = page.getByRole('button', { name: /^Play Daily Challenge/ });
+    await expect(daily).toBeEnabled();
+    await expect(page.getByText('Browser storage required')).toHaveCount(0);
+    await page.reload();
+    await expect(daily).toBeEnabled();
+    expect(
+      await page.evaluate(() => {
+        const save = JSON.parse(
+          localStorage.getItem('quizmon.player') ?? '{}',
+        ) as PlayerBackup['save'];
+        return save.data.results.daily['2026-09-01'];
+      }),
+    ).toEqual(historical);
+    await daily.click();
+    await expect(
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toBeVisible();
+  });
+}

@@ -207,25 +207,38 @@ export interface QuestionData {
 export type GameMode =
   { kind: 'training' } | { kind: 'daily'; date: string } | { kind: 'league' };
 
-export interface AnswerResult {
-  category: QuestionCategory;
-  cluesUsed: number;
+export interface SavedAnswerResult {
+  category: QuestionCategory | 'cry' | 'scale';
+  cluesUsed?: number;
   correct: boolean;
-  generation: Generation;
-  pokemonName: string;
+  generation?: Generation;
+  pokemonName?: string;
   points: number;
-  questionType: QuestionType | 'champion';
+  questionType?:
+    | QuestionType
+    | 'champion'
+    | 'battle-view'
+    | 'evolution-trail'
+    | 'evolution-order';
   responseMilliseconds?: number;
   speedBonus?: number;
 }
 
+export interface AnswerResult extends SavedAnswerResult {
+  category: QuestionCategory;
+  cluesUsed: number;
+  generation: Generation;
+  pokemonName: string;
+  questionType: QuestionType | 'champion';
+}
+
 export interface GameResult {
-  answers: AnswerResult[];
+  answers: SavedAnswerResult[];
   contentVersion: number;
   correctCount: number;
   elapsedMilliseconds?: number;
   elapsedSeconds: number;
   questionCount: number;
   score: number;
-  scoreVersion: number;
+  scoreVersion?: number;
 }

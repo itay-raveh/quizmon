@@ -9,6 +9,7 @@ import { readActiveGame, writeActiveGame } from '@/game/active-game';
 import { defaultModifiers } from '@/game/game';
 import { createTrainerProfile } from '@/game/profile-data';
 import {
+  canPersistPlayerData,
   PLAYER_STORAGE_KEY,
   readPlayerSave,
   subscribeToPlayerRestore,
@@ -368,4 +369,41 @@ it('does not bypass the Generation roundup settings requirement during restore',
   const before = localStorage.getItem(PLAYER_STORAGE_KEY);
   expect(() => restoreBackup(backup)).toThrow('fewer than two generations');
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
+});
+
+it.each([
+  { category: 'identity', correct: true, points: 1000 },
+  { category: 'cry', correct: false, points: 0 },
+  { category: 'scale', correct: true, points: 1000 },
+  {
+    category: 'evolution',
+    correct: true,
+    points: 1000,
+    questionType: 'evolution-trail',
+  },
+  { ...result.answers[0], pokemonName: undefined, questionType: 'battle-view' },
+])('migrates historical answers without inventing metadata (%#)', (answer) => {
+  populate();
+  const original = readPlayerSave().data;
+  const historical = { ...result, answers: [answer], scoreVersion: undefined };
+  const results = { ...original.results, daily: { '2026-09-07': historical } };
+  localStorage.clear();
+  localStorage.setItem('quizmon.results.v2', JSON.stringify(results));
+  localStorage.setItem(
+    'quizmon.trainer-profile.v1',
+    JSON.stringify(original.profile),
+  );
+  const migrated = readPlayerSave();
+  expect(migrated.data.results).toEqual(results);
+  expect(migrated.data.profile).toEqual(original.profile);
+  expect(canPersistPlayerData()).toBe(true);
+  expect(
+    saveResult({ kind: 'daily', date: '2026-09-08' }, result).isSaved,
+  ).toBe(true);
+  const backup = parseBackup(JSON.stringify(createBackup()));
+  restoreBackup(backup);
+  expect(readDailyResult('2026-09-07')).toEqual(historical);
+  expect(readPlayerSave().data.results.progress.correctPokemon).toEqual(
+    original.results.progress.correctPokemon,
+  );
 });

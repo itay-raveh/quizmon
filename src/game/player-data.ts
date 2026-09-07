@@ -56,7 +56,7 @@ const isResult = (value: unknown): value is GameResult => {
     !isRecord(value) ||
     !Array.isArray(value.answers) ||
     !isCount(value.contentVersion) ||
-    !isCount(value.scoreVersion) ||
+    (value.scoreVersion !== undefined && !isCount(value.scoreVersion)) ||
     !isCount(value.correctCount) ||
     !isCount(value.questionCount) ||
     value.questionCount < 1 ||
@@ -71,13 +71,21 @@ const isResult = (value: unknown): value is GameResult => {
   return value.answers.every(
     (answer: unknown) =>
       isRecord(answer) &&
-      isChoice(answer.category, questionCategories) &&
-      isCount(answer.cluesUsed) &&
+      isChoice(answer.category, [...questionCategories, 'cry', 'scale']) &&
+      (answer.cluesUsed === undefined || isCount(answer.cluesUsed)) &&
       typeof answer.correct === 'boolean' &&
-      isChoice(answer.generation, generations) &&
-      isName(answer.pokemonName) &&
+      (answer.generation === undefined ||
+        isChoice(answer.generation, generations)) &&
+      (answer.pokemonName === undefined || isName(answer.pokemonName)) &&
       isCount(answer.points) &&
-      isChoice(answer.questionType, [...questionTypes, 'champion']) &&
+      (answer.questionType === undefined ||
+        isChoice(answer.questionType, [
+          ...questionTypes,
+          'champion',
+          'battle-view',
+          'evolution-trail',
+          'evolution-order',
+        ])) &&
       (answer.responseMilliseconds === undefined ||
         isFiniteNonnegative(answer.responseMilliseconds)) &&
       (answer.speedBonus === undefined || isCount(answer.speedBonus)),

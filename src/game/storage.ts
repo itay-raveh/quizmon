@@ -1,3 +1,4 @@
+import { questionTypes } from './questions/registry';
 import {
   readPlayerData,
   updatePlayerData,
@@ -13,6 +14,7 @@ import { getLocalDate } from './daily';
 import { isLeagueVictory } from './league';
 import { createRoundSeed } from './random';
 import {
+  questionCategories,
   type GameMode,
   type GameResult,
   type Generation,
@@ -48,16 +50,24 @@ const addResultToProgress = (
   for (const answer of result.answers) {
     if (!answer.correct) continue;
 
-    correctCategories[answer.category] =
-      (correctCategories[answer.category] ?? 0) + 1;
-    correctPokemon.add(answer.pokemonName);
-    correctGenerations[answer.generation] =
-      (correctGenerations[answer.generation] ?? 0) + 1;
+    if (questionCategories.includes(answer.category as QuestionCategory)) {
+      const category = answer.category as QuestionCategory;
+      correctCategories[category] = (correctCategories[category] ?? 0) + 1;
+    }
+    if (answer.pokemonName) correctPokemon.add(answer.pokemonName);
+    if (answer.generation) {
+      correctGenerations[answer.generation] =
+        (correctGenerations[answer.generation] ?? 0) + 1;
+    }
     if (answer.questionType === 'champion') {
       championAnswersWithoutClues += Number(answer.cluesUsed === 0);
-    } else {
-      correctQuestionTypes[answer.questionType] =
-        (correctQuestionTypes[answer.questionType] ?? 0) + 1;
+    } else if (
+      answer.questionType &&
+      questionTypes.includes(answer.questionType as QuestionType)
+    ) {
+      const questionType = answer.questionType as QuestionType;
+      correctQuestionTypes[questionType] =
+        (correctQuestionTypes[questionType] ?? 0) + 1;
     }
   }
 

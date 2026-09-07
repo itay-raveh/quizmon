@@ -1,7 +1,7 @@
 import {
   generations,
   type AnswerFlow,
-  type AnswerResult,
+  type SavedAnswerResult,
   type Generation,
   type Modifiers,
   type PokemonCatalog,
@@ -213,8 +213,9 @@ export const getAnswerPoints = (
   return [1_000, 750, 500, 250][Math.max(0, Math.min(3, assistsUsed))] ?? 250;
 };
 
-export const getKnowledgePoints = (answers: readonly AnswerResult[]): number =>
-  answers.reduce((total, answer) => total + answer.points, 0);
+export const getKnowledgePoints = (
+  answers: readonly SavedAnswerResult[],
+): number => answers.reduce((total, answer) => total + answer.points, 0);
 
 const speedBonusRate = 3;
 const speedBonusHalfLifeMilliseconds = 5_000;
@@ -232,10 +233,12 @@ export const getSpeedBonusPoints = (
   return Math.round(bonus / 10) * 10;
 };
 
-export const getSpeedBonus = (answers: readonly AnswerResult[]): number =>
+export const getSpeedBonus = (answers: readonly SavedAnswerResult[]): number =>
   answers.reduce((total, answer) => total + (answer.speedBonus ?? 0), 0);
 
-export const getMasteryBonus = (answers: readonly AnswerResult[]): number => {
+export const getMasteryBonus = (
+  answers: readonly SavedAnswerResult[],
+): number => {
   if (answers.length === 0) return 0;
   const knowledgePoints = getKnowledgePoints(answers);
   return Math.round(
@@ -245,13 +248,19 @@ export const getMasteryBonus = (answers: readonly AnswerResult[]): number => {
 
 export const SCORE_VERSION = 2;
 
-export const calculateScore = (answers: readonly AnswerResult[]): number =>
+export const calculateScore = (answers: readonly SavedAnswerResult[]): number =>
   getKnowledgePoints(answers) +
   getSpeedBonus(answers) +
   getMasteryBonus(answers);
 
-export const getCategoryLabel = (category: QuestionCategory): string =>
-  categoryLabels[category];
+export const getCategoryLabel = (
+  category: SavedAnswerResult['category'],
+): string =>
+  category === 'cry'
+    ? 'Pokémon cry'
+    : category === 'scale'
+      ? 'Scale comparison'
+      : categoryLabels[category];
 
 export const getQuestionTypeLabel = (questionType: QuestionType): string =>
   questionRegistry[questionType].label;
@@ -283,11 +292,11 @@ export const getQuestionPromptText = (prompt: QuestionPrompt): string =>
     : `${prompt.before}${formatPokemonName(prompt.name)}${prompt.after}`;
 
 export const getResponseTimeSeconds = (
-  answers: readonly AnswerResult[],
+  answers: readonly SavedAnswerResult[],
 ): number => Math.floor(getResponseTimeMilliseconds(answers) / 1_000);
 
 export const getResponseTimeMilliseconds = (
-  answers: readonly AnswerResult[],
+  answers: readonly SavedAnswerResult[],
 ): number =>
   answers.reduce(
     (total, answer) => total + (answer.responseMilliseconds ?? 0),
