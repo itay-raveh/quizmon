@@ -1,4 +1,4 @@
-import { getLocalDate, parseDailyDate } from './daily';
+import { getLocalDate, isDailyDate } from './daily';
 import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
 import { isRecord } from './validation';
 
@@ -29,8 +29,7 @@ export const normalizeTrainerProfile = (
   const profile = value as Partial<TrainerProfile>;
   if (
     profile.version !== TRAINER_PROFILE_VERSION ||
-    typeof profile.createdAt !== 'string' ||
-    parseDailyDate(`?daily=${profile.createdAt}`) !== profile.createdAt ||
+    !isDailyDate(profile.createdAt) ||
     typeof profile.hasBeenRevealed !== 'boolean' ||
     typeof profile.name !== 'string' ||
     (profile.partnerPokemon !== null &&

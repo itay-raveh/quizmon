@@ -32,15 +32,19 @@ export const getLocalDate = (date = new Date()): string =>
     .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
     .join('-');
 
-export const parseDailyDate = (search: string): string | null => {
-  const value = new URLSearchParams(search).get('daily');
-  if (!value || !DATE_PATTERN.test(value)) return null;
+export const isDailyDate = (value: unknown): value is string => {
+  if (typeof value !== 'string' || !DATE_PATTERN.test(value)) return false;
 
   const parsed = new Date(`${value}T00:00:00.000Z`);
-  return Number.isNaN(parsed.valueOf()) ||
-    parsed.toISOString().slice(0, 10) !== value
-    ? null
-    : value;
+  return (
+    !Number.isNaN(parsed.valueOf()) &&
+    parsed.toISOString().slice(0, 10) === value
+  );
+};
+
+export const parseDailyDate = (search: string): string | null => {
+  const value = new URLSearchParams(search).get('daily');
+  return isDailyDate(value) ? value : null;
 };
 
 export const shouldAutoStartDaily = (search: string): boolean =>

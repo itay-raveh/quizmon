@@ -1,4 +1,4 @@
-import { parseDailyDate } from './daily';
+import { isDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import {
   generations,
@@ -95,12 +95,7 @@ const normalizeStreak = (
   return {
     creditedDates: [
       ...new Set(
-        creditedDates.filter(
-          (date) =>
-            typeof date === 'string' &&
-            parseDailyDate(`?daily=${date}`) === date &&
-            daily[date],
-        ),
+        creditedDates.filter((date) => isDailyDate(date) && daily[date]),
       ),
     ].sort(),
     version: STREAK_VERSION,

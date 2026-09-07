@@ -5,6 +5,7 @@ import {
   getDailyModifiers,
   getDailyQuestionTypes,
   getLocalDate,
+  isDailyDate,
   parseDailyDate,
   shouldAutoStartDaily,
 } from '@/game/daily';
@@ -154,6 +155,43 @@ describe('daily dates', () => {
     expect(parseDailyDate('?daily=2024-02-29')).toBe('2024-02-29');
     expect(parseDailyDate('?daily=2026-02-29')).toBeNull();
     expect(parseDailyDate('?daily=September-1')).toBeNull();
+  });
+
+  it.each([
+    ['?daily=2000-02-29', '2000-02-29'],
+    ['?daily=1900-02-29', null],
+    ['?daily=2026-04-31', null],
+    ['?daily=2026-00-01', null],
+    ['?daily=2026-01-00', null],
+    ['?daily=0000-01-01', '0000-01-01'],
+    ['?daily=9999-12-31', '9999-12-31'],
+    ['?daily=2026-9-01', null],
+    ['?daily=2026-09-01T00:00:00.000Z', null],
+    ['?daily=%32%30%32%36-09-01', '2026-09-01'],
+    ['?daily=2026-09-01&daily=2026-09-02', '2026-09-01'],
+    ['?daily=&daily=2026-09-01', null],
+    ['?daily=2026-09-01+', null],
+    ['?daily=2026-09-01%0A', null],
+    ['', null],
+  ])('parses %s as %s', (search, expected) => {
+    expect(parseDailyDate(search)).toBe(expected);
+  });
+
+  it('validates stored dates without query decoding or type coercion', () => {
+    expect(isDailyDate('2024-02-29')).toBe(true);
+    for (const value of [
+      null,
+      undefined,
+      20260901,
+      {},
+      '2026-02-29',
+      '%32%30%32%36-09-01',
+      '2026-09-01&daily=2026-09-02',
+      '2026-09-01+',
+      '2026-09-01\n',
+    ]) {
+      expect(isDailyDate(value)).toBe(false);
+    }
   });
 
   it('only auto-starts an explicitly playable, valid daily link', () => {

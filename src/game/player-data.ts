@@ -1,7 +1,7 @@
 import type { LeagueVictoryRecord } from './hall-of-fame';
 import { isLeagueVictory } from './league';
 import { normalizeModifiers } from './game';
-import { parseDailyDate } from './daily';
+import { isDailyDate } from './daily';
 import { normalizeTrainerProfile, type TrainerProfile } from './profile-data';
 import { questionTypes } from './questions/registry';
 import { normalizeResults, type SavedResults } from './results-data';
@@ -48,9 +48,6 @@ export const emptyPlayerData = (): PlayerData => ({
 
 const isCount = (value: unknown): value is number =>
   isFiniteNonnegative(value) && Number.isSafeInteger(value);
-
-const isDate = (value: string): boolean =>
-  parseDailyDate(`?daily=${value}`) === value;
 
 const isName = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0 && value.length <= 200;
@@ -132,7 +129,7 @@ const isResults = (value: unknown): value is SavedResults => {
   const { daily, training, progress, streak, league } = value;
   return (
     Object.entries(daily).every(
-      ([date, result]) => isDate(date) && isResult(result),
+      ([date, result]) => isDailyDate(date) && isResult(result),
     ) &&
     Object.entries(training).every(
       ([key, result]) => ['league', 'custom'].includes(key) && isResult(result),
@@ -142,8 +139,7 @@ const isResults = (value: unknown): value is SavedResults => {
     streak.version === 1 &&
     Array.isArray(streak.creditedDates) &&
     streak.creditedDates.every(
-      (date: unknown) =>
-        typeof date === 'string' && isDate(date) && Object.hasOwn(daily, date),
+      (date: unknown) => isDailyDate(date) && Object.hasOwn(daily, date),
     ) &&
     progress.version === 2 &&
     isCount(progress.championAnswersWithoutClues) &&

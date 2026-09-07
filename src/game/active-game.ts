@@ -5,7 +5,7 @@ import {
   writeStoredJson,
 } from './browser-storage';
 import { normalizeModifiers } from './game';
-import { parseDailyDate } from './daily';
+import { isDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import type { AnswerResult, GameMode, Modifiers } from './types';
 import { generations, questionCategories } from './types';
@@ -29,11 +29,7 @@ const parseMode = (value: unknown): GameMode | null => {
   if (!isRecord(value)) return null;
   if (value.kind === 'training') return { kind: 'training' };
   if (value.kind === 'league') return { kind: 'league' };
-  if (
-    value.kind === 'daily' &&
-    typeof value.date === 'string' &&
-    parseDailyDate(`?daily=${value.date}`) === value.date
-  ) {
+  if (value.kind === 'daily' && isDailyDate(value.date)) {
     return { kind: 'daily', date: value.date };
   }
   return null;
