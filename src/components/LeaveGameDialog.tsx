@@ -10,12 +10,7 @@ export const LeaveGameDialog = ({
   onCancel,
   onConfirm,
 }: LeaveGameDialogProps) => {
-  const dialog = useModalDialog();
-
-  const cancel = () => {
-    dialog.current?.close();
-    onCancel();
-  };
+  const { dialog, dialogProps, closeDialog: cancel } = useModalDialog(onCancel);
 
   const confirm = () => {
     dialog.current?.close();
@@ -24,14 +19,10 @@ export const LeaveGameDialog = ({
 
   return (
     <dialog
-      ref={dialog}
+      {...dialogProps}
       aria-describedby="leave-game-description"
       aria-labelledby="leave-game-title"
       className="leave-game-dialog"
-      onCancel={(event) => {
-        event.preventDefault();
-        cancel();
-      }}
     >
       <div className="leave-game-dialog__body">
         <h2 id="leave-game-title">Leave this game?</h2>

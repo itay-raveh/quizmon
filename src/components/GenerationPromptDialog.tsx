@@ -40,23 +40,14 @@ export const GenerationPromptDialog = ({
   onChooseAll,
   onChooseGenOne,
 }: GenerationPromptDialogProps) => {
-  const dialog = useModalDialog();
-
-  const cancel = () => {
-    dialog.current?.close();
-    onCancel();
-  };
+  const { dialogProps, closeDialog: cancel } = useModalDialog(onCancel);
 
   return (
     <dialog
-      ref={dialog}
+      {...dialogProps}
       aria-describedby="generation-prompt-description generation-prompt-note"
       aria-labelledby="generation-prompt-title"
       className="generation-prompt"
-      onCancel={(event) => {
-        event.preventDefault();
-        cancel();
-      }}
     >
       <header className="generation-prompt__header">
         <h2 id="generation-prompt-title">Which Pokémon do you know?</h2>

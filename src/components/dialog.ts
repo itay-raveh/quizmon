@@ -1,6 +1,12 @@
-import { useEffect, useRef, type PointerEvent, type RefObject } from 'react';
+import {
+  useEffect,
+  useRef,
+  type PointerEvent,
+  type RefObject,
+  type SyntheticEvent,
+} from 'react';
 
-export const isDialogBackdropPointerDown = (
+const isDialogBackdropPointerDown = (
   event: PointerEvent<HTMLDialogElement>,
 ): boolean => {
   const bounds = event.currentTarget.getBoundingClientRect();
@@ -13,7 +19,14 @@ export const isDialogBackdropPointerDown = (
 };
 
 export const useModalDialog = (
-  initialFocus?: RefObject<HTMLElement | null>,
+  onDismiss: () => void,
+  {
+    initialFocus,
+    dismissOnBackdrop = false,
+  }: {
+    initialFocus?: RefObject<HTMLElement | null>;
+    dismissOnBackdrop?: boolean;
+  } = {},
 ) => {
   const dialog = useRef<HTMLDialogElement>(null);
 
@@ -26,5 +39,25 @@ export const useModalDialog = (
     };
   }, [initialFocus]);
 
-  return dialog;
+  const closeDialog = () => {
+    dialog.current?.close();
+    onDismiss();
+  };
+
+  return {
+    dialog,
+    closeDialog,
+    dialogProps: {
+      ref: dialog,
+      onCancel: (event: SyntheticEvent<HTMLDialogElement>) => {
+        event.preventDefault();
+        closeDialog();
+      },
+      onPointerDown: dismissOnBackdrop
+        ? (event: PointerEvent<HTMLDialogElement>) => {
+            if (isDialogBackdropPointerDown(event)) closeDialog();
+          }
+        : undefined,
+    },
+  };
 };

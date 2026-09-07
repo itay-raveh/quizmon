@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 import { BackupSettings } from './BackupSettings';
 import { DialogCloseButton } from './DialogCloseButton';
-import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
+import { useModalDialog } from './dialog';
 import { ExperienceSettings } from './ExperienceSettings';
 import { GameButton } from './GameButton';
 import { SoundButton } from './SoundButton';
@@ -42,7 +42,10 @@ export const ModifiersDialog = ({
   const [draft, setDraft] = useState<Modifiers>(modifiers);
   const [submitted, setSubmitted] = useState(false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
-  const dialog = useModalDialog(dialogTitle);
+  const { dialog, dialogProps, closeDialog } = useModalDialog(onClose, {
+    initialFocus: dialogTitle,
+    dismissOnBackdrop: true,
+  });
   const generationsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Record<SettingsTab, HTMLButtonElement | null>>({
@@ -55,11 +58,6 @@ export const ModifiersDialog = ({
     () => getTrainingSettingsValidation(catalog, draft),
     [catalog, draft],
   );
-
-  const closeDialog = () => {
-    dialog.current?.close();
-    onClose();
-  };
 
   const selectTab = (tab: SettingsTab, moveFocus = false) => {
     setActiveTab(tab);
@@ -97,16 +95,9 @@ export const ModifiersDialog = ({
 
   return (
     <dialog
-      ref={dialog}
+      {...dialogProps}
       className="modifiers-dialog"
       aria-labelledby="modifiers-title"
-      onCancel={(event) => {
-        event.preventDefault();
-        closeDialog();
-      }}
-      onPointerDown={(event) => {
-        if (isDialogBackdropPointerDown(event)) closeDialog();
-      }}
     >
       <header className="modifiers-dialog__header">
         <h2 id="modifiers-title" ref={dialogTitle} tabIndex={-1}>

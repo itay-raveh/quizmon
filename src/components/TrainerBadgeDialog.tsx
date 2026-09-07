@@ -1,6 +1,6 @@
 import type { TrainerBadge } from '@/game/trainer';
 import { DialogCloseButton } from './DialogCloseButton';
-import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
+import { useModalDialog } from './dialog';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 
 interface TrainerBadgeDialogProps {
@@ -12,26 +12,16 @@ export const TrainerBadgeDialog = ({
   badge,
   onClose,
 }: TrainerBadgeDialogProps) => {
-  const dialog = useModalDialog();
+  const { dialogProps, closeDialog } = useModalDialog(onClose, {
+    dismissOnBackdrop: true,
+  });
   const progress = Math.min(badge.current, badge.goal);
-
-  const closeDialog = () => {
-    dialog.current?.close();
-    onClose();
-  };
 
   return (
     <dialog
-      ref={dialog}
+      {...dialogProps}
       aria-labelledby="trainer-badge-title"
       className="trainer-badge-dialog"
-      onCancel={(event) => {
-        event.preventDefault();
-        closeDialog();
-      }}
-      onPointerDown={(event) => {
-        if (isDialogBackdropPointerDown(event)) closeDialog();
-      }}
     >
       <header>
         <h2 id="trainer-badge-title">{badge.label}</h2>

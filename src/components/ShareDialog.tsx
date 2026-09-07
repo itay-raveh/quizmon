@@ -16,7 +16,7 @@ import { buildShareContent, copyResult } from '@/game/share';
 import type { GameMode, GameResult } from '@/game/types';
 import { DialogCloseButton } from './DialogCloseButton';
 import { GameButton } from './GameButton';
-import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
+import { useModalDialog } from './dialog';
 
 interface ShareDialogProps {
   mode: GameMode;
@@ -34,16 +34,13 @@ const iconProps = {
 
 export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
   const [copyStatus, setCopyStatus] = useState('');
-  const dialog = useModalDialog();
+  const { dialogProps, closeDialog } = useModalDialog(onClose, {
+    dismissOnBackdrop: true,
+  });
   const playInteractionSound = useInteractionSound();
   const content = buildShareContent(mode, result);
   const message = `${content.title}\n${content.text}`;
   const playTap = () => playInteractionSound('tap');
-
-  const closeDialog = () => {
-    dialog.current?.close();
-    onClose();
-  };
 
   const copy = async () => {
     try {
@@ -56,16 +53,9 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
 
   return (
     <dialog
-      ref={dialog}
+      {...dialogProps}
       className="share-dialog"
       aria-labelledby="share-title"
-      onCancel={(event) => {
-        event.preventDefault();
-        closeDialog();
-      }}
-      onPointerDown={(event) => {
-        if (isDialogBackdropPointerDown(event)) closeDialog();
-      }}
     >
       <header className="share-dialog__header">
         <h2 id="share-title">Share result</h2>

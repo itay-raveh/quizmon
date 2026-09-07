@@ -1,7 +1,7 @@
 import type { TrainerTitle } from '@/game/trainer';
 import { DialogCloseButton } from './DialogCloseButton';
 import { GameButton } from './GameButton';
-import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
+import { useModalDialog } from './dialog';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitleDialogProps {
@@ -17,26 +17,16 @@ export const TrainerTitleDialog = ({
   onUnequip,
   title,
 }: TrainerTitleDialogProps) => {
-  const dialog = useModalDialog();
+  const { dialogProps, closeDialog } = useModalDialog(onClose, {
+    dismissOnBackdrop: true,
+  });
   const progress = Math.min(title.current, title.goal);
-
-  const closeDialog = () => {
-    dialog.current?.close();
-    onClose();
-  };
 
   return (
     <dialog
-      ref={dialog}
+      {...dialogProps}
       aria-labelledby="trainer-title-dialog-heading"
       className="trainer-title-dialog"
-      onCancel={(event) => {
-        event.preventDefault();
-        closeDialog();
-      }}
-      onPointerDown={(event) => {
-        if (isDialogBackdropPointerDown(event)) closeDialog();
-      }}
     >
       <header>
         <h2 id="trainer-title-dialog-heading">{title.label}</h2>

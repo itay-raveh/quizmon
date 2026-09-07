@@ -212,3 +212,15 @@ for (const repair of ['add generation', 'remove roundup'] as const) {
     );
   });
 }
+
+test('dismisses settings from the backdrop but keeps inside clicks open', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  await dialog.getByRole('heading', { name: 'Settings' }).click();
+  await expect(dialog).toBeVisible();
+  await page.mouse.click(1, 1);
+  await expect(dialog).toBeHidden();
+});

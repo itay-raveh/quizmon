@@ -352,6 +352,9 @@ test('confirms before discarding an in-progress game', async ({ page }) => {
     confirmation.getByRole('button', { name: 'Keep playing' }),
   ).toBeFocused();
 
+  await page.mouse.click(1, 1);
+  await expect(confirmation).toBeVisible();
+
   const timer = page.locator('.timer');
   const pausedAt = await timer.getAttribute('aria-label');
   await page.waitForTimeout(500);
