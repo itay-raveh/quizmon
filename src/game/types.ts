@@ -233,19 +233,22 @@ export interface QuestionData {
 export type GameMode =
   { kind: 'training' } | { kind: 'daily'; date: string } | { kind: 'league' };
 
+export const legacyQuestionCategories = ['cry', 'scale'] as const;
+export const legacyQuestionTypes = [
+  'battle-view',
+  'evolution-trail',
+  'evolution-order',
+] as const;
+
 export interface SavedAnswerResult {
-  category: QuestionCategory | 'cry' | 'scale';
+  category: QuestionCategory | (typeof legacyQuestionCategories)[number];
   cluesUsed?: number;
   correct: boolean;
   generation?: Generation;
   pokemonName?: string;
   points: number;
   questionType?:
-    | QuestionType
-    | 'champion'
-    | 'battle-view'
-    | 'evolution-trail'
-    | 'evolution-order';
+    QuestionType | 'champion' | (typeof legacyQuestionTypes)[number];
   responseMilliseconds?: number;
   speedBonus?: number;
 }

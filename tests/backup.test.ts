@@ -422,6 +422,7 @@ it.each([
     questionType: 'evolution-trail',
   },
   { ...result.answers[0], pokemonName: undefined, questionType: 'battle-view' },
+  { ...result.answers[0], questionType: 'evolution-order' },
 ])('migrates historical answers without inventing metadata (%#)', (answer) => {
   populate();
   const original = readPlayerSave().data;

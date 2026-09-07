@@ -11,10 +11,17 @@ import {
   timerDisplays,
   trainingModes,
   questionCategories,
+  legacyQuestionCategories,
+  legacyQuestionTypes,
   type GameResult,
   type Modifiers,
 } from './types';
-import { isChoice, isFiniteNonnegative, isRecord } from './validation';
+import {
+  isChoice,
+  isFiniteNonnegative,
+  isRecord,
+  isUtcTimestamp,
+} from './validation';
 
 interface PlayerDataV1 {
   generationPromptAnswered: boolean;
@@ -81,7 +88,10 @@ const isResult = (value: unknown): value is GameResult => {
   return value.answers.every(
     (answer: unknown) =>
       isRecord(answer) &&
-      isChoice(answer.category, [...questionCategories, 'cry', 'scale']) &&
+      isChoice(answer.category, [
+        ...questionCategories,
+        ...legacyQuestionCategories,
+      ]) &&
       (answer.cluesUsed === undefined || isCount(answer.cluesUsed)) &&
       typeof answer.correct === 'boolean' &&
       (answer.generation === undefined ||
@@ -92,9 +102,7 @@ const isResult = (value: unknown): value is GameResult => {
         isChoice(answer.questionType, [
           ...questionTypes,
           'champion',
-          'battle-view',
-          'evolution-trail',
-          'evolution-order',
+          ...legacyQuestionTypes,
         ])) &&
       (answer.responseMilliseconds === undefined ||
         isFiniteNonnegative(answer.responseMilliseconds)) &&
@@ -105,10 +113,7 @@ const isResult = (value: unknown): value is GameResult => {
 const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
   isRecord(value) &&
   isName(value.id) &&
-  typeof value.completedAt === 'string' &&
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value.completedAt) &&
-  Number.isFinite(Date.parse(value.completedAt)) &&
-  new Date(value.completedAt).toISOString() === value.completedAt &&
+  isUtcTimestamp(value.completedAt) &&
   typeof value.trainerName === 'string' &&
   value.trainerName.length <= 20 &&
   Array.isArray(value.pokemon) &&
@@ -135,7 +140,7 @@ const isResults = (value: unknown): value is SavedResults => {
       ([date, result]) => isDailyDate(date) && isResult(result),
     ) &&
     Object.entries(training).every(
-      ([key, result]) => ['league', 'custom'].includes(key) && isResult(result),
+      ([key, result]) => isChoice(key, trainingModes) && isResult(result),
     ) &&
     typeof league.completed === 'boolean' &&
     (league.seed === null || isName(league.seed)) &&

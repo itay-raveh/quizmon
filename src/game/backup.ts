@@ -1,7 +1,7 @@
 import { clearActiveGame } from './active-game';
 import { parsePlayerSave, type PlayerSave } from './player-data';
 import { PLAYER_STORAGE_KEY, readPlayerSave } from './player-storage';
-import { isRecord } from './validation';
+import { isRecord, isUtcTimestamp } from './validation';
 
 export const MAX_BACKUP_BYTES = 10 * 1024 * 1024;
 
@@ -41,12 +41,7 @@ export const parseBackup = (text: string): PlayerBackup => {
       'This backup uses an unsupported version. Update Quizmon or choose another backup.',
     );
   }
-  if (
-    typeof value.exportedAt !== 'string' ||
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value.exportedAt) ||
-    !Number.isFinite(Date.parse(value.exportedAt)) ||
-    new Date(value.exportedAt).toISOString() !== value.exportedAt
-  ) {
+  if (!isUtcTimestamp(value.exportedAt)) {
     throw new Error('This backup has an invalid date. Choose another backup.');
   }
   const save = parsePlayerSave(value.save);
