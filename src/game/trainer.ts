@@ -135,24 +135,17 @@ export interface TrainerTitle {
   specialty: TrainerSpecialty;
 }
 
-interface TrainerBadgeChange {
-  current: number;
+interface TrainerBadgeChange extends Omit<TrainerBadge, 'requirement'> {
   delta: number;
-  earned: boolean;
-  goal: number;
-  id: TrainerBadgeId;
   kind: 'badge';
-  label: string;
 }
 
-interface TrainerSpecialtyChange {
-  current: number;
+interface TrainerSpecialtyChange extends Omit<
+  TrainerTitle,
+  'description' | 'equipped'
+> {
   delta: number;
-  earned: boolean;
-  goal: number;
   kind: 'specialty';
-  label: string;
-  specialty: TrainerSpecialty;
 }
 
 export type TrainerProgressChange = TrainerBadgeChange | TrainerSpecialtyChange;

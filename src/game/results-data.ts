@@ -7,6 +7,7 @@ import {
   type Generation,
   type QuestionCategory,
   type QuestionType,
+  type TrainingMode,
 } from './types';
 import { isChoice, isFiniteNonnegative, isRecord } from './validation';
 
@@ -33,15 +34,12 @@ interface LeagueState {
   seed: string | null;
 }
 
-type HighScoreKey = 'daily' | 'league' | 'custom';
-type TrainingHighScoreKey = Exclude<HighScoreKey, 'daily'>;
-
 export interface SavedResults {
   daily: Record<string, GameResult>;
   league: LeagueState;
   progress: TrainerProgress;
   streak: DailyStreakState;
-  training: Partial<Record<TrainingHighScoreKey, GameResult>>;
+  training: Partial<Record<TrainingMode, GameResult>>;
 }
 
 const emptyProgress = (): TrainerProgress => ({
