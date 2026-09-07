@@ -278,9 +278,6 @@ export const getQuestionTypeDescription = (
   questionType: QuestionType,
 ): string => questionRegistry[questionType].description;
 
-export const getCorrectOptions = (question: QuestionData): string[] =>
-  question.answer.correctOptions;
-
 export const isQuestionAnswerCorrect = (
   question: QuestionData,
   selectedOptions: readonly string[],

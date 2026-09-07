@@ -4,7 +4,6 @@ import {
   formatDuration,
   formatDurationMilliseconds,
   getAnswerPoints,
-  getCorrectOptions,
   getQuestionTitle,
 } from '@/game/game';
 import { getLeagueStageLabel } from '@/game/league';
@@ -78,7 +77,7 @@ const QuestionPrompt = ({
 );
 
 const formatCorrectAnswer = (question: QuestionData): string => {
-  const names = getCorrectOptions(question).map(formatPokemonName);
+  const names = question.answer.correctOptions.map(formatPokemonName);
   if (names.length < 2) return names[0] ?? '';
   return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
 };

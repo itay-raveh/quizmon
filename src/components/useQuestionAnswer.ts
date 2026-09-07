@@ -8,7 +8,6 @@ import {
 import { useGameSounds } from '@/audio/sound';
 import {
   getAnswerPoints,
-  getCorrectOptions,
   getSpeedBonusPoints,
   isQuestionAnswerCorrect,
 } from '@/game/game';
@@ -197,7 +196,7 @@ export const useQuestionAnswer = ({
     answered,
     advanceAnswer,
     cluesShown,
-    correctOptions: getCorrectOptions(question),
+    correctOptions: question.answer.correctOptions,
     finishAnswer,
     revealClue: () => setCluesShown((current) => current + 1),
     selectedOptions,

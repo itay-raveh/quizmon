@@ -8,7 +8,6 @@ import {
   filterPokemon,
   formatDuration,
   getAnswerPoints,
-  getCorrectOptions,
   getKnowledgePoints,
   getMasteryBonus,
   getQuestionCount,
@@ -238,7 +237,7 @@ describe('question building', () => {
     );
     for (const question of questions) {
       expect(question.options).toEqual(
-        expect.arrayContaining(getCorrectOptions(question)),
+        expect.arrayContaining(question.answer.correctOptions),
       );
       expect(new Set(question.options).size).toBe(4);
     }
@@ -548,7 +547,7 @@ describe('question building', () => {
       expect(candidate.visual?.kind).toBe('stat-showdown');
       if (candidate.visual?.kind !== 'stat-showdown') continue;
       const stat = candidate.visual.stat;
-      const correct = getCorrectOptions(candidate)[0]!;
+      const correct = candidate.answer.correctOptions[0]!;
       const correctValue = catalog.pokemon[correct]!.stats[stat];
       const distractorValues = candidate.options
         .filter((option) => option !== correct)
@@ -589,7 +588,7 @@ describe('question building', () => {
       expect(multipliers).toEqual(new Set([0.25, 0.5, 2, 4]));
       for (const question of questions) {
         const defender = catalog.pokemon[question.pokemonName]!;
-        const correct = getCorrectOptions(question)[0]!;
+        const correct = question.answer.correctOptions[0]!;
         const visual = question.visual;
         expect(['type-matchup', 'counter-pick']).toContain(visual?.kind);
         if (
@@ -623,7 +622,7 @@ describe('question building', () => {
     expect(question?.visual?.kind).toBe('counter-pick');
 
     const defender = catalog.pokemon[question!.pokemonName]!;
-    const correct = getCorrectOptions(question!)[0];
+    const correct = question!.answer.correctOptions[0];
     const multiplier =
       question?.visual?.kind === 'counter-pick'
         ? question.visual.multiplier
@@ -688,7 +687,7 @@ describe('question building', () => {
 
     const target = catalog.pokemon[question!.pokemonName]!;
     const evolution = catalog.pokemon[target.evolvesTo[0]!]!;
-    const correct = getCorrectOptions(question!)[0]!;
+    const correct = question!.answer.correctOptions[0]!;
     expect(target.types).not.toContain(correct);
     expect(evolution.types).toContain(correct);
     expect(question?.visual).toEqual({
