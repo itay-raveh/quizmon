@@ -1,3 +1,4 @@
+import { CollectionCorners } from './CollectionCorners';
 import type { Ref } from 'react';
 import type { TrainerBadge } from '@/game/trainer';
 import { SoundButton } from './SoundButton';
@@ -26,22 +27,7 @@ export const TrainerBadgeCase = ({
         aria-label={`${earnedCount} of ${badges.length} League Badges earned`}
         className="trainer-badge-case__badges"
       >
-        <span
-          aria-hidden="true"
-          className="trainer-badge-case__rivet trainer-badge-case__rivet--top-left"
-        />
-        <span
-          aria-hidden="true"
-          className="trainer-badge-case__rivet trainer-badge-case__rivet--top-right"
-        />
-        <span
-          aria-hidden="true"
-          className="trainer-badge-case__rivet trainer-badge-case__rivet--bottom-left"
-        />
-        <span
-          aria-hidden="true"
-          className="trainer-badge-case__rivet trainer-badge-case__rivet--bottom-right"
-        />
+        <CollectionCorners className="trainer-badge-case__rivet" />
         {badges.map((badge) => (
           <SoundButton
             aria-label={`${badge.label}. ${badge.earned ? 'Earned' : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}

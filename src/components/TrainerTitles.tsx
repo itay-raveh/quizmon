@@ -1,10 +1,4 @@
-/*
-THESIS: Trainer Titles are a visible collection to pursue and display, not a settings option hidden in a form.
-OWN-WORLD: A warm wood display board holds cream title plaques, brass fasteners, and cobalt earned marks.
-STORY: See every title and its progress, open one for its meaning, equip an earned title, then share the board.
-FIRST VIEWPORT: All eight icon-led title records appear together without repeated headings or status panels.
-FORM: The wood board is one physical collection surface, not a table or a dashboard of cards.
-*/
+import { CollectionCorners } from './CollectionCorners';
 import type { Ref } from 'react';
 import type { TrainerStats } from '@/game/storage';
 import {
@@ -37,22 +31,7 @@ export const TrainerTitles = ({
       aria-label="Trainer Titles collection"
       className="trainer-titles"
     >
-      <span
-        aria-hidden="true"
-        className="trainer-titles__fastener trainer-titles__fastener--top-left"
-      />
-      <span
-        aria-hidden="true"
-        className="trainer-titles__fastener trainer-titles__fastener--top-right"
-      />
-      <span
-        aria-hidden="true"
-        className="trainer-titles__fastener trainer-titles__fastener--bottom-left"
-      />
-      <span
-        aria-hidden="true"
-        className="trainer-titles__fastener trainer-titles__fastener--bottom-right"
-      />
+      <CollectionCorners className="trainer-titles__fastener" />
       <section
         aria-label={`${earnedCount} of ${titles.length} Trainer Titles earned`}
         className="trainer-titles__collection"
