@@ -71,55 +71,26 @@ describe('Trainer Card progression', () => {
       correctQuestionTypes: masteredQuestionTypes(10),
     });
     const ace = stats({
+      ...oneBadge,
       correctPokemon: Array.from(
         { length: 151 },
         (_, index) => `pokemon-${index}`,
       ),
-      correctQuestionTypes: masteredQuestionTypes(10),
     });
     const fourBadges = stats({
+      ...ace,
       correctCategories: { identity: 50 },
       correctGenerations: masteredGenerations(9),
-      correctPokemon: Array.from(
-        { length: 151 },
-        (_, index) => `pokemon-${index}`,
-      ),
-      correctQuestionTypes: masteredQuestionTypes(10),
     });
-    const veteran = stats({
-      correctCategories: { identity: 50 },
-      correctGenerations: masteredGenerations(9),
-      correctPokemon: Array.from(
-        { length: 151 },
-        (_, index) => `pokemon-${index}`,
-      ),
-      correctQuestionTypes: masteredQuestionTypes(10),
-      masteryRounds: 3,
-    });
+    const veteran = stats({ ...fourBadges, masteryRounds: 3 });
     const sevenBadges = stats({
+      ...veteran,
       bestDailyStreak: 7,
-      correctCategories: { identity: 50 },
-      correctGenerations: masteredGenerations(9),
-      correctPokemon: Array.from(
-        { length: 151 },
-        (_, index) => `pokemon-${index}`,
-      ),
-      correctQuestionTypes: masteredQuestionTypes(10),
-      masteryRounds: 3,
       quickAttackCompleted: true,
     });
     const leagueChallenger = stats({
-      bestDailyStreak: 7,
-      correctCategories: { identity: 50 },
+      ...sevenBadges,
       championAnswersWithoutClues: 5,
-      correctGenerations: masteredGenerations(9),
-      correctPokemon: Array.from(
-        { length: 151 },
-        (_, index) => `pokemon-${index}`,
-      ),
-      correctQuestionTypes: masteredQuestionTypes(10),
-      masteryRounds: 3,
-      quickAttackCompleted: true,
     });
     const champion = stats({ ...leagueChallenger, leagueCompleted: true });
 
