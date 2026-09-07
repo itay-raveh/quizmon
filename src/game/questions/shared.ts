@@ -57,7 +57,10 @@ export const rankedOptionSet = (
   random: () => number,
 ): string[] => {
   const ranked = rankCandidates(correct, candidates, score, random);
-  return shuffle([...ranked.slice(0, 3), correct], random);
+  return shuffle(
+    [...ranked.slice(0, 3).map(({ candidate }) => candidate), correct],
+    random,
+  );
 };
 
 export const randomOptionSet = (
@@ -76,14 +79,13 @@ const rankCandidates = (
   candidates: readonly string[],
   score: (candidate: string) => number,
   random: () => number,
-): string[] => {
+) => {
   const unique = [...new Set(candidates)].filter(
     (candidate) => candidate !== correct,
   );
   return shuffle(unique, random)
     .map((candidate) => ({ candidate, score: score(candidate) }))
-    .sort((left, right) => right.score - left.score)
-    .map(({ candidate }) => candidate);
+    .sort((left, right) => right.score - left.score);
 };
 
 const evolutionStage = (pokemon: PokemonKnowledge): number => {
@@ -253,7 +255,7 @@ export const pokemonOptions = (
     const candidate = context.catalog.pokemon[name];
     return candidate ? pokemonSimilarity(target.pokemon, candidate) : 0;
   };
-  const ranked = rankCandidates(
+  const scored = rankCandidates(
     target.name,
     candidates
       .filter(({ name }) => name !== target.name && !excluded.includes(name))
@@ -261,10 +263,12 @@ export const pokemonOptions = (
     similarityFor,
     context.random,
   );
-  const bestScore = similarityFor(ranked[0] ?? '');
-  const semanticBand = ranked
-    .filter((name) => similarityFor(name) >= bestScore * 0.6)
-    .slice(0, 15);
+  const ranked = scored.map(({ candidate }) => candidate);
+  const bestScore = scored[0]?.score ?? similarityFor('');
+  const semanticBand = scored
+    .filter(({ score }) => score >= bestScore * 0.6)
+    .slice(0, 15)
+    .map(({ candidate }) => candidate);
   const shortlist =
     ranked.length >= 15
       ? ranked.slice(0, 15)
