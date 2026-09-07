@@ -135,8 +135,10 @@ for (const viewport of [
   });
 }
 
-for (const width of [320, 390, 1280]) {
-  test(`Champion keeps search compact and expands requested help at ${width}px`, async ({
+for (const { width, assisted } of [320, 390, 1280].flatMap((width) =>
+  [false, true].map((assisted) => ({ width, assisted })),
+)) {
+  test(`Champion keeps search compact and expands requested help at ${width}px (${assisted ? 'assisted' : 'search'})`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 844 });
@@ -171,6 +173,27 @@ for (const width of [320, 390, 1280]) {
     const choices = page.getByRole('button', { name: /^Show 4 choices/ });
     await expect(choices).toBeInViewport();
     await assertFits(page);
+    if (!assisted) {
+      await page.getByRole('combobox', { name: 'Your answer' }).fill('pika');
+      await page.getByRole('option', { name: 'Pikachu', exact: true }).click();
+      await page.getByRole('button', { name: 'Guess', exact: true }).click();
+      await expect(
+        page.getByRole('button', { name: 'See results' }),
+      ).toBeVisible();
+      await expect(page.locator('.clue-board')).toHaveCount(0);
+      const portrait = await page.locator('.sprite-frame').boundingBox();
+      const panel = await page.locator('.question').boundingBox();
+      expect(portrait).not.toBeNull();
+      expect(panel).not.toBeNull();
+      expect(portrait!.width).toBeGreaterThanOrEqual(140);
+      expect(
+        Math.abs(
+          portrait!.x + portrait!.width / 2 - panel!.x - panel!.width / 2,
+        ),
+      ).toBeLessThan(1);
+      await assertFits(page);
+      return;
+    }
     await choices.click();
     await expect(page.locator('.answer')).toHaveCount(4);
     await page.getByRole('button', { name: /^Reveal another clue/ }).click();

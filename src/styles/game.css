@@ -427,17 +427,13 @@
 }
 
 .question--champion .question__stimulus {
-  grid-template-columns: minmax(0, 1fr) 6rem;
+  grid-template-columns: minmax(0, 1fr) var(--question-stimulus-size);
   align-items: center;
   gap: 0.75rem;
 }
 
-.question--champion.question--league .question__stimulus {
-  grid-template-columns: 1fr;
-}
-
-.question--champion .sprite-frame {
-  width: 6rem;
+.question--champion .question__artwork:only-child {
+  grid-column: 1 / -1;
 }
 
 .clue-board--concealed {
@@ -1509,10 +1505,15 @@
   }
 }
 
+@container (max-width: 24rem) {
+  .question--champion .question__stimulus {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @container (max-width: 16rem) {
   .question-evolution-link,
   .question-relation,
-  .question--champion .question__stimulus,
   .question__response .answers--pokemon {
     grid-template-columns: minmax(0, 1fr);
   }

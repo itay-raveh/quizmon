@@ -229,7 +229,7 @@ export const Question = ({
         </div>
         {!isChampion || cluesShown > 1 || answered ? (
           <div className="question__stimulus">
-            {isChampion && !isLeague ? (
+            {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />
             ) : null}
             <QuestionArtwork
