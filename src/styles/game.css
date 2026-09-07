@@ -56,15 +56,9 @@
   display: grid;
   width: 100%;
   min-width: 0;
-  min-height: 11.5rem;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.25rem;
-  margin-block: 0.6rem 0.75rem;
-}
-
-.question__context:not(:has(.question__stimulus > *)) {
-  min-height: 0;
   grid-template-rows: auto;
+  gap: 0.5rem;
+  margin-block: 0.6rem 0.75rem;
 }
 
 .question__stimulus:empty {
@@ -405,11 +399,6 @@
 
 .question-relation__arrow--down svg {
   transform: rotate(90deg);
-}
-
-.question--champion .question__context {
-  min-height: 0;
-  grid-template-rows: auto;
 }
 
 .question--champion-search .question__response {

@@ -9,7 +9,10 @@ const geometry = (page: Page) =>
       return { x: rect.x, y: rect.y + window.scrollY, height: rect.height };
     };
     return {
-      hasStimulus: Boolean(panel.querySelector('.question__stimulus > *')),
+      stimulus: panel.querySelector('.question__stimulus > *')
+        ? box(panel.querySelector('.question__stimulus')!)
+        : null,
+      rem: parseFloat(getComputedStyle(document.documentElement).fontSize),
       panel: box(panel),
       title: box(panel.querySelector('h1')!),
       prompt: box(panel.querySelector('.question__instruction')!),
@@ -111,11 +114,17 @@ for (const viewport of [
           await page.addStyleTag({ content: 'html { font-size: 200%; }' });
         const before = await geometry(page);
         layouts.push(before);
-        if (!before.hasStimulus) {
+        const lastContext = before.stimulus ?? before.prompt;
+        expect(
+          (before.response.y - lastContext.y - lastContext.height) / before.rem,
+          `${type} gap before answers`,
+        ).toBeCloseTo(0.75, 1);
+        if (before.stimulus) {
           expect(
-            before.response.y - before.prompt.y - before.prompt.height,
-            `${type} gap between instruction and answers`,
-          ).toBeLessThan(viewport.name === 'zoom' ? 48 : 24);
+            (before.stimulus.y - before.prompt.y - before.prompt.height) /
+              before.rem,
+            `${type} gap before the visual`,
+          ).toBeCloseTo(0.5, 1);
         }
         await assertFits(page);
         await page.locator('.answer').first().click();
@@ -132,12 +141,8 @@ for (const viewport of [
       });
     }
     if (viewport.name === 'zoom') return;
-    for (const region of ['title', 'prompt', 'response', 'action'] as const) {
-      const aligned =
-        region === 'title' || region === 'prompt'
-          ? layouts
-          : layouts.filter((layout) => layout.hasStimulus);
-      const positions = aligned.map((layout) => layout[region].y);
+    for (const region of ['title', 'prompt'] as const) {
+      const positions = layouts.map((layout) => layout[region].y);
       expect(
         Math.max(...positions) - Math.min(...positions),
         `${region} spread: ${layouts.map((layout, index) => `${questionTypes[index]}=${Math.round(layout[region].y)}`).join(', ')}`,

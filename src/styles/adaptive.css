@@ -299,12 +299,6 @@
   }
 }
 
-@media (max-width: 22rem) {
-  .question__context {
-    min-height: 12.5rem;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
