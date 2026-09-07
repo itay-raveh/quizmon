@@ -30,35 +30,41 @@ export const buildDescriptionQuestion: QuestionBuilder = (context) => {
   );
 };
 
+const typeOptions = (
+  context: QuestionContext,
+  target: Candidate,
+  correct: string,
+): string[] =>
+  rankedOptionSet(
+    correct,
+    Object.keys(context.catalog.typeRelations).filter(
+      (type) => !target.pokemon.types.includes(type),
+    ),
+    (type) =>
+      context.pool.reduce(
+        (best, candidate) =>
+          candidate.pokemon.types.includes(type)
+            ? Math.max(
+                best,
+                pokemonSimilarity(target.pokemon, candidate.pokemon),
+              )
+            : best,
+        0,
+      ),
+    context.random,
+  );
+
 export const buildTypeQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ types }) => types.length > 0);
   if (!target) return undefined;
   const correct = pick(target.pokemon.types, context.random);
   if (!correct) return undefined;
-  const candidates = Object.keys(context.catalog.typeRelations).filter(
-    (type) => !target.pokemon.types.includes(type),
-  );
   return {
     ...makeQuestion(
       'type',
       target,
       correct,
-      rankedOptionSet(
-        correct,
-        candidates,
-        (type) =>
-          context.pool.reduce(
-            (best, candidate) =>
-              candidate.pokemon.types.includes(type)
-                ? Math.max(
-                    best,
-                    pokemonSimilarity(target.pokemon, candidate.pokemon),
-                  )
-                : best,
-            0,
-          ),
-        context.random,
-      ),
+      typeOptions(context, target, correct),
       pokemonPrompt(target, 'Which type does ', ' have?'),
     ),
     visual: { kind: 'type-check' },
@@ -192,24 +198,7 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
       'evolution',
       target,
       correct,
-      rankedOptionSet(
-        correct,
-        Object.keys(context.catalog.typeRelations).filter(
-          (type) => !target.pokemon.types.includes(type),
-        ),
-        (type) =>
-          context.pool.reduce(
-            (best, candidate) =>
-              candidate.pokemon.types.includes(type)
-                ? Math.max(
-                    best,
-                    pokemonSimilarity(target.pokemon, candidate.pokemon),
-                  )
-                : best,
-            0,
-          ),
-        context.random,
-      ),
+      typeOptions(context, target, correct),
       pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
       { kind: 'pixel-sprite', src: target.pokemon.sprite },
     ),

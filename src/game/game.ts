@@ -139,17 +139,27 @@ export const getQuestionCount = (
   return Math.min(Math.max(1, requestedCount), availableCount);
 };
 
+const createQuestionContext = (
+  catalog: PokemonCatalog,
+  modifiers: Modifiers,
+  random: () => number,
+): QuestionContext => ({
+  catalog,
+  pool: filterPokemon(catalog, modifiers)
+    .map((name) => ({ name, pokemon: catalog.pokemon[name] }))
+    .filter((candidate): candidate is Candidate => Boolean(candidate.pokemon)),
+  random,
+  used: new Set(),
+});
+
 export const buildQuestions = (
   catalog: PokemonCatalog,
   modifiers: Modifiers,
   random: () => number = Math.random,
   requestedCount = TRAINING_QUESTION_COUNT,
 ): QuestionData[] => {
-  const pool = filterPokemon(catalog, modifiers)
-    .map((name) => ({ name, pokemon: catalog.pokemon[name] }))
-    .filter((candidate): candidate is Candidate => Boolean(candidate.pokemon));
-  const count = getQuestionCount(pool.length, requestedCount);
-  const context: QuestionContext = { catalog, pool, random, used: new Set() };
+  const context = createQuestionContext(catalog, modifiers, random);
+  const count = getQuestionCount(context.pool.length, requestedCount);
   const questionTypeDeck = shuffle(modifiers.questionTypes, random);
   const questions: QuestionData[] = [];
 
@@ -183,10 +193,7 @@ export const buildQuestionSequence = (
   modifiers: Modifiers,
   random: () => number,
 ): QuestionData[] => {
-  const pool = filterPokemon(catalog, modifiers)
-    .map((name) => ({ name, pokemon: catalog.pokemon[name] }))
-    .filter((candidate): candidate is Candidate => Boolean(candidate.pokemon));
-  const context: QuestionContext = { catalog, pool, random, used: new Set() };
+  const context = createQuestionContext(catalog, modifiers, random);
 
   return questionSequence.map((questionType, index) => {
     let question = buildQuestionType(context, questionType);
