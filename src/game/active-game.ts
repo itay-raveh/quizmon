@@ -8,7 +8,7 @@ import { normalizeModifiers } from './game';
 import { isDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import type { AnswerResult, GameMode, Modifiers } from './types';
-import { generations, questionCategories } from './types';
+import { generations, questionCategories, trainingModes } from './types';
 import { isChoice, isFiniteNonnegative, isRecord } from './validation';
 
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
@@ -84,7 +84,7 @@ const parseModifiers = (value: unknown): Modifiers | null => {
     !value.questionTypes.every((questionType) =>
       isChoice(questionType, questionTypes),
     ) ||
-    (value.trainingMode !== 'league' && value.trainingMode !== 'custom')
+    !isChoice(value.trainingMode, trainingModes)
   ) {
     return null;
   }

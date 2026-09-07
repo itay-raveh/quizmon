@@ -1,6 +1,8 @@
 import {
   generations,
-  type AnswerFlow,
+  answerFlows,
+  timerDisplays,
+  trainingModes,
   type ExperienceSettings,
   type SavedAnswerResult,
   type Modifiers,
@@ -9,7 +11,6 @@ import {
   type QuestionData,
   type QuestionPrompt,
   type QuestionType,
-  type TimerDisplay,
 } from './types';
 import { formatPokemonName } from './format';
 import {
@@ -68,12 +69,6 @@ const categoryLabels: Record<QuestionCategory, string> = {
   type: 'Type check',
 };
 
-const isAnswerFlow = (value: unknown): value is AnswerFlow =>
-  value === 'manual' || value === 'auto' || value === 'instant';
-
-const isTimerDisplay = (value: unknown): value is TimerDisplay =>
-  value === 'hidden' || value === 'seconds' || value === 'milliseconds';
-
 export const normalizeModifiers = (value: unknown): Modifiers => {
   if (!value || typeof value !== 'object') return defaultModifiers;
 
@@ -92,7 +87,7 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
       )
     : [];
   return {
-    answerFlow: isAnswerFlow(candidate.answerFlow)
+    answerFlow: isChoice(candidate.answerFlow, answerFlows)
       ? candidate.answerFlow
       : candidate.speedrunMode === true
         ? 'instant'
@@ -113,13 +108,12 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
         : candidate.soundEnabled === false
           ? 0
           : defaultModifiers.soundVolume,
-    timerDisplay: isTimerDisplay(candidate.timerDisplay)
+    timerDisplay: isChoice(candidate.timerDisplay, timerDisplays)
       ? candidate.timerDisplay
       : defaultModifiers.timerDisplay,
-    trainingMode:
-      candidate.trainingMode === 'league' || candidate.trainingMode === 'custom'
-        ? candidate.trainingMode
-        : defaultModifiers.trainingMode,
+    trainingMode: isChoice(candidate.trainingMode, trainingModes)
+      ? candidate.trainingMode
+      : defaultModifiers.trainingMode,
   };
 };
 

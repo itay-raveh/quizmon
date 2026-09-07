@@ -5,7 +5,7 @@ import {
   generations,
   type Generation,
   type Modifiers,
-  type TrainingMode,
+  trainingModes,
 } from '@/game/types';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
 import { SelectionTile } from './SelectionTile';
@@ -28,8 +28,6 @@ interface TrainingSettingsProps extends TrainingSettingsValidation {
 
 const toggleValue = <T,>(values: readonly T[], value: T, checked: boolean) =>
   checked ? [...values, value] : values.filter((current) => current !== value);
-
-const trainingModes: readonly TrainingMode[] = ['league', 'custom'];
 
 export const TrainingSettings = ({
   draft,

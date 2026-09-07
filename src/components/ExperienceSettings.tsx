@@ -1,5 +1,11 @@
 import type { Dispatch, SetStateAction } from 'react';
-import type { AnswerFlow, Modifiers, TimerDisplay } from '@/game/types';
+import {
+  answerFlows,
+  timerDisplays,
+  type AnswerFlow,
+  type Modifiers,
+  type TimerDisplay,
+} from '@/game/types';
 import { Checkbox } from './Checkbox';
 import { DailyReminderSetting } from './DailyReminderSetting';
 import { SelectionTile } from './SelectionTile';
@@ -9,25 +15,20 @@ interface ExperienceSettingsProps {
   onChange: Dispatch<SetStateAction<Modifiers>>;
 }
 
-const answerFlows: readonly {
-  description: string;
-  label: string;
-  value: AnswerFlow;
-}[] = [
-  { description: 'Use the Next button', label: 'Manual', value: 'manual' },
-  { description: 'Move on after 2 seconds', label: 'Auto', value: 'auto' },
-  {
-    description: 'Move on after 0.3 seconds',
-    label: 'Instant',
-    value: 'instant',
-  },
-];
+const answerFlowDetails: Record<
+  AnswerFlow,
+  { description: string; label: string }
+> = {
+  manual: { description: 'Use the Next button', label: 'Manual' },
+  auto: { description: 'Move on after 2 seconds', label: 'Auto' },
+  instant: { description: 'Move on after 0.3 seconds', label: 'Instant' },
+};
 
-const timerDisplays: readonly { label: string; value: TimerDisplay }[] = [
-  { label: 'Hidden', value: 'hidden' },
-  { label: 'Seconds', value: 'seconds' },
-  { label: 'Milliseconds', value: 'milliseconds' },
-];
+const timerDisplayLabels: Record<TimerDisplay, string> = {
+  hidden: 'Hidden',
+  seconds: 'Seconds',
+  milliseconds: 'Milliseconds',
+};
 
 export const ExperienceSettings = ({
   draft,
@@ -45,13 +46,13 @@ export const ExperienceSettings = ({
       <fieldset className="experience-setting">
         <legend>Answer flow</legend>
         <div className="experience-options experience-options--flow">
-          {answerFlows.map(({ description, label, value }) => (
+          {answerFlows.map((value) => (
             <SelectionTile
               checked={draft.answerFlow === value}
-              description={description}
+              description={answerFlowDetails[value].description}
               inputType="radio"
               key={value}
-              label={label}
+              label={answerFlowDetails[value].label}
               name="answer-flow"
               onChange={(event) => {
                 if (!event.target.checked) return;
@@ -66,12 +67,12 @@ export const ExperienceSettings = ({
       <fieldset className="experience-setting">
         <legend>Timer</legend>
         <div className="experience-options experience-options--timer">
-          {timerDisplays.map(({ label, value }) => (
+          {timerDisplays.map((value) => (
             <SelectionTile
               checked={draft.timerDisplay === value}
               inputType="radio"
               key={value}
-              label={label}
+              label={timerDisplayLabels[value]}
               name="timer-display"
               onChange={(event) => {
                 if (!event.target.checked) return;

@@ -12,9 +12,13 @@ export const generations = [
 
 export type Generation = (typeof generations)[number];
 
-export type TrainingMode = 'league' | 'custom';
-export type AnswerFlow = 'manual' | 'auto' | 'instant';
-export type TimerDisplay = 'hidden' | 'seconds' | 'milliseconds';
+export const trainingModes = ['league', 'custom'] as const;
+export const answerFlows = ['manual', 'auto', 'instant'] as const;
+export const timerDisplays = ['hidden', 'seconds', 'milliseconds'] as const;
+
+export type TrainingMode = (typeof trainingModes)[number];
+export type AnswerFlow = (typeof answerFlows)[number];
+export type TimerDisplay = (typeof timerDisplays)[number];
 
 export type QuestionType =
   | 'ability-check'

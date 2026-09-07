@@ -7,6 +7,9 @@ import { questionTypes } from './questions/registry';
 import { normalizeResults, type SavedResults } from './results-data';
 import {
   generations,
+  answerFlows,
+  timerDisplays,
+  trainingModes,
   questionCategories,
   type GameResult,
   type Modifiers,
@@ -155,9 +158,9 @@ const isResults = (value: unknown): value is SavedResults => {
 
 const isSettings = (value: unknown): value is Modifiers =>
   isRecord(value) &&
-  isChoice(value.answerFlow, ['manual', 'auto', 'instant']) &&
-  isChoice(value.timerDisplay, ['hidden', 'seconds', 'milliseconds']) &&
-  isChoice(value.trainingMode, ['league', 'custom']) &&
+  isChoice(value.answerFlow, answerFlows) &&
+  isChoice(value.timerDisplay, timerDisplays) &&
+  isChoice(value.trainingMode, trainingModes) &&
   typeof value.reduceMotion === 'boolean' &&
   isFiniteNonnegative(value.soundVolume) &&
   value.soundVolume <= 1 &&
