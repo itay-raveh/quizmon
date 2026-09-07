@@ -1,6 +1,7 @@
 import v1Fixture from './fixtures/player-backup.v1.json';
 import {
   createBackup,
+  downloadBackup,
   MAX_BACKUP_BYTES,
   parseBackup,
   restoreBackup,
@@ -95,6 +96,39 @@ beforeEach(() => {
   sessionStorage.clear();
 });
 afterEach(() => vi.restoreAllMocks());
+
+it.each([
+  [null, ''],
+  ['', ''],
+  ['Leaf', 'Leaf-'],
+  ['Leaf / Red', 'Leaf-Red-'],
+  ['Élodie', 'Élodie-'],
+  ['<>:"/\\|?*', ''],
+])('uses a filename-safe chosen Trainer name: %s', (name, expected) => {
+  if (name !== null)
+    updatePlayerData({ profile: { ...createTrainerProfile(), name } });
+  let filename = '';
+  vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (
+    this: HTMLAnchorElement,
+  ) {
+    filename = this.download;
+  });
+  vi.stubGlobal('URL', {
+    createObjectURL: () => 'blob:backup',
+    revokeObjectURL: vi.fn(),
+  });
+  vi.useFakeTimers();
+  try {
+    downloadBackup();
+    expect(filename).toBe(
+      `quizmon-backup-${expected}${new Date().toISOString().slice(0, 10)}.json`,
+    );
+    vi.runAllTimers();
+  } finally {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  }
+});
 
 it('round-trips every portable field and replaces rather than merges progress', () => {
   populate();

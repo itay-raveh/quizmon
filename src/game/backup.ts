@@ -86,13 +86,16 @@ export const restoreBackup = (backup: PlayerBackup): void => {
 
 export const downloadBackup = (): void => {
   const backup = createBackup();
+  const trainerName = (backup.save.data.profile?.name ?? '')
+    .replace(/[<>:"/\\|?*\p{Cc}\p{Cf}\s]+/gu, '-')
+    .replace(/^-+|-+$/g, '');
   const blob = new Blob([JSON.stringify(backup)], {
     type: 'application/json',
   });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `quizmon-backup-${backup.exportedAt.slice(0, 10)}.json`;
+  link.download = `quizmon-backup-${trainerName ? `${trainerName}-` : ''}${backup.exportedAt.slice(0, 10)}.json`;
   document.body.append(link);
   link.click();
   link.remove();
