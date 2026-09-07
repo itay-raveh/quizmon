@@ -1,6 +1,6 @@
 import { GenerationLabel } from './GenerationLabel';
 import { PixelSprite } from './PixelSprite';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { formatPokemonName, formatTypeMultiplier } from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { PokemonIdentity } from './PokemonIdentity';
@@ -131,27 +131,20 @@ export const QuestionArtwork = ({
         className="question-visual question-evolution-link"
         aria-hidden="true"
       >
-        <Subject
-          name={visual.before}
-          dexNumber={visual.stages[visual.before]?.dexNumber}
-          src={visual.stages[visual.before]?.src}
-          framed
-        />
-        <RelationArrow />
-        <Subject
-          name={question.pokemonName}
-          dexNumber={visual.stages[question.pokemonName]?.dexNumber}
-          src={visual.stages[question.pokemonName]?.src}
-          concealed={!answered}
-          framed
-        />
-        <RelationArrow />
-        <Subject
-          name={visual.after}
-          dexNumber={visual.stages[visual.after]?.dexNumber}
-          src={visual.stages[visual.after]?.src}
-          framed
-        />
+        {[visual.before, question.pokemonName, visual.after].map(
+          (name, index) => (
+            <Fragment key={index}>
+              {index > 0 && <RelationArrow />}
+              <Subject
+                name={name}
+                dexNumber={visual.stages[name]?.dexNumber}
+                src={visual.stages[name]?.src}
+                concealed={index === 1 && !answered}
+                framed
+              />
+            </Fragment>
+          ),
+        )}
       </div>
     );
   }
