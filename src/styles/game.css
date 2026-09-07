@@ -808,11 +808,12 @@
 }
 
 .answer--pokemon {
+  --answer-sprite-size: 6.2rem;
   min-height: 6.4rem;
   padding: 0;
   color: var(--navy);
   background: var(--paper);
-  grid-template-columns: 5.5rem minmax(0, 1fr);
+  grid-template-columns: calc(var(--answer-sprite-size) + 0.3rem) minmax(0, 1fr);
   gap: 0;
 }
 
@@ -850,8 +851,8 @@
 }
 
 .answer__sprite {
-  width: 5.2rem;
-  height: 5.2rem;
+  width: var(--answer-sprite-size);
+  height: var(--answer-sprite-size);
   filter: drop-shadow(0.18rem 0.22rem 0 rgba(8, 59, 126, 0.28));
 }
 

@@ -223,14 +223,10 @@
   }
 
   .answer--pokemon {
+    --answer-sprite-size: 4.75rem;
     min-height: 7rem;
     grid-template-columns: 1fr;
-    grid-template-rows: 4rem minmax(3.5rem, auto);
-  }
-
-  .answer__sprite {
-    width: 4rem;
-    height: 4rem;
+    grid-template-rows: var(--answer-sprite-size) minmax(2.75rem, auto);
   }
 
   .answer__nameplate {
