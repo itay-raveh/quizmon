@@ -5,6 +5,7 @@ import {
   getOptionVisuals,
   makeQuestion,
   pick,
+  pickFreshTarget,
   pokemonOptions,
   pokemonPrompt,
   rankedOptionSet,
@@ -49,8 +50,7 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
           attackMultiplier(context.catalog, type, pokemon.types) === multiplier,
       ),
     );
-    const fresh = targets.filter(({ name }) => !context.used.has(name));
-    const target = pick(fresh.length > 0 ? fresh : targets, context.random);
+    const target = pickFreshTarget(context, targets);
     if (!target) continue;
     const matchingTypes = attackTypes.filter(
       (type) =>

@@ -5,6 +5,7 @@ import {
   getOptionVisuals,
   makeQuestion,
   pick,
+  pickFreshTarget,
   pickTarget,
   pokemonOptions,
   pokemonPrompt,
@@ -96,11 +97,7 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   if (!type) return undefined;
   const { matching, others } = getTypePuzzlePool(context, type);
   const shared = shuffle(matching, context.random).slice(0, 3);
-  const freshOthers = others.filter(({ name }) => !context.used.has(name));
-  const target = pick(
-    freshOthers.length > 0 ? freshOthers : others,
-    context.random,
-  );
+  const target = pickFreshTarget(context, others);
   if (!target) return undefined;
   context.used.add(target.name);
   const options = shuffle(

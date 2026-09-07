@@ -3,6 +3,7 @@ import {
   getOptionVisuals,
   makeQuestion,
   pick,
+  pickFreshTarget,
   pokemonOptions,
   pokemonPrompt,
   textPrompt,
@@ -51,8 +52,7 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
     const unrelated = pool.length - (familyCounts.get(family) ?? 0);
     return matches >= 1 && unrelated - matches >= 3;
   });
-  const fresh = targets.filter(({ name }) => !context.used.has(name));
-  const target = pick(fresh.length > 0 ? fresh : targets, context.random);
+  const target = pickFreshTarget(context, targets);
   if (!target?.pokemon.sprite) return undefined;
   const candidates = pool.filter(
     ({ name }) => families.get(name) !== families.get(target.name),

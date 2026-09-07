@@ -32,13 +32,20 @@ export const pick = <T>(
   random: () => number,
 ): T | undefined => values[Math.floor(random() * values.length)];
 
+export const pickFreshTarget = (
+  context: QuestionContext,
+  candidates: readonly Candidate[],
+): Candidate | undefined => {
+  const fresh = candidates.filter(({ name }) => !context.used.has(name));
+  return pick(fresh.length > 0 ? fresh : candidates, context.random);
+};
+
 export const pickTarget = (
   context: QuestionContext,
   predicate: (pokemon: PokemonKnowledge) => boolean,
 ): Candidate | undefined => {
   const eligible = context.pool.filter(({ pokemon }) => predicate(pokemon));
-  const fresh = eligible.filter(({ name }) => !context.used.has(name));
-  const target = pick(fresh.length > 0 ? fresh : eligible, context.random);
+  const target = pickFreshTarget(context, eligible);
   if (target) context.used.add(target.name);
   return target;
 };
