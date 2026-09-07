@@ -24,6 +24,14 @@ interface ShareDialogProps {
   result: GameResult;
 }
 
+const shareTargets = [
+  { Button: WhatsappShareButton, Icon: WhatsappIcon, label: 'WhatsApp' },
+  { Button: TelegramShareButton, Icon: TelegramIcon, label: 'Telegram' },
+  { Button: XShareButton, Icon: XIcon, label: 'X' },
+  { Button: BlueskyShareButton, Icon: BlueskyIcon, label: 'Bluesky' },
+  { Button: RedditShareButton, Icon: RedditIcon, label: 'Reddit' },
+];
+
 const iconProps = {
   'aria-hidden': true,
   bgStyle: { fill: 'transparent' },
@@ -69,56 +77,19 @@ export const ShareDialog = ({ mode, onClose, result }: ShareDialogProps) => {
       <div className="share-dialog__body">
         <p>Send your spoiler-free score card.</p>
         <div className="share-targets">
-          <WhatsappShareButton
-            className="share-target"
-            onClick={playTap}
-            resetButtonStyle={false}
-            title={message}
-            url={content.url}
-          >
-            <WhatsappIcon {...iconProps} />
-            <span>WhatsApp</span>
-          </WhatsappShareButton>
-          <TelegramShareButton
-            className="share-target"
-            onClick={playTap}
-            resetButtonStyle={false}
-            title={message}
-            url={content.url}
-          >
-            <TelegramIcon {...iconProps} />
-            <span>Telegram</span>
-          </TelegramShareButton>
-          <XShareButton
-            className="share-target"
-            onClick={playTap}
-            resetButtonStyle={false}
-            title={message}
-            url={content.url}
-          >
-            <XIcon {...iconProps} />
-            <span>X</span>
-          </XShareButton>
-          <BlueskyShareButton
-            className="share-target"
-            onClick={playTap}
-            resetButtonStyle={false}
-            title={message}
-            url={content.url}
-          >
-            <BlueskyIcon {...iconProps} />
-            <span>Bluesky</span>
-          </BlueskyShareButton>
-          <RedditShareButton
-            className="share-target"
-            onClick={playTap}
-            resetButtonStyle={false}
-            title={message}
-            url={content.url}
-          >
-            <RedditIcon {...iconProps} />
-            <span>Reddit</span>
-          </RedditShareButton>
+          {shareTargets.map(({ Button, Icon, label }) => (
+            <Button
+              key={label}
+              className="share-target"
+              onClick={playTap}
+              resetButtonStyle={false}
+              title={message}
+              url={content.url}
+            >
+              <Icon {...iconProps} />
+              <span>{label}</span>
+            </Button>
+          ))}
         </div>
 
         <GameButton

@@ -353,27 +353,22 @@ export const TrainerPassport = ({
 
       {view !== 'pokedex' && (
         <div className="trainer-passport__controls">
-          {canShareArtifact ? (
-            <GameButton
-              aria-busy={preparingArtifact}
-              disabled={preparingArtifact}
-              onClick={() => void exportArtifact()}
-            >
+          <GameButton
+            aria-busy={preparingArtifact}
+            disabled={preparingArtifact}
+            onClick={() => void exportArtifact()}
+          >
+            {canShareArtifact ? (
               <ShareNetworkIcon aria-hidden="true" weight="bold" />
-              {preparingArtifact
-                ? 'Preparing PNG…'
-                : `Share ${shareLabels[view]}`}
-            </GameButton>
-          ) : (
-            <GameButton
-              aria-busy={preparingArtifact}
-              disabled={preparingArtifact}
-              onClick={() => void exportArtifact()}
-            >
+            ) : (
               <DownloadSimpleIcon aria-hidden="true" weight="bold" />
-              {preparingArtifact ? 'Preparing PNG…' : 'Download PNG'}
-            </GameButton>
-          )}
+            )}
+            {preparingArtifact
+              ? 'Preparing PNG…'
+              : canShareArtifact
+                ? `Share ${shareLabels[view]}`
+                : 'Download PNG'}
+          </GameButton>
         </div>
       )}
       {selectedBadge ? (
