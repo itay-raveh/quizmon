@@ -38,7 +38,7 @@ const backup: PlayerBackup = {
   },
 };
 
-for (const width of [320, 1280]) {
+for (const width of [320, 390, 1280]) {
   test(`exports and restores a validated backup after preview at ${width}px`, async ({
     page,
   }) => {
@@ -54,6 +54,16 @@ for (const width of [320, 1280]) {
     await expect(
       page.getByRole('button', { name: 'Restore backup', exact: true }),
     ).toBeInViewport();
+    for (const name of ['Download backup', 'Restore backup']) {
+      const lines = await page
+        .getByRole('button', { name, exact: true })
+        .evaluate((button) => {
+          const range = document.createRange();
+          range.selectNodeContents(button);
+          return range.getClientRects().length;
+        });
+      expect(lines).toBe(1);
+    }
     const before = await page.evaluate(() =>
       localStorage.getItem('quizmon.player'),
     );
@@ -130,6 +140,15 @@ for (const width of [320, 1280]) {
     await expect(page.getByRole('status')).toHaveText(
       'Backup download started.',
     );
+    await expect(page.getByRole('status')).toBeInViewport();
+    await expect(page.locator('.toast:popover-open')).toBeVisible();
+    if (width < 400) {
+      const toast = await page.locator('.toast').boundingBox();
+      const actions = await page
+        .locator('.modifiers-form__actions')
+        .boundingBox();
+      expect(toast!.y + toast!.height).toBeLessThan(actions!.y);
+    }
     expect(download.suggestedFilename()).toMatch(
       /^quizmon-backup-Leaf-\d{4}-\d{2}-\d{2}\.json$/,
     );
@@ -138,6 +157,11 @@ for (const width of [320, 1280]) {
     const exported = JSON.parse(await readFile(path, 'utf8')) as PlayerBackup;
     expect(exported.save.data).toEqual(backup.save.data);
     expect(exported.format).toBe('quizmon-backup');
+    await page.getByRole('button', { name: 'Dismiss notification' }).click();
+    await expect(page.getByRole('status')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Download backup' }).click();
+    await expect(page.locator('.toast:popover-open')).toBeVisible();
+    await expect(page.getByRole('status')).toHaveCount(0, { timeout: 8000 });
   });
 }
 

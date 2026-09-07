@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   downloadBackup,
   MAX_BACKUP_BYTES,
@@ -8,6 +8,7 @@ import {
 } from '@/game/backup';
 import { readPlayerData } from '@/game/player-storage';
 import { GameButton } from './GameButton';
+import { Toast } from './Toast';
 
 export const BackupSettings = () => {
   const input = useRef<HTMLInputElement>(null);
@@ -15,7 +16,8 @@ export const BackupSettings = () => {
   const chooseButton = useRef<HTMLButtonElement>(null);
   const [preview, setPreview] = useState<PlayerBackup | null>(null);
   const [error, setError] = useState('');
-  const [downloadStarted, setDownloadStarted] = useState(false);
+  const [downloadNotice, setDownloadNotice] = useState(0);
+  const dismissDownloadNotice = useCallback(() => setDownloadNotice(0), []);
   const [busy, setBusy] = useState(false);
   const current = readPlayerData();
 
@@ -26,7 +28,7 @@ export const BackupSettings = () => {
   const readFile = async (file: File) => {
     setPreview(null);
     setError('');
-    setDownloadStarted(false);
+    dismissDownloadNotice();
     setBusy(true);
     try {
       if (file.size > MAX_BACKUP_BYTES)
@@ -55,11 +57,11 @@ export const BackupSettings = () => {
           disabled={busy}
           onClick={() => {
             setError('');
-            setDownloadStarted(false);
             try {
               downloadBackup();
-              setDownloadStarted(true);
+              setDownloadNotice((notice) => notice + 1);
             } catch {
+              dismissDownloadNotice();
               setError(
                 'Your saved data could not be exported. Check that site storage is available and try again.',
               );
@@ -77,11 +79,13 @@ export const BackupSettings = () => {
           {busy ? 'Reading backup…' : 'Restore backup'}
         </GameButton>
       </div>
-      <div role="status">
-        {downloadStarted && (
-          <p className="experience-status">Backup download started.</p>
-        )}
-      </div>
+      {downloadNotice > 0 && (
+        <Toast
+          key={downloadNotice}
+          message="Backup download started."
+          onDismiss={dismissDownloadNotice}
+        />
+      )}
       <input
         ref={input}
         type="file"
