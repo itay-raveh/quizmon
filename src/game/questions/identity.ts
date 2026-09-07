@@ -25,18 +25,11 @@ const pickScanSprite = (
   );
   if (!generation) return pokemon.sprite;
   const preferFront = random() < 0.75;
-  const versions = preferFront
-    ? generation.front.length > 0
-      ? generation.front
-      : generation.back
-    : generation.back.length > 0
-      ? generation.back
-      : generation.front;
-  const version = pick(versions, random);
-  if (!version) return pokemon.sprite;
   const usesBack =
-    generation.back.includes(version) &&
+    generation.back.length > 0 &&
     (!preferFront || generation.front.length === 0);
+  const version = pick(usesBack ? generation.back : generation.front, random);
+  if (!version) return pokemon.sprite;
 
   return getVersionSpritePath(
     generation.generation,

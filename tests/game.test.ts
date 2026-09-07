@@ -739,6 +739,45 @@ describe('question building', () => {
     );
   });
 
+  it.each([
+    { front: ['red-blue'], back: ['red-blue'], paths: ['', 'back/'] },
+    { front: ['red-blue'], back: [], paths: ['', ''] },
+    { front: [], back: ['red-blue'], paths: ['back/', 'back/'] },
+    { front: [], back: [], paths: [null, null] },
+  ])('falls back between scan orientations: %j', ({ front, back, paths }) => {
+    const scanCatalog: PokemonCatalog = {
+      ...catalog,
+      pokemon: Object.fromEntries(
+        ['one', 'two', 'three', 'four'].map((name, index) => [
+          name,
+          makeKnowledge(index + 1, {
+            identitySprites: {
+              generations: [{ generation: 'I', front, back }],
+            },
+          }),
+        ]),
+      ),
+    };
+    for (const [index, roll] of [0.74, 0.75].entries()) {
+      const [question] = buildQuestions(
+        scanCatalog,
+        { ...defaultModifiers, questionTypes: ['pokedex-scan'] },
+        () => roll,
+        1,
+      );
+      expect(question).toBeDefined();
+      const pokemon = scanCatalog.pokemon[question!.pokemonName]!;
+      const path = paths[index];
+      expect(question!.media).toMatchObject({
+        kind: 'sprite',
+        src:
+          path !== null
+            ? `/sprites/pokemon/versions/generation-i/red-blue/${path}${pokemon.id}.png`
+            : pokemon.sprite,
+      });
+    }
+  });
+
   it('uses default pixel sprites for Pokémon without pre-X/Y versions', () => {
     const modernCatalog: PokemonCatalog = {
       ...catalog,
