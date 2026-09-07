@@ -57,6 +57,7 @@ describe('saved results', () => {
   it('never overwrites the first daily attempt', () => {
     const mode = { kind: 'daily', date: '2026-09-01' } as const;
     saveResult(mode, result);
+    const progressBeforeRetry = readTrainerStats();
     const perfect = {
       ...result,
       answers: result.answers.map((answer) => ({
@@ -74,6 +75,7 @@ describe('saved results', () => {
       isSaved: true,
     });
     expect(readDailyResult(mode.date)).toEqual(result);
+    expect(readTrainerStats()).toEqual(progressBeforeRetry);
   });
 
   it('keeps one Daily best across challenge dates', () => {

@@ -20,6 +20,7 @@ import {
   type GameMode,
   type GameResult,
   type Modifiers,
+  type TrainingMode,
 } from './types';
 
 export interface TrainerStats extends Omit<
@@ -86,7 +87,7 @@ const addResultToProgress = (
 export const getHighScoreKey = (
   mode: GameMode,
   modifiers: Pick<Modifiers, 'trainingMode'>,
-): 'daily' | 'league' | 'custom' | null =>
+): 'daily' | TrainingMode | null =>
   mode.kind === 'daily'
     ? 'daily'
     : mode.kind === 'training'
@@ -188,6 +189,15 @@ export const saveResult = (
   victory?: LeagueVictoryRecord,
 ): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
   const results = readResults();
+  const recordProgress = () => {
+    results.progress = addResultToProgress(
+      results.progress,
+      result,
+      mode,
+      modifiers,
+    );
+  };
+
   if (mode.kind === 'daily') {
     const previous = results.daily[mode.date];
     if (previous) {
@@ -196,12 +206,7 @@ export const saveResult = (
     const previousBest = getBestResult(Object.values(results.daily));
     const isNewBest = !previousBest || isBetterResult(result, previousBest);
     results.daily[mode.date] = result;
-    results.progress = addResultToProgress(
-      results.progress,
-      result,
-      mode,
-      modifiers,
-    );
+    recordProgress();
     if (
       mode.date === getLocalDate() &&
       !results.streak.creditedDates.includes(mode.date)
@@ -222,12 +227,7 @@ export const saveResult = (
     if (victory && hallOfFame.some(({ id }) => id === victory.id)) {
       return { best: result, isNewBest: false, isSaved: true };
     }
-    results.progress = addResultToProgress(
-      results.progress,
-      result,
-      mode,
-      modifiers,
-    );
+    recordProgress();
     const completed = isLeagueVictory(result);
     results.league.completed = results.league.completed || completed;
     if (completed) results.league.seed = null;
@@ -245,12 +245,7 @@ export const saveResult = (
   const key = modifiers.trainingMode;
   const previous = results.training[key];
   const isNewBest = !previous || isBetterResult(result, previous);
-  results.progress = addResultToProgress(
-    results.progress,
-    result,
-    mode,
-    modifiers,
-  );
+  recordProgress();
   if (isNewBest) results.training[key] = result;
   const isSaved = writeResults(results);
   return {
