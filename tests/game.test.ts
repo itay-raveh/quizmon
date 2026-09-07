@@ -703,7 +703,7 @@ describe('question building', () => {
     });
   });
 
-  it('uses only versioned front and back sprites for Pokédex Scan', () => {
+  it('uses only pre-X/Y front and back sprites or the default pixel sprite for Pokédex Scan', () => {
     const sources = new Set(
       Array.from({ length: 80 }, (_, index) => {
         const question = buildSingleQuestion(
@@ -727,12 +727,50 @@ describe('question building', () => {
         (source) => source.includes('/versions/') && source.includes('/back/'),
       ),
     ).toBe(true);
-    expect([...sources].every((source) => source.includes('/versions/'))).toBe(
-      true,
-    );
+    expect(
+      [...sources].every((source) =>
+        /^\/sprites\/pokemon\/(?:\d+\.png|versions\/generation-(?:i|ii|iii|iv|v)\/)/.test(
+          source,
+        ),
+      ),
+    ).toBe(true);
     expect([...sources].every((source) => !source.includes('/other/'))).toBe(
       true,
     );
+  });
+
+  it('uses default pixel sprites for Pokémon without pre-X/Y versions', () => {
+    const modernCatalog: PokemonCatalog = {
+      ...catalog,
+      pokemon: Object.fromEntries(
+        ['one', 'two', 'three', 'four'].map((name, index) => [
+          name,
+          makeKnowledge(index + 1, {
+            generation: 'VI',
+            identitySprites: {
+              generations: [{ generation: 'VI', front: ['x-y'], back: [] }],
+            },
+          }),
+        ]),
+      ),
+    };
+    const questions = buildQuestions(
+      modernCatalog,
+      {
+        ...defaultModifiers,
+        generations: ['VI', 'VII', 'VIII', 'IX'],
+        questionTypes: ['pokedex-scan'],
+      },
+      createSeededRandom('modern-pixel-sprites'),
+      4,
+    );
+    expect(questions).toHaveLength(4);
+    for (const question of questions) {
+      expect(question.media).toMatchObject({
+        kind: 'sprite',
+        src: modernCatalog.pokemon[question.pokemonName]!.sprite,
+      });
+    }
   });
 });
 

@@ -16,7 +16,12 @@ const pickScanSprite = (
 ): string | null => {
   if (!pokemon.sprite) return null;
 
-  const generation = pick(pokemon.identitySprites.generations, random);
+  const generation = pick(
+    pokemon.identitySprites.generations.filter(({ generation }) =>
+      ['I', 'II', 'III', 'IV', 'V'].includes(generation),
+    ),
+    random,
+  );
   if (!generation) return pokemon.sprite;
   const preferFront = random() < 0.75;
   const versions = preferFront
