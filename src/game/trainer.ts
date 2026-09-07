@@ -26,6 +26,10 @@ const trainerSpecialtyDescriptions = {
 } as const satisfies Record<keyof typeof trainerSpecialtyLabels, string>;
 
 export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
+const trainerSpecialties = Object.keys(
+  trainerSpecialtyLabels,
+) as TrainerSpecialty[];
+
 export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
@@ -69,7 +73,7 @@ const trainerBadgeDefinitions = [
     getCurrent: (stats) =>
       Math.max(
         0,
-        ...(Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).map(
+        ...trainerSpecialties.map(
           (category) => stats.correctCategories[category] ?? 0,
         ),
       ),
@@ -153,28 +157,11 @@ interface TrainerSpecialtyChange {
 
 export type TrainerProgressChange = TrainerBadgeChange | TrainerSpecialtyChange;
 
-interface BadgeDefinition {
-  current: number;
-  goal: number;
-  id: TrainerBadgeId;
-  label: string;
-  requirement: string;
-}
-
-const makeBadge = (definition: BadgeDefinition): TrainerBadge => ({
-  current: definition.current,
-  earned: definition.current >= definition.goal,
-  goal: definition.goal,
-  id: definition.id,
-  label: definition.label,
-  requirement: definition.requirement,
-});
-
-export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] => {
-  return trainerBadgeDefinitions.map(({ getCurrent, ...definition }) =>
-    makeBadge({ ...definition, current: getCurrent(stats) }),
-  );
-};
+export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] =>
+  trainerBadgeDefinitions.map(({ getCurrent, ...definition }) => {
+    const current = getCurrent(stats);
+    return { ...definition, current, earned: current >= definition.goal };
+  });
 
 export const getEarnedTrainerBadgeCount = (stats: TrainerStats): number =>
   getTrainerBadges(stats).filter(({ earned }) => earned).length;
@@ -185,7 +172,7 @@ export const isLeagueUnlocked = (stats: TrainerStats): boolean =>
 export const getQualifiedTrainerSpecialties = (
   stats: TrainerStats,
 ): TrainerSpecialty[] =>
-  (Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).filter(
+  trainerSpecialties.filter(
     (category) =>
       (stats.correctCategories[category] ?? 0) >= TRAINER_SPECIALTY_GOAL,
   );
@@ -194,20 +181,18 @@ export const getTrainerTitles = (
   stats: TrainerStats,
   equipped: TrainerSpecialty | null,
 ): TrainerTitle[] =>
-  (Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]).map(
-    (specialty) => {
-      const current = stats.correctCategories[specialty] ?? 0;
-      return {
-        current,
-        description: trainerSpecialtyDescriptions[specialty],
-        earned: current >= TRAINER_SPECIALTY_GOAL,
-        equipped: specialty === equipped,
-        goal: TRAINER_SPECIALTY_GOAL,
-        label: trainerSpecialtyLabels[specialty],
-        specialty,
-      };
-    },
-  );
+  trainerSpecialties.map((specialty) => {
+    const current = stats.correctCategories[specialty] ?? 0;
+    return {
+      current,
+      description: trainerSpecialtyDescriptions[specialty],
+      earned: current >= TRAINER_SPECIALTY_GOAL,
+      equipped: specialty === equipped,
+      goal: TRAINER_SPECIALTY_GOAL,
+      label: trainerSpecialtyLabels[specialty],
+      specialty,
+    };
+  });
 
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
   const earnedBadges = getEarnedTrainerBadgeCount(stats);
@@ -252,31 +237,31 @@ export const getTrainerProgressChanges = (
         : [];
     },
   );
-  const specialtyChanges = (
-    Object.keys(trainerSpecialtyLabels) as TrainerSpecialty[]
-  ).flatMap<TrainerSpecialtyChange>((specialty) => {
-    const previous = Math.min(
-      before.correctCategories[specialty] ?? 0,
-      TRAINER_SPECIALTY_GOAL,
-    );
-    const current = Math.min(
-      after.correctCategories[specialty] ?? 0,
-      TRAINER_SPECIALTY_GOAL,
-    );
-    return current > previous
-      ? [
-          {
-            current,
-            delta: current - previous,
-            earned: current === TRAINER_SPECIALTY_GOAL,
-            goal: TRAINER_SPECIALTY_GOAL,
-            kind: 'specialty',
-            label: trainerSpecialtyLabels[specialty],
-            specialty,
-          },
-        ]
-      : [];
-  });
+  const specialtyChanges = trainerSpecialties.flatMap<TrainerSpecialtyChange>(
+    (specialty) => {
+      const previous = Math.min(
+        before.correctCategories[specialty] ?? 0,
+        TRAINER_SPECIALTY_GOAL,
+      );
+      const current = Math.min(
+        after.correctCategories[specialty] ?? 0,
+        TRAINER_SPECIALTY_GOAL,
+      );
+      return current > previous
+        ? [
+            {
+              current,
+              delta: current - previous,
+              earned: current === TRAINER_SPECIALTY_GOAL,
+              goal: TRAINER_SPECIALTY_GOAL,
+              kind: 'specialty',
+              label: trainerSpecialtyLabels[specialty],
+              specialty,
+            },
+          ]
+        : [];
+    },
+  );
 
   return [...badgeChanges, ...specialtyChanges];
 };

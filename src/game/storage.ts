@@ -19,22 +19,15 @@ import {
   questionCategories,
   type GameMode,
   type GameResult,
-  type Generation,
   type Modifiers,
-  type QuestionCategory,
-  type QuestionType,
 } from './types';
 
-export interface TrainerStats {
+export interface TrainerStats extends Omit<
+  SavedResults['progress'],
+  'version'
+> {
   bestDailyStreak: number;
-  championAnswersWithoutClues: number;
-  correctCategories: Partial<Record<QuestionCategory, number>>;
-  correctGenerations: Partial<Record<Generation, number>>;
-  correctPokemon: string[];
-  correctQuestionTypes: Partial<Record<QuestionType, number>>;
   leagueCompleted: boolean;
-  masteryRounds: number;
-  quickAttackCompleted: boolean;
 }
 
 const addResultToProgress = (
