@@ -23,6 +23,7 @@ and daily push reminders.
 | `src/styles/`                     | Shared CSS foundations and surface-specific styles             |
 | `worker/`                         | Cloudflare Worker routes and the daily-reminder Durable Object |
 | `build/`, `scripts/`              | Build-time metadata, site assets, and catalog maintenance      |
+| `content/`                        | Public information and legal-page Markdown                     |
 | `art/`, `src/assets/`, `public/`  | Source art and shipped static assets                           |
 | `tests/`, `e2e/`                  | Vitest coverage and Playwright browser tests                   |
 

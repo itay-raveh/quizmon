@@ -43,7 +43,7 @@ you can also install it and play offline; Pokémon images you have not loaded ye
 may be unavailable. Optional daily reminders need an internet connection.
 
 Quizmon uses Pokémon data from [PokéAPI](https://pokeapi.co/). It is not affiliated
-with Nintendo, Game Freak, or The Pokémon Company. See the [Privacy policy](PRIVACY.md)
-and [Terms of Use](TERMS.md) for data practices and credits.
+with Nintendo, Game Freak, or The Pokémon Company. See the [Privacy policy](privacy.md)
+and [Terms of Use](terms.md) for data practices and credits.
 
 [Play Quizmon](/)

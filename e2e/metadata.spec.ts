@@ -146,6 +146,6 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
     '[Privacy policy](https://quizmon.raveh.dev/privacy)',
   );
   expect(overview).toContain('[Terms of Use](https://quizmon.raveh.dev/terms)');
-  expect(overview).not.toContain('(PRIVACY.md)');
-  expect(overview).not.toContain('(TERMS.md)');
+  expect(overview).not.toContain('(privacy.md)');
+  expect(overview).not.toContain('(terms.md)');
 });

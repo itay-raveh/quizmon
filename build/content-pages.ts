@@ -9,7 +9,7 @@ const pages = [
     title: 'About & How to Play',
     description:
       'Learn how Quizmon’s Daily Challenge, Training, scores, badges, and Pokémon League work, and how your progress is saved.',
-    source: 'ABOUT.md',
+    source: 'about.md',
   },
   {
     path: '/privacy',
@@ -17,7 +17,7 @@ const pages = [
     title: 'Privacy and Cookies',
     description:
       'How Quizmon handles game analytics, optional reminders, browser storage, and your privacy choices.',
-    source: 'PRIVACY.md',
+    source: 'privacy.md',
   },
   {
     path: '/terms',
@@ -25,7 +25,7 @@ const pages = [
     title: 'Terms of Use',
     description:
       'Terms for playing Quizmon, including acceptable use, saved progress, open-source licensing, and artwork credits.',
-    source: 'TERMS.md',
+    source: 'terms.md',
   },
 ];
 
@@ -34,7 +34,7 @@ const markdown = new Marked({
     if (token.type !== 'link') return;
     const page = pages.find(({ source }) => source === token.href);
     if (page) token.href = page.path;
-    if (token.href === 'LICENSE') {
+    if (token.href === '../LICENSE') {
       token.href = `${site.repositoryUrl}/blob/main/LICENSE`;
     }
   },
@@ -46,14 +46,21 @@ const layout = (content: string) =>
     content,
   );
 
-export const renderContentPage = (path: string, html: string) => {
+export const contentPageEntries = [
+  ...pages.map(({ path }) => `${path.slice(1)}.html`),
+  '404.html',
+];
+
+export const renderContentPage = (path: string) => {
   if (path === '/404.html') {
     return {
       path,
       title: 'Page Not Found',
       description: undefined,
       noindex: true as const,
-      html: layout(html),
+      html: layout(
+        readFileSync(new URL('./404.html', import.meta.url), 'utf8'),
+      ),
     };
   }
 
@@ -61,7 +68,7 @@ export const renderContentPage = (path: string, html: string) => {
   if (!page) return;
 
   const source = readFileSync(
-    new URL(`../${page.source}`, import.meta.url),
+    new URL(`../content/${page.source}`, import.meta.url),
     'utf8',
   );
   const links = pages

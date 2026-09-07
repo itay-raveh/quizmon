@@ -40,12 +40,12 @@ be excluded or limits mandatory consumer rights.
 
 ## Data and Privacy
 
-Our [Privacy and Cookies policy](PRIVACY.md) explains the information we collect,
+Our [Privacy and Cookies policy](privacy.md) explains the information we collect,
 how we use it, and your choices.
 
 ## Intellectual Property and Open Source
 
-Quizmon's code is available under the [MIT License](LICENSE). You may review,
+Quizmon's code is available under the [MIT License](../LICENSE). You may review,
 modify, and run it under that license. These terms do not restrict those rights.
 The code license does not cover third-party artwork or trademarks.
 

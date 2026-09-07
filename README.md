@@ -8,7 +8,7 @@
 
 Quizmon is a browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc. Scores and Trainer progress stay in the browser.
 
-[How to play](ABOUT.md) explains the Daily Challenge, Training, scoring, badges,
+[How to play](content/about.md) explains the Daily Challenge, Training, scoring, badges,
 and Quizmon League.
 
 ## Run Quizmon locally

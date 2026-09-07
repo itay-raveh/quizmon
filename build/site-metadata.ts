@@ -1,6 +1,7 @@
-import type { HtmlTagDescriptor, Plugin } from 'vite';
+import { resolve } from 'node:path';
+import { normalizePath, type HtmlTagDescriptor, type Plugin } from 'vite';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
-import { renderContentPage } from './content-pages.ts';
+import { contentPageEntries, renderContentPage } from './content-pages.ts';
 import {
   generatedAssets,
   llmsUrl,
@@ -60,77 +61,104 @@ const tags: HtmlTagDescriptor[] = [
   },
 ];
 
-export const siteMetadata = (): Plugin => ({
-  name: 'quizmon-site-metadata',
-  configureServer(server) {
-    server.middlewares.use((request, response, next) => {
-      const path = request.url?.split('?')[0]?.slice(1);
-      const asset = generatedAssets.find(({ fileName }) => fileName === path);
-
-      if (!asset) {
-        next();
-        return;
-      }
-
-      response.statusCode = 200;
-      response.setHeader('Content-Type', asset.contentType);
-      response.end(asset.source);
-    });
-  },
-  generateBundle() {
-    for (const asset of generatedAssets) {
-      this.emitFile({
-        type: 'asset',
-        fileName: asset.fileName,
-        source: asset.source,
-      });
-    }
-  },
-  transformIndexHtml: {
-    // Expand the shared shell before Vite bundles its stylesheet.
-    order: 'pre',
-    handler(html, context) {
-      const page = renderContentPage(context.path, html);
-      if (page) {
-        const title = `${page.title} | ${site.name}`;
-        return {
-          html: page.html,
-          tags: page.noindex
-            ? [
-                { tag: 'title', children: title, injectTo: 'head' },
-                meta('name', 'robots', 'noindex'),
-              ]
-            : [
-                ...pageTags(
-                  title,
-                  page.description,
-                  absoluteSiteUrl(page.path),
-                ),
-                ...(page.path === '/about'
-                  ? [
-                      {
-                        tag: 'link',
-                        attrs: {
-                          rel: 'alternate',
-                          type: 'text/markdown',
-                          href: markdownUrl,
-                        },
-                        injectTo: 'head' as const,
-                      },
-                    ]
-                  : []),
-              ],
-        };
-      }
-      return {
-        html: html
-          .replace('<html>', `<html lang="${site.language}">`)
-          .replace(
-            '<div id="root"></div>',
-            `<div id="root"><h1 id="landing-title" class="visually-hidden">${site.title}</h1></div>`,
-          ),
-        tags,
-      };
+export const siteMetadata = (): Plugin => {
+  const entries = new Set<string>();
+  return {
+    name: 'quizmon-site-metadata',
+    configResolved(config) {
+      for (const entry of contentPageEntries)
+        entries.add(normalizePath(resolve(config.root, entry)));
     },
-  },
-});
+    resolveId(id) {
+      return [...entries].find(
+        (entry) => entry === id || entry.endsWith(`/${id}`),
+      );
+    },
+    load(id) {
+      if (entries.has(id)) return '';
+    },
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        const path = request.url?.split('?')[0]?.slice(1);
+        const pagePath = `/${path ?? ''}`
+          .replace(/\/$/, '')
+          .replace(/\.html$/, '');
+        if (contentPageEntries.includes(`${pagePath.slice(1)}.html`)) {
+          void server
+            .transformIndexHtml(`${pagePath}.html`, '')
+            .then((html) => {
+              response.setHeader('Content-Type', 'text/html; charset=utf-8');
+              response.end(html);
+            }, next);
+          return;
+        }
+        const asset = generatedAssets.find(({ fileName }) => fileName === path);
+
+        if (!asset) {
+          next();
+          return;
+        }
+
+        response.statusCode = 200;
+        response.setHeader('Content-Type', asset.contentType);
+        response.end(asset.source);
+      });
+    },
+    generateBundle() {
+      for (const asset of generatedAssets) {
+        this.emitFile({
+          type: 'asset',
+          fileName: asset.fileName,
+          source: asset.source,
+        });
+      }
+    },
+    transformIndexHtml: {
+      // Expand the shared shell before Vite bundles its stylesheet.
+      order: 'pre',
+      handler(html, context) {
+        const page = renderContentPage(context.path);
+        if (page) {
+          const title = `${page.title} | ${site.name}`;
+          return {
+            html: page.html,
+            tags: page.noindex
+              ? [
+                  { tag: 'title', children: title, injectTo: 'head' },
+                  meta('name', 'robots', 'noindex'),
+                ]
+              : [
+                  ...pageTags(
+                    title,
+                    page.description,
+                    absoluteSiteUrl(page.path),
+                  ),
+                  ...(page.path === '/about'
+                    ? [
+                        {
+                          tag: 'link',
+                          attrs: {
+                            rel: 'alternate',
+                            type: 'text/markdown',
+                            href: markdownUrl,
+                          },
+                          injectTo: 'head' as const,
+                        },
+                      ]
+                    : []),
+                ],
+          };
+        }
+        return {
+          html: html
+            .replace('<html>', `<html lang="${site.language}">`)
+            .replace(
+              '<div id="root"></div>',
+              `<div id="root"><h1 id="landing-title" class="visually-hidden">${site.title}</h1></div>`,
+            ),
+          tags,
+        };
+      },
+    },
+  };
+};

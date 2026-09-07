@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
+import { contentPageEntries } from './build/content-pages.ts';
 import { siteMetadata } from './build/site-metadata.ts';
 
 const spriteProxy = {
@@ -17,13 +18,7 @@ export default defineConfig({
   build: {
     assetsDir: 'assets/build',
     rolldownOptions: {
-      input: [
-        'index.html',
-        'about.html',
-        'privacy.html',
-        'terms.html',
-        '404.html',
-      ],
+      input: ['index.html', ...contentPageEntries],
     },
   },
   plugins: [

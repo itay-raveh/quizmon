@@ -67,11 +67,11 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 `;
 
 const pageMarkdown = readFileSync(
-  new URL('../ABOUT.md', import.meta.url),
+  new URL('../content/about.md', import.meta.url),
   'utf8',
 )
-  .replaceAll('(PRIVACY.md)', `(${absoluteSiteUrl('/privacy')})`)
-  .replaceAll('(TERMS.md)', `(${absoluteSiteUrl('/terms')})`)
+  .replaceAll('(privacy.md)', `(${absoluteSiteUrl('/privacy')})`)
+  .replaceAll('(terms.md)', `(${absoluteSiteUrl('/terms')})`)
   .replaceAll('](/)', `](${site.url})`);
 
 const llms = `# ${site.name}
