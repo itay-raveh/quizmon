@@ -33,6 +33,7 @@ interface ResultsProps {
   onOpenTrainerCard: (view: TrainerView) => void;
   onOpenSettings: () => void;
   onTrainAgain: () => void;
+  onStartTraining: () => void;
   onRetryLeague: () => void;
   result: GameResult;
   resultSaved: boolean;
@@ -49,6 +50,7 @@ export const Results = ({
   onOpenTrainerCard,
   onOpenSettings,
   onTrainAgain,
+  onStartTraining,
   onRetryLeague,
   result,
   resultSaved,
@@ -212,20 +214,20 @@ export const Results = ({
         <DailyReminderPrompt dailyDate={mode.date} />
       ) : null}
 
-      {mode.kind === 'training' ? (
-        <div className="results__actions results__actions--training">
-          <GameButton onClick={onTrainAgain}>Train again</GameButton>
+      {mode.kind !== 'league' ? (
+        <div className="results__actions results__actions--paired">
+          <GameButton
+            onClick={mode.kind === 'training' ? onTrainAgain : onStartTraining}
+          >
+            {mode.kind === 'training' ? 'Train again' : 'Start training'}
+          </GameButton>
           <ShareResultButton mode={mode} result={result} tone="quiet" />
         </div>
-      ) : mode.kind === 'league' ? (
+      ) : (
         <div className="results__actions">
           <GameButton onClick={onRetryLeague}>
             {leagueVictory ? 'League rematch' : 'Retry League'}
           </GameButton>
-        </div>
-      ) : (
-        <div className="results__actions">
-          <ShareResultButton mode={mode} result={result} />
         </div>
       )}
     </section>

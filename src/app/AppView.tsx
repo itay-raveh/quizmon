@@ -183,6 +183,7 @@ const AppScreen = ({
       onOpenTrainerCard={trainer.open}
       onRetryLeague={league.retry}
       onTrainAgain={training.trainAgain}
+      onStartTraining={training.start}
       result={session.result}
       resultSaved={session.resultSaved}
       progressChanges={session.progressChanges}

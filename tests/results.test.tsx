@@ -45,6 +45,7 @@ const renderResults = (result: GameResult) =>
       onOpenSettings={vi.fn()}
       onRetryLeague={vi.fn()}
       onTrainAgain={vi.fn()}
+      onStartTraining={vi.fn()}
       result={result}
       resultSaved
       progressChanges={[]}
@@ -99,6 +100,7 @@ describe('results summary', () => {
         onOpenSettings={vi.fn()}
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
+        onStartTraining={vi.fn()}
         result={result}
         resultSaved
         progressChanges={[]}
@@ -140,6 +142,7 @@ describe('results summary', () => {
         onOpenSettings={vi.fn()}
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
+        onStartTraining={vi.fn()}
         result={result}
         resultSaved
         progressChanges={[
@@ -187,6 +190,7 @@ describe('results summary', () => {
         onOpenSettings={vi.fn()}
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
+        onStartTraining={vi.fn()}
         result={result}
         resultSaved
         progressChanges={[
@@ -226,6 +230,7 @@ describe('results summary', () => {
         onOpenSettings={vi.fn()}
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
+        onStartTraining={vi.fn()}
         result={result}
         resultSaved
         progressChanges={[
@@ -271,6 +276,7 @@ describe('results summary', () => {
         onOpenSettings={vi.fn()}
         onRetryLeague={onRetryLeague}
         onTrainAgain={vi.fn()}
+        onStartTraining={vi.fn()}
         result={result}
         resultSaved
         progressChanges={[]}
@@ -300,6 +306,7 @@ describe('results summary', () => {
         onOpenSettings={vi.fn()}
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
+        onStartTraining={vi.fn()}
         result={result}
         resultSaved
         progressChanges={[]}

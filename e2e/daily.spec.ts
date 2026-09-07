@@ -166,3 +166,60 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
     otherPage.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toHaveCount(0);
 });
+
+test('starts saved Training settings directly after completing Daily', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'quizmon.training-settings.v2',
+      JSON.stringify({
+        generations: ['I'],
+        questionTypes: ['pokedex-scan'],
+        trainingMode: 'custom',
+        answerFlow: 'manual',
+        soundVolume: 0,
+      }),
+    );
+  });
+  await page.goto('/?daily=2026-09-01&play=1');
+  for (let index = 0; index < 4; index += 1) {
+    await page.locator('.answer').first().click();
+    const check = page.getByRole('button', {
+      name: 'Check answers',
+      exact: true,
+    });
+    if (await check.count()) await check.click();
+    await page
+      .getByRole('button', { name: 'Next question', exact: true })
+      .click();
+  }
+  await page.getByRole('button', { name: /^Show 4 choices/ }).click();
+  await page.locator('.answer').first().click();
+  await page.getByRole('button', { name: 'See results', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Daily complete', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Share result', exact: true }),
+  ).toBeVisible();
+  const savedDaily = await page.evaluate(() =>
+    window.localStorage.getItem('quizmon.results.v2'),
+  );
+  expect(savedDaily).not.toBeNull();
+  await page
+    .getByRole('button', { name: 'Start training', exact: true })
+    .click();
+  await expect(
+    page.getByRole('heading', { name: 'Pokédex scan', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 010');
+  expect(
+    await page.evaluate(() =>
+      window.localStorage.getItem('quizmon.results.v2'),
+    ),
+  ).toBe(savedDaily);
+});
