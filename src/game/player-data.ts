@@ -4,7 +4,12 @@ import { normalizeModifiers } from './game';
 import { isDailyDate } from './daily';
 import { normalizeTrainerProfile, type TrainerProfile } from './profile-data';
 import { questionTypes } from './questions/registry';
-import { normalizeResults, type SavedResults } from './results-data';
+import {
+  normalizeResults,
+  STREAK_VERSION,
+  TRAINER_PROGRESS_VERSION,
+  type SavedResults,
+} from './results-data';
 import {
   generations,
   answerFlows,
@@ -144,12 +149,12 @@ const isResults = (value: unknown): value is SavedResults => {
     ) &&
     typeof league.completed === 'boolean' &&
     (league.seed === null || isName(league.seed)) &&
-    streak.version === 1 &&
+    streak.version === STREAK_VERSION &&
     Array.isArray(streak.creditedDates) &&
     streak.creditedDates.every(
       (date: unknown) => isDailyDate(date) && Object.hasOwn(daily, date),
     ) &&
-    progress.version === 2 &&
+    progress.version === TRAINER_PROGRESS_VERSION &&
     isCount(progress.championAnswersWithoutClues) &&
     isCounts(progress.correctCategories, questionCategories) &&
     isCounts(progress.correctGenerations, generations) &&

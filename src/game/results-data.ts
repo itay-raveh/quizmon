@@ -11,8 +11,8 @@ import {
 } from './types';
 import { isChoice, isFiniteNonnegative, isRecord } from './validation';
 
-const STREAK_VERSION = 1;
-const TRAINER_PROGRESS_VERSION = 2;
+export const STREAK_VERSION = 1;
+export const TRAINER_PROGRESS_VERSION = 2;
 interface TrainerProgress {
   championAnswersWithoutClues: number;
   correctCategories: Partial<Record<QuestionCategory, number>>;

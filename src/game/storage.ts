@@ -5,7 +5,7 @@ import {
   updatePlayerData,
   canPersistPlayerData,
 } from './player-storage';
-import type { SavedResults } from './results-data';
+import { TRAINER_PROGRESS_VERSION, type SavedResults } from './results-data';
 import {
   defaultModifiers,
   isLeagueTraining,
@@ -80,7 +80,7 @@ const addResultToProgress = (
     quickAttackCompleted:
       progress.quickAttackCompleted ||
       (isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60),
-    version: 2,
+    version: TRAINER_PROGRESS_VERSION,
   };
 };
 
