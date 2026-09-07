@@ -278,33 +278,26 @@ html:has(.app--questions) {
 }
 
 .generation-label {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.25em;
-}
-
-.generation-label__value {
-  white-space: nowrap;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .generation-label__number {
+  display: inline-block;
   font-family: var(--font-data);
-  font-size: 1.15em;
+  font-size: 1em;
   font-weight: 850;
+  white-space: nowrap;
 }
 
 .generation-label--stacked {
   display: inline-grid;
   justify-items: center;
-  gap: 0.2rem;
-  font-size: var(--text-body);
-  line-height: 1;
+  gap: 0.25em;
+  line-height: 1.25;
 }
 
 .generation-label--stacked .generation-label__number {
-  font-size: var(--text-display);
-}
-
-.generation-label--numeral .generation-label__number {
-  font-size: inherit;
+  font-size: 2.25em;
+  line-height: 1.1;
 }

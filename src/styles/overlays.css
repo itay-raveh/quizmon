@@ -103,7 +103,7 @@
 
 .generation-prompt__choices strong {
   display: grid;
-  min-height: 3.4rem;
+  min-height: 1.5em;
   align-items: center;
   font-size: var(--text-body);
 }

@@ -12,10 +12,17 @@ export const GenerationLabel = ({
   suffix,
 }: GenerationLabelProps) => (
   <span className={`generation-label generation-label--${variant}`}>
-    {variant !== 'numeral' && <span>Generation </span>}
-    <span className="generation-label__value">
-      <span className="generation-label__number">{generation}</span>
-      {suffix && <> {suffix}</>}
-    </span>
+    {variant !== 'numeral' && (
+      <>
+        <span>Generation</span>{' '}
+      </>
+    )}
+    <span className="generation-label__number">{generation}</span>
+    {suffix && (
+      <>
+        {' '}
+        <span>{suffix}</span>
+      </>
+    )}
   </span>
 );

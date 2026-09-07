@@ -70,7 +70,7 @@ export const GenerationPromptDialog = ({
         <div className="generation-prompt__choices">
           <GameButton autoFocus onClick={onChooseGenOne}>
             <strong>
-              <GenerationLabel generation="I" variant="stacked" suffix="only" />
+              <GenerationLabel generation="I" suffix="only" />
             </strong>
             <PokemonPreview sprites={genOnePreview} />
           </GameButton>
