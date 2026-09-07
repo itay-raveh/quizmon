@@ -75,25 +75,16 @@ export const gameSessionReducer = (
 ): GameSession => {
   switch (action.type) {
     case 'started':
-      return {
-        answers: [],
-        mode: action.mode,
-        modifiers: action.modifiers,
-        phase: 'questions',
-        questionIndex: 0,
-        questions: action.questions,
-        seed: action.seed,
-      };
     case 'restored':
       return {
-        answers: action.answers,
+        answers: action.type === 'restored' ? action.answers : [],
         mode: action.mode,
         modifiers: action.modifiers,
         phase: 'questions',
-        questionIndex: Math.min(
-          action.answers.length,
-          action.questions.length - 1,
-        ),
+        questionIndex:
+          action.type === 'restored'
+            ? Math.min(action.answers.length, action.questions.length - 1)
+            : 0,
         questions: action.questions,
         seed: action.seed,
       };

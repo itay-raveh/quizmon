@@ -119,23 +119,30 @@ describe('gameSessionReducer', () => {
     );
   });
 
-  it('restores at the first unanswered question', () => {
-    const restored = gameSessionReducer(initialGameSession, {
-      answers: [answer],
-      mode: { kind: 'training' },
-      modifiers: defaultModifiers,
-      questions: [question, { ...question, id: 'identity:eevee:1' }],
-      seed: 'saved-round',
-      type: 'restored',
-    });
+  it.each([
+    { answers: [], expectedIndex: 0 },
+    { answers: [answer], expectedIndex: 1 },
+    { answers: [answer, answer], expectedIndex: 1 },
+  ])(
+    'restores the answer position for $answers.length saved answers',
+    ({ answers, expectedIndex }) => {
+      const restored = gameSessionReducer(initialGameSession, {
+        answers,
+        mode: { kind: 'training' },
+        modifiers: defaultModifiers,
+        questions: [question, { ...question, id: 'identity:eevee:1' }],
+        seed: 'saved-round',
+        type: 'restored',
+      });
 
-    expect(restored).toMatchObject({
-      answers: [answer],
-      phase: 'questions',
-      questionIndex: 1,
-      seed: 'saved-round',
-    });
-  });
+      expect(restored).toMatchObject({
+        answers,
+        phase: 'questions',
+        questionIndex: expectedIndex,
+        seed: 'saved-round',
+      });
+    },
+  );
 
   it('ignores phase-specific actions outside an active game', () => {
     expect(
