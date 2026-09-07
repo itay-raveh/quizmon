@@ -124,9 +124,6 @@
   );
   border: 3px solid var(--navy);
   border-radius: 50%;
-  box-shadow:
-    0 0.18rem 0 var(--yellow),
-    0 0.3rem 0 var(--navy-shadow);
   place-items: center;
 }
 
