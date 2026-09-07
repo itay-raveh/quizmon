@@ -1,3 +1,5 @@
+import type { Generation } from './types.ts';
+
 export const SPRITE_SOURCE =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master';
 
@@ -21,6 +23,14 @@ const VERSION_SPRITE_PATH = new RegExp(
 
 export const isSpritePath = (path: string): boolean =>
   SPRITE_PATH.test(path) || VERSION_SPRITE_PATH.test(path);
+
+export const getVersionSpritePath = (
+  generation: Generation,
+  version: string,
+  orientation: 'back' | 'front',
+  pokemonId: number,
+): string =>
+  `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/${orientation === 'back' ? 'back/' : ''}${pokemonId}.png`;
 
 export const normalizeSpriteUrl = (url: string | null): string | null => {
   if (!url) return null;

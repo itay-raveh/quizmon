@@ -1,3 +1,4 @@
+import { getVersionSpritePath } from '../sprite-source';
 import {
   getOptionVisuals,
   makeQuestion,
@@ -37,7 +38,12 @@ const pickScanSprite = (
     generation.back.includes(version) &&
     (!preferFront || generation.front.length === 0);
 
-  return `/sprites/pokemon/versions/generation-${generation.generation.toLowerCase()}/${version}/${usesBack ? 'back/' : ''}${pokemon.id}.png`;
+  return getVersionSpritePath(
+    generation.generation,
+    version,
+    usesBack ? 'back' : 'front',
+    pokemon.id,
+  );
 };
 
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {

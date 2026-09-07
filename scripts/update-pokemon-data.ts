@@ -25,6 +25,7 @@ import {
 
 import {
   fetchSpriteSource,
+  getVersionSpritePath,
   normalizeSpriteUrl,
 } from '../src/game/sprite-source.ts';
 import { measureCatalogSprites } from './sprite-measurements.ts';
@@ -100,12 +101,6 @@ const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   ) as Record<StatName, number>;
 };
 
-const getSprite = (pokemon: Pokemon): string | null =>
-  normalizeSpriteUrl(pokemon.sprites.front_default);
-
-const getShinySprite = (pokemon: Pokemon): string | null =>
-  normalizeSpriteUrl(pokemon.sprites.front_shiny);
-
 interface VersionSpriteSet {
   back_default?: unknown;
   front_default?: unknown;
@@ -120,7 +115,12 @@ const getSpriteVersion = (
 ): string | null => {
   if (typeof value !== 'string') return null;
   const path = normalizeSpriteUrl(value);
-  const expectedPath = `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/${orientation === 'back' ? 'back/' : ''}${pokemonId}.png`;
+  const expectedPath = getVersionSpritePath(
+    generation,
+    version,
+    orientation,
+    pokemonId,
+  );
   if (path !== expectedPath) {
     throw new Error(`Unexpected version sprite path: ${path}`);
   }
@@ -282,8 +282,8 @@ export const buildPokemonCatalog = async (
       isMythical: species.is_mythical,
       levelMoves: getLevelMoves(entry),
       shape: species.shape.name,
-      shinySprite: getShinySprite(entry),
-      sprite: getSprite(entry),
+      shinySprite: normalizeSpriteUrl(entry.sprites.front_shiny),
+      sprite: normalizeSpriteUrl(entry.sprites.front_default),
       stats: getStats(entry),
       types: entry.types
         .sort((left, right) => left.slot - right.slot)
