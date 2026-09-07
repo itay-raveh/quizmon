@@ -8,14 +8,12 @@ import {
   filterPokemon,
   formatDuration,
   getAnswerPoints,
-  getKnowledgePoints,
-  getMasteryBonus,
+  getScoreBreakdown,
   getQuestionCount,
   getQuestionPromptText,
   getQuestionTitle,
   getQuestionTypeLabel,
   getResponseTimeSeconds,
-  getSpeedBonus,
   getSpeedBonusPoints,
   getTrainingModifiers,
   normalizeModifiers,
@@ -865,8 +863,11 @@ describe('scoring', () => {
       },
     ] as const;
 
-    expect(getKnowledgePoints(answers)).toBe(1_500);
-    expect(getMasteryBonus(answers)).toBe(750);
+    expect(getScoreBreakdown(answers)).toEqual({
+      knowledge: 1_500,
+      speed: 0,
+      mastery: 750,
+    });
     expect(calculateScore(answers)).toBe(2_250);
   });
 
@@ -893,8 +894,17 @@ describe('scoring', () => {
       speedBonus: 3_000,
     }));
 
-    expect(getSpeedBonus(perfect)).toBe(30_000);
+    expect(getScoreBreakdown(perfect)).toEqual({
+      knowledge: 10_000,
+      speed: 30_000,
+      mastery: 10_000,
+    });
     expect(calculateScore(perfect)).toBe(50_000);
+    expect(getScoreBreakdown([])).toEqual({
+      knowledge: 0,
+      speed: 0,
+      mastery: 0,
+    });
     expect(calculateScore([])).toBe(0);
   });
 });

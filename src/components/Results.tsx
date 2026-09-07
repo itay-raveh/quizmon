@@ -5,9 +5,7 @@ import {
   formatDuration,
   formatDurationMilliseconds,
   getCategoryLabel,
-  getKnowledgePoints,
-  getMasteryBonus,
-  getSpeedBonus,
+  getScoreBreakdown,
 } from '@/game/game';
 import { getLeagueStage, isLeagueVictory } from '@/game/league';
 import { formatScore } from '@/game/format';
@@ -65,6 +63,7 @@ export const Results = ({
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
   const leagueVictory = mode.kind === 'league' && isLeagueVictory(result);
+  const score = getScoreBreakdown(result.answers);
   const resultStats: ResultStat[] = [
     ...(mode.kind === 'league' && !leagueVictory
       ? [
@@ -93,10 +92,10 @@ export const Results = ({
     },
     {
       label: 'Knowledge',
-      value: formatScore(getKnowledgePoints(result.answers)),
+      value: formatScore(score.knowledge),
     },
-    { label: 'Speed', value: formatScore(getSpeedBonus(result.answers)) },
-    { label: 'Mastery', value: formatScore(getMasteryBonus(result.answers)) },
+    { label: 'Speed', value: formatScore(score.speed) },
+    { label: 'Mastery', value: formatScore(score.mastery) },
   ];
   const highScoreKey = getHighScoreKey(mode, modifiers);
   const highScoreLabel = highScoreKey
