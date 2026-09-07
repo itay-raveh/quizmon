@@ -1,3 +1,4 @@
+import type { LeagueVictoryRecord } from '@/game/hall-of-fame';
 import type {
   AnswerResult,
   GameMode,
@@ -26,6 +27,7 @@ export type GameSession =
       phase: 'results';
       result: GameResult;
       resultSaved: boolean;
+      leagueRecord?: LeagueVictoryRecord;
       progressChanges: TrainerProgressChange[];
       seed: string;
     };
@@ -53,6 +55,7 @@ export type GameSessionAction =
       isNewBest: boolean;
       result: GameResult;
       resultSaved: boolean;
+      leagueRecord?: LeagueVictoryRecord;
       progressChanges: TrainerProgressChange[];
       type: 'completed';
     }
@@ -119,6 +122,7 @@ export const gameSessionReducer = (
             phase: 'results',
             result: action.result,
             resultSaved: action.resultSaved,
+            leagueRecord: action.leagueRecord,
             seed: session.seed,
             progressChanges: action.progressChanges,
           }

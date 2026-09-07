@@ -1,13 +1,17 @@
-.league-hall {
+.league-hall,
+.hall-record {
   --hall-gold: #f4d578;
   --hall-ink: #fff5d6;
-  --hall-muted: #bfd0df;
+  --hall-muted: #bdcfe0;
+  --hall-night: #102f50;
   --focus: var(--hall-gold);
-  width: min(46rem, 100%);
-  padding: clamp(1rem, 3vw, 1.8rem);
-  overflow: hidden;
+}
+
+.league-hall {
+  width: min(48rem, 100%);
+  padding: clamp(0.8rem, 3vw, 1.5rem);
   color: var(--hall-ink);
-  background: #102f50;
+  background: var(--hall-night);
   border: 3px solid var(--navy);
   border-radius: var(--surface-radius);
   box-shadow:
@@ -17,198 +21,288 @@
 }
 
 .league-hall__header {
-  display: grid;
-  grid-template-columns: 2.8rem minmax(0, 1fr) 2.8rem;
-  align-items: center;
+  display: flex;
+  align-items: stretch;
   gap: 0.7rem;
+  margin-bottom: 1.3rem;
 }
 
-.league-hall__header .game-button {
-  padding: 0;
+.league-hall__header > .game-button {
+  flex: none;
   width: 2.8rem;
-  height: 2.8rem;
+  min-height: 2.8rem;
+  padding: 0.4rem;
 }
 
-.league-hall__header h1 {
+.league-hall__navigation {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.league-hall__navigation .game-button {
+  padding: 0.5rem 0.35rem;
+  font-size: var(--text-small);
+}
+
+.league-hall__navigation [aria-pressed='true'] {
+  color: var(--navy);
+  background: var(--hall-gold);
+}
+
+.league-hall h1,
+.hall-record h1 {
   margin: 0;
   color: var(--hall-gold);
-  font-size: var(--text-display);
-  font-weight: 800;
-  line-height: 1.05;
-  text-align: center;
-  text-wrap: balance;
-}
-
-.league-hall__chamber {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  justify-items: center;
-  padding: 1.6rem 0 1.3rem;
-  text-align: center;
-}
-
-.league-hall__trophy {
-  width: 4rem;
-  height: 4rem;
-  margin-bottom: 0.6rem;
-}
-
-.league-hall__identity h2,
-.league-hall__invitation h2 {
-  max-width: 26ch;
-  margin: 0;
-  font-size: var(--text-headline);
+  font-size: clamp(1.9rem, 6cqi, 2.8rem);
   font-weight: 800;
   line-height: 1.1;
-  overflow-wrap: anywhere;
+  text-align: center;
   text-wrap: balance;
 }
 
-.league-hall__identity p {
-  margin: 0.35rem 0 0;
-  color: var(--hall-gold);
-  font-size: var(--text-control);
-  font-weight: 700;
-}
-
-.league-hall__header h1:focus {
+.league-hall h1:focus {
   outline: none;
 }
 
-.league-hall__partner {
-  display: grid;
-  justify-items: center;
-  width: min(100%, 32rem);
-  margin-top: 0.8rem;
-}
-
-.league-hall__portrait {
+.league-trophy {
   position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 2;
-}
-
-.league-hall__backdrop {
-  display: block;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-}
-
-.league-hall__sprite {
-  position: absolute;
-  width: 42%;
-  height: auto;
-  left: 50%;
-  bottom: 19%;
-  transform: translateX(-50%);
-  image-rendering: pixelated;
-}
-
-.league-hall__partner .pokemon-identity {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.6rem;
-  color: var(--hall-ink);
-}
-
-.league-hall__partner .pokemon-identity__number {
-  color: var(--hall-muted);
-}
-
-.league-hall__record {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin: 1rem 0 0;
-  font-size: var(--text-control);
-  font-weight: 700;
-}
-
-.league-hall__record strong {
-  color: var(--hall-gold);
-  font-family: var(--font-data);
-  font-size: var(--text-control);
-}
-
-.league-hall__invitation p {
-  margin: 0.85rem 0 0;
-  color: var(--hall-muted);
-  font-size: var(--text-body);
-  line-height: 1.5;
-}
-
-.league-hall__trials {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.5rem;
-  padding: 1.1rem 0;
-  margin: 0;
-  border-block: 1px solid #55748d;
-  list-style: none;
-  text-align: center;
-}
-
-.league-hall__trials li {
-  display: grid;
-  justify-items: center;
-  align-content: start;
-  gap: 0.4rem;
-  min-width: 0;
-}
-
-.league-hall__trial-mark {
-  display: grid;
-  height: 2rem;
-  color: var(--hall-gold);
-  font-family: var(--font-data);
-  font-size: var(--text-control);
-  font-weight: 800;
+  width: min(100%, 24rem);
+  height: 15rem;
+  margin-inline: auto;
+  isolation: isolate;
   place-items: center;
 }
 
-.league-hall__trial-mark .champion-trophy {
-  width: 2rem;
-  height: 2rem;
+.league-trophy__rays {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--hall-gold);
+  mask-image: radial-gradient(ellipse, black 25%, transparent 70%);
 }
 
-.league-hall__trial-name {
-  font-size: var(--text-small);
-  font-weight: 700;
+.league-trophy .league-trophy__image {
+  width: 12rem;
+  height: 12rem;
+  filter: drop-shadow(0 0.4rem 0 #061c35);
 }
 
-.league-hall__trial-detail {
+.league-trophy--locked .league-trophy__image {
+  filter: brightness(0) saturate(100%) drop-shadow(0 2px 0 #7c94ab);
+  opacity: 0.75;
+}
+
+.league-trophy--locked .league-trophy__rays {
+  color: #8ba7c2;
+}
+
+.league-challenge,
+.league-hall__empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+}
+
+.league-challenge > p,
+.league-hall__empty > p {
+  max-width: 35ch;
+  margin: 0.6rem 0 1.5rem;
   color: var(--hall-muted);
-  font-size: var(--text-micro);
-  line-height: 1.25;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  text-wrap: pretty;
 }
 
-.league-hall__trial-score {
+.league-hall__empty h2 {
+  margin: 0;
+  font-size: var(--text-headline);
+  text-wrap: balance;
+}
+
+.league-challenge__trials {
   display: flex;
   align-items: center;
-  gap: 0.2rem;
-  color: var(--hall-gold);
-  font-family: var(--font-data);
-  font-size: var(--text-mini);
-  font-weight: 700;
+  justify-content: center;
+  width: min(100%, 27rem);
+  padding: 0;
+  margin: 0 0 2rem;
+  list-style: none;
 }
 
-.league-hall__trial-score svg {
-  width: 0.8rem;
-  height: 0.8rem;
+.league-challenge__trials li {
+  position: relative;
+  display: grid;
+  flex: 1;
+  color: var(--hall-gold);
+  font-family: var(--font-data);
+  font-size: var(--text-control);
+  font-weight: 700;
+  place-items: center;
+}
+
+.league-challenge__trials li + li::before {
+  position: absolute;
+  left: -20%;
+  width: 40%;
+  height: 1px;
+  background: #55748d;
+  content: '';
+}
+
+.league-gold-button.game-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--navy);
+  background: var(--hall-gold);
+  font-weight: 800;
+}
+
+.hall-record {
+  padding: clamp(0.8rem, 3cqi, 1.5rem);
+  color: var(--hall-ink);
+  background: var(--hall-night);
+  border: 1px solid #6e6845;
+}
+
+.hall-record__portrait {
+  position: relative;
+  aspect-ratio: 1.12;
+  margin-top: 0.5rem;
+  isolation: isolate;
+}
+
+.hall-record__portrait::before {
+  position: absolute;
+  inset: 33% 1% 1%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    #385b73,
+    #1c405e 65%,
+    transparent 66%
+  );
+  content: '';
+}
+
+.hall-record__portrait > .league-trophy {
+  position: absolute;
+  top: -5%;
+  left: 20%;
+  width: 60%;
+  height: 65%;
+}
+
+.hall-record__portrait .league-trophy__image {
+  width: 65%;
+  height: auto;
+}
+
+.hall-record__group {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.hall-record__group li {
+  position: absolute;
+  aspect-ratio: 1;
+  transform: translate(-50%, -65%);
+}
+
+.hall-record__group img,
+.hall-record__missing {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 1px #091f35);
+}
+
+.hall-record__sprite--flipped {
+  transform: scaleX(-1);
+}
+
+.hall-record__missing {
+  display: grid;
+  font-size: var(--text-headline);
+  place-items: center;
+}
+
+.hall-record__honors {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.hall-record__honors h2 {
+  margin: 0 0 0.7rem;
+  font-size: clamp(1.4rem, 4cqi, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.hall-record__score {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--hall-gold);
+  font-size: var(--text-small);
+}
+
+.hall-record__score strong {
+  font-family: var(--font-data);
+  font-size: clamp(1.2rem, 4cqi, 1.8rem);
+}
+
+.hall-record__signature {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #55748d;
+  color: var(--hall-muted);
+  font-size: var(--text-micro);
+}
+
+.league-hall__history {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  font-size: var(--text-small);
+}
+
+.league-hall__history .game-button {
+  width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.3rem;
 }
 
 .league-hall__actions {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   gap: 0.8rem;
-  padding: 1.25rem 0 0.25rem;
+  margin-block: 1.3rem 0.4rem;
 }
 
 .league-hall__notice {
@@ -216,61 +310,45 @@
   text-align: center;
 }
 
-.league-hall--induction .league-hall__chamber {
-  animation: league-induction 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+.league-hall--induction .league-trophy__rays {
+  animation: league-radiance 650ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes league-induction {
+@keyframes league-radiance {
   from {
-    opacity: 0.35;
-    transform: translateY(1rem);
-    filter: brightness(1.8);
+    transform: scale(0.75) rotate(-10deg);
+    opacity: 0.5;
   }
   to {
+    transform: scale(1) rotate(0);
     opacity: 1;
-    transform: translateY(0);
-    filter: brightness(1);
   }
 }
 
-@container (max-width: 28rem) {
-  .league-hall__header {
-    grid-template-columns: 2.5rem minmax(0, 1fr);
+@container (max-width: 32rem) {
+  .league-trophy .league-trophy__image {
+    width: 10rem;
+    height: 10rem;
   }
-
-  .league-hall__header h1 {
-    text-align: left;
-    font-size: var(--text-display);
+  .hall-record__portrait .league-trophy__image {
+    width: 65%;
+    height: auto;
   }
-
-  .league-hall__header .game-button {
-    width: 2.5rem;
-    height: 2.5rem;
+  .hall-record__honors h2 {
+    margin-bottom: 0.5rem;
   }
-
-  .league-hall__chamber {
-    padding-top: 1.2rem;
-  }
-
-  .league-hall__trial-detail {
-    display: none;
-  }
-
-  .league-hall__trial-name {
-    font-size: var(--text-micro);
-  }
-
-  .league-hall__trials {
-    gap: 0.2rem;
+  .hall-record__signature {
+    justify-content: center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .league-hall--induction .league-hall__chamber {
+  .league-hall--induction .league-trophy__rays {
     animation: none;
   }
 }
 
-html[data-reduce-motion] .league-hall--induction .league-hall__chamber {
+html[data-reduce-motion] .league-hall--induction .league-trophy__rays,
+.trainer-share-capture .league-trophy__rays {
   animation: none;
 }

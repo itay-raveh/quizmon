@@ -1,3 +1,4 @@
+import type { LeagueVictoryRecord } from './hall-of-fame';
 import { questionTypes } from './questions/registry';
 import {
   readPlayerData,
@@ -193,6 +194,7 @@ export const saveResult = (
   mode: GameMode,
   result: GameResult,
   modifiers: Modifiers = defaultModifiers,
+  victory?: LeagueVictoryRecord,
 ): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
   const results = readResults();
   if (mode.kind === 'daily') {
@@ -225,6 +227,10 @@ export const saveResult = (
   }
 
   if (mode.kind === 'league') {
+    const hallOfFame = readPlayerData().hallOfFame;
+    if (victory && hallOfFame.some(({ id }) => id === victory.id)) {
+      return { best: result, isNewBest: false, isSaved: true };
+    }
     results.progress = addResultToProgress(
       results.progress,
       result,
@@ -234,7 +240,10 @@ export const saveResult = (
     const completed = isLeagueVictory(result);
     results.league.completed = results.league.completed || completed;
     if (completed) results.league.seed = null;
-    const isSaved = writeResults(results);
+    const isSaved = updatePlayerData({
+      results,
+      ...(completed && victory ? { hallOfFame: [...hallOfFame, victory] } : {}),
+    });
     return {
       best: result,
       isNewBest: completed && isSaved,

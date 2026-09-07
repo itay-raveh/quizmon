@@ -1313,7 +1313,7 @@
   background: var(--blue);
 }
 
-.champion-trophy {
+.trophy {
   display: block;
   object-fit: contain;
   image-rendering: pixelated;

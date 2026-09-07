@@ -46,7 +46,8 @@ interface NavigationView {
 
 interface LeagueView {
   isOpen: boolean;
-  open: () => void;
+  open: (view?: 'challenge' | 'hall') => void;
+  view: 'challenge' | 'hall' | null;
   close: () => void;
   showResults: boolean;
   setShowResults: (show: boolean) => void;
@@ -151,7 +152,11 @@ const AppScreen = ({
         onViewResults={
           leagueVictory ? () => league.setShowResults(true) : undefined
         }
-        profile={trainer.profile}
+        view={league.view ?? (leagueVictory ? 'hall' : 'challenge')}
+        onViewChange={league.open}
+        freshRecord={
+          session.phase === 'results' ? session.leagueRecord : undefined
+        }
         resultSaved={session.phase === 'results' ? session.resultSaved : true}
       />
     );
@@ -172,7 +177,9 @@ const AppScreen = ({
         onRetryCatalog={catalogState.retry}
         onStart={training.start}
         onStartDaily={daily.start}
-        onStartLeague={league.open}
+        onStartLeague={() =>
+          league.open(trainer.stats.leagueCompleted ? 'hall' : 'challenge')
+        }
         storageAvailable={daily.storageAvailable}
       />
     );
@@ -214,7 +221,10 @@ const AppScreen = ({
       modifiers={session.modifiers}
       onNewGame={navigation.returnToLanding}
       onOpenTrainerCard={trainer.open}
-      onOpenHallOfFame={() => league.setShowResults(false)}
+      onOpenHallOfFame={() => {
+        league.open('hall');
+        league.setShowResults(false);
+      }}
       onRetryLeague={league.retry}
       onTrainAgain={training.trainAgain}
       onStartTraining={training.start}

@@ -15,7 +15,7 @@ import {
   shouldOfferDailyReminder,
 } from '@/notifications/daily-reminder-storage';
 
-const catalog = catalogData as PokemonCatalog;
+const catalog = catalogData as unknown as PokemonCatalog;
 
 describe('Daily Challenge', () => {
   it('builds the same seeded five-question challenge for a date', () => {

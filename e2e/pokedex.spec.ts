@@ -89,7 +89,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
   };
   const seed = 'pokedex-answer';
   const [question] = buildQuestions(
-    catalogData as PokemonCatalog,
+    catalogData as unknown as PokemonCatalog,
     modifiers,
     createSeededRandom(seed),
   );

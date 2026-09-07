@@ -1,3 +1,6 @@
+import { createLeagueVictoryRecord } from '@/game/hall-of-fame';
+import { isLeagueVictory } from '@/game/league';
+import { readPlayerData } from '@/game/player-storage';
 import { registerPokedexAnswer } from '@/game/pokedex';
 import { useCallback, type Dispatch } from 'react';
 import { clearActiveGame } from '@/game/active-game';
@@ -15,6 +18,7 @@ import type {
   GameMode,
   GameResult,
   Modifiers,
+  QuestionData,
 } from '@/game/types';
 import type { GameSession, GameSessionAction } from './session';
 
@@ -42,7 +46,8 @@ export const useGameCompletion = ({
       answers: AnswerResult[],
       mode: GameMode,
       modifiers: Modifiers,
-      questionCount: number,
+      questions: QuestionData[],
+      seed: string,
     ) => {
       const result = {
         answers,
@@ -50,12 +55,21 @@ export const useGameCompletion = ({
         correctCount: answers.filter(({ correct }) => correct).length,
         elapsedMilliseconds: getResponseTimeMilliseconds(answers),
         elapsedSeconds: getResponseTimeSeconds(answers),
-        questionCount,
+        questionCount: questions.length,
         score: calculateScore(answers),
         scoreVersion: SCORE_VERSION,
       };
       const previousTrainerStats = readTrainerStats();
-      const best = saveResult(mode, result, modifiers);
+      const leagueRecord =
+        mode.kind === 'league' && isLeagueVictory(result)
+          ? createLeagueVictoryRecord(
+              result,
+              questions,
+              seed,
+              readPlayerData().profile?.name ?? '',
+            )
+          : undefined;
+      const best = saveResult(mode, result, modifiers, leagueRecord);
       const progressChanges = best.isSaved
         ? getTrainerProgressChanges(previousTrainerStats, readTrainerStats())
         : [];
@@ -67,6 +81,7 @@ export const useGameCompletion = ({
         isNewBest: best.isNewBest,
         result,
         resultSaved: best.isSaved,
+        leagueRecord,
         progressChanges,
         type: 'completed',
       });
@@ -110,7 +125,8 @@ export const useGameCompletion = ({
           nextAnswers,
           session.mode,
           session.modifiers,
-          session.questions.length,
+          session.questions,
+          session.seed,
         );
         return;
       }

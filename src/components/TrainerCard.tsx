@@ -11,7 +11,7 @@ import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
 import { PokemonIdentity } from './PokemonIdentity';
 import { CatchCombo } from './CatchCombo';
-import { ChampionTrophy } from './ChampionTrophy';
+import { Trophy } from './Trophy';
 
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
@@ -54,7 +54,7 @@ export const TrainerCard = ({
       <div className="trainer-card__front">
         <header className="trainer-card__rank">
           {rank}
-          {rank === 'Champion' ? <ChampionTrophy /> : null}
+          {rank === 'Champion' ? <Trophy /> : null}
         </header>
         <div className="trainer-card__identity">
           <h2>{profile.name || `${site.name} Trainer`}</h2>

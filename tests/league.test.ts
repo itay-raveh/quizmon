@@ -13,7 +13,7 @@ import {
   type PokemonCatalog,
 } from '@/game/types';
 
-const catalog = catalogData as PokemonCatalog;
+const catalog = catalogData as unknown as PokemonCatalog;
 
 describe('Quizmon League', () => {
   it('builds the deterministic 15-format championship lineup', () => {

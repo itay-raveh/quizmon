@@ -13,7 +13,7 @@ import {
   type Generation,
 } from '@/game/types';
 
-const catalog = catalogData as PokemonCatalog;
+const catalog = catalogData as unknown as PokemonCatalog;
 const context = (
   seed: string,
   selected: readonly Generation[] = generations,

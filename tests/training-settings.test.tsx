@@ -6,7 +6,7 @@ import type { Modifiers, PokemonCatalog } from '@/game/types';
 import { TrainingSettings } from '@/components/TrainingSettings';
 import { getTrainingSettingsValidation } from '@/components/trainingSettingsModel';
 
-const catalog = catalogData as PokemonCatalog;
+const catalog = catalogData as unknown as PokemonCatalog;
 
 const TrainingSettingsHarness = ({ initial }: { initial: Modifiers }) => {
   const [draft, setDraft] = useState(initial);

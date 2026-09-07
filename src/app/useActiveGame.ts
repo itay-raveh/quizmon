@@ -27,7 +27,8 @@ interface ActiveGameOptions {
     answers: AnswerResult[],
     mode: GameMode,
     modifiers: Modifiers,
-    questionCount: number,
+    questions: QuestionData[],
+    seed: string,
   ) => void;
   dailyDate: string;
   dispatch: Dispatch<GameSessionAction>;
@@ -159,7 +160,8 @@ export const useActiveGame = ({
           snapshot.answers,
           snapshot.mode,
           snapshot.modifiers,
-          questions.length,
+          questions,
+          snapshot.seed,
         );
       } else {
         startTimer();

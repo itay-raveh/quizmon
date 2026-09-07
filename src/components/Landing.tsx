@@ -1,3 +1,5 @@
+import { LeagueTrophy } from './LeagueTrophy';
+import { ArrowRightIcon } from './icons';
 import { site } from '@/app/site';
 import { formatDailyDate, getLocalDate } from '@/game/daily';
 import type { GameResult } from '@/game/types';
@@ -120,11 +122,17 @@ export const Landing = ({
         {leagueUnlocked ? (
           <GameButton
             className="landing__league-button"
+            aria-label="Quizmon League"
             disabled={catalogStatus !== 'ready'}
             tone="quiet"
             onClick={onStartLeague}
           >
-            {leagueCompleted ? 'Hall of Fame' : 'Quizmon League'}
+            <LeagueTrophy locked={!leagueCompleted} />
+            <span className="landing__league-copy">
+              <strong>Quizmon League</strong>
+              <span>Challenge · Hall of Fame</span>
+            </span>
+            <ArrowRightIcon aria-hidden="true" weight="bold" />
           </GameButton>
         ) : null}
       </div>

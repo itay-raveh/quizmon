@@ -41,7 +41,7 @@ import {
   type QuestionType,
 } from '@/game/types';
 
-const catalog = catalogData as PokemonCatalog;
+const catalog = catalogData as unknown as PokemonCatalog;
 
 const makeKnowledge = (
   id: number,
@@ -70,6 +70,7 @@ const makeKnowledge = (
   shape: 'quadruped',
   shinySprite: `/shiny/${id}.png`,
   sprite: `/sprite/${id}.png`,
+  spriteMeasurements: null,
   stats: {
     attack: 50,
     defense: 50,

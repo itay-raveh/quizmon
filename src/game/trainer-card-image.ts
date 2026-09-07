@@ -1,9 +1,10 @@
 import { site } from '@/app/site';
 import type { TrainerView } from './trainer';
 
-type TrainerArtifactView = Exclude<TrainerView, 'pokedex'>;
+type TrainerArtifactView = Exclude<TrainerView, 'pokedex'> | 'hall';
 
 const artifactDetails = {
+  hall: { filename: 'quizmon-hall-of-fame.png', label: 'Hall of Fame' },
   badges: {
     filename: 'quizmon-league-badge-case.png',
     label: 'League Badge Case',

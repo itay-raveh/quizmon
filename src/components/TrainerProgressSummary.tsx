@@ -1,7 +1,7 @@
 import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import { GameButton } from './GameButton';
 import { CaretRightIcon } from './icons';
-import { ChampionTrophy } from './ChampionTrophy';
+import { Trophy } from './Trophy';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
@@ -62,7 +62,7 @@ export const TrainerProgressSummary = ({
           <span className="trainer-progress-summary__earned">
             {leagueVictory ? (
               <span className="trainer-progress-change trainer-progress-change--earned">
-                <ChampionTrophy className="trainer-progress-change__hall-mark" />
+                <Trophy className="trainer-progress-change__hall-mark" />
                 <span>
                   <small>Milestone earned</small>
                   <strong>Hall of Fame</strong>

@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { format } from 'prettier';
@@ -19,7 +19,10 @@ import {
   type PokemonIdentitySprites,
   type PokemonKnowledge,
   type StatName,
+  type SpriteMeasurements,
 } from '../src/game/types.ts';
+
+import { measureCatalogSprites } from './sprite-measurements.ts';
 
 const DATA_PATH = new URL('../src/game/data/pokemon.json', import.meta.url);
 const GENERATIONS: readonly Generation[] = [
@@ -38,6 +41,9 @@ const SPRITE_REPOSITORY_PREFIX =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/';
 
 export interface CatalogClient {
+  measureSprites(
+    paths: readonly string[],
+  ): Promise<Map<string, SpriteMeasurements>>;
   getGenerationById(id: number): Promise<ApiGeneration>;
   resolveEvolutionChains(
     resources: readonly ResourceLink<EvolutionChain>[],
@@ -57,6 +63,7 @@ export const createCatalogClient = (
     revalidate: true,
   }),
 ): CatalogClient => ({
+  measureSprites: measureCatalogSprites,
   getGenerationById: (id) => api.game.getGenerationById(id),
   resolveEvolutionChains: (resources) =>
     api.resolveAll(resources, { concurrency: CONCURRENCY }),
@@ -289,20 +296,51 @@ export const buildPokemonCatalog = async (
       types: entry.types
         .sort((left, right) => left.slot - right.slot)
         .map(({ type }) => type.name),
+      spriteMeasurements: null,
     };
   }
 
-  return {
-    contentVersion: 13,
-    pokemon: sortRecord(entries),
-    typeRelations: sortRecord(typeRelations),
-  };
+  return addSpriteMeasurements(
+    {
+      contentVersion: 13,
+      pokemon: sortRecord(entries),
+      typeRelations: sortRecord(typeRelations),
+    },
+    (paths) => client.measureSprites(paths),
+  );
+};
+
+const addSpriteMeasurements = async (
+  catalog: PokemonCatalog,
+  measure: CatalogClient['measureSprites'],
+): Promise<PokemonCatalog> => {
+  const measurements = await measure(
+    Object.values(catalog.pokemon).flatMap(({ sprite }) =>
+      sprite ? [sprite] : [],
+    ),
+  );
+  for (const pokemon of Object.values(catalog.pokemon)) {
+    if (pokemon.sprite && !measurements.has(pokemon.sprite)) {
+      throw new Error(`Missing sprite measurements for ${pokemon.id}`);
+    }
+    const size = pokemon.sprite ? measurements.get(pokemon.sprite) : undefined;
+    pokemon.spriteMeasurements = size
+      ? [size.area, size.width, size.height, size.centerX, size.bottom]
+      : null;
+  }
+  return catalog;
 };
 
 export const updatePokemonData = async (
   client: CatalogClient = createCatalogClient(),
+  { spritesOnly = false }: { spritesOnly?: boolean } = {},
 ) => {
-  const catalog = await buildPokemonCatalog(client);
+  const catalog = spritesOnly
+    ? await addSpriteMeasurements(
+        JSON.parse(await readFile(DATA_PATH, 'utf8')) as PokemonCatalog,
+        (paths) => client.measureSprites(paths),
+      )
+    : await buildPokemonCatalog(client);
   const output = await format(JSON.stringify(catalog), { parser: 'json' });
   await writeFile(DATA_PATH, output);
   return {
@@ -316,7 +354,10 @@ const isEntrypoint =
   import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
 
 if (isEntrypoint) {
-  const { pokemonCount, typeCount } = await updatePokemonData();
+  const { pokemonCount, typeCount } = await updatePokemonData(
+    createCatalogClient(),
+    { spritesOnly: process.argv.includes('--sprites-only') },
+  );
   console.log(
     `Updated ${pokemonCount} Pokémon and ${typeCount} type matchups from PokéAPI.`,
   );

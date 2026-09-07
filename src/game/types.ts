@@ -70,6 +70,22 @@ export interface PokemonIdentitySprites {
   generations: PokemonIdentitySpriteGeneration[];
 }
 
+export interface SpriteMeasurements {
+  area: number;
+  width: number;
+  height: number;
+  centerX: number;
+  bottom: number;
+}
+
+export type PackedSpriteMeasurements = [
+  area: number,
+  width: number,
+  height: number,
+  centerX: number,
+  bottom: number,
+];
+
 export interface PokemonKnowledge {
   abilities: string[];
   color: string;
@@ -86,6 +102,7 @@ export interface PokemonKnowledge {
   shape: string;
   shinySprite: string | null;
   sprite: string | null;
+  spriteMeasurements: PackedSpriteMeasurements | null;
   stats: Record<StatName, number>;
   types: string[];
 }

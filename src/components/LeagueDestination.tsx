@@ -1,13 +1,24 @@
-import { useEffect, useRef } from 'react';
-import chamber from '@/assets/images/league-chamber.png';
-import { site } from '@/app/site';
-import { LEAGUE_QUESTION_COUNT, leagueStages } from '@/game/league';
-import type { TrainerProfile } from '@/game/trainer-profile';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { leagueStages } from '@/game/league';
+import type { LeagueVictoryRecord } from '@/game/hall-of-fame';
+import { readPlayerData } from '@/game/player-storage';
 import type { PokemonCatalog } from '@/game/types';
-import { ChampionTrophy } from './ChampionTrophy';
+import {
+  downloadTrainerArtifact,
+  renderTrainerArtifactImage,
+  shareTrainerArtifact,
+  supportsTrainerArtifactSharing,
+} from '@/game/trainer-card-image';
 import { GameButton } from './GameButton';
-import { ArrowLeftIcon, CheckIcon } from './icons';
-import { PokemonIdentity } from './PokemonIdentity';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  DownloadSimpleIcon,
+  ShareNetworkIcon,
+} from './icons';
+import { HallOfFameRecord } from './HallOfFameRecord';
+import { LeagueTrophy } from './LeagueTrophy';
+import { Toast } from './Toast';
 import { useReducedMotion } from './motion';
 import '@/styles/league.css';
 
@@ -15,10 +26,12 @@ interface LeagueDestinationProps {
   catalog: PokemonCatalog;
   completed: boolean;
   celebrate?: boolean;
+  freshRecord?: LeagueVictoryRecord;
   onBack: () => void;
   onStart: () => void;
+  onViewChange: (view: 'challenge' | 'hall') => void;
   onViewResults?: () => void;
-  profile: TrainerProfile;
+  view: 'challenge' | 'hall';
   resultSaved?: boolean;
 }
 
@@ -26,132 +39,202 @@ export const LeagueDestination = ({
   catalog,
   completed,
   celebrate = false,
+  freshRecord,
   onBack,
   onStart,
+  onViewChange,
   onViewResults,
-  profile,
+  view,
   resultSaved = true,
 }: LeagueDestinationProps) => {
-  const heading = useRef<HTMLHeadingElement>(null);
+  const heading = useRef<HTMLDivElement>(null);
+  const artifact = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
-  const partner = profile.partnerPokemon
-    ? catalog.pokemon[profile.partnerPokemon]
-    : null;
+  const [records] = useState(() => {
+    const saved = readPlayerData().hallOfFame;
+    return freshRecord && !saved.some(({ id }) => id === freshRecord.id)
+      ? [...saved, freshRecord]
+      : saved;
+  });
+  const [index, setIndex] = useState(records.length - 1);
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [error, setError] = useState('');
+  const dismissNotice = useCallback(() => setNotice(''), []);
+  const record = records[index];
+  const canShare = supportsTrainerArtifactSharing();
 
   useEffect(() => {
-    heading.current?.focus({ preventScroll: true });
+    heading.current
+      ?.querySelector<HTMLElement>('h1')
+      ?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
-  }, []);
+  }, [view]);
+
+  const exportRecord = async () => {
+    if (!artifact.current || busy) return;
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      const image = await renderTrainerArtifactImage(artifact.current);
+      if (canShare) {
+        const outcome = await shareTrainerArtifact(image, 'hall');
+        if (outcome === 'cancelled') return;
+        if (outcome === 'shared') {
+          setNotice('Victory shared.');
+          return;
+        }
+      }
+      downloadTrainerArtifact(image, 'hall');
+      setNotice('Victory image downloaded.');
+    } catch {
+      setError('The victory image could not be shared. Try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <section
-      className={`league-hall${completed ? ' league-hall--complete' : ''}${celebrate && !reducedMotion ? ' league-hall--induction' : ''}`}
-      aria-labelledby="league-hall-title"
+      className={`league-hall${celebrate && !reducedMotion ? ' league-hall--induction' : ''}`}
+      aria-label="Quizmon League"
     >
       <header className="league-hall__header">
         <GameButton aria-label="Back to home" onClick={onBack} tone="quiet">
           <ArrowLeftIcon aria-hidden="true" weight="bold" />
         </GameButton>
-        <h1 id="league-hall-title" ref={heading} tabIndex={-1}>
-          {completed ? 'Hall of Fame' : 'Quizmon League'}
-        </h1>
+        <nav className="league-hall__navigation" aria-label="League views">
+          <GameButton
+            tone="quiet"
+            aria-pressed={view === 'challenge'}
+            onClick={() => onViewChange('challenge')}
+          >
+            Challenge
+          </GameButton>
+          <GameButton
+            tone="quiet"
+            aria-pressed={view === 'hall'}
+            onClick={() => onViewChange('hall')}
+          >
+            Hall of Fame
+          </GameButton>
+        </nav>
       </header>
-
-      <div className="league-hall__chamber">
-        <ChampionTrophy className="league-hall__trophy" />
-        {completed ? (
+      <div ref={heading}>
+        {view === 'challenge' ? (
+          <div className="league-challenge">
+            <h1 tabIndex={-1}>League challenge</h1>
+            <p>Answer all 15 questions correctly to enter the Hall of Fame.</p>
+            <ol
+              className="league-challenge__trials"
+              aria-label="Five League trials"
+            >
+              {leagueStages.map((stage) => (
+                <li key={stage.id}>{stage.marker}</li>
+              ))}
+            </ol>
+            <GameButton className="league-gold-button" onClick={onStart}>
+              {completed ? 'League rematch' : 'Start League challenge'}
+              <ArrowRightIcon aria-hidden="true" weight="bold" />
+            </GameButton>
+          </div>
+        ) : record ? (
           <>
-            <div className="league-hall__identity">
-              <h2>{profile.name || `${site.name} Trainer`}</h2>
-              <p>League Champion</p>
-            </div>
-            <div className="league-hall__partner">
-              <div className="league-hall__portrait">
-                <img
-                  className="league-hall__backdrop"
-                  src={chamber}
-                  alt=""
-                  width="384"
-                  height="256"
-                />
-                {partner?.sprite ? (
-                  <img
-                    className="league-hall__sprite"
-                    src={partner.sprite}
-                    alt=""
-                    width="96"
-                    height="96"
-                  />
-                ) : null}
+            {records.length > 1 && (
+              <div
+                className="league-hall__history"
+                aria-label="Victory history"
+              >
+                <GameButton
+                  tone="quiet"
+                  aria-label="Older victory"
+                  disabled={index === 0 || busy}
+                  onClick={() => setIndex(index - 1)}
+                >
+                  <ArrowLeftIcon aria-hidden="true" />
+                </GameButton>
+                <span aria-live="polite">
+                  Victory {index + 1} of {records.length}
+                </span>
+                <GameButton
+                  tone="quiet"
+                  aria-label="Newer victory"
+                  disabled={index === records.length - 1 || busy}
+                  onClick={() => setIndex(index + 1)}
+                >
+                  <ArrowRightIcon aria-hidden="true" />
+                </GameButton>
               </div>
-              {partner && profile.partnerPokemon ? (
-                <PokemonIdentity
-                  dexNumber={partner.id}
-                  name={profile.partnerPokemon}
-                />
-              ) : null}
-            </div>
-            <p className="league-hall__record">
-              Perfect clear{' '}
-              <strong>
-                {LEAGUE_QUESTION_COUNT} / {LEAGUE_QUESTION_COUNT}
-              </strong>
-            </p>
+            )}
+            <HallOfFameRecord
+              key={record.id}
+              catalog={catalog}
+              record={record}
+              number={index + 1}
+              artifactRef={artifact}
+            />
+            {!resultSaved && record.id === freshRecord?.id && (
+              <p className="league-hall__notice" role="alert">
+                This victory could not be saved on this device. Download its
+                image now to keep it.
+              </p>
+            )}
+            <footer className="league-hall__actions">
+              <GameButton
+                className="league-gold-button"
+                disabled={busy}
+                aria-busy={busy}
+                onClick={() => void exportRecord()}
+              >
+                {canShare ? (
+                  <ShareNetworkIcon aria-hidden="true" weight="bold" />
+                ) : (
+                  <DownloadSimpleIcon aria-hidden="true" weight="bold" />
+                )}
+                {busy
+                  ? 'Preparing image…'
+                  : canShare
+                    ? 'Share victory'
+                    : 'Download PNG'}
+              </GameButton>
+              {onViewResults && record.id === freshRecord?.id && (
+                <GameButton tone="quiet" onClick={onViewResults}>
+                  View results
+                </GameButton>
+              )}
+            </footer>
           </>
         ) : (
-          <div className="league-hall__invitation">
+          <div className="league-hall__empty">
+            <h1 tabIndex={-1}>Hall of Fame</h1>
+            <LeagueTrophy locked={!completed} />
             <h2>
-              Earn your place
-              <br />
-              in the Hall of Fame.
+              {completed
+                ? 'Your Champion title is yours.'
+                : 'Your place awaits.'}
             </h2>
             <p>
-              Five trials. Fifteen questions.
-              <br />
-              One wrong answer ends the challenge.
+              {completed
+                ? 'Your earlier victory’s lineup wasn’t recorded. Win a rematch to add your first shareable record.'
+                : 'Clear the League to record your victory and its Pokémon here.'}
             </p>
+            <GameButton
+              className="league-gold-button"
+              onClick={() => onViewChange('challenge')}
+            >
+              Go to challenge{' '}
+              <ArrowRightIcon aria-hidden="true" weight="bold" />
+            </GameButton>
           </div>
         )}
       </div>
-
-      <ol
-        className="league-hall__trials"
-        aria-label={
-          completed ? 'Five completed League trials' : 'Five League trials'
-        }
-      >
-        {leagueStages.map((stage) => (
-          <li key={stage.id}>
-            <span className="league-hall__trial-mark" aria-hidden="true">
-              {stage.marker === 'C' ? <ChampionTrophy /> : stage.marker}
-            </span>
-            <span className="league-hall__trial-name">
-              {stage.heading.replace('Elite ', '')}
-            </span>
-            <span className="league-hall__trial-detail">{stage.title}</span>
-            {completed ? (
-              <span className="league-hall__trial-score">
-                <CheckIcon aria-hidden="true" weight="bold" />3 / 3
-              </span>
-            ) : null}
-          </li>
-        ))}
-      </ol>
-      {!resultSaved ? (
+      {error && (
         <p className="league-hall__notice" role="alert">
-          Your victory could not be saved on this device.
+          {error}
         </p>
-      ) : null}
-      <footer className="league-hall__actions">
-        <GameButton onClick={onStart}>
-          {completed ? 'League rematch' : 'Start League challenge'}
-        </GameButton>
-        {onViewResults ? (
-          <GameButton tone="quiet" onClick={onViewResults}>
-            View results
-          </GameButton>
-        ) : null}
-      </footer>
+      )}
+      {notice && <Toast message={notice} onDismiss={dismissNotice} />}
     </section>
   );
 };

@@ -1,4 +1,5 @@
 .app--trainer main {
+  align-items: start;
   container-type: inline-size;
 }
 
@@ -395,7 +396,7 @@
   gap: 0.35em;
 }
 
-.trainer-card__rank .champion-trophy {
+.trainer-card__rank .trophy {
   width: clamp(1.5rem, 2em, 2rem);
   height: auto;
   flex: none;

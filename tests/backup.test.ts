@@ -388,9 +388,10 @@ it('does not save a stale round again while the tab unloads after restore', () =
 
 it('keeps the published version 1 fixture readable without losing fields', () => {
   const backup = parseBackup(JSON.stringify(v1Fixture));
-  expect(backup.save.version).toBe(2);
+  expect(backup.save.version).toBe(3);
   expect(backup.save.data).toEqual({
     ...v1Fixture.save.data,
+    hallOfFame: [],
     pokedex: v1Fixture.save.data.results.progress.correctPokemon,
   });
   restoreBackup(backup);

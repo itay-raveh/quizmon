@@ -127,7 +127,7 @@ describe('Trainer profile artifacts', () => {
     expect(
       container.querySelector('.trainer-card__polish'),
     ).toBeInTheDocument();
-    expect(container.querySelector('.champion-trophy')).toBeInTheDocument();
+    expect(container.querySelector('.trophy')).toBeInTheDocument();
     expect(
       container.querySelector('.trainer-card__sheen'),
     ).not.toBeInTheDocument();

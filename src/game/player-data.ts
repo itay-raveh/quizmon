@@ -1,3 +1,5 @@
+import type { LeagueVictoryRecord } from './hall-of-fame';
+import { isLeagueVictory } from './league';
 import { normalizeModifiers } from './game';
 import { parseDailyDate } from './daily';
 import { normalizeTrainerProfile, type TrainerProfile } from './profile-data';
@@ -26,16 +28,18 @@ export interface PlayerSaveV1 {
 
 export interface PlayerData extends PlayerDataV1 {
   pokedex: string[];
+  hallOfFame: LeagueVictoryRecord[];
 }
 
 export interface PlayerSave {
   data: PlayerData;
   restoreId: string | null;
-  version: 2;
+  version: 3;
 }
 
 export const emptyPlayerData = (): PlayerData => ({
   generationPromptAnswered: false,
+  hallOfFame: [],
   pokedex: [],
   profile: null,
   results: normalizeResults(null),
@@ -103,6 +107,23 @@ const isResult = (value: unknown): value is GameResult => {
   );
 };
 
+const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
+  isRecord(value) &&
+  isName(value.id) &&
+  typeof value.completedAt === 'string' &&
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value.completedAt) &&
+  Number.isFinite(Date.parse(value.completedAt)) &&
+  new Date(value.completedAt).toISOString() === value.completedAt &&
+  typeof value.trainerName === 'string' &&
+  value.trainerName.length <= 20 &&
+  Array.isArray(value.pokemon) &&
+  value.pokemon.length > 0 &&
+  value.pokemon.every(isName) &&
+  new Set(value.pokemon).size === value.pokemon.length &&
+  isResult(value.result) &&
+  isLeagueVictory(value.result) &&
+  value.result.answers.every((answer) => answer.correct);
+
 const isResults = (value: unknown): value is SavedResults => {
   if (
     !isRecord(value) ||
@@ -156,12 +177,18 @@ const isSettings = (value: unknown): value is Modifiers =>
   value.questionTypes.length > 0 &&
   value.questionTypes.every((entry: unknown) => isChoice(entry, questionTypes));
 
-const parsePlayerData = (value: unknown, version: 1 | 2): PlayerData => {
+const parsePlayerData = (value: unknown, version: 1 | 2 | 3): PlayerData => {
   if (
     !isRecord(value) ||
     typeof value.generationPromptAnswered !== 'boolean' ||
-    (version === 2 &&
+    (version >= 2 &&
       (!Array.isArray(value.pokedex) || !value.pokedex.every(isName))) ||
+    (version === 3 &&
+      (!Array.isArray(value.hallOfFame) ||
+        !value.hallOfFame.every(isVictoryRecord) ||
+        new Set(
+          value.hallOfFame.map((record: LeagueVictoryRecord) => record.id),
+        ).size !== value.hallOfFame.length)) ||
     !isResults(value.results) ||
     (value.settings !== null && !isSettings(value.settings))
   ) {
@@ -178,6 +205,8 @@ const parsePlayerData = (value: unknown, version: 1 | 2): PlayerData => {
   }
   return {
     generationPromptAnswered: value.generationPromptAnswered,
+    hallOfFame:
+      version === 3 ? (value.hallOfFame as LeagueVictoryRecord[]) : [],
     pokedex: [
       ...new Set(
         version === 1
@@ -205,7 +234,10 @@ const parsePlayerData = (value: unknown, version: 1 | 2): PlayerData => {
 };
 
 export const parsePlayerSave = (value: unknown): PlayerSave => {
-  if (!isRecord(value) || (value.version !== 1 && value.version !== 2)) {
+  if (
+    !isRecord(value) ||
+    (value.version !== 1 && value.version !== 2 && value.version !== 3)
+  ) {
     throw new Error(
       'This save uses an unsupported version. Update Quizmon or choose another backup.',
     );
@@ -216,6 +248,6 @@ export const parsePlayerSave = (value: unknown): PlayerSave => {
   return {
     data: parsePlayerData(value.data, value.version),
     restoreId: value.restoreId,
-    version: 2,
+    version: 3,
   };
 };

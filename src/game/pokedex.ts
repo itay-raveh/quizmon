@@ -1,7 +1,10 @@
 import { readPlayerSave, updatePlayerData } from './player-storage';
 import type { QuestionData } from './types';
 
-export const getQuestionPokemon = (question: QuestionData): string[] => {
+export const getQuestionPokemon = (
+  question: QuestionData,
+  includeDistractors = false,
+): string[] => {
   const subjects = [question.pokemonName];
   if (question.visual?.kind === 'evolution-link') {
     subjects.push(question.visual.before, question.visual.after);
@@ -30,7 +33,14 @@ export const getQuestionPokemon = (question: QuestionData): string[] => {
     case 'stat-showdown':
     case 'type-roundup':
     case 'type-twins':
-      return [...new Set([...subjects, ...question.answer.correctOptions])];
+      return [
+        ...new Set([
+          ...subjects,
+          ...(includeDistractors
+            ? question.options
+            : question.answer.correctOptions),
+        ]),
+      ];
   }
 };
 

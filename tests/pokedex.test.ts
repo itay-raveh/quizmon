@@ -18,7 +18,7 @@ import {
 } from '@/game/types';
 import { parseTrainerRoute, setTrainerRoute } from '@/app/trainer-route';
 
-const catalog = catalogData as PokemonCatalog;
+const catalog = catalogData as unknown as PokemonCatalog;
 const questionFor = (questionType: QuestionType) => {
   const [question] = buildQuestions(
     catalog,
@@ -123,7 +123,7 @@ it('migrates a version 1 save once, using only recorded correct Pokémon', () =>
   const raw = JSON.stringify({ version: 1, restoreId: null, data });
   localStorage.setItem(PLAYER_STORAGE_KEY, raw);
   const migrated = readPlayerSave();
-  expect(migrated.version).toBe(2);
+  expect(migrated.version).toBe(3);
   expect(migrated.data.pokedex).toEqual(['pikachu', 'eevee']);
   expect(migrated.data.results).toEqual(data.results);
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(

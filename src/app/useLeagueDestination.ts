@@ -1,35 +1,42 @@
 import { useCallback, useEffect, useState } from 'react';
 
+type LeagueView = 'challenge' | 'hall';
+const readView = (): LeagueView | null => {
+  const value = new URLSearchParams(window.location.search).get('league');
+  return value === 'hall' || value === 'challenge' ? value : null;
+};
+
 export const useLeagueDestination = () => {
-  const [isOpen, setIsOpen] = useState(
-    () => new URLSearchParams(window.location.search).get('league') === 'hall',
-  );
+  const [view, setView] = useState(readView);
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
-    const syncRoute = () => {
-      setIsOpen(
-        new URLSearchParams(window.location.search).get('league') === 'hall',
-      );
-    };
+    const syncRoute = () => setView(readView());
     window.addEventListener('popstate', syncRoute);
     return () => window.removeEventListener('popstate', syncRoute);
   }, []);
 
-  const open = useCallback(() => {
+  const open = useCallback((next: LeagueView = 'challenge') => {
     const url = new URL(window.location.href);
-    url.searchParams.set('league', 'hall');
+    url.searchParams.set('league', next);
     window.history.pushState(null, '', url);
-    setIsOpen(true);
+    setView(next);
   }, []);
 
   const close = useCallback(() => {
     const url = new URL(window.location.href);
     url.searchParams.delete('league');
     window.history.replaceState(window.history.state, '', url);
-    setIsOpen(false);
+    setView(null);
     setShowResults(false);
   }, []);
 
-  return { isOpen, open, close, showResults, setShowResults };
+  return {
+    isOpen: view !== null,
+    view,
+    open,
+    close,
+    showResults,
+    setShowResults,
+  };
 };

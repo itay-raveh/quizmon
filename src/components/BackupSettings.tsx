@@ -145,6 +145,11 @@ export const BackupSettings = () => {
                 <td>{preview.save.data.pokedex.length}</td>
               </tr>
               <tr>
+                <th scope="row">Hall of Fame records</th>
+                <td>{current.hallOfFame.length}</td>
+                <td>{preview.save.data.hallOfFame.length}</td>
+              </tr>
+              <tr>
                 <th scope="row">League won</th>
                 <td>{current.results.league.completed ? 'Yes' : 'No'}</td>
                 <td>

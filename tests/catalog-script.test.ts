@@ -16,6 +16,21 @@ const spriteUrl = (path: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/${path}`;
 
 const makeClient = (): CatalogClient => ({
+  measureSprites: (paths) =>
+    Promise.resolve(
+      new Map(
+        paths.map((path) => [
+          path,
+          {
+            area: 0.25,
+            width: 0.5,
+            height: 0.5,
+            centerX: 0.5,
+            bottom: 0.75,
+          },
+        ]),
+      ),
+    ),
   getGenerationById(id) {
     return Promise.resolve({
       pokemon_species: [
@@ -223,6 +238,7 @@ describe('catalog generation', () => {
       shape: 'quadruped',
       shinySprite: '/sprites/pokemon/shiny/1.png',
       sprite: '/sprites/pokemon/1.png',
+      spriteMeasurements: [0.25, 0.5, 0.5, 0.5, 0.75],
       types: ['normal'],
     });
     expect(catalog.pokemon['species-2']).toMatchObject({
