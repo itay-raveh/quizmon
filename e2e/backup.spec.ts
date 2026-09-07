@@ -45,7 +45,15 @@ for (const width of [320, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
     await page.getByRole('button', { name: 'Settings', exact: true }).click();
-    await page.getByRole('tab', { name: 'Experience' }).click();
+    await expect(page.getByRole('tab', { name: 'Backup' })).toBeInViewport();
+    await page.getByRole('tab', { name: 'Training' }).press('ArrowLeft');
+    await expect(page.getByRole('tab', { name: 'Backup' })).toBeFocused();
+    await expect(
+      page.getByRole('button', { name: 'Download backup' }),
+    ).toBeInViewport();
+    await expect(
+      page.getByRole('button', { name: 'Restore backup', exact: true }),
+    ).toBeInViewport();
     const before = await page.evaluate(() =>
       localStorage.getItem('quizmon.player'),
     );
@@ -115,9 +123,9 @@ for (const width of [320, 1280]) {
       .toEqual(backup.save.data);
 
     await page.getByRole('button', { name: 'Settings', exact: true }).click();
-    await page.getByRole('tab', { name: 'Experience' }).click();
+    await page.getByRole('tab', { name: 'Backup' }).click();
     const pending = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Export backup' }).click();
+    await page.getByRole('button', { name: 'Download backup' }).click();
     const download = await pending;
     expect(download.suggestedFilename()).toMatch(
       /^quizmon-backup-\d{4}-\d{2}-\d{2}\.json$/,
@@ -144,7 +152,7 @@ test('restoring in one tab stops a stale round in another tab', async ({
     other.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
-  await page.getByRole('tab', { name: 'Experience' }).click();
+  await page.getByRole('tab', { name: 'Backup' }).click();
   await page.getByLabel('Choose backup file').setInputFiles({
     name: 'quizmon.json',
     mimeType: 'application/json',

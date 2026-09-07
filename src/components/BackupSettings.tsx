@@ -45,11 +45,8 @@ export const BackupSettings = () => {
 
   return (
     <fieldset className="experience-setting backup-settings">
-      <legend>Progress backup</legend>
-      <p>
-        Save your Trainer profile, progress, and settings to a file, or restore
-        them on another device. Unsaved settings are not included.
-      </p>
+      <legend>Backup & restore</legend>
+      <p>Your saved progress, Trainer profile, and settings.</p>
       <div className="backup-settings__actions">
         <GameButton
           tone="quiet"
@@ -65,7 +62,7 @@ export const BackupSettings = () => {
             }
           }}
         >
-          Export backup
+          Download backup
         </GameButton>
         <GameButton
           tone="quiet"
@@ -73,7 +70,7 @@ export const BackupSettings = () => {
           ref={chooseButton}
           onClick={() => input.current?.click()}
         >
-          {busy ? 'Reading backup…' : 'Choose backup'}
+          {busy ? 'Reading backup…' : 'Restore backup'}
         </GameButton>
       </div>
       <input
@@ -144,9 +141,8 @@ export const BackupSettings = () => {
             </tbody>
           </table>
           <p>
-            This replaces your saved progress, Trainer profile, and settings,
-            and ends any unfinished round. Daily reminders stay on this device.
-            Export your current data first if you want to keep it.
+            Replaces saved progress, profile, and settings, and ends unfinished
+            rounds. Reminders stay on this device.
           </p>
           <div className="backup-settings__actions">
             <GameButton

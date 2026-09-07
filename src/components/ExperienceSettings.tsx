@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { AnswerFlow, Modifiers, TimerDisplay } from '@/game/types';
-import { BackupSettings } from './BackupSettings';
 import { Checkbox } from './Checkbox';
 import { DailyReminderSetting } from './DailyReminderSetting';
 import { SelectionTile } from './SelectionTile';
@@ -119,7 +118,6 @@ export const ExperienceSettings = ({
           }
         />
       </fieldset>
-      <BackupSettings />
     </div>
   );
 };

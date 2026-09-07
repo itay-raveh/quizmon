@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
+import { BackupSettings } from './BackupSettings';
 import { DialogCloseButton } from './DialogCloseButton';
 import { isDialogBackdropPointerDown, useModalDialog } from './dialog';
 import { ExperienceSettings } from './ExperienceSettings';
@@ -8,7 +9,7 @@ import { SoundButton } from './SoundButton';
 import { TrainingSettings } from './TrainingSettings';
 import { getTrainingSettingsValidation } from './trainingSettingsModel';
 
-export type SettingsTab = 'training' | 'experience';
+export type SettingsTab = 'training' | 'experience' | 'backup';
 
 interface ModifiersDialogProps {
   catalog: PokemonCatalog;
@@ -19,7 +20,16 @@ interface ModifiersDialogProps {
   trainingChangesApplyNextGame?: boolean;
 }
 
-const settingsTabs: readonly SettingsTab[] = ['training', 'experience'];
+const settingsTabs: readonly SettingsTab[] = [
+  'training',
+  'experience',
+  'backup',
+];
+const settingsTabLabels: Record<SettingsTab, string> = {
+  training: 'Training',
+  experience: 'Experience',
+  backup: 'Backup',
+};
 export const ModifiersDialog = ({
   catalog,
   initialTab = 'training',
@@ -36,6 +46,7 @@ export const ModifiersDialog = ({
   const generationsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Record<SettingsTab, HTMLButtonElement | null>>({
+    backup: null,
     experience: null,
     training: null,
   });
@@ -133,7 +144,7 @@ export const ModifiersDialog = ({
             role="tab"
             tabIndex={activeTab === tab ? 0 : -1}
           >
-            {tab === 'training' ? 'Training' : 'Experience'}
+            {settingsTabLabels[tab]}
           </SoundButton>
         ))}
       </div>
@@ -171,6 +182,14 @@ export const ModifiersDialog = ({
             role="tabpanel"
           >
             <ExperienceSettings draft={draft} onChange={setDraft} />
+          </div>
+          <div
+            aria-labelledby="settings-tab-backup"
+            hidden={activeTab !== 'backup'}
+            id="settings-panel-backup"
+            role="tabpanel"
+          >
+            <BackupSettings />
           </div>
         </div>
 
