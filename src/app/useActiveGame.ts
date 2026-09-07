@@ -11,25 +11,13 @@ import { buildQuestions } from '@/game/game';
 import { buildLeagueQuestions } from '@/game/league';
 import { createSeededRandom } from '@/game/random';
 import { readDailyResult } from '@/game/storage';
-import type {
-  AnswerResult,
-  GameMode,
-  Modifiers,
-  PokemonCatalog,
-  QuestionData,
-} from '@/game/types';
-import type { GameSession, GameSessionAction } from './session';
+import type { PokemonCatalog, QuestionData } from '@/game/types';
+import type { CompleteGame, GameSession, GameSessionAction } from './session';
 
 interface ActiveGameOptions {
   autoStartDaily: boolean;
   catalog?: PokemonCatalog;
-  completeGame: (
-    answers: AnswerResult[],
-    mode: GameMode,
-    modifiers: Modifiers,
-    questions: QuestionData[],
-    seed: string,
-  ) => void;
+  completeGame: CompleteGame;
   dailyDate: string;
   dispatch: Dispatch<GameSessionAction>;
   elapsedSeconds: number;
@@ -141,14 +129,14 @@ export const useActiveGame = ({
       }
 
       const { questions, snapshot } = restoration;
-      dispatch({
+      const round = {
         answers: snapshot.answers,
         mode: snapshot.mode,
         modifiers: snapshot.modifiers,
         questions,
         seed: snapshot.seed,
-        type: 'restored',
-      });
+      };
+      dispatch({ ...round, type: 'restored' });
       resetTimer(snapshot.elapsedMilliseconds);
 
       if (
@@ -156,13 +144,7 @@ export const useActiveGame = ({
         (snapshot.mode.kind === 'league' &&
           snapshot.answers.some(({ correct }) => !correct))
       ) {
-        completeGame(
-          snapshot.answers,
-          snapshot.mode,
-          snapshot.modifiers,
-          questions,
-          snapshot.seed,
-        );
+        completeGame(round);
       } else {
         startTimer();
       }

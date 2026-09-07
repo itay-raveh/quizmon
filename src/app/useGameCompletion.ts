@@ -13,14 +13,8 @@ import {
 } from '@/game/game';
 import { readTrainerStats, saveResult } from '@/game/storage';
 import { getTrainerProgressChanges } from '@/game/trainer';
-import type {
-  AnswerResult,
-  GameMode,
-  GameResult,
-  Modifiers,
-  QuestionData,
-} from '@/game/types';
-import type { GameSession, GameSessionAction } from './session';
+import type { AnswerResult, GameResult } from '@/game/types';
+import type { CompleteGame, GameSession, GameSessionAction } from './session';
 
 interface GameCompletionOptions {
   contentVersion: number;
@@ -41,14 +35,8 @@ export const useGameCompletion = ({
   session,
   startTimer,
 }: GameCompletionOptions) => {
-  const complete = useCallback(
-    (
-      answers: AnswerResult[],
-      mode: GameMode,
-      modifiers: Modifiers,
-      questions: QuestionData[],
-      seed: string,
-    ) => {
+  const complete = useCallback<CompleteGame>(
+    ({ answers, mode, modifiers, questions, seed }) => {
       const result = {
         answers,
         contentVersion,
@@ -121,13 +109,7 @@ export const useGameCompletion = ({
         session.questionIndex === session.questions.length - 1 ||
         (session.mode.kind === 'league' && !answer.correct)
       ) {
-        complete(
-          nextAnswers,
-          session.mode,
-          session.modifiers,
-          session.questions,
-          session.seed,
-        );
+        complete({ ...session, answers: nextAnswers });
         return;
       }
 

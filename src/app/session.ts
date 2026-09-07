@@ -40,22 +40,16 @@ export type GameSession =
       seed: string;
     };
 
+type GameRound = Omit<
+  Extract<GameSession, { phase: 'questions' }>,
+  'phase' | 'questionIndex'
+>;
+
+export type CompleteGame = (round: GameRound) => void;
+
 export type GameSessionAction =
-  | {
-      mode: GameMode;
-      modifiers: Modifiers;
-      questions: QuestionData[];
-      seed: string;
-      type: 'started';
-    }
-  | {
-      answers: AnswerResult[];
-      mode: GameMode;
-      modifiers: Modifiers;
-      questions: QuestionData[];
-      seed: string;
-      type: 'restored';
-    }
+  | (Omit<GameRound, 'answers'> & { type: 'started' })
+  | (GameRound & { type: 'restored' })
   | { answer: AnswerResult; type: 'answer-recorded' }
   | { answer: AnswerResult; type: 'advanced' }
   | {

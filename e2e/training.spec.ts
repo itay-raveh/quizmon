@@ -371,34 +371,49 @@ test('confirms before discarding an in-progress game', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('restores the next unanswered question after a reload', async ({
-  page,
-}) => {
-  await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({
-        generations: ['I'],
-        questionTypes: ['pokedex-scan'],
-        soundEnabled: false,
-        speedrunMode: false,
-        trainingMode: 'custom',
-      }),
-    );
+for (const answeredCount of [1, 10]) {
+  test(`restores a round after answer ${answeredCount}`, async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'quizmon.training-settings.v2',
+        JSON.stringify({
+          generations: ['I'],
+          questionTypes: ['pokedex-scan'],
+          soundEnabled: false,
+          speedrunMode: false,
+          trainingMode: 'custom',
+        }),
+      );
+    });
+
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start training' }).click();
+    await expect(
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toHaveText('001 / 010');
+
+    for (let index = 0; index < answeredCount; index += 1) {
+      await page.locator('.answer').first().click();
+      if (index < answeredCount - 1)
+        await page
+          .getByRole('button', { name: 'Next question', exact: true })
+          .click();
+    }
+    await page.reload();
+
+    if (answeredCount === 10) {
+      await expect(
+        page.getByRole('heading', { name: 'Training complete', exact: true }),
+      ).toBeVisible();
+      return;
+    }
+
+    await expect(
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toHaveText('002 / 010');
+    await expect(page.getByText('Training', { exact: true })).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Leave game' }),
+    ).toBeVisible();
   });
-
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Start training' }).click();
-  await expect(
-    page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 010');
-
-  await page.locator('.answer').first().click();
-  await page.reload();
-
-  await expect(
-    page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('002 / 010');
-  await expect(page.getByText('Training', { exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Leave game' })).toBeVisible();
-});
+}
