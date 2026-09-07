@@ -6,9 +6,27 @@ import {
   restoreBackup,
   type PlayerBackup,
 } from '@/game/backup';
+import type { PlayerData } from '@/game/player-data';
 import { readPlayerData } from '@/game/player-storage';
 import { GameButton } from './GameButton';
 import { Toast } from './Toast';
+
+const previewRows: {
+  label: string;
+  value: (data: PlayerData) => string | number;
+}[] = [
+  { label: 'Trainer', value: (data) => data.profile?.name || 'Unnamed' },
+  {
+    label: 'Daily results',
+    value: (data) => Object.keys(data.results.daily).length,
+  },
+  { label: 'Pokédex entries', value: (data) => data.pokedex.length },
+  { label: 'Hall of Fame records', value: (data) => data.hallOfFame.length },
+  {
+    label: 'League won',
+    value: (data) => (data.results.league.completed ? 'Yes' : 'No'),
+  },
+];
 
 export const BackupSettings = () => {
   const input = useRef<HTMLInputElement>(null);
@@ -129,33 +147,13 @@ export const BackupSettings = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">Trainer</th>
-                <td>{current.profile?.name || 'Unnamed'}</td>
-                <td>{preview.save.data.profile?.name || 'Unnamed'}</td>
-              </tr>
-              <tr>
-                <th scope="row">Daily results</th>
-                <td>{Object.keys(current.results.daily).length}</td>
-                <td>{Object.keys(preview.save.data.results.daily).length}</td>
-              </tr>
-              <tr>
-                <th scope="row">Pokédex entries</th>
-                <td>{current.pokedex.length}</td>
-                <td>{preview.save.data.pokedex.length}</td>
-              </tr>
-              <tr>
-                <th scope="row">Hall of Fame records</th>
-                <td>{current.hallOfFame.length}</td>
-                <td>{preview.save.data.hallOfFame.length}</td>
-              </tr>
-              <tr>
-                <th scope="row">League won</th>
-                <td>{current.results.league.completed ? 'Yes' : 'No'}</td>
-                <td>
-                  {preview.save.data.results.league.completed ? 'Yes' : 'No'}
-                </td>
-              </tr>
+              {previewRows.map(({ label, value }) => (
+                <tr key={label}>
+                  <th scope="row">{label}</th>
+                  <td>{value(current)}</td>
+                  <td>{value(preview.save.data)}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
           <p>
