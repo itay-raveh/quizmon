@@ -163,6 +163,7 @@ export const Question = ({
   const className = [
     'question',
     isChampion ? 'question--champion' : '',
+    isChampion && !championChoicesVisible ? 'question--champion-search' : '',
     isLeague ? 'question--league' : '',
     number === 1 ? 'question--enter' : '',
   ]
@@ -226,16 +227,18 @@ export const Question = ({
             />
           )}
         </div>
-        <div className="question__stimulus">
-          {isChampion && !isLeague ? (
-            <QuestionClues cluesShown={cluesShown} question={question} />
-          ) : null}
-          <QuestionArtwork
-            answered={answered}
-            cluesShown={cluesShown}
-            question={question}
-          />
-        </div>
+        {!isChampion || cluesShown > 1 || answered ? (
+          <div className="question__stimulus">
+            {isChampion && !isLeague ? (
+              <QuestionClues cluesShown={cluesShown} question={question} />
+            ) : null}
+            <QuestionArtwork
+              answered={answered}
+              cluesShown={cluesShown}
+              question={question}
+            />
+          </div>
+        ) : null}
       </div>
 
       {answered &&
@@ -282,7 +285,9 @@ export const Question = ({
           aria-hidden="true"
           className="game-button question__action-reserve"
         >
-          Check answers
+          {isChampion && !isLeague && championChoicesVisible
+            ? `Reveal another clue · ${getAnswerPoints(question, true, 3)} points`
+            : 'Check answers'}
         </span>
         {checkAnswerAction}
         {isChampion &&

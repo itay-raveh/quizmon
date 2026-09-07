@@ -418,8 +418,12 @@
 }
 
 .question--champion .question__context {
-  min-height: 14.5rem;
-  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  grid-template-rows: auto;
+}
+
+.question--champion-search .question__response {
+  min-height: 0;
 }
 
 .question--champion .question__stimulus {

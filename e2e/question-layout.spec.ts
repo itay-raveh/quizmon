@@ -135,39 +135,55 @@ for (const viewport of [
   });
 }
 
-test('Champion keeps search, choices, clues, and answer in a stable frame', async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({ soundEnabled: false, speedrunMode: false }),
-    );
-  });
-  await page.goto('/?daily=2026-09-01&play=1');
-  for (let index = 0; index < 4; index += 1) {
-    await page.locator('.answer').first().click();
-    const check = page.getByRole('button', {
-      name: 'Check answers',
-      exact: true,
+for (const width of [320, 390, 1280]) {
+  test(`Champion keeps search compact and expands requested help at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'quizmon.training-settings.v2',
+        JSON.stringify({ soundEnabled: false, speedrunMode: false }),
+      );
     });
-    if (await check.count()) await check.click();
-    await page.getByRole('button', { name: 'Next question' }).click();
-  }
-  await expect(
-    page.getByRole('combobox', { name: 'Your answer' }),
-  ).toBeVisible();
-  const before = await geometry(page);
-  await page.getByRole('button', { name: /^Show 4 choices/ }).click();
-  assertStable(before, await geometry(page));
-  for (let index = 0; index < 3; index += 1) {
+    await page.goto('/?daily=2026-09-01&play=1');
+    for (let index = 0; index < 4; index += 1) {
+      await page.locator('.answer').first().click();
+      const check = page.getByRole('button', {
+        name: 'Check answers',
+        exact: true,
+      });
+      if (await check.count()) await check.click();
+      await page.getByRole('button', { name: 'Next question' }).click();
+    }
+    await expect(
+      page.getByRole('combobox', { name: 'Your answer' }),
+    ).toBeVisible();
+    const compact = await geometry(page);
+    expect(
+      compact.response.y - compact.prompt.y - compact.prompt.height,
+    ).toBeLessThan(24);
+    expect(
+      compact.action.y - compact.response.y - compact.response.height,
+    ).toBeLessThan(24);
+    expect(compact.response.height).toBeLessThan(100);
+    const choices = page.getByRole('button', { name: /^Show 4 choices/ });
+    await expect(choices).toBeInViewport();
+    await assertFits(page);
+    await choices.click();
+    await expect(page.locator('.answer')).toHaveCount(4);
     await page.getByRole('button', { name: /^Reveal another clue/ }).click();
+    const before = await geometry(page);
+    for (let index = 0; index < 2; index += 1) {
+      await page.getByRole('button', { name: /^Reveal another clue/ }).click();
+      assertStable(before, await geometry(page));
+    }
+    await page.locator('.answer').first().click();
+    await expect(
+      page.getByRole('button', { name: 'See results' }),
+    ).toBeVisible();
     assertStable(before, await geometry(page));
-  }
-  await page.locator('.answer').first().click();
-  await expect(page.getByRole('button', { name: 'See results' })).toBeVisible();
-  assertStable(before, await geometry(page));
-  await assertFits(page);
-});
+    await assertFits(page);
+  });
+}
