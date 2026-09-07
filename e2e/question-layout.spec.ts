@@ -9,6 +9,7 @@ const geometry = (page: Page) =>
       return { x: rect.x, y: rect.y + window.scrollY, height: rect.height };
     };
     return {
+      hasStimulus: Boolean(panel.querySelector('.question__stimulus > *')),
       panel: box(panel),
       title: box(panel.querySelector('h1')!),
       prompt: box(panel.querySelector('.question__instruction')!),
@@ -110,6 +111,12 @@ for (const viewport of [
           await page.addStyleTag({ content: 'html { font-size: 200%; }' });
         const before = await geometry(page);
         layouts.push(before);
+        if (!before.hasStimulus) {
+          expect(
+            before.response.y - before.prompt.y - before.prompt.height,
+            `${type} gap between instruction and answers`,
+          ).toBeLessThan(viewport.name === 'zoom' ? 48 : 24);
+        }
         await assertFits(page);
         await page.locator('.answer').first().click();
         const check = page.getByRole('button', {
@@ -126,7 +133,11 @@ for (const viewport of [
     }
     if (viewport.name === 'zoom') return;
     for (const region of ['title', 'prompt', 'response', 'action'] as const) {
-      const positions = layouts.map((layout) => layout[region].y);
+      const aligned =
+        region === 'title' || region === 'prompt'
+          ? layouts
+          : layouts.filter((layout) => layout.hasStimulus);
+      const positions = aligned.map((layout) => layout[region].y);
       expect(
         Math.max(...positions) - Math.min(...positions),
         `${region} spread: ${layouts.map((layout, index) => `${questionTypes[index]}=${Math.round(layout[region].y)}`).join(', ')}`,

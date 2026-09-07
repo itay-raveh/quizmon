@@ -62,6 +62,15 @@
   margin-block: 0.6rem 0.75rem;
 }
 
+.question__context:not(:has(.question__stimulus > *)) {
+  min-height: 0;
+  grid-template-rows: auto;
+}
+
+.question__stimulus:empty {
+  display: none;
+}
+
 .question__prompt {
   margin: 0;
 }
