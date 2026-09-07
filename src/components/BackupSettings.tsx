@@ -130,11 +130,9 @@ export const BackupSettings = () => {
                 <td>{Object.keys(preview.save.data.results.daily).length}</td>
               </tr>
               <tr>
-                <th scope="row">Correct Pokémon</th>
-                <td>{current.results.progress.correctPokemon.length}</td>
-                <td>
-                  {preview.save.data.results.progress.correctPokemon.length}
-                </td>
+                <th scope="row">Pokédex entries</th>
+                <td>{current.pokedex.length}</td>
+                <td>{preview.save.data.pokedex.length}</td>
               </tr>
               <tr>
                 <th scope="row">League won</th>

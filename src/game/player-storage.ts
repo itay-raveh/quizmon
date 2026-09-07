@@ -7,6 +7,7 @@ import {
   parsePlayerSave,
   type PlayerData,
   type PlayerSave,
+  type PlayerSaveV1,
 } from './player-data';
 
 export const PLAYER_STORAGE_KEY = 'quizmon.player';
@@ -22,7 +23,7 @@ const readLegacyJson = (key: string): unknown => {
   return raw === null ? null : (JSON.parse(raw) as unknown);
 };
 
-const migrateLegacySave = (): PlayerSave => {
+const migrateLegacySave = (): PlayerSaveV1 => {
   const settings = readLegacyJson(legacyKeys.settings);
   const results = readLegacyJson(legacyKeys.results);
   const profile = readLegacyJson(legacyKeys.profile);
@@ -57,7 +58,18 @@ const migrateLegacySave = (): PlayerSave => {
 
 export const readPlayerSave = (): PlayerSave => {
   const raw = window.localStorage.getItem(PLAYER_STORAGE_KEY);
-  if (raw !== null) return parsePlayerSave(JSON.parse(raw) as unknown);
+  if (raw !== null) {
+    const stored: unknown = JSON.parse(raw) as unknown;
+    const save = parsePlayerSave(stored);
+    if (isRecord(stored) && stored.version !== save.version) {
+      try {
+        window.localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(save));
+      } catch {
+        // Keep the previous version intact if the migrated document cannot be saved.
+      }
+    }
+    return save;
+  }
   const migrated = parsePlayerSave(migrateLegacySave());
   const concurrent = window.localStorage.getItem(PLAYER_STORAGE_KEY);
   if (concurrent !== null)

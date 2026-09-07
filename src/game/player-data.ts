@@ -11,21 +11,32 @@ import {
 } from './types';
 import { isFiniteNonnegative, isRecord } from './validation';
 
-export interface PlayerData {
+interface PlayerDataV1 {
   generationPromptAnswered: boolean;
   profile: TrainerProfile | null;
   results: SavedResults;
   settings: Modifiers | null;
 }
 
-export interface PlayerSave {
-  data: PlayerData;
+export interface PlayerSaveV1 {
+  data: PlayerDataV1;
   restoreId: string | null;
   version: 1;
 }
 
+export interface PlayerData extends PlayerDataV1 {
+  pokedex: string[];
+}
+
+export interface PlayerSave {
+  data: PlayerData;
+  restoreId: string | null;
+  version: 2;
+}
+
 export const emptyPlayerData = (): PlayerData => ({
   generationPromptAnswered: false,
+  pokedex: [],
   profile: null,
   results: normalizeResults(null),
   settings: null,
@@ -145,10 +156,12 @@ const isSettings = (value: unknown): value is Modifiers =>
   value.questionTypes.length > 0 &&
   value.questionTypes.every((entry: unknown) => isChoice(entry, questionTypes));
 
-const parsePlayerData = (value: unknown): PlayerData => {
+const parsePlayerData = (value: unknown, version: 1 | 2): PlayerData => {
   if (
     !isRecord(value) ||
     typeof value.generationPromptAnswered !== 'boolean' ||
+    (version === 2 &&
+      (!Array.isArray(value.pokedex) || !value.pokedex.every(isName))) ||
     !isResults(value.results) ||
     (value.settings !== null && !isSettings(value.settings))
   ) {
@@ -165,6 +178,25 @@ const parsePlayerData = (value: unknown): PlayerData => {
   }
   return {
     generationPromptAnswered: value.generationPromptAnswered,
+    pokedex: [
+      ...new Set(
+        version === 1
+          ? [
+              ...value.results.progress.correctPokemon,
+              ...[
+                ...Object.values(value.results.daily),
+                ...Object.values(value.results.training),
+              ]
+                .flatMap((result) => result.answers)
+                .flatMap((answer) =>
+                  answer.correct && answer.pokemonName
+                    ? [answer.pokemonName]
+                    : [],
+                ),
+            ]
+          : (value.pokedex as string[]),
+      ),
+    ],
     profile,
     results: normalizeResults(value.results),
     settings:
@@ -173,7 +205,7 @@ const parsePlayerData = (value: unknown): PlayerData => {
 };
 
 export const parsePlayerSave = (value: unknown): PlayerSave => {
-  if (!isRecord(value) || value.version !== 1) {
+  if (!isRecord(value) || (value.version !== 1 && value.version !== 2)) {
     throw new Error(
       'This save uses an unsupported version. Update Quizmon or choose another backup.',
     );
@@ -182,8 +214,8 @@ export const parsePlayerSave = (value: unknown): PlayerSave => {
     throw new Error('This save is damaged. Choose another backup.');
   }
   return {
-    data: parsePlayerData(value.data),
+    data: parsePlayerData(value.data, value.version),
     restoreId: value.restoreId,
-    version: 1,
+    version: 2,
   };
 };

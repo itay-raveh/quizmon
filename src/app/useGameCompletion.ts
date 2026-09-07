@@ -1,3 +1,4 @@
+import { registerPokedexAnswer } from '@/game/pokedex';
 import { useCallback, type Dispatch } from 'react';
 import { clearActiveGame } from '@/game/active-game';
 import { trackGameCompleted } from '@/game/analytics';
@@ -85,9 +86,12 @@ export const useGameCompletion = ({
 
   const recordAnswer = useCallback(
     (answer: AnswerResult) => {
+      if (session.phase !== 'questions') return;
+      const question = session.questions[session.questionIndex];
+      if (question) registerPokedexAnswer(question, answer.correct);
       dispatch({ answer, type: 'answer-recorded' });
     },
-    [dispatch],
+    [dispatch, session],
   );
 
   const answerQuestion = useCallback(

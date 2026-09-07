@@ -26,6 +26,7 @@ import {
 import { GameButton } from './GameButton';
 import {
   ArrowLeftIcon,
+  BookOpenIcon,
   CardholderIcon,
   CertificateIcon,
   DownloadSimpleIcon,
@@ -41,6 +42,7 @@ import { TrainerBadgeCase } from './TrainerBadgeCase';
 import { TrainerCard } from './TrainerCard';
 import { TrainerTitleDialog } from './TrainerTitleDialog';
 import { TrainerTitles } from './TrainerTitles';
+import { TrainerPokedex } from './TrainerPokedex';
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
@@ -62,13 +64,14 @@ const viewLabels = {
   badges: 'League Badge Case',
   front: 'Trainer Card',
   titles: 'Trainer Titles',
+  pokedex: 'Personal Pokédex',
 } satisfies Record<TrainerView, string>;
 
 const shareLabels = {
   badges: 'case',
   front: 'card',
   titles: 'titles',
-} satisfies Record<TrainerView, string>;
+} satisfies Record<Exclude<TrainerView, 'pokedex'>, string>;
 
 export const TrainerPassport = ({
   catalog,
@@ -184,7 +187,7 @@ export const TrainerPassport = ({
 
   const exportArtifact = async () => {
     const artifact = artifactRef.current;
-    if (!artifact || preparingArtifact) return;
+    if (!artifact || preparingArtifact || view === 'pokedex') return;
 
     setPreparingArtifact(true);
     setShareNotice(null);
@@ -267,6 +270,7 @@ export const TrainerPassport = ({
               ['front', 'Card', CardholderIcon],
               ['badges', 'Badges', MedalIcon],
               ['titles', 'Titles', CertificateIcon],
+              ['pokedex', 'Pokédex', BookOpenIcon],
             ] as const
           ).map(([nextView, label, ViewIcon]) => (
             <SoundButton
@@ -315,7 +319,9 @@ export const TrainerPassport = ({
       <div
         className={`trainer-passport__artifact ${view === 'front' && revealing ? 'trainer-passport__artifact--reveal' : ''}`.trim()}
       >
-        {view === 'badges' ? (
+        {view === 'pokedex' ? (
+          <TrainerPokedex catalog={catalog} />
+        ) : view === 'badges' ? (
           <TrainerBadgeCase
             badges={badges}
             caseRef={artifactRef}
@@ -346,29 +352,31 @@ export const TrainerPassport = ({
         />
       ) : null}
 
-      <div className="trainer-passport__controls">
-        {canShareArtifact ? (
-          <GameButton
-            aria-busy={preparingArtifact}
-            disabled={preparingArtifact}
-            onClick={() => void exportArtifact()}
-          >
-            <ShareNetworkIcon aria-hidden="true" weight="bold" />
-            {preparingArtifact
-              ? 'Preparing PNG…'
-              : `Share ${shareLabels[view]}`}
-          </GameButton>
-        ) : (
-          <GameButton
-            aria-busy={preparingArtifact}
-            disabled={preparingArtifact}
-            onClick={() => void exportArtifact()}
-          >
-            <DownloadSimpleIcon aria-hidden="true" weight="bold" />
-            {preparingArtifact ? 'Preparing PNG…' : 'Download PNG'}
-          </GameButton>
-        )}
-      </div>
+      {view !== 'pokedex' && (
+        <div className="trainer-passport__controls">
+          {canShareArtifact ? (
+            <GameButton
+              aria-busy={preparingArtifact}
+              disabled={preparingArtifact}
+              onClick={() => void exportArtifact()}
+            >
+              <ShareNetworkIcon aria-hidden="true" weight="bold" />
+              {preparingArtifact
+                ? 'Preparing PNG…'
+                : `Share ${shareLabels[view]}`}
+            </GameButton>
+          ) : (
+            <GameButton
+              aria-busy={preparingArtifact}
+              disabled={preparingArtifact}
+              onClick={() => void exportArtifact()}
+            >
+              <DownloadSimpleIcon aria-hidden="true" weight="bold" />
+              {preparingArtifact ? 'Preparing PNG…' : 'Download PNG'}
+            </GameButton>
+          )}
+        </div>
+      )}
       {selectedBadge ? (
         <TrainerBadgeDialog
           badge={selectedBadge}

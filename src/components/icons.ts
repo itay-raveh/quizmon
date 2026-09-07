@@ -1,3 +1,4 @@
+export { BookOpenIcon } from '@phosphor-icons/react/dist/icons/BookOpen';
 export { ArrowLeftIcon } from '@phosphor-icons/react/dist/icons/ArrowLeft';
 export { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/icons/ArrowsClockwise';
 export { BinocularsIcon } from '@phosphor-icons/react/dist/icons/Binoculars';

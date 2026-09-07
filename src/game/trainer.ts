@@ -29,7 +29,7 @@ export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
 export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
-export type TrainerView = 'front' | 'badges' | 'titles';
+export type TrainerView = 'front' | 'badges' | 'titles' | 'pokedex';
 
 interface TrainerBadgeDefinition {
   getCurrent: (stats: TrainerStats) => number;

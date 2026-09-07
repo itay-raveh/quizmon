@@ -10,7 +10,7 @@ const backup: PlayerBackup = {
   version: 1,
   exportedAt: '2026-09-07T09:00:00.000Z',
   save: {
-    version: 1,
+    version: 2,
     restoreId: null,
     data: {
       ...emptyPlayerData(),

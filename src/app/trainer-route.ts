@@ -5,6 +5,7 @@ export const parseTrainerRoute = (search: string): TrainerView | null => {
   if (value === 'card' || value === 'front') return 'front';
   if (value === 'badges') return 'badges';
   if (value === 'titles') return 'titles';
+  if (value === 'pokedex') return 'pokedex';
   return null;
 };
 

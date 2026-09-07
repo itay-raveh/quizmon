@@ -45,6 +45,7 @@ const populate = () => {
   saveResult({ kind: 'daily', date: '2026-09-07' }, result);
   const save = readPlayerSave();
   updatePlayerData({
+    pokedex: ['pikachu'],
     profile: {
       ...createTrainerProfile(),
       name: 'Leaf',
@@ -353,9 +354,13 @@ it('does not save a stale round again while the tab unloads after restore', () =
 
 it('keeps the published version 1 fixture readable without losing fields', () => {
   const backup = parseBackup(JSON.stringify(v1Fixture));
-  expect(backup).toEqual(v1Fixture);
+  expect(backup.save.version).toBe(2);
+  expect(backup.save.data).toEqual({
+    ...v1Fixture.save.data,
+    pokedex: v1Fixture.save.data.results.progress.correctPokemon,
+  });
   restoreBackup(backup);
-  expect(readPlayerSave().data).toEqual(v1Fixture.save.data);
+  expect(readPlayerSave().data).toEqual(backup.save.data);
 });
 
 it('does not bypass the Generation roundup settings requirement during restore', () => {

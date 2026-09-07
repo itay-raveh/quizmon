@@ -1,6 +1,8 @@
 import { site } from '@/app/site';
 import type { TrainerView } from './trainer';
 
+type TrainerArtifactView = Exclude<TrainerView, 'pokedex'>;
+
 const artifactDetails = {
   badges: {
     filename: 'quizmon-league-badge-case.png',
@@ -14,7 +16,7 @@ const artifactDetails = {
     filename: 'quizmon-trainer-titles.png',
     label: 'Trainer Titles',
   },
-} satisfies Record<TrainerView, { filename: string; label: string }>;
+} satisfies Record<TrainerArtifactView, { filename: string; label: string }>;
 
 const waitForRenderedAssets = async (element: HTMLElement) => {
   await document.fonts?.ready;
@@ -60,7 +62,10 @@ export const renderTrainerArtifactImage = async (
   }
 };
 
-export const downloadTrainerArtifact = (blob: Blob, view: TrainerView) => {
+export const downloadTrainerArtifact = (
+  blob: Blob,
+  view: TrainerArtifactView,
+) => {
   const details = artifactDetails[view];
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -86,7 +91,7 @@ export const supportsTrainerArtifactSharing = () => {
 
 export const shareTrainerArtifact = async (
   blob: Blob,
-  view: TrainerView,
+  view: TrainerArtifactView,
 ): Promise<'cancelled' | 'shared' | 'unsupported'> => {
   if (!supportsTrainerArtifactSharing()) return 'unsupported';
   const details = artifactDetails[view];
