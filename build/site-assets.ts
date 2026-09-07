@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
+import { contentPages } from './content-pages.ts';
 
 export const markdownUrl = absoluteSiteUrl('/index.md');
 export const llmsUrl = absoluteSiteUrl('/llms.txt');
@@ -51,18 +52,13 @@ Sitemap: ${sitemapUrl}
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${site.url}</loc>
-  </url>
-  <url>
-    <loc>${absoluteSiteUrl('/about')}</loc>
-  </url>
-  <url>
-    <loc>${absoluteSiteUrl('/privacy')}</loc>
-  </url>
-  <url>
-    <loc>${absoluteSiteUrl('/terms')}</loc>
-  </url>
+${[site.url, ...contentPages.map(({ path }) => absoluteSiteUrl(path))]
+  .map(
+    (url) => `  <url>
+    <loc>${url}</loc>
+  </url>`,
+  )
+  .join('\n')}
 </urlset>
 `;
 

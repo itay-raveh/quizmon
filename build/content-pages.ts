@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { Marked } from 'marked';
 import { site } from '../src/app/site.ts';
 
-const pages = [
+export const contentPages = [
   {
     path: '/about',
     label: 'How to play',
@@ -32,7 +32,7 @@ const pages = [
 const markdown = new Marked({
   walkTokens(token) {
     if (token.type !== 'link') return;
-    const page = pages.find(({ source }) => source === token.href);
+    const page = contentPages.find(({ source }) => source === token.href);
     if (page) token.href = page.path;
     if (token.href === '../LICENSE') {
       token.href = `${site.repositoryUrl}/blob/main/LICENSE`;
@@ -47,7 +47,7 @@ const layout = (content: string) =>
   );
 
 export const contentPageEntries = [
-  ...pages.map(({ path }) => `${path.slice(1)}.html`),
+  ...contentPages.map(({ path }) => `${path.slice(1)}.html`),
   '404.html',
 ];
 
@@ -64,14 +64,14 @@ export const renderContentPage = (path: string) => {
     };
   }
 
-  const page = pages.find((page) => `${page.path}.html` === path);
+  const page = contentPages.find((page) => `${page.path}.html` === path);
   if (!page) return;
 
   const source = readFileSync(
     new URL(`../content/${page.source}`, import.meta.url),
     'utf8',
   );
-  const links = pages
+  const links = contentPages
     .map(
       ({ path, label }) =>
         `<a href="${path}"${path === page.path ? ' aria-current="page"' : ''}>${label}</a>`,
