@@ -4,6 +4,9 @@ export const isRecord = (value: unknown): value is Record<string, unknown> =>
 export const isFiniteNonnegative = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
+export const isNonnegativeInteger = (value: unknown): value is number =>
+  isFiniteNonnegative(value) && Number.isInteger(value);
+
 export const isChoice = <T extends string>(
   value: unknown,
   choices: readonly T[],

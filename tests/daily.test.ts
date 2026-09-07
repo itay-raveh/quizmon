@@ -206,6 +206,17 @@ describe('daily dates', () => {
 describe('Daily reminder prompt', () => {
   beforeEach(() => window.localStorage.clear());
 
+  it.each([-1, 0.5, '1', null])(
+    'ignores malformed prompt counters: %j',
+    (completedDailyCount) => {
+      window.localStorage.setItem(
+        'quizmon.daily-reminder-prompt.v1',
+        JSON.stringify({ completedDailyCount, version: 1 }),
+      );
+      expect(shouldOfferDailyReminder(1)).toBe(true);
+    },
+  );
+
   it('offers after the first Daily and waits three more before asking again', () => {
     expect(shouldOfferDailyReminder(1)).toBe(true);
     markDailyReminderOffered(1);

@@ -9,7 +9,12 @@ import { isDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import type { AnswerResult, GameMode, Modifiers } from './types';
 import { generations, questionCategories, trainingModes } from './types';
-import { isChoice, isFiniteNonnegative, isRecord } from './validation';
+import {
+  isChoice,
+  isFiniteNonnegative,
+  isNonnegativeInteger,
+  isRecord,
+} from './validation';
 
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 const ACTIVE_GAME_VERSION = 1;
@@ -39,9 +44,7 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
   if (
     !isRecord(value) ||
     !isChoice(value.category, questionCategories) ||
-    typeof value.cluesUsed !== 'number' ||
-    !Number.isInteger(value.cluesUsed) ||
-    !isFiniteNonnegative(value.cluesUsed) ||
+    !isNonnegativeInteger(value.cluesUsed) ||
     typeof value.correct !== 'boolean' ||
     !isChoice(value.generation, generations) ||
     typeof value.pokemonName !== 'string' ||
@@ -96,11 +99,9 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
   if (
     !isRecord(value) ||
     value.version !== ACTIVE_GAME_VERSION ||
-    !Number.isInteger(value.contentVersion) ||
-    !isFiniteNonnegative(value.contentVersion) ||
+    !isNonnegativeInteger(value.contentVersion) ||
     !isFiniteNonnegative(value.elapsedMilliseconds) ||
-    !Number.isInteger(value.questionCount) ||
-    !isFiniteNonnegative(value.questionCount) ||
+    !isNonnegativeInteger(value.questionCount) ||
     value.questionCount < 1 ||
     typeof value.seed !== 'string' ||
     value.seed.length === 0 ||

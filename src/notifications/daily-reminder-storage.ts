@@ -1,3 +1,4 @@
+import { isNonnegativeInteger } from '@/game/validation';
 import { readStoredJson, writeStoredJson } from '@/game/browser-storage';
 
 const PROMPT_KEY = 'quizmon.daily-reminder-prompt.v1';
@@ -14,10 +15,9 @@ const readPromptHistory = (): PromptHistory | null => {
 
   const candidate = value as Partial<PromptHistory>;
   return candidate.version === 1 &&
-    Number.isInteger(candidate.completedDailyCount) &&
-    (candidate.completedDailyCount ?? -1) >= 0
+    isNonnegativeInteger(candidate.completedDailyCount)
     ? {
-        completedDailyCount: candidate.completedDailyCount as number,
+        completedDailyCount: candidate.completedDailyCount,
         version: 1,
       }
     : null;

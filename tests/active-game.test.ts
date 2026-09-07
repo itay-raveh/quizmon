@@ -50,6 +50,31 @@ describe('active game storage', () => {
     expect(window.sessionStorage.getItem('quizmon.active-game.v1')).toBeNull();
   });
 
+  it.each([-1, 0.5, '1', null])(
+    'rejects invalid round counters: %j',
+    (value) => {
+      for (const patch of [
+        { contentVersion: value },
+        { questionCount: value },
+        { answers: [{ ...snapshot.answers[0], cluesUsed: value }] },
+      ]) {
+        window.sessionStorage.setItem(
+          'quizmon.active-game.v1',
+          JSON.stringify({ ...snapshot, version: 1, ...patch }),
+        );
+        expect(readActiveGame()).toBeNull();
+      }
+    },
+  );
+
+  it('preserves the existing integer range for unfinished rounds', () => {
+    writeActiveGame({
+      ...snapshot,
+      contentVersion: Number.MAX_SAFE_INTEGER + 1,
+    });
+    expect(readActiveGame()?.contentVersion).toBe(Number.MAX_SAFE_INTEGER + 1);
+  });
+
   it('clears a round when the player leaves or completes it', () => {
     writeActiveGame(snapshot);
     clearActiveGame();
