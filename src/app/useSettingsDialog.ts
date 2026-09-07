@@ -53,5 +53,5 @@ export const useSettingsDialog = ({
     [dispatch, markGenerationKnown, phase, setModifiers, startTimer],
   );
 
-  return { close, open, save, settings };
+  return { close, open, save, state: settings };
 };

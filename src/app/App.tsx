@@ -28,23 +28,14 @@ export const App = () => {
   const catalogState = usePokemonCatalog({
     loadImmediately: loadCatalogImmediately,
   });
+  const catalog =
+    catalogState.status === 'ready' ? catalogState.catalog : undefined;
   const [modifiers, setModifiers] = usePersistentModifiers();
   const [session, dispatchSession] = useReducer(
     gameSessionReducer,
     initialGameSession,
   );
-  const {
-    close: closeTrainerCard,
-    isOpen: trainerCardOpen,
-    open: openTrainerCard,
-    profile: trainerProfile,
-    refresh: refreshTrainerCard,
-    refreshStats: refreshTrainerStats,
-    showView: showTrainerView,
-    stats: trainerStats,
-    updateProfile: updateTrainerProfile,
-    view: trainerView,
-  } = useTrainerCard();
+  const trainer = useTrainerCard();
   const {
     elapsedMilliseconds,
     elapsedSeconds,
@@ -70,16 +61,8 @@ export const App = () => {
     [reset, start],
   );
 
-  const {
-    chooseAllGenerations,
-    chooseGenOne,
-    closeGenerationPrompt,
-    generationPromptOpen,
-    markGenerationKnown,
-    start: startTrainingGame,
-    trainAgain,
-  } = useTrainingGame({
-    catalog: catalogState.status === 'ready' ? catalogState.catalog : undefined,
+  const training = useTrainingGame({
+    catalog,
     modifiers,
     session,
     setModifiers,
@@ -87,35 +70,20 @@ export const App = () => {
   });
 
   const { retry: retryLeague, start: startLeague } = useLeagueChallenge({
-    catalog: catalogState.status === 'ready' ? catalogState.catalog : undefined,
+    catalog,
     modifiers,
     session,
     startGame,
   });
 
-  const {
-    autoStart: autoStartDaily,
-    date: dailyDate,
-    linkedDate: linkedDailyDate,
-    recordCompletion: recordDailyCompletion,
-    result: dailyResult,
-    resultSaved: dailyResultSaved,
-    start: startDailyGame,
-    storageAvailable,
-    streak: dailyStreak,
-  } = useDailyChallenge({
-    catalog: catalogState.status === 'ready' ? catalogState.catalog : undefined,
+  const daily = useDailyChallenge({
+    catalog,
     modifiers,
-    refreshSavedData: refreshTrainerCard,
+    refreshSavedData: trainer.refresh,
     startGame,
   });
 
-  const {
-    cancelLeave: cancelLeaveGame,
-    leaveConfirmationOpen,
-    requestLeave: requestLeaveGame,
-    returnToLanding: newGame,
-  } = useGameNavigation({
+  const navigation = useGameNavigation({
     dispatch: dispatchSession,
     pauseTimer: pause,
     resetTimer: reset,
@@ -123,14 +91,9 @@ export const App = () => {
     startTimer: start,
   });
 
-  const {
-    close: closeSettings,
-    open: openSettings,
-    save: saveSettings,
-    settings,
-  } = useSettingsDialog({
+  const settings = useSettingsDialog({
     dispatch: dispatchSession,
-    markGenerationKnown,
+    markGenerationKnown: training.markGenerationKnown,
     pauseTimer: pause,
     session,
     setModifiers,
@@ -142,42 +105,34 @@ export const App = () => {
     complete: completeGame,
     recordAnswer,
   } = useGameCompletion({
-    contentVersion:
-      catalogState.status === 'ready' ? catalogState.catalog.contentVersion : 0,
+    contentVersion: catalog?.contentVersion ?? 0,
     dispatch: dispatchSession,
     pauseTimer: pause,
-    recordDailyCompletion,
-    refreshTrainerStats,
+    recordDailyCompletion: daily.recordCompletion,
+    refreshTrainerStats: trainer.refreshStats,
     session,
     startTimer: start,
   });
 
   useActiveGame({
-    autoStartDaily,
-    catalog: catalogState.status === 'ready' ? catalogState.catalog : undefined,
+    autoStartDaily: daily.autoStart,
+    catalog,
     completeGame,
-    dailyDate,
+    dailyDate: daily.date,
     dispatch: dispatchSession,
     elapsedSeconds,
     getElapsedMilliseconds,
-    linkedDailyDate,
+    linkedDailyDate: daily.linkedDate,
     resetTimer: reset,
     session,
-    startDailyGame,
+    startDailyGame: daily.start,
     startTimer: start,
   });
 
   return (
     <AppView
       catalogState={catalogState}
-      daily={{
-        date: dailyDate,
-        result: dailyResult,
-        resultSaved: dailyResultSaved,
-        start: startDailyGame,
-        storageAvailable,
-        streak: dailyStreak,
-      }}
+      daily={daily}
       modifiers={modifiers}
       league={{
         ...leagueDestination,
@@ -190,12 +145,7 @@ export const App = () => {
           startLeague();
         },
       }}
-      navigation={{
-        cancelLeave: cancelLeaveGame,
-        leaveConfirmationOpen,
-        requestLeave: requestLeaveGame,
-        returnToLanding: newGame,
-      }}
+      navigation={navigation}
       question={{
         answer: answerQuestion,
         elapsedMilliseconds,
@@ -204,30 +154,9 @@ export const App = () => {
         recordAnswer,
       }}
       session={session}
-      settings={{
-        close: closeSettings,
-        open: openSettings,
-        save: saveSettings,
-        state: settings,
-      }}
-      trainer={{
-        close: closeTrainerCard,
-        isOpen: trainerCardOpen,
-        open: openTrainerCard,
-        profile: trainerProfile,
-        stats: trainerStats,
-        showView: showTrainerView,
-        updateProfile: updateTrainerProfile,
-        view: trainerView,
-      }}
-      training={{
-        chooseAllGenerations,
-        chooseGenOne,
-        closeGenerationPrompt,
-        generationPromptOpen,
-        start: startTrainingGame,
-        trainAgain,
-      }}
+      settings={settings}
+      trainer={trainer}
+      training={training}
     />
   );
 };

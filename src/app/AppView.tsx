@@ -5,10 +5,7 @@ import { LeagueDestination } from '@/components/LeagueDestination';
 import { isLeagueVictory } from '@/game/league';
 import { Landing } from '@/components/Landing';
 import { LeaveGameDialog } from '@/components/LeaveGameDialog';
-import {
-  ModifiersDialog,
-  type SettingsTab,
-} from '@/components/ModifiersDialog';
+import { ModifiersDialog } from '@/components/ModifiersDialog';
 import { MotionProvider } from '@/components/MotionProvider';
 import { DailyReminderProvider } from '@/notifications/DailyReminderProvider';
 import { Question } from '@/components/Question';
@@ -17,43 +14,18 @@ import { TrainerPassport } from '@/components/TrainerPassport';
 import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { getLocalDate } from '@/game/daily';
 import type { usePokemonCatalog } from '@/game/catalog';
-import type { TrainerStats } from '@/game/storage';
-import {
-  isLeagueUnlocked,
-  type TrainerView as TrainerDestination,
-} from '@/game/trainer';
-import type { TrainerProfile } from '@/game/trainer-profile';
-import type { AnswerResult, GameResult, Modifiers } from '@/game/types';
+import { isLeagueUnlocked } from '@/game/trainer';
+import type { AnswerResult, Modifiers } from '@/game/types';
 import type { GameSession } from './session';
+import type { useDailyChallenge } from './useDailyChallenge';
+import type { useGameNavigation } from './useGameNavigation';
+import type { useLeagueDestination } from './useLeagueDestination';
+import type { useLeagueChallenge } from './useLeagueChallenge';
+import type { useSettingsDialog } from './useSettingsDialog';
+import type { useTrainerCard } from './useTrainerCard';
+import type { useTrainingGame } from './useTrainingGame';
 
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
-
-interface DailyView {
-  date: string;
-  result: GameResult | null;
-  resultSaved: boolean;
-  start: () => void;
-  storageAvailable: boolean;
-  streak: number;
-}
-
-interface NavigationView {
-  cancelLeave: () => void;
-  leaveConfirmationOpen: boolean;
-  requestLeave: () => void;
-  returnToLanding: () => void;
-}
-
-interface LeagueView {
-  isOpen: boolean;
-  open: (view?: 'challenge' | 'hall') => void;
-  view: 'challenge' | 'hall' | null;
-  close: () => void;
-  showResults: boolean;
-  setShowResults: (show: boolean) => void;
-  retry: () => void;
-  start: () => void;
-}
 
 interface QuestionView {
   answer: (answer: AnswerResult) => void;
@@ -63,44 +35,18 @@ interface QuestionView {
   recordAnswer: (answer: AnswerResult) => void;
 }
 
-interface SettingsView {
-  close: () => void;
-  open: (tab: SettingsTab) => void;
-  save: (modifiers: Modifiers) => void;
-  state: { initialTab: SettingsTab } | null;
-}
-
-interface TrainerViewState {
-  close: () => void;
-  isOpen: boolean;
-  open: (view: TrainerDestination) => void;
-  profile: TrainerProfile;
-  showView: (view: TrainerDestination) => void;
-  stats: TrainerStats;
-  updateProfile: (profile: TrainerProfile) => void;
-  view: TrainerDestination;
-}
-
-interface TrainingView {
-  chooseAllGenerations: () => void;
-  chooseGenOne: () => void;
-  closeGenerationPrompt: () => void;
-  generationPromptOpen: boolean;
-  start: () => void;
-  trainAgain: () => void;
-}
-
 interface AppViewProps {
   catalogState: CatalogState;
-  daily: DailyView;
-  league: LeagueView;
+  daily: ReturnType<typeof useDailyChallenge>;
+  league: ReturnType<typeof useLeagueDestination> &
+    ReturnType<typeof useLeagueChallenge>;
   modifiers: Modifiers;
-  navigation: NavigationView;
+  navigation: ReturnType<typeof useGameNavigation>;
   question: QuestionView;
   session: GameSession;
-  settings: SettingsView;
-  trainer: TrainerViewState;
-  training: TrainingView;
+  settings: ReturnType<typeof useSettingsDialog>;
+  trainer: ReturnType<typeof useTrainerCard>;
+  training: ReturnType<typeof useTrainingGame>;
 }
 
 const AppScreen = ({
