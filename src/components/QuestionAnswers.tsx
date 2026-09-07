@@ -8,6 +8,7 @@ import type { QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
 import { CheckIcon, XIcon } from './icons';
 import { PokemonIdentity } from './PokemonIdentity';
+import { PixelSprite } from './PixelSprite';
 import { TypeBadges } from './TypeBadge';
 
 const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
@@ -113,6 +114,14 @@ export const QuestionAnswers = ({
         const statAnnouncement = revealsStat
           ? `. ${formatPokemonName(showdownStat)}: ${statValue}.`
           : '';
+        const stat = hasStatValue ? (
+          <span
+            aria-hidden="true"
+            className={`answer__stat ${revealsStat ? '' : 'answer__stat--reserved'}`.trim()}
+          >
+            {statValue}
+          </span>
+        ) : null;
         const selectionMark = answered ? (
           optionCorrect ? (
             <CheckIcon weight="bold" />
@@ -121,7 +130,7 @@ export const QuestionAnswers = ({
           ) : (
             index + 1
           )
-        ) : question.answer.interaction === 'multi-select' && optionSelected ? (
+        ) : multiSelect && optionSelected ? (
           <CheckIcon weight="bold" />
         ) : (
           index + 1
@@ -158,56 +167,44 @@ export const QuestionAnswers = ({
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
-                  <img
-                    className={`pixel-sprite answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
+                  <PixelSprite
+                    className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
                     src={visual.src}
-                    alt=""
-                    decoding="async"
-                    width="96"
-                    height="96"
+                    fetchPriority="auto"
                   />
                 </span>
-                {
-                  <PokemonIdentity
-                    className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
-                    revealed={!concealed}
-                    dexNumber={dexNumber}
-                    hideNumberFromAccessibility
-                    name={option}
-                    nameClassName="answer__name"
-                  >
-                    {reservesOptionTypes ? (
-                      <TypeBadges
-                        className={`answer__types ${answered ? '' : 'answer__types--reserved'}`.trim()}
-                        types={visual.types}
-                      />
-                    ) : null}
-                    {classification ? (
-                      <span
-                        aria-hidden="true"
-                        className={`answer__classification ${answered ? '' : 'answer__classification--reserved'}`.trim()}
-                      >
-                        {classification}
-                      </span>
-                    ) : null}
-                    {generation ? (
-                      <span
-                        aria-hidden="true"
-                        className={`answer__generation ${answered ? '' : 'answer__generation--reserved'}`.trim()}
-                      >
-                        <GenerationLabel generation={generation} />
-                      </span>
-                    ) : null}
-                    {hasStatValue ? (
-                      <span
-                        aria-hidden="true"
-                        className={`answer__stat ${revealsStat ? '' : 'answer__stat--reserved'}`.trim()}
-                      >
-                        {statValue}
-                      </span>
-                    ) : null}
-                  </PokemonIdentity>
-                }
+                <PokemonIdentity
+                  className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
+                  revealed={!concealed}
+                  dexNumber={dexNumber}
+                  hideNumberFromAccessibility
+                  name={option}
+                  nameClassName="answer__name"
+                >
+                  {reservesOptionTypes ? (
+                    <TypeBadges
+                      className={`answer__types ${answered ? '' : 'answer__types--reserved'}`.trim()}
+                      types={visual.types}
+                    />
+                  ) : null}
+                  {classification ? (
+                    <span
+                      aria-hidden="true"
+                      className={`answer__classification ${answered ? '' : 'answer__classification--reserved'}`.trim()}
+                    >
+                      {classification}
+                    </span>
+                  ) : null}
+                  {generation ? (
+                    <span
+                      aria-hidden="true"
+                      className={`answer__generation ${answered ? '' : 'answer__generation--reserved'}`.trim()}
+                    >
+                      <GenerationLabel generation={generation} />
+                    </span>
+                  ) : null}
+                  {stat}
+                </PokemonIdentity>
               </>
             ) : hasTypeOptionBadges ? (
               <TypeBadges className="answer__type-choice" types={[option]} />
@@ -219,14 +216,7 @@ export const QuestionAnswers = ({
                 name={option}
                 nameClassName="answer__name"
               >
-                {hasStatValue ? (
-                  <span
-                    aria-hidden="true"
-                    className={`answer__stat ${revealsStat ? '' : 'answer__stat--reserved'}`.trim()}
-                  >
-                    {statValue}
-                  </span>
-                ) : null}
+                {stat}
               </PokemonIdentity>
             ) : (
               <span>{formatPokemonName(option)}</span>

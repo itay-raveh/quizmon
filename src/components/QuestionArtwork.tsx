@@ -273,19 +273,15 @@ export const QuestionArtwork = ({
   if (media.kind === 'pixel-peek') {
     return (
       <div className={`pixel-peek ${answered ? 'pixel-peek--revealed' : ''}`}>
-        <img
-          className="pixel-sprite pixel-peek__image"
+        <PixelSprite
+          className="pixel-peek__image"
           src={media.src}
           alt={
             answered
               ? formatPokemonName(question.pokemonName)
               : 'Cropped Pokémon sprite'
           }
-          decoding="async"
-          fetchPriority="high"
           style={{ transformOrigin: `${media.focusX}% ${media.focusY}%` }}
-          width="96"
-          height="96"
         />
       </div>
     );

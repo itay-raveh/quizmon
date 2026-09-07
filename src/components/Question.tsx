@@ -8,7 +8,11 @@ import {
   getQuestionTitle,
 } from '@/game/game';
 import { getLeagueStageLabel } from '@/game/league';
-import { formatPokemonName, formatPokemonTypes } from '@/game/format';
+import {
+  formatPokedexNumber,
+  formatPokemonName,
+  formatPokemonTypes,
+} from '@/game/format';
 import type {
   GameMode,
   QuestionData,
@@ -64,7 +68,7 @@ const QuestionPrompt = ({
         <span className="question__subject">
           <b>{formatPokemonName(prompt.name)}</b>{' '}
           <span className="question__subject-number">
-            (No. {String(prompt.dexNumber).padStart(4, '0')})
+            ({formatPokedexNumber(prompt.dexNumber)})
           </span>
         </span>
         {prompt.after}
