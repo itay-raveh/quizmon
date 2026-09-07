@@ -271,6 +271,20 @@ it.each([
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
 });
 
+it.each([[], ['unknown'], null, 'I'])(
+  'rejects invalid backup selections without changing storage: %j',
+  (value) => {
+    populate();
+    const before = localStorage.getItem(PLAYER_STORAGE_KEY);
+    for (const field of ['generations', 'questionTypes']) {
+      const backup = createBackup();
+      backup.save.data.settings = { ...defaultModifiers, [field]: value };
+      expect(() => parseBackup(JSON.stringify(backup))).toThrow();
+      expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
+    }
+  },
+);
+
 it('rejects malformed JSON and oversized files', () => {
   expect(() => parseBackup('{')).toThrow('valid JSON');
   expect(() => parseBackup(' '.repeat(MAX_BACKUP_BYTES + 1))).toThrow(

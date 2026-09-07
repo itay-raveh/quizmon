@@ -24,6 +24,7 @@ import {
 import {
   isChoice,
   isFiniteNonnegative,
+  isNonemptyChoiceArray,
   isRecord,
   isUtcTimestamp,
 } from './validation';
@@ -174,12 +175,8 @@ const isSettings = (value: unknown): value is Modifiers =>
   typeof value.reduceMotion === 'boolean' &&
   isFiniteNonnegative(value.soundVolume) &&
   value.soundVolume <= 1 &&
-  Array.isArray(value.generations) &&
-  value.generations.length > 0 &&
-  value.generations.every((entry: unknown) => isChoice(entry, generations)) &&
-  Array.isArray(value.questionTypes) &&
-  value.questionTypes.length > 0 &&
-  value.questionTypes.every((entry: unknown) => isChoice(entry, questionTypes));
+  isNonemptyChoiceArray(value.generations, generations) &&
+  isNonemptyChoiceArray(value.questionTypes, questionTypes);
 
 const parsePlayerData = (value: unknown, version: 1 | 2 | 3): PlayerData => {
   if (

@@ -12,6 +12,14 @@ export const isChoice = <T extends string>(
   choices: readonly T[],
 ): value is T => typeof value === 'string' && choices.includes(value as T);
 
+export const isNonemptyChoiceArray = (
+  value: unknown,
+  choices: readonly string[],
+): boolean =>
+  Array.isArray(value) &&
+  value.length > 0 &&
+  value.every((entry) => isChoice(entry, choices));
+
 export const isUtcTimestamp = (value: unknown): value is string =>
   typeof value === 'string' &&
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) &&

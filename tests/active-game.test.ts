@@ -67,6 +67,23 @@ describe('active game storage', () => {
     },
   );
 
+  it.each([[], ['unknown'], null, 'I'])(
+    'rejects invalid saved selections: %j',
+    (value) => {
+      for (const field of ['generations', 'questionTypes']) {
+        window.sessionStorage.setItem(
+          'quizmon.active-game.v1',
+          JSON.stringify({
+            ...snapshot,
+            version: 1,
+            modifiers: { ...defaultModifiers, [field]: value },
+          }),
+        );
+        expect(readActiveGame()).toBeNull();
+      }
+    },
+  );
+
   it('preserves the existing integer range for unfinished rounds', () => {
     writeActiveGame({
       ...snapshot,

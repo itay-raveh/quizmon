@@ -13,6 +13,7 @@ import {
   isChoice,
   isFiniteNonnegative,
   isNonnegativeInteger,
+  isNonemptyChoiceArray,
   isRecord,
 } from './validation';
 
@@ -77,16 +78,8 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
 const parseModifiers = (value: unknown): Modifiers | null => {
   if (
     !isRecord(value) ||
-    !Array.isArray(value.generations) ||
-    value.generations.length === 0 ||
-    !value.generations.every((generation) =>
-      isChoice(generation, generations),
-    ) ||
-    !Array.isArray(value.questionTypes) ||
-    value.questionTypes.length === 0 ||
-    !value.questionTypes.every((questionType) =>
-      isChoice(questionType, questionTypes),
-    ) ||
+    !isNonemptyChoiceArray(value.generations, generations) ||
+    !isNonemptyChoiceArray(value.questionTypes, questionTypes) ||
     !isChoice(value.trainingMode, trainingModes)
   ) {
     return null;
