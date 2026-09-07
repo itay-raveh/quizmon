@@ -1,13 +1,8 @@
-import {
-  useId,
-  useMemo,
-  useState,
-  type KeyboardEvent,
-  type PointerEvent,
-} from 'react';
+import { useId, useMemo, useState } from 'react';
 import { useInteractionSound } from '@/audio/sound';
 import { formatPokemonName } from '@/game/format';
 import { findSearchMatches, normalizeSearch } from '@/game/search';
+import { useSuggestionNavigation } from './useSuggestionNavigation';
 
 interface PokemonPickerProps {
   onChange: (pokemon: string | null) => void;
@@ -26,8 +21,6 @@ export const PokemonPicker = ({
   const listboxId = useId();
   const playInteractionSound = useInteractionSound();
   const [query, setQuery] = useState(value ? formatPokemonName(value) : '');
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const [open, setOpen] = useState(false);
   const entries = useMemo(
     () =>
       options.map(({ name, sprite }) => ({
@@ -42,49 +35,19 @@ export const PokemonPicker = ({
   const suggestions = useMemo(() => {
     return findSearchMatches(entries, query);
   }, [entries, query]);
-  const showSuggestions = open && normalizedQuery.length > 0;
-
-  const choose = (name: string, label: string) => {
+  const {
+    activeIndex,
+    choose,
+    handleKeyDown,
+    open,
+    resetActiveIndex,
+    setOpen,
+  } = useSuggestionNavigation(suggestions, (suggestion) => {
     playInteractionSound('toggle-on');
-    setQuery(label);
-    setOpen(false);
-    setActiveIndex(-1);
-    onChange(name);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Escape') {
-      setOpen(false);
-      setActiveIndex(-1);
-    } else if (event.key === 'ArrowDown' && suggestions.length > 0) {
-      event.preventDefault();
-      setOpen(true);
-      setActiveIndex((current) =>
-        current >= suggestions.length - 1 ? 0 : current + 1,
-      );
-    } else if (event.key === 'ArrowUp' && suggestions.length > 0) {
-      event.preventDefault();
-      setOpen(true);
-      setActiveIndex((current) =>
-        current <= 0 ? suggestions.length - 1 : current - 1,
-      );
-    } else if (event.key === 'Enter' && activeIndex >= 0) {
-      const suggestion = suggestions[activeIndex];
-      if (suggestion) {
-        event.preventDefault();
-        choose(suggestion.name, suggestion.label);
-      }
-    }
-  };
-
-  const handlePointerDown = (
-    event: PointerEvent<HTMLLIElement>,
-    name: string,
-    label: string,
-  ) => {
-    event.preventDefault();
-    choose(name, label);
-  };
+    setQuery(suggestion.label);
+    onChange(suggestion.name);
+  });
+  const showSuggestions = open && normalizedQuery.length > 0;
 
   return (
     <div className="pokemon-picker">
@@ -103,7 +66,7 @@ export const PokemonPicker = ({
           onBlur={() => setOpen(false)}
           onChange={(event) => {
             setQuery(event.target.value);
-            setActiveIndex(-1);
+            resetActiveIndex();
             setOpen(true);
             onChange(null);
           }}
@@ -123,9 +86,10 @@ export const PokemonPicker = ({
                   aria-selected={index === activeIndex}
                   id={`${listboxId}-option-${index}`}
                   key={suggestion.name}
-                  onPointerDown={(event) =>
-                    handlePointerDown(event, suggestion.name, suggestion.label)
-                  }
+                  onPointerDown={(event) => {
+                    event.preventDefault();
+                    choose(suggestion);
+                  }}
                   role="option"
                 >
                   <span aria-hidden="true" className="pokemon-picker__sprite">

@@ -1,14 +1,8 @@
-import {
-  useId,
-  useMemo,
-  useState,
-  type FormEvent,
-  type KeyboardEvent,
-  type PointerEvent,
-} from 'react';
+import { useId, useMemo, useState, type FormEvent } from 'react';
 import { useInteractionSound } from '@/audio/sound';
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import { findSearchMatches, normalizeSearch } from '@/game/search';
+import { useSuggestionNavigation } from './useSuggestionNavigation';
 import type { PokemonSearchOption } from '@/game/types';
 import { GameButton } from './GameButton';
 
@@ -32,8 +26,6 @@ export const ChampionSearch = ({
   const listboxId = useId();
   const playInteractionSound = useInteractionSound();
   const [query, setQuery] = useState('');
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const [open, setOpen] = useState(false);
   const entries = useMemo(
     () =>
       options.map(({ dexNumber, name }) => {
@@ -55,6 +47,17 @@ export const ChampionSearch = ({
     if (!normalizedQuery || exactMatch) return [];
     return findSearchMatches(entries, query);
   }, [entries, exactMatch, normalizedQuery, query]);
+  const {
+    activeIndex,
+    choose,
+    handleKeyDown,
+    open,
+    resetActiveIndex,
+    setOpen,
+  } = useSuggestionNavigation(suggestions, (suggestion) => {
+    playInteractionSound('tap');
+    setQuery(suggestion.label);
+  });
   const showSuggestions =
     open && !answered && !exactMatch && normalizedQuery.length > 0;
   const result = answered
@@ -63,56 +66,9 @@ export const ChampionSearch = ({
       : 'wrong'
     : null;
 
-  const chooseSuggestion = (option: string, label: string) => {
-    playInteractionSound('tap');
-    setQuery(label);
-    setActiveIndex(-1);
-    setOpen(false);
-  };
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!disabled && !answered && exactMatch) onAnswer(exactMatch.option);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Escape') {
-      setOpen(false);
-      setActiveIndex(-1);
-      return;
-    }
-    if (event.key === 'ArrowDown' && suggestions.length > 0) {
-      event.preventDefault();
-      setOpen(true);
-      setActiveIndex((current) =>
-        current >= suggestions.length - 1 ? 0 : current + 1,
-      );
-      return;
-    }
-    if (event.key === 'ArrowUp' && suggestions.length > 0) {
-      event.preventDefault();
-      setOpen(true);
-      setActiveIndex((current) =>
-        current <= 0 ? suggestions.length - 1 : current - 1,
-      );
-      return;
-    }
-    if (event.key === 'Enter' && activeIndex >= 0) {
-      const suggestion = suggestions[activeIndex];
-      if (suggestion) {
-        event.preventDefault();
-        chooseSuggestion(suggestion.option, suggestion.label);
-      }
-    }
-  };
-
-  const handleSuggestionPointerDown = (
-    event: PointerEvent<HTMLLIElement>,
-    option: string,
-    label: string,
-  ) => {
-    event.preventDefault();
-    chooseSuggestion(option, label);
   };
 
   return (
@@ -142,7 +98,7 @@ export const ChampionSearch = ({
             onBlur={() => setOpen(false)}
             onChange={(event) => {
               setQuery(event.target.value);
-              setActiveIndex(-1);
+              resetActiveIndex();
               setOpen(true);
             }}
             onFocus={() => setOpen(true)}
@@ -162,13 +118,10 @@ export const ChampionSearch = ({
                     aria-selected={index === activeIndex}
                     id={`${listboxId}-option-${index}`}
                     key={suggestion.option}
-                    onPointerDown={(event) =>
-                      handleSuggestionPointerDown(
-                        event,
-                        suggestion.option,
-                        suggestion.label,
-                      )
-                    }
+                    onPointerDown={(event) => {
+                      event.preventDefault();
+                      choose(suggestion);
+                    }}
                     role="option"
                   >
                     <span>{suggestion.label}</span>
