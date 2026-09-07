@@ -1044,7 +1044,7 @@
 
 .results__header {
   display: grid;
-  grid-template-columns: 2.8rem minmax(0, 1fr) 2.8rem;
+  grid-template-columns: 2.8rem minmax(0, 1fr);
   align-items: center;
   gap: 0.75rem;
 }
@@ -1062,10 +1062,6 @@
 .results__close svg {
   width: 1.45rem;
   height: 1.45rem;
-}
-
-.results__header > :last-child {
-  justify-self: end;
 }
 
 .results__header h1 {
@@ -1088,14 +1084,52 @@
 .results-list {
   display: grid;
   margin: 1rem 0 1.15rem;
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.65rem 0.8rem;
+}
+
+.results-list--5 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.results-list--5 > div {
+  grid-column: span 2;
+}
+
+.results-list--5 > div:nth-child(-n + 2) {
+  grid-column: span 3;
+}
+
+.results-list--6 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.results-list__stage dd {
+  text-wrap: balance;
+}
+
+@container (max-width: 32rem) {
+  .results-list--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .results-list--6 {
+    --results-value-size: clamp(0.7rem, 3.4cqw, var(--text-status));
+  }
 }
 
 .results-list > div {
   display: grid;
   min-width: 0;
   gap: 0.08rem;
+}
+
+@container (max-width: 18rem) {
+  .results-list--6 {
+    --results-value-size: 0.85rem;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .results-list dt {
@@ -1108,7 +1142,8 @@
   margin: 0;
   color: var(--navy);
   font-family: var(--font-data);
-  font-size: var(--text-status);
+  font-size: var(--results-value-size, var(--text-status));
+  min-width: 0;
   font-weight: 800;
 }
 
@@ -1278,16 +1313,16 @@
   background: var(--blue);
 }
 
+.champion-trophy {
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
 .trainer-progress-change__hall-mark {
-  display: grid;
   width: 2.35rem;
+  height: auto;
   aspect-ratio: 1;
-  color: var(--navy);
-  background: var(--yellow);
-  border: 2px solid var(--navy);
-  border-radius: 0.28rem;
-  box-shadow: 0 0.14rem 0 var(--navy-shadow);
-  padding: 0.35rem;
 }
 
 .trainer-progress-change--earned {
@@ -1476,11 +1511,6 @@
     grid-column: 1 / -1;
     grid-row: 2;
     overflow-wrap: anywhere;
-  }
-
-  .results__header > :last-child {
-    grid-column: 2;
-    grid-row: 1;
   }
 }
 

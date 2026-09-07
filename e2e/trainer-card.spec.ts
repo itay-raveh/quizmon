@@ -242,17 +242,14 @@ for (const width of [320, 390, 1280]) {
     );
     await page.goto('/?trainer=card');
     const card = page.getByRole('article', { name: 'Trainer Card' });
-    for (const [label, value] of [
-      ['Pokédex found', `3 / ${Object.keys(catalogData.pokemon).length}`],
-      ['Correct answers', '12,684'],
-      ['Daily clears', '6'],
-      ['Day combo', '2 · Best 4'],
-    ] as const) {
-      await expect(
-        card
-          .locator('dl > div')
-          .filter({ has: page.getByText(label, { exact: true }) }),
-      ).toHaveText(`${label}${value}`);
+    await expect(card.locator('.trainer-card__record')).toHaveText(
+      `Pokémon found3 / ${Object.keys(catalogData.pokemon).length}`,
+    );
+    await expect(
+      card.getByRole('img', { name: '2-day Daily Combo' }),
+    ).toBeVisible();
+    for (const label of ['Name', 'Correct answers', 'Daily clears']) {
+      await expect(card.getByText(label, { exact: true })).toHaveCount(0);
     }
     await expect(
       card.getByRole('heading', { name: data.profile.name }),
@@ -279,3 +276,91 @@ for (const width of [320, 390, 1280]) {
     );
   });
 }
+
+test('plays and exports the polished Champion finish with reduced motion support', async ({
+  page,
+}, testInfo) => {
+  const data = emptyPlayerData();
+  data.generationPromptAnswered = true;
+  data.profile = {
+    version: 1,
+    createdAt: '2026-09-01',
+    hasBeenRevealed: true,
+    name: 'Leaf',
+    partnerPokemon: 'garchomp',
+    specialty: null,
+  };
+  data.results.league.completed = true;
+  await page.addInitScript(
+    (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
+    { version: 2, restoreId: null, data },
+  );
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/?trainer=card');
+  const card = page.getByRole('article', { name: 'Trainer Card' });
+  const effects = card.locator('.trainer-card__finish-effects');
+  const polish = effects.locator('.trainer-card__polish');
+  const reflectionPosition = () =>
+    polish.evaluate(
+      (element) => getComputedStyle(element, '::before').transform,
+    );
+  await expect(effects).toHaveClass(/is-motion-active/);
+  const initialPosition = await reflectionPosition();
+  await expect.poll(reflectionPosition).not.toBe(initialPosition);
+
+  const downloadImage = async () => {
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download PNG' }).click();
+    const download = await downloadPromise;
+    return { download, png: await readFile(await download.path()) };
+  };
+  const { download, png } = await downloadImage();
+  await download.saveAs(testInfo.outputPath('champion-card.png'));
+  await expect(effects).toHaveClass(/is-motion-active/);
+
+  await polish.evaluate((element) => {
+    element.style.visibility = 'hidden';
+  });
+  const { png: withoutReflection } = await downloadImage();
+  await polish.evaluate((element) => {
+    element.style.removeProperty('visibility');
+  });
+  const highlightedPixels = await page.evaluate(
+    async ([finished, plain]) => {
+      const pixels = async (base64: string) => {
+        const image = new Image();
+        image.src = `data:image/png;base64,${base64}`;
+        await image.decode();
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const context = canvas.getContext('2d')!;
+        context.drawImage(image, 0, 0);
+        return context.getImageData(
+          Math.round(image.width * 0.4),
+          Math.round(image.height * 0.55),
+          Math.round(image.width * 0.4),
+          Math.round(image.height * 0.15),
+        ).data;
+      };
+      const [a, b] = await Promise.all([pixels(finished!), pixels(plain!)]);
+      let highlights = 0;
+      for (let i = 0; i < a.length; i += 4) {
+        if (a[i + 1]! - b[i + 1]! > 8 || a[i + 2]! - b[i + 2]! > 8)
+          highlights++;
+      }
+      return highlights;
+    },
+    [png.toString('base64'), withoutReflection.toString('base64')],
+  );
+  expect(highlightedPixels).toBeGreaterThan(200);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(effects).toHaveClass(/is-static/);
+  await expect(effects).not.toHaveClass(/is-motion-active/);
+  expect(
+    await polish.evaluate(
+      (element) => getComputedStyle(element, '::before').animationName,
+    ),
+  ).toBe('none');
+});

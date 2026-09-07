@@ -29,21 +29,20 @@ const firstSheenFrame = sheenFrames[0];
 const staticSheenFrame = sheenFrames[5];
 
 const motionByFinish = {
-  Bronze: { frameMs: 68, initialDelayMs: 150 },
-  Gold: { frameMs: 49, initialDelayMs: 710 },
-  Silver: { frameMs: 58, initialDelayMs: 430 },
+  Bronze: { frameMs: 90, initialDelayMs: 150 },
+  Gold: { frameMs: 76, initialDelayMs: 710 },
+  Silver: { frameMs: 82, initialDelayMs: 430 },
 } as const;
 
-const loopGapMs = 1100;
-
+const loopGapMs = 2400;
 interface TrainerCardFinishEffectsProps {
   finish: CardFinish;
-  sparkles?: boolean;
+  polished?: boolean;
 }
 
 export const TrainerCardFinishEffects = ({
   finish,
-  sparkles = false,
+  polished = false,
 }: TrainerCardFinishEffectsProps) => {
   const reduceMotion = useReducedMotion();
   const effectsRef = useRef<HTMLDivElement>(null);
@@ -54,12 +53,13 @@ export const TrainerCardFinishEffects = ({
 
     const effects = effectsRef.current;
     const sheen = sheenRef.current;
-    if (!effects || !sheen) return;
+    if (!effects) return;
 
-    sheenFrames.forEach((src) => {
-      const image = new Image();
-      image.src = src;
-    });
+    if (sheen)
+      sheenFrames.forEach((src) => {
+        const image = new Image();
+        image.src = src;
+      });
 
     const motion = motionByFinish[finish];
     let isIntersecting = true;
@@ -73,19 +73,23 @@ export const TrainerCardFinishEffects = ({
     const reset = () => {
       clearTimer();
       effects.classList.remove('is-motion-active', 'is-static');
-      sheen.classList.remove('is-active');
-      sheen.src = firstSheenFrame;
+      if (sheen) {
+        sheen.classList.remove('is-active');
+        sheen.src = firstSheenFrame;
+      }
     };
 
     const showStaticFinish = () => {
       reset();
       effects.classList.add('is-static');
-      sheen.src = staticSheenFrame;
-      sheen.classList.add('is-active');
+      if (sheen) {
+        sheen.src = staticSheenFrame;
+        sheen.classList.add('is-active');
+      }
     };
 
     const playPass = () => {
-      if (document.hidden || !isIntersecting || reduceMotion) return;
+      if (!sheen || document.hidden || !isIntersecting || reduceMotion) return;
 
       let frame = 0;
       effects.classList.add('is-motion-active');
@@ -117,7 +121,7 @@ export const TrainerCardFinishEffects = ({
       }
 
       effects.classList.add('is-motion-active');
-      timer = window.setTimeout(playPass, motion.initialDelayMs);
+      if (sheen) timer = window.setTimeout(playPass, motion.initialDelayMs);
     };
 
     const observer =
@@ -138,7 +142,7 @@ export const TrainerCardFinishEffects = ({
       observer?.disconnect();
       document.removeEventListener('visibilitychange', updateMotion);
     };
-  }, [finish, reduceMotion]);
+  }, [finish, reduceMotion, polished]);
 
   if (finish === 'Classic') return null;
 
@@ -148,20 +152,18 @@ export const TrainerCardFinishEffects = ({
       aria-hidden="true"
       className="trainer-card__finish-effects"
     >
-      <img
-        ref={sheenRef}
-        alt=""
-        className="trainer-card__sheen"
-        draggable="false"
-        src={firstSheenFrame}
-      />
-      {sparkles ? (
-        <>
-          <span className="trainer-card__sparkle trainer-card__sparkle--one" />
-          <span className="trainer-card__sparkle trainer-card__sparkle--two" />
-          <span className="trainer-card__sparkle trainer-card__sparkle--three" />
-        </>
-      ) : null}
+      {polished ? (
+        <div className="trainer-card__polish" />
+      ) : (
+        <img
+          ref={sheenRef}
+          alt=""
+          className="trainer-card__sheen"
+          data-static-src={staticSheenFrame}
+          draggable="false"
+          src={firstSheenFrame}
+        />
+      )}
     </div>
   );
 };

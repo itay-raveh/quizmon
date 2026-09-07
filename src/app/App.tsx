@@ -11,12 +11,14 @@ import { useActiveGame } from './useActiveGame';
 import { useDailyChallenge } from './useDailyChallenge';
 import { useGameCompletion } from './useGameCompletion';
 import { useGameNavigation } from './useGameNavigation';
+import { useLeagueDestination } from './useLeagueDestination';
 import { useLeagueChallenge } from './useLeagueChallenge';
 import { useSettingsDialog } from './useSettingsDialog';
 import { useTrainerCard } from './useTrainerCard';
 import { useTrainingGame } from './useTrainingGame';
 
 export const App = () => {
+  const leagueDestination = useLeagueDestination();
   const [loadCatalogImmediately] = useState(
     () => window.location.search.length > 0 || readActiveGame() !== null,
   );
@@ -179,7 +181,17 @@ export const App = () => {
         streak: dailyStreak,
       }}
       modifiers={modifiers}
-      league={{ retry: retryLeague, start: startLeague }}
+      league={{
+        ...leagueDestination,
+        retry: () => {
+          leagueDestination.close();
+          retryLeague();
+        },
+        start: () => {
+          leagueDestination.close();
+          startLeague();
+        },
+      }}
       navigation={{
         cancelLeave: cancelLeaveGame,
         leaveConfirmationOpen,

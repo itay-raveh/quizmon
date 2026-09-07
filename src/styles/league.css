@@ -1,0 +1,276 @@
+.league-hall {
+  --hall-gold: #f4d578;
+  --hall-ink: #fff5d6;
+  --hall-muted: #bfd0df;
+  --focus: var(--hall-gold);
+  width: min(46rem, 100%);
+  padding: clamp(1rem, 3vw, 1.8rem);
+  overflow: hidden;
+  color: var(--hall-ink);
+  background: #102f50;
+  border: 3px solid var(--navy);
+  border-radius: var(--surface-radius);
+  box-shadow:
+    inset 0 0 0 2px var(--hall-gold),
+    0 0.3rem 0 var(--navy-shadow);
+  container-type: inline-size;
+}
+
+.league-hall__header {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr) 2.8rem;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.league-hall__header .game-button {
+  padding: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+.league-hall__header h1 {
+  margin: 0;
+  color: var(--hall-gold);
+  font-size: var(--text-display);
+  font-weight: 800;
+  line-height: 1.05;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.league-hall__chamber {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding: 1.6rem 0 1.3rem;
+  text-align: center;
+}
+
+.league-hall__trophy {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 0.6rem;
+}
+
+.league-hall__identity h2,
+.league-hall__invitation h2 {
+  max-width: 26ch;
+  margin: 0;
+  font-size: var(--text-headline);
+  font-weight: 800;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.league-hall__identity p {
+  margin: 0.35rem 0 0;
+  color: var(--hall-gold);
+  font-size: var(--text-control);
+  font-weight: 700;
+}
+
+.league-hall__header h1:focus {
+  outline: none;
+}
+
+.league-hall__partner {
+  display: grid;
+  justify-items: center;
+  width: min(100%, 32rem);
+  margin-top: 0.8rem;
+}
+
+.league-hall__portrait {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+}
+
+.league-hall__backdrop {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.league-hall__sprite {
+  position: absolute;
+  width: 42%;
+  height: auto;
+  left: 50%;
+  bottom: 19%;
+  transform: translateX(-50%);
+  image-rendering: pixelated;
+}
+
+.league-hall__partner .pokemon-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  color: var(--hall-ink);
+}
+
+.league-hall__partner .pokemon-identity__number {
+  color: var(--hall-muted);
+}
+
+.league-hall__record {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  font-size: var(--text-control);
+  font-weight: 700;
+}
+
+.league-hall__record strong {
+  color: var(--hall-gold);
+  font-family: var(--font-data);
+  font-size: var(--text-control);
+}
+
+.league-hall__invitation p {
+  margin: 0.85rem 0 0;
+  color: var(--hall-muted);
+  font-size: var(--text-body);
+  line-height: 1.5;
+}
+
+.league-hall__trials {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 1.1rem 0;
+  margin: 0;
+  border-block: 1px solid #55748d;
+  list-style: none;
+  text-align: center;
+}
+
+.league-hall__trials li {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.league-hall__trial-mark {
+  display: grid;
+  height: 2rem;
+  color: var(--hall-gold);
+  font-family: var(--font-data);
+  font-size: var(--text-control);
+  font-weight: 800;
+  place-items: center;
+}
+
+.league-hall__trial-mark .champion-trophy {
+  width: 2rem;
+  height: 2rem;
+}
+
+.league-hall__trial-name {
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+
+.league-hall__trial-detail {
+  color: var(--hall-muted);
+  font-size: var(--text-micro);
+  line-height: 1.25;
+}
+
+.league-hall__trial-score {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--hall-gold);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 700;
+}
+
+.league-hall__trial-score svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.league-hall__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding: 1.25rem 0 0.25rem;
+}
+
+.league-hall__notice {
+  color: var(--hall-ink);
+  text-align: center;
+}
+
+.league-hall--induction .league-hall__chamber {
+  animation: league-induction 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes league-induction {
+  from {
+    opacity: 0.35;
+    transform: translateY(1rem);
+    filter: brightness(1.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+}
+
+@container (max-width: 28rem) {
+  .league-hall__header {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+  }
+
+  .league-hall__header h1 {
+    text-align: left;
+    font-size: var(--text-display);
+  }
+
+  .league-hall__header .game-button {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .league-hall__chamber {
+    padding-top: 1.2rem;
+  }
+
+  .league-hall__trial-detail {
+    display: none;
+  }
+
+  .league-hall__trial-name {
+    font-size: var(--text-micro);
+  }
+
+  .league-hall__trials {
+    gap: 0.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .league-hall--induction .league-hall__chamber {
+    animation: none;
+  }
+}
+
+html[data-reduce-motion] .league-hall--induction .league-hall__chamber {
+  animation: none;
+}

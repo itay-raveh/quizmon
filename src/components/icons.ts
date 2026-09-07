@@ -21,5 +21,4 @@ export { ShareNetworkIcon } from '@phosphor-icons/react/dist/icons/ShareNetwork'
 export { ShapesIcon } from '@phosphor-icons/react/dist/icons/Shapes';
 export { SlidersHorizontalIcon } from '@phosphor-icons/react/dist/icons/SlidersHorizontal';
 export { SwordIcon } from '@phosphor-icons/react/dist/icons/Sword';
-export { TrophyIcon } from '@phosphor-icons/react/dist/icons/Trophy';
 export { XIcon } from '@phosphor-icons/react/dist/icons/X';

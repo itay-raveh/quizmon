@@ -19,7 +19,6 @@ import { CatchCombo } from './CatchCombo';
 import { DailyReminderPrompt } from './DailyReminderPrompt';
 import { GameButton } from './GameButton';
 import { CheckIcon, XIcon } from './icons';
-import { SettingsButton } from './SettingsButton';
 import { ShareResultButton } from './ShareResultButton';
 import { TrainerProgressSummary } from './TrainerProgressSummary';
 
@@ -30,8 +29,8 @@ interface ResultsProps {
   mode: GameMode;
   modifiers: Modifiers;
   onNewGame: () => void;
+  onOpenHallOfFame: () => void;
   onOpenTrainerCard: (view: TrainerView) => void;
-  onOpenSettings: () => void;
   onTrainAgain: () => void;
   onStartTraining: () => void;
   onRetryLeague: () => void;
@@ -48,7 +47,7 @@ export const Results = ({
   modifiers,
   onNewGame,
   onOpenTrainerCard,
-  onOpenSettings,
+  onOpenHallOfFame,
   onTrainAgain,
   onStartTraining,
   onRetryLeague,
@@ -60,6 +59,10 @@ export const Results = ({
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
   const leagueVictory = mode.kind === 'league' && isLeagueVictory(result);
+  const resultStatCount =
+    4 +
+    Number(result.questionCount > 10) +
+    Number(mode.kind === 'league' && !leagueVictory);
   const highScoreKey = getHighScoreKey(mode, modifiers);
   const highScoreLabel = highScoreKey
     ? { custom: 'Custom', daily: 'Daily', league: 'League' }[highScoreKey]
@@ -108,7 +111,6 @@ export const Results = ({
         <h1 id="results-title" ref={heading} tabIndex={-1}>
           {resultTitle}
         </h1>
-        <SettingsButton onClick={onOpenSettings} />
       </div>
       {mode.kind === 'daily' ? (
         <div className="results__daily-meta">
@@ -119,9 +121,9 @@ export const Results = ({
         </div>
       ) : null}
 
-      <dl className="results-list">
+      <dl className={`results-list results-list--${resultStatCount}`}>
         {mode.kind === 'league' && !leagueVictory ? (
-          <div>
+          <div className="results-list__stage">
             <dt>Reached</dt>
             <dd>{getLeagueStage(result.answers.length).heading}</dd>
           </div>
@@ -207,6 +209,7 @@ export const Results = ({
       <TrainerProgressSummary
         leagueVictory={leagueVictory}
         onOpenTrainerCard={onOpenTrainerCard}
+        onOpenHallOfFame={onOpenHallOfFame}
         progressChanges={progressChanges}
       />
 

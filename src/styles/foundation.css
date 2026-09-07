@@ -69,7 +69,7 @@ html[data-reduce-motion] .share-dialog[open],
 html[data-reduce-motion] .trainer-passport__artifact--reveal,
 html[data-reduce-motion] .trainer-badge-dialog[open],
 html[data-reduce-motion] .trainer-title-dialog[open],
-html[data-reduce-motion] .trainer-card__sparkle,
+html[data-reduce-motion] .trainer-card__polish::before,
 html[data-reduce-motion] .catch-combo--celebrate .catch-combo__ball,
 html[data-reduce-motion] .catch-combo--celebrate .catch-combo__ring {
   animation: none !important;

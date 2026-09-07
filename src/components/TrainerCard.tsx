@@ -1,6 +1,5 @@
 import type { Ref } from 'react';
 import { site } from '@/app/site';
-import { formatDailyDate } from '@/game/daily';
 import type { TrainerStats } from '@/game/storage';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import {
@@ -11,6 +10,8 @@ import {
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
 import { PokemonIdentity } from './PokemonIdentity';
+import { CatchCombo } from './CatchCombo';
+import { ChampionTrophy } from './ChampionTrophy';
 
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
@@ -19,7 +20,6 @@ interface TrainerCardProps {
   profile: TrainerProfile;
   stats: TrainerStats;
   record: {
-    dailyClears: number;
     dayCombo: number;
     pokedexFound: number;
     pokedexTotal: number;
@@ -36,63 +36,35 @@ export const TrainerCard = ({
 }: TrainerCardProps) => {
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank);
-  const correctAnswers = Object.values(stats.correctCategories).reduce(
-    (total, count) => total + count,
-    0,
-  );
   const partnerName = profile.partnerPokemon ?? 'Choose partner';
 
   return (
     <article
       ref={cardRef}
-      className={`trainer-card trainer-card--${finish.toLowerCase()}`}
+      className={`trainer-card trainer-card--${finish.toLowerCase()}${rank === 'Champion' ? ' trainer-card--champion' : ''}`}
       aria-label="Trainer Card"
     >
       <TrainerCardFinishEffects
         finish={finish}
-        sparkles={rank === 'Champion'}
+        polished={rank === 'Champion'}
       />
-      <header className="trainer-card__banner">
-        <span>Trainer Card</span>
-        <strong>{rank}</strong>
-      </header>
+      <div className="trainer-card__decoration" aria-hidden="true">
+        <div className="trainer-card__watermark" />
+      </div>
       <div className="trainer-card__front">
+        <header className="trainer-card__rank">
+          {rank}
+          {rank === 'Champion' ? <ChampionTrophy /> : null}
+        </header>
         <div className="trainer-card__identity">
-          <div className="trainer-card__name">
-            <span>Name</span>
-            <h2>{profile.name || `${site.name} Trainer`}</h2>
-          </div>
+          <h2>{profile.name || `${site.name} Trainer`}</h2>
           {profile.specialty ? (
             <p className="trainer-card__title">
-              <TrainerTitleMark earned specialty={profile.specialty} />
               <span>{trainerSpecialtyLabels[profile.specialty]}</span>
+              <TrainerTitleMark earned specialty={profile.specialty} />
             </p>
           ) : null}
         </div>
-        <dl className="trainer-card__record">
-          <div>
-            <dt>Pokédex found</dt>
-            <dd>
-              {record.pokedexFound}
-              <small> / {record.pokedexTotal}</small>
-            </dd>
-          </div>
-          <div>
-            <dt>Correct answers</dt>
-            <dd>{correctAnswers.toLocaleString('en-US')}</dd>
-          </div>
-          <div>
-            <dt>Daily clears</dt>
-            <dd>{record.dailyClears.toLocaleString('en-US')}</dd>
-          </div>
-          <div>
-            <dt>Day combo</dt>
-            <dd>
-              {record.dayCombo}
-              <small> · Best {stats.bestDailyStreak}</small>
-            </dd>
-          </div>
-        </dl>
         <div className="trainer-card__partner">
           <div className="trainer-card__portrait" aria-hidden="true">
             {partnerSprite ? (
@@ -102,19 +74,24 @@ export const TrainerCard = ({
             )}
           </div>
           <PokemonIdentity
-            className="trainer-card__partner-caption question-visual__subject-name"
+            className="trainer-card__partner-caption"
             dexNumber={partnerDexNumber ?? undefined}
             name={partnerName}
-            numberClassName="question-visual__subject-number"
           />
         </div>
       </div>
-      <footer className="trainer-card__footer">
-        <span>Trainer since</span>
-        <time dateTime={profile.createdAt}>
-          {formatDailyDate(profile.createdAt)}
-        </time>
-      </footer>
+      <div className="trainer-card__details">
+        <dl className="trainer-card__record">
+          <div>
+            <dt>Pokémon found</dt>
+            <dd>
+              {record.pokedexFound}
+              <small> / {record.pokedexTotal}</small>
+            </dd>
+          </div>
+        </dl>
+        <CatchCombo className="trainer-card__combo" count={record.dayCombo} />
+      </div>
     </article>
   );
 };

@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
-import {
-  readCompletedDailyCount,
-  readDailyStreak,
-  type TrainerStats,
-} from '@/game/storage';
+import { readDailyStreak, type TrainerStats } from '@/game/storage';
 import { readPlayerData } from '@/game/player-storage';
 import {
   requestPersistentStorage,
@@ -21,7 +17,6 @@ import {
   getQualifiedTrainerSpecialties,
   getTrainerBadges,
   getTrainerRank,
-  isLeagueUnlocked,
   trainerSpecialtyLabels,
   type TrainerBadgeId,
   type TrainerSpecialty,
@@ -39,7 +34,6 @@ import {
   PencilSimpleIcon,
   ShareNetworkIcon,
 } from './icons';
-import { LeagueGateway } from './LeagueGateway';
 import { PokemonPicker } from './PokemonPicker';
 import { SoundButton } from './SoundButton';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';
@@ -53,7 +47,6 @@ interface TrainerPassportProps {
   catalog: PokemonCatalog;
   onBack: () => void;
   onProfileChange: (profile: TrainerProfile) => void;
-  onStartLeague: () => void;
   onViewChange: (view: TrainerView) => void;
   profile: TrainerProfile;
   requestedView: TrainerView;
@@ -82,7 +75,6 @@ export const TrainerPassport = ({
   catalog,
   onBack,
   onProfileChange,
-  onStartLeague,
   onViewChange,
   profile,
   requestedView,
@@ -93,7 +85,6 @@ export const TrainerPassport = ({
     const found = new Set(readPlayerData().pokedex);
     const pokemon = Object.keys(catalog.pokemon);
     return {
-      dailyClears: readCompletedDailyCount(),
       dayCombo: readDailyStreak(),
       pokedexFound: pokemon.filter((name) => found.has(name)).length,
       pokedexTotal: pokemon.length,
@@ -138,7 +129,6 @@ export const TrainerPassport = ({
   const finish = getCardFinish(getTrainerRank(stats)).toLowerCase();
   const canShareArtifact = supportsTrainerArtifactSharing();
   const badges = getTrainerBadges(stats);
-  const leagueUnlocked = isLeagueUnlocked(stats);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
 
   useEffect(() => {
@@ -360,13 +350,6 @@ export const TrainerPassport = ({
           />
         )}
       </div>
-
-      {view === 'badges' && leagueUnlocked ? (
-        <LeagueGateway
-          completed={stats.leagueCompleted}
-          onStart={onStartLeague}
-        />
-      ) : null}
 
       {view !== 'pokedex' && (
         <div className="trainer-passport__controls">

@@ -30,6 +30,17 @@ const createCaptureClone = (element: HTMLElement) => {
   const host = document.createElement('div');
   const clone = element.cloneNode(true) as HTMLElement;
   const width = element.getBoundingClientRect().width;
+  clone.querySelectorAll('.trainer-card__finish-effects').forEach((effects) => {
+    effects.classList.remove('is-motion-active');
+    effects.classList.add('is-static');
+    const sheen = effects.querySelector<HTMLImageElement>(
+      '.trainer-card__sheen',
+    );
+    if (sheen?.dataset.staticSrc) {
+      sheen.src = sheen.dataset.staticSrc;
+      sheen.classList.add('is-active');
+    }
+  });
 
   host.className = 'trainer-share-capture';
   host.setAttribute('aria-hidden', 'true');
@@ -51,6 +62,7 @@ export const renderTrainerArtifactImage = async (
     const { snapdom } = await import('@zumer/snapdom');
 
     return await snapdom.toBlob(clone, {
+      compress: true,
       dpr: 2,
       embedFonts: true,
       outerShadows: true,

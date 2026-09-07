@@ -37,7 +37,6 @@ const stats: TrainerStats = {
 };
 
 const record = {
-  dailyClears: 12,
   dayCombo: 3,
   pokedexFound: 355,
   pokedexTotal: 1025,
@@ -65,13 +64,16 @@ describe('Trainer profile artifacts', () => {
       container.querySelector('.trainer-card__title .trainer-title-mark'),
     ).toBeVisible();
     expect(screen.getByText('Ace')).toBeVisible();
-    for (const [label, value] of [
-      ['Pokédex found', '355 / 1025'],
-      ['Correct answers', '10'],
-      ['Daily clears', '12'],
-      ['Day combo', '3 · Best 7'],
-    ] as const) {
-      expect(screen.getByText(label).parentElement).toHaveTextContent(value);
+    expect(screen.getByText('Pokémon found').parentElement).toHaveTextContent(
+      '355 / 1025',
+    );
+    expect(screen.getByRole('img', { name: '3-day Daily Combo' })).toHaveClass(
+      'catch-combo',
+    );
+    for (const label of ['Name', 'Correct answers', 'Daily clears']) {
+      expect(
+        screen.queryByText(label, { exact: true }),
+      ).not.toBeInTheDocument();
     }
     expect(
       screen.queryByRole('list', { name: 'League Badges' }),
@@ -89,7 +91,7 @@ describe('Trainer profile artifacts', () => {
     expect(container.querySelector('.trainer-card__sheen')).toBeInTheDocument();
   });
 
-  it('adds sourced pixel sparkles only to a Champion card', () => {
+  it('adds a polished finish and trophy to a Champion card', () => {
     const championStats: TrainerStats = {
       ...stats,
       bestDailyStreak: 7,
@@ -122,9 +124,13 @@ describe('Trainer profile artifacts', () => {
     expect(screen.getByRole('article', { name: 'Trainer Card' })).toHaveClass(
       'trainer-card--gold',
     );
-    expect(container.querySelectorAll('.trainer-card__sparkle')).toHaveLength(
-      3,
-    );
+    expect(
+      container.querySelector('.trainer-card__polish'),
+    ).toBeInTheDocument();
+    expect(container.querySelector('.champion-trophy')).toBeInTheDocument();
+    expect(
+      container.querySelector('.trainer-card__sheen'),
+    ).not.toBeInTheDocument();
   });
 
   it('renders a standalone, interactive League Badge Case', () => {

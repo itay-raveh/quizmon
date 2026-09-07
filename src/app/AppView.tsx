@@ -1,6 +1,8 @@
 import { SoundProvider } from '@/audio/SoundProvider';
 import { Footer } from '@/components/Footer';
 import { GenerationPromptDialog } from '@/components/GenerationPromptDialog';
+import { LeagueDestination } from '@/components/LeagueDestination';
+import { isLeagueVictory } from '@/game/league';
 import { Landing } from '@/components/Landing';
 import { LeaveGameDialog } from '@/components/LeaveGameDialog';
 import {
@@ -43,6 +45,11 @@ interface NavigationView {
 }
 
 interface LeagueView {
+  isOpen: boolean;
+  open: () => void;
+  close: () => void;
+  showResults: boolean;
+  setShowResults: (show: boolean) => void;
   retry: () => void;
   start: () => void;
 }
@@ -113,13 +120,39 @@ const AppScreen = ({
         onBack={trainer.close}
         onViewChange={trainer.showView}
         onProfileChange={trainer.updateProfile}
-        onStartLeague={() => {
-          trainer.close();
-          league.start();
-        }}
         profile={trainer.profile}
         requestedView={trainer.view}
         stats={trainer.stats}
+      />
+    );
+  }
+
+  const leagueVictory =
+    session.phase === 'results' &&
+    session.mode.kind === 'league' &&
+    isLeagueVictory(session.result);
+  if (
+    catalogState.status === 'ready' &&
+    ((session.phase === 'landing' &&
+      league.isOpen &&
+      isLeagueUnlocked(trainer.stats)) ||
+      (leagueVictory && !league.showResults))
+  ) {
+    return (
+      <LeagueDestination
+        catalog={catalogState.catalog}
+        completed={trainer.stats.leagueCompleted || leagueVictory}
+        celebrate={leagueVictory}
+        onBack={() => {
+          league.close();
+          navigation.returnToLanding();
+        }}
+        onStart={league.start}
+        onViewResults={
+          leagueVictory ? () => league.setShowResults(true) : undefined
+        }
+        profile={trainer.profile}
+        resultSaved={session.phase === 'results' ? session.resultSaved : true}
       />
     );
   }
@@ -133,12 +166,13 @@ const AppScreen = ({
         dailyResultSaved={daily.resultSaved}
         dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
         leagueUnlocked={isLeagueUnlocked(trainer.stats)}
+        leagueCompleted={trainer.stats.leagueCompleted}
         onOpenSettings={() => settings.open('training')}
         onOpenTrainerCard={() => trainer.open('front')}
         onRetryCatalog={catalogState.retry}
         onStart={training.start}
         onStartDaily={daily.start}
-        onStartLeague={league.start}
+        onStartLeague={league.open}
         storageAvailable={daily.storageAvailable}
       />
     );
@@ -179,8 +213,8 @@ const AppScreen = ({
       mode={session.mode}
       modifiers={session.modifiers}
       onNewGame={navigation.returnToLanding}
-      onOpenSettings={() => settings.open('experience')}
       onOpenTrainerCard={trainer.open}
+      onOpenHallOfFame={() => league.setShowResults(false)}
       onRetryLeague={league.retry}
       onTrainAgain={training.trainAgain}
       onStartTraining={training.start}

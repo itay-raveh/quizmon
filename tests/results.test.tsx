@@ -35,6 +35,7 @@ const makeResult = (
 const renderResults = (result: GameResult) =>
   render(
     <Results
+      onOpenHallOfFame={vi.fn()}
       bestResult={result}
       dailyStreak={0}
       isNewBest={false}
@@ -42,7 +43,7 @@ const renderResults = (result: GameResult) =>
       modifiers={defaultModifiers}
       onNewGame={vi.fn()}
       onOpenTrainerCard={vi.fn()}
-      onOpenSettings={vi.fn()}
+
       onRetryLeague={vi.fn()}
       onTrainAgain={vi.fn()}
       onStartTraining={vi.fn()}
@@ -56,6 +57,9 @@ describe('results summary', () => {
   it('moves focus to the result heading', () => {
     renderResults(makeResult(10, 5));
 
+    expect(
+      screen.queryByRole('button', { name: 'Settings' }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'Training complete' }),
     ).toHaveFocus();
@@ -90,6 +94,7 @@ describe('results summary', () => {
     const result = makeResult(5, 3);
     render(
       <Results
+        onOpenHallOfFame={vi.fn()}
         bestResult={result}
         dailyStreak={7}
         isNewBest={false}
@@ -97,7 +102,7 @@ describe('results summary', () => {
         modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={vi.fn()}
-        onOpenSettings={vi.fn()}
+
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
         onStartTraining={vi.fn()}
@@ -132,6 +137,7 @@ describe('results summary', () => {
     const onOpenTrainerCard = vi.fn();
     const rendered = render(
       <Results
+        onOpenHallOfFame={vi.fn()}
         bestResult={result}
         dailyStreak={0}
         isNewBest={false}
@@ -139,7 +145,7 @@ describe('results summary', () => {
         modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={onOpenTrainerCard}
-        onOpenSettings={vi.fn()}
+
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
         onStartTraining={vi.fn()}
@@ -180,6 +186,7 @@ describe('results summary', () => {
 
     rendered.rerender(
       <Results
+        onOpenHallOfFame={vi.fn()}
         bestResult={result}
         dailyStreak={0}
         isNewBest={false}
@@ -187,7 +194,7 @@ describe('results summary', () => {
         modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={onOpenTrainerCard}
-        onOpenSettings={vi.fn()}
+
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
         onStartTraining={vi.fn()}
@@ -220,6 +227,7 @@ describe('results summary', () => {
     const rendered = renderResults(result);
     rendered.rerender(
       <Results
+        onOpenHallOfFame={vi.fn()}
         bestResult={result}
         dailyStreak={0}
         isNewBest={false}
@@ -227,7 +235,7 @@ describe('results summary', () => {
         modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={onOpenTrainerCard}
-        onOpenSettings={vi.fn()}
+
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
         onStartTraining={vi.fn()}
@@ -266,6 +274,7 @@ describe('results summary', () => {
     const onRetryLeague = vi.fn();
     render(
       <Results
+        onOpenHallOfFame={vi.fn()}
         bestResult={result}
         dailyStreak={0}
         isNewBest={false}
@@ -273,7 +282,7 @@ describe('results summary', () => {
         modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={vi.fn()}
-        onOpenSettings={vi.fn()}
+
         onRetryLeague={onRetryLeague}
         onTrainAgain={vi.fn()}
         onStartTraining={vi.fn()}
@@ -291,11 +300,13 @@ describe('results summary', () => {
     expect(onRetryLeague).toHaveBeenCalledOnce();
   });
 
-  it('links a League victory directly to the Hall of Fame badge case', () => {
+  it('links a League victory to the dedicated Hall of Fame', () => {
     const result = makeResult(15, 15);
     const onOpenTrainerCard = vi.fn();
+    const onOpenHallOfFame = vi.fn();
     render(
       <Results
+        onOpenHallOfFame={onOpenHallOfFame}
         bestResult={result}
         dailyStreak={0}
         isNewBest
@@ -303,7 +314,7 @@ describe('results summary', () => {
         modifiers={defaultModifiers}
         onNewGame={vi.fn()}
         onOpenTrainerCard={onOpenTrainerCard}
-        onOpenSettings={vi.fn()}
+
         onRetryLeague={vi.fn()}
         onTrainAgain={vi.fn()}
         onStartTraining={vi.fn()}
@@ -321,6 +332,7 @@ describe('results summary', () => {
         name: /Trainer progress.*Milestone earned.*Hall of Fame/,
       })
       .click();
-    expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
+    expect(onOpenHallOfFame).toHaveBeenCalledOnce();
+    expect(onOpenTrainerCard).not.toHaveBeenCalled();
   });
 });

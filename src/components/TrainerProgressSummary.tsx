@@ -1,11 +1,13 @@
 import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import { GameButton } from './GameButton';
-import { CaretRightIcon, TrophyIcon } from './icons';
+import { CaretRightIcon } from './icons';
+import { ChampionTrophy } from './ChampionTrophy';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerProgressSummaryProps {
   leagueVictory: boolean;
+  onOpenHallOfFame: () => void;
   onOpenTrainerCard: (view: TrainerView) => void;
   progressChanges: TrainerProgressChange[];
 }
@@ -13,18 +15,21 @@ interface TrainerProgressSummaryProps {
 export const TrainerProgressSummary = ({
   leagueVictory,
   onOpenTrainerCard,
+  onOpenHallOfFame,
   progressChanges,
 }: TrainerProgressSummaryProps) => {
   if (!leagueVictory && progressChanges.length === 0) return null;
 
   const earnedChanges = progressChanges.filter(({ earned }) => earned);
   const ongoingChanges = progressChanges.filter(({ earned }) => !earned);
-  const view: TrainerView =
-    leagueVictory || progressChanges.some(({ kind }) => kind === 'badge')
-      ? 'badges'
-      : 'titles';
-  const destinationLabel =
-    view === 'badges' ? 'Open badge case' : 'Open Trainer Titles';
+  const view: TrainerView = progressChanges.some(({ kind }) => kind === 'badge')
+    ? 'badges'
+    : 'titles';
+  const destinationLabel = leagueVictory
+    ? 'Open Hall of Fame'
+    : view === 'badges'
+      ? 'Open badge case'
+      : 'Open Trainer Titles';
 
   const renderMark = (change: TrainerProgressChange) =>
     change.kind === 'badge' ? (
@@ -36,7 +41,9 @@ export const TrainerProgressSummary = ({
   return (
     <GameButton
       className="trainer-progress-summary"
-      onClick={() => onOpenTrainerCard(view)}
+      onClick={() =>
+        leagueVictory ? onOpenHallOfFame() : onOpenTrainerCard(view)
+      }
       tone="quiet"
     >
       <span className="trainer-progress-summary__heading">
@@ -55,11 +62,7 @@ export const TrainerProgressSummary = ({
           <span className="trainer-progress-summary__earned">
             {leagueVictory ? (
               <span className="trainer-progress-change trainer-progress-change--earned">
-                <TrophyIcon
-                  className="trainer-progress-change__hall-mark"
-                  aria-hidden="true"
-                  weight="bold"
-                />
+                <ChampionTrophy className="trainer-progress-change__hall-mark" />
                 <span>
                   <small>Milestone earned</small>
                   <strong>Hall of Fame</strong>

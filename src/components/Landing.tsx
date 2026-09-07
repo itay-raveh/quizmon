@@ -14,6 +14,7 @@ interface LandingProps {
   dailyResultSaved: boolean;
   dailyStreak: number;
   leagueUnlocked: boolean;
+  leagueCompleted?: boolean;
   onOpenTrainerCard: () => void;
   onOpenSettings: () => void;
   onRetryCatalog: () => void;
@@ -30,6 +31,7 @@ export const Landing = ({
   dailyResultSaved,
   dailyStreak,
   leagueUnlocked,
+  leagueCompleted = false,
   onOpenTrainerCard,
   onOpenSettings,
   onRetryCatalog,
@@ -122,7 +124,7 @@ export const Landing = ({
             tone="quiet"
             onClick={onStartLeague}
           >
-            Quizmon League
+            {leagueCompleted ? 'Hall of Fame' : 'Quizmon League'}
           </GameButton>
         ) : null}
       </div>

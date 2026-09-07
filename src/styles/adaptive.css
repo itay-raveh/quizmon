@@ -317,7 +317,7 @@
   .trainer-passport__artifact--reveal,
   .trainer-badge-dialog[open],
   .trainer-title-dialog[open],
-  .trainer-card__sparkle,
+  .trainer-card__polish::before,
   .catch-combo--celebrate .catch-combo__ball,
   .catch-combo--celebrate .catch-combo__ring {
     animation: none !important;
