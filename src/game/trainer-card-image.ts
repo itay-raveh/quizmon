@@ -1,5 +1,5 @@
 import { site } from '@/app/site';
-import type { TrainerView } from './trainer';
+import { trainerViewLabels, type TrainerView } from './trainer';
 
 type TrainerArtifactView = Exclude<TrainerView, 'pokedex'> | 'hall';
 
@@ -7,15 +7,15 @@ const artifactDetails = {
   hall: { filename: 'quizmon-hall-of-fame.png', label: 'Hall of Fame' },
   badges: {
     filename: 'quizmon-league-badge-case.png',
-    label: 'League Badge Case',
+    label: trainerViewLabels.badges,
   },
   front: {
     filename: 'quizmon-trainer-card.png',
-    label: 'Trainer Card',
+    label: trainerViewLabels.front,
   },
   titles: {
     filename: 'quizmon-trainer-titles.png',
-    label: 'Trainer Titles',
+    label: trainerViewLabels.titles,
   },
 } satisfies Record<TrainerArtifactView, { filename: string; label: string }>;
 
@@ -95,7 +95,9 @@ export const supportsTrainerArtifactSharing = () => {
 
   try {
     return navigator.canShare({
-      files: [new File([], 'quizmon-trainer-card.png', { type: 'image/png' })],
+      files: [
+        new File([], artifactDetails.front.filename, { type: 'image/png' }),
+      ],
     });
   } catch {
     return false;

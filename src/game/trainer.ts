@@ -33,7 +33,14 @@ const trainerSpecialties = Object.keys(
 export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
 export type CardFinish = 'Classic' | 'Bronze' | 'Silver' | 'Gold';
-export type TrainerView = 'front' | 'badges' | 'titles' | 'pokedex';
+export const trainerViewLabels = {
+  badges: 'League Badge Case',
+  front: 'Trainer Card',
+  titles: 'Trainer Titles',
+  pokedex: 'Personal Pokédex',
+} as const;
+
+export type TrainerView = keyof typeof trainerViewLabels;
 
 interface TrainerBadgeDefinition {
   getCurrent: (stats: TrainerStats) => number;

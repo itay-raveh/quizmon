@@ -18,6 +18,7 @@ import {
   getTrainerBadges,
   getTrainerRank,
   trainerSpecialtyLabels,
+  trainerViewLabels,
   type TrainerBadgeId,
   type TrainerSpecialty,
   type TrainerTitle,
@@ -57,13 +58,6 @@ interface ShareNotice {
   message: string;
   visible: boolean;
 }
-
-const viewLabels = {
-  badges: 'League Badge Case',
-  front: 'Trainer Card',
-  titles: 'Trainer Titles',
-  pokedex: 'Personal Pokédex',
-} satisfies Record<TrainerView, string>;
 
 const shareLabels = {
   badges: 'case',
@@ -206,7 +200,7 @@ export const TrainerPassport = ({
           });
         } else if (outcome === 'shared') {
           setShareNotice({
-            message: `${viewLabels[view]} shared.`,
+            message: `${trainerViewLabels[view]} shared.`,
             visible: false,
           });
         }
@@ -243,7 +237,7 @@ export const TrainerPassport = ({
           <ArrowLeftIcon aria-hidden="true" weight="bold" />
         </GameButton>
         <div>
-          <h1 id="trainer-passport-title">{viewLabels[view]}</h1>
+          <h1 id="trainer-passport-title">{trainerViewLabels[view]}</h1>
         </div>
         {view === 'front' ? (
           <GameButton

@@ -1,6 +1,6 @@
 import { CollectionCorners } from './CollectionCorners';
 import type { Ref } from 'react';
-import type { TrainerBadge } from '@/game/trainer';
+import { trainerViewLabels, type TrainerBadge } from '@/game/trainer';
 import { SoundButton } from './SoundButton';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 
@@ -20,7 +20,7 @@ export const TrainerBadgeCase = ({
   return (
     <article
       ref={caseRef}
-      aria-label="League Badge Case"
+      aria-label={trainerViewLabels.badges}
       className="trainer-badge-case"
     >
       <section

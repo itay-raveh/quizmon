@@ -3,6 +3,7 @@ import type { Ref } from 'react';
 import type { TrainerStats } from '@/game/storage';
 import {
   getTrainerTitles,
+  trainerViewLabels,
   type TrainerSpecialty,
   type TrainerTitle,
 } from '@/game/trainer';
@@ -28,7 +29,7 @@ export const TrainerTitles = ({
   return (
     <article
       ref={collectionRef}
-      aria-label="Trainer Titles collection"
+      aria-label={`${trainerViewLabels.titles} collection`}
       className="trainer-titles"
     >
       <CollectionCorners className="trainer-titles__fastener" />

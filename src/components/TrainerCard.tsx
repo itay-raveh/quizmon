@@ -6,6 +6,7 @@ import {
   getCardFinish,
   getTrainerRank,
   trainerSpecialtyLabels,
+  trainerViewLabels,
 } from '@/game/trainer';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
@@ -42,7 +43,7 @@ export const TrainerCard = ({
     <article
       ref={cardRef}
       className={`trainer-card trainer-card--${finish.toLowerCase()}${rank === 'Champion' ? ' trainer-card--champion' : ''}`}
-      aria-label="Trainer Card"
+      aria-label={trainerViewLabels.front}
     >
       <TrainerCardFinishEffects
         finish={finish}
