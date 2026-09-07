@@ -85,13 +85,21 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
             await answer.click();
         }
         await page.getByRole('button', { name: 'Check answers' }).click();
-        for (let index = 0; index < values.length; index += 1) {
+        for (const [index, generation] of values.entries()) {
           await expect(
             answers.nth(index).locator('.answer__generation'),
           ).toBeVisible();
           await expect(
-            answers.nth(index).locator('.answer__generation'),
-          ).toHaveText(`Generation ${values[index]}`);
+            answers
+              .nth(index)
+              .locator('.answer__generation [aria-hidden="true"]'),
+          ).toHaveText('Gen');
+          await expect(
+            answers.nth(index).locator('.generation-label__number'),
+          ).toHaveText(generation);
+          await expect(answers.nth(index)).toHaveAccessibleName(
+            new RegExp(`Generation ${generation}\\.`),
+          );
         }
       }
       await expect(

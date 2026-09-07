@@ -27,7 +27,12 @@ export const QuestionClues = ({
             ) : (
               <>
                 {clue.types.map(formatPokemonName).join(' / ')} type, introduced
-                in <GenerationLabel generation={clue.generation} />.
+                in{' '}
+                <GenerationLabel
+                  abbreviated={false}
+                  generation={clue.generation}
+                />
+                .
               </>
             )}
           </li>
