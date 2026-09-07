@@ -184,11 +184,20 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
       text: 'My Quizmon Trainer Titles\nhttps://quizmon.raveh.dev/',
     });
 
+  await equippedTitle.click();
+  await page.getByRole('button', { name: 'Unequip title' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByText('Trainer title unequipped.')).toBeVisible();
   await page.reload();
   await expect(titles).toBeVisible();
+  await expect(equippedTitle).toHaveCount(0);
+  await expect(
+    titles.getByRole('button', { name: /Type Specialist.*Earned/ }),
+  ).toBeVisible();
 
   await page.getByRole('button', { name: 'Card', exact: true }).click();
   await expect(page).toHaveURL(/\?trainer=card$/);
+  await expect(card.locator('.trainer-card__title')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL('/');

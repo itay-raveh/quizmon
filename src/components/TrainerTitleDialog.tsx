@@ -60,26 +60,17 @@ export const TrainerTitleDialog = ({
             max={title.goal}
             value={progress}
           />
-          {title.equipped ? (
+          {title.equipped || title.earned ? (
             <GameButton
-              sound="toggle-off"
-              tone="quiet"
+              sound={title.equipped ? 'toggle-off' : 'toggle-on'}
+              tone={title.equipped ? 'quiet' : 'primary'}
               onClick={() => {
-                onUnequip();
+                if (title.equipped) onUnequip();
+                else onEquip(title);
                 closeDialog();
               }}
             >
-              Unequip title
-            </GameButton>
-          ) : title.earned ? (
-            <GameButton
-              sound="toggle-on"
-              onClick={() => {
-                onEquip(title);
-                closeDialog();
-              }}
-            >
-              Equip title
+              {title.equipped ? 'Unequip title' : 'Equip title'}
             </GameButton>
           ) : null}
         </div>

@@ -172,19 +172,12 @@ export const TrainerPassport = ({
     setEditing(true);
   };
 
-  const equipTitle = (nextSpecialty: TrainerSpecialty) => {
-    onProfileChange({ ...profile, specialty: nextSpecialty });
+  const setTitle = (specialty: TrainerSpecialty | null) => {
+    onProfileChange({ ...profile, specialty });
     setShareNotice({
-      message: `${trainerSpecialtyLabels[nextSpecialty]} equipped.`,
-      visible: true,
-    });
-    void requestPersistentStorage().catch(() => false);
-  };
-
-  const unequipTitle = () => {
-    onProfileChange({ ...profile, specialty: null });
-    setShareNotice({
-      message: 'Trainer title unequipped.',
+      message: specialty
+        ? `${trainerSpecialtyLabels[specialty]} equipped.`
+        : 'Trainer title unequipped.',
       visible: true,
     });
     void requestPersistentStorage().catch(() => false);
@@ -380,8 +373,8 @@ export const TrainerPassport = ({
       {selectedTitle ? (
         <TrainerTitleDialog
           onClose={() => setSelectedTitle(null)}
-          onEquip={(title) => equipTitle(title.specialty)}
-          onUnequip={unequipTitle}
+          onEquip={(title) => setTitle(title.specialty)}
+          onUnequip={() => setTitle(null)}
           title={selectedTitle}
         />
       ) : null}
