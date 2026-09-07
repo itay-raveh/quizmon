@@ -35,25 +35,23 @@ const typeOptions = (
   context: QuestionContext,
   target: Candidate,
   correct: string,
-): string[] =>
-  rankedOptionSet(
+): string[] => {
+  const bestScores = new Map<string, number>();
+  for (const { pokemon } of context.pool) {
+    const score = pokemonSimilarity(target.pokemon, pokemon);
+    for (const type of pokemon.types) {
+      bestScores.set(type, Math.max(bestScores.get(type) ?? 0, score));
+    }
+  }
+  return rankedOptionSet(
     correct,
     Object.keys(context.catalog.typeRelations).filter(
       (type) => !target.pokemon.types.includes(type),
     ),
-    (type) =>
-      context.pool.reduce(
-        (best, candidate) =>
-          candidate.pokemon.types.includes(type)
-            ? Math.max(
-                best,
-                pokemonSimilarity(target.pokemon, candidate.pokemon),
-              )
-            : best,
-        0,
-      ),
+    (type) => bestScores.get(type) ?? 0,
     context.random,
   );
+};
 
 export const buildTypeQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ types }) => types.length > 0);
