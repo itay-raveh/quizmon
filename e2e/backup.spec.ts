@@ -127,6 +127,9 @@ for (const width of [320, 1280]) {
     const pending = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Download backup' }).click();
     const download = await pending;
+    await expect(page.getByRole('status')).toHaveText(
+      'Backup download started.',
+    );
     expect(download.suggestedFilename()).toMatch(
       /^quizmon-backup-Leaf-\d{4}-\d{2}-\d{2}\.json$/,
     );

@@ -15,6 +15,7 @@ export const BackupSettings = () => {
   const chooseButton = useRef<HTMLButtonElement>(null);
   const [preview, setPreview] = useState<PlayerBackup | null>(null);
   const [error, setError] = useState('');
+  const [downloadStarted, setDownloadStarted] = useState(false);
   const [busy, setBusy] = useState(false);
   const current = readPlayerData();
 
@@ -25,6 +26,7 @@ export const BackupSettings = () => {
   const readFile = async (file: File) => {
     setPreview(null);
     setError('');
+    setDownloadStarted(false);
     setBusy(true);
     try {
       if (file.size > MAX_BACKUP_BYTES)
@@ -53,8 +55,10 @@ export const BackupSettings = () => {
           disabled={busy}
           onClick={() => {
             setError('');
+            setDownloadStarted(false);
             try {
               downloadBackup();
+              setDownloadStarted(true);
             } catch {
               setError(
                 'Your saved data could not be exported. Check that site storage is available and try again.',
@@ -72,6 +76,11 @@ export const BackupSettings = () => {
         >
           {busy ? 'Reading backup…' : 'Restore backup'}
         </GameButton>
+      </div>
+      <div role="status">
+        {downloadStarted && (
+          <p className="experience-status">Backup download started.</p>
+        )}
       </div>
       <input
         ref={input}
