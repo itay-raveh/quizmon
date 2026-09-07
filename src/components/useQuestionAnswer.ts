@@ -14,7 +14,7 @@ import {
 } from '@/game/game';
 import type { AnswerFlow, AnswerResult, QuestionData } from '@/game/types';
 
-interface UseQuestionAnswerOptions {
+export interface UseQuestionAnswerOptions {
   answerFlow: AnswerFlow;
   elapsedMilliseconds: number;
   interactionPaused: boolean;
@@ -79,11 +79,18 @@ export const useQuestionAnswer = ({
     };
   }, [nextQuestion, question]);
 
+  const submitAnswer = useCallback(
+    (answer: AnswerResult) => {
+      if (answerAdvanced.current) return;
+      answerAdvanced.current = true;
+      onAnswer(answer);
+    },
+    [onAnswer],
+  );
+
   const advanceAnswer = useCallback(() => {
-    if (!answerResult || answerAdvanced.current) return;
-    answerAdvanced.current = true;
-    onAnswer(answerResult);
-  }, [answerResult, onAnswer]);
+    if (answerResult) submitAnswer(answerResult);
+  }, [answerResult, submitAnswer]);
 
   const finishAnswer = useCallback(
     (options: string[]) => {
@@ -112,11 +119,10 @@ export const useQuestionAnswer = ({
       else playWrong();
       onAnswerRecorded?.(answer);
       if (answerFlow !== 'manual') {
-        answerTimeout.current = window.setTimeout(() => {
-          if (answerAdvanced.current) return;
-          answerAdvanced.current = true;
-          onAnswer(answer);
-        }, feedbackDelay[answerFlow]);
+        answerTimeout.current = window.setTimeout(
+          () => submitAnswer(answer),
+          feedbackDelay[answerFlow],
+        );
       }
     },
     [
@@ -124,7 +130,7 @@ export const useQuestionAnswer = ({
       answered,
       cluesShown,
       interactionPaused,
-      onAnswer,
+      submitAnswer,
       onAnswerRecorded,
       onFeedbackStart,
       playCorrect,

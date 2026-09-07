@@ -10,8 +10,6 @@ import {
 import { getLeagueStageLabel } from '@/game/league';
 import { formatPokemonName, formatPokemonTypes } from '@/game/format';
 import type {
-  AnswerFlow,
-  AnswerResult,
   GameMode,
   QuestionData,
   QuestionPrompt as QuestionPromptData,
@@ -27,7 +25,10 @@ import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionClues } from './QuestionClues';
 import { QuestionInstruction } from './QuestionInstruction';
 import { TypeBadges } from './TypeBadge';
-import { useQuestionAnswer } from './useQuestionAnswer';
+import {
+  useQuestionAnswer,
+  type UseQuestionAnswerOptions,
+} from './useQuestionAnswer';
 
 const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
   'counter-pick',
@@ -36,19 +37,11 @@ const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
   'type-matchup',
 ]);
 
-interface QuestionProps {
-  answerFlow: AnswerFlow;
-  elapsedMilliseconds: number;
+interface QuestionProps extends UseQuestionAnswerOptions {
   elapsedSeconds: number;
-  interactionPaused: boolean;
   mode: GameMode;
-  nextQuestion?: QuestionData;
   number: number;
-  onAnswerRecorded?: (answer: AnswerResult) => void;
-  onAnswer: (answer: AnswerResult) => void;
-  onFeedbackStart: () => number;
   onNewGame: () => void;
-  question: QuestionData;
   timerDisplay: TimerDisplay;
   total: number;
 }

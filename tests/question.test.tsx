@@ -691,6 +691,47 @@ describe('question transitions', () => {
     vi.useRealTimers();
   });
 
+  it.each(['button', 'timer'])(
+    'advances Auto mode once when the %s wins',
+    (first) => {
+      vi.useFakeTimers();
+      try {
+        const onAnswer = vi.fn();
+        const onAnswerRecorded = vi.fn();
+        renderQuestion({ answerFlow: 'auto', onAnswer, onAnswerRecorded });
+        fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+        const next = screen.getByRole('button', { name: 'Next question' });
+
+        vi.advanceTimersByTime(1_999);
+        expect(onAnswer).not.toHaveBeenCalled();
+        if (first === 'button') fireEvent.click(next);
+        vi.advanceTimersByTime(1);
+        fireEvent.click(next);
+        expect(onAnswer).toHaveBeenCalledOnce();
+        expect(onAnswerRecorded).toHaveBeenCalledOnce();
+        expect(onAnswer).toHaveBeenCalledWith(
+          onAnswerRecorded.mock.calls[0]?.[0],
+        );
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
+
+  it('cancels a pending advance when the question unmounts', () => {
+    vi.useFakeTimers();
+    try {
+      const onAnswer = vi.fn();
+      const { unmount } = renderQuestion({ answerFlow: 'auto', onAnswer });
+      fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+      unmount();
+      vi.runAllTimers();
+      expect(onAnswer).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('checks every selected answer in a multi-select question', () => {
     renderQuestion({
       question: {
