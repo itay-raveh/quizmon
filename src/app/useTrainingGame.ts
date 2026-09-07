@@ -6,26 +6,15 @@ import {
   shouldShowGenerationPrompt,
 } from '@/game/settings-storage';
 import { generations } from '@/game/types';
-import type {
-  GameMode,
-  Generation,
-  Modifiers,
-  PokemonCatalog,
-  QuestionData,
-} from '@/game/types';
-import type { GameSession } from './session';
+import type { Generation, Modifiers, PokemonCatalog } from '@/game/types';
+import type { GameSession, StartGame } from './session';
 
 interface TrainingGameOptions {
   catalog?: PokemonCatalog;
   modifiers: Modifiers;
   session: GameSession;
   setModifiers: (modifiers: Modifiers) => void;
-  startGame: (
-    questions: QuestionData[],
-    modifiers: Modifiers,
-    mode: GameMode,
-    seed: string,
-  ) => void;
+  startGame: StartGame;
 }
 
 export const useTrainingGame = ({
@@ -49,6 +38,21 @@ export const useTrainingGame = ({
     generationPromptPending.current = false;
   }, [isGenerationPromptPending]);
 
+  const startRound = useCallback(
+    (nextModifiers: Modifiers) => {
+      if (!catalog) return;
+      const seed = createRoundSeed();
+      const gameModifiers = getTrainingModifiers(nextModifiers);
+      startGame(
+        buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
+        gameModifiers,
+        { kind: 'training' },
+        seed,
+      );
+    },
+    [catalog, startGame],
+  );
+
   const startWithGenerations = useCallback(
     (selectedGenerations: Generation[]) => {
       if (!catalog) return;
@@ -61,16 +65,9 @@ export const useTrainingGame = ({
       markGenerationPromptAnswered();
       generationPromptPending.current = false;
       setGenerationPromptOpen(false);
-      const seed = createRoundSeed();
-      const gameModifiers = getTrainingModifiers(nextModifiers);
-      startGame(
-        buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
-        gameModifiers,
-        { kind: 'training' },
-        seed,
-      );
+      startRound(nextModifiers);
     },
-    [catalog, modifiers, setModifiers, startGame],
+    [catalog, modifiers, setModifiers, startRound],
   );
 
   const start = useCallback(() => {
@@ -80,15 +77,8 @@ export const useTrainingGame = ({
       return;
     }
 
-    const seed = createRoundSeed();
-    const gameModifiers = getTrainingModifiers(modifiers);
-    startGame(
-      buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
-      gameModifiers,
-      { kind: 'training' },
-      seed,
-    );
-  }, [catalog, isGenerationPromptPending, modifiers, startGame]);
+    startRound(modifiers);
+  }, [catalog, isGenerationPromptPending, modifiers, startRound]);
 
   const trainAgain = useCallback(() => {
     if (
@@ -99,15 +89,8 @@ export const useTrainingGame = ({
       return;
     }
 
-    const seed = createRoundSeed();
-    const gameModifiers = getTrainingModifiers(session.modifiers);
-    startGame(
-      buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
-      gameModifiers,
-      { kind: 'training' },
-      seed,
-    );
-  }, [catalog, session, startGame]);
+    startRound(session.modifiers);
+  }, [catalog, session, startRound]);
 
   return {
     chooseAllGenerations: () => startWithGenerations([...generations]),

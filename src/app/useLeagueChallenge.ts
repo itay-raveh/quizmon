@@ -5,24 +5,14 @@ import {
   isLeagueVictory,
 } from '@/game/league';
 import { getLeagueChallengeSeed } from '@/game/storage';
-import type {
-  GameMode,
-  Modifiers,
-  PokemonCatalog,
-  QuestionData,
-} from '@/game/types';
-import type { GameSession } from './session';
+import type { Modifiers, PokemonCatalog } from '@/game/types';
+import type { GameSession, StartGame } from './session';
 
 interface LeagueChallengeOptions {
   catalog?: PokemonCatalog;
   modifiers: Modifiers;
   session: GameSession;
-  startGame: (
-    questions: QuestionData[],
-    modifiers: Modifiers,
-    mode: GameMode,
-    seed: string,
-  ) => void;
+  startGame: StartGame;
 }
 
 export const useLeagueChallenge = ({

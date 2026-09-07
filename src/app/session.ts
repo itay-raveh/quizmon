@@ -8,6 +8,13 @@ import type {
 } from '@/game/types';
 import type { TrainerProgressChange } from '@/game/trainer';
 
+export type StartGame = (
+  questions: QuestionData[],
+  modifiers: Modifiers,
+  mode: GameMode,
+  seed: string,
+) => void;
+
 export type GameSession =
   | { phase: 'landing' }
   | {

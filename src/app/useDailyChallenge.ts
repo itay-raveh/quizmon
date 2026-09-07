@@ -11,25 +11,15 @@ import {
   readDailyResult,
   readDailyStreak,
 } from '@/game/storage';
-import type {
-  GameMode,
-  GameResult,
-  Modifiers,
-  PokemonCatalog,
-  QuestionData,
-} from '@/game/types';
+import type { GameResult, Modifiers, PokemonCatalog } from '@/game/types';
+import type { StartGame } from './session';
 import { parseTrainerRoute } from './trainer-route';
 
 interface DailyChallengeOptions {
   catalog?: PokemonCatalog;
   modifiers: Modifiers;
   refreshSavedData: () => void;
-  startGame: (
-    questions: QuestionData[],
-    modifiers: Modifiers,
-    mode: GameMode,
-    seed: string,
-  ) => void;
+  startGame: StartGame;
 }
 
 const getDailyRoute = () => {

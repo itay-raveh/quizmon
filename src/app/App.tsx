@@ -4,9 +4,12 @@ import { trackGameStarted } from '@/game/analytics';
 import { usePokemonCatalog } from '@/game/catalog';
 import { usePersistentModifiers } from '@/game/settings-storage';
 import { useStopwatch } from '@/game/stopwatch';
-import type { GameMode, Modifiers, QuestionData } from '@/game/types';
 import { AppView } from './AppView';
-import { gameSessionReducer, initialGameSession } from './session';
+import {
+  gameSessionReducer,
+  initialGameSession,
+  type StartGame,
+} from './session';
 import { useActiveGame } from './useActiveGame';
 import { useDailyChallenge } from './useDailyChallenge';
 import { useGameCompletion } from './useGameCompletion';
@@ -51,13 +54,8 @@ export const App = () => {
     start,
   } = useStopwatch(modifiers.timerDisplay === 'milliseconds');
 
-  const startGame = useCallback(
-    (
-      nextQuestions: QuestionData[],
-      nextModifiers: Modifiers,
-      nextMode: GameMode,
-      seed: string,
-    ) => {
+  const startGame = useCallback<StartGame>(
+    (nextQuestions, nextModifiers, nextMode, seed) => {
       trackGameStarted(nextMode, nextQuestions.length);
       dispatchSession({
         mode: nextMode,
