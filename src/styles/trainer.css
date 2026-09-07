@@ -157,18 +157,22 @@
   display: grid;
   width: 100%;
   min-height: 0;
-  aspect-ratio: 3 / 2;
+  padding: 0.45rem;
+
   overflow: hidden;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
   text-align: left;
-  background: var(--paper);
-  border: 4px solid var(--navy);
+  background: repeating-linear-gradient(
+    0deg,
+    var(--trainer-rank-surface) 0 2px,
+    color-mix(in srgb, var(--trainer-rank-surface) 78%, var(--paper)) 2px 4px
+  );
+  border: 3px solid var(--trainer-rank-accent-strong);
   border-radius: var(--surface-radius);
   box-shadow:
-    inset 0 0 0 0.35rem var(--cream),
-    0 0.3rem 0 var(--trainer-card-step),
-    0 0.52rem 0 var(--navy-shadow);
+    inset 0 0 0 2px var(--paper),
+    inset 0 0 0 4px var(--trainer-rank-accent-strong);
   isolation: isolate;
 }
 
@@ -294,140 +298,74 @@
 }
 
 .trainer-card__banner {
+  position: relative;
+  z-index: 5;
   display: flex;
-  min-height: 4.4rem;
-  padding: 0.9rem 1.3rem;
+  padding: 0.45rem 0.65rem;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
   color: var(--trainer-rank-ink);
   background: var(--trainer-rank-accent);
-  border-bottom: 4px solid var(--navy);
-}
-
-.trainer-card:is(
-    .trainer-card--bronze,
-    .trainer-card--silver,
-    .trainer-card--gold
-  )
-  .trainer-card__banner {
-  border-bottom-width: 7px;
-  border-bottom-color: var(--trainer-rank-accent-strong);
+  border-bottom: 2px solid var(--trainer-rank-accent-strong);
 }
 
 .trainer-card__banner span {
-  font-size: var(--text-headline);
+  font-size: var(--text-label);
   font-weight: 900;
-  letter-spacing: 0.02em;
+  font-family: var(--font-data);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .trainer-card__banner strong {
-  min-width: 5rem;
-  padding: 0.4rem 0.65rem 0.45rem;
-  color: var(--navy);
-  background: var(--trainer-rank-surface);
-  border: 2px solid var(--trainer-rank-accent-strong);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.2rem 0 var(--trainer-rank-accent-strong);
+  color: inherit;
   font-family: var(--font-data);
-  font-size: var(--text-label);
+  font-size: var(--text-small);
   text-align: center;
-  white-space: nowrap;
 }
 
 .trainer-card__front {
   display: grid;
-  min-height: 18.7rem;
-  padding: 1.25rem 1.5rem;
-  grid-template-columns: minmax(13rem, 15rem) minmax(12rem, 18rem);
+  padding: 0.85rem 0.65rem;
+  grid-template-areas:
+    'identity identity'
+    'record partner';
+  grid-template-columns: minmax(0, 1fr) minmax(0, 38%);
   align-items: center;
-  justify-content: center;
-  gap: 2rem;
-}
-
-.trainer-card__partner {
-  display: grid;
-  min-width: 0;
-  justify-items: center;
-  gap: 0.45rem;
-}
-
-.trainer-card__portrait {
-  display: grid;
-  width: min(15rem, 100%);
-  aspect-ratio: 1;
-  overflow: hidden;
-  background: var(--cream);
-  border: 3px solid var(--navy);
-  border-radius: var(--surface-radius);
-  place-items: center;
-}
-
-.trainer-card:is(
-    .trainer-card--bronze,
-    .trainer-card--silver,
-    .trainer-card--gold
-  )
-  .trainer-card__portrait {
-  background: var(--trainer-rank-surface);
-  border-width: 4px;
-  border-color: var(--trainer-rank-accent-strong);
-}
-
-.trainer-card__portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0.3rem 0.4rem 0 rgba(8, 59, 126, 0.24));
-  image-rendering: pixelated;
-}
-
-.trainer-card__partner-caption {
-  position: relative;
-  z-index: 5;
-  max-width: 100%;
-  text-align: center;
-}
-
-.trainer-card__partner-caption .pokemon-identity__number {
-  font-size: var(--text-small);
-}
-
-.trainer-card__partner-caption .pokemon-identity__name {
-  max-width: 100%;
-  font-size: var(--text-control);
-  line-height: 1.2;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-
-.trainer-card__partner-mark {
-  color: var(--navy);
-  font-family: var(--font-data);
-  font-size: calc(var(--text-display) * 2.6);
-  font-weight: 800;
+  gap: 0.75rem 1rem;
 }
 
 .trainer-card__identity {
   position: relative;
   z-index: 5;
   display: grid;
-  width: max-content;
-  max-width: 100%;
   min-width: 0;
-  align-content: center;
-  justify-self: center;
+  grid-area: identity;
   gap: 0.5rem;
+}
+
+.trainer-card__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-bottom: 2px solid var(--trainer-rank-accent-strong);
+  padding-bottom: 0.4rem;
+}
+
+.trainer-card__name > span {
+  font-size: var(--text-label);
+  text-transform: uppercase;
 }
 
 .trainer-card__identity h2 {
   margin: 0;
   overflow-wrap: anywhere;
   color: var(--navy);
-  font-size: var(--text-display);
-  line-height: 1.05;
+  font-size: var(--text-headline);
+  font-family: var(--font-data);
+  line-height: 1.1;
 }
 
 .trainer-card__title {
@@ -435,7 +373,7 @@
   margin: 0;
   align-items: center;
   color: var(--navy);
-  font-size: var(--text-control);
+  font-size: var(--text-label);
   font-weight: 800;
   line-height: 1.35;
   gap: 0.4rem;
@@ -455,25 +393,116 @@
   height: 1rem;
 }
 
-.trainer-card__identity dl {
+.trainer-card__record {
+  position: relative;
+  z-index: 5;
   display: grid;
-  margin: 0.75rem 0 0;
+  min-width: 0;
+  margin: 0;
+  grid-area: record;
 }
 
-.trainer-card dt {
-  color: var(--muted);
-  font-size: var(--text-small);
-  font-weight: 800;
-  letter-spacing: 0.04em;
+.trainer-card__record > div {
+  display: flex;
+  padding-block: 0.6rem;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.5rem;
+  border-bottom: 1px solid var(--trainer-rank-accent-strong);
+}
+
+.trainer-card__record dt {
+  color: var(--navy);
+  font-size: var(--text-label);
+  font-weight: 500;
   text-transform: uppercase;
 }
 
-.trainer-card dd {
-  margin: 0.12rem 0 0;
+.trainer-card__record dd {
+  margin: 0 0 0 auto;
   color: var(--navy);
   font-family: var(--font-data);
-  font-size: var(--text-answer);
+  font-size: var(--text-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.trainer-card__record small {
+  font-size: var(--text-micro);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.trainer-card__partner {
+  display: grid;
+  min-width: 0;
+  grid-area: partner;
+  justify-items: center;
+  gap: 0.5rem;
+}
+
+.trainer-card__portrait {
+  display: grid;
+  width: min(100%, 10rem);
+  aspect-ratio: 1;
+  place-items: center;
+}
+
+.trainer-card__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.trainer-card__partner-caption {
+  position: relative;
+  z-index: 5;
+  max-width: 100%;
+  text-align: center;
+}
+
+.trainer-card__partner-caption .pokemon-identity__number {
+  font-size: var(--text-small);
+}
+
+.trainer-card__partner-caption .pokemon-identity__name {
+  max-width: 100%;
+  font-size: var(--text-label);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.trainer-card__partner-mark {
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: calc(var(--text-display) * 2);
   font-weight: 800;
+}
+
+.trainer-card__footer {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  padding: 0.6rem 0.65rem;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  color: var(--navy);
+  border-top: 2px solid var(--trainer-rank-accent-strong);
+  font-size: var(--text-small);
+}
+
+.trainer-card__footer > span {
+  text-transform: uppercase;
+}
+
+.trainer-card__footer time {
+  font-family: var(--font-data);
+  white-space: nowrap;
 }
 
 .trainer-badge-case__badges {
@@ -1296,8 +1325,7 @@ html[data-reduce-motion]
   }
 
   .trainer-card__banner {
-    min-height: 2.3rem;
-    padding: 0.5rem 0.85rem;
+    padding: 0.4rem 0.5rem;
   }
 
   .trainer-card__banner span {
@@ -1305,43 +1333,36 @@ html[data-reduce-motion]
   }
 
   .trainer-card__banner strong {
-    min-width: 4.5rem;
-    padding: 0.2rem 0.45rem 0.25rem;
     font-size: var(--text-micro);
   }
 
-  .trainer-card {
-    min-height: min-content;
-    aspect-ratio: auto;
-  }
-
   .trainer-card__front {
-    min-height: min-content;
-    padding: 1rem;
-    grid-template-columns: minmax(0, 34%) minmax(0, 1fr);
-    gap: 1rem;
-  }
-
-  .trainer-card__partner {
-    gap: 0.45rem;
-  }
-
-  .trainer-card__portrait {
-    width: 100%;
-    max-width: 6.25rem;
-  }
-
-  .trainer-card__portrait img {
-    width: 100%;
-    height: 100%;
+    padding: 0.65rem 0.5rem;
+    grid-template-areas:
+      'identity identity'
+      'record partner';
+    grid-template-columns: minmax(0, 1fr) minmax(0, 34%);
+    gap: 0.75rem;
   }
 
   .trainer-card__identity h2 {
-    font-size: var(--text-headline);
+    font-size: var(--text-control);
   }
 
-  .trainer-card__title {
+  .trainer-card__record > div {
+    padding-block: 0.45rem;
+  }
+
+  .trainer-card__record dt {
+    font-size: var(--text-small);
+  }
+
+  .trainer-card__record dd {
     font-size: var(--text-label);
+  }
+
+  .trainer-card__record small {
+    font-size: var(--text-mini);
   }
 
   .trainer-card__partner-caption .pokemon-identity__number {
@@ -1349,17 +1370,12 @@ html[data-reduce-motion]
   }
 
   .trainer-card__partner-caption .pokemon-identity__name {
-    font-size: var(--text-label);
+    font-size: var(--text-small);
   }
 
-  .trainer-card dt {
+  .trainer-card__footer {
+    padding: 0.55rem 0.5rem;
     font-size: var(--text-micro);
-    line-height: 1.35;
-  }
-
-  .trainer-card dd {
-    font-size: var(--text-label);
-    line-height: 1.35;
   }
 
   .trainer-badge-case__badges {
@@ -1542,7 +1558,7 @@ html[data-reduce-motion]
   }
 
   .trainer-card__front {
-    min-height: min-content;
+    grid-template-areas: 'identity' 'partner' 'record';
     grid-template-columns: minmax(0, 1fr);
   }
 }

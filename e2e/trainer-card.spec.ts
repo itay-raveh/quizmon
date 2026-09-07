@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test } from './fixtures';
+import { expect, test, catalogData } from './fixtures';
+import { emptyPlayerData } from '../src/game/player-data';
 
 test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await page.addInitScript(() => {
@@ -192,3 +193,89 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL('/');
 });
+
+for (const width of [320, 390, 1280]) {
+  test(`shows saved Trainer records at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.clock.setFixedTime(new Date('2026-09-07T12:00:00'));
+    const data = emptyPlayerData();
+    data.generationPromptAnswered = true;
+    data.profile = {
+      version: 1,
+      createdAt: '2026-09-01',
+      hasBeenRevealed: true,
+      name: 'Alexandria Evergreen',
+      partnerPokemon: 'garchomp',
+      specialty: 'type',
+    };
+    data.pokedex = [
+      'bulbasaur',
+      'ivysaur',
+      'venusaur',
+      'bulbasaur',
+      'unknown-pokemon',
+    ];
+    data.results.progress.correctPokemon = ['pikachu'];
+    data.results.progress.correctCategories = { type: 12000, matchup: 684 };
+    const dates = [
+      '2026-08-01',
+      '2026-08-02',
+      '2026-08-03',
+      '2026-08-04',
+      '2026-09-06',
+      '2026-09-07',
+    ];
+    for (const date of dates) {
+      data.results.daily[date] = {
+        answers: [],
+        contentVersion: 1,
+        correctCount: 3,
+        elapsedSeconds: 60,
+        questionCount: 5,
+        score: 3000,
+      };
+    }
+    data.results.streak.creditedDates = dates;
+    await page.addInitScript(
+      (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
+      { version: 2, restoreId: null, data },
+    );
+    await page.goto('/?trainer=card');
+    const card = page.getByRole('article', { name: 'Trainer Card' });
+    for (const [label, value] of [
+      ['Pokédex found', `3 / ${Object.keys(catalogData.pokemon).length}`],
+      ['Correct answers', '12,684'],
+      ['Daily clears', '6'],
+      ['Day combo', '2 · Best 4'],
+    ] as const) {
+      await expect(
+        card
+          .locator('dl > div')
+          .filter({ has: page.getByText(label, { exact: true }) }),
+      ).toHaveText(`${label}${value}`);
+    }
+    await expect(
+      card.getByRole('heading', { name: data.profile.name }),
+    ).toBeVisible();
+    await expect(
+      card.getByRole('list', { name: 'League Badges' }).getByRole('listitem'),
+    ).toHaveCount(0);
+    expect(
+      await card.evaluate(
+        (element) => element.scrollWidth <= element.clientWidth,
+      ),
+    ).toBe(true);
+    const overflowing = await card
+      .locator('.trainer-card__record')
+      .evaluate((element) =>
+        [...element.querySelectorAll<HTMLElement>('*')].some(
+          (child) => child.scrollWidth > child.clientWidth + 1,
+        ),
+      );
+    expect(overflowing).toBe(false);
+    await page.getByRole('button', { name: 'Pokédex', exact: true }).click();
+    await expect(page.locator('.trainer-pokedex__summary')).toHaveText(
+      `3 / ${Object.keys(catalogData.pokemon).length} found`,
+    );
+  });
+}

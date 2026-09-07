@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
-import type { TrainerStats } from '@/game/storage';
+import {
+  readCompletedDailyCount,
+  readDailyStreak,
+  type TrainerStats,
+} from '@/game/storage';
+import { readPlayerData } from '@/game/player-storage';
 import {
   requestPersistentStorage,
   type TrainerProfile,
@@ -84,6 +89,16 @@ export const TrainerPassport = ({
   stats,
 }: TrainerPassportProps) => {
   const view = requestedView;
+  const [record] = useState(() => {
+    const found = new Set(readPlayerData().pokedex);
+    const pokemon = Object.keys(catalog.pokemon);
+    return {
+      dailyClears: readCompletedDailyCount(),
+      dayCombo: readDailyStreak(),
+      pokedexFound: pokemon.filter((name) => found.has(name)).length,
+      pokedexTotal: pokemon.length,
+    };
+  });
   const [revealing, setRevealing] = useState(
     !profile.hasBeenRevealed && requestedView === 'front',
   );
@@ -340,6 +355,7 @@ export const TrainerPassport = ({
             partnerDexNumber={savedPartner?.id ?? null}
             partnerSprite={savedPartner?.sprite ?? null}
             profile={visibleProfile}
+            record={record}
             stats={stats}
           />
         )}

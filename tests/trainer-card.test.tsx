@@ -36,6 +36,13 @@ const stats: TrainerStats = {
   quickAttackCompleted: false,
 };
 
+const record = {
+  dailyClears: 12,
+  dayCombo: 3,
+  pokedexFound: 355,
+  pokedexTotal: 1025,
+};
+
 describe('Trainer profile artifacts', () => {
   beforeEach(() => {
     snapdomToBlob.mockReset();
@@ -47,6 +54,7 @@ describe('Trainer profile artifacts', () => {
         partnerDexNumber={1}
         partnerSprite="/sprites/pokemon/1.png"
         profile={profile}
+        record={record}
         stats={stats}
       />,
     );
@@ -57,6 +65,18 @@ describe('Trainer profile artifacts', () => {
       container.querySelector('.trainer-card__title .trainer-title-mark'),
     ).toBeVisible();
     expect(screen.getByText('Ace')).toBeVisible();
+    for (const [label, value] of [
+      ['Pokédex found', '355 / 1025'],
+      ['Correct answers', '10'],
+      ['Daily clears', '12'],
+      ['Day combo', '3 · Best 7'],
+    ] as const) {
+      expect(screen.getByText(label).parentElement).toHaveTextContent(value);
+    }
+    expect(
+      screen.queryByRole('list', { name: 'League Badges' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Badges/)).not.toBeInTheDocument();
     expect(
       container.querySelector('.trainer-card__partner-caption'),
     ).toHaveTextContent('No. 0001Bulbasaur');
@@ -93,6 +113,7 @@ describe('Trainer profile artifacts', () => {
         partnerDexNumber={1}
         partnerSprite="/sprites/pokemon/1.png"
         profile={profile}
+        record={record}
         stats={championStats}
       />,
     );
