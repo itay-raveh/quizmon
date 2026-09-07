@@ -52,15 +52,10 @@ export type GameSessionAction =
   | (GameRound & { type: 'restored' })
   | { answer: AnswerResult; type: 'answer-recorded' }
   | { answer: AnswerResult; type: 'advanced' }
-  | {
-      bestResult: GameResult;
-      isNewBest: boolean;
-      result: GameResult;
-      resultSaved: boolean;
-      leagueRecord?: LeagueVictoryRecord;
-      progressChanges: TrainerProgressChange[];
-      type: 'completed';
-    }
+  | (Omit<
+      Extract<GameSession, { phase: 'results' }>,
+      'phase' | 'mode' | 'modifiers' | 'seed'
+    > & { type: 'completed' })
   | {
       modifiers: Modifiers;
       type: 'settings-updated';

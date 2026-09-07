@@ -115,10 +115,11 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
   const mode = parseMode(value.mode);
   const modifiers = parseModifiers(value.modifiers);
   const answers = value.answers.map(parseAnswer);
-  if (!mode || !modifiers || answers.some((answer) => !answer)) return null;
+  if (!mode || !modifiers || !answers.every((answer) => answer !== null))
+    return null;
 
   return {
-    answers: answers as AnswerResult[],
+    answers,
     contentVersion: value.contentVersion,
     elapsedMilliseconds: value.elapsedMilliseconds,
     mode,
