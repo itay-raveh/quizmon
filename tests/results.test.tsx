@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react';
 import { render, screen } from '@testing-library/react';
 import { Results } from '@/components/Results';
 import { defaultModifiers } from '@/game/game';
@@ -32,26 +33,30 @@ const makeResult = (
   };
 };
 
-const renderResults = (result: GameResult) =>
-  render(
-    <Results
-      onOpenHallOfFame={vi.fn()}
-      bestResult={result}
-      dailyStreak={0}
-      isNewBest={false}
-      mode={{ kind: 'training' }}
-      modifiers={defaultModifiers}
-      onNewGame={vi.fn()}
-      onOpenTrainerCard={vi.fn()}
+const createResults = (
+  result: GameResult,
+  overrides: Partial<ComponentProps<typeof Results>> = {},
+) => (
+  <Results
+    onOpenHallOfFame={vi.fn()}
+    bestResult={result}
+    dailyStreak={0}
+    isNewBest={false}
+    mode={{ kind: 'training' }}
+    modifiers={defaultModifiers}
+    onNewGame={vi.fn()}
+    onOpenTrainerCard={vi.fn()}
+    onRetryLeague={vi.fn()}
+    onTrainAgain={vi.fn()}
+    onStartTraining={vi.fn()}
+    result={result}
+    resultSaved
+    progressChanges={[]}
+    {...overrides}
+  />
+);
 
-      onRetryLeague={vi.fn()}
-      onTrainAgain={vi.fn()}
-      onStartTraining={vi.fn()}
-      result={result}
-      resultSaved
-      progressChanges={[]}
-    />,
-  );
+const renderResults = (result: GameResult) => render(createResults(result));
 
 describe('results summary', () => {
   it('moves focus to the result heading', () => {
@@ -93,23 +98,10 @@ describe('results summary', () => {
   it('celebrates a Daily Combo without adding another result statistic', () => {
     const result = makeResult(5, 3);
     render(
-      <Results
-        onOpenHallOfFame={vi.fn()}
-        bestResult={result}
-        dailyStreak={7}
-        isNewBest={false}
-        mode={{ kind: 'daily', date: '2026-09-03' }}
-        modifiers={defaultModifiers}
-        onNewGame={vi.fn()}
-        onOpenTrainerCard={vi.fn()}
-
-        onRetryLeague={vi.fn()}
-        onTrainAgain={vi.fn()}
-        onStartTraining={vi.fn()}
-        result={result}
-        resultSaved
-        progressChanges={[]}
-      />,
+      createResults(result, {
+        dailyStreak: 7,
+        mode: { kind: 'daily', date: '2026-09-03' },
+      }),
     );
 
     expect(
@@ -136,22 +128,9 @@ describe('results summary', () => {
     const result = makeResult(10, 5);
     const onOpenTrainerCard = vi.fn();
     const rendered = render(
-      <Results
-        onOpenHallOfFame={vi.fn()}
-        bestResult={result}
-        dailyStreak={0}
-        isNewBest={false}
-        mode={{ kind: 'training' }}
-        modifiers={defaultModifiers}
-        onNewGame={vi.fn()}
-        onOpenTrainerCard={onOpenTrainerCard}
-
-        onRetryLeague={vi.fn()}
-        onTrainAgain={vi.fn()}
-        onStartTraining={vi.fn()}
-        result={result}
-        resultSaved
-        progressChanges={[
+      createResults(result, {
+        onOpenTrainerCard,
+        progressChanges: [
           {
             current: 6,
             delta: 2,
@@ -170,8 +149,8 @@ describe('results summary', () => {
             label: 'Type Specialist',
             specialty: 'type',
           },
-        ]}
-      />,
+        ],
+      }),
     );
 
     const progress = screen.getByRole('button', {
@@ -185,22 +164,9 @@ describe('results summary', () => {
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
 
     rendered.rerender(
-      <Results
-        onOpenHallOfFame={vi.fn()}
-        bestResult={result}
-        dailyStreak={0}
-        isNewBest={false}
-        mode={{ kind: 'training' }}
-        modifiers={defaultModifiers}
-        onNewGame={vi.fn()}
-        onOpenTrainerCard={onOpenTrainerCard}
-
-        onRetryLeague={vi.fn()}
-        onTrainAgain={vi.fn()}
-        onStartTraining={vi.fn()}
-        result={result}
-        resultSaved
-        progressChanges={[
+      createResults(result, {
+        onOpenTrainerCard,
+        progressChanges: [
           {
             current: 10,
             delta: 1,
@@ -210,8 +176,8 @@ describe('results summary', () => {
             label: 'Type Specialist',
             specialty: 'type',
           },
-        ]}
-      />,
+        ],
+      }),
     );
     screen
       .getByRole('button', {
@@ -226,22 +192,9 @@ describe('results summary', () => {
     const onOpenTrainerCard = vi.fn();
     const rendered = renderResults(result);
     rendered.rerender(
-      <Results
-        onOpenHallOfFame={vi.fn()}
-        bestResult={result}
-        dailyStreak={0}
-        isNewBest={false}
-        mode={{ kind: 'training' }}
-        modifiers={defaultModifiers}
-        onNewGame={vi.fn()}
-        onOpenTrainerCard={onOpenTrainerCard}
-
-        onRetryLeague={vi.fn()}
-        onTrainAgain={vi.fn()}
-        onStartTraining={vi.fn()}
-        result={result}
-        resultSaved
-        progressChanges={[
+      createResults(result, {
+        onOpenTrainerCard,
+        progressChanges: [
           {
             current: 3,
             delta: 1,
@@ -251,8 +204,8 @@ describe('results summary', () => {
             kind: 'badge',
             label: 'Perfect Form',
           },
-        ]}
-      />,
+        ],
+      }),
     );
 
     expect(
@@ -273,23 +226,10 @@ describe('results summary', () => {
     const result = makeResult(15, 14);
     const onRetryLeague = vi.fn();
     render(
-      <Results
-        onOpenHallOfFame={vi.fn()}
-        bestResult={result}
-        dailyStreak={0}
-        isNewBest={false}
-        mode={{ kind: 'league' }}
-        modifiers={defaultModifiers}
-        onNewGame={vi.fn()}
-        onOpenTrainerCard={vi.fn()}
-
-        onRetryLeague={onRetryLeague}
-        onTrainAgain={vi.fn()}
-        onStartTraining={vi.fn()}
-        result={result}
-        resultSaved
-        progressChanges={[]}
-      />,
+      createResults(result, {
+        mode: { kind: 'league' },
+        onRetryLeague,
+      }),
     );
 
     expect(
@@ -305,23 +245,12 @@ describe('results summary', () => {
     const onOpenTrainerCard = vi.fn();
     const onOpenHallOfFame = vi.fn();
     render(
-      <Results
-        onOpenHallOfFame={onOpenHallOfFame}
-        bestResult={result}
-        dailyStreak={0}
-        isNewBest
-        mode={{ kind: 'league' }}
-        modifiers={defaultModifiers}
-        onNewGame={vi.fn()}
-        onOpenTrainerCard={onOpenTrainerCard}
-
-        onRetryLeague={vi.fn()}
-        onTrainAgain={vi.fn()}
-        onStartTraining={vi.fn()}
-        result={result}
-        resultSaved
-        progressChanges={[]}
-      />,
+      createResults(result, {
+        onOpenHallOfFame,
+        isNewBest: true,
+        mode: { kind: 'league' },
+        onOpenTrainerCard,
+      }),
     );
 
     expect(

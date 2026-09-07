@@ -22,6 +22,12 @@ import { CheckIcon, XIcon } from './icons';
 import { ShareResultButton } from './ShareResultButton';
 import { TrainerProgressSummary } from './TrainerProgressSummary';
 
+interface ResultStat {
+  label: string;
+  value: string;
+  className?: string;
+}
+
 interface ResultsProps {
   bestResult: GameResult;
   dailyStreak: number;
@@ -59,10 +65,39 @@ export const Results = ({
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
   const leagueVictory = mode.kind === 'league' && isLeagueVictory(result);
-  const resultStatCount =
-    4 +
-    Number(result.questionCount > 10) +
-    Number(mode.kind === 'league' && !leagueVictory);
+  const resultStats: ResultStat[] = [
+    ...(mode.kind === 'league' && !leagueVictory
+      ? [
+          {
+            label: 'Reached',
+            value: getLeagueStage(result.answers.length).heading,
+            className: 'results-list__stage',
+          },
+        ]
+      : []),
+    ...(result.questionCount > 10
+      ? [
+          {
+            label: 'Correct',
+            value: `${result.correctCount} / ${result.questionCount}`,
+          },
+        ]
+      : []),
+    {
+      label: 'Time',
+      value:
+        modifiers.timerDisplay === 'milliseconds' &&
+        result.elapsedMilliseconds !== undefined
+          ? formatDurationMilliseconds(result.elapsedMilliseconds)
+          : formatDuration(result.elapsedSeconds),
+    },
+    {
+      label: 'Knowledge',
+      value: formatScore(getKnowledgePoints(result.answers)),
+    },
+    { label: 'Speed', value: formatScore(getSpeedBonus(result.answers)) },
+    { label: 'Mastery', value: formatScore(getMasteryBonus(result.answers)) },
+  ];
   const highScoreKey = getHighScoreKey(mode, modifiers);
   const highScoreLabel = highScoreKey
     ? { custom: 'Custom', daily: 'Daily', league: 'League' }[highScoreKey]
@@ -121,42 +156,13 @@ export const Results = ({
         </div>
       ) : null}
 
-      <dl className={`results-list results-list--${resultStatCount}`}>
-        {mode.kind === 'league' && !leagueVictory ? (
-          <div className="results-list__stage">
-            <dt>Reached</dt>
-            <dd>{getLeagueStage(result.answers.length).heading}</dd>
+      <dl className={`results-list results-list--${resultStats.length}`}>
+        {resultStats.map(({ label, value, className }) => (
+          <div className={className} key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
           </div>
-        ) : null}
-        {result.questionCount > 10 ? (
-          <div>
-            <dt>Correct</dt>
-            <dd>
-              {result.correctCount} / {result.questionCount}
-            </dd>
-          </div>
-        ) : null}
-        <div>
-          <dt>Time</dt>
-          <dd>
-            {modifiers.timerDisplay === 'milliseconds' &&
-            result.elapsedMilliseconds !== undefined
-              ? formatDurationMilliseconds(result.elapsedMilliseconds)
-              : formatDuration(result.elapsedSeconds)}
-          </dd>
-        </div>
-        <div>
-          <dt>Knowledge</dt>
-          <dd>{formatScore(getKnowledgePoints(result.answers))}</dd>
-        </div>
-        <div>
-          <dt>Speed</dt>
-          <dd>{formatScore(getSpeedBonus(result.answers))}</dd>
-        </div>
-        <div>
-          <dt>Mastery</dt>
-          <dd>{formatScore(getMasteryBonus(result.answers))}</dd>
-        </div>
+        ))}
       </dl>
 
       {result.questionCount <= 10 ? (
