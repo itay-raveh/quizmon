@@ -11,13 +11,15 @@ import { QuestionTypeSettings } from './QuestionTypeSettings';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from './SoundButton';
 
-interface TrainingSettingsValidation {
-  generationsAreValid: boolean;
-  matchingCount: number;
-  questionTypesAreValid: boolean;
-}
+import {
+  toggleValue,
+  type TrainingSettingsValidation,
+} from './trainingSettingsModel';
 
-interface TrainingSettingsProps extends TrainingSettingsValidation {
+interface TrainingSettingsProps extends Omit<
+  TrainingSettingsValidation,
+  'isValid'
+> {
   draft: Modifiers;
   generationsHeading: RefObject<HTMLHeadingElement | null>;
   onChange: Dispatch<SetStateAction<Modifiers>>;
@@ -25,9 +27,6 @@ interface TrainingSettingsProps extends TrainingSettingsValidation {
   submitted: boolean;
   trainingChangesApplyNextGame: boolean;
 }
-
-const toggleValue = <T,>(values: readonly T[], value: T, checked: boolean) =>
-  checked ? [...values, value] : values.filter((current) => current !== value);
 
 export const TrainingSettings = ({
   draft,

@@ -21,3 +21,14 @@ export const getTrainingSettingsValidation = (
     questionTypesAreValid,
   };
 };
+
+export type TrainingSettingsValidation = ReturnType<
+  typeof getTrainingSettingsValidation
+>;
+
+export const toggleValue = <T>(
+  values: readonly T[],
+  value: T,
+  checked: boolean,
+): T[] =>
+  checked ? [...values, value] : values.filter((current) => current !== value);

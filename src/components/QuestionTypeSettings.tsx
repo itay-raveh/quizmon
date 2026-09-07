@@ -15,13 +15,18 @@ import type { Modifiers, QuestionType } from '@/game/types';
 import { CaretDownIcon, QuestionIcon, XIcon } from './icons';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from './SoundButton';
+import {
+  toggleValue,
+  type TrainingSettingsValidation,
+} from './trainingSettingsModel';
 
-interface QuestionTypeSettingsProps {
+interface QuestionTypeSettingsProps extends Pick<
+  TrainingSettingsValidation,
+  'matchingCount' | 'questionTypesAreValid'
+> {
   draft: Modifiers;
   heading: RefObject<HTMLHeadingElement | null>;
-  matchingCount: number;
   onChange: Dispatch<SetStateAction<Modifiers>>;
-  questionTypesAreValid: boolean;
   submitted: boolean;
 }
 
@@ -44,19 +49,6 @@ const getInitialExpandedGroup = (
     })?.id ?? questionTypeGroups[0].id
   );
 };
-
-const toggleQuestionType = (
-  current: Modifiers,
-  questionType: QuestionType,
-  checked: boolean,
-): Modifiers => ({
-  ...current,
-  questionTypes: checked
-    ? [...current.questionTypes, questionType]
-    : current.questionTypes.filter(
-        (currentType) => currentType !== questionType,
-      ),
-});
 
 export const QuestionTypeSettings = ({
   draft,
@@ -169,13 +161,14 @@ export const QuestionTypeSettings = ({
                           checked={checked}
                           label={label}
                           onChange={(event) =>
-                            onChange((current) =>
-                              toggleQuestionType(
-                                current,
+                            onChange((current) => ({
+                              ...current,
+                              questionTypes: toggleValue<QuestionType>(
+                                current.questionTypes,
                                 questionType,
                                 event.target.checked,
                               ),
-                            )
+                            }))
                           }
                         />
                         <SoundButton
