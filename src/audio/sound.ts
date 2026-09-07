@@ -16,7 +16,7 @@ export interface SoundControls {
 
 const noop = () => undefined;
 
-export const SoundContext = createContext<SoundControls>({
+export const silentSoundControls: SoundControls = {
   playCorrect: noop,
   playPerfect: noop,
   playResults: noop,
@@ -26,7 +26,9 @@ export const SoundContext = createContext<SoundControls>({
   playToggleOn: noop,
   playWrong: noop,
   stopCelebration: noop,
-});
+};
+
+export const SoundContext = createContext(silentSoundControls);
 
 export const useGameSounds = () => useContext(SoundContext);
 

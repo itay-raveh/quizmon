@@ -13,7 +13,7 @@ import resultsSound from '@/assets/sounds/results.mp3';
 import tapSound from '@/assets/sounds/tap.mp3';
 import toggleOffSound from '@/assets/sounds/toggle-off.mp3';
 import toggleOnSound from '@/assets/sounds/toggle-on.mp3';
-import { SoundContext, type SoundControls } from './sound';
+import { silentSoundControls, SoundContext, type SoundControls } from './sound';
 
 interface SoundProviderProps {
   children: ReactNode;
@@ -31,18 +31,6 @@ type UseSound = (typeof import('use-sound'))['default'];
 const silentScoreCount: ScoreCountControls = {
   play: () => undefined,
   stop: () => undefined,
-};
-
-const silentControls: SoundControls = {
-  playCorrect: () => undefined,
-  playPerfect: () => undefined,
-  playResults: () => undefined,
-  playScoreCount: () => undefined,
-  playTap: () => undefined,
-  playToggleOff: () => undefined,
-  playToggleOn: () => undefined,
-  playWrong: () => undefined,
-  stopCelebration: () => undefined,
 };
 
 const ScoreCountSound = ({
@@ -123,22 +111,19 @@ const SoundEngine = ({
     return stopCelebration;
   }, [stopCelebration]);
 
-  const play = useCallback((sound: () => void) => sound(), []);
-
   const controls = useMemo<SoundControls>(
     () => ({
-      playCorrect: () => play(playCorrect),
-      playPerfect: () => play(playPerfect),
-      playResults: () => play(playResults),
-      playScoreCount: () => play(scoreCountControls.play),
-      playTap: () => play(playTap),
-      playToggleOff: () => play(playToggleOff),
-      playToggleOn: () => play(playToggleOn),
-      playWrong: () => play(playWrong),
+      playCorrect: () => playCorrect(),
+      playPerfect: () => playPerfect(),
+      playResults: () => playResults(),
+      playScoreCount: () => scoreCountControls.play(),
+      playTap: () => playTap(),
+      playToggleOff: () => playToggleOff(),
+      playToggleOn: () => playToggleOn(),
+      playWrong: () => playWrong(),
       stopCelebration,
     }),
     [
-      play,
       playCorrect,
       playPerfect,
       playResults,
@@ -153,7 +138,7 @@ const SoundEngine = ({
 
   useEffect(() => {
     onReady(controls);
-    return () => onReady(silentControls);
+    return () => onReady(silentSoundControls);
   }, [controls, onReady]);
 
   return (
@@ -174,7 +159,7 @@ export const SoundProvider = ({
   prepareScoreCount,
   volume,
 }: SoundProviderProps) => {
-  const [controls, setControls] = useState<SoundControls>(silentControls);
+  const [controls, setControls] = useState<SoundControls>(silentSoundControls);
   const [useSound, setUseSound] = useState<UseSound | null>(null);
 
   useEffect(() => {
@@ -211,7 +196,7 @@ export const SoundProvider = ({
   }, [prepareScoreCount, useSound, volume]);
 
   return (
-    <SoundContext.Provider value={volume > 0 ? controls : silentControls}>
+    <SoundContext.Provider value={volume > 0 ? controls : silentSoundControls}>
       {children}
       {volume > 0 && useSound ? (
         <SoundEngine
