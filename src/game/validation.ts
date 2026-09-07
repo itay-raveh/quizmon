@@ -3,3 +3,8 @@ export const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 export const isFiniteNonnegative = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value) && value >= 0;
+
+export const isChoice = <T extends string>(
+  value: unknown,
+  choices: readonly T[],
+): value is T => typeof value === 'string' && choices.includes(value as T);

@@ -13,6 +13,7 @@ import {
   type Type,
 } from 'pokenode-ts';
 import {
+  generations,
   statNames,
   type Generation,
   type PokemonCatalog,
@@ -29,17 +30,6 @@ import {
 import { measureCatalogSprites } from './sprite-measurements.ts';
 
 const DATA_PATH = new URL('../src/game/data/pokemon.json', import.meta.url);
-const GENERATIONS: readonly Generation[] = [
-  'I',
-  'II',
-  'III',
-  'IV',
-  'V',
-  'VI',
-  'VII',
-  'VIII',
-  'IX',
-];
 const CONCURRENCY = 4;
 
 export interface CatalogClient {
@@ -139,7 +129,7 @@ const getSpriteVersion = (
 
 const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
   return {
-    generations: GENERATIONS.flatMap((generation) => {
+    generations: generations.flatMap((generation) => {
       const versions = pokemon.sprites.versions as unknown as Record<
         string,
         Record<string, VersionSpriteSet>
@@ -208,7 +198,7 @@ export const buildPokemonCatalog = async (
   const speciesByName = new Map<string, PokemonSpecies>();
   const generationBySpecies = new Map<string, Generation>();
 
-  for (const [index, generationName] of GENERATIONS.entries()) {
+  for (const [index, generationName] of generations.entries()) {
     const generation = await client.getGenerationById(index + 1);
     const species = await client.resolveSpecies(generation.pokemon_species);
     for (const entry of species) {

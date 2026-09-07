@@ -2,7 +2,6 @@ import {
   generations,
   type AnswerFlow,
   type SavedAnswerResult,
-  type Generation,
   type Modifiers,
   type PokemonCatalog,
   type QuestionCategory,
@@ -20,6 +19,7 @@ import {
 } from './questions/registry';
 import type { Candidate, QuestionContext } from './questions/shared';
 import { shuffle } from './random';
+import { isChoice } from './validation';
 
 export { shuffle } from './random';
 
@@ -58,12 +58,6 @@ const categoryLabels: Record<QuestionCategory, string> = {
   type: 'Type check',
 };
 
-const isGeneration = (value: unknown): value is Generation =>
-  typeof value === 'string' && generations.includes(value as Generation);
-
-const isQuestionType = (value: unknown): value is QuestionType =>
-  typeof value === 'string' && questionTypes.includes(value as QuestionType);
-
 const isAnswerFlow = (value: unknown): value is AnswerFlow =>
   value === 'manual' || value === 'auto' || value === 'instant';
 
@@ -78,10 +72,14 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
     speedrunMode?: unknown;
   };
   const selectedGenerations = Array.isArray(candidate.generations)
-    ? candidate.generations.filter(isGeneration)
+    ? candidate.generations.filter((generation) =>
+        isChoice(generation, generations),
+      )
     : [];
   const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
-    ? candidate.questionTypes.filter(isQuestionType)
+    ? candidate.questionTypes.filter((questionType) =>
+        isChoice(questionType, questionTypes),
+      )
     : [];
   return {
     answerFlow: isAnswerFlow(candidate.answerFlow)

@@ -11,7 +11,7 @@ import {
   type GameResult,
   type Modifiers,
 } from './types';
-import { isFiniteNonnegative, isRecord } from './validation';
+import { isChoice, isFiniteNonnegative, isRecord } from './validation';
 
 interface PlayerDataV1 {
   generationPromptAnswered: boolean;
@@ -54,11 +54,6 @@ const isDate = (value: string): boolean =>
 
 const isName = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0 && value.length <= 200;
-
-const isChoice = <T extends string>(
-  value: unknown,
-  choices: readonly T[],
-): value is T => typeof value === 'string' && choices.includes(value as T);
 
 const isCounts = (value: unknown, keys: readonly string[]): boolean =>
   isRecord(value) &&

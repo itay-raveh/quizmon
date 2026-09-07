@@ -7,16 +7,9 @@ import {
 import { normalizeModifiers } from './game';
 import { parseDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
-import type {
-  AnswerResult,
-  GameMode,
-  Generation,
-  Modifiers,
-  QuestionCategory,
-  QuestionType,
-} from './types';
+import type { AnswerResult, GameMode, Modifiers } from './types';
 import { generations, questionCategories } from './types';
-import { isFiniteNonnegative, isRecord } from './validation';
+import { isChoice, isFiniteNonnegative, isRecord } from './validation';
 
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 const ACTIVE_GAME_VERSION = 1;
@@ -49,20 +42,17 @@ const parseMode = (value: unknown): GameMode | null => {
 const parseAnswer = (value: unknown): AnswerResult | null => {
   if (
     !isRecord(value) ||
-    typeof value.category !== 'string' ||
-    !questionCategories.includes(value.category as QuestionCategory) ||
+    !isChoice(value.category, questionCategories) ||
     typeof value.cluesUsed !== 'number' ||
     !Number.isInteger(value.cluesUsed) ||
     !isFiniteNonnegative(value.cluesUsed) ||
     typeof value.correct !== 'boolean' ||
-    typeof value.generation !== 'string' ||
-    !generations.includes(value.generation as Generation) ||
+    !isChoice(value.generation, generations) ||
     typeof value.pokemonName !== 'string' ||
     value.pokemonName.length === 0 ||
     !isFiniteNonnegative(value.points) ||
     (value.questionType !== 'champion' &&
-      (typeof value.questionType !== 'string' ||
-        !questionTypes.includes(value.questionType as QuestionType))) ||
+      !isChoice(value.questionType, questionTypes)) ||
     (value.responseMilliseconds !== undefined &&
       !isFiniteNonnegative(value.responseMilliseconds)) ||
     (value.speedBonus !== undefined && !isFiniteNonnegative(value.speedBonus))
@@ -71,13 +61,13 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
   }
 
   return {
-    category: value.category as QuestionCategory,
+    category: value.category,
     cluesUsed: value.cluesUsed,
     correct: value.correct,
-    generation: value.generation as Generation,
+    generation: value.generation,
     pokemonName: value.pokemonName,
     points: value.points,
-    questionType: value.questionType as QuestionType | 'champion',
+    questionType: value.questionType,
     ...(value.responseMilliseconds === undefined
       ? {}
       : { responseMilliseconds: value.responseMilliseconds }),
@@ -90,17 +80,13 @@ const parseModifiers = (value: unknown): Modifiers | null => {
     !isRecord(value) ||
     !Array.isArray(value.generations) ||
     value.generations.length === 0 ||
-    !value.generations.every(
-      (generation) =>
-        typeof generation === 'string' &&
-        generations.includes(generation as (typeof generations)[number]),
+    !value.generations.every((generation) =>
+      isChoice(generation, generations),
     ) ||
     !Array.isArray(value.questionTypes) ||
     value.questionTypes.length === 0 ||
-    !value.questionTypes.every(
-      (questionType) =>
-        typeof questionType === 'string' &&
-        questionTypes.includes(questionType as (typeof questionTypes)[number]),
+    !value.questionTypes.every((questionType) =>
+      isChoice(questionType, questionTypes),
     ) ||
     (value.trainingMode !== 'league' && value.trainingMode !== 'custom')
   ) {

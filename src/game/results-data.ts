@@ -8,7 +8,7 @@ import {
   type QuestionCategory,
   type QuestionType,
 } from './types';
-import { isFiniteNonnegative, isRecord } from './validation';
+import { isChoice, isFiniteNonnegative, isRecord } from './validation';
 
 const STREAK_VERSION = 1;
 const TRAINER_PROGRESS_VERSION = 2;
@@ -115,7 +115,7 @@ const normalizeCounts = <Key extends string>(
     ? (Object.fromEntries(
         Object.entries(value).filter(
           ([key, count]) =>
-            allowedKeys.includes(key as Key) && isFiniteNonnegative(count),
+            isChoice(key, allowedKeys) && isFiniteNonnegative(count),
         ),
       ) as Partial<Record<Key, number>>)
     : {};

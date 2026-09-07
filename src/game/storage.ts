@@ -14,6 +14,7 @@ import {
 import { getLocalDate } from './daily';
 import { isLeagueVictory } from './league';
 import { createRoundSeed } from './random';
+import { isChoice } from './validation';
 import {
   questionCategories,
   type GameMode,
@@ -51,8 +52,8 @@ const addResultToProgress = (
   for (const answer of result.answers) {
     if (!answer.correct) continue;
 
-    if (questionCategories.includes(answer.category as QuestionCategory)) {
-      const category = answer.category as QuestionCategory;
+    if (isChoice(answer.category, questionCategories)) {
+      const category = answer.category;
       correctCategories[category] = (correctCategories[category] ?? 0) + 1;
     }
     if (answer.pokemonName) correctPokemon.add(answer.pokemonName);
@@ -62,11 +63,8 @@ const addResultToProgress = (
     }
     if (answer.questionType === 'champion') {
       championAnswersWithoutClues += Number(answer.cluesUsed === 0);
-    } else if (
-      answer.questionType &&
-      questionTypes.includes(answer.questionType as QuestionType)
-    ) {
-      const questionType = answer.questionType as QuestionType;
+    } else if (isChoice(answer.questionType, questionTypes)) {
+      const questionType = answer.questionType;
       correctQuestionTypes[questionType] =
         (correctQuestionTypes[questionType] ?? 0) + 1;
     }
