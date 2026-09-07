@@ -119,13 +119,16 @@ export interface PokemonCatalog {
   typeRelations: Record<string, TypeRelations>;
 }
 
-export interface Modifiers {
+export interface ExperienceSettings {
   answerFlow: AnswerFlow;
-  generations: Generation[];
-  questionTypes: QuestionType[];
   reduceMotion: boolean;
   soundVolume: number;
   timerDisplay: TimerDisplay;
+}
+
+export interface Modifiers extends ExperienceSettings {
+  generations: Generation[];
+  questionTypes: QuestionType[];
   trainingMode: TrainingMode;
 }
 

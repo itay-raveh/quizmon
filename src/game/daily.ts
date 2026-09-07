@@ -1,9 +1,14 @@
 import { site } from '../app/site';
-import { buildQuestionSequence, defaultModifiers } from './game';
+import {
+  buildQuestionSequence,
+  defaultModifiers,
+  getExperienceSettings,
+} from './game';
 import {
   generations,
   type GameMode,
   type Modifiers,
+  type ExperienceSettings,
   type PokemonCatalog,
   type QuestionData,
   type QuestionType,
@@ -46,18 +51,12 @@ export const formatDailyDate = (date: string): string =>
   dailyDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
 
 export const getDailyModifiers = (
-  experience: Pick<
-    Modifiers,
-    'answerFlow' | 'reduceMotion' | 'soundVolume' | 'timerDisplay'
-  >,
+  experience: ExperienceSettings,
 ): Modifiers => ({
   ...defaultModifiers,
-  answerFlow: experience.answerFlow,
+  ...getExperienceSettings(experience),
   generations: [...generations],
   questionTypes: [...coreQuestionTypes],
-  reduceMotion: experience.reduceMotion,
-  soundVolume: experience.soundVolume,
-  timerDisplay: experience.timerDisplay,
 });
 
 export const getDailyQuestionTypes = (

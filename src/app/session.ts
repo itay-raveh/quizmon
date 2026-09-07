@@ -1,3 +1,4 @@
+import { getExperienceSettings } from '@/game/game';
 import type { LeagueVictoryRecord } from '@/game/hall-of-fame';
 import type {
   AnswerResult,
@@ -140,10 +141,7 @@ export const gameSessionReducer = (
           ...session,
           modifiers: {
             ...session.modifiers,
-            answerFlow: action.modifiers.answerFlow,
-            reduceMotion: action.modifiers.reduceMotion,
-            soundVolume: action.modifiers.soundVolume,
-            timerDisplay: action.modifiers.timerDisplay,
+            ...getExperienceSettings(action.modifiers),
           },
         };
       }

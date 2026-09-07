@@ -1,9 +1,14 @@
-import { buildQuestionSequence, defaultModifiers } from './game';
+import {
+  buildQuestionSequence,
+  defaultModifiers,
+  getExperienceSettings,
+} from './game';
 import { createSeededRandom, shuffle } from './random';
 import {
   generations,
   type GameResult,
   type Modifiers,
+  type ExperienceSettings,
   type PokemonCatalog,
   type QuestionData,
   type QuestionType,
@@ -62,17 +67,11 @@ const stageQuestionTypes: readonly (readonly QuestionType[])[] = [
 ];
 
 export const getLeagueModifiers = (
-  experience: Pick<
-    Modifiers,
-    'answerFlow' | 'reduceMotion' | 'soundVolume' | 'timerDisplay'
-  >,
+  experience: ExperienceSettings,
 ): Modifiers => ({
   ...defaultModifiers,
-  answerFlow: experience.answerFlow,
+  ...getExperienceSettings(experience),
   generations: [...generations],
-  reduceMotion: experience.reduceMotion,
-  soundVolume: experience.soundVolume,
-  timerDisplay: experience.timerDisplay,
 });
 
 export const getLeagueQuestionTypes = (
@@ -98,10 +97,7 @@ export const getLeagueQuestionTypes = (
 export const buildLeagueQuestions = (
   catalog: PokemonCatalog,
   seed: string,
-  experience: Pick<
-    Modifiers,
-    'answerFlow' | 'reduceMotion' | 'soundVolume' | 'timerDisplay'
-  >,
+  experience: ExperienceSettings,
 ): QuestionData[] => {
   const modifiers = getLeagueModifiers(experience);
   const questions = buildQuestionSequence(

@@ -1,6 +1,7 @@
 import {
   generations,
   type AnswerFlow,
+  type ExperienceSettings,
   type SavedAnswerResult,
   type Modifiers,
   type PokemonCatalog,
@@ -32,6 +33,15 @@ export const defaultModifiers: Modifiers = {
   timerDisplay: 'seconds',
   trainingMode: 'league',
 };
+
+export const getExperienceSettings = (
+  settings: ExperienceSettings,
+): ExperienceSettings => ({
+  answerFlow: settings.answerFlow,
+  reduceMotion: settings.reduceMotion,
+  soundVolume: settings.soundVolume,
+  timerDisplay: settings.timerDisplay,
+});
 
 export const TRAINING_QUESTION_COUNT = 10;
 

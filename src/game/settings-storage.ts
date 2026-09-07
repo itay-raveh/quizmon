@@ -3,17 +3,14 @@ import { readPlayerData, updatePlayerData } from './player-storage';
 import { defaultModifiers, normalizeModifiers } from './game';
 import type { Modifiers } from './types';
 
-const normalizeTrainingSettings = (value: unknown): Modifiers =>
-  normalizeModifiers(value);
-
 const readModifiers = (): Modifiers =>
-  normalizeTrainingSettings(readPlayerData().settings ?? defaultModifiers);
+  normalizeModifiers(readPlayerData().settings ?? defaultModifiers);
 
 export const usePersistentModifiers = () => {
   const [modifiers, setModifiersState] = useState<Modifiers>(readModifiers);
 
   const setModifiers = (nextModifiers: Modifiers) => {
-    const normalized = normalizeTrainingSettings(nextModifiers);
+    const normalized = normalizeModifiers(nextModifiers);
     setModifiersState(normalized);
 
     updatePlayerData({ settings: normalized });
