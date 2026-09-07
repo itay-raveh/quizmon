@@ -31,7 +31,6 @@
 
 .generation-prompt {
   width: min(30rem, calc(100% - 1rem));
-  padding: 0;
 }
 
 .leave-game-dialog {
@@ -103,6 +102,9 @@
 }
 
 .generation-prompt__choices strong {
+  display: grid;
+  min-height: 3.4rem;
+  align-items: center;
   font-size: var(--text-body);
 }
 
@@ -115,12 +117,9 @@
 }
 
 .generation-prompt__sprite {
-  display: block;
   width: min(4.1rem, 100%);
   height: auto;
   justify-self: center;
-  image-rendering: pixelated;
-  filter: drop-shadow(0.1rem 0.18rem 0 rgba(8, 59, 126, 0.18));
 }
 
 .generation-prompt__note {

@@ -1,3 +1,5 @@
+import { GenerationLabel } from './GenerationLabel';
+import { PixelSprite } from './PixelSprite';
 import type { ReactNode } from 'react';
 import { formatPokemonName, formatTypeMultiplier } from '@/game/format';
 import type { QuestionData } from '@/game/types';
@@ -10,18 +12,6 @@ interface QuestionArtworkProps {
   cluesShown: number;
   question: QuestionData;
 }
-
-const PixelSprite = ({ src }: { src: string }) => (
-  <img
-    className="pixel-sprite question-visual__pokemon"
-    src={src}
-    alt=""
-    decoding="async"
-    fetchPriority="high"
-    width="96"
-    height="96"
-  />
-);
 
 const RelationArrow = ({
   direction = 'right',
@@ -89,7 +79,7 @@ const Subject = ({
       {concealed ? (
         <span className="question-visual__question-mark">?</span>
       ) : src ? (
-        <PixelSprite src={src} />
+        <PixelSprite className="question-visual__pokemon" src={src} />
       ) : null}
     </span>
     <PokemonIdentity
@@ -169,9 +159,8 @@ export const QuestionArtwork = ({
   if (visual?.kind === 'generation-roundup') {
     return (
       <div className="question-visual" aria-hidden="true">
-        <strong className="question-generation">
-          <span>Generation</span>
-          <span>{visual.generation}</span>
+        <strong>
+          <GenerationLabel generation={visual.generation} variant="stacked" />
         </strong>
       </div>
     );
@@ -247,7 +236,10 @@ export const QuestionArtwork = ({
         ) : (
           <span className="question-visual__pokemon-slot">
             {answered && answerVisual ? (
-              <PixelSprite src={answerVisual.src} />
+              <PixelSprite
+                className="question-visual__pokemon"
+                src={answerVisual.src}
+              />
             ) : (
               <span className="question-visual__question-mark">?</span>
             )}

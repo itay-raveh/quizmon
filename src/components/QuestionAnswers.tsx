@@ -1,4 +1,9 @@
-import { formatPokemonName, formatPokemonTypes } from '@/game/format';
+import { GenerationLabel } from './GenerationLabel';
+import {
+  formatGeneration,
+  formatPokemonName,
+  formatPokemonTypes,
+} from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
 import { CheckIcon, XIcon } from './icons';
@@ -100,7 +105,7 @@ export const QuestionAnswers = ({
             : '';
         const generation = question.optionGenerations?.[option];
         const generationAnnouncement =
-          answered && generation ? `. Generation ${generation}.` : '';
+          answered && generation ? `. ${formatGeneration(generation)}.` : '';
         const statValue = question.optionStats?.[option];
         const hasStatValue =
           showdownStat !== undefined && statValue !== undefined;
@@ -190,7 +195,7 @@ export const QuestionAnswers = ({
                         aria-hidden="true"
                         className={`answer__generation ${answered ? '' : 'answer__generation--reserved'}`.trim()}
                       >
-                        Generation <span>{generation}</span>
+                        <GenerationLabel generation={generation} />
                       </span>
                     ) : null}
                     {hasStatValue ? (

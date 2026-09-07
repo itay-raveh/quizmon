@@ -1,4 +1,3 @@
-import { formatPokemonName } from '../format';
 import {
   makeQuestion,
   pickTarget,
@@ -31,7 +30,11 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
     ),
     clues: [
       `Known as the ${target.pokemon.genus} Pokémon.`,
-      `${target.pokemon.types.map(formatPokemonName).join(' / ')} type, introduced in Generation ${target.pokemon.generation}.`,
+      {
+        kind: 'generation',
+        generation: target.pokemon.generation,
+        types: target.pokemon.types,
+      },
       `National Pokédex number #${target.pokemon.id}.`,
     ],
     searchOptions: context.pool.map(({ name, pokemon }) => ({

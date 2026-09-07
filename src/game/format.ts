@@ -1,3 +1,5 @@
+import type { Generation } from './types';
+
 const scoreFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,
 });
@@ -19,3 +21,6 @@ export const formatTypeMultiplier = (multiplier: number): string =>
 
 export const formatScore = (score: number): string =>
   scoreFormatter.format(score);
+
+export const formatGeneration = (generation: Generation): string =>
+  `Generation ${generation}`;

@@ -184,7 +184,9 @@ export type QuestionPrompt =
 export interface QuestionData {
   answer: QuestionAnswer;
   category: QuestionCategory;
-  clues?: string[];
+  clues?: (
+    string | { kind: 'generation'; generation: Generation; types: string[] }
+  )[];
   concealOptionLabels?: boolean;
   generation: Generation;
   id: string;

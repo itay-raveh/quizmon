@@ -1,4 +1,4 @@
-import { formatPokemonName } from '../format';
+import { formatGeneration, formatPokemonName } from '../format';
 import { shuffle } from '../random';
 import { generations } from '../types';
 import {
@@ -49,7 +49,7 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
       target.name,
       options,
       textPrompt(
-        `Select every Pokémon introduced in Generation ${generation}.`,
+        `Select every Pokémon introduced in ${formatGeneration(generation)}.`,
       ),
     ),
     title: 'Generation roundup',

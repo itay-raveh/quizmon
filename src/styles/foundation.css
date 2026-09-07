@@ -276,3 +276,35 @@ main {
 html:has(.app--questions) {
   scrollbar-gutter: stable;
 }
+
+.generation-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25em;
+}
+
+.generation-label__value {
+  white-space: nowrap;
+}
+
+.generation-label__number {
+  font-family: var(--font-data);
+  font-size: 1.15em;
+  font-weight: 850;
+}
+
+.generation-label--stacked {
+  display: inline-grid;
+  justify-items: center;
+  gap: 0.2rem;
+  font-size: var(--text-body);
+  line-height: 1;
+}
+
+.generation-label--stacked .generation-label__number {
+  font-size: var(--text-display);
+}
+
+.generation-label--numeral .generation-label__number {
+  font-size: inherit;
+}

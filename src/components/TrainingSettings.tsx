@@ -1,3 +1,4 @@
+import { GenerationLabel } from './GenerationLabel';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { isLeagueTraining } from '@/game/game';
 import {
@@ -85,7 +86,9 @@ export const TrainingSettings = ({
             <SelectionTile
               checked={draft.generations.includes(generation)}
               key={generation}
-              label={generation}
+              label={
+                <GenerationLabel generation={generation} variant="numeral" />
+              }
               onChange={(event) =>
                 onChange((current) => ({
                   ...current,

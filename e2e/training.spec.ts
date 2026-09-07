@@ -288,7 +288,32 @@ test('asks new players which generations they know before Training', async ({
     prompt.locator('img[src="/sprites/pokemon/959.png"]'),
   ).toHaveCount(1);
 
-  await prompt.getByRole('button', { name: /Gen I only/ }).click();
+  for (const width of [320, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const preview of await prompt
+      .locator('.generation-prompt__preview')
+      .all()) {
+      const sprites = preview.locator('img');
+      await expect(sprites.nth(1)).toHaveAttribute(
+        'src',
+        '/sprites/pokemon/25.png',
+      );
+      const row = await preview.boundingBox();
+      const pikachu = await sprites.nth(1).boundingBox();
+      expect(row).not.toBeNull();
+      expect(pikachu).not.toBeNull();
+      expect(
+        Math.abs(pikachu!.x + pikachu!.width / 2 - (row!.x + row!.width / 2)),
+      ).toBeLessThan(1);
+    }
+    expect(
+      await prompt.evaluate(
+        (element) => element.scrollWidth <= element.clientWidth,
+      ),
+    ).toBe(true);
+  }
+
+  await prompt.getByRole('button', { name: /Generation I only/ }).click();
   await expect(prompt).toBeHidden();
   await expect(page.locator('.question')).toBeVisible();
 

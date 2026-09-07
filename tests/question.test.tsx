@@ -1,3 +1,4 @@
+import { QuestionClues } from '@/components/QuestionClues';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import { Question } from '@/components/Question';
@@ -1052,4 +1053,24 @@ it('does not announce a missing Pokémon for an exact Champion answer', () => {
   fireEvent.change(input, { target: { value: 'zzzzzz' } });
   expect(screen.getByText('No Pokémon found')).toBeVisible();
   expect(screen.getByRole('button', { name: 'Guess' })).toBeDisabled();
+});
+
+it('keeps structured generation clues concealed until their reveal', () => {
+  const structured: QuestionData = {
+    ...championQuestion,
+    clues: [
+      'An electric mouse.',
+      { kind: 'generation', generation: 'I', types: ['electric'] },
+    ],
+  };
+  const { rerender } = render(
+    <QuestionClues question={structured} cluesShown={2} />,
+  );
+  expect(screen.getByText('Generation')).not.toBeVisible();
+  rerender(<QuestionClues question={structured} cluesShown={3} />);
+  expect(screen.getByText('Generation')).toBeVisible();
+  expect(screen.getByText('I')).toBeVisible();
+  expect(screen.getByText(/Electric type, introduced in/)).toHaveTextContent(
+    'Electric type, introduced in Generation I.',
+  );
 });

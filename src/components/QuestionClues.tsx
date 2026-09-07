@@ -1,3 +1,5 @@
+import { formatPokemonName } from '@/game/format';
+import { GenerationLabel } from './GenerationLabel';
 import type { QuestionData } from '@/game/types';
 
 export const QuestionClues = ({
@@ -16,11 +18,18 @@ export const QuestionClues = ({
       <ol aria-live="polite">
         {question.clues.map((clue, index) => (
           <li
-            key={clue}
+            key={typeof clue === 'string' ? clue : clue.kind}
             aria-hidden={index >= visibleCount}
             style={{ visibility: index >= visibleCount ? 'hidden' : undefined }}
           >
-            {clue}
+            {typeof clue === 'string' ? (
+              clue
+            ) : (
+              <>
+                {clue.types.map(formatPokemonName).join(' / ')} type, introduced
+                in <GenerationLabel generation={clue.generation} />.
+              </>
+            )}
           </li>
         ))}
       </ol>
