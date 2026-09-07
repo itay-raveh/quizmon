@@ -66,14 +66,13 @@ const normalizeLeague = (value: unknown): LeagueState => {
     return { completed: false, seed: null };
   }
 
-  const league = value as Partial<LeagueState>;
   return {
-    completed: league.completed === true,
+    completed: value.completed === true,
     seed:
-      typeof league.seed === 'string' &&
-      league.seed.length > 0 &&
-      league.seed.length <= 200
-        ? league.seed
+      typeof value.seed === 'string' &&
+      value.seed.length > 0 &&
+      value.seed.length <= 200
+        ? value.seed
         : null,
   };
 };

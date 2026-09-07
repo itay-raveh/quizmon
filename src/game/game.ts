@@ -72,10 +72,7 @@ const categoryLabels: Record<QuestionCategory, string> = {
 export const normalizeModifiers = (value: unknown): Modifiers => {
   if (!value || typeof value !== 'object') return defaultModifiers;
 
-  const candidate = value as Partial<Modifiers> & {
-    soundEnabled?: unknown;
-    speedrunMode?: unknown;
-  };
+  const candidate = value as Record<string, unknown>;
   const selectedGenerations = Array.isArray(candidate.generations)
     ? candidate.generations.filter((generation) =>
         isChoice(generation, generations),
