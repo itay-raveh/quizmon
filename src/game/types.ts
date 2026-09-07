@@ -1,3 +1,5 @@
+import type { questionRegistry } from './questions/registry';
+
 export const generations = [
   'I',
   'II',
@@ -20,25 +22,8 @@ export type TrainingMode = (typeof trainingModes)[number];
 export type AnswerFlow = (typeof answerFlows)[number];
 export type TimerDisplay = (typeof timerDisplays)[number];
 
-export type QuestionType =
-  | 'ability-check'
-  | 'counter-pick'
-  | 'evolution-link'
-  | 'generation-roundup'
-  | 'evolution-shift'
-  | 'field-notes'
-  | 'move-check'
-  | 'odd-one-out'
-  | 'pixel-peek'
-  | 'pokedex-scan'
-  | 'shiny-spotter'
-  | 'silhouette-match'
-  | 'stat-showdown'
-  | 'type-check'
-  | 'type-matchup'
-  | 'type-roundup'
-  | 'type-twins'
-  | 'legend-hunt';
+export type QuestionType = keyof typeof questionRegistry;
+
 export const questionCategories = [
   'ability',
   'champion',

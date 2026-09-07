@@ -182,7 +182,7 @@ export const questionRegistry = {
     group: 'battle',
     label: 'Counter pick',
   },
-} satisfies Record<QuestionType, QuestionDefinition>;
+} satisfies Record<string, QuestionDefinition>;
 
 export const questionTypes = Object.keys(questionRegistry) as QuestionType[];
 
