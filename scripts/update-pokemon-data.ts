@@ -22,6 +22,10 @@ import {
   type SpriteMeasurements,
 } from '../src/game/types.ts';
 
+import {
+  fetchSpriteSource,
+  normalizeSpriteUrl,
+} from '../src/game/sprite-source.ts';
 import { measureCatalogSprites } from './sprite-measurements.ts';
 
 const DATA_PATH = new URL('../src/game/data/pokemon.json', import.meta.url);
@@ -37,8 +41,6 @@ const GENERATIONS: readonly Generation[] = [
   'IX',
 ];
 const CONCURRENCY = 4;
-const SPRITE_REPOSITORY_PREFIX =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/';
 
 export interface CatalogClient {
   measureSprites(
@@ -63,7 +65,15 @@ export const createCatalogClient = (
     revalidate: true,
   }),
 ): CatalogClient => ({
-  measureSprites: measureCatalogSprites,
+  measureSprites: (paths) =>
+    measureCatalogSprites(paths, async (path) => {
+      const response = await fetchSpriteSource(path, {
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (!response.ok)
+        throw new Error(`Sprite ${path}: HTTP ${response.status}`);
+      return Buffer.from(await response.arrayBuffer()).toString('base64');
+    }),
   getGenerationById: (id) => api.game.getGenerationById(id),
   resolveEvolutionChains: (resources) =>
     api.resolveAll(resources, { concurrency: CONCURRENCY }),
@@ -98,14 +108,6 @@ const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   return Object.fromEntries(
     statNames.map((name) => [name, values[name] ?? 0]),
   ) as Record<StatName, number>;
-};
-
-const normalizeSpriteUrl = (spriteUrl: string | null): string | null => {
-  if (!spriteUrl) return null;
-  if (!spriteUrl.startsWith(SPRITE_REPOSITORY_PREFIX)) {
-    throw new Error(`Unexpected PokéAPI sprite URL: ${spriteUrl}`);
-  }
-  return `/sprites/${spriteUrl.slice(SPRITE_REPOSITORY_PREFIX.length)}`;
 };
 
 const getSprite = (pokemon: Pokemon): string | null =>

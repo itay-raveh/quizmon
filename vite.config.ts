@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { SPRITE_SOURCE } from './src/game/sprite-source.ts';
 import { fileURLToPath, URL } from 'node:url';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
@@ -7,10 +8,8 @@ import { siteMetadata } from './build/site-metadata.ts';
 
 const spriteProxy = {
   '/sprites': {
-    target: 'https://raw.githubusercontent.com',
+    target: SPRITE_SOURCE,
     changeOrigin: true,
-    rewrite: (path: string) =>
-      `/PokeAPI/sprites/master/sprites${path.replace(/^\/sprites/, '')}`,
   },
 };
 

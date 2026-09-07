@@ -1,20 +1,8 @@
 import type { SpriteMeasurements } from '../src/game/types.ts';
 
-const loadSprite = async (path: string) => {
-  if (!/^\/sprites\/pokemon\/\d+\.png$/.test(path)) {
-    throw new Error(`Unexpected portrait sprite path: ${path}`);
-  }
-  const response = await fetch(
-    `https://raw.githubusercontent.com/PokeAPI/sprites/master${path}`,
-    { signal: AbortSignal.timeout(30_000) },
-  );
-  if (!response.ok) throw new Error(`Sprite ${path}: HTTP ${response.status}`);
-  return Buffer.from(await response.arrayBuffer()).toString('base64');
-};
-
 export const measureCatalogSprites = async (
   paths: readonly string[],
-  load: (path: string) => Promise<string> = loadSprite,
+  load: (path: string) => Promise<string>,
 ): Promise<Map<string, SpriteMeasurements>> => {
   const { chromium } = await import('@playwright/test');
   const browser = await chromium.launch();

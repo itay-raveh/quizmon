@@ -1,28 +1,10 @@
+import { fetchSpriteSource, isSpritePath } from '../src/game/sprite-source';
 import {
   DailyReminder,
   handleDailyReminderRequest,
   type DailyReminderEnv,
 } from './daily-reminder';
 
-const SPRITE_PATH =
-  /^\/sprites\/pokemon\/(?:(?:back\/|shiny\/)?[1-9]\d{0,3}\.png|other\/(?:(?:home|official-artwork)\/[1-9]\d{0,3}\.png|dream-world\/[1-9]\d{0,3}\.svg|showdown\/(?:back\/)?[1-9]\d{0,3}\.gif))$/;
-const VERSION_SPRITE_PATH = new RegExp(
-  '^/sprites/pokemon/versions/generation-(?:' +
-    [
-      'i/(?:red-blue|yellow)',
-      'ii/(?:crystal|gold|silver)',
-      'iii/(?:emerald|firered-leafgreen|ruby-sapphire)',
-      'iv/(?:diamond-pearl|heartgold-soulsilver|platinum)',
-      'v/black-white',
-      'vi/(?:omegaruby-alphasapphire|x-y)',
-      'vii/ultra-sun-ultra-moon',
-      'viii/brilliant-diamond-shining-pearl',
-      'ix/scarlet-violet',
-    ].join('|') +
-    ')/(?:back/)?[1-9]\\d{0,3}\\.png$',
-);
-const SPRITE_SOURCE =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites';
 const SPRITE_CACHE_SECONDS = 60 * 60 * 24 * 30;
 const ANALYTICS_PATH = '/api/events';
 const MAX_EVENT_BODY_LENGTH = 1_024;
@@ -50,8 +32,7 @@ interface CloudflareRequestInit extends RequestInit {
 }
 
 const fetchSprite = async (request: Request, url: URL): Promise<Response> => {
-  const sourcePath = url.pathname.slice('/sprites'.length);
-  const response = await fetch(`${SPRITE_SOURCE}${sourcePath}`, {
+  const response = await fetchSpriteSource(url.pathname, {
     cf: {
       cacheEverything: true,
       cacheTtl: SPRITE_CACHE_SECONDS,
@@ -228,7 +209,7 @@ export default {
 
     if (
       (request.method === 'GET' || request.method === 'HEAD') &&
-      (SPRITE_PATH.test(url.pathname) || VERSION_SPRITE_PATH.test(url.pathname))
+      isSpritePath(url.pathname)
     ) {
       return fetchSprite(request, url);
     }

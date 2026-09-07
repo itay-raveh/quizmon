@@ -1,18 +1,27 @@
 // @vitest-environment node
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { measureCatalogSprites } from '../scripts/sprite-measurements';
+import { createCatalogClient } from '../scripts/update-pokemon-data';
 
 const cornersPng =
   'iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAFUlEQVR4nGP4////fwYoQGbjAehaAB5CD/EFFLnzAAAAAElFTkSuQmCC';
 
+afterEach(() => vi.restoreAllMocks());
+
 describe('catalog sprite measurements', () => {
   it('measures painted pixels and bounds once for each distinct sprite', async () => {
-    const load = vi.fn(() => Promise.resolve(cornersPng));
-    const measurements = await measureCatalogSprites(
-      ['/sprites/pokemon/1.png', '/sprites/pokemon/1.png'],
-      load,
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response(Buffer.from(cornersPng, 'base64')));
+    const measurements = await createCatalogClient().measureSprites([
+      '/sprites/pokemon/1.png',
+      '/sprites/pokemon/1.png',
+    ]);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0]?.[0]).toBe(
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
     );
-    expect(load).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0]?.[1]?.signal).toBeInstanceOf(AbortSignal);
     expect(measurements.get('/sprites/pokemon/1.png')).toEqual({
       area: 0.25,
       width: 1,
@@ -20,6 +29,15 @@ describe('catalog sprite measurements', () => {
       centerX: 0.5,
       bottom: 1,
     });
+  });
+
+  it('rejects an unavailable sprite through the shared source', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(null, { status: 404 }),
+    );
+    await expect(
+      createCatalogClient().measureSprites(['/sprites/pokemon/1.png']),
+    ).rejects.toThrow('HTTP 404');
   });
 
   it('rejects unreadable sprites rather than saving guessed measurements', async () => {
