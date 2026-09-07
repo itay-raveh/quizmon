@@ -31,15 +31,17 @@ describe('Trainer profile storage', () => {
     });
     expect(readTrainerProfile()).toEqual(saved);
 
+    window.localStorage.clear();
     window.localStorage.setItem(
       'quizmon.trainer-profile.v1',
       JSON.stringify({ ...saved, accent: 'violet', cardNumber: 'QZ-123456' }),
     );
     expect(readTrainerProfile()).toEqual(saved);
     expect(
-      JSON.parse(
-        window.localStorage.getItem('quizmon.trainer-profile.v1') ?? '{}',
-      ),
-    ).not.toHaveProperty('cardNumber');
+      JSON.parse(window.localStorage.getItem('quizmon.player') ?? '{}'),
+    ).not.toHaveProperty('data.profile.cardNumber');
+    expect(
+      window.localStorage.getItem('quizmon.trainer-profile.v1'),
+    ).toBeNull();
   });
 });

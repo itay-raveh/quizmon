@@ -1,3 +1,4 @@
+import type { PlayerSave } from '../src/game/player-data';
 import { expect, test } from './fixtures';
 
 test('shows a saved daily score instead of another play button', async ({
@@ -22,6 +23,10 @@ test('shows a saved daily score instead of another play button', async ({
             answers: Array.from({ length: 10 }, (_, index) => ({
               category: index === 9 ? 'champion' : 'identity',
               correct: index < 8,
+              cluesUsed: 0,
+              generation: 'I',
+              pokemonName: 'pikachu',
+              questionType: index === 9 ? 'champion' : 'pokedex-scan',
               points: index < 8 ? 1_000 : 0,
             })),
             contentVersion: 2,
@@ -139,26 +144,27 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
   ).toBeVisible();
 
   await page.evaluate(() => {
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {
-          '2026-09-01': {
-            answers: Array.from({ length: 10 }, (_, index) => ({
-              category: index === 9 ? 'champion' : 'identity',
-              correct: true,
-              points: 100,
-            })),
-            contentVersion: 2,
-            correctCount: 10,
-            elapsedSeconds: 70,
-            questionCount: 10,
-            score: 1000,
-          },
-        },
-        training: {},
-      }),
-    );
+    const save = JSON.parse(
+      localStorage.getItem('quizmon.player')!,
+    ) as PlayerSave;
+    save.data.results.daily['2026-09-01'] = {
+      answers: Array.from({ length: 10 }, (_, index) => ({
+        category: index === 9 ? 'champion' : 'identity',
+        cluesUsed: 0,
+        correct: true,
+        generation: 'I',
+        pokemonName: 'pikachu',
+        questionType: index === 9 ? 'champion' : 'pokedex-scan',
+        points: 100,
+      })),
+      contentVersion: 2,
+      correctCount: 10,
+      elapsedSeconds: 70,
+      questionCount: 10,
+      score: 1000,
+      scoreVersion: 2,
+    };
+    localStorage.setItem('quizmon.player', JSON.stringify(save));
   });
 
   await expect(otherPage.getByText('Share result')).toBeVisible();
@@ -205,7 +211,7 @@ test('starts saved Training settings directly after completing Daily', async ({
     page.getByRole('button', { name: 'Share result', exact: true }),
   ).toBeVisible();
   const savedDaily = await page.evaluate(() =>
-    window.localStorage.getItem('quizmon.results.v2'),
+    window.localStorage.getItem('quizmon.player'),
   );
   expect(savedDaily).not.toBeNull();
   await page
@@ -218,8 +224,6 @@ test('starts saved Training settings directly after completing Daily', async ({
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
   expect(
-    await page.evaluate(() =>
-      window.localStorage.getItem('quizmon.results.v2'),
-    ),
+    await page.evaluate(() => window.localStorage.getItem('quizmon.player')),
   ).toBe(savedDaily);
 });

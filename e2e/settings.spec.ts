@@ -171,7 +171,7 @@ for (const repair of ['add generation', 'remove roundup'] as const) {
     await page.getByRole('button', { name: 'Settings' }).click();
     const dialog = page.getByRole('dialog', { name: 'Settings' });
     const savedBefore = await page.evaluate(() =>
-      localStorage.getItem('quizmon.training-settings.v2'),
+      localStorage.getItem('quizmon.player'),
     );
     await dialog.getByRole('button', { name: /General knowledge/ }).click();
     await dialog.getByText('Generation roundup', { exact: true }).click();
@@ -182,9 +182,7 @@ for (const repair of ['add generation', 'remove roundup'] as const) {
       'Select at least two generations for Generation roundup.',
     );
     expect(
-      await page.evaluate(() =>
-        localStorage.getItem('quizmon.training-settings.v2'),
-      ),
+      await page.evaluate(() => localStorage.getItem('quizmon.player')),
     ).toBe(savedBefore);
 
     if (repair === 'add generation') {
@@ -196,9 +194,13 @@ for (const repair of ['add generation', 'remove roundup'] as const) {
     await expect(dialog).toBeHidden();
     const saved = await page.evaluate(
       () =>
-        JSON.parse(
-          localStorage.getItem('quizmon.training-settings.v2')!,
-        ) as Pick<Modifiers, 'generations' | 'questionTypes'>,
+        (
+          JSON.parse(localStorage.getItem('quizmon.player')!) as {
+            data: {
+              settings: Pick<Modifiers, 'generations' | 'questionTypes'>;
+            };
+          }
+        ).data.settings,
     );
     expect(saved.generations).toEqual(
       repair === 'add generation' ? ['I', 'II'] : ['I'],

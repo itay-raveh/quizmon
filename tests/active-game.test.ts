@@ -33,7 +33,11 @@ describe('active game storage', () => {
   it('restores a versioned in-progress round from the current tab', () => {
     writeActiveGame(snapshot);
 
-    expect(readActiveGame()).toEqual({ ...snapshot, version: 1 });
+    expect(readActiveGame()).toEqual({
+      ...snapshot,
+      playerRestoreId: null,
+      version: 1,
+    });
   });
 
   it('fails closed for corrupt or incompatible snapshots', () => {

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, type Dispatch } from 'react';
+import { readPlayerSave } from '@/game/player-storage';
+import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
 import {
   clearActiveGame,
   readActiveGame,
@@ -112,6 +113,13 @@ export const useActiveGame = ({
   startTimer,
 }: ActiveGameOptions) => {
   const restorationAttempted = useRef(false);
+  const [playerRestoreId] = useState(() => {
+    try {
+      return readPlayerSave().restoreId;
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
     if (!catalog || restorationAttempted.current) return;
@@ -182,9 +190,10 @@ export const useActiveGame = ({
       mode: session.mode,
       modifiers: session.modifiers,
       questionCount: session.questions.length,
+      playerRestoreId,
       seed: session.seed,
     });
-  }, [catalog, getElapsedMilliseconds, session]);
+  }, [catalog, getElapsedMilliseconds, playerRestoreId, session]);
 
   useEffect(() => {
     persist();

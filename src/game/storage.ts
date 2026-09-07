@@ -1,21 +1,18 @@
 import {
-  readStoredJson,
-  removeStoredValue,
-  writeStoredJson,
-  writeStoredValue,
-} from './browser-storage';
+  readPlayerData,
+  updatePlayerData,
+  canPersistPlayerData,
+} from './player-storage';
+import type { SavedResults } from './results-data';
 import {
   defaultModifiers,
   isLeagueTraining,
   TRAINING_QUESTION_COUNT,
 } from './game';
-import { getLocalDate, parseDailyDate } from './daily';
+import { getLocalDate } from './daily';
 import { isLeagueVictory } from './league';
-import { questionTypes } from './questions/registry';
 import { createRoundSeed } from './random';
 import {
-  generations,
-  questionCategories,
   type GameMode,
   type GameResult,
   type Generation,
@@ -23,42 +20,6 @@ import {
   type QuestionCategory,
   type QuestionType,
 } from './types';
-import { isFiniteNonnegative, isRecord } from './validation';
-
-const RESULTS_KEY = 'quizmon.results.v2';
-const STREAK_VERSION = 1;
-const TRAINER_PROGRESS_VERSION = 2;
-interface TrainerProgress {
-  championAnswersWithoutClues: number;
-  correctCategories: Partial<Record<QuestionCategory, number>>;
-  correctGenerations: Partial<Record<Generation, number>>;
-  correctPokemon: string[];
-  correctQuestionTypes: Partial<Record<QuestionType, number>>;
-  masteryRounds: number;
-  quickAttackCompleted: boolean;
-  version: number;
-}
-
-interface DailyStreakState {
-  creditedDates: string[];
-  version: number;
-}
-
-interface LeagueState {
-  completed: boolean;
-  seed: string | null;
-}
-
-type HighScoreKey = 'daily' | 'league' | 'custom';
-type TrainingHighScoreKey = Exclude<HighScoreKey, 'daily'>;
-
-interface SavedResults {
-  daily: Record<string, GameResult>;
-  league: LeagueState;
-  progress: TrainerProgress;
-  streak: DailyStreakState;
-  training: Partial<Record<TrainingHighScoreKey, GameResult>>;
-}
 
 export interface TrainerStats {
   bestDailyStreak: number;
@@ -72,75 +33,12 @@ export interface TrainerStats {
   quickAttackCompleted: boolean;
 }
 
-const emptyProgress = (): TrainerProgress => ({
-  championAnswersWithoutClues: 0,
-  correctCategories: {},
-  correctGenerations: {},
-  correctPokemon: [],
-  correctQuestionTypes: {},
-  masteryRounds: 0,
-  quickAttackCompleted: false,
-  version: TRAINER_PROGRESS_VERSION,
-});
-
-const emptyResults = (): SavedResults => ({
-  daily: {},
-  league: { completed: false, seed: null },
-  progress: emptyProgress(),
-  streak: { creditedDates: [], version: STREAK_VERSION },
-  training: {},
-});
-
-const normalizeLeague = (value: unknown): LeagueState => {
-  if (!isRecord(value)) {
-    return { completed: false, seed: null };
-  }
-
-  const league = value as Partial<LeagueState>;
-  return {
-    completed: league.completed === true,
-    seed:
-      typeof league.seed === 'string' &&
-      league.seed.length > 0 &&
-      league.seed.length <= 200
-        ? league.seed
-        : null,
-  };
-};
-
-const readResultRecord = (value: unknown): Record<string, GameResult> =>
-  isRecord(value) ? (value as Record<string, GameResult>) : {};
-
-const normalizeStreak = (
-  streak: Partial<DailyStreakState> | undefined,
-  daily: Record<string, GameResult>,
-): DailyStreakState => {
-  const creditedDates =
-    streak?.version === STREAK_VERSION && Array.isArray(streak.creditedDates)
-      ? streak.creditedDates
-      : [];
-
-  return {
-    creditedDates: [
-      ...new Set(
-        creditedDates.filter(
-          (date) =>
-            typeof date === 'string' &&
-            parseDailyDate(`?daily=${date}`) === date &&
-            daily[date],
-        ),
-      ),
-    ].sort(),
-    version: STREAK_VERSION,
-  };
-};
-
 const addResultToProgress = (
-  progress: TrainerProgress,
+  progress: SavedResults['progress'],
   result: GameResult,
   mode: GameMode,
   modifiers: Modifiers,
-): TrainerProgress => {
+): SavedResults['progress'] => {
   const correctCategories = { ...progress.correctCategories };
   const correctGenerations = { ...progress.correctGenerations };
   const correctPokemon = new Set(progress.correctPokemon);
@@ -179,72 +77,14 @@ const addResultToProgress = (
     quickAttackCompleted:
       progress.quickAttackCompleted ||
       (isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60),
-    version: TRAINER_PROGRESS_VERSION,
-  };
-};
-
-const normalizeCounts = <Key extends string>(
-  value: unknown,
-  allowedKeys: readonly Key[],
-): Partial<Record<Key, number>> =>
-  isRecord(value)
-    ? (Object.fromEntries(
-        Object.entries(value).filter(
-          ([key, count]) =>
-            allowedKeys.includes(key as Key) && isFiniteNonnegative(count),
-        ),
-      ) as Partial<Record<Key, number>>)
-    : {};
-
-const normalizeProgress = (
-  progress: Partial<TrainerProgress> | undefined,
-): TrainerProgress => {
-  if (
-    progress?.version !== TRAINER_PROGRESS_VERSION ||
-    !Array.isArray(progress.correctPokemon) ||
-    typeof progress.quickAttackCompleted !== 'boolean' ||
-    !isRecord(progress.correctCategories)
-  ) {
-    return emptyProgress();
-  }
-
-  return {
-    championAnswersWithoutClues: isFiniteNonnegative(
-      progress.championAnswersWithoutClues,
-    )
-      ? Math.max(0, Math.trunc(progress.championAnswersWithoutClues))
-      : 0,
-    correctCategories: normalizeCounts(
-      progress.correctCategories,
-      questionCategories,
-    ),
-    correctGenerations: normalizeCounts(
-      progress.correctGenerations,
-      generations,
-    ),
-    correctPokemon: [
-      ...new Set(
-        progress.correctPokemon.filter(
-          (name) => typeof name === 'string' && name.length > 0,
-        ),
-      ),
-    ],
-    correctQuestionTypes: normalizeCounts(
-      progress.correctQuestionTypes,
-      questionTypes,
-    ),
-    masteryRounds: isFiniteNonnegative(progress.masteryRounds)
-      ? Math.max(0, Math.trunc(progress.masteryRounds))
-      : 0,
-    quickAttackCompleted: progress.quickAttackCompleted,
-    version: TRAINER_PROGRESS_VERSION,
+    version: 2,
   };
 };
 
 export const getHighScoreKey = (
   mode: GameMode,
   modifiers: Pick<Modifiers, 'trainingMode'>,
-): HighScoreKey | null =>
+): 'daily' | 'league' | 'custom' | null =>
   mode.kind === 'daily'
     ? 'daily'
     : mode.kind === 'training'
@@ -267,42 +107,12 @@ const getBestResult = (
     undefined,
   );
 
-const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
-  const records = readResultRecord(value);
-  return {
-    ...(records.custom ? { custom: records.custom } : {}),
-    ...(records.league ? { league: records.league } : {}),
-  };
-};
-
-const readResults = (): SavedResults => {
-  const value = readStoredJson('localStorage', RESULTS_KEY);
-  if (!isRecord(value)) {
-    return emptyResults();
-  }
-
-  const parsed = value as Partial<SavedResults>;
-  const daily = readResultRecord(parsed.daily);
-  const training = normalizeTrainingRecords(parsed.training);
-  return {
-    daily,
-    league: normalizeLeague(parsed.league),
-    progress: normalizeProgress(parsed.progress),
-    streak: normalizeStreak(parsed.streak, daily),
-    training,
-  };
-};
+const readResults = (): SavedResults => readPlayerData().results;
 
 const writeResults = (results: SavedResults): boolean =>
-  writeStoredJson('localStorage', RESULTS_KEY, results);
+  updatePlayerData({ results });
 
-export const canPersistResults = (): boolean => {
-  const probeKey = `${RESULTS_KEY}.probe`;
-  return (
-    writeStoredValue('localStorage', probeKey, '1') &&
-    removeStoredValue('localStorage', probeKey)
-  );
-};
+export const canPersistResults = canPersistPlayerData;
 
 export const readDailyResult = (date: string): GameResult | null =>
   readResults().daily[date] ?? null;

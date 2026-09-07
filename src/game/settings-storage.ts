@@ -1,23 +1,13 @@
 import { useState } from 'react';
-import {
-  readStoredJson,
-  readStoredValue,
-  writeStoredJson,
-  writeStoredValue,
-} from './browser-storage';
+import { readPlayerData, updatePlayerData } from './player-storage';
 import { defaultModifiers, normalizeModifiers } from './game';
 import type { Modifiers } from './types';
-
-const SETTINGS_KEY = 'quizmon.training-settings.v2';
-const GENERATION_PROMPT_KEY = 'quizmon.generation-prompt.v1';
 
 const normalizeTrainingSettings = (value: unknown): Modifiers =>
   normalizeModifiers(value);
 
 const readModifiers = (): Modifiers =>
-  normalizeTrainingSettings(
-    readStoredJson('localStorage', SETTINGS_KEY) ?? defaultModifiers,
-  );
+  normalizeTrainingSettings(readPlayerData().settings ?? defaultModifiers);
 
 export const usePersistentModifiers = () => {
   const [modifiers, setModifiersState] = useState<Modifiers>(readModifiers);
@@ -26,16 +16,17 @@ export const usePersistentModifiers = () => {
     const normalized = normalizeTrainingSettings(nextModifiers);
     setModifiersState(normalized);
 
-    writeStoredJson('localStorage', SETTINGS_KEY, normalized);
+    updatePlayerData({ settings: normalized });
   };
 
   return [modifiers, setModifiers] as const;
 };
 
-export const shouldShowGenerationPrompt = (): boolean =>
-  !readStoredValue('localStorage', SETTINGS_KEY) &&
-  !readStoredValue('localStorage', GENERATION_PROMPT_KEY);
+export const shouldShowGenerationPrompt = (): boolean => {
+  const data = readPlayerData();
+  return !data.settings && !data.generationPromptAnswered;
+};
 
 export const markGenerationPromptAnswered = () => {
-  writeStoredValue('localStorage', GENERATION_PROMPT_KEY, '1');
+  updatePlayerData({ generationPromptAnswered: true });
 };

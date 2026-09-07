@@ -607,3 +607,50 @@
   background: var(--cream);
   border-top: 2px solid var(--navy);
 }
+
+.backup-settings p {
+  margin: 0.6rem 0 0.85rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.backup-settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.backup-settings__actions > button {
+  flex: 1 1 9rem;
+}
+
+.backup-settings__preview {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--navy);
+}
+
+.backup-settings__preview h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.backup-settings table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.85rem;
+}
+
+.backup-settings th,
+.backup-settings td {
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--muted);
+  overflow-wrap: anywhere;
+  text-align: start;
+  vertical-align: top;
+}
+
+.backup-settings p[role='alert'] {
+  color: var(--error-ink);
+}

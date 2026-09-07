@@ -1,3 +1,4 @@
+import { readPlayerSave } from './player-storage';
 import {
   readStoredJson,
   removeStoredValue,
@@ -26,6 +27,7 @@ export interface ActiveGameSnapshot {
   mode: GameMode;
   modifiers: Modifiers;
   questionCount: number;
+  playerRestoreId?: string | null;
   seed: string;
   version: number;
 }
@@ -139,6 +141,8 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
     mode,
     modifiers,
     questionCount: value.questionCount,
+    playerRestoreId:
+      typeof value.playerRestoreId === 'string' ? value.playerRestoreId : null,
     seed: value.seed,
     version: ACTIVE_GAME_VERSION,
   };
@@ -148,6 +152,14 @@ export const readActiveGame = (): ActiveGameSnapshot | null => {
   const snapshot = parseSnapshot(
     readStoredJson('sessionStorage', ACTIVE_GAME_KEY),
   );
+  try {
+    if ((snapshot?.playerRestoreId ?? null) !== readPlayerSave().restoreId) {
+      clearActiveGame();
+      return null;
+    }
+  } catch {
+    return null;
+  }
   if (!snapshot) removeStoredValue('sessionStorage', ACTIVE_GAME_KEY);
   return snapshot;
 };
@@ -155,10 +167,21 @@ export const readActiveGame = (): ActiveGameSnapshot | null => {
 export const writeActiveGame = (
   snapshot: Omit<ActiveGameSnapshot, 'version'>,
 ): void => {
-  writeStoredJson('sessionStorage', ACTIVE_GAME_KEY, {
-    ...snapshot,
-    version: ACTIVE_GAME_VERSION,
-  });
+  try {
+    const playerRestoreId = readPlayerSave().restoreId;
+    if (
+      snapshot.playerRestoreId !== undefined &&
+      snapshot.playerRestoreId !== playerRestoreId
+    )
+      return;
+    writeStoredJson('sessionStorage', ACTIVE_GAME_KEY, {
+      ...snapshot,
+      playerRestoreId,
+      version: ACTIVE_GAME_VERSION,
+    });
+  } catch {
+    return;
+  }
 };
 
 export const clearActiveGame = (): void => {

@@ -1,0 +1,125 @@
+{
+  "format": "quizmon-backup",
+  "version": 1,
+  "exportedAt": "2026-09-07T09:00:00.000Z",
+  "save": {
+    "version": 1,
+    "restoreId": null,
+    "data": {
+      "generationPromptAnswered": true,
+      "settings": {
+        "answerFlow": "auto",
+        "generations": ["I", "II"],
+        "questionTypes": ["pokedex-scan", "generation-roundup"],
+        "reduceMotion": true,
+        "soundVolume": 0.4,
+        "timerDisplay": "milliseconds",
+        "trainingMode": "custom"
+      },
+      "profile": {
+        "version": 1,
+        "createdAt": "2026-09-01",
+        "hasBeenRevealed": true,
+        "name": "Leaf",
+        "partnerPokemon": "pikachu",
+        "specialty": "identity"
+      },
+      "results": {
+        "daily": {
+          "2026-09-07": {
+            "answers": [
+              {
+                "category": "identity",
+                "cluesUsed": 0,
+                "correct": true,
+                "generation": "I",
+                "pokemonName": "pikachu",
+                "points": 1000,
+                "questionType": "pokedex-scan",
+                "responseMilliseconds": 1500,
+                "speedBonus": 2000
+              }
+            ],
+            "contentVersion": 13,
+            "correctCount": 1,
+            "elapsedMilliseconds": 1500,
+            "elapsedSeconds": 1,
+            "questionCount": 1,
+            "score": 5000,
+            "scoreVersion": 3
+          }
+        },
+        "training": {
+          "custom": {
+            "answers": [
+              {
+                "category": "identity",
+                "cluesUsed": 0,
+                "correct": true,
+                "generation": "I",
+                "pokemonName": "pikachu",
+                "points": 1000,
+                "questionType": "pokedex-scan",
+                "responseMilliseconds": 1500,
+                "speedBonus": 2000
+              }
+            ],
+            "contentVersion": 13,
+            "correctCount": 1,
+            "elapsedMilliseconds": 1500,
+            "elapsedSeconds": 1,
+            "questionCount": 1,
+            "score": 5000,
+            "scoreVersion": 3
+          },
+          "league": {
+            "answers": [
+              {
+                "category": "identity",
+                "cluesUsed": 0,
+                "correct": true,
+                "generation": "I",
+                "pokemonName": "pikachu",
+                "points": 1000,
+                "questionType": "pokedex-scan",
+                "responseMilliseconds": 1500,
+                "speedBonus": 2000
+              }
+            ],
+            "contentVersion": 13,
+            "correctCount": 1,
+            "elapsedMilliseconds": 1500,
+            "elapsedSeconds": 1,
+            "questionCount": 1,
+            "score": 5000,
+            "scoreVersion": 3
+          }
+        },
+        "league": {
+          "completed": true,
+          "seed": "fixed-league-retry"
+        },
+        "streak": {
+          "version": 1,
+          "creditedDates": ["2026-09-07"]
+        },
+        "progress": {
+          "version": 2,
+          "championAnswersWithoutClues": 5,
+          "correctCategories": {
+            "identity": 1
+          },
+          "correctGenerations": {
+            "I": 1
+          },
+          "correctQuestionTypes": {
+            "pokedex-scan": 1
+          },
+          "correctPokemon": ["pikachu"],
+          "masteryRounds": 3,
+          "quickAttackCompleted": true
+        }
+      }
+    }
+  }
+}
