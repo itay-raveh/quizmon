@@ -280,15 +280,13 @@ export const pokemonOptions = (
     ].join(':'),
   );
   const selected = shuffle(shortlist, optionRandom).slice(0, 3);
+  const distanceFromTarget = (name: string) =>
+    Math.abs(
+      (context.catalog.pokemon[name]?.id ?? target.pokemon.id) -
+        target.pokemon.id,
+    );
   const spreadBand = [...shortlist]
-    .sort((left, right) => {
-      const leftId = context.catalog.pokemon[left]?.id ?? target.pokemon.id;
-      const rightId = context.catalog.pokemon[right]?.id ?? target.pokemon.id;
-      return (
-        Math.abs(rightId - target.pokemon.id) -
-        Math.abs(leftId - target.pokemon.id)
-      );
-    })
+    .sort((left, right) => distanceFromTarget(right) - distanceFromTarget(left))
     .slice(0, Math.ceil(shortlist.length / 3));
 
   if (
@@ -297,17 +295,13 @@ export const pokemonOptions = (
   ) {
     const spreadCandidate = pick(spreadBand, optionRandom);
     if (spreadCandidate) {
-      const closestIndex = selected.reduce((closest, name, index) => {
-        const closestId =
-          context.catalog.pokemon[selected[closest] ?? '']?.id ??
-          target.pokemon.id;
-        const candidateId =
-          context.catalog.pokemon[name]?.id ?? target.pokemon.id;
-        return Math.abs(candidateId - target.pokemon.id) <
-          Math.abs(closestId - target.pokemon.id)
-          ? index
-          : closest;
-      }, 0);
+      const closestIndex = selected.reduce(
+        (closest, name, index) =>
+          distanceFromTarget(name) < distanceFromTarget(selected[closest] ?? '')
+            ? index
+            : closest,
+        0,
+      );
       selected[closestIndex] = spreadCandidate;
     }
   }
