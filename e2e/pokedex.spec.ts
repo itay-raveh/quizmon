@@ -8,7 +8,7 @@ import { generations, type PokemonCatalog } from '../src/game/types';
 import { catalogData, expect, formatName, test } from './fixtures';
 
 for (const width of [320, 1280]) {
-  test(`browses registered and missing Pokédex entries at ${width}px`, async ({
+  test(`browses found and missing Pokédex entries at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -37,17 +37,15 @@ for (const width of [320, 1280]) {
       page.getByRole('button', { name: 'Pokédex', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
     await expect(
-      page.getByText('4 / 1025 registered', { exact: true }),
+      page.getByText('4 / 1025 found', { exact: true }),
     ).toBeVisible();
     const entries = page.locator('.trainer-pokedex__entries > li');
     await expect(entries).toHaveCount(12);
     await expect(entries.first()).toContainText('Bulbasaur');
-    await expect(entries.nth(3)).toContainText('Not registered');
+    await expect(entries.nth(3)).toContainText('Not found');
     await expect(entries.nth(3).locator('img')).toHaveCount(0);
-    await page
-      .getByRole('combobox', { name: 'Entries', exact: true })
-      .selectOption('registered');
-    await expect(entries).toHaveCount(4);
+    await expect(page.getByRole('combobox')).toHaveCount(0);
+    await expect(page.getByText(/Correct answers register/)).toHaveCount(0);
     await page
       .getByRole('searchbox', { name: 'Search Pokédex' })
       .fill('pikachu');
@@ -56,18 +54,12 @@ for (const width of [320, 1280]) {
     await page.getByRole('searchbox').fill('nothing matches');
     await expect(page.getByRole('status')).toContainText('No matching entries');
     await page.getByRole('searchbox').fill('');
-    await page
-      .getByRole('combobox', { name: 'Entries', exact: true })
-      .selectOption('missing');
     await page.getByRole('button', { name: 'Next', exact: true }).click();
     await expect(page.getByRole('status')).toContainText('13–24');
     await page.getByRole('searchbox').fill('#0004');
     await expect(entries).toHaveCount(1);
-    await expect(entries.first()).toContainText('Not registered');
+    await expect(entries.first()).toContainText('Not found');
     await page.getByRole('searchbox').fill('');
-    await page
-      .getByRole('combobox', { name: 'Entries', exact: true })
-      .selectOption('registered');
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -81,7 +73,7 @@ for (const width of [320, 1280]) {
     await page.getByRole('button', { name: 'Pokédex', exact: true }).click();
     await page.reload();
     await expect(
-      page.getByText('4 / 1025 registered', { exact: true }),
+      page.getByText('4 / 1025 found', { exact: true }),
     ).toBeVisible();
   });
 }
@@ -152,9 +144,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
     ),
   ).toEqual(getQuestionPokemon(question!));
   await page.goto('/?trainer=pokedex');
-  await expect(
-    page.getByText('2 / 1025 registered', { exact: true }),
-  ).toBeVisible();
+  await expect(page.getByText('2 / 1025 found', { exact: true })).toBeVisible();
   expect(
     await page.evaluate(
       () =>

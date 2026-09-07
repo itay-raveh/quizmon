@@ -10,23 +10,21 @@ import { TypeBadges } from './TypeBadge';
 const pageSize = 12;
 
 export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
-  const [registered] = useState(() => new Set(readPlayerData().pokedex));
+  const [foundPokemon] = useState(() => new Set(readPlayerData().pokedex));
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
   const [page, setPage] = useState(0);
   const entries = useMemo(
     () => Object.entries(catalog.pokemon).sort(([, a], [, b]) => a.id - b.id),
     [catalog],
   );
-  const count = entries.filter(([name]) => registered.has(name)).length;
+  const count = entries.filter(([name]) => foundPokemon.has(name)).length;
   const query = search.trim().toLowerCase().replace(/^#/, '');
   const matches = entries.filter(([name, pokemon]) => {
-    const found = registered.has(name);
+    const found = foundPokemon.has(name);
     return (
-      (filter === 'all' || (filter === 'registered' ? found : !found)) &&
-      (!query ||
-        String(pokemon.id).padStart(4, '0').includes(query) ||
-        (found && formatPokemonName(name).toLowerCase().includes(query)))
+      !query ||
+      String(pokemon.id).padStart(4, '0').includes(query) ||
+      (found && formatPokemonName(name).toLowerCase().includes(query))
     );
   });
   const pages = Math.max(1, Math.ceil(matches.length / pageSize));
@@ -40,57 +38,35 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
     <section className="trainer-pokedex" aria-label="Pokédex collection">
       <div className="trainer-pokedex__summary">
         <strong>
-          {count} / {entries.length} registered
+          {count} / {entries.length} found
         </strong>
-        <p>
-          Correct answers register the Pokémon in the question and its correct
-          choices.
-        </p>
       </div>
-      <div className="trainer-pokedex__filters">
-        <label>
-          Search Pokédex
-          <input
-            type="search"
-            placeholder="Name or Pokédex number"
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(0);
-            }}
-          />
-        </label>
-        <label>
-          Entries
-          <select
-            value={filter}
-            onChange={(event) => {
-              setFilter(event.target.value);
-              setPage(0);
-            }}
-          >
-            <option value="all">All</option>
-            <option value="registered">Registered</option>
-            <option value="missing">Missing</option>
-          </select>
-        </label>
-      </div>
+      <label className="trainer-pokedex__search">
+        Search Pokédex
+        <input
+          type="search"
+          placeholder="Name or Pokédex number"
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(0);
+          }}
+        />
+      </label>
       <p className="trainer-pokedex__count" role="status">
         {matches.length === 0
           ? search
-            ? 'No matching entries. Try a registered name or a Pokédex number.'
-            : filter === 'missing'
-              ? 'Every Pokémon is registered.'
-              : 'No entries yet. Answer a question correctly to start your Pokédex.'
+            ? 'No matching entries. Try another name or Pokédex number.'
+            : 'No entries yet. Answer a question correctly to start your Pokédex.'
           : `${currentPage * pageSize + 1}–${Math.min((currentPage + 1) * pageSize, matches.length)} of ${matches.length} entries`}
       </p>
       {visible.length > 0 && (
         <ul className="trainer-pokedex__entries">
           {visible.map(([name, pokemon]) => {
-            const found = registered.has(name);
+            const found = foundPokemon.has(name);
             return (
               <li
-                className={`trainer-pokedex__entry${found ? ' is-registered' : ''}`}
+                className={`trainer-pokedex__entry${found ? ' is-found' : ''}`}
                 key={name}
               >
                 <div className="trainer-pokedex__portrait" aria-hidden="true">
@@ -118,7 +94,7 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
                 ) : (
                   <span className="trainer-pokedex__missing">
                     <small>{formatPokedexNumber(pokemon.id)}</small>
-                    <span>Not registered</span>
+                    <span>Not found</span>
                   </span>
                 )}
               </li>

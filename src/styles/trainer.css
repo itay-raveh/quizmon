@@ -1568,19 +1568,7 @@ html[data-reduce-motion]
   font-size: var(--text-headline);
 }
 
-.trainer-pokedex__summary p {
-  margin: 0.35rem 0 0;
-  color: var(--muted);
-  font-size: var(--text-label);
-}
-
-.trainer-pokedex__filters {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 0.7rem;
-}
-
-.trainer-pokedex__filters label {
+.trainer-pokedex__search {
   display: grid;
   min-width: 0;
   color: var(--navy);
@@ -1589,8 +1577,7 @@ html[data-reduce-motion]
   gap: 0.25rem;
 }
 
-.trainer-pokedex__filters input,
-.trainer-pokedex__filters select {
+.trainer-pokedex__search input {
   width: 100%;
   min-width: 0;
   min-height: 2.8rem;
@@ -1603,12 +1590,12 @@ html[data-reduce-motion]
   font-size: var(--text-body);
 }
 
-.trainer-pokedex__filters input::placeholder {
+.trainer-pokedex__search input::placeholder {
   color: var(--muted);
   opacity: 1;
 }
 
-.trainer-pokedex__filters :is(input, select):focus-visible {
+.trainer-pokedex__search input:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
@@ -1631,26 +1618,26 @@ html[data-reduce-motion]
 .trainer-pokedex__entry {
   display: flex;
   min-width: 0;
-  padding: 0.5rem 0.25rem;
+  padding: 0.25rem;
   flex-direction: column;
   align-items: center;
   color: var(--muted);
   border: 2px solid var(--sky);
   border-radius: var(--button-radius);
   text-align: center;
-  gap: 0.4rem;
+  gap: 0.25rem;
 }
 
-.trainer-pokedex__entry.is-registered {
+.trainer-pokedex__entry.is-found {
   color: var(--navy);
   border-color: var(--navy);
 }
 
 .trainer-pokedex__portrait {
   display: grid;
-  width: 6rem;
+  width: 4rem;
   max-width: 100%;
-  height: 6rem;
+  height: 4rem;
   place-items: center;
 }
 
@@ -1732,9 +1719,5 @@ html[data-reduce-motion]
 @container (max-width: 23rem) {
   .trainer-pokedex__entries {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .trainer-pokedex__filters {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
