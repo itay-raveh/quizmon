@@ -944,26 +944,28 @@
   font-family: var(--font-data);
 }
 
-.trainer-badge-dialog progress {
+:is(.trainer-badge-dialog, .trainer-title-dialog) progress {
   width: 100%;
-  height: 0.55rem;
+  height: 0.75rem;
   overflow: hidden;
   appearance: none;
-  background: color-mix(in srgb, var(--navy) 10%, transparent);
+  background: var(--sky);
   border: 2px solid var(--navy);
   border-radius: 0;
 }
 
-.trainer-badge-dialog progress::-webkit-progress-bar {
-  background: color-mix(in srgb, var(--navy) 10%, transparent);
+:is(.trainer-badge-dialog, .trainer-title-dialog)
+  progress::-webkit-progress-bar {
+  background: var(--sky);
 }
 
-.trainer-badge-dialog progress::-webkit-progress-value {
-  background: var(--trainer-rank-accent);
+:is(.trainer-badge-dialog, .trainer-title-dialog)
+  progress::-webkit-progress-value {
+  background: var(--blue);
 }
 
-.trainer-badge-dialog progress::-moz-progress-bar {
-  background: var(--trainer-rank-accent);
+:is(.trainer-badge-dialog, .trainer-title-dialog) progress::-moz-progress-bar {
+  background: var(--blue);
 }
 
 .trainer-title-dialog__body {
@@ -1022,28 +1024,6 @@
 
 .trainer-title-dialog__progress-label strong {
   font-family: var(--font-data);
-}
-
-.trainer-title-dialog progress {
-  width: 100%;
-  height: 0.55rem;
-  overflow: hidden;
-  appearance: none;
-  background: var(--sky);
-  border: 2px solid var(--navy);
-  border-radius: 0;
-}
-
-.trainer-title-dialog progress::-webkit-progress-bar {
-  background: var(--sky);
-}
-
-.trainer-title-dialog progress::-webkit-progress-value {
-  background: var(--yellow);
-}
-
-.trainer-title-dialog progress::-moz-progress-bar {
-  background: var(--yellow);
 }
 
 .trainer-title-dialog__details .game-button {
