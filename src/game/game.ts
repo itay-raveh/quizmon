@@ -210,7 +210,7 @@ export const buildQuestionSequence = (
 };
 
 export const getAnswerPoints = (
-  question: QuestionData,
+  question: Pick<QuestionData, 'category'>,
   correct: boolean,
   assistsUsed = 0,
 ): number => {

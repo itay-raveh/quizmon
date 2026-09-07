@@ -812,54 +812,38 @@ describe('question building', () => {
 
 describe('scoring', () => {
   it('awards 1,000 points for a normal correct answer', () => {
-    const question = buildSingleQuestion('stat-showdown', 'score');
-    expect(question && getAnswerPoints(question, true)).toBe(1_000);
-    expect(question && getAnswerPoints(question, false)).toBe(0);
+    const question = { category: 'stat' } as const;
+    expect(getAnswerPoints(question, true)).toBe(1_000);
+    expect(getAnswerPoints(question, false)).toBe(0);
   });
 
   it('reduces Champion points as answer assistance is revealed', () => {
-    const [question] = buildQuestionSequence(
-      catalog,
-      ['champion'],
-      defaultModifiers,
-      createSeededRandom('champion-score'),
-    );
+    const question = { category: 'champion' } as const;
 
-    expect(question && getAnswerPoints(question, true, 0)).toBe(1_000);
-    expect(question && getAnswerPoints(question, true, 1)).toBe(750);
-    expect(question && getAnswerPoints(question, true, 2)).toBe(500);
-    expect(question && getAnswerPoints(question, true, 3)).toBe(250);
-    expect(question && getAnswerPoints(question, true, 8)).toBe(250);
+    expect(getAnswerPoints(question, true, 0)).toBe(1_000);
+    expect(getAnswerPoints(question, true, 1)).toBe(750);
+    expect(getAnswerPoints(question, true, 2)).toBe(500);
+    expect(getAnswerPoints(question, true, 3)).toBe(250);
+    expect(getAnswerPoints(question, true, 8)).toBe(250);
   });
 
   it('adds a bounded mastery bonus to earned knowledge points', () => {
     const answers = [
       {
         category: 'identity',
-        cluesUsed: 0,
         correct: true,
-        generation: 'I',
-        pokemonName: 'pikachu',
         points: 1_000,
-        questionType: 'pokedex-scan',
       },
       {
         category: 'stat',
-        cluesUsed: 0,
         correct: false,
-        generation: 'II',
-        pokemonName: 'sudowoodo',
         points: 0,
-        questionType: 'stat-showdown',
       },
       {
         category: 'champion',
         cluesUsed: 2,
         correct: true,
-        generation: 'III',
-        pokemonName: 'rayquaza',
         points: 500,
-        questionType: 'champion',
       },
     ] as const;
 
@@ -884,13 +868,8 @@ describe('scoring', () => {
   it('combines knowledge, speed, and mastery for a perfect round', () => {
     const perfect = Array.from({ length: 10 }, () => ({
       category: 'identity' as const,
-      cluesUsed: 0,
       correct: true,
-      generation: 'I' as const,
-      pokemonName: 'pikachu',
       points: 1_000,
-      questionType: 'pokedex-scan' as const,
-      responseMilliseconds: 0,
       speedBonus: 3_000,
     }));
 
