@@ -45,7 +45,9 @@ describe('result sharing', () => {
 
   it('includes the daily date and challenge URL without answer details', () => {
     window.history.replaceState({}, '', '/play?daily=old#answer');
-    const text = buildShareText({ kind: 'daily', date: '2026-09-01' }, result);
+    const text = buildShareText(
+      buildShareContent({ kind: 'daily', date: '2026-09-01' }, result),
+    );
 
     expect(text).toContain('Quizmon · Sep 1, 2026');
     expect(text).toContain('1,500 points');
@@ -59,10 +61,13 @@ describe('result sharing', () => {
     expect(text).not.toContain('#answer');
   });
 
-  it('keeps the title, score card, and URL as separate share fields', () => {
-    const content = buildShareContent({ kind: 'training' }, result);
+  it.each([
+    { mode: { kind: 'training' } as const, title: 'Quizmon · Training' },
+    { mode: { kind: 'league' } as const, title: 'Quizmon · Quizmon League' },
+  ])('keeps $mode.kind share fields separate', ({ mode, title }) => {
+    const content = buildShareContent(mode, result);
 
-    expect(content.title).toBe('Quizmon · Training');
+    expect(content.title).toBe(title);
     expect(content.text).toContain('1,500 points');
     expect(content.text).not.toContain(content.url);
     expect(content.url).toBe('https://quizmon.raveh.dev/');

@@ -1,4 +1,4 @@
-import { getDailyUrl } from './daily';
+import { getDailyUrl, getModeLabel } from './daily';
 import { formatDailyDate, formatScore } from './format';
 import { site } from '../app/site';
 import type { GameMode, GameResult } from './types';
@@ -20,20 +20,14 @@ export const buildShareContent = (
   return {
     text: [`${formatScore(result.score)} points`, pattern].join('\n'),
     title: `${site.name} · ${
-      mode.kind === 'daily'
-        ? formatDailyDate(mode.date)
-        : mode.kind === 'league'
-          ? 'Quizmon League'
-          : 'Training'
+      mode.kind === 'daily' ? formatDailyDate(mode.date) : getModeLabel(mode)
     }`,
     url: mode.kind === 'daily' ? getDailyUrl(mode.date) : site.url,
   };
 };
 
-export const buildShareText = (mode: GameMode, result: GameResult): string => {
-  const content = buildShareContent(mode, result);
-  return [content.title, content.text, content.url].join('\n');
-};
+export const buildShareText = (content: ShareContent): string =>
+  [content.title, content.text, content.url].join('\n');
 
 export const canShareResult = (): boolean =>
   typeof navigator.share === 'function';
@@ -48,7 +42,7 @@ export const shareResult = async (
 
   try {
     await navigator.share({
-      text: buildShareText(mode, result),
+      text: buildShareText(content),
       title: content.title,
     });
     return 'shared';
@@ -61,4 +55,6 @@ export const shareResult = async (
 };
 
 export const copyResult = (mode: GameMode, result: GameResult): Promise<void> =>
-  navigator.clipboard.writeText(buildShareText(mode, result));
+  navigator.clipboard.writeText(
+    buildShareText(buildShareContent(mode, result)),
+  );
