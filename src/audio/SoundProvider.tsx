@@ -141,17 +141,13 @@ const SoundEngine = ({
     return () => onReady(silentSoundControls);
   }, [controls, onReady]);
 
-  return (
-    <>
-      {prepareScoreCount ? (
-        <ScoreCountSound
-          onReady={setScoreCountControls}
-          useSound={useSound}
-          volume={volume}
-        />
-      ) : null}
-    </>
-  );
+  return prepareScoreCount ? (
+    <ScoreCountSound
+      onReady={setScoreCountControls}
+      useSound={useSound}
+      volume={volume}
+    />
+  ) : null;
 };
 
 export const SoundProvider = ({

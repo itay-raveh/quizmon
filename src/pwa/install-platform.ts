@@ -13,13 +13,16 @@ export const isStandalone = () =>
 export const getInstallGuide = (): InstallGuide | null => {
   const ua = navigator.userAgent;
   if (isIos()) return 'ios';
-  if (/Firefox\//.test(ua)) {
-    if (/Android/.test(ua)) return 'firefox-android';
+  if (ua.includes('Firefox/')) {
+    if (ua.includes('Android')) return 'firefox-android';
     const version = Number(/Firefox\/(\d+)/.exec(ua)?.[1]);
-    if (/Windows/.test(ua) && version >= 143) return 'firefox-windows';
+    if (ua.includes('Windows') && version >= 143) return 'firefox-windows';
     return null;
   }
-  if (/Macintosh/.test(ua) && /Version\/(1[7-9]|[2-9]\d).*Safari\//.test(ua)) {
+  if (
+    ua.includes('Macintosh') &&
+    /Version\/(1[7-9]|[2-9]\d).*Safari\//.test(ua)
+  ) {
     return 'safari-mac';
   }
   return null;
