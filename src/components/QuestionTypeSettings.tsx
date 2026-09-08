@@ -30,22 +30,23 @@ interface QuestionTypeSettingsProps extends Pick<
   submitted: boolean;
 }
 
-const getGroupedQuestionTypes = (group: QuestionTypeGroup) =>
-  questionTypes.filter(
-    (questionType) => questionRegistry[questionType].group === group,
-  );
+const groupedQuestionTypes = questionTypeGroups.map((group) => ({
+  ...group,
+  types: questionTypes.filter(
+    (questionType) => questionRegistry[questionType].group === group.id,
+  ),
+}));
 
 const getInitialExpandedGroup = (
   selectedQuestionTypes: readonly QuestionType[],
 ): QuestionTypeGroup => {
   const selected = new Set(selectedQuestionTypes);
   return (
-    questionTypeGroups.find(({ id }) => {
-      const groupedQuestionTypes = getGroupedQuestionTypes(id);
-      const selectedCount = groupedQuestionTypes.filter((questionType) =>
+    groupedQuestionTypes.find(({ types }) => {
+      const selectedCount = types.filter((questionType) =>
         selected.has(questionType),
       ).length;
-      return selectedCount > 0 && selectedCount < groupedQuestionTypes.length;
+      return selectedCount > 0 && selectedCount < types.length;
     })?.id ?? questionTypeGroups[0].id
   );
 };
@@ -104,9 +105,8 @@ export const QuestionTypeSettings = ({
                 : 'Choose at least one question type.'}
           </p>
         ) : null}
-        {questionTypeGroups.map((group) => {
-          const groupedQuestionTypes = getGroupedQuestionTypes(group.id);
-          const selectedCount = groupedQuestionTypes.filter((questionType) =>
+        {groupedQuestionTypes.map((group) => {
+          const selectedCount = group.types.filter((questionType) =>
             selectedQuestionTypes.has(questionType),
           ).length;
           const expanded = expandedGroup === group.id;
@@ -133,7 +133,7 @@ export const QuestionTypeSettings = ({
                 >
                   <span>{group.label}</span>
                   <span className="question-type-group__count">
-                    {selectedCount} / {groupedQuestionTypes.length}
+                    {selectedCount} / {group.types.length}
                     <span className="visually-hidden"> selected</span>
                   </span>
                   <CaretDownIcon aria-hidden="true" weight="bold" />
@@ -149,7 +149,7 @@ export const QuestionTypeSettings = ({
                   className="selection-grid selection-grid--question-types"
                   role="group"
                 >
-                  {groupedQuestionTypes.map((questionType) => {
+                  {group.types.map((questionType) => {
                     const label = getQuestionTypeLabel(questionType);
                     const checked = selectedQuestionTypes.has(questionType);
                     return (
