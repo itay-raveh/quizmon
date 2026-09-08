@@ -438,7 +438,7 @@
   color: var(--navy);
   background: var(--tier-metal);
   border: 1px solid var(--navy);
-  font: 800 0.65rem / 1 var(--font-interface);
+  font: 850 0.65rem / 1 var(--font-data);
 }
 
 .trainer-card__title > svg {
