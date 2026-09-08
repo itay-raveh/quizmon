@@ -149,4 +149,47 @@ describe('gameSessionReducer', () => {
       gameSessionReducer(initialGameSession, { answer, type: 'advanced' }),
     ).toBe(initialGameSession);
   });
+
+  it.each([0, 1, 2])(
+    'records one answer when advancing after %i answer notifications',
+    (notifications) => {
+      let session = gameSessionReducer(initialGameSession, {
+        mode: { kind: 'training' },
+        modifiers: defaultModifiers,
+        questions: [question, { ...question, id: 'next-question' }],
+        seed: 'record-once',
+        type: 'started',
+      });
+      for (let index = 0; index < notifications; index += 1) {
+        const previous = session;
+        session = gameSessionReducer(session, {
+          answer,
+          type: 'answer-recorded',
+        });
+        if (index > 0) expect(session).toBe(previous);
+      }
+      expect(
+        gameSessionReducer(session, { answer, type: 'advanced' }),
+      ).toMatchObject({ answers: [answer], questionIndex: 1 });
+    },
+  );
+
+  it('keeps the recorded answer and ignores advancement past the last question', () => {
+    const session = gameSessionReducer(initialGameSession, {
+      answers: [answer],
+      mode: { kind: 'training' },
+      modifiers: defaultModifiers,
+      questions: [question],
+      seed: 'last-question',
+      type: 'restored',
+    });
+    for (const type of ['answer-recorded', 'advanced'] as const) {
+      expect(
+        gameSessionReducer(session, {
+          answer: { ...answer, correct: false, points: 0 },
+          type,
+        }),
+      ).toBe(session);
+    }
+  });
 });

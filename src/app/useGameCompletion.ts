@@ -9,7 +9,12 @@ import { calculateScore, getResponseTime, SCORE_VERSION } from '@/game/game';
 import { getTrainerStats, readTrainerStats, saveResult } from '@/game/storage';
 import { getTrainerProgressChanges } from '@/game/trainer';
 import type { AnswerResult, GameResult } from '@/game/types';
-import type { CompleteGame, GameSession, GameSessionAction } from './session';
+import {
+  recordSessionAnswer,
+  type CompleteGame,
+  type GameSession,
+  type GameSessionAction,
+} from './session';
 
 interface GameCompletionOptions {
   contentVersion: number;
@@ -95,16 +100,11 @@ export const useGameCompletion = ({
   const answerQuestion = useCallback(
     (answer: AnswerResult) => {
       if (session.phase !== 'questions') return;
-      const nextAnswers =
-        session.answers.length === session.questionIndex
-          ? [...session.answers, answer]
-          : session.answers;
-
       if (
         session.questionIndex === session.questions.length - 1 ||
         (session.mode.kind === 'league' && !answer.correct)
       ) {
-        complete({ ...session, answers: nextAnswers });
+        complete(recordSessionAnswer(session, answer));
         return;
       }
 

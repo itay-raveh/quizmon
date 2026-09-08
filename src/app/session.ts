@@ -64,6 +64,14 @@ export type GameSessionAction =
 
 export const initialGameSession: GameSession = { phase: 'landing' };
 
+export const recordSessionAnswer = (
+  session: Extract<GameSession, { phase: 'questions' }>,
+  answer: AnswerResult,
+): Extract<GameSession, { phase: 'questions' }> =>
+  session.answers.length === session.questionIndex
+    ? { ...session, answers: [...session.answers, answer] }
+    : session;
+
 export const gameSessionReducer = (
   session: GameSession,
   action: GameSessionAction,
@@ -84,19 +92,14 @@ export const gameSessionReducer = (
         seed: action.seed,
       };
     case 'answer-recorded':
-      return session.phase === 'questions' &&
-        session.answers.length === session.questionIndex
-        ? { ...session, answers: [...session.answers, action.answer] }
+      return session.phase === 'questions'
+        ? recordSessionAnswer(session, action.answer)
         : session;
     case 'advanced':
       if (session.phase !== 'questions') return session;
       return session.questionIndex < session.questions.length - 1
         ? {
-            ...session,
-            answers:
-              session.answers.length === session.questionIndex
-                ? [...session.answers, action.answer]
-                : session.answers,
+            ...recordSessionAnswer(session, action.answer),
             questionIndex: session.questionIndex + 1,
           }
         : session;
