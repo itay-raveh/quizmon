@@ -53,15 +53,6 @@ export const QuestionAnswers = ({
       ? question.visual.stat
       : undefined;
 
-  const optionClassName = (option: string) => {
-    if (!answered) {
-      return selected.has(option) ? 'answer answer--selected' : 'answer';
-    }
-    if (correct.has(option)) return 'answer answer--correct';
-    if (selected.has(option)) return 'answer answer--wrong';
-    return 'answer answer--muted';
-  };
-
   return (
     <div
       className={[
@@ -79,6 +70,15 @@ export const QuestionAnswers = ({
           : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
         const optionSelected = selected.has(option);
         const optionCorrect = correct.has(option);
+        const optionClassName = !answered
+          ? optionSelected
+            ? 'answer answer--selected'
+            : 'answer'
+          : optionCorrect
+            ? 'answer answer--correct'
+            : optionSelected
+              ? 'answer answer--wrong'
+              : 'answer answer--muted';
         const resultMarker =
           answered && multiSelect
             ? optionCorrect && !optionSelected
@@ -143,7 +143,7 @@ export const QuestionAnswers = ({
             }
             aria-keyshortcuts={String(index + 1)}
             aria-pressed={multiSelect ? optionSelected : undefined}
-            className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+            className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             disabled={answered}
             key={option}
             onClick={() => onSelect(option)}

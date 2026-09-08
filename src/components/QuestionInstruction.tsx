@@ -20,19 +20,9 @@ export const QuestionInstruction = ({
   if (kind === 'generation-roundup')
     return 'Select every Pokémon introduced in this generation';
   if (question.visual?.kind === 'type-matchup')
-    return (
-      <>
-        Which type deals ×{formatTypeMultiplier(question.visual.multiplier)}
-        {' damage?'}
-      </>
-    );
+    return `Which type deals ×${formatTypeMultiplier(question.visual.multiplier)} damage?`;
   if (question.visual?.kind === 'counter-pick')
-    return (
-      <>
-        Whose best attack type deals ×
-        {formatTypeMultiplier(question.visual.multiplier)} damage?
-      </>
-    );
+    return `Whose best attack type deals ×${formatTypeMultiplier(question.visual.multiplier)} damage?`;
   if (question.visual?.kind === 'stat-showdown')
     return (
       <>

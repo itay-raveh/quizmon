@@ -6,9 +6,7 @@ interface LeagueProgressProps {
 
 export const LeagueProgress = ({ currentQuestion }: LeagueProgressProps) => {
   const currentStage = getLeagueStage(currentQuestion);
-  const currentIndex = leagueStages.findIndex(
-    ({ id }) => id === currentStage.id,
-  );
+  const currentIndex = leagueStages.indexOf(currentStage);
 
   return (
     <ol
