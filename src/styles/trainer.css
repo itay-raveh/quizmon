@@ -895,16 +895,20 @@
   font-size: var(--text-headline);
 }
 
-.trainer-badge-dialog__body {
+.trainer-badge-dialog__body,
+.trainer-title-dialog__body {
   display: grid;
   min-width: 0;
   min-height: 0;
   padding: 1.1rem;
   overflow-x: hidden;
   overflow-y: auto;
-  grid-template-columns: minmax(8rem, 0.8fr) minmax(0, 1.2fr);
   align-items: center;
   gap: 1.15rem;
+}
+
+.trainer-badge-dialog__body {
+  grid-template-columns: minmax(8rem, 0.8fr) minmax(0, 1.2fr);
 }
 
 .trainer-badge-dialog__body > .trainer-badge-mark {
@@ -918,20 +922,22 @@
   gap: 0.7rem;
 }
 
-.trainer-badge-dialog__state {
+.trainer-badge-dialog__state,
+.trainer-title-dialog__state {
   color: var(--navy);
   font-size: var(--text-control);
 }
 
-.trainer-badge-dialog__details p {
+.trainer-badge-dialog__details p,
+.trainer-title-dialog__details p {
   margin: 0;
   color: var(--muted);
   font-weight: 700;
 }
 
-.trainer-badge-dialog__progress-label {
+.trainer-badge-dialog__progress-label,
+.trainer-title-dialog__progress-label {
   display: flex;
-  margin-top: 0.15rem;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
@@ -940,7 +946,12 @@
   font-weight: 800;
 }
 
-.trainer-badge-dialog__progress-label strong {
+.trainer-badge-dialog__progress-label {
+  margin-top: 0.15rem;
+}
+
+.trainer-badge-dialog__progress-label strong,
+.trainer-title-dialog__progress-label strong {
   font-family: var(--font-data);
 }
 
@@ -969,15 +980,7 @@
 }
 
 .trainer-title-dialog__body {
-  display: grid;
-  min-width: 0;
-  min-height: 0;
-  padding: 1.1rem;
-  overflow-x: hidden;
-  overflow-y: auto;
   grid-template-columns: 7.5rem minmax(0, 1fr);
-  align-items: center;
-  gap: 1.15rem;
 }
 
 .trainer-title-dialog__body > .trainer-title-mark {
@@ -999,31 +1002,12 @@
   gap: 0.65rem;
 }
 
-.trainer-title-dialog__state {
-  color: var(--navy);
-  font-size: var(--text-control);
-}
-
 .trainer-title-dialog__details p {
-  margin: 0;
-  color: var(--muted);
-  font-weight: 700;
   line-height: 1.35;
 }
 
 .trainer-title-dialog__progress-label {
-  display: flex;
   margin-top: 0.1rem;
-  align-items: baseline;
-  justify-content: space-between;
-  color: var(--navy);
-  font-size: var(--text-small);
-  font-weight: 800;
-  gap: 1rem;
-}
-
-.trainer-title-dialog__progress-label strong {
-  font-family: var(--font-data);
 }
 
 .trainer-title-dialog__details .game-button {
@@ -1311,10 +1295,7 @@
     grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
   }
 
-  .trainer-badge-dialog {
-    margin: auto auto 0.5rem;
-  }
-
+  .trainer-badge-dialog,
   .trainer-title-dialog {
     margin: auto auto 0.5rem;
   }
