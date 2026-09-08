@@ -55,20 +55,29 @@ export const orderTargets = (
     );
   }
   const history = context.history;
-  return shuffle(candidates, context.random).sort((a, b) => {
-    if (history && context.questionType) {
-      const age =
-        getSubjectRecency(history, context.questionType, a.name) -
-        getSubjectRecency(history, context.questionType, b.name);
-      if (age) return age;
-    }
-    const used =
-      Number(context.used.has(a.name)) - Number(context.used.has(b.name));
-    if (used) return used;
-    return history
-      ? getPokemonRecency(history, a.name) - getPokemonRecency(history, b.name)
-      : 0;
-  });
+  const shuffled = shuffle(candidates, context.random);
+  if (!history) {
+    return shuffled.sort(
+      (a, b) =>
+        Number(context.used.has(a.name)) - Number(context.used.has(b.name)),
+    );
+  }
+  return shuffled
+    .map((candidate) => ({
+      candidate,
+      subjectRecency: context.questionType
+        ? getSubjectRecency(history, context.questionType, candidate.name)
+        : 0,
+      used: Number(context.used.has(candidate.name)),
+      pokemonRecency: getPokemonRecency(history, candidate.name),
+    }))
+    .sort(
+      (a, b) =>
+        a.subjectRecency - b.subjectRecency ||
+        a.used - b.used ||
+        a.pokemonRecency - b.pokemonRecency,
+    )
+    .map(({ candidate }) => candidate);
 };
 
 export const pickFreshTarget = (
