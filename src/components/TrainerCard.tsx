@@ -1,12 +1,11 @@
 import type { Ref } from 'react';
 import { site } from '@/app/site';
-import type { TrainerStats } from '@/game/storage';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import {
   getCardFinish,
-  getTrainerRank,
   trainerSpecialtyLabels,
   trainerViewLabels,
+  type TrainerRank,
 } from '@/game/trainer';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
@@ -19,7 +18,7 @@ interface TrainerCardProps {
   partnerDexNumber: number | null;
   partnerSprite: string | null;
   profile: TrainerProfile;
-  stats: TrainerStats;
+  rank: TrainerRank;
   record: {
     dayCombo: number;
     pokedexFound: number;
@@ -32,10 +31,9 @@ export const TrainerCard = ({
   partnerDexNumber,
   partnerSprite,
   profile,
-  stats,
+  rank,
   record,
 }: TrainerCardProps) => {
-  const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank);
   const partnerName = profile.partnerPokemon ?? 'Choose partner';
 

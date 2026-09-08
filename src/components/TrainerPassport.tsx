@@ -121,7 +121,8 @@ export const TrainerPassport = ({
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
   const visibleProfile = { ...profile, specialty: savedSpecialty };
-  const finish = getCardFinish(getTrainerRank(stats)).toLowerCase();
+  const rank = getTrainerRank(stats);
+  const finish = getCardFinish(rank).toLowerCase();
   const canShareArtifact = supportsTrainerArtifactSharing();
   const badges = getTrainerBadges(stats);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
@@ -334,7 +335,7 @@ export const TrainerPassport = ({
             partnerSprite={savedPartner?.sprite ?? null}
             profile={visibleProfile}
             record={record}
-            stats={stats}
+            rank={rank}
           />
         )}
       </div>

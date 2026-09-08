@@ -2,12 +2,10 @@ import { render, screen } from '@testing-library/react';
 import { TrainerBadgeCase } from '@/components/TrainerBadgeCase';
 import { TrainerCard } from '@/components/TrainerCard';
 import { TrainerTitles } from '@/components/TrainerTitles';
-import { questionTypes } from '@/game/questions/registry';
 import type { TrainerStats } from '@/game/storage';
 import { renderTrainerArtifactImage } from '@/game/trainer-card-image';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import { getTrainerBadges } from '@/game/trainer';
-import { generations } from '@/game/types';
 
 const snapdomToBlob = vi.hoisted(() => vi.fn());
 
@@ -54,7 +52,7 @@ describe('Trainer profile artifacts', () => {
         partnerSprite="/sprites/pokemon/1.png"
         profile={profile}
         record={record}
-        stats={stats}
+        rank="Ace"
       />,
     );
 
@@ -92,31 +90,13 @@ describe('Trainer profile artifacts', () => {
   });
 
   it('adds a polished finish and trophy to a Champion card', () => {
-    const championStats: TrainerStats = {
-      ...stats,
-      bestDailyStreak: 7,
-      correctCategories: { type: 50 },
-      championAnswersWithoutClues: 5,
-      correctGenerations: Object.fromEntries(
-        generations.map((generation) => [generation, 1]),
-      ),
-      correctPokemon: Array.from(
-        { length: 151 },
-        (_, index) => `pokemon-${index}`,
-      ),
-      correctQuestionTypes: Object.fromEntries(
-        questionTypes.slice(0, 10).map((questionType) => [questionType, 1]),
-      ),
-      leagueCompleted: true,
-      quickAttackCompleted: true,
-    };
     const { container } = render(
       <TrainerCard
         partnerDexNumber={1}
         partnerSprite="/sprites/pokemon/1.png"
         profile={profile}
         record={record}
-        stats={championStats}
+        rank="Champion"
       />,
     );
 
