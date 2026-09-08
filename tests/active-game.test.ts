@@ -5,26 +5,27 @@ import {
   clearActiveGame,
   readActiveGame,
   writeActiveGame,
+  type ActiveGameSnapshot,
 } from '@/game/active-game';
 import { defaultModifiers } from '@/game/modifiers';
 
-const snapshot = {
+const snapshot: Omit<ActiveGameSnapshot, 'version'> = {
   answers: [
     {
-      category: 'identity' as const,
+      category: 'identity',
       cluesUsed: 0,
       correct: true,
-      generation: 'I' as const,
+      generation: 'I',
       pokemonName: 'pikachu',
       points: 1_000,
-      questionType: 'pokedex-scan' as const,
+      questionType: 'pokedex-scan',
       responseMilliseconds: 2_500,
       speedBonus: 2_120,
     },
   ],
   contentVersion: 8,
   elapsedMilliseconds: 2_500,
-  mode: { kind: 'training' as const },
+  mode: { kind: 'training' },
   modifiers: defaultModifiers,
   questionCount: 10,
   questions: buildQuestions(

@@ -50,22 +50,6 @@ beforeEach(() => {
   sessionStorage.clear();
 });
 
-it('covers all 40 eligible Evolution Shift targets across games before recycling the oldest', () => {
-  let history = emptyQuestionHistory();
-  const seen: string[] = [];
-  for (let game = 0; game < 4; game++) {
-    const questions = generate('evolution-shift', history, `shift:${game}`, 10);
-    expect(questions).toHaveLength(10);
-    for (const question of questions) {
-      expect(seen).not.toContain(question.pokemonName);
-      seen.push(question.pokemonName);
-      history = rememberQuestion(history, question);
-    }
-  }
-  expect(seen).toHaveLength(40);
-  expect(generate('evolution-shift', history)[0]!.pokemonName).toBe(seen[0]);
-});
-
 it('retains history when generation selections change', () => {
   const initial = generate(
     'evolution-shift',
@@ -328,17 +312,19 @@ it('retains the most recent round receipts rather than the rounds with the most 
   expect(isQuestionHistory(history)).toBe(true);
 });
 
-it('maintains the full small-pool repeat distance over twenty games', () => {
+it('cycles all 40 Evolution Shift targets in oldest-first order over twenty games', () => {
   let history = emptyQuestionHistory();
   const last = new Map<string, number>();
   let position = 0;
   for (let game = 0; game < 20; game++) {
-    for (const question of generate(
+    const questions = generate(
       'evolution-shift',
       history,
       `long-run:${game}`,
       10,
-    )) {
+    );
+    expect(questions).toHaveLength(10);
+    for (const question of questions) {
       const previous = last.get(question.pokemonName);
       if (previous !== undefined) expect(position - previous).toBe(40);
       last.set(question.pokemonName, position++);
