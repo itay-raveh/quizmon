@@ -2,8 +2,10 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { expect, test as base, type Page } from '@playwright/test';
 import catalogData from '../src/game/data/pokemon.json' with { type: 'json' };
+import type { PokemonCatalog } from '../src/game/types';
 
 export { catalogData, expect };
+export const catalog = catalogData as unknown as PokemonCatalog;
 const imageBody = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
   'base64',

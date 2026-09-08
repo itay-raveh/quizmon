@@ -4,8 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { buildLeagueQuestions } from '../src/game/game';
 import { getLeagueModifiers } from '../src/game/league';
 import { getQuestionTitle } from '../src/game/question-labels';
-import type { PokemonCatalog } from '../src/game/types';
-import { catalogData, expect, test } from './fixtures';
+import { catalog, expect, test } from './fixtures';
 
 const leagueSeed = 'league-e2e-lineup';
 
@@ -210,15 +209,11 @@ test('a perfect clear opens the induction before its detailed results', async ({
     soundVolume: 0,
     timerDisplay: 'seconds',
   });
-  const questions = buildLeagueQuestions(
-    catalogData as unknown as PokemonCatalog,
-    leagueSeed,
-    modifiers,
-  );
+  const questions = buildLeagueQuestions(catalog, leagueSeed, modifiers);
   const snapshot = {
     version: 2,
     questions,
-    contentVersion: catalogData.contentVersion,
+    contentVersion: catalog.contentVersion,
     elapsedMilliseconds: 15000,
     mode: { kind: 'league' },
     modifiers,

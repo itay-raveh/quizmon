@@ -4,8 +4,8 @@ import { defaultModifiers } from '../src/game/modifiers';
 import { emptyPlayerData, type PlayerSave } from '../src/game/player-data';
 import { createSeededRandom } from '../src/game/random';
 import { getQuestionPokemon } from '../src/game/pokedex';
-import { generations, type PokemonCatalog } from '../src/game/types';
-import { catalogData, expect, formatName, test } from './fixtures';
+import { generations, type Modifiers } from '../src/game/types';
+import { catalog, expect, formatName, test } from './fixtures';
 
 for (const width of [320, 1280]) {
   test(`browses found and missing Pokédex entries at ${width}px`, async ({
@@ -81,15 +81,15 @@ for (const width of [320, 1280]) {
 test('registers a correct answer immediately even when the round is abandoned', async ({
   page,
 }) => {
-  const modifiers = {
+  const modifiers: Modifiers = {
     ...defaultModifiers,
     generations: [...generations],
-    questionTypes: ['type-twins' as const],
-    trainingMode: 'custom' as const,
+    questionTypes: ['type-twins'],
+    trainingMode: 'custom',
   };
   const seed = 'pokedex-answer';
   const questions = buildQuestions(
-    catalogData as unknown as PokemonCatalog,
+    catalog,
     modifiers,
     createSeededRandom(seed),
   );
@@ -127,7 +127,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
       settings: modifiers,
       questions,
       seed,
-      contentVersion: catalogData.contentVersion,
+      contentVersion: catalog.contentVersion,
     },
   );
   await page.goto('/');

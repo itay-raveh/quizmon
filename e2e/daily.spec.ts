@@ -1,7 +1,6 @@
 import type { PlayerSave } from '../src/game/player-data';
-import { catalogData, expect, seedBrowserRandom, test } from './fixtures';
+import { catalog, expect, seedBrowserRandom, test } from './fixtures';
 import { buildDailyQuestions } from '../src/game/game';
-import type { PokemonCatalog } from '../src/game/types';
 
 test('shows a saved daily score instead of another play button', async ({
   page,
@@ -249,10 +248,7 @@ for (const tag of [[], ['@cross-browser']]) {
     { tag },
     async ({ page }) => {
       const date = '2026-09-08';
-      const expected = buildDailyQuestions(
-        catalogData as unknown as PokemonCatalog,
-        date,
-      );
+      const expected = buildDailyQuestions(catalog, date);
       await seedBrowserRandom(page, 'unrelated-browser-randomness');
       await page.goto(`/?daily=${date}&play=1`);
       await expect(page.locator('.question')).toBeVisible();
