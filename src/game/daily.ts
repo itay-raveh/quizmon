@@ -1,10 +1,8 @@
-import { formatDailyDate } from './format';
 import { isDailyDate } from './validation';
 import { site } from '../app/site';
 import { defaultModifiers, getExperienceSettings } from './modifiers';
 import {
   generations,
-  type GameMode,
   type Modifiers,
   type ExperienceSettings,
   type QuestionData,
@@ -51,13 +49,6 @@ export const getDailyQuestionTypes = (
 
   return [...standard, 'champion'];
 };
-
-export const getModeLabel = (mode: GameMode): string =>
-  mode.kind === 'daily'
-    ? `Daily Challenge · ${formatDailyDate(mode.date)}`
-    : mode.kind === 'league'
-      ? 'Quizmon League'
-      : 'Training';
 
 export const getDailyUrl = (date: string): string => {
   const url = new URL(site.url);

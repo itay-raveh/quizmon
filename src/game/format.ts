@@ -1,4 +1,4 @@
-import type { Generation } from './types';
+import type { GameMode, Generation } from './types';
 
 const scoreFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,
@@ -51,3 +51,10 @@ export const formatDurationMilliseconds = (
   `${formatDuration(Math.floor(elapsedMilliseconds / 1000))}.${String(
     Math.floor(elapsedMilliseconds % 1000),
   ).padStart(3, '0')}`;
+
+export const getModeLabel = (mode: GameMode): string =>
+  mode.kind === 'daily'
+    ? `Daily Challenge · ${formatDailyDate(mode.date)}`
+    : mode.kind === 'league'
+      ? 'Quizmon League'
+      : 'Training';

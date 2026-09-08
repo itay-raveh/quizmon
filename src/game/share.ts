@@ -1,5 +1,5 @@
-import { getDailyUrl, getModeLabel } from './daily';
-import { formatDailyDate, formatScore } from './format';
+import { getDailyUrl } from './daily';
+import { formatDailyDate, formatScore, getModeLabel } from './format';
 import { site } from '../app/site';
 import type { GameMode, GameResult } from './types';
 
