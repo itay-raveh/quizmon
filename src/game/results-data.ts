@@ -116,6 +116,9 @@ const normalizeCounts = <Key extends string>(
       ) as Partial<Record<Key, number>>)
     : {};
 
+const normalizeProgressCount = (value: unknown): number =>
+  isFiniteNonnegative(value) ? Math.max(0, Math.trunc(value)) : 0;
+
 const normalizeProgress = (
   progress: Partial<TrainerProgress> | undefined,
 ): TrainerProgress => {
@@ -129,11 +132,9 @@ const normalizeProgress = (
   }
 
   return {
-    championAnswersWithoutClues: isFiniteNonnegative(
+    championAnswersWithoutClues: normalizeProgressCount(
       progress.championAnswersWithoutClues,
-    )
-      ? Math.max(0, Math.trunc(progress.championAnswersWithoutClues))
-      : 0,
+    ),
     correctCategories: normalizeCounts(
       progress.correctCategories,
       questionCategories,
@@ -153,9 +154,7 @@ const normalizeProgress = (
       progress.correctQuestionTypes,
       questionTypes,
     ),
-    masteryRounds: isFiniteNonnegative(progress.masteryRounds)
-      ? Math.max(0, Math.trunc(progress.masteryRounds))
-      : 0,
+    masteryRounds: normalizeProgressCount(progress.masteryRounds),
     quickAttackCompleted: progress.quickAttackCompleted,
     version: TRAINER_PROGRESS_VERSION,
   };
