@@ -34,6 +34,7 @@ import {
   isDailyDate,
   isChoice,
   isFiniteNonnegative,
+  isSafeNonnegativeInteger,
   isNonemptyChoiceArray,
   isRecord,
   isUtcTimestamp,
@@ -76,16 +77,13 @@ export const emptyPlayerData = (): PlayerData => ({
   settings: null,
 });
 
-const isCount = (value: unknown): value is number =>
-  isFiniteNonnegative(value) && Number.isSafeInteger(value);
-
 const isName = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0 && value.length <= 200;
 
 const isCounts = (value: unknown, keys: readonly string[]): boolean =>
   isRecord(value) &&
   Object.entries(value).every(
-    ([key, count]) => keys.includes(key) && isCount(count),
+    ([key, count]) => keys.includes(key) && isSafeNonnegativeInteger(count),
   );
 
 const savedQuestionCategories = [
@@ -102,14 +100,15 @@ const isResult = (value: unknown): value is GameResult => {
   if (
     !isRecord(value) ||
     !Array.isArray(value.answers) ||
-    !isCount(value.contentVersion) ||
-    (value.scoreVersion !== undefined && !isCount(value.scoreVersion)) ||
-    !isCount(value.correctCount) ||
-    !isCount(value.questionCount) ||
+    !isSafeNonnegativeInteger(value.contentVersion) ||
+    (value.scoreVersion !== undefined &&
+      !isSafeNonnegativeInteger(value.scoreVersion)) ||
+    !isSafeNonnegativeInteger(value.correctCount) ||
+    !isSafeNonnegativeInteger(value.questionCount) ||
     value.questionCount < 1 ||
     value.correctCount > value.questionCount ||
     value.answers.length > value.questionCount ||
-    !isCount(value.score) ||
+    !isSafeNonnegativeInteger(value.score) ||
     !isFiniteNonnegative(value.elapsedSeconds) ||
     (value.elapsedMilliseconds !== undefined &&
       !isFiniteNonnegative(value.elapsedMilliseconds))
@@ -119,17 +118,19 @@ const isResult = (value: unknown): value is GameResult => {
     (answer: unknown) =>
       isRecord(answer) &&
       isChoice(answer.category, savedQuestionCategories) &&
-      (answer.cluesUsed === undefined || isCount(answer.cluesUsed)) &&
+      (answer.cluesUsed === undefined ||
+        isSafeNonnegativeInteger(answer.cluesUsed)) &&
       typeof answer.correct === 'boolean' &&
       (answer.generation === undefined ||
         isChoice(answer.generation, generations)) &&
       (answer.pokemonName === undefined || isName(answer.pokemonName)) &&
-      isCount(answer.points) &&
+      isSafeNonnegativeInteger(answer.points) &&
       (answer.questionType === undefined ||
         isChoice(answer.questionType, savedQuestionTypes)) &&
       (answer.responseMilliseconds === undefined ||
         isFiniteNonnegative(answer.responseMilliseconds)) &&
-      (answer.speedBonus === undefined || isCount(answer.speedBonus)),
+      (answer.speedBonus === undefined ||
+        isSafeNonnegativeInteger(answer.speedBonus)),
   );
 };
 
@@ -173,16 +174,16 @@ const isResults = (value: unknown): value is SavedResults => {
       (date: unknown) => isDailyDate(date) && Object.hasOwn(daily, date),
     ) &&
     progress.version === TRAINER_PROGRESS_VERSION &&
-    isCount(progress.championAnswersWithoutClues) &&
+    isSafeNonnegativeInteger(progress.championAnswersWithoutClues) &&
     isCounts(progress.correctCategories, questionCategories) &&
     isCounts(progress.correctGenerations, generations) &&
     isCounts(progress.correctQuestionTypes, questionTypes) &&
     Array.isArray(progress.correctPokemon) &&
     progress.correctPokemon.every(isName) &&
-    isCount(progress.masteryRounds) &&
+    isSafeNonnegativeInteger(progress.masteryRounds) &&
     typeof progress.quickAttackCompleted === 'boolean' &&
     (progress.quickAttackRounds === undefined ||
-      isCount(progress.quickAttackRounds))
+      isSafeNonnegativeInteger(progress.quickAttackRounds))
   );
 };
 

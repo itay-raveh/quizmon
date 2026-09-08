@@ -290,7 +290,19 @@ it('rejects corrupt history and stops stale exposure events from moving history 
     3,
   );
   expect(rememberShownQuestion(history, question, 'round', 2)).toBe(history);
-  expect(isQuestionHistory({ ...history, sequence: -1 })).toBe(false);
+  for (const sequence of [
+    -1,
+    0.5,
+    NaN,
+    Infinity,
+    Number.MAX_SAFE_INTEGER + 1,
+    '1',
+  ]) {
+    expect(isQuestionHistory({ ...history, sequence })).toBe(false);
+  }
+  expect(
+    isQuestionHistory({ ...history, sequence: Number.MAX_SAFE_INTEGER }),
+  ).toBe(true);
   expect(
     isQuestionHistory({ ...history, questions: { bad: history.sequence + 1 } }),
   ).toBe(false);

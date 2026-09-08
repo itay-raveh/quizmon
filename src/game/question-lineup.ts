@@ -5,7 +5,7 @@ import {
   statNames,
   type QuestionData,
 } from './types';
-import { isChoice, isRecord } from './validation';
+import { isChoice, isRecord, isSafeNonnegativeInteger } from './validation';
 
 export interface QuestionLineup {
   seed: string;
@@ -17,15 +17,13 @@ const text = (value: unknown): value is string =>
   typeof value === 'string' && value.length <= 10000;
 const strings = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(text);
-const count = (value: unknown): value is number =>
-  Number.isSafeInteger(value) && (value as number) >= 0;
 const optional = (value: unknown, check: (value: unknown) => boolean) =>
   value === undefined || check(value);
 const map = (value: unknown, check: (value: unknown) => boolean) =>
   isRecord(value) && Object.values(value).every(check);
 const sprite = (value: unknown): boolean =>
   isRecord(value) &&
-  count(value.dexNumber) &&
+  isSafeNonnegativeInteger(value.dexNumber) &&
   text(value.src) &&
   strings(value.types) &&
   optional(value.silhouette, (v) => typeof v === 'boolean');
@@ -43,7 +41,7 @@ const mediaChecks = {
   sprite: (value) =>
     text(value.src) &&
     typeof value.silhouette === 'boolean' &&
-    optional(value.revealAt, count),
+    optional(value.revealAt, isSafeNonnegativeInteger),
   'pixel-peek': (value) =>
     text(value.src) &&
     typeof value.focusX === 'number' &&
@@ -121,7 +119,7 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
         text(prompt.before) &&
         text(prompt.after) &&
         text(prompt.name) &&
-        count(prompt.dexNumber)) &&
+        isSafeNonnegativeInteger(prompt.dexNumber)) &&
     variant(value.media, mediaChecks) &&
     optional(value.visual, (v) => variant(v, visualChecks)) &&
     optional(value.concealOptionLabels, (v) => typeof v === 'boolean') &&
@@ -131,8 +129,8 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
         Array.isArray(v) &&
         v.every((clue) => text(clue) || generationClue(clue)),
     ) &&
-    optional(value.optionDexNumbers, (v) => map(v, count)) &&
-    optional(value.optionStats, (v) => map(v, count)) &&
+    optional(value.optionDexNumbers, (v) => map(v, isSafeNonnegativeInteger)) &&
+    optional(value.optionStats, (v) => map(v, isSafeNonnegativeInteger)) &&
     optional(value.optionVisuals, (v) => map(v, sprite)) &&
     optional(value.optionGenerations, (v) =>
       map(v, (g) => isChoice(g, generations)),
@@ -144,7 +142,12 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
       value.searchOptions,
       (v) =>
         Array.isArray(v) &&
-        v.every((o) => isRecord(o) && text(o.name) && count(o.dexNumber)),
+        v.every(
+          (o) =>
+            isRecord(o) &&
+            text(o.name) &&
+            isSafeNonnegativeInteger(o.dexNumber),
+        ),
     )
   );
 };
@@ -154,6 +157,6 @@ export const isQuestionLineup = (value: unknown): value is QuestionLineup =>
   text(value.seed) &&
   value.seed.length > 0 &&
   value.seed.length <= 200 &&
-  count(value.contentVersion) &&
+  isSafeNonnegativeInteger(value.contentVersion) &&
   Array.isArray(value.questions) &&
   value.questions.every(isQuestionData);

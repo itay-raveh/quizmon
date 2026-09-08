@@ -10,6 +10,9 @@ export const isFiniteNonnegative = (value: unknown): value is number =>
 export const isNonnegativeInteger = (value: unknown): value is number =>
   isFiniteNonnegative(value) && Number.isInteger(value);
 
+export const isSafeNonnegativeInteger = (value: unknown): value is number =>
+  isFiniteNonnegative(value) && Number.isSafeInteger(value);
+
 export const isChoice = <T extends string>(
   value: unknown,
   choices: readonly T[],

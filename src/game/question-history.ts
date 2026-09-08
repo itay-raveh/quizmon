@@ -1,4 +1,4 @@
-import { isRecord } from './validation';
+import { isRecord, isSafeNonnegativeInteger } from './validation';
 import type { QuestionRepetition } from './types';
 
 interface HistoryQuestion {
@@ -131,12 +131,9 @@ export const rememberShownQuestion = (
 };
 
 export const isQuestionHistory = (value: unknown): value is QuestionHistory => {
-  if (
-    !isRecord(value) ||
-    !Number.isSafeInteger(value.sequence) ||
-    (value.sequence as number) < 0
-  )
+  if (!isRecord(value) || !isSafeNonnegativeInteger(value.sequence))
     return false;
+  const { sequence } = value;
   if (
     !isRecord(value.rounds) ||
     !Object.entries(value.rounds).every(
@@ -144,11 +141,10 @@ export const isQuestionHistory = (value: unknown): value is QuestionHistory => {
         key.length > 0 &&
         key.length <= 200 &&
         isRecord(round) &&
-        Number.isSafeInteger(round.index) &&
-        (round.index as number) >= 0 &&
-        Number.isSafeInteger(round.sequence) &&
-        (round.sequence as number) > 0 &&
-        (round.sequence as number) <= (value.sequence as number),
+        isSafeNonnegativeInteger(round.index) &&
+        isSafeNonnegativeInteger(round.sequence) &&
+        round.sequence > 0 &&
+        round.sequence <= sequence,
     )
   )
     return false;
@@ -160,9 +156,8 @@ export const isQuestionHistory = (value: unknown): value is QuestionHistory => {
         ([key, seen]) =>
           key.length > 0 &&
           key.length <= 1000 &&
-          Number.isSafeInteger(seen) &&
-          (seen as number) >= 0 &&
-          (seen as number) <= (value.sequence as number),
+          isSafeNonnegativeInteger(seen) &&
+          seen <= sequence,
       )
     );
   });
