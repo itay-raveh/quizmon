@@ -46,7 +46,7 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
     ...makeQuestion(
       'identity',
       target,
-      target.name,
+      correctOptions,
       options,
       textPrompt(
         `Select every Pokémon introduced in ${formatGeneration(generation)}.`,
@@ -54,7 +54,6 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
     ),
     title: 'Generation roundup',
     visual: { kind: 'generation-roundup', generation },
-    answer: { correctOptions, interaction: 'multi-select' },
     optionGenerations: Object.fromEntries(
       [...matching, ...others].map(({ name, pokemon }) => [
         name,

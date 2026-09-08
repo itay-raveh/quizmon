@@ -124,14 +124,14 @@ export const pokemonSimilarity = (
 export const makeQuestion = (
   category: QuestionCategory,
   target: Candidate,
-  correctOption: string,
+  correct: string | string[],
   options: string[],
   prompt: QuestionPrompt,
   media: QuestionDraft['media'] = { kind: 'none' },
 ): QuestionDraft => ({
   answer: {
-    correctOptions: [correctOption],
-    interaction: 'single-choice',
+    correctOptions: typeof correct === 'string' ? [correct] : correct,
+    interaction: typeof correct === 'string' ? 'single-choice' : 'multi-select',
   },
   category,
   id: `${category}:${target.name}`,

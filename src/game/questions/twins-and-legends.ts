@@ -113,11 +113,10 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
     ...makeQuestion(
       'identity',
       target,
-      target.name,
+      correctOptions,
       options,
       textPrompt('Select every Legendary or Mythical Pokémon.'),
     ),
-    answer: { correctOptions, interaction: 'multi-select' },
     optionClassifications: Object.fromEntries(
       [...legends, ...ordinary].map(({ name, pokemon }) => [
         name,

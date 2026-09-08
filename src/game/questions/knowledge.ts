@@ -152,11 +152,10 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
     ...makeQuestion(
       'type',
       target,
-      correctOptions[0] ?? target.name,
+      correctOptions,
       options,
       textPrompt(`Select every ${formatPokemonName(type)}-type Pokémon.`),
     ),
-    answer: { correctOptions, interaction: 'multi-select' },
     optionVisuals: getOptionVisuals(context, options),
     title: 'Type roundup',
     visual: { kind: 'type-roundup', type },
