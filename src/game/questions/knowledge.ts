@@ -72,17 +72,17 @@ export const buildTypeQuestion: QuestionBuilder = (context) => {
   };
 };
 
-const pickTypePuzzlePool = (context: QuestionContext, matchingCount: number) =>
-  pick(
+const pickTypePuzzlePool = (
+  context: QuestionContext,
+  matchingCount: number,
+) => {
+  const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
+  return pick(
     shuffle(Object.keys(context.catalog.typeRelations), context.random)
       .map((type) => ({
         type,
-        matching: context.pool.filter(
-          ({ pokemon }) => pokemon.sprite && pokemon.types.includes(type),
-        ),
-        others: context.pool.filter(
-          ({ pokemon }) => pokemon.sprite && !pokemon.types.includes(type),
-        ),
+        matching: pool.filter(({ pokemon }) => pokemon.types.includes(type)),
+        others: pool.filter(({ pokemon }) => !pokemon.types.includes(type)),
       }))
       .filter(
         ({ matching, others }) =>
@@ -91,6 +91,7 @@ const pickTypePuzzlePool = (context: QuestionContext, matchingCount: number) =>
       ),
     context.random,
   );
+};
 
 export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   const pool = pickTypePuzzlePool(context, 3);
