@@ -1,8 +1,7 @@
-import { shuffle } from '../random';
+import { pick, shuffle } from '../random';
 import {
   getOptionVisuals,
   makeQuestion,
-  pick,
   pickFreshTarget,
   pokemonOptions,
   pokemonPrompt,

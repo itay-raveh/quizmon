@@ -1,10 +1,9 @@
 import { formatGeneration, formatPokemonName } from '../format';
-import { shuffle } from '../random';
+import { pick, shuffle } from '../random';
 import { generations } from '../types';
 import {
   getOptionVisuals,
   makeQuestion,
-  pick,
   pokemonOptions,
   textPrompt,
   type QuestionBuilder,

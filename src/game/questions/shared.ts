@@ -1,4 +1,4 @@
-import { createSeededRandom, shuffle } from '../random';
+import { createSeededRandom, pick, shuffle } from '../random';
 import {
   statNames,
   type PokemonCatalog,
@@ -26,11 +26,6 @@ export type QuestionDraft = Omit<QuestionData, 'generation' | 'questionType'>;
 export type QuestionBuilder = (
   context: QuestionContext,
 ) => QuestionDraft | undefined;
-
-export const pick = <T>(
-  values: readonly T[],
-  random: () => number,
-): T | undefined => values[Math.floor(random() * values.length)];
 
 export const pickFreshTarget = (
   context: QuestionContext,

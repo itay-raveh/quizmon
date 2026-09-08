@@ -1,10 +1,9 @@
 import { formatPokemonName } from '../format';
-import { shuffle } from '../random';
+import { pick, shuffle } from '../random';
 import { statNames, type StatName } from '../types';
 import {
   getOptionVisuals,
   makeQuestion,
-  pick,
   pickFreshTarget,
   pickTarget,
   pokemonOptions,

@@ -1,3 +1,8 @@
+export const pick = <T>(
+  values: readonly T[],
+  random: () => number,
+): T | undefined => values[Math.floor(random() * values.length)];
+
 export const shuffle = <T>(
   values: readonly T[],
   random: () => number = Math.random,

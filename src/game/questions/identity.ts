@@ -1,8 +1,8 @@
+import { pick } from '../random';
 import { getVersionSpritePath } from '../sprite-source';
 import {
   getOptionVisuals,
   makeQuestion,
-  pick,
   pickTarget,
   pokemonOptions,
   pokemonPrompt,

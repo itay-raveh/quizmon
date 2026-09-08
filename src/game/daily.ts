@@ -10,7 +10,7 @@ import {
   type QuestionData,
 } from './types';
 import { coreQuestionTypes } from './questions/definitions';
-import { createSeededRandom } from './random';
+import { createSeededRandom, pick } from './random';
 
 export const DAILY_CHALLENGE_VERSION = 11;
 export const DAILY_QUESTION_COUNT = 5;
@@ -44,10 +44,10 @@ export const getDailyQuestionTypes = (
   const random = createSeededRandom(
     `quizmon-daily-question-types-v${DAILY_CHALLENGE_VERSION}:${date}`,
   );
-  const standard = Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, () => {
-    const index = Math.floor(random() * coreQuestionTypes.length);
-    return coreQuestionTypes[index] ?? 'pokedex-scan';
-  });
+  const standard = Array.from(
+    { length: DAILY_STANDARD_QUESTION_COUNT },
+    () => pick(coreQuestionTypes, random) ?? 'pokedex-scan',
+  );
 
   return [...standard, 'champion'];
 };

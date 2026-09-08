@@ -1,10 +1,9 @@
-import { shuffle } from '../random';
+import { pick, shuffle } from '../random';
 import { formatTypeMultiplier } from '../format';
 import type { PokemonCatalog } from '../types';
 import {
   getOptionVisuals,
   makeQuestion,
-  pick,
   pickFreshTarget,
   pokemonOptions,
   pokemonPrompt,
