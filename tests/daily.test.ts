@@ -1,8 +1,7 @@
 import { isDailyDate } from '@/game/validation';
 import { catalog } from './fixtures/catalog';
-import { getQuestionTitle } from '@/game/game';
+import { buildDailyQuestions, getQuestionTitle } from '@/game/game';
 import {
-  buildDailyQuestions,
   getDailyModifiers,
   getDailyQuestionTypes,
   getLocalDate,

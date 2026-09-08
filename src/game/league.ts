@@ -1,4 +1,3 @@
-import { buildQuestionSequence } from './game';
 import { defaultModifiers, getExperienceSettings } from './modifiers';
 import { createSeededRandom, shuffle } from './random';
 import {
@@ -6,12 +5,11 @@ import {
   type GameResult,
   type Modifiers,
   type ExperienceSettings,
-  type PokemonCatalog,
   type QuestionData,
   type QuestionType,
 } from './types';
 
-const LEAGUE_CHALLENGE_VERSION = 1;
+export const LEAGUE_CHALLENGE_VERSION = 1;
 
 export const LEAGUE_QUESTION_COUNT = 15;
 const LEAGUE_STAGE_SIZE = 3;
@@ -92,30 +90,6 @@ export const getLeagueQuestionTypes = (
   ),
   'champion',
 ];
-
-export const buildLeagueQuestions = (
-  catalog: PokemonCatalog,
-  seed: string,
-  experience: ExperienceSettings,
-): QuestionData[] => {
-  const modifiers = getLeagueModifiers(experience);
-  const questions = buildQuestionSequence(
-    catalog,
-    getLeagueQuestionTypes(seed),
-    modifiers,
-    createSeededRandom(`quizmon-league-v${LEAGUE_CHALLENGE_VERSION}:${seed}`),
-  );
-
-  if (
-    questions.length !== LEAGUE_QUESTION_COUNT ||
-    new Set(questions.map(({ questionType }) => questionType)).size !==
-      LEAGUE_QUESTION_COUNT
-  ) {
-    throw new Error('Quizmon League must contain 15 unique question formats');
-  }
-
-  return questions;
-};
 
 export const getLeagueStage = (questionNumber: number): LeagueStage =>
   leagueStages[

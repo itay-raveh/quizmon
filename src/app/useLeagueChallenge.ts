@@ -1,9 +1,6 @@
+import { buildLeagueQuestions } from '@/game/game';
 import { useCallback } from 'react';
-import {
-  buildLeagueQuestions,
-  getLeagueModifiers,
-  isLeagueVictory,
-} from '@/game/league';
+import { getLeagueModifiers, isLeagueVictory } from '@/game/league';
 import { getLeagueChallengeSeed } from '@/game/storage';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 import type { GameSession, StartGame } from './session';

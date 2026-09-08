@@ -1,6 +1,6 @@
+import { buildDailyQuestions } from '@/game/game';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  buildDailyQuestions,
   getDailyModifiers,
   getLocalDate,
   parseDailyDate,

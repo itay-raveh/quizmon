@@ -1,6 +1,23 @@
-import { filterPokemon, TRAINING_QUESTION_COUNT } from './modifiers';
+import {
+  DAILY_CHALLENGE_VERSION,
+  DAILY_QUESTION_COUNT,
+  getDailyModifiers,
+  getDailyQuestionTypes,
+} from './daily';
+import {
+  LEAGUE_CHALLENGE_VERSION,
+  LEAGUE_QUESTION_COUNT,
+  getLeagueModifiers,
+  getLeagueQuestionTypes,
+} from './league';
+import {
+  defaultModifiers,
+  filterPokemon,
+  TRAINING_QUESTION_COUNT,
+} from './modifiers';
 import { questionLabels } from './question-labels';
 import {
+  type ExperienceSettings,
   type SavedAnswerResult,
   type Modifiers,
   type PokemonCatalog,
@@ -9,7 +26,7 @@ import {
 } from './types';
 import { buildQuestionType } from './questions/registry';
 import type { QuestionContext } from './questions/shared';
-import { shuffle } from './random';
+import { createSeededRandom, shuffle } from './random';
 
 const categoryLabels: Record<QuestionCategory, string> = {
   ability: questionLabels['ability-check'],
@@ -202,4 +219,46 @@ export const getResponseTime = (
     elapsedMilliseconds,
     elapsedSeconds: Math.floor(elapsedMilliseconds / 1_000),
   };
+};
+
+export const buildDailyQuestions = (
+  catalog: PokemonCatalog,
+  date: string,
+): QuestionData[] => {
+  const questions = buildQuestionSequence(
+    catalog,
+    getDailyQuestionTypes(date),
+    getDailyModifiers(defaultModifiers),
+    createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
+  );
+
+  if (questions.length !== DAILY_QUESTION_COUNT) {
+    throw new Error('Daily Challenge must contain exactly five questions');
+  }
+
+  return questions;
+};
+
+export const buildLeagueQuestions = (
+  catalog: PokemonCatalog,
+  seed: string,
+  experience: ExperienceSettings,
+): QuestionData[] => {
+  const modifiers = getLeagueModifiers(experience);
+  const questions = buildQuestionSequence(
+    catalog,
+    getLeagueQuestionTypes(seed),
+    modifiers,
+    createSeededRandom(`quizmon-league-v${LEAGUE_CHALLENGE_VERSION}:${seed}`),
+  );
+
+  if (
+    questions.length !== LEAGUE_QUESTION_COUNT ||
+    new Set(questions.map(({ questionType }) => questionType)).size !==
+      LEAGUE_QUESTION_COUNT
+  ) {
+    throw new Error('Quizmon League must contain 15 unique question formats');
+  }
+
+  return questions;
 };

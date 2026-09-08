@@ -1,6 +1,7 @@
 import type { PlayerSave } from '../src/game/player-data';
 import AxeBuilder from '@axe-core/playwright';
-import { buildLeagueQuestions, getLeagueModifiers } from '../src/game/league';
+import { buildLeagueQuestions } from '../src/game/game';
+import { getLeagueModifiers } from '../src/game/league';
 import { getQuestionTitle } from '../src/game/game';
 import type { PokemonCatalog } from '../src/game/types';
 import { catalogData, expect, test } from './fixtures';

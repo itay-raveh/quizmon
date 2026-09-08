@@ -6,9 +6,11 @@ import {
   writeActiveGame,
   type ActiveGameSnapshot,
 } from '@/game/active-game';
-import { buildDailyQuestions } from '@/game/daily';
-import { buildQuestions } from '@/game/game';
-import { buildLeagueQuestions } from '@/game/league';
+import {
+  buildQuestions,
+  buildDailyQuestions,
+  buildLeagueQuestions,
+} from '@/game/game';
 import { createSeededRandom } from '@/game/random';
 import { readDailyResult } from '@/game/storage';
 import type { PokemonCatalog, QuestionData } from '@/game/types';

@@ -2,7 +2,7 @@ import { catalog } from './fixtures/catalog';
 import { createBackup, parseBackup, restoreBackup } from '@/game/backup';
 import { defaultModifiers } from '@/game/modifiers';
 import { createLeagueVictoryRecord } from '@/game/hall-of-fame';
-import { buildLeagueQuestions } from '@/game/league';
+import { buildLeagueQuestions } from '@/game/game';
 import { emptyPlayerData, parsePlayerSave } from '@/game/player-data';
 import { PLAYER_STORAGE_KEY, readPlayerSave } from '@/game/player-storage';
 import { readTrainerStats, saveResult } from '@/game/storage';

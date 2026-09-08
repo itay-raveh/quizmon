@@ -1,6 +1,6 @@
+import { buildLeagueQuestions } from '@/game/game';
 import { catalog } from './fixtures/catalog';
 import {
-  buildLeagueQuestions,
   getLeagueModifiers,
   getLeagueQuestionTypes,
   getLeagueStage,
