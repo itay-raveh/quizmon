@@ -1,6 +1,14 @@
 import { readFile } from 'node:fs/promises';
+import type { Page } from '@playwright/test';
 import { expect, test, catalogData } from './fixtures';
 import { emptyPlayerData } from '../src/game/player-data';
+
+const downloadTrainerImage = async (page: Page) => {
+  const downloadReady = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download PNG', exact: true }).click();
+  const download = await downloadReady;
+  return { download, png: await readFile(await download.path()) };
+};
 
 test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await page.addInitScript(() => {
@@ -62,10 +70,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
     card.locator('.trainer-card__title .trainer-title-mark__tier'),
   ).toHaveCount(0);
 
-  const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Download PNG' }).click();
-  const downloadPath = await (await downloadPromise).path();
-  const png = await readFile(downloadPath);
+  const { png } = await downloadTrainerImage(page);
   expect(png.subarray(1, 4).toString()).toBe('PNG');
 
   await page.addInitScript(() => {
@@ -88,22 +93,21 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   });
   await page.reload();
 
+  const sharedArtifact = () =>
+    page.evaluate(
+      () =>
+        (
+          window as typeof window & {
+            sharedTrainerArtifact?: { hasUrl: boolean; text?: string };
+          }
+        ).sharedTrainerArtifact,
+    );
+
   await page.getByRole('button', { name: 'Share card' }).click();
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          (
-            window as typeof window & {
-              sharedTrainerArtifact?: { hasUrl: boolean; text?: string };
-            }
-          ).sharedTrainerArtifact,
-      ),
-    )
-    .toEqual({
-      hasUrl: false,
-      text: 'My Quizmon Trainer Card\nhttps://quizmon.raveh.dev/',
-    });
+  await expect.poll(sharedArtifact).toEqual({
+    hasUrl: false,
+    text: 'My Quizmon Trainer Card\nhttps://quizmon.raveh.dev/',
+  });
 
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(page).toHaveURL(/\?trainer=badges$/);
@@ -113,21 +117,10 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(badgeCase).toBeVisible();
   await expect(badgeCase.getByText('Play at')).toHaveCount(0);
   await page.getByRole('button', { name: 'Share case' }).click();
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          (
-            window as typeof window & {
-              sharedTrainerArtifact?: { hasUrl: boolean; text?: string };
-            }
-          ).sharedTrainerArtifact,
-      ),
-    )
-    .toEqual({
-      hasUrl: false,
-      text: 'My Quizmon League Badge Case\nhttps://quizmon.raveh.dev/',
-    });
+  await expect.poll(sharedArtifact).toEqual({
+    hasUrl: false,
+    text: 'My Quizmon League Badge Case\nhttps://quizmon.raveh.dev/',
+  });
 
   await expect(badgeCase.getByText(/^0 \/ \d+$/)).toHaveCount(0);
   await badgeCase.getByRole('button', { name: /Many Paths\. Locked/ }).click();
@@ -169,21 +162,10 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   ).toHaveCount(0);
   await page.getByRole('button', { name: 'Close title details' }).click();
   await page.getByRole('button', { name: 'Share titles' }).click();
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          (
-            window as typeof window & {
-              sharedTrainerArtifact?: { hasUrl: boolean; text?: string };
-            }
-          ).sharedTrainerArtifact,
-      ),
-    )
-    .toEqual({
-      hasUrl: false,
-      text: 'My Quizmon Trainer Titles\nhttps://quizmon.raveh.dev/',
-    });
+  await expect.poll(sharedArtifact).toEqual({
+    hasUrl: false,
+    text: 'My Quizmon Trainer Titles\nhttps://quizmon.raveh.dev/',
+  });
 
   await equippedTitle.click();
   await page.getByRole('button', { name: 'Unequip title' }).click();
@@ -282,11 +264,7 @@ for (const width of [320, 390, 1280]) {
     expect(overflowing).toBe(false);
     const cardBounds = await card.boundingBox();
     const exportDimensions = async () => {
-      const downloadReady = page.waitForEvent('download');
-      await page
-        .getByRole('button', { name: 'Download PNG', exact: true })
-        .click();
-      const png = await readFile(await (await downloadReady).path());
+      const { png } = await downloadTrainerImage(page);
       return { width: png.readUInt32BE(16), height: png.readUInt32BE(20) };
     };
     const cardExport = await exportDimensions();
@@ -342,20 +320,14 @@ test('plays and exports the polished Champion finish with reduced motion support
   const initialPosition = await reflectionPosition();
   await expect.poll(reflectionPosition).not.toBe(initialPosition);
 
-  const downloadImage = async () => {
-    const downloadPromise = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Download PNG' }).click();
-    const download = await downloadPromise;
-    return { download, png: await readFile(await download.path()) };
-  };
-  const { download, png } = await downloadImage();
+  const { download, png } = await downloadTrainerImage(page);
   await download.saveAs(testInfo.outputPath('champion-card.png'));
   await expect(effects).toHaveClass(/is-motion-active/);
 
   await polish.evaluate((element) => {
     element.style.visibility = 'hidden';
   });
-  const { png: withoutReflection } = await downloadImage();
+  const { png: withoutReflection } = await downloadTrainerImage(page);
   await polish.evaluate((element) => {
     element.style.removeProperty('visibility');
   });
