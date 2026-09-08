@@ -59,7 +59,7 @@ const createResults = (
 const renderResults = (result: GameResult) => render(createResults(result));
 
 describe('results summary', () => {
-  it('moves focus to the result heading', () => {
+  it('focuses the result heading and summarizes ten questions with an answer trail', () => {
     renderResults(makeResult(10, 5));
 
     expect(
@@ -68,10 +68,6 @@ describe('results summary', () => {
     expect(
       screen.getByRole('heading', { name: 'Training complete' }),
     ).toHaveFocus();
-  });
-
-  it('uses the answer trail as the only accuracy summary for ten questions or fewer', () => {
-    renderResults(makeResult(10, 5));
 
     expect(screen.getByText('00:01:59')).toBeVisible();
     expect(screen.queryByText(/seconds$/)).not.toBeInTheDocument();
@@ -193,8 +189,7 @@ describe('results summary', () => {
   it('names a newly earned League Badge', () => {
     const result = makeResult(10, 10);
     const onOpenTrainerCard = vi.fn();
-    const rendered = renderResults(result);
-    rendered.rerender(
+    render(
       createResults(result, {
         onOpenTrainerCard,
         progressChanges: [
@@ -212,17 +207,11 @@ describe('results summary', () => {
       }),
     );
 
-    expect(
-      screen.getByRole('button', {
-        name: /Trainer progress.*League Badge earned.*Perfect Form/,
-      }),
-    ).toBeVisible();
-
-    screen
-      .getByRole('button', {
-        name: /Trainer progress.*League Badge earned.*Perfect Form/,
-      })
-      .click();
+    const progress = screen.getByRole('button', {
+      name: /Trainer progress.*League Badge earned.*Perfect Form/,
+    });
+    expect(progress).toBeVisible();
+    progress.click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });
 

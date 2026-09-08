@@ -85,16 +85,11 @@ describe('question transitions', () => {
     vi.unstubAllGlobals();
   });
 
-  it('moves focus to each new question heading', () => {
-    renderQuestion();
-
+  it('focuses the question heading and animates the first question only', () => {
+    const first = renderQuestion();
     expect(
       screen.getByRole('heading', { name: 'Stat showdown' }),
     ).toHaveFocus();
-  });
-
-  it('animates the first question only', () => {
-    const first = renderQuestion();
     expect(first.container.firstElementChild).toHaveClass('question--enter');
     first.unmount();
 
