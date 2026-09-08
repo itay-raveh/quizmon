@@ -243,23 +243,19 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
   const stat = pick(statNames, context.random) as StatName;
   const direction = context.random() < 0.5 ? 'highest' : 'lowest';
   const candidates = shuffle(context.pool, context.random);
-  const target = candidates.find(({ pokemon }) => {
-    const eligibleDistractors = candidates.filter(({ pokemon: other }) =>
-      direction === 'highest'
-        ? other.stats[stat] < pokemon.stats[stat]
-        : other.stats[stat] > pokemon.stats[stat],
-    );
-    return eligibleDistractors.length >= 3;
-  });
+  const isDistractor = (target: Candidate, other: Candidate) =>
+    direction === 'highest'
+      ? other.pokemon.stats[stat] < target.pokemon.stats[stat]
+      : other.pokemon.stats[stat] > target.pokemon.stats[stat];
+  const target = candidates.find(
+    (candidate) =>
+      candidates.filter((other) => isDistractor(candidate, other)).length >= 3,
+  );
   if (!target) return undefined;
   context.used.add(target.name);
   const distractors = candidates
     .filter(
-      ({ name, pokemon }) =>
-        name !== target.name &&
-        (direction === 'highest'
-          ? pokemon.stats[stat] < target.pokemon.stats[stat]
-          : pokemon.stats[stat] > target.pokemon.stats[stat]),
+      (other) => other.name !== target.name && isDistractor(target, other),
     )
     .map(({ name }) => name);
   const options = randomOptionSet(target.name, distractors, context.random);
