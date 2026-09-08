@@ -39,31 +39,26 @@ export const getZonedDateParts = (
 export const dateFromParts = ({ day, month, year }: ZonedDateParts): string =>
   `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
+const datePartsAsUtc = (parts: ZonedDateParts): number =>
+  Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second,
+  );
+
 const zonedTimeToTimestamp = (
   target: ZonedDateParts,
   timeZone: string,
 ): number => {
-  const targetAsUtc = Date.UTC(
-    target.year,
-    target.month - 1,
-    target.day,
-    target.hour,
-    target.minute,
-    target.second,
-  );
+  const targetAsUtc = datePartsAsUtc(target);
   let timestamp = targetAsUtc;
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const actual = getZonedDateParts(timestamp, timeZone);
-    const actualAsUtc = Date.UTC(
-      actual.year,
-      actual.month - 1,
-      actual.day,
-      actual.hour,
-      actual.minute,
-      actual.second,
-    );
-    const difference = targetAsUtc - actualAsUtc;
+    const difference = targetAsUtc - datePartsAsUtc(actual);
     if (difference === 0) break;
     timestamp += difference;
   }
