@@ -45,12 +45,11 @@ export const getLeagueLineup = (
     saved.contentVersion === catalog.contentVersion
   )
     return saved.questions;
-  const legacy = saved?.seed === seed && saved.contentVersion === 0;
   const questions = buildLeagueQuestions(
     catalog,
     seed,
     experience,
-    legacy ? undefined : data.questionHistory,
+    data.questionHistory,
   );
   updatePlayerData({
     leagueLineup: { seed, contentVersion: catalog.contentVersion, questions },

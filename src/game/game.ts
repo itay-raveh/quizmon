@@ -147,17 +147,14 @@ export const buildQuestionSequence = (
 export const buildDailyQuestions = (
   catalog: PokemonCatalog,
   date: string,
-  legacy = false,
 ): QuestionData[] => {
   const questions = buildQuestionSequence(
     catalog,
-    getDailyQuestionTypes(date, legacy),
+    getDailyQuestionTypes(date),
     getDailyModifiers(defaultModifiers),
-    createSeededRandom(
-      `quizmon-daily-v${legacy ? 11 : DAILY_CHALLENGE_VERSION}:${date}`,
-    ),
-    legacy ? undefined : emptyQuestionHistory(),
-    legacy ? undefined : getDailyRotation(date),
+    createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
+    emptyQuestionHistory(),
+    getDailyRotation(date),
   );
 
   if (questions.length !== DAILY_QUESTION_COUNT) {

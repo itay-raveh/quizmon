@@ -7,12 +7,6 @@ import {
   writeActiveGame,
   type ActiveGameSnapshot,
 } from '@/game/active-game';
-import {
-  buildQuestions,
-  buildDailyQuestions,
-  buildLeagueQuestions,
-} from '@/game/game';
-import { createSeededRandom } from '@/game/random';
 import { readDailyResult } from '@/game/storage';
 import type { PokemonCatalog, QuestionData } from '@/game/types';
 import type { CompleteGame, GameSession, GameSessionAction } from './session';
@@ -66,17 +60,7 @@ const resolveRestoration = (
     return { kind: 'discard', shouldClear: true };
   }
 
-  const questions =
-    snapshot.questions ??
-    (snapshot.mode.kind === 'daily'
-      ? buildDailyQuestions(catalog, snapshot.mode.date, snapshot.version === 1)
-      : snapshot.mode.kind === 'league'
-        ? buildLeagueQuestions(catalog, snapshot.seed, snapshot.modifiers)
-        : buildQuestions(
-            catalog,
-            snapshot.modifiers,
-            createSeededRandom(snapshot.seed),
-          ));
+  const questions = snapshot.questions;
   const answersMatchQuestions =
     snapshot.answers.length <= questions.length &&
     snapshot.answers.every(

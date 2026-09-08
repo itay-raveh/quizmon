@@ -336,14 +336,12 @@ export const pokemonOptions = (
     shortlisted = semanticBand.length >= 3 ? semanticBand : scored.slice(0, 3);
   }
   const shortlist = shortlisted.map(({ candidate }) => candidate);
-  const optionRandom = createSeededRandom(
-    [
-      target.name,
-      ...Array.from({ length: Math.min(3, scored.length) }, () =>
-        context.random().toString(36),
-      ),
-    ].join(':'),
-  );
+  const optionRandom = createSeededRandom([
+    target.name,
+    ...Array.from({ length: Math.min(3, scored.length) }, () =>
+      context.random(),
+    ),
+  ]);
   const selected = shuffle(shortlist, optionRandom)
     .sort((a, b) =>
       context.history

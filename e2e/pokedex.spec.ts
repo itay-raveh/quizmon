@@ -89,14 +89,15 @@ test('registers a correct answer immediately even when the round is abandoned', 
     trainingMode: 'custom' as const,
   };
   const seed = 'pokedex-answer';
-  const [question] = buildQuestions(
+  const questions = buildQuestions(
     catalogData as unknown as PokemonCatalog,
     modifiers,
     createSeededRandom(seed),
   );
+  const [question] = questions;
   expect(question).toBeDefined();
   await page.addInitScript(
-    ({ data, settings, seed, contentVersion }) => {
+    ({ data, settings, seed, contentVersion, questions }) => {
       if (localStorage.getItem('quizmon.player')) return;
       localStorage.setItem(
         'quizmon.player',
@@ -109,7 +110,8 @@ test('registers a correct answer immediately even when the round is abandoned', 
       sessionStorage.setItem(
         'quizmon.active-game.v1',
         JSON.stringify({
-          version: 1,
+          version: 2,
+          questions,
           playerRestoreId: null,
           answers: [],
           contentVersion,
@@ -124,6 +126,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
     {
       data: emptyPlayerData(),
       settings: modifiers,
+      questions,
       seed,
       contentVersion: catalogData.contentVersion,
     },

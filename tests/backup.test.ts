@@ -1,3 +1,6 @@
+import { buildQuestions } from '@/game/game';
+import { createSeededRandom } from '@/game/random';
+import { catalog } from './fixtures/catalog';
 import { emptyQuestionHistory } from '@/game/question-history';
 import v1Fixture from './fixtures/player-backup.v1.json';
 import {
@@ -89,6 +92,11 @@ const active = () =>
     mode: { kind: 'training' },
     modifiers: defaultModifiers,
     questionCount: 10,
+    questions: buildQuestions(
+      catalog,
+      defaultModifiers,
+      createSeededRandom('saved-round'),
+    ),
     seed: 'unfinished',
   });
 
@@ -409,6 +417,11 @@ it('does not save a stale round again while the tab unloads after restore', () =
     mode: { kind: 'training' },
     modifiers: defaultModifiers,
     questionCount: 10,
+    questions: buildQuestions(
+      catalog,
+      defaultModifiers,
+      createSeededRandom('saved-round'),
+    ),
     seed: 'stale',
     playerRestoreId: null,
   });

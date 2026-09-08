@@ -1,8 +1,4 @@
-import {
-  buildDailyQuestions,
-  buildLeagueQuestions,
-  buildQuestions,
-} from '@/game/game';
+import { buildDailyQuestions, buildQuestions } from '@/game/game';
 import { defaultModifiers } from '@/game/modifiers';
 import { createSeededRandom } from '@/game/random';
 import {
@@ -19,11 +15,7 @@ import {
   getLeagueLineup,
   registerShownQuestion,
 } from '@/game/question-history-storage';
-import {
-  readPlayerSave,
-  updatePlayerData,
-  PLAYER_STORAGE_KEY,
-} from '@/game/player-storage';
+import { readPlayerSave, updatePlayerData } from '@/game/player-storage';
 import { createBackup, parseBackup, restoreBackup } from '@/game/backup';
 import { readActiveGame, writeActiveGame } from '@/game/active-game';
 import {
@@ -268,25 +260,6 @@ it('preserves failed League retries after other games and gives a new run fresh 
   );
   expect(getLeagueLineup(catalog, 'new-seed', defaultModifiers)).not.toEqual(
     original,
-  );
-});
-
-it('migrates an existing League seed without changing its legacy questions', () => {
-  const save = readPlayerSave();
-  save.data.results.league.seed = 'old-league';
-  localStorage.setItem(
-    PLAYER_STORAGE_KEY,
-    JSON.stringify({ ...save, version: 3 }),
-  );
-  const migrated = readPlayerSave();
-  expect(migrated.version).toBe(4);
-  expect(migrated.data.questionHistory).toEqual(emptyQuestionHistory());
-  const otherGame = generate('evolution-shift');
-  updatePlayerData({
-    questionHistory: otherGame.reduce(rememberQuestion, emptyQuestionHistory()),
-  });
-  expect(getLeagueLineup(catalog, 'old-league', defaultModifiers)).toEqual(
-    buildLeagueQuestions(catalog, 'old-league', defaultModifiers),
   );
 });
 

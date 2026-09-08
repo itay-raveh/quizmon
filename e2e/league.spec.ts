@@ -184,7 +184,8 @@ test('a perfect clear opens the induction before its detailed results', async ({
     modifiers,
   );
   const snapshot = {
-    version: 1,
+    version: 2,
+    questions,
     contentVersion: catalogData.contentVersion,
     elapsedMilliseconds: 15000,
     mode: { kind: 'league' },

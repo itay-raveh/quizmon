@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { expect, test as base, type Page } from '@playwright/test';
 import catalogData from '../src/game/data/pokemon.json' with { type: 'json' };
 
@@ -13,23 +15,17 @@ export const formatName = (name: string) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
+const seedrandomScript = readFileSync(
+  createRequire(import.meta.url).resolve('seedrandom/seedrandom.min.js'),
+  'utf8',
+);
+
 export const seedBrowserRandom = (page: Page, seed: string) =>
-  page.addInitScript((value) => {
-    Date.now = () => 1_700_000_000_000;
-    let hash = 2166136261;
-    for (const character of value) {
-      hash ^= character.charCodeAt(0);
-      hash = Math.imul(hash, 16777619);
-    }
-    let state = hash >>> 0;
-    Math.random = () => {
-      state += 0x6d2b79f5;
-      let next = state;
-      next = Math.imul(next ^ (next >>> 15), next | 1);
-      next ^= next + Math.imul(next ^ (next >>> 7), next | 61);
-      return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
-    };
-  }, seed);
+  page.addInitScript({
+    content: `${seedrandomScript}
+      Date.now = () => 1_700_000_000_000;
+      Math.random = Math.seedrandom(${JSON.stringify(seed)}, { global: false });`,
+  });
 
 export const completeTrainingRound = async (page: Page) => {
   const progress = page.getByRole('progressbar', { name: 'Quiz progress' });

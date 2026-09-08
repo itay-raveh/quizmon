@@ -8,9 +8,9 @@ import {
   type QuestionData,
 } from './types';
 import { coreQuestionTypes } from './questions/definitions';
-import { createSeededRandom, pick, shuffle } from './random';
+import { createSeededRandom, shuffle } from './random';
 
-export const DAILY_CHALLENGE_VERSION = 12;
+export const DAILY_CHALLENGE_VERSION = 13;
 export const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
 export const getLocalDate = (date = new Date()): string =>
@@ -44,32 +44,18 @@ const dailySlot = (date: string, index: number): number =>
 
 export const getDailyQuestionTypes = (
   date: string,
-  legacy = false,
-): QuestionData['questionType'][] => {
-  if (legacy) {
-    const random = createSeededRandom(
-      `quizmon-daily-question-types-v11:${date}`,
+): QuestionData['questionType'][] => [
+  ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, (_, index) => {
+    const slot = dailySlot(date, index);
+    const cycle = Math.floor(slot / coreQuestionTypes.length);
+    const deck = shuffle(
+      coreQuestionTypes,
+      createSeededRandom(`daily-types-v${DAILY_CHALLENGE_VERSION}:${cycle}`),
     );
-    return [
-      ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, () =>
-        pick(coreQuestionTypes, random)!,
-      ),
-      'champion',
-    ];
-  }
-  return [
-    ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, (_, index) => {
-      const slot = dailySlot(date, index);
-      const cycle = Math.floor(slot / coreQuestionTypes.length);
-      const deck = shuffle(
-        coreQuestionTypes,
-        createSeededRandom(`daily-types-v${DAILY_CHALLENGE_VERSION}:${cycle}`),
-      );
-      return deck[((slot % deck.length) + deck.length) % deck.length]!;
-    }),
-    'champion',
-  ];
-};
+    return deck[((slot % deck.length) + deck.length) % deck.length]!;
+  }),
+  'champion',
+];
 
 export const getDailyRotation = (date: string): number[] => [
   ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, (_, index) =>

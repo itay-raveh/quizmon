@@ -22,7 +22,7 @@ import {
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 const ACTIVE_GAME_VERSION = 2;
 export interface ActiveGameSnapshot {
-  questions?: QuestionData[];
+  questions: QuestionData[];
   roundId?: string;
   answers: AnswerResult[];
   contentVersion: number;
@@ -95,7 +95,7 @@ const parseModifiers = (value: unknown): Modifiers | null => {
 const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
   if (
     !isRecord(value) ||
-    (value.version !== 1 && value.version !== ACTIVE_GAME_VERSION) ||
+    value.version !== ACTIVE_GAME_VERSION ||
     !isNonnegativeInteger(value.contentVersion) ||
     !isFiniteNonnegative(value.elapsedMilliseconds) ||
     !isNonnegativeInteger(value.questionCount) ||
@@ -105,11 +105,9 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
     value.seed.length > 200 ||
     !Array.isArray(value.answers) ||
     value.answers.length > value.questionCount ||
-    (value.version === 2 && value.questions === undefined) ||
-    (value.questions !== undefined &&
-      (!Array.isArray(value.questions) ||
-        value.questions.length !== value.questionCount ||
-        !value.questions.every(isQuestionData))) ||
+    !Array.isArray(value.questions) ||
+    value.questions.length !== value.questionCount ||
+    !value.questions.every(isQuestionData) ||
     (value.roundId !== undefined &&
       (typeof value.roundId !== 'string' ||
         value.roundId.length > 200 ||
@@ -125,7 +123,7 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
     return null;
 
   return {
-    ...(value.questions === undefined ? {} : { questions: value.questions }),
+    questions: value.questions,
     ...(value.roundId === undefined ? {} : { roundId: value.roundId }),
     answers,
     contentVersion: value.contentVersion,
@@ -169,7 +167,7 @@ export const writeActiveGame = (
     writeStoredJson('sessionStorage', ACTIVE_GAME_KEY, {
       ...snapshot,
       playerRestoreId,
-      version: snapshot.questions ? ACTIVE_GAME_VERSION : 1,
+      version: ACTIVE_GAME_VERSION,
     });
   } catch {
     return;

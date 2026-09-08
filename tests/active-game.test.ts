@@ -1,3 +1,6 @@
+import { buildQuestions } from '@/game/game';
+import { createSeededRandom } from '@/game/random';
+import { catalog } from './fixtures/catalog';
 import {
   clearActiveGame,
   readActiveGame,
@@ -24,6 +27,11 @@ const snapshot = {
   mode: { kind: 'training' as const },
   modifiers: defaultModifiers,
   questionCount: 10,
+  questions: buildQuestions(
+    catalog,
+    defaultModifiers,
+    createSeededRandom('saved-round'),
+  ),
   seed: 'saved-round',
 };
 
@@ -36,7 +44,7 @@ describe('active game storage', () => {
     expect(readActiveGame()).toEqual({
       ...snapshot,
       playerRestoreId: null,
-      version: 1,
+      version: 2,
     });
   });
 
@@ -60,7 +68,7 @@ describe('active game storage', () => {
       ]) {
         window.sessionStorage.setItem(
           'quizmon.active-game.v1',
-          JSON.stringify({ ...snapshot, version: 1, ...patch }),
+          JSON.stringify({ ...snapshot, version: 2, ...patch }),
         );
         expect(readActiveGame()).toBeNull();
       }
@@ -75,7 +83,7 @@ describe('active game storage', () => {
           'quizmon.active-game.v1',
           JSON.stringify({
             ...snapshot,
-            version: 1,
+            version: 2,
             modifiers: { ...defaultModifiers, [field]: value },
           }),
         );

@@ -1,5 +1,7 @@
 import type { PlayerSave } from '../src/game/player-data';
-import { expect, test } from './fixtures';
+import { catalogData, expect, seedBrowserRandom, test } from './fixtures';
+import { buildDailyQuestions } from '../src/game/game';
+import type { PokemonCatalog } from '../src/game/types';
 
 test('shows a saved daily score instead of another play button', async ({
   page,
@@ -240,3 +242,30 @@ test('starts saved Training settings directly after completing Daily', async ({
     },
   }).toEqual(beforeTraining);
 });
+
+for (const tag of [[], ['@cross-browser']]) {
+  test(
+    `generates the same complete Daily in the browser and Node ${tag.join(' ')}`,
+    { tag },
+    async ({ page }) => {
+      const date = '2026-09-08';
+      const expected = buildDailyQuestions(
+        catalogData as unknown as PokemonCatalog,
+        date,
+      );
+      await seedBrowserRandom(page, 'unrelated-browser-randomness');
+      await page.goto(`/?daily=${date}&play=1`);
+      await expect(page.locator('.question')).toBeVisible();
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const snapshot = sessionStorage.getItem('quizmon.active-game.v1');
+            return snapshot
+              ? (JSON.parse(snapshot) as { questions?: unknown }).questions
+              : null;
+          }),
+        )
+        .toEqual(expected);
+    },
+  );
+}

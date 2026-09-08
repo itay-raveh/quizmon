@@ -21,52 +21,13 @@ import {
 } from '@/notifications/daily-reminder-storage';
 
 describe('Daily Challenge', () => {
-  it('preserves the legacy lineup for unfinished version 1 rounds', () => {
-    const first = buildDailyQuestions(catalog, '2026-09-01', true);
-    const second = buildDailyQuestions(catalog, '2026-09-01', true);
-    const schedule = getDailyQuestionTypes('2026-09-01', true);
+  it('reproduces the complete Daily lineup for a given date', () => {
+    const first = buildDailyQuestions(catalog, '2026-09-01');
+    const second = buildDailyQuestions(catalog, '2026-09-01');
+    const schedule = getDailyQuestionTypes('2026-09-01');
 
     expect(first).toEqual(second);
     expect(first).toHaveLength(5);
-    expect(
-      first.map((question) => ({
-        correctOptions: question.answer.correctOptions,
-        id: question.id,
-        pokemonName: question.pokemonName,
-        title: getQuestionTitle(question),
-      })),
-    ).toEqual([
-      {
-        correctOptions: ['moltres', 'charmeleon', 'infernape'],
-        id: 'type:moltres:0',
-        pokemonName: 'moltres',
-        title: 'Type roundup',
-      },
-      {
-        correctOptions: ['seadra'],
-        id: 'type:seadra:1',
-        pokemonName: 'seadra',
-        title: 'Odd one out',
-      },
-      {
-        correctOptions: ['cosmog', 'necrozma', 'thundurus-incarnate'],
-        id: 'identity:cosmog:2',
-        pokemonName: 'cosmog',
-        title: 'Legend hunt',
-      },
-      {
-        correctOptions: ['happiny'],
-        id: 'identity:happiny:3',
-        pokemonName: 'happiny',
-        title: 'Shiny spotter',
-      },
-      {
-        correctOptions: ['toxtricity-amped'],
-        id: 'champion:toxtricity-amped:4',
-        pokemonName: 'toxtricity-amped',
-        title: 'Champion question',
-      },
-    ]);
     expect(first.map(getQuestionTitle)).toEqual(
       schedule.map((questionType) =>
         questionType === 'champion'
