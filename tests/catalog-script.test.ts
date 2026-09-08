@@ -281,4 +281,18 @@ describe('catalog generation', () => {
       'has no default Pokémon variety',
     );
   });
+
+  it('rejects Pokémon whose species metadata is missing', async () => {
+    const client = makeClient();
+    const resolvePokemon = client.resolvePokemon.bind(client);
+    client.resolvePokemon = async (resources) =>
+      (await resolvePokemon(resources)).map((pokemon) => ({
+        ...pokemon,
+        species: { ...pokemon.species, name: 'missing-species' },
+      }));
+
+    await expect(buildPokemonCatalog(client)).rejects.toThrow(
+      'species-1 is missing species metadata',
+    );
+  });
 });

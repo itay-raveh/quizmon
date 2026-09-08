@@ -189,19 +189,23 @@ const sortRecord = <T>(record: Record<string, T>): Record<string, T> =>
 export const buildPokemonCatalog = async (
   client: CatalogClient,
 ): Promise<PokemonCatalog> => {
-  const speciesByName = new Map<string, PokemonSpecies>();
-  const generationBySpecies = new Map<string, Generation>();
+  const speciesByName = new Map<
+    string,
+    { species: PokemonSpecies; generation: Generation }
+  >();
 
   for (const [index, generationName] of generations.entries()) {
     const generation = await client.getGenerationById(index + 1);
     const species = await client.resolveSpecies(generation.pokemon_species);
     for (const entry of species) {
-      speciesByName.set(entry.name, entry);
-      generationBySpecies.set(entry.name, generationName);
+      speciesByName.set(entry.name, {
+        species: entry,
+        generation: generationName,
+      });
     }
   }
 
-  const defaultLinks = [...speciesByName.values()].map((species) => {
+  const defaultLinks = [...speciesByName.values()].map(({ species }) => {
     const variety = species.varieties.find(({ is_default }) => is_default);
     if (!variety) {
       throw new Error(`${species.name} has no default Pokémon variety`);
@@ -212,7 +216,7 @@ export const buildPokemonCatalog = async (
 
   const chainLinks = [
     ...new Map(
-      [...speciesByName.values()].map((species) => [
+      [...speciesByName.values()].map(({ species }) => [
         species.evolution_chain.url,
         species.evolution_chain,
       ]),
@@ -251,11 +255,11 @@ export const buildPokemonCatalog = async (
 
   const entries: Record<string, PokemonKnowledge> = {};
   for (const entry of pokemon) {
-    const species = speciesByName.get(entry.species.name);
-    const generation = generationBySpecies.get(entry.species.name);
-    if (!species || !generation) {
+    const metadata = speciesByName.get(entry.species.name);
+    if (!metadata) {
       throw new Error(`${entry.name} is missing species metadata`);
     }
+    const { species, generation } = metadata;
     const description =
       species.flavor_text_entries.findLast(isEnglish)?.flavor_text;
     const genus = species.genera.find(isEnglish)?.genus;
