@@ -1,8 +1,8 @@
+import { getQuestionTitle } from '@/game/question-labels';
 import { isDailyDate } from '@/game/validation';
 import { catalog } from './fixtures/catalog';
 import { buildDailyQuestions } from '@/game/game';
 import {
-  getQuestionTitle,
   questionDefinitions,
   questionTypes,
 } from '@/game/questions/definitions';

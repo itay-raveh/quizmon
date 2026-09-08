@@ -1,10 +1,5 @@
 import { questionLabels } from '../question-labels';
-import type {
-  QuestionType,
-  QuestionCategory,
-  QuestionData,
-  SavedAnswerResult,
-} from '../types';
+import type { QuestionType } from '../types';
 
 interface QuestionDefinition {
   description: string;
@@ -127,28 +122,3 @@ export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
 export const coreQuestionTypes = questionTypes.filter(
   (type) => !['ability-check', 'move-check', 'stat-showdown'].includes(type),
 );
-
-const categoryLabels: Record<QuestionCategory, string> = {
-  ability: questionLabels['ability-check'],
-  champion: questionLabels.champion,
-  description: questionLabels['field-notes'],
-  evolution: questionLabels['evolution-shift'],
-  identity: questionLabels['pokedex-scan'],
-  matchup: questionLabels['type-matchup'],
-  move: questionLabels['move-check'],
-  stat: questionLabels['stat-showdown'],
-  type: questionLabels['type-check'],
-};
-
-export const getCategoryLabel = (
-  category: SavedAnswerResult['category'],
-): string =>
-  category === 'cry'
-    ? 'Pokémon cry'
-    : category === 'scale'
-      ? 'Scale comparison'
-      : categoryLabels[category];
-
-export const getQuestionTitle = (
-  question: Pick<QuestionData, 'questionType'>,
-): string => questionLabels[question.questionType];

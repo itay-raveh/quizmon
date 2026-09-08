@@ -1,3 +1,4 @@
+import { getQuestionTitle } from '@/game/question-labels';
 import { catalog } from './fixtures/catalog';
 import { createSeededRandom, shuffle } from '@/game/random';
 import {
@@ -6,7 +7,6 @@ import {
   getQuestionCount,
 } from '@/game/game';
 import {
-  getQuestionTitle,
   questionDefinitions,
   questionTypes,
 } from '@/game/questions/definitions';
