@@ -10,7 +10,6 @@ import {
   getQuestionKey,
   getQuestionRecency,
   getSubjectRecency,
-  getQuestionExposure,
   rememberQuestion,
   rememberShownQuestion,
   isQuestionHistory,
@@ -166,7 +165,7 @@ it('distinguishes stat and matchup questions while keeping related Pokémon expo
       ),
     }),
   ).not.toBe(getQuestionKey(matchup));
-  const exposure = getQuestionExposure(generate('evolution-link')[0]!);
+  const exposure = generate('evolution-link')[0]!.repetition;
   expect(exposure.primary).toHaveLength(3);
   expect(exposure.distractors).toHaveLength(3);
 });
@@ -175,7 +174,7 @@ it('avoids recently featured Pokémon across question formats', () => {
   const question = generate('pokedex-scan')[0]!;
   const history = rememberQuestion(emptyQuestionHistory(), question);
   const next = generate('silhouette-match', history, 'different-format')[0]!;
-  expect(getQuestionExposure(next).primary).not.toContain(question.pokemonName);
+  expect(next.repetition.primary).not.toContain(question.pokemonName);
 });
 
 it.each(questionTypes)(

@@ -58,14 +58,6 @@ export const getPokemonRecency = (
 export const getQuestionKey = (question: HistoryQuestion): string =>
   `${question.questionType}:${question.repetition.identity}`;
 
-export const getQuestionSubjects = (question: HistoryQuestion): string[] =>
-  question.repetition.subjects;
-
-export const getQuestionExposure = (question: HistoryQuestion) => ({
-  primary: question.repetition.primary,
-  distractors: question.repetition.distractors,
-});
-
 export const getQuestionRecency = (
   history: QuestionHistory,
   question: HistoryQuestion,
@@ -86,7 +78,7 @@ export const rememberQuestion = (
   question: HistoryQuestion,
 ): QuestionHistory => {
   const sequence = history.sequence + 1;
-  const exposure = getQuestionExposure(question);
+  const { subjects, primary, distractors } = question.repetition;
   const update = (entries: Record<string, number>, keys: string[]) => ({
     ...entries,
     ...Object.fromEntries(keys.map((key) => [key, sequence])),
@@ -95,16 +87,14 @@ export const rememberQuestion = (
     sequence,
     subjects: update(
       history.subjects,
-      getQuestionSubjects(question).map((name) =>
-        subjectKey(question.questionType, name),
-      ),
+      subjects.map((name) => subjectKey(question.questionType, name)),
     ),
     questions: retainNewest(
       update(history.questions, [getQuestionKey(question)]),
       questionRepeatPolicy.rememberedQuestions,
     ),
-    pokemon: update(history.pokemon, exposure.primary),
-    distractors: update(history.distractors, exposure.distractors),
+    pokemon: update(history.pokemon, primary),
+    distractors: update(history.distractors, distractors),
     rounds: history.rounds,
   };
 };
