@@ -128,10 +128,9 @@ const shuffleDistractors = (
   candidates: readonly string[],
   random: () => number,
 ): string[] => {
-  const unique = [...new Set(candidates)].filter(
-    (candidate) => candidate !== correct,
-  );
-  return shuffle(unique, random);
+  const unique = new Set(candidates);
+  unique.delete(correct);
+  return shuffle([...unique], random);
 };
 
 export const randomOptionSet = (
@@ -333,7 +332,7 @@ export const pokemonOptions = (
   const scored = rankCandidates(
     target.name,
     candidates
-      .filter(({ name }) => name !== target.name && !excluded.includes(name))
+      .filter(({ name }) => !excluded.includes(name))
       .map(({ name }) => name),
     similarityFor,
     context.random,
