@@ -70,30 +70,30 @@ export const buildTypeQuestion: QuestionBuilder = (context) => {
   };
 };
 
-const getTypePuzzlePool = (
-  context: QuestionContext,
-  type: string,
-): { matching: Candidate[]; others: Candidate[] } => ({
-  matching: context.pool.filter(
-    ({ pokemon }) => pokemon.sprite && pokemon.types.includes(type),
-  ),
-  others: context.pool.filter(
-    ({ pokemon }) => pokemon.sprite && !pokemon.types.includes(type),
-  ),
-});
-
-export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
-  const type = pick(
-    shuffle(Object.keys(context.catalog.typeRelations), context.random).filter(
-      (candidate) => {
-        const { matching, others } = getTypePuzzlePool(context, candidate);
-        return matching.length >= 3 && others.length > 0;
-      },
-    ),
+const pickTypePuzzlePool = (context: QuestionContext, matchingCount: number) =>
+  pick(
+    shuffle(Object.keys(context.catalog.typeRelations), context.random)
+      .map((type) => ({
+        type,
+        matching: context.pool.filter(
+          ({ pokemon }) => pokemon.sprite && pokemon.types.includes(type),
+        ),
+        others: context.pool.filter(
+          ({ pokemon }) => pokemon.sprite && !pokemon.types.includes(type),
+        ),
+      }))
+      .filter(
+        ({ matching, others }) =>
+          matching.length >= matchingCount &&
+          others.length >= 4 - matchingCount,
+      ),
     context.random,
   );
-  if (!type) return undefined;
-  const { matching, others } = getTypePuzzlePool(context, type);
+
+export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
+  const pool = pickTypePuzzlePool(context, 3);
+  if (!pool?.type) return undefined;
+  const { matching, others } = pool;
   const shared = shuffle(matching, context.random).slice(0, 3);
   const target = pickFreshTarget(context, others);
   if (!target) return undefined;
@@ -118,19 +118,9 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
 
 export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
   const correctCount = context.random() < 0.5 ? 2 : 3;
-  const type = pick(
-    shuffle(Object.keys(context.catalog.typeRelations), context.random).filter(
-      (candidate) => {
-        const { matching, others } = getTypePuzzlePool(context, candidate);
-        return (
-          matching.length >= correctCount && others.length >= 4 - correctCount
-        );
-      },
-    ),
-    context.random,
-  );
-  if (!type) return undefined;
-  const { matching, others } = getTypePuzzlePool(context, type);
+  const pool = pickTypePuzzlePool(context, correctCount);
+  if (!pool?.type) return undefined;
+  const { type, matching, others } = pool;
   const selectedMatching = shuffle(matching, context.random).slice(
     0,
     correctCount,
