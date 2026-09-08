@@ -9,6 +9,7 @@ import {
   pokemonOptions,
   pokemonPrompt,
   rankedOptionSet,
+  type Candidate,
   type QuestionBuilder,
 } from './shared';
 
@@ -60,10 +61,7 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
     const correct = pick(matchingTypes, context.random);
     if (!correct) continue;
     const distractors = attackTypes.filter(
-      (type) =>
-        type !== correct &&
-        attackMultiplier(context.catalog, type, target.pokemon.types) !==
-          multiplier,
+      (type) => !matchingTypes.includes(type),
     );
     if (distractors.length < 3) continue;
     context.used.add(target.name);
@@ -114,26 +112,19 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
     for (const target of targets) {
       const targetSprite = target.pokemon.sprite;
       if (!targetSprite) continue;
-      const candidates = context.pool.filter(
-        ({ name, pokemon }) => name !== target.name && Boolean(pokemon.sprite),
-      );
-      const counters = candidates.filter(({ pokemon }) =>
-        hasExactMatchup(
+      const counters: Candidate[] = [];
+      const distractors: Candidate[] = [];
+      context.pool.forEach((candidate) => {
+        const { name, pokemon } = candidate;
+        if (name === target.name || !pokemon.sprite) return;
+        const matches = hasExactMatchup(
           context.catalog,
           pokemon.types,
           target.pokemon.types,
           multiplier,
-        ),
-      );
-      const distractors = candidates.filter(
-        ({ pokemon }) =>
-          !hasExactMatchup(
-            context.catalog,
-            pokemon.types,
-            target.pokemon.types,
-            multiplier,
-          ),
-      );
+        );
+        (matches ? counters : distractors).push(candidate);
+      });
       if (counters.length === 0 || distractors.length < 3) continue;
       const correct = pick(counters, context.random);
       if (!correct) continue;
