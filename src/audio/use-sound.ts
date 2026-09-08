@@ -1,15 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Howl } from 'howler';
 
-interface SoundOptions {
-  interrupt?: boolean;
-  volume?: number;
-}
-
-export default function useSound(
-  src: string,
-  { interrupt = false, volume = 1 }: SoundOptions = {},
-) {
+export default function useSound(src: string, volume: number) {
   const sound = useRef<Howl | null>(null);
   const currentVolume = useRef(volume);
 
@@ -30,9 +22,9 @@ export default function useSound(
   const play = useCallback(() => {
     const instance = sound.current;
     if (!instance) return;
-    if (interrupt) instance.stop();
+    instance.stop();
     instance.play();
-  }, [interrupt]);
+  }, []);
 
   const stop = useCallback(() => {
     sound.current?.stop();

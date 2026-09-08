@@ -42,10 +42,7 @@ const ScoreCountSound = ({
   useSound: UseSound;
   volume: number;
 }) => {
-  const [play, { stop }] = useSound(scoreCountSound, {
-    interrupt: true,
-    volume: 0.24 * volume,
-  });
+  const [play, { stop }] = useSound(scoreCountSound, 0.24 * volume);
 
   useEffect(() => {
     onReady({ play, stop });
@@ -71,35 +68,19 @@ const SoundEngine = ({
 }) => {
   const [scoreCountControls, setScoreCountControls] =
     useState<ScoreCountControls>(silentScoreCount);
-  const sharedOptions = { interrupt: true };
-  const [playTap] = useSound(tapSound, {
-    ...sharedOptions,
-    volume: 0.16 * volume,
-  });
-  const [playToggleOff] = useSound(toggleOffSound, {
-    ...sharedOptions,
-    volume: 0.18 * volume,
-  });
-  const [playToggleOn] = useSound(toggleOnSound, {
-    ...sharedOptions,
-    volume: 0.18 * volume,
-  });
-  const [playCorrect] = useSound(correctSound, {
-    ...sharedOptions,
-    volume: 0.28 * volume,
-  });
-  const [playWrong] = useSound(wrongSound, {
-    ...sharedOptions,
-    volume: 0.24 * volume,
-  });
-  const [playResults, { stop: stopResults }] = useSound(resultsSound, {
-    ...sharedOptions,
-    volume: 0.32 * volume,
-  });
-  const [playPerfect, { stop: stopPerfect }] = useSound(perfectSound, {
-    ...sharedOptions,
-    volume: 0.36 * volume,
-  });
+  const [playTap] = useSound(tapSound, 0.16 * volume);
+  const [playToggleOff] = useSound(toggleOffSound, 0.18 * volume);
+  const [playToggleOn] = useSound(toggleOnSound, 0.18 * volume);
+  const [playCorrect] = useSound(correctSound, 0.28 * volume);
+  const [playWrong] = useSound(wrongSound, 0.24 * volume);
+  const [playResults, { stop: stopResults }] = useSound(
+    resultsSound,
+    0.32 * volume,
+  );
+  const [playPerfect, { stop: stopPerfect }] = useSound(
+    perfectSound,
+    0.36 * volume,
+  );
 
   const stopCelebration = useCallback(() => {
     stopResults();
