@@ -1,3 +1,4 @@
+import { isDailyDate } from './validation';
 import { site } from '../app/site';
 import {
   buildQuestionSequence,
@@ -19,7 +20,6 @@ import { createSeededRandom } from './random';
 const DAILY_CHALLENGE_VERSION = 11;
 const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   month: 'short',
@@ -31,16 +31,6 @@ export const getLocalDate = (date = new Date()): string =>
   [date.getFullYear(), date.getMonth() + 1, date.getDate()]
     .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
     .join('-');
-
-export const isDailyDate = (value: unknown): value is string => {
-  if (typeof value !== 'string' || !DATE_PATTERN.test(value)) return false;
-
-  const parsed = new Date(`${value}T00:00:00.000Z`);
-  return (
-    !Number.isNaN(parsed.valueOf()) &&
-    parsed.toISOString().slice(0, 10) === value
-  );
-};
 
 export const parseDailyDate = (search: string): string | null => {
   const value = new URLSearchParams(search).get('daily');

@@ -1,4 +1,4 @@
-import worker from '../worker/index';
+import worker, { DailyReminder } from '../worker/index';
 import { getNextReminderAt } from '../worker/reminder-time';
 import catalog from '../src/game/data/pokemon.json';
 
@@ -43,6 +43,52 @@ describe('Daily reminders', () => {
       ).toISOString(),
     ).toBe('2026-11-01T13:00:00.000Z');
   });
+
+  it.each([
+    ['2024-02-29', 204],
+    ['2026-09-08', 204],
+    ['2026-02-29', 400],
+    ['2026-13-01', 400],
+    ['2026-09-08\n', 400],
+    [null, 400],
+    [20260908, 400],
+  ])(
+    'validates completion date %j before storing reminders',
+    async (completedDate, status) => {
+      const registration = {
+        subscription: {
+          endpoint: 'https://example.com/push',
+          keys: { auth: 'test-auth', p256dh: 'test-key' },
+        },
+        timeZone: 'UTC',
+      };
+      for (const method of ['PUT', 'PATCH']) {
+        const storage = {
+          get: vi.fn().mockResolvedValue(registration),
+          put: vi.fn(),
+          setAlarm: vi.fn(),
+        };
+        const reminder = new DailyReminder({ storage }, makeEnv().env);
+        const response = await reminder.fetch(
+          new Request('https://example.com/', {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...registration, completedDate }),
+          }),
+        );
+        expect(response.status).toBe(status);
+        if (status === 204) {
+          expect(storage.put).toHaveBeenCalledWith('daily-reminder', {
+            ...registration,
+            completedDate,
+          });
+        } else {
+          expect(storage.put).not.toHaveBeenCalled();
+          expect(storage.setAlarm).not.toHaveBeenCalled();
+        }
+      }
+    },
+  );
 
   it('only forwards reminder changes made by the app origin', async () => {
     const { env, reminderFetch } = makeEnv();

@@ -1,6 +1,6 @@
-import { getLocalDate, isDailyDate } from './daily';
+import { getLocalDate } from './daily';
 import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
-import { isRecord } from './validation';
+import { isDailyDate, isRecord } from './validation';
 
 const TRAINER_PROFILE_VERSION = 1;
 

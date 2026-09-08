@@ -1,4 +1,3 @@
-import { isDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import {
   generations,
@@ -9,7 +8,12 @@ import {
   type QuestionType,
   type TrainingMode,
 } from './types';
-import { isChoice, isFiniteNonnegative, isRecord } from './validation';
+import {
+  isDailyDate,
+  isChoice,
+  isFiniteNonnegative,
+  isRecord,
+} from './validation';
 
 export const STREAK_VERSION = 1;
 export const TRAINER_PROGRESS_VERSION = 2;

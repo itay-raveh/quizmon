@@ -5,11 +5,11 @@ import {
   writeStoredJson,
 } from './browser-storage';
 import { normalizeModifiers } from './game';
-import { isDailyDate } from './daily';
 import { questionTypes } from './questions/registry';
 import type { AnswerResult, GameMode, Modifiers } from './types';
 import { generations, questionCategories, trainingModes } from './types';
 import {
+  isDailyDate,
   isChoice,
   isFiniteNonnegative,
   isNonnegativeInteger,

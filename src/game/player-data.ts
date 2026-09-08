@@ -1,7 +1,6 @@
 import type { LeagueVictoryRecord } from './hall-of-fame';
 import { isLeagueVictory } from './league';
 import { normalizeModifiers } from './game';
-import { isDailyDate } from './daily';
 import { normalizeTrainerProfile, type TrainerProfile } from './profile-data';
 import { questionTypes } from './questions/registry';
 import {
@@ -22,6 +21,7 @@ import {
   type Modifiers,
 } from './types';
 import {
+  isDailyDate,
   isChoice,
   isFiniteNonnegative,
   isNonemptyChoiceArray,

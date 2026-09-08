@@ -1,3 +1,4 @@
+import { isDailyDate } from '@/game/validation';
 import catalogData from '@/game/data/pokemon.json';
 import { getQuestionTitle } from '@/game/game';
 import {
@@ -5,7 +6,6 @@ import {
   getDailyModifiers,
   getDailyQuestionTypes,
   getLocalDate,
-  isDailyDate,
   parseDailyDate,
   shouldAutoStartDaily,
 } from '@/game/daily';

@@ -1,3 +1,4 @@
+import { isDailyDate } from '../src/game/validation';
 import { DurableObject } from 'cloudflare:workers';
 import webpush, {
   WebPushError,
@@ -15,7 +16,6 @@ const REMINDER_PATH =
   /^\/api\/daily-reminders\/([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
 const MAX_BODY_LENGTH = 8_192;
 const STORAGE_KEY = 'daily-reminder';
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
 
 export interface DailyReminderEnv {
@@ -34,14 +34,6 @@ interface DailyReminderRegistration {
   subscription: WebPushSubscription;
   timeZone: string;
 }
-
-const isValidDailyDate = (value: unknown): value is string => {
-  if (typeof value !== 'string' || !DATE_PATTERN.test(value)) return false;
-  const date = new Date(`${value}T00:00:00.000Z`);
-  return (
-    !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value
-  );
-};
 
 const isValidTimeZone = (value: unknown): value is string => {
   if (typeof value !== 'string' || value.length > 100) return false;
@@ -111,7 +103,7 @@ const parseRegistration = async (
     !isValidTimeZone(candidate.timeZone) ||
     !isValidSubscription(candidate.subscription) ||
     (candidate.completedDate !== undefined &&
-      !isValidDailyDate(candidate.completedDate))
+      !isDailyDate(candidate.completedDate))
   ) {
     return null;
   }
@@ -132,7 +124,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
         body && typeof body === 'object'
           ? (body as { completedDate?: unknown }).completedDate
           : null;
-      if (!isValidDailyDate(completedDate)) {
+      if (!isDailyDate(completedDate)) {
         return new Response('Invalid completion date', {
           headers: NO_STORE_HEADERS,
           status: 400,
