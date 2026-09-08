@@ -1,3 +1,4 @@
+import type { GameMode } from '../src/game/types';
 import { fetchSpriteSource, isSpritePath } from '../src/game/sprite-source';
 import {
   DailyReminder,
@@ -61,12 +62,10 @@ const fetchSprite = async (request: Request, url: URL): Promise<Response> => {
   });
 };
 
-type GameMode = 'daily' | 'league' | 'training';
-
 type AnalyticsEvent =
   | { type: 'page_view' }
   | {
-      mode: GameMode;
+      mode: GameMode['kind'];
       questionCount: number;
       type: 'game_started';
     }
@@ -74,7 +73,7 @@ type AnalyticsEvent =
       contentVersion: number;
       correctCount: number;
       elapsedSeconds: number;
-      mode: GameMode;
+      mode: GameMode['kind'];
       questionCount: number;
       score: number;
       scoreVersion: number;
@@ -87,7 +86,7 @@ const isIntegerBetween = (value: unknown, minimum: number, maximum: number) =>
   value >= minimum &&
   value <= maximum;
 
-const isGameMode = (value: unknown): value is GameMode =>
+const isGameMode = (value: unknown): value is GameMode['kind'] =>
   value === 'daily' || value === 'league' || value === 'training';
 
 const isAnalyticsEvent = (value: unknown): value is AnalyticsEvent => {

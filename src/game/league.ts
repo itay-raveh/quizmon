@@ -19,6 +19,8 @@ const LEAGUE_CHALLENGE_VERSION = 1;
 export const LEAGUE_QUESTION_COUNT = 15;
 const LEAGUE_STAGE_SIZE = 3;
 
+export type LeagueView = 'challenge' | 'hall';
+
 export interface LeagueStage {
   heading: string;
   id: 'elite-1' | 'elite-2' | 'elite-3' | 'elite-4' | 'champion';

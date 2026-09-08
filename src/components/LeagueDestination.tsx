@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { leagueStages } from '@/game/league';
+import { leagueStages, type LeagueView } from '@/game/league';
 import type { LeagueVictoryRecord } from '@/game/hall-of-fame';
 import { readPlayerData } from '@/game/player-storage';
 import type { PokemonCatalog } from '@/game/types';
@@ -29,9 +29,9 @@ interface LeagueDestinationProps {
   freshRecord?: LeagueVictoryRecord;
   onBack: () => void;
   onStart: () => void;
-  onViewChange: (view: 'challenge' | 'hall') => void;
+  onViewChange: (view: LeagueView) => void;
   onViewResults?: () => void;
-  view: 'challenge' | 'hall';
+  view: LeagueView;
   resultSaved?: boolean;
 }
 

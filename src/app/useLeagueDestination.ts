@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { LeagueView } from '@/game/league';
 
-type LeagueView = 'challenge' | 'hall';
 const readView = (): LeagueView | null => {
   const value = new URLSearchParams(window.location.search).get('league');
   return value === 'hall' || value === 'challenge' ? value : null;
