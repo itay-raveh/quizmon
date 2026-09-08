@@ -34,12 +34,6 @@ const getInitialStatus = (): DailyReminderStatus => {
   return Notification.permission === 'granted' ? 'checking' : 'available';
 };
 
-const decodeApplicationServerKey = (value: string): Uint8Array<ArrayBuffer> => {
-  const padded = `${value}${'='.repeat((4 - (value.length % 4)) % 4)}`;
-  const bytes = atob(padded.replaceAll('-', '+').replaceAll('_', '/'));
-  return Uint8Array.from(bytes, (character) => character.charCodeAt(0));
-};
-
 const getSubscriptionId = (): string => {
   const stored = readStoredValue('localStorage', SUBSCRIPTION_ID_KEY);
   if (stored) return stored;
@@ -126,7 +120,7 @@ export const DailyReminderProvider = ({
       const subscription =
         existing ??
         (await registration.pushManager.subscribe({
-          applicationServerKey: decodeApplicationServerKey(VAPID_PUBLIC_KEY),
+          applicationServerKey: VAPID_PUBLIC_KEY,
           userVisibleOnly: true,
         }));
       await registerSubscription(getSubscriptionId(), subscription);
