@@ -143,6 +143,17 @@ const createQuestionContext = (
   used: new Set(),
 });
 
+const buildFirstAvailableQuestion = (
+  context: QuestionContext,
+  types: readonly (QuestionType | 'champion')[],
+): QuestionData | undefined => {
+  for (const type of types) {
+    const question = buildQuestionType(context, type);
+    if (question) return question;
+  }
+  return undefined;
+};
+
 export const buildQuestions = (
   catalog: PokemonCatalog,
   modifiers: Modifiers,
@@ -166,11 +177,7 @@ export const buildQuestions = (
         random,
       ),
     ];
-    let question: QuestionData | undefined;
-    for (const questionType of candidates) {
-      question = buildQuestionType(context, questionType);
-      if (question) break;
-    }
+    const question = buildFirstAvailableQuestion(context, candidates);
     if (!question) continue;
     questions.push({ ...question, id: `${question.id}:${index}` });
   }
@@ -190,15 +197,15 @@ export const buildQuestionSequence = (
     let question = buildQuestionType(context, questionType);
 
     if (!question && questionType !== 'champion') {
-      for (const fallbackType of shuffle(
-        modifiers.questionTypes.filter(
-          (candidate) => candidate !== questionType,
+      question = buildFirstAvailableQuestion(
+        context,
+        shuffle(
+          modifiers.questionTypes.filter(
+            (candidate) => candidate !== questionType,
+          ),
+          random,
         ),
-        random,
-      )) {
-        question = buildQuestionType(context, fallbackType);
-        if (question) break;
-      }
+      );
     }
 
     if (!question) {

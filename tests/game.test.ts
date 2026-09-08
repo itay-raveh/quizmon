@@ -268,6 +268,30 @@ describe('question building', () => {
 
     expect(questions).toHaveLength(1);
     expect(questions[0]?.questionType).toBe('pokedex-scan');
+
+    const unavailable = {
+      ...defaultModifiers,
+      questionTypes: ['field-notes' as const],
+    };
+    expect(
+      buildQuestions(syntheticCatalog, unavailable, createSeededRandom('none')),
+    ).toEqual([]);
+    expect(() =>
+      buildQuestionSequence(
+        syntheticCatalog,
+        ['field-notes'],
+        unavailable,
+        createSeededRandom('none'),
+      ),
+    ).toThrow('Unable to build field-notes question');
+    expect(() =>
+      buildQuestionSequence(
+        syntheticCatalog,
+        ['champion'],
+        { ...defaultModifiers, questionTypes: ['pokedex-scan'] },
+        createSeededRandom('none'),
+      ),
+    ).toThrow('Unable to build champion question');
   });
 
   it('starts the Champion question with a Pokédex clue before paid assists', () => {
