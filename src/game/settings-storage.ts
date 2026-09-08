@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { readPlayerData, updatePlayerData } from './player-storage';
 import { defaultModifiers, normalizeModifiers } from './modifiers';
 import type { Modifiers } from './types';
@@ -9,12 +9,12 @@ const readModifiers = (): Modifiers =>
 export const usePersistentModifiers = () => {
   const [modifiers, setModifiersState] = useState<Modifiers>(readModifiers);
 
-  const setModifiers = (nextModifiers: Modifiers) => {
+  const setModifiers = useCallback((nextModifiers: Modifiers) => {
     const normalized = normalizeModifiers(nextModifiers);
     setModifiersState(normalized);
 
     updatePlayerData({ settings: normalized });
-  };
+  }, []);
 
   return [modifiers, setModifiers] as const;
 };

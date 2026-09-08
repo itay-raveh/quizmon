@@ -113,14 +113,14 @@ const SoundEngine = ({
 
   const controls = useMemo<SoundControls>(
     () => ({
-      playCorrect: () => playCorrect(),
-      playPerfect: () => playPerfect(),
-      playResults: () => playResults(),
-      playScoreCount: () => scoreCountControls.play(),
-      playTap: () => playTap(),
-      playToggleOff: () => playToggleOff(),
-      playToggleOn: () => playToggleOn(),
-      playWrong: () => playWrong(),
+      playCorrect,
+      playPerfect,
+      playResults,
+      playScoreCount: scoreCountControls.play,
+      playTap,
+      playToggleOff,
+      playToggleOn,
+      playWrong,
       stopCelebration,
     }),
     [
