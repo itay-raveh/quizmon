@@ -6,33 +6,28 @@
   <a href="https://quizmon.raveh.dev/">Play Quizmon</a>
 </p>
 
-Quizmon is a browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc. Scores and Trainer progress stay in the browser.
+Quizmon is a browser game about Pokémon sprites, descriptions, types, matchups, abilities, moves, evolutions, stats, etc.
 
-[How to play](content/about.md) explains the Daily Challenge, Training, scoring, badges,
-and Quizmon League.
+[How to play](content/about.md) explains the Daily Challenge, Training, scoring, badges,and Quizmon League.
 
 ## Run Quizmon locally
 
-[mise](https://mise.jdx.dev/) installs the pinned tools and exposes one setup task for a fresh clone:
+Setup using [mise](https://mise.jdx.dev/):
 
 ```sh
 mise run setup
 npm run dev
 ```
 
-## Pokémon data
+## Data
 
-Quizmon builds a versioned catalog from [PokéAPI](https://pokeapi.co/) and ships it as a hashed static asset.
+Quizmon builds an offline dataset from [PokéAPI](https://pokeapi.co/).
 
 ```sh
 npm run data:update
 ```
 
-## Daily reminders
-
-The private VAPID key is stored as `VAPID_PRIVATE_KEY` in GitHub's `production` environment. CI passes it to Wrangler only during deployment, while the matching public key stays in [`src/notifications/config.ts`](src/notifications/config.ts).
-
-## License
+## Licenses
 
 Quizmon is available under the [MIT License](LICENSE).
 
