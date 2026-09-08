@@ -6,23 +6,28 @@ export const useStopwatch = (showMilliseconds = false) => {
   const startedAt = useRef(0);
   const accumulatedMilliseconds = useRef(0);
 
-  const updateElapsed = useCallback(() => {
-    const currentMilliseconds = running
-      ? accumulatedMilliseconds.current + performance.now() - startedAt.current
-      : accumulatedMilliseconds.current;
-    setElapsedMilliseconds(currentMilliseconds);
-  }, [running]);
+  const getElapsedMilliseconds = useCallback(
+    () =>
+      running
+        ? accumulatedMilliseconds.current +
+          performance.now() -
+          startedAt.current
+        : accumulatedMilliseconds.current,
+    [running],
+  );
 
   useEffect(() => {
     if (!running) return;
 
+    const updateElapsed = () =>
+      setElapsedMilliseconds(getElapsedMilliseconds());
     updateElapsed();
     const interval = window.setInterval(
       updateElapsed,
       showMilliseconds ? 50 : 250,
     );
     return () => window.clearInterval(interval);
-  }, [running, showMilliseconds, updateElapsed]);
+  }, [getElapsedMilliseconds, running, showMilliseconds]);
 
   const start = useCallback(() => {
     startedAt.current = performance.now();
@@ -44,16 +49,6 @@ export const useStopwatch = (showMilliseconds = false) => {
     setElapsedMilliseconds(normalizedMilliseconds);
     setRunning(false);
   }, []);
-
-  const getElapsedMilliseconds = useCallback(
-    () =>
-      running
-        ? accumulatedMilliseconds.current +
-          performance.now() -
-          startedAt.current
-        : accumulatedMilliseconds.current,
-    [running],
-  );
 
   return {
     elapsedMilliseconds,
