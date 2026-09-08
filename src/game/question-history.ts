@@ -45,12 +45,15 @@ export const getSubjectRecency = (
 export const getPokemonRecency = (
   history: QuestionHistory,
   name: string,
-): number =>
-  (questionRepeatPolicy.primaryWeight /
-    (history.sequence + 1 - lastSeen(history.pokemon, name))) *
-    Number(lastSeen(history.pokemon, name) > 0) +
-  (1 / (history.sequence + 1 - lastSeen(history.distractors, name))) *
-    Number(lastSeen(history.distractors, name) > 0);
+): number => {
+  const primary = lastSeen(history.pokemon, name);
+  const distractor = lastSeen(history.distractors, name);
+  return (
+    (questionRepeatPolicy.primaryWeight / (history.sequence + 1 - primary)) *
+      Number(primary > 0) +
+    (1 / (history.sequence + 1 - distractor)) * Number(distractor > 0)
+  );
+};
 
 export const getQuestionKey = (question: HistoryQuestion): string =>
   `${question.questionType}:${question.repetition.identity}`;

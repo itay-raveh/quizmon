@@ -85,6 +85,11 @@ export const buildQuestionType = (
       )
     );
   };
+  const compareRecency = (left: QuestionData, right: QuestionData): number =>
+    history
+      ? getQuestionRecency(history, left) -
+          getQuestionRecency(history, right) || score(left) - score(right)
+      : 0;
   const attempts =
     history && context.rotation === undefined
       ? questionRepeatPolicy.candidateAttempts
@@ -103,15 +108,7 @@ export const buildQuestionType = (
       generation,
       questionType,
     };
-    if (
-      !selected ||
-      (history &&
-        (getQuestionRecency(history, question) <
-          getQuestionRecency(history, selected) ||
-          (getQuestionRecency(history, question) ===
-            getQuestionRecency(history, selected) &&
-            score(question) < score(selected))))
-    )
+    if (!selected || compareRecency(question, selected) < 0)
       selected = question;
   }
   if (selected) {
