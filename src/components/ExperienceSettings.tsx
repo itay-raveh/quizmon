@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import {
   answerFlows,
+  answerFlowDelays,
   timerDisplays,
   type AnswerFlow,
   type Modifiers,
@@ -15,13 +16,10 @@ interface ExperienceSettingsProps {
   onChange: Dispatch<SetStateAction<Modifiers>>;
 }
 
-const answerFlowDetails: Record<
-  AnswerFlow,
-  { description: string; label: string }
-> = {
-  manual: { description: 'Use the Next button', label: 'Manual' },
-  auto: { description: 'Move on after 2 seconds', label: 'Auto' },
-  instant: { description: 'Move on after 0.3 seconds', label: 'Instant' },
+const answerFlowLabels: Record<AnswerFlow, string> = {
+  manual: 'Manual',
+  auto: 'Auto',
+  instant: 'Instant',
 };
 
 const timerDisplayLabels: Record<TimerDisplay, string> = {
@@ -49,10 +47,14 @@ export const ExperienceSettings = ({
           {answerFlows.map((value) => (
             <SelectionTile
               checked={draft.answerFlow === value}
-              description={answerFlowDetails[value].description}
+              description={
+                value === 'manual'
+                  ? 'Use the Next button'
+                  : `Move on after ${answerFlowDelays[value] / 1_000} seconds`
+              }
               inputType="radio"
               key={value}
-              label={answerFlowDetails[value].label}
+              label={answerFlowLabels[value]}
               name="answer-flow"
               onChange={(event) => {
                 if (!event.target.checked) return;

@@ -22,6 +22,11 @@ export type TrainingMode = (typeof trainingModes)[number];
 export type AnswerFlow = (typeof answerFlows)[number];
 export type TimerDisplay = (typeof timerDisplays)[number];
 
+export const answerFlowDelays: Record<Exclude<AnswerFlow, 'manual'>, number> = {
+  auto: 2_000,
+  instant: 300,
+};
+
 export type QuestionType = keyof typeof questionRegistry;
 
 export const questionCategories = [

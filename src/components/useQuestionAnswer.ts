@@ -11,7 +11,12 @@ import {
   getSpeedBonusPoints,
   isQuestionAnswerCorrect,
 } from '@/game/game';
-import type { AnswerFlow, AnswerResult, QuestionData } from '@/game/types';
+import {
+  answerFlowDelays,
+  type AnswerFlow,
+  type AnswerResult,
+  type QuestionData,
+} from '@/game/types';
 
 export interface UseQuestionAnswerOptions {
   answerFlow: AnswerFlow;
@@ -23,11 +28,6 @@ export interface UseQuestionAnswerOptions {
   onFeedbackStart: () => number;
   question: QuestionData;
 }
-
-const feedbackDelay: Record<Exclude<AnswerFlow, 'manual'>, number> = {
-  auto: 2_000,
-  instant: 300,
-};
 
 const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
@@ -120,7 +120,7 @@ export const useQuestionAnswer = ({
       if (answerFlow !== 'manual') {
         answerTimeout.current = window.setTimeout(
           () => submitAnswer(answer),
-          feedbackDelay[answerFlow],
+          answerFlowDelays[answerFlow],
         );
       }
     },
