@@ -19,11 +19,6 @@ mise run setup
 npm run dev
 ```
 
-`npm run build` uses TypeScript 7's native `tsc` compiler. The `typescript`
-dependency aliases Microsoft's TypeScript 6 compatibility package so ESLint
-and other tools retain the compiler API they require; `tsc6` is available for
-comparison. Keep both aliases until those tools support the native compiler API.
-
 ## Data
 
 Quizmon builds an offline dataset from [PokéAPI](https://pokeapi.co/).
