@@ -13,20 +13,26 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
   const [foundPokemon] = useState(() => new Set(readPlayerData().pokedex));
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
-  const entries = useMemo(
-    () => Object.entries(catalog.pokemon).sort(([, a], [, b]) => a.id - b.id),
-    [catalog],
-  );
-  const count = entries.filter(([name]) => foundPokemon.has(name)).length;
+  const { entries, count } = useMemo(() => {
+    const entries = Object.entries(catalog.pokemon)
+      .sort(([, a], [, b]) => a.id - b.id)
+      .map(([name, pokemon]) => {
+        const found = foundPokemon.has(name);
+        return {
+          found,
+          name,
+          pokemon,
+          searchName: found ? formatPokemonName(name).toLowerCase() : '',
+          searchNumber: String(pokemon.id).padStart(4, '0'),
+        };
+      });
+    return { entries, count: entries.filter(({ found }) => found).length };
+  }, [catalog, foundPokemon]);
   const query = search.trim().toLowerCase().replace(/^#/, '');
-  const matches = entries.filter(([name, pokemon]) => {
-    const found = foundPokemon.has(name);
-    return (
-      !query ||
-      String(pokemon.id).padStart(4, '0').includes(query) ||
-      (found && formatPokemonName(name).toLowerCase().includes(query))
-    );
-  });
+  const matches = entries.filter(
+    ({ searchName, searchNumber }) =>
+      !query || searchNumber.includes(query) || searchName.includes(query),
+  );
   const pages = Math.max(1, Math.ceil(matches.length / pageSize));
   const currentPage = Math.min(page, pages - 1);
   const visible = matches.slice(
@@ -62,44 +68,41 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
       </p>
       {visible.length > 0 && (
         <ul className="trainer-pokedex__entries">
-          {visible.map(([name, pokemon]) => {
-            const found = foundPokemon.has(name);
-            return (
-              <li
-                className={`trainer-pokedex__entry${found ? ' is-found' : ''}`}
-                key={name}
-              >
-                <div className="trainer-pokedex__portrait" aria-hidden="true">
-                  {found && pokemon.sprite ? (
-                    <img
-                      src={pokemon.sprite}
-                      alt=""
-                      width="96"
-                      height="96"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <QuestionIcon weight="bold" />
-                  )}
-                </div>
-                {found ? (
-                  <>
-                    <PokemonIdentity dexNumber={pokemon.id} name={name} />
-                    <TypeBadges
-                      types={pokemon.types}
-                      label={pokemon.types.join(' / ')}
-                    />
-                  </>
+          {visible.map(({ found, name, pokemon }) => (
+            <li
+              className={`trainer-pokedex__entry${found ? ' is-found' : ''}`}
+              key={name}
+            >
+              <div className="trainer-pokedex__portrait" aria-hidden="true">
+                {found && pokemon.sprite ? (
+                  <img
+                    src={pokemon.sprite}
+                    alt=""
+                    width="96"
+                    height="96"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 ) : (
-                  <span className="trainer-pokedex__missing">
-                    <small>{formatPokedexNumber(pokemon.id)}</small>
-                    <span>Not found</span>
-                  </span>
+                  <QuestionIcon weight="bold" />
                 )}
-              </li>
-            );
-          })}
+              </div>
+              {found ? (
+                <>
+                  <PokemonIdentity dexNumber={pokemon.id} name={name} />
+                  <TypeBadges
+                    types={pokemon.types}
+                    label={pokemon.types.join(' / ')}
+                  />
+                </>
+              ) : (
+                <span className="trainer-pokedex__missing">
+                  <small>{formatPokedexNumber(pokemon.id)}</small>
+                  <span>Not found</span>
+                </span>
+              )}
+            </li>
+          ))}
         </ul>
       )}
       {pages > 1 && (
