@@ -217,20 +217,20 @@ describe('question building', () => {
     );
     const target = question && catalog.pokemon[question.pokemonName];
 
-    expect(question).toBeDefined();
-    expect(target).toBeDefined();
-    expect(getQuestionPromptText(question!.prompt)).toBe(
-      `“${redactName(target!.description, question!.pokemonName)}”`,
+    expect.assert.isDefined(question);
+    expect.assert.isDefined(target);
+    expect(getQuestionPromptText(question.prompt)).toBe(
+      `“${redactName(target.description, question.pokemonName)}”`,
     );
-    expect(question!.clues).not.toContain(
-      redactName(target!.description, question!.pokemonName),
+    expect(question.clues).not.toContain(
+      redactName(target.description, question.pokemonName),
     );
-    expect(question!.media).toMatchObject({ kind: 'sprite', revealAt: 4 });
-    expect(question!.searchOptions).toEqual(
+    expect(question.media).toMatchObject({ kind: 'sprite', revealAt: 4 });
+    expect(question.searchOptions).toEqual(
       expect.arrayContaining([
         {
-          dexNumber: target!.id,
-          name: question!.pokemonName,
+          dexNumber: target.id,
+          name: question.pokemonName,
         },
       ]),
     );
@@ -443,16 +443,16 @@ describe('question building', () => {
         `numbered-${questionType}`,
       );
 
-      expect(question).toBeDefined();
-      for (const option of question!.options) {
+      expect.assert.isDefined(question);
+      for (const option of question.options) {
         const pokemon = catalog.pokemon[option];
         if (
           questionType === 'evolution-link' ||
           questionType === 'generation-roundup'
         ) {
-          expect(question!.optionDexNumbers).toBeUndefined();
+          expect(question.optionDexNumbers).toBeUndefined();
         } else if (pokemon) {
-          expect(question!.optionDexNumbers?.[option]).toBe(pokemon.id);
+          expect(question.optionDexNumbers?.[option]).toBe(pokemon.id);
         }
       }
     }
@@ -486,8 +486,7 @@ describe('question building', () => {
 
     expect(directions).toEqual(new Set(['highest', 'lowest']));
     for (const candidate of questions) {
-      expect(candidate.visual?.kind).toBe('stat-showdown');
-      if (candidate.visual?.kind !== 'stat-showdown') continue;
+      expect.assert(candidate.visual?.kind === 'stat-showdown');
       const stat = candidate.visual.stat;
       const correct = candidate.answer.correctOptions[0]!;
       const correctValue = catalog.pokemon[correct]!.stats[stat];
@@ -706,10 +705,10 @@ describe('question building', () => {
         () => roll,
         1,
       );
-      expect(question).toBeDefined();
-      const pokemon = scanCatalog.pokemon[question!.pokemonName]!;
+      expect.assert.isDefined(question);
+      const pokemon = scanCatalog.pokemon[question.pokemonName]!;
       const path = paths[index];
-      expect(question!.media).toMatchObject({
+      expect(question.media).toMatchObject({
         kind: 'sprite',
         src:
           path !== null

@@ -15,9 +15,7 @@ describe('Evolution link', () => {
           createQuestionContext(`link-${seed}`, [generation]),
           'evolution-link',
         );
-        expect(question).toBeDefined();
-        if (question?.visual?.kind !== 'evolution-link')
-          throw new Error('Missing evolution chain');
+        expect.assert(question?.visual?.kind === 'evolution-link');
         const { before, after } = question.visual;
         const correct = question.answer.correctOptions[0]!;
         expect(catalog.pokemon[before]!.evolvesTo).toContain(correct);
@@ -67,8 +65,7 @@ describe('Generation roundup', () => {
         createQuestionContext(`roundup-${seed}`, ['I', 'II']),
         'generation-roundup',
       );
-      expect(question).toBeDefined();
-      if (!question) throw new Error('Missing roundup');
+      expect.assert(question);
       expect(question.answer.interaction).toBe('multi-select');
       expect(question.options).toHaveLength(4);
       expect(new Set(question.options).size).toBe(4);

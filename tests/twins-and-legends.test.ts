@@ -11,8 +11,7 @@ describe('Type twins', () => {
           createQuestionContext(`twins-${seed}`, [generation]),
           'type-twins',
         );
-        expect(question).toBeDefined();
-        if (!question) throw new Error('Missing Type twins question');
+        expect.assert(question);
         expect(question.pokemonTypes).toHaveLength(2);
         expect(question.options).toHaveLength(4);
         expect(new Set(question.options).size).toBe(4);
@@ -132,8 +131,7 @@ describe('Legend hunt', () => {
           createQuestionContext(`legends-${seed}`, [generation]),
           'legend-hunt',
         );
-        expect(question).toBeDefined();
-        if (!question) throw new Error('Missing Legend hunt question');
+        expect.assert(question);
         expect(question.answer.interaction).toBe('multi-select');
         expect(question.options).toHaveLength(4);
         expect(new Set(question.options).size).toBe(4);

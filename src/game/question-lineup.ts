@@ -5,7 +5,12 @@ import {
   statNames,
   type QuestionData,
 } from './types';
-import { isChoice, isRecord, isSafeNonnegativeInteger } from './validation';
+import {
+  isChoice,
+  isFiniteNonnegative,
+  isRecord,
+  isSafeNonnegativeInteger,
+} from './validation';
 
 export interface QuestionLineup {
   seed: string;
@@ -51,9 +56,7 @@ const mediaChecks = {
 } satisfies Record<QuestionData['media']['kind'], VariantCheck>;
 
 const multiplier = (value: Record<string, unknown>) =>
-  typeof value.multiplier === 'number' &&
-  Number.isFinite(value.multiplier) &&
-  value.multiplier >= 0;
+  isFiniteNonnegative(value.multiplier);
 
 const visualChecks = {
   'type-check': () => true,
@@ -86,7 +89,7 @@ const variant = (
 export const isQuestionData = (value: unknown): value is QuestionData => {
   if (!isRecord(value) || !isRecord(value.answer) || !isRecord(value.prompt))
     return false;
-  const { answer, prompt } = value;
+  const { answer, options, prompt } = value;
   return (
     isRecord(value.repetition) &&
     text(value.repetition.identity) &&
@@ -101,15 +104,13 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
     Object.hasOwn(questionLabels, value.questionType) &&
     isChoice(value.category, questionCategories) &&
     isChoice(value.generation, generations) &&
-    strings(value.options) &&
-    value.options.length > 0 &&
-    new Set(value.options).size === value.options.length &&
+    strings(options) &&
+    options.length > 0 &&
+    new Set(options).size === options.length &&
     strings(answer.correctOptions) &&
     answer.correctOptions.length > 0 &&
     new Set(answer.correctOptions).size === answer.correctOptions.length &&
-    answer.correctOptions.every((option) =>
-      (value.options as string[]).includes(option),
-    ) &&
+    answer.correctOptions.every((option) => options.includes(option)) &&
     (answer.interaction === 'single-choice'
       ? answer.correctOptions.length === 1
       : answer.interaction === 'multi-select') &&

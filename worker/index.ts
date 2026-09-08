@@ -82,7 +82,11 @@ type AnalyticsEvent =
       type: 'game_completed';
     };
 
-const isIntegerBetween = (value: unknown, minimum: number, maximum: number) =>
+const isIntegerBetween = (
+  value: unknown,
+  minimum: number,
+  maximum: number,
+): value is number =>
   Number.isInteger(value) &&
   typeof value === 'number' &&
   value >= minimum &&
@@ -104,7 +108,7 @@ const isAnalyticsEvent = (event: unknown): event is AnalyticsEvent => {
     event.type === 'game_completed' &&
     isGameMode(event.mode) &&
     isIntegerBetween(event.questionCount, 1, 100) &&
-    isIntegerBetween(event.correctCount, 0, event.questionCount as number) &&
+    isIntegerBetween(event.correctCount, 0, event.questionCount) &&
     isIntegerBetween(event.score, 0, 1_000_000_000) &&
     isIntegerBetween(event.elapsedSeconds, 0, 604_800) &&
     isIntegerBetween(event.contentVersion, 0, Number.MAX_SAFE_INTEGER) &&
