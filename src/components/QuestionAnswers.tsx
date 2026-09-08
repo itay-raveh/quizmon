@@ -26,7 +26,6 @@ const optionTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
 
 interface QuestionAnswersProps {
   answered: boolean;
-  correctOptions: readonly string[];
   onSelect: (option: string) => void;
   question: QuestionData;
   selectedOptions: readonly string[];
@@ -34,12 +33,11 @@ interface QuestionAnswersProps {
 
 export const QuestionAnswers = ({
   answered,
-  correctOptions,
   onSelect,
   question,
   selectedOptions,
 }: QuestionAnswersProps) => {
-  const correct = new Set(correctOptions);
+  const correct = new Set(question.answer.correctOptions);
   const selected = new Set(selectedOptions);
   const hasTypeOptionBadges = typeOptionQuestionTypes.has(
     question.questionType,

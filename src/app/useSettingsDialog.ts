@@ -47,10 +47,9 @@ export const useSettingsDialog = ({
       if (phase === 'questions' || phase === 'results') {
         dispatch({ modifiers: nextModifiers, type: 'settings-updated' });
       }
-      setSettings(null);
-      if (phase === 'questions') startTimer();
+      close();
     },
-    [dispatch, markGenerationKnown, phase, setModifiers, startTimer],
+    [close, dispatch, markGenerationKnown, phase, setModifiers],
   );
 
   return { close, open, save, state: settings };

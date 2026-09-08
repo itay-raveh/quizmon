@@ -11,7 +11,6 @@ interface CheckboxProps extends Omit<
 }
 
 export const Checkbox = ({
-  checked,
   description,
   label,
   onChange,
@@ -21,12 +20,7 @@ export const Checkbox = ({
 
   return (
     <label className="checkbox">
-      <input
-        {...props}
-        checked={checked}
-        onChange={handleChange}
-        type="checkbox"
-      />
+      <input {...props} onChange={handleChange} type="checkbox" />
       <span className="checkbox__control" aria-hidden="true">
         <CheckIcon weight="bold" />
       </span>

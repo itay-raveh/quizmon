@@ -21,11 +21,10 @@ export const useGameNavigation = ({
 
   const returnToLanding = useCallback(() => {
     clearActiveGame();
-    pauseTimer();
     resetTimer();
     setLeaveConfirmationOpen(false);
     dispatch({ type: 'returned-to-landing' });
-  }, [dispatch, pauseTimer, resetTimer]);
+  }, [dispatch, resetTimer]);
 
   const requestLeave = useCallback(() => {
     if (session.phase !== 'questions' || session.answers.length === 0) {

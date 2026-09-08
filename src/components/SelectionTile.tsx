@@ -13,7 +13,6 @@ interface SelectionTileProps extends Omit<
 }
 
 export const SelectionTile = ({
-  checked,
   description,
   inputType = 'checkbox',
   label,
@@ -30,7 +29,6 @@ export const SelectionTile = ({
         {...props}
         aria-describedby={description ? `${id}-description` : undefined}
         aria-labelledby={`${id}-label`}
-        checked={checked}
         onChange={handleChange}
         type={inputType}
       />

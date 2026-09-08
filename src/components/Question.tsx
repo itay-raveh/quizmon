@@ -103,7 +103,6 @@ export const Question = ({
     answered,
     advanceAnswer,
     cluesShown,
-    correctOptions,
     finishAnswer,
     revealClue,
     selectedOptions,
@@ -249,7 +248,7 @@ export const Question = ({
         {isChampion && !championChoicesVisible && question.searchOptions ? (
           <ChampionSearch
             answered={answered}
-            correctOption={correctOptions[0] ?? ''}
+            correctOption={question.answer.correctOptions[0] ?? ''}
             disabled={interactionPaused}
             onAnswer={(option) => finishAnswer([option])}
             options={question.searchOptions}
@@ -258,7 +257,6 @@ export const Question = ({
         ) : (
           <QuestionAnswers
             answered={answered}
-            correctOptions={correctOptions}
             onSelect={selectOption}
             question={question}
             selectedOptions={selectedOptions}
