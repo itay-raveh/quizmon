@@ -8,7 +8,7 @@ import {
   type ActiveGameSnapshot,
 } from '@/game/active-game';
 import { readDailyResult } from '@/game/storage';
-import type { PokemonCatalog, QuestionData } from '@/game/types';
+import type { PokemonCatalog } from '@/game/types';
 import type { CompleteGame, GameSession, GameSessionAction } from './session';
 
 interface ActiveGameOptions {
@@ -28,11 +28,7 @@ interface ActiveGameOptions {
 
 type Restoration =
   | { kind: 'discard'; shouldClear: boolean }
-  | {
-      kind: 'restore';
-      questions: QuestionData[];
-      snapshot: ActiveGameSnapshot;
-    };
+  | { kind: 'restore'; snapshot: ActiveGameSnapshot };
 
 const resolveRestoration = (
   snapshot: ActiveGameSnapshot | null,
@@ -61,18 +57,16 @@ const resolveRestoration = (
   }
 
   const questions = snapshot.questions;
-  const answersMatchQuestions =
-    snapshot.answers.length <= questions.length &&
-    snapshot.answers.every(
-      (answer, index) =>
-        answer.category === questions[index]?.category &&
-        answer.generation === questions[index]?.generation &&
-        answer.questionType === questions[index]?.questionType &&
-        answer.pokemonName === questions[index]?.pokemonName,
-    );
+  const answersMatchQuestions = snapshot.answers.every(
+    (answer, index) =>
+      answer.category === questions[index]?.category &&
+      answer.generation === questions[index]?.generation &&
+      answer.questionType === questions[index]?.questionType &&
+      answer.pokemonName === questions[index]?.pokemonName,
+  );
 
-  return questions.length === snapshot.questionCount && answersMatchQuestions
-    ? { kind: 'restore', questions, snapshot }
+  return answersMatchQuestions
+    ? { kind: 'restore', snapshot }
     : { kind: 'discard', shouldClear: true };
 };
 
@@ -117,7 +111,8 @@ export const useActiveGame = ({
         return;
       }
 
-      const { questions, snapshot } = restoration;
+      const { snapshot } = restoration;
+      const { questions } = snapshot;
       const round = {
         answers: snapshot.answers,
         mode: snapshot.mode,
