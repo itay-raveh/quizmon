@@ -1,4 +1,5 @@
 import type { PlayerSave } from '../src/game/player-data';
+import type { ActiveGameSnapshot } from '../src/game/active-game';
 import AxeBuilder from '@axe-core/playwright';
 import { buildLeagueQuestions } from '../src/game/game';
 import { getLeagueModifiers } from '../src/game/league';
@@ -66,7 +67,7 @@ const unlockLeague = (completed = false) => {
   );
 };
 
-test('opens the unlocked League from home and keeps its retry lineup', async ({
+test('refreshes League attempts and retries while preserving reloads', async ({
   page,
 }) => {
   await page.addInitScript(unlockLeague, false);
@@ -83,17 +84,20 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   ).toHaveCount(0);
   await page.getByRole('button', { name: 'Start League challenge' }).click();
 
-  const questions = buildLeagueQuestions(
-    catalogData as unknown as PokemonCatalog,
-    leagueSeed,
-    {
-      answerFlow: 'manual',
-      reduceMotion: false,
-      soundVolume: 0,
-      timerDisplay: 'seconds',
-    },
-  );
-  const first = questions[0]!;
+  const readAttempt = async () => {
+    await expect(
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toBeVisible();
+    return page.evaluate(
+      () =>
+        JSON.parse(
+          sessionStorage.getItem('quizmon.active-game.v1')!,
+        ) as ActiveGameSnapshot,
+    );
+  };
+  const original = await readAttempt();
+  expect(original.seed).not.toBe(leagueSeed);
+  const first = original.questions[0]!;
   await expect(
     page.getByRole('heading', { name: getQuestionTitle(first) }),
   ).toBeVisible();
@@ -111,14 +115,15 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   ).toBeVisible();
   await expect(page.getByText('Elite Trial I')).toBeVisible();
   await page.getByRole('button', { name: 'Retry League' }).click();
-  await expect(
-    page.getByRole('heading', { name: getQuestionTitle(first) }),
-  ).toBeVisible();
+  const retry = await readAttempt();
+  expect(retry.seed).not.toBe(original.seed);
+  expect(retry.questions).not.toEqual(original.questions);
 
   await page.reload();
-  await expect(
-    page.getByRole('heading', { name: getQuestionTitle(first) }),
-  ).toBeVisible();
+  const restored = await readAttempt();
+  expect(restored.seed).toBe(retry.seed);
+  expect(restored.questions).toEqual(retry.questions);
+  expect(restored.answers).toEqual(retry.answers);
   await page.getByRole('button', { name: 'Leave game' }).click();
 
   await page.getByRole('button', { name: 'Trainer profile' }).click();
@@ -129,9 +134,9 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   await page.getByRole('button', { name: 'Back', exact: true }).click();
   await leagueButton.click();
   await page.getByRole('button', { name: 'Start League challenge' }).click();
-  await expect(
-    page.getByRole('heading', { name: getQuestionTitle(first) }),
-  ).toBeVisible();
+  const restarted = await readAttempt();
+  expect(restarted.seed).not.toBe(retry.seed);
+  expect(restarted.questions).not.toEqual(retry.questions);
 });
 
 test('keeps Hall of Fame deep links on the challenge before a League clear', async ({

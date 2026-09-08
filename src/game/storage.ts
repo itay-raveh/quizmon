@@ -191,10 +191,8 @@ export const readTrainerStats = (): TrainerStats => {
   return getTrainerStats(data.results, data.pokedex);
 };
 
-export const getLeagueChallengeSeed = (): string => {
+export const createLeagueChallengeSeed = (): string => {
   const results = readResults();
-  if (results.league.seed) return results.league.seed;
-
   const seed = createRoundSeed();
   results.league.seed = seed;
   writeResults(results);

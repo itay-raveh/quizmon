@@ -1,7 +1,7 @@
 import { getLeagueLineup } from '@/game/question-history-storage';
 import { useCallback } from 'react';
-import { getLeagueModifiers, isLeagueVictory } from '@/game/league';
-import { getLeagueChallengeSeed } from '@/game/storage';
+import { getLeagueModifiers } from '@/game/league';
+import { createLeagueChallengeSeed } from '@/game/storage';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 import type { GameSession, StartGame } from './session';
 
@@ -18,30 +18,22 @@ export const useLeagueChallenge = ({
   session,
   startGame,
 }: LeagueChallengeOptions) => {
-  const startWithSeed = useCallback(
-    (seed: string) => {
-      if (!catalog) return;
-      const leagueModifiers = getLeagueModifiers(modifiers);
-      startGame(
-        getLeagueLineup(catalog, seed, leagueModifiers),
-        leagueModifiers,
-        { kind: 'league' },
-        seed,
-      );
-    },
-    [catalog, modifiers, startGame],
-  );
-
   const start = useCallback(() => {
-    startWithSeed(getLeagueChallengeSeed());
-  }, [startWithSeed]);
+    if (!catalog) return;
+    const seed = createLeagueChallengeSeed();
+    const leagueModifiers = getLeagueModifiers(modifiers);
+    startGame(
+      getLeagueLineup(catalog, seed, leagueModifiers),
+      leagueModifiers,
+      { kind: 'league' },
+      seed,
+    );
+  }, [catalog, modifiers, startGame]);
 
   const retry = useCallback(() => {
     if (session.phase !== 'results' || session.mode.kind !== 'league') return;
-    startWithSeed(
-      isLeagueVictory(session.result) ? getLeagueChallengeSeed() : session.seed,
-    );
-  }, [session, startWithSeed]);
+    start();
+  }, [session, start]);
 
   return { retry, start };
 };
