@@ -49,10 +49,6 @@ interface TypeBadgesProps {
   types: readonly string[];
 }
 
-interface MysteryTypeBadgeProps {
-  className?: string;
-}
-
 const TypeBadge = ({ type }: TypeBadgeProps) => {
   const src = typeBadgeSources[type];
   if (!src) return null;
@@ -69,10 +65,10 @@ const TypeBadge = ({ type }: TypeBadgeProps) => {
   );
 };
 
-export const MysteryTypeBadge = ({ className = '' }: MysteryTypeBadgeProps) => (
+export const MysteryTypeBadge = () => (
   <img
     aria-hidden="true"
-    className={`type-badge type-badge--mystery ${className}`.trim()}
+    className="type-badge type-badge--mystery"
     src={unknown}
     alt=""
     width="50"

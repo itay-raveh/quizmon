@@ -5,10 +5,7 @@ export const pick = <T>(
   random: () => number,
 ): T | undefined => values[Math.floor(random() * values.length)];
 
-export const shuffle = <T>(
-  values: readonly T[],
-  random: () => number = Math.random,
-): T[] => {
+export const shuffle = <T>(values: readonly T[], random: () => number): T[] => {
   const shuffled = [...values];
 
   for (let index = shuffled.length - 1; index > 0; index -= 1) {

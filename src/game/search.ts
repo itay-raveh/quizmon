@@ -12,7 +12,6 @@ export const normalizeSearch = (value: string): string =>
 export const findSearchMatches = <Entry extends SearchEntry>(
   entries: readonly Entry[],
   normalizedQuery: string,
-  limit = 6,
 ): Entry[] => {
   if (!normalizedQuery) return [];
 
@@ -24,5 +23,5 @@ export const findSearchMatches = <Entry extends SearchEntry>(
       if (leftStarts !== rightStarts) return leftStarts ? -1 : 1;
       return left.label.localeCompare(right.label);
     })
-    .slice(0, limit);
+    .slice(0, 6);
 };

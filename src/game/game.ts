@@ -33,7 +33,7 @@ import { createSeededRandom, shuffle } from './random';
 
 export const getQuestionCount = (
   availableCount: number,
-  requestedCount = TRAINING_QUESTION_COUNT,
+  requestedCount: number,
 ): number => {
   if (availableCount < 1) return 0;
   return Math.min(Math.max(1, requestedCount), availableCount);
@@ -66,7 +66,7 @@ const buildFirstAvailableQuestion = (
 export const buildQuestions = (
   catalog: PokemonCatalog,
   modifiers: Modifiers,
-  random: () => number = Math.random,
+  random: () => number,
   requestedCount = TRAINING_QUESTION_COUNT,
   history?: QuestionHistory,
 ): QuestionData[] => {
