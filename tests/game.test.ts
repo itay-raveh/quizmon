@@ -1,5 +1,5 @@
 import { catalog } from './fixtures/catalog';
-import { createSeededRandom } from '@/game/random';
+import { createSeededRandom, shuffle } from '@/game/random';
 import {
   buildQuestions,
   buildQuestionSequence,
@@ -9,14 +9,12 @@ import {
   getAnswerPoints,
   getScoreBreakdown,
   getQuestionCount,
-  getQuestionPromptText,
   getQuestionTitle,
   getQuestionTypeLabel,
   getResponseTime,
   getSpeedBonusPoints,
   getTrainingModifiers,
   normalizeModifiers,
-  shuffle,
 } from '@/game/game';
 import {
   formatDuration,
@@ -39,8 +37,14 @@ import {
   generations,
   type PokemonCatalog,
   type PokemonKnowledge,
+  type QuestionPrompt,
   type QuestionType,
 } from '@/game/types';
+
+const getQuestionPromptText = (prompt: QuestionPrompt): string =>
+  prompt.kind === 'text'
+    ? prompt.text
+    : `${prompt.before}${formatPokemonName(prompt.name)}${prompt.after}`;
 
 const makeKnowledge = (
   id: number,

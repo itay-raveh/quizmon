@@ -10,10 +10,8 @@ import {
   type PokemonCatalog,
   type QuestionCategory,
   type QuestionData,
-  type QuestionPrompt,
   type QuestionType,
 } from './types';
-import { formatPokemonName } from './format';
 import {
   buildQuestionType,
   coreQuestionTypes,
@@ -23,8 +21,6 @@ import {
 import type { Candidate, QuestionContext } from './questions/shared';
 import { shuffle } from './random';
 import { isChoice } from './validation';
-
-export { shuffle } from './random';
 
 export const defaultModifiers: Modifiers = {
   answerFlow: 'manual',
@@ -299,11 +295,6 @@ export const isQuestionAnswerCorrect = (
 
 export const getQuestionTitle = (question: QuestionData): string =>
   question.title ?? getCategoryLabel(question.category);
-
-export const getQuestionPromptText = (prompt: QuestionPrompt): string =>
-  prompt.kind === 'text'
-    ? prompt.text
-    : `${prompt.before}${formatPokemonName(prompt.name)}${prompt.after}`;
 
 export const getResponseTime = (
   answers: readonly Pick<SavedAnswerResult, 'responseMilliseconds'>[],
