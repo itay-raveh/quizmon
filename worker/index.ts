@@ -48,7 +48,7 @@ const fetchSprite = async (request: Request, url: URL): Promise<Response> => {
     });
   }
 
-  const headers = new Headers({
+  const headers = {
     'Cache-Control': `public, max-age=${SPRITE_CACHE_SECONDS}, immutable`,
     'Content-Type': url.pathname.endsWith('.gif')
       ? 'image/gif'
@@ -56,7 +56,7 @@ const fetchSprite = async (request: Request, url: URL): Promise<Response> => {
         ? 'image/svg+xml'
         : 'image/png',
     'X-Content-Type-Options': 'nosniff',
-  });
+  };
 
   return new Response(request.method === 'HEAD' ? null : response.body, {
     headers,
