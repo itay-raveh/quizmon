@@ -1,4 +1,3 @@
-import { questionLabels } from '../question-labels';
 import { getVersionSpritePath } from '../sprite-source';
 import {
   getOptionVisuals,
@@ -73,7 +72,6 @@ export const buildSilhouetteMatchQuestion: QuestionBuilder = (context) => {
     ),
     concealOptionLabels: true,
     optionVisuals: getOptionVisuals(context, options, undefined, true),
-    title: questionLabels['silhouette-match'],
   };
 };
 
@@ -81,22 +79,19 @@ export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;
 
-  return {
-    ...makeQuestion(
-      'identity',
-      target,
-      target.name,
-      pokemonOptions(context, target),
-      textPrompt('Who is hiding in this pixel peek?'),
-      {
-        focusX: pick([25, 50, 75], context.random) ?? 50,
-        focusY: pick([25, 50, 75], context.random) ?? 50,
-        kind: 'pixel-peek',
-        src: target.pokemon.sprite,
-      },
-    ),
-    title: questionLabels['pixel-peek'],
-  };
+  return makeQuestion(
+    'identity',
+    target,
+    target.name,
+    pokemonOptions(context, target),
+    textPrompt('Who is hiding in this pixel peek?'),
+    {
+      focusX: pick([25, 50, 75], context.random) ?? 50,
+      focusY: pick([25, 50, 75], context.random) ?? 50,
+      kind: 'pixel-peek',
+      src: target.pokemon.sprite,
+    },
+  );
 };
 
 export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
@@ -121,6 +116,5 @@ export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
     optionVisuals: getOptionVisuals(context, options, (pokemon, option) =>
       option === target.name ? pokemon.shinySprite : pokemon.sprite,
     ),
-    title: questionLabels['shiny-spotter'],
   };
 };

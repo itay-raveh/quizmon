@@ -1,4 +1,3 @@
-import { questionLabels } from '../question-labels';
 import { formatPokemonName } from '../format';
 import { shuffle } from '../random';
 import { statNames, type StatName } from '../types';
@@ -115,7 +114,6 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
       textPrompt('Which Pokémon does not belong?'),
     ),
     optionVisuals: getOptionVisuals(context, options),
-    title: questionLabels['odd-one-out'],
   };
 };
 
@@ -150,7 +148,6 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
       textPrompt(`Select every ${formatPokemonName(type)}-type Pokémon.`),
     ),
     optionVisuals: getOptionVisuals(context, options),
-    title: questionLabels['type-roundup'],
     visual: { kind: 'type-roundup', type },
   };
 };
@@ -189,7 +186,6 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
       pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
       { kind: 'pixel-sprite', src: target.pokemon.sprite },
     ),
-    title: questionLabels['evolution-shift'],
     visual: {
       evolution: {
         dexNumber: evolution.id,

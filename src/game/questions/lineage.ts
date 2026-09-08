@@ -1,4 +1,3 @@
-import { questionLabels } from '../question-labels';
 import { formatGeneration, formatPokemonName } from '../format';
 import { shuffle } from '../random';
 import { generations } from '../types';
@@ -53,7 +52,6 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
         `Select every Pokémon introduced in ${formatGeneration(generation)}.`,
       ),
     ),
-    title: questionLabels['generation-roundup'],
     visual: { kind: 'generation-roundup', generation },
     optionGenerations: Object.fromEntries(
       [...matching, ...others].map(({ name, pokemon }) => [
@@ -117,7 +115,6 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
         `Complete the evolution chain: ${formatPokemonName(before)} → ? → ${formatPokemonName(after)}.`,
       ),
     ),
-    title: questionLabels['evolution-link'],
     visual: {
       kind: 'evolution-link',
       before,

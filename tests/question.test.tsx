@@ -984,7 +984,6 @@ it.each(['Ivysaur', 'Bayleef'])(
           text: 'Complete the evolution chain: Bulbasaur → ? → Venusaur.',
         },
         questionType: 'evolution-link',
-        title: 'Evolution link',
         visual: {
           kind: 'evolution-link',
           before: 'bulbasaur',
@@ -1055,7 +1054,6 @@ it.each([
         text: 'Select every Pokémon introduced in Generation I.',
       },
       questionType: 'generation-roundup',
-      title: 'Generation roundup',
     },
   });
   expect(container.querySelectorAll('.pokemon-identity__number')).toHaveLength(

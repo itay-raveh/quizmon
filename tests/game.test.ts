@@ -573,7 +573,7 @@ describe('question building', () => {
 
   it('builds Counter Pick with exactly one matching answer', () => {
     const question = buildSingleQuestion('counter-pick', 'counter-pick');
-    expect(question?.title).toBe('Counter pick');
+    expect(getQuestionTitle(question!)).toBe('Counter pick');
     expect(question?.media.kind).toBe('pixel-sprite');
     expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
     expect(question?.visual?.kind).toBe('counter-pick');
@@ -639,7 +639,7 @@ describe('question building', () => {
 
   it('builds Evolution Shift from a real typing change', () => {
     const question = buildSingleQuestion('evolution-shift', 'evolution-shift');
-    expect(question?.title).toBe('Evolution shift');
+    expect(getQuestionTitle(question!)).toBe('Evolution shift');
     expect(question?.media.kind).toBe('pixel-sprite');
 
     const target = catalog.pokemon[question!.pokemonName]!;

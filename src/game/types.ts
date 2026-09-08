@@ -216,7 +216,6 @@ export interface QuestionData {
   prompt: QuestionPrompt;
   questionType: keyof typeof questionLabels;
   searchOptions?: PokemonSearchOption[];
-  title?: string;
   visual?: QuestionVisual;
 }
 

@@ -149,5 +149,6 @@ export const getCategoryLabel = (
       ? 'Scale comparison'
       : categoryLabels[category];
 
-export const getQuestionTitle = (question: QuestionData): string =>
-  question.title ?? getCategoryLabel(question.category);
+export const getQuestionTitle = (
+  question: Pick<QuestionData, 'questionType'>,
+): string => questionLabels[question.questionType];
