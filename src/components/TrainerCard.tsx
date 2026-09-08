@@ -3,7 +3,7 @@ import { site } from '@/app/site';
 import type { TrainerProfile } from '@/game/trainer-profile';
 import {
   getCardFinish,
-  trainerSpecialtyLabels,
+  trainerSpecialtyDetails,
   trainerViewLabels,
   type TrainerRank,
 } from '@/game/trainer';
@@ -59,7 +59,7 @@ export const TrainerCard = ({
           <h2>{profile.name || `${site.name} Trainer`}</h2>
           {profile.specialty ? (
             <p className="trainer-card__title">
-              <span>{trainerSpecialtyLabels[profile.specialty]}</span>
+              <span>{trainerSpecialtyDetails[profile.specialty].label}</span>
               <TrainerTitleMark earned specialty={profile.specialty} />
             </p>
           ) : null}

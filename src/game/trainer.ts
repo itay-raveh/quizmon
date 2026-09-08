@@ -3,31 +3,47 @@ import type { QuestionCategory } from './types';
 
 const TRAINER_SPECIALTY_GOAL = 10;
 
-export const trainerSpecialtyLabels = {
-  ability: 'Ability Specialist',
-  description: 'Field Researcher',
-  evolution: 'Evolution Specialist',
-  identity: 'Pokédex Specialist',
-  matchup: 'Battle Strategist',
-  move: 'Move Specialist',
-  stat: 'Stat Specialist',
-  type: 'Type Specialist',
-} as const satisfies Partial<Record<QuestionCategory, string>>;
+export const trainerSpecialtyDetails = {
+  ability: {
+    label: 'Ability Specialist',
+    description: 'Know which abilities a Pokémon can have.',
+  },
+  description: {
+    label: 'Field Researcher',
+    description: 'Match Pokédex entries to their Pokémon.',
+  },
+  evolution: {
+    label: 'Evolution Specialist',
+    description: 'Track how Pokémon types change through evolution.',
+  },
+  identity: {
+    label: 'Pokédex Specialist',
+    description:
+      'Identify Pokémon from sprites, silhouettes, crops, and colors.',
+  },
+  matchup: {
+    label: 'Battle Strategist',
+    description: 'Solve super-effective type and Pokémon matchups.',
+  },
+  move: {
+    label: 'Move Specialist',
+    description: 'Know which moves Pokémon learn by leveling up.',
+  },
+  stat: {
+    label: 'Stat Specialist',
+    description: 'Compare Pokémon stats to find the highest or lowest.',
+  },
+  type: {
+    label: 'Type Specialist',
+    description: 'Recognize Pokémon types and hidden type patterns.',
+  },
+} as const satisfies Partial<
+  Record<QuestionCategory, { label: string; description: string }>
+>;
 
-const trainerSpecialtyDescriptions = {
-  ability: 'Know which abilities a Pokémon can have.',
-  description: 'Match Pokédex entries to their Pokémon.',
-  evolution: 'Track how Pokémon types change through evolution.',
-  identity: 'Identify Pokémon from sprites, silhouettes, crops, and colors.',
-  matchup: 'Solve super-effective type and Pokémon matchups.',
-  move: 'Know which moves Pokémon learn by leveling up.',
-  stat: 'Compare Pokémon stats to find the highest or lowest.',
-  type: 'Recognize Pokémon types and hidden type patterns.',
-} as const satisfies Record<keyof typeof trainerSpecialtyLabels, string>;
-
-export type TrainerSpecialty = keyof typeof trainerSpecialtyLabels;
+export type TrainerSpecialty = keyof typeof trainerSpecialtyDetails;
 const trainerSpecialties = Object.keys(
-  trainerSpecialtyLabels,
+  trainerSpecialtyDetails,
 ) as TrainerSpecialty[];
 
 export type TrainerRank =
@@ -185,11 +201,11 @@ export const getTrainerTitles = (
     const current = stats.correctCategories[specialty] ?? 0;
     return {
       current,
-      description: trainerSpecialtyDescriptions[specialty],
+      description: trainerSpecialtyDetails[specialty].description,
       earned: current >= TRAINER_SPECIALTY_GOAL,
       equipped: specialty === equipped,
       goal: TRAINER_SPECIALTY_GOAL,
-      label: trainerSpecialtyLabels[specialty],
+      label: trainerSpecialtyDetails[specialty].label,
       specialty,
     };
   });
@@ -255,7 +271,7 @@ export const getTrainerProgressChanges = (
               earned: current === TRAINER_SPECIALTY_GOAL,
               goal: TRAINER_SPECIALTY_GOAL,
               kind: 'specialty',
-              label: trainerSpecialtyLabels[specialty],
+              label: trainerSpecialtyDetails[specialty].label,
               specialty,
             },
           ]

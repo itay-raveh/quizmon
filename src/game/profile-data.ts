@@ -1,5 +1,5 @@
 import { getLocalDate } from './daily';
-import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
+import { trainerSpecialtyDetails, type TrainerSpecialty } from './trainer';
 import { isDailyDate, isRecord } from './validation';
 
 const TRAINER_PROFILE_VERSION = 1;
@@ -36,7 +36,7 @@ export const normalizeTrainerProfile = (
     (profile.partnerPokemon !== null &&
       typeof profile.partnerPokemon !== 'string') ||
     (profile.specialty !== null &&
-      !Object.hasOwn(trainerSpecialtyLabels, profile.specialty ?? ''))
+      !Object.hasOwn(trainerSpecialtyDetails, profile.specialty ?? ''))
   ) {
     return null;
   }

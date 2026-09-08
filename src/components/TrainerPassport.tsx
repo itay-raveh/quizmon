@@ -19,7 +19,7 @@ import {
   getQualifiedTrainerSpecialties,
   getTrainerBadges,
   getTrainerRank,
-  trainerSpecialtyLabels,
+  trainerSpecialtyDetails,
   trainerViewLabels,
   type TrainerBadgeId,
   type TrainerSpecialty,
@@ -177,7 +177,7 @@ export const TrainerPassport = ({
     onProfileChange({ ...profile, specialty });
     setShareNotice({
       message: specialty
-        ? `${trainerSpecialtyLabels[specialty]} equipped.`
+        ? `${trainerSpecialtyDetails[specialty].label} equipped.`
         : 'Trainer title unequipped.',
       visible: true,
     });
