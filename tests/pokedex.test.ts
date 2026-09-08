@@ -8,7 +8,7 @@ import { getQuestionPokemon, registerPokedexAnswer } from '@/game/pokedex';
 import { createBackup, parseBackup, restoreBackup } from '@/game/backup';
 import { emptyPlayerData, parsePlayerSave } from '@/game/player-data';
 import { PLAYER_STORAGE_KEY, readPlayerSave } from '@/game/player-storage';
-import { questionTypes } from '@/game/questions/registry';
+import { questionTypes } from '@/game/questions/definitions';
 import { createSeededRandom } from '@/game/random';
 import {
   generations,

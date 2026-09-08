@@ -9,7 +9,7 @@ import {
 } from '@/game/trainer';
 import type { TrainerStats } from '@/game/storage';
 import { generations, type QuestionType } from '@/game/types';
-import { questionTypes } from '@/game/questions/registry';
+import { questionTypes } from '@/game/questions/definitions';
 
 const stats = (overrides: Partial<TrainerStats> = {}): TrainerStats => ({
   bestDailyStreak: 0,

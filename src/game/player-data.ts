@@ -6,7 +6,7 @@ import {
   TRAINER_NAME_MAX_LENGTH,
   type TrainerProfile,
 } from './profile-data';
-import { questionTypes } from './questions/registry';
+import { questionTypes } from './questions/definitions';
 import {
   normalizeResults,
   STREAK_VERSION,

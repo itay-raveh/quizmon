@@ -4,13 +4,12 @@ import {
   type RefObject,
   type SetStateAction,
 } from 'react';
-import { getQuestionTypeDescription, getQuestionTypeLabel } from '@/game/game';
 import {
-  questionRegistry,
+  questionDefinitions,
   questionTypeGroups,
   questionTypes,
   type QuestionTypeGroup,
-} from '@/game/questions/registry';
+} from '@/game/questions/definitions';
 import type { Modifiers, QuestionType } from '@/game/types';
 import { CaretDownIcon, QuestionIcon, XIcon } from './icons';
 import { SelectionTile } from './SelectionTile';
@@ -33,7 +32,7 @@ interface QuestionTypeSettingsProps extends Pick<
 const groupedQuestionTypes = questionTypeGroups.map((group) => ({
   ...group,
   types: questionTypes.filter(
-    (questionType) => questionRegistry[questionType].group === group.id,
+    (questionType) => questionDefinitions[questionType].group === group.id,
   ),
 }));
 
@@ -150,7 +149,7 @@ export const QuestionTypeSettings = ({
                   role="group"
                 >
                   {group.types.map((questionType) => {
-                    const label = getQuestionTypeLabel(questionType);
+                    const label = questionDefinitions[questionType].label;
                     const checked = selectedQuestionTypes.has(questionType);
                     return (
                       <div
@@ -206,8 +205,8 @@ export const QuestionTypeSettings = ({
         >
           <XIcon aria-hidden="true" weight="bold" />
         </SoundButton>
-        <strong>{getQuestionTypeLabel(explainedQuestionType)}</strong>
-        <p>{getQuestionTypeDescription(explainedQuestionType)}</p>
+        <strong>{questionDefinitions[explainedQuestionType].label}</strong>
+        <p>{questionDefinitions[explainedQuestionType].description}</p>
       </div>
     </>
   );

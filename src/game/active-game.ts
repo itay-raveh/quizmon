@@ -5,7 +5,7 @@ import {
   writeStoredJson,
 } from './browser-storage';
 import { normalizeModifiers } from './game';
-import { questionTypes } from './questions/registry';
+import { questionTypes } from './questions/definitions';
 import type { AnswerResult, GameMode, Modifiers } from './types';
 import { generations, questionCategories, trainingModes } from './types';
 import {

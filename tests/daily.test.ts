@@ -10,7 +10,10 @@ import {
   shouldAutoStartDaily,
 } from '@/game/daily';
 import { generations } from '@/game/types';
-import { questionRegistry, questionTypes } from '@/game/questions/registry';
+import {
+  questionDefinitions,
+  questionTypes,
+} from '@/game/questions/definitions';
 import {
   markDailyReminderOffered,
   shouldOfferDailyReminder,
@@ -67,7 +70,7 @@ describe('Daily Challenge', () => {
       schedule.map((questionType) =>
         questionType === 'champion'
           ? 'Champion question'
-          : questionRegistry[questionType].label,
+          : questionDefinitions[questionType].label,
       ),
     );
     expect(schedule.at(-1)).toBe('champion');

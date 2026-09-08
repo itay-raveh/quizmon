@@ -14,7 +14,7 @@ import {
   type PokemonCatalog,
   type QuestionData,
 } from './types';
-import { coreQuestionTypes } from './questions/registry';
+import { coreQuestionTypes } from './questions/definitions';
 import { createSeededRandom } from './random';
 
 const DAILY_CHALLENGE_VERSION = 11;

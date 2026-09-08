@@ -1,4 +1,4 @@
-import { questionTypes } from './questions/registry';
+import { questionTypes } from './questions/definitions';
 import {
   generations,
   questionCategories,

@@ -10,14 +10,9 @@ import {
   type PokemonCatalog,
   type QuestionCategory,
   type QuestionData,
-  type QuestionType,
 } from './types';
-import {
-  buildQuestionType,
-  coreQuestionTypes,
-  questionRegistry,
-  questionTypes,
-} from './questions/registry';
+import { coreQuestionTypes, questionTypes } from './questions/definitions';
+import { buildQuestionType } from './questions/registry';
 import type { Candidate, QuestionContext } from './questions/shared';
 import { shuffle } from './random';
 import { isChoice } from './validation';
@@ -272,13 +267,6 @@ export const getCategoryLabel = (
     : category === 'scale'
       ? 'Scale comparison'
       : categoryLabels[category];
-
-export const getQuestionTypeLabel = (questionType: QuestionType): string =>
-  questionRegistry[questionType].label;
-
-export const getQuestionTypeDescription = (
-  questionType: QuestionType,
-): string => questionRegistry[questionType].description;
 
 export const isQuestionAnswerCorrect = (
   question: QuestionData,

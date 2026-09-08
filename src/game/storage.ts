@@ -1,5 +1,5 @@
 import type { LeagueVictoryRecord } from './hall-of-fame';
-import { questionTypes } from './questions/registry';
+import { questionTypes } from './questions/definitions';
 import {
   readPlayerData,
   updatePlayerData,

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { questionTypes } from '../src/game/questions/registry';
+import { questionTypes } from '../src/game/questions/definitions';
 import { expect, seedBrowserRandom, test } from './fixtures';
 
 const geometry = (page: Page) =>

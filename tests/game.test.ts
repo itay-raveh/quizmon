@@ -10,7 +10,6 @@ import {
   getScoreBreakdown,
   getQuestionCount,
   getQuestionTitle,
-  getQuestionTypeLabel,
   getResponseTime,
   getSpeedBonusPoints,
   getTrainingModifiers,
@@ -24,9 +23,9 @@ import {
 } from '@/game/format';
 import {
   coreQuestionTypes,
-  questionRegistry,
+  questionDefinitions,
   questionTypes,
-} from '@/game/questions/registry';
+} from '@/game/questions/definitions';
 import { buildCounterPickQuestion } from '@/game/questions/battle';
 import {
   pokemonOptions,
@@ -199,13 +198,13 @@ describe('question building', () => {
   });
 
   it('keeps every selectable format in one complete registry', () => {
-    expect(Object.keys(questionRegistry)).toEqual(questionTypes);
+    expect(Object.keys(questionDefinitions)).toEqual(questionTypes);
     expect(
       questionTypes.every(
         (questionType) =>
-          questionRegistry[questionType].description &&
-          questionRegistry[questionType].group &&
-          questionRegistry[questionType].label,
+          questionDefinitions[questionType].description &&
+          questionDefinitions[questionType].group &&
+          questionDefinitions[questionType].label,
       ),
     ).toBe(true);
   });
@@ -241,7 +240,7 @@ describe('question building', () => {
 
     expect(questions).toHaveLength(questionTypes.length);
     expect(new Set(questions.map(getQuestionTitle))).toEqual(
-      new Set(questionTypes.map(getQuestionTypeLabel)),
+      new Set(questionTypes.map((type) => questionDefinitions[type].label)),
     );
     for (const question of questions) {
       expect(question.options).toEqual(
