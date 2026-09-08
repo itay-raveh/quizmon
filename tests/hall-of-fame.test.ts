@@ -1,4 +1,4 @@
-import catalogData from '@/game/data/pokemon.json';
+import { catalog } from './fixtures/catalog';
 import { createBackup, parseBackup, restoreBackup } from '@/game/backup';
 import { defaultModifiers } from '@/game/game';
 import { createLeagueVictoryRecord } from '@/game/hall-of-fame';
@@ -6,10 +6,10 @@ import { buildLeagueQuestions } from '@/game/league';
 import { emptyPlayerData, parsePlayerSave } from '@/game/player-data';
 import { PLAYER_STORAGE_KEY, readPlayerSave } from '@/game/player-storage';
 import { readTrainerStats, saveResult } from '@/game/storage';
-import type { GameResult, PokemonCatalog } from '@/game/types';
+import type { GameResult } from '@/game/types';
 
 const questions = buildLeagueQuestions(
-  catalogData as unknown as PokemonCatalog,
+  catalog,
   'record-test',
   defaultModifiers,
 );
@@ -22,7 +22,7 @@ const result: GameResult = {
     questionType: q.questionType,
     cluesUsed: 0,
   })),
-  contentVersion: catalogData.contentVersion,
+  contentVersion: catalog.contentVersion,
   correctCount: 15,
   questionCount: 15,
   score: 42000,
@@ -49,7 +49,7 @@ it('includes subjects, revealed evolutions and distractors but excludes types an
   expect(record.pokemon.length).toBeGreaterThan(15);
   expect(new Set(record.pokemon).size).toBe(record.pokemon.length);
   expect(
-    record.pokemon.every((name) => Object.hasOwn(catalogData.pokemon, name)),
+    record.pokemon.every((name) => Object.hasOwn(catalog.pokemon, name)),
   ).toBe(true);
   const champion = questions.at(-1)!;
   const championRecord = createLeagueVictoryRecord(

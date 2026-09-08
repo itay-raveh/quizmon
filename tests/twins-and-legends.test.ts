@@ -1,24 +1,6 @@
-import catalogData from '@/game/data/pokemon.json';
+import { catalog, createQuestionContext } from './fixtures/catalog';
 import { buildQuestionType } from '@/game/questions/registry';
-import { createSeededRandom } from '@/game/random';
-import {
-  generations,
-  type Generation,
-  type PokemonCatalog,
-} from '@/game/types';
-
-const catalog = catalogData as unknown as PokemonCatalog;
-const context = (
-  seed: string,
-  selected: readonly Generation[] = generations,
-) => ({
-  catalog,
-  pool: Object.entries(catalog.pokemon)
-    .filter(([, pokemon]) => selected.includes(pokemon.generation))
-    .map(([name, pokemon]) => ({ name, pokemon })),
-  random: createSeededRandom(seed),
-  used: new Set<string>(),
-});
+import { generations } from '@/game/types';
 
 describe('Type twins', () => {
   it.each(generations)(
@@ -26,7 +8,7 @@ describe('Type twins', () => {
     (generation) => {
       for (let seed = 0; seed < 10; seed += 1) {
         const question = buildQuestionType(
-          context(`twins-${seed}`, [generation]),
+          createQuestionContext(`twins-${seed}`, [generation]),
           'type-twins',
         );
         expect(question).toBeDefined();
@@ -49,7 +31,7 @@ describe('Type twins', () => {
   );
 
   it('matches reversed type order and rejects options that share only one type', () => {
-    const current = context('reversed');
+    const current = createQuestionContext('reversed');
     const base = catalog.pokemon.bulbasaur!;
     current.catalog = {
       ...catalog,
@@ -73,19 +55,21 @@ describe('Type twins', () => {
   });
 
   it('does not substitute a single-type target when no dual-type pair exists', () => {
-    const current = context('single-types');
+    const current = createQuestionContext('single-types');
     current.pool = current.pool.filter(
       ({ pokemon }) => pokemon.types.length === 1,
     );
     expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
     current.pool.push(
-      context('target').pool.find(({ name }) => name === 'charizard')!,
+      createQuestionContext('target').pool.find(
+        ({ name }) => name === 'charizard',
+      )!,
     );
     expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
   });
 
   it('skips type pairs that only exist within one evolution family', () => {
-    const current = context('ludicolo');
+    const current = createQuestionContext('ludicolo');
     current.pool = current.pool.filter(({ name }) =>
       ['lotad', 'lombre', 'ludicolo', 'bellsprout', 'abra', 'paras'].includes(
         name,
@@ -114,7 +98,7 @@ describe('Type twins', () => {
     'excludes the entire family of $target from every answer',
     ({ target, relatives, alternatives }) => {
       for (let seed = 0; seed < 10; seed += 1) {
-        const current = context(`family-${seed}`);
+        const current = createQuestionContext(`family-${seed}`);
         current.pool = current.pool.filter(({ name }) =>
           [target, ...relatives, ...alternatives].includes(name),
         );
@@ -131,7 +115,7 @@ describe('Type twins', () => {
   );
 
   it('skips targets when excluding relatives leaves fewer than three distractors', () => {
-    const current = context('few-unrelated');
+    const current = createQuestionContext('few-unrelated');
     current.pool = current.pool.filter(({ name }) =>
       ['mothim', 'butterfree', 'burmy', 'caterpie', 'ponyta'].includes(name),
     );
@@ -145,7 +129,7 @@ describe('Legend hunt', () => {
     (generation) => {
       for (let seed = 0; seed < 10; seed += 1) {
         const question = buildQuestionType(
-          context(`legends-${seed}`, [generation]),
+          createQuestionContext(`legends-${seed}`, [generation]),
           'legend-hunt',
         );
         expect(question).toBeDefined();
@@ -178,7 +162,7 @@ describe('Legend hunt', () => {
   );
 
   it('includes both Legendary and Mythical Pokémon and ordinary distractors', () => {
-    const current = context('both-kinds');
+    const current = createQuestionContext('both-kinds');
     current.pool = current.pool.filter(({ name }) =>
       ['mewtwo', 'mew', 'pikachu', 'eevee'].includes(name),
     );
@@ -196,7 +180,7 @@ describe('Legend hunt', () => {
   });
 
   it('skips pools without enough matches instead of presenting an invalid answer key', () => {
-    const current = context('no-legends');
+    const current = createQuestionContext('no-legends');
     current.pool = current.pool.filter(
       ({ pokemon }) => !pokemon.isLegendary && !pokemon.isMythical,
     );

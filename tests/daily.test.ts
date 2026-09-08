@@ -1,5 +1,5 @@
 import { isDailyDate } from '@/game/validation';
-import catalogData from '@/game/data/pokemon.json';
+import { catalog } from './fixtures/catalog';
 import { getQuestionTitle } from '@/game/game';
 import {
   buildDailyQuestions,
@@ -9,14 +9,12 @@ import {
   parseDailyDate,
   shouldAutoStartDaily,
 } from '@/game/daily';
-import { generations, type PokemonCatalog } from '@/game/types';
+import { generations } from '@/game/types';
 import { questionRegistry, questionTypes } from '@/game/questions/registry';
 import {
   markDailyReminderOffered,
   shouldOfferDailyReminder,
 } from '@/notifications/daily-reminder-storage';
-
-const catalog = catalogData as unknown as PokemonCatalog;
 
 describe('Daily Challenge', () => {
   it('builds the same seeded five-question challenge for a date', () => {

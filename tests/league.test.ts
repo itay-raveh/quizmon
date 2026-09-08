@@ -1,4 +1,4 @@
-import catalogData from '@/game/data/pokemon.json';
+import { catalog } from './fixtures/catalog';
 import {
   buildLeagueQuestions,
   getLeagueModifiers,
@@ -7,13 +7,7 @@ import {
   isLeagueVictory,
   LEAGUE_QUESTION_COUNT,
 } from '@/game/league';
-import {
-  generations,
-  type GameResult,
-  type PokemonCatalog,
-} from '@/game/types';
-
-const catalog = catalogData as unknown as PokemonCatalog;
+import { generations, type GameResult } from '@/game/types';
 
 describe('Quizmon League', () => {
   it('builds the deterministic 15-format championship lineup', () => {

@@ -1,4 +1,4 @@
-import catalogData from '@/game/data/pokemon.json';
+import { catalog } from './fixtures/catalog';
 import { createSeededRandom } from '@/game/random';
 import {
   buildQuestions,
@@ -41,8 +41,6 @@ import {
   type PokemonKnowledge,
   type QuestionType,
 } from '@/game/types';
-
-const catalog = catalogData as unknown as PokemonCatalog;
 
 const makeKnowledge = (
   id: number,

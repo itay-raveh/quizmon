@@ -1,4 +1,4 @@
-import catalogData from '@/game/data/pokemon.json';
+import { catalog, createQuestionContext } from './fixtures/catalog';
 import { getTrainingSettingsValidation } from '@/components/trainingSettingsModel';
 import {
   buildQuestions,
@@ -7,24 +7,7 @@ import {
 } from '@/game/game';
 import { buildQuestionType } from '@/game/questions/registry';
 import { createSeededRandom } from '@/game/random';
-import {
-  generations,
-  type PokemonCatalog,
-  type Generation,
-} from '@/game/types';
-
-const catalog = catalogData as unknown as PokemonCatalog;
-const context = (
-  seed: string,
-  selected: readonly Generation[] = generations,
-) => ({
-  catalog,
-  pool: Object.entries(catalog.pokemon)
-    .filter(([, pokemon]) => selected.includes(pokemon.generation))
-    .map(([name, pokemon]) => ({ name, pokemon })),
-  random: createSeededRandom(seed),
-  used: new Set<string>(),
-});
+import { generations, type Generation } from '@/game/types';
 
 describe('Evolution link', () => {
   it.each(generations)(
@@ -32,7 +15,7 @@ describe('Evolution link', () => {
     (generation) => {
       for (let seed = 0; seed < 15; seed += 1) {
         const question = buildQuestionType(
-          context(`link-${seed}`, [generation]),
+          createQuestionContext(`link-${seed}`, [generation]),
           'evolution-link',
         );
         expect(question).toBeDefined();
@@ -63,7 +46,7 @@ describe('Evolution link', () => {
 
   it('rejects branching answers and regional-form-only links', () => {
     for (const target of ['kirlia', 'linoone', 'mr-mime']) {
-      const current = context('ambiguous');
+      const current = createQuestionContext('ambiguous');
       const pokemon = catalog.pokemon[target]!;
       const names = new Set([
         target,
@@ -84,7 +67,7 @@ describe('Generation roundup', () => {
     const counts = new Set<number>();
     for (let seed = 0; seed < 30; seed += 1) {
       const question = buildQuestionType(
-        context(`roundup-${seed}`, ['I', 'II']),
+        createQuestionContext(`roundup-${seed}`, ['I', 'II']),
         'generation-roundup',
       );
       expect(question).toBeDefined();
@@ -119,7 +102,10 @@ describe('Generation roundup', () => {
 
   it('skips single-generation pools without shortening League Training or widening filters', () => {
     expect(
-      buildQuestionType(context('one', ['I']), 'generation-roundup'),
+      buildQuestionType(
+        createQuestionContext('one', ['I']),
+        'generation-roundup',
+      ),
     ).toBeUndefined();
     const questions = buildQuestions(
       catalog,

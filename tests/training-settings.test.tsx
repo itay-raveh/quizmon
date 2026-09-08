@@ -1,12 +1,10 @@
 import { useRef, useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import catalogData from '@/game/data/pokemon.json';
+import { catalog } from './fixtures/catalog';
 import { defaultModifiers } from '@/game/game';
-import type { Modifiers, PokemonCatalog } from '@/game/types';
+import type { Modifiers } from '@/game/types';
 import { TrainingSettings } from '@/components/TrainingSettings';
 import { getTrainingSettingsValidation } from '@/components/trainingSettingsModel';
-
-const catalog = catalogData as unknown as PokemonCatalog;
 
 const TrainingSettingsHarness = ({ initial }: { initial: Modifiers }) => {
   const [draft, setDraft] = useState(initial);

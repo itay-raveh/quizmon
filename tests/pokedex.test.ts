@@ -1,4 +1,4 @@
-import catalogData from '@/game/data/pokemon.json';
+import { catalog } from './fixtures/catalog';
 import {
   buildQuestions,
   defaultModifiers,
@@ -12,13 +12,11 @@ import { questionTypes } from '@/game/questions/registry';
 import { createSeededRandom } from '@/game/random';
 import {
   generations,
-  type PokemonCatalog,
   type QuestionData,
   type QuestionType,
 } from '@/game/types';
 import { parseTrainerRoute, setTrainerRoute } from '@/app/trainer-route';
 
-const catalog = catalogData as unknown as PokemonCatalog;
 const questionFor = (questionType: QuestionType) => {
   const [question] = buildQuestions(
     catalog,
