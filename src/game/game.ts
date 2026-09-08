@@ -114,10 +114,10 @@ export const normalizeModifiers = (value: unknown): Modifiers => {
 export const filterPokemon = (
   catalog: PokemonCatalog,
   modifiers: Modifiers,
-): string[] =>
+): Candidate[] =>
   Object.entries(catalog.pokemon)
     .filter(([, pokemon]) => modifiers.generations.includes(pokemon.generation))
-    .map(([name]) => name);
+    .map(([name, pokemon]) => ({ name, pokemon }));
 
 export const getQuestionCount = (
   availableCount: number,
@@ -133,9 +133,7 @@ const createQuestionContext = (
   random: () => number,
 ): QuestionContext => ({
   catalog,
-  pool: filterPokemon(catalog, modifiers)
-    .map((name) => ({ name, pokemon: catalog.pokemon[name] }))
-    .filter((candidate): candidate is Candidate => Boolean(candidate.pokemon)),
+  pool: filterPokemon(catalog, modifiers),
   random,
   used: new Set(),
 });

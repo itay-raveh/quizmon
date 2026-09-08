@@ -211,14 +211,19 @@ describe('question building', () => {
   });
 
   it('filters the normalized catalog by generation', () => {
-    const names = filterPokemon(catalog, {
+    const candidates = filterPokemon(catalog, {
       ...defaultModifiers,
       generations: ['IX'],
     });
 
-    expect(names.length).toBeGreaterThan(100);
+    expect(candidates.length).toBeGreaterThan(100);
+    expect(candidates.every(({ pokemon }) => pokemon.generation === 'IX')).toBe(
+      true,
+    );
     expect(
-      names.every((name) => catalog.pokemon[name]?.generation === 'IX'),
+      candidates.every(
+        ({ name, pokemon }) => pokemon === catalog.pokemon[name],
+      ),
     ).toBe(true);
   });
 
