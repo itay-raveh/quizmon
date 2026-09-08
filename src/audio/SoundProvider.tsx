@@ -26,7 +26,7 @@ interface ScoreCountControls {
   stop: () => void;
 }
 
-type UseSound = (typeof import('use-sound'))['default'];
+type UseSound = (typeof import('./use-sound'))['default'];
 
 const silentScoreCount: ScoreCountControls = {
   play: () => undefined,
@@ -170,7 +170,7 @@ export const SoundProvider = ({
     const prepare = () => {
       if (loading) return;
       loading = true;
-      void import('use-sound')
+      void import('./use-sound')
         .then((module) => {
           if (active) setUseSound(() => module.default);
         })
