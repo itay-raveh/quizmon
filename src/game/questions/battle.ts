@@ -109,15 +109,17 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
 };
 
 export const buildCounterPickQuestion: QuestionBuilder = (context) => {
-  const fresh = context.pool.filter(({ name }) => !context.used.has(name));
-  const repeated = context.pool.filter(({ name }) => context.used.has(name));
-  const targets =
-    context.history || context.rotation !== undefined
-      ? orderTargets(context, context.pool)
-      : [
-          ...shuffle(fresh, context.random),
-          ...shuffle(repeated, context.random),
-        ];
+  let targets: Candidate[];
+  if (context.history || context.rotation !== undefined) {
+    targets = orderTargets(context, context.pool);
+  } else {
+    const fresh = context.pool.filter(({ name }) => !context.used.has(name));
+    const repeated = context.pool.filter(({ name }) => context.used.has(name));
+    targets = [
+      ...shuffle(fresh, context.random),
+      ...shuffle(repeated, context.random),
+    ];
+  }
 
   for (const multiplier of shuffle(matchupMultipliers, context.random)) {
     for (const target of targets) {

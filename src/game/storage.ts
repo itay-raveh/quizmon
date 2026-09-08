@@ -69,6 +69,8 @@ const addResultToProgress = (
     mode.kind === 'training' &&
     result.questionCount === TRAINING_QUESTION_COUNT &&
     isLeagueTraining(modifiers);
+  const earnedQuickAttack =
+    isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60;
 
   return {
     championAnswersWithoutClues,
@@ -79,12 +81,8 @@ const addResultToProgress = (
     masteryRounds: progress.masteryRounds + Number(isLeagueRound && isPerfect),
     quickAttackRounds:
       (progress.quickAttackRounds ?? Number(progress.quickAttackCompleted)) +
-      Number(
-        isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60,
-      ),
-    quickAttackCompleted:
-      progress.quickAttackCompleted ||
-      (isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60),
+      Number(earnedQuickAttack),
+    quickAttackCompleted: progress.quickAttackCompleted || earnedQuickAttack,
     version: TRAINER_PROGRESS_VERSION,
   };
 };
