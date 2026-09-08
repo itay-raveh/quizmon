@@ -199,7 +199,6 @@ describe('question building', () => {
     expect(
       questionTypes.every(
         (questionType) =>
-          questionRegistry[questionType].category &&
           questionRegistry[questionType].description &&
           questionRegistry[questionType].group &&
           questionRegistry[questionType].label,
