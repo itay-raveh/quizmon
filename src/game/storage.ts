@@ -188,7 +188,7 @@ export const saveResult = (
   modifiers: Modifiers = defaultModifiers,
   victory?: LeagueVictoryRecord,
 ): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
-  const results = readResults();
+  const { results, hallOfFame } = readPlayerData();
   const recordProgress = () => {
     results.progress = addResultToProgress(
       results.progress,
@@ -223,7 +223,6 @@ export const saveResult = (
   }
 
   if (mode.kind === 'league') {
-    const hallOfFame = readPlayerData().hallOfFame;
     if (victory && hallOfFame.some(({ id }) => id === victory.id)) {
       return { best: result, isNewBest: false, isSaved: true };
     }
