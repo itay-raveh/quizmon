@@ -5,7 +5,7 @@ import { registerPokedexAnswer } from '@/game/pokedex';
 import { useCallback, type Dispatch } from 'react';
 import { clearActiveGame } from '@/game/active-game';
 import { trackGameCompleted } from '@/game/analytics';
-import { calculateScore, getResponseTime, SCORE_VERSION } from '@/game/game';
+import { calculateScore, getResponseTime, SCORE_VERSION } from '@/game/scoring';
 import { getTrainerStats, readTrainerStats, saveResult } from '@/game/storage';
 import { getTrainerProgressChanges } from '@/game/trainer';
 import type { AnswerResult, GameResult } from '@/game/types';

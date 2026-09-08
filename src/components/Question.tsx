@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { getModeLabel } from '@/game/daily';
-import { getAnswerPoints, getQuestionTitle } from '@/game/game';
+import { getAnswerPoints } from '@/game/scoring';
+import { getQuestionTitle } from '@/game/questions/definitions';
 import { getLeagueStageLabel } from '@/game/league';
 import {
   formatDuration,

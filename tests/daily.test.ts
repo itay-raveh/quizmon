@@ -1,6 +1,11 @@
 import { isDailyDate } from '@/game/validation';
 import { catalog } from './fixtures/catalog';
-import { buildDailyQuestions, getQuestionTitle } from '@/game/game';
+import { buildDailyQuestions } from '@/game/game';
+import {
+  getQuestionTitle,
+  questionDefinitions,
+  questionTypes,
+} from '@/game/questions/definitions';
 import {
   getDailyModifiers,
   getDailyQuestionTypes,
@@ -9,10 +14,7 @@ import {
   shouldAutoStartDaily,
 } from '@/game/daily';
 import { generations } from '@/game/types';
-import {
-  questionDefinitions,
-  questionTypes,
-} from '@/game/questions/definitions';
+
 import {
   markDailyReminderOffered,
   shouldOfferDailyReminder,

@@ -10,7 +10,7 @@ import {
   getAnswerPoints,
   getSpeedBonusPoints,
   isQuestionAnswerCorrect,
-} from '@/game/game';
+} from '@/game/scoring';
 import {
   answerFlowDelays,
   type AnswerFlow,

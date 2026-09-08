@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useGameSounds } from '@/audio/sound';
-import { getCategoryLabel, getScoreBreakdown } from '@/game/game';
+import { getCategoryLabel } from '@/game/questions/definitions';
+import { getScoreBreakdown } from '@/game/scoring';
 import { getLeagueStage, isLeagueVictory } from '@/game/league';
 import {
   formatDailyDate,
