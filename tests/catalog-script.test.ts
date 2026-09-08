@@ -172,7 +172,7 @@ const makeClient = (): CatalogClient => ({
             { base_stat: 50, stat: { name: 'defense' } },
             { base_stat: 50, stat: { name: 'special-attack' } },
             { base_stat: 50, stat: { name: 'special-defense' } },
-            { base_stat: 50, stat: { name: 'speed' } },
+            { base_stat: 75, stat: { name: 'hp' } },
           ],
           types: [{ slot: 1, type: { name: 'normal', url: '/type/1' } }],
         };
@@ -241,6 +241,14 @@ describe('catalog generation', () => {
       shinySprite: '/sprites/pokemon/shiny/1.png',
       sprite: '/sprites/pokemon/1.png',
       spriteMeasurements: [0.25, 0.5, 0.5, 0.5, 0.75],
+      stats: {
+        hp: 75,
+        attack: 50,
+        defense: 50,
+        'special-attack': 50,
+        'special-defense': 50,
+        speed: 0,
+      },
       types: ['normal'],
     });
     expect(catalog.pokemon['species-2']).toMatchObject({

@@ -87,11 +87,11 @@ const isEnglish = ({ language }: { language: { name: string } }): boolean =>
   language.name === 'en';
 
 const getStats = (pokemon: Pokemon): Record<StatName, number> => {
-  const values = Object.fromEntries(
+  const values = new Map(
     pokemon.stats.map(({ base_stat, stat }) => [stat.name, base_stat]),
-  ) as Partial<Record<StatName, number>>;
+  );
   return Object.fromEntries(
-    statNames.map((name) => [name, values[name] ?? 0]),
+    statNames.map((name) => [name, values.get(name) ?? 0]),
   ) as Record<StatName, number>;
 };
 
