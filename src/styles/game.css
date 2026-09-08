@@ -197,7 +197,8 @@
   object-fit: fill;
 }
 
-.question-visual__roundup-type .type-badge {
+.question-visual__roundup-type .type-badge,
+.answer__type-choice .type-badge {
   width: 4.6875rem;
   height: 1.875rem;
 }
@@ -948,11 +949,6 @@
 .answer__type-choice,
 .question__types {
   justify-content: center;
-}
-
-.answer__type-choice .type-badge {
-  width: 4.6875rem;
-  height: 1.875rem;
 }
 
 .question__types {

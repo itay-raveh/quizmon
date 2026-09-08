@@ -1494,7 +1494,8 @@
   gap: 0.2rem;
 }
 
-.trainer-pokedex__missing small {
+.trainer-pokedex__missing small,
+.trainer-pokedex__entry .pokemon-identity__number {
   font-family: var(--font-data);
   font-size: var(--text-mini);
 }
@@ -1502,11 +1503,6 @@
 .trainer-pokedex__entry .pokemon-identity {
   display: grid;
   gap: 0.2rem;
-}
-
-.trainer-pokedex__entry .pokemon-identity__number {
-  font-family: var(--font-data);
-  font-size: var(--text-mini);
 }
 
 .trainer-pokedex__entry .pokemon-identity__name {
