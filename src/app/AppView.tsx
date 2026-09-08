@@ -8,6 +8,7 @@ import { LeaveGameDialog } from '@/components/LeaveGameDialog';
 import { ModifiersDialog } from '@/components/ModifiersDialog';
 import { MotionProvider } from '@/components/MotionProvider';
 import { DailyReminderProvider } from '@/notifications/DailyReminderProvider';
+import { InstallProvider } from '@/pwa/InstallProvider';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
 import { TrainerPassport } from '@/components/TrainerPassport';
@@ -241,17 +242,19 @@ export const AppView = (props: AppViewProps) => (
       prepareScoreCount={props.session.phase !== 'landing'}
       volume={props.modifiers.soundVolume}
     >
-      <DailyReminderProvider>
-        <div
-          className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
-        >
-          <div className="background" aria-hidden="true" />
-          <main>
-            <AppScreen {...props} />
-          </main>
-          <AppOverlays {...props} />
-        </div>
-      </DailyReminderProvider>
+      <InstallProvider>
+        <DailyReminderProvider>
+          <div
+            className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
+          >
+            <div className="background" aria-hidden="true" />
+            <main>
+              <AppScreen {...props} />
+            </main>
+            <AppOverlays {...props} />
+          </div>
+        </DailyReminderProvider>
+      </InstallProvider>
     </SoundProvider>
   </MotionProvider>
 );

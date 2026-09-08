@@ -9,6 +9,7 @@ import {
 } from '@/game/types';
 import { Checkbox } from './Checkbox';
 import { DailyReminderSetting } from './DailyReminderSetting';
+import { InstallSetting } from './InstallSetting';
 import { SelectionTile } from './SelectionTile';
 
 interface ExperienceSettingsProps {
@@ -36,6 +37,7 @@ export const ExperienceSettings = ({
 
   return (
     <div className="experience-settings">
+      <InstallSetting />
       <fieldset className="experience-setting">
         <legend>Daily Challenge Reminder</legend>
         <DailyReminderSetting />

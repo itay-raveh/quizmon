@@ -10,7 +10,8 @@ export const DailyReminderSetting = () => {
   if (status === 'install-required') {
     return (
       <p className="experience-status">
-        Add Quizmon to your Home Screen, then open it there to turn this on.
+        Install Quizmon, then open it from your Home Screen to turn on
+        reminders.
       </p>
     );
   }

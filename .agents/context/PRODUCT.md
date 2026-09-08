@@ -41,6 +41,9 @@ Players open Quizmon in a browser, take the Daily Challenge once, configure a te
 - Exports either Trainer Card face as a shareable PNG without adding an account or backend identity.
 - Awards 1,000 knowledge points for a standard correct answer, adds a quick-answer bonus that halves every five seconds, and adds a mastery bonus weighted by accuracy. Champion knowledge points decrease as clues are revealed. The interface shows the earned score without presenting a maximum.
 - Must remain responsive, keyboard-operable, and usable without an account.
+- Offers installation in Settings under Experience and between the Daily score and achievement progress. The Daily offer shares one space with reminders, remembers installation dismissal on the device, and never follows installation with another permission request in the same result view.
+- Uses the browser's install prompt when available and a player-opened instructions dialog for iOS, Firefox on Android or supported Windows versions, and Safari on Mac. Installation controls stay hidden in the installed app and where no supported installation journey is known. Notification permission remains a separate choice.
+- Apple installation instructions explain how to transfer saved progress using the existing Backup and Restore controls, because Home Screen and Dock apps do not inherit browser local storage.
 - Must preserve the existing game mechanics and static-web deployment model during visual work.
 - Must not imply affiliation with Nintendo, Game Freak, or The Pokémon Company.
 

@@ -12,6 +12,7 @@ import {
 } from '@/game/browser-storage';
 import { getLocalDate } from '@/game/daily';
 import { readDailyResult } from '@/game/storage';
+import { isIos, isStandalone } from '@/pwa/install-platform';
 import { VAPID_PUBLIC_KEY } from './config';
 import {
   DailyReminderContext,
@@ -20,14 +21,6 @@ import {
 
 const SUBSCRIPTION_ID_KEY = 'quizmon.daily-reminder-subscription.v1';
 const LAST_COMPLETED_DAILY_KEY = 'quizmon.daily-reminder-last-completed.v1';
-
-const isIos = () =>
-  /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-const isStandalone = () =>
-  window.matchMedia?.('(display-mode: standalone)').matches === true ||
-  (navigator as Navigator & { standalone?: boolean }).standalone === true;
 
 const supportsPush = () =>
   'Notification' in window &&

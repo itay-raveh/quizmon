@@ -211,16 +211,16 @@ export const Results = ({
         </p>
       ) : null}
 
+      {mode.kind === 'daily' && resultSaved ? (
+        <DailyReminderPrompt dailyDate={mode.date} />
+      ) : null}
+
       <TrainerProgressSummary
         leagueVictory={leagueVictory}
         onOpenTrainerCard={onOpenTrainerCard}
         onOpenHallOfFame={onOpenHallOfFame}
         progressChanges={progressChanges}
       />
-
-      {mode.kind === 'daily' && resultSaved ? (
-        <DailyReminderPrompt dailyDate={mode.date} />
-      ) : null}
 
       {mode.kind !== 'league' ? (
         <div className="results__actions results__actions--paired">
