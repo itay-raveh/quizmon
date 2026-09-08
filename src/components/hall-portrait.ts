@@ -39,21 +39,21 @@ export const arrangeGroup = (
   return Array.from({ length: rowCount }, (_, row) => {
     const count = Math.ceil((sorted.length - offset) / (rowCount - row));
     const ranked = sorted.slice(offset, offset + count);
+    const width = Math.min(28, 175 / Math.max(count, 6));
     const members = [
       ...ranked.filter((_, index) => index % 2 === 0),
       ...ranked.filter((_, index) => index % 2 === 1).reverse(),
-    ];
+    ].map((name) => {
+      const size = sizes.get(name) ?? fallbackSpriteMeasurements;
+      return { name, size, occupied: size.width * width };
+    });
     offset += count;
-    const width = Math.min(28, 175 / Math.max(count, 6));
-    const bounds = members.map(
-      (name) => sizes.get(name) ?? fallbackSpriteMeasurements,
-    );
-    const occupied = bounds.map((size) => size.width * width);
-    const total = occupied.reduce((sum, value) => sum + value, 0);
+    const total = members.reduce((sum, { occupied }) => sum + occupied, 0);
     const packing = Math.min(0.9, 84 / Math.max(total, 1));
     const span = total * packing;
     const averageHeight =
-      bounds.reduce((sum, size) => sum + size.height, 0) / Math.max(count, 1);
+      members.reduce((sum, { size }) => sum + size.height, 0) /
+      Math.max(count, 1);
     if (row > 0) {
       baseline += Math.min(
         averageHeight * width * 1.12 * 0.58,
@@ -61,9 +61,8 @@ export const arrangeGroup = (
       );
     }
     let cursor = 50 - span / 2 + (count > 1 ? (row % 2 ? 1.5 : -1.5) : 0);
-    return members.map((name, index) => {
-      const size = bounds[index]!;
-      const slot = occupied[index]! * packing;
+    return members.map(({ name, size, occupied }) => {
+      const slot = occupied * packing;
       const center = cursor + slot / 2;
       cursor += slot;
       const position = span ? (center - 50) / span : 0;
