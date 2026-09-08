@@ -1,6 +1,5 @@
-import { trainerTierLabels } from '@/game/trainer';
+import { trainerTierLabels, type TrainerTitle } from '@/game/trainer';
 import { TrainerTierProgress } from './TrainerTierProgress';
-import type { TrainerTitle } from '@/game/trainer';
 import { DialogCloseButton } from './DialogCloseButton';
 import { GameButton } from './GameButton';
 import { useModalDialog } from './dialog';

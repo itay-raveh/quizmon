@@ -1,5 +1,4 @@
 import { isQuestionData } from './question-lineup';
-import type { QuestionData } from './types';
 import { readPlayerSave } from './player-storage';
 import {
   readStoredJson,
@@ -8,8 +7,15 @@ import {
 } from './browser-storage';
 import { normalizeModifiers } from './modifiers';
 import { questionTypes } from './questions/definitions';
-import type { AnswerResult, GameMode, Modifiers } from './types';
-import { generations, questionCategories, trainingModes } from './types';
+import {
+  generations,
+  questionCategories,
+  trainingModes,
+  type AnswerResult,
+  type GameMode,
+  type Modifiers,
+  type QuestionData,
+} from './types';
 import {
   isDailyDate,
   isChoice,

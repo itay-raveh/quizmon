@@ -1,8 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { buildQuestions } from '../src/game/game';
 import { defaultModifiers } from '../src/game/modifiers';
-import { emptyPlayerData } from '../src/game/player-data';
-import type { PlayerSave } from '../src/game/player-data';
+import { emptyPlayerData, type PlayerSave } from '../src/game/player-data';
 import { createSeededRandom } from '../src/game/random';
 import { getQuestionPokemon } from '../src/game/pokedex';
 import { generations, type PokemonCatalog } from '../src/game/types';

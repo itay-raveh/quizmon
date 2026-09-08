@@ -1,15 +1,21 @@
 import { readPlayerData } from '@/game/player-storage';
-import { TRAINING_QUESTION_COUNT } from '@/game/modifiers';
+import {
+  getTrainingModifiers,
+  TRAINING_QUESTION_COUNT,
+} from '@/game/modifiers';
 import { useCallback, useRef, useState } from 'react';
 import { buildQuestions } from '@/game/game';
-import { getTrainingModifiers } from '@/game/modifiers';
 import { createRoundSeed, createSeededRandom } from '@/game/random';
 import {
   markGenerationPromptAnswered,
   shouldShowGenerationPrompt,
 } from '@/game/settings-storage';
-import { generations } from '@/game/types';
-import type { Generation, Modifiers, PokemonCatalog } from '@/game/types';
+import {
+  generations,
+  type Generation,
+  type Modifiers,
+  type PokemonCatalog,
+} from '@/game/types';
 import type { GameSession, StartGame } from './session';
 
 interface TrainingGameOptions {

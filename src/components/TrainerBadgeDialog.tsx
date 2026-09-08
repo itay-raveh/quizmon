@@ -1,6 +1,5 @@
-import { trainerTierLabels } from '@/game/trainer';
+import { trainerTierLabels, type TrainerBadge } from '@/game/trainer';
 import { TrainerTierProgress } from './TrainerTierProgress';
-import type { TrainerBadge } from '@/game/trainer';
 import { DialogCloseButton } from './DialogCloseButton';
 import { useModalDialog } from './dialog';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
