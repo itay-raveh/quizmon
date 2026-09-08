@@ -78,7 +78,7 @@ export const createCatalogClient = (
 
 const cleanText = (value: string): string =>
   value
-    .replace(/\u00ad/g, '')
+    .replaceAll('\u00ad', '')
     .replace(/pokémon/giu, 'Pokémon')
     .replace(/\s+/g, ' ')
     .trim();
@@ -122,16 +122,16 @@ const getSpriteVersion = (
 };
 
 const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
+  const versions = pokemon.sprites.versions as unknown as Record<
+    string,
+    Record<string, VersionSpriteSet>
+  >;
   return {
     generations: generations.flatMap((generation) => {
-      const versions = pokemon.sprites.versions as unknown as Record<
-        string,
-        Record<string, VersionSpriteSet>
-      >;
       const generationSprites =
         versions[`generation-${generation.toLowerCase()}`];
-      const front = new Set<string>();
-      const back = new Set<string>();
+      const front: string[] = [];
+      const back: string[] = [];
 
       for (const [version, sprites] of Object.entries(
         generationSprites ?? {},
@@ -151,15 +151,15 @@ const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
           'back',
           pokemon.id,
         );
-        if (frontVersion) front.add(frontVersion);
-        if (backVersion) back.add(backVersion);
+        if (frontVersion) front.push(frontVersion);
+        if (backVersion) back.push(backVersion);
       }
 
-      return front.size > 0 || back.size > 0
+      return front.length > 0 || back.length > 0
         ? [
             {
-              back: [...back].sort(),
-              front: [...front].sort(),
+              back: back.sort(),
+              front: front.sort(),
               generation,
             },
           ]
