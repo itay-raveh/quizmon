@@ -8,19 +8,21 @@ import {
   saveResult,
 } from '@/game/storage';
 import { defaultModifiers } from '@/game/game';
-import type { GameResult } from '@/game/types';
+import type { AnswerResult, GameResult } from '@/game/types';
+
+const correctAnswer: AnswerResult = {
+  category: 'identity',
+  cluesUsed: 0,
+  correct: true,
+  generation: 'I',
+  pokemonName: 'pikachu',
+  points: 1_000,
+  questionType: 'pokedex-scan',
+};
 
 const result: GameResult = {
   answers: [
-    {
-      category: 'identity',
-      cluesUsed: 0,
-      correct: true,
-      generation: 'I',
-      pokemonName: 'pikachu',
-      points: 1_000,
-      questionType: 'pokedex-scan',
-    },
+    correctAnswer,
     {
       category: 'stat',
       cluesUsed: 0,
@@ -245,12 +247,10 @@ describe('saved results', () => {
 
   it('tracks League mastery without rewarding perfect Quick rounds', () => {
     const perfectAnswers = Array.from({ length: 10 }, (_, index) => ({
+      ...correctAnswer,
       category: index === 9 ? ('champion' as const) : ('identity' as const),
-      cluesUsed: 0,
-      correct: true,
       generation: index % 2 === 0 ? ('I' as const) : ('II' as const),
       pokemonName: `pokemon-${index}`,
-      points: 1_000,
       questionType:
         index === 9 ? ('champion' as const) : ('pokedex-scan' as const),
     }));
@@ -283,13 +283,8 @@ describe('saved results', () => {
 
   it('keeps knowledge progress but pauses performance badges under custom rules', () => {
     const answers = Array.from({ length: 10 }, (_, index) => ({
-      category: 'identity' as const,
-      cluesUsed: 0,
-      correct: true,
-      generation: 'I' as const,
+      ...correctAnswer,
       pokemonName: `pokemon-${index}`,
-      points: 1_000,
-      questionType: 'pokedex-scan' as const,
     }));
     const perfect = {
       ...result,
@@ -314,13 +309,10 @@ describe('saved results', () => {
 
   it('requires both speed and accuracy for Quick Attack', () => {
     const answers = Array.from({ length: 10 }, (_, index) => ({
-      category: 'identity' as const,
-      cluesUsed: 0,
+      ...correctAnswer,
       correct: index < 8,
-      generation: 'I' as const,
       pokemonName: `pokemon-${index}`,
       points: index < 8 ? 1_000 : 0,
-      questionType: 'pokedex-scan' as const,
     }));
     const standard = {
       ...result,
@@ -360,13 +352,8 @@ describe('saved results', () => {
   it('keeps one League lineup until a perfect challenge clears it', () => {
     const seed = getLeagueChallengeSeed();
     const answers = Array.from({ length: 15 }, (_, index) => ({
-      category: 'identity' as const,
-      cluesUsed: 0,
-      correct: true,
-      generation: 'I' as const,
+      ...correctAnswer,
       pokemonName: `league-${index}`,
-      points: 1_000,
-      questionType: 'pokedex-scan' as const,
     }));
     const leagueResult = {
       ...result,
