@@ -114,15 +114,17 @@ const trainerBadgeDefinitions = [
     id: 'many-paths',
     label: 'Many Paths',
     milestones: (stats) =>
-      [
-        [10, 1],
-        [15, 10],
-        [18, 50],
-      ].map(([goal, minimum]) => ({
+      (
+        [
+          [10, 1],
+          [15, 10],
+          [18, 50],
+        ] as const
+      ).map(([goal, minimum]) => ({
         current: questionTypes.filter(
-          (type) => (stats.correctQuestionTypes[type] ?? 0) >= minimum!,
+          (type) => (stats.correctQuestionTypes[type] ?? 0) >= minimum,
         ).length,
-        goal: goal!,
+        goal,
         requirement: `Answer ${minimum} question${minimum === 1 ? '' : 's'} correctly in each of ${goal} different formats`,
       })),
   },
@@ -300,16 +302,15 @@ export const getTrainerTitles = (
             `Answer ${goal.toLocaleString()} questions correctly in this specialty`,
         ),
       ),
-      description: trainerSpecialtyDetails[specialty].description,
+      ...trainerSpecialtyDetails[specialty],
       equipped: specialty === equipped,
-      label: trainerSpecialtyDetails[specialty].label,
       specialty,
     };
   });
 
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
-  const earnedBadges = getEarnedTrainerBadgeCount(stats);
   if (stats.leagueCompleted) return 'Champion';
+  const earnedBadges = getEarnedTrainerBadgeCount(stats);
   if (earnedBadges === TRAINER_BADGE_COUNT) return 'League Challenger';
   if (earnedBadges >= 5) return 'Veteran';
   if (earnedBadges >= 2) return 'Ace';

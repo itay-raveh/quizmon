@@ -1,5 +1,4 @@
-import catalogData from '@/game/data/pokemon.json';
-import { parsePokemonCatalog } from '@/game/catalog';
+import { catalog } from './fixtures/catalog';
 import {
   getCardFinish,
   isLeagueUnlocked,
@@ -13,7 +12,7 @@ import {
   getTrainerRank,
 } from '@/game/trainer';
 import type { TrainerStats } from '@/game/storage';
-import { generations, type QuestionType } from '@/game/types';
+import { generations } from '@/game/types';
 import { questionTypes } from '@/game/questions/definitions';
 
 const stats = (overrides: Partial<TrainerStats> = {}): TrainerStats => ({
@@ -32,12 +31,12 @@ const stats = (overrides: Partial<TrainerStats> = {}): TrainerStats => ({
 const masteredQuestionTypes = (count: number) =>
   Object.fromEntries(
     questionTypes.slice(0, count).map((questionType) => [questionType, 1]),
-  ) as Partial<Record<QuestionType, number>>;
+  );
 
 const masteredGenerations = (count: number) =>
   Object.fromEntries(
     generations.slice(0, count).map((generation) => [generation, 1]),
-  ) as TrainerStats['correctGenerations'];
+  );
 
 describe('Trainer Card progression', () => {
   it('awards every distinct League Badge for meaningful accomplishments', () => {
@@ -274,13 +273,13 @@ it('keeps the League gate at all eight bronze badges', () => {
 });
 
 it('requires every real Personal Pokédex entry for gold', () => {
-  const names = Object.keys(catalogData.pokemon);
+  const names = Object.keys(catalog.pokemon);
   const progress = stats({
     correctPokemon: names.slice(0, 500),
     pokedex: [...names.slice(1), 'unknown', names[1]!],
   });
   const badge = () =>
-    getTrainerBadges(progress, parsePokemonCatalog(catalogData)).find(
+    getTrainerBadges(progress, catalog).find(
       ({ id }) => id === 'pokedex-trail',
     )!;
   expect(badge()).toMatchObject({
@@ -293,18 +292,12 @@ it('requires every real Personal Pokédex entry for gold', () => {
   const changes = getTrainerProgressChanges(
     { ...progress, pokedex: names.slice(1) },
     progress,
-    parsePokemonCatalog(catalogData),
+    catalog,
   );
   expect(changes).toContainEqual(
     expect.objectContaining({ id: 'pokedex-trail', tier: 3, earned: true }),
   );
-  expect(
-    getTrainerProgressChanges(
-      progress,
-      progress,
-      parsePokemonCatalog(catalogData),
-    ),
-  ).toEqual([]);
+  expect(getTrainerProgressChanges(progress, progress, catalog)).toEqual([]);
 });
 
 it('upgrades all titles and keeps counting after gold', () => {
