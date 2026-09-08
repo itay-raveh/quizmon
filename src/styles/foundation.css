@@ -19,7 +19,6 @@
   --text-mini: 0.65rem;
   --text-tiny: 0.56rem;
   --text-numeric: 0.76rem;
-  --text-brand-title: clamp(0.9rem, 1.2vw, 1.19rem);
   --text-brand-detail: clamp(0.72rem, 0.89vw, 0.89rem);
   --text-brand-control: clamp(1rem, 1.15vw, 1.125rem);
   --text-answer: clamp(0.92rem, 2.6vw, 1.08rem);
@@ -37,6 +36,9 @@
   --metal-bronze: #c7a181;
   --metal-bronze-edge: #866246;
   --metal-bronze-light: #ead7bf;
+  --metal-silver: #b8cbd2;
+  --metal-silver-edge: #7895a2;
+  --metal-silver-light: #e5f0f4;
   --metal-gold: #ffca28;
   --metal-gold-edge: #a66a08;
   --metal-gold-light: #fff5c4;
@@ -48,7 +50,6 @@
   --correct: #18763a;
   --wrong: #a92843;
   --focus: #083b7e;
-  --disabled-surface: #e5ebed;
   --error-ink: #8b1e31;
   --error-surface: #fff0f3;
   --modal-scrim: rgba(8, 35, 73, 0.8);

@@ -168,7 +168,6 @@
 }
 
 .trainer-card {
-  --trainer-card-step: var(--yellow);
   --trainer-rank-accent: var(--blue);
   --trainer-rank-accent-strong: var(--navy);
   --trainer-rank-ink: var(--paper);
@@ -204,7 +203,6 @@
 
 .trainer-passport--bronze,
 .trainer-card--bronze {
-  --trainer-card-step: var(--metal-bronze);
   --trainer-rank-accent: var(--metal-bronze);
   --trainer-rank-accent-strong: var(--metal-bronze-edge);
   --trainer-rank-ink: var(--navy);
@@ -214,17 +212,15 @@
 
 .trainer-passport--silver,
 .trainer-card--silver {
-  --trainer-card-step: #b8cbd2;
-  --trainer-rank-accent: #b8cbd2;
-  --trainer-rank-accent-strong: #7895a2;
+  --trainer-rank-accent: var(--metal-silver);
+  --trainer-rank-accent-strong: var(--metal-silver-edge);
   --trainer-rank-ink: var(--navy);
-  --trainer-rank-surface: #e5f0f4;
+  --trainer-rank-surface: var(--metal-silver-light);
   --trainer-sheen-opacity: 0.38;
 }
 
 .trainer-passport--gold,
 .trainer-card--gold {
-  --trainer-card-step: var(--metal-gold);
   --trainer-rank-accent: var(--metal-gold);
   --trainer-rank-accent-strong: var(--metal-gold-edge);
   --trainer-rank-ink: var(--navy);
@@ -651,9 +647,9 @@
 }
 
 [data-tier='2'] {
-  --tier-metal: #b8cbd2;
-  --tier-edge: #7895a2;
-  --tier-light: #e5f0f4;
+  --tier-metal: var(--metal-silver);
+  --tier-edge: var(--metal-silver-edge);
+  --tier-light: var(--metal-silver-light);
 }
 
 [data-tier='3'] {
