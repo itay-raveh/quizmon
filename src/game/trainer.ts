@@ -230,24 +230,20 @@ export const getTrainerProgressChanges = (
   before: TrainerStats,
   after: TrainerStats,
 ): TrainerProgressChange[] => {
-  const previousBadges = new Map(
-    getTrainerBadges(before).map((badge) => [badge.id, badge]),
-  );
-  const badgeChanges = getTrainerBadges(after).flatMap<TrainerBadgeChange>(
-    (badge) => {
-      const previousBadge = previousBadges.get(badge.id);
-      const previous = Math.min(previousBadge?.current ?? 0, badge.goal);
-      const current = Math.min(badge.current, badge.goal);
+  const badgeChanges = trainerBadgeDefinitions.flatMap<TrainerBadgeChange>(
+    ({ getCurrent, goal, id, label }) => {
+      const previous = Math.min(getCurrent(before), goal);
+      const current = Math.min(getCurrent(after), goal);
       return current > previous
         ? [
             {
               current,
               delta: current - previous,
-              earned: badge.earned && !previousBadge?.earned,
-              goal: badge.goal,
-              id: badge.id,
+              earned: current === goal,
+              goal,
+              id,
               kind: 'badge',
-              label: badge.label,
+              label,
             },
           ]
         : [];
