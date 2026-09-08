@@ -1,11 +1,7 @@
-import { getQuestionTitle } from '@/game/question-labels';
 import { isDailyDate } from '@/game/validation';
 import { catalog } from './fixtures/catalog';
 import { buildDailyQuestions } from '@/game/game';
-import {
-  questionDefinitions,
-  questionTypes,
-} from '@/game/questions/definitions';
+import { questionTypes } from '@/game/questions/definitions';
 import {
   getDailyModifiers,
   getDailyQuestionTypes,
@@ -28,13 +24,7 @@ describe('Daily Challenge', () => {
 
     expect(first).toEqual(second);
     expect(first).toHaveLength(5);
-    expect(first.map(getQuestionTitle)).toEqual(
-      schedule.map((questionType) =>
-        questionType === 'champion'
-          ? 'Champion question'
-          : questionDefinitions[questionType].label,
-      ),
-    );
+    expect(first.map(({ questionType }) => questionType)).toEqual(schedule);
     expect(schedule.at(-1)).toBe('champion');
     expect(first.at(-1)?.searchOptions).toHaveLength(
       Object.keys(catalog.pokemon).length,

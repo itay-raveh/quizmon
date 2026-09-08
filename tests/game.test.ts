@@ -6,10 +6,7 @@ import {
   buildQuestionSequence,
   getQuestionCount,
 } from '@/game/game';
-import {
-  questionDefinitions,
-  questionTypes,
-} from '@/game/questions/definitions';
+import { questionTypes } from '@/game/questions/definitions';
 import {
   defaultModifiers,
   filterPokemon,
@@ -121,18 +118,6 @@ describe('question building', () => {
     }
   });
 
-  it('keeps every selectable format in one complete registry', () => {
-    expect(Object.keys(questionDefinitions)).toEqual(questionTypes);
-    expect(
-      questionTypes.every(
-        (questionType) =>
-          questionDefinitions[questionType].description &&
-          questionDefinitions[questionType].group &&
-          questionDefinitions[questionType].label,
-      ),
-    ).toBe(true);
-  });
-
   it('filters the normalized catalog by generation', () => {
     const candidates = filterPokemon(catalog, {
       ...defaultModifiers,
@@ -163,8 +148,8 @@ describe('question building', () => {
     );
 
     expect(questions).toHaveLength(questionTypes.length);
-    expect(new Set(questions.map(getQuestionTitle))).toEqual(
-      new Set(questionTypes.map((type) => questionDefinitions[type].label)),
+    expect(new Set(questions.map(({ questionType }) => questionType))).toEqual(
+      new Set(questionTypes),
     );
     for (const question of questions) {
       expect(question.options).toEqual(

@@ -10,6 +10,7 @@ import {
   questionTypes,
   type QuestionTypeGroup,
 } from '@/game/questions/definitions';
+import { questionLabels } from '@/game/question-labels';
 import type { Modifiers, QuestionType } from '@/game/types';
 import { CaretDownIcon, QuestionIcon, XIcon } from './icons';
 import { SelectionTile } from './SelectionTile';
@@ -149,7 +150,7 @@ export const QuestionTypeSettings = ({
                   role="group"
                 >
                   {group.types.map((questionType) => {
-                    const label = questionDefinitions[questionType].label;
+                    const label = questionLabels[questionType];
                     const checked = selectedQuestionTypes.has(questionType);
                     return (
                       <div
@@ -205,7 +206,7 @@ export const QuestionTypeSettings = ({
         >
           <XIcon aria-hidden="true" weight="bold" />
         </SoundButton>
-        <strong>{questionDefinitions[explainedQuestionType].label}</strong>
+        <strong>{questionLabels[explainedQuestionType]}</strong>
         <p>{questionDefinitions[explainedQuestionType].description}</p>
       </div>
     </>
