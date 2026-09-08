@@ -1,3 +1,4 @@
+import { registerShownQuestion } from '@/game/question-history-storage';
 import { readPlayerSave } from '@/game/player-storage';
 import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
 import {
@@ -66,22 +67,24 @@ const resolveRestoration = (
   }
 
   const questions =
-    snapshot.mode.kind === 'daily'
-      ? buildDailyQuestions(catalog, snapshot.mode.date)
+    snapshot.questions ??
+    (snapshot.mode.kind === 'daily'
+      ? buildDailyQuestions(catalog, snapshot.mode.date, snapshot.version === 1)
       : snapshot.mode.kind === 'league'
         ? buildLeagueQuestions(catalog, snapshot.seed, snapshot.modifiers)
         : buildQuestions(
             catalog,
             snapshot.modifiers,
             createSeededRandom(snapshot.seed),
-          );
+          ));
   const answersMatchQuestions =
     snapshot.answers.length <= questions.length &&
     snapshot.answers.every(
       (answer, index) =>
         answer.category === questions[index]?.category &&
         answer.generation === questions[index]?.generation &&
-        answer.questionType === questions[index]?.questionType,
+        answer.questionType === questions[index]?.questionType &&
+        answer.pokemonName === questions[index]?.pokemonName,
     );
 
   return questions.length === snapshot.questionCount && answersMatchQuestions
@@ -137,6 +140,7 @@ export const useActiveGame = ({
         modifiers: snapshot.modifiers,
         questions,
         seed: snapshot.seed,
+        roundId: snapshot.roundId ?? snapshot.seed,
       };
       dispatch({ ...round, type: 'restored' });
       resetTimer(snapshot.elapsedMilliseconds);
@@ -166,6 +170,29 @@ export const useActiveGame = ({
     startTimer,
   ]);
 
+  const visibleQuestion =
+    session.phase === 'questions' &&
+    session.answers.length < session.questions.length &&
+    !(
+      session.mode.kind === 'league' &&
+      session.answers.some(({ correct }) => !correct)
+    )
+      ? session.questions[session.questionIndex]
+      : undefined;
+  const roundId =
+    session.phase === 'questions' ? (session.roundId ?? session.seed) : '';
+  const questionIndex =
+    session.phase === 'questions' ? session.questionIndex : 0;
+  useEffect(() => {
+    if (visibleQuestion)
+      void registerShownQuestion(
+        visibleQuestion,
+        roundId,
+        questionIndex,
+        playerRestoreId,
+      );
+  }, [visibleQuestion, roundId, questionIndex, playerRestoreId]);
+
   const persist = useCallback(() => {
     if (!catalog || session.phase !== 'questions') return;
 
@@ -176,6 +203,8 @@ export const useActiveGame = ({
       mode: session.mode,
       modifiers: session.modifiers,
       questionCount: session.questions.length,
+      questions: session.questions,
+      roundId: session.roundId ?? session.seed,
       playerRestoreId,
       seed: session.seed,
     });

@@ -1,3 +1,5 @@
+import { readPlayerData } from '@/game/player-storage';
+import { TRAINING_QUESTION_COUNT } from '@/game/modifiers';
 import { useCallback, useRef, useState } from 'react';
 import { buildQuestions } from '@/game/game';
 import { getTrainingModifiers } from '@/game/modifiers';
@@ -45,7 +47,13 @@ export const useTrainingGame = ({
       const seed = createRoundSeed();
       const gameModifiers = getTrainingModifiers(nextModifiers);
       startGame(
-        buildQuestions(catalog, gameModifiers, createSeededRandom(seed)),
+        buildQuestions(
+          catalog,
+          gameModifiers,
+          createSeededRandom(seed),
+          TRAINING_QUESTION_COUNT,
+          readPlayerData().questionHistory,
+        ),
         gameModifiers,
         { kind: 'training' },
         seed,

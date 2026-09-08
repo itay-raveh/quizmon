@@ -1,3 +1,11 @@
+import {
+  getQuestionExposure,
+  getQuestionRecency,
+  getPokemonRecency,
+  getQuestionSubjects,
+  rememberQuestion,
+  questionRepeatPolicy,
+} from '../question-history';
 import type { QuestionData, QuestionType } from '../types';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
@@ -59,15 +67,59 @@ export const buildQuestionType = (
     questionType === 'champion'
       ? buildChampionQuestion
       : questionBuilders[questionType];
-  const question = build(context);
-  if (!question) return undefined;
-
-  const generation = context.catalog.pokemon[question.pokemonName]?.generation;
-  if (!generation) return undefined;
-
-  return {
-    ...addQuestionVisuals(context, question),
-    generation,
-    questionType,
+  let selected: QuestionData | undefined;
+  const history = context.history;
+  const score = (question: QuestionData): number => {
+    if (!history) return 0;
+    const exposure = getQuestionExposure(question);
+    return (
+      exposure.primary.reduce(
+        (sum, name) => sum + getPokemonRecency(history, name),
+        0,
+      ) +
+      exposure.distractors.reduce(
+        (sum, name) =>
+          sum +
+          getPokemonRecency(history, name) / questionRepeatPolicy.primaryWeight,
+        0,
+      )
+    );
   };
+  const attempts =
+    history && context.rotation === undefined
+      ? questionRepeatPolicy.candidateAttempts
+      : 1;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    const draft = build({
+      ...context,
+      questionType,
+      used: new Set(context.used),
+    });
+    if (!draft) continue;
+    const generation = context.catalog.pokemon[draft.pokemonName]?.generation;
+    if (!generation) continue;
+    const question = {
+      ...addQuestionVisuals(context, draft),
+      generation,
+      questionType,
+    };
+    if (
+      !selected ||
+      (history &&
+        (getQuestionRecency(history, question) <
+          getQuestionRecency(history, selected) ||
+          (getQuestionRecency(history, question) ===
+            getQuestionRecency(history, selected) &&
+            score(question) < score(selected))))
+    )
+      selected = question;
+  }
+  if (selected) {
+    if (history || context.rotation !== undefined) {
+      for (const name of getQuestionSubjects(selected)) context.used.add(name);
+    }
+    context.used.add(selected.pokemonName);
+    if (history) context.history = rememberQuestion(history, selected);
+  }
+  return selected;
 };

@@ -1,7 +1,9 @@
+import { targetRepetition } from './repetition';
 import { pick, shuffle } from '../random';
 import { formatTypeMultiplier } from '../format';
 import type { PokemonCatalog } from '../types';
 import {
+  orderTargets,
   getOptionVisuals,
   makeQuestion,
   pickFreshTarget,
@@ -70,6 +72,10 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
 
     return {
       ...makeQuestion(
+        targetRepetition({
+          pokemonOptions: false,
+          variant: [String(multiplier)],
+        }),
         'matchup',
         target,
         correct,
@@ -105,10 +111,13 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
 export const buildCounterPickQuestion: QuestionBuilder = (context) => {
   const fresh = context.pool.filter(({ name }) => !context.used.has(name));
   const repeated = context.pool.filter(({ name }) => context.used.has(name));
-  const targets = [
-    ...shuffle(fresh, context.random),
-    ...shuffle(repeated, context.random),
-  ];
+  const targets =
+    context.history || context.rotation !== undefined
+      ? orderTargets(context, context.pool)
+      : [
+          ...shuffle(fresh, context.random),
+          ...shuffle(repeated, context.random),
+        ];
 
   for (const multiplier of shuffle(matchupMultipliers, context.random)) {
     for (const target of targets) {
@@ -127,13 +136,20 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
         (matches ? counters : distractors).push(candidate);
       });
       if (counters.length === 0 || distractors.length < 3) continue;
-      const correct = pick(counters, context.random);
+      const correct =
+        context.history || context.rotation !== undefined
+          ? pickFreshTarget(context, counters)
+          : pick(counters, context.random);
       if (!correct) continue;
       const options = pokemonOptions(context, correct, [], distractors);
       context.used.add(target.name);
 
       return {
         ...makeQuestion(
+          targetRepetition({
+            pokemonOptions: true,
+            variant: [String(multiplier)],
+          }),
           'matchup',
           target,
           correct.name,

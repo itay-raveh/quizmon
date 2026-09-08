@@ -1,7 +1,9 @@
+import { targetRepetition, optionSetRepetition } from './repetition';
 import { formatPokemonName } from '../format';
 import { pick, shuffle } from '../random';
 import { statNames, type StatName } from '../types';
 import {
+  chooseTargets,
   getOptionVisuals,
   makeQuestion,
   pickFreshTarget,
@@ -22,6 +24,7 @@ export const buildDescriptionQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ description }) => Boolean(description));
   if (!target) return undefined;
   return makeQuestion(
+    targetRepetition({ pokemonOptions: true }),
     'description',
     target,
     target.name,
@@ -60,6 +63,7 @@ export const buildTypeQuestion: QuestionBuilder = (context) => {
   if (!correct) return undefined;
   return {
     ...makeQuestion(
+      targetRepetition({ pokemonOptions: false }),
       'type',
       target,
       correct,
@@ -95,7 +99,7 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   const pool = pickTypePuzzlePool(context, 3);
   if (!pool?.type) return undefined;
   const { matching, others } = pool;
-  const shared = shuffle(matching, context.random).slice(0, 3);
+  const shared = chooseTargets(context, matching, 3);
   const target = pickFreshTarget(context, others);
   if (!target) return undefined;
   context.used.add(target.name);
@@ -106,6 +110,7 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
 
   return {
     ...makeQuestion(
+      optionSetRepetition({ subjects: 'all' }),
       'type',
       target,
       target.name,
@@ -121,14 +126,8 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
   const pool = pickTypePuzzlePool(context, correctCount);
   if (!pool?.type) return undefined;
   const { type, matching, others } = pool;
-  const selectedMatching = shuffle(matching, context.random).slice(
-    0,
-    correctCount,
-  );
-  const selectedOthers = shuffle(others, context.random).slice(
-    0,
-    4 - correctCount,
-  );
+  const selectedMatching = chooseTargets(context, matching, correctCount);
+  const selectedOthers = chooseTargets(context, others, 4 - correctCount);
   const target = selectedMatching[0];
   if (!target) return undefined;
   context.used.add(target.name);
@@ -140,6 +139,7 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
 
   return {
     ...makeQuestion(
+      optionSetRepetition({ subjects: 'correct', variant: [type] }),
       'type',
       target,
       correctOptions,
@@ -178,6 +178,7 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
 
   return {
     ...makeQuestion(
+      targetRepetition({ pokemonOptions: false, related: [evolutionName] }),
       'evolution',
       target,
       correct,
@@ -218,6 +219,7 @@ export const buildPropertyQuestion =
     );
     const subject = category === 'ability' ? 'ability' : 'move by leveling up';
     return makeQuestion(
+      targetRepetition({ pokemonOptions: false }),
       category,
       target,
       correct,
@@ -234,10 +236,21 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
     direction === 'highest'
       ? other.pokemon.stats[stat] < target.pokemon.stats[stat]
       : other.pokemon.stats[stat] > target.pokemon.stats[stat];
-  const target = candidates.find(
-    (candidate) =>
-      candidates.filter((other) => isDistractor(candidate, other)).length >= 3,
+  const values = candidates
+    .map(({ pokemon }) => pokemon.stats[stat])
+    .sort((a, b) => a - b);
+  const boundary = values[direction === 'highest' ? 2 : values.length - 3];
+  const eligible = candidates.filter(
+    ({ pokemon }) =>
+      boundary !== undefined &&
+      (direction === 'highest'
+        ? pokemon.stats[stat] > boundary
+        : pokemon.stats[stat] < boundary),
   );
+  const target =
+    context.history || context.rotation !== undefined
+      ? pickFreshTarget(context, eligible)
+      : eligible[0];
   if (!target) return undefined;
   context.used.add(target.name);
   const distractors = candidates
@@ -255,6 +268,7 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
 
   return {
     ...makeQuestion(
+      optionSetRepetition({ subjects: 'all', variant: [stat, direction] }),
       'stat',
       target,
       target.name,

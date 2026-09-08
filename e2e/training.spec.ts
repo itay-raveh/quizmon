@@ -417,3 +417,66 @@ for (const answeredCount of [1, 10]) {
     ).toBeVisible();
   });
 }
+
+test('remembers shown questions across abandoned games and preserves a lineup on reload', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      'quizmon.training-settings.v2',
+      JSON.stringify({
+        generations: ['I', 'II', 'III', 'IV', 'V'],
+        questionTypes: ['evolution-shift'],
+        soundEnabled: false,
+        speedrunMode: false,
+        trainingMode: 'custom',
+      }),
+    );
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Evolution shift' }),
+  ).toBeVisible();
+  const readHistory = () =>
+    page.evaluate(() => {
+      const save = JSON.parse(localStorage.getItem('quizmon.player')!) as {
+        data: {
+          questionHistory: {
+            sequence: number;
+            questions: Record<string, number>;
+          };
+        };
+      };
+      return save.data.questionHistory;
+    });
+  const readQuestions = () =>
+    page.evaluate(() => {
+      const active = JSON.parse(
+        sessionStorage.getItem('quizmon.active-game.v1')!,
+      ) as { questions: { pokemonName: string }[] };
+      return active.questions;
+    });
+  await expect.poll(async () => (await readHistory()).sequence).toBe(1);
+  const original = await readQuestions();
+  const firstKey = Object.keys((await readHistory()).questions)[0]!;
+  await page.reload();
+  await expect(
+    page.getByRole('heading', { name: 'Evolution shift' }),
+  ).toBeVisible();
+  expect(await readQuestions()).toEqual(original);
+  expect((await readHistory()).sequence).toBe(1);
+  await page.getByRole('button', { name: 'Leave game' }).click();
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Evolution shift' }),
+  ).toBeVisible();
+  await expect.poll(async () => (await readHistory()).sequence).toBe(2);
+  const next = await readQuestions();
+  expect(
+    next.some(
+      ({ pokemonName }) => `evolution-shift:${pokemonName}` === firstKey,
+    ),
+  ).toBe(false);
+  expect(Object.keys((await readHistory()).questions)).toHaveLength(2);
+});

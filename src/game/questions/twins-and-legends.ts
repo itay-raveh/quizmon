@@ -1,5 +1,7 @@
+import { targetRepetition, optionSetRepetition } from './repetition';
 import { pick, shuffle } from '../random';
 import {
+  chooseTargets,
   getOptionVisuals,
   makeQuestion,
   pickFreshTarget,
@@ -70,6 +72,7 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   context.used.add(target.name);
   return {
     ...makeQuestion(
+      targetRepetition({ pokemonOptions: true }),
       'type',
       target,
       correct.name,
@@ -97,8 +100,8 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
     context.random,
   );
   if (!correctCount) return undefined;
-  const legends = shuffle(matching, context.random).slice(0, correctCount);
-  const ordinary = shuffle(others, context.random).slice(0, 4 - correctCount);
+  const legends = chooseTargets(context, matching, correctCount);
+  const ordinary = chooseTargets(context, others, 4 - correctCount);
   const target = legends[0];
   if (!target) return undefined;
   const correctOptions = legends.map(({ name }) => name);
@@ -109,6 +112,7 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
   context.used.add(target.name);
   return {
     ...makeQuestion(
+      optionSetRepetition({ subjects: 'correct' }),
       'identity',
       target,
       correctOptions,

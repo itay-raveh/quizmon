@@ -1,3 +1,4 @@
+import { targetRepetition } from './repetition';
 import { pick } from '../random';
 import { getVersionSpritePath } from '../sprite-source';
 import {
@@ -45,6 +46,7 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   const sprite = pickScanSprite(target.pokemon, context.random);
   if (!sprite) return undefined;
   return makeQuestion(
+    targetRepetition({ pokemonOptions: true }),
     'identity',
     target,
     target.name,
@@ -64,6 +66,7 @@ export const buildSilhouetteMatchQuestion: QuestionBuilder = (context) => {
 
   return {
     ...makeQuestion(
+      targetRepetition({ pokemonOptions: true }),
       'identity',
       target,
       target.name,
@@ -80,6 +83,7 @@ export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
   if (!target?.pokemon.sprite) return undefined;
 
   return makeQuestion(
+    targetRepetition({ pokemonOptions: true }),
     'identity',
     target,
     target.name,
@@ -107,6 +111,7 @@ export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
 
   return {
     ...makeQuestion(
+      targetRepetition({ pokemonOptions: true }),
       'identity',
       target,
       target.name,

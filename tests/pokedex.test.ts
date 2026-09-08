@@ -119,7 +119,7 @@ it('migrates a version 1 save once, using only recorded correct Pokémon', () =>
   const raw = JSON.stringify({ version: 1, restoreId: null, data });
   localStorage.setItem(PLAYER_STORAGE_KEY, raw);
   const migrated = readPlayerSave();
-  expect(migrated.version).toBe(3);
+  expect(migrated.version).toBe(4);
   expect(migrated.data.pokedex).toEqual(['pikachu', 'eevee']);
   expect(migrated.data.results).toEqual(data.results);
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(

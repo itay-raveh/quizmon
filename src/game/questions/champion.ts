@@ -1,3 +1,4 @@
+import { targetRepetition } from './repetition';
 import {
   makeQuestion,
   pickTarget,
@@ -16,6 +17,7 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
 
   return {
     ...makeQuestion(
+      targetRepetition({ pokemonOptions: true }),
       'champion',
       target,
       target.name,

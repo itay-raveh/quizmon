@@ -21,10 +21,10 @@ import {
 } from '@/notifications/daily-reminder-storage';
 
 describe('Daily Challenge', () => {
-  it('builds the same seeded five-question challenge for a date', () => {
-    const first = buildDailyQuestions(catalog, '2026-09-01');
-    const second = buildDailyQuestions(catalog, '2026-09-01');
-    const schedule = getDailyQuestionTypes('2026-09-01');
+  it('preserves the legacy lineup for unfinished version 1 rounds', () => {
+    const first = buildDailyQuestions(catalog, '2026-09-01', true);
+    const second = buildDailyQuestions(catalog, '2026-09-01', true);
+    const schedule = getDailyQuestionTypes('2026-09-01', true);
 
     expect(first).toEqual(second);
     expect(first).toHaveLength(5);
@@ -226,4 +226,16 @@ describe('Daily reminder prompt', () => {
     expect(shouldOfferDailyReminder(3)).toBe(false);
     expect(shouldOfferDailyReminder(4)).toBe(true);
   });
+});
+
+it('keeps the shared Daily independent of locale-specific collation', () => {
+  const expected = buildDailyQuestions(catalog, '2026-09-08');
+  const compare = vi
+    .spyOn(String.prototype, 'localeCompare')
+    .mockReturnValue(0);
+  try {
+    expect(buildDailyQuestions(catalog, '2026-09-08')).toEqual(expected);
+  } finally {
+    compare.mockRestore();
+  }
 });

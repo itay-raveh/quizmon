@@ -1,4 +1,4 @@
-import { buildLeagueQuestions } from '@/game/game';
+import { getLeagueLineup } from '@/game/question-history-storage';
 import { useCallback } from 'react';
 import { getLeagueModifiers, isLeagueVictory } from '@/game/league';
 import { getLeagueChallengeSeed } from '@/game/storage';
@@ -23,7 +23,7 @@ export const useLeagueChallenge = ({
       if (!catalog) return;
       const leagueModifiers = getLeagueModifiers(modifiers);
       startGame(
-        buildLeagueQuestions(catalog, seed, leagueModifiers),
+        getLeagueLineup(catalog, seed, leagueModifiers),
         leagueModifiers,
         { kind: 'league' },
         seed,

@@ -238,6 +238,7 @@ export const saveResult = (
     if (completed) results.league.seed = null;
     const isSaved = updatePlayerData({
       results,
+      ...(completed ? { leagueLineup: null } : {}),
       ...(completed && victory ? { hallOfFame: [...hallOfFame, victory] } : {}),
     });
     return {

@@ -1,7 +1,10 @@
+import { targetRepetition, optionSetRepetition } from './repetition';
 import { formatGeneration, formatPokemonName } from '../format';
 import { pick, shuffle } from '../random';
 import { generations } from '../types';
 import {
+  chooseTargets,
+  pickFreshTarget,
   getOptionVisuals,
   makeQuestion,
   pokemonOptions,
@@ -25,14 +28,16 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
     context.random,
   );
   if (!generation) return undefined;
-  const matching = shuffle(
+  const matching = chooseTargets(
+    context,
     pool.filter(({ pokemon }) => pokemon.generation === generation),
-    context.random,
-  ).slice(0, correctCount);
-  const others = shuffle(
+    correctCount,
+  );
+  const others = chooseTargets(
+    context,
     pool.filter(({ pokemon }) => pokemon.generation !== generation),
-    context.random,
-  ).slice(0, 4 - correctCount);
+    4 - correctCount,
+  );
   const target = matching[0];
   if (!target) return undefined;
   context.used.add(target.name);
@@ -43,6 +48,7 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
   );
   return {
     ...makeQuestion(
+      optionSetRepetition({ subjects: 'correct', variant: [generation] }),
       'identity',
       target,
       correctOptions,
@@ -100,12 +106,22 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
     return [{ target, before, after, possibleAnswers }];
   });
   const fresh = chains.filter(({ target }) => !context.used.has(target.name));
-  const chain = pick(fresh.length > 0 ? fresh : chains, context.random);
+  const selected =
+    context.history || context.rotation !== undefined
+      ? pickFreshTarget(
+          context,
+          chains.map(({ target }) => target),
+        )
+      : undefined;
+  const chain = selected
+    ? chains.find(({ target }) => target === selected)
+    : pick(fresh.length > 0 ? fresh : chains, context.random);
   if (!chain) return undefined;
   const { target, before, after, possibleAnswers } = chain;
   context.used.add(target.name);
   return {
     ...makeQuestion(
+      targetRepetition({ pokemonOptions: true, related: [before, after] }),
       'evolution',
       target,
       target.name,

@@ -1,8 +1,14 @@
 import {
+  type QuestionHistory,
+  emptyQuestionHistory,
+  rememberQuestion,
+} from './question-history';
+import {
   DAILY_CHALLENGE_VERSION,
   DAILY_QUESTION_COUNT,
   getDailyModifiers,
   getDailyQuestionTypes,
+  getDailyRotation,
 } from './daily';
 import {
   LEAGUE_CHALLENGE_VERSION,
@@ -37,11 +43,13 @@ const createQuestionContext = (
   catalog: PokemonCatalog,
   modifiers: Modifiers,
   random: () => number,
+  history?: QuestionHistory,
 ): QuestionContext => ({
   catalog,
   pool: filterPokemon(catalog, modifiers),
   random,
   used: new Set(),
+  history,
 });
 
 const buildFirstAvailableQuestion = (
@@ -60,8 +68,9 @@ export const buildQuestions = (
   modifiers: Modifiers,
   random: () => number = Math.random,
   requestedCount = TRAINING_QUESTION_COUNT,
+  history?: QuestionHistory,
 ): QuestionData[] => {
-  const context = createQuestionContext(catalog, modifiers, random);
+  const context = createQuestionContext(catalog, modifiers, random, history);
   const count = getQuestionCount(context.pool.length, requestedCount);
   const questionTypeDeck = shuffle(modifiers.questionTypes, random);
   const questions: QuestionData[] = [];
@@ -91,11 +100,29 @@ export const buildQuestionSequence = (
   questionSequence: readonly QuestionData['questionType'][],
   modifiers: Modifiers,
   random: () => number,
+  history?: QuestionHistory,
+  rotations?: readonly number[],
 ): QuestionData[] => {
-  const context = createQuestionContext(catalog, modifiers, random);
+  const context = createQuestionContext(catalog, modifiers, random, history);
 
+  const finale =
+    rotations && questionSequence.at(-1) === 'champion'
+      ? buildQuestionType(
+          { ...context, rotation: rotations.at(-1) },
+          'champion',
+        )
+      : undefined;
+  if (finale) {
+    context.used.add(finale.pokemonName);
+    if (context.history)
+      context.history = rememberQuestion(context.history, finale);
+  }
   return questionSequence.map((questionType, index) => {
-    let question = buildQuestionType(context, questionType);
+    context.rotation = rotations?.[index];
+    let question =
+      finale && index === questionSequence.length - 1
+        ? finale
+        : buildQuestionType(context, questionType);
 
     if (!question && questionType !== 'champion') {
       question = buildFirstAvailableQuestion(
@@ -120,12 +147,17 @@ export const buildQuestionSequence = (
 export const buildDailyQuestions = (
   catalog: PokemonCatalog,
   date: string,
+  legacy = false,
 ): QuestionData[] => {
   const questions = buildQuestionSequence(
     catalog,
-    getDailyQuestionTypes(date),
+    getDailyQuestionTypes(date, legacy),
     getDailyModifiers(defaultModifiers),
-    createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
+    createSeededRandom(
+      `quizmon-daily-v${legacy ? 11 : DAILY_CHALLENGE_VERSION}:${date}`,
+    ),
+    legacy ? undefined : emptyQuestionHistory(),
+    legacy ? undefined : getDailyRotation(date),
   );
 
   if (questions.length !== DAILY_QUESTION_COUNT) {
@@ -139,6 +171,7 @@ export const buildLeagueQuestions = (
   catalog: PokemonCatalog,
   seed: string,
   experience: ExperienceSettings,
+  history?: QuestionHistory,
 ): QuestionData[] => {
   const modifiers = getLeagueModifiers(experience);
   const questions = buildQuestionSequence(
@@ -146,6 +179,7 @@ export const buildLeagueQuestions = (
     getLeagueQuestionTypes(seed),
     modifiers,
     createSeededRandom(`quizmon-league-v${LEAGUE_CHALLENGE_VERSION}:${seed}`),
+    history,
   );
 
   if (

@@ -3,6 +3,12 @@ import { defaultModifiers } from '@/game/modifiers';
 import type { AnswerResult, GameResult, QuestionData } from '@/game/types';
 
 const question: QuestionData = {
+  repetition: {
+    identity: 'pikachu',
+    subjects: ['pikachu'],
+    primary: ['pikachu'],
+    distractors: [],
+  },
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'identity',
   generation: 'I',

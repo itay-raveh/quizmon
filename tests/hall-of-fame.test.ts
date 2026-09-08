@@ -83,7 +83,7 @@ it('round-trips all victory records through backup and replacement restore', () 
   const backup = parseBackup(JSON.stringify(createBackup()));
   localStorage.clear();
   restoreBackup(backup);
-  expect(readPlayerSave().version).toBe(3);
+  expect(readPlayerSave().version).toBe(4);
   expect(readPlayerSave().data.hallOfFame).toEqual([first, second]);
 });
 
@@ -99,7 +99,7 @@ it('migrates version 2 without fabricating old victory records or losing Champio
     JSON.stringify({ version: 2, restoreId: null, data: oldData }),
   );
   expect(readPlayerSave()).toMatchObject({
-    version: 3,
+    version: 4,
     data: {
       hallOfFame: [],
       pokedex: ['pikachu'],

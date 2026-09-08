@@ -1,3 +1,5 @@
+import { isQuestionData } from './question-lineup';
+import type { QuestionData } from './types';
 import { readPlayerSave } from './player-storage';
 import {
   readStoredJson,
@@ -18,8 +20,10 @@ import {
 } from './validation';
 
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
-const ACTIVE_GAME_VERSION = 1;
+const ACTIVE_GAME_VERSION = 2;
 export interface ActiveGameSnapshot {
+  questions?: QuestionData[];
+  roundId?: string;
   answers: AnswerResult[];
   contentVersion: number;
   elapsedMilliseconds: number;
@@ -91,7 +95,7 @@ const parseModifiers = (value: unknown): Modifiers | null => {
 const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
   if (
     !isRecord(value) ||
-    value.version !== ACTIVE_GAME_VERSION ||
+    (value.version !== 1 && value.version !== ACTIVE_GAME_VERSION) ||
     !isNonnegativeInteger(value.contentVersion) ||
     !isFiniteNonnegative(value.elapsedMilliseconds) ||
     !isNonnegativeInteger(value.questionCount) ||
@@ -100,7 +104,16 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
     value.seed.length === 0 ||
     value.seed.length > 200 ||
     !Array.isArray(value.answers) ||
-    value.answers.length > value.questionCount
+    value.answers.length > value.questionCount ||
+    (value.version === 2 && value.questions === undefined) ||
+    (value.questions !== undefined &&
+      (!Array.isArray(value.questions) ||
+        value.questions.length !== value.questionCount ||
+        !value.questions.every(isQuestionData))) ||
+    (value.roundId !== undefined &&
+      (typeof value.roundId !== 'string' ||
+        value.roundId.length > 200 ||
+        !value.roundId))
   ) {
     return null;
   }
@@ -112,6 +125,8 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
     return null;
 
   return {
+    ...(value.questions === undefined ? {} : { questions: value.questions }),
+    ...(value.roundId === undefined ? {} : { roundId: value.roundId }),
     answers,
     contentVersion: value.contentVersion,
     elapsedMilliseconds: value.elapsedMilliseconds,
@@ -121,7 +136,7 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
     playerRestoreId:
       typeof value.playerRestoreId === 'string' ? value.playerRestoreId : null,
     seed: value.seed,
-    version: ACTIVE_GAME_VERSION,
+    version: value.version,
   };
 };
 
@@ -154,7 +169,7 @@ export const writeActiveGame = (
     writeStoredJson('sessionStorage', ACTIVE_GAME_KEY, {
       ...snapshot,
       playerRestoreId,
-      version: ACTIVE_GAME_VERSION,
+      version: snapshot.questions ? ACTIVE_GAME_VERSION : 1,
     });
   } catch {
     return;

@@ -5,6 +5,12 @@ import { Question } from '@/components/Question';
 import type { QuestionData } from '@/game/types';
 
 const question: QuestionData = {
+  repetition: {
+    identity: 'pikachu',
+    subjects: ['pikachu'],
+    primary: ['pikachu'],
+    distractors: [],
+  },
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'stat',
   generation: 'I',
@@ -18,6 +24,12 @@ const question: QuestionData = {
 };
 
 const championQuestion: QuestionData = {
+  repetition: {
+    identity: 'pikachu',
+    subjects: ['pikachu'],
+    primary: ['pikachu'],
+    distractors: ['eevee', 'ditto', 'mew'],
+  },
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'champion',
   clues: ['An electric mouse.', 'Known for its red cheeks.'],

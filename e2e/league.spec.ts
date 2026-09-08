@@ -196,7 +196,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
       cluesUsed: 0,
       correct: true,
       generation: question.generation,
-      pokemonName: 'pikachu',
+      pokemonName: question.pokemonName,
       points: 1000,
       questionType: question.questionType,
       responseMilliseconds: 1000,

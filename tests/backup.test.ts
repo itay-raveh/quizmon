@@ -1,3 +1,4 @@
+import { emptyQuestionHistory } from '@/game/question-history';
 import v1Fixture from './fixtures/player-backup.v1.json';
 import {
   createBackup,
@@ -179,11 +180,25 @@ it('migrates all existing keys once and keeps the migrated save authoritative', 
     JSON.stringify({ ...original.profile, cardNumber: 'obsolete' }),
   );
   localStorage.setItem('quizmon.generation-prompt.v1', '1');
-  expect(readPlayerSave().data).toEqual(original);
+  expect(readPlayerSave().data).toEqual({
+    ...original,
+    leagueLineup: {
+      seed: 'fixed-league-retry',
+      contentVersion: 0,
+      questions: [],
+    },
+  });
   const persisted = localStorage.getItem(PLAYER_STORAGE_KEY);
   expect(localStorage.getItem('quizmon.results.v2')).toBeNull();
   localStorage.setItem('quizmon.results.v2', '{}');
-  expect(readPlayerSave().data).toEqual(original);
+  expect(readPlayerSave().data).toEqual({
+    ...original,
+    leagueLineup: {
+      seed: 'fixed-league-retry',
+      contentVersion: 0,
+      questions: [],
+    },
+  });
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(persisted);
 });
 
@@ -402,9 +417,17 @@ it('does not save a stale round again while the tab unloads after restore', () =
 
 it('keeps the published version 1 fixture readable without losing fields', () => {
   const backup = parseBackup(JSON.stringify(v1Fixture));
-  expect(backup.save.version).toBe(3);
+  expect(backup.save.version).toBe(4);
   expect(backup.save.data).toEqual({
     ...v1Fixture.save.data,
+    questionHistory: emptyQuestionHistory(),
+    leagueLineup: v1Fixture.save.data.results.league.seed
+      ? {
+          seed: v1Fixture.save.data.results.league.seed,
+          contentVersion: 0,
+          questions: [],
+        }
+      : null,
     hallOfFame: [],
     pokedex: v1Fixture.save.data.results.progress.correctPokemon,
   });

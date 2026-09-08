@@ -1,3 +1,4 @@
+import { createRoundSeed } from '@/game/random';
 import { useCallback, useReducer, useState } from 'react';
 import { readActiveGame } from '@/game/active-game';
 import { trackGameStarted } from '@/game/analytics';
@@ -52,6 +53,7 @@ export const App = () => {
         mode: nextMode,
         modifiers: nextModifiers,
         questions: nextQuestions,
+        roundId: createRoundSeed(),
         seed,
         type: 'started',
       });

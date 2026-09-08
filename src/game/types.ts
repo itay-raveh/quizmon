@@ -195,7 +195,17 @@ export type QuestionPrompt =
       name: string;
     };
 
+export interface QuestionRepetition {
+  // Stable within a question type, independent of presentation order.
+  identity: string;
+  // Rotation subjects can differ from the Pokémon shown.
+  subjects: string[];
+  primary: string[];
+  distractors: string[];
+}
+
 export interface QuestionData {
+  repetition: QuestionRepetition;
   answer: QuestionAnswer;
   category: QuestionCategory;
   clues?: (

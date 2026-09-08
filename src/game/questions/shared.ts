@@ -1,3 +1,8 @@
+import {
+  getPokemonRecency,
+  getSubjectRecency,
+  type QuestionHistory,
+} from '../question-history';
 import { createSeededRandom, pick, shuffle } from '../random';
 import {
   statNames,
@@ -7,6 +12,7 @@ import {
   type QuestionCategory,
   type QuestionData,
   type QuestionPrompt,
+  type QuestionRepetition,
 } from '../types';
 
 export interface Candidate {
@@ -19,6 +25,9 @@ export interface QuestionContext {
   pool: Candidate[];
   random: () => number;
   used: Set<string>;
+  history?: QuestionHistory;
+  questionType?: QuestionData['questionType'];
+  rotation?: number;
 }
 
 export type QuestionDraft = Omit<QuestionData, 'generation' | 'questionType'>;
@@ -27,13 +36,60 @@ export type QuestionBuilder = (
   context: QuestionContext,
 ) => QuestionDraft | undefined;
 
+export const orderTargets = (
+  context: QuestionContext,
+  candidates: readonly Candidate[],
+): Candidate[] => {
+  if (context.rotation !== undefined) {
+    const deck = shuffle(
+      [...candidates].sort((a, b) =>
+        a.name < b.name ? -1 : a.name > b.name ? 1 : 0,
+      ),
+      createSeededRandom(`question-rotation-v1:${context.questionType}`),
+    );
+    const offset =
+      ((context.rotation % deck.length) + deck.length) % deck.length;
+    return [...deck.slice(offset), ...deck.slice(0, offset)].sort(
+      (a, b) =>
+        Number(context.used.has(a.name)) - Number(context.used.has(b.name)),
+    );
+  }
+  const history = context.history;
+  return shuffle(candidates, context.random).sort((a, b) => {
+    if (history && context.questionType) {
+      const age =
+        getSubjectRecency(history, context.questionType, a.name) -
+        getSubjectRecency(history, context.questionType, b.name);
+      if (age) return age;
+    }
+    const used =
+      Number(context.used.has(a.name)) - Number(context.used.has(b.name));
+    if (used) return used;
+    return history
+      ? getPokemonRecency(history, a.name) - getPokemonRecency(history, b.name)
+      : 0;
+  });
+};
+
 export const pickFreshTarget = (
   context: QuestionContext,
   candidates: readonly Candidate[],
 ): Candidate | undefined => {
+  if (context.history || context.rotation !== undefined)
+    return orderTargets(context, candidates)[0];
   const fresh = candidates.filter(({ name }) => !context.used.has(name));
   return pick(fresh.length > 0 ? fresh : candidates, context.random);
 };
+
+export const chooseTargets = (
+  context: QuestionContext,
+  candidates: readonly Candidate[],
+  count: number,
+): Candidate[] =>
+  (context.history || context.rotation !== undefined
+    ? orderTargets(context, candidates)
+    : shuffle(candidates, context.random)
+  ).slice(0, count);
 
 export const pickTarget = (
   context: QuestionContext,
@@ -126,25 +182,30 @@ export const createPokemonSimilarityScorer = (
 };
 
 export const makeQuestion = (
+  repeat: (question: Omit<QuestionDraft, 'repetition'>) => QuestionRepetition,
   category: QuestionCategory,
   target: Candidate,
   correct: string | string[],
   options: string[],
   prompt: QuestionPrompt,
   media: QuestionDraft['media'] = { kind: 'none' },
-): QuestionDraft => ({
-  answer: {
-    correctOptions: typeof correct === 'string' ? [correct] : correct,
-    interaction: typeof correct === 'string' ? 'single-choice' : 'multi-select',
-  },
-  category,
-  id: `${category}:${target.name}`,
-  media,
-  options,
-  pokemonName: target.name,
-  pokemonTypes: target.pokemon.types,
-  prompt,
-});
+): QuestionDraft => {
+  const question: Omit<QuestionDraft, 'repetition'> = {
+    answer: {
+      correctOptions: typeof correct === 'string' ? [correct] : correct,
+      interaction:
+        typeof correct === 'string' ? 'single-choice' : 'multi-select',
+    },
+    category,
+    id: `${category}:${target.name}`,
+    media,
+    options,
+    pokemonName: target.name,
+    pokemonTypes: target.pokemon.types,
+    prompt,
+  };
+  return { ...question, repetition: repeat(question) };
+};
 
 export const textPrompt = (text: string): QuestionPrompt => ({
   kind: 'text',
@@ -283,7 +344,14 @@ export const pokemonOptions = (
       ),
     ].join(':'),
   );
-  const selected = shuffle(shortlist, optionRandom).slice(0, 3);
+  const selected = shuffle(shortlist, optionRandom)
+    .sort((a, b) =>
+      context.history
+        ? getPokemonRecency(context.history, a) -
+          getPokemonRecency(context.history, b)
+        : 0,
+    )
+    .slice(0, 3);
   const distanceFromTarget = (name: string) =>
     Math.abs(
       (context.catalog.pokemon[name]?.id ?? target.pokemon.id) -

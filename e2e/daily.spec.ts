@@ -223,7 +223,20 @@ test('starts saved Training settings directly after completing Daily', async ({
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
-  expect(
-    await page.evaluate(() => window.localStorage.getItem('quizmon.player')),
-  ).toBe(savedDaily);
+  const beforeTraining = JSON.parse(savedDaily!) as PlayerSave;
+  const readSave = () =>
+    page.evaluate(
+      () => JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave,
+    );
+  await expect
+    .poll(async () => (await readSave()).data.questionHistory.sequence)
+    .toBe(beforeTraining.data.questionHistory.sequence + 1);
+  const afterTraining = await readSave();
+  expect({
+    ...afterTraining,
+    data: {
+      ...afterTraining.data,
+      questionHistory: beforeTraining.data.questionHistory,
+    },
+  }).toEqual(beforeTraining);
 });
