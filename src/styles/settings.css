@@ -515,11 +515,6 @@
   height: 1.25rem;
 }
 
-.modifier-list {
-  display: grid;
-  gap: 0.8rem;
-}
-
 .checkbox {
   position: relative;
   display: grid;

@@ -1,12 +1,7 @@
 import { GenerationLabel } from './GenerationLabel';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { isLeagueTraining } from '@/game/modifiers';
-import {
-  generations,
-  type Generation,
-  type Modifiers,
-  trainingModes,
-} from '@/game/types';
+import { generations, type Modifiers, trainingModes } from '@/game/types';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from './SoundButton';
@@ -89,7 +84,7 @@ export const TrainingSettings = ({
               onChange={(event) =>
                 onChange((current) => ({
                   ...current,
-                  generations: toggleValue<Generation>(
+                  generations: toggleValue(
                     current.generations,
                     generation,
                     event.target.checked,

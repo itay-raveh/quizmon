@@ -96,8 +96,7 @@ export const QuestionTypeSettings = ({
         </div>
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
-            {draft.questionTypes.length > 0 &&
-            draft.questionTypes.includes('generation-roundup') &&
+            {draft.questionTypes.includes('generation-roundup') &&
             draft.generations.length < 2
               ? 'Select at least two generations for Generation roundup.'
               : questionTypesAreValid
@@ -163,7 +162,7 @@ export const QuestionTypeSettings = ({
                           onChange={(event) =>
                             onChange((current) => ({
                               ...current,
-                              questionTypes: toggleValue<QuestionType>(
+                              questionTypes: toggleValue(
                                 current.questionTypes,
                                 questionType,
                                 event.target.checked,
