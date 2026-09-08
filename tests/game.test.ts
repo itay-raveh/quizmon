@@ -125,14 +125,10 @@ describe('question building', () => {
     });
 
     expect(candidates.length).toBeGreaterThan(100);
-    expect(candidates.every(({ pokemon }) => pokemon.generation === 'IX')).toBe(
-      true,
-    );
-    expect(
-      candidates.every(
-        ({ name, pokemon }) => pokemon === catalog.pokemon[name],
-      ),
-    ).toBe(true);
+    for (const { name, pokemon } of candidates) {
+      expect(pokemon.generation).toBe('IX');
+      expect(pokemon).toBe(catalog.pokemon[name]);
+    }
   });
 
   it('builds every selected question type with unique options', () => {
@@ -353,7 +349,7 @@ describe('question building', () => {
     );
 
     expect(new Set(distractors).size).toBeGreaterThan(3);
-    expect(distractors.every((name) => name.startsWith('similar-'))).toBe(true);
+    for (const name of distractors) expect(name).toMatch(/^similar-/);
     for (const options of optionSets) {
       expect(options).toHaveLength(4);
       expect(options).toContain(target.name);
@@ -490,25 +486,17 @@ describe('question building', () => {
       const stat = candidate.visual.stat;
       const correct = candidate.answer.correctOptions[0]!;
       const correctValue = catalog.pokemon[correct]!.stats[stat];
-      const distractorValues = candidate.options
-        .filter((option) => option !== correct)
-        .map((option) => catalog.pokemon[option]!.stats[stat]);
-
       for (const option of candidate.options) {
-        expect(candidate.optionStats?.[option]).toBe(
-          catalog.pokemon[option]!.stats[stat],
-        );
+        const value = catalog.pokemon[option]!.stats[stat];
+        expect(candidate.optionStats?.[option]).toBe(value);
+        if (option === correct) continue;
+        if (candidate.visual.direction === 'highest') {
+          expect(value).toBeLessThan(correctValue);
+        } else {
+          expect(value).toBeGreaterThan(correctValue);
+        }
       }
       expect(getQuestionPromptText(candidate.prompt)).not.toContain('base');
-      if (candidate.visual.direction === 'highest') {
-        expect(distractorValues.every((value) => value < correctValue)).toBe(
-          true,
-        );
-      } else {
-        expect(distractorValues.every((value) => value > correctValue)).toBe(
-          true,
-        );
-      }
     }
   });
 
@@ -667,16 +655,12 @@ describe('question building', () => {
         (source) => source.includes('/versions/') && source.includes('/back/'),
       ),
     ).toBe(true);
-    expect(
-      [...sources].every((source) =>
-        /^\/sprites\/pokemon\/(?:\d+\.png|versions\/generation-(?:i|ii|iii|iv|v)\/)/.test(
-          source,
-        ),
-      ),
-    ).toBe(true);
-    expect([...sources].every((source) => !source.includes('/other/'))).toBe(
-      true,
-    );
+    for (const source of sources) {
+      expect(source).toMatch(
+        /^\/sprites\/pokemon\/(?:\d+\.png|versions\/generation-(?:i|ii|iii|iv|v)\/)/,
+      );
+      expect(source).not.toContain('/other/');
+    }
   });
 
   it.each([

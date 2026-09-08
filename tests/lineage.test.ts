@@ -111,13 +111,10 @@ describe('Generation roundup', () => {
       createSeededRandom('single-gen'),
     );
     expect(questions).toHaveLength(10);
-    expect(
-      questions.every(
-        (question) =>
-          question.generation === 'I' &&
-          question.questionType !== 'generation-roundup',
-      ),
-    ).toBe(true);
+    for (const question of questions) {
+      expect(question.generation).toBe('I');
+      expect(question.questionType).not.toBe('generation-roundup');
+    }
   });
 
   it('requires two generations whenever Custom includes Generation roundup', () => {

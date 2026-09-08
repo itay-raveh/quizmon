@@ -86,8 +86,8 @@ it('counts only displayed questions and makes duplicate exposure notifications h
     getQuestionKey(questions[0]!),
   ]);
   const next = generate('evolution-shift', history, 'after-abandon', 39);
-  expect(next.some((q) => q.pokemonName === questions[0]!.pokemonName)).toBe(
-    false,
+  expect(next.map(({ pokemonName }) => pokemonName)).not.toContain(
+    questions[0]!.pokemonName,
   );
   expect(new Set(next.map(getQuestionKey)).size).toBe(39);
 });
@@ -105,11 +105,9 @@ it('tracks all correct Pokémon in Legend Hunt and covers the restricted pool', 
     );
     for (const name of question.answer.correctOptions) seen.add(name);
     history = rememberQuestion(history, question);
-    expect(
-      question.answer.correctOptions.every(
-        (name) => history.subjects[`legend-hunt:${name}`] === history.sequence,
-      ),
-    ).toBe(true);
+    for (const name of question.answer.correctOptions) {
+      expect(history.subjects[`legend-hunt:${name}`]).toBe(history.sequence);
+    }
   }
   expect(seen.size).toBe(48);
 });
