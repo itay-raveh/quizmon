@@ -171,18 +171,18 @@ test('plays and shares a complete Training round without a live API call', async
   await expect
     .poll(() => analyticsEvents.filter(({ type }) => type === 'game_started'))
     .toHaveLength(1);
-  const completionEvents = analyticsEvents.filter(
-    ({ type }) => type === 'game_completed',
-  );
-  await expect.poll(() => completionEvents).toHaveLength(1);
-  expect(completionEvents[0]).toMatchObject({
-    contentVersion: catalogData.contentVersion,
-    correctCount: 10,
-    mode: 'training',
-    questionCount: 10,
-    scoreVersion: 2,
-    type: 'game_completed',
-  });
+  await expect
+    .poll(() => analyticsEvents.filter(({ type }) => type === 'game_completed'))
+    .toMatchObject([
+      {
+        contentVersion: catalogData.contentVersion,
+        correctCount: 10,
+        mode: 'training',
+        questionCount: 10,
+        scoreVersion: 2,
+        type: 'game_completed',
+      },
+    ]);
   await expect(page.getByRole('contentinfo')).toBeVisible();
   expect(apiCalls).toBe(0);
 
@@ -325,19 +325,6 @@ test('asks new players which generations they know before Training', async ({
 });
 
 test('confirms before discarding an in-progress game', async ({ page }) => {
-  await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({
-        generations: ['I'],
-        questionTypes: ['pokedex-scan'],
-        soundEnabled: false,
-        speedrunMode: true,
-        trainingMode: 'custom',
-      }),
-    );
-  });
-
   await page.goto('/');
   await page.getByRole('button', { name: 'Start training' }).click();
   await page.locator('.answer').first().click();
