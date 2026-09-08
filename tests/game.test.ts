@@ -12,7 +12,7 @@ import {
   getQuestionPromptText,
   getQuestionTitle,
   getQuestionTypeLabel,
-  getResponseTimeSeconds,
+  getResponseTime,
   getSpeedBonusPoints,
   getTrainingModifiers,
   normalizeModifiers,
@@ -916,28 +916,11 @@ describe('utilities', () => {
 
   it('totals only active answer time', () => {
     expect(
-      getResponseTimeSeconds([
-        {
-          category: 'identity',
-          cluesUsed: 0,
-          correct: true,
-          generation: 'I',
-          pokemonName: 'pikachu',
-          points: 1_000,
-          questionType: 'pokedex-scan',
-          responseMilliseconds: 1_900,
-        },
-        {
-          category: 'type',
-          cluesUsed: 0,
-          correct: false,
-          generation: 'II',
-          pokemonName: 'sudowoodo',
-          points: 0,
-          questionType: 'type-check',
-          responseMilliseconds: 2_600,
-        },
+      getResponseTime([
+        { responseMilliseconds: 1_900 },
+        { responseMilliseconds: 2_600 },
+        {},
       ]),
-    ).toBe(4);
+    ).toEqual({ elapsedMilliseconds: 4_500, elapsedSeconds: 4 });
   });
 });

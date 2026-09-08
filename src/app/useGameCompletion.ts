@@ -5,12 +5,7 @@ import { registerPokedexAnswer } from '@/game/pokedex';
 import { useCallback, type Dispatch } from 'react';
 import { clearActiveGame } from '@/game/active-game';
 import { trackGameCompleted } from '@/game/analytics';
-import {
-  calculateScore,
-  getResponseTimeMilliseconds,
-  getResponseTimeSeconds,
-  SCORE_VERSION,
-} from '@/game/game';
+import { calculateScore, getResponseTime, SCORE_VERSION } from '@/game/game';
 import { readTrainerStats, saveResult } from '@/game/storage';
 import { getTrainerProgressChanges } from '@/game/trainer';
 import type { AnswerResult, GameResult } from '@/game/types';
@@ -41,8 +36,7 @@ export const useGameCompletion = ({
         answers,
         contentVersion,
         correctCount: answers.filter(({ correct }) => correct).length,
-        elapsedMilliseconds: getResponseTimeMilliseconds(answers),
-        elapsedSeconds: getResponseTimeSeconds(answers),
+        ...getResponseTime(answers),
         questionCount: questions.length,
         score: calculateScore(answers),
         scoreVersion: SCORE_VERSION,

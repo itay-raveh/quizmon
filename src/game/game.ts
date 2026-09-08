@@ -292,14 +292,15 @@ export const getQuestionPromptText = (prompt: QuestionPrompt): string =>
     ? prompt.text
     : `${prompt.before}${formatPokemonName(prompt.name)}${prompt.after}`;
 
-export const getResponseTimeSeconds = (
-  answers: readonly SavedAnswerResult[],
-): number => Math.floor(getResponseTimeMilliseconds(answers) / 1_000);
-
-export const getResponseTimeMilliseconds = (
-  answers: readonly SavedAnswerResult[],
-): number =>
-  answers.reduce(
+export const getResponseTime = (
+  answers: readonly Pick<SavedAnswerResult, 'responseMilliseconds'>[],
+) => {
+  const elapsedMilliseconds = answers.reduce(
     (total, answer) => total + (answer.responseMilliseconds ?? 0),
     0,
   );
+  return {
+    elapsedMilliseconds,
+    elapsedSeconds: Math.floor(elapsedMilliseconds / 1_000),
+  };
+};
