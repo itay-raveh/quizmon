@@ -32,9 +32,10 @@ export const PokemonPicker = ({
     [options],
   );
   const normalizedQuery = normalizeSearch(query);
-  const suggestions = useMemo(() => {
-    return findSearchMatches(entries, query);
-  }, [entries, query]);
+  const suggestions = useMemo(
+    () => findSearchMatches(entries, normalizedQuery),
+    [entries, normalizedQuery],
+  );
   const {
     activeIndex,
     choose,

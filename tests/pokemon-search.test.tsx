@@ -9,7 +9,7 @@ const options = [
 ];
 
 for (const kind of ['partner', 'champion'] as const) {
-  const setup = () => {
+  const setup = (query = 'char') => {
     const onChoose = vi.fn();
     render(
       kind === 'partner' ? (
@@ -25,10 +25,22 @@ for (const kind of ['partner', 'champion'] as const) {
       ),
     );
     const input = screen.getByRole('combobox');
-    fireEvent.change(input, { target: { value: 'char' } });
+    fireEvent.change(input, { target: { value: query } });
     onChoose.mockClear();
     return { input, onChoose };
   };
+
+  it.each([' CHÁR-- ', 'ＣＨＡＲ', 'cha\u0301r'])(
+    `${kind} search normalizes %s without changing suggestion order`,
+    (query) => {
+      setup(query);
+      const suggestions = screen.getAllByRole('option');
+      expect(suggestions).toHaveLength(3);
+      ['Charizard', 'Charmander', 'Charmeleon'].forEach((name, index) => {
+        expect(suggestions[index]).toHaveAccessibleName(name);
+      });
+    },
+  );
 
   it(`${kind} search wraps arrow navigation and selects with Enter`, () => {
     const { input, onChoose } = setup();

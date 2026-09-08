@@ -11,10 +11,9 @@ export const normalizeSearch = (value: string): string =>
 
 export const findSearchMatches = <Entry extends SearchEntry>(
   entries: readonly Entry[],
-  query: string,
+  normalizedQuery: string,
   limit = 6,
 ): Entry[] => {
-  const normalizedQuery = normalizeSearch(query);
   if (!normalizedQuery) return [];
 
   return entries
