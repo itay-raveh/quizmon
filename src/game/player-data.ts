@@ -78,6 +78,16 @@ const isCounts = (value: unknown, keys: readonly string[]): boolean =>
     ([key, count]) => keys.includes(key) && isCount(count),
   );
 
+const savedQuestionCategories = [
+  ...questionCategories,
+  ...legacyQuestionCategories,
+] as const;
+const savedQuestionTypes = [
+  ...questionTypes,
+  'champion',
+  ...legacyQuestionTypes,
+] as const;
+
 const isResult = (value: unknown): value is GameResult => {
   if (
     !isRecord(value) ||
@@ -98,10 +108,7 @@ const isResult = (value: unknown): value is GameResult => {
   return value.answers.every(
     (answer: unknown) =>
       isRecord(answer) &&
-      isChoice(answer.category, [
-        ...questionCategories,
-        ...legacyQuestionCategories,
-      ]) &&
+      isChoice(answer.category, savedQuestionCategories) &&
       (answer.cluesUsed === undefined || isCount(answer.cluesUsed)) &&
       typeof answer.correct === 'boolean' &&
       (answer.generation === undefined ||
@@ -109,11 +116,7 @@ const isResult = (value: unknown): value is GameResult => {
       (answer.pokemonName === undefined || isName(answer.pokemonName)) &&
       isCount(answer.points) &&
       (answer.questionType === undefined ||
-        isChoice(answer.questionType, [
-          ...questionTypes,
-          'champion',
-          ...legacyQuestionTypes,
-        ])) &&
+        isChoice(answer.questionType, savedQuestionTypes)) &&
       (answer.responseMilliseconds === undefined ||
         isFiniteNonnegative(answer.responseMilliseconds)) &&
       (answer.speedBonus === undefined || isCount(answer.speedBonus)),
