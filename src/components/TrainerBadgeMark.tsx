@@ -9,8 +9,7 @@ import worldTour from '@/assets/images/badges/world-tour.png';
 import type { TrainerBadgeId, TrainerTier } from '@/game/trainer';
 
 interface TrainerBadgeMarkProps {
-  earned: boolean;
-  tier?: TrainerTier;
+  tier: TrainerTier;
   id: TrainerBadgeId;
 }
 
@@ -25,12 +24,8 @@ const badgeImages = {
   'world-tour': worldTour,
 } satisfies Record<TrainerBadgeId, string>;
 
-export const TrainerBadgeMark = ({
-  earned,
-  id,
-  tier = earned ? 1 : 0,
-}: TrainerBadgeMarkProps) => (
-  <span className="trainer-badge-mark" data-earned={earned} data-tier={tier}>
+export const TrainerBadgeMark = ({ id, tier }: TrainerBadgeMarkProps) => (
+  <span className="trainer-badge-mark" data-earned={tier > 0} data-tier={tier}>
     <img
       aria-hidden="true"
       src={badgeImages[id]}

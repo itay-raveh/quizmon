@@ -68,7 +68,11 @@ export const TrainerCard = ({
               aria-label={`${trainerSpecialtyDetails[profile.specialty].label}, ${trainerTierLabels[titleTier]} title`}
             >
               <span>{trainerSpecialtyDetails[profile.specialty].label}</span>
-              <TrainerTitleMark earned plain specialty={profile.specialty} />
+              <TrainerTitleMark
+                plain
+                tier={titleTier}
+                specialty={profile.specialty}
+              />
             </p>
           ) : null}
         </div>

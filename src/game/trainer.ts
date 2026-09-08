@@ -301,7 +301,6 @@ export const getTrainerTitles = (
         ),
       ),
       description: trainerSpecialtyDetails[specialty].description,
-      earned: current >= TRAINER_SPECIALTY_GOALS[0],
       equipped: specialty === equipped,
       label: trainerSpecialtyDetails[specialty].label,
       specialty,

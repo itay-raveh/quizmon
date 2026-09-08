@@ -37,17 +37,9 @@ export const TrainerProgressSummary = ({
 
   const renderMark = (change: TrainerProgressChange) =>
     change.kind === 'badge' ? (
-      <TrainerBadgeMark
-        earned={change.tier > 0}
-        tier={change.tier}
-        id={change.id}
-      />
+      <TrainerBadgeMark tier={change.tier} id={change.id} />
     ) : (
-      <TrainerTitleMark
-        earned={change.tier > 0}
-        tier={change.tier}
-        specialty={change.specialty}
-      />
+      <TrainerTitleMark tier={change.tier} specialty={change.specialty} />
     );
 
   return (

@@ -60,11 +60,7 @@ export const TrainerTitles = ({
               key={title.specialty}
               onClick={() => onSelect(title)}
             >
-              <TrainerTitleMark
-                earned={title.earned}
-                tier={title.tier}
-                specialty={title.specialty}
-              />
+              <TrainerTitleMark tier={title.tier} specialty={title.specialty} />
               <span className="trainer-title__copy">
                 <strong>
                   {title.label}

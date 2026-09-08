@@ -38,11 +38,7 @@ export const TrainerTitleDialog = ({
         />
       </header>
       <div className="trainer-title-dialog__body">
-        <TrainerTitleMark
-          earned={title.earned}
-          tier={title.tier}
-          specialty={title.specialty}
-        />
+        <TrainerTitleMark tier={title.tier} specialty={title.specialty} />
         <div className="trainer-title-dialog__details">
           <strong className="trainer-title-dialog__state">
             {title.equipped

@@ -43,11 +43,7 @@ export const TrainerBadgeCase = ({
             key={badge.id}
             onClick={() => onSelect(badge)}
           >
-            <TrainerBadgeMark
-              earned={badge.earned}
-              id={badge.id}
-              tier={badge.tier}
-            />
+            <TrainerBadgeMark id={badge.id} tier={badge.tier} />
           </SoundButton>
         ))}
       </section>

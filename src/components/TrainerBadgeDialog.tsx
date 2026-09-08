@@ -33,11 +33,7 @@ export const TrainerBadgeDialog = ({
         />
       </header>
       <div className="trainer-badge-dialog__body">
-        <TrainerBadgeMark
-          earned={badge.earned}
-          tier={badge.tier}
-          id={badge.id}
-        />
+        <TrainerBadgeMark tier={badge.tier} id={badge.id} />
         <div className="trainer-badge-dialog__details">
           <strong className="trainer-badge-dialog__state">
             {badge.earned

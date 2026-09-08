@@ -13,9 +13,8 @@ import {
 } from './icons';
 
 interface TrainerTitleMarkProps {
-  earned: boolean;
   plain?: boolean;
-  tier?: TrainerTier;
+  tier: TrainerTier;
   specialty: TrainerSpecialty;
 }
 
@@ -31,12 +30,12 @@ const titleMarks = {
 } satisfies Record<TrainerSpecialty, Icon>;
 
 export const TrainerTitleMark = ({
-  earned,
   plain = false,
   specialty,
-  tier = earned ? 1 : 0,
+  tier,
 }: TrainerTitleMarkProps) => {
-  const Mark = earned ? titleMarks[specialty] : LockSimpleIcon;
+  const earned = tier > 0;
+  const Mark = plain || earned ? titleMarks[specialty] : LockSimpleIcon;
 
   if (plain) return <Mark aria-hidden="true" weight="bold" />;
 
