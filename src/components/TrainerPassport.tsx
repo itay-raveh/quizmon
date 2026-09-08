@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
 import { TRAINER_NAME_MAX_LENGTH } from '@/game/profile-data';
-import { readDailyStreak, type TrainerStats } from '@/game/storage';
+import { getDailyStreak, type TrainerStats } from '@/game/storage';
+import { getLocalDate } from '@/game/daily';
 import { readPlayerData } from '@/game/player-storage';
 import {
   requestPersistentStorage,
@@ -77,10 +78,14 @@ export const TrainerPassport = ({
 }: TrainerPassportProps) => {
   const view = requestedView;
   const [record] = useState(() => {
-    const found = new Set(readPlayerData().pokedex);
+    const data = readPlayerData();
+    const found = new Set(data.pokedex);
     const pokemon = Object.keys(catalog.pokemon);
     return {
-      dayCombo: readDailyStreak(),
+      dayCombo: getDailyStreak(
+        data.results.streak.creditedDates,
+        getLocalDate(),
+      ),
       pokedexFound: pokemon.filter((name) => found.has(name)).length,
       pokedexTotal: pokemon.length,
     };

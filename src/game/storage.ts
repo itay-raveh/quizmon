@@ -129,8 +129,11 @@ const previousDailyDate = (date: string): string => {
   return previous.toISOString().slice(0, 10);
 };
 
-export const readDailyStreak = (today = getLocalDate()): number => {
-  const creditedDates = new Set(readResults().streak.creditedDates);
+export const getDailyStreak = (
+  dates: readonly string[],
+  today: string,
+): number => {
+  const creditedDates = new Set(dates);
   let date = creditedDates.has(today) ? today : previousDailyDate(today);
   let streak = 0;
 
@@ -141,6 +144,9 @@ export const readDailyStreak = (today = getLocalDate()): number => {
 
   return streak;
 };
+
+export const readDailyStreak = (today = getLocalDate()): number =>
+  getDailyStreak(readResults().streak.creditedDates, today);
 
 const getLongestStreak = (dates: readonly string[]): number => {
   let longest = 0;

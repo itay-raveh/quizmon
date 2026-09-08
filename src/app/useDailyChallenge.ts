@@ -8,10 +8,12 @@ import {
 } from '@/game/daily';
 import {
   canPersistResults,
+  getDailyStreak,
   readDailyResult,
   readDailyStreak,
 } from '@/game/storage';
 import type { GameResult, Modifiers, PokemonCatalog } from '@/game/types';
+import { readPlayerData } from '@/game/player-storage';
 import type { StartGame } from './session';
 import { parseTrainerRoute } from './trainer-route';
 
@@ -47,11 +49,14 @@ export const useDailyChallenge = ({
   const [storageAvailable] = useState(canPersistResults);
 
   const refresh = useCallback(() => {
-    const saved = readDailyResult(route.date);
+    const data = readPlayerData();
+    const saved = data.results.daily[route.date];
     if (saved) {
       setCompletion({ result: saved, resultSaved: true });
     }
-    setStreak(readDailyStreak());
+    setStreak(
+      getDailyStreak(data.results.streak.creditedDates, getLocalDate()),
+    );
     refreshSavedData();
   }, [refreshSavedData, route.date]);
 
