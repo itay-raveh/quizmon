@@ -126,7 +126,7 @@ describe('Trainer profile artifacts', () => {
     expect(screen.queryByText('quizmon.raveh.dev')).not.toBeInTheDocument();
     expect(
       screen.getByRole('region', {
-        name: `2 of ${badges.length} League Badges earned`,
+        name: `3 of ${badges.length} League Badges earned`,
       }),
     ).toBeVisible();
     const badge = screen.getByRole('button', {

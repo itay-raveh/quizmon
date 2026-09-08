@@ -1,3 +1,5 @@
+import { trainerTierLabels } from '@/game/trainer';
+import { TrainerTierProgress } from './TrainerTierProgress';
 import type { TrainerBadge } from '@/game/trainer';
 import { DialogCloseButton } from './DialogCloseButton';
 import { useModalDialog } from './dialog';
@@ -32,22 +34,39 @@ export const TrainerBadgeDialog = ({
         />
       </header>
       <div className="trainer-badge-dialog__body">
-        <TrainerBadgeMark earned={badge.earned} id={badge.id} />
+        <TrainerBadgeMark
+          earned={badge.earned}
+          tier={badge.tier}
+          id={badge.id}
+        />
         <div className="trainer-badge-dialog__details">
           <strong className="trainer-badge-dialog__state">
-            {badge.earned ? 'Badge earned' : 'Badge locked'}
+            {badge.earned
+              ? `${trainerTierLabels[badge.tier]} badge earned`
+              : 'Badge locked'}
           </strong>
           <p>{badge.requirement}</p>
           <div className="trainer-badge-dialog__progress-label">
-            <span>Progress</span>
+            <span>
+              {badge.tier === 3
+                ? 'Total'
+                : `Next: ${trainerTierLabels[badge.tier + 1]}`}
+            </span>
             <strong>
-              {progress} / {badge.goal}
+              {badge.tier === 3
+                ? badge.current.toLocaleString()
+                : `${progress.toLocaleString()} / ${badge.goal.toLocaleString()}`}
             </strong>
           </div>
           <progress
             aria-label={`${badge.label} progress`}
             max={badge.goal}
             value={progress}
+          />
+          <TrainerTierProgress
+            label={badge.label}
+            milestones={badge.milestones}
+            tier={badge.tier}
           />
         </div>
       </div>

@@ -6,6 +6,8 @@ import {
   trainerSpecialtyDetails,
   trainerViewLabels,
   type TrainerRank,
+  type TrainerTier,
+  trainerTierLabels,
 } from '@/game/trainer';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
@@ -19,6 +21,7 @@ interface TrainerCardProps {
   partnerSprite: string | null;
   profile: TrainerProfile;
   rank: TrainerRank;
+  titleTier?: TrainerTier;
   record: {
     dayCombo: number;
     pokedexFound: number;
@@ -32,6 +35,7 @@ export const TrainerCard = ({
   partnerSprite,
   profile,
   rank,
+  titleTier = 1,
   record,
 }: TrainerCardProps) => {
   const finish = getCardFinish(rank);
@@ -58,9 +62,16 @@ export const TrainerCard = ({
         <div className="trainer-card__identity">
           <h2>{profile.name || `${site.name} Trainer`}</h2>
           {profile.specialty ? (
-            <p className="trainer-card__title">
+            <p
+              className="trainer-card__title"
+              aria-label={`${trainerSpecialtyDetails[profile.specialty].label}, ${trainerTierLabels[titleTier]} title`}
+            >
               <span>{trainerSpecialtyDetails[profile.specialty].label}</span>
-              <TrainerTitleMark earned specialty={profile.specialty} />
+              <TrainerTitleMark
+                earned
+                tier={titleTier}
+                specialty={profile.specialty}
+              />
             </p>
           ) : null}
         </div>

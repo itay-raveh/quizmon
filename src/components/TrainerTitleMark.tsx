@@ -1,5 +1,5 @@
 import type { Icon } from '@phosphor-icons/react';
-import type { TrainerSpecialty } from '@/game/trainer';
+import type { TrainerSpecialty, TrainerTier } from '@/game/trainer';
 import {
   ArrowsClockwiseIcon,
   BinocularsIcon,
@@ -14,6 +14,7 @@ import {
 
 interface TrainerTitleMarkProps {
   earned: boolean;
+  tier?: TrainerTier;
   specialty: TrainerSpecialty;
 }
 
@@ -31,6 +32,7 @@ const titleMarks = {
 export const TrainerTitleMark = ({
   earned,
   specialty,
+  tier = earned ? 1 : 0,
 }: TrainerTitleMarkProps) => {
   const Mark = earned ? titleMarks[specialty] : LockSimpleIcon;
 
@@ -40,8 +42,14 @@ export const TrainerTitleMark = ({
       className="trainer-title-mark"
       data-earned={earned}
       data-specialty={specialty}
+      data-tier={tier}
     >
       <Mark weight="bold" />
+      {tier > 0 ? (
+        <small className="trainer-title-mark__tier">
+          {['', 'I', 'II', 'III'][tier]}
+        </small>
+      ) : null}
     </span>
   );
 };

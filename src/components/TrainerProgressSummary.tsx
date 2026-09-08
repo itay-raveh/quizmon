@@ -1,4 +1,8 @@
-import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
+import {
+  trainerTierLabels,
+  type TrainerProgressChange,
+  type TrainerView,
+} from '@/game/trainer';
 import { GameButton } from './GameButton';
 import { CaretRightIcon } from './icons';
 import { Trophy } from './Trophy';
@@ -33,9 +37,17 @@ export const TrainerProgressSummary = ({
 
   const renderMark = (change: TrainerProgressChange) =>
     change.kind === 'badge' ? (
-      <TrainerBadgeMark earned={change.earned} id={change.id} />
+      <TrainerBadgeMark
+        earned={change.tier > 0}
+        tier={change.tier}
+        id={change.id}
+      />
     ) : (
-      <TrainerTitleMark earned={change.earned} specialty={change.specialty} />
+      <TrainerTitleMark
+        earned={change.tier > 0}
+        tier={change.tier}
+        specialty={change.specialty}
+      />
     );
 
   return (
@@ -78,8 +90,8 @@ export const TrainerProgressSummary = ({
                 <span>
                   <small>
                     {change.kind === 'badge'
-                      ? 'League Badge earned'
-                      : 'Trainer Title unlocked'}
+                      ? `League Badge earned · ${trainerTierLabels[change.tier]}`
+                      : `Trainer Title unlocked · ${trainerTierLabels[change.tier]}`}
                   </small>
                   <strong>{change.label}</strong>
                 </span>

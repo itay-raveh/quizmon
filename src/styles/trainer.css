@@ -435,6 +435,10 @@
 }
 
 .trainer-card__title .trainer-title-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
   width: auto;
   flex: none;
   color: inherit;
@@ -442,6 +446,22 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+
+.trainer-title-mark__tier {
+  position: absolute;
+  right: -0.35rem;
+  bottom: -0.3rem;
+  padding: 0.05rem 0.2rem;
+  color: var(--navy);
+  background: var(--tier-metal);
+  border: 1px solid var(--navy);
+  font: 800 0.65rem / 1 var(--font-interface);
+}
+
+.trainer-card__title .trainer-title-mark__tier {
+  position: static;
+  font-size: 0.8em;
 }
 
 .trainer-card__title .trainer-title-mark svg {
@@ -645,6 +665,24 @@
   bottom: 0.2rem;
 }
 
+[data-tier='1'] {
+  --tier-metal: #ed9147;
+  --tier-edge: #c86a27;
+  --tier-light: #ffe5cc;
+}
+
+[data-tier='2'] {
+  --tier-metal: #b8cbd2;
+  --tier-edge: #7895a2;
+  --tier-light: #e5f0f4;
+}
+
+[data-tier='3'] {
+  --tier-metal: #f0c51f;
+  --tier-edge: #c58c00;
+  --tier-light: #fff0a0;
+}
+
 .trainer-badge {
   width: 100%;
   display: grid;
@@ -666,6 +704,26 @@
 .trainer-badge:hover {
   background: var(--case-tile-hover);
   border-color: #dfe9ea;
+}
+
+.trainer-badge[data-earned='true'] {
+  border-color: var(--tier-metal);
+  box-shadow:
+    inset 0.12rem 0.12rem 0 var(--tier-light),
+    inset -0.12rem -0.12rem 0 var(--tier-edge),
+    0 0.16rem 0 #091f34;
+}
+
+.trainer-badge[data-tier='2'] {
+  border-width: 4px;
+}
+
+.trainer-badge[data-tier='3'] {
+  border-width: 5px;
+}
+
+.trainer-badge[data-earned='true']:hover {
+  border-color: var(--tier-light);
 }
 
 .trainer-badge:active {
@@ -777,10 +835,26 @@
 
 .trainer-title[data-equipped='true'] {
   background: var(--cream);
-  border-color: var(--navy);
+}
+
+.trainer-title[data-tier]:not([data-tier='0']) {
+  border-color: var(--tier-metal);
   box-shadow:
-    inset 0 0 0 2px var(--yellow),
+    inset 0 0 0 1px var(--tier-edge),
     0 0.18rem 0 var(--title-wood-dark);
+}
+
+.trainer-title[data-equipped='true'] {
+  box-shadow:
+    inset 0 0 0 2px var(--navy),
+    0 0.18rem 0 var(--title-wood-dark);
+}
+
+.trainer-title__equipped {
+  width: 1em;
+  height: 1em;
+  margin-inline-start: 0.3em;
+  vertical-align: -0.1em;
 }
 
 .trainer-title:hover {
@@ -801,6 +875,7 @@
 }
 
 .trainer-title-mark {
+  position: relative;
   display: grid;
   width: 3.25rem;
   aspect-ratio: 1;
@@ -810,6 +885,11 @@
   border-radius: 0.35rem;
   box-shadow: 0 0.18rem 0 var(--yellow);
   place-items: center;
+}
+
+.trainer-title-mark[data-earned='true'] {
+  border-color: var(--tier-metal);
+  box-shadow: 0 0.18rem 0 var(--tier-edge);
 }
 
 .trainer-title-mark svg {
@@ -849,6 +929,90 @@
   font-size: var(--text-small);
   font-weight: 700;
   text-align: center;
+}
+
+.trainer-progress-change--earned > .trainer-badge-mark,
+.trainer-progress-change--earned > .trainer-title-mark {
+  position: relative;
+  isolation: isolate;
+}
+
+.trainer-progress-change--earned > .trainer-badge-mark::after,
+.trainer-progress-change--earned > .trainer-title-mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url('../assets/images/trainer-card/sheen-05.png') center / contain
+    no-repeat;
+  image-rendering: pixelated;
+  opacity: 0;
+  animation: trainer-tier-sheen 650ms steps(8, end) 120ms;
+}
+
+@keyframes trainer-tier-sheen {
+  0% {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+  45% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateX(30%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trainer-progress-change--earned > .trainer-badge-mark::after,
+  .trainer-progress-change--earned > .trainer-title-mark::after {
+    animation: none;
+  }
+}
+
+.trainer-tier-progress {
+  display: grid;
+  padding: 0;
+  margin: 0.6rem 0 0;
+  list-style: none;
+  gap: 0.75rem;
+}
+
+.trainer-tier-progress li {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--muted);
+}
+
+.trainer-tier-progress__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: var(--text-label);
+}
+
+.trainer-tier-progress__heading strong {
+  color: var(--navy);
+  text-decoration: underline;
+  text-decoration-color: var(--tier-edge);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2rem;
+}
+
+.trainer-tier-progress li p {
+  margin-top: 0.4rem;
+  font-size: var(--text-label);
+}
+
+.trainer-badge-dialog__body > .trainer-badge-mark[data-earned='true'] {
+  padding: 0.5rem;
+  background: var(--case-tile);
+  border: 4px solid var(--tier-metal);
+  border-radius: 0.38rem;
+  box-shadow:
+    inset 2px 2px 0 var(--tier-light),
+    inset -2px -2px 0 var(--tier-edge);
 }
 
 .trainer-badge-dialog,
@@ -986,11 +1150,12 @@
 }
 
 .trainer-title-dialog__body > .trainer-title-mark {
+  position: relative;
   width: 7.5rem;
   justify-self: center;
   border-width: 4px;
   border-radius: 0.55rem;
-  box-shadow: 0 0.28rem 0 var(--yellow);
+  box-shadow: 0 0.28rem 0 var(--tier-edge, var(--yellow));
 }
 
 .trainer-title-dialog__body > .trainer-title-mark svg {
@@ -1269,6 +1434,7 @@
   }
 
   .trainer-title-mark {
+    position: relative;
     width: 2.6rem;
     border-width: 2px;
   }
@@ -1308,6 +1474,7 @@
   }
 
   .trainer-title-dialog__body > .trainer-title-mark {
+    position: relative;
     width: 5.5rem;
   }
 
@@ -1360,6 +1527,7 @@
 
   .trainer-badge-dialog__body > .trainer-badge-mark,
   .trainer-title-dialog__body > .trainer-title-mark {
+    position: relative;
     width: min(5rem, 100%);
   }
 

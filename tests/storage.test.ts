@@ -407,3 +407,32 @@ describe('saved results', () => {
     setItem.mockRestore();
   });
 });
+
+it('counts qualifying Quick Attack rounds without counting Custom or slow rounds', () => {
+  window.localStorage.clear();
+  const fast = {
+    ...result,
+    answers: Array.from({ length: 10 }, () => correctAnswer),
+    correctCount: 10,
+    questionCount: 10,
+    elapsedSeconds: 59,
+  };
+  saveResult({ kind: 'training' }, fast, {
+    ...defaultModifiers,
+    trainingMode: 'league',
+  });
+  saveResult({ kind: 'training' }, fast, {
+    ...defaultModifiers,
+    trainingMode: 'league',
+  });
+  saveResult({ kind: 'training' }, fast, {
+    ...defaultModifiers,
+    trainingMode: 'custom',
+  });
+  saveResult(
+    { kind: 'training' },
+    { ...fast, elapsedSeconds: 60 },
+    { ...defaultModifiers, trainingMode: 'league' },
+  );
+  expect(readTrainerStats().quickAttackRounds).toBe(2);
+});

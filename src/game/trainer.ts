@@ -1,7 +1,42 @@
 import type { TrainerStats } from './storage';
-import type { QuestionCategory } from './types';
+import {
+  generations,
+  type PokemonCatalog,
+  type QuestionCategory,
+} from './types';
+import { questionTypes } from './questions/definitions';
 
-const TRAINER_SPECIALTY_GOAL = 10;
+const TRAINER_SPECIALTY_GOALS = [10, 100, 1000] as const;
+export type TrainerTier = 0 | 1 | 2 | 3;
+export const trainerTierLabels = [
+  'Locked',
+  'Bronze',
+  'Silver',
+  'Gold',
+] as const;
+
+export interface TrainerMilestone {
+  current: number;
+  goal: number;
+  requirement: string;
+}
+
+const getTier = (milestones: readonly TrainerMilestone[]): TrainerTier =>
+  milestones.reduce<TrainerTier>(
+    (tier, { current, goal }, index) =>
+      current >= goal ? ((index + 1) as TrainerTier) : tier,
+    0,
+  );
+
+const getProgress = (milestones: readonly TrainerMilestone[]) => {
+  const tier = getTier(milestones);
+  return {
+    ...milestones[Math.min(tier, 2)]!,
+    tier,
+    earned: tier > 0,
+    milestones,
+  };
+};
 
 export const trainerSpecialtyDetails = {
   ability: {
@@ -59,80 +94,127 @@ export const trainerViewLabels = {
 export type TrainerView = keyof typeof trainerViewLabels;
 
 interface TrainerBadgeDefinition {
-  getCurrent: (stats: TrainerStats) => number;
-  goal: number;
   id: string;
   label: string;
-  requirement: string;
+  milestones: (
+    stats: TrainerStats,
+    catalog?: PokemonCatalog,
+  ) => TrainerMilestone[];
 }
+
+const countMilestones = (
+  current: number,
+  goals: readonly number[],
+  requirement: (goal: number) => string,
+): TrainerMilestone[] =>
+  goals.map((goal) => ({ current, goal, requirement: requirement(goal) }));
 
 const trainerBadgeDefinitions = [
   {
-    getCurrent: (stats) =>
-      Object.values(stats.correctQuestionTypes).filter((correct) => correct > 0)
-        .length,
-    goal: 10,
     id: 'many-paths',
     label: 'Many Paths',
-    requirement: 'Answer correctly in 10 different question formats',
+    milestones: (stats) =>
+      [
+        [10, 1],
+        [15, 10],
+        [18, 50],
+      ].map(([goal, minimum]) => ({
+        current: questionTypes.filter(
+          (type) => (stats.correctQuestionTypes[type] ?? 0) >= minimum!,
+        ).length,
+        goal: goal!,
+        requirement: `Answer ${minimum} question${minimum === 1 ? '' : 's'} correctly in each of ${goal} different formats`,
+      })),
   },
   {
-    getCurrent: (stats) => stats.correctPokemon.length,
-    goal: 151,
     id: 'pokedex-trail',
     label: 'Pokédex Trail',
-    requirement: 'Answer correctly about 151 different Pokémon',
+    milestones: (stats, catalog) => {
+      const found = new Set(stats.pokedex ?? stats.correctPokemon);
+      const names = catalog ? Object.keys(catalog.pokemon) : [];
+      return [
+        ...countMilestones(
+          stats.correctPokemon.length,
+          [151, 500],
+          (goal) => `Answer correctly about ${goal} different Pokémon`,
+        ),
+        {
+          current: names.filter((name) => found.has(name)).length,
+          goal: names.length || Infinity,
+          requirement: 'Complete the entire Personal Pokédex',
+        },
+      ];
+    },
   },
   {
-    getCurrent: (stats) =>
-      Object.values(stats.correctGenerations).filter((correct) => correct > 0)
-        .length,
-    goal: 9,
     id: 'world-tour',
     label: 'World Tour',
-    requirement: 'Answer correctly across all 9 Pokémon generations',
+    milestones: (stats) =>
+      [1, 25, 100].map((minimum) => ({
+        current: generations.filter(
+          (generation) =>
+            (stats.correctGenerations[generation] ?? 0) >= minimum,
+        ).length,
+        goal: generations.length,
+        requirement: `Answer ${minimum} question${minimum === 1 ? '' : 's'} correctly in each of all 9 Pokémon generations`,
+      })),
   },
   {
-    getCurrent: (stats) =>
-      Math.max(
-        0,
-        ...trainerSpecialties.map(
-          (category) => stats.correctCategories[category] ?? 0,
-        ),
-      ),
-    goal: 50,
     id: 'true-calling',
     label: 'True Calling',
-    requirement: 'Answer 50 questions correctly in one Trainer specialty',
+    milestones: (stats) =>
+      countMilestones(
+        Math.max(
+          0,
+          ...trainerSpecialties.map(
+            (category) => stats.correctCategories[category] ?? 0,
+          ),
+        ),
+        [50, 250, 1000],
+        (goal) => `Answer ${goal} questions correctly in one Trainer specialty`,
+      ),
   },
   {
-    getCurrent: (stats) => Number(stats.quickAttackCompleted),
-    goal: 1,
     id: 'quick-attack',
     label: 'Quick Attack',
-    requirement:
-      'Finish League Training in under 60 seconds with at least 8 correct answers',
+    milestones: (stats) =>
+      countMilestones(
+        stats.quickAttackRounds ?? Number(stats.quickAttackCompleted),
+        [1, 10, 50],
+        (goal) =>
+          `Finish ${goal} League Training round${goal === 1 ? '' : 's'} in under 60 seconds each with at least 8 correct answers`,
+      ),
   },
   {
-    getCurrent: (stats) => stats.masteryRounds,
-    goal: 3,
     id: 'perfect-form',
     label: 'Perfect Form',
-    requirement: 'Finish 3 perfect League Training rounds',
+    milestones: (stats) =>
+      countMilestones(
+        stats.masteryRounds,
+        [3, 25, 100],
+        (goal) => `Finish ${goal} perfect League Training rounds`,
+      ),
   },
   {
-    getCurrent: (stats) => stats.bestDailyStreak,
-    goal: 7,
     id: 'daily-resolve',
     label: 'Daily Resolve',
-    requirement: 'Reach a 7-day Daily Combo',
+    milestones: (stats) =>
+      countMilestones(
+        stats.bestDailyStreak,
+        [3, 7, 30],
+        (goal) => `Reach a ${goal}-day Daily Combo`,
+      ),
   },
   {
-    getCurrent: (stats) => stats.championAnswersWithoutClues,
-    goal: 5,
     id: 'champions-instinct',
     label: "Champion's Instinct",
-    requirement: 'Solve 5 Champion questions without clues',
+    milestones: (stats) =>
+      countMilestones(
+        stats.championAnswersWithoutClues,
+        [1, 5, 30],
+        (goal) =>
+          `Solve ${goal} Champion question${goal === 1 ? '' : 's'} without clues`,
+      ),
   },
 ] as const satisfies readonly TrainerBadgeDefinition[];
 
@@ -140,6 +222,8 @@ export type TrainerBadgeId = (typeof trainerBadgeDefinitions)[number]['id'];
 const TRAINER_BADGE_COUNT = trainerBadgeDefinitions.length;
 
 export interface TrainerBadge {
+  tier: TrainerTier;
+  milestones: readonly TrainerMilestone[];
   current: number;
   earned: boolean;
   goal: number;
@@ -149,6 +233,8 @@ export interface TrainerBadge {
 }
 
 export interface TrainerTitle {
+  tier: TrainerTier;
+  milestones: readonly TrainerMilestone[];
   current: number;
   description: string;
   earned: boolean;
@@ -158,14 +244,17 @@ export interface TrainerTitle {
   specialty: TrainerSpecialty;
 }
 
-interface TrainerBadgeChange extends Omit<TrainerBadge, 'requirement'> {
+interface TrainerBadgeChange extends Omit<
+  TrainerBadge,
+  'requirement' | 'milestones'
+> {
   delta: number;
   kind: 'badge';
 }
 
 interface TrainerSpecialtyChange extends Omit<
   TrainerTitle,
-  'description' | 'equipped'
+  'description' | 'equipped' | 'milestones'
 > {
   delta: number;
   kind: 'specialty';
@@ -173,11 +262,14 @@ interface TrainerSpecialtyChange extends Omit<
 
 export type TrainerProgressChange = TrainerBadgeChange | TrainerSpecialtyChange;
 
-export const getTrainerBadges = (stats: TrainerStats): TrainerBadge[] =>
-  trainerBadgeDefinitions.map(({ getCurrent, ...definition }) => {
-    const current = getCurrent(stats);
-    return { ...definition, current, earned: current >= definition.goal };
-  });
+export const getTrainerBadges = (
+  stats: TrainerStats,
+  catalog?: PokemonCatalog,
+): TrainerBadge[] =>
+  trainerBadgeDefinitions.map(({ milestones, ...definition }) => ({
+    ...definition,
+    ...getProgress(milestones(stats, catalog)),
+  }));
 
 export const getEarnedTrainerBadgeCount = (stats: TrainerStats): number =>
   getTrainerBadges(stats).filter(({ earned }) => earned).length;
@@ -190,7 +282,7 @@ export const getQualifiedTrainerSpecialties = (
 ): TrainerSpecialty[] =>
   trainerSpecialties.filter(
     (category) =>
-      (stats.correctCategories[category] ?? 0) >= TRAINER_SPECIALTY_GOAL,
+      (stats.correctCategories[category] ?? 0) >= TRAINER_SPECIALTY_GOALS[0],
   );
 
 export const getTrainerTitles = (
@@ -200,11 +292,17 @@ export const getTrainerTitles = (
   trainerSpecialties.map((specialty) => {
     const current = stats.correctCategories[specialty] ?? 0;
     return {
-      current,
+      ...getProgress(
+        countMilestones(
+          current,
+          TRAINER_SPECIALTY_GOALS,
+          (goal) =>
+            `Answer ${goal.toLocaleString()} questions correctly in this specialty`,
+        ),
+      ),
       description: trainerSpecialtyDetails[specialty].description,
-      earned: current >= TRAINER_SPECIALTY_GOAL,
+      earned: current >= TRAINER_SPECIALTY_GOALS[0],
       equipped: specialty === equipped,
-      goal: TRAINER_SPECIALTY_GOAL,
       label: trainerSpecialtyDetails[specialty].label,
       specialty,
     };
@@ -229,51 +327,46 @@ export const getCardFinish = (rank: TrainerRank): CardFinish => {
 export const getTrainerProgressChanges = (
   before: TrainerStats,
   after: TrainerStats,
+  catalog?: PokemonCatalog,
 ): TrainerProgressChange[] => {
+  const changeFor = (
+    previous: readonly TrainerMilestone[],
+    next: readonly TrainerMilestone[],
+  ) => {
+    const previousTier = getTier(previous);
+    const tier = getTier(next);
+    const index = Math.min(tier > previousTier ? tier - 1 : previousTier, 2);
+    const current = Math.min(next[index]!.current, next[index]!.goal);
+    const delta =
+      current - Math.min(previous[index]!.current, previous[index]!.goal);
+    return delta > 0 || tier > previousTier
+      ? {
+          current,
+          delta,
+          goal: next[index]!.goal,
+          earned: tier > previousTier,
+          tier,
+        }
+      : null;
+  };
   const badgeChanges = trainerBadgeDefinitions.flatMap<TrainerBadgeChange>(
-    ({ getCurrent, goal, id, label }) => {
-      const previous = Math.min(getCurrent(before), goal);
-      const current = Math.min(getCurrent(after), goal);
-      return current > previous
-        ? [
-            {
-              current,
-              delta: current - previous,
-              earned: current === goal,
-              goal,
-              id,
-              kind: 'badge',
-              label,
-            },
-          ]
-        : [];
+    ({ milestones, id, label }) => {
+      const change = changeFor(
+        milestones(before, catalog),
+        milestones(after, catalog),
+      );
+      return change ? [{ ...change, id, label, kind: 'badge' }] : [];
     },
   );
-  const specialtyChanges = trainerSpecialties.flatMap<TrainerSpecialtyChange>(
-    (specialty) => {
-      const previous = Math.min(
-        before.correctCategories[specialty] ?? 0,
-        TRAINER_SPECIALTY_GOAL,
-      );
-      const current = Math.min(
-        after.correctCategories[specialty] ?? 0,
-        TRAINER_SPECIALTY_GOAL,
-      );
-      return current > previous
-        ? [
-            {
-              current,
-              delta: current - previous,
-              earned: current === TRAINER_SPECIALTY_GOAL,
-              goal: TRAINER_SPECIALTY_GOAL,
-              kind: 'specialty',
-              label: trainerSpecialtyDetails[specialty].label,
-              specialty,
-            },
-          ]
-        : [];
+  const previousTitles = getTrainerTitles(before, null);
+  const specialtyChanges = getTrainerTitles(
+    after,
+    null,
+  ).flatMap<TrainerSpecialtyChange>(
+    ({ milestones, specialty, label }, index) => {
+      const change = changeFor(previousTitles[index]!.milestones, milestones);
+      return change ? [{ ...change, specialty, label, kind: 'specialty' }] : [];
     },
   );
-
   return [...badgeChanges, ...specialtyChanges];
 };

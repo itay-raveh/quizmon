@@ -180,7 +180,9 @@ const isResults = (value: unknown): value is SavedResults => {
     Array.isArray(progress.correctPokemon) &&
     progress.correctPokemon.every(isName) &&
     isCount(progress.masteryRounds) &&
-    typeof progress.quickAttackCompleted === 'boolean'
+    typeof progress.quickAttackCompleted === 'boolean' &&
+    (progress.quickAttackRounds === undefined ||
+      isCount(progress.quickAttackRounds))
   );
 };
 

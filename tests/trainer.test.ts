@@ -1,5 +1,10 @@
+import catalogData from '@/game/data/pokemon.json';
+import { parsePokemonCatalog } from '@/game/catalog';
 import {
   getCardFinish,
+  isLeagueUnlocked,
+  trainerSpecialtyDetails,
+  type TrainerSpecialty,
   getEarnedTrainerBadgeCount,
   getQualifiedTrainerSpecialties,
   getTrainerTitles,
@@ -130,6 +135,7 @@ describe('Trainer Card progression', () => {
         delta: 1,
         earned: true,
         goal: 9,
+        tier: 1,
         id: 'world-tour',
         kind: 'badge',
         label: 'World Tour',
@@ -139,6 +145,7 @@ describe('Trainer Card progression', () => {
         delta: 2,
         earned: false,
         goal: 50,
+        tier: 0,
         id: 'true-calling',
         kind: 'badge',
         label: 'True Calling',
@@ -148,6 +155,7 @@ describe('Trainer Card progression', () => {
         delta: 1,
         earned: true,
         goal: 5,
+        tier: 2,
         id: 'champions-instinct',
         kind: 'badge',
         label: "Champion's Instinct",
@@ -157,6 +165,7 @@ describe('Trainer Card progression', () => {
         delta: 2,
         earned: true,
         goal: 10,
+        tier: 1,
         kind: 'specialty',
         label: 'Pokédex Specialist',
         specialty: 'identity',
@@ -193,5 +202,149 @@ describe('Trainer Card progression', () => {
         }),
       ]),
     );
+  });
+});
+
+it.each([
+  ['daily-resolve', 'bestDailyStreak', [3, 7, 30]],
+  ['champions-instinct', 'championAnswersWithoutClues', [1, 5, 30]],
+  ['quick-attack', 'quickAttackRounds', [1, 10, 50]],
+  ['perfect-form', 'masteryRounds', [3, 25, 100]],
+] as const)(
+  'awards %s at each threshold and never early',
+  (id, field, goals) => {
+    goals.forEach((goal, index) => {
+      const badge = (count: number) =>
+        getTrainerBadges(stats({ [field]: count })).find(
+          (entry) => entry.id === id,
+        )!;
+      expect(badge(goal - 1).tier).toBe(index);
+      expect(badge(goal).tier).toBe(index + 1);
+    });
+  },
+);
+
+it('requires the per-format and per-generation minimum, not a pooled total', () => {
+  const progress = stats({
+    correctQuestionTypes: Object.fromEntries(
+      questionTypes.map((type) => [type, 50]),
+    ),
+    correctGenerations: Object.fromEntries(
+      generations.map((generation) => [generation, 100]),
+    ),
+  });
+  const badge = (id: string) =>
+    getTrainerBadges(progress).find((entry) => entry.id === id)!;
+  expect(badge('many-paths').tier).toBe(3);
+  expect(badge('world-tour').tier).toBe(3);
+  progress.correctQuestionTypes[questionTypes[0]!] = 49;
+  progress.correctGenerations.IX = 99;
+  expect(badge('many-paths').tier).toBe(2);
+  expect(badge('world-tour').tier).toBe(2);
+  progress.correctQuestionTypes = Object.fromEntries(
+    questionTypes.slice(0, 15).map((type) => [type, 10]),
+  );
+  expect(badge('many-paths').tier).toBe(2);
+  progress.correctQuestionTypes[questionTypes[0]!] = 9;
+  progress.correctGenerations.IX = 24;
+  expect(badge('many-paths').tier).toBe(1);
+  expect(badge('world-tour').tier).toBe(1);
+});
+
+it('keeps the League gate at all eight bronze badges', () => {
+  const bronze = stats({
+    bestDailyStreak: 3,
+    championAnswersWithoutClues: 1,
+    correctCategories: { identity: 50 },
+    correctGenerations: masteredGenerations(9),
+    correctPokemon: Array.from(
+      { length: 151 },
+      (_, index) => `pokemon-${index}`,
+    ),
+    correctQuestionTypes: masteredQuestionTypes(10),
+    masteryRounds: 3,
+    quickAttackRounds: 1,
+  });
+  expect(getTrainerBadges(bronze).map(({ tier }) => tier)).toEqual(
+    Array(8).fill(1),
+  );
+  expect(getTrainerRank(bronze)).toBe('League Challenger');
+  expect(isLeagueUnlocked(bronze)).toBe(true);
+  expect(isLeagueUnlocked({ ...bronze, bestDailyStreak: 2 })).toBe(false);
+});
+
+it('requires every real Personal Pokédex entry for gold', () => {
+  const names = Object.keys(catalogData.pokemon);
+  const progress = stats({
+    correctPokemon: names.slice(0, 500),
+    pokedex: [...names.slice(1), 'unknown', names[1]!],
+  });
+  const badge = () =>
+    getTrainerBadges(progress, parsePokemonCatalog(catalogData)).find(
+      ({ id }) => id === 'pokedex-trail',
+    )!;
+  expect(badge()).toMatchObject({
+    tier: 2,
+    current: names.length - 1,
+    goal: names.length,
+  });
+  progress.pokedex!.push(names[0]!);
+  expect(badge().tier).toBe(3);
+  const changes = getTrainerProgressChanges(
+    { ...progress, pokedex: names.slice(1) },
+    progress,
+    parsePokemonCatalog(catalogData),
+  );
+  expect(changes).toContainEqual(
+    expect.objectContaining({ id: 'pokedex-trail', tier: 3, earned: true }),
+  );
+  expect(
+    getTrainerProgressChanges(
+      progress,
+      progress,
+      parsePokemonCatalog(catalogData),
+    ),
+  ).toEqual([]);
+});
+
+it('upgrades all titles and keeps counting after gold', () => {
+  for (const specialty of Object.keys(
+    trainerSpecialtyDetails,
+  ) as TrainerSpecialty[]) {
+    for (const [index, goal] of [10, 100, 1000].entries()) {
+      const before = stats({ correctCategories: { [specialty]: goal - 1 } });
+      const after = stats({ correctCategories: { [specialty]: goal } });
+      expect(
+        getTrainerTitles(before, specialty).find((title) => title.equipped)
+          ?.tier,
+      ).toBe(index);
+      expect(
+        getTrainerTitles(after, specialty).find((title) => title.equipped)
+          ?.tier,
+      ).toBe(index + 1);
+      expect(getTrainerProgressChanges(before, after)).toContainEqual(
+        expect.objectContaining({
+          kind: 'specialty',
+          specialty,
+          tier: index + 1,
+          earned: true,
+        }),
+      );
+    }
+  }
+  expect(
+    getTrainerTitles(stats({ correctCategories: { type: 1200 } }), 'type').find(
+      (title) => title.equipped,
+    ),
+  ).toMatchObject({ tier: 3, current: 1200 });
+  const changes = getTrainerProgressChanges(
+    stats({ correctCategories: { type: 100 } }),
+    stats({ correctCategories: { type: 101 } }),
+  );
+  expect(changes.find((change) => change.kind === 'specialty')).toMatchObject({
+    earned: false,
+    current: 101,
+    goal: 1000,
+    tier: 2,
   });
 });

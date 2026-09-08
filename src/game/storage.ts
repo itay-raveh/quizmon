@@ -28,6 +28,7 @@ export interface TrainerStats extends Omit<
   'version'
 > {
   bestDailyStreak: number;
+  pokedex?: string[];
   leagueCompleted: boolean;
 }
 
@@ -77,6 +78,11 @@ const addResultToProgress = (
     correctPokemon: [...correctPokemon],
     correctQuestionTypes,
     masteryRounds: progress.masteryRounds + Number(isLeagueRound && isPerfect),
+    quickAttackRounds:
+      (progress.quickAttackRounds ?? Number(progress.quickAttackCompleted)) +
+      Number(
+        isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60,
+      ),
     quickAttackCompleted:
       progress.quickAttackCompleted ||
       (isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60),
@@ -163,7 +169,11 @@ const getLongestStreak = (dates: readonly string[]): number => {
   return longest;
 };
 
-export const getTrainerStats = (results: SavedResults): TrainerStats => ({
+export const getTrainerStats = (
+  results: SavedResults,
+  pokedex?: string[],
+): TrainerStats => ({
+  pokedex,
   bestDailyStreak: getLongestStreak(results.streak.creditedDates),
   championAnswersWithoutClues: results.progress.championAnswersWithoutClues,
   correctCategories: results.progress.correctCategories,
@@ -173,10 +183,13 @@ export const getTrainerStats = (results: SavedResults): TrainerStats => ({
   leagueCompleted: results.league.completed,
   masteryRounds: results.progress.masteryRounds,
   quickAttackCompleted: results.progress.quickAttackCompleted,
+  quickAttackRounds: results.progress.quickAttackRounds,
 });
 
-export const readTrainerStats = (): TrainerStats =>
-  getTrainerStats(readResults());
+export const readTrainerStats = (): TrainerStats => {
+  const data = readPlayerData();
+  return getTrainerStats(data.results, data.pokedex);
+};
 
 export const getLeagueChallengeSeed = (): string => {
   const results = readResults();

@@ -1,3 +1,5 @@
+import { trainerTierLabels } from '@/game/trainer';
+import { TrainerTierProgress } from './TrainerTierProgress';
 import type { TrainerTitle } from '@/game/trainer';
 import { DialogCloseButton } from './DialogCloseButton';
 import { GameButton } from './GameButton';
@@ -37,28 +39,41 @@ export const TrainerTitleDialog = ({
         />
       </header>
       <div className="trainer-title-dialog__body">
-        <TrainerTitleMark earned={title.earned} specialty={title.specialty} />
+        <TrainerTitleMark
+          earned={title.earned}
+          tier={title.tier}
+          specialty={title.specialty}
+        />
         <div className="trainer-title-dialog__details">
           <strong className="trainer-title-dialog__state">
             {title.equipped
-              ? 'Title equipped'
+              ? `${trainerTierLabels[title.tier]} title equipped`
               : title.earned
-                ? 'Title earned'
+                ? `${trainerTierLabels[title.tier]} title earned`
                 : 'Title locked'}
           </strong>
           <p>{title.description}</p>
           <div className="trainer-title-dialog__progress-label">
-            <span>{title.earned ? 'Correct' : 'Progress'}</span>
+            <span>
+              {title.tier === 3
+                ? 'Correct'
+                : `Next: ${trainerTierLabels[title.tier + 1]}`}
+            </span>
             <strong>
-              {title.earned
+              {title.tier === 3
                 ? title.current.toLocaleString()
-                : `${progress} / ${title.goal}`}
+                : `${progress.toLocaleString()} / ${title.goal.toLocaleString()}`}
             </strong>
           </div>
           <progress
             aria-label={`${title.label} progress`}
             max={title.goal}
             value={progress}
+          />
+          <TrainerTierProgress
+            label={title.label}
+            milestones={title.milestones}
+            tier={title.tier}
           />
           {title.equipped || title.earned ? (
             <GameButton

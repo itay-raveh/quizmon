@@ -108,6 +108,7 @@ export const App = () => {
     recordAnswer,
   } = useGameCompletion({
     contentVersion: catalog?.contentVersion ?? 0,
+    catalog,
     dispatch: dispatchSession,
     pauseTimer: pause,
     recordDailyCompletion: daily.recordCompletion,

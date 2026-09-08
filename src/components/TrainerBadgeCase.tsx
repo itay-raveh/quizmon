@@ -1,6 +1,10 @@
 import { CollectionCorners } from './CollectionCorners';
 import type { Ref } from 'react';
-import { trainerViewLabels, type TrainerBadge } from '@/game/trainer';
+import {
+  trainerViewLabels,
+  trainerTierLabels,
+  type TrainerBadge,
+} from '@/game/trainer';
 import { SoundButton } from './SoundButton';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 
@@ -30,13 +34,19 @@ export const TrainerBadgeCase = ({
         <CollectionCorners className="trainer-badge-case__rivet" />
         {badges.map((badge) => (
           <SoundButton
-            aria-label={`${badge.label}. ${badge.earned ? 'Earned' : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}
+            aria-label={`${badge.label}. ${badge.earned ? `Earned, ${trainerTierLabels[badge.tier]} tier ${badge.tier}` : `Locked, ${Math.min(badge.current, badge.goal)} of ${badge.goal}`}. Open badge details.`}
             className="trainer-badge"
             data-earned={badge.earned}
+            data-tier={badge.tier}
+            title={`${badge.label} · ${trainerTierLabels[badge.tier]}`}
             key={badge.id}
             onClick={() => onSelect(badge)}
           >
-            <TrainerBadgeMark earned={badge.earned} id={badge.id} />
+            <TrainerBadgeMark
+              earned={badge.earned}
+              id={badge.id}
+              tier={badge.tier}
+            />
           </SoundButton>
         ))}
       </section>

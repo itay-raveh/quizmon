@@ -30,3 +30,23 @@ it.each([
     expect(progress.masteryRounds).toBe(expected);
   },
 );
+
+it('credits one historical Quick Attack and preserves new round totals', () => {
+  const legacy = {
+    version: 2,
+    correctPokemon: [],
+    correctCategories: {},
+    quickAttackCompleted: true,
+  };
+  expect(
+    normalizeResults({ progress: legacy }).progress.quickAttackRounds,
+  ).toBe(1);
+  expect(
+    normalizeResults({ progress: { ...legacy, quickAttackRounds: 17 } })
+      .progress.quickAttackRounds,
+  ).toBe(17);
+  expect(
+    normalizeResults(normalizeResults({ progress: legacy })).progress
+      .quickAttackRounds,
+  ).toBe(1);
+});

@@ -25,6 +25,7 @@ interface TrainerProgress {
   correctQuestionTypes: Partial<Record<QuestionType, number>>;
   masteryRounds: number;
   quickAttackCompleted: boolean;
+  quickAttackRounds?: number;
   version: number;
 }
 
@@ -54,6 +55,7 @@ const emptyProgress = (): TrainerProgress => ({
   correctQuestionTypes: {},
   masteryRounds: 0,
   quickAttackCompleted: false,
+  quickAttackRounds: 0,
   version: TRAINER_PROGRESS_VERSION,
 });
 
@@ -156,6 +158,10 @@ const normalizeProgress = (
     ),
     masteryRounds: normalizeProgressCount(progress.masteryRounds),
     quickAttackCompleted: progress.quickAttackCompleted,
+    quickAttackRounds: Math.max(
+      Number(progress.quickAttackCompleted),
+      normalizeProgressCount(progress.quickAttackRounds),
+    ),
     version: TRAINER_PROGRESS_VERSION,
   };
 };

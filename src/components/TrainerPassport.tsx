@@ -18,6 +18,7 @@ import {
   getCardFinish,
   getQualifiedTrainerSpecialties,
   getTrainerBadges,
+  getTrainerTitles,
   getTrainerRank,
   trainerSpecialtyDetails,
   trainerViewLabels,
@@ -129,7 +130,7 @@ export const TrainerPassport = ({
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
   const canShareArtifact = supportsTrainerArtifactSharing();
-  const badges = getTrainerBadges(stats);
+  const badges = getTrainerBadges(stats, catalog);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
 
   useEffect(() => {
@@ -341,6 +342,11 @@ export const TrainerPassport = ({
             profile={visibleProfile}
             record={record}
             rank={rank}
+            titleTier={
+              getTrainerTitles(stats, savedSpecialty).find(
+                (title) => title.equipped,
+              )?.tier ?? 0
+            }
           />
         )}
       </div>

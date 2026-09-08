@@ -6,10 +6,11 @@ import pokedexTrail from '@/assets/images/badges/pokedex-trail.png';
 import quickAttack from '@/assets/images/badges/quick-attack.png';
 import trueCalling from '@/assets/images/badges/true-calling.png';
 import worldTour from '@/assets/images/badges/world-tour.png';
-import type { TrainerBadgeId } from '@/game/trainer';
+import type { TrainerBadgeId, TrainerTier } from '@/game/trainer';
 
 interface TrainerBadgeMarkProps {
   earned: boolean;
+  tier?: TrainerTier;
   id: TrainerBadgeId;
 }
 
@@ -24,8 +25,12 @@ const badgeImages = {
   'world-tour': worldTour,
 } satisfies Record<TrainerBadgeId, string>;
 
-export const TrainerBadgeMark = ({ earned, id }: TrainerBadgeMarkProps) => (
-  <span className="trainer-badge-mark" data-earned={earned}>
+export const TrainerBadgeMark = ({
+  earned,
+  id,
+  tier = earned ? 1 : 0,
+}: TrainerBadgeMarkProps) => (
+  <span className="trainer-badge-mark" data-earned={earned} data-tier={tier}>
     <img
       aria-hidden="true"
       src={badgeImages[id]}

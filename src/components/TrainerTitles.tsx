@@ -1,9 +1,11 @@
+import { CheckIcon } from './icons';
 import { CollectionCorners } from './CollectionCorners';
 import type { Ref } from 'react';
 import type { TrainerStats } from '@/game/storage';
 import {
   getTrainerTitles,
   trainerViewLabels,
+  trainerTierLabels,
   type TrainerSpecialty,
   type TrainerTitle,
 } from '@/game/trainer';
@@ -44,24 +46,36 @@ export const TrainerTitles = ({
             : title.earned
               ? 'Earned'
               : 'Locked';
-          const progressLabel = title.earned
-            ? `${title.current.toLocaleString()} correct`
-            : `${progress} / ${title.goal} correct`;
+          const progressLabel =
+            title.tier === 3
+              ? `${title.current.toLocaleString()} correct`
+              : `${progress.toLocaleString()} / ${title.goal.toLocaleString()} correct`;
 
           return (
             <SoundButton
-              aria-label={`${title.label}. ${progressLabel}. ${state}. Open title details.`}
+              aria-label={`${title.label}. ${progressLabel}. ${state}.${title.earned ? ` ${trainerTierLabels[title.tier]} tier ${title.tier}.` : ''} Open title details.`}
               className="trainer-title"
               data-equipped={title.equipped}
+              data-tier={title.tier}
               key={title.specialty}
               onClick={() => onSelect(title)}
             >
               <TrainerTitleMark
                 earned={title.earned}
+                tier={title.tier}
                 specialty={title.specialty}
               />
               <span className="trainer-title__copy">
-                <strong>{title.label}</strong>
+                <strong>
+                  {title.label}
+                  {title.equipped ? (
+                    <CheckIcon
+                      aria-label="Equipped"
+                      className="trainer-title__equipped"
+                      weight="bold"
+                    />
+                  ) : null}
+                </strong>
                 <small>{progressLabel}</small>
               </span>
             </SoundButton>

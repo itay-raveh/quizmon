@@ -433,6 +433,13 @@ it('keeps the published version 1 fixture readable without losing fields', () =>
   expect(backup.save.version).toBe(4);
   expect(backup.save.data).toEqual({
     ...v1Fixture.save.data,
+    results: {
+      ...v1Fixture.save.data.results,
+      progress: {
+        ...v1Fixture.save.data.results.progress,
+        quickAttackRounds: 1,
+      },
+    },
     questionHistory: emptyQuestionHistory(),
     leagueLineup: v1Fixture.save.data.results.league.seed
       ? {

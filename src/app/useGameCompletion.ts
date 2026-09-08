@@ -2,13 +2,13 @@ import { createLeagueVictoryRecord } from '@/game/hall-of-fame';
 import { isLeagueVictory } from '@/game/league';
 import { readPlayerData } from '@/game/player-storage';
 import { registerPokedexAnswer } from '@/game/pokedex';
-import { useCallback, type Dispatch } from 'react';
+import { useCallback, useRef, type Dispatch } from 'react';
 import { clearActiveGame } from '@/game/active-game';
 import { trackGameCompleted } from '@/game/analytics';
 import { calculateScore, getResponseTime, SCORE_VERSION } from '@/game/scoring';
 import { getTrainerStats, readTrainerStats, saveResult } from '@/game/storage';
 import { getTrainerProgressChanges } from '@/game/trainer';
-import type { AnswerResult, GameResult } from '@/game/types';
+import type { AnswerResult, GameResult, PokemonCatalog } from '@/game/types';
 import {
   recordSessionAnswer,
   type CompleteGame,
@@ -18,6 +18,7 @@ import {
 
 interface GameCompletionOptions {
   contentVersion: number;
+  catalog?: PokemonCatalog;
   dispatch: Dispatch<GameSessionAction>;
   pauseTimer: () => number;
   recordDailyCompletion: (result: GameResult, isSaved: boolean) => void;
@@ -28,6 +29,7 @@ interface GameCompletionOptions {
 
 export const useGameCompletion = ({
   contentVersion,
+  catalog,
   dispatch,
   pauseTimer,
   recordDailyCompletion,
@@ -35,6 +37,10 @@ export const useGameCompletion = ({
   session,
   startTimer,
 }: GameCompletionOptions) => {
+  const progressStart = useRef<{
+    seed: string;
+    stats: ReturnType<typeof readTrainerStats>;
+  } | null>(null);
   const complete = useCallback<CompleteGame>(
     ({ answers, mode, modifiers, questions, seed }) => {
       const result = {
@@ -47,7 +53,10 @@ export const useGameCompletion = ({
         scoreVersion: SCORE_VERSION,
       };
       const previousData = readPlayerData();
-      const previousTrainerStats = getTrainerStats(previousData.results);
+      const previousTrainerStats =
+        progressStart.current?.seed === seed
+          ? progressStart.current.stats
+          : getTrainerStats(previousData.results, previousData.pokedex);
       const leagueRecord =
         mode.kind === 'league' && isLeagueVictory(result)
           ? createLeagueVictoryRecord(
@@ -59,8 +68,13 @@ export const useGameCompletion = ({
           : undefined;
       const best = saveResult(mode, result, modifiers, leagueRecord);
       const progressChanges = best.isSaved
-        ? getTrainerProgressChanges(previousTrainerStats, readTrainerStats())
+        ? getTrainerProgressChanges(
+            previousTrainerStats,
+            readTrainerStats(),
+            catalog,
+          )
         : [];
+      progressStart.current = null;
       clearActiveGame();
       refreshTrainerStats();
       trackGameCompleted(mode, result);
@@ -80,6 +94,7 @@ export const useGameCompletion = ({
     },
     [
       contentVersion,
+      catalog,
       dispatch,
       pauseTimer,
       recordDailyCompletion,
@@ -90,6 +105,12 @@ export const useGameCompletion = ({
   const recordAnswer = useCallback(
     (answer: AnswerResult) => {
       if (session.phase !== 'questions') return;
+      if (progressStart.current?.seed !== session.seed) {
+        progressStart.current = {
+          seed: session.seed,
+          stats: readTrainerStats(),
+        };
+      }
       const question = session.questions[session.questionIndex];
       if (question) registerPokedexAnswer(question, answer.correct);
       dispatch({ answer, type: 'answer-recorded' });
