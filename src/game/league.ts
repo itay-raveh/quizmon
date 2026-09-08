@@ -78,7 +78,7 @@ export const getLeagueModifiers = (
 
 export const getLeagueQuestionTypes = (
   seed: string,
-): (QuestionType | 'champion')[] => [
+): QuestionData['questionType'][] => [
   ...stageQuestionTypes.flatMap((types, index) =>
     shuffle(
       types,

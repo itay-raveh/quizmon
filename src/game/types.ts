@@ -233,7 +233,7 @@ export interface SavedAnswerResult {
   pokemonName?: string;
   points: number;
   questionType?:
-    QuestionType | 'champion' | (typeof legacyQuestionTypes)[number];
+    QuestionData['questionType'] | (typeof legacyQuestionTypes)[number];
   responseMilliseconds?: number;
   speedBonus?: number;
 }
@@ -243,7 +243,7 @@ export interface AnswerResult extends SavedAnswerResult {
   cluesUsed: number;
   generation: Generation;
   pokemonName: string;
-  questionType: QuestionType | 'champion';
+  questionType: QuestionData['questionType'];
 }
 
 export interface GameResult {

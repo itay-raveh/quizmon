@@ -145,7 +145,7 @@ const createQuestionContext = (
 
 const buildFirstAvailableQuestion = (
   context: QuestionContext,
-  types: readonly (QuestionType | 'champion')[],
+  types: readonly QuestionData['questionType'][],
 ): QuestionData | undefined => {
   for (const type of types) {
     const question = buildQuestionType(context, type);
@@ -187,7 +187,7 @@ export const buildQuestions = (
 
 export const buildQuestionSequence = (
   catalog: PokemonCatalog,
-  questionSequence: readonly (QuestionType | 'champion')[],
+  questionSequence: readonly QuestionData['questionType'][],
   modifiers: Modifiers,
   random: () => number,
 ): QuestionData[] => {

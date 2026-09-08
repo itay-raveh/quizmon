@@ -13,7 +13,6 @@ import {
   type ExperienceSettings,
   type PokemonCatalog,
   type QuestionData,
-  type QuestionType,
 } from './types';
 import { coreQuestionTypes } from './questions/registry';
 import { createSeededRandom } from './random';
@@ -46,7 +45,7 @@ export const getDailyModifiers = (
 
 export const getDailyQuestionTypes = (
   date: string,
-): (QuestionType | 'champion')[] => {
+): QuestionData['questionType'][] => {
   const random = createSeededRandom(
     `quizmon-daily-question-types-v${DAILY_CHALLENGE_VERSION}:${date}`,
   );

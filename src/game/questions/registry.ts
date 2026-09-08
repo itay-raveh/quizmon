@@ -200,7 +200,7 @@ const championDefinition: QuestionDefinition = {
 
 export const buildQuestionType = (
   context: QuestionContext,
-  questionType: QuestionType | 'champion',
+  questionType: QuestionData['questionType'],
 ): QuestionData | undefined => {
   const definition =
     questionType === 'champion'
