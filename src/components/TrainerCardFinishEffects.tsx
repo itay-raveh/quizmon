@@ -79,15 +79,6 @@ export const TrainerCardFinishEffects = ({
       }
     };
 
-    const showStaticFinish = () => {
-      reset();
-      effects.classList.add('is-static');
-      if (sheen) {
-        sheen.src = staticSheenFrame;
-        sheen.classList.add('is-active');
-      }
-    };
-
     const playPass = () => {
       if (!sheen || document.hidden || !isIntersecting || reduceMotion) return;
 
@@ -116,7 +107,11 @@ export const TrainerCardFinishEffects = ({
       reset();
       if (document.hidden || !isIntersecting) return;
       if (reduceMotion) {
-        showStaticFinish();
+        effects.classList.add('is-static');
+        if (sheen) {
+          sheen.src = staticSheenFrame;
+          sheen.classList.add('is-active');
+        }
         return;
       }
 
