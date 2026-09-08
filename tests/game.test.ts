@@ -32,7 +32,7 @@ import {
 import { buildCounterPickQuestion } from '@/game/questions/battle';
 import {
   pokemonOptions,
-  pokemonSimilarity,
+  createPokemonSimilarityScorer,
   redactName,
 } from '@/game/questions/shared';
 import {
@@ -381,10 +381,12 @@ describe('question building', () => {
   });
 
   it('does not treat nearby Pokédex numbers as semantic similarity', () => {
-    const target = makeKnowledge(500);
+    const similarityToTarget = createPokemonSimilarityScorer(
+      makeKnowledge(500),
+    );
 
-    expect(pokemonSimilarity(target, makeKnowledge(501))).toBe(
-      pokemonSimilarity(target, makeKnowledge(1_000)),
+    expect(similarityToTarget(makeKnowledge(501))).toBe(
+      similarityToTarget(makeKnowledge(1_000)),
     );
   });
 

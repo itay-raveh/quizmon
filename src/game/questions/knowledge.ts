@@ -10,7 +10,7 @@ import {
   pickTarget,
   pokemonOptions,
   pokemonPrompt,
-  pokemonSimilarity,
+  createPokemonSimilarityScorer,
   randomOptionSet,
   rankedOptionSet,
   redactName,
@@ -37,9 +37,10 @@ const typeOptions = (
   target: Candidate,
   correct: string,
 ): string[] => {
+  const similarityToTarget = createPokemonSimilarityScorer(target.pokemon);
   const bestScores = new Map<string, number>();
   for (const { pokemon } of context.pool) {
-    const score = pokemonSimilarity(target.pokemon, pokemon);
+    const score = similarityToTarget(pokemon);
     for (const type of pokemon.types) {
       bestScores.set(type, Math.max(bestScores.get(type) ?? 0, score));
     }

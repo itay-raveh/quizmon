@@ -95,30 +95,33 @@ const evolutionStage = (pokemon: PokemonKnowledge): number => {
   return 3;
 };
 
-export const pokemonSimilarity = (
+export const createPokemonSimilarityScorer = (
   target: PokemonKnowledge,
-  candidate: PokemonKnowledge,
-): number => {
-  const sharedTypes = target.types.filter((type) =>
-    candidate.types.includes(type),
-  ).length;
+): ((candidate: PokemonKnowledge) => number) => {
   const targetStats = statNames.reduce(
     (total, stat) => total + target.stats[stat],
     0,
   );
-  const candidateStats = statNames.reduce(
-    (total, stat) => total + candidate.stats[stat],
-    0,
-  );
+  const targetStage = evolutionStage(target);
 
-  return (
-    sharedTypes * 12 +
-    (target.shape === candidate.shape ? 8 : 0) +
-    (target.color === candidate.color ? 5 : 0) +
-    (target.generation === candidate.generation ? 4 : 0) +
-    (evolutionStage(target) === evolutionStage(candidate) ? 3 : 0) +
-    Math.max(0, 3 - Math.abs(targetStats - candidateStats) / 80)
-  );
+  return (candidate) => {
+    const sharedTypes = target.types.filter((type) =>
+      candidate.types.includes(type),
+    ).length;
+    const candidateStats = statNames.reduce(
+      (total, stat) => total + candidate.stats[stat],
+      0,
+    );
+
+    return (
+      sharedTypes * 12 +
+      (target.shape === candidate.shape ? 8 : 0) +
+      (target.color === candidate.color ? 5 : 0) +
+      (target.generation === candidate.generation ? 4 : 0) +
+      (targetStage === evolutionStage(candidate) ? 3 : 0) +
+      Math.max(0, 3 - Math.abs(targetStats - candidateStats) / 80)
+    );
+  };
 };
 
 export const makeQuestion = (
@@ -251,9 +254,10 @@ export const pokemonOptions = (
   excluded: readonly string[] = [],
   candidates: readonly Candidate[] = context.pool,
 ): string[] => {
+  const similarityToTarget = createPokemonSimilarityScorer(target.pokemon);
   const similarityFor = (name: string) => {
     const candidate = context.catalog.pokemon[name];
-    return candidate ? pokemonSimilarity(target.pokemon, candidate) : 0;
+    return candidate ? similarityToTarget(candidate) : 0;
   };
   const scored = rankCandidates(
     target.name,
