@@ -10,6 +10,7 @@ import {
   trainerTierLabels,
 } from '@/game/trainer';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
+import { TrainerArtifactFrame } from './TrainerArtifactFrame';
 import { TrainerTitleMark } from './TrainerTitleMark';
 import { PokemonIdentity } from './PokemonIdentity';
 import { CatchCombo } from './CatchCombo';
@@ -42,7 +43,7 @@ export const TrainerCard = ({
   const partnerName = profile.partnerPokemon ?? 'Choose partner';
 
   return (
-    <article
+    <TrainerArtifactFrame
       ref={cardRef}
       className={`trainer-card trainer-card--${finish.toLowerCase()}${rank === 'Champion' ? ' trainer-card--champion' : ''}`}
       aria-label={trainerViewLabels.front}
@@ -98,6 +99,6 @@ export const TrainerCard = ({
         </dl>
         <CatchCombo className="trainer-card__combo" count={record.dayCombo} />
       </div>
-    </article>
+    </TrainerArtifactFrame>
   );
 };

@@ -7,6 +7,7 @@ import {
 } from '@/game/trainer';
 import { SoundButton } from './SoundButton';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
+import { TrainerArtifactFrame } from './TrainerArtifactFrame';
 
 interface TrainerBadgeCaseProps {
   badges: TrainerBadge[];
@@ -22,7 +23,7 @@ export const TrainerBadgeCase = ({
   const earnedCount = badges.filter(({ earned }) => earned).length;
 
   return (
-    <article
+    <TrainerArtifactFrame
       ref={caseRef}
       aria-label={trainerViewLabels.badges}
       className="trainer-badge-case"
@@ -50,6 +51,6 @@ export const TrainerBadgeCase = ({
           </SoundButton>
         ))}
       </section>
-    </article>
+    </TrainerArtifactFrame>
   );
 };

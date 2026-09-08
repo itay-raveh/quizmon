@@ -280,6 +280,30 @@ for (const width of [320, 390, 1280]) {
         ),
       );
     expect(overflowing).toBe(false);
+    const cardBounds = await card.boundingBox();
+    const exportDimensions = async () => {
+      const downloadReady = page.waitForEvent('download');
+      await page
+        .getByRole('button', { name: 'Download PNG', exact: true })
+        .click();
+      const png = await readFile(await (await downloadReady).path());
+      return { width: png.readUInt32BE(16), height: png.readUInt32BE(20) };
+    };
+    const cardExport = await exportDimensions();
+    await page.getByRole('button', { name: 'Badges', exact: true }).click();
+    const badgeCase = page.getByRole('article', { name: 'League Badge Case' });
+    const caseBounds = await badgeCase.boundingBox();
+    expect(caseBounds?.width).toBe(cardBounds?.width);
+    expect(caseBounds?.height).toBe(cardBounds?.height);
+    expect(await exportDimensions()).toEqual(cardExport);
+    for (const badge of await badgeCase.locator('.trainer-badge').all()) {
+      const bounds = (await badge.boundingBox())!;
+      expect(Math.abs(bounds.width - bounds.height)).toBeLessThan(1);
+      expect(bounds.y).toBeGreaterThanOrEqual(caseBounds!.y);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(
+        caseBounds!.y + caseBounds!.height,
+      );
+    }
     await page.getByRole('button', { name: 'Pokédex', exact: true }).click();
     await expect(page.locator('.trainer-pokedex__summary')).toHaveText(
       `3 / ${Object.keys(catalogData.pokemon).length} found`,
