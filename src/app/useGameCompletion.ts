@@ -6,7 +6,7 @@ import { useCallback, type Dispatch } from 'react';
 import { clearActiveGame } from '@/game/active-game';
 import { trackGameCompleted } from '@/game/analytics';
 import { calculateScore, getResponseTime, SCORE_VERSION } from '@/game/game';
-import { readTrainerStats, saveResult } from '@/game/storage';
+import { getTrainerStats, readTrainerStats, saveResult } from '@/game/storage';
 import { getTrainerProgressChanges } from '@/game/trainer';
 import type { AnswerResult, GameResult } from '@/game/types';
 import type { CompleteGame, GameSession, GameSessionAction } from './session';
@@ -41,14 +41,15 @@ export const useGameCompletion = ({
         score: calculateScore(answers),
         scoreVersion: SCORE_VERSION,
       };
-      const previousTrainerStats = readTrainerStats();
+      const previousData = readPlayerData();
+      const previousTrainerStats = getTrainerStats(previousData.results);
       const leagueRecord =
         mode.kind === 'league' && isLeagueVictory(result)
           ? createLeagueVictoryRecord(
               result,
               questions,
               seed,
-              readPlayerData().profile?.name ?? '',
+              previousData.profile?.name ?? '',
             )
           : undefined;
       const best = saveResult(mode, result, modifiers, leagueRecord);

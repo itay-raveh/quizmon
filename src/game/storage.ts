@@ -157,20 +157,20 @@ const getLongestStreak = (dates: readonly string[]): number => {
   return longest;
 };
 
-export const readTrainerStats = (): TrainerStats => {
-  const results = readResults();
-  return {
-    bestDailyStreak: getLongestStreak(results.streak.creditedDates),
-    championAnswersWithoutClues: results.progress.championAnswersWithoutClues,
-    correctCategories: results.progress.correctCategories,
-    correctGenerations: results.progress.correctGenerations,
-    correctPokemon: results.progress.correctPokemon,
-    correctQuestionTypes: results.progress.correctQuestionTypes,
-    leagueCompleted: results.league.completed,
-    masteryRounds: results.progress.masteryRounds,
-    quickAttackCompleted: results.progress.quickAttackCompleted,
-  };
-};
+export const getTrainerStats = (results: SavedResults): TrainerStats => ({
+  bestDailyStreak: getLongestStreak(results.streak.creditedDates),
+  championAnswersWithoutClues: results.progress.championAnswersWithoutClues,
+  correctCategories: results.progress.correctCategories,
+  correctGenerations: results.progress.correctGenerations,
+  correctPokemon: results.progress.correctPokemon,
+  correctQuestionTypes: results.progress.correctQuestionTypes,
+  leagueCompleted: results.league.completed,
+  masteryRounds: results.progress.masteryRounds,
+  quickAttackCompleted: results.progress.quickAttackCompleted,
+});
+
+export const readTrainerStats = (): TrainerStats =>
+  getTrainerStats(readResults());
 
 export const getLeagueChallengeSeed = (): string => {
   const results = readResults();
