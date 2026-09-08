@@ -1,3 +1,4 @@
+import { noStoreResponse } from './responses';
 import type { GameMode } from '../src/game/types';
 import { fetchSpriteSource, isSpritePath } from '../src/game/sprite-source';
 import {
@@ -111,59 +112,39 @@ const isAnalyticsEvent = (value: unknown): value is AnalyticsEvent => {
   );
 };
 
-const noStoreHeaders = { 'Cache-Control': 'no-store' };
-
 const recordAnalyticsEvent = async (
   request: Request,
   env: Env,
 ): Promise<Response> => {
   if (request.method !== 'POST') {
-    return new Response('Method not allowed', {
-      headers: { ...noStoreHeaders, Allow: 'POST' },
-      status: 405,
-    });
+    return noStoreResponse('Method not allowed', 405, { Allow: 'POST' });
   }
 
   if (
     request.headers.get('Content-Type')?.split(';', 1)[0] !== 'application/json'
   ) {
-    return new Response('Expected application/json', {
-      headers: noStoreHeaders,
-      status: 415,
-    });
+    return noStoreResponse('Expected application/json', 415);
   }
 
   const contentLength = Number(request.headers.get('Content-Length') ?? 0);
   if (contentLength > MAX_EVENT_BODY_LENGTH) {
-    return new Response('Request body too large', {
-      headers: noStoreHeaders,
-      status: 413,
-    });
+    return noStoreResponse('Request body too large', 413);
   }
 
   const body = await request.text();
   if (body.length > MAX_EVENT_BODY_LENGTH) {
-    return new Response('Request body too large', {
-      headers: noStoreHeaders,
-      status: 413,
-    });
+    return noStoreResponse('Request body too large', 413);
   }
 
   let event: unknown;
   try {
     event = JSON.parse(body);
   } catch {
-    return new Response('Invalid event', {
-      headers: noStoreHeaders,
-      status: 400,
-    });
+    return noStoreResponse('Invalid event', 400);
   }
 
   if (!isAnalyticsEvent(event)) {
-    return new Response('Invalid event', {
-      headers: noStoreHeaders,
-      status: 400,
-    });
+    return noStoreResponse('Invalid event', 400);
   }
 
   if (event.type === 'page_view') {
@@ -189,7 +170,7 @@ const recordAnalyticsEvent = async (
     });
   }
 
-  return new Response(null, { headers: noStoreHeaders, status: 204 });
+  return noStoreResponse(null, 204);
 };
 
 export default {
@@ -214,10 +195,7 @@ export default {
     }
 
     if (url.pathname.startsWith('/sprites/')) {
-      return new Response('Sprite unavailable', {
-        headers: noStoreHeaders,
-        status: 404,
-      });
+      return noStoreResponse('Sprite unavailable', 404);
     }
 
     return env.ASSETS.fetch(request);

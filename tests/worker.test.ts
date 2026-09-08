@@ -77,6 +77,14 @@ describe('Daily reminders', () => {
           }),
         );
         expect(response.status).toBe(status);
+        expect(response.headers.get('Cache-Control')).toBe('no-store');
+        expect(await response.text()).toBe(
+          status === 204
+            ? ''
+            : method === 'PUT'
+              ? 'Invalid reminder'
+              : 'Invalid completion date',
+        );
         if (status === 204) {
           expect(storage.put).toHaveBeenCalledWith('daily-reminder', {
             ...registration,
@@ -212,20 +220,49 @@ describe('analytics endpoint', () => {
   });
 
   it.each([
-    ['a GET request', undefined, {}, 405],
+    ['a GET request', undefined, {}, 405, 'Method not allowed'],
     [
       'a non-JSON request',
       'event',
       { method: 'POST', headers: { 'Content-Type': 'text/plain' } },
       415,
+      'Expected application/json',
     ],
     [
       'an invalid event',
       JSON.stringify({ ...validEvent, correctCount: 6 }),
       { method: 'POST', headers: { 'Content-Type': 'application/json' } },
       400,
+      'Invalid event',
     ],
-  ])('rejects %s', async (_name, body, init, status) => {
+    [
+      'malformed JSON',
+      '{',
+      { method: 'POST', headers: { 'Content-Type': 'application/json' } },
+      400,
+      'Invalid event',
+    ],
+    [
+      'an oversized declared body',
+      '{}',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': '1025',
+        },
+      },
+      413,
+      'Request body too large',
+    ],
+    [
+      'an oversized actual body',
+      ' '.repeat(1025),
+      { method: 'POST', headers: { 'Content-Type': 'application/json' } },
+      413,
+      'Request body too large',
+    ],
+  ])('rejects %s', async (_name, body, init, status, message) => {
     const { env, writeDataPoint } = makeEnv();
     const response = await worker.fetch(
       new Request('https://quizmon.raveh.dev/api/events', {
@@ -236,6 +273,9 @@ describe('analytics endpoint', () => {
     );
 
     expect(response.status).toBe(status);
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(response.headers.get('Allow')).toBe(status === 405 ? 'POST' : null);
+    expect(await response.text()).toBe(message);
     expect(writeDataPoint).not.toHaveBeenCalled();
   });
 

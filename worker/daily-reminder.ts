@@ -1,3 +1,4 @@
+import { noStoreResponse } from './responses';
 import { isDailyDate } from '../src/game/validation';
 import { DurableObject } from 'cloudflare:workers';
 import webpush, {
@@ -19,13 +20,11 @@ const REMINDER_PATH =
   /^\/api\/daily-reminders\/([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
 const MAX_BODY_LENGTH = 8_192;
 const STORAGE_KEY = 'daily-reminder';
-const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
 const reminderMethods = ['PUT', 'PATCH', 'DELETE'];
 
 const methodNotAllowed = (): Response =>
-  new Response('Method not allowed', {
-    headers: { ...NO_STORE_HEADERS, Allow: reminderMethods.join(', ') },
-    status: 405,
+  noStoreResponse('Method not allowed', 405, {
+    Allow: reminderMethods.join(', '),
   });
 
 export interface DailyReminderEnv {
@@ -125,7 +124,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
     if (request.method === 'DELETE') {
       await this.ctx.storage.deleteAlarm();
       await this.ctx.storage.deleteAll();
-      return new Response(null, { headers: NO_STORE_HEADERS, status: 204 });
+      return noStoreResponse(null, 204);
     }
 
     if (request.method === 'PATCH') {
@@ -135,10 +134,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
           ? (body as { completedDate?: unknown }).completedDate
           : null;
       if (!isDailyDate(completedDate)) {
-        return new Response('Invalid completion date', {
-          headers: NO_STORE_HEADERS,
-          status: 400,
-        });
+        return noStoreResponse('Invalid completion date', 400);
       }
       const current =
         await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
@@ -148,7 +144,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
           completedDate,
         });
       }
-      return new Response(null, { headers: NO_STORE_HEADERS, status: 204 });
+      return noStoreResponse(null, 204);
     }
 
     if (request.method !== 'PUT') {
@@ -157,10 +153,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
 
     const registration = await parseRegistration(request);
     if (!registration) {
-      return new Response('Invalid reminder', {
-        headers: NO_STORE_HEADERS,
-        status: 400,
-      });
+      return noStoreResponse('Invalid reminder', 400);
     }
     const current =
       await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
@@ -169,7 +162,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       completedDate: registration.completedDate ?? current?.completedDate,
     });
     await this.ctx.storage.setAlarm(getNextReminderAt(registration.timeZone));
-    return new Response(null, { headers: NO_STORE_HEADERS, status: 204 });
+    return noStoreResponse(null, 204);
   }
 
   async alarm(alarmInfo?: AlarmInvocationInfo): Promise<void> {
@@ -224,28 +217,19 @@ export const handleDailyReminderRequest = async (
   if (!match) return null;
 
   if (request.headers.get('Origin') !== url.origin) {
-    return new Response('Forbidden', {
-      headers: NO_STORE_HEADERS,
-      status: 403,
-    });
+    return noStoreResponse('Forbidden', 403);
   }
 
   const id = match[1];
   if (!id) {
-    return new Response('Invalid reminder', {
-      headers: NO_STORE_HEADERS,
-      status: 400,
-    });
+    return noStoreResponse('Invalid reminder', 400);
   }
   if (!reminderMethods.includes(request.method)) {
     return methodNotAllowed();
   }
 
   if (request.method === 'PUT' && !env.VAPID_PRIVATE_KEY) {
-    return new Response('Reminders unavailable', {
-      headers: NO_STORE_HEADERS,
-      status: 503,
-    });
+    return noStoreResponse('Reminders unavailable', 503);
   }
 
   return env.DAILY_REMINDERS.getByName(id).fetch(request);
