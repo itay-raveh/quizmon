@@ -5,7 +5,10 @@ import webpush, {
   type PushSubscription as WebPushSubscription,
 } from 'web-push';
 import { site } from '../src/app/site';
-import { VAPID_PUBLIC_KEY } from '../src/notifications/config';
+import {
+  DAILY_REMINDER_MESSAGE,
+  VAPID_PUBLIC_KEY,
+} from '../src/notifications/config';
 import {
   dateFromParts,
   getNextReminderAt,
@@ -178,9 +181,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
         await webpush.sendNotification(
           registration.subscription,
           JSON.stringify({
-            body: 'Five questions are waiting.',
-            tag: 'quizmon-daily',
-            title: "Today's Daily is ready",
+            ...DAILY_REMINDER_MESSAGE,
             url: `/?daily=${dailyDate}&play=1`,
           }),
           {

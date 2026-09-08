@@ -10,6 +10,7 @@ import {
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
 import { spriteCachePlugin } from './sprite-cache';
+import { DAILY_REMINDER_MESSAGE } from './notifications/config';
 
 declare const self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: string[];
@@ -106,12 +107,12 @@ self.addEventListener('push', (event) => {
 
   event.waitUntil(
     self.registration.showNotification(
-      payload.title ?? "Today's Daily is ready",
+      payload.title ?? DAILY_REMINDER_MESSAGE.title,
       {
-        body: payload.body ?? 'Five questions are waiting.',
+        body: payload.body ?? DAILY_REMINDER_MESSAGE.body,
         data: { url: payload.url ?? '/' },
         icon: '/pwa-192x192.png',
-        tag: payload.tag ?? 'quizmon-daily',
+        tag: payload.tag ?? DAILY_REMINDER_MESSAGE.tag,
       },
     ),
   );
