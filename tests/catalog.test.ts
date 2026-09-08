@@ -17,11 +17,7 @@ describe('Pokémon catalog loading', () => {
   });
 
   it('loads the generated catalog from its asset URL', async () => {
-    const fetch = vi.fn().mockResolvedValue({
-      json: vi.fn().mockResolvedValue(catalog),
-      ok: true,
-      status: 200,
-    });
+    const fetch = vi.fn().mockResolvedValue(Response.json(catalog));
     vi.stubGlobal('fetch', fetch);
 
     await expect(fetchPokemonCatalog()).resolves.toEqual(catalog);
@@ -33,7 +29,7 @@ describe('Pokémon catalog loading', () => {
   it('rejects unsuccessful catalog responses', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: false, status: 503 }),
+      vi.fn().mockResolvedValue(new Response(null, { status: 503 })),
     );
 
     await expect(fetchPokemonCatalog()).rejects.toThrow(
@@ -49,11 +45,7 @@ describe('Pokémon catalog loading', () => {
 
   it('defers loading until the browser is idle', async () => {
     let runWhenIdle: IdleRequestCallback | undefined;
-    const fetch = vi.fn().mockResolvedValue({
-      json: vi.fn().mockResolvedValue(catalog),
-      ok: true,
-      status: 200,
-    });
+    const fetch = vi.fn().mockResolvedValue(Response.json(catalog));
     vi.stubGlobal('fetch', fetch);
     vi.stubGlobal(
       'requestIdleCallback',

@@ -1028,10 +1028,10 @@ it.each(['Ivysaur', 'Bayleef'])(
   },
 );
 
-it.each([
+it.for([
   ['pikachu', 'eevee'],
   ['pikachu', 'chikorita'],
-])('reveals all generations after a roundup submission %j', (...selected) => {
+])('reveals all generations after a roundup submission %j', (selected) => {
   const options = ['pikachu', 'eevee', 'chikorita', 'mareep'];
   const optionGenerations = {
     pikachu: 'I',

@@ -177,6 +177,14 @@ it('round-trips every portable field and replaces rather than merges progress', 
 it('migrates all existing keys once and keeps the migrated save authoritative', () => {
   populate();
   const original = readPlayerSave().data;
+  const migrated = {
+    ...original,
+    leagueLineup: {
+      seed: 'fixed-league-retry',
+      contentVersion: 0,
+      questions: [],
+    },
+  };
   localStorage.clear();
   localStorage.setItem('quizmon.results.v2', JSON.stringify(original.results));
   localStorage.setItem(
@@ -188,25 +196,11 @@ it('migrates all existing keys once and keeps the migrated save authoritative', 
     JSON.stringify({ ...original.profile, cardNumber: 'obsolete' }),
   );
   localStorage.setItem('quizmon.generation-prompt.v1', '1');
-  expect(readPlayerSave().data).toEqual({
-    ...original,
-    leagueLineup: {
-      seed: 'fixed-league-retry',
-      contentVersion: 0,
-      questions: [],
-    },
-  });
+  expect(readPlayerSave().data).toEqual(migrated);
   const persisted = localStorage.getItem(PLAYER_STORAGE_KEY);
   expect(localStorage.getItem('quizmon.results.v2')).toBeNull();
   localStorage.setItem('quizmon.results.v2', '{}');
-  expect(readPlayerSave().data).toEqual({
-    ...original,
-    leagueLineup: {
-      seed: 'fixed-league-retry',
-      contentVersion: 0,
-      questions: [],
-    },
-  });
+  expect(readPlayerSave().data).toEqual(migrated);
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(persisted);
 });
 

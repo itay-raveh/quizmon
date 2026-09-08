@@ -75,7 +75,7 @@ describe('active game storage', () => {
     },
   );
 
-  it.each([[], ['unknown'], null, 'I'])(
+  it.for([[], ['unknown'], null, 'I'])(
     'rejects invalid saved selections: %j',
     (value) => {
       for (const field of ['generations', 'questionTypes']) {

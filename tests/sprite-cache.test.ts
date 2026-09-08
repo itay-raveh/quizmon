@@ -23,12 +23,12 @@ describe('sprite caching', () => {
     [404, 'text/html'],
     [502, 'image/png'],
     [200, 'application/octet-stream'],
-  ])(
+  ] as const)(
     'rejects a %s %s response on cache reads and writes',
     async (status, contentType) => {
       const response = new Response('unavailable', {
-        headers: { 'Content-Type': String(contentType) },
-        status: Number(status),
+        headers: { 'Content-Type': contentType },
+        status,
       });
       await expect(
         spriteCachePlugin.cacheWillUpdate({ response }),
