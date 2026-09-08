@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
+import { TRAINER_NAME_MAX_LENGTH } from '@/game/profile-data';
 import { readDailyStreak, type TrainerStats } from '@/game/storage';
 import { readPlayerData } from '@/game/player-storage';
 import {
@@ -285,7 +286,7 @@ export const TrainerPassport = ({
             <input
               autoComplete="nickname"
               id="trainer-name"
-              maxLength={20}
+              maxLength={TRAINER_NAME_MAX_LENGTH}
               onChange={(event) => setName(event.target.value)}
               placeholder="Optional"
               type="text"

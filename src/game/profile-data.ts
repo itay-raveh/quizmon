@@ -3,6 +3,7 @@ import { trainerSpecialtyLabels, type TrainerSpecialty } from './trainer';
 import { isDailyDate, isRecord } from './validation';
 
 const TRAINER_PROFILE_VERSION = 1;
+export const TRAINER_NAME_MAX_LENGTH = 20;
 
 export interface TrainerProfile {
   createdAt: string;
@@ -43,7 +44,7 @@ export const normalizeTrainerProfile = (
   return {
     createdAt: profile.createdAt,
     hasBeenRevealed: profile.hasBeenRevealed,
-    name: profile.name.trim().slice(0, 20),
+    name: profile.name.trim().slice(0, TRAINER_NAME_MAX_LENGTH),
     partnerPokemon: profile.partnerPokemon,
     specialty: profile.specialty as TrainerSpecialty | null,
     version: TRAINER_PROFILE_VERSION,

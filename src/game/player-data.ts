@@ -1,7 +1,11 @@
 import type { LeagueVictoryRecord } from './hall-of-fame';
 import { isLeagueVictory } from './league';
 import { normalizeModifiers } from './game';
-import { normalizeTrainerProfile, type TrainerProfile } from './profile-data';
+import {
+  normalizeTrainerProfile,
+  TRAINER_NAME_MAX_LENGTH,
+  type TrainerProfile,
+} from './profile-data';
 import { questionTypes } from './questions/registry';
 import {
   normalizeResults,
@@ -121,7 +125,7 @@ const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
   isName(value.id) &&
   isUtcTimestamp(value.completedAt) &&
   typeof value.trainerName === 'string' &&
-  value.trainerName.length <= 20 &&
+  value.trainerName.length <= TRAINER_NAME_MAX_LENGTH &&
   Array.isArray(value.pokemon) &&
   value.pokemon.length > 0 &&
   value.pokemon.every(isName) &&

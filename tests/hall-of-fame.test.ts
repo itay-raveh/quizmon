@@ -112,6 +112,7 @@ it.each([
   { completedAt: '2026-02-31T12:00:00.000Z' },
   { pokemon: ['pikachu', 'pikachu'] },
   { pokemon: [] },
+  { trainerName: 'A'.repeat(21) },
   { result: { ...result, correctCount: 14 } },
   { result: { ...result, score: -1 } },
 ])(
@@ -126,6 +127,16 @@ it.each([
     ).toThrow('invalid progress');
   },
 );
+
+it('accepts a victory with a 20-character Trainer name', () => {
+  const record = { ...victory(), trainerName: 'A'.repeat(20) };
+  const saved = parsePlayerSave({
+    version: 3,
+    restoreId: null,
+    data: { ...emptyPlayerData(), hallOfFame: [record] },
+  });
+  expect(saved.data.hallOfFame).toEqual([record]);
+});
 
 it('leaves existing victories intact if saving a new victory fails', () => {
   saveResult({ kind: 'league' }, result, defaultModifiers, victory());

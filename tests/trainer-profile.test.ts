@@ -3,6 +3,15 @@ import { readTrainerProfile, saveTrainerProfile } from '@/game/trainer-profile';
 describe('Trainer profile storage', () => {
   beforeEach(() => window.localStorage.clear());
 
+  it('trims names before applying the 20-character limit', () => {
+    const saved = saveTrainerProfile({
+      ...readTrainerProfile(),
+      name: `  ${'A'.repeat(21)}  `,
+    });
+    expect(saved.name).toBe('A'.repeat(20));
+    expect(readTrainerProfile().name).toBe(saved.name);
+  });
+
   it('creates, migrates, and saves a normalized local profile', () => {
     const profile = readTrainerProfile();
 
