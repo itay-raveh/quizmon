@@ -31,17 +31,20 @@ const attackMultiplier = (
   }, 1);
 };
 
-const hasExactMatchup = (
+const createMatchupChecker = (
   catalog: PokemonCatalog,
-  attackerTypes: readonly string[],
   defenderTypes: readonly string[],
-  multiplier: number,
-): boolean =>
-  Math.max(
-    ...attackerTypes.map((type) =>
+) => {
+  const multipliers = new Map(
+    Object.keys(catalog.typeRelations).map((type) => [
+      type,
       attackMultiplier(catalog, type, defenderTypes),
-    ),
-  ) === multiplier;
+    ]),
+  );
+  return (attackerTypes: readonly string[], multiplier: number): boolean =>
+    Math.max(...attackerTypes.map((type) => multipliers.get(type) ?? 1)) ===
+    multiplier;
+};
 
 export const buildMatchupQuestion: QuestionBuilder = (context) => {
   const attackTypes = Object.keys(context.catalog.typeRelations);
@@ -113,17 +116,16 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
     for (const target of targets) {
       const targetSprite = target.pokemon.sprite;
       if (!targetSprite) continue;
+      const hasExactMatchup = createMatchupChecker(
+        context.catalog,
+        target.pokemon.types,
+      );
       const counters: Candidate[] = [];
       const distractors: Candidate[] = [];
       context.pool.forEach((candidate) => {
         const { name, pokemon } = candidate;
         if (name === target.name || !pokemon.sprite) return;
-        const matches = hasExactMatchup(
-          context.catalog,
-          pokemon.types,
-          target.pokemon.types,
-          multiplier,
-        );
+        const matches = hasExactMatchup(pokemon.types, multiplier);
         (matches ? counters : distractors).push(candidate);
       });
       if (counters.length === 0 || distractors.length < 3) continue;
