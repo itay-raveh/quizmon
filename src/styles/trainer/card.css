@@ -1,0 +1,587 @@
+.app--trainer main {
+  align-items: start;
+  container-type: inline-size;
+}
+
+.trainer-passport {
+  --trainer-rank-accent: var(--blue);
+  --trainer-rank-accent-strong: var(--navy);
+  --trainer-rank-ink: var(--paper);
+  --trainer-rank-surface: var(--cream);
+
+  display: grid;
+  width: min(42rem, calc(100vw - 2rem));
+  min-width: 0;
+  container-type: inline-size;
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  grid-template-columns: minmax(0, 1fr);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  border: 3px solid var(--navy);
+  border-radius: 0.75rem;
+  box-shadow:
+    0 0.28rem 0 var(--yellow),
+    0 0.62rem 0 var(--navy-shadow);
+  gap: 1.1rem;
+}
+
+.trainer-passport__header {
+  display: grid;
+  grid-template-columns: minmax(5.8rem, 1fr) auto minmax(5.8rem, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.trainer-passport__header > :last-child {
+  justify-self: end;
+}
+
+.trainer-passport__back.game-button {
+  width: 2.8rem;
+  min-width: 2.8rem;
+  height: 2.8rem;
+  min-height: 2.8rem;
+  padding: 0;
+  justify-self: start;
+}
+
+.trainer-passport__back svg {
+  width: 1.45rem;
+  height: 1.45rem;
+}
+
+.trainer-passport__edit.game-button,
+.trainer-passport__controls .game-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.trainer-passport__edit svg,
+.trainer-passport__controls svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+}
+
+.trainer-passport__header > div {
+  text-align: center;
+}
+
+.trainer-passport__header h1 {
+  margin: 0;
+  color: var(--navy);
+  font-size: var(--text-display);
+  line-height: 1;
+}
+
+.trainer-passport__header-space {
+  width: 5.8rem;
+}
+
+.trainer-passport__views {
+  display: grid;
+  overflow: hidden;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--navy);
+  border: 3px solid var(--navy);
+  border-radius: var(--button-radius);
+  box-shadow:
+    0 0.2rem 0 var(--yellow),
+    0 0.42rem 0 var(--navy-shadow);
+  gap: 2px;
+}
+
+.trainer-passport__view {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 2.8rem;
+  padding: 0.45rem 0.6rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--navy);
+  background: var(--paper);
+  border: 0;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 900;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  text-align: center;
+  cursor: pointer;
+  gap: 0.35rem;
+}
+
+.trainer-passport__view svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
+
+.trainer-passport__view[aria-pressed='true'] {
+  color: var(--paper);
+  background: var(--blue);
+}
+
+.trainer-passport__view:disabled {
+  cursor: wait;
+}
+
+.trainer-passport__view:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--navy);
+  outline-offset: -3px;
+}
+
+.trainer-passport__view[aria-pressed='true']:focus-visible {
+  outline-color: var(--paper);
+}
+
+.trainer-passport__artifact {
+  min-width: 0;
+}
+
+.trainer-passport__artifact--reveal {
+  animation: trainer-reveal 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.trainer-artifact-frame {
+  --trainer-frame-border: var(--navy);
+  --trainer-frame-surface: var(--paper);
+  --trainer-frame-highlight: var(--paper);
+
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 7 / 4;
+  container-type: inline-size;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--trainer-frame-surface);
+  border: 3px solid var(--trainer-frame-border);
+  border-radius: var(--surface-radius);
+  box-shadow: inset 0 0 0 2px var(--trainer-frame-highlight);
+  isolation: isolate;
+}
+
+.trainer-card {
+  --trainer-rank-accent: var(--blue);
+  --trainer-rank-accent-strong: var(--navy);
+  --trainer-rank-ink: var(--paper);
+  --trainer-rank-surface: color-mix(in srgb, var(--blue) 12%, var(--paper));
+  --trainer-frame-border: var(--trainer-rank-accent-strong);
+  --trainer-frame-surface: var(--trainer-rank-surface);
+
+  grid-template-rows: 1fr auto;
+  text-align: left;
+}
+
+.trainer-badge-case {
+  --case-metal: #c7d7dc;
+  --case-metal-dark: #607b87;
+  --case-inset: #173a54;
+  --case-tile: #254d67;
+  --case-tile-hover: #2c5976;
+  --trainer-frame-surface: var(--case-metal);
+  --trainer-frame-highlight: #e8f0f1;
+
+  grid-template-rows: minmax(0, 1fr);
+  color: var(--navy);
+}
+
+.trainer-share-capture {
+  position: fixed;
+  top: 0;
+  left: -100000px;
+  z-index: -1;
+  container-type: inline-size;
+  pointer-events: none;
+}
+
+.trainer-passport--bronze,
+.trainer-card--bronze {
+  --trainer-rank-accent: var(--metal-bronze);
+  --trainer-rank-accent-strong: var(--metal-bronze-edge);
+  --trainer-rank-ink: var(--navy);
+  --trainer-rank-surface: var(--metal-bronze-light);
+  --trainer-sheen-opacity: 0.2;
+}
+
+.trainer-passport--silver,
+.trainer-card--silver {
+  --trainer-rank-accent: var(--metal-silver);
+  --trainer-rank-accent-strong: var(--metal-silver-edge);
+  --trainer-rank-ink: var(--navy);
+  --trainer-rank-surface: var(--metal-silver-light);
+  --trainer-sheen-opacity: 0.38;
+}
+
+.trainer-passport--gold,
+.trainer-card--gold {
+  --trainer-rank-accent: var(--metal-gold);
+  --trainer-rank-accent-strong: var(--metal-gold-edge);
+  --trainer-rank-ink: var(--navy);
+  --trainer-rank-surface: var(--metal-gold-light);
+  --trainer-sheen-opacity: 0.56;
+}
+
+.trainer-card__finish-effects {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.trainer-card__sheen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 100 / 128;
+  transform: translate(-50%, -50%) rotate(90deg);
+  opacity: 0;
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+  transition: opacity 45ms steps(1, end);
+}
+
+.trainer-card__sheen.is-active {
+  opacity: var(--trainer-sheen-opacity);
+}
+
+.trainer-card--champion {
+  border-color: var(--metal-gold-edge);
+  box-shadow:
+    inset 0 0 0 2px var(--metal-gold-light),
+    inset 0 0 0 5px var(--metal-gold);
+  background: linear-gradient(
+    120deg,
+    var(--metal-gold-light) 0%,
+    #ffe27a 46%,
+    var(--metal-gold) 77%,
+    var(--metal-gold-light) 100%
+  );
+}
+
+.trainer-card--champion .trainer-card__watermark {
+  border-color: var(--metal-gold-edge);
+  background: var(--metal-gold);
+}
+
+.trainer-card__polish {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.trainer-card__polish::before,
+.trainer-card__polish::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.trainer-card__polish::before {
+  background: linear-gradient(
+    125deg,
+    transparent 34%,
+    #fff4bb14 41%,
+    #fffbed66 48%,
+    #fffefacc 50%,
+    #fffbed88 52%,
+    #fff4bb14 59%,
+    transparent 66%
+  );
+  transform: translateX(-4%);
+}
+
+.trainer-card__polish::after {
+  inset: 3px;
+  border: 2px solid transparent;
+  border-image: linear-gradient(
+      125deg,
+      #fffbe2,
+      #bc811d 20%,
+      #fffce6 38%,
+      #efc564 62%,
+      #fffbe2 75%,
+      #ad7112
+    )
+    1;
+  opacity: 0.95;
+}
+
+.trainer-card__finish-effects.is-motion-active .trainer-card__polish::before {
+  animation: trainer-card-polish 4.8s linear infinite;
+}
+
+.trainer-card__decoration {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.trainer-card__watermark {
+  position: absolute;
+  top: -10cqw;
+  right: -10cqw;
+  width: 45cqw;
+  aspect-ratio: 1;
+  color: color-mix(
+    in srgb,
+    var(--trainer-rank-accent) 65%,
+    var(--trainer-rank-surface)
+  );
+  border: 5cqw solid currentColor;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.trainer-card__watermark::after {
+  position: absolute;
+  top: 15cqw;
+  left: -5cqw;
+  width: 45cqw;
+  height: 4cqw;
+  background: currentColor;
+  content: '';
+}
+
+.trainer-card__front {
+  display: grid;
+  min-width: 0;
+  padding: 5cqw 5cqw 2cqw 6cqw;
+  grid-template-areas: 'rank partner' 'identity partner';
+  grid-template-columns: minmax(0, 1fr) 33%;
+  grid-template-rows: auto 1fr;
+  align-items: center;
+  gap: 2cqw 4cqw;
+}
+
+.trainer-card__rank {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  grid-area: rank;
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: clamp(0.65rem, 3cqw, 1.125rem);
+  font-weight: 600;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.trainer-card--champion .trainer-card__rank {
+  width: fit-content;
+  padding-bottom: 0.5cqw;
+  border-bottom: 1px solid var(--trainer-rank-accent-strong);
+  gap: 0.35em;
+}
+
+.trainer-card__rank .trophy {
+  width: clamp(1.5rem, 2em, 2rem);
+  height: auto;
+  flex: none;
+}
+
+.trainer-card__identity {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  min-width: 0;
+  grid-area: identity;
+  align-content: center;
+  padding-bottom: 3cqw;
+  gap: 1.5cqw;
+}
+
+.trainer-card__identity h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--navy);
+  font-family: var(--font-interface);
+  font-size: clamp(1.1rem, 6cqw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.trainer-card__title {
+  display: flex;
+  margin: 0;
+  align-items: center;
+  color: var(--navy);
+  font-size: clamp(0.65rem, 3.5cqw, 1.3rem);
+  font-weight: 700;
+  line-height: 1.3;
+  gap: 1cqw;
+}
+
+.trainer-title-mark__tier {
+  position: absolute;
+  right: -0.35rem;
+  bottom: -0.3rem;
+  padding: 0.05rem 0.2rem;
+  color: var(--navy);
+  background: var(--tier-metal);
+  border: 1px solid var(--navy);
+  font: 850 0.65rem / 1 var(--font-data);
+}
+
+.trainer-card__title > svg {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.trainer-card__details {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 12cqw;
+  padding: 1.5cqw 5cqw 1.5cqw 6cqw;
+  align-items: center;
+  color: var(--trainer-rank-ink);
+  background: var(--trainer-rank-accent);
+  border-top: 1px solid var(--trainer-rank-accent-strong);
+  gap: 4cqw;
+}
+
+.trainer-card__record {
+  position: relative;
+  z-index: 5;
+  min-width: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.trainer-card__record > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2cqw;
+}
+
+.trainer-card__record dt {
+  font-size: clamp(0.6rem, 3.2cqw, 1.15rem);
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.trainer-card__record dd {
+  margin: 0;
+  font-family: var(--font-data);
+  font-size: clamp(0.65rem, 3.4cqw, 1.3rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.trainer-card__record small {
+  font-size: 0.82em;
+  font-weight: 400;
+}
+
+.trainer-card__combo {
+  position: relative;
+  z-index: 5;
+  width: 10.56cqw;
+}
+
+.trainer-card__combo .catch-combo__ball {
+  width: 8.36cqw;
+  border-width: 0.44cqw;
+}
+
+.trainer-card__combo .catch-combo__ball::before {
+  width: 4.576cqw;
+  border-width: 0.44cqw;
+}
+
+.trainer-card__combo .catch-combo__ball strong {
+  font-size: 2.2cqw;
+}
+
+.trainer-card__combo .catch-combo__ball strong[data-digits='3'] {
+  font-size: 1.76cqw;
+}
+
+.trainer-card__combo .catch-combo__ball strong[data-digits='4'] {
+  font-size: 1.408cqw;
+}
+
+.trainer-card__combo .catch-combo__label {
+  padding: 0.176cqw 0.616cqw;
+  margin-top: -0.44cqw;
+  border-width: 0.264cqw;
+  border-radius: 0.44cqw;
+  font-size: 1.408cqw;
+}
+
+.trainer-card__partner {
+  display: grid;
+  min-width: 0;
+  grid-area: partner;
+  justify-items: center;
+  gap: 1cqw;
+}
+
+.trainer-card__portrait {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 29cqw;
+  max-width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+}
+
+.trainer-card__portrait img,
+.trainer-customizer__preview img,
+.trainer-pokedex__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.trainer-card__partner-caption {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  max-width: 100%;
+  text-align: center;
+}
+
+.trainer-card__partner-caption .pokemon-identity__number {
+  font-family: var(--font-data);
+  font-size: clamp(0.6rem, 2.8cqw, 1.1rem);
+  font-weight: 500;
+}
+
+.trainer-card__partner-caption .pokemon-identity__name {
+  max-width: 100%;
+  font-size: clamp(0.65rem, 3.6cqw, 1.3rem);
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.trainer-card__partner-mark {
+  color: var(--navy);
+  font-family: var(--font-interface);
+  font-size: 16cqw;
+  font-weight: 800;
+}

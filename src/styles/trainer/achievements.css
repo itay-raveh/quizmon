@@ -1,0 +1,572 @@
+.trainer-badge-case__badges {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  padding: 0.9rem 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, auto);
+  align-content: center;
+  background: var(--case-inset);
+  border: 0.55rem solid var(--case-metal);
+  box-shadow:
+    inset 0 0 0 3px var(--navy),
+    inset 0.35rem 0.35rem 0 var(--navy-shadow);
+  gap: 0.55rem;
+}
+
+.trainer-badge-case__rivet,
+.trainer-titles__fastener {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 0.55rem;
+  aspect-ratio: 1;
+  background: var(--yellow);
+  border: 2px solid var(--navy);
+  border-radius: 50%;
+  box-shadow: 0 0.08rem 0 var(--navy-shadow);
+  pointer-events: none;
+}
+
+.trainer-badge-case__rivet--top-left,
+.trainer-titles__fastener--top-left {
+  top: 0.2rem;
+  left: 0.2rem;
+}
+
+.trainer-badge-case__rivet--top-right,
+.trainer-titles__fastener--top-right {
+  top: 0.2rem;
+  right: 0.2rem;
+}
+
+.trainer-badge-case__rivet--bottom-left,
+.trainer-titles__fastener--bottom-left {
+  bottom: 0.2rem;
+  left: 0.2rem;
+}
+
+.trainer-badge-case__rivet--bottom-right,
+.trainer-titles__fastener--bottom-right {
+  right: 0.2rem;
+  bottom: 0.2rem;
+}
+
+[data-tier='1'] {
+  --tier-metal: var(--metal-bronze);
+  --tier-edge: var(--metal-bronze-edge);
+  --tier-light: var(--metal-bronze-light);
+}
+
+[data-tier='2'] {
+  --tier-metal: var(--metal-silver);
+  --tier-edge: var(--metal-silver-edge);
+  --tier-light: var(--metal-silver-light);
+}
+
+[data-tier='3'] {
+  --tier-metal: var(--metal-gold);
+  --tier-edge: var(--metal-gold-edge);
+  --tier-light: var(--metal-gold-light);
+}
+
+.trainer-badge {
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.25rem;
+  appearance: none;
+  color: var(--paper);
+  background: var(--case-tile);
+  border: 3px solid var(--case-metal-dark);
+  border-radius: 0.38rem;
+  box-shadow:
+    inset 0 0 0 2px var(--navy),
+    0 0.16rem 0 #091f34;
+  cursor: pointer;
+  place-items: center;
+}
+
+.trainer-badge:hover {
+  background: var(--case-tile-hover);
+  border-color: #dfe9ea;
+}
+
+.trainer-badge[data-earned='true'] {
+  background: var(--tier-metal);
+  border-color: var(--tier-edge);
+  box-shadow:
+    inset 0.22rem 0.22rem 0 var(--tier-light),
+    inset -0.22rem -0.22rem 0 var(--tier-edge),
+    0 0.16rem 0 #091f34;
+}
+
+.trainer-badge[data-tier='2'] {
+  border-width: 4px;
+}
+
+.trainer-badge[data-tier='3'] {
+  border-width: 5px;
+}
+
+.trainer-badge[data-earned='true']:hover {
+  border-color: var(--tier-light);
+}
+
+.trainer-badge:active {
+  box-shadow: inset 0 0 0 2px var(--navy);
+  transform: translateY(0.12rem);
+}
+
+.trainer-badge:hover .trainer-badge-mark img {
+  --trainer-badge-depth: drop-shadow(0.23rem 0.3rem 0 var(--navy-shadow));
+
+  transform: translate(-0.06rem, -0.12rem) scale(1.025);
+}
+
+.trainer-badge:active .trainer-badge-mark img {
+  --trainer-badge-depth: drop-shadow(0.05rem 0.1rem 0 var(--navy-shadow));
+
+  transform: translate(0.08rem, 0.1rem) scale(0.99);
+}
+
+.trainer-badge:focus-visible {
+  outline: 3px solid var(--paper);
+  outline-offset: 2px;
+}
+
+.trainer-badge-mark {
+  display: grid;
+  width: 4.4rem;
+  aspect-ratio: 1;
+  place-items: center;
+}
+
+.trainer-badge-mark img {
+  --trainer-badge-tone: saturate(1);
+  --trainer-badge-depth: drop-shadow(0.16rem 0.22rem 0 var(--navy-shadow));
+
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: var(--trainer-badge-tone) var(--trainer-badge-depth);
+  image-rendering: pixelated;
+  transform: translate(-0.03rem, -0.04rem);
+  transition:
+    filter 100ms ease,
+    transform 100ms ease;
+}
+
+.trainer-badge-mark[data-earned='false'] img {
+  --trainer-badge-tone: brightness(0);
+
+  opacity: 0.48;
+}
+
+.trainer-badge-case__badges .trainer-badge-mark {
+  width: min(7.4rem, 88%);
+  max-width: 100%;
+}
+
+.trainer-titles {
+  --title-wood: #bd7438;
+  --title-wood-dark: #78411f;
+
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-width: 0;
+  padding: 0.65rem;
+  color: var(--navy);
+  background: var(--title-wood);
+  border: 4px solid var(--navy);
+  border-radius: var(--surface-radius);
+  box-shadow:
+    inset 0 0 0 0.25rem var(--title-wood-dark),
+    0 0.3rem 0 var(--yellow),
+    0 0.52rem 0 var(--navy-shadow);
+  gap: 0.55rem;
+}
+
+.trainer-title__copy small {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  font-weight: 800;
+}
+
+.trainer-titles__collection {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.trainer-title {
+  display: grid;
+  min-width: 0;
+  min-height: 4.75rem;
+  padding: 0.55rem 0.65rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  appearance: none;
+  color: var(--navy);
+  background: var(--paper);
+  border: 3px solid var(--title-wood-dark);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.18rem 0 var(--title-wood-dark);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  gap: 0.55rem;
+}
+
+.trainer-title[data-equipped='true'] {
+  background: var(--cream);
+}
+
+.trainer-title[data-tier]:not([data-tier='0']) {
+  border-color: var(--tier-metal);
+  box-shadow:
+    inset 0 0 0 1px var(--tier-edge),
+    0 0.18rem 0 var(--title-wood-dark);
+}
+
+.trainer-title[data-equipped='true'] {
+  box-shadow:
+    inset 0 0 0 2px var(--navy),
+    0 0.18rem 0 var(--title-wood-dark);
+}
+
+.trainer-title__equipped {
+  width: 1em;
+  height: 1em;
+  margin-inline-start: 0.3em;
+  vertical-align: -0.1em;
+}
+
+.trainer-title:hover {
+  background: var(--cream);
+  transform: translateY(-1px);
+}
+
+.trainer-title:active {
+  box-shadow: none;
+  transform: translateY(0.15rem);
+}
+
+.trainer-title:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.trainer-title-mark {
+  position: relative;
+  display: grid;
+  width: 3.25rem;
+  aspect-ratio: 1;
+  color: var(--paper);
+  background: var(--blue);
+  border: 3px solid var(--navy);
+  border-radius: 0.35rem;
+  box-shadow: 0 0.18rem 0 var(--yellow);
+  place-items: center;
+}
+
+.trainer-title-mark[data-earned='true'] {
+  border-color: var(--tier-metal);
+  box-shadow: 0 0.18rem 0 var(--tier-edge);
+}
+
+.trainer-title-mark svg {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+.trainer-title-mark[data-earned='false'] {
+  color: var(--title-wood-dark);
+  background: var(--cream);
+  border-color: var(--muted);
+  box-shadow: none;
+}
+
+.trainer-title__copy {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  gap: 0.25rem;
+}
+
+.trainer-title__copy > strong {
+  font-size: var(--text-label);
+  line-height: 1.05;
+}
+
+.trainer-passport__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.7rem;
+}
+
+.trainer-passport__status {
+  min-height: 1.2rem;
+  margin: -0.7rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-small);
+  font-weight: 700;
+  text-align: center;
+}
+
+.trainer-progress-change--earned > .trainer-badge-mark,
+.trainer-progress-change--earned > .trainer-title-mark {
+  position: relative;
+  isolation: isolate;
+}
+
+.trainer-progress-change--earned > .trainer-badge-mark::after,
+.trainer-progress-change--earned > .trainer-title-mark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url('../../assets/images/trainer-card/sheen-05.png') center /
+    contain no-repeat;
+  image-rendering: pixelated;
+  opacity: 0;
+  animation: trainer-tier-sheen 650ms steps(8, end) 120ms;
+}
+
+@keyframes trainer-tier-sheen {
+  0% {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+  45% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateX(30%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trainer-progress-change--earned > .trainer-badge-mark::after,
+  .trainer-progress-change--earned > .trainer-title-mark::after {
+    animation: none;
+  }
+}
+
+.trainer-tier-progress {
+  display: grid;
+  padding: 0;
+  margin: 0.6rem 0 0;
+  list-style: none;
+  gap: 0.75rem;
+}
+
+.trainer-tier-progress li {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--muted);
+}
+
+.trainer-tier-progress__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: var(--text-label);
+}
+
+.trainer-tier-progress__heading strong {
+  color: var(--navy);
+  text-decoration: underline;
+  text-decoration-color: var(--tier-edge);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2rem;
+}
+
+.trainer-tier-progress li p {
+  margin-top: 0.4rem;
+  font-size: var(--text-label);
+}
+
+.trainer-badge-dialog__body > .trainer-badge-mark[data-earned='true'] {
+  padding: 0.5rem;
+  background: var(--case-tile);
+  border: 4px solid var(--tier-metal);
+  border-radius: 0.38rem;
+  box-shadow:
+    inset 2px 2px 0 var(--tier-light),
+    inset -2px -2px 0 var(--tier-edge);
+}
+
+.trainer-badge-dialog,
+.trainer-title-dialog {
+  width: min(31rem, calc(100% - 1rem));
+  max-width: none;
+  max-height: calc(100dvh - 1rem);
+  padding: 0;
+  overflow: hidden;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: 0.75rem;
+  box-shadow:
+    0 0.3rem 0 var(--yellow),
+    0 0.7rem 0 var(--navy-shadow);
+}
+
+.trainer-badge-dialog[open],
+.trainer-title-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  animation: surface-in 160ms ease-out both;
+}
+
+.trainer-badge-dialog::backdrop,
+.trainer-title-dialog::backdrop {
+  background: var(--modal-scrim);
+}
+
+.trainer-badge-dialog > header,
+.trainer-title-dialog > header {
+  display: flex;
+  padding: 0.85rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--trainer-rank-surface, var(--cream));
+  border-bottom: 3px solid var(--navy);
+}
+
+.trainer-badge-dialog h2,
+.trainer-title-dialog h2 {
+  margin: 0;
+  color: var(--navy);
+  font-size: var(--text-headline);
+}
+
+.trainer-badge-dialog__body,
+.trainer-title-dialog__body {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  padding: 1.1rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.trainer-badge-dialog__body {
+  grid-template-columns: minmax(8rem, 0.8fr) minmax(0, 1.2fr);
+}
+
+.trainer-badge-dialog__body > .trainer-badge-mark {
+  width: min(10rem, 100%);
+  justify-self: center;
+}
+
+.trainer-badge-dialog__details {
+  display: grid;
+  min-width: 0;
+  gap: 0.7rem;
+}
+
+.trainer-badge-dialog__state,
+.trainer-title-dialog__state {
+  color: var(--navy);
+  font-size: var(--text-control);
+}
+
+.trainer-badge-dialog__details p,
+.trainer-title-dialog__details p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.trainer-badge-dialog__progress-label,
+.trainer-title-dialog__progress-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--navy);
+  font-size: var(--text-small);
+  font-weight: 800;
+}
+
+.trainer-badge-dialog__progress-label {
+  margin-top: 0.15rem;
+}
+
+.trainer-badge-dialog__progress-label strong,
+.trainer-title-dialog__progress-label strong {
+  font-family: var(--font-data);
+}
+
+:is(.trainer-badge-dialog, .trainer-title-dialog) progress {
+  width: 100%;
+  height: 0.75rem;
+  overflow: hidden;
+  appearance: none;
+  background: var(--sky);
+  border: 2px solid var(--navy);
+  border-radius: 0;
+}
+
+:is(.trainer-badge-dialog, .trainer-title-dialog)
+  progress::-webkit-progress-bar {
+  background: var(--sky);
+}
+
+:is(.trainer-badge-dialog, .trainer-title-dialog)
+  progress::-webkit-progress-value {
+  background: var(--blue);
+}
+
+:is(.trainer-badge-dialog, .trainer-title-dialog) progress::-moz-progress-bar {
+  background: var(--blue);
+}
+
+.trainer-title-dialog__body {
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+}
+
+.trainer-title-dialog__body > .trainer-title-mark {
+  position: relative;
+  width: 7.5rem;
+  justify-self: center;
+  border-width: 4px;
+  border-radius: 0.55rem;
+  box-shadow: 0 0.28rem 0 var(--tier-edge, var(--yellow));
+}
+
+.trainer-title-dialog__body > .trainer-title-mark svg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.trainer-title-dialog__details {
+  display: grid;
+  min-width: 0;
+  gap: 0.65rem;
+}
+
+.trainer-title-dialog__details p {
+  line-height: 1.35;
+}
+
+.trainer-title-dialog__progress-label {
+  margin-top: 0.1rem;
+}
+
+.trainer-title-dialog__details .game-button {
+  width: 100%;
+  margin-top: 0.1rem;
+}

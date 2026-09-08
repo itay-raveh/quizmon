@@ -1,0 +1,134 @@
+.trainer-customizer {
+  display: grid;
+  padding: 1rem;
+  align-items: end;
+  background: var(--cream);
+  border: 3px solid var(--navy);
+  border-radius: var(--surface-radius);
+  box-shadow: 0 0.2rem 0 var(--yellow);
+  grid-template-areas:
+    'name partner preview'
+    'save save save';
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.8rem;
+}
+
+.trainer-customizer__name,
+.pokemon-picker {
+  display: grid;
+  min-width: 0;
+  gap: 0.3rem;
+}
+
+.trainer-customizer__name {
+  grid-area: name;
+}
+
+.trainer-customizer > .pokemon-picker {
+  grid-area: partner;
+}
+
+.trainer-customizer > .game-button {
+  grid-area: save;
+}
+
+.trainer-customizer label,
+.pokemon-picker > label {
+  color: var(--navy);
+  font-size: var(--text-label);
+  font-weight: 800;
+}
+
+.trainer-customizer__name input,
+.pokemon-picker input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.6rem 0.7rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: var(--button-radius);
+  font-weight: 700;
+}
+
+.pokemon-picker__field {
+  position: relative;
+}
+
+.pokemon-picker ul,
+.pokemon-picker__empty {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  left: 0;
+  padding: 0.25rem;
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: var(--button-radius);
+  box-shadow:
+    0 0.2rem 0 var(--yellow),
+    0 0.4rem 0 var(--navy-shadow);
+}
+
+.pokemon-picker ul {
+  max-height: 13rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.pokemon-picker li {
+  display: flex;
+  min-height: 2.5rem;
+  padding: 0.3rem 0.5rem;
+  align-items: center;
+  border-radius: 0.25rem;
+  font-weight: 750;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.pokemon-picker__sprite {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  background: var(--sky);
+  border-radius: var(--icon-control-radius);
+  place-items: center;
+}
+
+.pokemon-picker__sprite img {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.pokemon-picker li:hover,
+.pokemon-picker li[aria-selected='true'] {
+  color: var(--paper);
+  background: var(--blue);
+}
+
+.pokemon-picker__empty {
+  font-size: var(--text-label);
+  font-weight: 700;
+  text-align: center;
+}
+
+.trainer-customizer__preview {
+  display: grid;
+  width: 3rem;
+  aspect-ratio: 1;
+  color: var(--navy);
+  background: var(--paper);
+  border: 2px solid var(--navy);
+  border-radius: var(--icon-control-radius);
+  font-family: var(--font-data);
+  font-weight: 800;
+  grid-area: preview;
+  place-items: center;
+}
