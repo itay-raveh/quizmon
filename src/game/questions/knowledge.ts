@@ -219,13 +219,11 @@ export const buildPropertyQuestion =
     if (!target) return undefined;
     const correct = pick(target.pokemon[property], context.random);
     if (!correct) return undefined;
-    const candidates = context.pool.flatMap(({ pokemon }) => pokemon[property]);
-    const invalid = new Set(target.pokemon[property]);
-    const options = randomOptionSet(
-      correct,
-      candidates.filter((candidate) => !invalid.has(candidate)),
-      context.random,
+    const candidates = new Set(
+      context.pool.flatMap(({ pokemon }) => pokemon[property]),
     );
+    for (const invalid of target.pokemon[property]) candidates.delete(invalid);
+    const options = randomOptionSet(correct, [...candidates], context.random);
     const subject = category === 'ability' ? 'ability' : 'move by leveling up';
     return makeQuestion(
       targetRepetition({ pokemonOptions: false }),
