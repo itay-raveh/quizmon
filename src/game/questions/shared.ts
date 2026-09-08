@@ -267,22 +267,17 @@ export const pokemonOptions = (
     similarityFor,
     context.random,
   );
-  const ranked = scored.map(({ candidate }) => candidate);
-  const bestScore = scored[0]?.score ?? similarityFor('');
-  const semanticBand = scored
-    .filter(({ score }) => score >= bestScore * 0.6)
-    .slice(0, 15)
-    .map(({ candidate }) => candidate);
-  const shortlist =
-    ranked.length >= 15
-      ? ranked.slice(0, 15)
-      : semanticBand.length >= 3
-        ? semanticBand
-        : ranked.slice(0, 3);
+  let shortlisted = scored.slice(0, 15);
+  if (scored.length < 15) {
+    const bestScore = scored[0]?.score ?? similarityFor('');
+    const semanticBand = scored.filter(({ score }) => score >= bestScore * 0.6);
+    shortlisted = semanticBand.length >= 3 ? semanticBand : scored.slice(0, 3);
+  }
+  const shortlist = shortlisted.map(({ candidate }) => candidate);
   const optionRandom = createSeededRandom(
     [
       target.name,
-      ...Array.from({ length: Math.min(3, ranked.length) }, () =>
+      ...Array.from({ length: Math.min(3, scored.length) }, () =>
         context.random().toString(36),
       ),
     ].join(':'),
