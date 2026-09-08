@@ -94,7 +94,6 @@
 
 .league-trophy--locked .league-trophy__image {
   filter: brightness(0) saturate(100%) drop-shadow(0 2px 0 #7c94ab);
-  opacity: 0.75;
 }
 
 .league-trophy--locked .league-trophy__rays {
