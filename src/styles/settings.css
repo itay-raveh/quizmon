@@ -148,7 +148,8 @@
   cursor: pointer;
 }
 
-.selection-tile input {
+.selection-tile input,
+.checkbox input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -529,13 +530,6 @@
   gap: 0.55rem;
   align-items: start;
   cursor: pointer;
-}
-
-.checkbox input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
 }
 
 .checkbox__control {

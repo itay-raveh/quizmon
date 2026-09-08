@@ -553,7 +553,9 @@
   place-items: center;
 }
 
-.trainer-card__portrait img {
+.trainer-card__portrait img,
+.trainer-customizer__preview img,
+.trainer-pokedex__portrait img {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -1150,13 +1152,6 @@
   place-items: center;
 }
 
-.trainer-customizer__preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
-
 @keyframes trainer-reveal {
   from {
     opacity: 0;
@@ -1486,13 +1481,6 @@
   max-width: 100%;
   height: 4rem;
   place-items: center;
-}
-
-.trainer-pokedex__portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
 }
 
 .trainer-pokedex__portrait svg {
