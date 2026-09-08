@@ -1,5 +1,5 @@
 import { noStoreResponse } from './responses';
-import { isDailyDate } from '../src/game/validation';
+import { isDailyDate, isObject } from '../src/game/validation';
 import { DurableObject } from 'cloudflare:workers';
 import webpush, {
   WebPushError,
@@ -54,9 +54,10 @@ const isValidTimeZone = (value: unknown): value is string => {
   }
 };
 
-const isValidSubscription = (value: unknown): value is WebPushSubscription => {
-  if (!value || typeof value !== 'object') return false;
-  const candidate = value as Partial<WebPushSubscription>;
+const isValidSubscription = (
+  candidate: unknown,
+): candidate is WebPushSubscription => {
+  if (!isObject(candidate)) return false;
   if (
     typeof candidate.endpoint !== 'string' ||
     candidate.endpoint.length > 2_048
@@ -105,7 +106,7 @@ const parseRegistration = async (
   request: Request,
 ): Promise<DailyReminderRegistration | null> => {
   const value = await readJson(request);
-  if (!value || typeof value !== 'object') return null;
+  if (!isObject(value)) return null;
 
   const candidate = value as Partial<DailyReminderRegistration>;
   if (
@@ -129,10 +130,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
 
     if (request.method === 'PATCH') {
       const body = await readJson(request);
-      const completedDate =
-        body && typeof body === 'object'
-          ? (body as { completedDate?: unknown }).completedDate
-          : null;
+      const completedDate = isObject(body) ? body.completedDate : null;
       if (!isDailyDate(completedDate)) {
         return noStoreResponse('Invalid completion date', 400);
       }

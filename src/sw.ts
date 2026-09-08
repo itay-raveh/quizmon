@@ -9,6 +9,7 @@ import {
 } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
+import { isObject } from './game/validation';
 import { contentPages } from './app/content-pages';
 import { spriteCachePlugin } from './sprite-cache';
 import { DAILY_REMINDER_MESSAGE } from './notifications/config';
@@ -26,9 +27,8 @@ interface DailyPushPayload {
 
 const readPushPayload = (event: PushEvent): DailyPushPayload => {
   try {
-    const value: unknown = event.data?.json();
-    if (!value || typeof value !== 'object') return {};
-    const candidate = value as Record<string, unknown>;
+    const candidate: unknown = event.data?.json();
+    if (!isObject(candidate)) return {};
     return {
       body: typeof candidate.body === 'string' ? candidate.body : undefined,
       tag: typeof candidate.tag === 'string' ? candidate.tag : undefined,
@@ -94,11 +94,7 @@ registerRoute(
 
 self.addEventListener('message', (event) => {
   const value: unknown = event.data;
-  if (
-    value &&
-    typeof value === 'object' &&
-    (value as { type?: unknown }).type === 'SKIP_WAITING'
-  ) {
+  if (isObject(value) && value.type === 'SKIP_WAITING') {
     void self.skipWaiting();
   }
 });

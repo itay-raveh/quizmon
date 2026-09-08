@@ -1,3 +1,4 @@
+import { isObject } from '../src/game/validation';
 import { noStoreResponse } from './responses';
 import type { GameMode } from '../src/game/types';
 import { fetchSpriteSource, isSpritePath } from '../src/game/sprite-source';
@@ -90,10 +91,9 @@ const isIntegerBetween = (value: unknown, minimum: number, maximum: number) =>
 const isGameMode = (value: unknown): value is GameMode['kind'] =>
   value === 'daily' || value === 'league' || value === 'training';
 
-const isAnalyticsEvent = (value: unknown): value is AnalyticsEvent => {
-  if (!value || typeof value !== 'object') return false;
+const isAnalyticsEvent = (event: unknown): event is AnalyticsEvent => {
+  if (!isObject(event)) return false;
 
-  const event = value as Record<string, unknown>;
   if (event.type === 'page_view') return true;
   if (event.type === 'game_started') {
     return (

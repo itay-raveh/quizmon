@@ -1,4 +1,4 @@
-import { isNonnegativeInteger } from '@/game/validation';
+import { isNonnegativeInteger, isObject } from '@/game/validation';
 import { readStoredJson, writeStoredJson } from '@/game/browser-storage';
 
 const PROMPT_KEY = 'quizmon.daily-reminder-prompt.v1';
@@ -10,10 +10,9 @@ interface PromptHistory {
 }
 
 const readPromptHistory = (): PromptHistory | null => {
-  const value = readStoredJson('localStorage', PROMPT_KEY);
-  if (!value || typeof value !== 'object') return null;
+  const candidate = readStoredJson('localStorage', PROMPT_KEY);
+  if (!isObject(candidate)) return null;
 
-  const candidate = value as Record<string, unknown>;
   return candidate.version === 1 &&
     isNonnegativeInteger(candidate.completedDailyCount)
     ? {

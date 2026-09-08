@@ -9,7 +9,7 @@ import {
   type Modifiers,
   type PokemonCatalog,
 } from './types';
-import { isChoice } from './validation';
+import { isChoice, isObject } from './validation';
 
 export const defaultModifiers: Modifiers = {
   answerFlow: 'manual',
@@ -43,10 +43,8 @@ export const getTrainingModifiers = (modifiers: Modifiers): Modifiers => ({
     : [...modifiers.questionTypes],
 });
 
-export const normalizeModifiers = (value: unknown): Modifiers => {
-  if (!value || typeof value !== 'object') return defaultModifiers;
-
-  const candidate = value as Record<string, unknown>;
+export const normalizeModifiers = (candidate: unknown): Modifiers => {
+  if (!isObject(candidate)) return defaultModifiers;
   const selectedGenerations = Array.isArray(candidate.generations)
     ? candidate.generations.filter((generation) =>
         isChoice(generation, generations),
