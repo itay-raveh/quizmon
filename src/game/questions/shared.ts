@@ -63,7 +63,7 @@ export const rankedOptionSet = (
   );
 };
 
-export const randomOptionSet = (
+const shuffleDistractors = (
   correct: string,
   candidates: readonly string[],
   random: () => number,
@@ -71,22 +71,28 @@ export const randomOptionSet = (
   const unique = [...new Set(candidates)].filter(
     (candidate) => candidate !== correct,
   );
-  return shuffle([...shuffle(unique, random).slice(0, 3), correct], random);
+  return shuffle(unique, random);
 };
+
+export const randomOptionSet = (
+  correct: string,
+  candidates: readonly string[],
+  random: () => number,
+): string[] =>
+  shuffle(
+    [...shuffleDistractors(correct, candidates, random).slice(0, 3), correct],
+    random,
+  );
 
 const rankCandidates = (
   correct: string,
   candidates: readonly string[],
   score: (candidate: string) => number,
   random: () => number,
-) => {
-  const unique = [...new Set(candidates)].filter(
-    (candidate) => candidate !== correct,
-  );
-  return shuffle(unique, random)
+) =>
+  shuffleDistractors(correct, candidates, random)
     .map((candidate) => ({ candidate, score: score(candidate) }))
     .sort((left, right) => right.score - left.score);
-};
 
 const evolutionStage = (pokemon: PokemonKnowledge): number => {
   if (!pokemon.evolvesFrom && pokemon.evolvesTo.length > 0) return 0;
