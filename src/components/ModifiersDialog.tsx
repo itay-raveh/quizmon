@@ -9,7 +9,13 @@ import { SoundButton } from './SoundButton';
 import { TrainingSettings } from './TrainingSettings';
 import { getTrainingSettingsValidation } from './trainingSettingsModel';
 
-export type SettingsTab = 'training' | 'experience' | 'backup';
+const settingsTabLabels = {
+  training: 'Training',
+  experience: 'Experience',
+  backup: 'Backup',
+} as const;
+export type SettingsTab = keyof typeof settingsTabLabels;
+const settingsTabs = Object.keys(settingsTabLabels) as SettingsTab[];
 
 interface ModifiersDialogProps {
   catalog: PokemonCatalog;
@@ -20,16 +26,6 @@ interface ModifiersDialogProps {
   trainingChangesApplyNextGame?: boolean;
 }
 
-const settingsTabs: readonly SettingsTab[] = [
-  'training',
-  'experience',
-  'backup',
-];
-const settingsTabLabels: Record<SettingsTab, string> = {
-  training: 'Training',
-  experience: 'Experience',
-  backup: 'Backup',
-};
 export const ModifiersDialog = ({
   catalog,
   initialTab = 'training',
@@ -38,8 +34,8 @@ export const ModifiersDialog = ({
   onSave,
   trainingChangesApplyNextGame = false,
 }: ModifiersDialogProps) => {
-  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
-  const [draft, setDraft] = useState<Modifiers>(modifiers);
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [draft, setDraft] = useState(modifiers);
   const [submitted, setSubmitted] = useState(false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
   const { dialog, dialogProps, closeDialog } = useModalDialog(onClose, {
