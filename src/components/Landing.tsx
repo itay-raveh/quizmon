@@ -1,7 +1,8 @@
 import { LeagueTrophy } from './LeagueTrophy';
 import { ArrowRightIcon } from './icons';
 import { site } from '@/app/site';
-import { formatDailyDate, getLocalDate } from '@/game/daily';
+import { getLocalDate } from '@/game/daily';
+import { formatDailyDate } from '@/game/format';
 import type { GameResult } from '@/game/types';
 import { CatchCombo } from './CatchCombo';
 import { GameButton } from './GameButton';

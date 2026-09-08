@@ -303,20 +303,3 @@ export const getResponseTimeMilliseconds = (
     (total, answer) => total + (answer.responseMilliseconds ?? 0),
     0,
   );
-
-export const formatDuration = (elapsedSeconds: number): string => {
-  const hours = Math.floor(elapsedSeconds / 3600);
-  const minutes = Math.floor((elapsedSeconds % 3600) / 60);
-  const seconds = elapsedSeconds % 60;
-
-  return [hours, minutes, seconds]
-    .map((part) => String(part).padStart(2, '0'))
-    .join(':');
-};
-
-export const formatDurationMilliseconds = (
-  elapsedMilliseconds: number,
-): string =>
-  `${formatDuration(Math.floor(elapsedMilliseconds / 1000))}.${String(
-    Math.floor(elapsedMilliseconds % 1000),
-  ).padStart(3, '0')}`;

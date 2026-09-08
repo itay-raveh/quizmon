@@ -1,3 +1,4 @@
+import { formatDailyDate } from './format';
 import { isDailyDate } from './validation';
 import { site } from '../app/site';
 import {
@@ -20,13 +21,6 @@ import { createSeededRandom } from './random';
 const DAILY_CHALLENGE_VERSION = 11;
 const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
-const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
-  day: 'numeric',
-  month: 'short',
-  timeZone: 'UTC',
-  year: 'numeric',
-});
-
 export const getLocalDate = (date = new Date()): string =>
   [date.getFullYear(), date.getMonth() + 1, date.getDate()]
     .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
@@ -40,9 +34,6 @@ export const parseDailyDate = (search: string): string | null => {
 export const shouldAutoStartDaily = (search: string): boolean =>
   parseDailyDate(search) !== null &&
   new URLSearchParams(search).get('play') === '1';
-
-export const formatDailyDate = (date: string): string =>
-  dailyDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
 
 export const getDailyModifiers = (
   experience: ExperienceSettings,

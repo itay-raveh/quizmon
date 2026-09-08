@@ -6,7 +6,6 @@ import {
   calculateScore,
   defaultModifiers,
   filterPokemon,
-  formatDuration,
   getAnswerPoints,
   getScoreBreakdown,
   getQuestionCount,
@@ -19,7 +18,12 @@ import {
   normalizeModifiers,
   shuffle,
 } from '@/game/game';
-import { formatPokedexNumber, formatPokemonName } from '@/game/format';
+import {
+  formatDuration,
+  formatDurationMilliseconds,
+  formatPokedexNumber,
+  formatPokemonName,
+} from '@/game/format';
 import {
   coreQuestionTypes,
   questionRegistry,
@@ -900,6 +904,14 @@ describe('utilities', () => {
     expect(formatDuration(3661)).toBe('01:01:01');
     expect(formatPokemonName('special-attack')).toBe('Special Attack');
     expect(formatPokedexNumber(25)).toBe('No. 0025');
+  });
+
+  it.each([
+    [0, '00:00:00.000'],
+    [999.9, '00:00:00.999'],
+    [3_600_123.5, '01:00:00.123'],
+  ])('formats %d milliseconds without rounding up', (elapsed, expected) => {
+    expect(formatDurationMilliseconds(elapsed)).toBe(expected);
   });
 
   it('totals only active answer time', () => {

@@ -1,13 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { getModeLabel } from '@/game/daily';
+import { getAnswerPoints, getQuestionTitle } from '@/game/game';
+import { getLeagueStageLabel } from '@/game/league';
 import {
   formatDuration,
   formatDurationMilliseconds,
-  getAnswerPoints,
-  getQuestionTitle,
-} from '@/game/game';
-import { getLeagueStageLabel } from '@/game/league';
-import {
   formatPokedexNumber,
   formatPokemonName,
   formatPokemonTypes,

@@ -4,6 +4,13 @@ const scoreFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,
 });
 
+const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'UTC',
+  year: 'numeric',
+});
+
 export const formatPokemonName = (name: string): string =>
   name
     .split('-')
@@ -24,3 +31,23 @@ export const formatScore = (score: number): string =>
 
 export const formatGeneration = (generation: Generation): string =>
   `Generation ${generation}`;
+
+export const formatDailyDate = (date: string): string =>
+  dailyDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
+
+export const formatDuration = (elapsedSeconds: number): string => {
+  const hours = Math.floor(elapsedSeconds / 3600);
+  const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+  const seconds = elapsedSeconds % 60;
+
+  return [hours, minutes, seconds]
+    .map((part) => String(part).padStart(2, '0'))
+    .join(':');
+};
+
+export const formatDurationMilliseconds = (
+  elapsedMilliseconds: number,
+): string =>
+  `${formatDuration(Math.floor(elapsedMilliseconds / 1000))}.${String(
+    Math.floor(elapsedMilliseconds % 1000),
+  ).padStart(3, '0')}`;

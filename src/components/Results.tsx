@@ -1,14 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useGameSounds } from '@/audio/sound';
-import { formatDailyDate } from '@/game/daily';
+import { getCategoryLabel, getScoreBreakdown } from '@/game/game';
+import { getLeagueStage, isLeagueVictory } from '@/game/league';
 import {
+  formatDailyDate,
   formatDuration,
   formatDurationMilliseconds,
-  getCategoryLabel,
-  getScoreBreakdown,
-} from '@/game/game';
-import { getLeagueStage, isLeagueVictory } from '@/game/league';
-import { formatScore } from '@/game/format';
+  formatScore,
+} from '@/game/format';
 import { getHighScoreKey } from '@/game/storage';
 import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import type { GameMode, GameResult, Modifiers } from '@/game/types';
