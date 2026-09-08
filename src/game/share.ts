@@ -32,19 +32,11 @@ export const buildShareText = (content: ShareContent): string =>
 export const canShareResult = (): boolean =>
   typeof navigator.share === 'function';
 
-export const shareResult = async (
-  mode: GameMode,
-  result: GameResult,
-): Promise<'shared' | 'unsupported' | 'cancelled'> => {
-  if (!canShareResult()) return 'unsupported';
-
-  const content = buildShareContent(mode, result);
-
+export const shareContent = async (
+  data: ShareData,
+): Promise<'shared' | 'cancelled'> => {
   try {
-    await navigator.share({
-      text: buildShareText(content),
-      title: content.title,
-    });
+    await navigator.share(data);
     return 'shared';
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -52,6 +44,18 @@ export const shareResult = async (
     }
     throw error;
   }
+};
+
+export const shareResult = async (
+  mode: GameMode,
+  result: GameResult,
+): Promise<'shared' | 'unsupported' | 'cancelled'> => {
+  if (!canShareResult()) return 'unsupported';
+  const content = buildShareContent(mode, result);
+  return shareContent({
+    text: buildShareText(content),
+    title: content.title,
+  });
 };
 
 export const copyResult = (mode: GameMode, result: GameResult): Promise<void> =>

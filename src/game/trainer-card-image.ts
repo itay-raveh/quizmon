@@ -1,4 +1,5 @@
 import { site } from '@/app/site';
+import { shareContent } from './share';
 import { trainerViewLabels, type TrainerView } from './trainer';
 
 type TrainerArtifactView = Exclude<TrainerView, 'pokedex'> | 'hall';
@@ -114,17 +115,9 @@ export const shareTrainerArtifact = async (
     type: 'image/png',
   });
 
-  try {
-    await navigator.share({
-      files: [file],
-      text: `My ${site.name} ${details.label}\n${site.url}`,
-      title: `${site.name} ${details.label}`,
-    });
-    return 'shared';
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      return 'cancelled';
-    }
-    throw error;
-  }
+  return shareContent({
+    files: [file],
+    text: `My ${site.name} ${details.label}\n${site.url}`,
+    title: `${site.name} ${details.label}`,
+  });
 };

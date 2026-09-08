@@ -1,3 +1,4 @@
+import { shareTrainerArtifact } from '@/game/trainer-card-image';
 import {
   buildShareContent,
   buildShareText,
@@ -35,12 +36,33 @@ const result: GameResult = {
   scoreVersion: 2,
 };
 
+const mockNativeShare = () => {
+  const share = vi
+    .fn<(data: ShareData) => Promise<void>>()
+    .mockResolvedValue(undefined);
+  Object.defineProperties(navigator, {
+    share: { configurable: true, value: share },
+    canShare: { configurable: true, value: () => true },
+  });
+  return share;
+};
+
+const nativeShares = [
+  { name: 'result', run: () => shareResult({ kind: 'training' }, result) },
+  {
+    name: 'Trainer artifact',
+    run: () => shareTrainerArtifact(new Blob(['image']), 'front'),
+  },
+];
+
 describe('result sharing', () => {
   afterEach(() => {
-    Object.defineProperty(navigator, 'share', {
-      configurable: true,
-      value: undefined,
-    });
+    for (const property of ['share', 'canShare']) {
+      Object.defineProperty(navigator, property, {
+        configurable: true,
+        value: undefined,
+      });
+    }
   });
 
   it('includes the daily date and challenge URL without answer details', () => {
@@ -74,13 +96,7 @@ describe('result sharing', () => {
   });
 
   it('includes the dated challenge link in the native share payload', async () => {
-    const share = vi
-      .fn<(data: ShareData) => Promise<void>>()
-      .mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'share', {
-      configurable: true,
-      value: share,
-    });
+    const share = mockNativeShare();
 
     await expect(
       shareResult({ kind: 'daily', date: '2026-09-01' }, result),
@@ -102,5 +118,43 @@ describe('result sharing', () => {
     await expect(shareResult({ kind: 'training' }, result)).resolves.toBe(
       'unsupported',
     );
+  });
+  it.each(nativeShares)(
+    '$name sharing returns cancellation for a native AbortError',
+    async ({ run }) => {
+      mockNativeShare().mockRejectedValue(
+        new DOMException('Cancelled', 'AbortError'),
+      );
+      await expect(run()).resolves.toBe('cancelled');
+    },
+  );
+
+  it.each(nativeShares)(
+    '$name sharing preserves other failures for its caller',
+    async ({ run }) => {
+      const share = mockNativeShare();
+      for (const error of [
+        new DOMException('Denied', 'NotAllowedError'),
+        Object.assign(new Error('Failed'), { name: 'AbortError' }),
+      ]) {
+        share.mockRejectedValue(error);
+        await expect(run()).rejects.toBe(error);
+      }
+    },
+  );
+
+  it('shares the Trainer image with its existing filename and label', async () => {
+    const share = mockNativeShare();
+    await expect(
+      shareTrainerArtifact(new Blob(['image']), 'front'),
+    ).resolves.toBe('shared');
+    const data = share.mock.calls[0]?.[0];
+    expect(data?.files).toHaveLength(1);
+    expect(data?.files?.[0]).toMatchObject({
+      name: 'quizmon-trainer-card.png',
+      type: 'image/png',
+      size: 5,
+    });
+    expect(data?.title).toBe('Quizmon Trainer Card');
   });
 });
