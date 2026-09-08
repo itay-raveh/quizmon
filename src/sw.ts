@@ -9,6 +9,7 @@ import {
 } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
+import { contentPages } from './app/content-pages';
 import { spriteCachePlugin } from './sprite-cache';
 import { DAILY_REMINDER_MESSAGE } from './notifications/config';
 
@@ -44,12 +45,12 @@ cleanupOutdatedCaches();
 
 registerRoute(
   new NavigationRoute(async (options) => {
-    const contentPage = /^\/(about|privacy|terms)(?:\/|\.html)?$/.exec(
-      options.url.pathname,
-    )?.[1];
+    const contentPage = contentPages.find(({ path }) =>
+      [path, `${path}/`, `${path}.html`].includes(options.url.pathname),
+    );
     const isGame = /^\/(?:index\.html)?$/.test(options.url.pathname);
     const page = contentPage
-      ? `/${contentPage}.html`
+      ? `${contentPage.path}.html`
       : isGame
         ? '/index.html'
         : '/404.html';

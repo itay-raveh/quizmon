@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
-import { contentPages } from './content-pages.ts';
+import { contentPages } from '../src/app/content-pages.ts';
 
 export const markdownUrl = absoluteSiteUrl('/index.md');
 export const llmsUrl = absoluteSiteUrl('/llms.txt');

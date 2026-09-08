@@ -1,3 +1,4 @@
+import { contentPages } from '@/app/content-pages';
 import { site } from '@/app/site';
 
 export const Footer = () => {
@@ -30,15 +31,11 @@ export const Footer = () => {
           </span>
         </li>
         <li className="site-footer__group">
-          <span className="site-footer__credit">
-            <a href="/about">How to play</a>
-          </span>
-          <span className="site-footer__credit">
-            <a href="/privacy">Privacy</a>
-          </span>
-          <span className="site-footer__credit">
-            <a href="/terms">Terms</a>
-          </span>
+          {contentPages.map(({ path, label }) => (
+            <span className="site-footer__credit" key={path}>
+              <a href={path}>{label}</a>
+            </span>
+          ))}
         </li>
         <li className="site-footer__group site-footer__group--credits">
           <span className="site-footer__credit">
