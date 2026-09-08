@@ -22,7 +22,7 @@ export const getZonedDateParts = (
     second: '2-digit',
     timeZone,
     year: 'numeric',
-  }).formatToParts(new Date(timestamp));
+  }).formatToParts(timestamp);
   const values = Object.fromEntries(
     parts.map(({ type, value }) => [type, value]),
   );
