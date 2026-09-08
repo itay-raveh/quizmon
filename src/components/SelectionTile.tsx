@@ -1,10 +1,5 @@
-import {
-  useId,
-  type ChangeEvent,
-  type InputHTMLAttributes,
-  type ReactNode,
-} from 'react';
-import { useInteractionSound } from '@/audio/sound';
+import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
+import { useToggleSound } from '@/audio/sound';
 import { CheckIcon } from './icons';
 
 interface SelectionTileProps extends Omit<
@@ -26,13 +21,8 @@ export const SelectionTile = ({
   variant = 'question-type',
   ...props
 }: SelectionTileProps) => {
-  const playInteractionSound = useInteractionSound();
+  const handleChange = useToggleSound(onChange);
   const id = useId();
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    playInteractionSound(event.target.checked ? 'toggle-on' : 'toggle-off');
-    onChange?.(event);
-  };
 
   return (
     <label className={`selection-tile selection-tile--${variant}`}>

@@ -1,5 +1,5 @@
-import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
-import { useInteractionSound } from '@/audio/sound';
+import type { InputHTMLAttributes, ReactNode } from 'react';
+import { useToggleSound } from '@/audio/sound';
 import { CheckIcon } from './icons';
 
 interface CheckboxProps extends Omit<
@@ -17,12 +17,7 @@ export const Checkbox = ({
   onChange,
   ...props
 }: CheckboxProps) => {
-  const playInteractionSound = useInteractionSound();
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    playInteractionSound(event.target.checked ? 'toggle-on' : 'toggle-off');
-    onChange?.(event);
-  };
+  const handleChange = useToggleSound(onChange);
 
   return (
     <label className="checkbox">

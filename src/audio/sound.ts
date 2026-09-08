@@ -1,4 +1,9 @@
-import { createContext, useCallback, useContext } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  type ChangeEventHandler,
+} from 'react';
 
 export type InteractionSound = 'none' | 'tap' | 'toggle-off' | 'toggle-on';
 
@@ -43,4 +48,14 @@ export const useInteractionSound = () => {
     },
     [playTap, playToggleOff, playToggleOn],
   );
+};
+
+export const useToggleSound = (
+  onChange?: ChangeEventHandler<HTMLInputElement>,
+): ChangeEventHandler<HTMLInputElement> => {
+  const playInteractionSound = useInteractionSound();
+  return (event) => {
+    playInteractionSound(event.target.checked ? 'toggle-on' : 'toggle-off');
+    onChange?.(event);
+  };
 };
