@@ -3,11 +3,10 @@ import { readPlayerData, updatePlayerData } from './player-storage';
 import { defaultModifiers, normalizeModifiers } from './modifiers';
 import type { Modifiers } from './types';
 
-const readModifiers = (): Modifiers =>
-  normalizeModifiers(readPlayerData().settings ?? defaultModifiers);
-
 export const usePersistentModifiers = () => {
-  const [modifiers, setModifiersState] = useState<Modifiers>(readModifiers);
+  const [modifiers, setModifiersState] = useState(
+    () => readPlayerData().settings ?? normalizeModifiers(defaultModifiers),
+  );
 
   const setModifiers = useCallback((nextModifiers: Modifiers) => {
     const normalized = normalizeModifiers(nextModifiers);
