@@ -1,6 +1,4 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { format } from 'prettier';
 import {
   flattenChain,
@@ -338,11 +336,7 @@ export const updatePokemonData = async (
   };
 };
 
-const isEntrypoint =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
-
-if (isEntrypoint) {
+if (import.meta.main) {
   const { pokemonCount, typeCount } = await updatePokemonData(
     createCatalogClient(),
     { spritesOnly: process.argv.includes('--sprites-only') },
