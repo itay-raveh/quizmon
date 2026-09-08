@@ -78,6 +78,9 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   await expect(
     page.getByRole('heading', { name: 'League challenge', exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole('navigation', { name: 'League views' }),
+  ).toHaveCount(0);
   await page.getByRole('button', { name: 'Start League challenge' }).click();
 
   const questions = buildLeagueQuestions(
@@ -129,6 +132,30 @@ test('opens the unlocked League from home and keeps its retry lineup', async ({
   await expect(
     page.getByRole('heading', { name: getQuestionTitle(first) }),
   ).toBeVisible();
+});
+
+test('keeps Hall of Fame deep links on the challenge before a League clear', async ({
+  page,
+}) => {
+  await page.addInitScript(unlockLeague, false);
+  await page.goto('/?league=hall');
+  await expect(
+    page.getByRole('heading', { name: 'League challenge', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Hall of Fame', exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Hall of Fame', exact: true }),
+  ).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByRole('heading', { name: 'League challenge', exact: true }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Back to home' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Quizmon League', exact: true }),
+  ).not.toContainText('Hall of Fame');
 });
 
 test('shows Champion and Hall of Fame after clearing the League', async ({

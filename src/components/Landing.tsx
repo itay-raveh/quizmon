@@ -131,7 +131,9 @@ export const Landing = ({
             <LeagueTrophy locked={!leagueCompleted} />
             <span className="landing__league-copy">
               <strong>Quizmon League</strong>
-              <span>Challenge · Hall of Fame</span>
+              <span>
+                {leagueCompleted ? 'Challenge · Hall of Fame' : 'Challenge'}
+              </span>
             </span>
             <ArrowRightIcon aria-hidden="true" weight="bold" />
           </GameButton>

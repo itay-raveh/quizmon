@@ -44,9 +44,10 @@ export const LeagueDestination = ({
   onStart,
   onViewChange,
   onViewResults,
-  view,
+  view: requestedView,
   resultSaved = true,
 }: LeagueDestinationProps) => {
+  const view = completed ? requestedView : 'challenge';
   const heading = useRef<HTMLDivElement>(null);
   const artifact = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
@@ -104,22 +105,24 @@ export const LeagueDestination = ({
         <GameButton aria-label="Back to home" onClick={onBack} tone="quiet">
           <ArrowLeftIcon aria-hidden="true" weight="bold" />
         </GameButton>
-        <nav className="league-hall__navigation" aria-label="League views">
-          <GameButton
-            tone="quiet"
-            aria-pressed={view === 'challenge'}
-            onClick={() => onViewChange('challenge')}
-          >
-            Challenge
-          </GameButton>
-          <GameButton
-            tone="quiet"
-            aria-pressed={view === 'hall'}
-            onClick={() => onViewChange('hall')}
-          >
-            Hall of Fame
-          </GameButton>
-        </nav>
+        {completed && (
+          <nav className="league-hall__navigation" aria-label="League views">
+            <GameButton
+              tone="quiet"
+              aria-pressed={view === 'challenge'}
+              onClick={() => onViewChange('challenge')}
+            >
+              Challenge
+            </GameButton>
+            <GameButton
+              tone="quiet"
+              aria-pressed={view === 'hall'}
+              onClick={() => onViewChange('hall')}
+            >
+              Hall of Fame
+            </GameButton>
+          </nav>
+        )}
       </header>
       <div ref={heading}>
         {view === 'challenge' ? (
@@ -208,16 +211,11 @@ export const LeagueDestination = ({
         ) : (
           <div className="league-hall__empty">
             <h1 tabIndex={-1}>Hall of Fame</h1>
-            <LeagueTrophy locked={!completed} />
-            <h2>
-              {completed
-                ? 'Your Champion title is yours.'
-                : 'Your place awaits.'}
-            </h2>
+            <LeagueTrophy />
+            <h2>Your Champion title is yours.</h2>
             <p>
-              {completed
-                ? 'Your earlier victory’s lineup wasn’t recorded. Win a rematch to add your first shareable record.'
-                : 'Clear the League to record your victory and its Pokémon here.'}
+              Your earlier victory’s lineup wasn’t recorded. Win a rematch to
+              add your first shareable record.
             </p>
             <GameButton
               className="league-gold-button"
