@@ -177,7 +177,7 @@ it('hides installation inside a standalone app even if an event arrives', () => 
 const enable = vi.fn().mockResolvedValue(undefined);
 const recordDailyCompletion = vi.fn();
 const ReturnJourney = ({ results = true }: { results?: boolean }) => (
-  <DailyReminderContext.Provider
+  <DailyReminderContext
     value={{
       busy: false,
       disable: vi.fn(),
@@ -189,7 +189,7 @@ const ReturnJourney = ({ results = true }: { results?: boolean }) => (
   >
     {results ? <DailyReminderPrompt dailyDate="2026-09-08" /> : null}
     <InstallSetting />
-  </DailyReminderContext.Provider>
+  </DailyReminderContext>
 );
 
 it('offers one action after a Daily, remembers dismissal across reloads, and retains Settings help', () => {

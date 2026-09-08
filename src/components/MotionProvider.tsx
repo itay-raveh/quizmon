@@ -33,8 +33,8 @@ export const MotionProvider = ({
   }, [reducedMotion]);
 
   return (
-    <ReducedMotionContext.Provider value={reducedMotion}>
+    <ReducedMotionContext value={reducedMotion}>
       {children}
-    </ReducedMotionContext.Provider>
+    </ReducedMotionContext>
   );
 };

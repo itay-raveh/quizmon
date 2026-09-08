@@ -11,7 +11,7 @@ it.each([
   ({ Control }) => {
     const events: string[] = [];
     render(
-      <SoundContext.Provider
+      <SoundContext
         value={{
           ...silentSoundControls,
           playToggleOn: () => events.push('on'),
@@ -22,7 +22,7 @@ it.each([
           label="Sound choice"
           onChange={(event) => events.push(`change:${event.target.checked}`)}
         />
-      </SoundContext.Provider>,
+      </SoundContext>,
     );
 
     const input = screen.getByRole('checkbox', { name: 'Sound choice' });
@@ -38,11 +38,11 @@ it('plays one on sound when a radio tile is selected', () => {
   const playToggleOn = vi.fn();
   const playToggleOff = vi.fn();
   render(
-    <SoundContext.Provider
+    <SoundContext
       value={{ ...silentSoundControls, playToggleOn, playToggleOff }}
     >
       <SelectionTile inputType="radio" label="Radio choice" />
-    </SoundContext.Provider>,
+    </SoundContext>,
   );
   const input = screen.getByRole('radio', { name: 'Radio choice' });
   fireEvent.click(input);

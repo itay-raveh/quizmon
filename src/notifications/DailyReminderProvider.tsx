@@ -178,9 +178,5 @@ export const DailyReminderProvider = ({
     [busy, disable, enable, error, recordDailyCompletion, status],
   );
 
-  return (
-    <DailyReminderContext.Provider value={value}>
-      {children}
-    </DailyReminderContext.Provider>
-  );
+  return <DailyReminderContext value={value}>{children}</DailyReminderContext>;
 };

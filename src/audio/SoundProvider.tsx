@@ -196,7 +196,7 @@ export const SoundProvider = ({
   }, [prepareScoreCount, useSound, volume]);
 
   return (
-    <SoundContext.Provider value={volume > 0 ? controls : silentSoundControls}>
+    <SoundContext value={volume > 0 ? controls : silentSoundControls}>
       {children}
       {volume > 0 && useSound ? (
         <SoundEngine
@@ -206,6 +206,6 @@ export const SoundProvider = ({
           volume={volume}
         />
       ) : null}
-    </SoundContext.Provider>
+    </SoundContext>
   );
 };

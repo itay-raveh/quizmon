@@ -85,7 +85,7 @@ export const InstallProvider = ({ children }: { children: ReactNode }) => {
   }, [dismissOffer]);
 
   return (
-    <InstallContext.Provider
+    <InstallContext
       value={{
         status: installed
           ? 'installed'
@@ -103,6 +103,6 @@ export const InstallProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </InstallContext.Provider>
+    </InstallContext>
   );
 };
