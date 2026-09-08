@@ -22,7 +22,6 @@ export const TrainerTitleDialog = ({
   const { dialogProps, closeDialog } = useModalDialog(onClose, {
     dismissOnBackdrop: true,
   });
-  const progress = Math.min(title.current, title.goal);
 
   return (
     <dialog
@@ -53,27 +52,10 @@ export const TrainerTitleDialog = ({
                 : 'Title locked'}
           </strong>
           <p>{title.description}</p>
-          <div className="trainer-title-dialog__progress-label">
-            <span>
-              {title.tier === 3
-                ? 'Correct'
-                : `Next: ${trainerTierLabels[title.tier + 1]}`}
-            </span>
-            <strong>
-              {title.tier === 3
-                ? title.current.toLocaleString()
-                : `${progress.toLocaleString()} / ${title.goal.toLocaleString()}`}
-            </strong>
-          </div>
-          <progress
-            aria-label={`${title.label} progress`}
-            max={title.goal}
-            value={progress}
-          />
           <TrainerTierProgress
-            label={title.label}
-            milestones={title.milestones}
-            tier={title.tier}
+            progress={title}
+            completedLabel="Correct"
+            labelClassName="trainer-title-dialog__progress-label"
           />
           {title.equipped || title.earned ? (
             <GameButton

@@ -17,7 +17,6 @@ export const TrainerBadgeDialog = ({
   const { dialogProps, closeDialog } = useModalDialog(onClose, {
     dismissOnBackdrop: true,
   });
-  const progress = Math.min(badge.current, badge.goal);
 
   return (
     <dialog
@@ -46,27 +45,10 @@ export const TrainerBadgeDialog = ({
               : 'Badge locked'}
           </strong>
           <p>{badge.requirement}</p>
-          <div className="trainer-badge-dialog__progress-label">
-            <span>
-              {badge.tier === 3
-                ? 'Total'
-                : `Next: ${trainerTierLabels[badge.tier + 1]}`}
-            </span>
-            <strong>
-              {badge.tier === 3
-                ? badge.current.toLocaleString()
-                : `${progress.toLocaleString()} / ${badge.goal.toLocaleString()}`}
-            </strong>
-          </div>
-          <progress
-            aria-label={`${badge.label} progress`}
-            max={badge.goal}
-            value={progress}
-          />
           <TrainerTierProgress
-            label={badge.label}
-            milestones={badge.milestones}
-            tier={badge.tier}
+            progress={badge}
+            completedLabel="Total"
+            labelClassName="trainer-badge-dialog__progress-label"
           />
         </div>
       </div>
