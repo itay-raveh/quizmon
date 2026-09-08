@@ -714,9 +714,8 @@ describe('question transitions', () => {
         if (first === 'button') fireEvent.click(next);
         vi.advanceTimersByTime(1);
         fireEvent.click(next);
-        expect(onAnswer).toHaveBeenCalledOnce();
         expect(onAnswerRecorded).toHaveBeenCalledOnce();
-        expect(onAnswer).toHaveBeenCalledWith(
+        expect(onAnswer).toHaveBeenCalledExactlyOnceWith(
           onAnswerRecorded.mock.calls[0]?.[0],
         );
       } finally {

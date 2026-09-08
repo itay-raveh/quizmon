@@ -17,7 +17,7 @@ import {
 } from '@/notifications/daily-reminder-storage';
 
 describe('Daily Challenge', () => {
-  it('reproduces the complete Daily lineup for a given date', () => {
+  it('reproduces a complete Daily lineup and varies it by date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');
     const schedule = getDailyQuestionTypes('2026-09-01');
@@ -42,15 +42,8 @@ describe('Daily Challenge', () => {
           ),
         ),
     ).toBe(true);
-  });
-
-  it('changes both the question-type schedule and questions on a different date', () => {
-    expect(getDailyQuestionTypes('2026-09-01')).not.toEqual(
-      getDailyQuestionTypes('2026-09-02'),
-    );
-    expect(buildDailyQuestions(catalog, '2026-09-01')).not.toEqual(
-      buildDailyQuestions(catalog, '2026-09-02'),
-    );
+    expect(schedule).not.toEqual(getDailyQuestionTypes('2026-09-02'));
+    expect(first).not.toEqual(buildDailyQuestions(catalog, '2026-09-02'));
   });
 
   it('allows question types to repeat before the Champion finale', () => {

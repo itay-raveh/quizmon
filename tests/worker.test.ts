@@ -155,27 +155,6 @@ describe('analytics endpoint', () => {
     vi.unstubAllGlobals();
   });
 
-  it('records one aggregate event without identifying data', async () => {
-    const { env, writeDataPoint } = makeEnv();
-    const response = await worker.fetch(
-      new Request('https://quizmon.raveh.dev/api/events', {
-        body: JSON.stringify(validEvent),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      }),
-      env,
-    );
-
-    expect(response.status).toBe(204);
-    expect(response.headers.get('Cache-Control')).toBe('no-store');
-    expect(writeDataPoint).toHaveBeenCalledOnce();
-    expect(writeDataPoint).toHaveBeenCalledWith({
-      blobs: ['daily'],
-      doubles: [5, 4, 12_345, 42, 3, 2],
-      indexes: ['game_completed'],
-    });
-  });
-
   it.each([
     ['a page view', { type: 'page_view' }, { indexes: ['page_view'] }],
     [
@@ -187,7 +166,25 @@ describe('analytics endpoint', () => {
         indexes: ['game_started'],
       },
     ],
-  ])('records %s', async (_name, event, dataPoint) => {
+    [
+      'a Daily completion',
+      validEvent,
+      {
+        blobs: ['daily'],
+        doubles: [5, 4, 12_345, 42, 3, 2],
+        indexes: ['game_completed'],
+      },
+    ],
+    [
+      'a League completion',
+      { ...validEvent, mode: 'league' },
+      {
+        blobs: ['league'],
+        doubles: [5, 4, 12_345, 42, 3, 2],
+        indexes: ['game_completed'],
+      },
+    ],
+  ])('records %s without identifying data', async (_name, event, dataPoint) => {
     const { env, writeDataPoint } = makeEnv();
     const response = await worker.fetch(
       new Request('https://quizmon.raveh.dev/api/events', {
@@ -199,24 +196,8 @@ describe('analytics endpoint', () => {
     );
 
     expect(response.status).toBe(204);
-    expect(writeDataPoint).toHaveBeenCalledWith(dataPoint);
-  });
-
-  it('accepts Quizmon League completions', async () => {
-    const { env, writeDataPoint } = makeEnv();
-    const response = await worker.fetch(
-      new Request('https://quizmon.raveh.dev/api/events', {
-        body: JSON.stringify({ ...validEvent, mode: 'league' }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      }),
-      env,
-    );
-
-    expect(response.status).toBe(204);
-    expect(writeDataPoint).toHaveBeenCalledWith(
-      expect.objectContaining({ blobs: ['league'] }),
-    );
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(writeDataPoint).toHaveBeenCalledExactlyOnceWith(dataPoint);
   });
 
   it.each([
