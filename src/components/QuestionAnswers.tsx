@@ -47,6 +47,7 @@ export const QuestionAnswers = ({
   );
   const revealsOptionTypes = answered && reservesOptionTypes;
   const multiSelect = question.answer.interaction === 'multi-select';
+  const concealed = Boolean(question.concealOptionLabels && !answered);
   const showdownStat =
     question.visual?.kind === 'stat-showdown'
       ? question.visual.stat
@@ -76,7 +77,6 @@ export const QuestionAnswers = ({
         const dexNumber = question.optionGenerations
           ? undefined
           : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
-        const concealed = Boolean(question.concealOptionLabels && !answered);
         const optionSelected = selected.has(option);
         const optionCorrect = correct.has(option);
         const resultMarker =
@@ -142,11 +142,7 @@ export const QuestionAnswers = ({
                 : `${formatPokemonName(option)}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={String(index + 1)}
-            aria-pressed={
-              question.answer.interaction === 'single-choice'
-                ? undefined
-                : optionSelected
-            }
+            aria-pressed={multiSelect ? optionSelected : undefined}
             className={`${optionClassName(option)} ${visual ? 'answer--pokemon' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             disabled={answered}
             key={option}

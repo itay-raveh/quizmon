@@ -33,5 +33,5 @@ export const AnimatedScore = ({
     return () => window.cancelAnimationFrame(frame);
   }, [duration, reducedMotion, value]);
 
-  return <>{format(reducedMotion ? value : displayValue)}</>;
+  return format(reducedMotion ? value : displayValue);
 };

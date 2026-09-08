@@ -11,14 +11,14 @@ export const QuestionInstruction = ({
   question: QuestionData;
 }) => {
   const kind = question.visual?.kind;
-  if (kind === 'type-check') return <>Which type does this Pokémon have?</>;
-  if (kind === 'type-twins') return <>Which Pokémon has the same two types?</>;
-  if (kind === 'evolution-link') return <>Complete the evolution chain</>;
+  if (kind === 'type-check') return 'Which type does this Pokémon have?';
+  if (kind === 'type-twins') return 'Which Pokémon has the same two types?';
+  if (kind === 'evolution-link') return 'Complete the evolution chain';
   if (kind === 'evolution-shift')
-    return <>Which type does it gain on evolution?</>;
-  if (kind === 'type-roundup') return <>Select every Pokémon with this type</>;
+    return 'Which type does it gain on evolution?';
+  if (kind === 'type-roundup') return 'Select every Pokémon with this type';
   if (kind === 'generation-roundup')
-    return <>Select every Pokémon introduced in this generation</>;
+    return 'Select every Pokémon introduced in this generation';
   if (question.visual?.kind === 'type-matchup')
     return (
       <>
@@ -40,13 +40,12 @@ export const QuestionInstruction = ({
       </>
     );
   if (question.questionType === 'ability-check')
-    return <>Which ability can this Pokémon have?</>;
+    return 'Which ability can this Pokémon have?';
   if (question.questionType === 'move-check')
-    return <>Which move can it learn by leveling up?</>;
+    return 'Which move can it learn by leveling up?';
   const { prompt } = question;
-  return prompt.kind === 'text' ? (
-    <>{prompt.text}</>
-  ) : (
+  if (prompt.kind === 'text') return prompt.text;
+  return (
     <>
       {prompt.before}
       <strong>{formatPokemonName(prompt.name)}</strong>{' '}
