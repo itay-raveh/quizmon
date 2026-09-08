@@ -1,7 +1,7 @@
 import { targetRepetition, optionSetRepetition } from './repetition';
 import { formatGeneration, formatPokemonName } from '../format';
 import { pick, shuffle } from '../random';
-import { generations } from '../types';
+import { generations, type Generation } from '../types';
 import {
   chooseTargets,
   pickFreshTarget,
@@ -15,11 +15,16 @@ import {
 export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const correctCount = context.random() < 0.5 ? 2 : 3;
+  const generationCounts = new Map<Generation, number>();
+  for (const { pokemon } of pool) {
+    generationCounts.set(
+      pokemon.generation,
+      (generationCounts.get(pokemon.generation) ?? 0) + 1,
+    );
+  }
   const generation = pick(
     generations.filter((generation) => {
-      const matchingCount = pool.filter(
-        ({ pokemon }) => pokemon.generation === generation,
-      ).length;
+      const matchingCount = generationCounts.get(generation) ?? 0;
       return (
         matchingCount >= correctCount &&
         pool.length - matchingCount >= 4 - correctCount

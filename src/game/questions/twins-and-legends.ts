@@ -55,8 +55,9 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   });
   const target = pickFreshTarget(context, targets);
   if (!target?.pokemon.sprite) return undefined;
+  const targetFamily = families.get(target.name);
   const candidates = pool.filter(
-    ({ name }) => families.get(name) !== families.get(target.name),
+    ({ name }) => families.get(name) !== targetFamily,
   );
   const correct = pick(
     candidates.filter(({ pokemon }) =>
