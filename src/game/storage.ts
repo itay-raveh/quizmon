@@ -13,7 +13,6 @@ import {
 } from './modifiers';
 import { getLocalDate } from './daily';
 import { isLeagueVictory } from './league';
-import { createRoundSeed } from './random';
 import { isChoice } from './validation';
 import {
   questionCategories,
@@ -189,14 +188,6 @@ export const getTrainerStats = (
 export const readTrainerStats = (): TrainerStats => {
   const data = readPlayerData();
   return getTrainerStats(data.results, data.pokedex);
-};
-
-export const createLeagueChallengeSeed = (): string => {
-  const results = readResults();
-  const seed = createRoundSeed();
-  results.league.seed = seed;
-  writeResults(results);
-  return seed;
 };
 
 export const saveResult = (

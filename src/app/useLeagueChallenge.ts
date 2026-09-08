@@ -1,7 +1,8 @@
-import { getLeagueLineup } from '@/game/question-history-storage';
+import { buildLeagueQuestions } from '@/game/game';
+import { readPlayerSave } from '@/game/player-storage';
+import { createRoundSeed } from '@/game/random';
 import { useCallback } from 'react';
 import { getLeagueModifiers } from '@/game/league';
-import { createLeagueChallengeSeed } from '@/game/storage';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 import type { GameSession, StartGame } from './session';
 
@@ -20,10 +21,15 @@ export const useLeagueChallenge = ({
 }: LeagueChallengeOptions) => {
   const start = useCallback(() => {
     if (!catalog) return;
-    const seed = createLeagueChallengeSeed();
+    const seed = createRoundSeed();
     const leagueModifiers = getLeagueModifiers(modifiers);
     startGame(
-      getLeagueLineup(catalog, seed, leagueModifiers),
+      buildLeagueQuestions(
+        catalog,
+        seed,
+        leagueModifiers,
+        readPlayerSave().data.questionHistory,
+      ),
       leagueModifiers,
       { kind: 'league' },
       seed,

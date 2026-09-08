@@ -1,7 +1,6 @@
 import { readPlayerSave, updatePlayerData } from './player-storage';
 import { rememberShownQuestion } from './question-history';
-import { buildLeagueQuestions } from './game';
-import type { ExperienceSettings, PokemonCatalog, QuestionData } from './types';
+import type { QuestionData } from './types';
 
 export const registerShownQuestion = async (
   question: QuestionData,
@@ -30,29 +29,4 @@ export const registerShownQuestion = async (
   return navigator.locks
     ? navigator.locks.request('quizmon.question-history', record)
     : record();
-};
-
-export const getLeagueLineup = (
-  catalog: PokemonCatalog,
-  seed: string,
-  experience: ExperienceSettings,
-): QuestionData[] => {
-  const { data } = readPlayerSave();
-  const saved = data.leagueLineup;
-  if (
-    saved?.seed === seed &&
-    saved.questions.length > 0 &&
-    saved.contentVersion === catalog.contentVersion
-  )
-    return saved.questions;
-  const questions = buildLeagueQuestions(
-    catalog,
-    seed,
-    experience,
-    data.questionHistory,
-  );
-  updatePlayerData({
-    leagueLineup: { seed, contentVersion: catalog.contentVersion, questions },
-  });
-  return questions;
 };

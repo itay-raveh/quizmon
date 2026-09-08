@@ -1,6 +1,5 @@
 import {
   canPersistResults,
-  createLeagueChallengeSeed,
   getHighScoreKey,
   readDailyResult,
   readDailyStreak,
@@ -349,8 +348,7 @@ describe('saved results', () => {
     expect(readTrainerStats().quickAttackCompleted).toBe(true);
   });
 
-  it('creates fresh League attempts and awards completion only for a perfect clear', () => {
-    const seed = createLeagueChallengeSeed();
+  it('awards League completion only for a perfect clear', () => {
     const answers = Array.from({ length: 15 }, (_, index) => ({
       ...correctAnswer,
       pokemonName: `league-${index}`,
@@ -371,7 +369,6 @@ describe('saved results', () => {
       },
       defaultModifiers,
     );
-    expect(createLeagueChallengeSeed()).not.toBe(seed);
     expect(readTrainerStats().leagueCompleted).toBe(false);
 
     saveResult(
@@ -388,7 +385,6 @@ describe('saved results', () => {
 
     saveResult({ kind: 'league' }, leagueResult, defaultModifiers);
     expect(readTrainerStats().leagueCompleted).toBe(true);
-    expect(createLeagueChallengeSeed()).not.toBe(seed);
   });
 
   it('reports when browser storage cannot persist a result', () => {

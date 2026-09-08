@@ -1,4 +1,8 @@
-import { buildDailyQuestions, buildQuestions } from '@/game/game';
+import {
+  buildDailyQuestions,
+  buildLeagueQuestions,
+  buildQuestions,
+} from '@/game/game';
 import { defaultModifiers } from '@/game/modifiers';
 import { createSeededRandom } from '@/game/random';
 import {
@@ -11,10 +15,7 @@ import {
   rememberShownQuestion,
   isQuestionHistory,
 } from '@/game/question-history';
-import {
-  getLeagueLineup,
-  registerShownQuestion,
-} from '@/game/question-history-storage';
+import { registerShownQuestion } from '@/game/question-history-storage';
 import { readPlayerSave, updatePlayerData } from '@/game/player-storage';
 import { createBackup, parseBackup, restoreBackup } from '@/game/backup';
 import { readActiveGame, writeActiveGame } from '@/game/active-game';
@@ -221,14 +222,21 @@ it('round-trips history and frozen lineups through saves and backup restore', as
     10,
   );
   await registerShownQuestion(questions[0]!, 'saved-run', 0, null);
-  const league = getLeagueLineup(catalog, 'league-history', defaultModifiers);
+  const leagueLineup = {
+    seed: 'league-history',
+    contentVersion: catalog.contentVersion,
+    questions: buildLeagueQuestions(
+      catalog,
+      'league-history',
+      defaultModifiers,
+    ),
+  };
+  updatePlayerData({ leagueLineup });
   const backup = parseBackup(JSON.stringify(createBackup()));
   localStorage.clear();
   restoreBackup(backup);
   expect(readPlayerSave().data.questionHistory.sequence).toBe(1);
-  expect(getLeagueLineup(catalog, 'league-history', defaultModifiers)).toEqual(
-    league,
-  );
+  expect(readPlayerSave().data.leagueLineup).toEqual(leagueLineup);
   expect(await registerShownQuestion(questions[1]!, 'stale-tab', 1, null)).toBe(
     false,
   );
@@ -248,19 +256,6 @@ it('round-trips history and frozen lineups through saves and backup restore', as
   });
   expect(readActiveGame()?.questions).toEqual(questions);
   expect(readActiveGame()?.version).toBe(2);
-});
-
-it('preserves failed League retries after other games and gives a new run fresh content', () => {
-  const original = getLeagueLineup(catalog, 'retry-seed', defaultModifiers);
-  updatePlayerData({
-    questionHistory: original.reduce(rememberQuestion, emptyQuestionHistory()),
-  });
-  expect(getLeagueLineup(catalog, 'retry-seed', defaultModifiers)).toEqual(
-    original,
-  );
-  expect(getLeagueLineup(catalog, 'new-seed', defaultModifiers)).not.toEqual(
-    original,
-  );
 });
 
 it('keeps Daily independent of personal history and rotates Champion targets across dates', () => {
