@@ -1,4 +1,5 @@
 import catalogData from '@/game/data/pokemon.json';
+import { filterPokemon } from '@/game/modifiers';
 import { createSeededRandom } from '@/game/random';
 import type { QuestionContext } from '@/game/questions/shared';
 import {
@@ -14,9 +15,7 @@ export const createQuestionContext = (
   selected: readonly Generation[] = generations,
 ): QuestionContext => ({
   catalog,
-  pool: Object.entries(catalog.pokemon)
-    .filter(([, pokemon]) => selected.includes(pokemon.generation))
-    .map(([name, pokemon]) => ({ name, pokemon })),
+  pool: filterPokemon(catalog, { generations: [...selected] }),
   random: createSeededRandom(seed),
   used: new Set<string>(),
 });

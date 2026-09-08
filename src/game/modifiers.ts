@@ -88,7 +88,7 @@ export const normalizeModifiers = (candidate: unknown): Modifiers => {
 
 export const filterPokemon = (
   catalog: PokemonCatalog,
-  modifiers: Modifiers,
+  modifiers: Pick<Modifiers, 'generations'>,
 ): Candidate[] =>
   Object.entries(catalog.pokemon)
     .filter(([, pokemon]) => modifiers.generations.includes(pokemon.generation))
