@@ -225,11 +225,11 @@
   grid-template-columns: 6rem minmax(0, 1fr) 1.2rem;
   align-items: center;
   gap: 0.4rem;
-  --hall-gold: #f4d578;
+  --hall-gold: var(--metal-gold);
   color: #fff5d6;
   background: #102f50;
   box-shadow:
-    inset 0 0 0 2px #f4d578,
+    inset 0 0 0 2px var(--metal-gold),
     0 0.2rem 0 var(--navy-shadow);
   text-align: left;
 }
@@ -271,7 +271,7 @@
 }
 
 .landing__league-copy strong {
-  color: #f4d578;
+  color: var(--metal-gold);
   font-size: var(--text-headline);
   line-height: 1.1;
 }

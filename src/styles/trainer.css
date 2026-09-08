@@ -208,11 +208,11 @@
 
 .trainer-passport--bronze,
 .trainer-card--bronze {
-  --trainer-card-step: #ed9147;
-  --trainer-rank-accent: #ed9147;
-  --trainer-rank-accent-strong: #c86a27;
+  --trainer-card-step: var(--metal-bronze);
+  --trainer-rank-accent: var(--metal-bronze);
+  --trainer-rank-accent-strong: var(--metal-bronze-edge);
   --trainer-rank-ink: var(--navy);
-  --trainer-rank-surface: #ffe5cc;
+  --trainer-rank-surface: var(--metal-bronze-light);
   --trainer-sheen-opacity: 0.2;
 }
 
@@ -228,11 +228,11 @@
 
 .trainer-passport--gold,
 .trainer-card--gold {
-  --trainer-card-step: #f0c51f;
-  --trainer-rank-accent: #f0c51f;
-  --trainer-rank-accent-strong: #c58c00;
+  --trainer-card-step: var(--metal-gold);
+  --trainer-rank-accent: var(--metal-gold);
+  --trainer-rank-accent-strong: var(--metal-gold-edge);
   --trainer-rank-ink: var(--navy);
-  --trainer-rank-surface: #fff0a0;
+  --trainer-rank-surface: var(--metal-gold-light);
   --trainer-sheen-opacity: 0.56;
 }
 
@@ -263,22 +263,22 @@
 }
 
 .trainer-card--champion {
-  border-color: #9b6714;
+  border-color: var(--metal-gold-edge);
   box-shadow:
-    inset 0 0 0 2px #fff9d7,
-    inset 0 0 0 5px #d8a53f;
+    inset 0 0 0 2px var(--metal-gold-light),
+    inset 0 0 0 5px var(--metal-gold);
   background: linear-gradient(
     120deg,
-    #fff6c9 0%,
-    #ffe79b 46%,
-    #f5d773 77%,
-    #fff2b9 100%
+    var(--metal-gold-light) 0%,
+    #ffe27a 46%,
+    var(--metal-gold) 77%,
+    var(--metal-gold-light) 100%
   );
 }
 
 .trainer-card--champion .trainer-card__watermark {
-  border-color: #d9ad43;
-  background: #f1cd67;
+  border-color: var(--metal-gold-edge);
+  background: var(--metal-gold);
 }
 
 .trainer-card__polish {
@@ -667,9 +667,9 @@
 }
 
 [data-tier='1'] {
-  --tier-metal: #ed9147;
-  --tier-edge: #c86a27;
-  --tier-light: #ffe5cc;
+  --tier-metal: var(--metal-bronze);
+  --tier-edge: var(--metal-bronze-edge);
+  --tier-light: var(--metal-bronze-light);
 }
 
 [data-tier='2'] {
@@ -679,9 +679,9 @@
 }
 
 [data-tier='3'] {
-  --tier-metal: #f0c51f;
-  --tier-edge: #c58c00;
-  --tier-light: #fff0a0;
+  --tier-metal: var(--metal-gold);
+  --tier-edge: var(--metal-gold-edge);
+  --tier-light: var(--metal-gold-light);
 }
 
 .trainer-badge {

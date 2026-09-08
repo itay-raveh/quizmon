@@ -1,6 +1,6 @@
 .league-hall,
 .hall-record {
-  --hall-gold: #f4d578;
+  --hall-gold: var(--metal-gold);
   --hall-ink: #fff5d6;
   --hall-muted: #bdcfe0;
   --hall-night: #102f50;

@@ -10,9 +10,9 @@ colors:
   soft-sky: '#b7e1fa'
   depth-edge: '#eed23e'
   accent-surface: '#feec99'
-  trainer-bronze: '#ed9147'
+  trainer-bronze: '#c7a181'
   trainer-silver: '#b8cbd2'
-  trainer-gold: '#f0c51f'
+  trainer-gold: '#ffca28'
   badge-recess: '#254d67'
   badge-recess-hover: '#2c5976'
   game-surface: '#fffbea'
@@ -190,7 +190,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 - **Butter Depth Edge** (`colors.depth-edge`): The slim lower edge under controls and surfaces, plus progress fill. It signals game-object depth rather than decoration.
 - **Daily Cream** (`colors.accent-surface`): The daily challenge strip, dialog header and footer, and score band.
 - **Soft Sky** (`colors.soft-sky`): Quiet progress tracks and loading details.
-- **Trainer Bronze, Silver, and Gold** (`colors.trainer-bronze`, `colors.trainer-silver`, `colors.trainer-gold`): Automatic Trainer Card rank accents. They progress from the classic cobalt Youngster card through Ace, Veteran, and League Challenger or Champion finishes.
+- **Trainer Bronze, Silver, and Gold** (`colors.trainer-bronze`, `colors.trainer-silver`, `colors.trainer-gold`): Shared achievement metals across badges, titles, Trainer Cards, and the League. Bronze uses muted brown-copper with soft cream highlights. Gold uses vivid amber, deep ochre edges, and pale highlights; the Champion card carries the same gold through its existing metallic finish. Automatic Trainer Card rank accents. They progress from the classic cobalt Youngster card through Ace, Veteran, and League Challenger or Champion finishes.
 
 ### Tertiary
 
