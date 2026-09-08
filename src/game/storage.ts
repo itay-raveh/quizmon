@@ -10,7 +10,7 @@ import {
   defaultModifiers,
   isLeagueTraining,
   TRAINING_QUESTION_COUNT,
-} from './game';
+} from './modifiers';
 import { getLocalDate } from './daily';
 import { isLeagueVictory } from './league';
 import { createRoundSeed } from './random';

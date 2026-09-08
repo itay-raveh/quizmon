@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { defaultModifiers, buildQuestions } from '../src/game/game';
+import { buildQuestions } from '../src/game/game';
+import { defaultModifiers } from '../src/game/modifiers';
 import { emptyPlayerData } from '../src/game/player-data';
 import type { PlayerSave } from '../src/game/player-data';
 import { createSeededRandom } from '../src/game/random';

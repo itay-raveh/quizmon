@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
-import { buildQuestions, getTrainingModifiers } from '@/game/game';
+import { buildQuestions } from '@/game/game';
+import { getTrainingModifiers } from '@/game/modifiers';
 import { createRoundSeed, createSeededRandom } from '@/game/random';
 import {
   markGenerationPromptAnswered,

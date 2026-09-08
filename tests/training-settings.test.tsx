@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { catalog } from './fixtures/catalog';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import type { Modifiers } from '@/game/types';
 import { TrainingSettings } from '@/components/TrainingSettings';
 import { getTrainingSettingsValidation } from '@/components/trainingSettingsModel';

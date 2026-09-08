@@ -3,7 +3,7 @@ import {
   readActiveGame,
   writeActiveGame,
 } from '@/game/active-game';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 
 const snapshot = {
   answers: [

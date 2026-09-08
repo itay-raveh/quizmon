@@ -1,8 +1,5 @@
-import {
-  buildQuestionSequence,
-  defaultModifiers,
-  getExperienceSettings,
-} from './game';
+import { buildQuestionSequence } from './game';
+import { defaultModifiers, getExperienceSettings } from './modifiers';
 import { createSeededRandom, shuffle } from './random';
 import {
   generations,

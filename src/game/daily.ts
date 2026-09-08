@@ -1,11 +1,8 @@
 import { formatDailyDate } from './format';
 import { isDailyDate } from './validation';
 import { site } from '../app/site';
-import {
-  buildQuestionSequence,
-  defaultModifiers,
-  getExperienceSettings,
-} from './game';
+import { buildQuestionSequence } from './game';
+import { defaultModifiers, getExperienceSettings } from './modifiers';
 import {
   generations,
   type GameMode,

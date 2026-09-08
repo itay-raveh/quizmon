@@ -4,7 +4,7 @@ import {
   removeStoredValue,
   writeStoredJson,
 } from './browser-storage';
-import { normalizeModifiers } from './game';
+import { normalizeModifiers } from './modifiers';
 import { questionTypes } from './questions/definitions';
 import type { AnswerResult, GameMode, Modifiers } from './types';
 import { generations, questionCategories, trainingModes } from './types';

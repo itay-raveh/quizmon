@@ -4,17 +4,19 @@ import {
   buildQuestions,
   buildQuestionSequence,
   calculateScore,
-  defaultModifiers,
-  filterPokemon,
   getAnswerPoints,
   getScoreBreakdown,
   getQuestionCount,
   getQuestionTitle,
   getResponseTime,
   getSpeedBonusPoints,
+} from '@/game/game';
+import {
+  defaultModifiers,
+  filterPokemon,
   getTrainingModifiers,
   normalizeModifiers,
-} from '@/game/game';
+} from '@/game/modifiers';
 import {
   formatDuration,
   formatDurationMilliseconds,

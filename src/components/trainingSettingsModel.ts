@@ -1,4 +1,4 @@
-import { filterPokemon, isLeagueTraining } from '@/game/game';
+import { filterPokemon, isLeagueTraining } from '@/game/modifiers';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 
 export const getTrainingSettingsValidation = (

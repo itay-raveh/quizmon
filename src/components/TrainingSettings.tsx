@@ -1,6 +1,6 @@
 import { GenerationLabel } from './GenerationLabel';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import { isLeagueTraining } from '@/game/game';
+import { isLeagueTraining } from '@/game/modifiers';
 import {
   generations,
   type Generation,

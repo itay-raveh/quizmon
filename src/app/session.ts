@@ -1,4 +1,4 @@
-import { getExperienceSettings } from '@/game/game';
+import { getExperienceSettings } from '@/game/modifiers';
 import type { LeagueVictoryRecord } from '@/game/hall-of-fame';
 import type {
   AnswerResult,

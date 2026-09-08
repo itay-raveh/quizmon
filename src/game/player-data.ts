@@ -1,6 +1,6 @@
 import type { LeagueVictoryRecord } from './hall-of-fame';
 import { isLeagueVictory } from './league';
-import { normalizeModifiers } from './game';
+import { normalizeModifiers } from './modifiers';
 import {
   normalizeTrainerProfile,
   TRAINER_NAME_MAX_LENGTH,

@@ -7,7 +7,7 @@ import {
   restoreBackup,
 } from '@/game/backup';
 import { readActiveGame, writeActiveGame } from '@/game/active-game';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import { createTrainerProfile } from '@/game/profile-data';
 import {
   canPersistPlayerData,

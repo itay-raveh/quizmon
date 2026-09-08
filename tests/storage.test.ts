@@ -7,7 +7,7 @@ import {
   readTrainerStats,
   saveResult,
 } from '@/game/storage';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import type { AnswerResult, GameResult } from '@/game/types';
 
 const correctAnswer: AnswerResult = {

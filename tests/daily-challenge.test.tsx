@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { useDailyChallenge } from '@/app/useDailyChallenge';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import { readDailyResult, saveResult } from '@/game/storage';
 import type { GameResult } from '@/game/types';
 

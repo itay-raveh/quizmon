@@ -1,5 +1,5 @@
 import { gameSessionReducer, initialGameSession } from '@/app/session';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import type { AnswerResult, GameResult, QuestionData } from '@/game/types';
 
 const question: QuestionData = {

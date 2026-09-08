@@ -1,5 +1,5 @@
 import { isRecord } from './validation';
-import { normalizeModifiers } from './game';
+import { normalizeModifiers } from './modifiers';
 import { normalizeTrainerProfile } from './profile-data';
 import { normalizeResults } from './results-data';
 import {

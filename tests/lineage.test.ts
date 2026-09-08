@@ -1,10 +1,7 @@
 import { catalog, createQuestionContext } from './fixtures/catalog';
 import { getTrainingSettingsValidation } from '@/components/trainingSettingsModel';
-import {
-  buildQuestions,
-  defaultModifiers,
-  getTrainingModifiers,
-} from '@/game/game';
+import { buildQuestions } from '@/game/game';
+import { defaultModifiers, getTrainingModifiers } from '@/game/modifiers';
 import { buildQuestionType } from '@/game/questions/registry';
 import { createSeededRandom } from '@/game/random';
 import { generations, type Generation } from '@/game/types';

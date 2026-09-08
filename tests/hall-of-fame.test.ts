@@ -1,6 +1,6 @@
 import { catalog } from './fixtures/catalog';
 import { createBackup, parseBackup, restoreBackup } from '@/game/backup';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import { createLeagueVictoryRecord } from '@/game/hall-of-fame';
 import { buildLeagueQuestions } from '@/game/league';
 import { emptyPlayerData, parsePlayerSave } from '@/game/player-data';

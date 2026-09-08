@@ -1,53 +1,15 @@
+import { filterPokemon, TRAINING_QUESTION_COUNT } from './modifiers';
 import { questionLabels } from './question-labels';
 import {
-  generations,
-  answerFlows,
-  timerDisplays,
-  trainingModes,
-  type ExperienceSettings,
   type SavedAnswerResult,
   type Modifiers,
   type PokemonCatalog,
   type QuestionCategory,
   type QuestionData,
 } from './types';
-import { coreQuestionTypes, questionTypes } from './questions/definitions';
 import { buildQuestionType } from './questions/registry';
-import type { Candidate, QuestionContext } from './questions/shared';
+import type { QuestionContext } from './questions/shared';
 import { shuffle } from './random';
-import { isChoice } from './validation';
-
-export const defaultModifiers: Modifiers = {
-  answerFlow: 'manual',
-  generations: [...generations],
-  questionTypes: [...questionTypes],
-  reduceMotion: false,
-  soundVolume: 1,
-  timerDisplay: 'seconds',
-  trainingMode: 'league',
-};
-
-export const getExperienceSettings = (
-  settings: ExperienceSettings,
-): ExperienceSettings => ({
-  answerFlow: settings.answerFlow,
-  reduceMotion: settings.reduceMotion,
-  soundVolume: settings.soundVolume,
-  timerDisplay: settings.timerDisplay,
-});
-
-export const TRAINING_QUESTION_COUNT = 10;
-
-export const isLeagueTraining = (
-  modifiers: Pick<Modifiers, 'trainingMode'>,
-): boolean => modifiers.trainingMode === 'league';
-
-export const getTrainingModifiers = (modifiers: Modifiers): Modifiers => ({
-  ...modifiers,
-  questionTypes: isLeagueTraining(modifiers)
-    ? [...coreQuestionTypes]
-    : [...modifiers.questionTypes],
-});
 
 const categoryLabels: Record<QuestionCategory, string> = {
   ability: questionLabels['ability-check'],
@@ -60,59 +22,6 @@ const categoryLabels: Record<QuestionCategory, string> = {
   stat: questionLabels['stat-showdown'],
   type: questionLabels['type-check'],
 };
-
-export const normalizeModifiers = (value: unknown): Modifiers => {
-  if (!value || typeof value !== 'object') return defaultModifiers;
-
-  const candidate = value as Record<string, unknown>;
-  const selectedGenerations = Array.isArray(candidate.generations)
-    ? candidate.generations.filter((generation) =>
-        isChoice(generation, generations),
-      )
-    : [];
-  const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
-    ? candidate.questionTypes.filter((questionType) =>
-        isChoice(questionType, questionTypes),
-      )
-    : [];
-  return {
-    answerFlow: isChoice(candidate.answerFlow, answerFlows)
-      ? candidate.answerFlow
-      : candidate.speedrunMode === true
-        ? 'instant'
-        : defaultModifiers.answerFlow,
-    generations:
-      selectedGenerations.length > 0
-        ? selectedGenerations
-        : defaultModifiers.generations,
-    questionTypes:
-      selectedQuestionTypes.length > 0
-        ? selectedQuestionTypes
-        : defaultModifiers.questionTypes,
-    reduceMotion: candidate.reduceMotion === true,
-    soundVolume:
-      typeof candidate.soundVolume === 'number' &&
-      Number.isFinite(candidate.soundVolume)
-        ? Math.min(1, Math.max(0, candidate.soundVolume))
-        : candidate.soundEnabled === false
-          ? 0
-          : defaultModifiers.soundVolume,
-    timerDisplay: isChoice(candidate.timerDisplay, timerDisplays)
-      ? candidate.timerDisplay
-      : defaultModifiers.timerDisplay,
-    trainingMode: isChoice(candidate.trainingMode, trainingModes)
-      ? candidate.trainingMode
-      : defaultModifiers.trainingMode,
-  };
-};
-
-export const filterPokemon = (
-  catalog: PokemonCatalog,
-  modifiers: Modifiers,
-): Candidate[] =>
-  Object.entries(catalog.pokemon)
-    .filter(([, pokemon]) => modifiers.generations.includes(pokemon.generation))
-    .map(([name, pokemon]) => ({ name, pokemon }));
 
 export const getQuestionCount = (
   availableCount: number,

@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import { emptyPlayerData } from '../src/game/player-data';
-import { defaultModifiers } from '../src/game/game';
+import { defaultModifiers } from '../src/game/modifiers';
 import type { PlayerBackup } from '../src/game/backup';
 import { expect, test } from './fixtures';
 

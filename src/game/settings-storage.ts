@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { readPlayerData, updatePlayerData } from './player-storage';
-import { defaultModifiers, normalizeModifiers } from './game';
+import { defaultModifiers, normalizeModifiers } from './modifiers';
 import type { Modifiers } from './types';
 
 const readModifiers = (): Modifiers =>

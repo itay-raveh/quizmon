@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { render, screen } from '@testing-library/react';
 import { Results } from '@/components/Results';
-import { defaultModifiers } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import type { AnswerResult, GameResult } from '@/game/types';
 
 const makeResult = (

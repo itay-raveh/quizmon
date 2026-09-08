@@ -1,9 +1,6 @@
 import { catalog } from './fixtures/catalog';
-import {
-  buildQuestions,
-  defaultModifiers,
-  isQuestionAnswerCorrect,
-} from '@/game/game';
+import { buildQuestions, isQuestionAnswerCorrect } from '@/game/game';
+import { defaultModifiers } from '@/game/modifiers';
 import { getQuestionPokemon, registerPokedexAnswer } from '@/game/pokedex';
 import { createBackup, parseBackup, restoreBackup } from '@/game/backup';
 import { emptyPlayerData, parsePlayerSave } from '@/game/player-data';
