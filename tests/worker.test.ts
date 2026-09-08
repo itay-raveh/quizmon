@@ -90,6 +90,29 @@ describe('Daily reminders', () => {
     },
   );
 
+  it.each(['GET', 'HEAD', 'POST', 'OPTIONS'])(
+    'returns the same 405 contract for %s at both reminder boundaries',
+    async (method) => {
+      const { env, reminderFetch } = makeEnv();
+      const reminder = new DailyReminder({ storage: {} }, env);
+      const request = new Request(
+        'https://example.com/api/daily-reminders/3c29978c-0c0a-4c95-a19d-9d2cf5e36493',
+        { method, headers: { Origin: 'https://example.com' } },
+      );
+      const responses = [
+        await worker.fetch(request, env),
+        await reminder.fetch(request),
+      ];
+      for (const response of responses) {
+        expect(response.status).toBe(405);
+        expect(response.headers.get('Allow')).toBe('PUT, PATCH, DELETE');
+        expect(response.headers.get('Cache-Control')).toBe('no-store');
+        expect(await response.text()).toBe('Method not allowed');
+      }
+      expect(reminderFetch).not.toHaveBeenCalled();
+    },
+  );
+
   it('only forwards reminder changes made by the app origin', async () => {
     const { env, reminderFetch } = makeEnv();
     const sameOrigin = await worker.fetch(

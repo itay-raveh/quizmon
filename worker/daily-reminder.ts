@@ -20,6 +20,13 @@ const REMINDER_PATH =
 const MAX_BODY_LENGTH = 8_192;
 const STORAGE_KEY = 'daily-reminder';
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
+const reminderMethods = ['PUT', 'PATCH', 'DELETE'];
+
+const methodNotAllowed = (): Response =>
+  new Response('Method not allowed', {
+    headers: { ...NO_STORE_HEADERS, Allow: reminderMethods.join(', ') },
+    status: 405,
+  });
 
 export interface DailyReminderEnv {
   DAILY_REMINDERS: {
@@ -145,10 +152,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
     }
 
     if (request.method !== 'PUT') {
-      return new Response('Method not allowed', {
-        headers: { ...NO_STORE_HEADERS, Allow: 'PUT, PATCH, DELETE' },
-        status: 405,
-      });
+      return methodNotAllowed();
     }
 
     const registration = await parseRegistration(request);
@@ -233,11 +237,8 @@ export const handleDailyReminderRequest = async (
       status: 400,
     });
   }
-  if (!['DELETE', 'PATCH', 'PUT'].includes(request.method)) {
-    return new Response('Method not allowed', {
-      headers: { ...NO_STORE_HEADERS, Allow: 'PUT, PATCH, DELETE' },
-      status: 405,
-    });
+  if (!reminderMethods.includes(request.method)) {
+    return methodNotAllowed();
   }
 
   if (request.method === 'PUT' && !env.VAPID_PRIVATE_KEY) {
