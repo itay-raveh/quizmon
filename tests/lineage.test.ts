@@ -4,7 +4,7 @@ import { buildQuestions } from '@/game/game';
 import { defaultModifiers, getTrainingModifiers } from '@/game/modifiers';
 import { buildQuestionType } from '@/game/questions/registry';
 import { createSeededRandom } from '@/game/random';
-import { generations, type Generation } from '@/game/types';
+import { generations, type Modifiers } from '@/game/types';
 
 describe('Evolution link', () => {
   it.each(generations)(
@@ -121,22 +121,18 @@ describe('Generation roundup', () => {
   });
 
   it('requires two generations whenever Custom includes Generation roundup', () => {
-    const modifiers = {
+    const modifiers: Modifiers = {
       ...defaultModifiers,
-      generations: ['I'] as Generation[],
-      trainingMode: 'custom' as const,
-      questionTypes: ['generation-roundup'] as const,
+      generations: ['I'],
+      trainingMode: 'custom',
+      questionTypes: ['generation-roundup'],
     };
+    expect(getTrainingSettingsValidation(catalog, modifiers).isValid).toBe(
+      false,
+    );
     expect(
       getTrainingSettingsValidation(catalog, {
         ...modifiers,
-        questionTypes: [...modifiers.questionTypes],
-      }).isValid,
-    ).toBe(false);
-    expect(
-      getTrainingSettingsValidation(catalog, {
-        ...modifiers,
-        questionTypes: [...modifiers.questionTypes],
         generations: ['I', 'II'],
       }).isValid,
     ).toBe(true);
@@ -155,7 +151,6 @@ describe('Generation roundup', () => {
     expect(
       getTrainingSettingsValidation(catalog, {
         ...modifiers,
-        questionTypes: ['generation-roundup'],
         trainingMode: 'league',
       }).isValid,
     ).toBe(true);
