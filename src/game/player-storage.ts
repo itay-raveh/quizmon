@@ -20,7 +20,7 @@ const legacyKeys = {
 
 const readLegacyJson = (key: string): unknown => {
   const raw = window.localStorage.getItem(key);
-  return raw === null ? null : (JSON.parse(raw) as unknown);
+  return raw === null ? null : JSON.parse(raw);
 };
 
 const migrateLegacySave = (): PlayerSaveV1 => {
@@ -59,7 +59,7 @@ const migrateLegacySave = (): PlayerSaveV1 => {
 export const readPlayerSave = (): PlayerSave => {
   const raw = window.localStorage.getItem(PLAYER_STORAGE_KEY);
   if (raw !== null) {
-    const stored: unknown = JSON.parse(raw) as unknown;
+    const stored: unknown = JSON.parse(raw);
     const save = parsePlayerSave(stored);
     if (isRecord(stored) && stored.version !== save.version) {
       try {
@@ -72,8 +72,7 @@ export const readPlayerSave = (): PlayerSave => {
   }
   const migrated = parsePlayerSave(migrateLegacySave());
   const concurrent = window.localStorage.getItem(PLAYER_STORAGE_KEY);
-  if (concurrent !== null)
-    return parsePlayerSave(JSON.parse(concurrent) as unknown);
+  if (concurrent !== null) return parsePlayerSave(JSON.parse(concurrent));
   try {
     window.localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(migrated));
     for (const key of Object.values(legacyKeys))
@@ -127,9 +126,9 @@ export const subscribeToPlayerRestore = (
     )
       return;
     try {
-      const next = parsePlayerSave(JSON.parse(event.newValue) as unknown);
+      const next = parsePlayerSave(JSON.parse(event.newValue));
       const previous: unknown = event.oldValue
-        ? (JSON.parse(event.oldValue) as unknown)
+        ? JSON.parse(event.oldValue)
         : null;
       if (
         next.restoreId &&

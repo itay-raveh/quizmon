@@ -27,7 +27,7 @@ export const parseBackup = (text: string): PlayerBackup => {
   }
   let value: unknown;
   try {
-    value = JSON.parse(text) as unknown;
+    value = JSON.parse(text);
   } catch {
     throw new Error('This file is not valid JSON. Choose a Quizmon backup.');
   }

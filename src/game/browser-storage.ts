@@ -19,7 +19,7 @@ export const readStoredJson = (
   if (value === null) return null;
 
   try {
-    return JSON.parse(value) as unknown;
+    return JSON.parse(value);
   } catch {
     return null;
   }

@@ -96,7 +96,7 @@ const readJson = async (request: Request): Promise<unknown> => {
   if (text.length > MAX_BODY_LENGTH) return null;
 
   try {
-    return JSON.parse(text) as unknown;
+    return JSON.parse(text);
   } catch {
     return null;
   }
