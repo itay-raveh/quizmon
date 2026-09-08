@@ -74,29 +74,29 @@ describe('Trainer Card progression', () => {
     const oneBadge = stats({
       correctQuestionTypes: masteredQuestionTypes(10),
     });
-    const ace = stats({
+    const ace = {
       ...oneBadge,
       correctPokemon: Array.from(
         { length: 151 },
         (_, index) => `pokemon-${index}`,
       ),
-    });
-    const fourBadges = stats({
+    };
+    const fourBadges = {
       ...ace,
       correctCategories: { identity: 50 },
       correctGenerations: masteredGenerations(9),
-    });
-    const veteran = stats({ ...fourBadges, masteryRounds: 3 });
-    const sevenBadges = stats({
+    };
+    const veteran = { ...fourBadges, masteryRounds: 3 };
+    const sevenBadges = {
       ...veteran,
       bestDailyStreak: 7,
       quickAttackCompleted: true,
-    });
-    const leagueChallenger = stats({
+    };
+    const leagueChallenger = {
       ...sevenBadges,
       championAnswersWithoutClues: 5,
-    });
-    const champion = stats({ ...leagueChallenger, leagueCompleted: true });
+    };
+    const champion = { ...leagueChallenger, leagueCompleted: true };
 
     expect(getTrainerRank(stats())).toBe('Youngster');
     expect(getTrainerRank(oneBadge)).toBe('Youngster');

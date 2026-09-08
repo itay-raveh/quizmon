@@ -58,15 +58,18 @@ describe('Quizmon League', () => {
       timerDisplay: 'hidden',
     });
 
-    const answers = Array.from({ length: LEAGUE_QUESTION_COUNT }, () => ({
-      category: 'identity' as const,
-      cluesUsed: 0,
-      correct: true,
-      generation: 'I' as const,
-      pokemonName: 'pikachu',
-      points: 1_000,
-      questionType: 'pokedex-scan' as const,
-    }));
+    const answers: GameResult['answers'] = Array.from(
+      { length: LEAGUE_QUESTION_COUNT },
+      () => ({
+        category: 'identity',
+        cluesUsed: 0,
+        correct: true,
+        generation: 'I',
+        pokemonName: 'pikachu',
+        points: 1_000,
+        questionType: 'pokedex-scan',
+      }),
+    );
     const result: GameResult = {
       answers,
       contentVersion: 1,

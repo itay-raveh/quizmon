@@ -33,15 +33,9 @@ describe('Daily Challenge', () => {
       dexNumber: 33,
       name: 'nidorino',
     });
-    expect(
-      schedule
-        .slice(0, -1)
-        .every((questionType) =>
-          questionTypes.includes(
-            questionType as (typeof questionTypes)[number],
-          ),
-        ),
-    ).toBe(true);
+    expect(questionTypes).toEqual(
+      expect.arrayContaining(schedule.slice(0, -1)),
+    );
     expect(schedule).not.toEqual(getDailyQuestionTypes('2026-09-02'));
     expect(first).not.toEqual(buildDailyQuestions(catalog, '2026-09-02'));
   });
@@ -57,7 +51,7 @@ describe('Daily Challenge', () => {
     ).toBe(true);
   });
 
-  it('uses all generations and a fixed five-question length', () => {
+  it('uses all generations and the supplied experience settings', () => {
     expect(
       getDailyModifiers({
         answerFlow: 'instant',

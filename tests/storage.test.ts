@@ -168,18 +168,18 @@ describe('saved results', () => {
       isNewBest: false,
       isSaved: true,
     });
-    const longer = {
+    const longer: GameResult = {
       ...result,
       answers: [
         ...result.answers,
         {
-          category: 'type' as const,
+          category: 'type',
           cluesUsed: 0,
           correct: true,
-          generation: 'III' as const,
+          generation: 'III',
           pokemonName: 'rayquaza',
           points: 1_000,
-          questionType: 'type-check' as const,
+          questionType: 'type-check',
         },
       ],
       correctCount: 2,
@@ -245,14 +245,16 @@ describe('saved results', () => {
   });
 
   it('tracks League mastery without rewarding perfect Quick rounds', () => {
-    const perfectAnswers = Array.from({ length: 10 }, (_, index) => ({
-      ...correctAnswer,
-      category: index === 9 ? ('champion' as const) : ('identity' as const),
-      generation: index % 2 === 0 ? ('I' as const) : ('II' as const),
-      pokemonName: `pokemon-${index}`,
-      questionType:
-        index === 9 ? ('champion' as const) : ('pokedex-scan' as const),
-    }));
+    const perfectAnswers: GameResult['answers'] = Array.from(
+      { length: 10 },
+      (_, index) => ({
+        ...correctAnswer,
+        category: index === 9 ? 'champion' : 'identity',
+        generation: index % 2 === 0 ? 'I' : 'II',
+        pokemonName: `pokemon-${index}`,
+        questionType: index === 9 ? 'champion' : 'pokedex-scan',
+      }),
+    );
     const standard = {
       ...result,
       answers: perfectAnswers,
