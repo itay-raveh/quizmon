@@ -1,3 +1,4 @@
+import { questionLabels } from '../question-labels';
 import { shuffle } from '../random';
 import {
   getOptionVisuals,
@@ -79,7 +80,7 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
       { kind: 'pixel-sprite', src: target.pokemon.sprite },
     ),
     optionVisuals: getOptionVisuals(context, options),
-    title: 'Type twins',
+    title: questionLabels['type-twins'],
     visual: { kind: 'type-twins' },
   };
 };
@@ -128,6 +129,6 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
       ]),
     ),
     optionVisuals: getOptionVisuals(context, options),
-    title: 'Legend hunt',
+    title: questionLabels['legend-hunt'],
   };
 };

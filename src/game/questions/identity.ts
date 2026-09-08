@@ -1,3 +1,4 @@
+import { questionLabels } from '../question-labels';
 import { getVersionSpritePath } from '../sprite-source';
 import {
   getOptionVisuals,
@@ -72,7 +73,7 @@ export const buildSilhouetteMatchQuestion: QuestionBuilder = (context) => {
     ),
     concealOptionLabels: true,
     optionVisuals: getOptionVisuals(context, options, undefined, true),
-    title: 'Silhouette match',
+    title: questionLabels['silhouette-match'],
   };
 };
 
@@ -94,7 +95,7 @@ export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
         src: target.pokemon.sprite,
       },
     ),
-    title: 'Pixel peek',
+    title: questionLabels['pixel-peek'],
   };
 };
 
@@ -120,6 +121,6 @@ export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
     optionVisuals: getOptionVisuals(context, options, (pokemon, option) =>
       option === target.name ? pokemon.shinySprite : pokemon.sprite,
     ),
-    title: 'Shiny spotter',
+    title: questionLabels['shiny-spotter'],
   };
 };

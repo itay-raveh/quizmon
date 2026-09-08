@@ -1,3 +1,4 @@
+import { questionLabels } from './question-labels';
 import {
   generations,
   answerFlows,
@@ -58,15 +59,15 @@ export const getTrainingModifiers = (modifiers: Modifiers): Modifiers => ({
 });
 
 const categoryLabels: Record<QuestionCategory, string> = {
-  ability: 'Ability check',
-  champion: 'Champion question',
-  description: 'Field notes',
-  evolution: 'Evolution shift',
-  identity: 'Pokédex scan',
-  matchup: 'Type matchup',
-  move: 'Move check',
-  stat: 'Stat showdown',
-  type: 'Type check',
+  ability: questionLabels['ability-check'],
+  champion: questionLabels.champion,
+  description: questionLabels['field-notes'],
+  evolution: questionLabels['evolution-shift'],
+  identity: questionLabels['pokedex-scan'],
+  matchup: questionLabels['type-matchup'],
+  move: questionLabels['move-check'],
+  stat: questionLabels['stat-showdown'],
+  type: questionLabels['type-check'],
 };
 
 export const normalizeModifiers = (value: unknown): Modifiers => {

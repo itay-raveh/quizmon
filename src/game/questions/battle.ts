@@ -1,3 +1,4 @@
+import { questionLabels } from '../question-labels';
 import { shuffle } from '../random';
 import { formatTypeMultiplier } from '../format';
 import type { PokemonCatalog } from '../types';
@@ -145,7 +146,7 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
           { kind: 'pixel-sprite', src: targetSprite },
         ),
         optionVisuals: getOptionVisuals(context, options),
-        title: 'Counter pick',
+        title: questionLabels['counter-pick'],
         visual: { kind: 'counter-pick', multiplier },
       };
     }

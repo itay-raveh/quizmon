@@ -1,3 +1,4 @@
+import { questionLabels } from '../question-labels';
 import type { QuestionCategory, QuestionData, QuestionType } from '../types';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
@@ -61,128 +62,128 @@ export const questionRegistry = {
     category: 'identity',
     description: 'Identify Pokémon across generations of game sprites.',
     group: 'identity',
-    label: 'Pokédex scan',
+    label: questionLabels['pokedex-scan'],
   },
   'silhouette-match': {
     build: buildSilhouetteMatchQuestion,
     category: 'identity',
     description: 'Pick the silhouette of a named Pokémon.',
     group: 'identity',
-    label: 'Silhouette match',
+    label: questionLabels['silhouette-match'],
   },
   'pixel-peek': {
     build: buildPixelPeekQuestion,
     category: 'identity',
     description: 'Name a Pokémon from a tiny sprite crop.',
     group: 'identity',
-    label: 'Pixel peek',
+    label: questionLabels['pixel-peek'],
   },
   'shiny-spotter': {
     build: buildShinySpotterQuestion,
     category: 'identity',
     description: 'Find the Pokémon shown in shiny colors.',
     group: 'identity',
-    label: 'Shiny spotter',
+    label: questionLabels['shiny-spotter'],
   },
   'field-notes': {
     build: buildDescriptionQuestion,
     category: 'description',
     description: 'Match a Pokédex entry to its Pokémon.',
     group: 'knowledge',
-    label: 'Field notes',
+    label: questionLabels['field-notes'],
   },
   'type-check': {
     build: buildTypeQuestion,
     category: 'type',
     description: 'Choose one type a Pokémon has.',
     group: 'knowledge',
-    label: 'Type check',
+    label: questionLabels['type-check'],
   },
   'odd-one-out': {
     build: buildOddOneOutQuestion,
     category: 'type',
     description: 'Find the Pokémon that breaks a hidden type pattern.',
     group: 'knowledge',
-    label: 'Odd one out',
+    label: questionLabels['odd-one-out'],
   },
   'type-roundup': {
     build: buildChooseAllTypeQuestion,
     category: 'type',
     description: 'Select every Pokémon with the named type.',
     group: 'knowledge',
-    label: 'Type roundup',
+    label: questionLabels['type-roundup'],
   },
   'type-twins': {
     build: buildTypeTwinsQuestion,
     category: 'type',
     description: 'Match both types of a dual-type Pokémon.',
     group: 'knowledge',
-    label: 'Type twins',
+    label: questionLabels['type-twins'],
   },
   'legend-hunt': {
     build: buildLegendHuntQuestion,
     category: 'identity',
     description: 'Select every Legendary or Mythical Pokémon.',
     group: 'knowledge',
-    label: 'Legend hunt',
+    label: questionLabels['legend-hunt'],
   },
   'generation-roundup': {
     build: buildGenerationRoundupQuestion,
     category: 'identity',
     description: 'Select every Pokémon introduced in the named generation.',
     group: 'knowledge',
-    label: 'Generation roundup',
+    label: questionLabels['generation-roundup'],
   },
   'evolution-link': {
     build: buildEvolutionLinkQuestion,
     category: 'evolution',
     description: 'Complete an evolution chain using four name-only choices.',
     group: 'knowledge',
-    label: 'Evolution link',
+    label: questionLabels['evolution-link'],
   },
   'evolution-shift': {
     build: buildEvolutionShiftQuestion,
     category: 'evolution',
     description: 'Choose the type a Pokémon gains when it evolves.',
     group: 'knowledge',
-    label: 'Evolution shift',
+    label: questionLabels['evolution-shift'],
   },
   'ability-check': {
     build: buildPropertyQuestion('ability'),
     category: 'ability',
     description: 'Choose an ability the named Pokémon can have.',
     group: 'battle',
-    label: 'Ability check',
+    label: questionLabels['ability-check'],
   },
   'move-check': {
     build: buildPropertyQuestion('move'),
     category: 'move',
     description: 'Choose a move the Pokémon learns by leveling up.',
     group: 'battle',
-    label: 'Move check',
+    label: questionLabels['move-check'],
   },
   'stat-showdown': {
     build: buildStatQuestion,
     category: 'stat',
     description: 'Find the highest or lowest stat among four Pokémon.',
     group: 'battle',
-    label: 'Stat showdown',
+    label: questionLabels['stat-showdown'],
   },
   'type-matchup': {
     build: buildMatchupQuestion,
     category: 'matchup',
     description: 'Choose a type that hits the Pokémon super effectively.',
     group: 'battle',
-    label: 'Type matchup',
+    label: questionLabels['type-matchup'],
   },
   'counter-pick': {
     build: buildCounterPickQuestion,
     category: 'matchup',
     description: 'Pick a Pokémon with a super-effective attack type.',
     group: 'battle',
-    label: 'Counter pick',
+    label: questionLabels['counter-pick'],
   },
-} satisfies Record<string, QuestionDefinition>;
+} satisfies Record<QuestionType, QuestionDefinition>;
 
 export const questionTypes = Object.keys(questionRegistry) as QuestionType[];
 
@@ -195,7 +196,7 @@ const championDefinition: QuestionDefinition = {
   category: 'champion',
   description: 'Name a Pokémon from one clue before revealing extra help.',
   group: 'identity',
-  label: 'Champion question',
+  label: questionLabels.champion,
 };
 
 export const buildQuestionType = (

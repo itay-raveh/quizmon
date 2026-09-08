@@ -1,4 +1,4 @@
-import type { questionRegistry } from './questions/registry';
+import type { questionLabels } from './question-labels';
 
 export const generations = [
   'I',
@@ -27,7 +27,7 @@ export const answerFlowDelays: Record<Exclude<AnswerFlow, 'manual'>, number> = {
   instant: 300,
 };
 
-export type QuestionType = keyof typeof questionRegistry;
+export type QuestionType = Exclude<keyof typeof questionLabels, 'champion'>;
 
 export const questionCategories = [
   'ability',
@@ -214,7 +214,7 @@ export interface QuestionData {
   pokemonName: string;
   pokemonTypes: string[];
   prompt: QuestionPrompt;
-  questionType: QuestionType | 'champion';
+  questionType: keyof typeof questionLabels;
   searchOptions?: PokemonSearchOption[];
   title?: string;
   visual?: QuestionVisual;
