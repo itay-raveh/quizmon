@@ -39,18 +39,17 @@ export const useDailyChallenge = ({
   startGame,
 }: DailyChallengeOptions) => {
   const [route] = useState(getDailyRoute);
-  const [result, setResult] = useState<GameResult | null>(() =>
-    readDailyResult(route.date),
-  );
-  const [resultSaved, setResultSaved] = useState(() => Boolean(result));
+  const [{ result, resultSaved }, setCompletion] = useState(() => {
+    const result = readDailyResult(route.date);
+    return { result, resultSaved: Boolean(result) };
+  });
   const [streak, setStreak] = useState(readDailyStreak);
   const [storageAvailable] = useState(canPersistResults);
 
   const refresh = useCallback(() => {
     const saved = readDailyResult(route.date);
     if (saved) {
-      setResult(saved);
-      setResultSaved(true);
+      setCompletion({ result: saved, resultSaved: true });
     }
     setStreak(readDailyStreak());
     refreshSavedData();
@@ -70,8 +69,7 @@ export const useDailyChallenge = ({
 
     const saved = readDailyResult(route.date);
     if (saved) {
-      setResult(saved);
-      setResultSaved(true);
+      setCompletion({ result: saved, resultSaved: true });
       return;
     }
 
@@ -84,10 +82,9 @@ export const useDailyChallenge = ({
   }, [catalog, modifiers, result, route.date, startGame, storageAvailable]);
 
   const recordCompletion = useCallback(
-    (savedResult: GameResult, isSaved: boolean) => {
-      setResult(savedResult);
-      setResultSaved(isSaved);
-      if (isSaved) setStreak(readDailyStreak());
+    (result: GameResult, resultSaved: boolean) => {
+      setCompletion({ result, resultSaved });
+      if (resultSaved) setStreak(readDailyStreak());
     },
     [],
   );
