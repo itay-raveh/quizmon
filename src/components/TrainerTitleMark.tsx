@@ -14,6 +14,7 @@ import {
 
 interface TrainerTitleMarkProps {
   earned: boolean;
+  plain?: boolean;
   tier?: TrainerTier;
   specialty: TrainerSpecialty;
 }
@@ -31,10 +32,13 @@ const titleMarks = {
 
 export const TrainerTitleMark = ({
   earned,
+  plain = false,
   specialty,
   tier = earned ? 1 : 0,
 }: TrainerTitleMarkProps) => {
   const Mark = earned ? titleMarks[specialty] : LockSimpleIcon;
+
+  if (plain) return <Mark aria-hidden="true" weight="bold" />;
 
   return (
     <span

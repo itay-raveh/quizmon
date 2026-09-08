@@ -57,9 +57,10 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(
     page.getByText('Type Specialist', { exact: true }),
   ).toBeVisible();
+  await expect(card.locator('.trainer-card__title > svg')).toBeVisible();
   await expect(
-    card.locator('.trainer-card__title .trainer-title-mark'),
-  ).toBeVisible();
+    card.locator('.trainer-card__title .trainer-title-mark__tier'),
+  ).toHaveCount(0);
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download PNG' }).click();

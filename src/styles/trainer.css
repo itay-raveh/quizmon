@@ -434,20 +434,6 @@
   gap: 1cqw;
 }
 
-.trainer-card__title .trainer-title-mark {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-  width: auto;
-  flex: none;
-  color: inherit;
-  background: none;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
 .trainer-title-mark__tier {
   position: absolute;
   right: -0.35rem;
@@ -459,14 +445,10 @@
   font: 800 0.65rem / 1 var(--font-interface);
 }
 
-.trainer-card__title .trainer-title-mark__tier {
-  position: static;
-  font-size: 0.8em;
-}
-
-.trainer-card__title .trainer-title-mark svg {
+.trainer-card__title > svg {
   width: 1em;
   height: 1em;
+  flex: none;
 }
 
 .trainer-card__details {
