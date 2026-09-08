@@ -216,14 +216,17 @@ export const buildQuestionSequence = (
   });
 };
 
+const baseQuestionPoints = 1_000;
+const championPoints = [baseQuestionPoints, 750, 500, 250] as const;
+
 export const getAnswerPoints = (
   question: Pick<QuestionData, 'category'>,
   correct: boolean,
   assistsUsed = 0,
 ): number => {
   if (!correct) return 0;
-  if (question.category !== 'champion') return 1_000;
-  return [1_000, 750, 500, 250][Math.max(0, Math.min(3, assistsUsed))] ?? 250;
+  if (question.category !== 'champion') return baseQuestionPoints;
+  return championPoints[Math.max(0, Math.min(3, assistsUsed))] ?? 250;
 };
 
 const speedBonusRate = 3;
@@ -251,7 +254,9 @@ export const getScoreBreakdown = (answers: readonly SavedAnswerResult[]) => {
   const mastery =
     answers.length === 0
       ? 0
-      : Math.round((knowledge * knowledge) / (answers.length * 1_000));
+      : Math.round(
+          (knowledge * knowledge) / (answers.length * baseQuestionPoints),
+        );
   return { knowledge, speed, mastery };
 };
 
