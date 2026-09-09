@@ -48,7 +48,7 @@ export const TrainerTitleMark = ({
       data-tier={tier}
     >
       <Mark weight="bold" />
-      {tier > 0 ? (
+      {earned ? (
         <small className="trainer-title-mark__tier">
           {['', 'I', 'II', 'III'][tier]}
         </small>

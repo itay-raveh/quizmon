@@ -158,7 +158,7 @@ const trainerBadgeDefinitions = [
             (stats.correctGenerations[generation] ?? 0) >= minimum,
         ).length,
         goal: generations.length,
-        requirement: `Answer ${minimum} question${minimum === 1 ? '' : 's'} correctly in each of all 9 Pokémon generations`,
+        requirement: `Answer ${minimum} question${minimum === 1 ? '' : 's'} correctly in each of all ${generations.length} Pokémon generations`,
       })),
   },
   {
