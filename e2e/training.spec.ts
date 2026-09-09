@@ -78,17 +78,18 @@ const findPokemonForSprite = (src: string | null) =>
   Object.entries(catalogData.pokemon).find(
     ([, entry]) =>
       entry.sprite === src ||
-      entry.identitySprites.generations.some(({ back, front, generation }) =>
-        [
-          ...front.map(
+      entry.identitySprites.generations.some(
+        ({ back, front, generation }) =>
+          front.some(
             (version) =>
-              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/${entry.id}.png`,
-          ),
-          ...back.map(
+              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/${entry.id}.png` ===
+              src,
+          ) ||
+          back.some(
             (version) =>
-              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/back/${entry.id}.png`,
+              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/back/${entry.id}.png` ===
+              src,
           ),
-        ].includes(src ?? ''),
       ),
   )?.[0] as PokemonName | undefined;
 
