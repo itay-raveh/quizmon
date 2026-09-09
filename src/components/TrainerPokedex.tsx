@@ -35,10 +35,9 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
   );
   const pages = Math.max(1, Math.ceil(matches.length / pageSize));
   const currentPage = Math.min(page, pages - 1);
-  const visible = matches.slice(
-    currentPage * pageSize,
-    (currentPage + 1) * pageSize,
-  );
+  const pageStart = currentPage * pageSize;
+  const pageEnd = Math.min(pageStart + pageSize, matches.length);
+  const visible = matches.slice(pageStart, pageEnd);
 
   return (
     <section className="trainer-pokedex" aria-label="Pokédex collection">
@@ -64,7 +63,7 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
           ? search
             ? 'No matching entries. Try another name or Pokédex number.'
             : 'No entries yet. Answer a question correctly to start your Pokédex.'
-          : `${currentPage * pageSize + 1}–${Math.min((currentPage + 1) * pageSize, matches.length)} of ${matches.length} entries`}
+          : `${pageStart + 1}–${pageEnd} of ${matches.length} entries`}
       </p>
       {visible.length > 0 && (
         <ul className="trainer-pokedex__entries">
