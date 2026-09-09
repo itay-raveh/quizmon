@@ -188,21 +188,17 @@ describe('saved results', () => {
     expect(saveResult(mode, longer, defaultModifiers).isNewBest).toBe(false);
   });
 
-  it('uses only Daily, League, and Custom high-score keys', () => {
-    expect(
-      getHighScoreKey({ kind: 'daily', date: '2026-09-05' }, defaultModifiers),
-    ).toBe('daily');
-    expect(getHighScoreKey({ kind: 'training' }, defaultModifiers)).toBe(
-      'league',
-    );
-    expect(
-      getHighScoreKey(
-        { kind: 'training' },
-        { ...defaultModifiers, trainingMode: 'custom' },
-      ),
-    ).toBe('custom');
-    expect(getHighScoreKey({ kind: 'league' }, defaultModifiers)).toBeNull();
-  });
+  it.each([
+    [{ kind: 'daily', date: '2026-09-05' }, 'league', 'daily'],
+    [{ kind: 'training' }, 'league', 'league'],
+    [{ kind: 'training' }, 'custom', 'custom'],
+    [{ kind: 'league' }, 'league', null],
+  ] as const)(
+    '%j with %s settings uses the %s high-score key',
+    (mode, trainingMode, expected) => {
+      expect(getHighScoreKey(mode, { trainingMode })).toBe(expected);
+    },
+  );
 
   it('keeps League and Custom Training bests separate', () => {
     saveResult({ kind: 'training' }, result, defaultModifiers);

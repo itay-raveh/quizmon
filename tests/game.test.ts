@@ -119,10 +119,7 @@ describe('question building', () => {
   });
 
   it('filters the normalized catalog by generation', () => {
-    const candidates = filterPokemon(catalog, {
-      ...defaultModifiers,
-      generations: ['IX'],
-    });
+    const candidates = filterPokemon(catalog, { generations: ['IX'] });
 
     expect(candidates.length).toBeGreaterThan(100);
     for (const { name, pokemon } of candidates) {
