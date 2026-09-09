@@ -245,6 +245,7 @@ interface TrainerBadgeChange extends Omit<
   'requirement' | 'milestones'
 > {
   delta: number;
+  previousTier: TrainerTier;
   kind: 'badge';
 }
 
@@ -253,6 +254,7 @@ interface TrainerSpecialtyChange extends Omit<
   'description' | 'equipped' | 'milestones'
 > {
   delta: number;
+  previousTier: TrainerTier;
   kind: 'specialty';
 }
 
@@ -323,13 +325,13 @@ export const getTrainerProgressChanges = (
     const tier = getTier(next);
     const earned = tier > previousTier;
     const index = Math.min(earned ? tier - 1 : previousTier, 2);
-    const current = Math.min(next[index]!.current, next[index]!.goal);
-    const delta =
-      current - Math.min(previous[index]!.current, previous[index]!.goal);
+    const current = next[index]!.current;
+    const delta = current - previous[index]!.current;
     return delta > 0 || earned
       ? {
           current,
           delta,
+          previousTier,
           goal: next[index]!.goal,
           earned,
           tier,

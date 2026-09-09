@@ -7,7 +7,11 @@ import {
 
 export type InteractionSound = 'none' | 'tap' | 'toggle-off' | 'toggle-on';
 
+export type RewardSound = 'gain' | 'gold' | 'complete';
+
 export interface SoundControls {
+  playReward: (index: number, kind: RewardSound) => void;
+  stopRewards: () => void;
   playCorrect: () => void;
   playPerfect: () => void;
   playResults: () => void;
@@ -22,6 +26,8 @@ export interface SoundControls {
 const noop = () => undefined;
 
 export const silentSoundControls: SoundControls = {
+  playReward: noop,
+  stopRewards: noop,
   playCorrect: noop,
   playPerfect: noop,
   playResults: noop,

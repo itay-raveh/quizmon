@@ -133,6 +133,7 @@ describe('Trainer Card progression', () => {
         delta: 1,
         earned: true,
         goal: 9,
+        previousTier: 0,
         tier: 1,
         id: 'world-tour',
         kind: 'badge',
@@ -143,6 +144,7 @@ describe('Trainer Card progression', () => {
         delta: 2,
         earned: false,
         goal: 50,
+        previousTier: 0,
         tier: 0,
         id: 'true-calling',
         kind: 'badge',
@@ -153,6 +155,7 @@ describe('Trainer Card progression', () => {
         delta: 1,
         earned: true,
         goal: 5,
+        previousTier: 1,
         tier: 2,
         id: 'champions-instinct',
         kind: 'badge',
@@ -163,6 +166,7 @@ describe('Trainer Card progression', () => {
         delta: 2,
         earned: true,
         goal: 10,
+        previousTier: 0,
         tier: 1,
         kind: 'specialty',
         label: 'Pokédex Specialist',
@@ -340,4 +344,36 @@ it('upgrades all titles and keeps counting after gold', () => {
     goal: 1000,
     tier: 2,
   });
+});
+
+it('reports uncapped gains at and beyond Gold without creating another tier', () => {
+  for (const [before, after, earned] of [
+    [998, 1004, true],
+    [1046, 1050, false],
+  ] as const) {
+    const changes = getTrainerProgressChanges(
+      stats({ correctCategories: { type: before }, masteryRounds: before }),
+      stats({ correctCategories: { type: after }, masteryRounds: after }),
+    );
+    expect(changes).toContainEqual(
+      expect.objectContaining({
+        kind: 'specialty',
+        specialty: 'type',
+        current: after,
+        delta: after - before,
+        tier: 3,
+        earned,
+      }),
+    );
+    expect(changes).toContainEqual(
+      expect.objectContaining({
+        kind: 'badge',
+        id: 'perfect-form',
+        current: after,
+        delta: after - before,
+        tier: 3,
+        earned: false,
+      }),
+    );
+  }
 });

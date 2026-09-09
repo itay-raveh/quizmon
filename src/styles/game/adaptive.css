@@ -19,10 +19,6 @@
     padding-inline: 0.35rem;
   }
 
-  .trainer-progress-summary__changes {
-    grid-template-columns: 1fr;
-  }
-
   .daily-reminder-offer:not(.daily-reminder-offer--install) {
     grid-template-columns: 2rem minmax(0, 1fr);
   }

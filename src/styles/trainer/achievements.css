@@ -320,46 +320,6 @@
   text-align: center;
 }
 
-.trainer-progress-change--earned > .trainer-badge-mark,
-.trainer-progress-change--earned > .trainer-title-mark {
-  position: relative;
-  isolation: isolate;
-}
-
-.trainer-progress-change--earned > .trainer-badge-mark::after,
-.trainer-progress-change--earned > .trainer-title-mark::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: url('../../assets/images/trainer-card/sheen-05.png') center /
-    contain no-repeat;
-  image-rendering: pixelated;
-  opacity: 0;
-  animation: trainer-tier-sheen 650ms steps(8, end) 120ms;
-}
-
-@keyframes trainer-tier-sheen {
-  0% {
-    transform: translateX(-30%);
-    opacity: 0;
-  }
-  45% {
-    opacity: 0.65;
-  }
-  100% {
-    transform: translateX(30%);
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .trainer-progress-change--earned > .trainer-badge-mark::after,
-  .trainer-progress-change--earned > .trainer-title-mark::after {
-    animation: none;
-  }
-}
-
 .trainer-tier-progress {
   display: grid;
   padding: 0;

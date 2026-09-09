@@ -304,7 +304,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
     page.getByRole('heading', { name: 'League Champion', exact: true }),
   ).toBeVisible();
   await page
-    .getByRole('button', { name: /Trainer progress.*Open Hall of Fame/ })
+    .getByRole('button', { name: /Hall of Fame.*Open Hall of Fame/ })
     .click();
   await expect(
     page.getByRole('heading', { name: 'Hall of Fame', exact: true }),

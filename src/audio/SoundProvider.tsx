@@ -26,7 +26,8 @@ interface ScoreCountControls {
   stop: () => void;
 }
 
-type UseSound = (typeof import('./use-sound'))['default'];
+type SoundModule = typeof import('./use-sound');
+type UseSound = SoundModule['default'];
 
 const silentScoreCount: ScoreCountControls = {
   play: () => undefined,
@@ -56,16 +57,19 @@ const ScoreCountSound = ({
 };
 
 const SoundEngine = ({
+  useRewardSounds,
   onReady,
   prepareScoreCount,
   useSound,
   volume,
 }: {
+  useRewardSounds: SoundModule['useRewardSounds'];
   onReady: (controls: SoundControls) => void;
   prepareScoreCount: boolean;
   useSound: UseSound;
   volume: number;
 }) => {
+  const { play: playReward, stop: stopRewards } = useRewardSounds(volume);
   const [scoreCountControls, setScoreCountControls] =
     useState<ScoreCountControls>(silentScoreCount);
   const [playTap] = useSound(tapSound, 0.16 * volume);
@@ -92,6 +96,8 @@ const SoundEngine = ({
 
   const controls = useMemo<SoundControls>(
     () => ({
+      playReward,
+      stopRewards,
       playCorrect,
       playPerfect,
       playResults,
@@ -103,6 +109,8 @@ const SoundEngine = ({
       stopCelebration,
     }),
     [
+      playReward,
+      stopRewards,
       playCorrect,
       playPerfect,
       playResults,
@@ -135,10 +143,10 @@ export const SoundProvider = ({
   volume,
 }: SoundProviderProps) => {
   const [controls, setControls] = useState<SoundControls>(silentSoundControls);
-  const [useSound, setUseSound] = useState<UseSound | null>(null);
+  const [soundModule, setSoundModule] = useState<SoundModule | null>(null);
 
   useEffect(() => {
-    if (volume <= 0 || useSound) return;
+    if (volume <= 0 || soundModule) return;
 
     let active = true;
     let loading = false;
@@ -147,7 +155,7 @@ export const SoundProvider = ({
       loading = true;
       void import('./use-sound')
         .then((module) => {
-          if (active) setUseSound(() => module.default);
+          if (active) setSoundModule(module);
         })
         .catch(() => {
           loading = false;
@@ -164,16 +172,17 @@ export const SoundProvider = ({
       active = false;
       for (const event of events) document.removeEventListener(event, prepare);
     };
-  }, [prepareScoreCount, useSound, volume]);
+  }, [prepareScoreCount, soundModule, volume]);
 
   return (
     <SoundContext value={volume > 0 ? controls : silentSoundControls}>
       {children}
-      {volume > 0 && useSound ? (
+      {volume > 0 && soundModule ? (
         <SoundEngine
           onReady={setControls}
           prepareScoreCount={prepareScoreCount}
-          useSound={useSound}
+          useSound={soundModule.default}
+          useRewardSounds={soundModule.useRewardSounds}
           volume={volume}
         />
       ) : null}

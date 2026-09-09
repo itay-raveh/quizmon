@@ -117,15 +117,25 @@ export const Results = ({
   }, []);
 
   useEffect(() => {
-    if (result.correctCount === result.questionCount) playPerfect();
-    else if (result.score > 0) playResults();
+    if (progressChanges.length === 0) {
+      if (result.correctCount === result.questionCount) playPerfect();
+      else if (result.score > 0) playResults();
+    }
 
     if (result.score > 0) playScoreCount();
-    return stopCelebration;
+    const stopWhenHidden = () => {
+      if (document.hidden) stopCelebration();
+    };
+    document.addEventListener('visibilitychange', stopWhenHidden);
+    return () => {
+      stopCelebration();
+      document.removeEventListener('visibilitychange', stopWhenHidden);
+    };
   }, [
     playPerfect,
     playResults,
     playScoreCount,
+    progressChanges.length,
     result.correctCount,
     result.questionCount,
     result.score,
@@ -157,65 +167,74 @@ export const Results = ({
         </div>
       ) : null}
 
-      <dl className={`results-list results-list--${resultStats.length}`}>
-        {resultStats.map(({ label, value, className }) => (
-          <div className={className} key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
+      <div className="result-score">
+        <div
+          className="score"
+          aria-label={`Score ${formatScore(result.score)}`}
+        >
+          <span>Score</span>
+          <strong>
+            <AnimatedScore
+              duration={650}
+              format={formatScore}
+              value={result.score}
+            />
+          </strong>
+        </div>
 
-      {result.questionCount <= 10 ? (
-        <ol className="answer-trail" aria-label="Question results">
-          {result.answers.map((answer, index) => {
-            const categoryLabel = getCategoryLabel(answer.category);
-            const outcome = answer.correct ? 'correct' : 'incorrect';
-            return (
-              <li
-                className={answer.correct ? 'answer-trail--correct' : ''}
-                key={`${answer.category}-${index}`}
-                title={`${categoryLabel}: ${outcome}`}
-              >
-                <span aria-hidden="true">
-                  {answer.correct ? (
-                    <CheckIcon weight="bold" />
-                  ) : (
-                    <XIcon weight="bold" />
-                  )}
-                </span>
-                <span className="visually-hidden">
-                  {categoryLabel}: {outcome}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      ) : null}
-
-      <div className="score" aria-label={`Score ${formatScore(result.score)}`}>
-        <span>Score</span>
-        <strong>
-          <AnimatedScore format={formatScore} value={result.score} />
-        </strong>
+        {!resultSaved ? (
+          <p className="personal-best personal-best--warning" role="alert">
+            This result could not be saved. Keep this tab open or enable browser
+            storage.
+          </p>
+        ) : highScoreLabel ? (
+          <p className="personal-best">
+            {isNewBest ? (
+              <strong>New {highScoreLabel} best!</strong>
+            ) : (
+              `${highScoreLabel} best`
+            )}{' '}
+            {formatScore(bestResult.score)} points
+          </p>
+        ) : null}
       </div>
+      <div className="result-details">
+        <dl className="results-list">
+          {resultStats.map(({ label, value, className }) => (
+            <div className={className} key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
 
-      {!resultSaved ? (
-        <p className="personal-best personal-best--warning" role="alert">
-          This result could not be saved. Keep this tab open or enable browser
-          storage.
-        </p>
-      ) : highScoreLabel ? (
-        <p className="personal-best">
-          {isNewBest ? (
-            <strong>New {highScoreLabel} best!</strong>
-          ) : (
-            `${highScoreLabel} best`
-          )}{' '}
-          {formatScore(bestResult.score)} points
-        </p>
-      ) : null}
-
+        {result.questionCount <= 10 ? (
+          <ol className="answer-trail" aria-label="Question results">
+            {result.answers.map((answer, index) => {
+              const categoryLabel = getCategoryLabel(answer.category);
+              const outcome = answer.correct ? 'correct' : 'incorrect';
+              return (
+                <li
+                  className={answer.correct ? 'answer-trail--correct' : ''}
+                  key={`${answer.category}-${index}`}
+                  title={`${categoryLabel}: ${outcome}`}
+                >
+                  <span aria-hidden="true">
+                    {answer.correct ? (
+                      <CheckIcon weight="bold" />
+                    ) : (
+                      <XIcon weight="bold" />
+                    )}
+                  </span>
+                  <span className="visually-hidden">
+                    {categoryLabel}: {outcome}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        ) : null}
+      </div>
       {isDaily && resultSaved ? (
         <DailyReminderPrompt dailyDate={mode.date} />
       ) : null}
@@ -232,7 +251,14 @@ export const Results = ({
           <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
             {isTraining ? 'Train again' : 'Start training'}
           </GameButton>
-          <ShareResultButton mode={mode} result={result} tone="quiet" />
+          <ShareResultButton
+            aria-label="Share result"
+            mode={mode}
+            result={result}
+            tone="quiet"
+          >
+            Share
+          </ShareResultButton>
         </div>
       ) : (
         <div className="results__actions">

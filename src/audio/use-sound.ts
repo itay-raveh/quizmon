@@ -32,3 +32,5 @@ export default function useSound(src: string, volume: number) {
 
   return [play, { stop }] as const;
 }
+
+export { useRewardSounds } from './use-reward-sounds';

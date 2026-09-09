@@ -10,13 +10,14 @@ const ShareDialog = lazy(() =>
 
 interface ShareResultButtonProps extends Pick<
   ComponentProps<typeof GameButton>,
-  'children' | 'className' | 'tone'
+  'children' | 'className' | 'tone' | 'aria-label'
 > {
   mode: GameMode;
   result: GameResult;
 }
 
 export const ShareResultButton = ({
+  'aria-label': ariaLabel,
   children = 'Share result',
   className,
   mode,
@@ -44,6 +45,7 @@ export const ShareResultButton = ({
   return (
     <>
       <GameButton
+        aria-label={ariaLabel}
         className={`share-result-button ${className ?? ''}`.trim()}
         onClick={() => void share()}
         tone={tone}

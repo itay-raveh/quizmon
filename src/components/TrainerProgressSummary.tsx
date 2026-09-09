@@ -1,13 +1,15 @@
+import type { CSSProperties } from 'react';
 import {
   trainerTierLabels,
   type TrainerProgressChange,
   type TrainerView,
 } from '@/game/trainer';
-import { GameButton } from './GameButton';
+import { useInteractionSound } from '@/audio/sound';
 import { CaretRightIcon } from './icons';
 import { Trophy } from './Trophy';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerTitleMark } from './TrainerTitleMark';
+import { useRewardSequence } from './use-reward-sequence';
 
 interface TrainerProgressSummaryProps {
   leagueVictory: boolean;
@@ -16,111 +18,128 @@ interface TrainerProgressSummaryProps {
   progressChanges: TrainerProgressChange[];
 }
 
+const format = (value: number) => Math.round(value).toLocaleString();
+
 export const TrainerProgressSummary = ({
   leagueVictory,
   onOpenTrainerCard,
   onOpenHallOfFame,
   progressChanges,
 }: TrainerProgressSummaryProps) => {
+  const { elapsed, starts } = useRewardSequence(progressChanges);
+  const playInteractionSound = useInteractionSound();
   if (!leagueVictory && progressChanges.length === 0) return null;
 
-  const earnedChanges = progressChanges.filter(({ earned }) => earned);
-  const ongoingChanges = progressChanges.filter(({ earned }) => !earned);
-  const view: TrainerView = progressChanges.some(({ kind }) => kind === 'badge')
-    ? 'badges'
-    : 'titles';
-  const destinationLabel = leagueVictory
-    ? 'Open Hall of Fame'
-    : view === 'badges'
-      ? 'Open badge case'
-      : 'Open Trainer Titles';
-
-  const renderMark = (change: TrainerProgressChange) =>
-    change.kind === 'badge' ? (
-      <TrainerBadgeMark tier={change.tier} id={change.id} />
-    ) : (
-      <TrainerTitleMark tier={change.tier} specialty={change.specialty} />
-    );
-
   return (
-    <GameButton
-      className="trainer-progress-summary"
-      onClick={() =>
-        leagueVictory ? onOpenHallOfFame() : onOpenTrainerCard(view)
-      }
-      tone="quiet"
+    <section
+      className="reward-case"
+      aria-label="Trainer progress"
+      data-playing={Number.isFinite(elapsed)}
     >
-      <span className="trainer-progress-summary__heading">
-        <strong>Trainer progress</strong>
-        <small>
-          {destinationLabel}{' '}
-          <CaretRightIcon
-            aria-hidden="true"
-            className="trainer-progress-summary__chevron"
-            weight="bold"
-          />
-        </small>
-      </span>
-      <span className="trainer-progress-summary__changes">
-        {leagueVictory || earnedChanges.length > 0 ? (
-          <span className="trainer-progress-summary__earned">
-            {leagueVictory ? (
-              <span className="trainer-progress-change trainer-progress-change--earned">
-                <Trophy className="trainer-progress-change__hall-mark" />
-                <span>
-                  <small>Milestone earned</small>
-                  <strong>Hall of Fame</strong>
-                </span>
+      <ul aria-label="Rewards">
+        {leagueVictory ? (
+          <li>
+            <button
+              className="reward reward--victory"
+              onClick={() => {
+                playInteractionSound('tap');
+                onOpenHallOfFame();
+              }}
+            >
+              <Trophy className="reward__hall-mark" />
+              <span className="reward__body">
+                <strong className="reward__name">Hall of Fame</strong>
+                <small>League Champion · Open Hall of Fame</small>
               </span>
-            ) : null}
-            {earnedChanges.map((change) => (
-              <span
-                className={`trainer-progress-change trainer-progress-change--${change.kind} trainer-progress-change--earned`}
-                key={`${change.kind}-${change.kind === 'badge' ? change.id : change.specialty}`}
-              >
-                {renderMark(change)}
-                <span>
-                  <small>
-                    {change.kind === 'badge'
-                      ? `League Badge earned · ${trainerTierLabels[change.tier]}`
-                      : `Trainer Title unlocked · ${trainerTierLabels[change.tier]}`}
-                  </small>
-                  <strong>{change.label}</strong>
-                </span>
-              </span>
-            ))}
-          </span>
+              <CaretRightIcon aria-hidden="true" />
+            </button>
+          </li>
         ) : null}
-        {ongoingChanges.map((change) => (
-          <span
-            className={`trainer-progress-change trainer-progress-change--${change.kind}`}
-            key={`${change.kind}-${change.kind === 'badge' ? change.id : change.specialty}`}
-          >
-            {renderMark(change)}
-            <span>
-              <strong>{change.label}</strong>
-              <small>
-                <span>
-                  {change.current} / {change.goal}
-                </span>
-                <span className="trainer-progress-change__delta">
-                  +{change.delta}
-                </span>
-              </small>
-              <span
-                className="trainer-progress-change__track"
-                aria-hidden="true"
+        {progressChanges.map((change, index) => {
+          const local = elapsed - starts[index]!;
+          const gold = change.earned && change.tier === 3;
+          const revealed = local >= (gold ? 500 : 620);
+          const before = change.current - change.delta;
+          const progress = Math.max(0, Math.min(1, local / 620));
+          const credited = gold
+            ? local < 500
+              ? Math.max(
+                  0,
+                  Math.min(
+                    change.delta - 1,
+                    (change.goal - 1 - before) *
+                      Math.min(1, Math.max(0, local / 230)),
+                  ),
+                )
+              : change.delta
+            : change.delta * (1 - (1 - progress) ** 2);
+          const current = before + credited;
+          const tier =
+            change.earned && !revealed ? change.previousTier : change.tier;
+          const unlocked = change.earned && revealed;
+          const total =
+            change.tier === 3
+              ? `${format(change.current)} total`
+              : `${format(change.current)} / ${format(change.goal)}`;
+          const unlockLabel = `${trainerTierLabels[change.tier]} unlocked`;
+          const destination =
+            change.kind === 'badge' ? 'badge case' : 'Trainer Titles';
+          return (
+            <li
+              key={`${change.kind}-${change.kind === 'badge' ? change.id : change.specialty}`}
+            >
+              <button
+                className="reward"
+                data-tier={tier}
+                data-gold-unlock={gold}
+                style={
+                  { '--reward-delay': `${starts[index]}ms` } as CSSProperties
+                }
+                aria-label={`${change.label}: +${change.delta}, ${total}${change.earned ? `, ${unlockLabel}` : ''}. Open ${destination}`}
+                onClick={() => {
+                  playInteractionSound('tap');
+                  onOpenTrainerCard(
+                    change.kind === 'badge' ? 'badges' : 'titles',
+                  );
+                }}
               >
-                <span
-                  style={{
-                    width: `${Math.min((change.current / change.goal) * 100, 100)}%`,
-                  }}
-                />
-              </span>
-            </span>
-          </span>
-        ))}
-      </span>
-    </GameButton>
+                <span className="reward__art" aria-hidden="true">
+                  {change.kind === 'badge' ? (
+                    <TrainerBadgeMark tier={tier} id={change.id} />
+                  ) : (
+                    <TrainerTitleMark
+                      tier={tier}
+                      specialty={change.specialty}
+                    />
+                  )}
+                </span>
+                <span className="reward__body" aria-hidden="true">
+                  <strong className="reward__name">{change.label}</strong>
+                  <span className="reward__progress">
+                    <span className="reward__track">
+                      <span
+                        style={{
+                          transform: `scaleX(${Math.max(0, Math.min(current / change.goal, 1))})`,
+                        }}
+                      />
+                    </span>
+                    <small className={unlocked ? 'is-unlocked' : undefined}>
+                      {unlocked
+                        ? unlockLabel
+                        : change.tier === 3
+                          ? `${format(current)} total`
+                          : `${format(current)} / ${format(change.goal)}`}
+                    </small>
+                  </span>
+                </span>
+                <b className="reward__gain" aria-hidden="true">
+                  +{format(credited)}
+                </b>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 };

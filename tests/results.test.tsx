@@ -1,5 +1,7 @@
 import type { ComponentProps } from 'react';
 import { render, screen } from '@testing-library/react';
+import { SoundContext, silentSoundControls } from '@/audio/sound';
+import { ReducedMotionContext } from '@/components/motion';
 import { Results } from '@/components/Results';
 import { defaultModifiers } from '@/game/modifiers';
 import type { TrainerProgressChange } from '@/game/trainer';
@@ -41,28 +43,67 @@ const createResults = (
   result: GameResult,
   overrides: Partial<ComponentProps<typeof Results>> = {},
 ) => (
-  <Results
-    onOpenHallOfFame={vi.fn()}
-    bestResult={result}
-    dailyStreak={0}
-    isNewBest={false}
-    mode={{ kind: 'training' }}
-    modifiers={defaultModifiers}
-    onNewGame={vi.fn()}
-    onOpenTrainerCard={vi.fn()}
-    onRetryLeague={vi.fn()}
-    onTrainAgain={vi.fn()}
-    onStartTraining={vi.fn()}
-    result={result}
-    resultSaved
-    progressChanges={[]}
-    {...overrides}
-  />
+  <ReducedMotionContext value={true}>
+    <Results
+      onOpenHallOfFame={vi.fn()}
+      bestResult={result}
+      dailyStreak={0}
+      isNewBest={false}
+      mode={{ kind: 'training' }}
+      modifiers={defaultModifiers}
+      onNewGame={vi.fn()}
+      onOpenTrainerCard={vi.fn()}
+      onRetryLeague={vi.fn()}
+      onTrainAgain={vi.fn()}
+      onStartTraining={vi.fn()}
+      result={result}
+      resultSaved
+      progressChanges={[]}
+      {...overrides}
+    />
+  </ReducedMotionContext>
 );
 
 const renderResults = (result: GameResult) => render(createResults(result));
 
 describe('results summary', () => {
+  it.each([5, 10])(
+    'plays the score roll alongside Trainer progress with %i correct answers',
+    (correctCount) => {
+      const sounds = {
+        ...silentSoundControls,
+        playScoreCount: vi.fn(),
+        playPerfect: vi.fn(),
+        playResults: vi.fn(),
+        stopCelebration: vi.fn(),
+      };
+      const { unmount } = render(
+        <SoundContext value={sounds}>
+          {createResults(makeResult(10, correctCount), {
+            progressChanges: [
+              {
+                current: 10,
+                previousTier: 0,
+                delta: 1,
+                earned: true,
+                tier: 1,
+                goal: 10,
+                kind: 'specialty',
+                label: 'Type Specialist',
+                specialty: 'type',
+              },
+            ],
+          })}
+        </SoundContext>,
+      );
+      expect(sounds.playScoreCount).toHaveBeenCalledOnce();
+      expect(sounds.playPerfect).not.toHaveBeenCalled();
+      expect(sounds.playResults).not.toHaveBeenCalled();
+      unmount();
+      expect(sounds.stopCelebration).toHaveBeenCalledOnce();
+    },
+  );
+
   it('focuses the result heading and summarizes ten questions with an answer trail', () => {
     renderResults(makeResult(10, 5));
 
@@ -128,6 +169,7 @@ describe('results summary', () => {
     const result = makeResult(10, 5);
     const titleProgress: TrainerProgressChange = {
       current: 10,
+      previousTier: 0,
       delta: 1,
       earned: true,
       tier: 1,
@@ -143,6 +185,7 @@ describe('results summary', () => {
         progressChanges: [
           {
             current: 6,
+            previousTier: 0,
             delta: 2,
             earned: false,
             tier: 0,
@@ -157,11 +200,11 @@ describe('results summary', () => {
     );
 
     const progress = screen.getByRole('button', {
-      name: /Trainer progress.*Trainer Title unlocked.*Type Specialist.*Many Paths.*6 \/ 10.*\+2/,
+      name: /Many Paths: \+2, 6 \/ 10/,
     });
     expect(progress).toBeVisible();
     expect(
-      rendered.container.querySelector('.trainer-progress-change--earned'),
+      screen.getByRole('button', { name: /Type Specialist.*Bronze unlocked/ }),
     ).toHaveTextContent('Type Specialist');
     progress.click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
@@ -174,7 +217,7 @@ describe('results summary', () => {
     );
     screen
       .getByRole('button', {
-        name: /Trainer progress.*Open Trainer Titles.*Type Specialist/,
+        name: /Type Specialist.*Open Trainer Titles/,
       })
       .click();
     expect(onOpenTrainerCard).toHaveBeenLastCalledWith('titles');
@@ -189,6 +232,7 @@ describe('results summary', () => {
         progressChanges: [
           {
             current: 3,
+            previousTier: 0,
             delta: 1,
             earned: true,
             tier: 1,
@@ -202,7 +246,7 @@ describe('results summary', () => {
     );
 
     const progress = screen.getByRole('button', {
-      name: /Trainer progress.*League Badge earned.*Perfect Form/,
+      name: /Perfect Form.*Bronze unlocked/,
     });
     expect(progress).toBeVisible();
     progress.click();
@@ -245,7 +289,7 @@ describe('results summary', () => {
     ).toBeVisible();
     screen
       .getByRole('button', {
-        name: /Trainer progress.*Milestone earned.*Hall of Fame/,
+        name: /Hall of Fame.*Open Hall of Fame/,
       })
       .click();
     expect(onOpenHallOfFame).toHaveBeenCalledOnce();
