@@ -186,8 +186,9 @@ it.each(questionTypes)(
       for (const question of questions) {
         expect(question.questionType).toBe(type);
         expect(isQuestionData(question)).toBe(true);
-        expect(keys.has(getQuestionKey(question))).toBe(false);
-        keys.add(getQuestionKey(question));
+        const key = getQuestionKey(question);
+        expect(keys).not.toContain(key);
+        keys.add(key);
         history = rememberQuestion(history, question);
       }
     }
@@ -339,8 +340,9 @@ it.each(['legend-hunt', 'stat-showdown'] as const)(
     const keys = new Set<string>();
     for (let game = 0; game < 20; game++) {
       for (const question of generate(type, history, `assembled:${game}`, 10)) {
-        expect(keys.has(getQuestionKey(question))).toBe(false);
-        keys.add(getQuestionKey(question));
+        const key = getQuestionKey(question);
+        expect(keys).not.toContain(key);
+        keys.add(key);
         history = rememberQuestion(history, question);
       }
     }
