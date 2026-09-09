@@ -32,6 +32,18 @@ const makeEnv = () => {
   };
 };
 
+const mockSpriteFetch = () => {
+  const upstream = vi.fn(() =>
+    Promise.resolve(
+      new Response(new Uint8Array([1]), {
+        headers: { 'Content-Type': 'image/png' },
+      }),
+    ),
+  );
+  vi.stubGlobal('fetch', upstream);
+  return upstream;
+};
+
 describe('Daily reminders', () => {
   it('schedules 8:00 AM in the saved time zone across a DST change', () => {
     expect(
@@ -261,13 +273,7 @@ describe('analytics endpoint', () => {
   });
 
   it('proxies supported sprite families with matching content types', async () => {
-    const upstream = vi.fn().mockResolvedValue(
-      new Response(new Uint8Array([1]), {
-        headers: { 'Content-Type': 'image/png' },
-        status: 200,
-      }),
-    );
-    vi.stubGlobal('fetch', upstream);
+    const upstream = mockSpriteFetch();
     const { env } = makeEnv();
     const examples = [
       [
@@ -297,14 +303,7 @@ describe('analytics endpoint', () => {
   });
 
   it('proxies every version and orientation used by the shipped catalog', async () => {
-    const upstream = vi.fn().mockImplementation(() =>
-      Promise.resolve(
-        new Response(new Uint8Array([1]), {
-          headers: { 'Content-Type': 'image/png' },
-        }),
-      ),
-    );
-    vi.stubGlobal('fetch', upstream);
+    const upstream = mockSpriteFetch();
     const { env } = makeEnv();
     const paths = new Map<string, string>();
     for (const pokemon of Object.values(catalog.pokemon)) {
