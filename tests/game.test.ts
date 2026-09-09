@@ -414,13 +414,11 @@ describe('question building', () => {
 
     for (const category of ['ability', 'move', 'matchup']) {
       const question = byCategory[category];
-      expect(question?.prompt.kind).toBe('pokemon');
-      if (question?.prompt.kind === 'pokemon') {
-        expect(question.prompt.name).toBe(question.pokemonName);
-        expect(question.prompt.dexNumber).toBe(
-          catalog.pokemon[question.pokemonName]?.id,
-        );
-      }
+      expect.assert(question?.prompt.kind === 'pokemon');
+      expect(question.prompt.name).toBe(question.pokemonName);
+      expect(question.prompt.dexNumber).toBe(
+        catalog.pokemon[question.pokemonName]?.id,
+      );
     }
 
     for (const category of ['description', 'stat']) {
@@ -511,13 +509,9 @@ describe('question building', () => {
         const defender = catalog.pokemon[question.pokemonName]!;
         const correct = question.answer.correctOptions[0]!;
         const visual = question.visual;
-        expect(['type-matchup', 'counter-pick']).toContain(visual?.kind);
-        if (
-          visual?.kind !== 'type-matchup' &&
-          visual?.kind !== 'counter-pick'
-        ) {
-          continue;
-        }
+        expect.assert(
+          visual?.kind === 'type-matchup' || visual?.kind === 'counter-pick',
+        );
         const multiplier = visual.multiplier;
 
         if (questionType === 'type-matchup') {
@@ -540,14 +534,11 @@ describe('question building', () => {
     expect(getQuestionTitle(question)).toBe('Counter pick');
     expect(question.media.kind).toBe('pixel-sprite');
     expect(Object.keys(question.optionVisuals ?? {})).toHaveLength(4);
-    expect(question.visual?.kind).toBe('counter-pick');
+    expect.assert(question.visual?.kind === 'counter-pick');
 
     const defender = catalog.pokemon[question.pokemonName]!;
     const correct = question.answer.correctOptions[0];
-    const multiplier =
-      question.visual?.kind === 'counter-pick'
-        ? question.visual.multiplier
-        : undefined;
+    const { multiplier } = question.visual;
     for (const option of question.options) {
       const attacker = catalog.pokemon[option]!;
       const strongestMatchup = Math.max(

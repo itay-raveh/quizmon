@@ -140,8 +140,10 @@ it('does not confuse button order or sprite crops with a new question', () => {
 
 it('distinguishes stat and matchup questions while keeping related Pokémon exposure', () => {
   const stat = generate('stat-showdown')[0]!;
-  if (stat.visual?.kind !== 'stat-showdown')
-    throw new Error('Expected stat question');
+  expect.assert(
+    stat.visual?.kind === 'stat-showdown',
+    'Expected stat question',
+  );
   expect(
     getQuestionKey({
       ...stat,
