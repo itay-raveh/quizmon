@@ -40,6 +40,8 @@ export const orderTargets = (
   context: QuestionContext,
   candidates: readonly Candidate[],
 ): Candidate[] => {
+  const compareUsed = (a: Candidate, b: Candidate) =>
+    Number(context.used.has(a.name)) - Number(context.used.has(b.name));
   if (context.rotation !== undefined) {
     const deck = shuffle(
       [...candidates].sort((a, b) =>
@@ -49,18 +51,12 @@ export const orderTargets = (
     );
     const offset =
       ((context.rotation % deck.length) + deck.length) % deck.length;
-    return [...deck.slice(offset), ...deck.slice(0, offset)].sort(
-      (a, b) =>
-        Number(context.used.has(a.name)) - Number(context.used.has(b.name)),
-    );
+    return [...deck.slice(offset), ...deck.slice(0, offset)].sort(compareUsed);
   }
   const history = context.history;
   const shuffled = shuffle(candidates, context.random);
   if (!history) {
-    return shuffled.sort(
-      (a, b) =>
-        Number(context.used.has(a.name)) - Number(context.used.has(b.name)),
-    );
+    return shuffled.sort(compareUsed);
   }
   return shuffled
     .map((candidate) => ({
