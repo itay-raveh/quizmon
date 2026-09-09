@@ -117,7 +117,7 @@ it('does not confuse button order or sprite crops with a new question', () => {
   const changed = {
     ...question,
     id: 'another-id',
-    options: [...question.options].reverse(),
+    options: question.options.toReversed(),
     media: {
       kind: 'pixel-peek' as const,
       src: 'another-sprite',
@@ -130,7 +130,7 @@ it('does not confuse button order or sprite crops with a new question', () => {
   const reordered = {
     ...group,
     pokemonName: group.answer.correctOptions[1]!,
-    options: [...group.options].reverse(),
+    options: group.options.toReversed(),
   };
   reordered.repetition = optionSetRepetition({ subjects: 'correct' })(
     reordered,

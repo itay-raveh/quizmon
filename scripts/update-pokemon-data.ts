@@ -318,11 +318,9 @@ const addSpriteMeasurements = async (
   return catalog;
 };
 
-export const updatePokemonData = async (
-  client: CatalogClient = createCatalogClient(),
-  { spritesOnly = false }: { spritesOnly?: boolean } = {},
-) => {
-  const catalog = spritesOnly
+if (import.meta.main) {
+  const client = createCatalogClient();
+  const catalog = process.argv.includes('--sprites-only')
     ? await addSpriteMeasurements(
         JSON.parse(await readFile(DATA_PATH, 'utf8')) as PokemonCatalog,
         (paths) => client.measureSprites(paths),
@@ -330,17 +328,8 @@ export const updatePokemonData = async (
     : await buildPokemonCatalog(client);
   const output = await format(JSON.stringify(catalog), { parser: 'json' });
   await writeFile(DATA_PATH, output);
-  return {
-    pokemonCount: Object.keys(catalog.pokemon).length,
-    typeCount: Object.keys(catalog.typeRelations).length,
-  };
-};
-
-if (import.meta.main) {
-  const { pokemonCount, typeCount } = await updatePokemonData(
-    createCatalogClient(),
-    { spritesOnly: process.argv.includes('--sprites-only') },
-  );
+  const pokemonCount = Object.keys(catalog.pokemon).length;
+  const typeCount = Object.keys(catalog.typeRelations).length;
   console.log(
     `Updated ${pokemonCount} Pokémon and ${typeCount} type matchups from PokéAPI.`,
   );

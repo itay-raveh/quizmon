@@ -19,9 +19,7 @@ const lineup = (count: number) => {
 describe('Hall of Fame portrait layering', () => {
   it('draws every smaller sprite above larger sprites, including across the curve', () => {
     const portrait = lineup(43);
-    const bySize = [...portrait].sort(
-      (a, b) => Number(a.name) - Number(b.name),
-    );
+    const bySize = portrait.toSorted((a, b) => Number(a.name) - Number(b.name));
     for (let index = 1; index < bySize.length; index++) {
       expect(bySize[index]!.layer).toBeGreaterThan(bySize[index - 1]!.layer);
     }
