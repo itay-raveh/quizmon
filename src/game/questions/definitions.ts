@@ -56,7 +56,8 @@ export const questionDefinitions = {
     group: 'knowledge',
   },
   'odd-one-out': {
-    description: 'Find the Pokémon that breaks a hidden type pattern.',
+    description:
+      'Three Pokémon share a type. Choose the Pokémon that does not have that type.',
     group: 'knowledge',
   },
   'type-roundup': {

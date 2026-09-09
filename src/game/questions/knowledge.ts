@@ -124,7 +124,7 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
       target,
       target.name,
       options,
-      textPrompt('Which Pokémon does not belong?'),
+      textPrompt('Three Pokémon share a type. Which one doesn’t?'),
     ),
     optionVisuals: getOptionVisuals(context, options),
   };
