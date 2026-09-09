@@ -154,14 +154,10 @@ export const SoundProvider = ({
         });
     };
 
-    if (prepareScoreCount) {
-      prepare();
-      return () => {
-        active = false;
-      };
-    }
-
-    const events = ['keydown', 'pointerdown'] as const;
+    const events = prepareScoreCount
+      ? []
+      : (['keydown', 'pointerdown'] as const);
+    if (prepareScoreCount) prepare();
     for (const event of events) document.addEventListener(event, prepare);
 
     return () => {
