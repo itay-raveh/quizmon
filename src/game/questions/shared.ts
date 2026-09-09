@@ -156,23 +156,20 @@ const evolutionStage = (pokemon: PokemonKnowledge): number => {
   return 3;
 };
 
+const totalStats = (pokemon: PokemonKnowledge): number =>
+  statNames.reduce((total, stat) => total + pokemon.stats[stat], 0);
+
 export const createPokemonSimilarityScorer = (
   target: PokemonKnowledge,
 ): ((candidate: PokemonKnowledge) => number) => {
-  const targetStats = statNames.reduce(
-    (total, stat) => total + target.stats[stat],
-    0,
-  );
+  const targetStats = totalStats(target);
   const targetStage = evolutionStage(target);
 
   return (candidate) => {
     const sharedTypes = target.types.filter((type) =>
       candidate.types.includes(type),
     ).length;
-    const candidateStats = statNames.reduce(
-      (total, stat) => total + candidate.stats[stat],
-      0,
-    );
+    const candidateStats = totalStats(candidate);
 
     return (
       sharedTypes * 12 +
