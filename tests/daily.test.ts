@@ -90,14 +90,14 @@ describe('Daily Challenge', () => {
 });
 
 describe('daily dates', () => {
-  it('uses the local calendar and accepts only real ISO dates from the query string', () => {
+  it('uses the local calendar', () => {
     expect(getLocalDate(new Date(2026, 8, 1, 23, 59, 59))).toBe('2026-09-01');
-    expect(parseDailyDate('?daily=2024-02-29')).toBe('2024-02-29');
-    expect(parseDailyDate('?daily=2026-02-29')).toBeNull();
-    expect(parseDailyDate('?daily=September-1')).toBeNull();
   });
 
   it.each([
+    ['?daily=2024-02-29', '2024-02-29'],
+    ['?daily=2026-02-29', null],
+    ['?daily=September-1', null],
     ['?daily=2000-02-29', '2000-02-29'],
     ['?daily=1900-02-29', null],
     ['?daily=2026-04-31', null],
@@ -134,12 +134,14 @@ describe('daily dates', () => {
     }
   });
 
-  it('only auto-starts an explicitly playable, valid daily link', () => {
-    expect(shouldAutoStartDaily('?daily=2026-09-01&play=1')).toBe(true);
-    expect(shouldAutoStartDaily('?daily=2026-09-01')).toBe(false);
-    expect(shouldAutoStartDaily('?daily=2026-09-01&play=0')).toBe(false);
-    expect(shouldAutoStartDaily('?daily=2026-02-29&play=1')).toBe(false);
-    expect(shouldAutoStartDaily('?play=1')).toBe(false);
+  it.each([
+    ['?daily=2026-09-01&play=1', true],
+    ['?daily=2026-09-01', false],
+    ['?daily=2026-09-01&play=0', false],
+    ['?daily=2026-02-29&play=1', false],
+    ['?play=1', false],
+  ])('auto-starts %s only when playable: %s', (search, expected) => {
+    expect(shouldAutoStartDaily(search)).toBe(expected);
   });
 });
 

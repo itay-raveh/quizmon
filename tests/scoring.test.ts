@@ -13,14 +13,16 @@ describe('scoring', () => {
     expect(getAnswerPoints(question, false)).toBe(0);
   });
 
-  it('reduces Champion points as answer assistance is revealed', () => {
-    const question = { category: 'champion' } as const;
-
-    expect(getAnswerPoints(question, true, 0)).toBe(1_000);
-    expect(getAnswerPoints(question, true, 1)).toBe(750);
-    expect(getAnswerPoints(question, true, 2)).toBe(500);
-    expect(getAnswerPoints(question, true, 3)).toBe(250);
-    expect(getAnswerPoints(question, true, 8)).toBe(250);
+  it.each([
+    [0, 1_000],
+    [1, 750],
+    [2, 500],
+    [3, 250],
+    [8, 250],
+  ])('awards %i-assist Champion answers %i points', (assists, points) => {
+    expect(getAnswerPoints({ category: 'champion' }, true, assists)).toBe(
+      points,
+    );
   });
 
   it('adds a bounded mastery bonus to earned knowledge points', () => {
@@ -51,15 +53,20 @@ describe('scoring', () => {
     expect(calculateScore(answers)).toBe(2_250);
   });
 
-  it('rewards quick answers with a volatile five-second half-life', () => {
-    expect(getSpeedBonusPoints(1_000, 0)).toBe(3_000);
-    expect(getSpeedBonusPoints(1_000, 2_000)).toBe(2_270);
-    expect(getSpeedBonusPoints(1_000, 5_000)).toBe(1_500);
-    expect(getSpeedBonusPoints(1_000, 8_000)).toBe(990);
-    expect(getSpeedBonusPoints(1_000, 16_000)).toBe(330);
-    expect(getSpeedBonusPoints(1_000, -1)).toBe(3_000);
-    expect(getSpeedBonusPoints(0, 0)).toBe(0);
-  });
+  it.each([
+    [1_000, 0, 3_000],
+    [1_000, 2_000, 2_270],
+    [1_000, 5_000, 1_500],
+    [1_000, 8_000, 990],
+    [1_000, 16_000, 330],
+    [1_000, -1, 3_000],
+    [0, 0, 0],
+  ])(
+    'gives %i knowledge points after %i ms a %i speed bonus',
+    (points, elapsed, bonus) => {
+      expect(getSpeedBonusPoints(points, elapsed)).toBe(bonus);
+    },
+  );
 
   it('combines knowledge, speed, and mastery for a perfect round', () => {
     const perfect = Array.from({ length: 10 }, () => ({
