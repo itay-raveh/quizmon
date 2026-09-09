@@ -11,16 +11,19 @@ const makeResult = (
 ): GameResult => {
   const answers: AnswerResult[] = Array.from(
     { length: questionCount },
-    (_, index) => ({
-      category: 'identity',
-      cluesUsed: 0,
-      correct: index < correctCount,
-      generation: 'I',
-      pokemonName: `pokemon-${index}`,
-      points: index < correctCount ? 1_000 : 0,
-      questionType: 'pokedex-scan',
-      speedBonus: index < correctCount ? 1_500 : 0,
-    }),
+    (_, index) => {
+      const correct = index < correctCount;
+      return {
+        category: 'identity',
+        cluesUsed: 0,
+        correct,
+        generation: 'I',
+        pokemonName: `pokemon-${index}`,
+        points: correct ? 1_000 : 0,
+        questionType: 'pokedex-scan',
+        speedBonus: correct ? 1_500 : 0,
+      };
+    },
   );
 
   return {

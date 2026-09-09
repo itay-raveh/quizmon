@@ -166,25 +166,25 @@ export const Results = ({
 
       {result.questionCount <= 10 ? (
         <ol className="answer-trail" aria-label="Question results">
-          {result.answers.map((answer, index) => (
-            <li
-              className={answer.correct ? 'answer-trail--correct' : ''}
-              key={`${answer.category}-${index}`}
-              title={`${getCategoryLabel(answer.category)}: ${answer.correct ? 'correct' : 'incorrect'}`}
-            >
-              <span aria-hidden="true">
-                {answer.correct ? (
-                  <CheckIcon weight="bold" />
-                ) : (
-                  <XIcon weight="bold" />
-                )}
-              </span>
-              <span className="visually-hidden">
-                {getCategoryLabel(answer.category)}:{' '}
-                {answer.correct ? 'correct' : 'incorrect'}
-              </span>
-            </li>
-          ))}
+          {result.answers.map((answer, index) => {
+            const label = `${getCategoryLabel(answer.category)}: ${answer.correct ? 'correct' : 'incorrect'}`;
+            return (
+              <li
+                className={answer.correct ? 'answer-trail--correct' : ''}
+                key={`${answer.category}-${index}`}
+                title={label}
+              >
+                <span aria-hidden="true">
+                  {answer.correct ? (
+                    <CheckIcon weight="bold" />
+                  ) : (
+                    <XIcon weight="bold" />
+                  )}
+                </span>
+                <span className="visually-hidden">{label}</span>
+              </li>
+            );
+          })}
         </ol>
       ) : null}
 
