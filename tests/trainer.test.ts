@@ -5,7 +5,6 @@ import {
   trainerSpecialtyDetails,
   type TrainerSpecialty,
   getEarnedTrainerBadgeCount,
-  getQualifiedTrainerSpecialties,
   getTrainerTitles,
   getTrainerProgressChanges,
   getTrainerBadges,
@@ -172,7 +171,7 @@ describe('Trainer Card progression', () => {
     ]);
   });
 
-  it('qualifies specialties through correct answers without selecting one', () => {
+  it('marks specialties earned at ten correct answers', () => {
     const specialtyStats = stats({
       correctCategories: {
         identity: 10,
@@ -180,9 +179,6 @@ describe('Trainer Card progression', () => {
       },
     });
 
-    expect(getQualifiedTrainerSpecialties(specialtyStats)).toEqual([
-      'identity',
-    ]);
     expect(getTrainerTitles(specialtyStats, 'identity')).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

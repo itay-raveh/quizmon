@@ -16,7 +16,6 @@ import {
 } from '@/game/trainer-card-image';
 import {
   getCardFinish,
-  getQualifiedTrainerSpecialties,
   getTrainerBadges,
   getTrainerTitles,
   getTrainerRank,
@@ -103,14 +102,14 @@ export const TrainerPassport = ({
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile.name);
   const [partner, setPartner] = useState(profile.partnerPokemon);
-  const qualifiedSpecialties = useMemo(
-    () => getQualifiedTrainerSpecialties(stats),
-    [stats],
+  const equippedTitle = useMemo(
+    () =>
+      getTrainerTitles(stats, profile.specialty).find(
+        (title) => title.equipped && title.earned,
+      ),
+    [stats, profile.specialty],
   );
-  const savedSpecialty =
-    profile.specialty && qualifiedSpecialties.includes(profile.specialty)
-      ? profile.specialty
-      : null;
+  const savedSpecialty = equippedTitle?.specialty ?? null;
   const [preparingArtifact, setPreparingArtifact] = useState(false);
   const [shareNotice, setShareNotice] = useState<ShareNotice | null>(null);
   const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
@@ -341,11 +340,7 @@ export const TrainerPassport = ({
             profile={visibleProfile}
             record={record}
             rank={rank}
-            titleTier={
-              getTrainerTitles(stats, savedSpecialty).find(
-                (title) => title.equipped,
-              )?.tier ?? 0
-            }
+            titleTier={equippedTitle?.tier ?? 0}
           />
         )}
       </div>

@@ -273,14 +273,6 @@ export const getEarnedTrainerBadgeCount = (stats: TrainerStats): number =>
 export const isLeagueUnlocked = (stats: TrainerStats): boolean =>
   getTrainerBadges(stats).every(({ earned }) => earned);
 
-export const getQualifiedTrainerSpecialties = (
-  stats: TrainerStats,
-): TrainerSpecialty[] =>
-  trainerSpecialties.filter(
-    (category) =>
-      (stats.correctCategories[category] ?? 0) >= TRAINER_SPECIALTY_GOALS[0],
-  );
-
 export const getTrainerTitles = (
   stats: TrainerStats,
   equipped: TrainerSpecialty | null,
