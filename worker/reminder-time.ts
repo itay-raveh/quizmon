@@ -81,16 +81,14 @@ export const getNextReminderAt = (
   now = Date.now(),
 ): number => {
   const localNow = getZonedDateParts(now, timeZone);
-  let target = {
+  const target = {
     ...localNow,
     hour: REMINDER_HOUR,
     minute: 0,
     second: 0,
   };
-  let timestamp = zonedTimeToTimestamp(target, timeZone);
-  if (timestamp <= now) {
-    target = addLocalDay(target);
-    timestamp = zonedTimeToTimestamp(target, timeZone);
-  }
-  return timestamp;
+  const timestamp = zonedTimeToTimestamp(target, timeZone);
+  return timestamp <= now
+    ? zonedTimeToTimestamp(addLocalDay(target), timeZone)
+    : timestamp;
 };
