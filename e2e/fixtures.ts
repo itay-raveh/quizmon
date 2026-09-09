@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { expect, test as base, type Page } from '@playwright/test';
 import catalogData from '../src/game/data/pokemon.json' with { type: 'json' };
 import type { PokemonCatalog } from '../src/game/types';
@@ -23,7 +22,7 @@ export const findPokemonByLabel = (label: string | null) =>
   )?.[1];
 
 const seedrandomScript = readFileSync(
-  createRequire(import.meta.url).resolve('seedrandom/seedrandom.min.js'),
+  new URL(import.meta.resolve('seedrandom/seedrandom.min.js')),
   'utf8',
 );
 
