@@ -102,7 +102,7 @@ describe('result sharing', () => {
       shareResult({ kind: 'daily', date: '2026-09-01' }, result),
     ).resolves.toBe('shared');
     expect(canShareResult()).toBe(true);
-    expect(share.mock.calls[0]?.[0]).toEqual({
+    expect(share).toHaveBeenCalledExactlyOnceWith({
       text: [
         'Quizmon · Sep 1, 2026',
         '1,500 points',
@@ -148,13 +148,17 @@ describe('result sharing', () => {
     await expect(
       shareTrainerArtifact(new Blob(['image']), 'front'),
     ).resolves.toBe('shared');
-    const data = share.mock.calls[0]?.[0];
-    expect(data?.files).toHaveLength(1);
-    expect(data?.files?.[0]).toMatchObject({
-      name: 'quizmon-trainer-card.png',
-      type: 'image/png',
-      size: 5,
-    });
-    expect(data?.title).toBe('Quizmon Trainer Card');
+    expect(share).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        files: [
+          expect.objectContaining({
+            name: 'quizmon-trainer-card.png',
+            type: 'image/png',
+            size: 5,
+          }),
+        ],
+        title: 'Quizmon Trainer Card',
+      }),
+    );
   });
 });
