@@ -135,22 +135,19 @@ const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
         generationSprites ?? {},
       )) {
         if (version === 'icons') continue;
-        const frontVersion = getSpriteVersion(
-          sprites.front_default,
-          generation,
-          version,
-          'front',
-          pokemon.id,
-        );
-        const backVersion = getSpriteVersion(
-          sprites.back_default,
-          generation,
-          version,
-          'back',
-          pokemon.id,
-        );
-        if (frontVersion) front.push(frontVersion);
-        if (backVersion) back.push(backVersion);
+        for (const [orientation, available] of [
+          ['front', front],
+          ['back', back],
+        ] as const) {
+          const spriteVersion = getSpriteVersion(
+            sprites[`${orientation}_default`],
+            generation,
+            version,
+            orientation,
+            pokemon.id,
+          );
+          if (spriteVersion) available.push(spriteVersion);
+        }
       }
 
       return front.length > 0 || back.length > 0
