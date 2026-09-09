@@ -203,7 +203,7 @@ export const buildPokemonCatalog = async (
     }
   }
 
-  const defaultLinks = [...speciesByName.values()].map(({ species }) => {
+  const defaultLinks = Array.from(speciesByName.values(), ({ species }) => {
     const variety = species.varieties.find(({ is_default }) => is_default);
     if (!variety) {
       throw new Error(`${species.name} has no default Pokémon variety`);
@@ -214,7 +214,7 @@ export const buildPokemonCatalog = async (
 
   const chainLinks = [
     ...new Map(
-      [...speciesByName.values()].map(({ species }) => [
+      Array.from(speciesByName.values(), ({ species }) => [
         species.evolution_chain.url,
         species.evolution_chain,
       ]),
