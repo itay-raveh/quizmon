@@ -239,8 +239,7 @@ test('keeps type reveals usable at 200% text', async ({ page }) => {
   if (!targetType) throw new Error('Type Roundup prompt has no target type.');
 
   const answers = page.locator('.answer');
-  for (let index = 0; index < (await answers.count()); index += 1) {
-    const answer = answers.nth(index);
+  for (const answer of await answers.all()) {
     const src = await answer.locator('.answer__sprite').getAttribute('src');
     const pokemon = findPokemonForSprite(src);
     if (!pokemon) throw new Error(`No Pokémon found for sprite ${src}.`);

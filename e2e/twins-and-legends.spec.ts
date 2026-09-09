@@ -114,8 +114,7 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
         ).toHaveCount(2);
       if (outcome === 'correct')
         await expect(page.locator('.answer--wrong')).toHaveCount(0);
-      else
-        expect(await page.locator('.answer--wrong').count()).toBeGreaterThan(0);
+      else await expect(page.locator('.answer--wrong')).not.toHaveCount(0);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,

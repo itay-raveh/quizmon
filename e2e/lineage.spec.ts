@@ -108,8 +108,7 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
       await expect(answers.locator('.pokemon-identity__number')).toHaveCount(0);
       if (outcome === 'correct')
         await expect(page.locator('.answer--wrong')).toHaveCount(0);
-      else
-        expect(await page.locator('.answer--wrong').count()).toBeGreaterThan(0);
+      else await expect(page.locator('.answer--wrong')).not.toHaveCount(0);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,
