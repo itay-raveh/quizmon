@@ -42,13 +42,13 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   );
 
   const faviconResponse = await page.request.get('/favicon.ico');
-  expect(faviconResponse.ok()).toBe(true);
+  await expect(faviconResponse).toBeOK();
   expect(faviconResponse.headers()['content-type']).toContain('image/x-icon');
 
   const socialImageResponse = await page.request.get(
     '/assets/images/social-card.png',
   );
-  expect(socialImageResponse.ok()).toBe(true);
+  await expect(socialImageResponse).toBeOK();
   expect((await socialImageResponse.body()).byteLength).toBeLessThan(500_000);
 
   const structuredData: unknown = JSON.parse(
@@ -79,7 +79,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   });
 
   const manifestResponse = await page.request.get('/site.webmanifest');
-  expect(manifestResponse.ok()).toBe(true);
+  await expect(manifestResponse).toBeOK();
   expect(manifestResponse.headers()['content-type']).toContain(
     'application/manifest+json',
   );
@@ -109,7 +109,7 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   });
 
   const serviceWorkerResponse = await page.request.get('/sw.js');
-  expect(serviceWorkerResponse.ok()).toBe(true);
+  await expect(serviceWorkerResponse).toBeOK();
   const serviceWorker = await serviceWorkerResponse.text();
   expect(serviceWorker).toContain('quizmon-pokemon-sprites');
   expect(serviceWorker).toContain('quizmon-static-media');
@@ -117,13 +117,13 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   expect(serviceWorker).not.toMatch(/assets\/build\/(?:background|wordmark)-/);
 
   const robotsResponse = await page.request.get('/robots.txt');
-  expect(robotsResponse.ok()).toBe(true);
+  await expect(robotsResponse).toBeOK();
   expect(await robotsResponse.text()).toBe(
     'User-agent: *\nAllow: /\n\nSitemap: https://quizmon.raveh.dev/sitemap.xml\n',
   );
 
   const sitemapResponse = await page.request.get('/sitemap.xml');
-  expect(sitemapResponse.ok()).toBe(true);
+  await expect(sitemapResponse).toBeOK();
   expect(await sitemapResponse.text()).toContain(
     '<loc>https://quizmon.raveh.dev/</loc>',
   );
@@ -132,13 +132,13 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   );
 
   const llmsResponse = await page.request.get('/llms.txt');
-  expect(llmsResponse.ok()).toBe(true);
+  await expect(llmsResponse).toBeOK();
   expect(await llmsResponse.text()).toContain(
     '[Quizmon overview](https://quizmon.raveh.dev/index.md)',
   );
 
   const markdownResponse = await page.request.get('/index.md');
-  expect(markdownResponse.ok()).toBe(true);
+  await expect(markdownResponse).toBeOK();
   const overview = await markdownResponse.text();
   expect(overview).toContain('# About & How to Play');
   expect(overview).toContain('## Daily Challenge');
