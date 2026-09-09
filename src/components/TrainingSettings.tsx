@@ -37,6 +37,7 @@ export const TrainingSettings = ({
   const allGenerationsSelected =
     draft.generations.length === generations.length;
   const leagueTraining = isLeagueTraining(draft);
+  const hasGenerationError = submitted && !generationsAreValid;
 
   return (
     <>
@@ -67,9 +68,9 @@ export const TrainingSettings = ({
         </div>
         <div
           aria-describedby={
-            submitted && !generationsAreValid ? 'generations-error' : undefined
+            hasGenerationError ? 'generations-error' : undefined
           }
-          aria-invalid={submitted && !generationsAreValid}
+          aria-invalid={hasGenerationError}
           aria-labelledby="generations-title"
           className="selection-grid selection-grid--generations"
           role="group"
@@ -95,7 +96,7 @@ export const TrainingSettings = ({
             />
           ))}
         </div>
-        {submitted && !generationsAreValid ? (
+        {hasGenerationError ? (
           <p className="form-error" id="generations-error" role="alert">
             Choose at least one generation.
           </p>

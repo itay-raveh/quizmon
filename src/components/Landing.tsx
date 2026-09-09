@@ -43,6 +43,7 @@ export const Landing = ({
   onStartLeague,
   storageAvailable,
 }: LandingProps) => {
+  const catalogReady = catalogStatus === 'ready';
   const dailyDetail = [
     dailyDate === getLocalDate() ? null : formatDailyDate(dailyDate),
     storageAvailable ? null : 'Browser storage required',
@@ -89,7 +90,7 @@ export const Landing = ({
           <GameButton
             aria-label={`Play Daily Challenge for ${formatDailyDate(dailyDate)}${dailyStreak > 0 ? `. ${dailyStreak}-day Daily Combo.` : ''}`}
             className={`daily-action ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
-            disabled={catalogStatus !== 'ready' || !storageAvailable}
+            disabled={!catalogReady || !storageAvailable}
             onClick={onStartDaily}
           >
             <span className="daily-action__copy">
@@ -104,19 +105,16 @@ export const Landing = ({
       </div>
       <div className="landing__control-stack">
         <div className="landing__actions" aria-label="Play and profile">
-          <SettingsButton
-            disabled={catalogStatus !== 'ready'}
-            onClick={onOpenSettings}
-          />
+          <SettingsButton disabled={!catalogReady} onClick={onOpenSettings} />
           <GameButton
             className="landing__trainer-button"
-            disabled={catalogStatus !== 'ready'}
+            disabled={!catalogReady}
             tone="quiet"
             onClick={onOpenTrainerCard}
           >
             <span>Trainer profile</span>
           </GameButton>
-          <GameButton disabled={catalogStatus !== 'ready'} onClick={onStart}>
+          <GameButton disabled={!catalogReady} onClick={onStart}>
             <span>Start training</span>
           </GameButton>
         </div>
@@ -124,7 +122,7 @@ export const Landing = ({
           <GameButton
             className="landing__league-button"
             aria-label="Quizmon League"
-            disabled={catalogStatus !== 'ready'}
+            disabled={!catalogReady}
             tone="quiet"
             onClick={onStartLeague}
           >

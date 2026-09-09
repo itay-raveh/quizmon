@@ -75,15 +75,15 @@ const AppScreen = ({
     );
   }
 
+  const leagueUnlocked =
+    session.phase === 'landing' && isLeagueUnlocked(trainer.stats);
   const leagueVictory =
     session.phase === 'results' &&
     session.mode.kind === 'league' &&
     isLeagueVictory(session.result);
   if (
     catalogState.status === 'ready' &&
-    ((session.phase === 'landing' &&
-      league.isOpen &&
-      isLeagueUnlocked(trainer.stats)) ||
+    ((league.isOpen && leagueUnlocked) ||
       (leagueVictory && !league.showResults))
   ) {
     return (
@@ -117,7 +117,7 @@ const AppScreen = ({
         dailyResult={daily.result}
         dailyResultSaved={daily.resultSaved}
         dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
-        leagueUnlocked={isLeagueUnlocked(trainer.stats)}
+        leagueUnlocked={leagueUnlocked}
         leagueCompleted={trainer.stats.leagueCompleted}
         onOpenSettings={settings.open}
         onOpenTrainerCard={() => trainer.open('front')}

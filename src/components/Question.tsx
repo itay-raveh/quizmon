@@ -138,6 +138,7 @@ export const Question = ({
       ? getModeLabel(mode)
       : null;
   const championChoicesVisible = isChampion && cluesShown > 0;
+  const timerHidden = timerDisplay === 'hidden';
   const timerText =
     timerDisplay === 'milliseconds'
       ? formatDurationMilliseconds(elapsedMilliseconds)
@@ -182,11 +183,9 @@ export const Question = ({
         </GameButton>
         <Progress current={number} total={total} />
         <span
-          className={`timer ${timerDisplay === 'hidden' ? 'timer--hidden' : ''}`.trim()}
-          aria-hidden={timerDisplay === 'hidden'}
-          aria-label={
-            timerDisplay === 'hidden' ? undefined : `Elapsed time ${timerText}`
-          }
+          className={`timer ${timerHidden ? 'timer--hidden' : ''}`.trim()}
+          aria-hidden={timerHidden}
+          aria-label={timerHidden ? undefined : `Elapsed time ${timerText}`}
         >
           {timerText}
         </span>

@@ -122,9 +122,10 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
 
   await page.getByRole('button', { name: 'Start training' }).click();
   const timer = page.locator('.timer');
-  await expect
-    .poll(() => timer.getAttribute('aria-label'))
-    .not.toBe('Elapsed time 00:00:00');
+  await expect(timer).not.toHaveAttribute(
+    'aria-label',
+    'Elapsed time 00:00:00',
+  );
   await expect(page.getByRole('button', { name: 'Settings' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Leave game' }).click();
 

@@ -12,9 +12,10 @@ export const UpdatePrompt = ({ visible }: UpdatePromptProps) => {
     needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW();
+  const updating = status === 'updating';
 
   const update = async () => {
-    if (status === 'updating') return;
+    if (updating) return;
     setStatus('updating');
     try {
       await updateServiceWorker(true);
@@ -30,16 +31,16 @@ export const UpdatePrompt = ({ visible }: UpdatePromptProps) => {
       <span>
         {status === 'error'
           ? "Update couldn't start. Try again."
-          : status === 'updating'
+          : updating
             ? 'Applying update…'
             : 'Update ready'}
       </span>
       <GameButton
-        aria-busy={status === 'updating'}
-        disabled={status === 'updating'}
+        aria-busy={updating}
+        disabled={updating}
         onClick={() => void update()}
       >
-        {status === 'updating' ? 'Updating…' : 'Update now'}
+        {updating ? 'Updating…' : 'Update now'}
       </GameButton>
     </aside>
   );
