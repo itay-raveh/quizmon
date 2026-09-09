@@ -81,10 +81,9 @@ export const TrainerPassport = ({
   onProfileChange,
   onViewChange,
   profile,
-  requestedView,
+  requestedView: view,
   stats,
 }: TrainerPassportProps) => {
-  const view = requestedView;
   const [record] = useState(() => {
     const data = readPlayerData();
     const found = new Set(data.pokedex);
@@ -99,7 +98,7 @@ export const TrainerPassport = ({
     };
   });
   const [revealing, setRevealing] = useState(
-    !profile.hasBeenRevealed && requestedView === 'front',
+    !profile.hasBeenRevealed && view === 'front',
   );
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile.name);

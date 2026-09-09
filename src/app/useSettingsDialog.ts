@@ -15,12 +15,11 @@ export const useSettingsDialog = ({
   dispatch,
   markGenerationKnown,
   pauseTimer,
-  session,
+  session: { phase },
   setModifiers,
   startTimer,
 }: SettingsDialogOptions) => {
   const [isOpen, setIsOpen] = useState(false);
-  const phase = session.phase;
 
   const open = useCallback(() => {
     if (phase === 'questions') pauseTimer();
