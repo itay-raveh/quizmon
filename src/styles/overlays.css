@@ -100,7 +100,9 @@
 .modifiers-dialog[open],
 .generation-prompt[open],
 .leave-game-dialog[open],
-.share-dialog[open] {
+.share-dialog[open],
+.trainer-badge-dialog[open],
+.trainer-title-dialog[open] {
   display: flex;
   flex-direction: column;
   animation: surface-in 160ms ease-out both;
@@ -109,7 +111,9 @@
 .modifiers-dialog::backdrop,
 .generation-prompt::backdrop,
 .leave-game-dialog::backdrop,
-.share-dialog::backdrop {
+.share-dialog::backdrop,
+.trainer-badge-dialog::backdrop,
+.trainer-title-dialog::backdrop {
   background: var(--modal-scrim);
 }
 

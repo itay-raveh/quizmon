@@ -420,18 +420,6 @@
     0 0.7rem 0 var(--navy-shadow);
 }
 
-.trainer-badge-dialog[open],
-.trainer-title-dialog[open] {
-  display: flex;
-  flex-direction: column;
-  animation: surface-in 160ms ease-out both;
-}
-
-.trainer-badge-dialog::backdrop,
-.trainer-title-dialog::backdrop {
-  background: var(--modal-scrim);
-}
-
 .trainer-badge-dialog > header,
 .trainer-title-dialog > header {
   display: flex;
