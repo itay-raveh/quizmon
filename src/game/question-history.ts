@@ -90,7 +90,7 @@ export const rememberQuestion = (
       subjects.map((name) => subjectKey(question.questionType, name)),
     ),
     questions: retainNewest(
-      update(history.questions, [getQuestionKey(question)]),
+      { ...history.questions, [getQuestionKey(question)]: sequence },
       questionRepeatPolicy.rememberedQuestions,
     ),
     pokemon: update(history.pokemon, primary),

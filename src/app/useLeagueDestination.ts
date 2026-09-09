@@ -16,7 +16,7 @@ export const useLeagueDestination = () => {
     return () => window.removeEventListener('popstate', syncRoute);
   }, []);
 
-  const open = useCallback((next: LeagueView = 'challenge') => {
+  const open = useCallback((next: LeagueView) => {
     const url = new URL(window.location.href);
     url.searchParams.set('league', next);
     window.history.pushState(null, '', url);

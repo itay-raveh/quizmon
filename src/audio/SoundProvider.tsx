@@ -88,9 +88,7 @@ const SoundEngine = ({
     scoreCountControls.stop();
   }, [scoreCountControls, stopPerfect, stopResults]);
 
-  useEffect(() => {
-    return stopCelebration;
-  }, [stopCelebration]);
+  useEffect(() => stopCelebration, [stopCelebration]);
 
   const controls = useMemo<SoundControls>(
     () => ({
