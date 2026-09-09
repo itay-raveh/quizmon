@@ -223,15 +223,12 @@ const trainerBadgeDefinitions = [
 export type TrainerBadgeId = (typeof trainerBadgeDefinitions)[number]['id'];
 const TRAINER_BADGE_COUNT = trainerBadgeDefinitions.length;
 
-export interface TrainerBadge {
+export interface TrainerBadge extends TrainerMilestone {
   tier: TrainerTier;
   milestones: readonly TrainerMilestone[];
-  current: number;
   earned: boolean;
-  goal: number;
   id: TrainerBadgeId;
   label: string;
-  requirement: string;
 }
 
 export interface TrainerTitle {

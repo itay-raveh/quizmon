@@ -1,4 +1,4 @@
-import { isQuestionData } from './question-lineup';
+import { isQuestionData, type QuestionLineup } from './question-lineup';
 import { readPlayerSave } from './player-storage';
 import {
   readStoredJson,
@@ -14,7 +14,6 @@ import {
   type AnswerResult,
   type GameMode,
   type Modifiers,
-  type QuestionData,
 } from './types';
 import {
   isDailyDate,
@@ -27,17 +26,14 @@ import {
 
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 const ACTIVE_GAME_VERSION = 2;
-export interface ActiveGameSnapshot {
-  questions: QuestionData[];
+export interface ActiveGameSnapshot extends QuestionLineup {
   roundId?: string;
   answers: AnswerResult[];
-  contentVersion: number;
   elapsedMilliseconds: number;
   mode: GameMode;
   modifiers: Modifiers;
   questionCount: number;
   playerRestoreId?: string | null;
-  seed: string;
   version: number;
 }
 
