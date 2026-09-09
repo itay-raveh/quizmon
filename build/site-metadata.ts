@@ -70,9 +70,9 @@ export const siteMetadata = (): Plugin => {
         entries.add(normalizePath(resolve(config.root, entry)));
     },
     resolveId(id) {
-      return [...entries].find(
-        (entry) => entry === id || entry.endsWith(`/${id}`),
-      );
+      for (const entry of entries) {
+        if (entry === id || entry.endsWith(`/${id}`)) return entry;
+      }
     },
     load(id) {
       if (entries.has(id)) return '';
