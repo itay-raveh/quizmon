@@ -291,8 +291,8 @@ export const addQuestionVisuals = (
       ? { ...question, optionDexNumbers }
       : question;
 
-  if (preparedQuestion.optionVisuals) return preparedQuestion;
-  if (preparedQuestion.media.kind !== 'none') return preparedQuestion;
+  if (preparedQuestion.optionVisuals || preparedQuestion.media.kind !== 'none')
+    return preparedQuestion;
 
   if (pokemonOptionCategories.includes(preparedQuestion.category)) {
     return {

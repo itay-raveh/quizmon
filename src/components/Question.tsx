@@ -49,14 +49,12 @@ interface QuestionProps extends UseQuestionAnswerOptions {
 
 const QuestionPrompt = ({
   className,
-  id,
   prompt,
 }: {
   className: string;
-  id: string;
   prompt: QuestionPromptData;
 }) => (
-  <p className={className} id={id}>
+  <p className={className} id="question-prompt">
     {prompt.kind === 'text' ? (
       prompt.text
     ) : (
@@ -198,11 +196,7 @@ export const Question = ({
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       {visualInstruction ? (
-        <QuestionPrompt
-          className="visually-hidden"
-          id="question-prompt"
-          prompt={question.prompt}
-        />
+        <QuestionPrompt className="visually-hidden" prompt={question.prompt} />
       ) : null}
       <div className="question__context">
         <div
@@ -214,7 +208,6 @@ export const Question = ({
           ) : (
             <QuestionPrompt
               className="question__prompt"
-              id="question-prompt"
               prompt={question.prompt}
             />
           )}
