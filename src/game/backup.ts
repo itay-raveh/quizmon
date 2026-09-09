@@ -19,12 +19,16 @@ export const createBackup = (): PlayerBackup => ({
   version: 1,
 });
 
-export const parseBackup = (text: string): PlayerBackup => {
-  if (new Blob([text]).size > MAX_BACKUP_BYTES) {
+export const validateBackupSize = (size: number): void => {
+  if (size > MAX_BACKUP_BYTES) {
     throw new Error(
       'This file is too large. Choose a Quizmon backup under 10 MB.',
     );
   }
+};
+
+export const parseBackup = (text: string): PlayerBackup => {
+  validateBackupSize(new Blob([text]).size);
   let value: unknown;
   try {
     value = JSON.parse(text);

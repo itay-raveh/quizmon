@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   downloadBackup,
-  MAX_BACKUP_BYTES,
   parseBackup,
   restoreBackup,
+  validateBackupSize,
   type PlayerBackup,
 } from '@/game/backup';
 import type { PlayerData } from '@/game/player-data';
@@ -49,10 +49,7 @@ export const BackupSettings = () => {
     dismissDownloadNotice();
     setBusy(true);
     try {
-      if (file.size > MAX_BACKUP_BYTES)
-        throw new Error(
-          'This file is too large. Choose a Quizmon backup under 10 MB.',
-        );
+      validateBackupSize(file.size);
       setPreview(parseBackup(await file.text()));
     } catch (error) {
       setError(
