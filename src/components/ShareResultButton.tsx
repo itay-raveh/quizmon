@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useState, type ComponentProps } from 'react';
 import { shareResult } from '@/game/share';
 import type { GameMode, GameResult } from '@/game/types';
 import { GameButton } from './GameButton';
@@ -8,12 +8,12 @@ const ShareDialog = lazy(() =>
   import('./ShareDialog').then((module) => ({ default: module.ShareDialog })),
 );
 
-interface ShareResultButtonProps {
-  children?: ReactNode;
-  className?: string;
+interface ShareResultButtonProps extends Pick<
+  ComponentProps<typeof GameButton>,
+  'children' | 'className' | 'tone'
+> {
   mode: GameMode;
   result: GameResult;
-  tone?: 'primary' | 'quiet';
 }
 
 export const ShareResultButton = ({
@@ -21,7 +21,7 @@ export const ShareResultButton = ({
   className,
   mode,
   result,
-  tone = 'primary',
+  tone,
 }: ShareResultButtonProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [status, setStatus] = useState('');

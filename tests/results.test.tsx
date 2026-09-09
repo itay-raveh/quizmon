@@ -2,6 +2,7 @@ import type { ComponentProps } from 'react';
 import { render, screen } from '@testing-library/react';
 import { Results } from '@/components/Results';
 import { defaultModifiers } from '@/game/modifiers';
+import type { TrainerProgressChange } from '@/game/trainer';
 import type { AnswerResult, GameResult } from '@/game/types';
 
 const makeResult = (
@@ -122,6 +123,16 @@ describe('results summary', () => {
 
   it('shows every badge and specialty that progressed', () => {
     const result = makeResult(10, 5);
+    const titleProgress: TrainerProgressChange = {
+      current: 10,
+      delta: 1,
+      earned: true,
+      tier: 1,
+      goal: 10,
+      kind: 'specialty',
+      label: 'Type Specialist',
+      specialty: 'type',
+    };
     const onOpenTrainerCard = vi.fn();
     const rendered = render(
       createResults(result, {
@@ -137,16 +148,7 @@ describe('results summary', () => {
             kind: 'badge',
             label: 'Many Paths',
           },
-          {
-            current: 10,
-            delta: 1,
-            earned: true,
-            tier: 1,
-            goal: 10,
-            kind: 'specialty',
-            label: 'Type Specialist',
-            specialty: 'type',
-          },
+          titleProgress,
         ],
       }),
     );
@@ -164,18 +166,7 @@ describe('results summary', () => {
     rendered.rerender(
       createResults(result, {
         onOpenTrainerCard,
-        progressChanges: [
-          {
-            current: 10,
-            delta: 1,
-            earned: true,
-            tier: 1,
-            goal: 10,
-            kind: 'specialty',
-            label: 'Type Specialist',
-            specialty: 'type',
-          },
-        ],
+        progressChanges: [titleProgress],
       }),
     );
     screen
