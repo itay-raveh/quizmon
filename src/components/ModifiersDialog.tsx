@@ -14,12 +14,11 @@ const settingsTabLabels = {
   experience: 'Experience',
   backup: 'Backup',
 } as const;
-export type SettingsTab = keyof typeof settingsTabLabels;
+type SettingsTab = keyof typeof settingsTabLabels;
 const settingsTabs = Object.keys(settingsTabLabels) as SettingsTab[];
 
 interface ModifiersDialogProps {
   catalog: PokemonCatalog;
-  initialTab?: SettingsTab;
   modifiers: Modifiers;
   onClose: () => void;
   onSave: (modifiers: Modifiers) => void;
@@ -28,13 +27,12 @@ interface ModifiersDialogProps {
 
 export const ModifiersDialog = ({
   catalog,
-  initialTab = 'training',
   modifiers,
   onClose,
   onSave,
   trainingChangesApplyNextGame = false,
 }: ModifiersDialogProps) => {
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState<SettingsTab>('training');
   const [draft, setDraft] = useState(modifiers);
   const [submitted, setSubmitted] = useState(false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);

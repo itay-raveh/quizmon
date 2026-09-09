@@ -1,11 +1,6 @@
 import { useCallback, useState, type Dispatch } from 'react';
-import type { SettingsTab } from '@/components/ModifiersDialog';
 import type { Modifiers } from '@/game/types';
 import type { GameSession, GameSessionAction } from './session';
-
-interface SettingsState {
-  initialTab: SettingsTab;
-}
 
 interface SettingsDialogOptions {
   dispatch: Dispatch<GameSessionAction>;
@@ -24,19 +19,16 @@ export const useSettingsDialog = ({
   setModifiers,
   startTimer,
 }: SettingsDialogOptions) => {
-  const [settings, setSettings] = useState<SettingsState | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const phase = session.phase;
 
-  const open = useCallback(
-    (initialTab: SettingsTab) => {
-      if (phase === 'questions') pauseTimer();
-      setSettings({ initialTab });
-    },
-    [pauseTimer, phase],
-  );
+  const open = useCallback(() => {
+    if (phase === 'questions') pauseTimer();
+    setIsOpen(true);
+  }, [pauseTimer, phase]);
 
   const close = useCallback(() => {
-    setSettings(null);
+    setIsOpen(false);
     if (phase === 'questions') startTimer();
   }, [phase, startTimer]);
 
@@ -52,5 +44,5 @@ export const useSettingsDialog = ({
     [close, dispatch, markGenerationKnown, phase, setModifiers],
   );
 
-  return { close, open, save, state: settings };
+  return { close, open, save, isOpen };
 };

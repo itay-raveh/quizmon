@@ -119,7 +119,7 @@ const AppScreen = ({
         dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
         leagueUnlocked={isLeagueUnlocked(trainer.stats)}
         leagueCompleted={trainer.stats.leagueCompleted}
-        onOpenSettings={() => settings.open('training')}
+        onOpenSettings={settings.open}
         onOpenTrainerCard={() => trainer.open('front')}
         onRetryCatalog={catalogState.retry}
         onStart={training.start}
@@ -140,7 +140,7 @@ const AppScreen = ({
         key={currentQuestion.id}
         elapsedMilliseconds={question.elapsedMilliseconds}
         elapsedSeconds={question.elapsedSeconds}
-        interactionPaused={Boolean(settings.state)}
+        interactionPaused={settings.isOpen}
         mode={session.mode}
         nextQuestion={session.questions[session.questionIndex + 1]}
         number={session.questionIndex + 1}
@@ -205,15 +205,14 @@ const AppOverlays = ({
       visible={
         session.phase !== 'questions' &&
         !trainer.isOpen &&
-        !settings.state &&
+        !settings.isOpen &&
         !training.generationPromptOpen
       }
     />
     <Footer />
-    {settings.state && catalogState.status === 'ready' ? (
+    {settings.isOpen && catalogState.status === 'ready' ? (
       <ModifiersDialog
         catalog={catalogState.catalog}
-        initialTab={settings.state.initialTab}
         modifiers={modifiers}
         onClose={settings.close}
         onSave={settings.save}
