@@ -461,16 +461,9 @@ describe('question building', () => {
   });
 
   it('builds both Stat Showdown directions with a unique extreme answer', () => {
-    const questions = Array.from(
-      { length: 40 },
-      (_, index) =>
-        buildQuestions(
-          catalog,
-          { ...defaultModifiers, questionTypes: ['stat-showdown'] },
-          createSeededRandom(`stat-direction-${index}`),
-          1,
-        )[0],
-    ).filter((candidate) => candidate !== undefined);
+    const questions = Array.from({ length: 40 }, (_, index) =>
+      buildSingleQuestion('stat-showdown', `stat-direction-${index}`),
+    );
     const directions = new Set(
       questions.map((candidate) =>
         candidate.visual?.kind === 'stat-showdown'
