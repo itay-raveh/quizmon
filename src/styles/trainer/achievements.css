@@ -414,7 +414,7 @@
   color: var(--ink);
   background: var(--paper);
   border: 3px solid var(--navy);
-  border-radius: 0.75rem;
+  border-radius: var(--surface-radius);
   box-shadow:
     0 0.3rem 0 var(--yellow),
     0 0.7rem 0 var(--navy-shadow);

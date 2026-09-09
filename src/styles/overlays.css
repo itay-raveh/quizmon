@@ -78,7 +78,7 @@
   color: var(--ink);
   background: var(--paper);
   border: 3px solid var(--navy);
-  border-radius: 0.75rem;
+  border-radius: var(--surface-radius);
   overscroll-behavior: contain;
   box-shadow:
     0 0.3rem 0 var(--yellow),
@@ -289,7 +289,7 @@
   color: var(--navy);
   background: var(--paper);
   border: 2px solid var(--navy);
-  border-radius: 0.5rem;
+  border-radius: var(--button-radius);
   box-shadow:
     0 0.16rem 0 var(--yellow),
     0 0.24rem 0 var(--navy-shadow);
@@ -335,7 +335,7 @@
   color: var(--primary-text);
   background: var(--blue);
   border: 2px solid var(--navy);
-  border-radius: 0.35rem;
+  border-radius: var(--icon-control-radius);
   box-shadow: 0 0.15rem 0 var(--yellow);
   cursor: pointer;
   flex: none;

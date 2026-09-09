@@ -18,7 +18,7 @@
   color: var(--ink);
   background: color-mix(in srgb, var(--paper) 94%, transparent);
   border: 3px solid var(--navy);
-  border-radius: 0.75rem;
+  border-radius: var(--surface-radius);
   box-shadow:
     0 0.28rem 0 var(--yellow),
     0 0.62rem 0 var(--navy-shadow);
