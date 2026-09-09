@@ -62,10 +62,13 @@ export const Results = ({
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
   const heading = useRef<HTMLHeadingElement>(null);
-  const leagueVictory = mode.kind === 'league' && isLeagueVictory(result);
+  const isDaily = mode.kind === 'daily';
+  const isLeague = mode.kind === 'league';
+  const isTraining = mode.kind === 'training';
+  const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
   const resultStats: ResultStat[] = [
-    ...(mode.kind === 'league' && !leagueVictory
+    ...(isLeague && !leagueVictory
       ? [
           {
             label: 'Reached',
@@ -101,14 +104,13 @@ export const Results = ({
   const highScoreLabel = highScoreKey
     ? { custom: 'Custom', daily: 'Daily', league: 'League' }[highScoreKey]
     : null;
-  const resultTitle =
-    mode.kind === 'daily'
-      ? 'Daily complete'
-      : mode.kind === 'league'
-        ? leagueVictory
-          ? 'League Champion'
-          : 'League challenge ended'
-        : 'Training complete';
+  const resultTitle = isDaily
+    ? 'Daily complete'
+    : isLeague
+      ? leagueVictory
+        ? 'League Champion'
+        : 'League challenge ended'
+      : 'Training complete';
 
   useEffect(() => {
     heading.current?.focus();
@@ -146,7 +148,7 @@ export const Results = ({
           {resultTitle}
         </h1>
       </div>
-      {mode.kind === 'daily' ? (
+      {isDaily ? (
         <div className="results__daily-meta">
           <p className="game-mode">{formatDailyDate(mode.date)}</p>
           {dailyStreak > 0 ? (
@@ -214,7 +216,7 @@ export const Results = ({
         </p>
       ) : null}
 
-      {mode.kind === 'daily' && resultSaved ? (
+      {isDaily && resultSaved ? (
         <DailyReminderPrompt dailyDate={mode.date} />
       ) : null}
 
@@ -225,12 +227,10 @@ export const Results = ({
         progressChanges={progressChanges}
       />
 
-      {mode.kind !== 'league' ? (
+      {!isLeague ? (
         <div className="results__actions results__actions--paired">
-          <GameButton
-            onClick={mode.kind === 'training' ? onTrainAgain : onStartTraining}
-          >
-            {mode.kind === 'training' ? 'Train again' : 'Start training'}
+          <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
+            {isTraining ? 'Train again' : 'Start training'}
           </GameButton>
           <ShareResultButton mode={mode} result={result} tone="quiet" />
         </div>

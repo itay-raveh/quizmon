@@ -290,13 +290,11 @@ export const Question = ({
             onClick={advanceAnswer}
             ref={advanceButton}
           >
-            {isLeague
-              ? number === total || !answerCorrect
+            {number === total || (isLeague && !answerCorrect)
+              ? isLeague
                 ? 'See result'
-                : 'Next question'
-              : number === total
-                ? 'See results'
-                : 'Next question'}
+                : 'See results'
+              : 'Next question'}
           </GameButton>
         ) : null}
       </div>

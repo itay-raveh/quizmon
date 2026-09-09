@@ -40,25 +40,23 @@ export const TrainerCard = ({
   record,
 }: TrainerCardProps) => {
   const finish = getCardFinish(rank);
+  const isChampion = rank === 'Champion';
   const partnerName = profile.partnerPokemon ?? 'Choose partner';
 
   return (
     <TrainerArtifactFrame
       ref={cardRef}
-      className={`trainer-card trainer-card--${finish.toLowerCase()}${rank === 'Champion' ? ' trainer-card--champion' : ''}`}
+      className={`trainer-card trainer-card--${finish.toLowerCase()}${isChampion ? ' trainer-card--champion' : ''}`}
       aria-label={trainerViewLabels.front}
     >
-      <TrainerCardFinishEffects
-        finish={finish}
-        polished={rank === 'Champion'}
-      />
+      <TrainerCardFinishEffects finish={finish} polished={isChampion} />
       <div className="trainer-card__decoration" aria-hidden="true">
         <div className="trainer-card__watermark" />
       </div>
       <div className="trainer-card__front">
         <header className="trainer-card__rank">
           {rank}
-          {rank === 'Champion' ? <Trophy /> : null}
+          {isChampion ? <Trophy /> : null}
         </header>
         <div className="trainer-card__identity">
           <h2>{profile.name || `${site.name} Trainer`}</h2>
