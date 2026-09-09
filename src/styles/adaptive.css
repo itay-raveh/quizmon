@@ -37,10 +37,7 @@
   font-weight: 600;
 }
 
-.site-footer__group--credits {
-  font-size: var(--text-micro);
-}
-
+.site-footer__group--credits,
 .site-footer__group--legal {
   font-size: var(--text-micro);
 }
