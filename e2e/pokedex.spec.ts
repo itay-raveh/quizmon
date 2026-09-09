@@ -5,7 +5,13 @@ import { emptyPlayerData, type PlayerSave } from '../src/game/player-data';
 import { createSeededRandom } from '../src/game/random';
 import { getQuestionPokemon } from '../src/game/pokedex';
 import { generations, type Modifiers } from '../src/game/types';
-import { catalog, expect, formatName, test } from './fixtures';
+import {
+  catalog,
+  expect,
+  expectNoHorizontalOverflow,
+  formatName,
+  test,
+} from './fixtures';
 
 for (const width of [320, 1280]) {
   test(`browses found and missing Pokédex entries at ${width}px`, async ({
@@ -60,11 +66,7 @@ for (const width of [320, 1280]) {
     await expect(entries).toHaveCount(1);
     await expect(entries.first()).toContainText('Not found');
     await page.getByRole('searchbox').fill('');
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= window.innerWidth,
-      ),
-    ).toBe(true);
+    await expectNoHorizontalOverflow(page);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     await page.getByRole('button', { name: 'Titles', exact: true }).click();
     await expect(

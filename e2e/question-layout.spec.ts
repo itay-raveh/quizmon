@@ -1,6 +1,11 @@
 import type { Page } from '@playwright/test';
 import { questionTypes } from '../src/game/questions/definitions';
-import { expect, seedBrowserRandom, test } from './fixtures';
+import {
+  expect,
+  expectNoHorizontalOverflow,
+  seedBrowserRandom,
+  test,
+} from './fixtures';
 
 const geometry = (page: Page) =>
   page.locator('.question').evaluate((panel) => {
@@ -46,11 +51,7 @@ const assertStable = (
 };
 
 const assertFits = async (page: Page) => {
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
-    ),
-  ).toBe(true);
+  await expectNoHorizontalOverflow(page);
   const clipped = await page
     .locator('.answer__name, .question__instruction, .progress__label, .timer')
     .evaluateAll((elements) =>

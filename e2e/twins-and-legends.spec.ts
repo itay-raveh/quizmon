@@ -1,6 +1,7 @@
 import {
   findPokemonByLabel,
   expect,
+  expectNoHorizontalOverflow,
   formatName,
   seedBrowserRandom,
   test,
@@ -111,20 +112,12 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
       if (outcome === 'correct')
         await expect(page.locator('.answer--wrong')).toHaveCount(0);
       else await expect(page.locator('.answer--wrong')).not.toHaveCount(0);
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      ).toBe(true);
+      await expectNoHorizontalOverflow(page);
       if (outcome === 'correct')
         expect(
           (await new AxeBuilder({ page }).include('.question').analyze())
             .violations,
         ).toEqual([]);
-      await page.screenshot({
-        path: `/tmp/quizmon-${questionType}-${outcome}.png`,
-        fullPage: true,
-      });
     });
   }
 }

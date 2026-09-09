@@ -34,6 +34,14 @@ export const seedBrowserRandom = (page: Page, seed: string) =>
       Math.random = Math.seedrandom(${JSON.stringify(seed)}, { global: false });`,
   });
 
+export const expectNoHorizontalOverflow = async (page: Page) => {
+  const { pageWidth, viewportWidth } = await page.evaluate(() => ({
+    pageWidth: document.documentElement.scrollWidth,
+    viewportWidth: window.innerWidth,
+  }));
+  expect(pageWidth).toBeLessThanOrEqual(viewportWidth);
+};
+
 export const completeTrainingRound = async (page: Page) => {
   const progress = page.getByRole('progressbar', { name: 'Quiz progress' });
 

@@ -1,6 +1,7 @@
 import {
   findPokemonByLabel,
   expect,
+  expectNoHorizontalOverflow,
   formatName,
   seedBrowserRandom,
   test,
@@ -105,15 +106,7 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
       if (outcome === 'correct')
         await expect(page.locator('.answer--wrong')).toHaveCount(0);
       else await expect(page.locator('.answer--wrong')).not.toHaveCount(0);
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      ).toBe(true);
-      await page.screenshot({
-        path: `/tmp/quizmon-${questionType}-${outcome}.png`,
-        fullPage: true,
-      });
+      await expectNoHorizontalOverflow(page);
       await page.getByRole('button', { name: 'Next question' }).click();
       await expect(
         page.getByRole('progressbar', { name: 'Quiz progress' }),
