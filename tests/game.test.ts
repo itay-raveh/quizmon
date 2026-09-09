@@ -92,13 +92,16 @@ const attackMultiplier = (
   }, 1);
 };
 
-const buildSingleQuestion = (questionType: QuestionType, seed: string) =>
-  buildQuestions(
+const buildSingleQuestion = (questionType: QuestionType, seed: string) => {
+  const [question] = buildQuestions(
     catalog,
     { ...defaultModifiers, questionTypes: [questionType] },
     createSeededRandom(seed),
     1,
-  )[0];
+  );
+  expect.assert.isDefined(question);
+  return question;
+};
 
 describe('question building', () => {
   it('keeps advanced formats out of generated League Training rounds', () => {
@@ -436,7 +439,6 @@ describe('question building', () => {
         `numbered-${questionType}`,
       );
 
-      expect.assert.isDefined(question);
       for (const option of question.options) {
         const pokemon = catalog.pokemon[option];
         if (
@@ -453,9 +455,9 @@ describe('question building', () => {
 
   it('builds an exact multi-select answer key', () => {
     const multiSelect = buildSingleQuestion('type-roundup', 'multi-select');
-    expect(multiSelect?.answer.correctOptions.length).toBeGreaterThan(1);
-    expect(multiSelect?.options).toHaveLength(4);
-    expect(multiSelect?.visual).toMatchObject({ kind: 'type-roundup' });
+    expect(multiSelect.answer.correctOptions.length).toBeGreaterThan(1);
+    expect(multiSelect.options).toHaveLength(4);
+    expect(multiSelect.visual).toMatchObject({ kind: 'type-roundup' });
   });
 
   it('builds both Stat Showdown directions with a unique extreme answer', () => {
@@ -501,7 +503,7 @@ describe('question building', () => {
     for (const questionType of ['type-matchup', 'counter-pick'] as const) {
       const questions = Array.from({ length: 24 }, (_, index) =>
         buildSingleQuestion(questionType, `${questionType}-${index}`),
-      ).filter((question) => question !== undefined);
+      );
       const multipliers = new Set(
         questions.flatMap((question) =>
           question.visual?.kind === 'type-matchup' ||
@@ -542,18 +544,18 @@ describe('question building', () => {
 
   it('builds Counter Pick with exactly one matching answer', () => {
     const question = buildSingleQuestion('counter-pick', 'counter-pick');
-    expect(getQuestionTitle(question!)).toBe('Counter pick');
-    expect(question?.media.kind).toBe('pixel-sprite');
-    expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
-    expect(question?.visual?.kind).toBe('counter-pick');
+    expect(getQuestionTitle(question)).toBe('Counter pick');
+    expect(question.media.kind).toBe('pixel-sprite');
+    expect(Object.keys(question.optionVisuals ?? {})).toHaveLength(4);
+    expect(question.visual?.kind).toBe('counter-pick');
 
-    const defender = catalog.pokemon[question!.pokemonName]!;
-    const correct = question!.answer.correctOptions[0];
+    const defender = catalog.pokemon[question.pokemonName]!;
+    const correct = question.answer.correctOptions[0];
     const multiplier =
-      question?.visual?.kind === 'counter-pick'
+      question.visual?.kind === 'counter-pick'
         ? question.visual.multiplier
         : undefined;
-    for (const option of question!.options) {
+    for (const option of question.options) {
       const attacker = catalog.pokemon[option]!;
       const strongestMatchup = Math.max(
         ...attacker.types.map((type) => attackMultiplier(type, defender.types)),
@@ -608,15 +610,15 @@ describe('question building', () => {
 
   it('builds Evolution Shift from a real typing change', () => {
     const question = buildSingleQuestion('evolution-shift', 'evolution-shift');
-    expect(getQuestionTitle(question!)).toBe('Evolution shift');
-    expect(question?.media.kind).toBe('pixel-sprite');
+    expect(getQuestionTitle(question)).toBe('Evolution shift');
+    expect(question.media.kind).toBe('pixel-sprite');
 
-    const target = catalog.pokemon[question!.pokemonName]!;
+    const target = catalog.pokemon[question.pokemonName]!;
     const evolution = catalog.pokemon[target.evolvesTo[0]!]!;
-    const correct = question!.answer.correctOptions[0]!;
+    const correct = question.answer.correctOptions[0]!;
     expect(target.types).not.toContain(correct);
     expect(evolution.types).toContain(correct);
-    expect(question?.visual).toEqual({
+    expect(question.visual).toEqual({
       evolution: {
         dexNumber: evolution.id,
         name: target.evolvesTo[0],
@@ -635,10 +637,10 @@ describe('question building', () => {
           'pokedex-scan',
           `pokedex-scan-${index}`,
         );
-        expect(getQuestionPromptText(question!.prompt)).toBe(
+        expect(getQuestionPromptText(question.prompt)).toBe(
           'Who is this Pokémon?',
         );
-        return question?.media.kind === 'sprite' ? question.media.src : '';
+        return question.media.kind === 'sprite' ? question.media.src : '';
       }),
     );
 
