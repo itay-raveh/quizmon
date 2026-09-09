@@ -208,10 +208,12 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
   };
 };
 
-export const buildPropertyQuestion =
-  (category: 'ability' | 'move'): QuestionBuilder =>
-  (context) => {
-    const property = category === 'ability' ? 'abilities' : 'levelMoves';
+export const buildPropertyQuestion = (
+  category: 'ability' | 'move',
+): QuestionBuilder => {
+  const property = category === 'ability' ? 'abilities' : 'levelMoves';
+  const subject = category === 'ability' ? 'ability' : 'move by leveling up';
+  return (context) => {
     const target = pickTarget(
       context,
       (pokemon) => pokemon[property].length > 0,
@@ -224,7 +226,6 @@ export const buildPropertyQuestion =
     );
     for (const invalid of target.pokemon[property]) candidates.delete(invalid);
     const options = randomOptionSet(correct, [...candidates], context.random);
-    const subject = category === 'ability' ? 'ability' : 'move by leveling up';
     return makeQuestion(
       targetRepetition({ pokemonOptions: false }),
       category,
@@ -234,6 +235,7 @@ export const buildPropertyQuestion =
       pokemonPrompt(target, `Which ${subject} can `, ' have?'),
     );
   };
+};
 
 export const buildStatQuestion: QuestionBuilder = (context) => {
   const stat = pick(statNames, context.random) as StatName;

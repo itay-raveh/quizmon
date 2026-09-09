@@ -43,39 +43,42 @@ const makeClient = (): CatalogClient => ({
   },
   resolveSpecies(resources) {
     return Promise.resolve(
-      resources.map((resource) => ({
-        name: resourceName(resource),
-        color: { name: 'green' },
-        is_legendary: resourceName(resource) === 'species-1',
-        is_mythical: resourceName(resource) === 'species-2',
-        evolution_chain: {
-          url: `https://pokeapi.co/api/v2/evolution-chain/${resourceName(resource)}`,
-        },
-        evolves_from_species: null,
-        flavor_text_entries: [
-          {
-            flavor_text: `${resourceName(resource)} old field notes.`,
-            language: { name: 'en' },
+      resources.map((resource) => {
+        const name = resourceName(resource);
+        return {
+          name,
+          color: { name: 'green' },
+          is_legendary: name === 'species-1',
+          is_mythical: name === 'species-2',
+          evolution_chain: {
+            url: `https://pokeapi.co/api/v2/evolution-chain/${name}`,
           },
-          {
-            flavor_text: `${resourceName(resource)}\tnew\u00adest\nfield\fnotes.`,
-            language: { name: 'en' },
-          },
-          { flavor_text: 'Ignored entry.', language: { name: 'EN' } },
-          { flavor_text: 'Ignored entry.', language: { name: 'ja' } },
-        ],
-        genera: [{ genus: 'Test\nPokémon', language: { name: 'en' } }],
-        shape: { name: 'quadruped' },
-        varieties: [
-          {
-            is_default: true,
-            pokemon: {
-              name: resourceName(resource),
-              url: `https://pokeapi.co/api/v2/pokemon/${resourceName(resource)}`,
+          evolves_from_species: null,
+          flavor_text_entries: [
+            {
+              flavor_text: `${name} old field notes.`,
+              language: { name: 'en' },
             },
-          },
-        ],
-      })) as never,
+            {
+              flavor_text: `${name}\tnew\u00adest\nfield\fnotes.`,
+              language: { name: 'en' },
+            },
+            { flavor_text: 'Ignored entry.', language: { name: 'EN' } },
+            { flavor_text: 'Ignored entry.', language: { name: 'ja' } },
+          ],
+          genera: [{ genus: 'Test\nPokémon', language: { name: 'en' } }],
+          shape: { name: 'quadruped' },
+          varieties: [
+            {
+              is_default: true,
+              pokemon: {
+                name,
+                url: `https://pokeapi.co/api/v2/pokemon/${name}`,
+              },
+            },
+          ],
+        };
+      }) as never,
     );
   },
   resolvePokemon(resources) {
