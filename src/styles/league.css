@@ -121,34 +121,8 @@
   text-wrap: balance;
 }
 
-.league-challenge__trials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: min(100%, 27rem);
-  padding: 0;
+.league-challenge > .league-progress {
   margin: 0 0 2rem;
-  list-style: none;
-}
-
-.league-challenge__trials li {
-  position: relative;
-  display: grid;
-  flex: 1;
-  color: var(--hall-gold);
-  font-family: var(--font-data);
-  font-size: var(--text-control);
-  font-weight: 700;
-  place-items: center;
-}
-
-.league-challenge__trials li + li::before {
-  position: absolute;
-  left: -20%;
-  width: 40%;
-  height: 1px;
-  background: #55748d;
-  content: '';
 }
 
 .league-gold-button.game-button {

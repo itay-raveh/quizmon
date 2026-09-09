@@ -1,16 +1,21 @@
 import { getLeagueStage, leagueStages } from '@/game/league';
 
 interface LeagueProgressProps {
-  currentQuestion: number;
+  currentQuestion?: number;
 }
 
 export const LeagueProgress = ({ currentQuestion }: LeagueProgressProps) => {
-  const currentStage = getLeagueStage(currentQuestion);
-  const currentIndex = leagueStages.indexOf(currentStage);
+  const currentStage =
+    currentQuestion === undefined ? undefined : getLeagueStage(currentQuestion);
+  const currentIndex = currentStage ? leagueStages.indexOf(currentStage) : -1;
 
   return (
     <ol
-      aria-label={`Quizmon League progress. ${currentStage.heading}, ${currentStage.title}.`}
+      aria-label={
+        currentStage
+          ? `Quizmon League progress. ${currentStage.heading}, ${currentStage.title}.`
+          : 'Five League trials'
+      }
       className="league-progress"
     >
       {leagueStages.map((stage, index) => (

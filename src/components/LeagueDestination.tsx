@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  LEAGUE_QUESTION_COUNT,
-  leagueStages,
-  type LeagueView,
-} from '@/game/league';
+import { LEAGUE_QUESTION_COUNT, type LeagueView } from '@/game/league';
 import type { LeagueVictoryRecord } from '@/game/hall-of-fame';
 import { readPlayerData } from '@/game/player-storage';
 import type { PokemonCatalog } from '@/game/types';
@@ -22,6 +18,7 @@ import {
 } from './icons';
 import { HallOfFameRecord } from './HallOfFameRecord';
 import { LeagueTrophy } from './LeagueTrophy';
+import { LeagueProgress } from './LeagueProgress';
 import { Toast } from './Toast';
 import { useReducedMotion } from './motion';
 import '@/styles/league.css';
@@ -133,14 +130,7 @@ export const LeagueDestination = ({
           <div className="league-challenge">
             <h1 tabIndex={-1}>League challenge</h1>
             <p>{`Answer all ${LEAGUE_QUESTION_COUNT} questions correctly to enter the Hall of Fame.`}</p>
-            <ol
-              className="league-challenge__trials"
-              aria-label="Five League trials"
-            >
-              {leagueStages.map((stage) => (
-                <li key={stage.id}>{stage.marker}</li>
-              ))}
-            </ol>
+            <LeagueProgress />
             <GameButton className="league-gold-button" onClick={onStart}>
               {completed ? 'League rematch' : 'Start League challenge'}
               <ArrowRightIcon aria-hidden="true" weight="bold" />
