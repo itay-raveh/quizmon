@@ -9,6 +9,7 @@ import {
   MAX_BACKUP_BYTES,
   parseBackup,
   restoreBackup,
+  type PlayerBackup,
 } from '@/game/backup';
 import { readActiveGame, writeActiveGame } from '@/game/active-game';
 import { defaultModifiers } from '@/game/modifiers';
@@ -213,21 +214,21 @@ it('keeps new-player settings and profile absent through a round trip', () => {
   expect(readPlayerSave().data).toEqual(backup.save.data);
 });
 
-it.each([
-  (backup: ReturnType<typeof createBackup>) => ({
+it.for<(backup: PlayerBackup) => unknown>([
+  (backup) => ({
     ...backup,
     format: 'other-app',
   }),
-  (backup: ReturnType<typeof createBackup>) => ({ ...backup, version: 99 }),
-  (backup: ReturnType<typeof createBackup>) => ({
+  (backup) => ({ ...backup, version: 99 }),
+  (backup) => ({
     ...backup,
     exportedAt: '2026-02-30T12:00:00.000Z',
   }),
-  (backup: ReturnType<typeof createBackup>) => ({
+  (backup) => ({
     ...backup,
     save: { ...backup.save, version: 99 },
   }),
-  (backup: ReturnType<typeof createBackup>) => ({
+  (backup) => ({
     ...backup,
     save: {
       ...backup.save,
@@ -237,7 +238,7 @@ it.each([
       },
     },
   }),
-  (backup: ReturnType<typeof createBackup>) => ({
+  (backup) => ({
     ...backup,
     save: {
       ...backup.save,
@@ -255,7 +256,7 @@ it.each([
       },
     },
   }),
-  (backup: ReturnType<typeof createBackup>) => ({
+  (backup) => ({
     ...backup,
     save: {
       ...backup.save,
@@ -265,7 +266,7 @@ it.each([
       },
     },
   }),
-  (backup: ReturnType<typeof createBackup>) => ({
+  (backup) => ({
     ...backup,
     save: {
       ...backup.save,
@@ -288,7 +289,7 @@ it.each([
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
 });
 
-it.each([[], ['unknown'], null, 'I'])(
+it.for([[], ['unknown'], null, 'I'])(
   'rejects invalid backup selections without changing storage: %j',
   (value) => {
     populate();
