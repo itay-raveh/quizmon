@@ -44,7 +44,7 @@ export const ChampionSearch = ({
     ({ normalized }) => normalized === normalizedQuery,
   );
   const suggestions = useMemo(() => {
-    if (!normalizedQuery || exactMatch) return [];
+    if (exactMatch) return [];
     return findSearchMatches(entries, normalizedQuery);
   }, [entries, exactMatch, normalizedQuery]);
   const {
