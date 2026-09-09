@@ -42,12 +42,11 @@ const getInitialExpandedGroup = (
 ): QuestionTypeGroup => {
   const selected = new Set(selectedQuestionTypes);
   return (
-    groupedQuestionTypes.find(({ types }) => {
-      const selectedCount = types.filter((questionType) =>
-        selected.has(questionType),
-      ).length;
-      return selectedCount > 0 && selectedCount < types.length;
-    })?.id ?? questionTypeGroups[0].id
+    groupedQuestionTypes.find(
+      ({ types }) =>
+        types.some((questionType) => selected.has(questionType)) &&
+        types.some((questionType) => !selected.has(questionType)),
+    )?.id ?? questionTypeGroups[0].id
   );
 };
 
