@@ -136,6 +136,7 @@ const AppScreen = ({
     const currentQuestion = session.questions[session.questionIndex];
     return currentQuestion ? (
       <Question
+        typeRelations={catalogState.catalog?.typeRelations}
         answerFlow={session.modifiers.answerFlow}
         key={currentQuestion.id}
         elapsedMilliseconds={question.elapsedMilliseconds}

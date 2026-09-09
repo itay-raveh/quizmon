@@ -137,6 +137,49 @@ for (const viewport of [
         ).toBeVisible();
         assertStable(before, await geometry(page));
         await assertFits(page);
+        if (type === 'type-matchup' || type === 'counter-pick') {
+          await page.locator('.answer-matchup__help').first().click();
+          const popover = page.locator('.matchup-help:popover-open');
+          await expect(popover).toBeVisible();
+          expect(
+            await popover.evaluate(
+              (element) => element.scrollWidth - element.clientWidth,
+            ),
+          ).toBeLessThanOrEqual(1);
+          const rows = await popover
+            .locator('.matchup-help__factor')
+            .evaluateAll((elements) =>
+              elements.map((row) => {
+                const center = (element: Element) => {
+                  const rect = element.getBoundingClientRect();
+                  return {
+                    x: rect.x + rect.width / 2,
+                    y: rect.y + rect.height / 2,
+                  };
+                };
+                const badges = row.querySelectorAll('.type-badge');
+                return {
+                  attacker: center(badges[0]!),
+                  defender: center(badges[1]!),
+                  arrow: center(
+                    row.querySelector('.question-relation__arrow')!,
+                  ),
+                  multiplier: center(row.querySelector('strong')!),
+                };
+              }),
+            );
+          expect(rows.length).toBeGreaterThan(0);
+          for (const row of rows) {
+            expect(Math.abs(row.attacker.y - row.arrow.y)).toBeLessThan(1);
+            expect(Math.abs(row.defender.y - row.arrow.y)).toBeLessThan(1);
+            expect(Math.abs(row.multiplier.x - row.arrow.x)).toBeLessThan(1);
+            expect(row.multiplier.y).toBeLessThan(row.arrow.y);
+            expect(Math.abs(row.defender.x - rows[0]!.defender.x)).toBeLessThan(
+              1,
+            );
+          }
+          await page.keyboard.press('Escape');
+        }
       });
     }
     if (viewport.name === 'zoom') return;

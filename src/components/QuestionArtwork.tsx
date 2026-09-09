@@ -1,7 +1,8 @@
+import { RelationArrow, TypeEffectArrow } from './RelationArrow';
 import { GenerationLabel } from './GenerationLabel';
 import { PixelSprite } from './PixelSprite';
 import { Fragment, type ReactNode } from 'react';
-import { formatPokemonName, formatTypeMultiplier } from '@/game/format';
+import { formatPokemonName } from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { PokemonIdentity } from './PokemonIdentity';
 import { Sprite } from './Sprite';
@@ -12,20 +13,6 @@ interface QuestionArtworkProps {
   cluesShown: number;
   question: QuestionData;
 }
-
-const RelationArrow = ({
-  direction = 'right',
-}: {
-  direction?: 'right' | 'up' | 'down';
-}) => (
-  <span
-    className={`question-relation__arrow question-relation__arrow--${direction}`}
-  >
-    <svg aria-hidden="true" viewBox="0 0 54 32">
-      <path d="M2 11h31V4l18 12-18 12v-7H2z" />
-    </svg>
-  </span>
-);
 
 const MysteryType = ({
   answered,
@@ -238,10 +225,7 @@ export const QuestionArtwork = ({
             )}
           </span>
         )}
-        <span className="question-relation__effect">
-          <strong>×{formatTypeMultiplier(visual.multiplier)}</strong>
-          <RelationArrow />
-        </span>
+        <TypeEffectArrow multiplier={visual.multiplier} />
         <Subject {...subject}>
           <SubjectTypes answered={answered} types={question.pokemonTypes} />
         </Subject>

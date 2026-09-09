@@ -258,3 +258,219 @@
   padding-block: 0.55rem;
   margin-top: 1.05rem;
 }
+
+.answer-matchup {
+  position: relative;
+  display: grid;
+  min-width: 0;
+}
+
+.answer-matchup > .answer {
+  width: 100%;
+  height: 100%;
+  padding-right: 5.4rem;
+}
+
+.answer-matchup__help {
+  position: absolute;
+  top: 50%;
+  right: 0.4rem;
+  display: flex;
+  min-height: 2.75rem;
+  padding: 0.35rem;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--primary-text);
+  background: transparent;
+  border: 0;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  font-family: var(--font-data);
+  font-size: var(--text-label);
+  font-weight: 800;
+  transform: translateY(-50%);
+}
+
+.answer-matchup__help svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.answer-matchup__help:hover {
+  background: var(--navy);
+}
+
+.answer-matchup__help:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 0;
+}
+
+.answer-matchup--pokemon > .answer {
+  padding-right: 0;
+}
+
+.answers.answers--counter-pick {
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+.answers--counter-pick .answer--pokemon {
+  --answer-sprite-size: 4.5rem;
+  min-height: 5.25rem;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  grid-template-rows: auto;
+}
+
+.answers--counter-pick .answer__nameplate {
+  padding: 0.5rem 4.5rem 0.5rem 0.65rem;
+  border: 0;
+  text-align: left;
+}
+
+.answers--counter-pick .answer__name {
+  font-size: var(--text-body);
+}
+
+.answers--counter-pick .answer__types {
+  justify-content: flex-start;
+}
+
+.answers--counter-pick .answer-matchup__help {
+  top: 0.25rem;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  width: 3.75rem;
+  padding: 0.4rem 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  border-left: 1px solid currentColor;
+  border-radius: 0;
+  transform: none;
+}
+
+.answers--counter-pick .answer-matchup__help > span {
+  font-size: var(--text-body);
+}
+
+.matchup-help.question-type-help[popover] {
+  width: max-content;
+  max-width: calc(100vw - 1.5rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  overflow-y: auto;
+}
+
+.matchup-help__calculation {
+  padding: 0.65rem 3rem 0.65rem 0.65rem;
+}
+
+.matchup-help__calculation + .matchup-help__calculation {
+  border-top: 1px solid var(--navy);
+}
+
+.matchup-help__attack {
+  margin-bottom: 0.65rem;
+  color: var(--navy);
+  font-size: var(--text-body);
+  font-weight: 500;
+}
+
+.matchup-help__attack b {
+  font-weight: 800;
+}
+
+.matchup-help__formula {
+  display: grid;
+  gap: 0.75rem;
+  color: var(--navy);
+  font-family: var(--font-interface);
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.matchup-help__factor {
+  display: grid;
+  grid-template-columns: minmax(0, 3.125rem) minmax(0, 3.375rem) minmax(
+      0,
+      3.125rem
+    );
+  grid-template-rows: auto 2rem;
+  align-items: center;
+  justify-items: center;
+  justify-content: start;
+  gap: 0.1rem 0.4rem;
+}
+
+.matchup-help__factor > .type-badges {
+  grid-row: 2;
+  min-width: 0;
+}
+
+.matchup-help__factor .type-badge {
+  max-width: 100%;
+  height: auto;
+}
+
+.matchup-help__factor > .type-badges:first-child {
+  grid-column: 1;
+}
+
+.matchup-help__factor > .type-badges:last-child {
+  grid-column: 3;
+}
+
+.matchup-help__factor .question-relation__effect {
+  display: contents;
+}
+
+.matchup-help__factor .question-relation__effect > strong {
+  grid-area: 1 / 2;
+}
+
+.matchup-help__factor .question-relation__arrow {
+  grid-area: 2 / 2;
+  max-width: 100%;
+}
+
+.matchup-help__total {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--navy);
+  text-align: center;
+}
+
+@media (min-width: 36.01rem) {
+  .answers.answers--counter-pick {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 16rem) {
+  .answers--counter-pick .answer--pokemon {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--answer-sprite-size) auto;
+  }
+
+  .answers--counter-pick .answer__nameplate {
+    padding: 0.5rem;
+  }
+
+  .answers--counter-pick .answer__sprite-field {
+    padding-right: 3rem;
+  }
+
+  .answers--counter-pick .answer-matchup__help {
+    bottom: auto;
+    width: 3rem;
+    min-height: 4rem;
+    color: var(--navy);
+    background: var(--paper);
+    border: 0;
+    border-radius: 0.2rem;
+  }
+
+  .answers--counter-pick .answer-matchup__help:focus-visible {
+    outline-color: var(--navy);
+  }
+}

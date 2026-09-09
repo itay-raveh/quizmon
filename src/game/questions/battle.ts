@@ -2,6 +2,7 @@ import { targetRepetition } from './repetition';
 import { pick, shuffle } from '../random';
 import { formatTypeMultiplier } from '../format';
 import type { PokemonCatalog } from '../types';
+import { attackMultiplier } from '../type-effectiveness';
 import {
   orderTargets,
   getOptionVisuals,
@@ -15,21 +16,6 @@ import {
 } from './shared';
 
 const matchupMultipliers = [4, 2, 0.5, 0.25] as const;
-
-const attackMultiplier = (
-  catalog: PokemonCatalog,
-  attackType: string,
-  defenderTypes: readonly string[],
-): number => {
-  const relations = catalog.typeRelations[attackType];
-  if (!relations) return 1;
-  return defenderTypes.reduce((multiplier, defenderType) => {
-    if (relations.noneTo.includes(defenderType)) return 0;
-    if (relations.doubleTo.includes(defenderType)) return multiplier * 2;
-    if (relations.halfTo.includes(defenderType)) return multiplier / 2;
-    return multiplier;
-  }, 1);
-};
 
 const createMatchupChecker = (
   catalog: PokemonCatalog,

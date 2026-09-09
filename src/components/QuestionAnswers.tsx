@@ -4,7 +4,9 @@ import {
   formatPokemonName,
   formatPokemonTypes,
 } from '@/game/format';
-import type { QuestionData } from '@/game/types';
+import { Fragment } from 'react';
+import { AnswerEffectiveness } from './AnswerEffectiveness';
+import type { PokemonCatalog, QuestionData } from '@/game/types';
 import { GameButton } from './GameButton';
 import { CheckIcon, XIcon } from './icons';
 import { PokemonIdentity } from './PokemonIdentity';
@@ -25,6 +27,7 @@ const optionTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
 ]);
 
 interface QuestionAnswersProps {
+  typeRelations?: PokemonCatalog['typeRelations'];
   answered: boolean;
   onSelect: (option: string) => void;
   question: QuestionData;
@@ -32,6 +35,7 @@ interface QuestionAnswersProps {
 }
 
 export const QuestionAnswers = ({
+  typeRelations,
   answered,
   onSelect,
   question,
@@ -58,6 +62,7 @@ export const QuestionAnswers = ({
       className={[
         'answers',
         question.optionVisuals ? 'answers--pokemon' : '',
+        question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
       ]
         .filter(Boolean)
@@ -131,7 +136,14 @@ export const QuestionAnswers = ({
           index + 1
         );
 
-        return (
+        const attackTypes = typeRelations
+          ? question.questionType === 'type-matchup'
+            ? [option]
+            : question.questionType === 'counter-pick'
+              ? visual?.types
+              : undefined
+          : undefined;
+        const answerButton = (
           <GameButton
             aria-label={
               concealed
@@ -213,6 +225,25 @@ export const QuestionAnswers = ({
               <span>{formatPokemonName(option)}</span>
             )}
           </GameButton>
+        );
+        return attackTypes && typeRelations ? (
+          <div
+            className={`answer-matchup ${visual ? 'answer-matchup--pokemon' : ''}`.trim()}
+            key={option}
+          >
+            {answerButton}
+            {answered ? (
+              <AnswerEffectiveness
+                option={option}
+                isTypeOption={question.questionType === 'type-matchup'}
+                attackTypes={attackTypes}
+                defenderTypes={question.pokemonTypes}
+                typeRelations={typeRelations}
+              />
+            ) : null}
+          </div>
+        ) : (
+          <Fragment key={option}>{answerButton}</Fragment>
         );
       })}
     </div>

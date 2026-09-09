@@ -12,6 +12,7 @@ import {
 } from '@/game/format';
 import type {
   GameMode,
+  PokemonCatalog,
   QuestionData,
   QuestionPrompt as QuestionPromptData,
   TimerDisplay,
@@ -39,6 +40,7 @@ const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
 ]);
 
 interface QuestionProps extends UseQuestionAnswerOptions {
+  typeRelations?: PokemonCatalog['typeRelations'];
   elapsedSeconds: number;
   mode: GameMode;
   number: number;
@@ -80,6 +82,7 @@ const formatCorrectAnswer = (question: QuestionData): string => {
 
 export const Question = ({
   answerFlow,
+  typeRelations,
   elapsedMilliseconds,
   elapsedSeconds,
   interactionPaused,
@@ -248,6 +251,7 @@ export const Question = ({
           />
         ) : (
           <QuestionAnswers
+            typeRelations={typeRelations}
             answered={answered}
             onSelect={selectOption}
             question={question}
