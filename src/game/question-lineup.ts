@@ -49,8 +49,6 @@ const mediaChecks = {
     optional(value.revealAt, isSafeNonnegativeInteger),
   'pixel-peek': (value) =>
     text(value.src) &&
-    typeof value.focusX === 'number' &&
-    typeof value.focusY === 'number' &&
     Number.isFinite(value.focusX) &&
     Number.isFinite(value.focusY),
 } satisfies Record<QuestionData['media']['kind'], VariantCheck>;
