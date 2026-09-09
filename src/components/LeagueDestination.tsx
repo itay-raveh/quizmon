@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { leagueStages, type LeagueView } from '@/game/league';
+import {
+  LEAGUE_QUESTION_COUNT,
+  leagueStages,
+  type LeagueView,
+} from '@/game/league';
 import type { LeagueVictoryRecord } from '@/game/hall-of-fame';
 import { readPlayerData } from '@/game/player-storage';
 import type { PokemonCatalog } from '@/game/types';
@@ -128,7 +132,7 @@ export const LeagueDestination = ({
         {view === 'challenge' ? (
           <div className="league-challenge">
             <h1 tabIndex={-1}>League challenge</h1>
-            <p>Answer all 15 questions correctly to enter the Hall of Fame.</p>
+            <p>{`Answer all ${LEAGUE_QUESTION_COUNT} questions correctly to enter the Hall of Fame.`}</p>
             <ol
               className="league-challenge__trials"
               aria-label="Five League trials"

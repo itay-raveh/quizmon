@@ -184,7 +184,9 @@ export const buildLeagueQuestions = (
     new Set(questions.map(({ questionType }) => questionType)).size !==
       LEAGUE_QUESTION_COUNT
   ) {
-    throw new Error('Quizmon League must contain 15 unique question formats');
+    throw new Error(
+      `Quizmon League must contain ${LEAGUE_QUESTION_COUNT} unique question formats`,
+    );
   }
 
   return questions;
