@@ -17,7 +17,6 @@ import {
 } from './session';
 
 interface GameCompletionOptions {
-  contentVersion: number;
   catalog?: PokemonCatalog;
   dispatch: Dispatch<GameSessionAction>;
   pauseTimer: () => number;
@@ -28,7 +27,6 @@ interface GameCompletionOptions {
 }
 
 export const useGameCompletion = ({
-  contentVersion,
   catalog,
   dispatch,
   pauseTimer,
@@ -37,6 +35,7 @@ export const useGameCompletion = ({
   session,
   startTimer,
 }: GameCompletionOptions) => {
+  const contentVersion = catalog?.contentVersion ?? 0;
   const progressStart = useRef<{
     seed: string;
     stats: ReturnType<typeof readTrainerStats>;

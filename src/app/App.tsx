@@ -107,7 +107,6 @@ export const App = () => {
     complete: completeGame,
     recordAnswer,
   } = useGameCompletion({
-    contentVersion: catalog?.contentVersion ?? 0,
     catalog,
     dispatch: dispatchSession,
     pauseTimer: pause,
