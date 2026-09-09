@@ -42,7 +42,7 @@ const pickScanSprite = (
 
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
-  if (!target?.pokemon.sprite) return undefined;
+  if (!target) return undefined;
   const sprite = pickScanSprite(target.pokemon, context.random);
   if (!sprite) return undefined;
   return makeQuestion(

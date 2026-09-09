@@ -71,13 +71,13 @@ export const usePokemonCatalog = ({
         });
     };
 
-    let cancelScheduledLoad: () => void = () => undefined;
+    let cancelScheduledLoad: (() => void) | undefined;
     if (loadImmediately || attempt > 0) load();
     else cancelScheduledLoad = scheduleIdleCatalogLoad(load);
 
     return () => {
       active = false;
-      cancelScheduledLoad();
+      cancelScheduledLoad?.();
     };
   }, [attempt, loadImmediately]);
 
