@@ -85,7 +85,9 @@ describe('Daily Challenge', () => {
         seen.add(type);
       }
     }
-    expect(seen.size).toBe(16);
+    expect(seen.size).toBe(18);
+    expect(seen).toContain('sprite-match');
+    expect(seen).toContain('whos-that-pokemon');
   });
 });
 

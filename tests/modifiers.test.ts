@@ -52,7 +52,7 @@ describe('normalizeModifiers', () => {
       questionTypes: coreQuestionTypes,
       trainingMode: 'league',
     });
-    expect(coreQuestionTypes).toHaveLength(15);
+    expect(coreQuestionTypes).toHaveLength(17);
     for (const advanced of ['ability-check', 'move-check', 'stat-showdown']) {
       expect(coreQuestionTypes).not.toContain(advanced);
     }

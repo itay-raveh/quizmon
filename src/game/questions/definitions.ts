@@ -31,6 +31,14 @@ export const questionDefinitions = {
     description: 'Pick the silhouette of a named Pokémon.',
     group: 'identity',
   },
+  'sprite-match': {
+    description: 'Pick the sprite of a named Pokémon.',
+    group: 'identity',
+  },
+  'whos-that-pokemon': {
+    description: 'Name the Pokémon hidden in a silhouette.',
+    group: 'identity',
+  },
   'pixel-peek': {
     description: 'Name a Pokémon from a tiny sprite crop.',
     group: 'identity',

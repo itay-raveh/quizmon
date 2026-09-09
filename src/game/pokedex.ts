@@ -30,6 +30,8 @@ export const getQuestionPokemon = (
     case 'pokedex-scan':
     case 'shiny-spotter':
     case 'silhouette-match':
+    case 'sprite-match':
+    case 'whos-that-pokemon':
     case 'stat-showdown':
     case 'type-roundup':
     case 'type-twins':

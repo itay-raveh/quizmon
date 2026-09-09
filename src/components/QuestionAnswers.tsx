@@ -135,7 +135,7 @@ export const QuestionAnswers = ({
           <GameButton
             aria-label={
               concealed
-                ? `Silhouette ${index + 1}`
+                ? `${visual?.silhouette ? 'Silhouette' : 'Sprite'} ${index + 1}`
                 : `${formatPokemonName(option)}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={String(index + 1)}

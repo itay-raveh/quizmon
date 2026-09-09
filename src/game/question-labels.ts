@@ -2,7 +2,9 @@ import type { QuestionData, SavedAnswerResult } from './types';
 
 export const questionLabels = {
   'pokedex-scan': 'Pokédex scan',
+  'sprite-match': 'Sprite match',
   'silhouette-match': 'Silhouette match',
+  'whos-that-pokemon': 'Who’s that Pokémon?',
   'pixel-peek': 'Pixel peek',
   'shiny-spotter': 'Shiny spotter',
   'field-notes': 'Field notes',

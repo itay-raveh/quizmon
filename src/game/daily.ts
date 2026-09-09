@@ -10,7 +10,7 @@ import {
 import { coreQuestionTypes } from './questions/definitions';
 import { createSeededRandom, shuffle } from './random';
 
-export const DAILY_CHALLENGE_VERSION = 13;
+export const DAILY_CHALLENGE_VERSION = 14;
 export const DAILY_QUESTION_COUNT = 5;
 const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
 export const getLocalDate = (date = new Date()): string =>

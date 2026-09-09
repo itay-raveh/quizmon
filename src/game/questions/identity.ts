@@ -56,26 +56,49 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   );
 };
 
-export const buildSilhouetteMatchQuestion: QuestionBuilder = (context) => {
-  const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
-  if (!target) return undefined;
-  const options = pokemonOptions(context, target).filter(
-    (option) => context.catalog.pokemon[option]?.sprite,
-  );
-  if (options.length !== 4) return undefined;
-
-  return {
-    ...makeQuestion(
-      targetRepetition({ pokemonOptions: true }),
-      'identity',
+const buildNamedPokemonQuestion =
+  (silhouette: boolean): QuestionBuilder =>
+  (context) => {
+    const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
+    if (!target) return undefined;
+    const options = pokemonOptions(
+      context,
       target,
-      target.name,
-      options,
-      pokemonPrompt(target, 'Find ', ''),
-    ),
-    concealOptionLabels: true,
-    optionVisuals: getOptionVisuals(context, options, undefined, true),
+      [],
+      context.pool.filter(({ pokemon }) => Boolean(pokemon.sprite)),
+    );
+    if (options.length !== 4) return undefined;
+
+    return {
+      ...makeQuestion(
+        targetRepetition({ pokemonOptions: true }),
+        'identity',
+        target,
+        target.name,
+        options,
+        pokemonPrompt(target, 'Find ', ''),
+      ),
+      concealOptionLabels: true,
+      optionVisuals: getOptionVisuals(context, options, undefined, silhouette),
+    };
   };
+
+export const buildSilhouetteMatchQuestion = buildNamedPokemonQuestion(true);
+export const buildSpriteMatchQuestion = buildNamedPokemonQuestion(false);
+
+export const buildWhosThatPokemonQuestion: QuestionBuilder = (context) => {
+  const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
+  if (!target?.pokemon.sprite) return undefined;
+
+  return makeQuestion(
+    targetRepetition({ pokemonOptions: true }),
+    'identity',
+    target,
+    target.name,
+    pokemonOptions(context, target),
+    textPrompt('Who is this Pokémon?'),
+    { kind: 'sprite', silhouette: true, src: target.pokemon.sprite },
+  );
 };
 
 export const buildPixelPeekQuestion: QuestionBuilder = (context) => {

@@ -20,6 +20,8 @@ import {
   buildPokedexScanQuestion,
   buildShinySpotterQuestion,
   buildSilhouetteMatchQuestion,
+  buildSpriteMatchQuestion,
+  buildWhosThatPokemonQuestion,
 } from './identity';
 import {
   buildChooseAllTypeQuestion,
@@ -39,6 +41,8 @@ import {
 const questionBuilders = {
   'pokedex-scan': buildPokedexScanQuestion,
   'silhouette-match': buildSilhouetteMatchQuestion,
+  'sprite-match': buildSpriteMatchQuestion,
+  'whos-that-pokemon': buildWhosThatPokemonQuestion,
   'pixel-peek': buildPixelPeekQuestion,
   'shiny-spotter': buildShinySpotterQuestion,
   'field-notes': buildDescriptionQuestion,

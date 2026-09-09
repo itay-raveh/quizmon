@@ -34,7 +34,7 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
     .getByRole('button', { name: 'Select all question types' })
     .click();
   const identityGroup = dialog.getByRole('button', {
-    name: 'Identity 4 / 4 selected',
+    name: 'Identity 6 / 6 selected',
   });
   const knowledgeGroup = dialog.getByRole('button', {
     name: 'General knowledge 9 / 9 selected',

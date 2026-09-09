@@ -232,6 +232,10 @@ it('requires the per-format and per-generation minimum, not a pooled total', () 
     getTrainerBadges(progress).find((entry) => entry.id === id)!;
   expect(badge('many-paths').tier).toBe(3);
   expect(badge('world-tour').tier).toBe(3);
+  for (const type of questionTypes.slice(18)) {
+    delete progress.correctQuestionTypes[type];
+  }
+  expect(badge('many-paths').tier).toBe(3);
   progress.correctQuestionTypes[questionTypes[0]!] = 49;
   progress.correctGenerations.IX = 99;
   expect(badge('many-paths').tier).toBe(2);
