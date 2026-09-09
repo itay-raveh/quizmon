@@ -332,16 +332,17 @@ export const getTrainerProgressChanges = (
   ) => {
     const previousTier = getTier(previous);
     const tier = getTier(next);
-    const index = Math.min(tier > previousTier ? tier - 1 : previousTier, 2);
+    const earned = tier > previousTier;
+    const index = Math.min(earned ? tier - 1 : previousTier, 2);
     const current = Math.min(next[index]!.current, next[index]!.goal);
     const delta =
       current - Math.min(previous[index]!.current, previous[index]!.goal);
-    return delta > 0 || tier > previousTier
+    return delta > 0 || earned
       ? {
           current,
           delta,
           goal: next[index]!.goal,
-          earned: tier > previousTier,
+          earned,
           tier,
         }
       : null;

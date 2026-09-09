@@ -23,7 +23,7 @@ const artifactDetails = {
 const waitForRenderedAssets = async (element: HTMLElement) => {
   await document.fonts?.ready;
   await Promise.allSettled(
-    [...element.querySelectorAll('img')].map((image) => image.decode()),
+    Array.from(element.querySelectorAll('img'), (image) => image.decode()),
   );
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 };
