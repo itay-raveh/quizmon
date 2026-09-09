@@ -167,12 +167,13 @@ export const Results = ({
       {result.questionCount <= 10 ? (
         <ol className="answer-trail" aria-label="Question results">
           {result.answers.map((answer, index) => {
-            const label = `${getCategoryLabel(answer.category)}: ${answer.correct ? 'correct' : 'incorrect'}`;
+            const categoryLabel = getCategoryLabel(answer.category);
+            const outcome = answer.correct ? 'correct' : 'incorrect';
             return (
               <li
                 className={answer.correct ? 'answer-trail--correct' : ''}
                 key={`${answer.category}-${index}`}
-                title={label}
+                title={`${categoryLabel}: ${outcome}`}
               >
                 <span aria-hidden="true">
                   {answer.correct ? (
@@ -181,7 +182,9 @@ export const Results = ({
                     <XIcon weight="bold" />
                   )}
                 </span>
-                <span className="visually-hidden">{label}</span>
+                <span className="visually-hidden">
+                  {categoryLabel}: {outcome}
+                </span>
               </li>
             );
           })}
