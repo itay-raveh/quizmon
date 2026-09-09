@@ -1,4 +1,5 @@
 import type { SpriteMeasurements } from '../src/game/types.ts';
+import { findPixelPeekFocus } from './pixel-peek-focus.ts';
 
 const measureSpritesInPage = async (
   sprites: { path: string; data: string }[],
@@ -26,10 +27,12 @@ const measureSpritesInPage = async (
       let top = canvas.height;
       let bottom = -1;
       let paintedPixels = 0;
+      const painted: number[] = [];
       for (let y = 0; y < canvas.height; y++) {
         for (let x = 0; x < canvas.width; x++) {
           if (pixels[(y * canvas.width + x) * 4 + 3]! < 128) continue;
           paintedPixels++;
+          painted.push(y * canvas.width + x);
           left = Math.min(left, x);
           right = Math.max(right, x);
           top = Math.min(top, y);
@@ -43,11 +46,16 @@ const measureSpritesInPage = async (
       return [
         path,
         {
-          area: round(paintedPixels / (canvas.width * canvas.height)),
-          width: round((right - left + 1) / canvas.width),
-          height: round((bottom - top + 1) / canvas.height),
-          centerX: round((left + right + 1) / (2 * canvas.width)),
-          bottom: round((bottom + 1) / canvas.height),
+          canvasWidth: canvas.width,
+          canvasHeight: canvas.height,
+          painted,
+          size: {
+            area: round(paintedPixels / (canvas.width * canvas.height)),
+            width: round((right - left + 1) / canvas.width),
+            height: round((bottom - top + 1) / canvas.height),
+            centerX: round((left + right + 1) / (2 * canvas.width)),
+            bottom: round((bottom + 1) / canvas.height),
+          },
         },
       ] as const;
     }),
@@ -72,7 +80,20 @@ export const measureCatalogSprites = async (
         })),
       );
       const measured = await page.evaluate(measureSpritesInPage, batch);
-      for (const [path, size] of measured) measurements.set(path, size);
+      for (const [
+        path,
+        { size, painted, canvasWidth, canvasHeight },
+      ] of measured) {
+        const pixelPeekFocus = findPixelPeekFocus(
+          painted,
+          canvasWidth,
+          canvasHeight,
+          size,
+        );
+        if (!/[1-9a-f]/.test(pixelPeekFocus))
+          throw new Error(`Sprite ${path} has no usable Pixel Peek crops`);
+        measurements.set(path, { ...size, pixelPeekFocus });
+      }
     }
     return measurements;
   } finally {

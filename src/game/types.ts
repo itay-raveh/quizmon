@@ -70,7 +70,10 @@ export interface SpriteMeasurements {
   height: number;
   centerX: number;
   bottom: number;
+  pixelPeekFocus?: string;
 }
+
+export type PixelPeekFocus = [x: number, y: number];
 
 export type PackedSpriteMeasurements = [
   area: number,
@@ -97,6 +100,7 @@ export interface PokemonKnowledge {
   shinySprite: string | null;
   sprite: string | null;
   spriteMeasurements: PackedSpriteMeasurements | null;
+  pixelPeekFocus?: string;
   stats: Record<StatName, number>;
   types: string[];
 }
@@ -138,6 +142,7 @@ type QuestionMedia =
       focusY: number;
       kind: 'pixel-peek';
       src: string;
+      zoom?: number;
     }
   | { kind: 'pixel-sprite'; src: string }
   | { kind: 'none' };

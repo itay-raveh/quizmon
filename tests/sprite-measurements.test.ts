@@ -22,13 +22,16 @@ describe('catalog sprite measurements', () => {
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
     );
     expect(fetch.mock.calls[0]?.[1]?.signal).toBeInstanceOf(AbortSignal);
-    expect(measurements.get('/sprites/pokemon/1.png')).toEqual({
+    expect(measurements.get('/sprites/pokemon/1.png')).toMatchObject({
       area: 0.25,
       width: 1,
       height: 1,
       centerX: 0.5,
       bottom: 1,
     });
+    expect(measurements.get('/sprites/pokemon/1.png')?.pixelPeekFocus).toMatch(
+      /^[0-9a-f]{21}$/,
+    );
   });
 
   it('rejects an unavailable sprite through the shared source', async () => {

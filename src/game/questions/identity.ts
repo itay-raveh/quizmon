@@ -1,5 +1,6 @@
 import { targetRepetition } from './repetition';
 import { pick } from '../random';
+import { getPixelPeekCrop } from '../pixel-peek';
 import { getVersionSpritePath } from '../sprite-source';
 import {
   getOptionVisuals,
@@ -113,8 +114,11 @@ export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
     pokemonOptions(context, target),
     textPrompt('Who is hiding in this pixel peek?'),
     {
-      focusX: pick([25, 50, 75], context.random) ?? 50,
-      focusY: pick([25, 50, 75], context.random) ?? 50,
+      ...getPixelPeekCrop(
+        target.pokemon.spriteMeasurements,
+        context.random,
+        target.pokemon.pixelPeekFocus,
+      ),
       kind: 'pixel-peek',
       src: target.pokemon.sprite,
     },

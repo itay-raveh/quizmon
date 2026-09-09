@@ -27,6 +27,7 @@ const makeClient = (): CatalogClient => ({
             height: 0.5,
             centerX: 0.5,
             bottom: 0.75,
+            pixelPeekFocus: '100000000000000000000',
           },
         ]),
       ),
@@ -244,6 +245,7 @@ describe('catalog generation', () => {
       shinySprite: '/sprites/pokemon/shiny/1.png',
       sprite: '/sprites/pokemon/1.png',
       spriteMeasurements: [0.25, 0.5, 0.5, 0.5, 0.75],
+      pixelPeekFocus: '100000000000000000000',
       stats: {
         hp: 75,
         attack: 50,

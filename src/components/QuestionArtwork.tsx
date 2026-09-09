@@ -1,7 +1,7 @@
 import { RelationArrow, TypeEffectArrow } from './RelationArrow';
 import { GenerationLabel } from './GenerationLabel';
 import { PixelSprite } from './PixelSprite';
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import { formatPokemonName } from '@/game/format';
 import type { QuestionData } from '@/game/types';
 import { PokemonIdentity } from './PokemonIdentity';
@@ -258,7 +258,15 @@ export const QuestionArtwork = ({
               ? formatPokemonName(question.pokemonName)
               : 'Cropped Pokémon sprite'
           }
-          style={{ transformOrigin: `${media.focusX}% ${media.focusY}%` }}
+          style={
+            {
+              transformOrigin: `${media.focusX}% ${media.focusY}%`,
+              '--pixel-peek-transform':
+                media.zoom === undefined
+                  ? undefined
+                  : `translate(${50 - media.focusX}%, ${50 - media.focusY}%) scale(${media.zoom})`,
+            } as CSSProperties
+          }
         />
       </div>
     );

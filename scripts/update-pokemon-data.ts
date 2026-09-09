@@ -311,6 +311,7 @@ const addSpriteMeasurements = async (
     pokemon.spriteMeasurements = size
       ? [size.area, size.width, size.height, size.centerX, size.bottom]
       : null;
+    pokemon.pixelPeekFocus = size?.pixelPeekFocus ?? '';
   }
   return catalog;
 };

@@ -50,7 +50,11 @@ const mediaChecks = {
   'pixel-peek': (value) =>
     text(value.src) &&
     Number.isFinite(value.focusX) &&
-    Number.isFinite(value.focusY),
+    Number.isFinite(value.focusY) &&
+    optional(
+      value.zoom,
+      (zoom) => typeof zoom === 'number' && Number.isFinite(zoom) && zoom >= 1,
+    ),
 } satisfies Record<QuestionData['media']['kind'], VariantCheck>;
 
 const multiplier = (value: Record<string, unknown>) =>
