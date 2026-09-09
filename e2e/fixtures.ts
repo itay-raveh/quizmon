@@ -17,6 +17,11 @@ export const formatName = (name: string) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
+export const findPokemonByLabel = (label: string | null) =>
+  Object.entries(catalogData.pokemon).find(
+    ([name]) => formatName(name) === label,
+  )?.[1];
+
 const seedrandomScript = readFileSync(
   createRequire(import.meta.url).resolve('seedrandom/seedrandom.min.js'),
   'utf8',

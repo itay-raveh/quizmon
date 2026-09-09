@@ -1,5 +1,5 @@
 import {
-  catalogData,
+  findPokemonByLabel,
   expect,
   formatName,
   seedBrowserRandom,
@@ -40,9 +40,7 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
         const name = await page
           .locator('.question-visual__subject-name .pokemon-identity__name')
           .textContent();
-        const target = Object.entries(catalogData.pokemon).find(
-          ([key]) => formatName(key) === name,
-        )?.[1];
+        const target = findPokemonByLabel(name);
         if (!target) throw new Error('Missing Type twins target');
         targetTypes = target.types;
         expect(targetTypes).toHaveLength(2);
@@ -53,9 +51,7 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
       const options = [];
       for (const answer of await answers.all()) {
         const name = await answer.getAttribute('aria-label');
-        const entry = Object.entries(catalogData.pokemon).find(
-          ([key]) => formatName(key) === name,
-        )?.[1];
+        const entry = findPokemonByLabel(name);
         if (!entry) throw new Error('Missing answer metadata');
         options.push(entry);
         await expect(

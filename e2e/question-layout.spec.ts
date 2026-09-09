@@ -32,18 +32,16 @@ const assertStable = (
     'response',
     'action',
   ] as const) {
-    expect(
-      Math.abs(after[region].x - before[region].x),
-      `${region} horizontal shift`,
-    ).toBeLessThan(1);
-    expect(
-      Math.abs(after[region].y - before[region].y),
-      `${region} vertical shift`,
-    ).toBeLessThan(1);
-    expect(
-      Math.abs(after[region].height - before[region].height),
-      `${region} height shift`,
-    ).toBeLessThan(1);
+    for (const [dimension, label] of [
+      ['x', 'horizontal'],
+      ['y', 'vertical'],
+      ['height', 'height'],
+    ] as const) {
+      expect(
+        Math.abs(after[region][dimension] - before[region][dimension]),
+        `${region} ${label} shift`,
+      ).toBeLessThan(1);
+    }
   }
 };
 

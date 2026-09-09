@@ -1,5 +1,5 @@
 import {
-  catalogData,
+  findPokemonByLabel,
   expect,
   formatName,
   seedBrowserRandom,
@@ -45,9 +45,7 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
           .first()
           .locator('.pokemon-identity__name')
           .textContent();
-        const first = Object.entries(catalogData.pokemon).find(
-          ([name]) => formatName(name) === before,
-        )?.[1];
+        const first = findPokemonByLabel(before);
         if (!first) throw new Error('Missing first evolution');
         const correct = first.evolvesTo[0]!;
         await expect(chain.locator('img')).toHaveCount(2);
@@ -76,9 +74,7 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
         for (const answer of await answers.all()) {
           await expect(answer.locator('.answer__generation')).toBeHidden();
           const label = await answer.getAttribute('aria-label');
-          const pokemon = Object.entries(catalogData.pokemon).find(
-            ([name]) => formatName(name) === label,
-          )?.[1];
+          const pokemon = findPokemonByLabel(label);
           if (!pokemon) throw new Error('Missing roundup option');
           values.push(pokemon.generation);
           if ((pokemon.generation === generation) === (outcome === 'correct'))
