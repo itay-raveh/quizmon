@@ -8,7 +8,8 @@ const cornersPng =
 
 afterEach(() => vi.restoreAllMocks());
 
-describe('catalog sprite measurements', () => {
+// Each measurement launches Chromium, including cold startup on CI.
+describe('catalog sprite measurements', { timeout: 15_000 }, () => {
   it('measures painted pixels and bounds once for each distinct sprite', async () => {
     const fetch = vi
       .spyOn(globalThis, 'fetch')
