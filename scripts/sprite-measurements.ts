@@ -1,5 +1,59 @@
 import type { SpriteMeasurements } from '../src/game/types.ts';
 
+const measureSpritesInPage = async (
+  sprites: { path: string; data: string }[],
+) => {
+  return Promise.all(
+    sprites.map(async ({ path, data }) => {
+      const image = new Image();
+      image.src = `data:image/png;base64,${data}`;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext('2d');
+      if (!context)
+        throw new Error('Canvas is unavailable for sprite measurement');
+      context.drawImage(image, 0, 0);
+      const pixels = context.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      ).data;
+      let left = canvas.width;
+      let right = -1;
+      let top = canvas.height;
+      let bottom = -1;
+      let paintedPixels = 0;
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          if (pixels[(y * canvas.width + x) * 4 + 3]! < 128) continue;
+          paintedPixels++;
+          left = Math.min(left, x);
+          right = Math.max(right, x);
+          top = Math.min(top, y);
+          bottom = Math.max(bottom, y);
+        }
+      }
+      if (!paintedPixels)
+        throw new Error(`Sprite ${path} has no visible pixels`);
+      const round = (value: number) =>
+        Math.round(value * 1_000_000) / 1_000_000;
+      return [
+        path,
+        {
+          area: round(paintedPixels / (canvas.width * canvas.height)),
+          width: round((right - left + 1) / canvas.width),
+          height: round((bottom - top + 1) / canvas.height),
+          centerX: round((left + right + 1) / (2 * canvas.width)),
+          bottom: round((bottom + 1) / canvas.height),
+        },
+      ] as const;
+    }),
+  );
+};
+
 export const measureCatalogSprites = async (
   paths: readonly string[],
   load: (path: string) => Promise<string>,
@@ -17,57 +71,7 @@ export const measureCatalogSprites = async (
           data: await load(path),
         })),
       );
-      const measured = await page.evaluate(async (sprites) => {
-        return Promise.all(
-          sprites.map(async ({ path, data }) => {
-            const image = new Image();
-            image.src = `data:image/png;base64,${data}`;
-            await image.decode();
-            const canvas = document.createElement('canvas');
-            canvas.width = image.naturalWidth;
-            canvas.height = image.naturalHeight;
-            const context = canvas.getContext('2d');
-            if (!context)
-              throw new Error('Canvas is unavailable for sprite measurement');
-            context.drawImage(image, 0, 0);
-            const pixels = context.getImageData(
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            ).data;
-            let left = canvas.width;
-            let right = -1;
-            let top = canvas.height;
-            let bottom = -1;
-            let paintedPixels = 0;
-            for (let y = 0; y < canvas.height; y++) {
-              for (let x = 0; x < canvas.width; x++) {
-                if (pixels[(y * canvas.width + x) * 4 + 3]! < 128) continue;
-                paintedPixels++;
-                left = Math.min(left, x);
-                right = Math.max(right, x);
-                top = Math.min(top, y);
-                bottom = Math.max(bottom, y);
-              }
-            }
-            if (!paintedPixels)
-              throw new Error(`Sprite ${path} has no visible pixels`);
-            const round = (value: number) =>
-              Math.round(value * 1_000_000) / 1_000_000;
-            return [
-              path,
-              {
-                area: round(paintedPixels / (canvas.width * canvas.height)),
-                width: round((right - left + 1) / canvas.width),
-                height: round((bottom - top + 1) / canvas.height),
-                centerX: round((left + right + 1) / (2 * canvas.width)),
-                bottom: round((bottom + 1) / canvas.height),
-              },
-            ] as const;
-          }),
-        );
-      }, batch);
+      const measured = await page.evaluate(measureSpritesInPage, batch);
       for (const [path, size] of measured) measurements.set(path, size);
     }
     return measurements;
