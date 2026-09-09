@@ -51,10 +51,11 @@ export const registerPokedexAnswer = (
   if (!correct) return false;
   try {
     const existing = readPlayerSave().data.pokedex;
-    const pokedex = [
-      ...new Set([...existing, ...getQuestionPokemon(question)]),
-    ];
-    return pokedex.length === existing.length || updatePlayerData({ pokedex });
+    const pokedex = new Set([...existing, ...getQuestionPokemon(question)]);
+    return (
+      pokedex.size === existing.length ||
+      updatePlayerData({ pokedex: [...pokedex] })
+    );
   } catch {
     return false;
   }

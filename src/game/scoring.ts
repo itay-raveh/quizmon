@@ -10,7 +10,7 @@ export const getAnswerPoints = (
 ): number => {
   if (!correct) return 0;
   if (question.category !== 'champion') return baseQuestionPoints;
-  return championPoints[Math.max(0, Math.min(3, assistsUsed))] ?? 250;
+  return championPoints[Math.max(0, assistsUsed)] ?? championPoints.at(-1)!;
 };
 
 const speedBonusRate = 3;

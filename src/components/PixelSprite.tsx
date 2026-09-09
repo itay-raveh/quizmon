@@ -1,11 +1,10 @@
-import type { CSSProperties } from 'react';
+import type { ComponentProps } from 'react';
 
-interface PixelSpriteProps {
+interface PixelSpriteProps extends Pick<
+  ComponentProps<'img'>,
+  'alt' | 'className' | 'fetchPriority' | 'style'
+> {
   src: string;
-  alt?: string;
-  style?: CSSProperties;
-  className?: string;
-  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 export const PixelSprite = ({
