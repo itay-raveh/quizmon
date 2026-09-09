@@ -96,16 +96,10 @@ export const useTrainingGame = ({
   }, [catalog, isGenerationPromptPending, modifiers, startRound]);
 
   const trainAgain = useCallback(() => {
-    if (
-      !catalog ||
-      session.phase !== 'results' ||
-      session.mode.kind !== 'training'
-    ) {
-      return;
-    }
+    if (session.phase !== 'results' || session.mode.kind !== 'training') return;
 
     startRound(session.modifiers);
-  }, [catalog, session, startRound]);
+  }, [session, startRound]);
 
   return {
     chooseAllGenerations: () => startWithGenerations([...generations]),
