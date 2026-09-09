@@ -22,11 +22,8 @@ export interface TrainerMilestone {
 }
 
 const getTier = (milestones: readonly TrainerMilestone[]): TrainerTier =>
-  milestones.reduce<TrainerTier>(
-    (tier, { current, goal }, index) =>
-      current >= goal ? ((index + 1) as TrainerTier) : tier,
-    0,
-  );
+  (milestones.findLastIndex(({ current, goal }) => current >= goal) +
+    1) as TrainerTier;
 
 const getProgress = (milestones: readonly TrainerMilestone[]) => {
   const tier = getTier(milestones);
@@ -274,7 +271,7 @@ export const getEarnedTrainerBadgeCount = (stats: TrainerStats): number =>
   getTrainerBadges(stats).filter(({ earned }) => earned).length;
 
 export const isLeagueUnlocked = (stats: TrainerStats): boolean =>
-  getEarnedTrainerBadgeCount(stats) === TRAINER_BADGE_COUNT;
+  getTrainerBadges(stats).every(({ earned }) => earned);
 
 export const getQualifiedTrainerSpecialties = (
   stats: TrainerStats,
