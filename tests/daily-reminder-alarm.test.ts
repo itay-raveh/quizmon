@@ -10,6 +10,11 @@ const subscription = {
   endpoint: 'https://example.com/push',
   keys: { auth: 'test-auth', p256dh: 'test-key' },
 };
+const deliveryErrors = [
+  new WebPushError('Service unavailable', 503, {}, '', subscription.endpoint),
+  new Error('Network unavailable'),
+];
+
 const nextMorning = Date.parse('2026-09-09T08:00:00.000Z');
 
 const makeReminder = (completedDate?: string) => {
@@ -115,10 +120,7 @@ it.each([404, 410])(
   },
 );
 
-it.each([
-  new WebPushError('Service unavailable', 503, {}, '', subscription.endpoint),
-  new Error('Network unavailable'),
-])(
+it.each(deliveryErrors)(
   'retries delivery failures without deleting the subscription: %s',
   async (error) => {
     const { reminder, storage } = makeReminder();
@@ -132,10 +134,7 @@ it.each([
   },
 );
 
-it.each([
-  new WebPushError('Service unavailable', 503, {}, '', subscription.endpoint),
-  new Error('Network unavailable'),
-])(
+it.each(deliveryErrors)(
   'resumes next morning after the retry budget is exhausted: %s',
   async (error) => {
     const { reminder, storage } = makeReminder();

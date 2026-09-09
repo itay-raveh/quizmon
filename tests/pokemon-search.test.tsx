@@ -8,7 +8,7 @@ const options = [
   { name: 'charizard', dexNumber: 6, sprite: null },
 ];
 
-for (const kind of ['partner', 'champion'] as const) {
+describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
   const setup = (query = 'char') => {
     const onChoose = vi.fn();
     render(
@@ -31,7 +31,7 @@ for (const kind of ['partner', 'champion'] as const) {
   };
 
   it.each([' CHÁR-- ', 'ＣＨＡＲ', 'cha\u0301r'])(
-    `${kind} search normalizes %s without changing suggestion order`,
+    'normalizes %s without changing suggestion order',
     (query) => {
       setup(query);
       const suggestions = screen.getAllByRole('option');
@@ -42,7 +42,7 @@ for (const kind of ['partner', 'champion'] as const) {
     },
   );
 
-  it(`${kind} search wraps arrow navigation and selects with Enter`, () => {
+  it('wraps arrow navigation and selects with Enter', () => {
     const { input, onChoose } = setup();
     fireEvent.keyDown(input, { key: 'ArrowUp' });
     expect(screen.getByRole('option', { name: 'Charmeleon' })).toHaveAttribute(
@@ -65,7 +65,7 @@ for (const kind of ['partner', 'champion'] as const) {
     expect(onChoose).toHaveBeenCalledExactlyOnceWith('charmander');
   });
 
-  it(`${kind} search clears keyboard selection when dismissed or edited`, () => {
+  it('clears keyboard selection when dismissed or edited', () => {
     const { input, onChoose } = setup();
     fireEvent.keyDown(input, { key: 'ArrowDown' });
     fireEvent.keyDown(input, { key: 'Escape' });
@@ -87,7 +87,7 @@ for (const kind of ['partner', 'champion'] as const) {
     );
   });
 
-  it(`${kind} search selects a pointer suggestion`, () => {
+  it('selects a pointer suggestion', () => {
     const { input, onChoose } = setup();
     fireEvent.pointerDown(screen.getByRole('option', { name: 'Charizard' }));
     expect(input).toHaveValue('Charizard');
@@ -98,4 +98,4 @@ for (const kind of ['partner', 'champion'] as const) {
     }
     expect(onChoose).toHaveBeenCalledExactlyOnceWith('charizard');
   });
-}
+});
