@@ -62,6 +62,13 @@ interface ShareNotice {
   visible: boolean;
 }
 
+const trainerViews = [
+  ['front', 'Card', CardholderIcon],
+  ['badges', 'Badges', MedalIcon],
+  ['titles', 'Titles', CertificateIcon],
+  ['pokedex', 'Pokédex', BookOpenIcon],
+] as const;
+
 const shareLabels = {
   badges: 'case',
   front: 'card',
@@ -265,14 +272,7 @@ export const TrainerPassport = ({
 
       {!editing ? (
         <nav aria-label="Trainer profile" className="trainer-passport__views">
-          {(
-            [
-              ['front', 'Card', CardholderIcon],
-              ['badges', 'Badges', MedalIcon],
-              ['titles', 'Titles', CertificateIcon],
-              ['pokedex', 'Pokédex', BookOpenIcon],
-            ] as const
-          ).map(([nextView, label, ViewIcon]) => (
+          {trainerViews.map(([nextView, label, ViewIcon]) => (
             <SoundButton
               aria-pressed={view === nextView}
               className="trainer-passport__view"
