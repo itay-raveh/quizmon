@@ -103,6 +103,12 @@
   font: 800 0.85rem / 1.35 var(--font-data);
   overflow-wrap: anywhere;
 }
+.results-list__time dd {
+  white-space: nowrap;
+}
+.results-list--precise {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+}
 .results-list__stage dd {
   text-wrap: balance;
 }

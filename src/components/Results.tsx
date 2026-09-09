@@ -87,11 +87,12 @@ export const Results = ({
       : []),
     {
       label: 'Time',
+      className: 'results-list__time',
       value:
         modifiers.timerDisplay === 'milliseconds' &&
         result.elapsedMilliseconds !== undefined
-          ? formatDurationMilliseconds(result.elapsedMilliseconds)
-          : formatDuration(result.elapsedSeconds),
+          ? formatDurationMilliseconds(result.elapsedMilliseconds, 'minutes')
+          : formatDuration(result.elapsedSeconds, 'minutes'),
     },
     {
       label: 'Knowledge',
@@ -199,7 +200,9 @@ export const Results = ({
         ) : null}
       </div>
       <div className="result-details">
-        <dl className="results-list">
+        <dl
+          className={`results-list ${modifiers.timerDisplay === 'milliseconds' ? 'results-list--precise' : ''}`.trim()}
+        >
           {resultStats.map(({ label, value, className }) => (
             <div className={className} key={label}>
               <dt>{label}</dt>

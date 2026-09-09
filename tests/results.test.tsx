@@ -67,6 +67,30 @@ const createResults = (
 const renderResults = (result: GameResult) => render(createResults(result));
 
 describe('results summary', () => {
+  it.each([
+    [6, '00:06'],
+    [119, '01:59'],
+    [3606, '60:06'],
+  ])(
+    'shows %i elapsed seconds without an hours field',
+    (elapsedSeconds, expected) => {
+      renderResults({ ...makeResult(10, 5), elapsedSeconds });
+      expect(screen.getByText(expected)).toBeVisible();
+    },
+  );
+
+  it('preserves millisecond precision without an hours field', () => {
+    render(
+      createResults(
+        { ...makeResult(10, 5), elapsedMilliseconds: 6123 },
+        {
+          modifiers: { ...defaultModifiers, timerDisplay: 'milliseconds' },
+        },
+      ),
+    );
+    expect(screen.getByText('00:06.123')).toBeVisible();
+  });
+
   it.each([5, 10])(
     'plays the score roll alongside Trainer progress with %i correct answers',
     (correctCount) => {
@@ -114,7 +138,7 @@ describe('results summary', () => {
       screen.getByRole('heading', { name: 'Training complete' }),
     ).toHaveFocus();
 
-    expect(screen.getByText('00:01:59')).toBeVisible();
+    expect(screen.getByText('01:59')).toBeVisible();
     expect(screen.queryByText(/seconds$/)).not.toBeInTheDocument();
     expect(screen.queryByText('Accuracy')).not.toBeInTheDocument();
     expect(

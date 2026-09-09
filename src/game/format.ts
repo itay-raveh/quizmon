@@ -35,20 +35,28 @@ export const formatGeneration = (generation: Generation): string =>
 export const formatDailyDate = (date: string): string =>
   dailyDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
 
-export const formatDuration = (elapsedSeconds: number): string => {
+export const formatDuration = (
+  elapsedSeconds: number,
+  unit: 'hours' | 'minutes' = 'hours',
+): string => {
   const hours = Math.floor(elapsedSeconds / 3600);
   const minutes = Math.floor((elapsedSeconds % 3600) / 60);
   const seconds = elapsedSeconds % 60;
 
-  return [hours, minutes, seconds]
+  return (
+    unit === 'minutes'
+      ? [Math.floor(elapsedSeconds / 60), seconds]
+      : [hours, minutes, seconds]
+  )
     .map((part) => String(part).padStart(2, '0'))
     .join(':');
 };
 
 export const formatDurationMilliseconds = (
   elapsedMilliseconds: number,
+  unit: 'hours' | 'minutes' = 'hours',
 ): string =>
-  `${formatDuration(Math.floor(elapsedMilliseconds / 1000))}.${String(
+  `${formatDuration(Math.floor(elapsedMilliseconds / 1000), unit)}.${String(
     Math.floor(elapsedMilliseconds % 1000),
   ).padStart(3, '0')}`;
 
