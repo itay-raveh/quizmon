@@ -1,4 +1,4 @@
-import { useId, useMemo, useState, type FormEvent } from 'react';
+import { useId, useMemo, useState, type SubmitEvent } from 'react';
 import { useInteractionSound } from '@/audio/sound';
 import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 import { findSearchMatches, normalizeSearch } from '@/game/search';
@@ -66,7 +66,7 @@ export const ChampionSearch = ({
       : 'wrong'
     : null;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!disabled && !answered && exactMatch) onAnswer(exactMatch.option);
   };

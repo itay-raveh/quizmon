@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
 import { TRAINER_NAME_MAX_LENGTH } from '@/game/profile-data';
 import { getDailyStreak, type TrainerStats } from '@/game/storage';
@@ -158,7 +158,7 @@ export const TrainerPassport = ({
     onViewChange(nextView);
   };
 
-  const save = (event: FormEvent<HTMLFormElement>) => {
+  const save = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     onProfileChange({
       ...profile,
