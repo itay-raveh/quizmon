@@ -152,7 +152,7 @@ export const readActiveGame = (): ActiveGameSnapshot | null => {
   } catch {
     return null;
   }
-  if (!snapshot) removeStoredValue('sessionStorage', ACTIVE_GAME_KEY);
+  if (!snapshot) clearActiveGame();
   return snapshot;
 };
 

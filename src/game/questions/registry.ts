@@ -4,7 +4,7 @@ import {
   rememberQuestion,
   questionRepeatPolicy,
 } from '../question-history';
-import type { QuestionData, QuestionType } from '../types';
+import type { QuestionData } from '../types';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
 import {
@@ -55,16 +55,14 @@ const questionBuilders = {
   'stat-showdown': buildStatQuestion,
   'type-matchup': buildMatchupQuestion,
   'counter-pick': buildCounterPickQuestion,
-} satisfies Record<QuestionType, QuestionBuilder>;
+  champion: buildChampionQuestion,
+} satisfies Record<QuestionData['questionType'], QuestionBuilder>;
 
 export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionData['questionType'],
 ): QuestionData | undefined => {
-  const build =
-    questionType === 'champion'
-      ? buildChampionQuestion
-      : questionBuilders[questionType];
+  const build = questionBuilders[questionType];
   let selected: QuestionData | undefined;
   const history = context.history;
   const score = (question: QuestionData): number => {
