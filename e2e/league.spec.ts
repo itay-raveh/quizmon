@@ -237,10 +237,8 @@ test('a perfect clear opens the induction before its detailed results', async ({
       sessionStorage.setItem('quizmon.active-game.v1', JSON.stringify(value)),
     snapshot,
   );
-  let releaseSprites = () => {};
-  const spritesReady = new Promise<void>((resolve) => {
-    releaseSprites = resolve;
-  });
+  const { promise: spritesReady, resolve: releaseSprites } =
+    Promise.withResolvers<void>();
   await page.route('**/sprites/pokemon/**', async (route) => {
     await spritesReady;
     await route.fallback();

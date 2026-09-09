@@ -100,7 +100,7 @@ it('tracks all correct Pokémon in Legend Hunt and covers the restricted pool', 
     const fresh = question.answer.correctOptions.filter(
       (name) => !seen.has(name),
     );
-    expect(fresh.length).toBe(
+    expect(fresh).toHaveLength(
       Math.min(48 - seen.size, question.answer.correctOptions.length),
     );
     for (const name of question.answer.correctOptions) seen.add(name);
