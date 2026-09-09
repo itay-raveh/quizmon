@@ -95,7 +95,7 @@ export const QuestionTypeSettings = ({
         </div>
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
-            {draft.questionTypes.includes('generation-roundup') &&
+            {selectedQuestionTypes.has('generation-roundup') &&
             draft.generations.length < 2
               ? 'Select at least two generations for Generation roundup.'
               : questionTypesAreValid

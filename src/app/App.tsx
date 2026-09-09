@@ -29,8 +29,7 @@ export const App = () => {
   const catalogState = usePokemonCatalog({
     loadImmediately: loadCatalogImmediately,
   });
-  const catalog =
-    catalogState.status === 'ready' ? catalogState.catalog : undefined;
+  const { catalog } = catalogState;
   const [modifiers, setModifiers] = usePersistentModifiers();
   const [session, dispatchSession] = useReducer(
     gameSessionReducer,
