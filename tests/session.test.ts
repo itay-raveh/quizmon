@@ -41,15 +41,19 @@ const result: GameResult = {
   scoreVersion: 2,
 };
 
+const roundDefaults = {
+  contentVersion: 14,
+  mode: { kind: 'training' as const },
+  modifiers: defaultModifiers,
+  questions: [question],
+};
+
 describe('gameSessionReducer', () => {
   it('moves through a complete game without partial result state', () => {
     const started = gameSessionReducer(initialGameSession, {
-      mode: { kind: 'training' },
-      modifiers: defaultModifiers,
-      questions: [question],
+      ...roundDefaults,
       seed: 'round-1',
       type: 'started',
-      contentVersion: 14,
     });
     expect(started).toMatchObject({
       answers: [],
@@ -81,12 +85,10 @@ describe('gameSessionReducer', () => {
 
   it('advances answers and updates only live experience settings', () => {
     const started = gameSessionReducer(initialGameSession, {
-      mode: { kind: 'training' },
-      modifiers: defaultModifiers,
+      ...roundDefaults,
       questions: [question, { ...question, id: 'identity:eevee:1' }],
       seed: 'round-2',
       type: 'started',
-      contentVersion: 14,
     });
     const recorded = gameSessionReducer(started, {
       answer,
@@ -136,12 +138,10 @@ describe('gameSessionReducer', () => {
     ({ answers, expectedIndex }) => {
       const restored = gameSessionReducer(initialGameSession, {
         answers,
-        mode: { kind: 'training' },
-        modifiers: defaultModifiers,
+        ...roundDefaults,
         questions: [question, { ...question, id: 'identity:eevee:1' }],
         seed: 'saved-round',
         type: 'restored',
-        contentVersion: 14,
       });
 
       expect(restored).toMatchObject({
@@ -163,12 +163,10 @@ describe('gameSessionReducer', () => {
     'records one answer when advancing after %i answer notifications',
     (notifications) => {
       let session = gameSessionReducer(initialGameSession, {
-        mode: { kind: 'training' },
-        modifiers: defaultModifiers,
+        ...roundDefaults,
         questions: [question, { ...question, id: 'next-question' }],
         seed: 'record-once',
         type: 'started',
-        contentVersion: 14,
       });
       for (let index = 0; index < notifications; index += 1) {
         const previous = session;
@@ -187,12 +185,9 @@ describe('gameSessionReducer', () => {
   it('keeps the recorded answer and ignores advancement past the last question', () => {
     const session = gameSessionReducer(initialGameSession, {
       answers: [answer],
-      mode: { kind: 'training' },
-      modifiers: defaultModifiers,
-      questions: [question],
+      ...roundDefaults,
       seed: 'last-question',
       type: 'restored',
-      contentVersion: 14,
     });
     for (const type of ['answer-recorded', 'advanced'] as const) {
       expect(
