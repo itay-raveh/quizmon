@@ -61,7 +61,12 @@ it.each([buildDescriptionQuestion, buildChampionQuestion])(
       name,
       pokemon:
         name === 'tatsugiri-curly'
-          ? catalog.pokemon[name]!
+          ? {
+              ...catalog.pokemon[name]!,
+              hasDistinctDescription: true,
+              description:
+                'Tatsugiri is an extremely cunning Pokémon. It feigns weakness to lure in prey, then orders its partner to attack.',
+            }
           : { ...catalog.pokemon[name]!, description: '' },
     }));
     const question = build({

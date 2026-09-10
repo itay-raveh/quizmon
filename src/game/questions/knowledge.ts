@@ -29,7 +29,9 @@ export const buildDescriptionQuestion: QuestionBuilder = (context) => {
     target,
     target.name,
     pokemonOptions(context, target),
-    textPrompt(`“${redactName(target.pokemon.description, target.name)}”`),
+    textPrompt(
+      `“${redactName(target.pokemon.description, target.name, target.pokemon.speciesName)}”`,
+    ),
   );
 };
 
@@ -109,7 +111,21 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   if (!pool?.type) return undefined;
   const { matching, others } = pool;
   const shared = chooseTargets(context, matching, 3);
-  const target = pickFreshTarget(context, others);
+  const ambiguousTypes = new Set(
+    shared
+      .flatMap(({ pokemon }) => pokemon.types)
+      .filter(
+        (type) =>
+          shared.filter(({ pokemon }) => pokemon.types.includes(type))
+            .length === 2,
+      ),
+  );
+  const target = pickFreshTarget(
+    context,
+    others.filter(
+      ({ pokemon }) => !pokemon.types.some((type) => ambiguousTypes.has(type)),
+    ),
+  );
   if (!target) return undefined;
   context.used.add(target.name);
   const options = shuffle(
@@ -162,22 +178,19 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
 
 export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
-  const target = pickTarget(
-    context,
-    ({ evolvesTo, types, hasAlternateEvolutionForms }) => {
-      if (hasAlternateEvolutionForms || evolvesTo.length !== 1) return false;
-      const evolutionName = evolvesTo[0];
-      const evolution = evolutionName
-        ? context.catalog.pokemon[evolutionName]
-        : undefined;
-      return Boolean(
-        evolutionName &&
-        poolNames.has(evolutionName) &&
-        evolution?.sprite &&
-        evolution.types.filter((type) => !types.includes(type)).length === 1,
-      );
-    },
-  );
+  const target = pickTarget(context, ({ evolvesTo, types }) => {
+    if (evolvesTo.length !== 1) return false;
+    const evolutionName = evolvesTo[0];
+    const evolution = evolutionName
+      ? context.catalog.pokemon[evolutionName]
+      : undefined;
+    return Boolean(
+      evolutionName &&
+      poolNames.has(evolutionName) &&
+      evolution?.sprite &&
+      evolution.types.filter((type) => !types.includes(type)).length === 1,
+    );
+  });
   if (!target?.pokemon.sprite) return undefined;
   const evolutionName = target.pokemon.evolvesTo[0];
   const evolution = evolutionName
@@ -200,7 +213,7 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
     ),
     visual: {
       evolution: {
-        dexNumber: evolution.id,
+        dexNumber: evolution.speciesId,
         name: evolutionName,
         src: evolution.sprite,
         types: evolution.types,

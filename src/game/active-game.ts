@@ -1,4 +1,5 @@
 import { isQuestionData, type QuestionLineup } from './question-lineup';
+import { getQuestionPokemon } from './pokedex';
 import { readPlayerSave } from './player-storage';
 import {
   readStoredJson,
@@ -14,6 +15,8 @@ import {
   type AnswerResult,
   type GameMode,
   type Modifiers,
+  type PokemonCatalog,
+  type QuestionData,
 } from './types';
 import {
   isDailyDate,
@@ -140,7 +143,46 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
   };
 };
 
-export const readActiveGame = (): ActiveGameSnapshot | null => {
+export const hasActiveGame = (): boolean =>
+  readStoredJson('sessionStorage', ACTIVE_GAME_KEY) !== null;
+
+const normalizeQuestionPokemon = (
+  question: QuestionData,
+  catalog: PokemonCatalog,
+): boolean => {
+  const { prompt, visual, optionDexNumbers } = question;
+  const namedPokemon = [
+    ...(question.searchOptions ?? []),
+    ...(prompt.kind === 'pokemon' ? [prompt] : []),
+    ...(visual?.kind === 'evolution-shift' ? [visual.evolution] : []),
+  ];
+  const numberedPokemon = [
+    ...namedPokemon.map((pokemon) => [pokemon.name, pokemon] as const),
+    ...Object.entries(question.optionVisuals ?? {}),
+    ...(visual?.kind === 'evolution-link' ? Object.entries(visual.stages) : []),
+  ];
+  const names = [
+    ...getQuestionPokemon(question, true),
+    ...question.repetition.subjects,
+    ...question.repetition.primary,
+    ...question.repetition.distractors,
+    ...numberedPokemon.map(([name]) => name),
+    ...Object.keys(optionDexNumbers ?? {}),
+  ];
+  if (names.some((name) => !Object.hasOwn(catalog.pokemon, name))) return false;
+
+  // The snapshot is freshly parsed, so normalization cannot mutate live state.
+  for (const [name, pokemon] of numberedPokemon)
+    pokemon.dexNumber = catalog.pokemon[name]!.speciesId;
+  if (optionDexNumbers)
+    for (const name of Object.keys(optionDexNumbers))
+      optionDexNumbers[name] = catalog.pokemon[name]!.speciesId;
+  return true;
+};
+
+export const readActiveGame = (
+  catalog: PokemonCatalog,
+): ActiveGameSnapshot | null => {
   const snapshot = parseSnapshot(
     readStoredJson('sessionStorage', ACTIVE_GAME_KEY),
   );
@@ -152,7 +194,24 @@ export const readActiveGame = (): ActiveGameSnapshot | null => {
   } catch {
     return null;
   }
-  if (!snapshot) clearActiveGame();
+  if (
+    !snapshot ||
+    !snapshot.questions.every((question) =>
+      normalizeQuestionPokemon(question, catalog),
+    ) ||
+    !snapshot.answers.every((answer, index) => {
+      const question = snapshot.questions[index];
+      return (
+        answer.category === question?.category &&
+        answer.generation === question.generation &&
+        answer.questionType === question.questionType &&
+        answer.pokemonName === question.pokemonName
+      );
+    })
+  ) {
+    clearActiveGame();
+    return null;
+  }
   return snapshot;
 };
 

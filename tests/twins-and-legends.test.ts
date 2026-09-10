@@ -35,11 +35,36 @@ describe('Type twins', () => {
     current.catalog = {
       ...catalog,
       pokemon: {
-        target: { ...base, types: ['fire', 'flying'] },
-        twin: { ...base, types: ['flying', 'fire'] },
-        fire: { ...base, types: ['fire'] },
-        bird: { ...base, types: ['normal', 'flying'] },
-        dragon: { ...base, types: ['dragon', 'flying'] },
+        target: {
+          ...base,
+          speciesName: 'target',
+          evolutionFamily: 1,
+          types: ['fire', 'flying'],
+        },
+        twin: {
+          ...base,
+          speciesName: 'twin',
+          evolutionFamily: 2,
+          types: ['flying', 'fire'],
+        },
+        fire: {
+          ...base,
+          speciesName: 'fire',
+          evolutionFamily: 3,
+          types: ['fire'],
+        },
+        bird: {
+          ...base,
+          speciesName: 'bird',
+          evolutionFamily: 4,
+          types: ['normal', 'flying'],
+        },
+        dragon: {
+          ...base,
+          speciesName: 'dragon',
+          evolutionFamily: 5,
+          types: ['dragon', 'flying'],
+        },
       },
     };
     current.pool = Object.entries(current.catalog.pokemon).map(

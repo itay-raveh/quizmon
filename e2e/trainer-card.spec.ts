@@ -53,7 +53,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(page.getByLabel('Trainer title')).toHaveCount(0);
   await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
   await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('Pikachu');
-  await page.getByRole('option', { name: 'Pikachu' }).click();
+  await page.getByRole('option', { name: 'Pikachu', exact: true }).click();
   await page.getByRole('button', { name: 'Save card' }).click();
 
   const card = page.getByRole('article', { name: 'Trainer Card' });

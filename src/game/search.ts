@@ -1,13 +1,30 @@
+import { formatPokemonName } from './format';
+
 interface SearchEntry {
   label: string;
   normalized: string;
+  aliases?: string[];
 }
 
 export const normalizeSearch = (value: string): string =>
   value
+    .replaceAll('♀', ' female ')
+    .replaceAll('♂', ' male ')
     .normalize('NFKD')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '');
+
+export const createPokemonSearchEntry = <Pokemon extends { name: string }>(
+  pokemon: Pokemon,
+) => {
+  const label = formatPokemonName(pokemon.name);
+  return {
+    ...pokemon,
+    label,
+    normalized: normalizeSearch(label),
+    aliases: [normalizeSearch(pokemon.name)],
+  };
+};
 
 export const findSearchMatches = <Entry extends SearchEntry>(
   entries: readonly Entry[],
@@ -16,7 +33,11 @@ export const findSearchMatches = <Entry extends SearchEntry>(
   if (!normalizedQuery) return [];
 
   return entries
-    .filter(({ normalized }) => normalized.includes(normalizedQuery))
+    .filter(
+      ({ normalized, aliases }) =>
+        normalized.includes(normalizedQuery) ||
+        aliases?.some((alias) => alias.includes(normalizedQuery)),
+    )
     .sort((left, right) => {
       const leftStarts = left.normalized.startsWith(normalizedQuery);
       const rightStarts = right.normalized.startsWith(normalizedQuery);

@@ -45,16 +45,25 @@ const makeKnowledge = (
   abilities: [`ability-${id}`],
   color: 'red',
   description: `Entry ${id}`,
+  displayName: `Pokemon ${id}`,
+  hasDistinctDescription: true,
+  speciesName: `species-${id}`,
+  speciesId: id,
+  pokemonId: id,
+  evolutionFamily: id,
+  speciesGeneration: 'I',
   evolvesFrom: null,
   evolvesTo: [],
   generation: 'I',
   genus: 'Test',
-  id,
+  formId: id,
   identitySprites: {
     generations: [
       {
-        back: ['red-blue'],
-        front: ['red-blue'],
+        back: [
+          `/sprites/pokemon/versions/generation-i/red-blue/back/${id}.png`,
+        ],
+        front: [`/sprites/pokemon/versions/generation-i/red-blue/${id}.png`],
         generation: 'I',
       },
     ],
@@ -225,7 +234,7 @@ describe('question building', () => {
     expect(question.searchOptions).toEqual(
       expect.arrayContaining([
         {
-          dexNumber: target.id,
+          dexNumber: target.speciesId,
           name: question.pokemonName,
         },
       ]),
@@ -356,7 +365,10 @@ describe('question building', () => {
       expect(
         Math.max(
           ...options.map((name) =>
-            Math.abs(syntheticCatalog.pokemon[name]!.id - target.pokemon.id),
+            Math.abs(
+              syntheticCatalog.pokemon[name]!.speciesId -
+                target.pokemon.speciesId,
+            ),
           ),
         ),
       ).toBeGreaterThanOrEqual(400);
@@ -417,7 +429,7 @@ describe('question building', () => {
       expect.assert(question?.prompt.kind === 'pokemon');
       expect(question.prompt.name).toBe(question.pokemonName);
       expect(question.prompt.dexNumber).toBe(
-        catalog.pokemon[question.pokemonName]?.id,
+        catalog.pokemon[question.pokemonName]?.speciesId,
       );
     }
 
@@ -445,7 +457,7 @@ describe('question building', () => {
         ) {
           expect(question.optionDexNumbers).toBeUndefined();
         } else if (pokemon) {
-          expect(question.optionDexNumbers?.[option]).toBe(pokemon.id);
+          expect(question.optionDexNumbers?.[option]).toBe(pokemon.speciesId);
         }
       }
     }
@@ -604,7 +616,7 @@ describe('question building', () => {
     expect(evolution.types).toContain(correct);
     expect(question.visual).toEqual({
       evolution: {
-        dexNumber: evolution.id,
+        dexNumber: evolution.speciesId,
         name: target.evolvesTo[0],
         src: evolution.sprite,
         types: evolution.types,
@@ -640,7 +652,7 @@ describe('question building', () => {
     ).toBe(true);
     for (const source of sources) {
       expect(source).toMatch(
-        /^\/sprites\/pokemon\/(?:\d+\.png|versions\/generation-(?:i|ii|iii|iv|v)\/)/,
+        /^\/sprites\/pokemon\/(?:\d+(?:-[a-z0-9]+)*\.png|versions\/generation-(?:i|ii|iii|iv|v)\/)/,
       );
       expect(source).not.toContain('/other/');
     }
@@ -659,7 +671,19 @@ describe('question building', () => {
           name,
           makeKnowledge(index + 1, {
             identitySprites: {
-              generations: [{ generation: 'I', front, back }],
+              generations: [
+                {
+                  generation: 'I',
+                  front: front.map(
+                    (version) =>
+                      `/sprites/pokemon/versions/generation-i/${version}/${index + 1}.png`,
+                  ),
+                  back: back.map(
+                    (version) =>
+                      `/sprites/pokemon/versions/generation-i/${version}/back/${index + 1}.png`,
+                  ),
+                },
+              ],
             },
           }),
         ]),
@@ -679,7 +703,7 @@ describe('question building', () => {
         kind: 'sprite',
         src:
           path !== null
-            ? `/sprites/pokemon/versions/generation-i/red-blue/${path}${pokemon.id}.png`
+            ? `/sprites/pokemon/versions/generation-i/red-blue/${path}${pokemon.pokemonId}.png`
             : pokemon.sprite,
       });
     }

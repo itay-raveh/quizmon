@@ -1,7 +1,6 @@
 import { targetRepetition } from './repetition';
 import { pick } from '../random';
 import { getPixelPeekCrop } from '../pixel-peek';
-import { getVersionSpritePath } from '../sprite-source';
 import {
   getOptionVisuals,
   makeQuestion,
@@ -33,12 +32,7 @@ const pickScanSprite = (
   const version = pick(usesBack ? generation.back : generation.front, random);
   if (!version) return pokemon.sprite;
 
-  return getVersionSpritePath(
-    generation.generation,
-    version,
-    usesBack ? 'back' : 'front',
-    pokemon.id,
-  );
+  return version;
 };
 
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {

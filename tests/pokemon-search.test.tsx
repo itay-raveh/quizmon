@@ -6,6 +6,12 @@ const options = [
   { name: 'charmander', dexNumber: 4, sprite: null },
   { name: 'charmeleon', dexNumber: 5, sprite: null },
   { name: 'charizard', dexNumber: 6, sprite: null },
+  { name: 'raichu', dexNumber: 26, sprite: null },
+  {
+    name: 'raichu-alola',
+    dexNumber: 26,
+    sprite: '/sprites/pokemon/10100.png',
+  },
 ];
 
 describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
@@ -29,6 +35,19 @@ describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
     onChoose.mockClear();
     return { input, onChoose };
   };
+
+  it.each(['Alolan Raichu', 'raichu-alola'])(
+    'selects a regional form by %s',
+    (query) => {
+      const { onChoose } = setup(query);
+      fireEvent.click(
+        kind === 'partner'
+          ? screen.getByRole('option', { name: 'Alolan Raichu' })
+          : screen.getByRole('button', { name: 'Guess' }),
+      );
+      expect(onChoose).toHaveBeenCalledExactlyOnceWith('raichu-alola');
+    },
+  );
 
   it.each([' CHÁR-- ', 'ＣＨＡＲ', 'cha\u0301r'])(
     'normalizes %s without changing suggestion order',

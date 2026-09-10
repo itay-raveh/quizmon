@@ -156,12 +156,12 @@ it('round-trips every portable field and replaces rather than merges progress', 
   );
   localStorage.setItem('unrelated', 'keep');
   active();
-  expect(readActiveGame()).not.toBeNull();
+  expect(readActiveGame(catalog)).not.toBeNull();
   restoreBackup(backup);
   expect(readPlayerSave().data).toEqual(backup.save.data);
   expect(readPlayerSave().restoreId).not.toBeNull();
   expect(readDailyResult('2026-09-06')).toBeNull();
-  expect(readActiveGame()).toBeNull();
+  expect(readActiveGame(catalog)).toBeNull();
   expect(localStorage.getItem('quizmon.daily-reminder-subscription.v1')).toBe(
     'device-only',
   );
@@ -371,7 +371,7 @@ it('invalidates an old active round even when session removal is blocked', () =>
   });
   restoreBackup(backup);
   expect(sessionStorage.getItem('quizmon.active-game.v1')).not.toBeNull();
-  expect(readActiveGame()).toBeNull();
+  expect(readActiveGame(catalog)).toBeNull();
 });
 
 it('notifies another tab on restore, but not ordinary saves', () => {

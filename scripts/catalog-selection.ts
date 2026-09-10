@@ -2,8 +2,10 @@ import {
   flattenChain,
   type EvolutionChain,
   type Pokemon,
+  type PokemonForm,
   type PokemonSpecies,
 } from 'pokenode-ts';
+import { catalogFormKey, selectCatalogForms } from './catalog-forms.ts';
 
 const mainSeriesVersions = [
   'red-japan',
@@ -60,8 +62,18 @@ const mainSeriesVersions = [
 
 export const mainSeriesDescription = (
   entries: PokemonSpecies['flavor_text_entries'],
+  beforeVersions: readonly string[] = [],
 ): string => {
-  const english = entries.filter(({ language }) => language.name === 'en');
+  const cutoff = Math.min(
+    ...beforeVersions
+      .map((version) => mainSeriesVersions.indexOf(version))
+      .filter((index) => index >= 0),
+  );
+  const english = entries.filter(
+    ({ language, version }) =>
+      language.name === 'en' &&
+      mainSeriesVersions.indexOf(version.name) < cutoff,
+  );
   for (const version of mainSeriesVersions.toReversed()) {
     const entry = english.find(
       (entry) => entry.version.name === version && entry.flavor_text.trim(),
@@ -71,46 +83,46 @@ export const mainSeriesDescription = (
   return '';
 };
 
-export const defaultEvolutionLinks = (
+export const formEvolutionLinks = (
   chains: EvolutionChain[],
   pokemon: Pokemon[],
+  forms: PokemonForm[],
+  { targets, defaults } = selectCatalogForms(pokemon, forms),
 ) => {
-  const names = new Map(
-    pokemon.map((entry) => [entry.species.name, entry.name]),
-  );
+  const formKeys = new Map<string, string | null | undefined>();
+  for (const form of forms) {
+    const target = targets.get(catalogFormKey(form));
+    formKeys.set(form.name, target);
+    if (form.is_default) formKeys.set(form.pokemon.name, target);
+  }
   const evolvesTo = new Map<string, Set<string>>();
-  const evolvesFrom = new Map<string, string>();
-  const alternateForms = new Set<string>();
+  const parents = new Map<string, Set<string>>();
   for (const chain of chains) {
     for (const step of flattenChain(chain)) {
-      const from = names.get(step.from.name);
-      const to = names.get(step.to.name);
-      if (!from || !to)
-        throw new Error(
-          `Missing default form for evolution ${step.from.name} → ${step.to.name}`,
-        );
-      if (
-        step.details.some(
-          (detail) =>
-            (!detail.base_form || detail.base_form.name === from) &&
-            detail.evolved_form &&
-            detail.evolved_form.name !== to,
-        )
-      )
-        alternateForms.add(from);
-      if (
-        !step.details.some(
-          (detail) =>
-            (!detail.base_form || detail.base_form.name === from) &&
-            (!detail.evolved_form || detail.evolved_form.name === to),
-        )
-      )
-        continue;
-      const destinations = evolvesTo.get(from) ?? new Set<string>();
-      destinations.add(to);
-      evolvesTo.set(from, destinations);
-      evolvesFrom.set(to, from);
+      for (const detail of step.details) {
+        const from = detail.base_form
+          ? formKeys.get(detail.base_form.name)
+          : defaults.get(step.from.name);
+        const to = detail.evolved_form
+          ? formKeys.get(detail.evolved_form.name)
+          : defaults.get(step.to.name);
+        if (!from || !to)
+          throw new Error(
+            `Missing form for evolution ${step.from.name} → ${step.to.name}`,
+          );
+        const destinations = evolvesTo.get(from) ?? new Set<string>();
+        destinations.add(to);
+        evolvesTo.set(from, destinations);
+        const origins = parents.get(to) ?? new Set<string>();
+        origins.add(from);
+        parents.set(to, origins);
+      }
     }
   }
-  return { evolvesTo, evolvesFrom, alternateForms };
+  const evolvesFrom = new Map(
+    [...parents].flatMap(([name, origins]) =>
+      origins.size === 1 ? [[name, [...origins][0]!] as const] : [],
+    ),
+  );
+  return { evolvesTo, evolvesFrom };
 };

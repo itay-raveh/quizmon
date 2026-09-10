@@ -49,6 +49,7 @@ describe('gameSessionReducer', () => {
       questions: [question],
       seed: 'round-1',
       type: 'started',
+      contentVersion: 14,
     });
     expect(started).toMatchObject({
       answers: [],
@@ -85,6 +86,7 @@ describe('gameSessionReducer', () => {
       questions: [question, { ...question, id: 'identity:eevee:1' }],
       seed: 'round-2',
       type: 'started',
+      contentVersion: 14,
     });
     const recorded = gameSessionReducer(started, {
       answer,
@@ -139,6 +141,7 @@ describe('gameSessionReducer', () => {
         questions: [question, { ...question, id: 'identity:eevee:1' }],
         seed: 'saved-round',
         type: 'restored',
+        contentVersion: 14,
       });
 
       expect(restored).toMatchObject({
@@ -165,6 +168,7 @@ describe('gameSessionReducer', () => {
         questions: [question, { ...question, id: 'next-question' }],
         seed: 'record-once',
         type: 'started',
+        contentVersion: 14,
       });
       for (let index = 0; index < notifications; index += 1) {
         const previous = session;
@@ -188,6 +192,7 @@ describe('gameSessionReducer', () => {
       questions: [question],
       seed: 'last-question',
       type: 'restored',
+      contentVersion: 14,
     });
     for (const type of ['answer-recorded', 'advanced'] as const) {
       expect(

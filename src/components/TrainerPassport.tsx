@@ -329,7 +329,7 @@ export const TrainerPassport = ({
         ) : (
           <TrainerCard
             cardRef={artifactRef}
-            partnerDexNumber={savedPartner?.id ?? null}
+            partnerDexNumber={savedPartner?.speciesId ?? null}
             partnerSprite={savedPartner?.sprite ?? null}
             profile={visibleProfile}
             record={record}

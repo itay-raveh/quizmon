@@ -32,7 +32,6 @@ type Restoration =
 
 const resolveRestoration = (
   snapshot: ActiveGameSnapshot | null,
-  catalog: PokemonCatalog,
   dailyDate: string,
   linkedDailyDate: string | null,
 ): Restoration => {
@@ -47,27 +46,11 @@ const resolveRestoration = (
     snapshot.mode.kind === 'daily' &&
     Boolean(readDailyResult(snapshot.mode.date));
 
-  if (
-    conflictsWithDailyLink ||
-    staleDaily ||
-    completedDaily ||
-    snapshot.contentVersion !== catalog.contentVersion
-  ) {
+  if (conflictsWithDailyLink || staleDaily || completedDaily) {
     return { kind: 'discard', shouldClear: true };
   }
 
-  const questions = snapshot.questions;
-  const answersMatchQuestions = snapshot.answers.every(
-    (answer, index) =>
-      answer.category === questions[index]?.category &&
-      answer.generation === questions[index]?.generation &&
-      answer.questionType === questions[index]?.questionType &&
-      answer.pokemonName === questions[index]?.pokemonName,
-  );
-
-  return answersMatchQuestions
-    ? { kind: 'restore', snapshot }
-    : { kind: 'discard', shouldClear: true };
+  return { kind: 'restore', snapshot };
 };
 
 export const useActiveGame = ({
@@ -103,8 +86,7 @@ export const useActiveGame = ({
       if (session.phase === 'results') return;
 
       const restoration = resolveRestoration(
-        readActiveGame(),
-        catalog,
+        readActiveGame(catalog),
         dailyDate,
         linkedDailyDate,
       );
@@ -117,6 +99,7 @@ export const useActiveGame = ({
       const { snapshot } = restoration;
       const { questions } = snapshot;
       const round = {
+        contentVersion: snapshot.contentVersion,
         answers: snapshot.answers,
         mode: snapshot.mode,
         modifiers: snapshot.modifiers,
@@ -180,7 +163,7 @@ export const useActiveGame = ({
 
     writeActiveGame({
       answers: session.answers,
-      contentVersion: catalog.contentVersion,
+      contentVersion: session.contentVersion,
       elapsedMilliseconds: getElapsedMilliseconds(),
       mode: session.mode,
       modifiers: session.modifiers,

@@ -95,13 +95,19 @@ it('counts only displayed questions and makes duplicate exposure notifications h
 it('tracks all correct Pokémon in Legend Hunt and covers the restricted pool', () => {
   let history = emptyQuestionHistory();
   const seen = new Set<string>();
-  for (let i = 0; i < 24; i++) {
+  const total = Object.values(catalog.pokemon).filter(
+    (pokemon) =>
+      genFive.includes(pokemon.generation) &&
+      pokemon.sprite &&
+      (pokemon.isLegendary || pokemon.isMythical),
+  ).length;
+  for (let i = 0; i < Math.ceil(total / 2); i++) {
     const question = generate('legend-hunt', history, `legends:${i}`)[0]!;
     const fresh = question.answer.correctOptions.filter(
       (name) => !seen.has(name),
     );
     expect(fresh).toHaveLength(
-      Math.min(48 - seen.size, question.answer.correctOptions.length),
+      Math.min(total - seen.size, question.answer.correctOptions.length),
     );
     for (const name of question.answer.correctOptions) seen.add(name);
     history = rememberQuestion(history, question);
@@ -109,7 +115,7 @@ it('tracks all correct Pokémon in Legend Hunt and covers the restricted pool', 
       expect(history.subjects[`legend-hunt:${name}`]).toBe(history.sequence);
     }
   }
-  expect(seen.size).toBe(48);
+  expect(seen.size).toBe(total);
 });
 
 it('does not confuse button order or sprite crops with a new question', () => {
@@ -238,8 +244,8 @@ it('round-trips history and frozen lineups through saves and backup restore', as
   updatePlayerData({
     questionHistory: questions.reduce(rememberQuestion, emptyQuestionHistory()),
   });
-  expect(readActiveGame()?.questions).toEqual(questions);
-  expect(readActiveGame()?.version).toBe(2);
+  expect(readActiveGame(catalog)?.questions).toEqual(questions);
+  expect(readActiveGame(catalog)?.version).toBe(2);
 });
 
 it('keeps Daily independent of personal history and rotates Champion targets across dates', () => {

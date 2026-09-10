@@ -1,3 +1,4 @@
+import pokemonLabels from './data/pokemon-labels.json' with { type: 'json' };
 import type { GameMode, Generation } from './types';
 
 const scoreFormatter = new Intl.NumberFormat(undefined, {
@@ -12,6 +13,7 @@ const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
 });
 
 export const formatPokemonName = (name: string): string =>
+  (pokemonLabels as Record<string, string>)[name] ??
   name
     .split('-')
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))

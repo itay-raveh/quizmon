@@ -43,7 +43,9 @@ for (const width of [320, 1280]) {
       page.getByRole('button', { name: 'Pokédex', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
     await expect(
-      page.getByText('4 / 1025 found', { exact: true }),
+      page.getByText(`4 / ${Object.keys(catalog.pokemon).length} found`, {
+        exact: true,
+      }),
     ).toBeVisible();
     const entries = page.locator('.trainer-pokedex__entries > li');
     await expect(entries).toHaveCount(12);
@@ -75,7 +77,9 @@ for (const width of [320, 1280]) {
     await page.getByRole('button', { name: 'Pokédex', exact: true }).click();
     await page.reload();
     await expect(
-      page.getByText('4 / 1025 found', { exact: true }),
+      page.getByText(`4 / ${Object.keys(catalog.pokemon).length} found`, {
+        exact: true,
+      }),
     ).toBeVisible();
   });
 }
@@ -149,7 +153,11 @@ test('registers a correct answer immediately even when the round is abandoned', 
     ),
   ).toEqual(getQuestionPokemon(question!));
   await page.goto('/?trainer=pokedex');
-  await expect(page.getByText('2 / 1025 found', { exact: true })).toBeVisible();
+  await expect(
+    page.getByText(`2 / ${Object.keys(catalog.pokemon).length} found`, {
+      exact: true,
+    }),
+  ).toBeVisible();
   expect(
     await page.evaluate(
       () =>

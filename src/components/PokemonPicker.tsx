@@ -2,7 +2,11 @@ import { useUpdateState } from '@/pwa/update-state';
 import { useId, useMemo } from 'react';
 import { useInteractionSound } from '@/audio/sound';
 import { formatPokemonName } from '@/game/format';
-import { findSearchMatches, normalizeSearch } from '@/game/search';
+import {
+  createPokemonSearchEntry,
+  findSearchMatches,
+  normalizeSearch,
+} from '@/game/search';
 import { useSuggestionNavigation } from './useSuggestionNavigation';
 
 interface PokemonPickerProps {
@@ -26,13 +30,7 @@ export const PokemonPicker = ({
     value ? formatPokemonName(value) : '',
   );
   const entries = useMemo(
-    () =>
-      options.map(({ name, sprite }) => ({
-        label: formatPokemonName(name),
-        normalized: normalizeSearch(name),
-        name,
-        sprite,
-      })),
+    () => options.map(createPokemonSearchEntry),
     [options],
   );
   const normalizedQuery = normalizeSearch(query);

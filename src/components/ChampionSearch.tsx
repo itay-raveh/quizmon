@@ -1,7 +1,11 @@
 import { useId, useMemo, useState, type SubmitEvent } from 'react';
 import { useInteractionSound } from '@/audio/sound';
-import { formatPokedexNumber, formatPokemonName } from '@/game/format';
-import { findSearchMatches, normalizeSearch } from '@/game/search';
+import { formatPokedexNumber } from '@/game/format';
+import {
+  createPokemonSearchEntry,
+  findSearchMatches,
+  normalizeSearch,
+} from '@/game/search';
 import { useSuggestionNavigation } from './useSuggestionNavigation';
 import type { PokemonSearchOption } from '@/game/types';
 import { GameButton } from './GameButton';
@@ -27,21 +31,13 @@ export const ChampionSearch = ({
   const playInteractionSound = useInteractionSound();
   const [query, setQuery] = useState('');
   const entries = useMemo(
-    () =>
-      options.map(({ dexNumber, name }) => {
-        const label = formatPokemonName(name);
-        return {
-          dexNumber,
-          label,
-          normalized: normalizeSearch(label),
-          option: name,
-        };
-      }),
+    () => options.map(createPokemonSearchEntry),
     [options],
   );
   const normalizedQuery = normalizeSearch(query);
   const exactMatch = entries.find(
-    ({ normalized }) => normalized === normalizedQuery,
+    ({ normalized, aliases }) =>
+      normalized === normalizedQuery || aliases.includes(normalizedQuery),
   );
   const suggestions = useMemo(() => {
     if (exactMatch) return [];
@@ -68,7 +64,7 @@ export const ChampionSearch = ({
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!disabled && !answered && exactMatch) onAnswer(exactMatch.option);
+    if (!disabled && !answered && exactMatch) onAnswer(exactMatch.name);
   };
 
   return (
@@ -117,7 +113,7 @@ export const ChampionSearch = ({
                   <li
                     aria-selected={index === activeIndex}
                     id={`${listboxId}-option-${index}`}
-                    key={suggestion.option}
+                    key={suggestion.name}
                     onMouseDown={(event) => {
                       event.preventDefault();
                     }}

@@ -17,19 +17,11 @@ const sameTypes = (left: readonly string[], right: readonly string[]) =>
 export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const families = new Map(
-    pool.map(({ name }) => {
-      let root = name;
-      let parent = context.catalog.pokemon[root]?.evolvesFrom;
-      while (parent) {
-        root = parent;
-        parent = context.catalog.pokemon[root]?.evolvesFrom;
-      }
-      return [name, root];
-    }),
+    pool.map(({ name, pokemon }) => [name, pokemon.evolutionFamily]),
   );
   const typePairKey = (types: readonly string[]) => [...types].sort().join('|');
   const pairCounts = new Map<string, number>();
-  const familyCounts = new Map<string, number>();
+  const familyCounts = new Map<number, number>();
   const familyPairCounts = new Map<string, number>();
   for (const { name, pokemon } of pool) {
     const family = families.get(name)!;

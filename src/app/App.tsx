@@ -2,7 +2,7 @@ import { AutomaticUpdate } from '@/components/AutomaticUpdate';
 import { readUpdateState, useUpdateSnapshot } from '@/pwa/update-state';
 import { createRoundSeed } from '@/game/random';
 import { useCallback, useReducer, useState } from 'react';
-import { readActiveGame } from '@/game/active-game';
+import { hasActiveGame } from '@/game/active-game';
 import { trackGameStarted } from '@/game/analytics';
 import { usePokemonCatalog } from '@/game/catalog';
 import { usePersistentModifiers } from '@/game/settings-storage';
@@ -26,7 +26,7 @@ import { useTrainingGame } from './useTrainingGame';
 export const App = () => {
   const leagueDestination = useLeagueDestination();
   const [loadCatalogImmediately] = useState(
-    () => window.location.search.length > 0 || readActiveGame() !== null,
+    () => window.location.search.length > 0 || hasActiveGame(),
   );
   const catalogState = usePokemonCatalog({
     loadImmediately: loadCatalogImmediately,
@@ -51,8 +51,10 @@ export const App = () => {
 
   const startGame = useCallback<StartGame>(
     (nextQuestions, nextModifiers, nextMode, seed) => {
+      if (!catalog) return;
       trackGameStarted(nextMode, nextQuestions.length);
       dispatchSession({
+        contentVersion: catalog.contentVersion,
         mode: nextMode,
         modifiers: nextModifiers,
         questions: nextQuestions,
@@ -63,7 +65,7 @@ export const App = () => {
       reset();
       start();
     },
-    [reset, start],
+    [catalog, reset, start],
   );
 
   const training = useTrainingGame({

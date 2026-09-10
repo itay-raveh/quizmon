@@ -27,7 +27,15 @@ describe('Daily Challenge', () => {
     expect(first.map(({ questionType }) => questionType)).toEqual(schedule);
     expect(schedule.at(-1)).toBe('champion');
     expect(first.at(-1)?.searchOptions).toHaveLength(
-      Object.keys(catalog.pokemon).length,
+      Object.values(catalog.pokemon).filter(
+        (pokemon) =>
+          pokemon.hasDistinctDescription &&
+          pokemon.genus &&
+          pokemon.sprite &&
+          (pokemon === catalog.pokemon[first.at(-1)!.pokemonName] ||
+            pokemon.speciesName !==
+              catalog.pokemon[first.at(-1)!.pokemonName]!.speciesName),
+      ).length,
     );
     expect(first.at(-1)?.searchOptions).toContainEqual({
       dexNumber: 33,

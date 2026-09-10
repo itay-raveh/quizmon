@@ -207,7 +207,7 @@ for (const { width, assisted } of [320, 390, 1280].flatMap((width) =>
         JSON.stringify({ soundEnabled: false, speedrunMode: false }),
       );
     });
-    await page.goto('/?daily=2026-09-01&play=1');
+    await page.goto('/?fresh=1&daily=2026-09-01&play=1');
     for (let index = 0; index < 4; index += 1) {
       await page.locator('.answer').first().click();
       const check = page.getByRole('button', {
@@ -232,8 +232,8 @@ for (const { width, assisted } of [320, 390, 1280].flatMap((width) =>
     await expect(choices).toBeInViewport();
     await assertFits(page);
     if (!assisted) {
-      await page.getByRole('combobox', { name: 'Your answer' }).fill('pika');
-      await page.getByRole('option', { name: 'Pikachu', exact: true }).click();
+      await page.getByRole('combobox', { name: 'Your answer' }).fill('nidor');
+      await page.getByRole('option', { name: 'Nidorino', exact: true }).click();
       await page.getByRole('button', { name: 'Guess', exact: true }).click();
       await expect(
         page.getByRole('button', { name: 'See results' }),

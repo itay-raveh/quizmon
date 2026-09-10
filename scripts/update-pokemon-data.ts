@@ -1,17 +1,17 @@
 import {
-  defaultEvolutionLinks,
+  formEvolutionLinks,
   mainSeriesDescription,
 } from './catalog-selection.ts';
+import { catalogFormKey, selectCatalogForms } from './catalog-forms.ts';
 import { readFile, writeFile } from 'node:fs/promises';
 import { format } from 'prettier';
 import {
   MainClient,
-  type EvolutionChain,
   type Generation as ApiGeneration,
   type Pokemon,
   type PokemonSpecies,
+  type PokemonForm,
   type ResourceLink,
-  type Type,
 } from 'pokenode-ts';
 import {
   generations,
@@ -26,29 +26,28 @@ import {
 
 import {
   fetchSpriteSource,
-  getVersionSpritePath,
+  isSpritePath,
   normalizeSpriteUrl,
 } from '../src/game/sprite-source.ts';
 import { measureCatalogSprites } from './sprite-measurements.ts';
 
 const DATA_PATH = new URL('../src/game/data/pokemon.json', import.meta.url);
 const CONCURRENCY = 4;
+const LABELS_PATH = new URL(
+  '../src/game/data/pokemon-labels.json',
+  import.meta.url,
+);
+
+export type CatalogForm = PokemonForm & {
+  flavor_text_entries?: PokemonSpecies['flavor_text_entries'];
+};
 
 export interface CatalogClient {
   measureSprites(
     paths: readonly string[],
   ): Promise<Map<string, SpriteMeasurements>>;
   getGenerationById(id: number): Promise<ApiGeneration>;
-  resolveEvolutionChains(
-    resources: readonly ResourceLink<EvolutionChain>[],
-  ): Promise<EvolutionChain[]>;
-  resolvePokemon(
-    resources: readonly ResourceLink<Pokemon>[],
-  ): Promise<Pokemon[]>;
-  resolveSpecies(
-    resources: readonly ResourceLink<PokemonSpecies>[],
-  ): Promise<PokemonSpecies[]>;
-  resolveTypes(resources: readonly ResourceLink<Type>[]): Promise<Type[]>;
+  resolveAll<T>(resources: readonly ResourceLink<T>[]): Promise<T[]>;
 }
 
 export const createCatalogClient = (
@@ -67,13 +66,7 @@ export const createCatalogClient = (
       return Buffer.from(await response.arrayBuffer()).toString('base64');
     }),
   getGenerationById: (id) => api.game.getGenerationById(id),
-  resolveEvolutionChains: (resources) =>
-    api.resolveAll(resources, { concurrency: CONCURRENCY }),
-  resolvePokemon: (resources) =>
-    api.resolveAll(resources, { concurrency: CONCURRENCY }),
-  resolveSpecies: (resources) =>
-    api.resolveAll(resources, { concurrency: CONCURRENCY }),
-  resolveTypes: (resources) =>
+  resolveAll: (resources) =>
     api.resolveAll(resources, { concurrency: CONCURRENCY }),
 });
 
@@ -101,69 +94,68 @@ interface VersionSpriteSet {
   front_default?: unknown;
 }
 
-const getSpriteVersion = (
-  value: unknown,
-  generation: Generation,
-  version: string,
-  orientation: 'back' | 'front',
-  pokemonId: number,
-): string | null => {
-  if (typeof value !== 'string') return null;
-  const path = normalizeSpriteUrl(value);
-  const expectedPath = getVersionSpritePath(
-    generation,
-    version,
-    orientation,
-    pokemonId,
-  );
-  if (path !== expectedPath) {
-    throw new Error(`Unexpected version sprite path: ${path}`);
-  }
-  return version;
-};
-
-const getIdentitySprites = (pokemon: Pokemon): PokemonIdentitySprites => {
-  const versions = pokemon.sprites.versions as unknown as Record<
+const getIdentitySprites = (
+  pokemon: Pokemon,
+  form: CatalogForm,
+  introduced: Generation,
+): PokemonIdentitySprites => {
+  const source = form.is_default ? pokemon.sprites.versions : {};
+  const formVersions = form.sprites.versions as unknown as Record<
+    string,
+    Record<string, VersionSpriteSet>
+  >;
+  const versions = source as unknown as Record<
     string,
     Record<string, VersionSpriteSet>
   >;
   return {
     generations: generations.flatMap((generation) => {
-      const generationSprites =
-        versions[`generation-${generation.toLowerCase()}`];
+      if (generations.indexOf(generation) < generations.indexOf(introduced))
+        return [];
+      const key = `generation-${generation.toLowerCase()}`;
       const front: string[] = [];
       const back: string[] = [];
-
-      for (const [version, sprites] of Object.entries(
-        generationSprites ?? {},
-      )) {
+      for (const [version, sprites] of Object.entries({
+        ...versions[key],
+        ...formVersions[key],
+      })) {
         if (version === 'icons') continue;
-        for (const [orientation, available] of [
+        for (const [orientation, paths] of [
           ['front', front],
           ['back', back],
         ] as const) {
-          const spriteVersion = getSpriteVersion(
-            sprites[`${orientation}_default`],
-            generation,
-            version,
-            orientation,
-            pokemon.id,
-          );
-          if (spriteVersion) available.push(spriteVersion);
+          const value = sprites[`${orientation}_default`];
+          if (typeof value !== 'string') continue;
+          const path = normalizeSpriteUrl(value)!;
+          if (!isSpritePath(path))
+            throw new Error(`Unexpected version sprite path: ${path}`);
+          paths.push(path);
         }
       }
-
-      return front.length > 0 || back.length > 0
-        ? [
-            {
-              back: back.sort(),
-              front: front.sort(),
-              generation,
-            },
-          ]
+      return front.length || back.length
+        ? [{ generation, front: front.sort(), back: back.sort() }]
         : [];
     }),
   };
+};
+
+const titleCase = (value: string) =>
+  value
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
+const formLabel = (form: CatalogForm, species: PokemonSpecies) => {
+  const label = form.names.find(isEnglish)?.name;
+  if (label)
+    return form.name.endsWith('-power-construct')
+      ? `${label} (Power Construct)`
+      : label;
+  const speciesLabel =
+    species.names.find(isEnglish)?.name ?? titleCase(species.name);
+  const formName =
+    form.form_names.find(isEnglish)?.name ?? titleCase(form.form_name);
+  return formName ? `${speciesLabel} (${formName})` : speciesLabel;
 };
 
 const getLevelMoves = (pokemon: Pokemon): string[] =>
@@ -194,7 +186,7 @@ export const buildPokemonCatalog = async (
 
   for (const [index, generationName] of generations.entries()) {
     const generation = await client.getGenerationById(index + 1);
-    const species = await client.resolveSpecies(generation.pokemon_species);
+    const species = await client.resolveAll(generation.pokemon_species);
     for (const entry of species) {
       speciesByName.set(entry.name, {
         species: entry,
@@ -203,14 +195,37 @@ export const buildPokemonCatalog = async (
     }
   }
 
-  const defaultLinks = Array.from(speciesByName.values(), ({ species }) => {
-    const variety = species.varieties.find(({ is_default }) => is_default);
-    if (!variety) {
-      throw new Error(`${species.name} has no default Pokémon variety`);
-    }
-    return variety.pokemon;
-  });
-  const pokemon = await client.resolvePokemon(defaultLinks);
+  const varietyLinks = Array.from(speciesByName.values()).flatMap(
+    ({ species }) => {
+      if (!species.varieties.some(({ is_default }) => is_default))
+        throw new Error(`${species.name} has no default Pokémon variety`);
+      return species.varieties.map(({ pokemon }) => pokemon);
+    },
+  );
+  const pokemon = await client.resolveAll(varietyLinks);
+  const pokemonByName = new Map(pokemon.map((entry) => [entry.name, entry]));
+  const allForms = await client.resolveAll<CatalogForm>(
+    pokemon.flatMap((entry) => entry.forms),
+  );
+  const selection = selectCatalogForms(pokemon, allForms);
+  const { forms, genericNames } = selection;
+  const versionGroups = await client.resolveAll([
+    ...new Map(
+      forms.map((form) => [form.version_group.name, form.version_group]),
+    ).values(),
+  ]);
+  const versionsByName = new Map(
+    versionGroups.map((group) => [group.name, group]),
+  );
+  const formsBySpecies = new Map<string, CatalogForm[]>();
+  for (const form of forms) {
+    const entry = pokemonByName.get(form.pokemon.name);
+    if (!entry || !speciesByName.has(entry.species.name))
+      throw new Error(`${form.pokemon.name} is missing species metadata`);
+    const siblings = formsBySpecies.get(entry.species.name) ?? [];
+    siblings.push(form);
+    formsBySpecies.set(entry.species.name, siblings);
+  }
 
   const chainLinks = [
     ...new Map(
@@ -220,20 +235,22 @@ export const buildPokemonCatalog = async (
       ]),
     ).values(),
   ];
-  const chains = await client.resolveEvolutionChains(chainLinks);
-  const { evolvesTo, evolvesFrom, alternateForms } = defaultEvolutionLinks(
+  const chains = await client.resolveAll(chainLinks);
+  const { evolvesTo, evolvesFrom } = formEvolutionLinks(
     chains,
     pokemon,
+    allForms,
+    selection,
   );
 
   const typeLinks = [
     ...new Map(
-      pokemon.flatMap(({ types }) =>
+      forms.flatMap(({ types }) =>
         types.map(({ type }) => [type.name, type] as const),
       ),
     ).values(),
   ];
-  const types = await client.resolveTypes(typeLinks);
+  const types = await client.resolveAll(typeLinks);
   const typeRelations = Object.fromEntries(
     types
       .filter(({ name }) => name !== 'unknown' && name !== 'shadow')
@@ -248,46 +265,114 @@ export const buildPokemonCatalog = async (
   );
 
   const entries: Record<string, PokemonKnowledge> = {};
-  for (const entry of pokemon) {
-    const metadata = speciesByName.get(entry.species.name);
-    if (!metadata) {
-      throw new Error(`${entry.name} is missing species metadata`);
-    }
-    const { species, generation } = metadata;
-    const description = mainSeriesDescription(species.flavor_text_entries);
+  for (const form of forms) {
+    const entry = pokemonByName.get(form.pokemon.name)!;
+    const { species, generation: speciesGeneration } = speciesByName.get(
+      entry.species.name,
+    )!;
+    const versionGroup = versionsByName.get(form.version_group.name);
+    const generation = generations.find(
+      (value) =>
+        `generation-${value.toLowerCase()}` === versionGroup?.generation.name,
+    );
+    if (!generation)
+      throw new Error(`Missing introduction generation for ${form.name}`);
+    const siblings = formsBySpecies.get(species.name)!;
+    const key = catalogFormKey(form);
+    if (entries[key]) throw new Error(`Duplicate form key: ${key}`);
+    const ownDescription = mainSeriesDescription(
+      form.flavor_text_entries ?? [],
+    );
+    const isSpeciesDefault =
+      form.is_default &&
+      species.varieties.some(
+        (variety) => variety.is_default && variety.pokemon.name === entry.name,
+      );
+    const alternateVersions = siblings
+      .filter((sibling) => sibling !== form)
+      .flatMap((sibling) =>
+        versionsByName
+          .get(sibling.version_group.name)!
+          .versions.map(({ name }) => name),
+      );
+    const description =
+      ownDescription ||
+      (isSpeciesDefault
+        ? mainSeriesDescription(species.flavor_text_entries, alternateVersions)
+        : '');
     const genus = species.genera.find(isEnglish)?.genus;
-    entries[entry.name] = {
+    const family = chains.find((chain) =>
+      species.evolution_chain.url.endsWith(`/evolution-chain/${chain.id}/`),
+    )?.id;
+    if (family === undefined)
+      throw new Error(`Missing evolution family for ${form.name}`);
+    entries[key] = {
       abilities: entry.abilities
-        .sort((left, right) => left.slot - right.slot)
+        .toSorted((left, right) => left.slot - right.slot)
         .map(({ ability }) => ability.name),
       color: species.color.name,
-      description: description ? cleanText(description) : '',
-      evolvesFrom: evolvesFrom.get(entry.name) ?? null,
-      evolvesTo: [...(evolvesTo.get(entry.name) ?? [])].sort(),
-      ...(alternateForms.has(entry.name)
-        ? { hasAlternateEvolutionForms: true }
-        : {}),
+      description: cleanText(description),
+      displayName: genericNames.has(key)
+        ? (species.names.find(isEnglish)?.name ?? titleCase(species.name))
+        : key === 'minior-red-meteor'
+          ? 'Minior (Meteor Form)'
+          : key === 'minior-red'
+            ? 'Minior (Core Form)'
+            : formLabel(form, species),
+      hasDistinctDescription:
+        Boolean(description) &&
+        (siblings.length === 1 ||
+          (Boolean(ownDescription) &&
+            !siblings.some(
+              (sibling) =>
+                sibling !== form &&
+                cleanText(
+                  mainSeriesDescription(sibling.flavor_text_entries ?? []),
+                ) === cleanText(description),
+            ))),
+      evolutionFamily: family,
+      evolvesFrom: evolvesFrom.get(key) ?? null,
+      evolvesTo: [...(evolvesTo.get(key) ?? [])].sort(),
       generation,
+      speciesGeneration,
+      speciesId: species.id,
+      speciesName: species.name,
+      pokemonId: entry.id,
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
-      id: entry.id,
-      identitySprites: getIdentitySprites(entry),
+      formId: form.id,
+      identitySprites: getIdentitySprites(entry, form, generation),
       isLegendary: species.is_legendary,
       isMythical: species.is_mythical,
       levelMoves: getLevelMoves(entry),
-      shape: species.shape.name,
-      shinySprite: normalizeSpriteUrl(entry.sprites.front_shiny),
-      sprite: normalizeSpriteUrl(entry.sprites.front_default),
+      shape: species.shape?.name ?? '',
+      shinySprite: normalizeSpriteUrl(form.sprites.front_shiny),
+      sprite: normalizeSpriteUrl(form.sprites.front_default),
       stats: getStats(entry),
-      types: entry.types
-        .sort((left, right) => left.slot - right.slot)
+      types: form.types
+        .toSorted((left, right) => left.slot - right.slot)
         .map(({ type }) => type.name),
       spriteMeasurements: null,
     };
+    if (
+      !entries[key].types.length ||
+      entries[key].types.some((type) => !Object.hasOwn(typeRelations, type))
+    )
+      throw new Error(`No question types for ${form.name}`);
+  }
+  const labelCounts = new Map<string, number>();
+  for (const entry of Object.values(entries))
+    labelCounts.set(
+      entry.displayName,
+      (labelCounts.get(entry.displayName) ?? 0) + 1,
+    );
+  for (const [key, entry] of Object.entries(entries)) {
+    if (labelCounts.get(entry.displayName)! > 1)
+      entry.displayName += ` (${titleCase(key.slice(entry.speciesName.length + 1))})`;
   }
 
   return addSpriteMeasurements(
     {
-      contentVersion: 14,
+      contentVersion: 15,
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },
@@ -306,7 +391,7 @@ const addSpriteMeasurements = async (
   );
   for (const pokemon of Object.values(catalog.pokemon)) {
     if (pokemon.sprite && !measurements.has(pokemon.sprite)) {
-      throw new Error(`Missing sprite measurements for ${pokemon.id}`);
+      throw new Error(`Missing sprite measurements for ${pokemon.formId}`);
     }
     const size = pokemon.sprite ? measurements.get(pokemon.sprite) : undefined;
     pokemon.spriteMeasurements = size
@@ -327,6 +412,20 @@ if (import.meta.main) {
     : await buildPokemonCatalog(client);
   const output = await format(JSON.stringify(catalog), { parser: 'json' });
   await writeFile(DATA_PATH, output);
+  await writeFile(
+    LABELS_PATH,
+    await format(
+      JSON.stringify(
+        Object.fromEntries(
+          Object.entries(catalog.pokemon).map(([name, pokemon]) => [
+            name,
+            pokemon.displayName,
+          ]),
+        ),
+      ),
+      { parser: 'json' },
+    ),
+  );
   const pokemonCount = Object.keys(catalog.pokemon).length;
   const typeCount = Object.keys(catalog.typeRelations).length;
   console.log(

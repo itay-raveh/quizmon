@@ -10,11 +10,8 @@ const imageBody = Buffer.from(
   'base64',
 );
 
-export const formatName = (name: string) =>
-  name
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
+export { formatPokemonName as formatName } from '../src/game/format';
+import { formatPokemonName as formatName } from '../src/game/format';
 
 export const findPokemonByLabel = (label: string | null) =>
   Object.entries(catalogData.pokemon).find(

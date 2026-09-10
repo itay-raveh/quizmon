@@ -15,7 +15,7 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
   const [page, setPage] = useState(0);
   const { entries, count } = useMemo(() => {
     const entries = Object.entries(catalog.pokemon)
-      .sort(([, a], [, b]) => a.id - b.id)
+      .sort(([, a], [, b]) => a.speciesId - b.speciesId)
       .map(([name, pokemon]) => {
         const found = foundPokemon.has(name);
         return {
@@ -23,7 +23,7 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
           name,
           pokemon,
           searchName: found ? formatPokemonName(name).toLowerCase() : '',
-          searchNumber: String(pokemon.id).padStart(4, '0'),
+          searchNumber: String(pokemon.speciesId).padStart(4, '0'),
         };
       });
     return { entries, count: entries.filter(({ found }) => found).length };
@@ -88,7 +88,7 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
               </div>
               {found ? (
                 <>
-                  <PokemonIdentity dexNumber={pokemon.id} name={name} />
+                  <PokemonIdentity dexNumber={pokemon.speciesId} name={name} />
                   <TypeBadges
                     types={pokemon.types}
                     label={pokemon.types.join(' / ')}
@@ -96,7 +96,7 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
                 </>
               ) : (
                 <span className="trainer-pokedex__missing">
-                  <small>{formatPokedexNumber(pokemon.id)}</small>
+                  <small>{formatPokedexNumber(pokemon.speciesId)}</small>
                   <span>Not found</span>
                 </span>
               )}

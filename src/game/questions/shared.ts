@@ -220,7 +220,7 @@ export const pokemonPrompt = (
 ): QuestionPrompt => ({
   after,
   before,
-  dexNumber: target.pokemon.id,
+  dexNumber: target.pokemon.speciesId,
   kind: 'pokemon',
   name: target.name,
 });
@@ -241,7 +241,12 @@ export const getOptionVisuals = (
         ? [
             [
               option,
-              { dexNumber: pokemon.id, silhouette, src, types: pokemon.types },
+              {
+                dexNumber: pokemon.speciesId,
+                silhouette,
+                src,
+                types: pokemon.types,
+              },
             ] as const,
           ]
         : [];
@@ -255,7 +260,7 @@ const getOptionDexNumbers = (
   Object.fromEntries(
     options.flatMap((option) => {
       const pokemon = context.catalog.pokemon[option];
-      return pokemon ? [[option, pokemon.id] as const] : [];
+      return pokemon ? [[option, pokemon.speciesId] as const] : [];
     }),
   );
 
@@ -325,7 +330,11 @@ export const pokemonOptions = (
   const scored = rankCandidates(
     target.name,
     candidates
-      .filter(({ name }) => !excluded.includes(name))
+      .filter(
+        ({ name, pokemon }) =>
+          !excluded.includes(name) &&
+          pokemon.speciesName !== target.pokemon.speciesName,
+      )
       .map(({ name }) => name),
     similarityFor,
     context.random,
@@ -353,8 +362,8 @@ export const pokemonOptions = (
     .slice(0, 3);
   const distanceFromTarget = (name: string) =>
     Math.abs(
-      (context.catalog.pokemon[name]?.id ?? target.pokemon.id) -
-        target.pokemon.id,
+      (context.catalog.pokemon[name]?.speciesId ?? target.pokemon.speciesId) -
+        target.pokemon.speciesId,
     );
   const spreadBand = [...shortlist]
     .sort((left, right) => distanceFromTarget(right) - distanceFromTarget(left))
@@ -430,12 +439,19 @@ const descriptionNames: Record<string, string> = {
   'zygarde-50': 'zygarde',
 };
 
-export const redactName = (description: string, name: string): string => {
+export const redactName = (
+  description: string,
+  name: string,
+  speciesName = name,
+): string => {
   const escapeRegExp = (value: string) =>
     value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const aliases = [name, descriptionNames[name]].filter(
-    (value): value is string => Boolean(value),
-  );
+  const aliases = [
+    name,
+    speciesName,
+    descriptionNames[speciesName],
+    descriptionNames[name],
+  ].filter((value): value is string => Boolean(value));
   if (name === 'nidoran-f' || name === 'nidoran-m') aliases.push('nidoran');
   const forms = aliases
     .flatMap((alias) => [alias, alias.replaceAll('-', ' ')])

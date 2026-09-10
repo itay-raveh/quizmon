@@ -1,6 +1,6 @@
 import type { EvolutionChain, Pokemon, PokemonSpecies } from 'pokenode-ts';
 import {
-  defaultEvolutionLinks,
+  formEvolutionLinks,
   mainSeriesDescription,
 } from '../scripts/catalog-selection';
 
@@ -46,101 +46,100 @@ it('includes Legends and Let’s Go, but never falls back to an unknown or spin-
   ).toBe('Available');
 });
 
-const chain = (
-  from: string,
-  to: string[],
-  forms: Record<
-    string,
-    { base_form?: { name: string }; evolved_form?: { name: string } }
-  > = {},
-) =>
+const pokemon = (name: string, species = name, is_default = true) =>
+  ({ name, species: { name: species }, is_default }) as Pokemon;
+const form = (name: string, parent = name, is_default = true) =>
   ({
+    name,
+    pokemon: { name: parent },
+    is_default,
+  }) as import('pokenode-ts').PokemonForm;
+
+it('resolves explicit regional evolution edges independently of species defaults', () => {
+  const chain = {
     chain: {
-      species: { name: from },
+      species: { name: 'meowth' },
       evolution_details: [],
-      evolves_to: to.map((name) => ({
-        species: { name },
-        evolution_details: [{ trigger: { name: 'level-up' }, ...forms[name] }],
-        evolves_to: [],
-      })),
+      evolves_to: [
+        {
+          species: { name: 'persian' },
+          evolution_details: [{ base_form: null, evolved_form: null }],
+          evolves_to: [],
+        },
+        {
+          species: { name: 'perrserker' },
+          evolution_details: [
+            { base_form: { name: 'meowth-galar' }, evolved_form: null },
+          ],
+          evolves_to: [],
+        },
+      ],
     },
-  }) as unknown as EvolutionChain;
-const pokemon = (species: string, name = species) =>
-  ({ name, species: { name: species } }) as Pokemon;
-
-it.each([
-  ['meowth', 'perrserker'],
-  ['farfetchd', 'sirfetchd'],
-  ['mr-mime', 'mr-rime'],
-  ['corsola', 'cursola'],
-  ['linoone', 'obstagoon'],
-  ['yamask', 'runerigus'],
-  ['wooper', 'clodsire'],
-  ['qwilfish', 'overqwil'],
-  ['sneasel', 'sneasler'],
-  ['basculin', 'basculegion'],
-])('does not link default %s to form-exclusive %s', (from, to) => {
-  const links = defaultEvolutionLinks(
-    [chain(from, [to], { [to]: { base_form: { name: `${from}-regional` } } })],
-    [pokemon(from), pokemon(to)],
-  );
-  expect(links.evolvesTo.size).toBe(0);
-  expect(links.evolvesFrom.size).toBe(0);
-});
-
-it('preserves valid branches and resolves species names to the shipped default forms', () => {
-  const links = defaultEvolutionLinks(
+  } as unknown as EvolutionChain;
+  const links = formEvolutionLinks(
+    [chain],
     [
-      chain('meowth', ['persian', 'perrserker'], {
-        perrserker: { base_form: { name: 'meowth-galar' } },
-      }),
-      chain('darumaka', ['darmanitan']),
-      chain('eevee', ['vaporeon', 'jolteon', 'flareon']),
+      pokemon('meowth'),
+      pokemon('meowth-galar', 'meowth', false),
+      pokemon('persian'),
+      pokemon('perrserker'),
     ],
-    [
-      'meowth',
-      'persian',
-      'perrserker',
-      'darumaka',
-      'eevee',
-      'vaporeon',
-      'jolteon',
-      'flareon',
-    ]
-      .map((name) => pokemon(name))
-      .concat(pokemon('darmanitan', 'darmanitan-standard')),
+    [form('meowth'), form('meowth-galar'), form('persian'), form('perrserker')],
   );
   expect([...links.evolvesTo.get('meowth')!]).toEqual(['persian']);
-  expect([...links.evolvesTo.get('darumaka')!]).toEqual([
-    'darmanitan-standard',
-  ]);
-  expect(links.evolvesFrom.get('darmanitan-standard')).toBe('darumaka');
-  expect(links.evolvesTo.get('eevee')?.size).toBe(3);
+  expect([...links.evolvesTo.get('meowth-galar')!]).toEqual(['perrserker']);
+  expect(links.evolvesFrom.get('perrserker')).toBe('meowth-galar');
 });
 
-it('rejects methods whose evolved form is not the shipped default', () => {
-  const links = defaultEvolutionLinks(
+it('does not assign a post-regional species description to the original form', () => {
+  expect(
+    mainSeriesDescription(
+      [
+        note('alpha-sapphire', 'Original form'),
+        note('legends-arceus', 'Hisuian form'),
+      ],
+      ['legends-arceus'],
+    ),
+  ).toBe('Original form');
+});
+
+it('merges authenticity evolution routes into the retained entries', () => {
+  const chain = {
+    chain: {
+      species: { name: 'sinistea' },
+      evolution_details: [],
+      evolves_to: [
+        {
+          species: { name: 'polteageist' },
+          evolution_details: [
+            { base_form: null, evolved_form: null },
+            {
+              base_form: { name: 'sinistea-antique' },
+              evolved_form: { name: 'polteageist-antique' },
+            },
+          ],
+          evolves_to: [],
+        },
+      ],
+    },
+  } as unknown as EvolutionChain;
+  const links = formEvolutionLinks(
+    [chain],
     [
-      chain('pikachu', ['raichu'], {
-        raichu: { evolved_form: { name: 'raichu-alola' } },
-      }),
+      pokemon('sinistea'),
+      pokemon('sinistea-antique', 'sinistea', false),
+      pokemon('polteageist'),
+      pokemon('polteageist-antique', 'polteageist', false),
     ],
-    [pokemon('pikachu'), pokemon('raichu')],
+    [
+      form('sinistea'),
+      form('sinistea-antique'),
+      form('polteageist'),
+      form('polteageist-antique'),
+    ],
   );
-  expect(links.evolvesTo.size).toBe(0);
-  expect(links.alternateForms.has('pikachu')).toBe(true);
-});
-
-it('keeps the default link while marking alternate evolution forms as branching', () => {
-  const defaultRoute = chain('kubfu', ['urshifu']);
-  defaultRoute.chain.evolves_to[0]!.evolution_details.push({
-    ...defaultRoute.chain.evolves_to[0]!.evolution_details[0]!,
-    evolved_form: { name: 'urshifu-rapid-strike', url: '' },
-  });
-  const links = defaultEvolutionLinks(
-    [defaultRoute],
-    [pokemon('kubfu'), pokemon('urshifu', 'urshifu-single-strike')],
+  expect([...links.evolvesTo].map(([name, next]) => [name, [...next]])).toEqual(
+    [['sinistea', ['polteageist']]],
   );
-  expect([...links.evolvesTo.get('kubfu')!]).toEqual(['urshifu-single-strike']);
-  expect(links.alternateForms.has('kubfu')).toBe(true);
+  expect([...links.evolvesFrom]).toEqual([['polteageist', 'sinistea']]);
 });

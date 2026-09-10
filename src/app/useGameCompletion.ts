@@ -35,13 +35,12 @@ export const useGameCompletion = ({
   session,
   startTimer,
 }: GameCompletionOptions) => {
-  const contentVersion = catalog?.contentVersion ?? 0;
   const progressStart = useRef<{
     seed: string;
     stats: ReturnType<typeof readTrainerStats>;
   } | null>(null);
   const complete = useCallback<CompleteGame>(
-    ({ answers, mode, modifiers, questions, seed }) => {
+    ({ answers, contentVersion, mode, modifiers, questions, seed }) => {
       const result = {
         answers,
         contentVersion,
@@ -91,14 +90,7 @@ export const useGameCompletion = ({
       }
       pauseTimer();
     },
-    [
-      contentVersion,
-      catalog,
-      dispatch,
-      pauseTimer,
-      recordDailyCompletion,
-      refreshTrainerStats,
-    ],
+    [catalog, dispatch, pauseTimer, recordDailyCompletion, refreshTrainerStats],
   );
 
   const recordAnswer = useCallback(

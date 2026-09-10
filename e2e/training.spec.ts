@@ -79,17 +79,9 @@ const findPokemonForSprite = (src: string | null) =>
     ([, entry]) =>
       entry.sprite === src ||
       entry.identitySprites.generations.some(
-        ({ back, front, generation }) =>
-          front.some(
-            (version) =>
-              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/${entry.id}.png` ===
-              src,
-          ) ||
-          back.some(
-            (version) =>
-              `/sprites/pokemon/versions/generation-${generation.toLowerCase()}/${version}/back/${entry.id}.png` ===
-              src,
-          ),
+        ({ back, front }) =>
+          front.some((path) => path === src) ||
+          back.some((path) => path === src),
       ),
   )?.[0] as PokemonName | undefined;
 

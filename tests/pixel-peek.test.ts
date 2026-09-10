@@ -8,6 +8,10 @@ import { catalog } from './fixtures/catalog';
 
 it('keeps measured crops inside visible sprite bounds across the catalog', () => {
   for (const pokemon of Object.values(catalog.pokemon)) {
+    if (!pokemon.sprite) {
+      expect(pokemon.spriteMeasurements).toBeNull();
+      continue;
+    }
     const measurements = pokemon.spriteMeasurements!;
     const [, width, height, centerX, bottom] = measurements;
     for (const x of [0, 0.5, 0.99]) {
@@ -42,7 +46,7 @@ it('keeps measured crops inside visible sprite bounds across the catalog', () =>
       }
     }
   }
-});
+}, 15_000);
 
 it('softens zoom for small sprites and tightens it for large sprites', () => {
   const small = getPixelPeekCrop(

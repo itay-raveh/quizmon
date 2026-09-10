@@ -309,12 +309,9 @@ describe('analytics endpoint', () => {
     for (const pokemon of Object.values(catalog.pokemon)) {
       for (const generation of pokemon.identitySprites.generations) {
         for (const orientation of ['front', 'back'] as const) {
-          for (const version of generation[orientation]) {
-            const family = `generation-${generation.generation.toLowerCase()}/${version}/${orientation === 'back' ? 'back/' : ''}`;
-            paths.set(
-              family,
-              `/sprites/pokemon/versions/${family}${pokemon.id}.png`,
-            );
+          for (const path of generation[orientation]) {
+            const family = path.slice(0, path.lastIndexOf('/'));
+            paths.set(family, path);
           }
         }
       }
