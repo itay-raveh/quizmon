@@ -77,17 +77,22 @@ export const buildTypeQuestion: QuestionBuilder = (context) => {
   };
 };
 
+const countPokemonTypes = (candidates: readonly Candidate[]) => {
+  const counts = new Map<string, number>();
+  for (const { pokemon } of candidates) {
+    for (const type of new Set(pokemon.types)) {
+      counts.set(type, (counts.get(type) ?? 0) + 1);
+    }
+  }
+  return counts;
+};
+
 const pickTypePuzzlePool = (
   context: QuestionContext,
   matchingCount: number,
 ) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
-  const typeCounts = new Map<string, number>();
-  for (const { pokemon } of pool) {
-    for (const type of new Set(pokemon.types)) {
-      typeCounts.set(type, (typeCounts.get(type) ?? 0) + 1);
-    }
-  }
+  const typeCounts = countPokemonTypes(pool);
   const type = pick(
     shuffle(Object.keys(context.catalog.typeRelations), context.random).filter(
       (type) => {
@@ -113,13 +118,9 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   const { matching, others } = pool;
   const shared = chooseTargets(context, matching, 3);
   const ambiguousTypes = new Set(
-    shared
-      .flatMap(({ pokemon }) => pokemon.types)
-      .filter(
-        (type) =>
-          shared.filter(({ pokemon }) => pokemon.types.includes(type))
-            .length === 2,
-      ),
+    [...countPokemonTypes(shared)]
+      .filter(([, count]) => count === 2)
+      .map(([type]) => type),
   );
   const target = pickFreshTarget(
     context,
