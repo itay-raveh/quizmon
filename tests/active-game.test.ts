@@ -25,6 +25,19 @@ const snapshot: Omit<ActiveGameSnapshot, 'version'> = {
   seed: 'saved-round',
 };
 
+const question = snapshot.questions[0]!;
+const answer = {
+  category: question.category,
+  cluesUsed: 0,
+  correct: true,
+  generation: question.generation,
+  pokemonName: question.pokemonName,
+  points: 1000,
+  questionType: question.questionType,
+  responseMilliseconds: 1234,
+  speedBonus: 250,
+};
+
 describe('active game storage', () => {
   beforeEach(() => window.sessionStorage.clear());
 
@@ -54,7 +67,7 @@ describe('active game storage', () => {
       for (const patch of [
         { contentVersion: value },
         { questionCount: value },
-        { answers: [{ ...snapshot.answers[0], cluesUsed: value }] },
+        { answers: [{ ...answer, cluesUsed: value }] },
       ]) {
         window.sessionStorage.setItem(
           'quizmon.active-game.v1',
@@ -108,18 +121,6 @@ describe('active game storage', () => {
   it.each(['training', 'daily', 'league'] as const)(
     'preserves a %s round across a catalog update',
     (kind) => {
-      const question = snapshot.questions[0]!;
-      const answer = {
-        category: question.category,
-        cluesUsed: 0,
-        correct: true,
-        generation: question.generation,
-        pokemonName: question.pokemonName,
-        points: 1000,
-        questionType: question.questionType,
-        responseMilliseconds: 1234,
-        speedBonus: 250,
-      };
       writeActiveGame({
         ...snapshot,
         contentVersion: 14,
