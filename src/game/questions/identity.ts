@@ -9,9 +9,27 @@ import {
   pokemonOptions,
   pokemonPrompt,
   textPrompt,
+  type Candidate,
   type QuestionBuilder,
+  type QuestionDraft,
 } from './shared';
-import type { PokemonKnowledge } from '../types';
+import type { PokemonKnowledge, QuestionPrompt } from '../types';
+
+const makeIdentityQuestion = (
+  target: Candidate,
+  options: string[],
+  prompt: QuestionPrompt,
+  media?: QuestionDraft['media'],
+): QuestionDraft =>
+  makeQuestion(
+    targetRepetition({ pokemonOptions: true }),
+    'identity',
+    target,
+    target.name,
+    options,
+    prompt,
+    media,
+  );
 
 const pickScanSprite = (
   pokemon: PokemonKnowledge,
@@ -39,11 +57,8 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   if (!target) return undefined;
   const sprite = pickScanSprite(target.pokemon, context.random);
   if (!sprite) return undefined;
-  return makeQuestion(
-    targetRepetition({ pokemonOptions: true }),
-    'identity',
+  return makeIdentityQuestion(
     target,
-    target.name,
     pokemonOptions(context, target),
     textPrompt('Who is this Pokémon?'),
     { kind: 'sprite', silhouette: false, src: sprite },
@@ -60,11 +75,8 @@ const buildNamedPokemonQuestion =
     if (options.length !== 4) return undefined;
 
     return {
-      ...makeQuestion(
-        targetRepetition({ pokemonOptions: true }),
-        'identity',
+      ...makeIdentityQuestion(
         target,
-        target.name,
         options,
         pokemonPrompt(target, 'Find ', ''),
       ),
@@ -80,11 +92,8 @@ export const buildWhosThatPokemonQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;
 
-  return makeQuestion(
-    targetRepetition({ pokemonOptions: true }),
-    'identity',
+  return makeIdentityQuestion(
     target,
-    target.name,
     pokemonOptions(context, target),
     textPrompt('Who is this Pokémon?'),
     { kind: 'sprite', silhouette: true, src: target.pokemon.sprite },
@@ -95,11 +104,8 @@ export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;
 
-  return makeQuestion(
-    targetRepetition({ pokemonOptions: true }),
-    'identity',
+  return makeIdentityQuestion(
     target,
-    target.name,
     pokemonOptions(context, target),
     textPrompt('Who is hiding in this pixel peek?'),
     {
@@ -124,11 +130,8 @@ export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
   if (options.length !== 4) return undefined;
 
   return {
-    ...makeQuestion(
-      targetRepetition({ pokemonOptions: true }),
-      'identity',
+    ...makeIdentityQuestion(
       target,
-      target.name,
       options,
       textPrompt('Which Pokémon is shown in its shiny colors?'),
     ),
