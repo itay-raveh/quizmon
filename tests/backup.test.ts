@@ -85,7 +85,9 @@ const populate = () => {
   });
 };
 
-const active = () =>
+const active = (
+  overrides: Partial<Parameters<typeof writeActiveGame>[0]> = {},
+) =>
   writeActiveGame({
     answers: [],
     contentVersion: 8,
@@ -99,6 +101,7 @@ const active = () =>
       createSeededRandom('saved-round'),
     ),
     seed: 'unfinished',
+    ...overrides,
   });
 
 beforeEach(() => {
@@ -405,21 +408,7 @@ it('notifies another tab on restore, but not ordinary saves', () => {
 it('does not save a stale round again while the tab unloads after restore', () => {
   const backup = createBackup();
   restoreBackup(backup);
-  writeActiveGame({
-    answers: [],
-    contentVersion: 8,
-    elapsedMilliseconds: 100,
-    mode: { kind: 'training' },
-    modifiers: defaultModifiers,
-    questionCount: 10,
-    questions: buildQuestions(
-      catalog,
-      defaultModifiers,
-      createSeededRandom('saved-round'),
-    ),
-    seed: 'stale',
-    playerRestoreId: null,
-  });
+  active({ seed: 'stale', playerRestoreId: null });
   expect(sessionStorage.getItem('quizmon.active-game.v1')).toBeNull();
 });
 
