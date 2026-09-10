@@ -79,11 +79,6 @@ export const Footer = ({ showSupport = true }: { showSupport?: boolean }) => {
           </span>
         </li>
         <li className="site-footer__group site-footer__group--legal">
-          <span>
-            Quizmon is an unofficial, fan-made Pokémon quiz. Not affiliated
-            with, sponsored by, or endorsed by Nintendo, Creatures Inc., GAME
-            FREAK, or The Pokémon Company.
-          </span>
           <span>Pokémon © </span>
           <a href={site.pokemonLegalUrl} rel="noreferrer" target="_blank">
             Nintendo / Creatures Inc. / GAME FREAK / The Pokémon Company
@@ -93,3 +88,11 @@ export const Footer = ({ showSupport = true }: { showSupport?: boolean }) => {
     </footer>
   );
 };
+
+export const Disclaimer = () => (
+  <aside className="site-disclaimer" aria-label="Fan game disclaimer">
+    Quizmon is an unofficial, fan-made Pokémon quiz. Not affiliated with,
+    sponsored by, or endorsed by Nintendo, Creatures Inc., GAME FREAK, or The
+    Pokémon Company.
+  </aside>
+);

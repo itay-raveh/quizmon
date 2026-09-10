@@ -1,5 +1,5 @@
 import { SoundProvider } from '@/audio/SoundProvider';
-import { Footer } from '@/components/Footer';
+import { Disclaimer, Footer } from '@/components/Footer';
 import { GenerationPromptDialog } from '@/components/GenerationPromptDialog';
 import { LeagueDestination } from '@/components/LeagueDestination';
 import { isLeagueVictory } from '@/game/league';
@@ -199,7 +199,6 @@ const AppOverlays = ({
   | 'training'
 >) => (
   <>
-    <Footer showSupport={session.phase !== 'questions'} />
     {settings.isOpen && catalogState.status === 'ready' ? (
       <ModifiersDialog
         catalog={catalogState.catalog}
@@ -237,9 +236,13 @@ export const AppView = (props: AppViewProps) => (
             className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
           >
             <div className="background" aria-hidden="true" />
-            <main>
-              <AppScreen {...props} />
-            </main>
+            <div className="app__screen">
+              <main>
+                <AppScreen {...props} />
+              </main>
+              <Footer showSupport={props.session.phase !== 'questions'} />
+            </div>
+            <Disclaimer />
             <AppOverlays {...props} />
           </div>
         </DailyReminderProvider>
