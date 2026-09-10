@@ -10,6 +10,10 @@ it.each([
   'farfetchd',
   'corsola',
   'qwilfish',
+  'pikachu',
+  'cubone',
+  'exeggcute',
+  'koffing',
 ])('does not ask an ambiguous or non-default-form type gain for %s', (name) => {
   const context = createQuestionContext('evolution-validity');
   context.pool = context.pool.filter(
@@ -19,18 +23,6 @@ it.each([
   );
   expect(context.pool.some((candidate) => candidate.name === name)).toBe(true);
   expect(buildQuestionType(context, 'evolution-shift')).toBeUndefined();
-});
-
-it('keeps ordinary evolutions to species with regional forms on their default typing', () => {
-  for (const name of ['pikachu', 'cubone', 'exeggcute', 'koffing']) {
-    const context = createQuestionContext(name);
-    context.pool = context.pool.filter(
-      (candidate) =>
-        candidate.name === name ||
-        catalog.pokemon[name]!.evolvesTo.includes(candidate.name),
-    );
-    expect(buildQuestionType(context, 'evolution-shift')).toBeUndefined();
-  }
 });
 
 it('keeps every shipped evolution link reciprocal and addressable', () => {

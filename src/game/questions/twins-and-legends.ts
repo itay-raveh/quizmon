@@ -62,7 +62,6 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
     ({ pokemon }) => !sameTypes(target.pokemon.types, pokemon.types),
   );
   const options = pokemonOptions(context, correct, [], distractors);
-  context.used.add(target.name);
   return {
     ...makeQuestion(
       targetRepetition({ pokemonOptions: true }),
@@ -102,7 +101,6 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
     [...correctOptions, ...ordinary.map(({ name }) => name)],
     context.random,
   );
-  context.used.add(target.name);
   return {
     ...makeQuestion(
       optionSetRepetition({ subjects: 'correct' }),

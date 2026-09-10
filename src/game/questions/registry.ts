@@ -95,7 +95,6 @@ export const buildQuestionType = (
     const draft = build({
       ...context,
       questionType,
-      used: new Set(context.used),
     });
     if (!draft) continue;
     const generation = context.catalog.pokemon[draft.pokemonName]?.generation;

@@ -1,3 +1,4 @@
+import { attackMultiplier } from '@/game/type-effectiveness';
 import { getQuestionTitle } from '@/game/question-labels';
 import { catalog } from './fixtures/catalog';
 import { createSeededRandom, shuffle } from '@/game/random';
@@ -86,20 +87,6 @@ const makeKnowledge = (
   types: ['fire'],
   ...overrides,
 });
-
-const attackMultiplier = (
-  attackType: string,
-  defenderTypes: readonly string[],
-): number => {
-  const relations = catalog.typeRelations[attackType];
-  if (!relations) return 1;
-  return defenderTypes.reduce((multiplier, defenderType) => {
-    if (relations.noneTo.includes(defenderType)) return 0;
-    if (relations.doubleTo.includes(defenderType)) return multiplier * 2;
-    if (relations.halfTo.includes(defenderType)) return multiplier / 2;
-    return multiplier;
-  }, 1);
-};
 
 const buildSingleQuestion = (questionType: QuestionType, seed: string) => {
   const [question] = buildQuestions(
@@ -527,12 +514,14 @@ describe('question building', () => {
         const multiplier = visual.multiplier;
 
         if (questionType === 'type-matchup') {
-          expect(attackMultiplier(correct, defender.types)).toBe(multiplier);
+          expect(attackMultiplier(catalog, correct, defender.types)).toBe(
+            multiplier,
+          );
         } else {
           expect(
             Math.max(
               ...catalog.pokemon[correct]!.types.map((type) =>
-                attackMultiplier(type, defender.types),
+                attackMultiplier(catalog, type, defender.types),
               ),
             ),
           ).toBe(multiplier);
@@ -554,7 +543,9 @@ describe('question building', () => {
     for (const option of question.options) {
       const attacker = catalog.pokemon[option]!;
       const strongestMatchup = Math.max(
-        ...attacker.types.map((type) => attackMultiplier(type, defender.types)),
+        ...attacker.types.map((type) =>
+          attackMultiplier(catalog, type, defender.types),
+        ),
       );
       expect(strongestMatchup === multiplier).toBe(option === correct);
     }

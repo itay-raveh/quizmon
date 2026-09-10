@@ -23,9 +23,6 @@ it('ships distinct identities for the curated forms and retains every species', 
         Object.hasOwn(catalog.typeRelations, type),
         `${name}: ${type}`,
       ).toBe(true);
-    for (const evolution of [pokemon.evolvesFrom, ...pokemon.evolvesTo])
-      if (evolution)
-        expect(Object.hasOwn(catalog.pokemon, evolution), name).toBe(true);
     for (const path of [
       pokemon.sprite,
       pokemon.shinySprite,

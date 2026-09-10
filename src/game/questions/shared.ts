@@ -114,9 +114,7 @@ export const pickTarget = (
   predicate: (pokemon: PokemonKnowledge) => boolean,
 ): Candidate | undefined => {
   const eligible = context.pool.filter(({ pokemon }) => predicate(pokemon));
-  const target = pickFreshTarget(context, eligible);
-  if (target) context.used.add(target.name);
-  return target;
+  return pickFreshTarget(context, eligible);
 };
 
 export const rankedOptionSet = (

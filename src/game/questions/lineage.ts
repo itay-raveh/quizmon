@@ -45,7 +45,6 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
   );
   const target = matching[0];
   if (!target) return undefined;
-  context.used.add(target.name);
   const correctOptions = matching.map(({ name }) => name);
   const options = shuffle(
     [...correctOptions, ...others.map(({ name }) => name)],
@@ -125,7 +124,6 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
   const chain = chains.find(({ target }) => target === selected);
   if (!chain) return undefined;
   const { target, before, after, possibleAnswers } = chain;
-  context.used.add(target.name);
   return {
     ...makeQuestion(
       targetRepetition({ pokemonOptions: true, related: [before, after] }),

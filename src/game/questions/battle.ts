@@ -54,7 +54,6 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
       (type) => !matchingTypes.includes(type),
     );
     if (distractors.length < 3) continue;
-    context.used.add(target.name);
 
     return {
       ...makeQuestion(
@@ -117,7 +116,6 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
       const correct = pickFreshTarget(context, counters);
       if (!correct) continue;
       const options = pokemonOptions(context, correct, [], distractors);
-      context.used.add(target.name);
 
       return {
         ...makeQuestion(

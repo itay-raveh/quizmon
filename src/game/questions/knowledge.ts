@@ -128,7 +128,6 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
     ),
   );
   if (!target) return undefined;
-  context.used.add(target.name);
   const options = shuffle(
     [...shared.map(({ name }) => name), target.name],
     context.random,
@@ -156,7 +155,6 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
   const selectedOthers = chooseTargets(context, others, 4 - correctCount);
   const target = selectedMatching[0];
   if (!target) return undefined;
-  context.used.add(target.name);
   const correctOptions = selectedMatching.map(({ name }) => name);
   const options = shuffle(
     [...correctOptions, ...selectedOthers.map(({ name }) => name)],
@@ -275,7 +273,6 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
   );
   const target = pickFreshTarget(context, eligible);
   if (!target) return undefined;
-  context.used.add(target.name);
   const distractors = candidates
     .filter(
       (other) => other.name !== target.name && isDistractor(target, other),
