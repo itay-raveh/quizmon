@@ -217,78 +217,38 @@ it('keeps new-player settings and profile absent through a round trip', () => {
   expect(readPlayerSave().data).toEqual(backup.save.data);
 });
 
-it.for<(backup: PlayerBackup) => unknown>([
-  (backup) => ({
-    ...backup,
-    format: 'other-app',
-  }),
-  (backup) => ({ ...backup, version: 99 }),
-  (backup) => ({
-    ...backup,
-    exportedAt: '2026-02-30T12:00:00.000Z',
-  }),
-  (backup) => ({
-    ...backup,
-    save: { ...backup.save, version: 99 },
-  }),
-  (backup) => ({
-    ...backup,
-    save: {
-      ...backup.save,
-      data: {
-        ...backup.save.data,
-        settings: { ...defaultModifiers, soundVolume: 9 },
-      },
-    },
-  }),
-  (backup) => ({
-    ...backup,
-    save: {
-      ...backup.save,
-      data: {
-        ...backup.save.data,
-        results: {
-          ...backup.save.data.results,
-          daily: {
-            '2026-09-07': {
-              ...result,
-              answers: [{ ...result.answers[0], generation: 'X' }],
-            },
-          },
+it.for<(backup: PlayerBackup) => void>([
+  (backup) => Object.assign(backup, { format: 'other-app' }),
+  (backup) => Object.assign(backup, { version: 99 }),
+  (backup) => Object.assign(backup, { exportedAt: '2026-02-30T12:00:00.000Z' }),
+  (backup) => Object.assign(backup.save, { version: 99 }),
+  (backup) =>
+    Object.assign(backup.save.data, {
+      settings: { ...defaultModifiers, soundVolume: 9 },
+    }),
+  (backup) =>
+    Object.assign(backup.save.data.results, {
+      daily: {
+        '2026-09-07': {
+          ...result,
+          answers: [{ ...result.answers[0], generation: 'X' }],
         },
       },
-    },
-  }),
-  (backup) => ({
-    ...backup,
-    save: {
-      ...backup.save,
-      data: {
-        ...backup.save.data,
-        profile: { ...backup.save.data.profile, version: 99 },
-      },
-    },
-  }),
-  (backup) => ({
-    ...backup,
-    save: {
-      ...backup.save,
-      data: {
-        ...backup.save.data,
-        results: {
-          ...backup.save.data.results,
-          progress: {
-            ...backup.save.data.results.progress,
-            correctCategories: { identity: -1 },
-          },
-        },
-      },
-    },
-  }),
+    }),
+  (backup) =>
+    Object.assign(backup.save.data, {
+      profile: { ...backup.save.data.profile, version: 99 },
+    }),
+  (backup) =>
+    Object.assign(backup.save.data.results.progress, {
+      correctCategories: { identity: -1 },
+    }),
 ])('rejects invalid imports without changing storage (%#)', (damage) => {
   populate();
   const before = localStorage.getItem(PLAYER_STORAGE_KEY);
-  expect(() => parseBackup(JSON.stringify(damage(createBackup())))).toThrow();
+  const backup = createBackup();
+  damage(backup);
+  expect(() => parseBackup(JSON.stringify(backup))).toThrow();
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
 });
 
