@@ -1,10 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { QuestionAnswers } from '@/components/QuestionAnswers';
 import { attackMultiplier } from '@/game/type-effectiveness';
-import type { PokemonCatalog, QuestionData } from '@/game/types';
-import catalogData from '@/game/data/pokemon.json';
-
-const catalog = catalogData as unknown as PokemonCatalog;
+import type { QuestionData } from '@/game/types';
+import { catalog } from './fixtures/catalog';
 const question: QuestionData = {
   repetition: {
     identity: 'talonflame',

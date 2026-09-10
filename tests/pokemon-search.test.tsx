@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ChampionSearch } from '@/components/ChampionSearch';
 import { PokemonPicker } from '@/components/PokemonPicker';
-import catalogData from '@/game/data/pokemon.json';
+import { catalog } from './fixtures/catalog';
 
-const hisuianOptions = Object.entries(catalogData.pokemon)
+const hisuianOptions = Object.entries(catalog.pokemon)
   .filter(([name]) => name.endsWith('-hisui'))
   .map(([name, pokemon]) => ({
     name,

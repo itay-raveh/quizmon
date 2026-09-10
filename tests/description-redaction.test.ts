@@ -2,10 +2,7 @@ import { redactName } from '@/game/questions/shared';
 import { buildDescriptionQuestion } from '@/game/questions/knowledge';
 import { buildChampionQuestion } from '@/game/questions/champion';
 import { createSeededRandom } from '@/game/random';
-import type { PokemonCatalog } from '@/game/types';
-import catalogData from '@/game/data/pokemon.json';
-
-const catalog = catalogData as unknown as PokemonCatalog;
+import { catalog } from './fixtures/catalog';
 
 it.each([
   ['tatsugiri-curly', 'Tatsugiri'],

@@ -5,6 +5,7 @@ import {
   getOptionVisuals,
   makeQuestion,
   pickTarget,
+  pickFreshTarget,
   pokemonOptions,
   pokemonPrompt,
   textPrompt,
@@ -30,9 +31,7 @@ const pickScanSprite = (
     generation.back.length > 0 &&
     (!preferFront || generation.front.length === 0);
   const version = pick(usesBack ? generation.back : generation.front, random);
-  if (!version) return pokemon.sprite;
-
-  return version;
+  return version || pokemon.sprite;
 };
 
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
@@ -54,14 +53,10 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
 const buildNamedPokemonQuestion =
   (silhouette: boolean): QuestionBuilder =>
   (context) => {
-    const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
+    const eligible = context.pool.filter(({ pokemon }) => pokemon.sprite);
+    const target = pickFreshTarget(context, eligible);
     if (!target) return undefined;
-    const options = pokemonOptions(
-      context,
-      target,
-      [],
-      context.pool.filter(({ pokemon }) => Boolean(pokemon.sprite)),
-    );
+    const options = pokemonOptions(context, target, [], eligible);
     if (options.length !== 4) return undefined;
 
     return {
@@ -120,13 +115,11 @@ export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
 };
 
 export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
-  const target = pickTarget(context, ({ shinySprite, sprite }) =>
-    Boolean(shinySprite && sprite),
-  );
-  if (!target?.pokemon.shinySprite) return undefined;
   const eligible = context.pool.filter(
     ({ pokemon }) => pokemon.sprite && pokemon.shinySprite,
   );
+  const target = pickFreshTarget(context, eligible);
+  if (!target?.pokemon.shinySprite) return undefined;
   const options = pokemonOptions(context, target, [], eligible);
   if (options.length !== 4) return undefined;
 
