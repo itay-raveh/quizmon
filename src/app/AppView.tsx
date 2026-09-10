@@ -199,7 +199,7 @@ const AppOverlays = ({
   | 'training'
 >) => (
   <>
-    <Footer />
+    <Footer showSupport={session.phase !== 'questions'} />
     {settings.isOpen && catalogState.status === 'ready' ? (
       <ModifiersDialog
         catalog={catalogState.catalog}

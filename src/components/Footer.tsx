@@ -1,11 +1,24 @@
 import { contentPages } from '@/app/content-pages';
 import { site } from '@/app/site';
+import { CoffeeIcon } from '@/components/icons';
 
-export const Footer = () => {
+export const Footer = ({ showSupport = true }: { showSupport?: boolean }) => {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="site-footer">
+      {showSupport ? (
+        <a
+          className="site-footer__support"
+          href={site.supportUrl}
+          target="_blank"
+          rel="noopener"
+          referrerPolicy="origin"
+        >
+          <CoffeeIcon size={22} weight="bold" aria-hidden="true" />
+          Buy me a coffee
+        </a>
+      ) : null}
       <ul className="site-footer__groups" role="list">
         <li className="site-footer__group site-footer__group--primary">
           <span className="site-footer__credit">

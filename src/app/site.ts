@@ -13,6 +13,7 @@ export const site = {
     'Play a free Pokémon quiz with a five-question Daily Challenge and unlimited Training. Test types, evolutions, moves, and more. No account needed.',
   url: 'https://quizmon.raveh.dev/',
   repositoryUrl,
+  supportUrl: 'https://buymeacoffee.com/itay_raveh',
   pokemonLegalUrl: 'https://www.pokemon.com/us/legal/information',
   language: 'en',
   locale: 'en_US',

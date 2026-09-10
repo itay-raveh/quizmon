@@ -23,3 +23,4 @@ export { ShapesIcon } from '@phosphor-icons/react/dist/icons/Shapes';
 export { SlidersHorizontalIcon } from '@phosphor-icons/react/dist/icons/SlidersHorizontal';
 export { SwordIcon } from '@phosphor-icons/react/dist/icons/Sword';
 export { XIcon } from '@phosphor-icons/react/dist/icons/X';
+export { CoffeeIcon } from '@phosphor-icons/react/dist/icons/Coffee';
