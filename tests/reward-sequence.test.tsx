@@ -1,3 +1,4 @@
+import { mockAnimationFrame } from './fixtures/animation-frame';
 import type { ComponentProps } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import { SoundContext, silentSoundControls } from '@/audio/sound';
@@ -42,18 +43,10 @@ const rewardSummary = (
   />
 );
 
-let nextFrame: FrameRequestCallback;
-const step = (time: number) => act(() => nextFrame(time));
+let step: ReturnType<typeof mockAnimationFrame>;
 beforeEach(() => {
   vi.spyOn(performance, 'now').mockReturnValue(0);
-  vi.stubGlobal(
-    'requestAnimationFrame',
-    vi.fn((callback: FrameRequestCallback) => {
-      nextFrame = callback;
-      return 1;
-    }),
-  );
-  vi.stubGlobal('cancelAnimationFrame', vi.fn());
+  step = mockAnimationFrame();
 });
 afterEach(() => {
   vi.restoreAllMocks();

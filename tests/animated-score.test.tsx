@@ -1,4 +1,5 @@
-import { act, render, screen } from '@testing-library/react';
+import { mockAnimationFrame } from './fixtures/animation-frame';
+import { render, screen } from '@testing-library/react';
 import { AnimatedScore } from '@/components/AnimatedScore';
 import { MotionProvider } from '@/components/MotionProvider';
 
@@ -20,15 +21,7 @@ describe('AnimatedScore', () => {
 });
 
 it('finishes 800 ms before playback ends and lets the audio tail continue', () => {
-  let nextFrame: FrameRequestCallback = () => undefined;
-  vi.stubGlobal(
-    'requestAnimationFrame',
-    vi.fn((callback: FrameRequestCallback) => {
-      nextFrame = callback;
-      return 1;
-    }),
-  );
-  vi.stubGlobal('cancelAnimationFrame', vi.fn());
+  const step = mockAnimationFrame();
   let positionMilliseconds = 0;
   const playback = {
     progress: vi.fn((endEarlyMilliseconds = 0) =>
@@ -40,17 +33,17 @@ it('finishes 800 ms before playback ends and lets the audio tail continue', () =
   const view = render(
     <AnimatedScore playSound={playSound} format={String} value={1000} />,
   );
-  act(() => nextFrame(performance.now() + 5000));
+  step(performance.now() + 5000);
   expect(screen.getByText('0')).toBeInTheDocument();
   positionMilliseconds = 1100;
-  act(() => nextFrame(performance.now() + 6000));
+  step(performance.now() + 6000);
   expect(screen.getByText('500')).toBeInTheDocument();
   positionMilliseconds = 2199;
-  act(() => nextFrame(performance.now() + 7000));
+  step(performance.now() + 7000);
   expect(screen.getByText('999')).toBeInTheDocument();
   expect(playback.stop).not.toHaveBeenCalled();
   positionMilliseconds = 2200;
-  act(() => nextFrame(performance.now() + 8000));
+  step(performance.now() + 8000);
   expect(screen.getByText('1000')).toBeInTheDocument();
   expect(playback.progress).toHaveBeenLastCalledWith(800);
   expect(playback.stop).not.toHaveBeenCalled();
