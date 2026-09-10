@@ -110,12 +110,13 @@ export const rememberShownQuestion = (
     history.rounds[roundId]!.index >= index
   )
     return history;
+  const remembered = rememberQuestion(history, question);
   return {
-    ...rememberQuestion(history, question),
+    ...remembered,
     rounds: Object.fromEntries(
       Object.entries({
         ...history.rounds,
-        [roundId]: { index, sequence: history.sequence + 1 },
+        [roundId]: { index, sequence: remembered.sequence },
       })
         .sort((a, b) => b[1].sequence - a[1].sequence)
         .slice(0, questionRepeatPolicy.rememberedRounds),
