@@ -30,6 +30,14 @@ export const getExperienceSettings = (
   timerDisplay: settings.timerDisplay,
 });
 
+export const getChallengeModifiers = (
+  experience: ExperienceSettings,
+): Modifiers => ({
+  ...defaultModifiers,
+  ...getExperienceSettings(experience),
+  generations: [...generations],
+});
+
 export const TRAINING_QUESTION_COUNT = 10;
 
 export const isLeagueTraining = (

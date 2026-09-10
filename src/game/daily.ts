@@ -1,12 +1,7 @@
 import { isDailyDate } from './validation';
 import { site } from '../app/site';
-import { defaultModifiers, getExperienceSettings } from './modifiers';
-import {
-  generations,
-  type Modifiers,
-  type ExperienceSettings,
-  type QuestionData,
-} from './types';
+import { getChallengeModifiers } from './modifiers';
+import type { Modifiers, ExperienceSettings, QuestionData } from './types';
 import { coreQuestionTypes } from './questions/definitions';
 import { createSeededRandom, shuffle } from './random';
 
@@ -30,9 +25,7 @@ export const shouldAutoStartDaily = (search: string): boolean =>
 export const getDailyModifiers = (
   experience: ExperienceSettings,
 ): Modifiers => ({
-  ...defaultModifiers,
-  ...getExperienceSettings(experience),
-  generations: [...generations],
+  ...getChallengeModifiers(experience),
   questionTypes: [...coreQuestionTypes],
 });
 

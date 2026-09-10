@@ -1,13 +1,5 @@
-import { defaultModifiers, getExperienceSettings } from './modifiers';
 import { createSeededRandom, shuffle } from './random';
-import {
-  generations,
-  type GameResult,
-  type Modifiers,
-  type ExperienceSettings,
-  type QuestionData,
-  type QuestionType,
-} from './types';
+import type { GameResult, QuestionData, QuestionType } from './types';
 
 export const LEAGUE_CHALLENGE_VERSION = 3;
 
@@ -64,13 +56,7 @@ const stageQuestionTypes: readonly (readonly QuestionType[])[] = [
   ['move-check', 'stat-showdown', 'type-matchup'],
 ];
 
-export const getLeagueModifiers = (
-  experience: ExperienceSettings,
-): Modifiers => ({
-  ...defaultModifiers,
-  ...getExperienceSettings(experience),
-  generations: [...generations],
-});
+export { getChallengeModifiers as getLeagueModifiers } from './modifiers';
 
 export const getLeagueQuestionTypes = (
   seed: string,
