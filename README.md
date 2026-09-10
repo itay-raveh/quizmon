@@ -21,7 +21,7 @@ npm run dev
 
 ## Data
 
-Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). Regional and mechanical forms count separately as partner choices and discoveries. Catalog generation groups cosmetic, costume, rare, authenticity, Totem, and Resolute variants into their retained entries and excludes unused forms. The data update generates both the gameplay catalog and its English display labels; live games do not request PokéAPI data.
+Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). Live games do not request PokéAPI data.
 
 ```sh
 npm run data:update
