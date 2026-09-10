@@ -73,10 +73,16 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
   };
 };
 
+const regionalForm = (name: string): string | undefined =>
+  name.match(/-(alola|galar|hisui|paldea)(?:-|$)/)?.[1];
+
 export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
   const middleStages = context.pool.filter(
     ({ pokemon }) => pokemon.evolvesFrom && pokemon.evolvesTo.length > 0,
+  );
+  const regions = new Map(
+    middleStages.map(({ name }) => [name, regionalForm(name)]),
   );
   const chains = middleStages.flatMap((target) => {
     const { name, pokemon } = target;
@@ -101,10 +107,15 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
       last.evolvesFrom !== name
     )
       return [];
+    const region = regions.get(name);
     const possibleAnswers = middleStages.filter(
-      ({ name: option }) => option !== before && option !== after,
+      ({ name: option, pokemon: candidate }) =>
+        option !== before &&
+        option !== after &&
+        candidate.speciesName !== pokemon.speciesName &&
+        regions.get(option) === region,
     );
-    if (possibleAnswers.length < 4) return [];
+    if (possibleAnswers.length < 3) return [];
     return [{ target, before, after, possibleAnswers }];
   });
   const fresh = chains.filter(({ target }) => !context.used.has(target.name));

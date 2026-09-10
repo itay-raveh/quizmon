@@ -7,6 +7,52 @@ import { createSeededRandom } from '@/game/random';
 import { generations, type Modifiers } from '@/game/types';
 
 describe('Evolution link', () => {
+  it.each(['graveler-alola', 'linoone-galar', 'sliggoo-hisui'])(
+    'skips %s when only other regional categories provide enough distractors',
+    (target) => {
+      const context = createQuestionContext('regional-clue');
+      const pokemon = catalog.pokemon[target]!;
+      const names = new Set([
+        target,
+        pokemon.evolvesFrom,
+        ...pokemon.evolvesTo,
+        'boldore',
+        'naclstack',
+        'pawmo',
+        'graveler-alola',
+        'linoone-galar',
+        'mr-mime-galar',
+        'sliggoo-hisui',
+      ]);
+      context.pool = context.pool.filter(({ name }) => names.has(name));
+      expect(context.pool.some(({ name }) => name === target)).toBe(true);
+      expect(buildQuestionType(context, 'evolution-link')).toBeUndefined();
+      expect(context.used.size).toBe(0);
+    },
+  );
+
+  it('keeps ordinary chains and fills all three distractors without regional forms', () => {
+    const context = createQuestionContext('ordinary-chain');
+    const names = new Set([
+      'geodude',
+      'graveler',
+      'golem',
+      'boldore',
+      'naclstack',
+      'pawmo',
+      'graveler-alola',
+      'linoone-galar',
+      'mr-mime-galar',
+      'sliggoo-hisui',
+    ]);
+    context.pool = context.pool.filter(({ name }) => names.has(name));
+    const question = buildQuestionType(context, 'evolution-link');
+    expect(question?.answer.correctOptions).toEqual(['graveler']);
+    expect(question?.options.toSorted()).toEqual(
+      ['graveler', 'boldore', 'naclstack', 'pawmo'].toSorted(),
+    );
+  });
+
   it.each(generations)(
     'builds valid text-only chains and four middle-stage choices in Generation %s',
     (generation) => {
