@@ -162,19 +162,22 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
 
 export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
-  const target = pickTarget(context, ({ evolvesTo, types }) => {
-    if (evolvesTo.length !== 1) return false;
-    const evolutionName = evolvesTo[0];
-    const evolution = evolutionName
-      ? context.catalog.pokemon[evolutionName]
-      : undefined;
-    return Boolean(
-      evolutionName &&
-      poolNames.has(evolutionName) &&
-      evolution?.sprite &&
-      evolution.types.filter((type) => !types.includes(type)).length === 1,
-    );
-  });
+  const target = pickTarget(
+    context,
+    ({ evolvesTo, types, hasAlternateEvolutionForms }) => {
+      if (hasAlternateEvolutionForms || evolvesTo.length !== 1) return false;
+      const evolutionName = evolvesTo[0];
+      const evolution = evolutionName
+        ? context.catalog.pokemon[evolutionName]
+        : undefined;
+      return Boolean(
+        evolutionName &&
+        poolNames.has(evolutionName) &&
+        evolution?.sprite &&
+        evolution.types.filter((type) => !types.includes(type)).length === 1,
+      );
+    },
+  );
   if (!target?.pokemon.sprite) return undefined;
   const evolutionName = target.pokemon.evolvesTo[0];
   const evolution = evolutionName

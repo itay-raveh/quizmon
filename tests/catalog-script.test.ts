@@ -58,10 +58,12 @@ const makeClient = (): CatalogClient => ({
           flavor_text_entries: [
             {
               flavor_text: `${name} old field notes.`,
+              version: { name: 'red' },
               language: { name: 'en' },
             },
             {
               flavor_text: `${name}\tnew\u00adest\nfield\fnotes.`,
+              version: { name: 'violet' },
               language: { name: 'en' },
             },
             { flavor_text: 'Ignored entry.', language: { name: 'EN' } },

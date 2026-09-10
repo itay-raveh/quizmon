@@ -1,7 +1,10 @@
+import {
+  defaultEvolutionLinks,
+  mainSeriesDescription,
+} from './catalog-selection.ts';
 import { readFile, writeFile } from 'node:fs/promises';
 import { format } from 'prettier';
 import {
-  flattenChain,
   MainClient,
   type EvolutionChain,
   type Generation as ApiGeneration,
@@ -218,14 +221,10 @@ export const buildPokemonCatalog = async (
     ).values(),
   ];
   const chains = await client.resolveEvolutionChains(chainLinks);
-  const evolvesTo = new Map<string, Set<string>>();
-  for (const chain of chains) {
-    for (const step of flattenChain(chain)) {
-      const destinations = evolvesTo.get(step.from.name) ?? new Set<string>();
-      destinations.add(step.to.name);
-      evolvesTo.set(step.from.name, destinations);
-    }
-  }
+  const { evolvesTo, evolvesFrom, alternateForms } = defaultEvolutionLinks(
+    chains,
+    pokemon,
+  );
 
   const typeLinks = [
     ...new Map(
@@ -255,8 +254,7 @@ export const buildPokemonCatalog = async (
       throw new Error(`${entry.name} is missing species metadata`);
     }
     const { species, generation } = metadata;
-    const description =
-      species.flavor_text_entries.findLast(isEnglish)?.flavor_text;
+    const description = mainSeriesDescription(species.flavor_text_entries);
     const genus = species.genera.find(isEnglish)?.genus;
     entries[entry.name] = {
       abilities: entry.abilities
@@ -264,8 +262,11 @@ export const buildPokemonCatalog = async (
         .map(({ ability }) => ability.name),
       color: species.color.name,
       description: description ? cleanText(description) : '',
-      evolvesFrom: species.evolves_from_species?.name ?? null,
-      evolvesTo: [...(evolvesTo.get(species.name) ?? [])].sort(),
+      evolvesFrom: evolvesFrom.get(entry.name) ?? null,
+      evolvesTo: [...(evolvesTo.get(entry.name) ?? [])].sort(),
+      ...(alternateForms.has(entry.name)
+        ? { hasAlternateEvolutionForms: true }
+        : {}),
       generation,
       genus: genus ? cleanText(genus).replace(/ Pokémon$/i, '') : '',
       id: entry.id,
@@ -286,7 +287,7 @@ export const buildPokemonCatalog = async (
 
   return addSpriteMeasurements(
     {
-      contentVersion: 13,
+      contentVersion: 14,
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },

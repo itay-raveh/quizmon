@@ -89,6 +89,7 @@ export interface PokemonKnowledge {
   description: string;
   evolvesFrom: string | null;
   evolvesTo: string[];
+  hasAlternateEvolutionForms?: boolean;
   generation: Generation;
   genus: string;
   id: number;

@@ -80,9 +80,6 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
   );
   const chains = middleStages.flatMap((target) => {
     const { name, pokemon } = target;
-    // Species-only links cannot identify the required regional forms.
-    // https://github.com/PokeAPI/pokeapi/issues/724
-    if (name === 'linoone' || name === 'mr-mime') return [];
     const before = pokemon.evolvesFrom;
     const after = pokemon.evolvesTo[0];
     if (
