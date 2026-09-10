@@ -11,7 +11,6 @@ import {
 
 export const LEAGUE_CHALLENGE_VERSION = 3;
 
-export const LEAGUE_QUESTION_COUNT = 15;
 const LEAGUE_STAGE_SIZE = 3;
 
 export type LeagueView = 'challenge' | 'hall';
@@ -55,6 +54,8 @@ export const leagueStages: readonly LeagueStage[] = [
     title: 'Final Trial',
   },
 ];
+
+export const LEAGUE_QUESTION_COUNT = leagueStages.length * LEAGUE_STAGE_SIZE;
 
 const stageQuestionTypes: readonly (readonly QuestionType[])[] = [
   ['pokedex-scan', 'silhouette-match', 'pixel-peek'],

@@ -25,7 +25,7 @@ describe('Quizmon League', () => {
     });
 
     expect(first).toEqual(second);
-    expect(first).toHaveLength(LEAGUE_QUESTION_COUNT);
+    expect(first).toHaveLength(15);
     expect(new Set(first.map(({ questionType }) => questionType))).toEqual(
       new Set(getLeagueQuestionTypes('league-lineup')),
     );
