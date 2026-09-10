@@ -115,6 +115,20 @@ export const expectNoHorizontalOverflow = async (page: Page) => {
   expect(pageWidth).toBeLessThanOrEqual(viewportWidth);
 };
 
+export const advanceToDailyFinale = async (page: Page) => {
+  for (let index = 0; index < 4; index += 1) {
+    await page.locator('.answer').first().click();
+    const check = page.getByRole('button', {
+      name: 'Check answers',
+      exact: true,
+    });
+    if (await check.count()) await check.click();
+    await page
+      .getByRole('button', { name: 'Next question', exact: true })
+      .click();
+  }
+};
+
 export const completeTrainingRound = async (page: Page) => {
   const progress = page.getByRole('progressbar', { name: 'Quiz progress' });
 

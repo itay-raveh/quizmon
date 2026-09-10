@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { questionTypes } from '../src/game/questions/definitions';
 import {
+  advanceToDailyFinale,
   expect,
   expectNoHorizontalOverflow,
   seedBrowserRandom,
@@ -208,15 +209,7 @@ for (const { width, assisted } of [320, 390, 1280].flatMap((width) =>
       );
     });
     await page.goto('/?fresh=1&daily=2026-09-01&play=1');
-    for (let index = 0; index < 4; index += 1) {
-      await page.locator('.answer').first().click();
-      const check = page.getByRole('button', {
-        name: 'Check answers',
-        exact: true,
-      });
-      if (await check.count()) await check.click();
-      await page.getByRole('button', { name: 'Next question' }).click();
-    }
+    await advanceToDailyFinale(page);
     await expect(
       page.getByRole('combobox', { name: 'Your answer' }),
     ).toBeVisible();

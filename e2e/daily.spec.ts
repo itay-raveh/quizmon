@@ -1,5 +1,11 @@
 import type { PlayerSave } from '../src/game/player-data';
-import { catalog, expect, seedBrowserRandom, test } from './fixtures';
+import {
+  advanceToDailyFinale,
+  catalog,
+  expect,
+  seedBrowserRandom,
+  test,
+} from './fixtures';
 import { buildDailyQuestions } from '../src/game/game';
 
 test('shows a saved daily score instead of another play button', async ({
@@ -191,17 +197,7 @@ test('starts saved Training settings directly after completing Daily', async ({
     );
   });
   await page.goto('/?daily=2026-09-01&play=1');
-  for (let index = 0; index < 4; index += 1) {
-    await page.locator('.answer').first().click();
-    const check = page.getByRole('button', {
-      name: 'Check answers',
-      exact: true,
-    });
-    if (await check.count()) await check.click();
-    await page
-      .getByRole('button', { name: 'Next question', exact: true })
-      .click();
-  }
+  await advanceToDailyFinale(page);
   await page.getByRole('button', { name: /^Show 4 choices/ }).click();
   await page.locator('.answer').first().click();
   await page.getByRole('button', { name: 'See results', exact: true }).click();
