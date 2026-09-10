@@ -10,7 +10,6 @@ it.each([
   'farfetchd',
   'corsola',
   'qwilfish',
-  'basculin-red-striped',
 ])('does not ask an ambiguous or non-default-form type gain for %s', (name) => {
   const context = createQuestionContext('evolution-validity');
   context.pool = context.pool.filter(
@@ -53,4 +52,15 @@ it('still asks an unambiguous type gain', () => {
   const question = buildQuestionType(context, 'evolution-shift');
   expect(question).toBeDefined();
   expect(question?.answer.correctOptions).toEqual(['flying']);
+});
+
+it('asks a type gain after grouping evolution forms into species entries', () => {
+  const context = createQuestionContext('grouped-evolution');
+  context.pool = context.pool.filter(({ name }) =>
+    ['basculin-red-striped', 'basculegion-male'].includes(name),
+  );
+  expect(catalog.pokemon['basculin-red-striped']!.displayName).toBe('Basculin');
+  expect(catalog.pokemon['basculegion-male']!.displayName).toBe('Basculegion');
+  const question = buildQuestionType(context, 'evolution-shift');
+  expect(question?.answer.correctOptions).toEqual(['ghost']);
 });

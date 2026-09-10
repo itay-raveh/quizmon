@@ -158,14 +158,14 @@ describe('active game storage', () => {
   });
 
   it('corrects a saved variety ID to its National Pokédex number without regenerating the question', () => {
-    const name = 'minior-red';
+    const name = 'rotom-wash';
     const pokemon = catalog.pokemon[name]!;
     const question = buildQuestionType(
       {
         catalog,
         pool: [{ name, pokemon }],
         used: new Set(),
-        random: createSeededRandom('legacy-minior-number'),
+        random: createSeededRandom('legacy-rotom-number'),
       },
       'type-check',
     )!;

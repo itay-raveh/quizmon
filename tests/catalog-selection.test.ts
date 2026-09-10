@@ -68,6 +68,89 @@ it('groups Cramorant feeding states into its ordinary catalog entry', () => {
     expect(selection.targets.get(name)).toBe('cramorant');
 });
 
+it('retains approved categories while grouping unlisted variants by default', () => {
+  const names = [
+    'example',
+    'example-alola',
+    'example-hisui',
+    'example-galar',
+    'example-paldea',
+    'example-mega',
+    'example-mega-x',
+    'example-mega-y',
+    'example-mega-z',
+    'example-gmax',
+    'example-large',
+    'example-alola-cap',
+    'example-unknown-future-form',
+  ];
+  const selection = selectCatalogForms(
+    names.map((name) => pokemon(name, 'example', name === 'example')),
+    names.map((name) => form(name)),
+  );
+  expect(selection.forms.map(({ name }) => name)).toEqual(names.slice(0, 10));
+  expect(selection.targets.get('example-large')).toBe('example');
+  expect(selection.targets.get('example-alola-cap')).toBe('example');
+  expect(selection.targets.get('example-unknown-future-form')).toBe('example');
+});
+
+it.each([
+  [
+    'rotom',
+    [
+      'rotom',
+      'rotom-heat',
+      'rotom-wash',
+      'rotom-frost',
+      'rotom-fan',
+      'rotom-mow',
+    ],
+  ],
+  ['lycanroc', ['lycanroc-midday', 'lycanroc-midnight', 'lycanroc-dusk']],
+  ['urshifu', ['urshifu-single-strike', 'urshifu-rapid-strike']],
+] as const)('retains the explicit %s exceptions', (species, names) => {
+  const selection = selectCatalogForms(
+    names.map((name, index) => pokemon(name, species, index === 0)),
+    names.map((name) => form(name)),
+  );
+  expect(selection.forms.map(({ name }) => name)).toEqual(names);
+  if (species !== 'rotom')
+    expect(selection.genericNames.has(names[0])).toBe(false);
+});
+
+it.each([
+  [
+    'darmanitan',
+    'darmanitan-standard',
+    'darmanitan-galar-standard',
+    'darmanitan-galar-zen',
+  ],
+  ['meowstic', 'meowstic-male', 'meowstic-male-mega', 'meowstic-female-mega'],
+  [
+    'tatsugiri',
+    'tatsugiri-curly',
+    'tatsugiri-curly-mega',
+    'tatsugiri-droopy-mega',
+  ],
+  [
+    'toxtricity',
+    'toxtricity-amped',
+    'toxtricity-amped-gmax',
+    'toxtricity-low-key-gmax',
+  ],
+])(
+  'groups secondary variants within %s transformations',
+  (species, base, retained, grouped) => {
+    const names = [base, retained, grouped];
+    const selection = selectCatalogForms(
+      names.map((name) => pokemon(name, species, name === base)),
+      names.map((name) => form(name)),
+    );
+    expect(selection.forms.map(({ name }) => name)).toEqual([base, retained]);
+    expect(selection.targets.get(grouped)).toBe(retained);
+  },
+);
+
 it('resolves explicit regional evolution edges independently of species defaults', () => {
   const chain = {
     chain: {

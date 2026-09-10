@@ -8,7 +8,7 @@ import { createSeededRandom } from '@/game/random';
 
 it('ships distinct identities for the curated forms and retains every species', () => {
   const entries = Object.values(catalog.pokemon);
-  expect(entries).toHaveLength(1338);
+  expect(entries).toHaveLength(1237);
   expect(new Set(entries.map((entry) => entry.formId)).size).toBe(
     entries.length,
   );
@@ -69,7 +69,7 @@ it.each([
   ['typhlosion-hisui', 157, 'VIII', 'II', ['fire', 'ghost']],
   ['tauros-paldea-aqua-breed', 128, 'IX', 'I', ['fighting', 'water']],
   ['unown', 201, 'II', 'II', ['psychic']],
-  ['arceus-fire', 493, 'IV', 'IV', ['fire']],
+  ['charizard-mega-x', 6, 'VI', 'I', ['fire', 'dragon']],
 ])(
   'keeps %s form facts separate from its species',
   (name, speciesId, generation, speciesGeneration, types) => {
@@ -89,8 +89,14 @@ it('preserves regional breed names and gives collapsed entries their shared name
   expect(formatPokemonName('raichu-alola')).toBe('Alolan Raichu');
   expect(formatPokemonName('unown')).toBe('Unown');
   expect(formatPokemonName('alcremie')).toBe('Alcremie');
-  expect(formatPokemonName('minior-red')).toBe('Minior (Core Form)');
-  expect(formatPokemonName('minior-red-meteor')).toBe('Minior (Meteor Form)');
+  expect(formatPokemonName('minior-red-meteor')).toBe('Minior');
+  expect(formatPokemonName('aegislash-shield')).toBe('Aegislash');
+  expect(formatPokemonName('zygarde-50')).toBe('Zygarde');
+  expect(formatPokemonName('pumpkaboo-average')).toBe('Pumpkaboo');
+  expect(formatPokemonName('darmanitan-galar-standard')).toBe(
+    'Galarian Darmanitan',
+  );
+  expect(formatPokemonName('meowstic-male-mega')).toBe('Mega Meowstic');
 });
 
 it('uses form-specific evolutions and retains a shared family across regional branches', () => {
@@ -123,8 +129,8 @@ it.each([
   ['gastrodon', 1],
   ['flabebe', 1],
   ['florges', 1],
-  ['floette', 3],
-  ['minior', 2],
+  ['floette', 2],
+  ['minior', 1],
   ['mothim', 1],
   ['frillish', 1],
   ['jellicent', 1],
@@ -132,7 +138,7 @@ it.each([
   ['xerneas', 1],
   ['koraidon', 1],
   ['miraidon', 1],
-  ['pikachu', 3],
+  ['pikachu', 2],
   ['pichu', 1],
   ['magearna', 2],
   ['zarude', 1],
@@ -144,6 +150,19 @@ it.each([
   ['sinistcha', 1],
   ['keldeo', 1],
   ['cramorant', 1],
+  ['aegislash', 1],
+  ['zygarde', 2],
+  ['pumpkaboo', 1],
+  ['gourgeist', 1],
+  ['arceus', 1],
+  ['silvally', 1],
+  ['rotom', 6],
+  ['lycanroc', 3],
+  ['urshifu', 4],
+  ['meowstic', 2],
+  ['tatsugiri', 2],
+  ['toxtricity', 2],
+  ['darmanitan', 2],
 ] as const)('keeps %s to its approved %i entries', (species, count) => {
   expect(
     Object.values(catalog.pokemon).filter(
@@ -152,7 +171,7 @@ it.each([
   ).toHaveLength(count);
 });
 
-it('excludes event, rare, authenticity, Totem, Resolute, and unused variants', () => {
+it('excludes unapproved alternate forms', () => {
   for (const name of [
     'pikachu-alola-cap',
     'pikachu-cosplay',
@@ -170,6 +189,29 @@ it('excludes event, rare, authenticity, Totem, Resolute, and unused variants', (
     'arceus-unknown',
     'cramorant-gulping',
     'cramorant-gorging',
+    'aegislash-blade',
+    'zygarde-10',
+    'zygarde-complete',
+    'zygarde-50-power-construct',
+    'pumpkaboo-large',
+    'pumpkaboo-small',
+    'gourgeist-super',
+    'arceus-fire',
+    'silvally-fire',
+    'floette-eternal',
+    'pikachu-starter',
+    'burmy-sandy',
+    'wormadam-sandy',
+    'meowstic-female',
+    'indeedee-female',
+    'basculegion-female',
+    'oinkologne-female',
+    'tatsugiri-droopy',
+    'minior-red',
+    'darmanitan-galar-zen',
+    'tatsugiri-droopy-mega',
+    'meowstic-female-mega',
+    'toxtricity-low-key-gmax',
   ])
     expect(catalog.pokemon[name], name).toBeUndefined();
   expect(
@@ -179,22 +221,42 @@ it('excludes event, rare, authenticity, Totem, Resolute, and unused variants', (
   expect(catalog.pokemon.poltchageist?.evolvesTo).toEqual(['sinistcha']);
 });
 
-it('retains mechanically distinct forms and gender differences', () => {
+it('retains the approved transformations and explicit exceptions', () => {
   for (const name of [
-    'floette-eternal',
     'floette-mega',
     'alcremie-gmax',
-    'pikachu-starter',
+    'zygarde-mega',
+    'rotom-heat',
     'rotom-wash',
-    'arceus-fire',
-    'silvally-fire',
-    'burmy-sandy',
-    'wormadam-sandy',
-    'meowstic-female',
-    'indeedee-female',
-    'basculegion-female',
-    'oinkologne-female',
-    'tatsugiri-droopy',
+    'rotom-frost',
+    'rotom-fan',
+    'rotom-mow',
+    'groudon-primal',
+    'kyogre-primal',
+    'dialga-origin',
+    'palkia-origin',
+    'giratina-origin',
+    'kyurem-black',
+    'kyurem-white',
+    'necrozma-dusk',
+    'necrozma-dawn',
+    'necrozma-ultra',
+    'calyrex-ice',
+    'calyrex-shadow',
+    'hoopa-unbound',
+    'shaymin-sky',
+    'tornadus-therian',
+    'thundurus-therian',
+    'landorus-therian',
+    'enamorus-therian',
+    'deoxys-attack',
+    'deoxys-defense',
+    'deoxys-speed',
+    'lycanroc-midday',
+    'lycanroc-midnight',
+    'lycanroc-dusk',
+    'urshifu-single-strike',
+    'urshifu-rapid-strike',
   ])
     expect(catalog.pokemon[name], name).toBeDefined();
 });

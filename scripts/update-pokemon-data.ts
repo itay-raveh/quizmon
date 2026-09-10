@@ -2,7 +2,11 @@ import {
   formEvolutionLinks,
   mainSeriesDescription,
 } from './catalog-selection.ts';
-import { catalogFormKey, selectCatalogForms } from './catalog-forms.ts';
+import {
+  catalogFormKey,
+  groupedFormLabels,
+  selectCatalogForms,
+} from './catalog-forms.ts';
 import { readFile, writeFile } from 'node:fs/promises';
 import { format } from 'prettier';
 import {
@@ -147,10 +151,7 @@ const titleCase = (value: string) =>
 
 const formLabel = (form: CatalogForm, species: PokemonSpecies) => {
   const label = form.names.find(isEnglish)?.name;
-  if (label)
-    return form.name.endsWith('-power-construct')
-      ? `${label} (Power Construct)`
-      : label;
+  if (label) return label;
   const speciesLabel =
     species.names.find(isEnglish)?.name ?? titleCase(species.name);
   const formName =
@@ -207,6 +208,11 @@ export const buildPokemonCatalog = async (
   const allForms = await client.resolveAll<CatalogForm>(
     pokemon.flatMap((entry) => entry.forms),
   );
+  for (const form of allForms) {
+    const entry = pokemonByName.get(form.pokemon.name);
+    if (!entry || !speciesByName.has(entry.species.name))
+      throw new Error(`${form.pokemon.name} is missing species metadata`);
+  }
   const selection = selectCatalogForms(pokemon, allForms);
   const { forms, genericNames } = selection;
   const versionGroups = await client.resolveAll([
@@ -219,9 +225,7 @@ export const buildPokemonCatalog = async (
   );
   const formsBySpecies = new Map<string, CatalogForm[]>();
   for (const form of forms) {
-    const entry = pokemonByName.get(form.pokemon.name);
-    if (!entry || !speciesByName.has(entry.species.name))
-      throw new Error(`${form.pokemon.name} is missing species metadata`);
+    const entry = pokemonByName.get(form.pokemon.name)!;
     const siblings = formsBySpecies.get(entry.species.name) ?? [];
     siblings.push(form);
     formsBySpecies.set(entry.species.name, siblings);
@@ -312,13 +316,11 @@ export const buildPokemonCatalog = async (
         .map(({ ability }) => ability.name),
       color: species.color.name,
       description: cleanText(description),
-      displayName: genericNames.has(key)
-        ? (species.names.find(isEnglish)?.name ?? titleCase(species.name))
-        : key === 'minior-red-meteor'
-          ? 'Minior (Meteor Form)'
-          : key === 'minior-red'
-            ? 'Minior (Core Form)'
-            : formLabel(form, species),
+      displayName:
+        groupedFormLabels[key] ??
+        (genericNames.has(key)
+          ? (species.names.find(isEnglish)?.name ?? titleCase(species.name))
+          : formLabel(form, species)),
       hasDistinctDescription:
         Boolean(description) &&
         (siblings.length === 1 ||
@@ -372,7 +374,7 @@ export const buildPokemonCatalog = async (
 
   return addSpriteMeasurements(
     {
-      contentVersion: 15,
+      contentVersion: 16,
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },

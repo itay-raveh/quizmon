@@ -74,7 +74,7 @@ test('selects curated partners and excludes collapsed variants', async ({
   for (const [query, names] of [
     ['Unown', ['Unown']],
     ['Alcremie', ['Alcremie', 'Gigantamax Alcremie']],
-    ['Minior', ['Minior (Core Form)', 'Minior (Meteor Form)']],
+    ['Minior', ['Minior']],
     ['Keldeo', ['Keldeo']],
   ] as const) {
     await search.fill(query);
