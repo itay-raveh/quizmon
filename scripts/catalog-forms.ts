@@ -18,6 +18,7 @@ const singleEntrySpecies = new Set([
   'florges',
   'furfrou',
   'xerneas',
+  'cramorant',
   'sinistea',
   'polteageist',
   'zarude',

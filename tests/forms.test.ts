@@ -8,7 +8,7 @@ import { createSeededRandom } from '@/game/random';
 
 it('ships distinct identities for the curated forms and retains every species', () => {
   const entries = Object.values(catalog.pokemon);
-  expect(entries).toHaveLength(1340);
+  expect(entries).toHaveLength(1338);
   expect(new Set(entries.map((entry) => entry.formId)).size).toBe(
     entries.length,
   );
@@ -143,6 +143,7 @@ it.each([
   ['poltchageist', 1],
   ['sinistcha', 1],
   ['keldeo', 1],
+  ['cramorant', 1],
 ] as const)('keeps %s to its approved %i entries', (species, count) => {
   expect(
     Object.values(catalog.pokemon).filter(
@@ -167,6 +168,8 @@ it('excludes event, rare, authenticity, Totem, Resolute, and unused variants', (
     'sinistcha-masterpiece',
     'keldeo-resolute',
     'arceus-unknown',
+    'cramorant-gulping',
+    'cramorant-gorging',
   ])
     expect(catalog.pokemon[name], name).toBeUndefined();
   expect(

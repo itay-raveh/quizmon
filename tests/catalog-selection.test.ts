@@ -1,4 +1,5 @@
 import type { EvolutionChain, Pokemon, PokemonSpecies } from 'pokenode-ts';
+import { selectCatalogForms } from '../scripts/catalog-forms';
 import {
   formEvolutionLinks,
   mainSeriesDescription,
@@ -54,6 +55,18 @@ const form = (name: string, parent = name, is_default = true) =>
     pokemon: { name: parent },
     is_default,
   }) as import('pokenode-ts').PokemonForm;
+
+it('groups Cramorant feeding states into its ordinary catalog entry', () => {
+  const names = ['cramorant', 'cramorant-gulping', 'cramorant-gorging'];
+  const selection = selectCatalogForms(
+    names.map((name) => pokemon(name, 'cramorant', name === 'cramorant')),
+    names.map((name) => form(name)),
+  );
+  expect(selection.forms.map(({ name }) => name)).toEqual(['cramorant']);
+  expect(selection.genericNames.has('cramorant')).toBe(true);
+  for (const name of names)
+    expect(selection.targets.get(name)).toBe('cramorant');
+});
 
 it('resolves explicit regional evolution edges independently of species defaults', () => {
   const chain = {

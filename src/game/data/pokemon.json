@@ -19933,9 +19933,9 @@
     "cramorant": {
       "abilities": ["gulp-missile"],
       "color": "blue",
-      "description": "",
+      "description": "This hungry Pokémon swallows Arrokuda whole. Occasionally, it makes a mistake and tries to swallow a Pokémon other than its preferred prey.",
       "displayName": "Cramorant",
-      "hasDistinctDescription": false,
+      "hasDistinctDescription": true,
       "evolutionFamily": 444,
       "evolvesFrom": null,
       "evolvesTo": [],
@@ -19988,124 +19988,6 @@
       "types": ["flying", "water"],
       "spriteMeasurements": [0.195964, 0.604167, 0.802083, 0.53125, 0.875],
       "pixelPeekFocus": "800103874fddf1f0e3830"
-    },
-    "cramorant-gorging": {
-      "abilities": ["gulp-missile"],
-      "color": "blue",
-      "description": "",
-      "displayName": "Gorging Cramorant",
-      "hasDistinctDescription": false,
-      "evolutionFamily": 444,
-      "evolvesFrom": null,
-      "evolvesTo": [],
-      "generation": "VIII",
-      "speciesGeneration": "VIII",
-      "speciesId": 845,
-      "speciesName": "cramorant",
-      "pokemonId": 10183,
-      "genus": "Gulp",
-      "formId": 10342,
-      "identitySprites": {
-        "generations": [
-          {
-            "generation": "IX",
-            "front": [
-              "/sprites/pokemon/versions/generation-ix/scarlet-violet/10183.png"
-            ],
-            "back": []
-          }
-        ]
-      },
-      "isLegendary": false,
-      "isMythical": false,
-      "levelMoves": [
-        "amnesia",
-        "belch",
-        "dive",
-        "drill-peck",
-        "fury-attack",
-        "hydro-pump",
-        "peck",
-        "pluck",
-        "spit-up",
-        "stockpile",
-        "swallow",
-        "thrash",
-        "water-gun"
-      ],
-      "shape": "wings",
-      "shinySprite": "/sprites/pokemon/shiny/10183.png",
-      "sprite": "/sprites/pokemon/10183.png",
-      "stats": {
-        "hp": 70,
-        "attack": 85,
-        "defense": 55,
-        "special-attack": 85,
-        "special-defense": 95,
-        "speed": 85
-      },
-      "types": ["flying", "water"],
-      "spriteMeasurements": [0.249891, 0.875, 0.84375, 0.4375, 0.875],
-      "pixelPeekFocus": "31c30c0438b1f3c183060"
-    },
-    "cramorant-gulping": {
-      "abilities": ["gulp-missile"],
-      "color": "blue",
-      "description": "",
-      "displayName": "Gulping Cramorant",
-      "hasDistinctDescription": false,
-      "evolutionFamily": 444,
-      "evolvesFrom": null,
-      "evolvesTo": [],
-      "generation": "VIII",
-      "speciesGeneration": "VIII",
-      "speciesId": 845,
-      "speciesName": "cramorant",
-      "pokemonId": 10182,
-      "genus": "Gulp",
-      "formId": 10341,
-      "identitySprites": {
-        "generations": [
-          {
-            "generation": "IX",
-            "front": [
-              "/sprites/pokemon/versions/generation-ix/scarlet-violet/10182.png"
-            ],
-            "back": []
-          }
-        ]
-      },
-      "isLegendary": false,
-      "isMythical": false,
-      "levelMoves": [
-        "amnesia",
-        "belch",
-        "dive",
-        "drill-peck",
-        "fury-attack",
-        "hydro-pump",
-        "peck",
-        "pluck",
-        "spit-up",
-        "stockpile",
-        "swallow",
-        "thrash",
-        "water-gun"
-      ],
-      "shape": "wings",
-      "shinySprite": "/sprites/pokemon/shiny/10182.png",
-      "sprite": "/sprites/pokemon/10182.png",
-      "stats": {
-        "hp": 70,
-        "attack": 85,
-        "defense": 55,
-        "special-attack": 85,
-        "special-defense": 95,
-        "speed": 85
-      },
-      "types": ["flying", "water"],
-      "spriteMeasurements": [0.197591, 0.604167, 0.760417, 0.572917, 0.875],
-      "pixelPeekFocus": "4001068d5fddf1f0e3830"
     },
     "cranidos": {
       "abilities": ["mold-breaker", "sheer-force"],
