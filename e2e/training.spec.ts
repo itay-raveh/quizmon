@@ -3,6 +3,7 @@ import {
   expect,
   formatName,
   seedBrowserRandom,
+  seedQuestionTraining,
   test,
 } from './fixtures';
 import type { Page } from '@playwright/test';
@@ -14,18 +15,7 @@ for (const outcome of ['correct', 'incorrect'] as const) {
     page,
   }) => {
     await page.setViewportSize({ width: 360, height: 780 });
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'quizmon.training-settings.v2',
-        JSON.stringify({
-          generations: ['I'],
-          questionTypes: ['stat-showdown'],
-          soundEnabled: false,
-          speedrunMode: false,
-          trainingMode: 'custom',
-        }),
-      );
-    });
+    await seedQuestionTraining(page, 'stat-showdown');
     await seedBrowserRandom(page, 'stat-reveal');
     await page.goto('/');
     await page.getByRole('button', { name: 'Start training' }).click();

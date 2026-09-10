@@ -3,6 +3,7 @@ import {
   expect,
   formatName,
   seedBrowserRandom,
+  seedQuestionTraining,
   test,
   expectNoHorizontalOverflow,
 } from './fixtures';
@@ -15,18 +16,7 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
       await page.setViewportSize(
         correct ? { width: 1280, height: 900 } : { width: 360, height: 780 },
       );
-      await page.addInitScript((type) => {
-        localStorage.setItem(
-          'quizmon.training-settings.v2',
-          JSON.stringify({
-            generations: ['I'],
-            questionTypes: [type],
-            trainingMode: 'custom',
-            soundEnabled: false,
-            speedrunMode: false,
-          }),
-        );
-      }, questionType);
+      await seedQuestionTraining(page, questionType);
       await seedBrowserRandom(page, `reverse-identity-${questionType}`);
       await page.goto('/');
       await page.getByRole('button', { name: 'Start training' }).click();

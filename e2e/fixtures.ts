@@ -1,7 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { expect, test as base, type Page } from '@playwright/test';
 import catalogData from '../src/game/data/pokemon.json' with { type: 'json' };
-import type { PokemonCatalog } from '../src/game/types';
+import type {
+  Generation,
+  PokemonCatalog,
+  QuestionType,
+} from '../src/game/types';
 
 export { catalogData, expect };
 export const catalog = catalogData as unknown as PokemonCatalog;
@@ -29,6 +33,27 @@ export const seedBrowserRandom = (page: Page, seed: string) =>
       Date.now = () => 1_700_000_000_000;
       Math.random = Math.seedrandom(${JSON.stringify(seed)}, { global: false });`,
   });
+
+export const seedQuestionTraining = (
+  page: Page,
+  questionType: QuestionType,
+  generations: readonly Generation[] = ['I'],
+) =>
+  page.addInitScript(
+    ({ questionType, generations }) => {
+      window.localStorage.setItem(
+        'quizmon.training-settings.v2',
+        JSON.stringify({
+          generations,
+          questionTypes: [questionType],
+          trainingMode: 'custom',
+          soundEnabled: false,
+          speedrunMode: false,
+        }),
+      );
+    },
+    { questionType, generations },
+  );
 
 export const expectNoHorizontalOverflow = async (page: Page) => {
   const { pageWidth, viewportWidth } = await page.evaluate(() => ({

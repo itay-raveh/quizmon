@@ -4,6 +4,7 @@ import {
   expectNoHorizontalOverflow,
   formatName,
   seedBrowserRandom,
+  seedQuestionTraining,
   test,
 } from './fixtures';
 
@@ -13,18 +14,7 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
       page,
     }) => {
       await page.setViewportSize({ width: 360, height: 780 });
-      await page.addInitScript((questionType) => {
-        window.localStorage.setItem(
-          'quizmon.training-settings.v2',
-          JSON.stringify({
-            generations: ['I', 'II'],
-            questionTypes: [questionType],
-            trainingMode: 'custom',
-            soundEnabled: false,
-            speedrunMode: false,
-          }),
-        );
-      }, questionType);
+      await seedQuestionTraining(page, questionType, ['I', 'II']);
       await seedBrowserRandom(page, 'lineage-mobile');
       await page.goto('/');
       await page.getByRole('button', { name: 'Start training' }).click();
