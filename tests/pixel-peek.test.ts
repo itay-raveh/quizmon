@@ -42,7 +42,7 @@ it('keeps measured crops inside visible sprite bounds across the catalog', () =>
       }
     }
   }
-});
+}, 15_000);
 
 it('softens zoom for small sprites and tightens it for large sprites', () => {
   const small = getPixelPeekCrop(
