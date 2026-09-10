@@ -186,18 +186,17 @@ test('plays and shares a complete Training round without a live API call', async
 
 test('keeps type reveals usable at 200% text', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
-  await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({
-        generations: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'],
-        questionTypes: ['type-roundup'],
-        soundEnabled: false,
-        speedrunMode: false,
-        trainingMode: 'custom',
-      }),
-    );
-  });
+  await seedQuestionTraining(page, 'type-roundup', [
+    'I',
+    'II',
+    'III',
+    'IV',
+    'V',
+    'VI',
+    'VII',
+    'VIII',
+    'IX',
+  ]);
 
   await seedBrowserRandom(page, 'stable-type-roundup');
   await page.goto('/');
@@ -342,18 +341,7 @@ test('confirms before discarding an in-progress game', async ({ page }) => {
 
 for (const answeredCount of [1, 10]) {
   test(`restores a round after answer ${answeredCount}`, async ({ page }) => {
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'quizmon.training-settings.v2',
-        JSON.stringify({
-          generations: ['I'],
-          questionTypes: ['pokedex-scan'],
-          soundEnabled: false,
-          speedrunMode: false,
-          trainingMode: 'custom',
-        }),
-      );
-    });
+    await seedQuestionTraining(page, 'pokedex-scan');
 
     await page.goto('/');
     await page.getByRole('button', { name: 'Start training' }).click();
@@ -390,18 +378,13 @@ for (const answeredCount of [1, 10]) {
 test('remembers shown questions across abandoned games and preserves a lineup on reload', async ({
   page,
 }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({
-        generations: ['I', 'II', 'III', 'IV', 'V'],
-        questionTypes: ['evolution-shift'],
-        soundEnabled: false,
-        speedrunMode: false,
-        trainingMode: 'custom',
-      }),
-    );
-  });
+  await seedQuestionTraining(page, 'evolution-shift', [
+    'I',
+    'II',
+    'III',
+    'IV',
+    'V',
+  ]);
   await page.goto('/');
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(
