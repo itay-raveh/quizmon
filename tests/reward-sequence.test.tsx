@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import { SoundContext, silentSoundControls } from '@/audio/sound';
 import { ReducedMotionContext } from '@/components/motion';
@@ -29,6 +30,18 @@ const changes: TrainerProgressChange[] = [
   },
 ];
 
+const rewardSummary = (
+  props: Partial<ComponentProps<typeof TrainerProgressSummary>> = {},
+) => (
+  <TrainerProgressSummary
+    progressChanges={changes}
+    leagueVictory={false}
+    onOpenTrainerCard={vi.fn()}
+    onOpenHallOfFame={vi.fn()}
+    {...props}
+  />
+);
+
 let nextFrame: FrameRequestCallback;
 const step = (time: number) => act(() => nextFrame(time));
 beforeEach(() => {
@@ -53,12 +66,7 @@ it('credits numbers and fractional fills before revealing Gold, then cancels on 
   const onOpenTrainerCard = vi.fn();
   const rendered = render(
     <SoundContext value={{ ...silentSoundControls, playReward, stopRewards }}>
-      <TrainerProgressSummary
-        progressChanges={changes}
-        leagueVictory={false}
-        onOpenTrainerCard={onOpenTrainerCard}
-        onOpenHallOfFame={vi.fn()}
-      />
+      {rewardSummary({ onOpenTrainerCard })}
     </SoundContext>,
   );
   const type = screen.getByRole('button', { name: /Type Specialist: \+10/ });
@@ -136,12 +144,7 @@ it('keeps every reward for long lists, finishes promptly, and settles when motio
   ];
   const renderSummary = (reduced: boolean) => (
     <ReducedMotionContext value={reduced}>
-      <TrainerProgressSummary
-        progressChanges={many}
-        leagueVictory={false}
-        onOpenTrainerCard={vi.fn()}
-        onOpenHallOfFame={vi.fn()}
-      />
+      {rewardSummary({ progressChanges: many })}
     </ReducedMotionContext>
   );
   const rendered = render(renderSummary(false));
@@ -161,12 +164,7 @@ it('finishes all visible progress and stops audio when the page is hidden', () =
   const stopRewards = vi.fn();
   const rendered = render(
     <SoundContext value={{ ...silentSoundControls, stopRewards }}>
-      <TrainerProgressSummary
-        progressChanges={changes}
-        leagueVictory={false}
-        onOpenTrainerCard={vi.fn()}
-        onOpenHallOfFame={vi.fn()}
-      />
+      {rewardSummary()}
     </SoundContext>,
   );
   step(200);
@@ -192,12 +190,9 @@ it.each([
     const playReward = vi.fn();
     render(
       <SoundContext value={{ ...silentSoundControls, playReward }}>
-        <TrainerProgressSummary
-          progressChanges={[{ ...changes[1]!, tier, previousTier }]}
-          leagueVictory={false}
-          onOpenTrainerCard={vi.fn()}
-          onOpenHallOfFame={vi.fn()}
-        />
+        {rewardSummary({
+          progressChanges: [{ ...changes[1]!, tier, previousTier }],
+        })}
       </SoundContext>,
     );
     const reward = screen.getByRole('button');
