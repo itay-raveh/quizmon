@@ -181,3 +181,37 @@ it('finishes all visible progress and stops audio when the page is hidden', () =
   expect(screen.getByText('231 / 1,000')).toBeVisible();
   expect(stopRewards).toHaveBeenCalled();
 });
+
+it.each([
+  [1, 0, 'bronze'],
+  [2, 1, 'silver'],
+  [3, 2, 'gold'],
+] as const)(
+  'celebrates tier %i once at the icon reveal',
+  (tier, previousTier, sound) => {
+    const playReward = vi.fn();
+    render(
+      <SoundContext value={{ ...silentSoundControls, playReward }}>
+        <TrainerProgressSummary
+          progressChanges={[{ ...changes[1]!, tier, previousTier }]}
+          leagueVictory={false}
+          onOpenTrainerCard={vi.fn()}
+          onOpenHallOfFame={vi.fn()}
+        />
+      </SoundContext>,
+    );
+    const reward = screen.getByRole('button');
+    step(679);
+    expect(reward).toHaveAttribute('data-unlocked', 'false');
+    expect(playReward).not.toHaveBeenCalledWith(0, sound);
+    step(680);
+    expect(reward).toHaveAttribute('data-tier', String(tier));
+    expect(reward).toHaveAttribute('data-unlocked', 'true');
+    expect(playReward).toHaveBeenCalledWith(0, sound);
+    step(2200);
+    expect(
+      playReward.mock.calls.filter(([, kind]) => kind === sound),
+    ).toHaveLength(1);
+    expect(playReward).not.toHaveBeenCalledWith(0, 'complete');
+  },
+);

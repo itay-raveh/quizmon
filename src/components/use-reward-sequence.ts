@@ -28,10 +28,8 @@ export const useRewardSequence = (changes: TrainerProgressChange[]) => {
   useEffect(() => {
     if (reducedMotion || changes.length === 0) return;
     const starts = rewardStarts(changes.length);
-    const hasGold = changes.some(
-      (change) => change.earned && change.tier === 3,
-    );
-    const end = (starts.at(-1) ?? 0) + (hasGold ? 870 : 650);
+    const hasUnlock = changes.some((change) => change.earned);
+    const end = (starts.at(-1) ?? 0) + (hasUnlock ? 1500 : 650);
     const startedAt = performance.now();
     const credited = new Set<number>();
     const unlocked = new Set<number>();
@@ -49,13 +47,15 @@ export const useRewardSequence = (changes: TrainerProgressChange[]) => {
           latestSounds.current.playReward(index, 'gain');
           credited.add(index);
         }
-        if (
-          change.earned &&
-          change.tier === 3 &&
-          local >= 500 &&
-          !unlocked.has(index)
-        ) {
-          latestSounds.current.playReward(index, 'gold');
+        if (change.earned && local >= 500 && !unlocked.has(index)) {
+          latestSounds.current.playReward(
+            index,
+            change.tier === 3
+              ? 'gold'
+              : change.tier === 2
+                ? 'silver'
+                : 'bronze',
+          );
           unlocked.add(index);
         }
       });

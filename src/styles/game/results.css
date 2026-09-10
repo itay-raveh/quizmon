@@ -198,7 +198,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border: 3px solid var(--metal-gold);
+  border: 3px solid var(--tier-metal);
   border-radius: 5px;
   opacity: 0;
   pointer-events: none;
@@ -254,11 +254,39 @@
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
+.reward[data-tier-unlock='true'] {
+  padding: 10px;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  border: 2px solid transparent;
+  border-radius: 0.38rem;
+}
+.reward[data-tier-unlock='true']::before {
+  inset: 0;
+}
+.reward[data-unlocked='true'] {
+  background: var(--tier-light);
+  border-color: var(--tier-edge);
+  box-shadow: inset 0 -4px 0 var(--tier-metal);
+}
+.reward[data-tier-unlock='true']
+  .reward__art
+  > :is(.trainer-badge-mark, .trainer-title-mark) {
+  width: 48px;
+  height: 48px;
+}
+.reward[data-unlocked='true'] .reward__progress {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.reward[data-unlocked='true'] .reward__track {
+  flex: none;
+  background: var(--tier-metal);
+}
 .reward__progress .is-unlocked {
   color: var(--navy);
+  font-size: var(--text-control);
   font-weight: 800;
-  background: var(--cream);
-  padding: 2px 4px;
 }
 .reward__track {
   display: block;
@@ -319,16 +347,16 @@
 .reward-case[data-playing='true'] .reward__track > span::after {
   animation: reward-sweep 620ms linear var(--reward-delay) backwards;
 }
-.reward-case[data-playing='true'] [data-gold-unlock='true'] .reward__art {
-  animation: reward-gold 520ms linear calc(var(--reward-delay) + 330ms);
+.reward-case[data-playing='true'] [data-tier-unlock='true'] .reward__art {
+  animation: reward-unlock 520ms linear calc(var(--reward-delay) + 330ms);
 }
 .reward-case[data-playing='true']
-  [data-gold-unlock='true']
+  [data-tier-unlock='true']
   .reward__art::after {
   animation: reward-ring 380ms linear calc(var(--reward-delay) + 500ms)
     backwards;
 }
-.reward-case[data-playing='true'] [data-gold-unlock='true']::before {
+.reward-case[data-playing='true'] [data-tier-unlock='true']::before {
   animation: reward-highlight 500ms linear calc(var(--reward-delay) + 500ms)
     backwards;
 }
@@ -365,7 +393,7 @@
     transform: translateX(100%);
   }
 }
-@keyframes reward-gold {
+@keyframes reward-unlock {
   0%,
   100% {
     transform: scale(1);

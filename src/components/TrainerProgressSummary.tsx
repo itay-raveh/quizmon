@@ -57,11 +57,11 @@ export const TrainerProgressSummary = ({
         ) : null}
         {progressChanges.map((change, index) => {
           const local = elapsed - starts[index]!;
-          const gold = change.earned && change.tier === 3;
-          const revealed = local >= (gold ? 500 : 620);
+          const celebrating = change.earned;
+          const revealed = local >= (celebrating ? 500 : 620);
           const before = change.current - change.delta;
           const progress = Math.max(0, Math.min(1, local / 620));
-          const credited = gold
+          const credited = celebrating
             ? local < 500
               ? Math.max(
                   0,
@@ -91,7 +91,8 @@ export const TrainerProgressSummary = ({
               <button
                 className="reward"
                 data-tier={tier}
-                data-gold-unlock={gold}
+                data-tier-unlock={celebrating}
+                data-unlocked={unlocked}
                 style={
                   { '--reward-delay': `${starts[index]}ms` } as CSSProperties
                 }
