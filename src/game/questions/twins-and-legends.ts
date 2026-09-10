@@ -16,15 +16,12 @@ const sameTypes = (left: readonly string[], right: readonly string[]) =>
 
 export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
-  const families = new Map(
-    pool.map(({ name, pokemon }) => [name, pokemon.evolutionFamily]),
-  );
   const typePairKey = (types: readonly string[]) => [...types].sort().join('|');
   const pairCounts = new Map<string, number>();
   const familyCounts = new Map<number, number>();
   const familyPairCounts = new Map<string, number>();
-  for (const { name, pokemon } of pool) {
-    const family = families.get(name)!;
+  for (const { pokemon } of pool) {
+    const family = pokemon.evolutionFamily;
     familyCounts.set(family, (familyCounts.get(family) ?? 0) + 1);
     if (pokemon.types.length !== 2) continue;
     const key = typePairKey(pokemon.types);
@@ -35,9 +32,9 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
       (familyPairCounts.get(familyPair) ?? 0) + 1,
     );
   }
-  const targets = pool.filter(({ name, pokemon }) => {
+  const targets = pool.filter(({ pokemon }) => {
     if (pokemon.types.length !== 2) return false;
-    const family = families.get(name)!;
+    const family = pokemon.evolutionFamily;
     const key = typePairKey(pokemon.types);
     const matches =
       (pairCounts.get(key) ?? 0) -
@@ -47,9 +44,9 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   });
   const target = pickFreshTarget(context, targets);
   if (!target?.pokemon.sprite) return undefined;
-  const targetFamily = families.get(target.name);
+  const targetFamily = target.pokemon.evolutionFamily;
   const candidates = pool.filter(
-    ({ name }) => families.get(name) !== targetFamily,
+    ({ pokemon }) => pokemon.evolutionFamily !== targetFamily,
   );
   const correct = pickFreshTarget(
     context,
