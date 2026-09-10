@@ -118,10 +118,10 @@ export const ChampionSearch = ({
                     aria-selected={index === activeIndex}
                     id={`${listboxId}-option-${index}`}
                     key={suggestion.option}
-                    onPointerDown={(event) => {
+                    onMouseDown={(event) => {
                       event.preventDefault();
-                      choose(suggestion);
                     }}
+                    onClick={() => choose(suggestion)}
                     role="option"
                   >
                     <span>{suggestion.label}</span>

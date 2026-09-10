@@ -87,10 +87,10 @@ export const PokemonPicker = ({
                   aria-selected={index === activeIndex}
                   id={`${listboxId}-option-${index}`}
                   key={suggestion.name}
-                  onPointerDown={(event) => {
+                  onMouseDown={(event) => {
                     event.preventDefault();
-                    choose(suggestion);
                   }}
+                  onClick={() => choose(suggestion)}
                   role="option"
                 >
                   <span aria-hidden="true" className="pokemon-picker__sprite">

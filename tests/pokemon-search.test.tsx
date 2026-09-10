@@ -87,9 +87,16 @@ describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
     );
   });
 
-  it('selects a pointer suggestion', () => {
+  it('selects only after a completed click or tap', () => {
     const { input, onChoose } = setup();
-    fireEvent.pointerDown(screen.getByRole('option', { name: 'Charizard' }));
+    const option = screen.getByRole('option', { name: 'Charizard' });
+    fireEvent.pointerDown(option, { pointerType: 'touch' });
+    expect(screen.getByRole('listbox')).toBeVisible();
+    expect(input).toHaveValue('char');
+    expect(onChoose).not.toHaveBeenCalled();
+    fireEvent.pointerCancel(option, { pointerType: 'touch' });
+    expect(screen.getByRole('listbox')).toBeVisible();
+    fireEvent.click(option);
     expect(input).toHaveValue('Charizard');
     expect(screen.queryByRole('listbox')).toBeNull();
     if (kind === 'champion') {

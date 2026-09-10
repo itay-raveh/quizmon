@@ -977,7 +977,7 @@ describe('question transitions', () => {
 
     const search = screen.getByRole('combobox', { name: 'Your answer' });
     fireEvent.change(search, { target: { value: 'bulb' } });
-    fireEvent.pointerDown(screen.getByRole('option', { name: 'Bulbasaur' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Bulbasaur' }));
     fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
     fireEvent.click(screen.getByRole('button', { name: 'See result' }));
 
