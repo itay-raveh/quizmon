@@ -1,3 +1,4 @@
+import { shufflePokemon } from './sampling';
 import { targetRepetition, optionSetRepetition } from './repetition';
 import { formatPokemonName } from '../format';
 import { pick, shuffle } from '../random';
@@ -256,7 +257,7 @@ export const buildPropertyQuestion = (
 export const buildStatQuestion: QuestionBuilder = (context) => {
   const stat = pick(statNames, context.random) as StatName;
   const direction = context.random() < 0.5 ? 'highest' : 'lowest';
-  const candidates = shuffle(context.pool, context.random);
+  const candidates = context.pool;
   const isDistractor = (target: Candidate, other: Candidate) =>
     direction === 'highest'
       ? other.pokemon.stats[stat] < target.pokemon.stats[stat]
@@ -272,10 +273,7 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
         ? pokemon.stats[stat] > boundary
         : pokemon.stats[stat] < boundary),
   );
-  const target =
-    context.history || context.rotation !== undefined
-      ? pickFreshTarget(context, eligible)
-      : eligible[0];
+  const target = pickFreshTarget(context, eligible);
   if (!target) return undefined;
   context.used.add(target.name);
   const distractors = candidates
@@ -283,7 +281,10 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
       (other) => other.name !== target.name && isDistractor(target, other),
     )
     .map(({ name }) => name);
-  const options = randomOptionSet(target.name, distractors, context.random);
+  const options = shuffle(
+    [target.name, ...shufflePokemon(distractors, context.random).slice(0, 3)],
+    context.random,
+  );
   const optionStats = Object.fromEntries(
     options.flatMap((name) => {
       const pokemon = context.catalog.pokemon[name];

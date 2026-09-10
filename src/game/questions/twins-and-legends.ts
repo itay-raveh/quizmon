@@ -51,11 +51,11 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   const candidates = pool.filter(
     ({ name }) => families.get(name) !== targetFamily,
   );
-  const correct = pick(
+  const correct = pickFreshTarget(
+    context,
     candidates.filter(({ pokemon }) =>
       sameTypes(target.pokemon.types, pokemon.types),
     ),
-    context.random,
   );
   if (!correct) return undefined;
   const distractors = candidates.filter(

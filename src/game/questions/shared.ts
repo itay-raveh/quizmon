@@ -1,9 +1,10 @@
+import { pickPokemon, pokemonWeight, shufflePokemon } from './sampling';
 import {
   getPokemonRecency,
   getSubjectRecency,
   type QuestionHistory,
 } from '../question-history';
-import { createSeededRandom, pick, shuffle } from '../random';
+import { createSeededRandom, shuffle } from '../random';
 import {
   statNames,
   type PokemonCatalog,
@@ -43,18 +44,30 @@ export const orderTargets = (
   const compareUsed = (a: Candidate, b: Candidate) =>
     Number(context.used.has(a.name)) - Number(context.used.has(b.name));
   if (context.rotation !== undefined) {
-    const deck = shuffle(
-      [...candidates].sort((a, b) =>
-        a.name < b.name ? -1 : a.name > b.name ? 1 : 0,
-      ),
-      createSeededRandom(`question-rotation-v1:${context.questionType}`),
+    const random = createSeededRandom(
+      `question-rotation-v2:${context.questionType}`,
     );
+    const deck = [...candidates]
+      .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+      .flatMap((candidate) => {
+        const tickets = 4 * pokemonWeight(candidate.name);
+        // Space each Pokémon’s rotation slots to avoid clustering repeats.
+        const phase = random();
+        return Array.from({ length: tickets }, (_, index) => ({
+          candidate,
+          position: (index + phase) / tickets,
+        }));
+      })
+      .sort((a, b) => a.position - b.position)
+      .map(({ candidate }) => candidate);
     const offset =
       ((context.rotation % deck.length) + deck.length) % deck.length;
-    return [...deck.slice(offset), ...deck.slice(0, offset)].sort(compareUsed);
+    return [...new Set([...deck.slice(offset), ...deck.slice(0, offset)])].sort(
+      compareUsed,
+    );
   }
   const history = context.history;
-  const shuffled = shuffle(candidates, context.random);
+  const shuffled = shufflePokemon(candidates, context.random);
   if (!history) {
     return shuffled.sort(compareUsed);
   }
@@ -83,7 +96,7 @@ export const pickFreshTarget = (
   if (context.history || context.rotation !== undefined)
     return orderTargets(context, candidates)[0];
   const fresh = candidates.filter(({ name }) => !context.used.has(name));
-  return pick(fresh.length > 0 ? fresh : candidates, context.random);
+  return pickPokemon(fresh.length > 0 ? fresh : candidates, context.random);
 };
 
 export const chooseTargets = (
@@ -93,7 +106,7 @@ export const chooseTargets = (
 ): Candidate[] =>
   (context.history || context.rotation !== undefined
     ? orderTargets(context, candidates)
-    : shuffle(candidates, context.random)
+    : shufflePokemon(candidates, context.random)
   ).slice(0, count);
 
 export const pickTarget = (
@@ -352,7 +365,7 @@ export const pokemonOptions = (
       context.random(),
     ),
   ]);
-  const selected = shuffle(shortlist, optionRandom)
+  const selected = shufflePokemon(shortlist, optionRandom)
     .sort((a, b) =>
       context.history
         ? getPokemonRecency(context.history, a) -
@@ -373,7 +386,7 @@ export const pokemonOptions = (
     selected.length === 3 &&
     !selected.some((name) => spreadBand.includes(name))
   ) {
-    const spreadCandidate = pick(spreadBand, optionRandom);
+    const spreadCandidate = pickPokemon(spreadBand, optionRandom);
     if (spreadCandidate) {
       const closestIndex = selected.reduce(
         (closest, name, index) =>

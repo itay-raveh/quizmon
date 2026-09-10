@@ -9,7 +9,7 @@ import {
   type QuestionType,
 } from './types';
 
-export const LEAGUE_CHALLENGE_VERSION = 2;
+export const LEAGUE_CHALLENGE_VERSION = 3;
 
 export const LEAGUE_QUESTION_COUNT = 15;
 const LEAGUE_STAGE_SIZE = 3;

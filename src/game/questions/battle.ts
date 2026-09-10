@@ -95,17 +95,7 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
 };
 
 export const buildCounterPickQuestion: QuestionBuilder = (context) => {
-  let targets: Candidate[];
-  if (context.history || context.rotation !== undefined) {
-    targets = orderTargets(context, context.pool);
-  } else {
-    const fresh = context.pool.filter(({ name }) => !context.used.has(name));
-    const repeated = context.pool.filter(({ name }) => context.used.has(name));
-    targets = [
-      ...shuffle(fresh, context.random),
-      ...shuffle(repeated, context.random),
-    ];
-  }
+  const targets = orderTargets(context, context.pool);
 
   for (const multiplier of shuffle(matchupMultipliers, context.random)) {
     for (const target of targets) {
@@ -124,10 +114,7 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
         (matches ? counters : distractors).push(candidate);
       });
       if (counters.length === 0 || distractors.length < 3) continue;
-      const correct =
-        context.history || context.rotation !== undefined
-          ? pickFreshTarget(context, counters)
-          : pick(counters, context.random);
+      const correct = pickFreshTarget(context, counters);
       if (!correct) continue;
       const options = pokemonOptions(context, correct, [], distractors);
       context.used.add(target.name);

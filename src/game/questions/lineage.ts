@@ -118,17 +118,11 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
     if (possibleAnswers.length < 3) return [];
     return [{ target, before, after, possibleAnswers }];
   });
-  const fresh = chains.filter(({ target }) => !context.used.has(target.name));
-  const selected =
-    context.history || context.rotation !== undefined
-      ? pickFreshTarget(
-          context,
-          chains.map(({ target }) => target),
-        )
-      : undefined;
-  const chain = selected
-    ? chains.find(({ target }) => target === selected)
-    : pick(fresh.length > 0 ? fresh : chains, context.random);
+  const selected = pickFreshTarget(
+    context,
+    chains.map(({ target }) => target),
+  );
+  const chain = chains.find(({ target }) => target === selected);
   if (!chain) return undefined;
   const { target, before, after, possibleAnswers } = chain;
   context.used.add(target.name);
