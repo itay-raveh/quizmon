@@ -38,6 +38,12 @@ const backup: PlayerBackup = {
   },
 };
 
+const backupFile = {
+  name: 'quizmon.json',
+  mimeType: 'application/json',
+  buffer: Buffer.from(JSON.stringify(backup)),
+};
+
 for (const width of [320, 390, 1280]) {
   test(`exports and restores a validated backup after preview at ${width}px`, async ({
     page,
@@ -67,11 +73,7 @@ for (const width of [320, 390, 1280]) {
     const before = await page.evaluate(() =>
       localStorage.getItem('quizmon.player'),
     );
-    await page.getByLabel('Choose backup file').setInputFiles({
-      name: 'quizmon.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify(backup)),
-    });
+    await page.getByLabel('Choose backup file').setInputFiles(backupFile);
     const preview = page.getByRole('region', { name: 'Restore preview' });
     await expect(preview).toBeVisible();
     await expect(
@@ -99,11 +101,7 @@ for (const width of [320, 390, 1280]) {
       await page.evaluate(() => localStorage.getItem('quizmon.player')),
     ).toBe(before);
 
-    await page.getByLabel('Choose backup file').setInputFiles({
-      name: 'quizmon.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify(backup)),
-    });
+    await page.getByLabel('Choose backup file').setInputFiles(backupFile);
     await expect(preview).toBeVisible();
     const overflow = await preview.evaluate(
       (element) => element.scrollWidth > element.clientWidth,
@@ -180,11 +178,7 @@ test('restoring in one tab stops a stale round in another tab', async ({
   ).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await page.getByRole('tab', { name: 'Backup' }).click();
-  await page.getByLabel('Choose backup file').setInputFiles({
-    name: 'quizmon.json',
-    mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(backup)),
-  });
+  await page.getByLabel('Choose backup file').setInputFiles(backupFile);
   await page.getByRole('button', { name: 'Replace and restore' }).click();
   await expect(
     other.getByRole('button', { name: 'Start training', exact: true }),
