@@ -1,4 +1,4 @@
-import { trainerTierLabels, type TrainerTitle } from '@/game/trainer';
+import type { TrainerTitle } from '@/game/trainer';
 import { TrainerTierProgress } from './TrainerTierProgress';
 import { DialogCloseButton } from './DialogCloseButton';
 import { GameButton } from './GameButton';
@@ -39,19 +39,8 @@ export const TrainerTitleDialog = ({
       <div className="trainer-title-dialog__body">
         <TrainerTitleMark tier={title.tier} specialty={title.specialty} />
         <div className="trainer-title-dialog__details">
-          <strong className="trainer-title-dialog__state">
-            {title.equipped
-              ? `${trainerTierLabels[title.tier]} title equipped`
-              : title.earned
-                ? `${trainerTierLabels[title.tier]} title earned`
-                : 'Title locked'}
-          </strong>
           <p>{title.description}</p>
-          <TrainerTierProgress
-            progress={title}
-            completedLabel="Correct"
-            labelClassName="trainer-title-dialog__progress-label"
-          />
+          <TrainerTierProgress progress={title} />
           {title.equipped || title.earned ? (
             <GameButton
               sound={title.equipped ? 'toggle-off' : 'toggle-on'}

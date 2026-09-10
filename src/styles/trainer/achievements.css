@@ -320,38 +320,32 @@
   text-align: center;
 }
 
-.trainer-tier-progress {
+.trainer-progress {
   display: grid;
-  padding: 0;
-  margin: 0.6rem 0 0;
-  list-style: none;
-  gap: 0.75rem;
+  gap: 0.4rem;
 }
 
-.trainer-tier-progress li {
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--muted);
-}
-
-.trainer-tier-progress__heading {
+.trainer-progress__numbers {
   display: flex;
+  justify-content: center;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6rem;
-  font-size: var(--text-label);
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-small);
 }
 
-.trainer-tier-progress__heading strong {
+.trainer-progress__numbers strong {
   color: var(--navy);
-  text-decoration: underline;
-  text-decoration-color: var(--tier-edge);
-  text-decoration-thickness: 3px;
-  text-underline-offset: 0.2rem;
 }
 
-.trainer-tier-progress li p {
-  margin-top: 0.4rem;
-  font-size: var(--text-label);
+.trainer-progress-total {
+  color: var(--navy);
+  font-family: var(--font-data);
+  font-size: clamp(1.75rem, 7vw, 2.5rem);
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .trainer-badge-dialog__body > .trainer-badge-mark[data-earned='true'] {
@@ -425,37 +419,11 @@
   gap: 0.7rem;
 }
 
-.trainer-badge-dialog__state,
-.trainer-title-dialog__state {
-  color: var(--navy);
-  font-size: var(--text-control);
-}
-
 .trainer-badge-dialog__details p,
 .trainer-title-dialog__details p {
   margin: 0;
   color: var(--muted);
   font-weight: 700;
-}
-
-.trainer-badge-dialog__progress-label,
-.trainer-title-dialog__progress-label {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  color: var(--navy);
-  font-size: var(--text-small);
-  font-weight: 800;
-}
-
-.trainer-badge-dialog__progress-label {
-  margin-top: 0.15rem;
-}
-
-.trainer-badge-dialog__progress-label strong,
-.trainer-title-dialog__progress-label strong {
-  font-family: var(--font-data);
 }
 
 :is(.trainer-badge-dialog, .trainer-title-dialog) progress {
@@ -508,10 +476,6 @@
 
 .trainer-title-dialog__details p {
   line-height: 1.35;
-}
-
-.trainer-title-dialog__progress-label {
-  margin-top: 0.1rem;
 }
 
 .trainer-title-dialog__details .game-button {

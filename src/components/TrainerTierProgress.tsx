@@ -1,55 +1,31 @@
-import { trainerTierLabels, type TrainerBadge } from '@/game/trainer';
+import type { TrainerBadge } from '@/game/trainer';
 
 interface TrainerTierProgressProps {
-  progress: Pick<
-    TrainerBadge,
-    'label' | 'current' | 'goal' | 'milestones' | 'tier'
-  >;
-  completedLabel: string;
-  labelClassName: string;
+  progress: Pick<TrainerBadge, 'label' | 'current' | 'goal' | 'tier'>;
 }
 
 export const TrainerTierProgress = ({
-  progress: { label, current, goal, milestones, tier },
-  completedLabel,
-  labelClassName,
+  progress: { label, current, goal, tier },
 }: TrainerTierProgressProps) => {
-  const value = Math.min(current, goal);
+  if (tier === 3) {
+    return (
+      <strong className="trainer-progress-total">
+        {current.toLocaleString()}
+      </strong>
+    );
+  }
+
   return (
-    <>
-      <div className={labelClassName}>
-        <span>
-          {tier === 3 ? completedLabel : `Next: ${trainerTierLabels[tier + 1]}`}
-        </span>
-        <strong>
-          {tier === 3
-            ? current.toLocaleString()
-            : `${value.toLocaleString()} / ${goal.toLocaleString()}`}
-        </strong>
+    <div className="trainer-progress">
+      <div className="trainer-progress__numbers">
+        <strong>{current.toLocaleString()}</strong>{' '}
+        <span>/ {goal.toLocaleString()}</span>
       </div>
-      <progress aria-label={`${label} progress`} max={goal} value={value} />
-      <ol className="trainer-tier-progress" aria-label={`${label} tiers`}>
-        {milestones.map(({ current, goal, requirement }, index) => (
-          <li
-            key={index}
-            data-tier={index + 1}
-            data-earned={tier > index}
-            aria-current={tier === index ? 'step' : undefined}
-          >
-            <div className="trainer-tier-progress__heading">
-              <strong>{trainerTierLabels[index + 1]}</strong>
-              <span>
-                {tier > index
-                  ? 'Earned'
-                  : tier === index
-                    ? 'Next tier'
-                    : `${Math.min(current, goal).toLocaleString()} / ${goal.toLocaleString()}`}
-              </span>
-            </div>
-            <p>{requirement}</p>
-          </li>
-        ))}
-      </ol>
-    </>
+      <progress
+        aria-label={`${label} progress`}
+        max={goal}
+        value={Math.min(current, goal)}
+      />
+    </div>
   );
 };

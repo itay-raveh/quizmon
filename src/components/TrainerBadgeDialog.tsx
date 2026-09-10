@@ -1,4 +1,4 @@
-import { trainerTierLabels, type TrainerBadge } from '@/game/trainer';
+import type { TrainerBadge } from '@/game/trainer';
 import { TrainerTierProgress } from './TrainerTierProgress';
 import { DialogCloseButton } from './DialogCloseButton';
 import { useModalDialog } from './dialog';
@@ -34,17 +34,8 @@ export const TrainerBadgeDialog = ({
       <div className="trainer-badge-dialog__body">
         <TrainerBadgeMark tier={badge.tier} id={badge.id} />
         <div className="trainer-badge-dialog__details">
-          <strong className="trainer-badge-dialog__state">
-            {badge.earned
-              ? `${trainerTierLabels[badge.tier]} badge earned`
-              : 'Badge locked'}
-          </strong>
           <p>{badge.requirement}</p>
-          <TrainerTierProgress
-            progress={badge}
-            completedLabel="Total"
-            labelClassName="trainer-badge-dialog__progress-label"
-          />
+          <TrainerTierProgress progress={badge} />
         </div>
       </div>
     </dialog>
