@@ -59,14 +59,6 @@ const emptyProgress = (): TrainerProgress => ({
   version: TRAINER_PROGRESS_VERSION,
 });
 
-const emptyResults = (): SavedResults => ({
-  daily: {},
-  league: { completed: false, seed: null },
-  progress: emptyProgress(),
-  streak: { creditedDates: [], version: STREAK_VERSION },
-  training: {},
-});
-
 const normalizeLeague = (value: unknown): LeagueState => {
   if (!isRecord(value)) {
     return { completed: false, seed: null };
@@ -175,11 +167,7 @@ const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
 };
 
 export const normalizeResults = (value: unknown): SavedResults => {
-  if (!isRecord(value)) {
-    return emptyResults();
-  }
-
-  const parsed = value as Partial<SavedResults>;
+  const parsed = (isRecord(value) ? value : {}) as Partial<SavedResults>;
   const daily = readResultRecord(parsed.daily);
   const training = normalizeTrainingRecords(parsed.training);
   return {
