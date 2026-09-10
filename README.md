@@ -37,4 +37,7 @@ Card animation from [Sparkles](https://opengameart.org/content/sparkles).
 
 Sound effects from [Kenney](https://kenney.nl/assets/interface-sounds).
 
-Quizmon is not affiliated with Nintendo, Game Freak, or The Pokémon Company. Pokémon and related trademarks belong to their respective owners.
+Quizmon is an unofficial, fan-made Pokémon quiz. It is not affiliated with,
+sponsored by, or endorsed by Nintendo, Creatures Inc., GAME FREAK, or The Pokémon
+Company. Pokémon and related names, characters, images, and trademarks belong to
+their respective owners.
