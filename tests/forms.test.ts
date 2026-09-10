@@ -80,20 +80,20 @@ it.each([
 );
 
 it('preserves regional breed names and gives collapsed entries their shared name', () => {
-  expect(formatPokemonName('tauros-paldea-aqua-breed')).toBe(
-    'Paldean Tauros (Aqua Breed)',
-  );
-  expect(formatPokemonName('raichu-alola')).toBe('Alolan Raichu');
-  expect(formatPokemonName('unown')).toBe('Unown');
-  expect(formatPokemonName('alcremie')).toBe('Alcremie');
-  expect(formatPokemonName('minior-red-meteor')).toBe('Minior');
-  expect(formatPokemonName('aegislash-shield')).toBe('Aegislash');
-  expect(formatPokemonName('zygarde-50')).toBe('Zygarde');
-  expect(formatPokemonName('pumpkaboo-average')).toBe('Pumpkaboo');
-  expect(formatPokemonName('darmanitan-galar-standard')).toBe(
-    'Galarian Darmanitan',
-  );
-  expect(formatPokemonName('meowstic-male-mega')).toBe('Mega Meowstic');
+  for (const [name, label] of [
+    ['tauros-paldea-aqua-breed', 'Paldean Tauros (Aqua Breed)'],
+    ['raichu-alola', 'Alolan Raichu'],
+    ['unown', 'Unown'],
+    ['alcremie', 'Alcremie'],
+    ['minior-red-meteor', 'Minior'],
+    ['aegislash-shield', 'Aegislash'],
+    ['zygarde-50', 'Zygarde'],
+    ['pumpkaboo-average', 'Pumpkaboo'],
+    ['darmanitan-galar-standard', 'Galarian Darmanitan'],
+    ['meowstic-male-mega', 'Mega Meowstic'],
+  ] as const) {
+    expect(formatPokemonName(name), name).toBe(label);
+  }
 });
 
 it('uses form-specific evolutions and retains a shared family across regional branches', () => {
