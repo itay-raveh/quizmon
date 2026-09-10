@@ -1,6 +1,6 @@
 # Terms of Use
 
-_Last updated: September 6, 2026_
+_Last updated: September 10, 2026_
 
 Quizmon is an open-source Pokémon knowledge game operated by Itay Raveh.
 By using this service, you agree to these terms.
@@ -54,9 +54,11 @@ The card animation uses [Sparkles](https://opengameart.org/content/sparkles),
 [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 The sprite sheet is unmodified.
 
-Pokémon and related rights belong to their respective owners. Quizmon is
-unofficial and is not affiliated with, sponsored by, or endorsed by Nintendo,
-Game Freak, or The Pokémon Company.
+Quizmon is an unofficial, fan-made Pokémon quiz. It is not affiliated with,
+sponsored by, or endorsed by Nintendo, Creatures Inc., GAME FREAK, or The Pokémon
+Company. Pokémon and related names, characters, images, and trademarks belong to
+their respective owners. Quizmon claims no ownership of Pokémon or official
+Pokémon content.
 
 Third-party websites and services have their own terms.
 
