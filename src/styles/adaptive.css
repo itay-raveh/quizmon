@@ -126,12 +126,6 @@
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
-  .update-prompt {
-    right: 0.6rem;
-    left: 0.6rem;
-    justify-content: space-between;
-  }
-
   .daily-action__detail {
     font-size: var(--text-small);
   }
@@ -301,7 +295,6 @@
 
   .question--enter,
   .results,
-  .update-prompt,
   .modifiers-dialog[open],
   .generation-prompt[open],
   .leave-game-dialog[open],

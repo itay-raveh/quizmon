@@ -1,3 +1,4 @@
+import { useUpdateState } from '@/pwa/update-state';
 import { useEffect, useMemo, useRef, useState, type SubmitEvent } from 'react';
 import type { PokemonCatalog } from '@/game/types';
 import { TRAINER_NAME_MAX_LENGTH } from '@/game/profile-data';
@@ -99,9 +100,12 @@ export const TrainerPassport = ({
   const [revealing, setRevealing] = useState(
     !profile.hasBeenRevealed && view === 'front',
   );
-  const [editing, setEditing] = useState(false);
-  const [name, setName] = useState(profile.name);
-  const [partner, setPartner] = useState(profile.partnerPokemon);
+  const [editing, setEditing] = useUpdateState('trainer-editing', false);
+  const [name, setName] = useUpdateState('trainer-name', profile.name);
+  const [partner, setPartner] = useUpdateState(
+    'trainer-partner',
+    profile.partnerPokemon,
+  );
   const equippedTitle = useMemo(
     () =>
       getTrainerTitles(stats, profile.specialty).find(

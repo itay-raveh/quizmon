@@ -85,6 +85,7 @@ export const useActiveGame = ({
   startTimer,
 }: ActiveGameOptions) => {
   const restorationAttempted = useRef(false);
+  const [restoring, setRestoring] = useState(true);
   const [playerRestoreId] = useState(() => {
     try {
       return readPlayerSave().restoreId;
@@ -98,6 +99,8 @@ export const useActiveGame = ({
     const timeoutId = window.setTimeout(() => {
       if (restorationAttempted.current) return;
       restorationAttempted.current = true;
+      setRestoring(false);
+      if (session.phase === 'results') return;
 
       const restoration = resolveRestoration(
         readActiveGame(),
@@ -202,4 +205,6 @@ export const useActiveGame = ({
     return () =>
       document.removeEventListener('visibilitychange', saveWhenHidden);
   }, [persist]);
+
+  return restoring;
 };

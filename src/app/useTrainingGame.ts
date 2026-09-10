@@ -1,9 +1,10 @@
+import { useUpdateState } from '@/pwa/update-state';
 import { readPlayerData } from '@/game/player-storage';
 import {
   getTrainingModifiers,
   TRAINING_QUESTION_COUNT,
 } from '@/game/modifiers';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { buildQuestions } from '@/game/game';
 import { createRoundSeed, createSeededRandom } from '@/game/random';
 import {
@@ -33,7 +34,10 @@ export const useTrainingGame = ({
   setModifiers,
   startGame,
 }: TrainingGameOptions) => {
-  const [generationPromptOpen, setGenerationPromptOpen] = useState(false);
+  const [generationPromptOpen, setGenerationPromptOpen] = useUpdateState(
+    'generation-prompt',
+    false,
+  );
   const generationPromptPending = useRef<boolean | null>(null);
 
   const isGenerationPromptPending = useCallback(() => {
@@ -82,7 +86,7 @@ export const useTrainingGame = ({
       setGenerationPromptOpen(false);
       startRound(nextModifiers);
     },
-    [catalog, modifiers, setModifiers, startRound],
+    [catalog, modifiers, setModifiers, startRound, setGenerationPromptOpen],
   );
 
   const start = useCallback(() => {
@@ -93,7 +97,13 @@ export const useTrainingGame = ({
     }
 
     startRound(modifiers);
-  }, [catalog, isGenerationPromptPending, modifiers, startRound]);
+  }, [
+    catalog,
+    isGenerationPromptPending,
+    modifiers,
+    startRound,
+    setGenerationPromptOpen,
+  ]);
 
   const trainAgain = useCallback(() => {
     if (session.phase !== 'results' || session.mode.kind !== 'training') return;

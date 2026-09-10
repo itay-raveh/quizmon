@@ -1,3 +1,5 @@
+import { AutomaticUpdate } from '@/components/AutomaticUpdate';
+import { readUpdateState, useUpdateSnapshot } from '@/pwa/update-state';
 import { createRoundSeed } from '@/game/random';
 import { useCallback, useReducer, useState } from 'react';
 import { readActiveGame } from '@/game/active-game';
@@ -34,7 +36,9 @@ export const App = () => {
   const [session, dispatchSession] = useReducer(
     gameSessionReducer,
     initialGameSession,
+    (initial) => readUpdateState('session', initial),
   );
+  useUpdateSnapshot('session', session);
   const trainer = useTrainerCard();
   const {
     elapsedMilliseconds,
@@ -115,7 +119,7 @@ export const App = () => {
     startTimer: start,
   });
 
-  useActiveGame({
+  const restoringGame = useActiveGame({
     autoStartDaily: daily.autoStart,
     catalog,
     completeGame,
@@ -131,33 +135,42 @@ export const App = () => {
   });
 
   return (
-    <AppView
-      catalogState={catalogState}
-      daily={daily}
-      modifiers={modifiers}
-      league={{
-        ...leagueDestination,
-        retry: () => {
-          leagueDestination.close();
-          retryLeague();
-        },
-        start: () => {
-          leagueDestination.close();
-          startLeague();
-        },
-      }}
-      navigation={navigation}
-      question={{
-        answer: answerQuestion,
-        elapsedMilliseconds,
-        elapsedSeconds,
-        pauseTimer: pause,
-        recordAnswer,
-      }}
-      session={session}
-      settings={settings}
-      trainer={trainer}
-      training={training}
-    />
+    <>
+      <AutomaticUpdate
+        allowed={
+          !restoringGame &&
+          session.phase !== 'questions' &&
+          catalogState.status === 'ready'
+        }
+      />
+      <AppView
+        catalogState={catalogState}
+        daily={daily}
+        modifiers={modifiers}
+        league={{
+          ...leagueDestination,
+          retry: () => {
+            leagueDestination.close();
+            retryLeague();
+          },
+          start: () => {
+            leagueDestination.close();
+            startLeague();
+          },
+        }}
+        navigation={navigation}
+        question={{
+          answer: answerQuestion,
+          elapsedMilliseconds,
+          elapsedSeconds,
+          pauseTimer: pause,
+          recordAnswer,
+        }}
+        session={session}
+        settings={settings}
+        trainer={trainer}
+        training={training}
+      />
+    </>
   );
 };

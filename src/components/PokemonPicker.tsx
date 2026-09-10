@@ -1,4 +1,5 @@
-import { useId, useMemo, useState } from 'react';
+import { useUpdateState } from '@/pwa/update-state';
+import { useId, useMemo } from 'react';
 import { useInteractionSound } from '@/audio/sound';
 import { formatPokemonName } from '@/game/format';
 import { findSearchMatches, normalizeSearch } from '@/game/search';
@@ -20,7 +21,10 @@ export const PokemonPicker = ({
 }: PokemonPickerProps) => {
   const listboxId = useId();
   const playInteractionSound = useInteractionSound();
-  const [query, setQuery] = useState(value ? formatPokemonName(value) : '');
+  const [query, setQuery] = useUpdateState(
+    'partner-query',
+    value ? formatPokemonName(value) : '',
+  );
   const entries = useMemo(
     () =>
       options.map(({ name, sprite }) => ({

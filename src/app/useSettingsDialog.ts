@@ -1,4 +1,5 @@
-import { useCallback, useState, type Dispatch } from 'react';
+import { useUpdateState } from '@/pwa/update-state';
+import { useCallback, type Dispatch } from 'react';
 import type { Modifiers } from '@/game/types';
 import type { GameSession, GameSessionAction } from './session';
 
@@ -19,17 +20,17 @@ export const useSettingsDialog = ({
   setModifiers,
   startTimer,
 }: SettingsDialogOptions) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useUpdateState('settings-open', false);
 
   const open = useCallback(() => {
     if (phase === 'questions') pauseTimer();
     setIsOpen(true);
-  }, [pauseTimer, phase]);
+  }, [pauseTimer, phase, setIsOpen]);
 
   const close = useCallback(() => {
     setIsOpen(false);
     if (phase === 'questions') startTimer();
-  }, [phase, startTimer]);
+  }, [phase, startTimer, setIsOpen]);
 
   const save = useCallback(
     (nextModifiers: Modifiers) => {

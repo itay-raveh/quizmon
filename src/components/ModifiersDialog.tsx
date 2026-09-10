@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
+import { useUpdateState } from '@/pwa/update-state';
+import { useMemo, useRef } from 'react';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 import { BackupSettings } from './BackupSettings';
 import { DialogCloseButton } from './DialogCloseButton';
@@ -32,9 +33,12 @@ export const ModifiersDialog = ({
   onSave,
   trainingChangesApplyNextGame = false,
 }: ModifiersDialogProps) => {
-  const [activeTab, setActiveTab] = useState<SettingsTab>('training');
-  const [draft, setDraft] = useState(modifiers);
-  const [submitted, setSubmitted] = useState(false);
+  const [activeTab, setActiveTab] = useUpdateState<SettingsTab>(
+    'settings-tab',
+    'training',
+  );
+  const [draft, setDraft] = useUpdateState('settings-draft', modifiers);
+  const [submitted, setSubmitted] = useUpdateState('settings-submitted', false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
   const { dialog, dialogProps, closeDialog } = useModalDialog(onClose, {
     initialFocus: dialogTitle,

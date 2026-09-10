@@ -12,7 +12,6 @@ import { InstallProvider } from '@/pwa/InstallProvider';
 import { Question } from '@/components/Question';
 import { Results } from '@/components/Results';
 import { TrainerPassport } from '@/components/TrainerPassport';
-import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { getLocalDate } from '@/game/daily';
 import type { usePokemonCatalog } from '@/game/catalog';
 import { isLeagueUnlocked } from '@/game/trainer';
@@ -189,7 +188,6 @@ const AppOverlays = ({
   navigation,
   session,
   settings,
-  trainer,
   training,
 }: Pick<
   AppViewProps,
@@ -198,18 +196,9 @@ const AppOverlays = ({
   | 'navigation'
   | 'session'
   | 'settings'
-  | 'trainer'
   | 'training'
 >) => (
   <>
-    <UpdatePrompt
-      visible={
-        session.phase !== 'questions' &&
-        !trainer.isOpen &&
-        !settings.isOpen &&
-        !training.generationPromptOpen
-      }
-    />
     <Footer />
     {settings.isOpen && catalogState.status === 'ready' ? (
       <ModifiersDialog
