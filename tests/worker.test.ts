@@ -20,6 +20,17 @@ const makeEnv = () => {
     .mockResolvedValue(new Response(null, { status: 204 }));
   return {
     env: {
+      QUIZMON_SPENDING: {
+        get: vi
+          .fn()
+          .mockImplementation(() =>
+            Promise.resolve({ enabled: true, expiresAt: Date.now() + 600_000 }),
+          ),
+      },
+      API_RATE_LIMIT: { limit: vi.fn().mockResolvedValue({ success: true }) },
+      SPRITE_RATE_LIMIT: {
+        limit: vi.fn().mockResolvedValue({ success: true }),
+      },
       ANALYTICS: { writeDataPoint },
       ASSETS: { fetch: vi.fn() },
       DAILY_REMINDERS: {
@@ -352,5 +363,47 @@ describe('analytics endpoint', () => {
     }
     expect(upstream).not.toHaveBeenCalled();
     expect(env.ASSETS.fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe('spending safeguards', () => {
+  it('rejects throttled API calls before touching storage or analytics', async () => {
+    const { env, writeDataPoint, reminderFetch } = makeEnv();
+    env.API_RATE_LIMIT.limit.mockResolvedValue({ success: false });
+    const result = await worker.fetch(
+      new Request('https://example.com/api/events'),
+      env,
+    );
+    expect(result.status).toBe(429);
+    expect(result.headers.get('Retry-After')).toBe('60');
+    expect(env.QUIZMON_SPENDING.get).not.toHaveBeenCalled();
+    expect(writeDataPoint).not.toHaveBeenCalled();
+    expect(reminderFetch).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when the rate limiter fails', async () => {
+    const { env } = makeEnv();
+    env.API_RATE_LIMIT.limit.mockRejectedValue(new Error('Unavailable'));
+    expect(
+      (await worker.fetch(new Request('https://example.com/api/events'), env))
+        .status,
+    ).toBe(503);
+  });
+
+  it('pauses online endpoints without stopping static gameplay', async () => {
+    const { env, writeDataPoint } = makeEnv();
+    env.QUIZMON_SPENDING.get.mockResolvedValue({ enabled: false });
+    expect(
+      (await worker.fetch(new Request('https://example.com/api/events'), env))
+        .status,
+    ).toBe(503);
+    expect(writeDataPoint).not.toHaveBeenCalled();
+    env.ASSETS.fetch.mockResolvedValue(new Response('game'));
+    const response = await worker.fetch(
+      new Request('https://example.com/'),
+      env,
+    );
+    expect(await response.text()).toBe('game');
+    expect(env.QUIZMON_SPENDING.get).toHaveBeenCalledOnce();
   });
 });

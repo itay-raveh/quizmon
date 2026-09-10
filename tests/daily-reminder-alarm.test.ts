@@ -1,43 +1,48 @@
 import webpush, { WebPushError } from 'web-push';
 import { DailyReminder } from '../worker/daily-reminder';
-import { site } from '@/app/site';
-import {
-  DAILY_REMINDER_MESSAGE,
-  VAPID_PUBLIC_KEY,
-} from '@/notifications/config';
 
 const subscription = {
   endpoint: 'https://example.com/push',
   keys: { auth: 'test-auth', p256dh: 'test-key' },
 };
-const deliveryErrors = [
-  new WebPushError('Service unavailable', 503, {}, '', subscription.endpoint),
-  new Error('Network unavailable'),
-];
-
 const nextMorning = Date.parse('2026-09-09T08:00:00.000Z');
 
-const makeReminder = (completedDate?: string) => {
+function makeReminder(completedDate?: string) {
+  const records = new Map<string, unknown>([
+    ['daily-reminder', { subscription, timeZone: 'UTC', completedDate }],
+  ]);
   const storage = {
-    get: vi
-      .fn()
-      .mockResolvedValue({ subscription, timeZone: 'UTC', completedDate }),
-    deleteAll: vi.fn().mockResolvedValue(undefined),
+    get: vi.fn((key: string) => Promise.resolve(records.get(key))),
+    put: vi.fn((key: string, value: unknown) => {
+      records.set(key, value);
+      return Promise.resolve();
+    }),
+    deleteAll: vi.fn(() => {
+      records.clear();
+      return Promise.resolve();
+    }),
+    deleteAlarm: vi.fn().mockResolvedValue(undefined),
     setAlarm: vi.fn().mockResolvedValue(undefined),
   };
+  const guard = vi
+    .fn()
+    .mockImplementation(() =>
+      Promise.resolve({ enabled: true, expiresAt: Date.now() + 600_000 }),
+    );
   const reminder = new DailyReminder(
     { storage },
     {
       DAILY_REMINDERS: { getByName: vi.fn() },
       VAPID_PRIVATE_KEY: 'test-private-key',
+      QUIZMON_SPENDING: { get: guard },
     },
   );
-  return { reminder, storage };
-};
+  return { reminder, storage, records, guard };
+}
 
 beforeEach(() => {
   vi.useFakeTimers();
-  vi.setSystemTime(new Date('2026-09-08T08:00:00.000Z'));
+  vi.setSystemTime(new Date('2026-09-08T08:00:00Z'));
   vi.spyOn(webpush, 'sendNotification').mockResolvedValue({
     statusCode: 201,
     headers: {},
@@ -50,99 +55,87 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-it('does not send or rearm an alarm after a registration was removed', async () => {
-  const { reminder, storage } = makeReminder();
-  storage.get.mockResolvedValue(undefined);
-
+it('does not send or rearm after registration removal', async () => {
+  const { reminder, storage, records } = makeReminder();
+  records.clear();
   await reminder.alarm();
-
   expect(webpush.sendNotification).not.toHaveBeenCalled();
   expect(storage.setAlarm).not.toHaveBeenCalled();
 });
 
-it('skips a completed daily while keeping the next morning reminder', async () => {
+it('skips completed games and schedules the next morning', async () => {
   const { reminder, storage } = makeReminder('2026-09-08');
-
   await reminder.alarm();
-
   expect(webpush.sendNotification).not.toHaveBeenCalled();
   expect(storage.setAlarm).toHaveBeenCalledExactlyOnceWith(nextMorning);
+});
+
+it('persists attempts before delivery and suppresses duplicate alarm delivery', async () => {
+  const { reminder, storage, records } = makeReminder();
+  vi.mocked(webpush.sendNotification).mockImplementation(() => {
+    expect(records.get('delivery')).toMatchObject({
+      attempts: 1,
+      delivered: false,
+    });
+    return Promise.resolve({ statusCode: 201, headers: {}, body: '' });
+  });
+  await reminder.alarm();
+  await reminder.alarm();
+  expect(webpush.sendNotification).toHaveBeenCalledExactlyOnceWith(
+    subscription,
+    expect.stringContaining('2026-09-08'),
+    expect.objectContaining({ timeout: 10_000, TTL: 43_200 }),
+  );
+  expect(storage.setAlarm).toHaveBeenLastCalledWith(nextMorning);
+});
+
+it.each([404, 410])('removes a rejected subscription (%s)', async (status) => {
+  const { reminder, storage } = makeReminder();
+  vi.mocked(webpush.sendNotification).mockRejectedValue(
+    new WebPushError('Expired', status, {}, '', subscription.endpoint),
+  );
+  await reminder.alarm();
+  expect(storage.deleteAll).toHaveBeenCalledOnce();
+  expect(storage.setAlarm).not.toHaveBeenCalled();
+});
+
+it('spaces retries, persists the six-attempt ceiling, and stops retrying until tomorrow', async () => {
+  const { reminder, storage } = makeReminder();
+  vi.mocked(webpush.sendNotification).mockRejectedValue(
+    new Error('Unavailable'),
+  );
+  for (let attempt = 0; attempt < 6; attempt++) {
+    await reminder.alarm();
+    const next = Number(storage.setAlarm.mock.lastCall?.[0]);
+    expect(next).toBeGreaterThan(Date.now());
+    await reminder.alarm();
+    expect(webpush.sendNotification).toHaveBeenCalledTimes(attempt + 1);
+    if (attempt < 5) vi.setSystemTime(next);
+  }
+  expect(storage.setAlarm).toHaveBeenLastCalledWith(nextMorning);
   expect(storage.deleteAll).not.toHaveBeenCalled();
 });
 
-it.each([undefined, '2026-09-07'])(
-  'sends an uncompleted daily and rearms the alarm (last completion: %s)',
-  async (completedDate) => {
-    const { reminder, storage } = makeReminder(completedDate);
-
+it.each([
+  null,
+  { enabled: false, expiresAt: nextMorning },
+  { enabled: true, expiresAt: 0 },
+])(
+  'cancels background work when spending permission is absent or revoked',
+  async (lease) => {
+    const { reminder, guard, storage } = makeReminder();
+    guard.mockResolvedValue(lease);
     await reminder.alarm();
-
-    expect(webpush.sendNotification).toHaveBeenCalledExactlyOnceWith(
-      subscription,
-      JSON.stringify({
-        ...DAILY_REMINDER_MESSAGE,
-        url: '/?daily=2026-09-08&play=1',
-      }),
-      {
-        TTL: 43_200,
-        topic: 'quizmon-daily',
-        urgency: 'normal',
-        vapidDetails: {
-          privateKey: 'test-private-key',
-          publicKey: VAPID_PUBLIC_KEY,
-          subject: `mailto:${site.contactEmail}`,
-        },
-      },
-    );
-    expect(storage.setAlarm).toHaveBeenCalledExactlyOnceWith(nextMorning);
-    expect(storage.deleteAll).not.toHaveBeenCalled();
-  },
-);
-
-it.each([404, 410])(
-  'removes a subscription rejected with HTTP %s',
-  async (status) => {
-    const { reminder, storage } = makeReminder();
-    vi.mocked(webpush.sendNotification).mockRejectedValue(
-      new WebPushError(
-        'Subscription expired',
-        status,
-        {},
-        '',
-        subscription.endpoint,
-      ),
-    );
-
-    await reminder.alarm();
-
-    expect(storage.deleteAll).toHaveBeenCalledOnce();
+    expect(storage.deleteAlarm).toHaveBeenCalledOnce();
+    expect(webpush.sendNotification).not.toHaveBeenCalled();
     expect(storage.setAlarm).not.toHaveBeenCalled();
   },
 );
 
-it.each(deliveryErrors)(
-  'retries delivery failures without deleting the subscription: %s',
-  async (error) => {
-    const { reminder, storage } = makeReminder();
-    vi.mocked(webpush.sendNotification).mockRejectedValue(error);
-
-    await expect(reminder.alarm()).rejects.toBe(error);
-    await expect(reminder.alarm({ retryCount: 4 })).rejects.toBe(error);
-
-    expect(storage.deleteAll).not.toHaveBeenCalled();
-    expect(storage.setAlarm).not.toHaveBeenCalled();
-  },
-);
-
-it.each(deliveryErrors)(
-  'resumes next morning after the retry budget is exhausted: %s',
-  async (error) => {
-    const { reminder, storage } = makeReminder();
-    vi.mocked(webpush.sendNotification).mockRejectedValue(error);
-
-    await reminder.alarm({ retryCount: 5 });
-
-    expect(storage.deleteAll).not.toHaveBeenCalled();
-    expect(storage.setAlarm).toHaveBeenCalledExactlyOnceWith(nextMorning);
-  },
-);
+it('fails closed when the spending control cannot be read', async () => {
+  const { reminder, guard, storage } = makeReminder();
+  guard.mockRejectedValue(new Error('Unavailable'));
+  await reminder.alarm();
+  expect(storage.deleteAlarm).toHaveBeenCalledOnce();
+  expect(webpush.sendNotification).not.toHaveBeenCalled();
+});

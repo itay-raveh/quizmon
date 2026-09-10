@@ -1,4 +1,6 @@
 import { isObject } from '../src/game/validation';
+import type { RateLimit } from '@cloudflare/workers-types';
+import { spendingAllowed } from './spending';
 import { noStoreResponse } from './responses';
 import type { GameMode } from '../src/game/types';
 import { fetchSpriteSource, isSpritePath } from '../src/game/sprite-source';
@@ -21,6 +23,8 @@ interface AnalyticsEngineDataset {
 }
 
 interface Env extends DailyReminderEnv {
+  API_RATE_LIMIT: RateLimit;
+  SPRITE_RATE_LIMIT: RateLimit;
   ANALYTICS: AnalyticsEngineDataset;
   ASSETS: {
     fetch(request: Request): Promise<Response>;
@@ -180,6 +184,27 @@ const recordAnalyticsEvent = async (
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (
+      url.pathname.startsWith('/api/') ||
+      url.pathname.startsWith('/sprites/')
+    ) {
+      const limiter = url.pathname.startsWith('/api/')
+        ? env.API_RATE_LIMIT
+        : env.SPRITE_RATE_LIMIT;
+      try {
+        const result = await limiter.limit({
+          key: request.headers.get('CF-Connecting-IP') ?? 'unknown',
+        });
+        if (!result.success)
+          return noStoreResponse('Too many requests', 429, {
+            'Retry-After': '60',
+          });
+      } catch {
+        return noStoreResponse('Service temporarily unavailable', 503);
+      }
+      if (!(await spendingAllowed(env)))
+        return noStoreResponse('Online services temporarily paused', 503);
+    }
     const dailyReminderResponse = await handleDailyReminderRequest(
       request,
       env,

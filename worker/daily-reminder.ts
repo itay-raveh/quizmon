@@ -1,4 +1,5 @@
 import { noStoreResponse } from './responses';
+import { spendingAllowed, type SpendingEnv } from './spending';
 import { isDailyDate, isObject } from '../src/game/validation';
 import { DurableObject } from 'cloudflare:workers';
 import webpush, {
@@ -27,7 +28,7 @@ const methodNotAllowed = (): Response =>
     Allow: reminderMethods.join(', '),
   });
 
-export interface DailyReminderEnv {
+export interface DailyReminderEnv extends SpendingEnv {
   DAILY_REMINDERS: {
     getByName(name: string): { fetch(request: Request): Promise<Response> };
   };
@@ -42,6 +43,13 @@ interface DailyReminderRegistration {
   completedDate?: string;
   subscription: WebPushSubscription;
   timeZone: string;
+}
+
+interface ReminderDelivery {
+  date: string;
+  attempts: number;
+  nextAttemptAt: number;
+  delivered: boolean;
 }
 
 const isValidTimeZone = (value: unknown): value is string => {
@@ -164,6 +172,10 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
   }
 
   async alarm(alarmInfo?: AlarmInvocationInfo): Promise<void> {
+    if (!(await spendingAllowed(this.env))) {
+      await this.ctx.storage.deleteAlarm();
+      return;
+    }
     const registration =
       await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
     if (!registration) return;
@@ -171,7 +183,36 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
     const dailyDate = dateFromParts(
       getZonedDateParts(Date.now(), registration.timeZone),
     );
-    if (registration.completedDate !== dailyDate) {
+    const saved = await this.ctx.storage.get<ReminderDelivery>('delivery');
+    const delivery: ReminderDelivery =
+      saved?.date === dailyDate
+        ? saved
+        : {
+            date: dailyDate,
+            attempts: 0,
+            nextAttemptAt: 0,
+            delivered: false,
+          };
+    const nextMorning = getNextReminderAt(
+      registration.timeZone,
+      Date.now() + 60_000,
+    );
+    if (
+      registration.completedDate !== dailyDate &&
+      !delivery.delivered &&
+      delivery.attempts < 6
+    ) {
+      if (delivery.nextAttemptAt > Date.now()) {
+        await this.ctx.storage.setAlarm(
+          Math.min(delivery.nextAttemptAt, nextMorning),
+        );
+        return;
+      }
+      delivery.attempts =
+        Math.max(delivery.attempts, alarmInfo?.retryCount ?? 0) + 1;
+      delivery.nextAttemptAt =
+        Date.now() + 60_000 * 2 ** (delivery.attempts - 1);
+      await this.ctx.storage.put('delivery', delivery);
       try {
         await webpush.sendNotification(
           registration.subscription,
@@ -180,6 +221,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
             url: `/?daily=${dailyDate}&play=1`,
           }),
           {
+            timeout: 10_000,
             TTL: 43_200,
             topic: 'quizmon-daily',
             urgency: 'normal',
@@ -190,19 +232,26 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
             },
           },
         );
+        await this.ctx.storage.put('delivery', {
+          ...delivery,
+          delivered: true,
+        });
       } catch (error) {
         const statusCode = error instanceof WebPushError ? error.statusCode : 0;
         if (statusCode === 404 || statusCode === 410) {
           await this.ctx.storage.deleteAll();
           return;
         }
-        if ((alarmInfo?.retryCount ?? 0) < 5) throw error;
+        if (delivery.attempts < 6) {
+          await this.ctx.storage.setAlarm(
+            Math.min(delivery.nextAttemptAt, nextMorning),
+          );
+          return;
+        }
       }
     }
 
-    await this.ctx.storage.setAlarm(
-      getNextReminderAt(registration.timeZone, Date.now() + 60_000),
-    );
+    await this.ctx.storage.setAlarm(nextMorning);
   }
 }
 
