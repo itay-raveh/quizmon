@@ -247,20 +247,20 @@ export const getOptionVisuals = (
   Object.fromEntries(
     options.flatMap((option) => {
       const pokemon = context.catalog.pokemon[option];
-      const src = pokemon ? getSource(pokemon, option) : null;
-      return pokemon && src
-        ? [
-            [
-              option,
-              {
-                dexNumber: pokemon.speciesId,
-                silhouette,
-                src,
-                types: pokemon.types,
-              },
-            ] as const,
-          ]
-        : [];
+      if (!pokemon) return [];
+      const src = getSource(pokemon, option);
+      if (!src) return [];
+      return [
+        [
+          option,
+          {
+            dexNumber: pokemon.speciesId,
+            silhouette,
+            src,
+            types: pokemon.types,
+          },
+        ] as const,
+      ];
     }),
   );
 
