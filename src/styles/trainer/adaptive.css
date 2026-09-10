@@ -166,10 +166,10 @@
 
   .trainer-customizer {
     grid-template-areas:
-      'name preview'
-      'partner partner'
-      'save save';
-    grid-template-columns: 1fr auto;
+      'name'
+      'partner'
+      'save';
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .trainer-customizer > .game-button {

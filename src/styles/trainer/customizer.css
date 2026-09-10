@@ -7,9 +7,9 @@
   border-radius: var(--surface-radius);
   box-shadow: 0 0.2rem 0 var(--yellow);
   grid-template-areas:
-    'name partner preview'
-    'save save save';
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    'name partner'
+    'save save';
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.8rem;
 }
 
@@ -117,18 +117,4 @@
   font-size: var(--text-label);
   font-weight: 700;
   text-align: center;
-}
-
-.trainer-customizer__preview {
-  display: grid;
-  width: 3rem;
-  aspect-ratio: 1;
-  color: var(--navy);
-  background: var(--paper);
-  border: 2px solid var(--navy);
-  border-radius: var(--icon-control-radius);
-  font-family: var(--font-data);
-  font-weight: 800;
-  grid-area: preview;
-  place-items: center;
 }

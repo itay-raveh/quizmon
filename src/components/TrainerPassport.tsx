@@ -125,9 +125,6 @@ export const TrainerPassport = ({
       })),
     [catalog.pokemon],
   );
-  const partnerSprite = partner
-    ? (catalog.pokemon[partner]?.sprite ?? null)
-    : null;
   const savedPartner = profile.partnerPokemon
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
@@ -303,13 +300,6 @@ export const TrainerPassport = ({
             options={pokemonOptions}
             value={partner}
           />
-          <div className="trainer-customizer__preview" aria-hidden="true">
-            {partnerSprite ? (
-              <img src={partnerSprite} alt="" width="96" height="96" />
-            ) : (
-              <span>?</span>
-            )}
-          </div>
           <GameButton type="submit">Save card</GameButton>
         </form>
       ) : null}
