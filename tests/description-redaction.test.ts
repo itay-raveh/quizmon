@@ -1,8 +1,11 @@
-import { redactName } from '@/game/questions/shared';
+import { redactName as redactPokemonName } from '@/game/questions/shared';
 import { buildDescriptionQuestion } from '@/game/questions/knowledge';
 import { buildChampionQuestion } from '@/game/questions/champion';
 import { createSeededRandom } from '@/game/random';
 import { catalog } from './fixtures/catalog';
+
+const redactName = (description: string, name: string) =>
+  redactPokemonName(description, name, catalog.pokemon[name]!.speciesName);
 
 it.each([
   ['tatsugiri-curly', 'Tatsugiri'],

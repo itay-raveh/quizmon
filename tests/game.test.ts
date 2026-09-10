@@ -212,10 +212,10 @@ describe('question building', () => {
     expect.assert.isDefined(question);
     expect.assert.isDefined(target);
     expect(getQuestionPromptText(question.prompt)).toBe(
-      `“${redactName(target.description, question.pokemonName)}”`,
+      `“${redactName(target.description, question.pokemonName, target.speciesName)}”`,
     );
     expect(question.clues).not.toContain(
-      redactName(target.description, question.pokemonName),
+      redactName(target.description, question.pokemonName, target.speciesName),
     );
     expect(question.media).toMatchObject({ kind: 'sprite', revealAt: 4 });
     expect(question.searchOptions).toEqual(

@@ -400,60 +400,22 @@ export const pokemonOptions = (
   return shuffle([...selected, target.name], optionRandom);
 };
 
-// Species names differ from the default variety names used by the catalog.
-// https://pokeapi.co/docs/v2#pokemon-species
+// Pokédex prose uses punctuation absent from species keys.
 const descriptionNames: Record<string, string> = {
-  'aegislash-shield': 'aegislash',
-  'basculegion-male': 'basculegion',
-  'basculin-red-striped': 'basculin',
-  'darmanitan-standard': 'darmanitan',
-  'deoxys-normal': 'deoxys',
-  'dudunsparce-two-segment': 'dudunsparce',
-  'eiscue-ice': 'eiscue',
-  'enamorus-incarnate': 'enamorus',
   farfetchd: 'Farfetch’d',
-  'frillish-male': 'frillish',
-  'giratina-altered': 'giratina',
-  'gourgeist-average': 'gourgeist',
-  'indeedee-male': 'indeedee',
-  'jellicent-male': 'jellicent',
-  'keldeo-ordinary': 'keldeo',
-  'landorus-incarnate': 'landorus',
-  'lycanroc-midday': 'lycanroc',
-  'maushold-family-of-four': 'maushold',
-  'meloetta-aria': 'meloetta',
-  'meowstic-male': 'meowstic',
   'mime-jr': 'Mime Jr.',
-  'mimikyu-disguised': 'mimikyu',
-  'minior-red-meteor': 'minior',
-  'morpeko-full-belly': 'morpeko',
   'mr-mime': 'Mr. Mime',
   'mr-rime': 'Mr. Rime',
   'nidoran-f': 'Nidoran♀',
   'nidoran-m': 'Nidoran♂',
-  'oinkologne-male': 'oinkologne',
-  'oricorio-baile': 'oricorio',
-  'palafin-zero': 'palafin',
-  'pumpkaboo-average': 'pumpkaboo',
-  'pyroar-male': 'pyroar',
-  'shaymin-land': 'shaymin',
   sirfetchd: 'Sirfetch’d',
-  'squawkabilly-green-plumage': 'squawkabilly',
-  'tatsugiri-curly': 'tatsugiri',
-  'thundurus-incarnate': 'thundurus',
-  'tornadus-incarnate': 'tornadus',
-  'toxtricity-amped': 'toxtricity',
   'type-null': 'Type: Null',
-  'urshifu-single-strike': 'urshifu',
-  'wishiwashi-solo': 'wishiwashi',
-  'wormadam-plant': 'wormadam',
-  'zygarde-50': 'zygarde',
 };
 
 export const redactName = (
   description: string,
   name: string,
-  speciesName = name,
+  speciesName: string,
 ): string => {
   const escapeRegExp = (value: string) =>
     value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
