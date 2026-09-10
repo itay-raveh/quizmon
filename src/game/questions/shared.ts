@@ -50,7 +50,7 @@ export const orderTargets = (
     const deck = [...candidates]
       .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
       .flatMap((candidate) => {
-        const tickets = 4 * pokemonWeight(candidate.name);
+        const tickets = pokemonWeight(candidate.name);
         // Space each Pokémon’s rotation slots to avoid clustering repeats.
         const phase = random();
         return Array.from({ length: tickets }, (_, index) => ({

@@ -13,19 +13,19 @@ import {
 import { catalog, createQuestionContext } from './fixtures/catalog';
 
 it.each([
-  ['pikachu', 1],
-  ['rotom-wash', 1],
-  ['lycanroc-dusk', 1],
-  ['urshifu-rapid-strike', 1],
-  ['raichu-alola', 0.5],
-  ['darmanitan-galar-standard', 0.5],
-  ['typhlosion-hisui', 0.5],
-  ['tauros-paldea-aqua-breed', 0.5],
-  ['charizard-mega-x', 0.25],
-  ['charizard-mega-y', 0.25],
-  ['zygarde-mega', 0.25],
-  ['pikachu-gmax', 0.25],
-  ['urshifu-rapid-strike-gmax', 0.25],
+  ['pikachu', 4],
+  ['rotom-wash', 4],
+  ['lycanroc-dusk', 4],
+  ['urshifu-rapid-strike', 4],
+  ['raichu-alola', 2],
+  ['darmanitan-galar-standard', 2],
+  ['typhlosion-hisui', 2],
+  ['tauros-paldea-aqua-breed', 2],
+  ['charizard-mega-x', 1],
+  ['charizard-mega-y', 1],
+  ['zygarde-mega', 1],
+  ['pikachu-gmax', 1],
+  ['urshifu-rapid-strike-gmax', 1],
 ])('assigns %s weight %s', (name, expected) => {
   expect(pokemonWeight(name)).toBe(expected);
 });
