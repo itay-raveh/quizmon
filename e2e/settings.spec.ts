@@ -1,4 +1,4 @@
-import type { Modifiers } from '../src/game/types';
+import type { PlayerSave } from '../src/game/player-data';
 import { expect, test } from './fixtures';
 
 test('keeps grouped settings reachable outside active questions on a phone', async ({
@@ -195,13 +195,8 @@ for (const repair of ['add generation', 'remove roundup'] as const) {
     await expect(dialog).toBeHidden();
     const saved = await page.evaluate(
       () =>
-        (
-          JSON.parse(localStorage.getItem('quizmon.player')!) as {
-            data: {
-              settings: Pick<Modifiers, 'generations' | 'questionTypes'>;
-            };
-          }
-        ).data.settings,
+        (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
+          .settings!,
     );
     expect(saved.generations).toEqual(
       repair === 'add generation' ? ['I', 'II'] : ['I'],

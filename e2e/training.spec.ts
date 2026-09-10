@@ -1,3 +1,5 @@
+import type { ActiveGameSnapshot } from '../src/game/active-game';
+import type { PlayerSave } from '../src/game/player-data';
 import {
   catalogData,
   expect,
@@ -392,21 +394,16 @@ test('remembers shown questions across abandoned games and preserves a lineup on
   ).toBeVisible();
   const readHistory = () =>
     page.evaluate(() => {
-      const save = JSON.parse(localStorage.getItem('quizmon.player')!) as {
-        data: {
-          questionHistory: {
-            sequence: number;
-            questions: Record<string, number>;
-          };
-        };
-      };
+      const save = JSON.parse(
+        localStorage.getItem('quizmon.player')!,
+      ) as PlayerSave;
       return save.data.questionHistory;
     });
   const readQuestions = () =>
     page.evaluate(() => {
       const active = JSON.parse(
         sessionStorage.getItem('quizmon.active-game.v1')!,
-      ) as { questions: { pokemonName: string }[] };
+      ) as ActiveGameSnapshot;
       return active.questions;
     });
   await expect.poll(async () => (await readHistory()).sequence).toBe(1);
