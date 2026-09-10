@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { Question } from '@/components/Question';
+import { fireEvent, screen } from '@testing-library/react';
+import { renderQuestion } from './fixtures/question';
 import { buildQuestions } from '@/game/game';
 import { defaultModifiers, filterPokemon } from '@/game/modifiers';
 import { formatPokemonName } from '@/game/format';
@@ -65,22 +65,7 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
     (correct) => {
       const question = generate(questionType);
       const onAnswer = vi.fn();
-      const { container } = render(
-        <Question
-          answerFlow="manual"
-          elapsedMilliseconds={0}
-          elapsedSeconds={0}
-          interactionPaused={false}
-          mode={{ kind: 'training' }}
-          number={1}
-          onAnswer={onAnswer}
-          onFeedbackStart={() => 0}
-          onNewGame={vi.fn()}
-          question={question}
-          timerDisplay="seconds"
-          total={10}
-        />,
-      );
+      const { container } = renderQuestion({ question, onAnswer });
       const selected = question.options.findIndex(
         (name) => (name === question.pokemonName) === correct,
       );
