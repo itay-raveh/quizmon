@@ -1,14 +1,6 @@
-import { useId, useMemo, useState, type SubmitEvent } from 'react';
-import { useInteractionSound } from '@/audio/sound';
-import { formatPokedexNumber } from '@/game/format';
-import {
-  createPokemonSearchEntry,
-  findSearchMatches,
-  normalizeSearch,
-} from '@/game/search';
-import { useSuggestionNavigation } from './useSuggestionNavigation';
+import { useState } from 'react';
 import type { PokemonSearchOption } from '@/game/types';
-import { GameButton } from './GameButton';
+import { PokemonSearch } from './PokemonSearch';
 
 interface ChampionSearchProps {
   answered: boolean;
@@ -27,122 +19,22 @@ export const ChampionSearch = ({
   options,
   selectedOption,
 }: ChampionSearchProps) => {
-  const listboxId = useId();
-  const playInteractionSound = useInteractionSound();
   const [query, setQuery] = useState('');
-  const entries = useMemo(
-    () => options.map(createPokemonSearchEntry),
-    [options],
-  );
-  const normalizedQuery = normalizeSearch(query);
-  const exactMatch = entries.find(
-    ({ normalized, aliases }) =>
-      normalized === normalizedQuery || aliases.includes(normalizedQuery),
-  );
-  const suggestions = useMemo(() => {
-    if (exactMatch) return [];
-    return findSearchMatches(entries, normalizedQuery);
-  }, [entries, exactMatch, normalizedQuery]);
-  const {
-    activeIndex,
-    choose,
-    handleKeyDown,
-    open,
-    resetActiveIndex,
-    setOpen,
-  } = useSuggestionNavigation(suggestions, (suggestion) => {
-    playInteractionSound('tap');
-    setQuery(suggestion.label);
-  });
-  const showSuggestions =
-    open && !answered && !exactMatch && normalizedQuery.length > 0;
   const result = answered
     ? selectedOption === correctOption
       ? 'correct'
       : 'wrong'
     : null;
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!disabled && !answered && exactMatch) onAnswer(exactMatch.name);
-  };
-
   return (
-    <form
-      className={`champion-search ${result ? `champion-search--${result}` : ''}`.trim()}
-      onSubmit={handleSubmit}
-    >
-      <label htmlFor={`${listboxId}-input`}>Your answer</label>
-      <div className="champion-search__controls">
-        <div className="champion-search__combobox">
-          <input
-            aria-activedescendant={
-              activeIndex >= 0
-                ? `${listboxId}-option-${activeIndex}`
-                : undefined
-            }
-            aria-autocomplete="list"
-            aria-controls={
-              showSuggestions && suggestions.length > 0 ? listboxId : undefined
-            }
-            aria-expanded={showSuggestions && suggestions.length > 0}
-            aria-invalid={result === 'wrong' ? true : undefined}
-            autoCapitalize="none"
-            autoComplete="off"
-            disabled={disabled || answered}
-            id={`${listboxId}-input`}
-            onBlur={() => setOpen(false)}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              resetActiveIndex();
-              setOpen(true);
-            }}
-            onFocus={() => setOpen(true)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a Pokémon name"
-            role="combobox"
-            spellCheck={false}
-            type="text"
-            value={query}
-          />
-
-          {showSuggestions ? (
-            suggestions.length > 0 ? (
-              <ul id={listboxId} role="listbox">
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    aria-selected={index === activeIndex}
-                    id={`${listboxId}-option-${index}`}
-                    key={suggestion.name}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                    }}
-                    onClick={() => choose(suggestion)}
-                    role="option"
-                  >
-                    <span>{suggestion.label}</span>
-                    <small aria-hidden="true">
-                      {formatPokedexNumber(suggestion.dexNumber)}
-                    </small>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="champion-search__empty" role="status">
-                No Pokémon found
-              </p>
-            )
-          ) : null}
-        </div>
-
-        <GameButton
-          disabled={disabled || answered || !exactMatch}
-          sound="none"
-          type="submit"
-        >
-          Guess
-        </GameButton>
-      </div>
-    </form>
+    <PokemonSearch
+      disabled={disabled || answered}
+      mode="champion"
+      onConfirm={onAnswer}
+      onQueryChange={setQuery}
+      options={options}
+      query={query}
+      result={result}
+    />
   );
 };

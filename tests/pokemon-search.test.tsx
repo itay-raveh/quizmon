@@ -1,6 +1,15 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ChampionSearch } from '@/components/ChampionSearch';
 import { PokemonPicker } from '@/components/PokemonPicker';
+import catalogData from '@/game/data/pokemon.json';
+
+const hisuianOptions = Object.entries(catalogData.pokemon)
+  .filter(([name]) => name.endsWith('-hisui'))
+  .map(([name, pokemon]) => ({
+    name,
+    dexNumber: pokemon.speciesId,
+    sprite: null,
+  }));
 
 const options = [
   { name: 'charmander', dexNumber: 4, sprite: null },
@@ -12,6 +21,7 @@ const options = [
     dexNumber: 26,
     sprite: '/sprites/pokemon/10100.png',
   },
+  ...hisuianOptions,
 ];
 
 describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
@@ -35,6 +45,22 @@ describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
     onChoose.mockClear();
     return { input, onChoose };
   };
+
+  it('keeps every regional match selectable beyond the first six results', () => {
+    const { input, onChoose } = setup('Hisu');
+    const suggestions = screen.getAllByRole('option');
+    expect(suggestions).toHaveLength(hisuianOptions.length);
+    const typhlosion = screen.getByRole('option', {
+      name: 'Hisuian Typhlosion',
+    });
+    for (let index = 0; index <= suggestions.indexOf(typhlosion); index += 1)
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+    expect(typhlosion).toHaveAttribute('aria-selected', 'true');
+    fireEvent.keyDown(input, { key: 'Enter' });
+    if (kind === 'champion')
+      fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith('typhlosion-hisui');
+  });
 
   it.each(['Alolan Raichu', 'raichu-alola'])(
     'selects a regional form by %s',

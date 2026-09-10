@@ -1,5 +1,9 @@
 import { useState, type KeyboardEvent } from 'react';
 
+const activeOptionRef = (option: HTMLLIElement | null) => {
+  option?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+};
+
 export const useSuggestionNavigation = <Suggestion>(
   suggestions: readonly Suggestion[],
   onChoose: (suggestion: Suggestion) => void,
@@ -41,6 +45,7 @@ export const useSuggestionNavigation = <Suggestion>(
 
   return {
     activeIndex,
+    activeOptionRef,
     choose,
     handleKeyDown,
     open,

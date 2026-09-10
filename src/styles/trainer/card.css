@@ -175,7 +175,7 @@
   --trainer-frame-border: var(--trainer-rank-accent-strong);
   --trainer-frame-surface: var(--trainer-rank-surface);
 
-  grid-template-rows: 1fr auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   text-align: left;
 }
 
@@ -358,10 +358,11 @@
 .trainer-card__front {
   display: grid;
   min-width: 0;
+  min-height: 0;
   padding: 5cqw 5cqw 2cqw 6cqw;
   grid-template-areas: 'rank partner' 'identity partner';
   grid-template-columns: minmax(0, 1fr) 33%;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
   align-items: center;
   gap: 2cqw 4cqw;
 }
@@ -532,7 +533,10 @@
 .trainer-card__partner {
   display: grid;
   min-width: 0;
+  min-height: 0;
+  height: 100%;
   grid-area: partner;
+  grid-template-rows: minmax(0, 1fr) auto;
   justify-items: center;
   gap: 1cqw;
 }
@@ -541,8 +545,10 @@
   position: relative;
   z-index: 1;
   display: grid;
-  width: 29cqw;
+  width: auto;
+  height: 100%;
   max-width: 100%;
+  max-height: 29cqw;
   aspect-ratio: 1;
   place-items: center;
 }

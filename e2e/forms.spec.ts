@@ -10,6 +10,36 @@ import { buildQuestionType } from '../src/game/questions/registry';
 import { createSeededRandom } from '../src/game/random';
 import { defaultModifiers } from '../src/game/modifiers';
 
+for (const width of [320, 1280]) {
+  test(`scrolls regional partner matches beyond six results at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?trainer=card');
+    await page.getByRole('button', { name: 'Edit card' }).click();
+    const search = page.getByRole('combobox', { name: 'Partner Pokémon' });
+    await search.fill('Hisu');
+    const names = await page.getByRole('option').allTextContents();
+    expect(names).toHaveLength(16);
+    const index = names.indexOf('Hisuian Typhlosion');
+    expect(index).toBeGreaterThan(5);
+    const typhlosion = page.getByRole('option', {
+      name: 'Hisuian Typhlosion',
+    });
+    await expect(typhlosion).not.toBeInViewport();
+    for (let position = 0; position <= index; position += 1)
+      await search.press('ArrowDown');
+    await expect(typhlosion).toHaveAttribute('aria-selected', 'true');
+    await expect(typhlosion).toBeInViewport({ ratio: 1 });
+    await search.press('Enter');
+    await page.getByRole('button', { name: 'Save card' }).click();
+    await expect(page.locator('.trainer-card__partner-caption')).toContainText(
+      'Hisuian Typhlosion',
+    );
+    await expectNoHorizontalOverflow(page);
+  });
+}
+
 test('selects curated partners and excludes collapsed variants', async ({
   page,
 }) => {

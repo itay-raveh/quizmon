@@ -186,8 +186,14 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(page).toHaveURL('/');
 });
 
-for (const width of [320, 390, 1280]) {
-  test(`shows saved Trainer records at ${width}px`, async ({ page }) => {
+for (const { width, partner } of [320, 390, 1280].flatMap((width) =>
+  ['garchomp', 'typhlosion-hisui', 'urshifu-single-strike-gmax'].map(
+    (partner) => ({ width, partner }),
+  ),
+)) {
+  test(`shows saved Trainer records with ${partner} at ${width}px`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.clock.setFixedTime(new Date('2026-09-07T12:00:00'));
     const data = emptyPlayerData();
@@ -197,7 +203,7 @@ for (const width of [320, 390, 1280]) {
       createdAt: '2026-09-01',
       hasBeenRevealed: true,
       name: 'Alexandria Evergreen',
-      partnerPokemon: 'garchomp',
+      partnerPokemon: partner,
       specialty: 'type',
     };
     data.pokedex = [
@@ -262,6 +268,31 @@ for (const width of [320, 390, 1280]) {
         ),
       );
     expect(overflowing).toBe(false);
+    const clipped = await card.evaluate((element) => {
+      const frame = element.getBoundingClientRect();
+      const footer = element
+        .querySelector('.trainer-card__details')!
+        .getBoundingClientRect();
+      return Array.from(
+        element.querySelectorAll<HTMLElement>(
+          '.trainer-card__rank, .trainer-card__identity, .trainer-card__partner-caption, .trainer-card__details, .trainer-card__record, .trainer-card__combo',
+        ),
+      )
+        .filter((child) => {
+          const bounds = child.getBoundingClientRect();
+          const bottom = child.closest('.trainer-card__front')
+            ? footer.top
+            : frame.bottom - 3;
+          return (
+            bounds.left < frame.left ||
+            bounds.right > frame.right ||
+            bounds.top < frame.top ||
+            bounds.bottom > bottom + 1
+          );
+        })
+        .map((child) => child.className);
+    });
+    expect(clipped).toEqual([]);
     const cardBounds = await card.boundingBox();
     const exportDimensions = async () => {
       const { png } = await downloadTrainerImage(page);

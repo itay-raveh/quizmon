@@ -43,6 +43,5 @@ export const findSearchMatches = <Entry extends SearchEntry>(
       const rightStarts = right.normalized.startsWith(normalizedQuery);
       if (leftStarts !== rightStarts) return leftStarts ? -1 : 1;
       return left.label.localeCompare(right.label);
-    })
-    .slice(0, 6);
+    });
 };
