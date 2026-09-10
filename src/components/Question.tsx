@@ -175,7 +175,6 @@ export const Question = ({
         <GameButton
           aria-label="Leave game"
           className="question__leave"
-          disabled={answered}
           onClick={onNewGame}
           title="Leave game"
           tone="quiet"

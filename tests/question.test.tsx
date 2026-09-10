@@ -81,6 +81,18 @@ const renderQuestion = (overrides: Partial<QuestionProps> = {}) =>
   );
 
 describe('question transitions', () => {
+  it('keeps Leave game available while showing answer feedback', () => {
+    const onNewGame = vi.fn();
+    renderQuestion({ onNewGame });
+    const leave = screen.getByRole('button', { name: 'Leave game' });
+    expect(leave).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    expect(screen.getByRole('button', { name: 'Next question' })).toBeVisible();
+    expect(leave).toBeEnabled();
+    fireEvent.click(leave);
+    expect(onNewGame).toHaveBeenCalledOnce();
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });
