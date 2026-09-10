@@ -112,7 +112,9 @@ test('refreshes League attempts and retries while preserving reloads', async ({
   await expect(
     page.getByRole('heading', { name: 'League challenge ended' }),
   ).toBeVisible();
-  await expect(page.getByText('Elite Trial I')).toBeVisible();
+  await expect(
+    page.locator('.result-details .league-progress [aria-current="step"]'),
+  ).toContainText('I');
   await page.getByRole('button', { name: 'Retry League' }).click();
   const retry = await readAttempt();
   expect(retry.seed).not.toBe(original.seed);

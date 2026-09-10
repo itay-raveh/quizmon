@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useGameSounds } from '@/audio/sound';
 import { getCategoryLabel } from '@/game/question-labels';
 import { getScoreBreakdown } from '@/game/scoring';
-import { getLeagueStage, isLeagueVictory } from '@/game/league';
+import { isLeagueVictory } from '@/game/league';
 import {
   formatDailyDate,
   formatDuration,
@@ -13,6 +13,7 @@ import { getHighScoreKey } from '@/game/storage';
 import type { TrainerProgressChange, TrainerView } from '@/game/trainer';
 import type { GameMode, GameResult, Modifiers } from '@/game/types';
 import { AnimatedScore } from './AnimatedScore';
+import { LeagueProgress } from './LeagueProgress';
 import { CatchCombo } from './CatchCombo';
 import { DailyReminderPrompt } from './DailyReminderPrompt';
 import { GameButton } from './GameButton';
@@ -68,16 +69,7 @@ export const Results = ({
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
   const resultStats: ResultStat[] = [
-    ...(isLeague && !leagueVictory
-      ? [
-          {
-            label: 'Reached',
-            value: getLeagueStage(result.answers.length).heading,
-            className: 'results-list__stage',
-          },
-        ]
-      : []),
-    ...(result.questionCount > 10
+    ...(!isLeague && result.questionCount > 10
       ? [
           {
             label: 'Correct',
@@ -209,7 +201,12 @@ export const Results = ({
           ))}
         </dl>
 
-        {result.questionCount <= 10 ? (
+        {isLeague ? (
+          <LeagueProgress
+            currentQuestion={result.answers.length}
+            completed={leagueVictory}
+          />
+        ) : result.questionCount <= 10 ? (
           <ol className="answer-trail" aria-label="Question results">
             {result.answers.map((answer, index) => {
               const categoryLabel = getCategoryLabel(answer.category);

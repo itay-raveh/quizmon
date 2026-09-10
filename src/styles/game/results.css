@@ -109,8 +109,8 @@
 .results-list--precise {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
 }
-.results-list__stage dd {
-  text-wrap: balance;
+.result-details > .league-progress {
+  margin: 1rem auto 0;
 }
 .answer-trail {
   display: flex;

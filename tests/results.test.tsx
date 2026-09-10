@@ -295,7 +295,9 @@ describe('results summary', () => {
     expect(
       screen.getByRole('heading', { name: 'League challenge ended' }),
     ).toBeVisible();
-    expect(screen.getByText('Champion')).toBeVisible();
+    expect(
+      screen.getByRole('list', { name: /Quizmon League progress. Champion/ }),
+    ).toBeVisible();
     screen.getByRole('button', { name: 'Retry League' }).click();
     expect(onRetryLeague).toHaveBeenCalledOnce();
   });
@@ -324,4 +326,39 @@ describe('results summary', () => {
     expect(onOpenHallOfFame).toHaveBeenCalledOnce();
     expect(onOpenTrainerCard).not.toHaveBeenCalled();
   });
+});
+
+it.each([1, 4, 9, 15])(
+  'shows the five League stages after ending on question %i',
+  (answered) => {
+    const result = {
+      ...makeResult(15, answered - 1),
+      answers: makeResult(15, answered - 1).answers.slice(0, answered),
+    };
+    render(createResults(result, { mode: { kind: 'league' } }));
+    expect(screen.queryByText('Reached')).not.toBeInTheDocument();
+    expect(screen.queryByText('Correct')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('list', { name: 'Question results' }),
+    ).not.toBeInTheDocument();
+    const stages = screen.getByRole('list', {
+      name: /Quizmon League progress/,
+    });
+    expect(stages.children).toHaveLength(5);
+    expect(
+      stages.querySelectorAll('.league-progress__stage--complete'),
+    ).toHaveLength(Math.floor((answered - 1) / 3));
+    expect(stages.querySelectorAll('[aria-current="step"]')).toHaveLength(1);
+  },
+);
+
+it('marks all five trials complete after a League victory', () => {
+  render(createResults(makeResult(15, 15), { mode: { kind: 'league' } }));
+  const stages = screen.getByRole('list', {
+    name: 'Quizmon League progress. All five trials complete.',
+  });
+  expect(
+    stages.querySelectorAll('.league-progress__stage--complete'),
+  ).toHaveLength(5);
+  expect(stages.querySelector('[aria-current]')).toBeNull();
 });

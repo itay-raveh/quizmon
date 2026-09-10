@@ -2,9 +2,13 @@ import { getLeagueStage, leagueStages } from '@/game/league';
 
 interface LeagueProgressProps {
   currentQuestion?: number;
+  completed?: boolean;
 }
 
-export const LeagueProgress = ({ currentQuestion }: LeagueProgressProps) => {
+export const LeagueProgress = ({
+  currentQuestion,
+  completed = false,
+}: LeagueProgressProps) => {
   const currentStage =
     currentQuestion === undefined ? undefined : getLeagueStage(currentQuestion);
   const currentIndex = currentStage ? leagueStages.indexOf(currentStage) : -1;
@@ -12,17 +16,21 @@ export const LeagueProgress = ({ currentQuestion }: LeagueProgressProps) => {
   return (
     <ol
       aria-label={
-        currentStage
-          ? `Quizmon League progress. ${currentStage.heading}, ${currentStage.title}.`
-          : 'Five League trials'
+        completed
+          ? 'Quizmon League progress. All five trials complete.'
+          : currentStage
+            ? `Quizmon League progress. ${currentStage.heading}, ${currentStage.title}.`
+            : 'Five League trials'
       }
       className="league-progress"
     >
       {leagueStages.map((stage, index) => (
         <li
-          aria-current={index === currentIndex ? 'step' : undefined}
+          aria-current={
+            !completed && index === currentIndex ? 'step' : undefined
+          }
           className={
-            index < currentIndex
+            completed || index < currentIndex
               ? 'league-progress__stage league-progress__stage--complete'
               : index === currentIndex
                 ? 'league-progress__stage league-progress__stage--current'
