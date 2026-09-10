@@ -28,7 +28,7 @@ export const AnimatedScore = ({
 
     const update = (now: number) => {
       const progress =
-        playback?.progress() ?? Math.min((now - startedAt) / duration, 1);
+        playback?.progress(800) ?? Math.min((now - startedAt) / duration, 1);
       const easedProgress = playback ? progress : 1 - (1 - progress) ** 3;
       setDisplayValue(
         progress < 1
@@ -37,7 +37,6 @@ export const AnimatedScore = ({
       );
 
       if (progress < 1) frame = window.requestAnimationFrame(update);
-      else playback?.stop();
     };
 
     const finishWhenHidden = () => {

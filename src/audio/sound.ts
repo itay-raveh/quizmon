@@ -10,7 +10,7 @@ export type InteractionSound = 'none' | 'tap' | 'toggle-off' | 'toggle-on';
 export type RewardSound = 'gain' | 'gold' | 'complete';
 
 export interface SoundPlayback {
-  progress: () => number | undefined;
+  progress: (endEarlyMilliseconds?: number) => number | undefined;
   stop: () => void;
 }
 

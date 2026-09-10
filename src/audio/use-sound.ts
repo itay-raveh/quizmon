@@ -42,14 +42,20 @@ export default function useSound(
     instance.once('playerror', fail, id);
     instance.once('loaderror', fail);
     return {
-      progress: () => {
+      progress: (endEarlyMilliseconds = 0) => {
         if (failed || instance.state() === 'unloaded') return undefined;
         if (ended) return 1;
         const duration = instance.duration(id);
         if (instance.state() !== 'loaded') return 0;
         const position = instance.seek(id);
         if (!duration || typeof position !== 'number') return 0;
-        return Math.min(position / duration, 1);
+        const animationDuration = Math.max(
+          0,
+          duration - endEarlyMilliseconds / 1000,
+        );
+        return animationDuration > 0
+          ? Math.min(position / animationDuration, 1)
+          : 1;
       },
       stop: () => {
         instance.off('end', finish, id);

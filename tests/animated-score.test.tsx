@@ -19,7 +19,7 @@ describe('AnimatedScore', () => {
   });
 });
 
-it('follows playback rather than elapsed time, including a delayed audio start', () => {
+it('finishes 800 ms before playback ends and lets the audio tail continue', () => {
   let nextFrame: FrameRequestCallback = () => undefined;
   vi.stubGlobal(
     'requestAnimationFrame',
@@ -29,24 +29,32 @@ it('follows playback rather than elapsed time, including a delayed audio start',
     }),
   );
   vi.stubGlobal('cancelAnimationFrame', vi.fn());
-  const playback = { progress: vi.fn(() => 0), stop: vi.fn() };
+  let positionMilliseconds = 0;
+  const playback = {
+    progress: vi.fn((endEarlyMilliseconds = 0) =>
+      Math.min(positionMilliseconds / (3000 - endEarlyMilliseconds), 1),
+    ),
+    stop: vi.fn(),
+  };
   const playSound = vi.fn(() => playback);
   const view = render(
     <AnimatedScore playSound={playSound} format={String} value={1000} />,
   );
   act(() => nextFrame(performance.now() + 5000));
   expect(screen.getByText('0')).toBeInTheDocument();
-  playback.progress.mockReturnValue(0.5);
+  positionMilliseconds = 1100;
   act(() => nextFrame(performance.now() + 6000));
   expect(screen.getByText('500')).toBeInTheDocument();
-  playback.progress.mockReturnValue(0.9999);
+  positionMilliseconds = 2199;
   act(() => nextFrame(performance.now() + 7000));
   expect(screen.getByText('999')).toBeInTheDocument();
   expect(playback.stop).not.toHaveBeenCalled();
-  playback.progress.mockReturnValue(1);
+  positionMilliseconds = 2200;
   act(() => nextFrame(performance.now() + 8000));
   expect(screen.getByText('1000')).toBeInTheDocument();
-  expect(playback.stop).toHaveBeenCalledOnce();
+  expect(playback.progress).toHaveBeenLastCalledWith(800);
+  expect(playback.stop).not.toHaveBeenCalled();
   expect(playSound).toHaveBeenCalledOnce();
   view.unmount();
+  expect(playback.stop).toHaveBeenCalledOnce();
 });
