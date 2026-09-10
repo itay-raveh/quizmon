@@ -1,8 +1,4 @@
-import {
-  type QuestionHistory,
-  emptyQuestionHistory,
-  rememberQuestion,
-} from './question-history';
+import { type QuestionHistory, emptyQuestionHistory } from './question-history';
 import {
   DAILY_CHALLENGE_VERSION,
   DAILY_QUESTION_COUNT,
@@ -105,18 +101,11 @@ export const buildQuestionSequence = (
 ): QuestionData[] => {
   const context = createQuestionContext(catalog, modifiers, random, history);
 
+  context.rotation = rotations?.at(-1);
   const finale =
     rotations && questionSequence.at(-1) === 'champion'
-      ? buildQuestionType(
-          { ...context, rotation: rotations.at(-1) },
-          'champion',
-        )
+      ? buildQuestionType(context, 'champion')
       : undefined;
-  if (finale) {
-    context.used.add(finale.pokemonName);
-    if (context.history)
-      context.history = rememberQuestion(context.history, finale);
-  }
   return questionSequence.map((questionType, index) => {
     context.rotation = rotations?.[index];
     let question =
