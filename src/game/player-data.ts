@@ -5,7 +5,7 @@ import {
 } from './question-history';
 import { isQuestionLineup, type QuestionLineup } from './question-lineup';
 import type { LeagueVictoryRecord } from './hall-of-fame';
-import { isLeagueVictory } from './league';
+import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from './league';
 import { normalizeModifiers } from './modifiers';
 import {
   normalizeTrainerProfile,
@@ -217,7 +217,7 @@ const parsePlayerData = (
       (!isQuestionHistory(value.questionHistory) ||
         (value.leagueLineup !== null &&
           (!isQuestionLineup(value.leagueLineup) ||
-            (value.leagueLineup.questions.length !== 15 &&
+            (value.leagueLineup.questions.length !== LEAGUE_QUESTION_COUNT &&
               !(
                 value.leagueLineup.contentVersion === 0 &&
                 value.leagueLineup.questions.length === 0
