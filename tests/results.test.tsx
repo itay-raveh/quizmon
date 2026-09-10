@@ -42,8 +42,9 @@ const makeResult = (
 const createResults = (
   result: GameResult,
   overrides: Partial<ComponentProps<typeof Results>> = {},
+  reduceMotion = true,
 ) => (
-  <ReducedMotionContext value={true}>
+  <ReducedMotionContext value={reduceMotion}>
     <Results
       onOpenHallOfFame={vi.fn()}
       bestResult={result}
@@ -103,21 +104,25 @@ describe('results summary', () => {
       };
       const { unmount } = render(
         <SoundContext value={sounds}>
-          {createResults(makeResult(10, correctCount), {
-            progressChanges: [
-              {
-                current: 10,
-                previousTier: 0,
-                delta: 1,
-                earned: true,
-                tier: 1,
-                goal: 10,
-                kind: 'specialty',
-                label: 'Type Specialist',
-                specialty: 'type',
-              },
-            ],
-          })}
+          {createResults(
+            makeResult(10, correctCount),
+            {
+              progressChanges: [
+                {
+                  current: 10,
+                  previousTier: 0,
+                  delta: 1,
+                  earned: true,
+                  tier: 1,
+                  goal: 10,
+                  kind: 'specialty',
+                  label: 'Type Specialist',
+                  specialty: 'type',
+                },
+              ],
+            },
+            false,
+          )}
         </SoundContext>,
       );
       expect(sounds.playScoreCount).toHaveBeenCalledOnce();

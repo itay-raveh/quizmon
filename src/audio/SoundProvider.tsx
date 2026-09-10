@@ -22,7 +22,7 @@ interface SoundProviderProps {
 }
 
 interface ScoreCountControls {
-  play: () => void;
+  play: SoundControls['playScoreCount'];
   stop: () => void;
 }
 
@@ -43,7 +43,7 @@ const ScoreCountSound = ({
   useSound: UseSound;
   volume: number;
 }) => {
-  const [play, { stop }] = useSound(scoreCountSound, 0.24 * volume);
+  const [play, { stop }] = useSound(scoreCountSound, 0.24 * volume, true);
 
   useEffect(() => {
     onReady({ play, stop });

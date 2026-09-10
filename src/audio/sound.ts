@@ -9,13 +9,18 @@ export type InteractionSound = 'none' | 'tap' | 'toggle-off' | 'toggle-on';
 
 export type RewardSound = 'gain' | 'gold' | 'complete';
 
+export interface SoundPlayback {
+  progress: () => number | undefined;
+  stop: () => void;
+}
+
 export interface SoundControls {
   playReward: (index: number, kind: RewardSound) => void;
   stopRewards: () => void;
   playCorrect: () => void;
   playPerfect: () => void;
   playResults: () => void;
-  playScoreCount: () => void;
+  playScoreCount: () => SoundPlayback | undefined;
   playTap: () => void;
   playToggleOff: () => void;
   playToggleOn: () => void;

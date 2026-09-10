@@ -123,7 +123,6 @@ export const Results = ({
       else if (result.score > 0) playResults();
     }
 
-    if (result.score > 0) playScoreCount();
     const stopWhenHidden = () => {
       if (document.hidden) stopCelebration();
     };
@@ -135,7 +134,6 @@ export const Results = ({
   }, [
     playPerfect,
     playResults,
-    playScoreCount,
     progressChanges.length,
     result.correctCount,
     result.questionCount,
@@ -176,7 +174,7 @@ export const Results = ({
           <span>Score</span>
           <strong>
             <AnimatedScore
-              duration={650}
+              playSound={playScoreCount}
               format={formatScore}
               value={result.score}
             />

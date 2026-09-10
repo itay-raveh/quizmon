@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Howl } from 'howler';
+import type { SoundPlayback } from './sound';
 
-export default function useSound(src: string, volume: number) {
+export default function useSound(
+  src: string,
+  volume: number,
+  trackProgress = false,
+) {
   const sound = useRef<Howl | null>(null);
   const currentVolume = useRef(volume);
 
@@ -19,12 +24,41 @@ export default function useSound(src: string, volume: number) {
     };
   }, [src]);
 
-  const play = useCallback(() => {
+  const play = useCallback((): SoundPlayback | undefined => {
     const instance = sound.current;
     if (!instance) return;
     instance.stop();
-    instance.play();
-  }, []);
+    const id = instance.play();
+    if (!trackProgress) return;
+    let ended = false;
+    let failed = false;
+    const finish = () => {
+      ended = true;
+    };
+    const fail = () => {
+      failed = true;
+    };
+    instance.once('end', finish, id);
+    instance.once('playerror', fail, id);
+    instance.once('loaderror', fail);
+    return {
+      progress: () => {
+        if (failed || instance.state() === 'unloaded') return undefined;
+        if (ended) return 1;
+        const duration = instance.duration(id);
+        if (instance.state() !== 'loaded') return 0;
+        const position = instance.seek(id);
+        if (!duration || typeof position !== 'number') return 0;
+        return Math.min(position / duration, 1);
+      },
+      stop: () => {
+        instance.off('end', finish, id);
+        instance.off('playerror', fail, id);
+        instance.off('loaderror', fail);
+        instance.stop(id);
+      },
+    };
+  }, [trackProgress]);
 
   const stop = useCallback(() => {
     sound.current?.stop();
