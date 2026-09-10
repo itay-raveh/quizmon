@@ -26,12 +26,10 @@ const measureSpritesInPage = async (
       let right = -1;
       let top = canvas.height;
       let bottom = -1;
-      let paintedPixels = 0;
       const painted: number[] = [];
       for (let y = 0; y < canvas.height; y++) {
         for (let x = 0; x < canvas.width; x++) {
           if (pixels[(y * canvas.width + x) * 4 + 3]! < 128) continue;
-          paintedPixels++;
           painted.push(y * canvas.width + x);
           left = Math.min(left, x);
           right = Math.max(right, x);
@@ -39,7 +37,7 @@ const measureSpritesInPage = async (
           bottom = Math.max(bottom, y);
         }
       }
-      if (!paintedPixels)
+      if (!painted.length)
         throw new Error(`Sprite ${path} has no visible pixels`);
       const round = (value: number) =>
         Math.round(value * 1_000_000) / 1_000_000;
@@ -50,7 +48,7 @@ const measureSpritesInPage = async (
           canvasHeight: canvas.height,
           painted,
           size: {
-            area: round(paintedPixels / (canvas.width * canvas.height)),
+            area: round(painted.length / (canvas.width * canvas.height)),
             width: round((right - left + 1) / canvas.width),
             height: round((bottom - top + 1) / canvas.height),
             centerX: round((left + right + 1) / (2 * canvas.width)),
