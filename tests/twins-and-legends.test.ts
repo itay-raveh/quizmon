@@ -38,6 +38,7 @@ describe('Type twins', () => {
         target: {
           ...base,
           speciesName: 'target',
+          sprite: '/sprite/target.png',
           speciesId: 1,
           evolutionFamily: 1,
           types: ['fire', 'flying'],
@@ -45,6 +46,7 @@ describe('Type twins', () => {
         twin: {
           ...base,
           speciesName: 'twin',
+          sprite: '/sprite/twin.png',
           speciesId: 2,
           evolutionFamily: 2,
           types: ['flying', 'fire'],
@@ -52,6 +54,7 @@ describe('Type twins', () => {
         fire: {
           ...base,
           speciesName: 'fire',
+          sprite: '/sprite/fire.png',
           speciesId: 3,
           evolutionFamily: 3,
           types: ['fire'],
@@ -59,6 +62,7 @@ describe('Type twins', () => {
         bird: {
           ...base,
           speciesName: 'bird',
+          sprite: '/sprite/bird.png',
           speciesId: 4,
           evolutionFamily: 4,
           types: ['normal', 'flying'],
@@ -66,6 +70,7 @@ describe('Type twins', () => {
         dragon: {
           ...base,
           speciesName: 'dragon',
+          sprite: '/sprite/dragon.png',
           speciesId: 5,
           evolutionFamily: 5,
           types: ['dragon', 'flying'],

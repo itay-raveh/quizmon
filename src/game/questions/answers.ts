@@ -3,7 +3,7 @@ import { createSeededRandom, shuffle } from '../random';
 import { statNames, type PokemonKnowledge } from '../types';
 import type { Candidate, QuestionContext } from './context';
 import { pickPokemon, shufflePokemon } from './sampling';
-import { chooseTargets, distinctSpecies } from './selection';
+import { chooseTargets, distinctPokemon } from './selection';
 
 export const rankedOptionSet = (
   correct: string,
@@ -98,7 +98,7 @@ export const pokemonOptions = (
     const candidate = context.catalog.pokemon[name];
     return candidate ? similarityToTarget(candidate) : 0;
   };
-  const scored = distinctSpecies(
+  const scored = distinctPokemon(
     rankCandidates(
       target.name,
       candidates
@@ -111,8 +111,11 @@ export const pokemonOptions = (
       similarityFor,
       context.random,
     ),
-    ({ candidate }) => context.catalog.pokemon[candidate]!.speciesId,
-    [target.pokemon.speciesId],
+    ({ candidate }) => ({
+      name: candidate,
+      pokemon: context.catalog.pokemon[candidate]!,
+    }),
+    [target],
   );
   let shortlisted = scored.slice(0, 15);
   if (scored.length < 15) {

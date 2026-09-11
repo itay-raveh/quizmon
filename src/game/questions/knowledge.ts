@@ -16,7 +16,12 @@ import {
 } from './context';
 import { pokemonPrompt, redactName, textPrompt } from './prompts';
 import { optionSetRepetition, targetRepetition } from './repetition';
-import { chooseTargets, pickFreshTarget, pickTarget } from './selection';
+import {
+  chooseTargets,
+  distinctPokemon,
+  pickFreshTarget,
+  pickTarget,
+} from './selection';
 
 export const buildDescriptionQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ description }) => Boolean(description));
@@ -26,7 +31,12 @@ export const buildDescriptionQuestion: QuestionBuilder = (context) => {
     category: 'description',
     target,
     correct: target.name,
-    options: pokemonOptions(context, { correct: target }),
+    options: pokemonOptions(context, {
+      correct: target,
+      candidates: context.pool.filter(({ pokemon }) =>
+        Boolean(pokemon.description),
+      ),
+    }),
     prompt: textPrompt(
       `“${redactName(target.pokemon.description, target.name, target.pokemon.speciesName)}”`,
     ),
@@ -125,11 +135,13 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   );
   const target = pickFreshTarget(
     context,
-    others.filter(
-      ({ pokemon }) =>
-        !shared.some(
-          (candidate) => candidate.pokemon.speciesId === pokemon.speciesId,
-        ) && !pokemon.types.some((type) => ambiguousTypes.has(type)),
+    distinctPokemon(
+      others.filter(
+        ({ pokemon }) =>
+          !pokemon.types.some((type) => ambiguousTypes.has(type)),
+      ),
+      (candidate) => candidate,
+      shared,
     ),
   );
   if (!target) return undefined;

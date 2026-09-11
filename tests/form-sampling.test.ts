@@ -98,6 +98,7 @@ it('weights Pokémon distractors while keeping the correct answer and four disti
       ...target.pokemon,
       speciesName: name,
       speciesId: 100 + (index % 6) * 3 + Math.floor(index / 6),
+      sprite: `/sprite/${name}.png`,
     },
   }));
   for (const { name, pokemon } of context.pool)

@@ -1,8 +1,92 @@
-import { selectPokemonAnswerGroups } from '@/game/questions/answers';
+import {
+  pokemonOptions,
+  selectPokemonAnswerGroups,
+} from '@/game/questions/answers';
+import { buildQuestionType } from '@/game/questions/registry';
 import { makeQuestion } from '@/game/questions/assembly';
 import { textPrompt } from '@/game/questions/prompts';
 import { targetRepetition } from '@/game/questions/repetition';
 import { createQuestionContext } from './fixtures/catalog';
+
+it('requires descriptions for every Field notes option', () => {
+  const context = createQuestionContext('field-notes-descriptions');
+  const names = ['carnivine', 'bulbasaur', 'chikorita', 'turtwig'];
+  context.pool = context.pool.filter(({ name }) =>
+    [...names, 'flapple-gmax', 'appletun-gmax', 'venusaur-gmax'].includes(name),
+  );
+  for (let index = 0; index < 20; index++) {
+    const question = buildQuestionType(context, 'field-notes');
+    expect(question?.options.toSorted()).toEqual(names.toSorted());
+  }
+  context.pool = context.pool.filter(({ name }) => name !== 'turtwig');
+  expect(buildQuestionType(context, 'field-notes')).toBeUndefined();
+});
+
+it.each(['flapple-gmax', 'appletun-gmax', 'carnivine'])(
+  'keeps identical Gigantamax appearances apart with %s as the answer',
+  (name) => {
+    const context = createQuestionContext(`identical-${name}`);
+    context.pool = context.pool.filter(({ name }) =>
+      [
+        'flapple-gmax',
+        'appletun-gmax',
+        'carnivine',
+        'bulbasaur',
+        'turtwig',
+      ].includes(name),
+    );
+    const target = context.pool.find((candidate) => candidate.name === name)!;
+    for (let index = 0; index < 20; index++) {
+      const options = pokemonOptions(context, { correct: target });
+      expect(options).toHaveLength(4);
+      expect(options).toContain(name);
+      expect(
+        options.filter((option) =>
+          ['flapple-gmax', 'appletun-gmax'].includes(option),
+        ),
+      ).toHaveLength(1);
+    }
+  },
+);
+
+it('keeps identical appearances apart across multi-select answer groups', () => {
+  const context = createQuestionContext('identical-groups');
+  const candidates = (names: string[]) =>
+    context.pool.filter(({ name }) => names.includes(name));
+  const answers = selectPokemonAnswerGroups(context, {
+    matching: candidates(['flapple-gmax', 'bulbasaur']),
+    others: candidates(['appletun-gmax', 'carnivine', 'turtwig']),
+    correctCount: 2,
+  });
+  expect(answers?.options.toSorted()).toEqual([
+    'bulbasaur',
+    'carnivine',
+    'flapple-gmax',
+    'turtwig',
+  ]);
+  expect(
+    selectPokemonAnswerGroups(context, {
+      matching: candidates(['flapple-gmax', 'appletun-gmax']),
+      others: candidates(['carnivine', 'turtwig']),
+      correctCount: 2,
+    }),
+  ).toBeUndefined();
+});
+
+it('excludes a shared sprite URL even for unrelated species', () => {
+  const context = createQuestionContext('shared-sprite');
+  const names = ['bulbasaur', 'chikorita', 'turtwig', 'carnivine', 'pikachu'];
+  const pokemon = { ...context.catalog.pokemon };
+  pokemon.chikorita = {
+    ...pokemon.chikorita!,
+    sprite: pokemon.bulbasaur!.sprite,
+  };
+  context.catalog = { ...context.catalog, pokemon };
+  context.pool = names.map((name) => ({ name, pokemon: pokemon[name]! }));
+  const options = pokemonOptions(context, { correct: context.pool[0]! });
+  expect(options).toHaveLength(4);
+  expect(options).not.toContain('chikorita');
+});
 
 it('keeps species distinct across correct and incorrect answer groups', () => {
   const context = createQuestionContext('answer-groups');

@@ -76,11 +76,33 @@ export const chooseTargets = (
     context.history || context.rotation !== undefined
       ? orderTargets(context, candidates)
       : shufflePokemon(candidates, context.random);
-  return distinctSpecies(
-    ordered,
-    ({ pokemon }) => pokemon.speciesId,
-    excluded.map(({ pokemon }) => pokemon.speciesId),
-  ).slice(0, count);
+  return distinctPokemon(ordered, (candidate) => candidate, excluded).slice(
+    0,
+    count,
+  );
+};
+
+export const distinctPokemon = <T>(
+  candidates: readonly T[],
+  getCandidate: (value: T) => Candidate,
+  excluded: readonly Candidate[] = [],
+): T[] => {
+  const keys = ({ name, pokemon }: Candidate): string[] => [
+    `species:${pokemon.speciesId}`,
+    ...(pokemon.sprite ? [`sprite:${pokemon.sprite}`] : []),
+    // These species share a Gigantamax appearance despite separate sprite URLs.
+    // https://bulbapedia.bulbagarden.net/wiki/Appletun
+    ...(['flapple-gmax', 'appletun-gmax'].includes(name)
+      ? ['appearance:gigantamax-apple']
+      : []),
+  ];
+  const seen = new Set(excluded.flatMap(keys));
+  return candidates.filter((value) => {
+    const candidateKeys = keys(getCandidate(value));
+    if (candidateKeys.some((key) => seen.has(key))) return false;
+    for (const key of candidateKeys) seen.add(key);
+    return true;
+  });
 };
 
 export const pickTarget = (
@@ -89,18 +111,4 @@ export const pickTarget = (
 ): Candidate | undefined => {
   const eligible = context.pool.filter(({ pokemon }) => predicate(pokemon));
   return pickFreshTarget(context, eligible);
-};
-
-export const distinctSpecies = <T>(
-  candidates: readonly T[],
-  speciesId: (candidate: T) => number,
-  excluded: readonly number[] = [],
-): T[] => {
-  const seen = new Set(excluded);
-  return candidates.filter((candidate) => {
-    const id = speciesId(candidate);
-    if (seen.has(id)) return false;
-    seen.add(id);
-    return true;
-  });
 };
