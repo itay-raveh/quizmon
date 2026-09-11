@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { questionTypes } from '../src/game/questions/definitions';
+import { questionTypes } from '../src/domain/quiz/questions/definitions';
 import {
   advanceToDailyFinale,
   expect,

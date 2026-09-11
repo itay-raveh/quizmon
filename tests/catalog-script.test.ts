@@ -1,8 +1,8 @@
+import type { Pokemon, ResourceLink } from 'pokenode-ts';
 import {
   buildPokemonCatalog,
   type CatalogClient,
 } from '../scripts/update-pokemon-data.ts';
-import type { Pokemon, ResourceLink } from 'pokenode-ts';
 
 const resourceUrl = <T>(resource: ResourceLink<T>) =>
   typeof resource === 'string' ? resource : resource.url;

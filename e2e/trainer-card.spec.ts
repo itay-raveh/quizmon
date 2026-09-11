@@ -1,7 +1,7 @@
-import { readFile } from 'node:fs/promises';
 import type { Page } from '@playwright/test';
-import { expect, test, catalogData } from './fixtures';
-import { emptyPlayerData } from '../src/game/player-data';
+import { readFile } from 'node:fs/promises';
+import { emptyPlayerData } from '../src/domain/player/player-save';
+import { catalogData, expect, test } from './fixtures';
 
 const downloadTrainerImage = async (page: Page) => {
   const downloadReady = page.waitForEvent('download');

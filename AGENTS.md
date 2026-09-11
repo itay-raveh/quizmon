@@ -14,40 +14,48 @@ and daily push reminders.
 
 ## Repository structure
 
-| Path                              | Purpose                                                        |
-| --------------------------------- | -------------------------------------------------------------- |
-| `src/main.tsx`, `src/app/`        | Browser entry point, orchestration, routes, and session hooks  |
-| `src/components/`                 | React UI and shared controls                                   |
-| `src/game/`                       | Quiz generation, scoring, persistence, sharing, and analytics  |
-| `src/sw.ts`, `src/notifications/` | PWA service worker and browser push-reminder client            |
-| `src/styles/`                     | Shared CSS foundations and surface-specific styles             |
-| `worker/`                         | Cloudflare Worker routes and the daily-reminder Durable Object |
-| `build/`, `scripts/`              | Build-time metadata, site assets, and catalog maintenance      |
-| `content/`                        | Public information and legal-page Markdown                     |
-| `art/`, `src/assets/`, `public/`  | Source art and shipped static assets                           |
-| `tests/`, `e2e/`                  | Vitest coverage and Playwright browser tests                   |
+| Path                                | Purpose                                                                           |
+| ----------------------------------- | --------------------------------------------------------------------------------- |
+| `src/main.tsx`, `src/app/`          | Browser entry, app composition, navigation, layout, and providers                 |
+| `src/features/`                     | Settings, quiz play, Daily, League, trainer, sharing, installation, and reminders |
+| `src/domain/`                       | Pure Pokémon, quiz, settings, and player models and rules                         |
+| `src/components/`, `src/hooks/`     | Shared UI controls and React hooks                                                |
+| `src/lib/`                          | Browser persistence, audio, analytics, and platform utilities                     |
+| `src/styles/`                       | Global foundations and fonts                                                      |
+| `src/sw.ts`, `worker/`              | Service worker and Cloudflare Worker routes and reminders                         |
+| `build/`, `scripts/`                | Build-time metadata, site assets, and catalog maintenance                         |
+| `content/`                          | Public information and legal-page Markdown                                        |
+| `art/`, `src/assets/`, `public/`    | Source art and shipped static assets                                              |
+| `src/**/*.test.*`, `tests/`, `e2e/` | Colocated unit tests, shared fixtures and tooling/Worker tests, browser tests     |
 
-`src/main.tsx` mounts `src/app/App.tsx`, whose hooks connect the UI to the game
-and persistence modules. `worker/index.ts` handles analytics, reminder, and
+`src/main.tsx` mounts `src/app/App.tsx`, which connects feature hooks to domain rules
+and browser persistence. `worker/index.ts` handles analytics, reminder, and
 sprite routes, then delegates other requests to the static asset binding.
 `src/sw.ts` supplies offline navigation, media caching, and push handling.
+
+Feature components, hooks, styles, and unit tests live with their owning feature.
+Pure domain modules do not import React, feature code, or browser persistence.
+Components use PascalCase filenames, hooks use `useCamelCase`, and other modules
+use descriptive kebab-case names. Import the owning module directly rather than
+adding forwarding files at old paths. Persisted keys and backup formats stay stable
+when source names change.
 
 ## Commands
 
 Run commands from the repository root.
 
-| Task                        | Command                                    |
-| --------------------------- | ------------------------------------------ |
-| Set up a fresh clone        | `mise run setup`                           |
-| Start Vite                  | `npm run dev`                              |
-| Run one unit test           | `npm test -- tests/game.test.ts`           |
-| Run one browser spec        | `npm run test:e2e -- e2e/training.spec.ts` |
-| Lint all source             | `npm run lint`                             |
-| Build production output     | `npm run build`                            |
-| Validate the Worker bundle  | `npm run deploy:dry-run`                   |
-| Run the complete local gate | `mise run check`                           |
-| Refresh Pokémon data        | `npm run data:update`                      |
-| Export badge art            | `mise run badges:export`                   |
+| Task                        | Command                                                   |
+| --------------------------- | --------------------------------------------------------- |
+| Set up a fresh clone        | `mise run setup`                                          |
+| Start Vite                  | `npm run dev`                                             |
+| Run one unit test           | `npm test -- src/domain/quiz/question-generation.test.ts` |
+| Run one browser spec        | `npm run test:e2e -- e2e/training.spec.ts`                |
+| Lint all source             | `npm run lint`                                            |
+| Build production output     | `npm run build`                                           |
+| Validate the Worker bundle  | `npm run deploy:dry-run`                                  |
+| Run the complete local gate | `mise run check`                                          |
+| Refresh Pokémon data        | `npm run data:update`                                     |
+| Export badge art            | `mise run badges:export`                                  |
 
 `mise run setup` also installs the Git hooks. Pre-commit checks formatting,
 lint, and secrets; pre-push runs the complete gate. Use conventional commit
@@ -71,7 +79,7 @@ existing `VAPID_PRIVATE_KEY` binding; CI is the production deployment path.
 ## Generated and durable files
 
 - Do not edit `dist/`; it is ignored production output.
-- `src/game/data/pokemon.json` is generated by `npm run data:update`.
+- `src/domain/pokemon/data/pokemon.json` is generated by `npm run data:update`.
 - `art/badges.aseprite` is the badge master. Its slice names determine the PNG
   filenames produced by `mise run badges:export`; Aseprite is required.
 - Keep browser behavior independent of live PokéAPI requests. The shipped

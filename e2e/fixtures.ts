@@ -1,13 +1,11 @@
-import { defaultModifiers } from '../src/game/modifiers';
-import type { TrainerProgressChange } from '../src/game/trainer';
+import { test as base, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { expect, test as base, type Page } from '@playwright/test';
-import catalogData from '../src/game/data/pokemon.json' with { type: 'json' };
-import type {
-  Generation,
-  PokemonCatalog,
-  QuestionType,
-} from '../src/game/types';
+import type { TrainerProgressChange } from '../src/domain/player/trainer-progression';
+import catalogData from '../src/domain/pokemon/data/pokemon.json' with { type: 'json' };
+import { formatPokemonName as formatName } from '../src/domain/pokemon/format';
+import type { Generation, PokemonCatalog } from '../src/domain/pokemon/types';
+import type { QuestionType } from '../src/domain/quiz/types';
+import { defaultGameSettings } from '../src/domain/settings/game-settings';
 
 export { catalogData, expect };
 export const catalog = catalogData as unknown as PokemonCatalog;
@@ -16,8 +14,7 @@ const imageBody = Buffer.from(
   'base64',
 );
 
-export { formatPokemonName as formatName } from '../src/game/format';
-import { formatPokemonName as formatName } from '../src/game/format';
+export { formatPokemonName as formatName } from '../src/domain/pokemon/format';
 
 export const findPokemonByLabel = (label: string | null) =>
   Object.entries(catalogData.pokemon).find(
@@ -62,7 +59,7 @@ export const seedLeagueResults = (
   progressChanges: TrainerProgressChange[] = [],
 ) =>
   page.addInitScript(
-    ({ modifiers, progressChanges }) => {
+    ({ settings, progressChanges }) => {
       const result = {
         answers: Array.from({ length: 9 }, (_, index) => ({
           category: 'identity',
@@ -89,7 +86,7 @@ export const seedLeagueResults = (
             session: {
               phase: 'results',
               mode: { kind: 'league' },
-              modifiers,
+              settings,
               result,
               bestResult: result,
               resultSaved: true,
@@ -102,7 +99,7 @@ export const seedLeagueResults = (
       );
     },
     {
-      modifiers: { ...defaultModifiers, reduceMotion: true, soundVolume: 0 },
+      settings: { ...defaultGameSettings, reduceMotion: true, soundVolume: 0 },
       progressChanges,
     },
   );

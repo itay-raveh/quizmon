@@ -1,4 +1,4 @@
-import { formatTypeMultiplier } from '@/game/format';
+import { formatTypeMultiplier } from '@/domain/pokemon/format';
 
 export const RelationArrow = ({
   direction = 'right',

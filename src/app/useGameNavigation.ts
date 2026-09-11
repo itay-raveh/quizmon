@@ -1,6 +1,6 @@
+import { clearActiveGame } from '@/lib/storage/active-game-storage';
 import { useCallback, useState, type Dispatch } from 'react';
-import { clearActiveGame } from '@/game/active-game';
-import type { GameSession, GameSessionAction } from './session';
+import type { GameSession, GameSessionAction } from './game-session';
 
 interface GameNavigationOptions {
   dispatch: Dispatch<GameSessionAction>;

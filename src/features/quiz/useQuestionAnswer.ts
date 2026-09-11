@@ -1,0 +1,200 @@
+import {
+  getAnswerPoints,
+  getSpeedBonusPoints,
+  isQuestionAnswerCorrect,
+} from '@/domain/quiz/scoring';
+import { type AnswerResult, type QuestionData } from '@/domain/quiz/types';
+import { answerFlowDelays, type AnswerFlow } from '@/domain/settings/types';
+import { useGameSounds } from '@/lib/audio/sound-context';
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+} from 'react';
+
+export interface UseQuestionAnswerOptions {
+  answerFlow: AnswerFlow;
+  elapsedMilliseconds: number;
+  interactionPaused: boolean;
+  nextQuestion?: QuestionData;
+  onAnswer: (answer: AnswerResult) => void;
+  onAnswerRecorded?: (answer: AnswerResult) => void;
+  onFeedbackStart: () => number;
+  question: QuestionData;
+}
+
+const preloadQuestionImages = (question: QuestionData) => {
+  const sources = [
+    ...(question.media.kind === 'none' ? [] : [question.media.src]),
+    ...(question.visual?.kind === 'evolution-link'
+      ? Object.values(question.visual.stages).map(({ src }) => src)
+      : []),
+    ...(question.visual?.kind === 'evolution-shift'
+      ? [question.visual.evolution.src]
+      : []),
+    ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
+  ];
+
+  for (const src of sources) {
+    const image = new Image();
+    image.decoding = 'async';
+    image.fetchPriority = 'low';
+    image.src = src;
+  }
+};
+
+export const useQuestionAnswer = ({
+  answerFlow,
+  elapsedMilliseconds,
+  interactionPaused,
+  nextQuestion,
+  onAnswer,
+  onAnswerRecorded,
+  onFeedbackStart,
+  question,
+}: UseQuestionAnswerOptions) => {
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
+  const [cluesShown, setCluesShown] = useState(0);
+  const answered = answerResult !== null;
+  const { playCorrect, playWrong } = useGameSounds();
+  const answerAdvanced = useRef(false);
+  const answerTimeout = useRef<number | null>(null);
+  const questionStartedAt = useRef(elapsedMilliseconds);
+
+  useEffect(() => {
+    preloadQuestionImages(question);
+    if (nextQuestion) preloadQuestionImages(nextQuestion);
+    return () => {
+      if (answerTimeout.current !== null) {
+        window.clearTimeout(answerTimeout.current);
+      }
+    };
+  }, [nextQuestion, question]);
+
+  const submitAnswer = useCallback(
+    (answer: AnswerResult) => {
+      if (answerAdvanced.current) return;
+      answerAdvanced.current = true;
+      onAnswer(answer);
+    },
+    [onAnswer],
+  );
+
+  const advanceAnswer = useCallback(() => {
+    if (answerResult) submitAnswer(answerResult);
+  }, [answerResult, submitAnswer]);
+
+  const finishAnswer = useCallback(
+    (options: string[]) => {
+      if (interactionPaused || answered) return;
+
+      const correct = isQuestionAnswerCorrect(question, options);
+      const points = getAnswerPoints(question, correct, cluesShown);
+      const responseMilliseconds = Math.max(
+        0,
+        onFeedbackStart() - questionStartedAt.current,
+      );
+      const answer = {
+        category: question.category,
+        cluesUsed: cluesShown,
+        correct,
+        generation: question.generation,
+        pokemonName: question.pokemonName,
+        points,
+        questionType: question.questionType,
+        responseMilliseconds,
+        speedBonus: getSpeedBonusPoints(points, responseMilliseconds),
+      };
+      setSelectedOptions(options);
+      setAnswerResult(answer);
+      if (correct) playCorrect();
+      else playWrong();
+      onAnswerRecorded?.(answer);
+      if (answerFlow !== 'manual') {
+        answerTimeout.current = window.setTimeout(
+          () => submitAnswer(answer),
+          answerFlowDelays[answerFlow],
+        );
+      }
+    },
+    [
+      answerFlow,
+      answered,
+      cluesShown,
+      interactionPaused,
+      submitAnswer,
+      onAnswerRecorded,
+      onFeedbackStart,
+      playCorrect,
+      playWrong,
+      question,
+    ],
+  );
+
+  const selectOption = useCallback(
+    (option: string) => {
+      if (interactionPaused || answered) return;
+      if (question.answer.interaction === 'single-choice') {
+        finishAnswer([option]);
+        return;
+      }
+
+      setSelectedOptions((current) =>
+        current.includes(option)
+          ? current.filter((selected) => selected !== option)
+          : [...current, option],
+      );
+    },
+    [answered, finishAnswer, interactionPaused, question.answer.interaction],
+  );
+
+  const answerWithKeyboard = useEffectEvent((event: KeyboardEvent) => {
+    if (
+      interactionPaused ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.repeat ||
+      event.target instanceof HTMLInputElement ||
+      (question.category === 'champion' && cluesShown === 0)
+    ) {
+      return;
+    }
+
+    if (
+      event.key === 'Enter' &&
+      question.answer.interaction === 'multi-select' &&
+      selectedOptions.length > 0 &&
+      (!(event.target instanceof HTMLElement) ||
+        !event.target.closest(
+          'button, input, select, textarea, [contenteditable]',
+        ))
+    ) {
+      event.preventDefault();
+      finishAnswer(selectedOptions);
+      return;
+    }
+
+    const option = question.options[Number(event.key) - 1];
+    if (option) selectOption(option);
+  });
+
+  useEffect(() => {
+    window.addEventListener('keydown', answerWithKeyboard);
+    return () => window.removeEventListener('keydown', answerWithKeyboard);
+  }, []);
+
+  return {
+    answerCorrect: answerResult?.correct === true,
+    answered,
+    advanceAnswer,
+    cluesShown,
+    finishAnswer,
+    revealClue: () => setCluesShown((current) => current + 1),
+    selectedOptions,
+    selectOption,
+  };
+};

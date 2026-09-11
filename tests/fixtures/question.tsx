@@ -1,7 +1,7 @@
+import { QuestionScreen } from '@/features/quiz/QuestionScreen';
 import { render } from '@testing-library/react';
 import type { ComponentProps } from 'react';
-import { Question } from '@/components/Question';
-import type { QuestionData } from '@/game/types';
+import type { QuestionData } from '../../src/domain/quiz/types';
 
 export const question: QuestionData = {
   repetition: {
@@ -22,11 +22,11 @@ export const question: QuestionData = {
   questionType: 'stat-showdown',
 };
 
-type QuestionProps = ComponentProps<typeof Question>;
+type QuestionScreenProps = ComponentProps<typeof QuestionScreen>;
 
-export const renderQuestion = (overrides: Partial<QuestionProps> = {}) =>
+export const renderQuestion = (overrides: Partial<QuestionScreenProps> = {}) =>
   render(
-    <Question
+    <QuestionScreen
       answerFlow="manual"
       elapsedMilliseconds={0}
       elapsedSeconds={0}

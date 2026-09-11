@@ -1,10 +1,10 @@
-import webpush, { WebPushError } from 'web-push';
-import { DailyReminder } from '../worker/daily-reminder';
 import { site } from '@/app/site';
 import {
   DAILY_REMINDER_MESSAGE,
   VAPID_PUBLIC_KEY,
-} from '@/notifications/config';
+} from '@/features/reminders/reminder-config';
+import webpush, { WebPushError } from 'web-push';
+import { DailyReminder } from '../worker/daily-reminder';
 
 const subscription = {
   endpoint: 'https://example.com/push',

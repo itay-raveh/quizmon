@@ -1,12 +1,12 @@
-import catalogData from '@/game/data/pokemon.json';
-import { filterPokemon } from '@/game/modifiers';
-import type { QuestionContext } from '@/game/questions/context';
-import { createSeededRandom } from '@/game/random';
+import catalogData from '@/domain/pokemon/data/pokemon.json';
+import type { QuestionContext } from '@/domain/quiz/questions/context';
+import { filterPokemon } from '@/domain/settings/game-settings';
+import { createSeededRandom } from '@/lib/random';
 import {
   generations,
   type Generation,
   type PokemonCatalog,
-} from '@/game/types';
+} from '../../src/domain/pokemon/types';
 
 export const catalog = catalogData as unknown as PokemonCatalog;
 

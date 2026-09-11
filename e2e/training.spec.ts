@@ -1,5 +1,6 @@
-import type { ActiveGameSnapshot } from '../src/game/active-game';
-import type { PlayerSave } from '../src/game/player-data';
+import type { Page } from '@playwright/test';
+import type { PlayerSave } from '../src/domain/player/player-save';
+import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import {
   catalogData,
   expect,
@@ -8,7 +9,6 @@ import {
   seedQuestionTraining,
   test,
 } from './fixtures';
-import type { Page } from '@playwright/test';
 
 type PokemonName = keyof typeof catalogData.pokemon;
 

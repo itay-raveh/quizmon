@@ -1,4 +1,4 @@
-import type { AnswerResult, GameResult } from '@/game/types';
+import type { AnswerResult, GameResult } from '../../src/domain/quiz/types';
 
 export const correctAnswer: AnswerResult = {
   category: 'identity',

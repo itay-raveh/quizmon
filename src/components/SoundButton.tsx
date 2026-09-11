@@ -1,5 +1,8 @@
+import {
+  useInteractionSound,
+  type InteractionSound,
+} from '@/lib/audio/sound-context';
 import type { ComponentPropsWithRef, MouseEvent } from 'react';
-import { useInteractionSound, type InteractionSound } from '@/audio/sound';
 
 export type SoundButtonProps = ComponentPropsWithRef<'button'> & {
   sound?: InteractionSound;

@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
-import { emptyPlayerData } from '../src/game/player-data';
-import { defaultModifiers } from '../src/game/modifiers';
-import type { PlayerBackup } from '../src/game/backup';
+import { emptyPlayerData } from '../src/domain/player/player-save';
+import { defaultGameSettings } from '../src/domain/settings/game-settings';
+import type { PlayerBackup } from '../src/features/settings/backup';
 import { expect, test } from './fixtures';
 
 const backup: PlayerBackup = {
@@ -16,7 +16,7 @@ const backup: PlayerBackup = {
       ...emptyPlayerData(),
       generationPromptAnswered: true,
       settings: {
-        ...defaultModifiers,
+        ...defaultGameSettings,
         soundVolume: 0.2,
         generations: ['II'],
         questionTypes: ['pokedex-scan'],
@@ -143,7 +143,7 @@ for (const width of [320, 390, 1280]) {
     if (width < 400) {
       const toast = await page.locator('.toast').boundingBox();
       const actions = await page
-        .locator('.modifiers-form__actions')
+        .locator('.settings-form__actions')
         .boundingBox();
       expect(toast!.y + toast!.height).toBeLessThan(actions!.y);
     }

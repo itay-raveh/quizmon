@@ -1,4 +1,5 @@
-import type { PlayerSave } from '../src/game/player-data';
+import type { PlayerSave } from '../src/domain/player/player-save';
+import { buildDailyQuestions } from '../src/domain/quiz/question-generation';
 import {
   advanceToDailyFinale,
   catalog,
@@ -6,7 +7,6 @@ import {
   seedBrowserRandom,
   test,
 } from './fixtures';
-import { buildDailyQuestions } from '../src/game/game';
 
 test('shows a saved daily score instead of another play button', async ({
   page,

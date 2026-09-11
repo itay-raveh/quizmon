@@ -4,18 +4,18 @@ slug: 'src-app-app-tsx'
 primary_target: 'src/app/App.tsx'
 related_targets:
   [
-    'src/components/Landing.tsx',
-    'src/components/Question.tsx',
-    'src/components/Results.tsx',
-    'src/components/TrainerPassport.tsx',
-    'src/components/TrainerCard.tsx',
-    'src/components/TrainerTitles.tsx',
-    'src/components/TrainerProgressSummary.tsx',
+    'src/app/HomeScreen.tsx',
+    'src/features/quiz/QuestionScreen.tsx',
+    'src/features/quiz/ResultsScreen.tsx',
+    'src/features/trainer/TrainerPassport.tsx',
+    'src/features/trainer/TrainerCard.tsx',
+    'src/features/trainer/TrainerTitles.tsx',
+    'src/features/trainer/TrainerProgressSummary.tsx',
     'src/components/LeagueGateway.tsx',
-    'src/components/LeagueProgress.tsx',
-    'src/styles/landing.css',
-    'src/styles/game.css',
-    'src/styles/trainer.css',
+    'src/features/league/LeagueProgress.tsx',
+    'src/app/home.css',
+    'src/features/quiz/quiz.css',
+    'src/features/trainer/trainer.css',
   ]
 ---
 

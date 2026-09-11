@@ -1,13 +1,13 @@
+import AxeBuilder from '@axe-core/playwright';
 import {
-  findPokemonByLabel,
   expect,
   expectNoHorizontalOverflow,
+  findPokemonByLabel,
   formatName,
   seedBrowserRandom,
   seedQuestionTraining,
   test,
 } from './fixtures';
-import AxeBuilder from '@axe-core/playwright';
 
 for (const questionType of ['type-twins', 'legend-hunt'] as const) {
   for (const outcome of ['correct', 'incorrect'] as const) {

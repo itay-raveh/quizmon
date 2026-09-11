@@ -68,8 +68,8 @@ Players open Quizmon in a browser, take the Daily Challenge once, configure a te
 
 ## Evidence on Hand
 
-- Responsive wordmark assets: `src/assets/images/logo-496.avif`, `src/assets/images/logo-496.webp`, `src/assets/images/logo-992.avif`, and `src/assets/images/logo-992.webp`.
-- Pixel-art landscape assets: `src/assets/images/bg.avif` and `src/assets/images/bg.webp`.
+- Responsive wordmark assets: `src/assets/images/wordmark-496.avif`, `src/assets/images/wordmark-496.webp`, `src/assets/images/wordmark-992.avif`, and `src/assets/images/wordmark-992.webp`.
+- Pixel-art landscape assets: `src/assets/images/landscape.avif` and `src/assets/images/landscape.webp`.
 - Pokémon artwork and metadata supplied through the existing PokéAPI integration and checked-in catalog.
 - Existing sound effects in `src/assets/sounds/`.
 - No testimonials, commercial claims, or affiliation claims are available and none should be invented.

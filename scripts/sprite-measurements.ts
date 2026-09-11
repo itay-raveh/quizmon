@@ -1,4 +1,4 @@
-import type { SpriteMeasurements } from '../src/game/types.ts';
+import type { SpriteMeasurements } from '../src/domain/pokemon/types.ts';
 import { findPixelPeekFocus } from './pixel-peek-focus.ts';
 
 const measureSpritesInPage = async (

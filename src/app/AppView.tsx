@@ -1,29 +1,30 @@
-import { SoundProvider } from '@/audio/SoundProvider';
-import { Disclaimer, Footer } from '@/components/Footer';
-import { GenerationPromptDialog } from '@/components/GenerationPromptDialog';
-import { LeagueDestination } from '@/components/LeagueDestination';
-import { isLeagueVictory } from '@/game/league';
-import { Landing } from '@/components/Landing';
-import { LeaveGameDialog } from '@/components/LeaveGameDialog';
-import { ModifiersDialog } from '@/components/ModifiersDialog';
-import { MotionProvider } from '@/components/MotionProvider';
-import { DailyReminderProvider } from '@/notifications/DailyReminderProvider';
-import { InstallProvider } from '@/pwa/InstallProvider';
-import { Question } from '@/components/Question';
-import { Results } from '@/components/Results';
-import { TrainerPassport } from '@/components/TrainerPassport';
-import { getLocalDate } from '@/game/daily';
-import type { usePokemonCatalog } from '@/game/catalog';
-import { isLeagueUnlocked } from '@/game/trainer';
-import type { AnswerResult, Modifiers } from '@/game/types';
-import type { GameSession } from './session';
-import type { useDailyChallenge } from './useDailyChallenge';
+import { Disclaimer, Footer } from '@/app/Footer';
+import { HomeScreen } from '@/app/HomeScreen';
+import { MotionProvider } from '@/app/providers/MotionProvider';
+import { isLeagueUnlocked } from '@/domain/player/trainer-progression';
+import { getLocalDate } from '@/domain/quiz/daily';
+import { isLeagueVictory } from '@/domain/quiz/league';
+import type { AnswerResult } from '@/domain/quiz/types';
+import type { GameSettings } from '@/domain/settings/types';
+import type { useDailyChallenge } from '@/features/daily/useDailyChallenge';
+import { InstallProvider } from '@/features/installation/InstallProvider';
+import { LeagueDestination } from '@/features/league/LeagueDestination';
+import type { useLeagueChallenge } from '@/features/league/useLeagueChallenge';
+import type { useLeagueDestination } from '@/features/league/useLeagueDestination';
+import { LeaveGameDialog } from '@/features/quiz/LeaveGameDialog';
+import { QuestionScreen } from '@/features/quiz/QuestionScreen';
+import { ResultsScreen } from '@/features/quiz/ResultsScreen';
+import type { useTrainingGame } from '@/features/quiz/useTrainingGame';
+import { DailyReminderProvider } from '@/features/reminders/DailyReminderProvider';
+import { GenerationPromptDialog } from '@/features/settings/GenerationPromptDialog';
+import { SettingsDialog } from '@/features/settings/SettingsDialog';
+import type { useSettingsDialog } from '@/features/settings/useSettingsDialog';
+import { TrainerPassport } from '@/features/trainer/TrainerPassport';
+import type { useTrainerCard } from '@/features/trainer/useTrainerCard';
+import type { usePokemonCatalog } from '@/hooks/usePokemonCatalog';
+import { SoundProvider } from '@/lib/audio/SoundProvider';
+import type { GameSession } from './game-session';
 import type { useGameNavigation } from './useGameNavigation';
-import type { useLeagueDestination } from './useLeagueDestination';
-import type { useLeagueChallenge } from './useLeagueChallenge';
-import type { useSettingsDialog } from './useSettingsDialog';
-import type { useTrainerCard } from './useTrainerCard';
-import type { useTrainingGame } from './useTrainingGame';
 
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
 
@@ -40,11 +41,11 @@ interface AppViewProps {
   daily: ReturnType<typeof useDailyChallenge>;
   league: ReturnType<typeof useLeagueDestination> &
     ReturnType<typeof useLeagueChallenge>;
-  modifiers: Modifiers;
+  settings: GameSettings;
   navigation: ReturnType<typeof useGameNavigation>;
   question: QuestionView;
   session: GameSession;
-  settings: ReturnType<typeof useSettingsDialog>;
+  settingsDialog: ReturnType<typeof useSettingsDialog>;
   trainer: ReturnType<typeof useTrainerCard>;
   training: ReturnType<typeof useTrainingGame>;
 }
@@ -56,7 +57,7 @@ const AppScreen = ({
   navigation,
   question,
   session,
-  settings,
+  settingsDialog,
   trainer,
   training,
 }: AppViewProps) => {
@@ -110,7 +111,7 @@ const AppScreen = ({
 
   if (session.phase === 'landing') {
     return (
-      <Landing
+      <HomeScreen
         catalogStatus={catalogState.status}
         dailyDate={daily.date}
         dailyResult={daily.result}
@@ -118,7 +119,7 @@ const AppScreen = ({
         dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
         leagueUnlocked={leagueUnlocked}
         leagueCompleted={trainer.stats.leagueCompleted}
-        onOpenSettings={settings.open}
+        onOpenSettings={settingsDialog.open}
         onOpenTrainerCard={() => trainer.open('front')}
         onRetryCatalog={catalogState.retry}
         onStart={training.start}
@@ -134,13 +135,13 @@ const AppScreen = ({
   if (session.phase === 'questions') {
     const currentQuestion = session.questions[session.questionIndex];
     return currentQuestion ? (
-      <Question
+      <QuestionScreen
         typeRelations={catalogState.catalog?.typeRelations}
-        answerFlow={session.modifiers.answerFlow}
+        answerFlow={session.settings.answerFlow}
         key={currentQuestion.id}
         elapsedMilliseconds={question.elapsedMilliseconds}
         elapsedSeconds={question.elapsedSeconds}
-        interactionPaused={settings.isOpen}
+        interactionPaused={settingsDialog.isOpen}
         mode={session.mode}
         nextQuestion={session.questions[session.questionIndex + 1]}
         number={session.questionIndex + 1}
@@ -149,14 +150,14 @@ const AppScreen = ({
         onFeedbackStart={question.pauseTimer}
         onNewGame={navigation.requestLeave}
         question={currentQuestion}
-        timerDisplay={session.modifiers.timerDisplay}
+        timerDisplay={session.settings.timerDisplay}
         total={session.questions.length}
       />
     ) : null;
   }
 
   return (
-    <Results
+    <ResultsScreen
       bestResult={session.bestResult}
       dailyStreak={
         session.mode.kind === 'daily' && session.mode.date === getLocalDate()
@@ -165,7 +166,7 @@ const AppScreen = ({
       }
       isNewBest={session.isNewBest}
       mode={session.mode}
-      modifiers={session.modifiers}
+      settings={session.settings}
       onNewGame={navigation.returnToLanding}
       onOpenTrainerCard={trainer.open}
       onOpenHallOfFame={() => {
@@ -184,27 +185,27 @@ const AppScreen = ({
 
 const AppOverlays = ({
   catalogState,
-  modifiers,
+  settings,
   navigation,
   session,
-  settings,
+  settingsDialog,
   training,
 }: Pick<
   AppViewProps,
   | 'catalogState'
-  | 'modifiers'
+  | 'settings'
   | 'navigation'
   | 'session'
-  | 'settings'
+  | 'settingsDialog'
   | 'training'
 >) => (
   <>
-    {settings.isOpen && catalogState.status === 'ready' ? (
-      <ModifiersDialog
+    {settingsDialog.isOpen && catalogState.status === 'ready' ? (
+      <SettingsDialog
         catalog={catalogState.catalog}
-        modifiers={modifiers}
-        onClose={settings.close}
-        onSave={settings.save}
+        settings={settings}
+        onClose={settingsDialog.close}
+        onSave={settingsDialog.save}
         trainingChangesApplyNextGame={session.phase !== 'landing'}
       />
     ) : null}
@@ -225,10 +226,10 @@ const AppOverlays = ({
 );
 
 export const AppView = (props: AppViewProps) => (
-  <MotionProvider reduceMotion={props.modifiers.reduceMotion}>
+  <MotionProvider reduceMotion={props.settings.reduceMotion}>
     <SoundProvider
       prepareScoreCount={props.session.phase !== 'landing'}
-      volume={props.modifiers.soundVolume}
+      volume={props.settings.soundVolume}
     >
       <InstallProvider>
         <DailyReminderProvider>

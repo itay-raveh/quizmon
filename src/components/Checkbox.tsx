@@ -1,5 +1,5 @@
+import { useToggleSound } from '@/lib/audio/sound-context';
 import type { InputHTMLAttributes, ReactNode } from 'react';
-import { useToggleSound } from '@/audio/sound';
 import { CheckIcon } from './icons';
 
 interface CheckboxProps extends Omit<

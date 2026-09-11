@@ -1,6 +1,6 @@
+import catalog from '../src/domain/pokemon/data/pokemon.json';
 import worker, { DailyReminder } from '../worker/index';
 import { getNextReminderAt } from '../worker/reminder-time';
-import catalog from '../src/game/data/pokemon.json';
 
 const validEvent = {
   contentVersion: 3,

@@ -1,27 +1,30 @@
-import { AutomaticUpdate } from '@/components/AutomaticUpdate';
-import { readUpdateState, useUpdateSnapshot } from '@/pwa/update-state';
-import { createRoundSeed } from '@/game/random';
+import { useDailyChallenge } from '@/features/daily/useDailyChallenge';
+import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
+import {
+  readUpdateState,
+  useUpdateSnapshot,
+} from '@/features/installation/update-session';
+import { useLeagueChallenge } from '@/features/league/useLeagueChallenge';
+import { useLeagueDestination } from '@/features/league/useLeagueDestination';
+import { useActiveGame } from '@/features/quiz/useActiveGame';
+import { useGameCompletion } from '@/features/quiz/useGameCompletion';
+import { useTrainingGame } from '@/features/quiz/useTrainingGame';
+import { useGameSettings } from '@/features/settings/useGameSettings';
+import { useSettingsDialog } from '@/features/settings/useSettingsDialog';
+import { useTrainerCard } from '@/features/trainer/useTrainerCard';
+import { usePokemonCatalog } from '@/hooks/usePokemonCatalog';
+import { useStopwatch } from '@/hooks/useStopwatch';
+import { trackGameStarted } from '@/lib/analytics';
+import { createRoundSeed } from '@/lib/random';
+import { hasActiveGame } from '@/lib/storage/active-game-storage';
 import { useCallback, useReducer, useState } from 'react';
-import { hasActiveGame } from '@/game/active-game';
-import { trackGameStarted } from '@/game/analytics';
-import { usePokemonCatalog } from '@/game/catalog';
-import { usePersistentModifiers } from '@/game/settings-storage';
-import { useStopwatch } from '@/game/stopwatch';
 import { AppView } from './AppView';
 import {
   gameSessionReducer,
   initialGameSession,
   type StartGame,
-} from './session';
-import { useActiveGame } from './useActiveGame';
-import { useDailyChallenge } from './useDailyChallenge';
-import { useGameCompletion } from './useGameCompletion';
+} from './game-session';
 import { useGameNavigation } from './useGameNavigation';
-import { useLeagueDestination } from './useLeagueDestination';
-import { useLeagueChallenge } from './useLeagueChallenge';
-import { useSettingsDialog } from './useSettingsDialog';
-import { useTrainerCard } from './useTrainerCard';
-import { useTrainingGame } from './useTrainingGame';
 
 export const App = () => {
   const leagueDestination = useLeagueDestination();
@@ -32,7 +35,7 @@ export const App = () => {
     loadImmediately: loadCatalogImmediately,
   });
   const { catalog } = catalogState;
-  const [modifiers, setModifiers] = usePersistentModifiers();
+  const [settings, setSettings] = useGameSettings();
   const [session, dispatchSession] = useReducer(
     gameSessionReducer,
     initialGameSession,
@@ -47,16 +50,16 @@ export const App = () => {
     pause,
     reset,
     start,
-  } = useStopwatch(modifiers.timerDisplay === 'milliseconds');
+  } = useStopwatch(settings.timerDisplay === 'milliseconds');
 
   const startGame = useCallback<StartGame>(
-    (nextQuestions, nextModifiers, nextMode, seed) => {
+    (nextQuestions, nextSettings, nextMode, seed) => {
       if (!catalog) return;
       trackGameStarted(nextMode, nextQuestions.length);
       dispatchSession({
         contentVersion: catalog.contentVersion,
         mode: nextMode,
-        modifiers: nextModifiers,
+        settings: nextSettings,
         questions: nextQuestions,
         roundId: createRoundSeed(),
         seed,
@@ -70,22 +73,22 @@ export const App = () => {
 
   const training = useTrainingGame({
     catalog,
-    modifiers,
+    settings,
     session,
-    setModifiers,
+    setSettings,
     startGame,
   });
 
   const { retry: retryLeague, start: startLeague } = useLeagueChallenge({
     catalog,
-    modifiers,
+    settings,
     session,
     startGame,
   });
 
   const daily = useDailyChallenge({
     catalog,
-    modifiers,
+    settings,
     refreshSavedData: trainer.refresh,
     startGame,
   });
@@ -98,12 +101,12 @@ export const App = () => {
     startTimer: start,
   });
 
-  const settings = useSettingsDialog({
+  const settingsDialog = useSettingsDialog({
     dispatch: dispatchSession,
     markGenerationKnown: training.markGenerationKnown,
     pauseTimer: pause,
     session,
-    setModifiers,
+    setSettings,
     startTimer: start,
   });
 
@@ -148,7 +151,7 @@ export const App = () => {
       <AppView
         catalogState={catalogState}
         daily={daily}
-        modifiers={modifiers}
+        settings={settings}
         league={{
           ...leagueDestination,
           retry: () => {
@@ -169,7 +172,7 @@ export const App = () => {
           recordAnswer,
         }}
         session={session}
-        settings={settings}
+        settingsDialog={settingsDialog}
         trainer={trainer}
         training={training}
       />

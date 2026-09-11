@@ -1,10 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
-import { buildQuestions } from '../src/game/game';
-import { defaultModifiers } from '../src/game/modifiers';
-import { emptyPlayerData, type PlayerSave } from '../src/game/player-data';
-import { createSeededRandom } from '../src/game/random';
-import { getQuestionPokemon } from '../src/game/pokedex';
-import { generations, type Modifiers } from '../src/game/types';
+import {
+  emptyPlayerData,
+  type PlayerSave,
+} from '../src/domain/player/player-save';
+import { generations } from '../src/domain/pokemon/types';
+import { buildQuestions } from '../src/domain/quiz/question-generation';
+import { getQuestionPokemon } from '../src/domain/quiz/question-pokemon';
+import { defaultGameSettings } from '../src/domain/settings/game-settings';
+import { type GameSettings } from '../src/domain/settings/types';
+import { createSeededRandom } from '../src/lib/random';
 import {
   catalog,
   expect,
@@ -87,18 +91,14 @@ for (const width of [320, 1280]) {
 test('registers a correct answer immediately even when the round is abandoned', async ({
   page,
 }) => {
-  const modifiers: Modifiers = {
-    ...defaultModifiers,
+  const settings: GameSettings = {
+    ...defaultGameSettings,
     generations: [...generations],
     questionTypes: ['type-twins'],
     trainingMode: 'custom',
   };
   const seed = 'pokedex-answer';
-  const questions = buildQuestions(
-    catalog,
-    modifiers,
-    createSeededRandom(seed),
-  );
+  const questions = buildQuestions(catalog, settings, createSeededRandom(seed));
   const [question] = questions;
   expect(question).toBeDefined();
   await page.addInitScript(
@@ -122,7 +122,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
           contentVersion,
           elapsedMilliseconds: 0,
           mode: { kind: 'training' },
-          modifiers: settings,
+          settings: settings,
           questionCount: 10,
           seed,
         }),
@@ -130,7 +130,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
     },
     {
       data: emptyPlayerData(),
-      settings: modifiers,
+      settings: settings,
       questions,
       seed,
       contentVersion: catalog.contentVersion,

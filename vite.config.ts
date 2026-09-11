@@ -1,10 +1,10 @@
 import react from '@vitejs/plugin-react';
-import { SPRITE_SOURCE } from './src/game/sprite-source.ts';
 import { fileURLToPath, URL } from 'node:url';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 import { contentPageEntries } from './build/content-pages.ts';
 import { siteMetadata } from './build/site-metadata.ts';
+import { SPRITE_SOURCE } from './src/domain/pokemon/sprite-source.ts';
 
 const spriteProxy = {
   '/sprites': {

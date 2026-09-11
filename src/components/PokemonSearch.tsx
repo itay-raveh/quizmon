@@ -1,13 +1,13 @@
-import { useId, useMemo } from 'react';
-import { useInteractionSound } from '@/audio/sound';
-import { formatPokedexNumber } from '@/game/format';
+import { formatPokedexNumber } from '@/domain/pokemon/format';
 import {
   createPokemonSearchEntry,
   findSearchMatches,
   normalizeSearch,
-} from '@/game/search';
+} from '@/domain/pokemon/search';
+import { useSuggestionNavigation } from '@/hooks/useSuggestionNavigation';
+import { useInteractionSound } from '@/lib/audio/sound-context';
+import { useId, useMemo } from 'react';
 import { GameButton } from './GameButton';
-import { useSuggestionNavigation } from './useSuggestionNavigation';
 
 interface PokemonSearchProps {
   disabled?: boolean;

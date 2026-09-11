@@ -1,10 +1,10 @@
-import type { SpriteMeasurements } from '../src/game/types.ts';
+import type { SpriteMeasurements } from '../src/domain/pokemon/types.ts';
 
 import {
   getPixelPeekCropSize,
   getPixelPeekFocusPoints,
   pixelPeekFocusGridSize,
-} from '../src/game/pixel-peek-focus.ts';
+} from '../src/domain/pokemon/pixel-peek-focus.ts';
 
 export const findPixelPeekFocus = (
   painted: readonly number[],

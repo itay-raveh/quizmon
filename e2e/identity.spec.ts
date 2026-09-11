@@ -1,11 +1,11 @@
 import {
   catalog,
   expect,
+  expectNoHorizontalOverflow,
   formatName,
   seedBrowserRandom,
   seedQuestionTraining,
   test,
-  expectNoHorizontalOverflow,
 } from './fixtures';
 
 for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {

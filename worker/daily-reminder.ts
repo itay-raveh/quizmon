@@ -1,5 +1,3 @@
-import { noStoreResponse } from './responses';
-import { isDailyDate, isObject } from '../src/game/validation';
 import { DurableObject } from 'cloudflare:workers';
 import webpush, {
   WebPushError,
@@ -9,12 +7,14 @@ import { site } from '../src/app/site';
 import {
   DAILY_REMINDER_MESSAGE,
   VAPID_PUBLIC_KEY,
-} from '../src/notifications/config';
+} from '../src/features/reminders/reminder-config';
+import { isDailyDate, isObject } from '../src/lib/validation';
 import {
   dateFromParts,
   getNextReminderAt,
   getZonedDateParts,
 } from './reminder-time';
+import { noStoreResponse } from './responses';
 
 const REMINDER_PATH =
   /^\/api\/daily-reminders\/([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;

@@ -1,4 +1,7 @@
-import type { PlayerSave } from '../src/game/player-data';
+import type { PlayerSave } from '../src/domain/player/player-save';
+import { buildQuestionType } from '../src/domain/quiz/questions/registry';
+import { defaultGameSettings } from '../src/domain/settings/game-settings';
+import { createSeededRandom } from '../src/lib/random';
 import {
   catalog,
   expect,
@@ -6,9 +9,6 @@ import {
   formatName,
   test,
 } from './fixtures';
-import { buildQuestionType } from '../src/game/questions/registry';
-import { createSeededRandom } from '../src/game/random';
-import { defaultModifiers } from '../src/game/modifiers';
 
 for (const width of [320, 1280]) {
   test(`scrolls regional partner matches beyond six results at ${width}px`, async ({
@@ -102,7 +102,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
     )!,
   );
   await page.addInitScript(
-    ({ questions, modifiers }) => {
+    ({ questions, settings }) => {
       if (sessionStorage.getItem('seeded-form-round')) return;
       sessionStorage.setItem('seeded-form-round', 'true');
       sessionStorage.setItem(
@@ -113,7 +113,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
           contentVersion: 14,
           elapsedMilliseconds: 4321,
           mode: { kind: 'training' },
-          modifiers,
+          settings,
           questionCount: 2,
           seed: 'forms-compatibility',
           questions,
@@ -121,7 +121,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
         }),
       );
     },
-    { questions, modifiers: { ...defaultModifiers, answerFlow: 'manual' } },
+    { questions, settings: { ...defaultGameSettings, answerFlow: 'manual' } },
   );
   await page.goto('/');
   for (const [index, question] of questions.entries()) {

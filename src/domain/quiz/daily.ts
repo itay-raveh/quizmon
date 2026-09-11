@@ -1,0 +1,58 @@
+import { createSeededRandom, shuffle } from '../../lib/random';
+import { isDailyDate } from '../../lib/validation';
+import { getChallengeSettings } from '../settings/game-settings';
+import type { ExperienceSettings, GameSettings } from '../settings/types';
+import { coreQuestionTypes } from './questions/definitions';
+import type { QuestionData } from './types';
+
+export const DAILY_CHALLENGE_VERSION = 15;
+export const DAILY_QUESTION_COUNT = 5;
+const DAILY_STANDARD_QUESTION_COUNT = DAILY_QUESTION_COUNT - 1;
+export const getLocalDate = (date = new Date()): string =>
+  [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+    .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
+    .join('-');
+
+export const parseDailyDate = (search: string): string | null => {
+  const value = new URLSearchParams(search).get('daily');
+  return isDailyDate(value) ? value : null;
+};
+
+export const shouldAutoStartDaily = (search: string): boolean =>
+  parseDailyDate(search) !== null &&
+  new URLSearchParams(search).get('play') === '1';
+
+export const getDailySettings = (
+  experience: ExperienceSettings,
+): GameSettings => ({
+  ...getChallengeSettings(experience),
+  questionTypes: [...coreQuestionTypes],
+});
+
+const dailyOrdinal = (date: string): number =>
+  Math.floor(Date.parse(`${date}T00:00:00Z`) / 86_400_000);
+
+const dailySlot = (date: string, index: number): number =>
+  dailyOrdinal(date) * DAILY_STANDARD_QUESTION_COUNT + index;
+
+export const getDailyQuestionTypes = (
+  date: string,
+): QuestionData['questionType'][] => [
+  ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, (_, index) => {
+    const slot = dailySlot(date, index);
+    const cycle = Math.floor(slot / coreQuestionTypes.length);
+    const deck = shuffle(
+      coreQuestionTypes,
+      createSeededRandom(`daily-types-v${DAILY_CHALLENGE_VERSION}:${cycle}`),
+    );
+    return deck[((slot % deck.length) + deck.length) % deck.length]!;
+  }),
+  'champion',
+];
+
+export const getDailyRotation = (date: string): number[] => [
+  ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, (_, index) =>
+    Math.floor(dailySlot(date, index) / coreQuestionTypes.length),
+  ),
+  dailyOrdinal(date),
+];

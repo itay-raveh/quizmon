@@ -1,17 +1,10 @@
-import { clearActiveGame } from './game/active-game';
-import { subscribeToPlayerRestore } from './game/player-storage';
+import './app/styles.css';
+import { trackPageViewed } from '@/lib/analytics';
+import { clearActiveGame } from '@/lib/storage/active-game-storage';
+import { subscribeToPlayerRestore } from '@/lib/storage/player-storage';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
-import { trackPageViewed } from './game/analytics';
-import './fonts.css';
-import './styles/foundation.css';
-import './styles/landing.css';
-import './styles/game.css';
-import './styles/overlays.css';
-import './styles/settings.css';
-import './styles/trainer.css';
-import './styles/adaptive.css';
 
 const root = document.getElementById('root');
 

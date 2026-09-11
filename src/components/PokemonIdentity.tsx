@@ -1,5 +1,8 @@
+import {
+  formatPokedexNumber,
+  formatPokemonName,
+} from '@/domain/pokemon/format';
 import type { ReactNode } from 'react';
-import { formatPokedexNumber, formatPokemonName } from '@/game/format';
 
 interface PokemonIdentityProps {
   children?: ReactNode;

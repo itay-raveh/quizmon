@@ -1,12 +1,15 @@
-import { isObject } from '../src/game/validation';
-import { noStoreResponse } from './responses';
-import type { GameMode } from '../src/game/types';
-import { fetchSpriteSource, isSpritePath } from '../src/game/sprite-source';
+import {
+  fetchSpriteSource,
+  isSpritePath,
+} from '../src/domain/pokemon/sprite-source';
+import type { GameMode } from '../src/domain/quiz/types';
+import { isObject } from '../src/lib/validation';
 import {
   DailyReminder,
   handleDailyReminderRequest,
   type DailyReminderEnv,
 } from './daily-reminder';
+import { noStoreResponse } from './responses';
 
 const SPRITE_CACHE_SECONDS = 60 * 60 * 24 * 30;
 const ANALYTICS_PATH = '/api/events';

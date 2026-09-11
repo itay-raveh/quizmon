@@ -1,9 +1,9 @@
-import type { PlayerSave } from '../src/game/player-data';
-import type { ActiveGameSnapshot } from '../src/game/active-game';
 import AxeBuilder from '@axe-core/playwright';
-import { buildLeagueQuestions } from '../src/game/game';
-import { getLeagueModifiers } from '../src/game/league';
-import { getQuestionTitle } from '../src/game/question-labels';
+import type { PlayerSave } from '../src/domain/player/player-save';
+import { getLeagueSettings } from '../src/domain/quiz/league';
+import { buildLeagueQuestions } from '../src/domain/quiz/question-generation';
+import { getQuestionTitle } from '../src/domain/quiz/question-labels';
+import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import { catalog, expect, test } from './fixtures';
 
 const leagueSeed = 'league-e2e-lineup';
@@ -205,20 +205,20 @@ test('shows Champion and Hall of Fame after clearing the League', async ({
 test('a perfect clear opens the induction before its detailed results', async ({
   page,
 }) => {
-  const modifiers = getLeagueModifiers({
+  const settings = getLeagueSettings({
     answerFlow: 'manual',
     reduceMotion: true,
     soundVolume: 0,
     timerDisplay: 'seconds',
   });
-  const questions = buildLeagueQuestions(catalog, leagueSeed, modifiers);
+  const questions = buildLeagueQuestions(catalog, leagueSeed, settings);
   const snapshot = {
     version: 2,
     questions,
     contentVersion: catalog.contentVersion,
     elapsedMilliseconds: 15000,
     mode: { kind: 'league' },
-    modifiers,
+    settings,
     questionCount: 15,
     seed: leagueSeed,
     answers: questions.map((question) => ({

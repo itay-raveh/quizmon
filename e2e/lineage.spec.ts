@@ -1,7 +1,7 @@
 import {
-  findPokemonByLabel,
   expect,
   expectNoHorizontalOverflow,
+  findPokemonByLabel,
   formatName,
   seedBrowserRandom,
   seedQuestionTraining,

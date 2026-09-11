@@ -1,5 +1,8 @@
 /// <reference lib="webworker" />
 
+import { DAILY_REMINDER_MESSAGE } from '@/features/reminders/reminder-config';
+import { spriteCachePlugin } from '@/lib/sprite-cache';
+import { isObject } from '@/lib/validation';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
 import {
@@ -9,10 +12,7 @@ import {
 } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
-import { isObject } from './game/validation';
 import { contentPages } from './app/content-pages';
-import { spriteCachePlugin } from './sprite-cache';
-import { DAILY_REMINDER_MESSAGE } from './notifications/config';
 
 declare const self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: string[];

@@ -1,22 +1,13 @@
-import {
-  formEvolutionLinks,
-  mainSeriesDescription,
-} from './catalog-selection.ts';
-import {
-  catalogFormKey,
-  groupedFormLabels,
-  selectCatalogForms,
-} from './catalog-forms.ts';
 import { readFile, writeFile } from 'node:fs/promises';
-import { format } from 'prettier';
 import {
   MainClient,
   type Generation as ApiGeneration,
   type Pokemon,
-  type PokemonSpecies,
   type PokemonForm,
+  type PokemonSpecies,
   type ResourceLink,
 } from 'pokenode-ts';
+import { format } from 'prettier';
 import {
   generations,
   statNames,
@@ -24,21 +15,33 @@ import {
   type PokemonCatalog,
   type PokemonIdentitySprites,
   type PokemonKnowledge,
-  type StatName,
   type SpriteMeasurements,
-} from '../src/game/types.ts';
+  type StatName,
+} from '../src/domain/pokemon/types.ts';
+import {
+  catalogFormKey,
+  groupedFormLabels,
+  selectCatalogForms,
+} from './catalog-forms.ts';
+import {
+  formEvolutionLinks,
+  mainSeriesDescription,
+} from './catalog-selection.ts';
 
 import {
   fetchSpriteSource,
   isSpritePath,
   normalizeSpriteUrl,
-} from '../src/game/sprite-source.ts';
+} from '../src/domain/pokemon/sprite-source.ts';
 import { measureCatalogSprites } from './sprite-measurements.ts';
 
-const DATA_PATH = new URL('../src/game/data/pokemon.json', import.meta.url);
+const DATA_PATH = new URL(
+  '../src/domain/pokemon/data/pokemon.json',
+  import.meta.url,
+);
 const CONCURRENCY = 4;
 const LABELS_PATH = new URL(
-  '../src/game/data/pokemon-labels.json',
+  '../src/domain/pokemon/data/pokemon-labels.json',
   import.meta.url,
 );
 

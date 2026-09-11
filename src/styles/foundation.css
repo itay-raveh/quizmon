@@ -72,7 +72,7 @@ html[data-reduce-motion] *::after {
 
 html[data-reduce-motion] .question--enter,
 html[data-reduce-motion] .results,
-html[data-reduce-motion] .modifiers-dialog[open],
+html[data-reduce-motion] .settings-dialog[open],
 html[data-reduce-motion] .generation-prompt[open],
 html[data-reduce-motion] .leave-game-dialog[open],
 html[data-reduce-motion] .share-dialog[open],
@@ -180,8 +180,8 @@ input {
   z-index: -1;
   inset: 0;
   background-image: image-set(
-    url('../assets/images/bg.avif') type('image/avif'),
-    url('../assets/images/bg.webp') type('image/webp'),
+    url('../assets/images/landscape.avif') type('image/avif'),
+    url('../assets/images/landscape.webp') type('image/webp'),
     url('../assets/images/background.png') type('image/png')
   );
   background-position: center;

@@ -1,4 +1,4 @@
-import type { Generation } from '@/game/types';
+import type { Generation } from '@/domain/pokemon/types';
 
 interface GenerationLabelProps {
   abbreviated?: boolean;

@@ -1,4 +1,4 @@
-import type { PlayerSave } from '../src/game/player-data';
+import type { PlayerSave } from '../src/domain/player/player-save';
 import { expect, test } from './fixtures';
 
 test('keeps grouped settings reachable outside active questions on a phone', async ({
