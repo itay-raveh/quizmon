@@ -336,7 +336,7 @@ it('rejects an odd-one-out puzzle where either Fire or Flying gives a different 
   }
 });
 
-it('allows forms together in an odd-one-out puzzle with one defensible answer', () => {
+it('rejects an odd-one-out puzzle with repeated species even when its answer is unambiguous', () => {
   const context = createQuestionContext('unambiguous-types');
   context.pool = [
     'charizard',
@@ -344,9 +344,7 @@ it('allows forms together in an odd-one-out puzzle with one defensible answer', 
     'charizard-mega-y',
     'squirtle',
   ].map((name) => ({ name, pokemon: catalog.pokemon[name]! }));
-  expect(
-    buildQuestionType(context, 'odd-one-out')?.answer.correctOptions,
-  ).toEqual(['squirtle']);
+  expect(buildQuestionType(context, 'odd-one-out')).toBeUndefined();
 });
 
 it('offers only the requested Deoxys forme when a Champion description could also describe its species', () => {

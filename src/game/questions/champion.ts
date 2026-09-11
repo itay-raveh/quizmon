@@ -1,13 +1,10 @@
 import type { PokemonKnowledge } from '../types';
+import { pokemonOptions } from './answers';
+import { makeQuestion } from './assembly';
+import { type QuestionBuilder } from './context';
+import { redactName, textPrompt } from './prompts';
 import { targetRepetition } from './repetition';
-import {
-  makeQuestion,
-  pickTarget,
-  pokemonOptions,
-  redactName,
-  textPrompt,
-  type QuestionBuilder,
-} from './shared';
+import { pickTarget } from './selection';
 
 const canIdentify = ({
   description,
@@ -34,20 +31,21 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
   );
 
   return {
-    ...makeQuestion(
-      targetRepetition({ pokemonOptions: true }),
-      'champion',
+    ...makeQuestion(context, {
+      repeat: targetRepetition({ pokemonOptions: true }),
+      category: 'champion',
       target,
-      target.name,
-      pokemonOptions(context, target),
-      textPrompt(`“${openingClue}”`),
-      {
+      correct: target.name,
+      options: pokemonOptions(context, { correct: target }),
+      prompt: textPrompt(`“${openingClue}”`),
+      media: {
         kind: 'sprite',
         revealAt: 4,
         silhouette: true,
         src: target.pokemon.sprite,
       },
-    ),
+      presentation: { kind: 'pokemon-names' },
+    }),
     clues: [
       `Known as the ${target.pokemon.genus} Pokémon.`,
       {

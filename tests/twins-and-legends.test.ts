@@ -38,30 +38,35 @@ describe('Type twins', () => {
         target: {
           ...base,
           speciesName: 'target',
+          speciesId: 1,
           evolutionFamily: 1,
           types: ['fire', 'flying'],
         },
         twin: {
           ...base,
           speciesName: 'twin',
+          speciesId: 2,
           evolutionFamily: 2,
           types: ['flying', 'fire'],
         },
         fire: {
           ...base,
           speciesName: 'fire',
+          speciesId: 3,
           evolutionFamily: 3,
           types: ['fire'],
         },
         bird: {
           ...base,
           speciesName: 'bird',
+          speciesId: 4,
           evolutionFamily: 4,
           types: ['normal', 'flying'],
         },
         dragon: {
           ...base,
           speciesName: 'dragon',
+          speciesId: 5,
           evolutionFamily: 5,
           types: ['dragon', 'flying'],
         },
@@ -157,6 +162,7 @@ describe('Legend hunt', () => {
           'legend-hunt',
         );
         expect.assert(question);
+        expect(question.concealOptionLabels).toBe(true);
         expect(question.answer.interaction).toBe('multi-select');
         expect(question.options).toHaveLength(4);
         expect(new Set(question.options).size).toBe(4);

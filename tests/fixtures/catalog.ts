@@ -1,7 +1,7 @@
 import catalogData from '@/game/data/pokemon.json';
 import { filterPokemon } from '@/game/modifiers';
+import type { QuestionContext } from '@/game/questions/context';
 import { createSeededRandom } from '@/game/random';
-import type { QuestionContext } from '@/game/questions/shared';
 import {
   generations,
   type Generation,

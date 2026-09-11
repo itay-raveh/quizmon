@@ -1,8 +1,8 @@
+import type { Candidate } from './questions/context';
 import { coreQuestionTypes, questionTypes } from './questions/definitions';
-import type { Candidate } from './questions/shared';
 import {
-  generations,
   answerFlows,
+  generations,
   timerDisplays,
   trainingModes,
   type ExperienceSettings,

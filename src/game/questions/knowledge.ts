@@ -1,39 +1,37 @@
-import { shufflePokemon } from './sampling';
-import { targetRepetition, optionSetRepetition } from './repetition';
 import { formatPokemonName } from '../format';
 import { pick, shuffle } from '../random';
 import { statNames, type StatName } from '../types';
 import {
-  chooseTargets,
-  getOptionVisuals,
-  makeQuestion,
-  pickFreshTarget,
-  pickTarget,
-  pokemonOptions,
-  pokemonPrompt,
   createPokemonSimilarityScorer,
+  pokemonOptions,
   randomOptionSet,
   rankedOptionSet,
-  redactName,
-  textPrompt,
+  selectPokemonAnswerGroups,
+} from './answers';
+import { makeQuestion, targetMedia } from './assembly';
+import {
   type Candidate,
   type QuestionBuilder,
   type QuestionContext,
-} from './shared';
+} from './context';
+import { pokemonPrompt, redactName, textPrompt } from './prompts';
+import { optionSetRepetition, targetRepetition } from './repetition';
+import { chooseTargets, pickFreshTarget, pickTarget } from './selection';
 
 export const buildDescriptionQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ description }) => Boolean(description));
   if (!target) return undefined;
-  return makeQuestion(
-    targetRepetition({ pokemonOptions: true }),
-    'description',
+  return makeQuestion(context, {
+    repeat: targetRepetition({ pokemonOptions: true }),
+    category: 'description',
     target,
-    target.name,
-    pokemonOptions(context, target),
-    textPrompt(
+    correct: target.name,
+    options: pokemonOptions(context, { correct: target }),
+    prompt: textPrompt(
       `“${redactName(target.pokemon.description, target.name, target.pokemon.speciesName)}”`,
     ),
-  );
+    presentation: { kind: 'pokemon-sprites' },
+  });
 };
 
 const typeOptions = (
@@ -65,14 +63,16 @@ export const buildTypeQuestion: QuestionBuilder = (context) => {
   const correct = pick(target.pokemon.types, context.random);
   if (!correct) return undefined;
   return {
-    ...makeQuestion(
-      targetRepetition({ pokemonOptions: false }),
-      'type',
+    ...makeQuestion(context, {
+      repeat: targetRepetition({ pokemonOptions: false }),
+      category: 'type',
       target,
       correct,
-      typeOptions(context, target, correct),
-      pokemonPrompt(target, 'Which type does ', ' have?'),
-    ),
+      options: typeOptions(context, target, correct),
+      prompt: pokemonPrompt(target, 'Which type does ', ' have?'),
+      presentation: { kind: 'text' },
+      media: targetMedia(target),
+    }),
     visual: { kind: 'type-check' },
   };
 };
@@ -117,6 +117,7 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   if (!pool?.type) return undefined;
   const { matching, others } = pool;
   const shared = chooseTargets(context, matching, 3);
+  if (shared.length !== 3) return undefined;
   const ambiguousTypes = new Set(
     [...countPokemonTypes(shared)]
       .filter(([, count]) => count === 2)
@@ -125,7 +126,10 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   const target = pickFreshTarget(
     context,
     others.filter(
-      ({ pokemon }) => !pokemon.types.some((type) => ambiguousTypes.has(type)),
+      ({ pokemon }) =>
+        !shared.some(
+          (candidate) => candidate.pokemon.speciesId === pokemon.speciesId,
+        ) && !pokemon.types.some((type) => ambiguousTypes.has(type)),
     ),
   );
   if (!target) return undefined;
@@ -134,17 +138,15 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
     context.random,
   );
 
-  return {
-    ...makeQuestion(
-      optionSetRepetition({ subjects: 'all' }),
-      'type',
-      target,
-      target.name,
-      options,
-      textPrompt('Three Pokémon share a type. Which one doesn’t?'),
-    ),
-    optionVisuals: getOptionVisuals(context, options),
-  };
+  return makeQuestion(context, {
+    repeat: optionSetRepetition({ subjects: 'all' }),
+    category: 'type',
+    target,
+    correct: target.name,
+    options,
+    prompt: textPrompt('Three Pokémon share a type. Which one doesn’t?'),
+    presentation: { kind: 'pokemon-sprites' },
+  });
 };
 
 export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
@@ -152,26 +154,26 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
   const pool = pickTypePuzzlePool(context, correctCount);
   if (!pool?.type) return undefined;
   const { type, matching, others } = pool;
-  const selectedMatching = chooseTargets(context, matching, correctCount);
-  const selectedOthers = chooseTargets(context, others, 4 - correctCount);
-  const target = selectedMatching[0];
-  if (!target) return undefined;
-  const correctOptions = selectedMatching.map(({ name }) => name);
-  const options = shuffle(
-    [...correctOptions, ...selectedOthers.map(({ name }) => name)],
-    context.random,
-  );
+  const answers = selectPokemonAnswerGroups(context, {
+    matching,
+    others,
+    correctCount,
+  });
+  if (!answers) return undefined;
+  const { target, correctOptions, options } = answers;
 
   return {
-    ...makeQuestion(
-      optionSetRepetition({ subjects: 'correct', variant: [type] }),
-      'type',
+    ...makeQuestion(context, {
+      repeat: optionSetRepetition({ subjects: 'correct', variant: [type] }),
+      category: 'type',
       target,
-      correctOptions,
+      correct: correctOptions,
       options,
-      textPrompt(`Select every ${formatPokemonName(type)}-type Pokémon.`),
-    ),
-    optionVisuals: getOptionVisuals(context, options),
+      prompt: textPrompt(
+        `Select every ${formatPokemonName(type)}-type Pokémon.`,
+      ),
+      presentation: { kind: 'pokemon-sprites' },
+    }),
     visual: { kind: 'type-roundup', type },
   };
 };
@@ -202,15 +204,19 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
   if (!correct || !evolutionName || !evolution?.sprite) return undefined;
 
   return {
-    ...makeQuestion(
-      targetRepetition({ pokemonOptions: false, related: [evolutionName] }),
-      'evolution',
+    ...makeQuestion(context, {
+      repeat: targetRepetition({
+        pokemonOptions: false,
+        related: [evolutionName],
+      }),
+      category: 'evolution',
       target,
       correct,
-      typeOptions(context, target, correct),
-      pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
-      { kind: 'pixel-sprite', src: target.pokemon.sprite },
-    ),
+      options: typeOptions(context, target, correct),
+      prompt: pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
+      media: { kind: 'pixel-sprite', src: target.pokemon.sprite },
+      presentation: { kind: 'text' },
+    }),
     visual: {
       evolution: {
         dexNumber: evolution.speciesId,
@@ -242,14 +248,16 @@ export const buildPropertyQuestion = (
     );
     for (const invalid of target.pokemon[property]) candidates.delete(invalid);
     const options = randomOptionSet(correct, [...candidates], context.random);
-    return makeQuestion(
-      targetRepetition({ pokemonOptions: false }),
+    return makeQuestion(context, {
+      repeat: targetRepetition({ pokemonOptions: false }),
       category,
       target,
       correct,
       options,
-      pokemonPrompt(target, `Which ${subject} can `, ' have?'),
-    );
+      prompt: pokemonPrompt(target, `Which ${subject} can `, ' have?'),
+      presentation: { kind: 'text' },
+      media: targetMedia(target),
+    });
   };
 };
 
@@ -274,34 +282,34 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
   );
   const target = pickFreshTarget(context, eligible);
   if (!target) return undefined;
-  const distractors = candidates
-    .filter(
-      (other) => other.name !== target.name && isDistractor(target, other),
-    )
-    .map(({ name }) => name);
-  const options = shuffle(
-    [target.name, ...shufflePokemon(distractors, context.random).slice(0, 3)],
-    context.random,
+  const distractors = chooseTargets(
+    context,
+    candidates.filter((other) => isDistractor(target, other)),
+    3,
+    [target],
   );
-  const optionStats = Object.fromEntries(
-    options.flatMap((name) => {
-      const pokemon = context.catalog.pokemon[name];
-      return pokemon ? [[name, pokemon.stats[stat]] as const] : [];
-    }),
+  if (distractors.length !== 3) return undefined;
+  const options = shuffle(
+    [target.name, ...distractors.map(({ name }) => name)],
+    context.random,
   );
 
   return {
-    ...makeQuestion(
-      optionSetRepetition({ subjects: 'all', variant: [stat, direction] }),
-      'stat',
+    ...makeQuestion(context, {
+      repeat: optionSetRepetition({
+        subjects: 'all',
+        variant: [stat, direction],
+      }),
+      category: 'stat',
       target,
-      target.name,
+      correct: target.name,
       options,
-      textPrompt(
+      prompt: textPrompt(
         `Which Pokémon has the ${direction} ${formatPokemonName(stat)}?`,
       ),
-    ),
-    optionStats,
+      presentation: { kind: 'pokemon-sprites' },
+      details: { kind: 'stat', stat },
+    }),
     visual: { direction, kind: 'stat-showdown', stat },
   };
 };

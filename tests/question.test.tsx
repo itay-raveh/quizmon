@@ -1,3 +1,6 @@
+import { createQuestionContext } from './fixtures/catalog';
+import { buildQuestionType } from '@/game/questions/registry';
+import { formatPokemonName } from '@/game/format';
 import { QuestionClues } from '@/components/QuestionClues';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { question, renderQuestion } from './fixtures/question';
@@ -755,6 +758,57 @@ describe('question transitions', () => {
     expect(
       missed.querySelector('.answer__result-marker--missed'),
     ).toHaveTextContent('Missed');
+  });
+
+  it('conceals Legend hunt identities until checking answers, then reveals classifications', () => {
+    const context = createQuestionContext('concealed-legend-hunt');
+    context.pool = context.pool.filter(({ name }) =>
+      [
+        'giratina-altered',
+        'hoopa-unbound',
+        'blastoise-mega',
+        'copperajah-gmax',
+      ].includes(name),
+    );
+    const legendQuestion = buildQuestionType(context, 'legend-hunt');
+    expect.assert(legendQuestion);
+    renderQuestion({ question: legendQuestion });
+
+    for (const [index, name] of legendQuestion.options.entries()) {
+      const button = screen.getByRole('button', {
+        name: `Sprite ${index + 1}`,
+      });
+      expect(button.querySelector('.answer__sprite')).toBeVisible();
+      expect(button.querySelector('.pokemon-identity__name')).not.toBeVisible();
+      expect(
+        button.querySelector('.pokemon-identity__number'),
+      ).not.toBeVisible();
+      expect(button.querySelector('.pokemon-identity')).toHaveAttribute(
+        'aria-hidden',
+        'true',
+      );
+      if (legendQuestion.answer.correctOptions.includes(name))
+        fireEvent.click(button);
+    }
+    expect(
+      document.querySelectorAll('.answer__sprite--silhouette'),
+    ).toHaveLength(0);
+    expect(screen.getByText('Mega Blastoise')).not.toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Check answers' }));
+
+    for (const name of legendQuestion.options) {
+      const classification = legendQuestion.optionClassifications![name]!;
+      const announcement =
+        classification === 'Neither'
+          ? 'Neither Legendary nor Mythical'
+          : classification;
+      const button = screen.getByRole('button', {
+        name: `${formatPokemonName(name)}. ${announcement}.`,
+      });
+      expect(button.querySelector('.pokemon-identity__name')).toBeVisible();
+      expect(button.querySelector('.pokemon-identity__number')).toBeVisible();
+      expect(button.querySelector('.answer__classification')).toBeVisible();
+    }
   });
 
   it('reveals reverse-silhouette choices after an answer', () => {

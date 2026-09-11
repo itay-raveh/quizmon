@@ -1,15 +1,10 @@
-import { targetRepetition, optionSetRepetition } from './repetition';
-import { pick, shuffle } from '../random';
-import {
-  chooseTargets,
-  getOptionVisuals,
-  makeQuestion,
-  pickFreshTarget,
-  pokemonOptions,
-  pokemonPrompt,
-  textPrompt,
-  type QuestionBuilder,
-} from './shared';
+import { pick } from '../random';
+import { pokemonOptions, selectPokemonAnswerGroups } from './answers';
+import { makeQuestion } from './assembly';
+import { type QuestionBuilder } from './context';
+import { pokemonPrompt, textPrompt } from './prompts';
+import { optionSetRepetition, targetRepetition } from './repetition';
+import { pickFreshTarget } from './selection';
 
 const sameTypes = (left: readonly string[], right: readonly string[]) =>
   left.length === right.length && left.every((type) => right.includes(type));
@@ -58,18 +53,25 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
   const distractors = candidates.filter(
     ({ pokemon }) => !sameTypes(target.pokemon.types, pokemon.types),
   );
-  const options = pokemonOptions(context, correct, [], distractors);
+  const options = pokemonOptions(context, {
+    correct,
+    candidates: distractors,
+  });
   return {
-    ...makeQuestion(
-      targetRepetition({ pokemonOptions: true }),
-      'type',
+    ...makeQuestion(context, {
+      repeat: targetRepetition({ pokemonOptions: true }),
+      category: 'type',
       target,
-      correct.name,
+      correct: correct.name,
       options,
-      pokemonPrompt(target, 'Which Pokémon has the same two types as ', '?'),
-      { kind: 'pixel-sprite', src: target.pokemon.sprite },
-    ),
-    optionVisuals: getOptionVisuals(context, options),
+      prompt: pokemonPrompt(
+        target,
+        'Which Pokémon has the same two types as ',
+        '?',
+      ),
+      media: { kind: 'pixel-sprite', src: target.pokemon.sprite },
+      presentation: { kind: 'pokemon-sprites' },
+    }),
     visual: { kind: 'type-twins' },
   };
 };
@@ -89,34 +91,21 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
     context.random,
   );
   if (!correctCount) return undefined;
-  const legends = chooseTargets(context, matching, correctCount);
-  const ordinary = chooseTargets(context, others, 4 - correctCount);
-  const target = legends[0];
-  if (!target) return undefined;
-  const correctOptions = legends.map(({ name }) => name);
-  const options = shuffle(
-    [...correctOptions, ...ordinary.map(({ name }) => name)],
-    context.random,
-  );
-  return {
-    ...makeQuestion(
-      optionSetRepetition({ subjects: 'correct' }),
-      'identity',
-      target,
-      correctOptions,
-      options,
-      textPrompt('Select every Legendary or Mythical Pokémon.'),
-    ),
-    optionClassifications: Object.fromEntries(
-      [...legends, ...ordinary].map(({ name, pokemon }) => [
-        name,
-        pokemon.isMythical
-          ? 'Mythical'
-          : pokemon.isLegendary
-            ? 'Legendary'
-            : 'Neither',
-      ]),
-    ),
-    optionVisuals: getOptionVisuals(context, options),
-  };
+  const answers = selectPokemonAnswerGroups(context, {
+    matching,
+    others,
+    correctCount,
+  });
+  if (!answers) return undefined;
+  const { target, correctOptions, options } = answers;
+  return makeQuestion(context, {
+    repeat: optionSetRepetition({ subjects: 'correct' }),
+    category: 'identity',
+    target,
+    correct: correctOptions,
+    options,
+    prompt: textPrompt('Select every Legendary or Mythical Pokémon.'),
+    presentation: { kind: 'pokemon-sprites', labels: 'concealed' },
+    details: { kind: 'classification' },
+  });
 };

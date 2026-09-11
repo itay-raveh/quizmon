@@ -1,16 +1,12 @@
-import { targetRepetition, optionSetRepetition } from './repetition';
 import { formatGeneration, formatPokemonName } from '../format';
-import { pick, shuffle } from '../random';
+import { pick } from '../random';
 import { generations, type Generation } from '../types';
-import {
-  chooseTargets,
-  pickFreshTarget,
-  getOptionVisuals,
-  makeQuestion,
-  pokemonOptions,
-  textPrompt,
-  type QuestionBuilder,
-} from './shared';
+import { pokemonOptions, selectPokemonAnswerGroups } from './answers';
+import { getOptionVisuals, makeQuestion } from './assembly';
+import { type QuestionBuilder } from './context';
+import { textPrompt } from './prompts';
+import { optionSetRepetition, targetRepetition } from './repetition';
+import { pickFreshTarget } from './selection';
 
 export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
@@ -33,42 +29,30 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
     context.random,
   );
   if (!generation) return undefined;
-  const matching = chooseTargets(
-    context,
-    pool.filter(({ pokemon }) => pokemon.generation === generation),
+  const answers = selectPokemonAnswerGroups(context, {
+    matching: pool.filter(({ pokemon }) => pokemon.generation === generation),
+    others: pool.filter(({ pokemon }) => pokemon.generation !== generation),
     correctCount,
-  );
-  const others = chooseTargets(
-    context,
-    pool.filter(({ pokemon }) => pokemon.generation !== generation),
-    4 - correctCount,
-  );
-  const target = matching[0];
-  if (!target) return undefined;
-  const correctOptions = matching.map(({ name }) => name);
-  const options = shuffle(
-    [...correctOptions, ...others.map(({ name }) => name)],
-    context.random,
-  );
+  });
+  if (!answers) return undefined;
+  const { target, correctOptions, options } = answers;
   return {
-    ...makeQuestion(
-      optionSetRepetition({ subjects: 'correct', variant: [generation] }),
-      'identity',
+    ...makeQuestion(context, {
+      repeat: optionSetRepetition({
+        subjects: 'correct',
+        variant: [generation],
+      }),
+      category: 'identity',
       target,
-      correctOptions,
+      correct: correctOptions,
       options,
-      textPrompt(
+      prompt: textPrompt(
         `Select every Pokémon introduced in ${formatGeneration(generation)}.`,
       ),
-    ),
+      presentation: { kind: 'pokemon-sprites', numbers: false },
+      details: { kind: 'generation' },
+    }),
     visual: { kind: 'generation-roundup', generation },
-    optionGenerations: Object.fromEntries(
-      [...matching, ...others].map(({ name, pokemon }) => [
-        name,
-        pokemon.generation,
-      ]),
-    ),
-    optionVisuals: getOptionVisuals(context, options),
   };
 };
 
@@ -125,16 +109,24 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
   if (!chain) return undefined;
   const { target, before, after, possibleAnswers } = chain;
   return {
-    ...makeQuestion(
-      targetRepetition({ pokemonOptions: true, related: [before, after] }),
-      'evolution',
+    ...makeQuestion(context, {
+      repeat: targetRepetition({
+        pokemonOptions: true,
+        related: [before, after],
+      }),
+      category: 'evolution',
       target,
-      target.name,
-      pokemonOptions(context, target, [before, after], possibleAnswers),
-      textPrompt(
+      correct: target.name,
+      options: pokemonOptions(context, {
+        correct: target,
+        excluded: [before, after],
+        candidates: possibleAnswers,
+      }),
+      prompt: textPrompt(
         `Complete the evolution chain: ${formatPokemonName(before)} → ? → ${formatPokemonName(after)}.`,
       ),
-    ),
+      presentation: { kind: 'pokemon-names', numbers: false },
+    }),
     visual: {
       kind: 'evolution-link',
       before,

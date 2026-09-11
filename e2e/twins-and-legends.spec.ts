@@ -41,10 +41,19 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
       }
       const options = [];
       for (const answer of await answers.all()) {
-        const name = await answer.getAttribute('aria-label');
+        const name = await answer
+          .locator('.pokemon-identity__name')
+          .textContent();
         const entry = findPokemonByLabel(name);
         if (!entry) throw new Error('Missing answer metadata');
         options.push(entry);
+        if (questionType === 'legend-hunt') {
+          await expect(answer).toHaveAccessibleName(`Sprite ${options.length}`);
+          await expect(answer.locator('.pokemon-identity__name')).toBeHidden();
+          await expect(
+            answer.locator('.pokemon-identity__number'),
+          ).toBeHidden();
+        }
         await expect(
           answer.locator(
             questionType === 'type-twins'
@@ -84,6 +93,10 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
               new RegExp(formatName(type)),
             );
         } else {
+          await expect(answer.locator('.pokemon-identity__name')).toBeVisible();
+          await expect(
+            answer.locator('.pokemon-identity__number'),
+          ).toBeVisible();
           const label = pokemon.isMythical
             ? 'Mythical'
             : pokemon.isLegendary

@@ -1,31 +1,31 @@
-import { attackMultiplier } from '@/game/type-effectiveness';
-import { getQuestionTitle } from '@/game/question-labels';
-import { catalog } from './fixtures/catalog';
-import { createSeededRandom, shuffle } from '@/game/random';
-import {
-  buildQuestions,
-  buildQuestionSequence,
-  getQuestionCount,
-} from '@/game/game';
-import { questionTypes } from '@/game/questions/definitions';
-import {
-  defaultModifiers,
-  filterPokemon,
-  getTrainingModifiers,
-} from '@/game/modifiers';
 import {
   formatDuration,
   formatDurationMilliseconds,
   formatPokedexNumber,
   formatPokemonName,
 } from '@/game/format';
-
-import { buildCounterPickQuestion } from '@/game/questions/battle';
 import {
-  pokemonOptions,
+  buildQuestions,
+  buildQuestionSequence,
+  getQuestionCount,
+} from '@/game/game';
+import {
+  defaultModifiers,
+  filterPokemon,
+  getTrainingModifiers,
+} from '@/game/modifiers';
+import { getQuestionTitle } from '@/game/question-labels';
+import { questionTypes } from '@/game/questions/definitions';
+import { createSeededRandom, shuffle } from '@/game/random';
+import { attackMultiplier } from '@/game/type-effectiveness';
+import { catalog } from './fixtures/catalog';
+
+import {
   createPokemonSimilarityScorer,
-  redactName,
-} from '@/game/questions/shared';
+  pokemonOptions,
+} from '@/game/questions/answers';
+import { buildCounterPickQuestion } from '@/game/questions/battle';
+import { redactName } from '@/game/questions/prompts';
 import {
   generations,
   type PokemonCatalog,
@@ -149,6 +149,85 @@ describe('question building', () => {
       );
       expect(new Set(question.options).size).toBe(4);
     }
+  });
+
+  it('uses distinct species in every Pokémon answer set across formats', () => {
+    for (let seed = 0; seed < 20; seed++) {
+      for (const questionType of questionTypes) {
+        const question = buildSingleQuestion(
+          questionType,
+          `species-${seed}-${questionType}`,
+        );
+        expect(question.options).toHaveLength(4);
+        const species = question.options.flatMap((name) => {
+          const pokemon = catalog.pokemon[name];
+          return pokemon ? [pokemon.speciesId] : [];
+        });
+        expect(
+          new Set(species).size,
+          `${questionType}: ${question.options.join(', ')}`,
+        ).toBe(species.length);
+      }
+    }
+  });
+
+  it('fills distractors with distinct species even when similar forms crowd the shortlist', () => {
+    const syntheticCatalog: PokemonCatalog = {
+      contentVersion: 1,
+      typeRelations: {},
+      pokemon: {
+        target: makeKnowledge(1),
+        'target-form': makeKnowledge(1),
+        ...Object.fromEntries(
+          Array.from({ length: 20 }, (_, index) => [
+            `form-${index}`,
+            makeKnowledge(2),
+          ]),
+        ),
+        third: makeKnowledge(3, { types: ['water'], color: 'blue' }),
+        fourth: makeKnowledge(4, { types: ['grass'], color: 'green' }),
+      },
+    };
+    const pool = Object.entries(syntheticCatalog.pokemon).map(
+      ([name, pokemon]) => ({ name, pokemon }),
+    );
+    const target = pool[0]!;
+    const forms = new Set<string>();
+    for (let seed = 0; seed < 20; seed++) {
+      const context = {
+        catalog: syntheticCatalog,
+        pool,
+        random: createSeededRandom(`crowded-${seed}`),
+        used: new Set<string>(),
+      };
+      const options = pokemonOptions(context, { correct: target });
+      expect(options).toHaveLength(4);
+      expect(options).toEqual(
+        expect.arrayContaining(['target', 'third', 'fourth']),
+      );
+      expect(
+        new Set(
+          options.map((name) => syntheticCatalog.pokemon[name]!.speciesId),
+        ).size,
+      ).toBe(4);
+      for (const name of options) if (name.startsWith('form-')) forms.add(name);
+    }
+    expect(forms.size).toBeGreaterThan(1);
+    expect(
+      buildQuestions(
+        {
+          ...syntheticCatalog,
+          pokemon: {
+            target: makeKnowledge(1),
+            a: makeKnowledge(2),
+            b: makeKnowledge(2),
+            c: makeKnowledge(2),
+          },
+        },
+        { ...defaultModifiers, questionTypes: ['pokedex-scan'] },
+        createSeededRandom('too-few-species'),
+      ),
+    ).toEqual([]);
   });
 
   it('fills a requested sequence when its preferred format is unavailable', () => {
@@ -337,7 +416,7 @@ describe('question building', () => {
           random: createSeededRandom(`distractor-spread-${index}`),
           used: new Set(),
         },
-        target,
+        { correct: target },
       ),
     );
     const distractors = optionSets.flatMap((options) =>

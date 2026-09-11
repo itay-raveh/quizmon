@@ -1,15 +1,15 @@
-import { createSeededRandom } from '@/game/random';
+import { pokemonOptions } from '@/game/questions/answers';
 import {
-  pokemonWeight,
   pickPokemon,
+  pokemonWeight,
   shufflePokemon,
 } from '@/game/questions/sampling';
 import {
   chooseTargets,
   orderTargets,
   pickFreshTarget,
-  pokemonOptions,
-} from '@/game/questions/shared';
+} from '@/game/questions/selection';
+import { createSeededRandom } from '@/game/random';
 import { catalog, createQuestionContext } from './fixtures/catalog';
 
 it.each([
@@ -92,15 +92,19 @@ it('weights Pokémon distractors while keeping the correct answer and four disti
   const mega = Array.from({ length: 6 }, (_, i) => `special-${i}-mega`);
   const target = { name: 'pikachu', pokemon: catalog.pokemon.pikachu! };
   context.catalog = { ...catalog, pokemon: { ...catalog.pokemon } };
-  context.pool = [...ordinary, ...regional, ...mega].map((name) => ({
+  context.pool = [...ordinary, ...regional, ...mega].map((name, index) => ({
     name,
-    pokemon: { ...target.pokemon, speciesName: name, speciesId: 100 },
+    pokemon: {
+      ...target.pokemon,
+      speciesName: name,
+      speciesId: 100 + (index % 6) * 3 + Math.floor(index / 6),
+    },
   }));
   for (const { name, pokemon } of context.pool)
     context.catalog.pokemon[name] = pokemon;
   const counts = [0, 0, 0];
   for (let i = 0; i < 3000; i++) {
-    const options = pokemonOptions(context, target);
+    const options = pokemonOptions(context, { correct: target });
     expect(options).toContain(target.name);
     expect(new Set(options).size).toBe(4);
     for (const [index, group] of [ordinary, regional, mega].entries())

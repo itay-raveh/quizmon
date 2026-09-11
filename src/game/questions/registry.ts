@@ -1,20 +1,13 @@
 import {
-  getQuestionRecency,
   getPokemonRecency,
-  rememberQuestion,
+  getQuestionRecency,
   questionRepeatPolicy,
+  rememberQuestion,
 } from '../question-history';
 import type { QuestionData } from '../types';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
-import {
-  buildTypeTwinsQuestion,
-  buildLegendHuntQuestion,
-} from './twins-and-legends';
-import {
-  buildEvolutionLinkQuestion,
-  buildGenerationRoundupQuestion,
-} from './lineage';
+import { type QuestionBuilder, type QuestionContext } from './context';
 import {
   buildPixelPeekQuestion,
   buildPokedexScanQuestion,
@@ -33,10 +26,13 @@ import {
   buildTypeQuestion,
 } from './knowledge';
 import {
-  addQuestionVisuals,
-  type QuestionBuilder,
-  type QuestionContext,
-} from './shared';
+  buildEvolutionLinkQuestion,
+  buildGenerationRoundupQuestion,
+} from './lineage';
+import {
+  buildLegendHuntQuestion,
+  buildTypeTwinsQuestion,
+} from './twins-and-legends';
 
 const questionBuilders = {
   'pokedex-scan': buildPokedexScanQuestion,
@@ -96,11 +92,11 @@ export const buildQuestionType = (
       ...context,
       questionType,
     });
-    if (!draft) continue;
+    if (!draft || draft.options.length !== 4) continue;
     const generation = context.catalog.pokemon[draft.pokemonName]?.generation;
     if (!generation) continue;
     const question = {
-      ...addQuestionVisuals(context, draft),
+      ...draft,
       generation,
       questionType,
     };

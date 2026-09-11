@@ -1,19 +1,13 @@
-import { targetRepetition } from './repetition';
-import { pick, shuffle } from '../random';
 import { formatTypeMultiplier } from '../format';
-import type { PokemonCatalog } from '../types';
+import { pick, shuffle } from '../random';
 import { attackMultiplier } from '../type-effectiveness';
-import {
-  orderTargets,
-  getOptionVisuals,
-  makeQuestion,
-  pickFreshTarget,
-  pokemonOptions,
-  pokemonPrompt,
-  rankedOptionSet,
-  type Candidate,
-  type QuestionBuilder,
-} from './shared';
+import type { PokemonCatalog } from '../types';
+import { pokemonOptions, rankedOptionSet } from './answers';
+import { makeQuestion, targetMedia } from './assembly';
+import { type Candidate, type QuestionBuilder } from './context';
+import { pokemonPrompt } from './prompts';
+import { targetRepetition } from './repetition';
+import { orderTargets, pickFreshTarget } from './selection';
 
 const matchupMultipliers = [4, 2, 0.5, 0.25] as const;
 
@@ -56,15 +50,15 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
     if (distractors.length < 3) continue;
 
     return {
-      ...makeQuestion(
-        targetRepetition({
+      ...makeQuestion(context, {
+        repeat: targetRepetition({
           pokemonOptions: false,
           variant: [String(multiplier)],
         }),
-        'matchup',
+        category: 'matchup',
         target,
         correct,
-        rankedOptionSet(
+        options: rankedOptionSet(
           correct,
           distractors,
           (type) => {
@@ -80,12 +74,14 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
           },
           context.random,
         ),
-        pokemonPrompt(
+        prompt: pokemonPrompt(
           target,
           `Which type has a ×${formatTypeMultiplier(multiplier)} matchup against `,
           '?',
         ),
-      ),
+        presentation: { kind: 'text' },
+        media: targetMedia(target),
+      }),
       visual: { kind: 'type-matchup', multiplier },
     };
   }
@@ -115,26 +111,29 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
       if (counters.length === 0 || distractors.length < 3) continue;
       const correct = pickFreshTarget(context, counters);
       if (!correct) continue;
-      const options = pokemonOptions(context, correct, [], distractors);
+      const options = pokemonOptions(context, {
+        correct,
+        candidates: distractors,
+      });
 
       return {
-        ...makeQuestion(
-          targetRepetition({
+        ...makeQuestion(context, {
+          repeat: targetRepetition({
             pokemonOptions: true,
             variant: [String(multiplier)],
           }),
-          'matchup',
+          category: 'matchup',
           target,
-          correct.name,
+          correct: correct.name,
           options,
-          pokemonPrompt(
+          prompt: pokemonPrompt(
             target,
             `Whose strongest attack type has a ×${formatTypeMultiplier(multiplier)} matchup against `,
             '?',
           ),
-          { kind: 'pixel-sprite', src: targetSprite },
-        ),
-        optionVisuals: getOptionVisuals(context, options),
+          media: { kind: 'pixel-sprite', src: targetSprite },
+          presentation: { kind: 'pokemon-sprites' },
+        }),
         visual: { kind: 'counter-pick', multiplier },
       };
     }
