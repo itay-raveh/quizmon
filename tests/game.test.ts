@@ -100,9 +100,10 @@ const buildSingleQuestion = (questionType: QuestionType, seed: string) => {
 };
 
 describe('question building', () => {
-  it('keeps advanced formats out of generated League Training rounds', () => {
-    const modifiers = getTrainingModifiers(defaultModifiers);
-    for (let index = 0; index < 20; index += 1) {
+  it.each(Array.from({ length: 20 }, (_, index) => index))(
+    'keeps advanced formats out of League Training round %i',
+    (index) => {
+      const modifiers = getTrainingModifiers(defaultModifiers);
       const questions = buildQuestions(
         catalog,
         modifiers,
@@ -114,8 +115,8 @@ describe('question building', () => {
           question.questionType,
         );
       }
-    }
-  });
+    },
+  );
 
   it('filters the normalized catalog by generation', () => {
     const candidates = filterPokemon(catalog, { generations: ['IX'] });
