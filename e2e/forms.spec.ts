@@ -50,7 +50,7 @@ test('selects curated partners and excludes collapsed variants', async ({
     'tauros-paldea-aqua-breed',
     'unown',
     'alcremie-gmax',
-    'zygarde-mega',
+    'charizard-mega-x',
   ]) {
     await page.getByRole('button', { name: 'Edit card' }).click();
     await page
@@ -76,6 +76,7 @@ test('selects curated partners and excludes collapsed variants', async ({
     ['Alcremie', ['Alcremie', 'Gigantamax Alcremie']],
     ['Minior', ['Minior']],
     ['Keldeo', ['Keldeo']],
+    ['Zygarde', ['Zygarde']],
   ] as const) {
     await search.fill(query);
     await expect(page.getByRole('option')).toHaveText([...names]);
