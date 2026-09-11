@@ -135,13 +135,10 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
   );
   const target = pickFreshTarget(
     context,
-    distinctPokemon(
-      others.filter(
-        ({ pokemon }) =>
-          !pokemon.types.some((type) => ambiguousTypes.has(type)),
-      ),
-      (candidate) => candidate,
-      shared,
+    others.filter(
+      (candidate) =>
+        !candidate.pokemon.types.some((type) => ambiguousTypes.has(type)) &&
+        distinctPokemon([candidate], (value) => value, shared).length > 0,
     ),
   );
   if (!target) return undefined;

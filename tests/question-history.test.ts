@@ -92,24 +92,29 @@ it('counts only displayed questions and makes duplicate exposure notifications h
   expect(new Set(next.map(getQuestionKey)).size).toBe(39);
 });
 
-it('tracks all correct Pokémon in Legend Hunt and covers the restricted pool', () => {
+it('tracks all correct Pokémon in Legend Hunt and covers the restricted species pool', () => {
   let history = emptyQuestionHistory();
   const seen = new Set<string>();
-  const total = Object.values(catalog.pokemon).filter(
-    (pokemon) =>
-      genFive.includes(pokemon.generation) &&
-      pokemon.sprite &&
-      (pokemon.isLegendary || pokemon.isMythical),
-  ).length;
+  const total = new Set(
+    Object.values(catalog.pokemon)
+      .filter(
+        (pokemon) =>
+          genFive.includes(pokemon.generation) &&
+          pokemon.sprite &&
+          (pokemon.isLegendary || pokemon.isMythical),
+      )
+      .map((pokemon) => pokemon.speciesName),
+  ).size;
   for (let i = 0; i < Math.ceil(total / 2); i++) {
     const question = generate('legend-hunt', history, `legends:${i}`)[0]!;
-    const fresh = question.answer.correctOptions.filter(
-      (name) => !seen.has(name),
+    const species = question.answer.correctOptions.map(
+      (name) => catalog.pokemon[name]!.speciesName,
     );
+    const fresh = species.filter((name) => !seen.has(name));
     expect(fresh).toHaveLength(
       Math.min(total - seen.size, question.answer.correctOptions.length),
     );
-    for (const name of question.answer.correctOptions) seen.add(name);
+    for (const name of species) seen.add(name);
     history = rememberQuestion(history, question);
     for (const name of question.answer.correctOptions) {
       expect(history.subjects[`legend-hunt:${name}`]).toBe(history.sequence);

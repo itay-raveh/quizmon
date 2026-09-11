@@ -270,9 +270,10 @@ it('avoids ambiguous same-species picture and description answers', () => {
     const context = createQuestionContext(type);
     context.used = new Set(
       context.pool
-        .filter(({ name }) => name !== 'raichu-alola')
+        .filter(({ pokemon }) => pokemon.speciesId !== 26)
         .map(({ name }) => name),
     );
+    context.random = () => 0.7;
     const question = buildQuestionType(context, type)!;
     expect(question.pokemonName).toBe('raichu-alola');
     expect(question.options).toHaveLength(4);
@@ -351,9 +352,10 @@ it('offers only the requested Deoxys forme when a Champion description could als
   const context = createQuestionContext('deoxys-champion');
   context.used = new Set(
     context.pool
-      .filter(({ name }) => name !== 'deoxys-normal')
+      .filter(({ pokemon }) => pokemon.speciesName !== 'deoxys')
       .map(({ name }) => name),
   );
+  context.random = () => 0.6;
   const question = buildQuestionType(context, 'champion')!;
   expect(question.pokemonName).toBe('deoxys-normal');
   expect(

@@ -7,7 +7,8 @@ import { makeQuestion, targetMedia } from './assembly';
 import { type Candidate, type QuestionBuilder } from './context';
 import { pokemonPrompt } from './prompts';
 import { targetRepetition } from './repetition';
-import { orderTargets, pickFreshTarget } from './selection';
+import { orderSpecies, pickFreshTarget } from './selection';
+import { pickForm } from './sampling';
 
 const matchupMultipliers = [4, 2, 0.5, 0.25] as const;
 
@@ -90,25 +91,51 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
 };
 
 export const buildCounterPickQuestion: QuestionBuilder = (context) => {
-  const targets = orderTargets(context, context.pool);
+  const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
+  const typeKey = (types: readonly string[]) => [...types].sort().join(',');
+  const typeGroups = new Map<string, { types: string[]; count: number }>();
+  for (const { pokemon } of pool) {
+    const key = typeKey(pokemon.types);
+    const group = typeGroups.get(key) ?? { types: pokemon.types, count: 0 };
+    group.count++;
+    typeGroups.set(key, group);
+  }
 
   for (const multiplier of shuffle(matchupMultipliers, context.random)) {
-    for (const target of targets) {
-      const targetSprite = target.pokemon.sprite;
-      if (!targetSprite) continue;
+    const eligibleTypes = new Set<string>();
+    for (const [key, defender] of typeGroups) {
+      const matches = createMatchupChecker(context.catalog, defender.types);
+      const counters = [...typeGroups.values()].reduce(
+        (count, attacker) =>
+          count + (matches(attacker.types, multiplier) ? attacker.count : 0),
+        0,
+      );
+      const selfMatches = Number(matches(defender.types, multiplier));
+      if (
+        counters - selfMatches > 0 &&
+        pool.length - counters - (1 - selfMatches) >= 3
+      )
+        eligibleTypes.add(key);
+    }
+    const eligible = pool.filter(({ pokemon }) =>
+      eligibleTypes.has(typeKey(pokemon.types)),
+    );
+    for (const forms of orderSpecies(context, eligible)) {
+      const target = pickForm(forms, context.random)!;
+      const targetSprite = target.pokemon.sprite!;
       const hasExactMatchup = createMatchupChecker(
         context.catalog,
         target.pokemon.types,
       );
       const counters: Candidate[] = [];
       const distractors: Candidate[] = [];
-      context.pool.forEach((candidate) => {
-        const { name, pokemon } = candidate;
-        if (name === target.name || !pokemon.sprite) return;
-        const matches = hasExactMatchup(pokemon.types, multiplier);
-        (matches ? counters : distractors).push(candidate);
-      });
-      if (counters.length === 0 || distractors.length < 3) continue;
+      for (const candidate of pool) {
+        if (candidate.name === target.name) continue;
+        (hasExactMatchup(candidate.pokemon.types, multiplier)
+          ? counters
+          : distractors
+        ).push(candidate);
+      }
       const correct = pickFreshTarget(context, counters);
       if (!correct) continue;
       const options = pokemonOptions(context, {

@@ -1,69 +1,89 @@
 import { getPokemonRecency, getSubjectRecency } from '../question-history';
-import { createSeededRandom } from '../random';
+import { createSeededRandom, shuffle } from '../random';
 import type { PokemonKnowledge } from '../types';
 import type { Candidate, QuestionContext } from './context';
-import { pickPokemon, pokemonWeight, shufflePokemon } from './sampling';
+import { groupPokemon, pickForm, speciesWeight } from './sampling';
+import { getSpeciesHistory, speciesName } from './species-history';
 
-export const orderTargets = (
+export const orderSpecies = (
   context: QuestionContext,
   candidates: readonly Candidate[],
-): Candidate[] => {
-  const compareUsed = (a: Candidate, b: Candidate) =>
-    Number(context.used.has(a.name)) - Number(context.used.has(b.name));
+  subjects = true,
+): Candidate[][] => {
+  const groups = groupPokemon(candidates);
+  const used = new Set(
+    [...context.used].map((name) => speciesName(context.catalog, name)),
+  );
+  const history =
+    context.rotation === undefined ? getSpeciesHistory(context) : undefined;
+  let slots: Candidate[][];
   if (context.rotation !== undefined) {
     const random = createSeededRandom(
-      `question-rotation-v2:${context.questionType}`,
+      `question-species-rotation-v2:${context.questionType}`,
     );
-    const deck = [...candidates]
-      .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
-      .flatMap((candidate) => {
-        const tickets = pokemonWeight(candidate.name);
-        // Space each Pokémon’s rotation slots to avoid clustering repeats.
+    const deck = groups
+      .sort((a, b) => a[0]!.pokemon.speciesId - b[0]!.pokemon.speciesId)
+      .flatMap((group) => {
+        const weight = speciesWeight(group);
         const phase = random();
-        return Array.from({ length: tickets }, (_, index) => ({
-          candidate,
-          position: (index + phase) / tickets,
+        return Array.from({ length: weight }, (_, index) => ({
+          group,
+          position: (index + phase) / weight,
         }));
       })
       .sort((a, b) => a.position - b.position)
-      .map(({ candidate }) => candidate);
+      .map(({ group }) => group);
     const offset =
       ((context.rotation % deck.length) + deck.length) % deck.length;
-    return [...new Set([...deck.slice(offset), ...deck.slice(0, offset)])].sort(
-      compareUsed,
-    );
+    slots = [...new Set([...deck.slice(offset), ...deck.slice(0, offset)])];
+  } else {
+    slots = [
+      ...new Set(
+        shuffle(
+          groups.flatMap((group) =>
+            Array<Candidate[]>(speciesWeight(group)).fill(group),
+          ),
+          context.random,
+        ),
+      ),
+    ];
   }
-  const history = context.history;
-  const shuffled = shufflePokemon(candidates, context.random);
-  if (!history) {
-    return shuffled.sort(compareUsed);
-  }
-  return shuffled
-    .map((candidate) => ({
-      candidate,
-      subjectRecency: context.questionType
-        ? getSubjectRecency(history, context.questionType, candidate.name)
-        : 0,
-      used: Number(context.used.has(candidate.name)),
-      pokemonRecency: getPokemonRecency(history, candidate.name),
-    }))
+  const ranked = slots
+    .map((group) => {
+      const name = group[0]!.pokemon.speciesName;
+      return {
+        group,
+        weight: speciesWeight(group),
+        subjectRecency:
+          history && subjects && context.questionType
+            ? getSubjectRecency(history, context.questionType, name)
+            : 0,
+        used: subjects ? Number(used.has(name)) : 0,
+        recency: history ? getPokemonRecency(history, name) : 0,
+      };
+    })
     .sort(
       (a, b) =>
         a.subjectRecency - b.subjectRecency ||
         a.used - b.used ||
-        a.pokemonRecency - b.pokemonRecency,
-    )
-    .map(({ candidate }) => candidate);
+        a.recency - b.recency,
+    );
+  const queues = new Map<number, Candidate[][]>();
+  for (const { group, weight } of ranked) {
+    const queue = queues.get(weight) ?? [];
+    queue.push(group);
+    queues.set(weight, queue);
+  }
+  // Recency reorders species within a weight class without changing its sampled slots.
+  return slots.map((group) => queues.get(speciesWeight(group))!.shift()!);
 };
 
 export const pickFreshTarget = (
   context: QuestionContext,
   candidates: readonly Candidate[],
 ): Candidate | undefined => {
-  if (context.history || context.rotation !== undefined)
-    return orderTargets(context, candidates)[0];
-  const fresh = candidates.filter(({ name }) => !context.used.has(name));
-  return pickPokemon(fresh.length > 0 ? fresh : candidates, context.random);
+  const group = orderSpecies(context, candidates)[0];
+  return group ? pickForm(group, context.random) : undefined;
 };
 
 export const chooseTargets = (
@@ -71,15 +91,23 @@ export const chooseTargets = (
   candidates: readonly Candidate[],
   count: number,
   excluded: readonly Candidate[] = [],
+  subjects = true,
 ): Candidate[] => {
-  const ordered =
-    context.history || context.rotation !== undefined
-      ? orderTargets(context, candidates)
-      : shufflePokemon(candidates, context.random);
-  return distinctPokemon(ordered, (candidate) => candidate, excluded).slice(
-    0,
-    count,
-  );
+  const selected: Candidate[] = [];
+  while (selected.length < count) {
+    const eligible = candidates.filter(
+      (candidate) =>
+        distinctPokemon([candidate], (value) => value, [
+          ...excluded,
+          ...selected,
+        ]).length > 0,
+    );
+    const group = orderSpecies(context, eligible, subjects)[0];
+    if (!group) break;
+    const candidate = pickForm(group, context.random);
+    if (candidate) selected.push(candidate);
+  }
+  return selected;
 };
 
 export const distinctPokemon = <T>(

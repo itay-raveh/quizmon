@@ -56,6 +56,11 @@ describe('question transitions', () => {
         questionType === 'ability-check' || questionType === 'move-check'
           ? 'pikachu'
           : 'zygarde-50';
+      context.pool = context.pool.filter(
+        ({ name, pokemon }) =>
+          name === targetName ||
+          pokemon.speciesId !== context.catalog.pokemon[targetName]!.speciesId,
+      );
       context.pool = context.pool.map((candidate) =>
         candidate.name === targetName
           ? { ...candidate, pokemon: { ...candidate.pokemon, sprite: null } }

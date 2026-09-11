@@ -1,6 +1,5 @@
-import { pick, shuffle } from '../random';
-
-type PokemonChoice = string | { name: string };
+import { pick } from '../random';
+import type { Candidate } from './context';
 
 const pokemonWeights = {
   ordinary: 4,
@@ -16,21 +15,36 @@ export const pokemonWeight = (name: string): number => {
   return pokemonWeights.ordinary;
 };
 
-const pokemonTickets = <T extends PokemonChoice>(
-  candidates: readonly T[],
-): T[] =>
-  candidates.flatMap((candidate) =>
-    Array<T>(
-      pokemonWeight(typeof candidate === 'string' ? candidate : candidate.name),
-    ).fill(candidate),
+export const groupPokemon = (
+  candidates: readonly Candidate[],
+): Candidate[][] => {
+  const species = new Map<number, Candidate[]>();
+  for (const candidate of candidates) {
+    const id = candidate.pokemon.speciesId;
+    const forms = species.get(id) ?? [];
+    forms.push(candidate);
+    species.set(id, forms);
+  }
+  return [...species.values()];
+};
+
+export const speciesWeight = (forms: readonly Candidate[]): number =>
+  forms.reduce((weight, { name }) => Math.max(weight, pokemonWeight(name)), 0);
+
+export const pickForm = (
+  candidates: readonly Candidate[],
+  random: () => number,
+): Candidate | undefined => {
+  const categories = new Map<number, Candidate[]>();
+  for (const candidate of candidates) {
+    const weight = pokemonWeight(candidate.name);
+    const forms = categories.get(weight) ?? [];
+    forms.push(candidate);
+    categories.set(weight, forms);
+  }
+  const tickets = [...categories].flatMap(([weight, forms]) =>
+    Array<Candidate[]>(weight).fill(forms),
   );
-
-export const pickPokemon = <T extends PokemonChoice>(
-  candidates: readonly T[],
-  random: () => number,
-): T | undefined => pick(pokemonTickets(candidates), random);
-
-export const shufflePokemon = <T extends PokemonChoice>(
-  candidates: readonly T[],
-  random: () => number,
-): T[] => [...new Set(shuffle(pokemonTickets(candidates), random))];
+  const forms = pick(tickets, random);
+  return forms ? pick(forms, random) : undefined;
+};

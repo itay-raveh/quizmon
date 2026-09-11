@@ -1,8 +1,7 @@
-import { getPokemonRecency } from '../question-history';
 import { createSeededRandom, shuffle } from '../random';
 import { statNames, type PokemonKnowledge } from '../types';
 import type { Candidate, QuestionContext } from './context';
-import { pickPokemon, shufflePokemon } from './sampling';
+import { groupPokemon } from './sampling';
 import { chooseTargets, distinctPokemon } from './selection';
 
 export const rankedOptionSet = (
@@ -98,73 +97,84 @@ export const pokemonOptions = (
     const candidate = context.catalog.pokemon[name];
     return candidate ? similarityToTarget(candidate) : 0;
   };
-  const scored = distinctPokemon(
+  const scored = groupPokemon(
     rankCandidates(
       target.name,
       candidates
         .filter(
-          ({ name, pokemon }) =>
-            !excluded.includes(name) &&
-            pokemon.speciesName !== target.pokemon.speciesName,
+          (candidate) =>
+            !excluded.includes(candidate.name) &&
+            distinctPokemon([candidate], (value) => value, [target]).length > 0,
         )
         .map(({ name }) => name),
       similarityFor,
       context.random,
-    ),
-    ({ candidate }) => ({
+    ).map(({ candidate }) => ({
       name: candidate,
       pokemon: context.catalog.pokemon[candidate]!,
-    }),
-    [target],
+    })),
   );
   let shortlisted = scored.slice(0, 15);
   if (scored.length < 15) {
-    const bestScore = scored[0]?.score ?? similarityFor('');
-    const semanticBand = scored.filter(({ score }) => score >= bestScore * 0.6);
+    const bestScore = scored[0]?.[0]
+      ? similarityFor(scored[0][0].name)
+      : similarityFor('');
+    const semanticBand = scored.filter(
+      (group) => similarityFor(group[0]!.name) >= bestScore * 0.6,
+    );
     shortlisted = semanticBand.length >= 3 ? semanticBand : scored.slice(0, 3);
   }
-  const shortlist = shortlisted.map(({ candidate }) => candidate);
+  const shortlist = shortlisted.flat();
   const optionRandom = createSeededRandom([
     target.name,
     ...Array.from({ length: Math.min(3, scored.length) }, () =>
       context.random(),
     ),
   ]);
-  const selected = shufflePokemon(shortlist, optionRandom)
-    .sort((a, b) =>
-      context.history
-        ? getPokemonRecency(context.history, a) -
-          getPokemonRecency(context.history, b)
-        : 0,
-    )
-    .slice(0, 3);
-  const distanceFromTarget = (name: string) =>
-    Math.abs(
-      (context.catalog.pokemon[name]?.speciesId ?? target.pokemon.speciesId) -
-        target.pokemon.speciesId,
+  const optionContext = { ...context, random: optionRandom };
+  const selected = chooseTargets(optionContext, shortlist, 3, [target], false);
+  for (const group of scored) {
+    if (selected.length === 3) break;
+    selected.push(
+      ...chooseTargets(optionContext, group, 1, [target, ...selected], false),
     );
-  const spreadBand = [...shortlist]
+  }
+  const distanceFromTarget = (group: Candidate[]) =>
+    Math.abs(group[0]!.pokemon.speciesId - target.pokemon.speciesId);
+  const spreadBand = [...shortlisted]
     .sort((left, right) => distanceFromTarget(right) - distanceFromTarget(left))
-    .slice(0, Math.ceil(shortlist.length / 3));
+    .slice(0, Math.ceil(shortlisted.length / 3))
+    .flat();
+  const spreadSpecies = new Set(
+    spreadBand.map(({ pokemon }) => pokemon.speciesId),
+  );
 
   if (
     selected.length === 3 &&
-    !selected.some((name) => spreadBand.includes(name))
+    !selected.some(({ pokemon }) => spreadSpecies.has(pokemon.speciesId))
   ) {
-    const spreadCandidate = pickPokemon(spreadBand, optionRandom);
-    if (spreadCandidate) {
-      const closestIndex = selected.reduce(
-        (closest, name, index) =>
-          distanceFromTarget(name) < distanceFromTarget(selected[closest] ?? '')
-            ? index
-            : closest,
-        0,
-      );
-      selected[closestIndex] = spreadCandidate;
-    }
+    const closestIndex = selected.reduce(
+      (closest, candidate, index) =>
+        distanceFromTarget([candidate]) <
+        distanceFromTarget([selected[closest]!])
+          ? index
+          : closest,
+      0,
+    );
+    const replacement = chooseTargets(
+      optionContext,
+      spreadBand,
+      1,
+      [target, ...selected.filter((_, index) => index !== closestIndex)],
+      false,
+    )[0];
+    if (replacement) selected[closestIndex] = replacement;
   }
 
-  return shuffle([...selected, target.name], optionRandom);
+  return shuffle(
+    [...selected.map(({ name }) => name), target.name],
+    optionRandom,
+  );
 };
 
 export const selectPokemonAnswerGroups = (

@@ -1,3 +1,4 @@
+import { buildQuestionType } from '@/game/questions/registry';
 import {
   formatDuration,
   formatDurationMilliseconds,
@@ -356,11 +357,20 @@ describe('question building', () => {
       'ability-check',
       'move-check',
     ] as const) {
-      const [question] = buildQuestions(
-        syntheticCatalog,
-        { ...defaultModifiers, questionTypes: [questionType] },
-        () => 0,
-        1,
+      const question = buildQuestionType(
+        {
+          catalog: syntheticCatalog,
+          pool: Object.entries(syntheticCatalog.pokemon).map(
+            ([name, pokemon]) => ({ name, pokemon }),
+          ),
+          random: () => 0,
+          used: new Set(
+            Object.keys(syntheticCatalog.pokemon).filter(
+              (name) => name !== 'target',
+            ),
+          ),
+        },
+        questionType,
       );
       expect(question?.pokemonName).toBe('target');
       expect(new Set(question?.options)).toEqual(

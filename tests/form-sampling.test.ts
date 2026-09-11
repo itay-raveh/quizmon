@@ -1,16 +1,18 @@
 import { pokemonOptions } from '@/game/questions/answers';
 import {
-  pickPokemon,
+  pickForm,
   pokemonWeight,
-  shufflePokemon,
+  speciesWeight,
 } from '@/game/questions/sampling';
-import {
-  chooseTargets,
-  orderTargets,
-  pickFreshTarget,
-} from '@/game/questions/selection';
-import { createSeededRandom } from '@/game/random';
+import { chooseTargets, pickFreshTarget } from '@/game/questions/selection';
 import { catalog, createQuestionContext } from './fixtures/catalog';
+import { emptyQuestionHistory } from '@/game/question-history';
+import type { Candidate } from '@/game/questions/context';
+import {
+  getSpeciesHistory,
+  speciesQuestion,
+} from '@/game/questions/species-history';
+import { buildQuestionType } from '@/game/questions/registry';
 
 it.each([
   ['pikachu', 4],
@@ -30,87 +32,240 @@ it.each([
   expect(pokemonWeight(name)).toBe(expected);
 });
 
-const names = ['pikachu', 'raichu-alola', 'charizard-mega-x'];
-
-it('selects targets in exact 4:2:1 probability intervals', () => {
-  const selected = Array.from({ length: 700 }, (_, i) =>
-    pickPokemon(names, () => (i + 0.5) / 700),
-  );
-  expect(
-    names.map((name) => selected.filter((value) => value === name).length),
-  ).toEqual([400, 200, 100]);
-  expect(pickPokemon([], () => 0)).toBeUndefined();
-});
-
-it('weights the first draw without duplicating or dropping choices', () => {
-  const random = createSeededRandom('weighted-first-draw');
-  const counts = new Map(names.map((name) => [name, 0]));
-  for (let i = 0; i < 14000; i++) {
-    const result = shufflePokemon(names, random);
-    expect([...result].sort()).toEqual([...names].sort());
-    counts.set(result[0]!, counts.get(result[0]!)! + 1);
-  }
-  for (const [i, expected] of [8000, 4000, 2000].entries())
-    expect(Math.abs(counts.get(names[i]!)! - expected)).toBeLessThan(250);
-});
-
-it('rotates Daily targets in 4:2:1 proportions with unique multi-choice selections', () => {
-  const context = createQuestionContext('weighted-daily');
-  const candidates = names.map((name) => ({
-    name,
-    pokemon: catalog.pokemon[name]!,
-  }));
-  context.questionType = 'type-check';
-  const selected = Array.from({ length: 7 }, (_, rotation) => {
-    context.rotation = rotation;
-    const ordered = orderTargets(context, candidates);
-    expect(new Set(ordered.map(({ name }) => name)).size).toBe(3);
-    expect(chooseTargets(context, candidates, 3)).toHaveLength(3);
-    return ordered[0]!.name;
-  });
-  expect(
-    names.map((name) => selected.filter((value) => value === name).length),
-  ).toEqual([4, 2, 1]);
-});
-
-it('keeps every form available and favors an unused form over a used ordinary entry', () => {
-  const context = createQuestionContext('weighted-freshness');
-  const candidates = names.map((name) => ({
-    name,
-    pokemon: catalog.pokemon[name]!,
-  }));
-  for (const candidate of candidates)
-    expect(pickFreshTarget(context, [candidate])).toEqual(candidate);
-  context.used = new Set(names.slice(0, 2));
-  expect(pickFreshTarget(context, candidates)?.name).toBe(names[2]);
-});
-
-it('weights Pokémon distractors while keeping the correct answer and four distinct options', () => {
-  const context = createQuestionContext('weighted-options');
-  const ordinary = Array.from({ length: 6 }, (_, i) => `ordinary-${i}`);
-  const regional = Array.from({ length: 6 }, (_, i) => `regional-${i}-alola`);
-  const mega = Array.from({ length: 6 }, (_, i) => `special-${i}-mega`);
-  const target = { name: 'pikachu', pokemon: catalog.pokemon.pikachu! };
-  context.catalog = { ...catalog, pokemon: { ...catalog.pokemon } };
-  context.pool = [...ordinary, ...regional, ...mega].map((name, index) => ({
+const forms = (id: number): Candidate[] =>
+  [
+    `species-${id}`,
+    `species-${id}-alola`,
+    `species-${id}-mega-x`,
+    `species-${id}-mega-y`,
+  ].map((name) => ({
     name,
     pokemon: {
-      ...target.pokemon,
-      speciesName: name,
-      speciesId: 100 + (index % 6) * 3 + Math.floor(index / 6),
+      ...catalog.pokemon.pikachu!,
+      speciesId: id,
+      speciesName: `species-${id}`,
       sprite: `/sprite/${name}.png`,
     },
   }));
-  for (const { name, pokemon } of context.pool)
-    context.catalog.pokemon[name] = pokemon;
-  const counts = [0, 0, 0];
-  for (let i = 0; i < 3000; i++) {
-    const options = pokemonOptions(context, { correct: target });
-    expect(options).toContain(target.name);
-    expect(new Set(options).size).toBe(4);
-    for (const [index, group] of [ordinary, regional, mega].entries())
-      counts[index]! += options.filter((name) => group.includes(name)).length;
+
+const contextFor = (candidates: Candidate[], seed: string) => {
+  const context = createQuestionContext(seed);
+  context.catalog = {
+    ...catalog,
+    pokemon: Object.fromEntries(
+      candidates.map(({ name, pokemon }) => [name, pokemon]),
+    ),
+  };
+  context.pool = candidates;
+  return context;
+};
+
+it('weights categories 4:2:1 without giving extra tickets to multiple Mega forms', () => {
+  const candidates = forms(1);
+  const selected = Array.from({ length: 700 }, (_, i) =>
+    pickForm(candidates, () => (i + 0.5) / 700)!,
+  );
+  expect(
+    [4, 2, 1].map(
+      (weight) =>
+        selected.filter(({ name }) => pokemonWeight(name) === weight).length,
+    ),
+  ).toEqual([400, 200, 100]);
+  expect(pickForm([], () => 0)).toBeUndefined();
+  const regionalAndMega = candidates.slice(1);
+  const limited = Array.from({ length: 300 }, (_, i) =>
+    pickForm(regionalAndMega, () => (i + 0.5) / 300)!,
+  );
+  expect(limited.filter(({ name }) => pokemonWeight(name) === 2)).toHaveLength(
+    200,
+  );
+});
+
+it('selects species uniformly regardless of their number of forms', () => {
+  const candidates = [...forms(1), forms(2)[0]!];
+  const context = contextFor(candidates, 'species-frequency');
+  let firstSpecies = 0;
+  const transformed = new Set<string>();
+  for (let i = 0; i < 6000; i++) {
+    const selected = pickFreshTarget(context, candidates)!;
+    firstSpecies += Number(selected.pokemon.speciesId === 1);
+    if (pokemonWeight(selected.name) === 1) transformed.add(selected.name);
   }
-  expect(counts[0]!).toBeGreaterThan(counts[1]! * 1.5);
-  expect(counts[1]!).toBeGreaterThan(counts[2]! * 1.5);
+  expect(Math.abs(firstSpecies - 3000)).toBeLessThan(180);
+  expect(transformed.size).toBe(2);
+});
+
+it('rotates Daily species without assigning extra slots to their forms', () => {
+  const candidates = [...forms(1), forms(2)[0]!];
+  const context = contextFor(candidates, 'species-daily');
+  context.questionType = 'type-check';
+  const selected = Array.from({ length: 6 }, (_, rotation) => {
+    context.rotation = rotation;
+    const selected = pickFreshTarget(context, candidates)!;
+    expect(chooseTargets(context, candidates, 2)).toHaveLength(2);
+    return selected.pokemon.speciesId;
+  });
+  expect(selected.filter((id) => id === 1)).toHaveLength(3);
+});
+
+it('treats an unseen form of a used or previously seen species as a repeat', () => {
+  const candidates = [...forms(1), forms(2)[0]!];
+  const context = contextFor(candidates, 'species-history');
+  context.used.add('species-1');
+  expect(pickFreshTarget(context, candidates)?.pokemon.speciesId).toBe(2);
+  context.used.clear();
+  context.history = {
+    ...emptyQuestionHistory(),
+    sequence: 1,
+    pokemon: { 'species-1': 1 },
+  };
+  expect(pickFreshTarget(context, candidates)?.pokemon.speciesId).toBe(2);
+  const onlyMegas = candidates.filter(({ name }) => name.includes('mega'));
+  expect(onlyMegas).toContainEqual(pickFreshTarget(context, onlyMegas));
+});
+
+it('keeps category weights after species-level history selection', () => {
+  const candidates = forms(1);
+  const context = contextFor(candidates, 'category-history');
+  context.history = {
+    ...emptyQuestionHistory(),
+    sequence: 1,
+    pokemon: { 'species-1': 1 },
+  };
+  const counts = [0, 0, 0];
+  for (let i = 0; i < 7000; i++) {
+    const selected = pickFreshTarget(context, candidates)!;
+    counts[[4, 2, 1].indexOf(pokemonWeight(selected.name))]!++;
+  }
+  for (const [index, expected] of [4000, 2000, 1000].entries())
+    expect(Math.abs(counts[index]! - expected)).toBeLessThan(180);
+});
+
+it('shortlists distractor species and then chooses among all their eligible forms', () => {
+  const candidates = [...forms(1), ...forms(2), ...forms(3), forms(4)[0]!];
+  const context = contextFor(candidates, 'species-options');
+  const target = candidates.at(-1)!;
+  context.history = {
+    ...emptyQuestionHistory(),
+    sequence: 1,
+    distractors: { 'species-1': 1, 'species-2': 1, 'species-3': 1 },
+  };
+  const counts = [0, 0, 0];
+  for (let i = 0; i < 1000; i++) {
+    const options = pokemonOptions(context, { correct: target });
+    expect(options).toHaveLength(4);
+    expect(options).toContain(target.name);
+    expect(
+      new Set(options.map((name) => context.catalog.pokemon[name]!.speciesId))
+        .size,
+    ).toBe(4);
+    for (const name of options.filter((name) => name !== target.name))
+      counts[[4, 2, 1].indexOf(pokemonWeight(name))]!++;
+  }
+  expect(counts[0]! / counts[1]!).toBeGreaterThan(1.7);
+  expect(counts[0]! / counts[1]!).toBeLessThan(2.3);
+  expect(counts[1]! / counts[2]!).toBeGreaterThan(1.7);
+  expect(counts[1]! / counts[2]!).toBeLessThan(2.3);
+});
+
+it('merges old form history and question identities without changing saved data', () => {
+  const context = contextFor(forms(1), 'legacy-species');
+  context.history = {
+    ...emptyQuestionHistory(),
+    sequence: 4,
+    pokemon: { 'species-1': 2, 'species-1-mega-x': 4 },
+    distractors: { 'species-1-alola': 3 },
+    subjects: { 'type-check:species-1-mega-y': 4 },
+    questions: { 'type:species-1-mega-x': 3 },
+  };
+  const original = structuredClone(context.history);
+  const savedHistory = context.history;
+  expect(getSpeciesHistory(context)).toMatchObject({
+    pokemon: { 'species-1': 4 },
+    distractors: { 'species-1': 3 },
+    subjects: { 'type-check:species-1': 4 },
+    questions: { 'type:species-1': 3 },
+  });
+  const question = buildQuestionType(context, 'type-check')!;
+  expect(speciesQuestion(context.catalog, question).repetition.identity).toBe(
+    'species-1',
+  );
+  expect(savedHistory).toEqual(original);
+  expect(original.pokemon).toEqual({ 'species-1': 2, 'species-1-mega-x': 4 });
+});
+
+it('does not favor an unseen Mega when comparing assembled questions', () => {
+  const context = contextFor(forms(1), 'assembled-category-history');
+  const history = {
+    ...emptyQuestionHistory(),
+    sequence: 1,
+    pokemon: { 'species-1': 1 },
+    subjects: { 'type-check:species-1': 1 },
+    questions: { 'type-check:species-1': 1 },
+  };
+  let ordinary = 0;
+  for (let i = 0; i < 700; i++) {
+    context.history = history;
+    context.used.clear();
+    const question = buildQuestionType(context, 'type-check')!;
+    ordinary += Number(pokemonWeight(question.pokemonName) === 4);
+  }
+  expect(Math.abs(ordinary - 400)).toBeLessThan(60);
+});
+
+it('weights species by their best eligible category without adding form weights', () => {
+  expect(speciesWeight(forms(1))).toBe(4);
+  expect(speciesWeight(forms(1).slice(1))).toBe(2);
+  expect(speciesWeight(forms(1).slice(2))).toBe(1);
+});
+
+it.each([false, true])(
+  'preserves species rarity with history=%s',
+  (withHistory) => {
+    const candidates = [forms(1)[0]!, forms(2)[1]!, ...forms(3).slice(2)];
+    const context = contextFor(candidates, 'eligible-species-rarity');
+    if (withHistory) {
+      context.history = {
+        ...emptyQuestionHistory(),
+        sequence: 2,
+        pokemon: { 'species-1': 2, 'species-2': 1 },
+      };
+      context.used.add('species-1');
+    }
+    const counts = [0, 0, 0];
+    for (let i = 0; i < 7000; i++) {
+      const selected = pickFreshTarget(context, candidates)!;
+      counts[selected.pokemon.speciesId - 1]!++;
+    }
+    for (const [index, expected] of [4000, 2000, 1000].entries())
+      expect(Math.abs(counts[index]! - expected)).toBeLessThan(180);
+  },
+);
+
+it('preserves species rarity across a complete Daily rotation', () => {
+  const candidates = [forms(1)[0]!, forms(2)[1]!, ...forms(3).slice(2)];
+  const context = contextFor(candidates, 'daily-eligible-rarity');
+  context.questionType = 'type-check';
+  const counts = [0, 0, 0];
+  for (let rotation = 0; rotation < 7; rotation++) {
+    context.rotation = rotation;
+    counts[pickFreshTarget(context, candidates)!.pokemon.speciesId - 1]!++;
+  }
+  expect(counts).toEqual([4, 2, 1]);
+});
+
+it('keeps the first draft rarity when history compares different species', () => {
+  const candidates = [forms(1)[0]!, forms(2)[1]!, ...forms(3).slice(2)];
+  for (let i = 0; i < 100; i++) {
+    const fresh = contextFor(candidates, `draft-rarity-${i}`);
+    const returning = contextFor(candidates, `draft-rarity-${i}`);
+    returning.history = {
+      ...emptyQuestionHistory(),
+      sequence: 2,
+      pokemon: { 'species-1': 2, 'species-2': 1 },
+    };
+    expect(
+      pokemonWeight(buildQuestionType(returning, 'type-check')!.pokemonName),
+    ).toBe(pokemonWeight(buildQuestionType(fresh, 'type-check')!.pokemonName));
+  }
 });

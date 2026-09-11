@@ -5,6 +5,8 @@ import {
   rememberQuestion,
 } from '../question-history';
 import type { QuestionData } from '../types';
+import { getSpeciesHistory, speciesQuestion } from './species-history';
+import { pokemonWeight } from './sampling';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
 import { buildChampionQuestion } from './champion';
 import { type QuestionBuilder, type QuestionContext } from './context';
@@ -64,24 +66,49 @@ export const buildQuestionType = (
 ): QuestionData | undefined => {
   const build = questionBuilders[questionType];
   let selected: QuestionData | undefined;
+  let selectedRarity: string | undefined;
+  const rarity = (question: QuestionData) =>
+    [
+      ...new Set([
+        ...question.repetition.primary,
+        ...question.repetition.distractors,
+      ]),
+    ]
+      .map(pokemonWeight)
+      .sort((a, b) => a - b)
+      .join(',');
   const history = context.history;
+  const speciesHistory = getSpeciesHistory(context);
   const score = (question: QuestionData): number => {
-    if (!history) return 0;
-    const { primary, distractors } = question.repetition;
+    if (!speciesHistory) return 0;
+    const { primary, distractors } = speciesQuestion(
+      context.catalog,
+      question,
+    ).repetition;
     return (
-      primary.reduce((sum, name) => sum + getPokemonRecency(history, name), 0) +
+      primary.reduce(
+        (sum, name) => sum + getPokemonRecency(speciesHistory, name),
+        0,
+      ) +
       distractors.reduce(
         (sum, name) =>
           sum +
-          getPokemonRecency(history, name) / questionRepeatPolicy.primaryWeight,
+          getPokemonRecency(speciesHistory, name) /
+            questionRepeatPolicy.primaryWeight,
         0,
       )
     );
   };
   const compareRecency = (left: QuestionData, right: QuestionData): number =>
-    history
-      ? getQuestionRecency(history, left) -
-          getQuestionRecency(history, right) || score(left) - score(right)
+    speciesHistory
+      ? getQuestionRecency(
+          speciesHistory,
+          speciesQuestion(context.catalog, left),
+        ) -
+          getQuestionRecency(
+            speciesHistory,
+            speciesQuestion(context.catalog, right),
+          ) || score(left) - score(right)
       : 0;
   const attempts =
     history && context.rotation === undefined
@@ -100,8 +127,16 @@ export const buildQuestionType = (
       generation,
       questionType,
     };
-    if (!selected || compareRecency(question, selected) < 0)
+    const questionRarity = rarity(question);
+    // Choosing a less-seen draft must not turn the initial rarity draw into more Megas.
+    if (
+      !selected ||
+      (questionRarity === selectedRarity &&
+        compareRecency(question, selected) < 0)
+    ) {
       selected = question;
+      selectedRarity = questionRarity;
+    }
   }
   if (selected) {
     if (history || context.rotation !== undefined) {
