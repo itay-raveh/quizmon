@@ -43,6 +43,55 @@ const championQuestion: QuestionData = {
 };
 
 describe('question transitions', () => {
+  it.each([
+    'type-check',
+    'type-matchup',
+    'ability-check',
+    'move-check',
+  ] as const)(
+    'keeps the named subject visible in %s when its sprite is unavailable',
+    (questionType) => {
+      const context = createQuestionContext(`missing-sprite-${questionType}`);
+      const targetName =
+        questionType === 'ability-check' || questionType === 'move-check'
+          ? 'pikachu'
+          : 'zygarde-50';
+      context.pool = context.pool.map((candidate) =>
+        candidate.name === targetName
+          ? { ...candidate, pokemon: { ...candidate.pokemon, sprite: null } }
+          : candidate,
+      );
+      context.used = new Set(
+        context.pool
+          .map(({ name }) => name)
+          .filter((name) => name !== targetName),
+      );
+      if (questionType === 'type-check' || questionType === 'type-matchup')
+        context.pool = context.pool.filter(({ name }) => name === targetName);
+      const generated = buildQuestionType(context, questionType)!;
+      expect(generated.pokemonName).toBe(targetName);
+      expect(generated.media).toEqual({ kind: 'none' });
+      const rendered = renderQuestion({ question: generated });
+      const prompt = rendered.container.querySelector('.question__instruction');
+      expect(prompt).toHaveTextContent(formatPokemonName(targetName));
+      expect(prompt).not.toHaveAttribute('aria-hidden', 'true');
+      expect(
+        rendered.container.querySelector('#question-prompt'),
+      ).not.toHaveClass('visually-hidden');
+      if (questionType === 'type-check' || questionType === 'type-matchup') {
+        expect(rendered.container.querySelector('.question__types')).toBeNull();
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: new RegExp(generated.answer.correctOptions[0]!, 'i'),
+          }),
+        );
+        expect(
+          rendered.container.querySelector('.question__types'),
+        ).toBeVisible();
+      }
+    },
+  );
+
   afterEach(() => vi.useRealTimers());
   it('keeps Leave game available while showing answer feedback', () => {
     const onNewGame = vi.fn();

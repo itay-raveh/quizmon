@@ -374,7 +374,7 @@ export const buildPokemonCatalog = async (
 
   return addSpriteMeasurements(
     {
-      contentVersion: 16,
+      contentVersion: 17,
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },

@@ -8,7 +8,7 @@ import { createSeededRandom } from '@/game/random';
 
 it('ships distinct identities for the curated forms and retains every species', () => {
   const entries = Object.values(catalog.pokemon);
-  expect(entries).toHaveLength(1237);
+  expect(entries).toHaveLength(1236);
   expect(new Set(entries.map((entry) => entry.formId)).size).toBe(
     entries.length,
   );
@@ -17,6 +17,7 @@ it('ships distinct identities for the curated forms and retains every species', 
     entries.length,
   );
   for (const [name, pokemon] of Object.entries(catalog.pokemon)) {
+    expect(pokemon.sprite, name).toBeTruthy();
     expect(formatPokemonName(name)).toBe(pokemon.displayName);
     for (const type of pokemon.types)
       expect(
@@ -36,7 +37,7 @@ it('ships distinct identities for the curated forms and retains every species', 
   }
 });
 
-it('can ask a valid named question about every form, including forms without sprites', () => {
+it('can ask a valid named question about every retained form', () => {
   for (const [name, pokemon] of Object.entries(catalog.pokemon)) {
     const question = buildQuestionType(
       {
@@ -148,7 +149,7 @@ it.each([
   ['keldeo', 1],
   ['cramorant', 1],
   ['aegislash', 1],
-  ['zygarde', 2],
+  ['zygarde', 1],
   ['pumpkaboo', 1],
   ['gourgeist', 1],
   ['arceus', 1],
@@ -222,7 +223,6 @@ it('retains the approved transformations and explicit exceptions', () => {
   for (const name of [
     'floette-mega',
     'alcremie-gmax',
-    'zygarde-mega',
     'rotom-heat',
     'rotom-wash',
     'rotom-frost',

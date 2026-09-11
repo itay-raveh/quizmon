@@ -1,5 +1,5 @@
 {
-  "contentVersion": 16,
+  "contentVersion": 17,
   "pokemon": {
     "abomasnow": {
       "abilities": ["snow-warning", "soundproof"],
@@ -112151,7 +112151,7 @@
       "color": "green",
       "description": "Some say it can change to an even more powerful form when battling those who threaten the ecosystem.",
       "displayName": "Zygarde",
-      "hasDistinctDescription": false,
+      "hasDistinctDescription": true,
       "evolutionFamily": 370,
       "evolvesFrom": null,
       "evolvesTo": [],
@@ -112220,41 +112220,6 @@
       "types": ["dragon", "ground"],
       "spriteMeasurements": [0.352865, 0.75, 0.916667, 0.5, 0.958333],
       "pixelPeekFocus": "018e8f7f7e78f060e7830"
-    },
-    "zygarde-mega": {
-      "abilities": [],
-      "color": "green",
-      "description": "",
-      "displayName": "Mega Zygarde",
-      "hasDistinctDescription": false,
-      "evolutionFamily": 370,
-      "evolvesFrom": null,
-      "evolvesTo": [],
-      "generation": "IX",
-      "speciesGeneration": "VI",
-      "speciesId": 718,
-      "speciesName": "zygarde",
-      "pokemonId": 10301,
-      "genus": "Order",
-      "formId": 10526,
-      "identitySprites": { "generations": [] },
-      "isLegendary": true,
-      "isMythical": false,
-      "levelMoves": [],
-      "shape": "squiggle",
-      "shinySprite": null,
-      "sprite": null,
-      "stats": {
-        "hp": 216,
-        "attack": 70,
-        "defense": 91,
-        "special-attack": 216,
-        "special-defense": 85,
-        "speed": 100
-      },
-      "types": ["dragon", "ground"],
-      "spriteMeasurements": null,
-      "pixelPeekFocus": ""
     }
   },
   "typeRelations": {

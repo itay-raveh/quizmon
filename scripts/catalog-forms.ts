@@ -89,8 +89,17 @@ export const selectCatalogForms = <Form extends PokemonForm>(
       return [key, defaultKey];
     }),
   );
-  const retained = forms.filter(
+  const selected = forms.filter(
     (form) => targets.get(catalogFormKey(form)) === catalogFormKey(form),
+  );
+  const missingSprites = new Set(
+    selected.filter((form) => !form.sprites.front_default).map(catalogFormKey),
+  );
+  for (const [key, target] of targets) {
+    if (target !== null && missingSprites.has(target)) targets.set(key, null);
+  }
+  const retained = selected.filter(
+    (form) => !missingSprites.has(catalogFormKey(form)),
   );
   const retainedKeys = new Set(retained.map(catalogFormKey));
   for (const [key, target] of targets) {

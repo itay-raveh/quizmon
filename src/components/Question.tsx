@@ -129,9 +129,10 @@ export const Question = ({
 
   const isChampion = question.category === 'champion';
   const visualInstruction =
-    Boolean(question.visual) ||
-    question.questionType === 'ability-check' ||
-    question.questionType === 'move-check';
+    !(question.prompt.kind === 'pokemon' && question.media.kind === 'none') &&
+    (Boolean(question.visual) ||
+      question.questionType === 'ability-check' ||
+      question.questionType === 'move-check');
   const isLeague = mode.kind === 'league';
   const modeLabel = isLeague
     ? getLeagueStageLabel(number)
@@ -232,7 +233,11 @@ export const Question = ({
       question.pokemonTypes.length > 0 &&
       subjectTypeRevealQuestionTypes.has(question.questionType) ? (
         <TypeBadges
-          className={question.visual ? 'visually-hidden' : 'question__types'}
+          className={
+            question.visual && visualInstruction
+              ? 'visually-hidden'
+              : 'question__types'
+          }
           label={`${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`}
           types={question.pokemonTypes}
         />

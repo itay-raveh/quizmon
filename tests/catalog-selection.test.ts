@@ -54,6 +54,7 @@ const form = (name: string, parent = name, is_default = true) =>
     name,
     pokemon: { name: parent },
     is_default,
+    sprites: { front_default: `https://example.com/${name}.png` },
   }) as import('pokenode-ts').PokemonForm;
 
 it('groups Cramorant feeding states into its ordinary catalog entry', () => {
@@ -238,4 +239,18 @@ it('merges authenticity evolution routes into the retained entries', () => {
     [['sinistea', ['polteageist']]],
   );
   expect([...links.evolvesFrom]).toEqual([['polteageist', 'sinistea']]);
+});
+
+it('excludes forms without default sprites and clears their catalog targets', () => {
+  const ordinary = form('example');
+  const mega = {
+    ...form('example-mega'),
+    sprites: { ...ordinary.sprites, front_default: null },
+  };
+  const selection = selectCatalogForms(
+    [pokemon('example'), pokemon('example-mega', 'example', false)],
+    [ordinary, mega],
+  );
+  expect(selection.forms).toEqual([ordinary]);
+  expect(selection.targets.get('example-mega')).toBeNull();
 });
