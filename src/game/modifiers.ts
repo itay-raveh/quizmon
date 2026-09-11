@@ -1,7 +1,9 @@
+import { getFormGroup } from './forms';
 import type { Candidate } from './questions/context';
 import { coreQuestionTypes, questionTypes } from './questions/definitions';
 import {
   answerFlows,
+  formGroups,
   generations,
   timerDisplays,
   trainingModes,
@@ -13,6 +15,7 @@ import { isChoice, isObject } from './validation';
 
 export const defaultModifiers: Modifiers = {
   answerFlow: 'manual',
+  formGroups: [...formGroups],
   generations: [...generations],
   questionTypes: [...questionTypes],
   reduceMotion: false,
@@ -53,6 +56,10 @@ export const getTrainingModifiers = (modifiers: Modifiers): Modifiers => ({
 
 export const normalizeModifiers = (candidate: unknown): Modifiers => {
   if (!isObject(candidate)) return defaultModifiers;
+  const savedFormGroups = candidate.formGroups;
+  const selectedFormGroups = Array.isArray(savedFormGroups)
+    ? formGroups.filter((group) => savedFormGroups.includes(group))
+    : [];
   const selectedGenerations = Array.isArray(candidate.generations)
     ? candidate.generations.filter((generation) =>
         isChoice(generation, generations),
@@ -69,6 +76,8 @@ export const normalizeModifiers = (candidate: unknown): Modifiers => {
       : candidate.speedrunMode === true
         ? 'instant'
         : defaultModifiers.answerFlow,
+    formGroups:
+      selectedFormGroups.length > 0 ? selectedFormGroups : [...formGroups],
     generations:
       selectedGenerations.length > 0
         ? selectedGenerations
@@ -96,8 +105,13 @@ export const normalizeModifiers = (candidate: unknown): Modifiers => {
 
 export const filterPokemon = (
   catalog: PokemonCatalog,
-  modifiers: Pick<Modifiers, 'generations'>,
+  modifiers: Pick<Modifiers, 'generations'> &
+    Partial<Pick<Modifiers, 'formGroups'>>,
 ): Candidate[] =>
   Object.entries(catalog.pokemon)
-    .filter(([, pokemon]) => modifiers.generations.includes(pokemon.generation))
+    .filter(
+      ([name, pokemon]) =>
+        modifiers.generations.includes(pokemon.generation) &&
+        (modifiers.formGroups ?? formGroups).includes(getFormGroup(name)),
+    )
     .map(([name, pokemon]) => ({ name, pokemon }));

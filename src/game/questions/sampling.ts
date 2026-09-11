@@ -1,3 +1,4 @@
+import { getFormGroup } from '../forms';
 import { pick } from '../random';
 import type { Candidate } from './context';
 
@@ -8,11 +9,12 @@ const pokemonWeights = {
 } as const;
 
 export const pokemonWeight = (name: string): number => {
-  if (/-(mega(?:-[xyz])?|gmax)$/.test(name))
+  const group = getFormGroup(name);
+  if (group === 'mega' || group === 'gigantamax')
     return pokemonWeights.transformation;
-  if (/-(alola|galar|hisui|paldea)(?:-|$)/.test(name))
-    return pokemonWeights.regional;
-  return pokemonWeights.ordinary;
+  return group === 'regional'
+    ? pokemonWeights.regional
+    : pokemonWeights.ordinary;
 };
 
 export const groupPokemon = (

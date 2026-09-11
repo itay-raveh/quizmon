@@ -131,7 +131,16 @@ export interface ExperienceSettings {
   timerDisplay: TimerDisplay;
 }
 
+export const formGroups = [
+  'standard',
+  'regional',
+  'mega',
+  'gigantamax',
+] as const;
+export type FormGroup = (typeof formGroups)[number];
+
 export interface Modifiers extends ExperienceSettings {
+  formGroups: FormGroup[];
   generations: Generation[];
   questionTypes: QuestionType[];
   trainingMode: TrainingMode;

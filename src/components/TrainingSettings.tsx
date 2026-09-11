@@ -1,7 +1,12 @@
 import { GenerationLabel } from './GenerationLabel';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { isLeagueTraining } from '@/game/modifiers';
-import { generations, type Modifiers, trainingModes } from '@/game/types';
+import {
+  formGroups,
+  generations,
+  type Modifiers,
+  trainingModes,
+} from '@/game/types';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from './SoundButton';
@@ -16,6 +21,7 @@ interface TrainingSettingsProps extends Omit<
   'isValid'
 > {
   draft: Modifiers;
+  formGroupsHeading: RefObject<HTMLHeadingElement | null>;
   generationsHeading: RefObject<HTMLHeadingElement | null>;
   onChange: Dispatch<SetStateAction<Modifiers>>;
   questionTypesHeading: RefObject<HTMLHeadingElement | null>;
@@ -25,6 +31,10 @@ interface TrainingSettingsProps extends Omit<
 
 export const TrainingSettings = ({
   draft,
+  availableFormGroups,
+  formGroupGenerations,
+  formGroupsAreValid,
+  formGroupsHeading,
   generationsAreValid,
   generationsHeading,
   matchingCount,
@@ -103,6 +113,66 @@ export const TrainingSettings = ({
         ) : null}
       </section>
 
+      <section className="settings-section">
+        <div className="settings-section__heading">
+          <h3 id="form-groups-title" ref={formGroupsHeading} tabIndex={-1}>
+            Forms
+          </h3>
+        </div>
+        <div
+          className="selection-grid selection-grid--forms"
+          role="group"
+          aria-labelledby="form-groups-title"
+          aria-invalid={submitted && !formGroupsAreValid}
+          aria-describedby={
+            submitted && !formGroupsAreValid ? 'form-groups-error' : undefined
+          }
+        >
+          {formGroups.map((group) => {
+            const available = availableFormGroups.includes(group);
+            const labels = {
+              standard: 'Standard',
+              regional: 'Regional',
+              mega: 'Mega',
+              gigantamax: 'Gigantamax',
+            };
+            return (
+              <SelectionTile
+                key={group}
+                variant="form"
+                label={labels[group]}
+                checked={available && draft.formGroups.includes(group)}
+                disabled={!available}
+                description={
+                  !available
+                    ? group === 'standard'
+                      ? 'Select a generation.'
+                      : `Needs Gen ${formGroupGenerations[group].join(' or ')}.`
+                    : group === 'standard'
+                      ? 'Includes alternate forms.'
+                      : undefined
+                }
+                onChange={(event) =>
+                  onChange((current) => ({
+                    ...current,
+                    formGroups: toggleValue(
+                      current.formGroups ?? formGroups,
+                      group,
+                      event.target.checked,
+                    ),
+                  }))
+                }
+              />
+            );
+          })}
+        </div>
+        {submitted && !formGroupsAreValid ? (
+          <p className="form-error" id="form-groups-error" role="alert">
+            Choose at least one available form group.
+          </p>
+        ) : null}
+      </section>
+
       <fieldset className="training-mode-settings">
         <legend>Training mode</legend>
         <div className="training-mode-control">
@@ -133,7 +203,7 @@ export const TrainingSettings = ({
           matchingCount={matchingCount}
           onChange={onChange}
           questionTypesAreValid={questionTypesAreValid}
-          submitted={submitted}
+          submitted={submitted && generationsAreValid && formGroupsAreValid}
         />
       )}
     </>

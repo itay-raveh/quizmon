@@ -336,7 +336,7 @@ The compact results header leads into a cream band containing score, best score,
 
 ### Dialogs and Fields
 
-Dialogs use one cream header and a paper body. Settings keeps a cream action footer outside its scrolling body, while the shorter share sheet lays out clearly labelled service buttons and one full-width copy action. A dark navy backdrop provides separation without blurring the landscape. Checkboxes are square white controls with `2px` navy borders and cobalt checked states. Number fields use the same white fill, navy border, and compact corners. On mobile, preserve three-column setup choice grids and comfortable share targets.
+Dialogs use one cream header and a paper body. Settings keeps a cream action footer outside its scrolling body, while the shorter share sheet lays out clearly labelled service buttons and one full-width copy action. A dark navy backdrop provides separation without blurring the landscape. Checkboxes are square white controls with `2px` navy borders and cobalt checked states. Number fields use the same white fill, navy border, and compact corners. On mobile, preserve three-column generation and question-type choice grids and comfortable share targets. The Forms group sits below Generations in a two-column grid of Standard, Regional, Mega, and Gigantamax tiles. Unavailable groups use the disabled surface with readable muted text explaining which generations enable them.
 
 ### Brand Assets and Footer
 

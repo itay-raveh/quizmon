@@ -9,6 +9,7 @@ import { getTrainingSettingsValidation } from '@/components/trainingSettingsMode
 const TrainingSettingsHarness = ({ initial }: { initial: Modifiers }) => {
   const [draft, setDraft] = useState(initial);
   const generationsHeading = useRef<HTMLHeadingElement>(null);
+  const formGroupsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
   const validation = getTrainingSettingsValidation(catalog, draft);
 
@@ -17,6 +18,7 @@ const TrainingSettingsHarness = ({ initial }: { initial: Modifiers }) => {
       {...validation}
       draft={draft}
       generationsHeading={generationsHeading}
+      formGroupsHeading={formGroupsHeading}
       onChange={setDraft}
       questionTypesHeading={questionTypesHeading}
       submitted={false}
@@ -44,7 +46,8 @@ describe('Training settings', () => {
     });
 
     expect(
-      generationsPicker.closest('.settings-section')?.nextElementSibling,
+      generationsPicker.closest('.settings-section')?.nextElementSibling
+        ?.nextElementSibling,
     ).toBe(trainingMode);
     expect(screen.queryByText(/10 questions/)).not.toBeInTheDocument();
   });
@@ -103,4 +106,27 @@ describe('Training settings', () => {
     );
     expect(roundup).toBeChecked();
   });
+});
+
+it('disables unavailable groups and restores both enabled and disabled preferences', () => {
+  render(
+    <TrainingSettingsHarness
+      initial={{ ...defaultModifiers, generations: ['VI'] }}
+    />,
+  );
+  const mega = screen.getByRole('checkbox', { name: 'Mega' });
+  const gmax = screen.getByRole('checkbox', { name: 'Gigantamax' });
+  expect(mega).toBeEnabled();
+  expect(mega).toBeChecked();
+  expect(gmax).toBeDisabled();
+  expect(gmax).not.toBeChecked();
+  fireEvent.click(mega);
+  fireEvent.click(screen.getByRole('checkbox', { name: 'VIII' }));
+  expect(gmax).toBeEnabled();
+  expect(gmax).toBeChecked();
+  fireEvent.click(screen.getByRole('checkbox', { name: 'VI' }));
+  expect(mega).toBeDisabled();
+  fireEvent.click(screen.getByRole('checkbox', { name: 'VI' }));
+  expect(mega).toBeEnabled();
+  expect(mega).not.toBeChecked();
 });

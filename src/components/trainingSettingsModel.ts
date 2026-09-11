@@ -1,3 +1,5 @@
+import { getFormGroupGenerations } from '@/game/forms';
+import { formGroups } from '@/game/types';
 import { filterPokemon, isLeagueTraining } from '@/game/modifiers';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 
@@ -5,6 +7,15 @@ export const getTrainingSettingsValidation = (
   catalog: PokemonCatalog,
   modifiers: Modifiers,
 ) => {
+  const formGroupGenerations = getFormGroupGenerations(catalog);
+  const availableFormGroups = formGroups.filter((group) =>
+    formGroupGenerations[group].some((generation) =>
+      modifiers.generations.includes(generation),
+    ),
+  );
+  const formGroupsAreValid = modifiers.formGroups.some((group) =>
+    availableFormGroups.includes(group),
+  );
   const generationsAreValid = modifiers.generations.length > 0;
   const questionTypesAreValid =
     isLeagueTraining(modifiers) ||
@@ -16,7 +27,14 @@ export const getTrainingSettingsValidation = (
   const matchingCount = filterPokemon(catalog, modifiers).length;
   return {
     generationsAreValid,
-    isValid: generationsAreValid && questionTypesAreValid && matchingCount > 0,
+    formGroupsAreValid,
+    formGroupGenerations,
+    availableFormGroups,
+    isValid:
+      generationsAreValid &&
+      formGroupsAreValid &&
+      questionTypesAreValid &&
+      matchingCount > 0,
     matchingCount,
     questionTypesAreValid,
   };

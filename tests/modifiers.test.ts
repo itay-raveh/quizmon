@@ -4,7 +4,7 @@ import {
   normalizeModifiers,
 } from '@/game/modifiers';
 import { coreQuestionTypes } from '@/game/questions/definitions';
-import { generations } from '@/game/types';
+import { formGroups, generations } from '@/game/types';
 
 describe('normalizeModifiers', () => {
   it('enables every generation by default', () => {
@@ -24,6 +24,7 @@ describe('normalizeModifiers', () => {
       }),
     ).toEqual({
       answerFlow: 'instant',
+      formGroups: [...formGroups],
       generations: ['IX'],
       questionTypes: ['stat-showdown'],
       reduceMotion: false,

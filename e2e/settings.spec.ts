@@ -220,3 +220,70 @@ test('dismisses settings from the backdrop but keeps inside clicks open', async 
   await page.mouse.click(1, 1);
   await expect(dialog).toBeHidden();
 });
+
+for (const width of [390, 1280]) {
+  test(`filters form groups and remembers unavailable preferences at ${width}px`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Settings', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Settings' });
+    const mega = dialog.getByRole('checkbox', { name: 'Mega', exact: true });
+    const gmax = dialog.getByRole('checkbox', {
+      name: 'Gigantamax',
+      exact: true,
+    });
+    await expect(mega).toBeDisabled();
+    await expect(gmax).toBeDisabled();
+    await dialog
+      .getByRole('checkbox', { name: 'VI', exact: true })
+      .locator('..')
+      .click();
+    await expect(mega).toBeChecked();
+    await mega.locator('..').click();
+    await dialog
+      .getByRole('checkbox', { name: 'VI', exact: true })
+      .locator('..')
+      .click();
+    await dialog
+      .getByRole('checkbox', { name: 'VIII', exact: true })
+      .locator('..')
+      .click();
+    await expect(gmax).toBeChecked();
+    await page.screenshot({ path: testInfo.outputPath('form-settings.png') });
+    expect(
+      await dialog.evaluate(
+        (element) => element.scrollWidth <= element.clientWidth,
+      ),
+    ).toBe(true);
+    await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await page.reload();
+    await page.getByRole('button', { name: 'Settings', exact: true }).click();
+    await dialog
+      .getByRole('checkbox', { name: 'VI', exact: true })
+      .locator('..')
+      .click();
+    await expect(mega).not.toBeChecked();
+    await expect(gmax).toBeChecked();
+    await dialog
+      .getByRole('checkbox', { name: 'Standard', exact: true })
+      .locator('..')
+      .click();
+    await dialog
+      .getByRole('checkbox', { name: 'Regional', exact: true })
+      .locator('..')
+      .click();
+    await gmax.locator('..').click();
+    await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await expect(dialog.getByRole('alert')).toHaveText(
+      'Choose at least one available form group.',
+    );
+    await expect(
+      dialog.getByRole('heading', { name: 'Forms', exact: true }),
+    ).toBeFocused();
+    await gmax.locator('..').click();
+    await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await expect(dialog).not.toBeVisible();
+  });
+}

@@ -377,6 +377,10 @@ it('keeps the published version 1 fixture readable without losing fields', () =>
   expect(backup.save.version).toBe(4);
   expect(backup.save.data).toEqual({
     ...v1Fixture.save.data,
+    settings: {
+      ...v1Fixture.save.data.settings,
+      formGroups: defaultModifiers.formGroups,
+    },
     results: {
       ...v1Fixture.save.data.results,
       progress: {

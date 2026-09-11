@@ -1,5 +1,6 @@
 import { useUpdateState } from '@/pwa/update-state';
 import { useMemo, useRef } from 'react';
+import { formGroups } from '@/game/types';
 import type { Modifiers, PokemonCatalog } from '@/game/types';
 import { BackupSettings } from './BackupSettings';
 import { DialogCloseButton } from './DialogCloseButton';
@@ -37,7 +38,14 @@ export const ModifiersDialog = ({
     'settings-tab',
     'training',
   );
-  const [draft, setDraft] = useUpdateState('settings-draft', modifiers);
+  const [storedDraft, setDraft] = useUpdateState('settings-draft', modifiers);
+  const draft = useMemo(
+    () => ({
+      ...storedDraft,
+      formGroups: storedDraft.formGroups ?? [...formGroups],
+    }),
+    [storedDraft],
+  );
   const [submitted, setSubmitted] = useUpdateState('settings-submitted', false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
   const { dialog, dialogProps, closeDialog } = useModalDialog(onClose, {
@@ -45,6 +53,7 @@ export const ModifiersDialog = ({
     dismissOnBackdrop: true,
   });
   const generationsHeading = useRef<HTMLHeadingElement>(null);
+  const formGroupsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Record<SettingsTab, HTMLButtonElement | null>>({
     backup: null,
@@ -80,7 +89,9 @@ export const ModifiersDialog = ({
       window.setTimeout(() => {
         const target = !validation.generationsAreValid
           ? generationsHeading.current
-          : questionTypesHeading.current;
+          : !validation.formGroupsAreValid
+            ? formGroupsHeading.current
+            : questionTypesHeading.current;
         target?.focus();
         target?.scrollIntoView({ block: 'center' });
       });
@@ -155,6 +166,7 @@ export const ModifiersDialog = ({
             <TrainingSettings
               draft={draft}
               generationsHeading={generationsHeading}
+              formGroupsHeading={formGroupsHeading}
               onChange={setDraft}
               questionTypesHeading={questionTypesHeading}
               submitted={submitted}

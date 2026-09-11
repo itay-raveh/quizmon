@@ -740,3 +740,19 @@
     padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
   }
 }
+
+.selection-grid--forms {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.selection-tile--form .selection-tile__surface {
+  height: 100%;
+  overflow-wrap: anywhere;
+}
+
+.selection-tile--form input:disabled + .selection-tile__surface {
+  color: var(--muted);
+  background: var(--disabled-surface);
+  opacity: 1;
+  filter: none;
+}
