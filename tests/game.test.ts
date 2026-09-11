@@ -151,9 +151,10 @@ describe('question building', () => {
     }
   });
 
-  it('uses distinct species in every Pokémon answer set across formats', () => {
-    for (let seed = 0; seed < 20; seed++) {
-      for (const questionType of questionTypes) {
+  it.each(questionTypes)(
+    'uses distinct species in every %s answer set',
+    (questionType) => {
+      for (let seed = 0; seed < 20; seed++) {
         const question = buildSingleQuestion(
           questionType,
           `species-${seed}-${questionType}`,
@@ -168,8 +169,8 @@ describe('question building', () => {
           `${questionType}: ${question.options.join(', ')}`,
         ).toBe(species.length);
       }
-    }
-  });
+    },
+  );
 
   it('fills distractors with distinct species even when similar forms crowd the shortlist', () => {
     const syntheticCatalog: PokemonCatalog = {

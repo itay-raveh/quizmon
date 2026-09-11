@@ -76,26 +76,35 @@ describe('Daily Challenge', () => {
     });
   });
 
-  it('excludes advanced formats from both the schedule and generated questions', () => {
+  describe('format coverage across September', () => {
     const excluded = ['ability-check', 'move-check', 'stat-showdown'];
-    const seen = new Set<string>();
-    for (let day = 1; day <= 30; day += 1) {
-      const date = `2026-09-${String(day).padStart(2, '0')}`;
+    const dates = Array.from(
+      { length: 30 },
+      (_, day) => `2026-09-${String(day + 1).padStart(2, '0')}`,
+    );
+
+    it.each(dates)('excludes advanced formats on %s', (date) => {
       const schedule = getDailyQuestionTypes(date);
       const questions = buildDailyQuestions(catalog, date);
       expect(questions).toHaveLength(5);
+      expect(questions.map(({ questionType }) => questionType)).toEqual(
+        schedule,
+      );
       expect(questions.at(-1)?.questionType).toBe('champion');
       for (const type of [
         ...schedule,
         ...questions.map((question) => question.questionType),
       ]) {
         expect(excluded).not.toContain(type);
-        seen.add(type);
       }
-    }
-    expect(seen.size).toBe(18);
-    expect(seen).toContain('sprite-match');
-    expect(seen).toContain('whos-that-pokemon');
+    });
+
+    it('covers all 18 Daily formats', () => {
+      const seen = new Set(dates.flatMap(getDailyQuestionTypes));
+      expect(seen.size).toBe(18);
+      expect(seen).toContain('sprite-match');
+      expect(seen).toContain('whos-that-pokemon');
+    });
   });
 });
 
