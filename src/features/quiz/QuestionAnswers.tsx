@@ -43,6 +43,7 @@ export const QuestionAnswers = ({
   question,
   selectedOptions,
 }: QuestionAnswersProps) => {
+  const concealedMedia = question.namesOnly && !answered;
   const correct = new Set(question.answer.correctOptions);
   const selected = new Set(selectedOptions);
   const hasTypeOptionBadges = typeOptionQuestionTypes.has(
@@ -76,7 +77,7 @@ export const QuestionAnswers = ({
     <div
       className={[
         'answers',
-        question.optionVisuals && !question.namesOnly ? 'answers--pokemon' : '',
+        question.optionVisuals && !concealedMedia ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
       ]
@@ -85,12 +86,13 @@ export const QuestionAnswers = ({
     >
       {question.options.map((option, index) => {
         const optionVisual = question.optionVisuals?.[option];
-        const visual = question.namesOnly
+        const visual = concealedMedia
           ? undefined
           : question.optionVisuals?.[option];
-        const dexNumber = question.optionGenerations
-          ? undefined
-          : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
+        const dexNumber =
+          concealedMedia || (question.optionGenerations && !answered)
+            ? undefined
+            : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
         const optionSelected = selected.has(option);
         const optionCorrect = correct.has(option);
         const optionClassName = !answered

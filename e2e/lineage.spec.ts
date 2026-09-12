@@ -92,7 +92,9 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
       await expect(
         page.getByRole('button', { name: 'Next question' }),
       ).toBeVisible();
-      await expect(answers.locator('.pokemon-identity__number')).toHaveCount(0);
+      await expect(answers.locator('.pokemon-identity__number')).toHaveCount(
+        questionType === 'generation-roundup' ? 4 : 0,
+      );
       if (outcome === 'correct')
         await expect(page.locator('.answer--wrong')).toHaveCount(0);
       else await expect(page.locator('.answer--wrong')).not.toHaveCount(0);

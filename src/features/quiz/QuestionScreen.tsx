@@ -239,7 +239,7 @@ export const QuestionScreen = ({
           ) : (
             <QuestionPrompt
               className="question__prompt"
-              hideNumbers={question.namesOnly}
+              hideNumbers={question.namesOnly && !answered}
               prompt={question.prompt}
             />
           )}

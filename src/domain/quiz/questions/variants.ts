@@ -20,8 +20,6 @@ export const applyQuestionVariant = (
     showTypes: rules.showTypes,
   };
   if (rules.namesOnly) {
-    question.media = { kind: 'none' };
-    question.optionDexNumbers = undefined;
     question.concealOptionLabels = false;
   }
   if (question.media.kind === 'pixel-peek' && rules.cropScale) {

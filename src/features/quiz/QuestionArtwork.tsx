@@ -87,10 +87,14 @@ export const QuestionArtwork = ({
   cluesShown,
   question,
 }: QuestionArtworkProps) => {
-  const { media, visual } = question;
+  const { visual } = question;
+  const concealedMedia = question.namesOnly && !answered;
+  const media = concealedMedia ? { kind: 'none' as const } : question.media;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;
   const subjectDexNumber =
-    question.prompt.kind === 'pokemon' ? question.prompt.dexNumber : undefined;
+    !concealedMedia && question.prompt.kind === 'pokemon'
+      ? question.prompt.dexNumber
+      : undefined;
   const subject = {
     name: question.pokemonName,
     dexNumber: subjectDexNumber,
@@ -195,8 +199,8 @@ export const QuestionArtwork = ({
         </div>
         <Subject
           {...evolution}
-          dexNumber={question.namesOnly ? undefined : evolution.dexNumber}
-          src={question.namesOnly ? undefined : evolution.src}
+          dexNumber={concealedMedia ? undefined : evolution.dexNumber}
+          src={concealedMedia ? undefined : evolution.src}
           concealed={!answered}
           framed
         >
