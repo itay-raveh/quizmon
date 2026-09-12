@@ -243,11 +243,13 @@ export const QuestionScreen = ({
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />
             ) : null}
-            <QuestionArtwork
-              answered={answered}
-              cluesShown={cluesShown}
-              question={question}
-            />
+            {answered && usesSearch && !question.visual ? null : (
+              <QuestionArtwork
+                answered={answered}
+                cluesShown={cluesShown}
+                question={question}
+              />
+            )}
           </div>
         ) : null}
       </div>
@@ -295,7 +297,7 @@ export const QuestionScreen = ({
         )}
       </div>
 
-      {answered && usesSearch && question.questionType === 'field-notes' ? (
+      {answered && usesSearch ? (
         <div className="question__answer-reveal">
           <strong>Correct answer</strong>
           {answerPokemon?.sprite ? (
