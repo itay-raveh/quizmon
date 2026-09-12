@@ -4,7 +4,7 @@ import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { RelationArrow, TypeEffectArrow } from '@/components/RelationArrow';
 import { Sprite } from '@/components/Sprite';
 import { MysteryTypeBadge, TypeBadges } from '@/components/TypeBadge';
-import { formatPokemonName } from '@/domain/pokemon/format';
+import { formatPokemonName, formatPokemonTypes } from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 
@@ -225,7 +225,9 @@ export const QuestionArtwork = ({
     return (
       <div
         className="question-visual question-relation question-relation--matchup"
-        aria-hidden="true"
+        role="img"
+        aria-hidden={!(answered || question.showTypes) || undefined}
+        aria-label={`${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`}
       >
         {visual.kind === 'type-matchup' ? (
           <MysteryType answered={answered} types={answer ? [answer] : []} />

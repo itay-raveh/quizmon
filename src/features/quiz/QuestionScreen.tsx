@@ -234,23 +234,6 @@ export const QuestionScreen = ({
         {question.suppliedClues?.map((clue) => (
           <p key={clue}>{clue}</p>
         ))}
-        {question.showTypes ? (
-          <TypeBadges
-            className={
-              (question.visual?.kind === 'type-matchup' ||
-                question.visual?.kind === 'counter-pick') &&
-              (question.media.kind === 'pixel-sprite' || question.namesOnly)
-                ? 'visually-hidden'
-                : undefined
-            }
-            label={
-              !answered
-                ? `${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`
-                : undefined
-            }
-            types={question.pokemonTypes}
-          />
-        ) : null}
         {!isChampion || cluesShown > 1 || answered ? (
           <div className="question__stimulus">
             {isChampion && !isLeague && cluesShown > 1 ? (
@@ -265,7 +248,12 @@ export const QuestionScreen = ({
         ) : null}
       </div>
 
-      {answered &&
+      {(answered || question.showTypes) &&
+      !(
+        (question.visual?.kind === 'type-matchup' ||
+          question.visual?.kind === 'counter-pick') &&
+        (question.media.kind === 'pixel-sprite' || question.namesOnly)
+      ) &&
       question.pokemonTypes.length > 0 &&
       subjectTypeRevealQuestionTypes.has(question.questionType) ? (
         <TypeBadges
