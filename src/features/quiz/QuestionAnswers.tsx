@@ -246,19 +246,28 @@ export const QuestionAnswers = ({
                 {stat}
               </PokemonIdentity>
             ) : (
-              <span>{formatPokemonName(option)}</span>
+              <span className="answer__text">
+                <span>{formatPokemonName(option)}</span>
+                {question.namesOnly &&
+                ((reservesOptionTypes && optionVisual) ||
+                  classification ||
+                  generation) ? (
+                  <span
+                    aria-hidden="true"
+                    className="answer__text-detail"
+                    style={{ visibility: answered ? undefined : 'hidden' }}
+                  >
+                    {reservesOptionTypes && optionVisual ? (
+                      <TypeBadges types={optionVisual.types} />
+                    ) : null}
+                    {classification ? <span>{classification}</span> : null}
+                    {generation ? (
+                      <GenerationLabel generation={generation} />
+                    ) : null}
+                  </span>
+                ) : null}
+              </span>
             )}
-            {question.namesOnly && answered ? (
-              <>
-                {reservesOptionTypes && optionVisual ? (
-                  <TypeBadges types={optionVisual.types} />
-                ) : null}
-                {classification ? <span>{classification}</span> : null}
-                {generation ? (
-                  <GenerationLabel generation={generation} />
-                ) : null}
-              </>
-            ) : null}
           </GameButton>
         );
         return attackTypes && typeRelations ? (
