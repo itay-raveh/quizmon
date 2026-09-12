@@ -254,7 +254,7 @@
   margin: 0;
 }
 
-.landing__league-button .league-trophy__image {
+.landing__league-button .league-trophy .league-trophy__image {
   width: 4.8rem;
   height: 4.8rem;
 }

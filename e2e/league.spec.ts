@@ -317,3 +317,40 @@ test('a perfect clear opens the induction before its detailed results', async ({
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 015');
 });
+
+for (const width of [320, 390, 1280]) {
+  for (const completed of [false, true]) {
+    test(`keeps the landing trophy inside its League action at ${width}px (${completed ? 'champion' : 'challenger'})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.addInitScript(unlockLeague, completed);
+      await page.goto('/');
+      const action = page.getByRole('button', {
+        name: 'Quizmon League',
+        exact: true,
+      });
+      await expect(action).toBeVisible();
+      const bounds = await action.evaluate((button) => {
+        const image = button
+          .querySelector('.league-trophy__image')!
+          .getBoundingClientRect();
+        const trophy = button
+          .querySelector('.league-trophy')!
+          .getBoundingClientRect();
+        const copy = button
+          .querySelector('.landing__league-copy')!
+          .getBoundingClientRect();
+        return {
+          left: image.left - trophy.left,
+          top: image.top - trophy.top,
+          right: trophy.right - image.right,
+          bottom: trophy.bottom - image.bottom,
+          textGap: copy.left - image.right,
+        };
+      });
+      for (const value of Object.values(bounds))
+        expect(value).toBeGreaterThanOrEqual(0);
+    });
+  }
+}
