@@ -273,7 +273,7 @@ export const QuestionScreen = ({
       subjectTypeRevealQuestionTypes.has(question.questionType) ? (
         <TypeBadges
           className={
-            question.visual && visualInstruction
+            question.visual && (visualInstruction || question.namesOnly)
               ? 'visually-hidden'
               : 'question__types'
           }
