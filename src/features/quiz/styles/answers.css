@@ -103,7 +103,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
     'number stat'
-    'name name';
+    'name stat';
   column-gap: 0.45rem;
 }
 
@@ -120,7 +120,7 @@
 .answer__stat {
   min-width: 2ch;
   grid-area: stat;
-  align-self: baseline;
+  align-self: center;
   font-family: var(--font-data);
   font-size: var(--text-label);
   font-variant-numeric: tabular-nums;
