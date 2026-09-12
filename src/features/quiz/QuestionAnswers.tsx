@@ -145,13 +145,10 @@ export const QuestionAnswers = ({
             {statValue}
           </span>
         ) : null;
-        const showCheckmark = answered
-          ? optionCorrect
-          : multiSelect && optionSelected;
         const selectionMark =
           resultMarker === 'missed' ? (
             <MinusIcon weight="bold" />
-          ) : showCheckmark ? (
+          ) : answered && optionCorrect ? (
             <CheckIcon weight="bold" />
           ) : answered && optionSelected ? (
             <XIcon weight="bold" />

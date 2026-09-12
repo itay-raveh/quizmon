@@ -202,6 +202,11 @@
   filter: none;
 }
 
+.answer--selected kbd {
+  color: var(--paper);
+  background: var(--navy);
+}
+
 .answer--selected .answer__nameplate {
   color: var(--navy);
   background: var(--yellow);
