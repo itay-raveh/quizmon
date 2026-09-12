@@ -87,6 +87,20 @@ describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
     },
   );
 
+  it('requires selection of a fuzzy suggestion before confirming a guess', () => {
+    const { input, onChoose } = setup('charmnder');
+    expect(screen.getAllByRole('option')[0]).toHaveAccessibleName('Charmander');
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(onChoose).not.toHaveBeenCalled();
+    if (kind === 'champion')
+      expect(screen.getByRole('button', { name: 'Guess' })).toBeDisabled();
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    if (kind === 'champion')
+      fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith('charmander');
+  });
+
   it('wraps arrow navigation and selects with Enter', () => {
     const { input, onChoose } = setup();
     fireEvent.keyDown(input, { key: 'ArrowUp' });

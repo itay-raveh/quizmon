@@ -1,11 +1,11 @@
 import { TypeBadges } from '@/components/TypeBadge';
 import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
 import { formatPokemonName } from '@/domain/pokemon/format';
-import { normalizeSearch } from '@/domain/pokemon/search';
+import { createSearch, normalizeSearch } from '@/domain/pokemon/search';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import type { QuestionData } from '@/domain/quiz/types';
-import { useSuggestionNavigation } from '@/hooks/useSuggestionNavigation';
-import { useId, useRef, useState } from 'react';
+import { SearchCombobox } from '@/components/SearchCombobox';
+import { useId, useMemo, useRef, useState } from 'react';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
 
 export const TypeAnswerPicker = ({
@@ -25,19 +25,20 @@ export const TypeAnswerPicker = ({
   const input = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
   const normalized = normalizeSearch(query);
-  const suggestions = question.options.filter(
-    (type) =>
-      normalized.length > 0 &&
-      !selectedOptions.includes(type) &&
-      type.includes(normalized),
+  const search = useMemo(
+    () =>
+      createSearch(
+        question.options.map((type) => ({
+          name: type,
+          label: formatPokemonName(type),
+          normalized: normalizeSearch(type),
+        })),
+      ),
+    [question.options],
   );
-  const navigation = useSuggestionNavigation(suggestions, (type) => {
-    onSelect(type);
-    setQuery('');
-    input.current?.focus();
-  });
-  const showSuggestions = navigation.open && normalized.length > 0;
-  const expanded = showSuggestions && suggestions.length > 0;
+  const suggestions = search(query)
+    .map(({ name }) => name)
+    .filter((type) => !selectedOptions.includes(type));
 
   if (answered) {
     const visible = question.options.filter(
@@ -92,74 +93,35 @@ export const TypeAnswerPicker = ({
   return (
     <div className="type-picker champion-search">
       <label htmlFor={`${id}-input`}>Your types</label>
-      <div className="type-picker__field">
-        <input
-          ref={input}
-          id={`${id}-input`}
-          role="combobox"
-          aria-autocomplete="list"
-          aria-expanded={expanded}
-          aria-controls={expanded ? id : undefined}
-          aria-activedescendant={
-            expanded && navigation.activeIndex >= 0
-              ? `${id}-${navigation.activeIndex}`
-              : undefined
-          }
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          placeholder="Add a type…"
-          value={query}
-          onFocus={() => navigation.setOpen(true)}
-          onBlur={() => navigation.setOpen(false)}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            navigation.resetActiveIndex();
-            navigation.setOpen(true);
-          }}
-          onKeyDown={(event) => {
-            if (
-              event.key === 'Enter' &&
-              navigation.open &&
-              navigation.activeIndex < 0 &&
-              suggestions.includes(normalized)
-            ) {
-              event.preventDefault();
-              navigation.choose(normalized);
-            } else navigation.handleKeyDown(event);
-          }}
-        />
-        {showSuggestions ? (
-          suggestions.length ? (
-            <ul id={id} role="listbox" aria-label="Matching types">
-              {suggestions.map((type, index) => (
-                <li
-                  key={type}
-                  id={`${id}-${index}`}
-                  role="option"
-                  aria-selected={index === navigation.activeIndex}
-                  ref={
-                    index === navigation.activeIndex
-                      ? navigation.activeOptionRef
-                      : undefined
-                  }
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => navigation.choose(type)}
-                >
-                  <span>{formatPokemonName(type)}</span>
-                  <TypeBadges types={[type]} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="champion-search__empty" role="status">
-              {selectedOptions.includes(normalized)
-                ? 'Already selected'
-                : 'No matching types'}
-            </p>
-          )
-        ) : null}
-      </div>
+      <SearchCombobox
+        id={id}
+        inputRef={input}
+        className="type-picker__field"
+        emptyClassName="champion-search__empty"
+        query={query}
+        onQueryChange={setQuery}
+        suggestions={suggestions}
+        hideSuggestions={!normalized}
+        exactOption={suggestions.includes(normalized) ? normalized : undefined}
+        onChoose={(type) => {
+          onSelect(type);
+          setQuery('');
+          input.current?.focus();
+        }}
+        getKey={(type) => type}
+        placeholder="Add a type…"
+        emptyMessage={
+          selectedOptions.includes(normalized)
+            ? 'Already selected'
+            : 'No matching types'
+        }
+        renderOption={(type) => (
+          <>
+            <span>{formatPokemonName(type)}</span>
+            <TypeBadges types={[type]} />
+          </>
+        )}
+      />
       <div
         className="type-picker__selected"
         role="group"
@@ -173,7 +135,6 @@ export const TypeAnswerPicker = ({
             aria-label={`Remove ${formatPokemonName(type)}`}
             onClick={() => {
               onSelect(type);
-              navigation.resetActiveIndex();
               input.current?.focus();
             }}
           >

@@ -2,10 +2,12 @@ import { GameButton } from '@/components/GameButton';
 import { QuestionIcon } from '@/components/icons';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { TypeBadges } from '@/components/TypeBadge';
+import { formatPokedexNumber } from '@/domain/pokemon/format';
 import {
-  formatPokedexNumber,
-  formatPokemonName,
-} from '@/domain/pokemon/format';
+  createPokemonSearchEntry,
+  createSearch,
+  normalizeSearch,
+} from '@/domain/pokemon/search';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { useMemo, useState } from 'react';
@@ -23,19 +25,24 @@ export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
         const found = foundPokemon.has(name);
         return {
           found,
-          name,
           pokemon,
-          searchName: found ? formatPokemonName(name).toLowerCase() : '',
+          ...createPokemonSearchEntry({ name: found ? name : '' }),
+          name,
           searchNumber: String(pokemon.speciesId).padStart(4, '0'),
         };
       });
     return { entries, count: entries.filter(({ found }) => found).length };
   }, [catalog, foundPokemon]);
-  const query = search.trim().toLowerCase().replace(/^#/, '');
-  const matches = entries.filter(
-    ({ searchName, searchNumber }) =>
-      !query || searchNumber.includes(query) || searchName.includes(query),
+  const find = useMemo(
+    () => createSearch(entries.filter(({ found }) => found)),
+    [entries],
   );
+  const query = normalizeSearch(search);
+  const matches = !query
+    ? entries
+    : /^\d+$/.test(query)
+      ? entries.filter(({ searchNumber }) => searchNumber.includes(query))
+      : find(query);
   const pages = Math.max(1, Math.ceil(matches.length / pageSize));
   const currentPage = Math.min(page, pages - 1);
   const pageStart = currentPage * pageSize;

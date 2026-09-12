@@ -161,7 +161,7 @@ test('complete typing supports search, removal, and submission while Pokémon se
   await expect(check).toBeDisabled();
   await picker.fill('not-a-type');
   await expect(page.getByRole('status')).toHaveText('No matching types');
-  await picker.fill('fire');
+  await picker.fill('fier');
   await picker.press('ArrowDown');
   await picker.press('Enter');
   await page.getByRole('button', { name: 'Remove Fire' }).click();

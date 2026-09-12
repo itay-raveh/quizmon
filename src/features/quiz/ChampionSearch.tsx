@@ -1,6 +1,6 @@
 import { PokemonSearch } from '@/components/PokemonSearch';
 import type { PokemonSearchOption } from '@/domain/quiz/types';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface ChampionSearchProps {
   hideNumbers?: boolean;
@@ -22,6 +22,10 @@ export const ChampionSearch = ({
   selectedOption,
 }: ChampionSearchProps) => {
   const [query, setQuery] = useState('');
+  const searchOptions = useMemo(
+    () => (hideNumbers ? options.map(({ name }) => ({ name })) : options),
+    [hideNumbers, options],
+  );
   const result = answered
     ? selectedOption === correctOption
       ? 'correct'
@@ -34,7 +38,7 @@ export const ChampionSearch = ({
       mode="champion"
       onConfirm={onAnswer}
       onQueryChange={setQuery}
-      options={hideNumbers ? options.map(({ name }) => ({ name })) : options}
+      options={searchOptions}
       query={query}
       result={result}
     />

@@ -1,10 +1,10 @@
 import { formatPokedexNumber } from '@/domain/pokemon/format';
 import {
   createPokemonSearchEntry,
-  findSearchMatches,
+  createSearch,
   normalizeSearch,
 } from '@/domain/pokemon/search';
-import { useSuggestionNavigation } from '@/hooks/useSuggestionNavigation';
+import { SearchCombobox } from './SearchCombobox';
 import { useInteractionSound } from '@/lib/audio/sound-context';
 import { useId, useMemo } from 'react';
 import { GameButton } from './GameButton';
@@ -43,35 +43,16 @@ export const PokemonSearch = ({
     () => options.map(createPokemonSearchEntry),
     [options],
   );
+  const search = useMemo(() => createSearch(entries), [entries]);
   const normalizedQuery = normalizeSearch(query);
   const exactMatch = entries.find(
     ({ normalized, aliases }) =>
       normalized === normalizedQuery || aliases.includes(normalizedQuery),
   );
   const suggestions = useMemo(
-    () =>
-      champion && exactMatch ? [] : findSearchMatches(entries, normalizedQuery),
-    [champion, entries, exactMatch, normalizedQuery],
+    () => (champion && exactMatch ? [] : search(normalizedQuery)),
+    [champion, search, exactMatch, normalizedQuery],
   );
-  const {
-    activeIndex,
-    activeOptionRef,
-    choose,
-    handleKeyDown,
-    open,
-    resetActiveIndex,
-    setOpen,
-  } = useSuggestionNavigation(suggestions, (suggestion) => {
-    playInteractionSound(champion ? 'tap' : 'toggle-on');
-    onQueryChange(suggestion.label);
-    if (!champion) onConfirm(suggestion.name);
-  });
-  const showSuggestions =
-    open &&
-    !disabled &&
-    !(champion && exactMatch) &&
-    normalizedQuery.length > 0;
-  const expanded = showSuggestions && suggestions.length > 0;
 
   return (
     <Root
@@ -89,87 +70,55 @@ export const PokemonSearch = ({
         {champion ? 'Your answer' : 'Partner Pokémon'}
       </label>
       <div className={`${className}__controls`}>
-        <div className={`${className}__${champion ? 'combobox' : 'field'}`}>
-          <input
-            aria-activedescendant={
-              expanded && activeIndex >= 0
-                ? `${listboxId}-option-${activeIndex}`
-                : undefined
-            }
-            aria-autocomplete="list"
-            aria-controls={expanded ? listboxId : undefined}
-            aria-expanded={expanded}
-            aria-invalid={result === 'wrong' ? true : undefined}
-            autoCapitalize="none"
-            autoComplete="off"
-            disabled={disabled}
-            id={`${listboxId}-input`}
-            onBlur={() => setOpen(false)}
-            onChange={(event) => {
-              onQueryChange(event.target.value);
-              resetActiveIndex();
-              setOpen(true);
-              onClear?.();
-            }}
-            onFocus={() => setOpen(true)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              champion ? 'Type a Pokémon name' : 'Search all Pokémon'
-            }
-            role="combobox"
-            spellCheck={false}
-            type="text"
-            value={query}
-          />
-          {showSuggestions ? (
-            suggestions.length > 0 ? (
-              <ul id={listboxId} role="listbox">
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    aria-selected={index === activeIndex}
-                    id={`${listboxId}-option-${index}`}
-                    key={suggestion.name}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => choose(suggestion)}
-                    ref={index === activeIndex ? activeOptionRef : undefined}
-                    role="option"
-                  >
-                    {!champion ? (
-                      <span
-                        aria-hidden="true"
-                        className="pokemon-picker__sprite"
-                      >
-                        {suggestion.sprite ? (
-                          <img
-                            alt=""
-                            decoding="async"
-                            height="32"
-                            loading="lazy"
-                            onError={(event) => {
-                              event.currentTarget.hidden = true;
-                            }}
-                            src={suggestion.sprite}
-                            width="32"
-                          />
-                        ) : null}
-                      </span>
-                    ) : null}
-                    <span>{suggestion.label}</span>
-                    {champion && suggestion.dexNumber !== undefined ? (
-                      <small aria-hidden="true">
-                        {formatPokedexNumber(suggestion.dexNumber)}
-                      </small>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={`${className}__empty`} role="status">
-                No Pokémon found
-              </p>
-            )
-          ) : null}
-        </div>
+        <SearchCombobox
+          id={listboxId}
+          className={`${className}__${champion ? 'combobox' : 'field'}`}
+          emptyClassName={`${className}__empty`}
+          query={query}
+          suggestions={suggestions}
+          disabled={disabled}
+          invalid={result === 'wrong'}
+          hideSuggestions={Boolean(champion && exactMatch) || !normalizedQuery}
+          onQueryChange={(value) => {
+            onQueryChange(value);
+            onClear?.();
+          }}
+          onChoose={(suggestion) => {
+            playInteractionSound(champion ? 'tap' : 'toggle-on');
+            onQueryChange(suggestion.label);
+            if (!champion) onConfirm(suggestion.name);
+          }}
+          getKey={(suggestion) => suggestion.name}
+          placeholder={champion ? 'Type a Pokémon name' : 'Search all Pokémon'}
+          emptyMessage="No Pokémon found"
+          renderOption={(suggestion) => (
+            <>
+              {!champion ? (
+                <span aria-hidden="true" className="pokemon-picker__sprite">
+                  {suggestion.sprite ? (
+                    <img
+                      alt=""
+                      decoding="async"
+                      height="32"
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.hidden = true;
+                      }}
+                      src={suggestion.sprite}
+                      width="32"
+                    />
+                  ) : null}
+                </span>
+              ) : null}
+              <span>{suggestion.label}</span>
+              {champion && suggestion.dexNumber !== undefined ? (
+                <small aria-hidden="true">
+                  {formatPokedexNumber(suggestion.dexNumber)}
+                </small>
+              ) : null}
+            </>
+          )}
+        />
         {champion ? (
           <GameButton
             disabled={disabled || !exactMatch}

@@ -1,3 +1,4 @@
+import Fuse from 'fuse.js';
 import { formatPokemonName } from './format';
 
 interface SearchEntry {
@@ -26,22 +27,35 @@ export const createPokemonSearchEntry = <Pokemon extends { name: string }>(
   };
 };
 
-export const findSearchMatches = <Entry extends SearchEntry>(
+export const createSearch = <Entry extends SearchEntry>(
   entries: readonly Entry[],
-  normalizedQuery: string,
-): Entry[] => {
-  if (!normalizedQuery) return [];
-
-  return entries
-    .filter(
-      ({ normalized, aliases }) =>
-        normalized.includes(normalizedQuery) ||
-        aliases?.some((alias) => alias.includes(normalizedQuery)),
-    )
-    .sort((left, right) => {
-      const leftStarts = left.normalized.startsWith(normalizedQuery);
-      const rightStarts = right.normalized.startsWith(normalizedQuery);
-      if (leftStarts !== rightStarts) return leftStarts ? -1 : 1;
-      return left.label.localeCompare(right.label);
-    });
+) => {
+  const fuse = new Fuse(entries, {
+    keys: ['normalized', 'aliases'],
+    threshold: 0.4,
+    ignoreLocation: true,
+    ignoreFieldNorm: true,
+    includeScore: true,
+  });
+  return (query: string): Entry[] => {
+    const normalized = normalizeSearch(query);
+    if (!normalized) return [];
+    return fuse
+      .search(normalized)
+      .sort((left, right) => {
+        const rank = (entry: Entry) => {
+          const values = [entry.normalized, ...(entry.aliases ?? [])];
+          if (values.includes(normalized)) return 0;
+          if (values.some((value) => value.startsWith(normalized))) return 1;
+          if (values.some((value) => value.includes(normalized))) return 2;
+          return 3;
+        };
+        return (
+          rank(left.item) - rank(right.item) ||
+          (left.score ?? 0) - (right.score ?? 0) ||
+          left.item.label.localeCompare(right.item.label)
+        );
+      })
+      .map(({ item }) => item);
+  };
 };

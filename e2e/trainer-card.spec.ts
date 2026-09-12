@@ -256,6 +256,20 @@ test('shows saved Trainer records on a narrow screen', async ({ page }) => {
   await expect(page.locator('.trainer-pokedex__summary')).toHaveText(
     `3 / ${Object.keys(catalogData.pokemon).length} found`,
   );
+  const search = page.getByRole('searchbox', { name: 'Search Pokédex' });
+  await search.fill('bulbsaur');
+  await expect(page.locator('.trainer-pokedex__entry').first()).toContainText(
+    'Bulbasaur',
+  );
+  await search.fill('pikchu');
+  await expect(page.locator('.trainer-pokedex__entries')).toHaveCount(0);
+  await search.fill('#0025');
+  await expect(page.locator('.trainer-pokedex__entry').first()).toContainText(
+    'No. 0025',
+  );
+  await expect(page.locator('.trainer-pokedex__entry').first()).toContainText(
+    'Not found',
+  );
 });
 
 test('stops the Champion finish animation when reduced motion is enabled', async ({
