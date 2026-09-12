@@ -235,7 +235,21 @@ export const QuestionScreen = ({
           <p key={clue}>{clue}</p>
         ))}
         {question.showTypes ? (
-          <TypeBadges types={question.pokemonTypes} />
+          <TypeBadges
+            className={
+              (question.visual?.kind === 'type-matchup' ||
+                question.visual?.kind === 'counter-pick') &&
+              (question.media.kind === 'pixel-sprite' || question.namesOnly)
+                ? 'visually-hidden'
+                : undefined
+            }
+            label={
+              !answered
+                ? `${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`
+                : undefined
+            }
+            types={question.pokemonTypes}
+          />
         ) : null}
         {!isChampion || cluesShown > 1 || answered ? (
           <div className="question__stimulus">
