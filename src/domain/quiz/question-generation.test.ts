@@ -91,7 +91,12 @@ const makeKnowledge = (
 const buildSingleQuestion = (questionType: QuestionType, seed: string) => {
   const [question] = buildQuestions(
     catalog,
-    { ...defaultGameSettings, questionTypes: [questionType] },
+    {
+      ...defaultGameSettings,
+      difficulty: undefined,
+      generations: [...generations],
+      questionTypes: [questionType],
+    },
     createSeededRandom(seed),
     1,
   );
@@ -133,6 +138,7 @@ describe('question building', () => {
       catalog,
       {
         ...defaultGameSettings,
+        difficulty: undefined,
         generations: [...generations],
         questionTypes: [...questionTypes],
       },
@@ -226,7 +232,11 @@ describe('question building', () => {
             c: makeKnowledge(2),
           },
         },
-        { ...defaultGameSettings, questionTypes: ['pokedex-scan'] },
+        {
+          ...defaultGameSettings,
+          difficulty: undefined,
+          questionTypes: ['pokedex-scan'],
+        },
         createSeededRandom('too-few-species'),
       ),
     ).toEqual([]);
@@ -251,6 +261,7 @@ describe('question building', () => {
       ['field-notes'],
       {
         ...defaultGameSettings,
+        difficulty: undefined,
         questionTypes: ['field-notes', 'pokedex-scan'],
       },
       createSeededRandom('sequence-fallback'),
@@ -261,6 +272,7 @@ describe('question building', () => {
 
     const unavailable = {
       ...defaultGameSettings,
+      difficulty: undefined,
       questionTypes: ['field-notes' as const],
     };
     expect(
@@ -278,7 +290,11 @@ describe('question building', () => {
       buildQuestionSequence(
         syntheticCatalog,
         ['champion'],
-        { ...defaultGameSettings, questionTypes: ['pokedex-scan'] },
+        {
+          ...defaultGameSettings,
+          difficulty: undefined,
+          questionTypes: ['pokedex-scan'],
+        },
         createSeededRandom('none'),
       ),
     ).toThrow('Unable to build champion question');
@@ -460,6 +476,7 @@ describe('question building', () => {
       catalog,
       {
         ...defaultGameSettings,
+        difficulty: undefined,
         generations: [...generations],
         questionTypes: [
           'field-notes',
@@ -776,7 +793,11 @@ describe('question building', () => {
     for (const [index, roll] of [0.74, 0.75].entries()) {
       const [question] = buildQuestions(
         scanCatalog,
-        { ...defaultGameSettings, questionTypes: ['pokedex-scan'] },
+        {
+          ...defaultGameSettings,
+          difficulty: undefined,
+          questionTypes: ['pokedex-scan'],
+        },
         () => roll,
         1,
       );
@@ -812,6 +833,7 @@ describe('question building', () => {
       modernCatalog,
       {
         ...defaultGameSettings,
+        difficulty: undefined,
         generations: ['VI', 'VII', 'VIII', 'IX'],
         questionTypes: ['pokedex-scan'],
       },

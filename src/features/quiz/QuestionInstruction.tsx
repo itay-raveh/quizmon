@@ -11,6 +11,13 @@ export const QuestionInstruction = ({
   question: QuestionData;
 }) => {
   const kind = question.visual?.kind;
+  if (kind === 'type-check' && question.answer.interaction === 'multi-select')
+    return 'Select every type this Pokémon has.';
+  if (
+    question.visual?.kind === 'type-matchup' &&
+    question.answer.interaction === 'multi-select'
+  )
+    return `Select every attack type that deals ×${formatTypeMultiplier(question.visual.multiplier)} damage.`;
   if (kind === 'type-check') return 'Which type does this Pokémon have?';
   if (kind === 'type-twins') return 'Which Pokémon has the same two types?';
   if (kind === 'evolution-link') return 'Complete the evolution chain';

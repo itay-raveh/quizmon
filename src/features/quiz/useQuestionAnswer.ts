@@ -17,9 +17,11 @@ import {
 export interface UseQuestionAnswerOptions {
   answerFlow: AnswerFlow;
   elapsedMilliseconds: number;
+  questionStartedMilliseconds?: number;
   interactionPaused: boolean;
   nextQuestion?: QuestionData;
   onAnswer: (answer: AnswerResult) => void;
+  onAssistance?: (count: number) => void;
   onAnswerRecorded?: (answer: AnswerResult) => void;
   onFeedbackStart: () => number;
   question: QuestionData;
@@ -48,21 +50,25 @@ const preloadQuestionImages = (question: QuestionData) => {
 export const useQuestionAnswer = ({
   answerFlow,
   elapsedMilliseconds,
+  questionStartedMilliseconds,
   interactionPaused,
   nextQuestion,
   onAnswer,
   onAnswerRecorded,
+  onAssistance,
   onFeedbackStart,
   question,
 }: UseQuestionAnswerOptions) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
-  const [cluesShown, setCluesShown] = useState(0);
+  const [cluesShown, setCluesShown] = useState(question.assistanceUsed ?? 0);
   const answered = answerResult !== null;
   const { playCorrect, playWrong } = useGameSounds();
   const answerAdvanced = useRef(false);
   const answerTimeout = useRef<number | null>(null);
-  const questionStartedAt = useRef(elapsedMilliseconds);
+  const questionStartedAt = useRef(
+    questionStartedMilliseconds ?? elapsedMilliseconds,
+  );
 
   useEffect(() => {
     preloadQuestionImages(question);
@@ -92,14 +98,24 @@ export const useQuestionAnswer = ({
       if (interactionPaused || answered) return;
 
       const correct = isQuestionAnswerCorrect(question, options);
-      const points = getAnswerPoints(question, correct, cluesShown);
+      const points = getAnswerPoints(
+        question,
+        correct,
+        cluesShown + (question.initialClues ?? 0),
+      );
       const responseMilliseconds = Math.max(
         0,
         onFeedbackStart() - questionStartedAt.current,
       );
       const answer = {
         category: question.category,
-        cluesUsed: cluesShown,
+        cluesUsed: cluesShown + (question.initialClues ?? 0),
+        unassistedSearch:
+          question.category === 'champion' &&
+          (question.answer.interaction === 'search' ||
+            !question.rulesVersion) &&
+          !question.initialClues &&
+          cluesShown === 0,
         correct,
         generation: question.generation,
         pokemonName: question.pokemonName,
@@ -137,7 +153,7 @@ export const useQuestionAnswer = ({
   const selectOption = useCallback(
     (option: string) => {
       if (interactionPaused || answered) return;
-      if (question.answer.interaction === 'single-choice') {
+      if (question.answer.interaction !== 'multi-select') {
         finishAnswer([option]);
         return;
       }
@@ -159,7 +175,9 @@ export const useQuestionAnswer = ({
       event.metaKey ||
       event.repeat ||
       event.target instanceof HTMLInputElement ||
-      (question.category === 'champion' && cluesShown === 0)
+      ((question.answer.interaction === 'search' ||
+        (question.category === 'champion' && !question.rulesVersion)) &&
+        cluesShown === 0)
     ) {
       return;
     }
@@ -193,7 +211,11 @@ export const useQuestionAnswer = ({
     advanceAnswer,
     cluesShown,
     finishAnswer,
-    revealClue: () => setCluesShown((current) => current + 1),
+    revealClue: () => {
+      const count = cluesShown + 1;
+      onAssistance?.(count);
+      setCluesShown(count);
+    },
     selectedOptions,
     selectOption,
   };

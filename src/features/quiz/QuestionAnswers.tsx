@@ -50,7 +50,8 @@ export const QuestionAnswers = ({
   const reservesOptionTypes = optionTypeRevealQuestionTypes.has(
     question.questionType,
   );
-  const revealsOptionTypes = answered && reservesOptionTypes;
+  const revealsOptionTypes =
+    (answered || question.showTypes) && reservesOptionTypes;
   const multiSelect = question.answer.interaction === 'multi-select';
   const concealed = Boolean(question.concealOptionLabels && !answered);
   const showdownStat =
@@ -62,7 +63,7 @@ export const QuestionAnswers = ({
     <div
       className={[
         'answers',
-        question.optionVisuals ? 'answers--pokemon' : '',
+        question.optionVisuals && !question.namesOnly ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
       ]
@@ -70,7 +71,10 @@ export const QuestionAnswers = ({
         .join(' ')}
     >
       {question.options.map((option, index) => {
-        const visual = question.optionVisuals?.[option];
+        const optionVisual = question.optionVisuals?.[option];
+        const visual = question.namesOnly
+          ? undefined
+          : question.optionVisuals?.[option];
         const dexNumber = question.optionGenerations
           ? undefined
           : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
@@ -94,8 +98,8 @@ export const QuestionAnswers = ({
                 : null
             : null;
         const typeAnnouncement =
-          revealsOptionTypes && visual
-            ? `. ${visual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(visual.types)}.`
+          revealsOptionTypes && optionVisual
+            ? `. ${optionVisual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(optionVisual.types)}.`
             : '';
         const resultAnnouncement =
           resultMarker === 'missed'
@@ -151,7 +155,7 @@ export const QuestionAnswers = ({
                 ? `${visual?.silhouette ? 'Silhouette' : 'Sprite'} ${index + 1}`
                 : `${formatPokemonName(option)}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
-            aria-keyshortcuts={String(index + 1)}
+            aria-keyshortcuts={index < 9 ? String(index + 1) : undefined}
             aria-pressed={multiSelect ? optionSelected : undefined}
             className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             disabled={answered}
@@ -171,6 +175,12 @@ export const QuestionAnswers = ({
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
+                  {visual.referenceSrc ? (
+                    <PixelSprite
+                      className="answer__sprite"
+                      src={visual.referenceSrc}
+                    />
+                  ) : null}
                   <PixelSprite
                     className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
                     src={visual.src}
@@ -187,7 +197,7 @@ export const QuestionAnswers = ({
                 >
                   {reservesOptionTypes ? (
                     <TypeBadges
-                      className={`answer__types ${answered ? '' : 'answer__types--reserved'}`.trim()}
+                      className={`answer__types ${revealsOptionTypes ? '' : 'answer__types--reserved'}`.trim()}
                       types={visual.types}
                     />
                   ) : null}
@@ -225,6 +235,17 @@ export const QuestionAnswers = ({
             ) : (
               <span>{formatPokemonName(option)}</span>
             )}
+            {question.namesOnly && answered ? (
+              <>
+                {reservesOptionTypes && optionVisual ? (
+                  <TypeBadges types={optionVisual.types} />
+                ) : null}
+                {classification ? <span>{classification}</span> : null}
+                {generation ? (
+                  <GenerationLabel generation={generation} />
+                ) : null}
+              </>
+            ) : null}
           </GameButton>
         );
         return attackTypes && typeRelations ? (

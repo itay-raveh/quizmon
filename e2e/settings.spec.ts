@@ -19,7 +19,9 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
     'aria-selected',
     'true',
   );
-  await expect(dialog.getByRole('radio', { name: 'Custom' })).toBeChecked();
+  await expect(
+    dialog.getByRole('checkbox', { name: 'Customize questions' }),
+  ).toBeChecked();
   const selectAllGenerations = dialog.getByRole('button', {
     name: 'Select all generations',
   });
@@ -96,7 +98,7 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
   await expect(
     dialog.getByText('Choose at least one question type.'),
   ).toHaveCount(0);
-  await dialog.getByText('League', { exact: true }).click();
+  await dialog.getByText('Customize questions', { exact: true }).click();
   await expect(
     dialog.getByRole('heading', { name: 'Question types' }),
   ).toHaveCount(0);
@@ -164,50 +166,30 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
   await dialog.getByRole('button', { name: 'Cancel' }).click();
 });
 
-for (const repair of ['add generation', 'remove roundup'] as const) {
-  test(`rejects saving single-generation roundup settings until corrected: ${repair}`, async ({
-    page,
-  }) => {
-    await page.goto('/');
-    await page.getByRole('button', { name: 'Settings' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Settings' });
-    const savedBefore = await page.evaluate(() =>
-      localStorage.getItem('quizmon.player'),
-    );
-    await dialog.getByRole('button', { name: /General knowledge/ }).click();
-    await dialog.getByText('Generation roundup', { exact: true }).click();
-    await dialog.getByRole('button', { name: 'Save settings' }).click();
-
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('alert')).toHaveText(
-      'Select at least two generations for Generation roundup.',
-    );
-    expect(
-      await page.evaluate(() => localStorage.getItem('quizmon.player')),
-    ).toBe(savedBefore);
-
-    if (repair === 'add generation') {
-      await dialog.getByText('II', { exact: true }).click();
-    } else {
-      await dialog.getByText('Generation roundup', { exact: true }).click();
-    }
-    await dialog.getByRole('button', { name: 'Save settings' }).click();
-    await expect(dialog).toBeHidden();
-    const saved = await page.evaluate(
-      () =>
-        (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
-          .settings!,
-    );
-    expect(saved.generations).toEqual(
-      repair === 'add generation' ? ['I', 'II'] : ['I'],
-    );
-    expect(saved.questionTypes).toEqual(
-      repair === 'add generation'
-        ? ['pokedex-scan', 'generation-roundup']
-        : ['pokedex-scan'],
-    );
-  });
-}
+test('keeps unavailable custom preferences without blocking other eligible families', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  await dialog.getByRole('button', { name: /General knowledge/ }).click();
+  await dialog.getByText('Generation roundup', { exact: true }).click();
+  await dialog.getByRole('button', { name: 'Save settings' }).click();
+  await expect(dialog).toBeHidden();
+  const settings = await page.evaluate(
+    () =>
+      (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
+        .settings!,
+  );
+  expect(settings.questionTypes).toEqual([
+    'pokedex-scan',
+    'generation-roundup',
+  ]);
+  await page.getByRole('button', { name: 'Start training' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Pokédex scan' }),
+  ).toBeVisible();
+});
 
 test('dismisses settings from the backdrop but keeps inside clicks open', async ({
   page,

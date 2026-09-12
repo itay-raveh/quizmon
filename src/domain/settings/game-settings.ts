@@ -1,7 +1,9 @@
+import { getQuestionVariant } from '../quiz/question-variants';
 import { isChoice, isObject } from '../../lib/validation';
 import { getFormGroup } from '../pokemon/forms';
 import { formGroups, generations, type PokemonCatalog } from '../pokemon/types';
 import type { Candidate } from '../quiz/questions/context';
+import { isDifficulty } from '../quiz/difficulty';
 import {
   coreQuestionTypes,
   questionTypes,
@@ -15,9 +17,11 @@ import {
 } from './types';
 
 export const defaultGameSettings: GameSettings = {
+  difficulty: 1,
+  questionSelection: 'automatic',
   answerFlow: 'manual',
   formGroups: [...formGroups],
-  generations: [...generations],
+  generations: ['I'],
   questionTypes: [...questionTypes],
   reduceMotion: false,
   soundVolume: 1,
@@ -38,6 +42,8 @@ export const getChallengeSettings = (
   experience: ExperienceSettings,
 ): GameSettings => ({
   ...defaultGameSettings,
+  difficulty: undefined,
+  questionSelection: undefined,
   ...getExperienceSettings(experience),
   generations: [...generations],
 });
@@ -50,9 +56,18 @@ export const isLeagueTraining = (
 
 export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
   ...settings,
-  questionTypes: isLeagueTraining(settings)
-    ? [...coreQuestionTypes]
-    : [...settings.questionTypes],
+  questionTypes: settings.difficulty
+    ? (settings.questionSelection === 'custom'
+        ? settings.questionTypes
+        : questionTypes
+      ).filter(
+        (type) =>
+          getQuestionVariant(type, settings.difficulty!) &&
+          (type !== 'generation-roundup' || settings.generations.length > 1),
+      )
+    : isLeagueTraining(settings)
+      ? [...coreQuestionTypes]
+      : [...settings.questionTypes],
 });
 
 export const normalizeGameSettings = (candidate: unknown): GameSettings => {
@@ -72,6 +87,20 @@ export const normalizeGameSettings = (candidate: unknown): GameSettings => {
       )
     : [];
   return {
+    ...(Array.isArray(candidate.automaticQuestionTypes)
+      ? {
+          automaticQuestionTypes: questionTypes.filter((type) =>
+            (candidate.automaticQuestionTypes as unknown[]).includes(type),
+          ),
+        }
+      : {}),
+    difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : 3,
+    questionSelection:
+      candidate.questionSelection === 'custom' ||
+      (candidate.questionSelection === undefined &&
+        candidate.trainingMode === 'custom')
+        ? 'custom'
+        : 'automatic',
     answerFlow: isChoice(candidate.answerFlow, answerFlows)
       ? candidate.answerFlow
       : candidate.speedrunMode === true

@@ -69,7 +69,11 @@ it('retains the legacy crop when measurements are unavailable', () => {
 it('saves measured zoom and still accepts legacy questions without it', () => {
   const [question] = buildQuestions(
     catalog,
-    { ...defaultGameSettings, questionTypes: ['pixel-peek'] },
+    {
+      ...defaultGameSettings,
+      difficulty: undefined,
+      questionTypes: ['pixel-peek'],
+    },
     createSeededRandom('measured-peek'),
     1,
   );

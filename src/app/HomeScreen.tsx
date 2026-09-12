@@ -13,6 +13,7 @@ import { Logo } from './Logo';
 interface HomeScreenProps {
   catalogStatus: 'loading' | 'ready' | 'error';
   dailyDate: string;
+  dailyError?: string;
   dailyResult: GameResult | null;
   dailyResultSaved: boolean;
   dailyStreak: number;
@@ -30,6 +31,7 @@ interface HomeScreenProps {
 export const HomeScreen = ({
   catalogStatus,
   dailyDate,
+  dailyError,
   dailyResult,
   dailyResultSaved,
   dailyStreak,
@@ -71,10 +73,19 @@ export const HomeScreen = ({
             </GameButton>
           </div>
         ) : null}
+        {dailyError ? (
+          <p className="landing__status landing__status--error" role="alert">
+            {dailyError}
+          </p>
+        ) : null}
         {dailyResult ? (
           <ShareResultButton
             className={`daily-action daily-action--complete ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
-            mode={{ kind: 'daily', date: dailyDate }}
+            mode={{
+              kind: 'daily',
+              date: dailyDate,
+              track: dailyResult.dailyTrack,
+            }}
             result={dailyResult}
           >
             <span className="daily-action__copy">

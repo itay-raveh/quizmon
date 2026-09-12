@@ -1,3 +1,4 @@
+import { dailyTrackLabel } from '@/domain/quiz/daily-track';
 import { GameButton } from '@/components/GameButton';
 import { CheckIcon, XIcon } from '@/components/icons';
 import type {
@@ -98,9 +99,11 @@ export const ResultsScreen = ({
     { label: 'Mastery', value: formatScore(score.mastery) },
   ];
   const highScoreKey = getHighScoreKey(mode, settings);
-  const highScoreLabel = highScoreKey
-    ? { custom: 'Custom', daily: 'Daily', league: 'League' }[highScoreKey]
-    : null;
+  const highScoreLabel = result.rules
+    ? 'Matching configuration'
+    : highScoreKey
+      ? { custom: 'Custom', daily: 'Daily', league: 'League' }[highScoreKey]
+      : null;
   const resultTitle = isDaily
     ? 'Daily complete'
     : isLeague
@@ -153,6 +156,15 @@ export const ResultsScreen = ({
           {resultTitle}
         </h1>
       </div>
+      {result.dailyTrack ? (
+        <p className="game-mode">{dailyTrackLabel(result.dailyTrack)}</p>
+      ) : result.rules ? (
+        <p className="game-mode">
+          Level {result.rules.difficulty} · Gen{' '}
+          {result.rules.generations.join(', ')} ·{' '}
+          {result.rules.formGroups.join(', ')} forms
+        </p>
+      ) : null}
       {isDaily ? (
         <div className="results__daily-meta">
           <p className="game-mode">{formatDailyDate(mode.date)}</p>
@@ -185,7 +197,13 @@ export const ResultsScreen = ({
         ) : highScoreLabel ? (
           <p className="personal-best">
             {isNewBest ? (
-              <strong>New {highScoreLabel} best!</strong>
+              <strong>
+                {result.rules
+                  ? 'New best for this configuration!'
+                  : `New ${highScoreLabel} best!`}
+              </strong>
+            ) : result.rules ? (
+              'Best for this configuration'
             ) : (
               `${highScoreLabel} best`
             )}{' '}

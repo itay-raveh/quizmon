@@ -52,16 +52,7 @@ export const parseBackup = (text: string): PlayerBackup => {
     throw new Error('This backup has an invalid date. Choose another backup.');
   }
   const save = parsePlayerSave(value.save);
-  const settings = save.data.settings;
-  if (
-    settings?.trainingMode === 'custom' &&
-    settings.questionTypes.includes('generation-roundup') &&
-    new Set(settings.generations).size < 2
-  ) {
-    throw new Error(
-      'This backup selects Generation roundup with fewer than two generations. Fix and export the settings on the original device, then try again.',
-    );
-  }
+
   return {
     exportedAt: value.exportedAt,
     format: 'quizmon-backup',

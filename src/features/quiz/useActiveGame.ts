@@ -48,7 +48,7 @@ const resolveRestoration = (
     snapshot.mode.kind === 'daily' && snapshot.mode.date !== dailyDate;
   const completedDaily =
     snapshot.mode.kind === 'daily' &&
-    Boolean(readDailyResult(snapshot.mode.date));
+    Boolean(readDailyResult(snapshot.mode.date, snapshot.mode.track));
 
   if (conflictsWithDailyLink || staleDaily || completedDaily) {
     return { kind: 'discard', shouldClear: true };

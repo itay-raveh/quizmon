@@ -3,6 +3,7 @@ import type { PokemonSearchOption } from '@/domain/quiz/types';
 import { useState } from 'react';
 
 interface ChampionSearchProps {
+  hideNumbers?: boolean;
   answered: boolean;
   correctOption: string;
   disabled: boolean;
@@ -12,6 +13,7 @@ interface ChampionSearchProps {
 }
 
 export const ChampionSearch = ({
+  hideNumbers = false,
   answered,
   correctOption,
   disabled,
@@ -32,7 +34,7 @@ export const ChampionSearch = ({
       mode="champion"
       onConfirm={onAnswer}
       onQueryChange={setQuery}
-      options={options}
+      options={hideNumbers ? options.map(({ name }) => ({ name })) : options}
       query={query}
       result={result}
     />

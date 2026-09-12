@@ -4,16 +4,16 @@ import {
   type Generation,
   type PokemonCatalog,
 } from '@/domain/pokemon/types';
-import { buildQuestions } from '@/domain/quiz/question-generation';
 import {
-  getTrainingSettings,
-  TRAINING_QUESTION_COUNT,
-} from '@/domain/settings/game-settings';
+  buildQuestions,
+  resolveTrainingSettings,
+} from '@/domain/quiz/question-generation';
+import { TRAINING_QUESTION_COUNT } from '@/domain/settings/game-settings';
 import { type GameSettings } from '@/domain/settings/types';
 import { useUpdateState } from '@/features/installation/update-session';
 import { createRoundSeed, createSeededRandom } from '@/lib/random';
 import { readPlayerData } from '@/lib/storage/player-storage';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   markGenerationPromptAnswered,
   shouldShowGenerationPrompt,
@@ -34,6 +34,7 @@ export const useTrainingGame = ({
   setSettings,
   startGame,
 }: TrainingGameOptions) => {
+  const [error, setError] = useState('');
   const [generationPromptOpen, setGenerationPromptOpen] = useUpdateState(
     'generation-prompt',
     false,
@@ -55,19 +56,22 @@ export const useTrainingGame = ({
     (nextSettings: GameSettings) => {
       if (!catalog) return;
       const seed = createRoundSeed();
-      const gameSettings = getTrainingSettings(nextSettings);
-      startGame(
-        buildQuestions(
-          catalog,
-          gameSettings,
-          createSeededRandom(seed),
-          TRAINING_QUESTION_COUNT,
-          readPlayerData().questionHistory,
-        ),
+      const gameSettings = resolveTrainingSettings(catalog, nextSettings);
+      const questions = buildQuestions(
+        catalog,
         gameSettings,
-        { kind: 'training' },
-        seed,
+        createSeededRandom(seed),
+        TRAINING_QUESTION_COUNT,
+        readPlayerData().questionHistory,
       );
+      if (questions.length !== TRAINING_QUESTION_COUNT) {
+        setError(
+          'This configuration cannot supply a complete round. Change your generations, forms, or question selection in Settings.',
+        );
+        return;
+      }
+      setError('');
+      startGame(questions, gameSettings, { kind: 'training' }, seed);
     },
     [catalog, startGame],
   );
@@ -91,7 +95,7 @@ export const useTrainingGame = ({
 
   const start = useCallback(() => {
     if (!catalog) return;
-    if (isGenerationPromptPending()) {
+    if (!settings.difficulty && isGenerationPromptPending()) {
       setGenerationPromptOpen(true);
       return;
     }
@@ -108,10 +112,11 @@ export const useTrainingGame = ({
   const trainAgain = useCallback(() => {
     if (session.phase !== 'results' || session.mode.kind !== 'training') return;
 
-    startRound(session.settings);
-  }, [session, startRound]);
+    startRound(settings);
+  }, [session, settings, startRound]);
 
   return {
+    error,
     chooseAllGenerations: () => startWithGenerations([...generations]),
     chooseGenOne: () => startWithGenerations(['I']),
     closeGenerationPrompt: () => setGenerationPromptOpen(false),

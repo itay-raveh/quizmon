@@ -1,3 +1,4 @@
+import { dailyTrackLabel } from '@/domain/quiz/daily-track';
 import { site } from '@/app/site';
 import {
   formatDailyDate,
@@ -22,11 +23,21 @@ export const buildShareContent = (
     .join('');
 
   return {
-    text: [`${formatScore(result.score)} points`, pattern].join('\n'),
+    text: [
+      result.dailyTrack
+        ? dailyTrackLabel(result.dailyTrack)
+        : result.rules
+          ? `Level ${result.rules.difficulty} · Gen ${result.rules.generations.join(', ')} · ${result.rules.formGroups.join(', ')} forms`
+          : null,
+      `${formatScore(result.score)} points`,
+      pattern,
+    ]
+      .filter(Boolean)
+      .join('\n'),
     title: `${site.name} · ${
       mode.kind === 'daily' ? formatDailyDate(mode.date) : getModeLabel(mode)
     }`,
-    url: mode.kind === 'daily' ? getDailyUrl(mode.date) : site.url,
+    url: mode.kind === 'daily' ? getDailyUrl(mode.date, result) : site.url,
   };
 };
 

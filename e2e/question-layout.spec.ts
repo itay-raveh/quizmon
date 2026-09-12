@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { questionTypes } from '../src/domain/quiz/questions/definitions';
 import {
   advanceToDailyFinale,
+  chooseDaily,
   expect,
   expectNoHorizontalOverflow,
   seedBrowserRandom,
@@ -22,6 +23,7 @@ const geometry = (page: Page) =>
       panel: box(panel),
       title: box(panel.querySelector('h1')!),
       prompt: box(panel.querySelector('.question__instruction')!),
+      context: box(panel.querySelector('.question__context')!),
       response: box(panel.querySelector('.question__response')!),
       action: box(panel.querySelector('.question__action-slot')!),
     };
@@ -99,6 +101,19 @@ for (const viewport of [
           soundEnabled: false,
           speedrunMode: false,
           timerDisplay: 'milliseconds',
+          difficulty:
+            (
+              {
+                'type-check': 2,
+                'type-twins': 3,
+                'field-notes': 2,
+                'legend-hunt': 3,
+                'generation-roundup': 3,
+                'evolution-link': 3,
+                'evolution-shift': 3,
+              } as Record<string, number>
+            )[new URL(location.href).searchParams.get('auditType')!] ?? 4,
+          questionSelection: 'custom',
           trainingMode: 'custom',
         }),
       );
@@ -208,14 +223,15 @@ for (const { width, assisted } of [320, 390, 1280].flatMap((width) =>
         JSON.stringify({ soundEnabled: false, speedrunMode: false }),
       );
     });
-    await page.goto('/?fresh=1&daily=2026-09-01&play=1');
+    await page.goto('/?fresh=1&daily=2026-09-01');
+    await chooseDaily(page);
     await advanceToDailyFinale(page);
     await expect(
       page.getByRole('combobox', { name: 'Your answer' }),
     ).toBeVisible();
     const compact = await geometry(page);
     expect(
-      compact.response.y - compact.prompt.y - compact.prompt.height,
+      compact.response.y - compact.context.y - compact.context.height,
     ).toBeLessThan(24);
     expect(
       compact.action.y - compact.response.y - compact.response.height,
@@ -249,7 +265,9 @@ for (const { width, assisted } of [320, 390, 1280].flatMap((width) =>
     await expect(page.locator('.answer')).toHaveCount(4);
     await page.getByRole('button', { name: /^Reveal another clue/ }).click();
     const before = await geometry(page);
-    for (let index = 0; index < 2; index += 1) {
+    while (
+      await page.getByRole('button', { name: /^Reveal another clue/ }).count()
+    ) {
       await page.getByRole('button', { name: /^Reveal another clue/ }).click();
       assertStable(before, await geometry(page));
     }

@@ -47,9 +47,7 @@ describe('result sharing', () => {
     expect(text).not.toContain(' / ');
     expect(text).not.toContain('1/2');
     expect(text).toContain('🟩🟥');
-    expect(text).toContain(
-      'https://quizmon.raveh.dev/?daily=2026-09-01&play=1',
-    );
+    expect(text).toContain('https://quizmon.raveh.dev/?daily=2026-09-01');
     expect(text).not.toContain('pikachu');
     expect(text).not.toContain('#answer');
   });
@@ -78,7 +76,7 @@ describe('result sharing', () => {
         'Quizmon · Sep 1, 2026',
         '1,500 points',
         '🟩🟥',
-        'https://quizmon.raveh.dev/?daily=2026-09-01&play=1',
+        'https://quizmon.raveh.dev/?daily=2026-09-01',
       ].join('\n'),
       title: 'Quizmon · Sep 1, 2026',
     });

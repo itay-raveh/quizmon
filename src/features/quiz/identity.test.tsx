@@ -18,6 +18,7 @@ const generate = (questionType: QuestionType) => {
     catalog,
     {
       ...defaultGameSettings,
+      difficulty: undefined,
       questionTypes: [questionType],
       generations: ['I'],
     },

@@ -29,6 +29,7 @@ import type { useGameNavigation } from './useGameNavigation';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
 
 interface QuestionView {
+  assistance: (count: number) => void;
   answer: (answer: AnswerResult) => void;
   elapsedMilliseconds: number;
   elapsedSeconds: number;
@@ -111,24 +112,28 @@ const AppScreen = ({
 
   if (session.phase === 'landing') {
     return (
-      <HomeScreen
-        catalogStatus={catalogState.status}
-        dailyDate={daily.date}
-        dailyResult={daily.result}
-        dailyResultSaved={daily.resultSaved}
-        dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
-        leagueUnlocked={leagueUnlocked}
-        leagueCompleted={trainer.stats.leagueCompleted}
-        onOpenSettings={settingsDialog.open}
-        onOpenTrainerCard={() => trainer.open('front')}
-        onRetryCatalog={catalogState.retry}
-        onStart={training.start}
-        onStartDaily={daily.start}
-        onStartLeague={() =>
-          league.open(trainer.stats.leagueCompleted ? 'hall' : 'challenge')
-        }
-        storageAvailable={daily.storageAvailable}
-      />
+      <>
+        {training.error ? <p role="alert">{training.error}</p> : null}
+        <HomeScreen
+          catalogStatus={catalogState.status}
+          dailyDate={daily.date}
+          dailyResult={daily.result}
+          dailyResultSaved={daily.resultSaved}
+          dailyError={daily.error}
+          dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
+          leagueUnlocked={leagueUnlocked}
+          leagueCompleted={trainer.stats.leagueCompleted}
+          onOpenSettings={settingsDialog.open}
+          onOpenTrainerCard={() => trainer.open('front')}
+          onRetryCatalog={catalogState.retry}
+          onStart={training.start}
+          onStartDaily={daily.start}
+          onStartLeague={() =>
+            league.open(trainer.stats.leagueCompleted ? 'hall' : 'challenge')
+          }
+          storageAvailable={daily.storageAvailable}
+        />
+      </>
     );
   }
 
@@ -139,12 +144,16 @@ const AppScreen = ({
         typeRelations={catalogState.catalog?.typeRelations}
         answerFlow={session.settings.answerFlow}
         key={currentQuestion.id}
+        questionStartedMilliseconds={session.answers
+          .slice(0, session.questionIndex)
+          .reduce((sum, answer) => sum + (answer.responseMilliseconds ?? 0), 0)}
         elapsedMilliseconds={question.elapsedMilliseconds}
         elapsedSeconds={question.elapsedSeconds}
         interactionPaused={settingsDialog.isOpen}
         mode={session.mode}
         nextQuestion={session.questions[session.questionIndex + 1]}
         number={session.questionIndex + 1}
+        onAssistance={question.assistance}
         onAnswer={question.answer}
         onAnswerRecorded={question.recordAnswer}
         onFeedbackStart={question.pauseTimer}
@@ -218,6 +227,11 @@ const AppOverlays = ({
     ) : null}
     {navigation.leaveConfirmationOpen ? (
       <LeaveGameDialog
+        resumable={
+          session.phase === 'questions' &&
+          session.mode.kind === 'daily' &&
+          Boolean(session.mode.track)
+        }
         onCancel={navigation.cancelLeave}
         onConfirm={navigation.returnToLanding}
       />

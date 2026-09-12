@@ -12,6 +12,11 @@ import {
   type QuestionData,
 } from '../../domain/quiz/types';
 import { normalizeGameSettings } from '../../domain/settings/game-settings';
+import {
+  getDailyResultKey,
+  isDailyTrack,
+  type DailyTrack,
+} from '../../domain/quiz/daily-track';
 import { trainingModes, type GameSettings } from '../../domain/settings/types';
 import {
   isChoice,
@@ -30,6 +35,7 @@ import { readPlayerSave } from './player-storage';
 
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 const ACTIVE_GAME_VERSION = 2;
+const DAILY_ATTEMPTS_KEY = 'quizmon.daily-attempts.v1';
 export interface ActiveGameSnapshot extends QuestionLineup {
   roundId?: string;
   answers: AnswerResult[];
@@ -46,7 +52,12 @@ const parseMode = (value: unknown): GameMode | null => {
   if (value.kind === 'training') return { kind: 'training' };
   if (value.kind === 'league') return { kind: 'league' };
   if (value.kind === 'daily' && isDailyDate(value.date)) {
-    return { kind: 'daily', date: value.date };
+    if (value.track !== undefined && !isDailyTrack(value.track)) return null;
+    return {
+      kind: 'daily',
+      date: value.date,
+      ...(value.track === undefined ? {} : { track: value.track }),
+    };
   }
   return null;
 };
@@ -73,6 +84,9 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
   return {
     category: value.category,
     cluesUsed: value.cluesUsed,
+    ...(typeof value.unassistedSearch === 'boolean'
+      ? { unassistedSearch: value.unassistedSearch }
+      : {}),
     correct: value.correct,
     generation: value.generation,
     pokemonName: value.pokemonName,
@@ -95,7 +109,12 @@ const parseGameSettings = (value: unknown): GameSettings | null => {
     return null;
   }
 
-  return normalizeGameSettings(value);
+  const settings = normalizeGameSettings(value);
+  if (value.difficulty === undefined) {
+    delete settings.difficulty;
+    delete settings.questionSelection;
+  }
+  return settings;
 };
 
 const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
@@ -218,26 +237,71 @@ export const readActiveGame = (
 
 export const writeActiveGame = (
   snapshot: Omit<ActiveGameSnapshot, 'version'>,
-): void => {
+): boolean => {
   try {
     const playerRestoreId = readPlayerSave().restoreId;
     if (
       snapshot.playerRestoreId !== undefined &&
       snapshot.playerRestoreId !== playerRestoreId
     )
-      return;
+      return false;
     const { settings, ...round } = snapshot;
-    writeStoredJson('sessionStorage', ACTIVE_GAME_KEY, {
+    const value = {
       ...round,
       modifiers: settings,
       playerRestoreId,
       version: ACTIVE_GAME_VERSION,
-    });
+    };
+    const activeSaved = writeStoredJson(
+      'sessionStorage',
+      ACTIVE_GAME_KEY,
+      value,
+    );
+    if (snapshot.mode.kind === 'daily' && snapshot.mode.track) {
+      const stored = readStoredJson('localStorage', DAILY_ATTEMPTS_KEY);
+      const attempts = isRecord(stored) ? stored : {};
+      attempts[getDailyResultKey(snapshot.mode.date, snapshot.mode.track)] =
+        value;
+      return (
+        writeStoredJson('localStorage', DAILY_ATTEMPTS_KEY, attempts) &&
+        activeSaved
+      );
+    }
+    return activeSaved;
   } catch {
-    return;
+    return false;
   }
 };
 
 export const clearActiveGame = (): void => {
   removeStoredValue('sessionStorage', ACTIVE_GAME_KEY);
+};
+
+export const readDailyAttempts = (
+  date: string,
+  restoreId: string | null,
+): Record<string, ActiveGameSnapshot> => {
+  const stored = readStoredJson('localStorage', DAILY_ATTEMPTS_KEY);
+  if (!isRecord(stored)) return {};
+  const attempts: Record<string, ActiveGameSnapshot> = {};
+  for (const [key, value] of Object.entries(stored)) {
+    if (!key.startsWith(`${date}:`)) continue;
+    const snapshot = parseSnapshot(value);
+    if (
+      snapshot?.mode.kind === 'daily' &&
+      snapshot.mode.track &&
+      snapshot.mode.date === date &&
+      snapshot.playerRestoreId === restoreId &&
+      getDailyResultKey(date, snapshot.mode.track) === key
+    )
+      attempts[key] = snapshot;
+  }
+  return attempts;
+};
+
+export const clearDailyAttempt = (date: string, track: DailyTrack): void => {
+  const attempts = readStoredJson('localStorage', DAILY_ATTEMPTS_KEY);
+  if (!isRecord(attempts)) return;
+  delete attempts[getDailyResultKey(date, track)];
+  writeStoredJson('localStorage', DAILY_ATTEMPTS_KEY, attempts);
 };

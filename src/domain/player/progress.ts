@@ -4,6 +4,7 @@ import { TRAINER_PROGRESS_VERSION, type SavedResults } from './results';
 
 import {
   isLeagueTraining,
+  getTrainingSettings,
   TRAINING_QUESTION_COUNT,
 } from '../settings/game-settings';
 
@@ -51,7 +52,9 @@ export const addResultToProgress = (
         (correctGenerations[answer.generation] ?? 0) + 1;
     }
     if (answer.questionType === 'champion') {
-      championAnswersWithoutClues += Number(answer.cluesUsed === 0);
+      championAnswersWithoutClues += Number(
+        answer.unassistedSearch ?? answer.cluesUsed === 0,
+      );
     } else if (isChoice(answer.questionType, questionTypes)) {
       const questionType = answer.questionType;
       correctQuestionTypes[questionType] =
@@ -63,7 +66,24 @@ export const addResultToProgress = (
   const isLeagueRound =
     mode.kind === 'training' &&
     result.questionCount === TRAINING_QUESTION_COUNT &&
-    isLeagueTraining(settings);
+    (result.rules
+      ? (() => {
+          const automatic =
+            result.rules.automaticQuestionTypes ??
+            getTrainingSettings({
+              ...settings,
+              difficulty: result.rules.difficulty,
+              generations: result.rules.generations,
+              questionSelection: 'automatic',
+            }).questionTypes;
+          return (
+            automatic.length === result.rules.questionTypes.length &&
+            automatic.every((type) =>
+              result.rules!.questionTypes.includes(type),
+            )
+          );
+        })()
+      : isLeagueTraining(settings));
   const earnedQuickAttack =
     isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60;
 

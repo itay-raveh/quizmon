@@ -24,7 +24,12 @@ import {
 } from './selection';
 
 export const buildDescriptionQuestion: QuestionBuilder = (context) => {
-  const target = pickTarget(context, ({ description }) => Boolean(description));
+  const target = pickTarget(
+    context,
+    ({ description, hasDistinctDescription }) =>
+      Boolean(description) &&
+      (!context.variant?.search || hasDistinctDescription),
+  );
   if (!target) return undefined;
   return makeQuestion(context, {
     repeat: targetRepetition({ pokemonOptions: true }),
@@ -256,7 +261,32 @@ export const buildPropertyQuestion = (
       context.pool.flatMap(({ pokemon }) => pokemon[property]),
     );
     for (const invalid of target.pokemon[property]) candidates.delete(invalid);
-    const options = randomOptionSet(correct, [...candidates], context.random);
+    const preferred = context.variant?.plausibleProperties
+      ? new Set(
+          context.pool
+            .filter(({ pokemon }) =>
+              pokemon.types.some((type) => target.pokemon.types.includes(type)),
+            )
+            .flatMap(({ pokemon }) => pokemon[property])
+            .filter((value) => candidates.has(value)),
+        )
+      : new Set<string>();
+    const options = context.variant?.plausibleProperties
+      ? shuffle(
+          [
+            correct,
+            ...shuffle([...preferred], context.random)
+              .concat(
+                shuffle(
+                  [...candidates].filter((value) => !preferred.has(value)),
+                  context.random,
+                ),
+              )
+              .slice(0, 3),
+          ],
+          context.random,
+        )
+      : randomOptionSet(correct, [...candidates], context.random);
     return makeQuestion(context, {
       repeat: targetRepetition({ pokemonOptions: false }),
       category,
@@ -274,10 +304,19 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
   const stat = pick(statNames, context.random) as StatName;
   const direction = context.random() < 0.5 ? 'highest' : 'lowest';
   const candidates = context.pool;
-  const isDistractor = (target: Candidate, other: Candidate) =>
-    direction === 'highest'
+  const isDistractor = (target: Candidate, other: Candidate) => {
+    const gap = Math.abs(
+      target.pokemon.stats[stat] - other.pokemon.stats[stat],
+    );
+    if (
+      context.variant?.statGap &&
+      (gap < context.variant.statGap[0] || gap > context.variant.statGap[1])
+    )
+      return false;
+    return direction === 'highest'
       ? other.pokemon.stats[stat] < target.pokemon.stats[stat]
       : other.pokemon.stats[stat] > target.pokemon.stats[stat];
+  };
   const values = candidates
     .map(({ pokemon }) => pokemon.stats[stat])
     .sort((a, b) => a - b);
@@ -289,7 +328,24 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
         ? pokemon.stats[stat] > boundary
         : pokemon.stats[stat] < boundary),
   );
-  const target = pickFreshTarget(context, eligible);
+  const examplesByValue = new Map<number, Candidate[]>();
+  const targets = context.variant?.statGap
+    ? eligible.filter((candidate) => {
+        const value = candidate.pokemon.stats[stat];
+        let examples = examplesByValue.get(value);
+        if (!examples) {
+          examples = distinctPokemon(
+            candidates.filter((other) => isDistractor(candidate, other)),
+            (entry) => entry,
+          ).slice(0, 6);
+          examplesByValue.set(value, examples);
+        }
+        return (
+          distinctPokemon(examples, (entry) => entry, [candidate]).length >= 3
+        );
+      })
+    : eligible;
+  const target = pickFreshTarget(context, targets);
   if (!target) return undefined;
   const distractors = chooseTargets(
     context,

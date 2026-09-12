@@ -247,62 +247,28 @@ test('keeps type reveals usable at 200% text', async ({ page }) => {
   ).toBeLessThanOrEqual(1);
 });
 
-test('asks new players which generations they know before Training', async ({
+test('starts new players at Level 1 with Gen I and keeps settings editable', async ({
   page,
 }) => {
   await page.goto('/?fresh=1');
-
   await page.getByRole('button', { name: 'Start training' }).click();
-  const prompt = page.getByRole('dialog', {
-    name: 'Which Pokémon do you know?',
-  });
-  await expect(prompt).toBeVisible();
-  await expect(
-    prompt.getByText('You can change this later in Settings.'),
-  ).toBeVisible();
-  await expect(prompt.locator('.generation-prompt__sprite')).toHaveCount(6);
-  await expect(
-    prompt.locator('img[src="/sprites/pokemon/25.png"]'),
-  ).toHaveCount(2);
-  await expect(
-    prompt.locator('img[src="/sprites/pokemon/823.png"]'),
-  ).toHaveCount(1);
-  await expect(
-    prompt.locator('img[src="/sprites/pokemon/959.png"]'),
-  ).toHaveCount(1);
-
-  for (const width of [320, 1280]) {
-    await page.setViewportSize({ width, height: 900 });
-    for (const preview of await prompt
-      .locator('.generation-prompt__preview')
-      .all()) {
-      const sprites = preview.locator('img');
-      await expect(sprites.nth(1)).toHaveAttribute(
-        'src',
-        '/sprites/pokemon/25.png',
-      );
-      const row = await preview.boundingBox();
-      const pikachu = await sprites.nth(1).boundingBox();
-      expect(row).not.toBeNull();
-      expect(pikachu).not.toBeNull();
-      expect(
-        Math.abs(pikachu!.x + pikachu!.width / 2 - (row!.x + row!.width / 2)),
-      ).toBeLessThan(1);
-    }
-    expect(
-      await prompt.evaluate(
-        (element) => element.scrollWidth <= element.clientWidth,
-      ),
-    ).toBe(true);
-  }
-
-  await prompt.getByRole('button', { name: /Generation I only/ }).click();
-  await expect(prompt).toBeHidden();
   await expect(page.locator('.question')).toBeVisible();
-
+  const snapshot = await page.evaluate(
+    () =>
+      JSON.parse(sessionStorage.getItem('quizmon.active-game.v1')!) as Omit<
+        ActiveGameSnapshot,
+        'settings'
+      > & { modifiers: ActiveGameSnapshot['settings'] },
+  );
+  expect(snapshot.modifiers.difficulty).toBe(1);
+  expect(snapshot.modifiers.generations).toEqual(['I']);
+  expect(snapshot.questions).toHaveLength(10);
   await page.getByRole('button', { name: 'Leave game' }).click();
   await page.getByRole('button', { name: 'Settings' }).click();
   const settings = page.getByRole('dialog', { name: 'Settings' });
+  await expect(
+    settings.getByRole('radio', { name: 'Level 1', exact: true }),
+  ).toBeChecked();
   await expect(settings.getByLabel('I', { exact: true })).toBeChecked();
   await expect(settings.getByLabel('II', { exact: true })).not.toBeChecked();
 });

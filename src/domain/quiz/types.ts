@@ -1,4 +1,6 @@
-import type { Generation, StatName } from '../pokemon/types';
+import type { FormGroup, Generation, StatName } from '../pokemon/types';
+import type { Difficulty } from './difficulty';
+import type { DailyTrack } from './daily-track';
 import type { questionLabels } from './question-labels';
 export type QuestionType = Exclude<keyof typeof questionLabels, 'champion'>;
 
@@ -34,6 +36,7 @@ type QuestionMedia =
   | { kind: 'none' };
 
 export interface PokemonOptionVisual {
+  referenceSrc?: string;
   dexNumber: number;
   silhouette?: boolean;
   src: string;
@@ -69,7 +72,7 @@ type QuestionVisual =
   | { kind: 'type-matchup'; multiplier: number }
   | { kind: 'counter-pick'; multiplier: number };
 
-type QuestionInteraction = 'single-choice' | 'multi-select';
+type QuestionInteraction = 'single-choice' | 'multi-select' | 'search';
 
 interface QuestionAnswer {
   correctOptions: string[];
@@ -96,6 +99,14 @@ export interface QuestionRepetition {
 }
 
 export interface QuestionData {
+  variantLevel?: Difficulty;
+  rulesVersion?: number;
+  namesOnly?: boolean;
+  showTypes?: boolean;
+  initialClues?: number;
+  assistanceAllowed?: boolean;
+  suppliedClues?: string[];
+  assistanceUsed?: number;
   repetition: QuestionRepetition;
   answer: QuestionAnswer;
   category: QuestionCategory;
@@ -121,7 +132,9 @@ export interface QuestionData {
 }
 
 export type GameMode =
-  { kind: 'training' } | { kind: 'daily'; date: string } | { kind: 'league' };
+  | { kind: 'training' }
+  | { kind: 'daily'; date: string; track?: DailyTrack }
+  | { kind: 'league' };
 
 export const legacyQuestionCategories = ['cry', 'scale'] as const;
 export const legacyQuestionTypes = [
@@ -132,6 +145,7 @@ export const legacyQuestionTypes = [
 
 export interface SavedAnswerResult {
   category: QuestionCategory | (typeof legacyQuestionCategories)[number];
+  unassistedSearch?: boolean;
   cluesUsed?: number;
   correct: boolean;
   generation?: Generation;
@@ -152,6 +166,8 @@ export interface AnswerResult extends SavedAnswerResult {
 }
 
 export interface GameResult {
+  dailyTrack?: DailyTrack;
+  rules?: RoundRules;
   answers: SavedAnswerResult[];
   contentVersion: number;
   correctCount: number;
@@ -160,4 +176,13 @@ export interface GameResult {
   questionCount: number;
   score: number;
   scoreVersion?: number;
+}
+
+export interface RoundRules {
+  automaticQuestionTypes?: QuestionType[];
+  version: number;
+  difficulty: Difficulty;
+  generations: Generation[];
+  formGroups: FormGroup[];
+  questionTypes: QuestionType[];
 }

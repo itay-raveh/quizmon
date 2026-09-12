@@ -1,9 +1,11 @@
+import { QUESTION_RULES_VERSION } from './question-variants';
 import { createSeededRandom, shuffle } from '../../lib/random';
 import type { PokemonCatalog } from '../pokemon/types';
 import {
   TRAINING_QUESTION_COUNT,
   defaultGameSettings,
   filterPokemon,
+  getTrainingSettings,
 } from '../settings/game-settings';
 import type { ExperienceSettings, GameSettings } from '../settings/types';
 import {
@@ -39,6 +41,7 @@ const createQuestionContext = (
   history?: QuestionHistory,
 ): QuestionContext => ({
   catalog,
+  difficulty: settings.difficulty,
   pool: filterPokemon(catalog, settings),
   random,
   used: new Set(),
@@ -64,7 +67,11 @@ export const buildQuestions = (
   history?: QuestionHistory,
 ): QuestionData[] => {
   const context = createQuestionContext(catalog, settings, random, history);
-  const count = getQuestionCount(context.pool.length, requestedCount);
+  const count = settings.difficulty
+    ? context.pool.length
+      ? requestedCount
+      : 0
+    : getQuestionCount(context.pool.length, requestedCount);
   const questionTypeDeck = shuffle(settings.questionTypes, random);
   const questions: QuestionData[] = [];
 
@@ -176,4 +183,72 @@ export const buildLeagueQuestions = (
   }
 
   return questions;
+};
+
+export const buildDailyTrackQuestions = (
+  catalog: PokemonCatalog,
+  date: string,
+  settings: GameSettings,
+  scope: string,
+): QuestionData[] => {
+  const identity = `${scope}:${settings.difficulty}:rules${QUESTION_RULES_VERSION}:catalog${catalog.contentVersion}`;
+  const ordinal = Math.floor(Date.parse(`${date}T00:00:00Z`) / 86_400_000);
+  const types = settings.questionTypes;
+  if (!types.length) throw new Error('No eligible Daily questions.');
+  const sequence = Array.from(
+    { length: DAILY_QUESTION_COUNT - 1 },
+    (_, index) => {
+      const slot = ordinal * (DAILY_QUESTION_COUNT - 1) + index;
+      const cycle = Math.floor(slot / types.length);
+      const deck = shuffle(
+        types,
+        createSeededRandom(`daily-types:${identity}:${cycle}`),
+      );
+      return deck[((slot % deck.length) + deck.length) % deck.length]!;
+    },
+  );
+  return buildQuestionSequence(
+    catalog,
+    [...sequence, 'champion'],
+    settings,
+    createSeededRandom(`daily:${date}:${identity}`),
+    undefined,
+    [
+      ...sequence.map((_, index) =>
+        Math.floor((ordinal * 4 + index) / types.length),
+      ),
+      ordinal,
+    ],
+  );
+};
+
+export const resolveTrainingSettings = (
+  catalog: PokemonCatalog,
+  settings: GameSettings,
+): GameSettings => {
+  const resolved = getTrainingSettings(settings);
+  if (!settings.difficulty) return resolved;
+  const automatic = getTrainingSettings({
+    ...settings,
+    questionSelection: 'automatic',
+  });
+  const automaticQuestionTypes = automatic.questionTypes.filter((type) =>
+    Boolean(
+      buildQuestionType(
+        createQuestionContext(
+          catalog,
+          automatic,
+          createSeededRandom(`availability:${type}`),
+        ),
+        type,
+      ),
+    ),
+  );
+  return {
+    ...resolved,
+    automaticQuestionTypes,
+    questionTypes: resolved.questionTypes.filter((type) =>
+      automaticQuestionTypes.includes(type),
+    ),
+  };
 };

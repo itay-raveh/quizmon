@@ -173,6 +173,7 @@ describe('Generation roundup', () => {
   it('requires two generations whenever Custom includes Generation roundup', () => {
     const settings: GameSettings = {
       ...defaultGameSettings,
+      difficulty: undefined,
       generations: ['I'],
       trainingMode: 'custom',
       questionTypes: ['generation-roundup'],

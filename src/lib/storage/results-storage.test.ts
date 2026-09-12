@@ -2,10 +2,14 @@ import { correctAnswer, result } from '../../../tests/fixtures/result';
 import { getHighScoreKey } from '../../domain/quiz/result-ranking';
 import type { GameResult } from '../../domain/quiz/types';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
+import { readPlayerData } from './player-storage';
+import { dailyTracks } from '../../domain/quiz/daily-track';
+import { createBackup, parseBackup } from '../../features/settings/backup';
 import {
   canPersistResults,
   readDailyResult,
   readDailyStreak,
+  readCompletedDailyCount,
   readTrainerStats,
   saveResult,
 } from './results-storage';
@@ -14,6 +18,89 @@ describe('saved results', () => {
   beforeEach(() => window.localStorage.clear());
 
   afterEach(() => vi.useRealTimers());
+
+  it('credits ten independent tracks, but only one shared combo day', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-09-12T12:00:00Z'));
+    for (const track of dailyTracks) {
+      const mode = { kind: 'daily' as const, date: '2026-09-12', track };
+      expect(saveResult(mode, result)).toMatchObject({
+        isSaved: true,
+        isNewBest: true,
+      });
+      expect(readDailyResult(mode.date, track)).toEqual({
+        ...result,
+        dailyTrack: track,
+      });
+      const progress = readTrainerStats();
+      expect(saveResult(mode, { ...result, score: 9999 })).toMatchObject({
+        isSaved: true,
+        isNewBest: false,
+      });
+      expect(readTrainerStats()).toEqual(progress);
+      expect(readDailyStreak('2026-09-12')).toBe(1);
+    }
+    expect(Object.keys(readPlayerData().results.daily)).toHaveLength(10);
+    expect(readPlayerData().results.streak.creditedDates).toEqual([
+      '2026-09-12',
+    ]);
+    expect(readCompletedDailyCount()).toBe(1);
+    expect(
+      parseBackup(JSON.stringify(createBackup())).save.data.results,
+    ).toEqual(readPlayerData().results);
+    vi.setSystemTime(new Date('2026-09-13T12:00:00Z'));
+    saveResult(
+      { kind: 'daily', date: '2026-09-13', track: dailyTracks[9] },
+      result,
+    );
+    expect(readDailyStreak('2026-09-13')).toBe(2);
+  });
+
+  it('preserves a legacy Daily result alongside new tracks', () => {
+    const date = '2026-09-12';
+    saveResult({ kind: 'daily', date }, result);
+    const track = dailyTracks[0]!;
+    saveResult({ kind: 'daily', date, track }, { ...result, score: 10 });
+    expect(readDailyResult(date)).toEqual(result);
+    expect(readDailyResult(date, track)?.score).toBe(10);
+    expect(Object.keys(readPlayerData().results.daily)).toHaveLength(2);
+  });
+
+  it('keeps legacy bests and compares new results only inside their saved rules', () => {
+    const mode = { kind: 'training' } as const;
+    saveResult(mode, { ...result, score: 9000 });
+    const next: GameResult = {
+      ...result,
+      rules: {
+        version: 1,
+        difficulty: 1,
+        generations: ['I'],
+        formGroups: ['standard'],
+        questionTypes: ['pokedex-scan'],
+      },
+    };
+    expect(saveResult(mode, next)).toMatchObject({
+      best: next,
+      isNewBest: true,
+      isSaved: true,
+    });
+    expect(saveResult(mode, { ...next, score: 100 })).toMatchObject({
+      best: next,
+      isNewBest: false,
+    });
+    const harder: GameResult = {
+      ...next,
+      score: 200,
+      rules: { ...next.rules!, difficulty: 5 },
+    };
+    expect(saveResult(mode, harder)).toMatchObject({
+      best: harder,
+      isNewBest: true,
+      isSaved: true,
+    });
+    expect(readPlayerData().results.training.league?.score).toBe(9000);
+    expect(Object.keys(readPlayerData().results.training)).toHaveLength(3);
+  });
 
   it('records a daily result once and restores it', () => {
     const mode = { kind: 'daily', date: '2026-09-01' } as const;
@@ -399,4 +486,66 @@ it('counts qualifying Quick Attack rounds without counting Custom or slow rounds
     { ...defaultGameSettings, trainingMode: 'league' },
   );
   expect(readTrainerStats().quickAttackRounds).toBe(2);
+});
+
+it('qualifies equivalent custom Training at Level 1 and rejects a narrowed family configuration', () => {
+  localStorage.clear();
+  const families = [
+    'pokedex-scan',
+    'sprite-match',
+    'type-check',
+    'type-matchup',
+  ] as const;
+  const round: GameResult = {
+    ...result,
+    rules: {
+      version: 1,
+      difficulty: 1,
+      generations: ['I'],
+      formGroups: ['standard'],
+      questionTypes: [...families],
+      automaticQuestionTypes: [...families],
+    },
+    answers: Array.from({ length: 10 }, () => ({ ...correctAnswer })),
+    questionCount: 10,
+    correctCount: 10,
+    elapsedSeconds: 40,
+  };
+  saveResult({ kind: 'training' }, round, {
+    ...defaultGameSettings,
+    trainingMode: 'custom',
+    questionSelection: 'custom',
+  });
+  expect(readTrainerStats()).toMatchObject({
+    masteryRounds: 1,
+    quickAttackRounds: 1,
+  });
+  saveResult(
+    { kind: 'training' },
+    { ...round, rules: { ...round.rules!, questionTypes: ['pokedex-scan'] } },
+    defaultGameSettings,
+  );
+  expect(readTrainerStats()).toMatchObject({
+    masteryRounds: 1,
+    quickAttackRounds: 1,
+  });
+});
+
+it('credits only an explicitly unassisted new Champion search answer', () => {
+  localStorage.clear();
+  const champion = {
+    ...correctAnswer,
+    category: 'champion' as const,
+    questionType: 'champion' as const,
+  };
+  saveResult(
+    { kind: 'training' },
+    { ...result, answers: [{ ...champion, unassistedSearch: false }] },
+  );
+  expect(readTrainerStats().championAnswersWithoutClues).toBe(0);
+  saveResult(
+    { kind: 'training' },
+    { ...result, answers: [{ ...champion, unassistedSearch: true }] },
+  );
+  expect(readTrainerStats().championAnswersWithoutClues).toBe(1);
 });

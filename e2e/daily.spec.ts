@@ -1,14 +1,20 @@
+import { generations, formGroups } from '../src/domain/pokemon/types';
+import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import type { PlayerSave } from '../src/domain/player/player-save';
-import { buildDailyQuestions } from '../src/domain/quiz/question-generation';
+import {
+  buildDailyTrackQuestions,
+  resolveTrainingSettings,
+} from '../src/domain/quiz/question-generation';
 import {
   advanceToDailyFinale,
+  chooseDaily,
   catalog,
   expect,
   seedBrowserRandom,
   test,
 } from './fixtures';
 
-test('shows a saved daily score instead of another play button', async ({
+test('keeps legacy Daily results shareable without granting another attempt', async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -51,14 +57,13 @@ test('shows a saved daily score instead of another play button', async ({
   });
 
   await page.goto('/?daily=2026-09-01');
-  await expect(page.getByText('Share result')).toBeVisible();
-  await expect(page.getByText('14,400 points')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Share result' }),
+  ).toBeVisible();
   await expect(
     page.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toHaveCount(0);
-  await page
-    .getByRole('button', { name: /Share result.*14,400 points/ })
-    .click();
+  await page.getByRole('button', { name: 'Share result' }).click();
 
   await expect
     .poll(() =>
@@ -67,23 +72,26 @@ test('shows a saved daily score instead of another play button', async ({
         return data ? (JSON.parse(data) as ShareData).text : undefined;
       }),
     )
-    .toContain('https://quizmon.raveh.dev/?daily=2026-09-01&play=1');
+    .toContain('https://quizmon.raveh.dev/?daily=2026-09-01');
 
   const sharedText = await page.evaluate(() => {
     const data = window.sessionStorage.getItem('quizmon.test-share');
     return data ? (JSON.parse(data) as ShareData).text : undefined;
   });
   const sharedUrl = sharedText?.split('\n').at(-1);
-  expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01&play=1');
+  expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01');
   const { pathname, search } = new URL(sharedUrl!);
   await page.goto(`${pathname}${search}`);
-  await expect(page.getByText('14,400 points')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Share result' }),
+  ).toBeVisible();
 });
 
 test('starts the selected daily challenge from a shared link', async ({
   page,
 }) => {
-  await page.goto('/?daily=2026-09-01&play=1');
+  await page.goto('/?daily=2026-09-01');
+  await chooseDaily(page);
 
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
@@ -147,7 +155,7 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
     otherPage.goto('/?daily=2026-09-01'),
   ]);
   await expect(
-    otherPage.getByRole('button', { name: /Play Daily Challenge/ }),
+    otherPage.getByRole('button', { name: /^Play Daily Challenge/ }),
   ).toBeVisible();
 
   await page.evaluate(() => {
@@ -174,9 +182,11 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
     localStorage.setItem('quizmon.player', JSON.stringify(save));
   });
 
-  await expect(otherPage.getByText('Share result')).toBeVisible();
   await expect(
-    otherPage.getByRole('button', { name: /Play Daily Challenge/ }),
+    otherPage.getByRole('button', { name: 'Share result' }),
+  ).toBeVisible();
+  await expect(
+    otherPage.getByRole('button', { name: /^Play Daily Challenge/ }),
   ).toHaveCount(0);
 });
 
@@ -196,7 +206,8 @@ test('starts saved Training settings directly after completing Daily', async ({
       }),
     );
   });
-  await page.goto('/?daily=2026-09-01&play=1');
+  await page.goto('/?daily=2026-09-01');
+  await chooseDaily(page);
   await advanceToDailyFinale(page);
   await page.getByRole('button', { name: /^Show 4 choices/ }).click();
   await page.locator('.answer').first().click();
@@ -205,7 +216,7 @@ test('starts saved Training settings directly after completing Daily', async ({
     page.getByRole('heading', { name: 'Daily complete', exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole('button', { name: 'Share result', exact: true }),
+    page.getByRole('button', { name: 'Share result' }),
   ).toBeVisible();
   const savedDaily = await page.evaluate(() =>
     window.localStorage.getItem('quizmon.player'),
@@ -244,9 +255,16 @@ for (const tag of [[], ['@cross-browser']]) {
     { tag },
     async ({ page }) => {
       const date = '2026-09-08';
-      const expected = buildDailyQuestions(catalog, date);
+      const settings = resolveTrainingSettings(catalog, {
+        ...defaultGameSettings,
+        difficulty: 3,
+        generations: [...generations],
+        formGroups: [...formGroups],
+      });
+      const expected = buildDailyTrackQuestions(catalog, date, settings, 'all');
       await seedBrowserRandom(page, 'unrelated-browser-randomness');
-      await page.goto(`/?daily=${date}&play=1`);
+      await page.goto(`/?daily=${date}`);
+      await chooseDaily(page);
       await expect(page.locator('.question')).toBeVisible();
       await expect
         .poll(() =>
@@ -261,3 +279,14 @@ for (const tag of [[], ['@cross-browser']]) {
     },
   );
 }
+
+test('play links enter Daily without a setup screen', async ({ page }) => {
+  await page.goto('/?daily=2026-09-01&play=1');
+  await expect(
+    page.getByRole('progressbar', { name: 'Quiz progress' }),
+  ).toHaveText('001 / 005');
+  await expect(page.locator('.daily-menu')).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Start Daily', exact: true }),
+  ).toHaveCount(0);
+});

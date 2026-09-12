@@ -7,8 +7,9 @@ import {
 } from './game-settings';
 
 describe('normalizeGameSettings', () => {
-  it('enables every generation by default', () => {
-    expect(defaultGameSettings.generations).toEqual(generations);
+  it('starts new players at Level 1 with Gen I', () => {
+    expect(defaultGameSettings.generations).toEqual(['I']);
+    expect(defaultGameSettings.difficulty).toBe(1);
   });
 
   it('returns defaults for malformed storage', () => {
@@ -23,6 +24,8 @@ describe('normalizeGameSettings', () => {
         speedrunMode: true,
       }),
     ).toEqual({
+      difficulty: 3,
+      questionSelection: 'automatic',
       answerFlow: 'instant',
       formGroups: [...formGroups],
       generations: ['IX'],
@@ -31,6 +34,23 @@ describe('normalizeGameSettings', () => {
       soundVolume: 1,
       timerDisplay: 'seconds',
       trainingMode: 'league',
+    });
+  });
+
+  it('migrates legacy preferences without changing scope or custom families', () => {
+    expect(
+      normalizeGameSettings({
+        generations: [...generations],
+        formGroups: ['regional'],
+        trainingMode: 'custom',
+        questionTypes: ['type-check'],
+      }),
+    ).toMatchObject({
+      difficulty: 3,
+      questionSelection: 'custom',
+      generations,
+      formGroups: ['regional'],
+      questionTypes: ['type-check'],
     });
   });
 
@@ -43,10 +63,11 @@ describe('normalizeGameSettings', () => {
     ).toBe('custom');
   });
 
-  it('excludes advanced formats from League Training but preserves Custom choices', () => {
+  it('preserves legacy League and Custom generation rules', () => {
     expect(
       getTrainingSettings({
         ...defaultGameSettings,
+        difficulty: undefined,
         questionTypes: ['evolution-shift'],
       }),
     ).toMatchObject({
@@ -60,6 +81,7 @@ describe('normalizeGameSettings', () => {
     expect(
       getTrainingSettings({
         ...defaultGameSettings,
+        difficulty: undefined,
         questionTypes: ['ability-check', 'move-check', 'stat-showdown'],
         trainingMode: 'custom',
       }),

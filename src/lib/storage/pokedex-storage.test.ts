@@ -28,6 +28,7 @@ const questionFor = (questionType: QuestionType) => {
     catalog,
     {
       ...defaultGameSettings,
+      difficulty: undefined,
       generations: [...generations],
       questionTypes: [questionType],
     },

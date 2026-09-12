@@ -16,7 +16,11 @@ import { usePokemonCatalog } from '@/hooks/usePokemonCatalog';
 import { useStopwatch } from '@/hooks/useStopwatch';
 import { trackGameStarted } from '@/lib/analytics';
 import { createRoundSeed } from '@/lib/random';
-import { hasActiveGame } from '@/lib/storage/active-game-storage';
+import {
+  clearActiveGame,
+  hasActiveGame,
+  writeActiveGame,
+} from '@/lib/storage/active-game-storage';
 import { useCallback, useReducer, useState } from 'react';
 import { AppView } from './AppView';
 import {
@@ -55,13 +59,32 @@ export const App = () => {
   const startGame = useCallback<StartGame>(
     (nextQuestions, nextSettings, nextMode, seed) => {
       if (!catalog) return;
+      const roundId = createRoundSeed();
+      if (
+        nextMode.kind === 'daily' &&
+        nextMode.track &&
+        !writeActiveGame({
+          questions: nextQuestions,
+          questionCount: nextQuestions.length,
+          settings: nextSettings,
+          mode: nextMode,
+          seed,
+          roundId,
+          answers: [],
+          elapsedMilliseconds: 0,
+          contentVersion: catalog.contentVersion,
+        })
+      ) {
+        clearActiveGame();
+        return false;
+      }
       trackGameStarted(nextMode, nextQuestions.length);
       dispatchSession({
         contentVersion: catalog.contentVersion,
         mode: nextMode,
         settings: nextSettings,
         questions: nextQuestions,
-        roundId: createRoundSeed(),
+        roundId,
         seed,
         type: 'started',
       });
@@ -90,6 +113,13 @@ export const App = () => {
     catalog,
     settings,
     refreshSavedData: trainer.refresh,
+    resume: (snapshot) => {
+      dispatchSession({ ...snapshot, type: 'restored' });
+      reset(snapshot.elapsedMilliseconds);
+      if (snapshot.answers.length === snapshot.questions.length)
+        completeGame(snapshot);
+      else start();
+    },
     startGame,
   });
 
@@ -165,6 +195,7 @@ export const App = () => {
         }}
         navigation={navigation}
         question={{
+          assistance: (count) => dispatchSession({ type: 'assistance', count }),
           answer: answerQuestion,
           elapsedMilliseconds,
           elapsedSeconds,

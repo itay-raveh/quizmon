@@ -93,6 +93,8 @@ test('registers a correct answer immediately even when the round is abandoned', 
 }) => {
   const settings: GameSettings = {
     ...defaultGameSettings,
+    difficulty: 3,
+    questionSelection: 'custom',
     generations: [...generations],
     questionTypes: ['type-twins'],
     trainingMode: 'custom',

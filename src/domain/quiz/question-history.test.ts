@@ -46,7 +46,12 @@ const generate = (
 ) =>
   buildQuestions(
     catalog,
-    { ...defaultGameSettings, questionTypes: [type], generations },
+    {
+      ...defaultGameSettings,
+      difficulty: undefined,
+      questionTypes: [type],
+      generations,
+    },
     createSeededRandom(seed),
     count,
     history,
@@ -65,13 +70,17 @@ it('retains history when generation selections change', () => {
     10,
   );
   const history = initial.reduce(rememberQuestion, emptyQuestionHistory());
-  const expanded = generate(
-    'evolution-shift',
-    history,
-    'expanded',
-    10,
-    defaultGameSettings.generations,
-  );
+  const expanded = generate('evolution-shift', history, 'expanded', 10, [
+    'I',
+    'II',
+    'III',
+    'IV',
+    'V',
+    'VI',
+    'VII',
+    'VIII',
+    'IX',
+  ]);
   const combined = expanded.reduce(rememberQuestion, history);
   const restricted = generate('evolution-shift', combined, 'restricted', 10);
   expect(

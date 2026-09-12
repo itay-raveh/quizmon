@@ -98,7 +98,7 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
         candidate.speciesName !== pokemon.speciesName &&
         regions.get(option) === region,
     );
-    if (possibleAnswers.length < 3) return [];
+    if (!context.variant?.search && possibleAnswers.length < 3) return [];
     return [{ target, before, after, possibleAnswers }];
   });
   const selected = pickFreshTarget(

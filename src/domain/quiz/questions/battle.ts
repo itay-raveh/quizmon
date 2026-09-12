@@ -29,7 +29,10 @@ const createMatchupChecker = (
 
 export const buildMatchupQuestion: QuestionBuilder = (context) => {
   const attackTypes = Object.keys(context.catalog.typeRelations);
-  for (const multiplier of shuffle(matchupMultipliers, context.random)) {
+  for (const multiplier of shuffle(
+    context.variant?.multipliers ?? matchupMultipliers,
+    context.random,
+  )) {
     const targets = context.pool.filter(({ pokemon }) =>
       attackTypes.some(
         (type) =>
@@ -101,7 +104,10 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
     typeGroups.set(key, group);
   }
 
-  for (const multiplier of shuffle(matchupMultipliers, context.random)) {
+  for (const multiplier of shuffle(
+    context.variant?.multipliers ?? matchupMultipliers,
+    context.random,
+  )) {
     const eligibleTypes = new Set<string>();
     for (const [key, defender] of typeGroups) {
       const matches = createMatchupChecker(context.catalog, defender.types);

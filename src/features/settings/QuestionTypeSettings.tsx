@@ -101,7 +101,9 @@ export const QuestionTypeSettings = ({
               ? 'Select at least two generations for Generation roundup.'
               : questionTypesAreValid
                 ? 'Choose a different generation or question type combination.'
-                : 'Choose at least one question type.'}
+                : draft.questionTypes.length === 0
+                  ? 'Choose at least one question type.'
+                  : 'No questions are available for this configuration. Change your selections.'}
           </p>
         ) : null}
         {groupedQuestionTypes.map((group) => {

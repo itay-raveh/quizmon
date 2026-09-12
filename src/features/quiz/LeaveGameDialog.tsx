@@ -2,11 +2,13 @@ import { GameButton } from '@/components/GameButton';
 import { useModalDialog } from '@/hooks/useModalDialog';
 
 interface LeaveGameDialogProps {
+  resumable?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
 export const LeaveGameDialog = ({
+  resumable = false,
   onCancel,
   onConfirm,
 }: LeaveGameDialogProps) => {
@@ -27,7 +29,9 @@ export const LeaveGameDialog = ({
       <div className="leave-game-dialog__body">
         <h2 id="leave-game-title">Leave this game?</h2>
         <p id="leave-game-description">
-          Your answers from this game will be lost.
+          {resumable
+            ? 'Your Daily progress is saved. Choose this challenge to resume it.'
+            : 'Your answers from this game will be lost.'}
         </p>
         <div className="leave-game-dialog__actions">
           <GameButton autoFocus tone="quiet" onClick={cancel}>

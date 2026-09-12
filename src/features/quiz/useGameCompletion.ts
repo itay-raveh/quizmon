@@ -1,3 +1,4 @@
+import { snapshotRoundRules } from '@/domain/quiz/round-rules';
 import {
   recordSessionAnswer,
   type CompleteGame,
@@ -15,7 +16,10 @@ import {
 } from '@/domain/quiz/scoring';
 import type { AnswerResult, GameResult } from '@/domain/quiz/types';
 import { trackGameCompleted } from '@/lib/analytics';
-import { clearActiveGame } from '@/lib/storage/active-game-storage';
+import {
+  clearActiveGame,
+  clearDailyAttempt,
+} from '@/lib/storage/active-game-storage';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { registerPokedexAnswer } from '@/lib/storage/pokedex-storage';
 import { useCallback, useRef, type Dispatch } from 'react';
@@ -51,6 +55,10 @@ export const useGameCompletion = ({
   const complete = useCallback<CompleteGame>(
     ({ answers, contentVersion, mode, settings, questions, seed }) => {
       const result = {
+        rules: snapshotRoundRules(settings, questions),
+        ...(mode.kind === 'daily' && mode.track
+          ? { dailyTrack: mode.track }
+          : {}),
         answers,
         contentVersion,
         correctCount: answers.filter(({ correct }) => correct).length,
@@ -83,6 +91,8 @@ export const useGameCompletion = ({
         : [];
       progressStart.current = null;
       clearActiveGame();
+      if (best.isSaved && mode.kind === 'daily' && mode.track)
+        clearDailyAttempt(mode.date, mode.track);
       refreshTrainerStats();
       trackGameCompleted(mode, result);
       dispatch({

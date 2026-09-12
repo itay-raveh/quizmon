@@ -13,6 +13,8 @@ import {
   type QuestionType,
 } from '../quiz/types';
 import { type TrainingMode } from '../settings/types';
+import { getRulesScoreKey } from '../quiz/round-rules';
+import { hasDailyResultOnDate } from '../quiz/daily-track';
 
 export const STREAK_VERSION = 1;
 export const TRAINER_PROGRESS_VERSION = 2;
@@ -43,7 +45,7 @@ export interface SavedResults {
   league: LeagueState;
   progress: TrainerProgress;
   streak: DailyStreakState;
-  training: Partial<Record<TrainingMode, GameResult>>;
+  training: Partial<Record<TrainingMode | `rules:${string}`, GameResult>>;
 }
 
 const emptyProgress = (): TrainerProgress => ({
@@ -89,7 +91,9 @@ const normalizeStreak = (
   return {
     creditedDates: [
       ...new Set(
-        creditedDates.filter((date) => isDailyDate(date) && daily[date]),
+        creditedDates.filter(
+          (date) => isDailyDate(date) && hasDailyResultOnDate(daily, date),
+        ),
       ),
     ].sort(),
     version: STREAK_VERSION,
@@ -160,6 +164,12 @@ const normalizeProgress = (
 const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
   const records = readResultRecord(value);
   return {
+    ...Object.fromEntries(
+      Object.entries(records).filter(
+        ([key, result]) =>
+          key.startsWith('rules:') && getRulesScoreKey(result) === key,
+      ),
+    ),
     ...(records.custom ? { custom: records.custom } : {}),
     ...(records.league ? { league: records.league } : {}),
   };

@@ -14,7 +14,7 @@ export type StartGame = (
   settings: GameSettings,
   mode: GameMode,
   seed: string,
-) => void;
+) => boolean | void;
 
 export type GameSession =
   | { phase: 'landing' }
@@ -47,11 +47,12 @@ type GameRound = Omit<
   'phase' | 'questionIndex'
 >;
 
-export type CompleteGame = (round: GameRound) => void;
+export type CompleteGame = (round: GameRound) => boolean | void;
 
 export type GameSessionAction =
   | (Omit<GameRound, 'answers'> & { type: 'started' })
   | (GameRound & { type: 'restored' })
+  | { type: 'assistance'; count: number }
   | { answer: AnswerResult; type: 'answer-recorded' }
   | { answer: AnswerResult; type: 'advanced' }
   | (Omit<
@@ -95,6 +96,17 @@ export const gameSessionReducer = (
         questions: action.questions,
         seed: action.seed,
       };
+    case 'assistance':
+      return session.phase === 'questions'
+        ? {
+            ...session,
+            questions: session.questions.map((question, index) =>
+              index === session.questionIndex
+                ? { ...question, assistanceUsed: action.count }
+                : question,
+            ),
+          }
+        : session;
     case 'answer-recorded':
       return session.phase === 'questions'
         ? recordSessionAnswer(session, action.answer)

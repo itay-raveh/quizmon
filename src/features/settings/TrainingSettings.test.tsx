@@ -28,28 +28,19 @@ const TrainingSettingsHarness = ({ initial }: { initial: GameSettings }) => {
 };
 
 describe('Training settings', () => {
-  it('uses a League or Custom control with no round-length setting', () => {
+  it('shows five numbered levels and retains generation and form controls', () => {
     render(<TrainingSettingsHarness initial={defaultGameSettings} />);
-
-    const trainingMode = screen.getByRole('group', { name: 'Training mode' });
-    expect(trainingMode).toBeVisible();
-    expect(screen.getByRole('radio', { name: 'League' })).toBeChecked();
-    expect(screen.getByRole('radio', { name: 'Custom' })).not.toBeChecked();
-    expect(
-      screen.queryByRole('group', { name: 'Round length' }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Difficulty' })).toBeVisible();
+    expect(screen.getAllByRole('radio')).toHaveLength(5);
+    expect(screen.getByRole('radio', { name: 'Level 1' })).toBeChecked();
+    expect(screen.getByRole('group', { name: 'Generations' })).toBeVisible();
+    expect(screen.getByRole('group', { name: 'Forms' })).toBeVisible();
     expect(
       screen.queryByRole('heading', { name: 'Question types' }),
     ).not.toBeInTheDocument();
-    const generationsPicker = screen.getByRole('group', {
-      name: 'Generations',
-    });
-
     expect(
-      generationsPicker.closest('.settings-section')?.nextElementSibling
-        ?.nextElementSibling,
-    ).toBe(trainingMode);
-    expect(screen.queryByText(/10 questions/)).not.toBeInTheDocument();
+      screen.queryByRole('radio', { name: 'League' }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows question types only in Custom and preserves the selection', () => {
@@ -62,7 +53,9 @@ describe('Training settings', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('radio', { name: 'Custom' }));
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: 'Customize questions' }),
+    );
     expect(
       screen.getByRole('heading', { name: 'Question types' }),
     ).toBeVisible();
@@ -70,12 +63,16 @@ describe('Training settings', () => {
       screen.getByRole('checkbox', { name: 'Evolution shift' }),
     ).toBeChecked();
 
-    fireEvent.click(screen.getByRole('radio', { name: 'League' }));
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: 'Customize questions' }),
+    );
     expect(
       screen.queryByRole('heading', { name: 'Question types' }),
     ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('radio', { name: 'Custom' }));
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: 'Customize questions' }),
+    );
     expect(
       screen.getByRole('checkbox', { name: 'Evolution shift' }),
     ).toBeChecked();
@@ -87,7 +84,7 @@ describe('Training settings', () => {
         initial={{
           ...defaultGameSettings,
           generations: ['I', 'II'],
-          trainingMode: 'custom',
+          questionSelection: 'custom',
           questionTypes: ['generation-roundup'],
         }}
       />,

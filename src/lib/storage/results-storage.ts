@@ -13,6 +13,12 @@ import {
   isBetterResult,
 } from '../../domain/quiz/result-ranking';
 import { type GameMode, type GameResult } from '../../domain/quiz/types';
+import { getRulesScoreKey } from '../../domain/quiz/round-rules';
+import {
+  getDailyResultKey,
+  parseDailyResultKey,
+  type DailyTrack,
+} from '../../domain/quiz/daily-track';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { type GameSettings } from '../../domain/settings/types';
 import {
@@ -28,11 +34,18 @@ const writeResults = (results: SavedResults): boolean =>
 
 export const canPersistResults = canPersistPlayerData;
 
-export const readDailyResult = (date: string): GameResult | null =>
-  readResults().daily[date] ?? null;
+export const readDailyResult = (
+  date: string,
+  track?: DailyTrack,
+): GameResult | null =>
+  readResults().daily[getDailyResultKey(date, track)] ?? null;
 
 export const readCompletedDailyCount = (): number =>
-  Object.keys(readResults().daily).length;
+  new Set(
+    Object.keys(readResults().daily)
+      .map((key) => parseDailyResultKey(key)?.date)
+      .filter(Boolean),
+  ).size;
 
 export const readDailyStreak = (today = getLocalDate()): number =>
   getDailyStreak(readResults().streak.creditedDates, today);
@@ -59,13 +72,24 @@ export const saveResult = (
   };
 
   if (mode.kind === 'daily') {
-    const previous = results.daily[mode.date];
+    const key = getDailyResultKey(mode.date, mode.track);
+    const dailyResult = mode.track
+      ? { ...result, dailyTrack: { ...mode.track } }
+      : result;
+    const previous = results.daily[key];
     if (previous) {
       return { best: previous, isNewBest: false, isSaved: true };
     }
-    const previousBest = getBestResult(Object.values(results.daily));
+    const previousBest = getBestResult(
+      Object.values(results.daily).filter(
+        (previous) =>
+          getRulesScoreKey(previous) === getRulesScoreKey(dailyResult) &&
+          getDailyResultKey('', previous.dailyTrack) ===
+            getDailyResultKey('', mode.track),
+      ),
+    );
     const isNewBest = !previousBest || isBetterResult(result, previousBest);
-    results.daily[mode.date] = result;
+    results.daily[key] = dailyResult;
     recordProgress();
     if (
       mode.date === getLocalDate() &&
@@ -76,7 +100,7 @@ export const saveResult = (
     }
     const isSaved = writeResults(results);
     return {
-      best: isNewBest ? result : previousBest,
+      best: isNewBest ? dailyResult : previousBest,
       isNewBest: isNewBest && isSaved,
       isSaved,
     };
@@ -102,7 +126,8 @@ export const saveResult = (
     };
   }
 
-  const key = settings.trainingMode;
+  const key = (getRulesScoreKey(result) ??
+    settings.trainingMode) as keyof SavedResults['training'];
   const previous = results.training[key];
   const isNewBest = !previous || isBetterResult(result, previous);
   recordProgress();

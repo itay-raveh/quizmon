@@ -52,8 +52,10 @@ interface QuestionScreenProps extends UseQuestionAnswerOptions {
 const QuestionPrompt = ({
   className,
   prompt,
+  hideNumbers = false,
 }: {
   className: string;
+  hideNumbers?: boolean;
   prompt: QuestionPromptData;
 }) => (
   <p className={className} id="question-prompt">
@@ -64,9 +66,11 @@ const QuestionPrompt = ({
         {prompt.before}
         <span className="question__subject">
           <b>{formatPokemonName(prompt.name)}</b>{' '}
-          <span className="question__subject-number">
-            ({formatPokedexNumber(prompt.dexNumber)})
-          </span>
+          {!hideNumbers ? (
+            <span className="question__subject-number">
+              ({formatPokedexNumber(prompt.dexNumber)})
+            </span>
+          ) : null}
         </span>
         {prompt.after}
       </>
@@ -84,11 +88,13 @@ export const QuestionScreen = ({
   answerFlow,
   typeRelations,
   elapsedMilliseconds,
+  questionStartedMilliseconds,
   elapsedSeconds,
   interactionPaused,
   mode,
   nextQuestion,
   number,
+  onAssistance,
   onAnswerRecorded,
   onAnswer,
   onFeedbackStart,
@@ -111,9 +117,11 @@ export const QuestionScreen = ({
   } = useQuestionAnswer({
     answerFlow,
     elapsedMilliseconds,
+    questionStartedMilliseconds,
     interactionPaused,
     nextQuestion,
     onAnswer,
+    onAssistance,
     onAnswerRecorded,
     onFeedbackStart,
     question,
@@ -139,14 +147,17 @@ export const QuestionScreen = ({
     : mode.kind === 'daily'
       ? getModeLabel(mode)
       : null;
-  const championChoicesVisible = isChampion && cluesShown > 0;
+  const usesSearch =
+    question.answer.interaction === 'search' ||
+    (isChampion && !question.rulesVersion);
+  const championChoicesVisible = isChampion && (!usesSearch || cluesShown > 0);
   const timerHidden = timerDisplay === 'hidden';
   const timerText =
     timerDisplay === 'milliseconds'
       ? formatDurationMilliseconds(elapsedMilliseconds)
       : formatDuration(elapsedSeconds);
   const checkAnswerAction =
-    question.answer.interaction !== 'single-choice' && !answered ? (
+    question.answer.interaction === 'multi-select' && !answered ? (
       <GameButton
         className="check-answer"
         disabled={selectedOptions.length === 0}
@@ -199,7 +210,11 @@ export const QuestionScreen = ({
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       {visualInstruction ? (
-        <QuestionPrompt className="visually-hidden" prompt={question.prompt} />
+        <QuestionPrompt
+          className="visually-hidden"
+          hideNumbers={question.namesOnly}
+          prompt={question.prompt}
+        />
       ) : null}
       <div className="question__context">
         <div
@@ -211,10 +226,17 @@ export const QuestionScreen = ({
           ) : (
             <QuestionPrompt
               className="question__prompt"
+              hideNumbers={question.namesOnly}
               prompt={question.prompt}
             />
           )}
         </div>
+        {question.suppliedClues?.map((clue) => (
+          <p key={clue}>{clue}</p>
+        ))}
+        {question.showTypes ? (
+          <TypeBadges types={question.pokemonTypes} />
+        ) : null}
         {!isChampion || cluesShown > 1 || answered ? (
           <div className="question__stimulus">
             {isChampion && !isLeague && cluesShown > 1 ? (
@@ -244,8 +266,11 @@ export const QuestionScreen = ({
       ) : null}
 
       <div className="question__response">
-        {isChampion && !championChoicesVisible && question.searchOptions ? (
+        {usesSearch &&
+        (!isChampion || !championChoicesVisible) &&
+        question.searchOptions ? (
           <ChampionSearch
+            hideNumbers={Boolean(question.rulesVersion)}
             answered={answered}
             correctOption={question.answer.correctOptions[0] ?? ''}
             disabled={interactionPaused}
@@ -284,12 +309,18 @@ export const QuestionScreen = ({
         {checkAnswerAction}
         {isChampion &&
         !isLeague &&
+        question.assistanceAllowed !== false &&
         !answered &&
         question.clues &&
         cluesShown <= question.clues.length ? (
           <GameButton className="clue-button" tone="quiet" onClick={revealClue}>
             {cluesShown === 0 ? 'Show 4 choices' : 'Reveal another clue'} ·{' '}
-            {getAnswerPoints(question, true, cluesShown + 1)} points
+            {getAnswerPoints(
+              question,
+              true,
+              cluesShown + 1 + (question.initialClues ?? 0),
+            )}{' '}
+            points
           </GameButton>
         ) : null}
         {answered && answerFlow !== 'instant' ? (

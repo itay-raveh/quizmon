@@ -54,6 +54,25 @@ describe('active game storage', () => {
     });
   });
 
+  it('does not assign difficulty to a legacy unfinished round', () => {
+    const settings = { ...snapshot.settings };
+    delete settings.difficulty;
+    delete settings.questionSelection;
+    writeActiveGame({ ...snapshot, settings });
+    expect(readActiveGame(catalog)?.settings).toEqual(settings);
+    expect(readActiveGame(catalog)?.questions).toEqual(snapshot.questions);
+  });
+
+  it('restores the original Daily track rather than a later selection', () => {
+    const mode = {
+      kind: 'daily' as const,
+      date: '2026-09-12',
+      track: { difficulty: 5 as const, scope: 'gen-i' as const },
+    };
+    writeActiveGame({ ...snapshot, mode });
+    expect(readActiveGame(catalog)?.mode).toEqual(mode);
+  });
+
   it('fails closed for corrupt or incompatible snapshots', () => {
     window.sessionStorage.setItem(
       'quizmon.active-game.v1',

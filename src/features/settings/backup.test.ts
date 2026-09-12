@@ -382,6 +382,8 @@ it('keeps the published version 1 fixture readable without losing fields', () =>
     ...v1Fixture.save.data,
     settings: {
       ...v1Fixture.save.data.settings,
+      difficulty: 3,
+      questionSelection: 'custom',
       formGroups: defaultGameSettings.formGroups,
     },
     results: {
@@ -406,17 +408,19 @@ it('keeps the published version 1 fixture readable without losing fields', () =>
   expect(readPlayerSave().data).toEqual(backup.save.data);
 });
 
-it('does not bypass the Generation roundup settings requirement during restore', () => {
+it('preserves temporarily unavailable custom families through backup restore', () => {
   const backup = createBackup();
   backup.save.data.settings = {
     ...defaultGameSettings,
-    trainingMode: 'custom',
+    difficulty: 3,
+    questionSelection: 'custom',
     generations: ['II'],
     questionTypes: ['generation-roundup'],
   };
-  const before = localStorage.getItem(PLAYER_STORAGE_KEY);
-  expect(() => restoreBackup(backup)).toThrow('fewer than two generations');
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
+  restoreBackup(backup);
+  expect(readPlayerSave().data.settings).toMatchObject(
+    backup.save.data.settings,
+  );
 });
 
 it.each([

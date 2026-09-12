@@ -52,7 +52,7 @@ export const questionDefinitions = {
     group: 'knowledge',
   },
   'type-check': {
-    description: 'Choose one type a Pokémon has.',
+    description: 'Identify a Pokémon’s typing.',
     group: 'knowledge',
   },
   'odd-one-out': {

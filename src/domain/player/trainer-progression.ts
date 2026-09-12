@@ -178,7 +178,7 @@ const trainerBadgeDefinitions = [
         stats.quickAttackRounds ?? Number(stats.quickAttackCompleted),
         [1, 10, 50],
         (goal) =>
-          `Finish ${goal} League Training round${goal === 1 ? '' : 's'} in under 60 seconds each with at least 8 correct answers`,
+          `Finish ${goal} ten-question Training round${goal === 1 ? '' : 's'} in under 60 seconds each with at least 8 correct answers, using automatic questions or an equivalent custom selection`,
       ),
   },
   {
@@ -188,7 +188,8 @@ const trainerBadgeDefinitions = [
       countMilestones(
         stats.masteryRounds,
         [3, 25, 100],
-        (goal) => `Finish ${goal} perfect League Training rounds`,
+        (goal) =>
+          `Finish ${goal} perfect ten-question Training rounds using automatic questions or an equivalent custom selection`,
       ),
   },
   {
@@ -209,7 +210,7 @@ const trainerBadgeDefinitions = [
         stats.championAnswersWithoutClues,
         [1, 5, 30],
         (goal) =>
-          `Solve ${goal} Champion question${goal === 1 ? '' : 's'} without clues`,
+          `Solve ${goal} Champion question${goal === 1 ? '' : 's'} using description-only search without assistance`,
       ),
   },
 ] as const satisfies readonly TrainerBadgeDefinition[];

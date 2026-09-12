@@ -53,7 +53,9 @@ const pickScanSprite = (
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target) return undefined;
-  const sprite = pickScanSprite(target.pokemon, context.random);
+  const sprite = context.variant?.currentSprite
+    ? target.pokemon.sprite
+    : pickScanSprite(target.pokemon, context.random);
   if (!sprite) return undefined;
   return makeIdentityQuestion(context, {
     target,

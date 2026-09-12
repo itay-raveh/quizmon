@@ -2,8 +2,8 @@ import { GenerationLabel } from '@/components/GenerationLabel';
 import { SelectionTile } from '@/components/SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
 import { formGroups, generations } from '@/domain/pokemon/types';
-import { isLeagueTraining } from '@/domain/settings/game-settings';
-import { type GameSettings, trainingModes } from '@/domain/settings/types';
+import { difficultyLevels } from '@/domain/quiz/difficulty';
+import { type GameSettings } from '@/domain/settings/types';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
 
@@ -34,6 +34,7 @@ export const TrainingSettings = ({
   generationsAreValid,
   generationsHeading,
   matchingCount,
+  unavailableSelectedCount,
   onChange,
   questionTypesAreValid,
   questionTypesHeading,
@@ -42,7 +43,7 @@ export const TrainingSettings = ({
 }: TrainingSettingsProps) => {
   const allGenerationsSelected =
     draft.generations.length === generations.length;
-  const leagueTraining = isLeagueTraining(draft);
+  const customized = draft.questionSelection === 'custom';
   const hasGenerationError = submitted && !generationsAreValid;
 
   return (
@@ -52,6 +53,30 @@ export const TrainingSettings = ({
           Training changes apply to your next game.
         </p>
       ) : null}
+
+      <fieldset className="difficulty-settings">
+        <legend>Difficulty</legend>
+        <div className="difficulty-control">
+          {difficultyLevels.map((level) => (
+            <SelectionTile
+              key={level}
+              checked={draft.difficulty === level}
+              inputType="radio"
+              name="difficulty"
+              variant="training-mode"
+              label={
+                <>
+                  <span className="visually-hidden">{`Level ${level}`}</span>
+                  <span aria-hidden="true">{level}</span>
+                </>
+              }
+              onChange={() =>
+                onChange((current) => ({ ...current, difficulty: level }))
+              }
+            />
+          ))}
+        </div>
+      </fieldset>
 
       <section className="settings-section">
         <div className="settings-section__heading">
@@ -167,30 +192,26 @@ export const TrainingSettings = ({
         ) : null}
       </section>
 
-      <fieldset className="training-mode-settings">
-        <legend>Training mode</legend>
-        <div className="training-mode-control">
-          {trainingModes.map((mode) => (
-            <SelectionTile
-              checked={draft.trainingMode === mode}
-              inputType="radio"
-              key={mode}
-              label={mode === 'league' ? 'League' : 'Custom'}
-              name="training-mode"
-              onChange={(event) => {
-                if (!event.target.checked) return;
-                onChange((current) => ({
-                  ...current,
-                  trainingMode: mode,
-                }));
-              }}
-              variant="training-mode"
-            />
-          ))}
-        </div>
-      </fieldset>
+      <section className="settings-section">
+        <SelectionTile
+          checked={customized}
+          label="Customize questions"
+          onChange={(event) =>
+            onChange((current) => ({
+              ...current,
+              questionSelection: event.target.checked ? 'custom' : 'automatic',
+            }))
+          }
+        />
+      </section>
 
-      {leagueTraining ? null : (
+      {customized && unavailableSelectedCount > 0 ? (
+        <p className="settings-note">
+          Some selected questions are unavailable for this configuration and
+          will be skipped.
+        </p>
+      ) : null}
+      {!customized ? null : (
         <QuestionTypeSettings
           draft={draft}
           heading={questionTypesHeading}

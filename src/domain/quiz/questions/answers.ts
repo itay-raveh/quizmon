@@ -114,8 +114,9 @@ export const pokemonOptions = (
       pokemon: context.catalog.pokemon[candidate]!,
     })),
   );
+  if (context.variant?.distractors === 'dissimilar') scored.reverse();
   let shortlisted = scored.slice(0, 15);
-  if (scored.length < 15) {
+  if (scored.length < 15 && context.variant?.distractors !== 'dissimilar') {
     const bestScore = scored[0]?.[0]
       ? similarityFor(scored[0][0].name)
       : similarityFor('');

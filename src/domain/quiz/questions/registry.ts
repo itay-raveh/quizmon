@@ -1,3 +1,5 @@
+import { getQuestionVariant } from '../question-variants';
+import { applyQuestionVariant } from './variants';
 import {
   getPokemonRecency,
   getQuestionRecency,
@@ -64,7 +66,19 @@ export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionData['questionType'],
 ): QuestionData | undefined => {
+  const resolved = context.difficulty
+    ? getQuestionVariant(questionType, context.difficulty)
+    : undefined;
+  if (context.difficulty && !resolved) return undefined;
   const build = questionBuilders[questionType];
+  const variantContext = {
+    ...context,
+    questionType,
+    variant: resolved?.variant,
+    pool: resolved?.variant.singleType
+      ? context.pool.filter(({ pokemon }) => pokemon.types.length === 1)
+      : context.pool,
+  };
   let selected: QuestionData | undefined;
   let selectedRarity: string | undefined;
   const rarity = (question: QuestionData) =>
@@ -115,11 +129,20 @@ export const buildQuestionType = (
       ? questionRepeatPolicy.candidateAttempts
       : 1;
   for (let attempt = 0; attempt < attempts; attempt++) {
-    const draft = build({
-      ...context,
-      questionType,
-    });
-    if (!draft || draft.options.length !== 4) continue;
+    const original = build(variantContext);
+    if (
+      !original ||
+      (!resolved?.variant.search && original.options.length !== 4)
+    )
+      continue;
+    const draft = resolved
+      ? applyQuestionVariant(
+          original,
+          variantContext,
+          resolved.variant,
+          resolved.level,
+        )
+      : original;
     const generation = context.catalog.pokemon[draft.pokemonName]?.generation;
     if (!generation) continue;
     const question = {

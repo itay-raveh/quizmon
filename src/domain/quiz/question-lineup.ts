@@ -1,3 +1,4 @@
+import { isDifficulty } from './difficulty';
 import {
   isChoice,
   isFiniteNonnegative,
@@ -109,7 +110,7 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
     answer.correctOptions.length > 0 &&
     new Set(answer.correctOptions).size === answer.correctOptions.length &&
     answer.correctOptions.every((option) => options.includes(option)) &&
-    (answer.interaction === 'single-choice'
+    (answer.interaction === 'single-choice' || answer.interaction === 'search'
       ? answer.correctOptions.length === 1
       : answer.interaction === 'multi-select') &&
     (prompt.kind === 'text'
@@ -120,6 +121,14 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
         text(prompt.name) &&
         isSafeNonnegativeInteger(prompt.dexNumber)) &&
     variant(value.media, mediaChecks) &&
+    optional(value.variantLevel, isDifficulty) &&
+    optional(value.namesOnly, (v) => typeof v === 'boolean') &&
+    optional(value.showTypes, (v) => typeof v === 'boolean') &&
+    optional(value.assistanceUsed, isSafeNonnegativeInteger) &&
+    optional(value.initialClues, isSafeNonnegativeInteger) &&
+    optional(value.rulesVersion, isSafeNonnegativeInteger) &&
+    optional(value.suppliedClues, strings) &&
+    optional(value.assistanceAllowed, (v) => typeof v === 'boolean') &&
     optional(value.visual, (v) => variant(v, visualChecks)) &&
     optional(value.concealOptionLabels, (v) => typeof v === 'boolean') &&
     optional(

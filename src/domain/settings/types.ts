@@ -1,5 +1,6 @@
 import type { FormGroup, Generation } from '../pokemon/types';
 import type { QuestionType } from '../quiz/types';
+import type { Difficulty } from '../quiz/difficulty';
 export const trainingModes = ['league', 'custom'] as const;
 export const answerFlows = ['manual', 'auto', 'instant'] as const;
 export const timerDisplays = ['hidden', 'seconds', 'milliseconds'] as const;
@@ -21,6 +22,9 @@ export interface ExperienceSettings {
 }
 
 export interface GameSettings extends ExperienceSettings {
+  automaticQuestionTypes?: QuestionType[];
+  difficulty?: Difficulty;
+  questionSelection?: 'automatic' | 'custom';
   formGroups: FormGroup[];
   generations: Generation[];
   questionTypes: QuestionType[];

@@ -88,7 +88,9 @@ export const QuestionArtwork = ({
   const { media, visual } = question;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;
   const subjectDexNumber =
-    question.prompt.kind === 'pokemon' ? question.prompt.dexNumber : undefined;
+    question.prompt.kind === 'pokemon' && !question.namesOnly
+      ? question.prompt.dexNumber
+      : undefined;
   const subject = {
     name: question.pokemonName,
     dexNumber: subjectDexNumber,
@@ -97,7 +99,7 @@ export const QuestionArtwork = ({
 
   if (
     (visual?.kind === 'type-check' || visual?.kind === 'type-twins') &&
-    pixelSprite
+    (pixelSprite || question.namesOnly)
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
@@ -105,7 +107,10 @@ export const QuestionArtwork = ({
           {visual.kind === 'type-check' ? (
             <MysteryType answered={answered} types={question.pokemonTypes} />
           ) : (
-            <SubjectTypes answered={answered} types={question.pokemonTypes} />
+            <SubjectTypes
+              answered={answered || Boolean(question.showTypes)}
+              types={question.pokemonTypes}
+            />
           )}
         </Subject>
       </div>
@@ -170,7 +175,10 @@ export const QuestionArtwork = ({
     );
   }
 
-  if (visual?.kind === 'evolution-shift' && pixelSprite) {
+  if (
+    visual?.kind === 'evolution-shift' &&
+    (pixelSprite || question.namesOnly)
+  ) {
     const { evolution, gainedType } = visual;
     const retainedTypes = evolution.types.filter((type) => type !== gainedType);
     return (
@@ -185,7 +193,13 @@ export const QuestionArtwork = ({
           <RelationArrow />
           <span className="question-relation__caption">evolves into</span>
         </div>
-        <Subject {...evolution} concealed={!answered} framed>
+        <Subject
+          {...evolution}
+          dexNumber={question.namesOnly ? undefined : evolution.dexNumber}
+          src={question.namesOnly ? undefined : evolution.src}
+          concealed={!answered}
+          framed
+        >
           <span className="question-visual__evolution-types">
             {retainedTypes.length > 0 ? (
               <>
@@ -202,7 +216,7 @@ export const QuestionArtwork = ({
 
   if (
     (visual?.kind === 'type-matchup' || visual?.kind === 'counter-pick') &&
-    pixelSprite
+    (pixelSprite || question.namesOnly)
   ) {
     const answer = question.answer.correctOptions[0];
     const answerVisual = answer ? question.optionVisuals?.[answer] : undefined;
@@ -227,7 +241,10 @@ export const QuestionArtwork = ({
         )}
         <TypeEffectArrow multiplier={visual.multiplier} />
         <Subject {...subject}>
-          <SubjectTypes answered={answered} types={question.pokemonTypes} />
+          <SubjectTypes
+            answered={answered || Boolean(question.showTypes)}
+            types={question.pokemonTypes}
+          />
         </Subject>
       </div>
     );

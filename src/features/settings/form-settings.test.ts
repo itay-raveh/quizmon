@@ -1,5 +1,5 @@
 import { getFormGroup, getFormGroupGenerations } from '@/domain/pokemon/forms';
-import { formGroups } from '@/domain/pokemon/types';
+import { formGroups, generations } from '@/domain/pokemon/types';
 import { getDailySettings } from '@/domain/quiz/daily';
 import { getLeagueSettings } from '@/domain/quiz/league';
 import { buildQuestions } from '@/domain/quiz/question-generation';
@@ -75,12 +75,14 @@ it('requires a selected group available in the selected generations', () => {
   expect(
     getTrainingSettingsValidation(catalog, {
       ...defaultGameSettings,
+      difficulty: undefined,
       formGroups: [],
     }).isValid,
   ).toBe(false);
   expect(
     getTrainingSettingsValidation(catalog, {
       ...defaultGameSettings,
+      difficulty: undefined,
       generations: ['VI'],
       formGroups: ['mega'],
     }).isValid,
@@ -93,7 +95,9 @@ it.each(formGroups)(
     for (const trainingMode of ['league', 'custom'] as const) {
       const settings = getTrainingSettings({
         ...defaultGameSettings,
+        difficulty: undefined,
         trainingMode,
+        generations: [...generations],
         formGroups: [group],
       });
       const questions = buildQuestions(
@@ -118,6 +122,7 @@ it.each(formGroups)(
 it('keeps Daily and the League challenge independent of Training form preferences', () => {
   const settings = {
     ...defaultGameSettings,
+    difficulty: undefined,
     formGroups: ['gigantamax'] as const,
   };
   expect(getDailySettings(settings).formGroups).toEqual(formGroups);
@@ -126,7 +131,11 @@ it('keeps Daily and the League challenge independent of Training form preference
 
 it('retains form preferences through a backup round trip', () => {
   updatePlayerData({
-    settings: { ...defaultGameSettings, formGroups: ['standard', 'regional'] },
+    settings: {
+      ...defaultGameSettings,
+      difficulty: undefined,
+      formGroups: ['standard', 'regional'],
+    },
   });
   expect(
     parseBackup(JSON.stringify(createBackup())).save.data.settings?.formGroups,

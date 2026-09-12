@@ -62,9 +62,33 @@ export const SettingsDialog = ({
     training: null,
   });
 
+  const {
+    difficulty,
+    questionSelection,
+    trainingMode,
+    generations,
+    formGroups: selectedForms,
+    questionTypes,
+  } = draft;
   const validation = useMemo(
-    () => getTrainingSettingsValidation(catalog, draft),
-    [catalog, draft],
+    () =>
+      getTrainingSettingsValidation(catalog, {
+        difficulty,
+        questionSelection,
+        trainingMode,
+        generations,
+        formGroups: selectedForms,
+        questionTypes,
+      }),
+    [
+      catalog,
+      difficulty,
+      questionSelection,
+      trainingMode,
+      generations,
+      selectedForms,
+      questionTypes,
+    ],
   );
 
   const selectTab = (tab: SettingsTab, moveFocus = false) => {

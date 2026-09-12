@@ -1,7 +1,9 @@
+import { resolveTrainingSettings } from '@/domain/quiz/question-generation';
 import { getFormGroupGenerations } from '@/domain/pokemon/forms';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { formGroups } from '@/domain/pokemon/types';
 import {
+  defaultGameSettings,
   filterPokemon,
   isLeagueTraining,
 } from '@/domain/settings/game-settings';
@@ -9,7 +11,15 @@ import type { GameSettings } from '@/domain/settings/types';
 
 export const getTrainingSettingsValidation = (
   catalog: PokemonCatalog,
-  settings: GameSettings,
+  settings: Pick<
+    GameSettings,
+    | 'difficulty'
+    | 'questionSelection'
+    | 'trainingMode'
+    | 'generations'
+    | 'formGroups'
+    | 'questionTypes'
+  >,
 ) => {
   const formGroupGenerations = getFormGroupGenerations(catalog);
   const availableFormGroups = formGroups.filter((group) =>
@@ -21,13 +31,18 @@ export const getTrainingSettingsValidation = (
     availableFormGroups.includes(group),
   );
   const generationsAreValid = settings.generations.length > 0;
-  const questionTypesAreValid =
-    isLeagueTraining(settings) ||
-    (settings.questionTypes.length > 0 &&
-      !(
-        settings.questionTypes.includes('generation-roundup') &&
-        settings.generations.length < 2
-      ));
+  const eligibleQuestionTypes = settings.difficulty
+    ? resolveTrainingSettings(catalog, { ...defaultGameSettings, ...settings })
+        .questionTypes
+    : settings.questionTypes;
+  const questionTypesAreValid = settings.difficulty
+    ? eligibleQuestionTypes.length > 0
+    : isLeagueTraining(settings) ||
+      (settings.questionTypes.length > 0 &&
+        !(
+          settings.questionTypes.includes('generation-roundup') &&
+          settings.generations.length < 2
+        ));
   const matchingCount = filterPokemon(catalog, settings).length;
   return {
     generationsAreValid,
@@ -39,6 +54,12 @@ export const getTrainingSettingsValidation = (
       formGroupsAreValid &&
       questionTypesAreValid &&
       matchingCount > 0,
+    unavailableSelectedCount:
+      settings.questionSelection === 'custom'
+        ? settings.questionTypes.filter(
+            (type) => !eligibleQuestionTypes.includes(type),
+          ).length
+        : 0,
     matchingCount,
     questionTypesAreValid,
   };

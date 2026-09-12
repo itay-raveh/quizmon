@@ -16,6 +16,14 @@ import {
 } from '../quiz/question-history';
 import { isQuestionLineup, type QuestionLineup } from '../quiz/question-lineup';
 import { questionTypes } from '../quiz/questions/definitions';
+import { getRulesScoreKey, isRoundRules } from '../quiz/round-rules';
+import { isDifficulty } from '../quiz/difficulty';
+import {
+  getDailyResultKey,
+  hasDailyResultOnDate,
+  isDailyTrack,
+  parseDailyResultKey,
+} from '../quiz/daily-track';
 import {
   legacyQuestionCategories,
   legacyQuestionTypes,
@@ -101,6 +109,8 @@ const savedQuestionTypes = [
 const isResult = (value: unknown): value is GameResult => {
   if (
     !isRecord(value) ||
+    (value.rules !== undefined && !isRoundRules(value.rules)) ||
+    (value.dailyTrack !== undefined && !isDailyTrack(value.dailyTrack)) ||
     !Array.isArray(value.answers) ||
     !isSafeNonnegativeInteger(value.contentVersion) ||
     (value.scoreVersion !== undefined &&
@@ -122,6 +132,8 @@ const isResult = (value: unknown): value is GameResult => {
       isChoice(answer.category, savedQuestionCategories) &&
       (answer.cluesUsed === undefined ||
         isSafeNonnegativeInteger(answer.cluesUsed)) &&
+      (answer.unassistedSearch === undefined ||
+        typeof answer.unassistedSearch === 'boolean') &&
       typeof answer.correct === 'boolean' &&
       (answer.generation === undefined ||
         isChoice(answer.generation, generations)) &&
@@ -162,18 +174,25 @@ const isResults = (value: unknown): value is SavedResults => {
     return false;
   const { daily, training, progress, streak, league } = value;
   return (
-    Object.entries(daily).every(
-      ([date, result]) => isDailyDate(date) && isResult(result),
-    ) &&
+    Object.entries(daily).every(([key, result]) => {
+      const parsed = parseDailyResultKey(key);
+      return (
+        parsed !== undefined &&
+        isResult(result) &&
+        getDailyResultKey(parsed.date, result.dailyTrack) === key
+      );
+    }) &&
     Object.entries(training).every(
-      ([key, result]) => isChoice(key, trainingModes) && isResult(result),
+      ([key, result]) =>
+        isResult(result) &&
+        (isChoice(key, trainingModes) || getRulesScoreKey(result) === key),
     ) &&
     typeof league.completed === 'boolean' &&
     (league.seed === null || isName(league.seed)) &&
     streak.version === STREAK_VERSION &&
     Array.isArray(streak.creditedDates) &&
     streak.creditedDates.every(
-      (date: unknown) => isDailyDate(date) && Object.hasOwn(daily, date),
+      (date: unknown) => isDailyDate(date) && hasDailyResultOnDate(daily, date),
     ) &&
     progress.version === TRAINER_PROGRESS_VERSION &&
     isSafeNonnegativeInteger(progress.championAnswersWithoutClues) &&
@@ -191,6 +210,10 @@ const isResults = (value: unknown): value is SavedResults => {
 
 const isSettings = (value: unknown): value is GameSettings =>
   isRecord(value) &&
+  (value.difficulty === undefined || isDifficulty(value.difficulty)) &&
+  (value.questionSelection === undefined ||
+    value.questionSelection === 'automatic' ||
+    value.questionSelection === 'custom') &&
   isChoice(value.answerFlow, answerFlows) &&
   isChoice(value.timerDisplay, timerDisplays) &&
   isChoice(value.trainingMode, trainingModes) &&
@@ -264,7 +287,7 @@ const parsePlayerData = (
                 ...Object.values(value.results.daily),
                 ...Object.values(value.results.training),
               ]
-                .flatMap((result) => result.answers)
+                .flatMap((result) => result?.answers ?? [])
                 .flatMap((answer) =>
                   answer.correct && answer.pokemonName
                     ? [answer.pokemonName]
