@@ -97,12 +97,10 @@ export const applyQuestionVariant = (
     };
     const genusClue = question.clues?.[0];
     question.suppliedClues =
-      typeof genusClue === 'string' &&
-      (opening === 'choices-types' || opening === 'search-genus')
+      typeof genusClue === 'string' && opening === 'choices-types'
         ? [genusClue]
         : [];
     question.showTypes = opening === 'choices-types';
-    if (opening === 'search-genus') question.clues = question.clues?.slice(1);
   }
   return question;
 };

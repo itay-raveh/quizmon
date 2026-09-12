@@ -48,7 +48,7 @@ it.each(difficultyLevels)(
           );
       }
       const finale = daily.at(-1)!;
-      expect(finale.initialClues).toBe([2, 1, 2, 0, 0][difficulty - 1]);
+      expect(finale.initialClues).toBe([2, 1, 0, 0, 0][difficulty - 1]);
       expect(finale.answer.interaction).toBe(
         difficulty < 3 ? 'single-choice' : 'search',
       );

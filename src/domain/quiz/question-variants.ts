@@ -6,7 +6,7 @@ import {
 import type { QuestionData } from './types';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 1;
+export const QUESTION_RULES_VERSION = 2;
 
 export interface VariantRules {
   distractors?: 'dissimilar' | 'similar';
@@ -22,7 +22,7 @@ export interface VariantRules {
   statGap?: readonly [number, number];
   multipliers?: readonly number[];
   finale?: {
-    opening: 'choices-types' | 'choices' | 'search-genus' | 'search';
+    opening: 'choices-types' | 'choices' | 'search';
     assistance: boolean;
     penalty: number;
   };
@@ -89,7 +89,7 @@ const questionVariants: Record<
   champion: {
     1: { finale: { opening: 'choices-types', assistance: false, penalty: 2 } },
     2: { finale: { opening: 'choices', assistance: false, penalty: 1 } },
-    3: { finale: { opening: 'search-genus', assistance: true, penalty: 2 } },
+    3: { finale: { opening: 'search', assistance: true, penalty: 0 } },
     4: { finale: { opening: 'search', assistance: true, penalty: 0 } },
     5: { finale: { opening: 'search', assistance: false, penalty: 0 } },
   },

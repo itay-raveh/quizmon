@@ -99,6 +99,7 @@ test('Daily assistance survives reload and cannot become an unassisted answer', 
       .getByRole('button', { name: 'Next question', exact: true })
       .click();
   }
+  await expect(page.getByText(/^Known as the/)).not.toBeVisible();
   await page.getByRole('button', { name: /^Show 4 choices/ }).click();
   await expect
     .poll(async () => (await snapshot(page)).questions[4]?.assistanceUsed)
@@ -111,7 +112,7 @@ test('Daily assistance survives reload and cannot become an unassisted answer', 
   await expect(page.locator('.answer')).toHaveCount(4);
   await answerCurrentQuestion(page);
   const saved = await snapshot(page);
-  expect(saved.answers[4]?.cluesUsed).toBe(3);
+  expect(saved.answers[4]?.cluesUsed).toBe(1);
   expect(saved.answers[4]?.unassistedSearch).toBe(false);
 });
 
