@@ -445,3 +445,11 @@
   justify-items: center;
   gap: 0.25rem;
 }
+
+.question__title > svg {
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.35em;
+  vertical-align: -0.08em;
+}

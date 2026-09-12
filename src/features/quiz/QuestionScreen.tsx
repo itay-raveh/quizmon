@@ -21,6 +21,7 @@ import type {
   QuestionPrompt as QuestionPromptData,
 } from '@/domain/quiz/types';
 import type { TimerDisplay } from '@/domain/settings/types';
+import { TrainerTitleMark } from '@/features/trainer/TrainerTitleMark';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
 import { useEffect, useRef } from 'react';
 import { ChampionSearch } from './ChampionSearch';
@@ -209,8 +210,16 @@ export const QuestionScreen = ({
 
       {isLeague ? <LeagueProgress currentQuestion={number} /> : null}
 
-      <h1 id="question-title" ref={heading} tabIndex={-1}>
-        {getQuestionTitle(question)}
+      <h1
+        className="question__title"
+        id="question-title"
+        ref={heading}
+        tabIndex={-1}
+      >
+        {question.category !== 'champion' ? (
+          <TrainerTitleMark plain tier={0} specialty={question.category} />
+        ) : null}
+        <span>{getQuestionTitle(question)}</span>
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       {visualInstruction ? (
