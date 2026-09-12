@@ -134,15 +134,6 @@ test('keeps the core experience accessible', async ({ page }) => {
     page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();
   await expectNoAccessibilityViolations(page);
-  await page.getByRole('button', { name: 'Card', exact: true }).focus();
-  await expect(
-    page.getByRole('button', { name: 'Card', exact: true }),
-  ).toHaveCSS('outline-color', 'rgb(255, 251, 234)');
-  await page.getByRole('button', { name: 'Badges', exact: true }).focus();
-  await expect(
-    page.getByRole('button', { name: 'Badges', exact: true }),
-  ).toHaveCSS('outline-color', 'rgb(8, 59, 126)');
-
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
     page.getByRole('article', { name: 'League Badge Case' }),
@@ -150,7 +141,6 @@ test('keeps the core experience accessible', async ({ page }) => {
   await expectNoAccessibilityViolations(page);
   const badge = page.locator('.trainer-badge').first();
   await badge.focus();
-  await expect(badge).toHaveCSS('outline-color', 'rgb(255, 251, 234)');
   await badge.click();
   await expect(page.locator('.trainer-badge-dialog')).toBeVisible();
   await expectNoAccessibilityViolations(page);

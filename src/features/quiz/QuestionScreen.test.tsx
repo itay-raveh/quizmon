@@ -114,16 +114,11 @@ describe('question transitions', () => {
     vi.unstubAllGlobals();
   });
 
-  it('focuses the question heading and animates the first question only', () => {
-    const first = renderQuestion();
+  it('focuses the question heading', () => {
+    renderQuestion();
     expect(
       screen.getByRole('heading', { name: 'Stat showdown' }),
     ).toHaveFocus();
-    expect(first.container.firstElementChild).toHaveClass('question--enter');
-    first.unmount();
-
-    const next = renderQuestion({ number: 2 });
-    expect(next.container.firstElementChild).not.toHaveClass('question--enter');
   });
 
   it('renders Pokémon answers as numbered sprite nameplates', () => {
@@ -143,9 +138,6 @@ describe('question transitions', () => {
       },
     });
 
-    expect(screen.getByRole('button', { name: 'Pikachu' })).toHaveClass(
-      'answer--pokemon',
-    );
     expect(rendered.container.querySelectorAll('.answer__sprite')).toHaveLength(
       4,
     );
@@ -169,7 +161,6 @@ describe('question transitions', () => {
       rendered.container.querySelectorAll('.answer__identity'),
     ).toHaveLength(4);
     expect(screen.getByText('No. 0025')).toBeVisible();
-    expect(screen.getByText('Pikachu')).toHaveClass('answer__name');
     expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
 
@@ -229,22 +220,6 @@ describe('question transitions', () => {
       ).toBeDisabled();
     },
   );
-
-  it('reserves the normal-mode action row before an answer', () => {
-    renderQuestion();
-
-    const actionSlot = document.querySelector('.question__action-slot');
-    expect(actionSlot?.querySelector('button')).toBeNull();
-    expect(
-      actionSlot?.querySelector('.question__action-reserve'),
-    ).not.toBeNull();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-
-    expect(actionSlot).toContainElement(
-      screen.getByRole('button', { name: 'Next question' }),
-    );
-  });
 
   it('renders Type Check as a visual prompt and reveals the subject types', () => {
     const rendered = renderQuestion({

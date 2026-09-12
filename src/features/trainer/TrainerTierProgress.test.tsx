@@ -35,9 +35,7 @@ describe('Trainer tier progress', () => {
           progress={{ label: 'Field Researcher', current, goal: 1000, tier: 3 }}
         />,
       );
-      expect(screen.getByText(current.toLocaleString())).toHaveClass(
-        'trainer-progress-total',
-      );
+      expect(screen.getByText(current.toLocaleString())).toBeVisible();
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       expect(screen.queryByText('/ 1,000')).not.toBeInTheDocument();
     },

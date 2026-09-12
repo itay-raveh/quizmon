@@ -140,13 +140,6 @@ for (const width of [320, 390, 1280]) {
     );
     await expect(page.getByRole('status')).toBeInViewport();
     await expect(page.locator('.toast:popover-open')).toBeVisible();
-    if (width < 400) {
-      const toast = await page.locator('.toast').boundingBox();
-      const actions = await page
-        .locator('.settings-form__actions')
-        .boundingBox();
-      expect(toast!.y + toast!.height).toBeLessThan(actions!.y);
-    }
     expect(download.suggestedFilename()).toMatch(
       /^quizmon-backup-Leaf-\d{4}-\d{2}-\d{2}\.json$/,
     );

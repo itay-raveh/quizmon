@@ -1,12 +1,10 @@
 import { test as base, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import type { TrainerProgressChange } from '../src/domain/player/trainer-progression';
 import catalogData from '../src/domain/pokemon/data/pokemon.json' with { type: 'json' };
 import { formatPokemonName as formatName } from '../src/domain/pokemon/format';
 import type { Generation, PokemonCatalog } from '../src/domain/pokemon/types';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import type { QuestionType } from '../src/domain/quiz/types';
-import { defaultGameSettings } from '../src/domain/settings/game-settings';
 
 export { catalogData, expect };
 export const catalog = catalogData as unknown as PokemonCatalog;
@@ -74,56 +72,6 @@ export const seedQuestionTraining = (
             'move-check': 4,
           } as Partial<Record<QuestionType, number>>
         )[questionType] ?? 3,
-    },
-  );
-
-export const seedLeagueResults = (
-  page: Page,
-  progressChanges: TrainerProgressChange[] = [],
-) =>
-  page.addInitScript(
-    ({ settings, progressChanges }) => {
-      const result = {
-        answers: Array.from({ length: 9 }, (_, index) => ({
-          category: 'identity',
-          cluesUsed: 0,
-          correct: index < 8,
-          generation: 'I',
-          pokemonName: 'pikachu',
-          points: index < 8 ? 1000 : 0,
-          questionType: 'pokedex-scan',
-          speedBonus: index < 8 ? 1500 : 0,
-        })),
-        contentVersion: 5,
-        correctCount: 8,
-        elapsedSeconds: 34,
-        questionCount: 15,
-        score: 29791,
-        scoreVersion: 2,
-      };
-      sessionStorage.setItem(
-        'quizmon.update-state.v1',
-        JSON.stringify({
-          url: location.href,
-          values: {
-            session: {
-              phase: 'results',
-              mode: { kind: 'league' },
-              settings,
-              result,
-              bestResult: result,
-              resultSaved: true,
-              isNewBest: false,
-              progressChanges,
-              seed: 'league-results-layout',
-            },
-          },
-        }),
-      );
-    },
-    {
-      settings: { ...defaultGameSettings, reduceMotion: true, soundVolume: 0 },
-      progressChanges,
     },
   );
 

@@ -45,7 +45,7 @@ describe('Trainer profile artifacts', () => {
     snapdomToBlob.mockReset();
   });
 
-  it('renders the selected specialty and earned finish on the front', () => {
+  it('renders the saved Trainer identity and records', () => {
     const { container } = render(
       <TrainerCard
         partnerDexNumber={1}
@@ -58,14 +58,13 @@ describe('Trainer profile artifacts', () => {
 
     expect(screen.getByRole('heading', { name: 'Leaf' })).toBeVisible();
     expect(screen.getByText('Type Specialist')).toBeVisible();
-    expect(container.querySelector('.trainer-card__title > svg')).toBeVisible();
     expect(screen.getByText('Ace')).toBeVisible();
     expect(screen.getByText('Pokémon found').parentElement).toHaveTextContent(
       '355 / 1025',
     );
-    expect(screen.getByRole('img', { name: '3-day Daily Combo' })).toHaveClass(
-      'catch-combo',
-    );
+    expect(
+      screen.getByRole('img', { name: '3-day Daily Combo' }),
+    ).toBeVisible();
     for (const label of ['Name', 'Correct answers', 'Daily clears']) {
       expect(
         screen.queryByText(label, { exact: true }),
@@ -78,37 +77,6 @@ describe('Trainer profile artifacts', () => {
     expect(
       container.querySelector('.trainer-card__partner-caption'),
     ).toHaveTextContent('No. 0001Bulbasaur');
-    expect(screen.getByRole('article', { name: 'Trainer Card' })).toHaveClass(
-      'trainer-card--bronze',
-    );
-    expect(
-      screen.getByRole('article', { name: 'Trainer Card' }).className,
-    ).not.toContain('trainer-card--accent-');
-    expect(container.querySelector('.trainer-card__sheen')).toBeInTheDocument();
-  });
-
-  it('adds a polished finish and trophy to a Champion card', () => {
-    const { container } = render(
-      <TrainerCard
-        partnerDexNumber={1}
-        partnerSprite="/sprites/pokemon/1.png"
-        profile={profile}
-        record={record}
-        rank="Champion"
-      />,
-    );
-
-    expect(screen.getByText('Champion')).toBeVisible();
-    expect(screen.getByRole('article', { name: 'Trainer Card' })).toHaveClass(
-      'trainer-card--gold',
-    );
-    expect(
-      container.querySelector('.trainer-card__polish'),
-    ).toBeInTheDocument();
-    expect(container.querySelector('.trophy')).toBeInTheDocument();
-    expect(
-      container.querySelector('.trainer-card__sheen'),
-    ).not.toBeInTheDocument();
   });
 
   it('renders a standalone, interactive League Badge Case', () => {

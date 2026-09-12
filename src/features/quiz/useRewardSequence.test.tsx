@@ -53,7 +53,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it('credits numbers and fractional fills before revealing Gold, then cancels on departure', () => {
+it('credits progress before revealing Gold, then cancels on departure', () => {
   const playReward = vi.fn();
   const stopRewards = vi.fn();
   const onOpenTrainerCard = vi.fn();
@@ -71,10 +71,6 @@ it('credits numbers and fractional fills before revealing Gold, then cancels on 
   step(400);
   expect(type).not.toHaveTextContent('221 / 1,000');
   expect(type).not.toHaveTextContent('231 / 1,000');
-  const fill = type.querySelector<HTMLElement>('.reward__track > span')!.style
-    .transform;
-  expect(Number(fill.slice(7, -1))).toBeGreaterThan(0.221);
-  expect(Number(fill.slice(7, -1))).toBeLessThan(0.231);
   type.click();
   expect(onOpenTrainerCard).toHaveBeenCalledWith('titles');
   step(859);

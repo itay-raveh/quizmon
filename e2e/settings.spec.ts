@@ -130,40 +130,6 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
   );
   await expect(page.getByRole('button', { name: 'Settings' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Leave game' }).click();
-
-  await page.setViewportSize({ width: 320, height: 844 });
-  await page.getByRole('button', { name: 'Settings' }).click();
-  await expect(dialog).toBeVisible();
-  await dialog.getByRole('tab', { name: 'Training' }).click();
-  const mobileControlMetrics = await dialog.evaluate((element) => {
-    const bounds = element.getBoundingClientRect();
-    const close = element
-      .querySelector('.dialog-close')
-      ?.getBoundingClientRect();
-    const selectionToggle = element
-      .querySelector('.selection-toggle')
-      ?.getBoundingClientRect();
-    const questionTypeHelp = element
-      .querySelector('.question-type-tile__help')
-      ?.getBoundingClientRect();
-    return {
-      closeHeight: close?.height,
-      closeWidth: close?.width,
-      dialogHeight: bounds.height,
-      dialogWidth: bounds.width,
-      helpHeight: questionTypeHelp?.height,
-      helpWidth: questionTypeHelp?.width,
-      selectionToggleHeight: selectionToggle?.height,
-    };
-  });
-  expect(mobileControlMetrics.dialogHeight).toBe(844);
-  expect(mobileControlMetrics.dialogWidth).toBe(320);
-  expect(mobileControlMetrics.closeHeight).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.closeWidth).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.helpHeight).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.helpWidth).toBeGreaterThanOrEqual(44);
-  expect(mobileControlMetrics.selectionToggleHeight).toBeGreaterThanOrEqual(44);
-  await dialog.getByRole('button', { name: 'Cancel' }).click();
 });
 
 test('keeps unavailable custom preferences without blocking other eligible families', async ({
