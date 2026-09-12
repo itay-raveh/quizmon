@@ -142,7 +142,11 @@ export const QuestionScreen = ({
 
   const isChampion = question.category === 'champion';
   const visualInstruction =
-    !(question.prompt.kind === 'pokemon' && question.media.kind === 'none') &&
+    !(
+      question.prompt.kind === 'pokemon' &&
+      question.media.kind === 'none' &&
+      !(question.namesOnly && question.visual)
+    ) &&
     (Boolean(question.visual) ||
       question.questionType === 'ability-check' ||
       question.questionType === 'move-check');
@@ -223,11 +227,7 @@ export const QuestionScreen = ({
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       {visualInstruction ? (
-        <QuestionPrompt
-          className="visually-hidden"
-          hideNumbers={question.namesOnly}
-          prompt={question.prompt}
-        />
+        <QuestionPrompt className="visually-hidden" prompt={question.prompt} />
       ) : null}
       <div className="question__context">
         <div
@@ -273,7 +273,7 @@ export const QuestionScreen = ({
       subjectTypeRevealQuestionTypes.has(question.questionType) ? (
         <TypeBadges
           className={
-            question.visual && (visualInstruction || question.namesOnly)
+            question.visual && visualInstruction
               ? 'visually-hidden'
               : 'question__types'
           }

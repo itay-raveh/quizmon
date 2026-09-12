@@ -90,9 +90,7 @@ export const QuestionArtwork = ({
   const { media, visual } = question;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;
   const subjectDexNumber =
-    question.prompt.kind === 'pokemon' && !question.namesOnly
-      ? question.prompt.dexNumber
-      : undefined;
+    question.prompt.kind === 'pokemon' ? question.prompt.dexNumber : undefined;
   const subject = {
     name: question.pokemonName,
     dexNumber: subjectDexNumber,
