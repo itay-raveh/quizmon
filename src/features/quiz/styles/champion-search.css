@@ -162,6 +162,10 @@
 
 .type-picker__result {
   display: flex;
+  padding: 0.45rem 0.65rem;
+  color: var(--paper);
+  border: 2px solid var(--navy);
+  border-radius: 0.5rem;
   min-height: 2.75rem;
   flex-wrap: wrap;
   align-items: center;
@@ -169,9 +173,17 @@
   font-weight: 700;
 }
 
+.type-picker__result--correct {
+  background: var(--correct);
+}
+
+.type-picker__result--wrong {
+  background: var(--wrong);
+}
+
 .type-picker__result .answer-matchup__help {
   position: static;
-  color: var(--navy);
+  color: inherit;
   margin-left: auto;
   transform: none;
 }
