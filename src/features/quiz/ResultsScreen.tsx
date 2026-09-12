@@ -1,6 +1,6 @@
 import { dailyTrackLabel } from '@/domain/quiz/daily-track';
 import { GameButton } from '@/components/GameButton';
-import { CheckIcon, XIcon } from '@/components/icons';
+import { CaretDownIcon, CheckIcon, XIcon } from '@/components/icons';
 import type {
   TrainerProgressChange,
   TrainerView,
@@ -11,6 +11,7 @@ import {
   formatDurationMilliseconds,
   formatScore,
 } from '@/domain/pokemon/format';
+import { generations } from '@/domain/pokemon/types';
 import { isLeagueVictory } from '@/domain/quiz/league';
 import { getCategoryLabel } from '@/domain/quiz/question-labels';
 import { getScoreBreakdown } from '@/domain/quiz/scoring';
@@ -152,18 +153,41 @@ export const ResultsScreen = ({
         >
           <XIcon aria-hidden="true" weight="bold" />
         </GameButton>
-        <h1 id="results-title" ref={heading} tabIndex={-1}>
-          {resultTitle}
-        </h1>
+        <div className="results__heading">
+          <h1 id="results-title" ref={heading} tabIndex={-1}>
+            {resultTitle}
+          </h1>
+          {!result.dailyTrack && result.rules ? (
+            <details className="results__settings">
+              <summary>
+                <span>
+                  Level {result.rules.difficulty} ·{' '}
+                  {generations.every((generation) =>
+                    result.rules?.generations.includes(generation),
+                  )
+                    ? 'All generations'
+                    : result.rules.generations.length === 1
+                      ? `Gen ${result.rules.generations[0]}`
+                      : `${result.rules.generations.length} generations`}
+                </span>
+                <CaretDownIcon aria-hidden="true" weight="bold" />
+              </summary>
+              <dl>
+                <div>
+                  <dt>Generations</dt>
+                  <dd>{result.rules.generations.join(', ')}</dd>
+                </div>
+                <div>
+                  <dt>Forms</dt>
+                  <dd>{result.rules.formGroups.join(', ')}</dd>
+                </div>
+              </dl>
+            </details>
+          ) : null}
+        </div>
       </div>
       {result.dailyTrack ? (
         <p className="game-mode">{dailyTrackLabel(result.dailyTrack)}</p>
-      ) : result.rules ? (
-        <p className="game-mode">
-          Level {result.rules.difficulty} · Gen{' '}
-          {result.rules.generations.join(', ')} ·{' '}
-          {result.rules.formGroups.join(', ')} forms
-        </p>
       ) : null}
       {isDaily ? (
         <div className="results__daily-meta">
