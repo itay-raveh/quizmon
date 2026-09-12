@@ -1,5 +1,7 @@
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
+import { PixelSprite } from '@/components/PixelSprite';
+import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatDuration,
@@ -9,7 +11,7 @@ import {
   formatPokemonTypes,
   getModeLabel,
 } from '@/domain/pokemon/format';
-import type { PokemonCatalog } from '@/domain/pokemon/types';
+import type { PokemonCatalog, PokemonKnowledge } from '@/domain/pokemon/types';
 import { getLeagueStageLabel } from '@/domain/quiz/league';
 import { getQuestionTitle } from '@/domain/quiz/question-labels';
 import { getAnswerPoints } from '@/domain/quiz/scoring';
@@ -40,6 +42,7 @@ const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
 ]);
 
 interface QuestionScreenProps extends UseQuestionAnswerOptions {
+  answerPokemon?: PokemonKnowledge;
   typeRelations?: PokemonCatalog['typeRelations'];
   elapsedSeconds: number;
   mode: GameMode;
@@ -85,6 +88,7 @@ const formatCorrectAnswer = (question: QuestionData): string => {
 };
 
 export const QuestionScreen = ({
+  answerPokemon,
   answerFlow,
   typeRelations,
   elapsedMilliseconds,
@@ -290,6 +294,24 @@ export const QuestionScreen = ({
           />
         )}
       </div>
+
+      {answered && usesSearch && question.questionType === 'field-notes' ? (
+        <div className="question__answer-reveal">
+          <strong>Correct answer</strong>
+          {answerPokemon?.sprite ? (
+            <PixelSprite src={answerPokemon.sprite} />
+          ) : null}
+          <PokemonIdentity
+            name={question.pokemonName}
+            dexNumber={answerPokemon?.speciesId}
+          >
+            <TypeBadges
+              types={question.pokemonTypes}
+              label={formatPokemonTypes(question.pokemonTypes)}
+            />
+          </PokemonIdentity>
+        </div>
+      ) : null}
 
       <span className="visually-hidden" aria-live="polite">
         {answerCorrect

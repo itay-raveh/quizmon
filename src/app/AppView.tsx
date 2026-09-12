@@ -141,6 +141,9 @@ const AppScreen = ({
     const currentQuestion = session.questions[session.questionIndex];
     return currentQuestion ? (
       <QuestionScreen
+        answerPokemon={
+          catalogState.catalog?.pokemon[currentQuestion.pokemonName]
+        }
         typeRelations={catalogState.catalog?.typeRelations}
         answerFlow={session.settings.answerFlow}
         key={currentQuestion.id}
