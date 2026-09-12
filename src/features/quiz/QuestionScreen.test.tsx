@@ -781,12 +781,8 @@ describe('question transitions', () => {
     const missed = screen.getByRole('button', {
       name: 'Eevee Correct answer, not selected.',
     });
-    expect(
-      wrongPick.querySelector('.answer__result-marker--wrong'),
-    ).toHaveTextContent('Wrong pick');
-    expect(
-      missed.querySelector('.answer__result-marker--missed'),
-    ).toHaveTextContent('Missed');
+    expect(wrongPick).toHaveAttribute('aria-pressed', 'true');
+    expect(missed).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('conceals Legend hunt identities until checking answers, then reveals classifications', () => {

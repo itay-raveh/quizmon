@@ -1,5 +1,5 @@
 import { TypeBadges } from '@/components/TypeBadge';
-import { CheckIcon, XIcon } from '@/components/icons';
+import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
 import { formatPokemonName } from '@/domain/pokemon/format';
 import { normalizeSearch } from '@/domain/pokemon/search';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
@@ -60,13 +60,15 @@ export const TypeAnswerPicker = ({
               : 'Missed';
           return (
             <div
-              className={`type-picker__result type-picker__result--${correct ? 'correct' : 'wrong'}`}
+              className={`type-picker__result type-picker__result--${!correct ? 'wrong' : selectedOptions.includes(type) ? 'correct' : 'missed'}`}
               role="listitem"
               key={type}
             >
               <TypeBadges types={[type]} label={formatPokemonName(type)} />
               <span className="visually-hidden">{status}</span>
-              {correct ? (
+              {status === 'Missed' ? (
+                <MinusIcon aria-hidden="true" weight="bold" />
+              ) : correct ? (
                 <CheckIcon aria-hidden="true" weight="bold" />
               ) : (
                 <XIcon aria-hidden="true" weight="bold" />

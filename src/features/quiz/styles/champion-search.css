@@ -191,3 +191,8 @@
 .question__response:has(.type-picker, .type-picker__results) {
   min-height: 7rem;
 }
+
+.type-picker__result--missed {
+  color: var(--navy);
+  background: var(--missed);
+}

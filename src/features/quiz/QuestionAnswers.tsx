@@ -1,6 +1,6 @@
 import { GameButton } from '@/components/GameButton';
 import { GenerationLabel } from '@/components/GenerationLabel';
-import { CheckIcon, XIcon } from '@/components/icons';
+import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
 import { PixelSprite } from '@/components/PixelSprite';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { TypeBadges } from '@/components/TypeBadge';
@@ -98,7 +98,9 @@ export const QuestionAnswers = ({
             ? 'answer answer--selected'
             : 'answer'
           : optionCorrect
-            ? 'answer answer--correct'
+            ? multiSelect && !optionSelected
+              ? 'answer answer--missed'
+              : 'answer answer--correct'
             : optionSelected
               ? 'answer answer--wrong'
               : 'answer answer--muted';
@@ -146,13 +148,16 @@ export const QuestionAnswers = ({
         const showCheckmark = answered
           ? optionCorrect
           : multiSelect && optionSelected;
-        const selectionMark = showCheckmark ? (
-          <CheckIcon weight="bold" />
-        ) : answered && optionSelected ? (
-          <XIcon weight="bold" />
-        ) : (
-          index + 1
-        );
+        const selectionMark =
+          resultMarker === 'missed' ? (
+            <MinusIcon weight="bold" />
+          ) : showCheckmark ? (
+            <CheckIcon weight="bold" />
+          ) : answered && optionSelected ? (
+            <XIcon weight="bold" />
+          ) : (
+            index + 1
+          );
 
         const attackTypes = typeRelations
           ? question.questionType === 'type-matchup'
@@ -177,14 +182,6 @@ export const QuestionAnswers = ({
             sound="none"
           >
             <kbd aria-hidden="true">{selectionMark}</kbd>
-            {resultMarker ? (
-              <span
-                aria-hidden="true"
-                className={`answer__result-marker answer__result-marker--${resultMarker}`}
-              >
-                {resultMarker === 'missed' ? 'Missed' : 'Wrong pick'}
-              </span>
-            ) : null}
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">

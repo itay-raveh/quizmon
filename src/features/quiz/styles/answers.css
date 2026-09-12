@@ -74,25 +74,6 @@
   background: rgba(255, 251, 234, 0.92);
 }
 
-.answer__result-marker {
-  position: absolute;
-  z-index: 2;
-  top: 0.42rem;
-  right: 0.42rem;
-  padding: 0.18rem 0.35rem 0.2rem;
-  color: var(--navy);
-  background: var(--paper);
-  border: 2px solid var(--navy);
-  border-radius: 0.2rem;
-  box-shadow: 0 0.12rem 0 var(--yellow);
-  font-family: var(--font-data);
-  font-size: var(--text-tiny);
-  font-weight: 850;
-  letter-spacing: 0.03em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .answer__sprite-field {
   display: grid;
   align-self: stretch;
@@ -203,6 +184,7 @@
   filter: none;
 }
 
+.answer--missed kbd,
 .answer--correct kbd,
 .answer--wrong kbd {
   color: var(--navy);
@@ -490,4 +472,14 @@
   .answers--counter-pick .answer-matchup__help:focus-visible {
     outline-color: var(--navy);
   }
+}
+
+.answer--missed,
+.answer--missed .answer__nameplate {
+  color: var(--navy);
+  background: var(--missed);
+}
+
+.answer-matchup:has(.answer--missed) > .answer-matchup__help {
+  color: var(--navy);
 }
