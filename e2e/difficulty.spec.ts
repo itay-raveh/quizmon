@@ -129,7 +129,7 @@ test('unavailable linked versions explain the problem without substituting quest
   await expect(page.getByRole('alert')).toHaveCount(0);
 });
 
-test('complete typing uses an accessible type grid and search variants use the full answer field', async ({
+test('complete typing supports search, removal, and submission while Pokémon search stays available', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 800 });
@@ -153,16 +153,33 @@ test('complete typing uses an accessible type grid and search variants use the f
   await page
     .getByRole('button', { name: 'Start training', exact: true })
     .click();
-  await expect(page.locator('.answer')).toHaveCount(18);
+  const picker = page.getByRole('combobox', { name: 'Your types' });
+  const check = page.getByRole('button', {
+    name: 'Check answers',
+    exact: true,
+  });
+  await expect(check).toBeDisabled();
+  await picker.fill('not-a-type');
+  await expect(page.getByRole('status')).toHaveText('No matching types');
+  await picker.fill('fire');
+  await picker.press('ArrowDown');
+  await picker.press('Enter');
+  await page.getByRole('button', { name: 'Remove Fire' }).click();
+  await expect(check).toBeDisabled();
   const current = (await snapshot(page)).questions[0]!;
-  for (const type of current.answer.correctOptions)
+  for (const type of current.answer.correctOptions) {
+    await picker.fill(type);
     await page
-      .getByRole('button', { name: new RegExp(`^${type}$`, 'i') })
+      .getByRole('option', { name: new RegExp(`^${type}$`, 'i') })
       .click();
-  await page
-    .getByRole('button', { name: 'Check answers', exact: true })
-    .click();
-  await expect(page.locator('.answer--wrong')).toHaveCount(0);
+  }
+  await check.click();
+  const feedback = page.getByRole('list', { name: 'Type answers' });
+  await expect(feedback.getByRole('listitem')).toHaveCount(
+    current.answer.correctOptions.length,
+  );
+  await expect(feedback).not.toContainText('Wrong pick');
+  await expect(feedback).not.toContainText('Missed');
   await expectNoHorizontalOverflow(page);
   await page.goto('/?search=1');
   await page

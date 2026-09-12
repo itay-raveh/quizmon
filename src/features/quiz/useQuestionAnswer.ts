@@ -196,6 +196,7 @@ export const useQuestionAnswer = ({
       return;
     }
 
+    if (question.options.length > 9) return;
     const option = question.options[Number(event.key) - 1];
     if (option) selectOption(option);
   });

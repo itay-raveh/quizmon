@@ -12,6 +12,7 @@ import {
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import type { QuestionData } from '@/domain/quiz/types';
 import { Fragment } from 'react';
+import { TypeAnswerPicker } from './TypeAnswerPicker';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
 
 const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
@@ -58,6 +59,18 @@ export const QuestionAnswers = ({
     question.visual?.kind === 'stat-showdown'
       ? question.visual.stat
       : undefined;
+
+  if (hasTypeOptionBadges && multiSelect && question.options.length > 4) {
+    return (
+      <TypeAnswerPicker
+        question={question}
+        selectedOptions={selectedOptions}
+        answered={answered}
+        onSelect={onSelect}
+        typeRelations={typeRelations}
+      />
+    );
+  }
 
   return (
     <div

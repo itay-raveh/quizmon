@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-05T22:40:00Z",
+  "generatedAt": "2026-09-12T10:58:05.556757Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -135,17 +135,17 @@
       "trainer-bronze": {
         "role": "tertiary",
         "displayName": "Trainer Bronze",
-        "canonical": "#ed9147",
+        "canonical": "#c7a181",
         "description": "The automatic Trainer Card accent for Ace rank.",
         "tonalRamp": [
-          "oklch(15% 0.142 56.8)",
-          "oklch(25% 0.142 56.8)",
-          "oklch(37% 0.142 56.8)",
-          "oklch(49% 0.142 56.8)",
-          "oklch(61% 0.142 56.8)",
-          "oklch(73% 0.142 56.8)",
-          "oklch(85% 0.142 56.8)",
-          "oklch(95% 0.142 56.8)"
+          "color-mix(in oklab, #c7a181 20%, black)",
+          "color-mix(in oklab, #c7a181 40%, black)",
+          "color-mix(in oklab, #c7a181 60%, black)",
+          "color-mix(in oklab, #c7a181 80%, black)",
+          "#c7a181",
+          "color-mix(in oklab, #c7a181, white 25%)",
+          "color-mix(in oklab, #c7a181, white 55%)",
+          "color-mix(in oklab, #c7a181, white 80%)"
         ]
       },
       "trainer-silver": {
@@ -167,17 +167,17 @@
       "trainer-gold": {
         "role": "tertiary",
         "displayName": "Trainer Gold",
-        "canonical": "#f0c51f",
+        "canonical": "#ffca28",
         "description": "The automatic Trainer Card accent for League Challenger and Champion ranks.",
         "tonalRamp": [
-          "oklch(15% 0.166 92.2)",
-          "oklch(25% 0.166 92.2)",
-          "oklch(37% 0.166 92.2)",
-          "oklch(49% 0.166 92.2)",
-          "oklch(61% 0.166 92.2)",
-          "oklch(73% 0.166 92.2)",
-          "oklch(85% 0.166 92.2)",
-          "oklch(95% 0.166 92.2)"
+          "color-mix(in oklab, #ffca28 20%, black)",
+          "color-mix(in oklab, #ffca28 40%, black)",
+          "color-mix(in oklab, #ffca28 60%, black)",
+          "color-mix(in oklab, #ffca28 80%, black)",
+          "#ffca28",
+          "color-mix(in oklab, #ffca28, white 25%)",
+          "color-mix(in oklab, #ffca28, white 55%)",
+          "color-mix(in oklab, #ffca28, white 80%)"
         ]
       },
       "badge-recess": {
@@ -499,9 +499,9 @@
         "purpose": "A short sourced pixel sheen on bronze, silver, and gold Trainer Card finishes."
       },
       {
-        "name": "trainer-sparkle",
-        "value": "1.75s steps(1, end) infinite",
-        "purpose": "Staggered sourced pixel sparkles reserved for the Champion finish."
+        "name": "trainer-card-polish",
+        "value": "4.8s linear infinite",
+        "purpose": "The moving metallic reflection on the Champion card, stopped when reduced motion is enabled."
       }
     ],
     "breakpoints": [
@@ -548,7 +548,7 @@
       "name": "Daily Challenge Action",
       "kind": "button",
       "refersTo": "daily-action",
-      "description": "The landing screen's dominant action, with one title and an optional compact detail line.",
+      "description": "Daily uses one shared Level 3 challenge across all generations. The landing action starts or resumes it directly, and completion replaces that action with the saved result share. Date-only links use the existing landing action with the date. Links with play=1 start automatically. There is no inner Daily screen, scope picker, difficulty picker, or extra start action. Keep saved legacy results and attempts accessible under their original rules.",
       "html": "<button class=\"ds-daily\"><strong>Daily Challenge</strong></button>",
       "css": ".ds-daily { display: flex; width: min(26rem, 90vw); min-height: 4.8rem; padding: 0.65rem 1rem; flex-direction: column; align-items: center; justify-content: center; gap: 0.18rem; color: var(--paper, #fffbea); background: var(--blue, #0d6be6); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); cursor: pointer; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-daily strong { font-size: 1.75rem; font-weight: 800; line-height: 1.15; } .ds-daily:hover { filter: brightness(1.07); transform: translateY(-1px); } .ds-daily:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; } .ds-daily:active { box-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.12), 0 0.08rem 0 var(--yellow, #eed23e), 0 0.12rem 0 var(--navy-shadow, #123f76); transform: translateY(0.22rem); }"
     },
@@ -558,7 +558,7 @@
       "refersTo": "search-field",
       "description": "The Champion question and Trainer Card autocomplete field.",
       "html": "<label class=\"ds-field\"><span>Your answer</span><input placeholder=\"Type a Pokémon name\" /></label>",
-      "css": ".ds-field { display: grid; width: min(100%, 30rem); gap: 0.35rem; color: var(--navy, #083b7e); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); font-size: 0.82rem; font-weight: 800; } .ds-field input { width: 100%; min-height: 3rem; padding: 0.65rem 0.8rem; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: 0 0.2rem 0 var(--yellow, #eed23e); font: inherit; font-size: 1rem; font-weight: 700; caret-color: var(--blue, #0d6be6); } .ds-field input::placeholder { color: var(--muted, #446078); opacity: 1; } .ds-field input:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; }"
+      "css": ".ds-field { display: grid; width: min(100%, 34rem); gap: 0.35rem; color: var(--navy, #083b7e); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); font-size: 0.82rem; font-weight: 800; } .ds-field input { width: 100%; min-height: 3rem; padding: 0.65rem 0.8rem; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: 0 0.2rem 0 var(--yellow, #eed23e); font: inherit; font-size: 1rem; font-weight: 700; caret-color: var(--blue, #0d6be6); } .ds-field input::placeholder { color: var(--muted, #446078); opacity: 1; } .ds-field input:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; }"
     },
     {
       "name": "Question Type Tile",
@@ -572,9 +572,9 @@
       "name": "Question Surface",
       "kind": "card",
       "refersTo": "game-panel",
-      "description": "The stable warm interaction surface used for direct prompts and compact visual questions during a round, with reserved answer-reveal and action footprints.",
+      "description": "Every question uses the same instruction, stimulus, response, and action regions within the existing panel. The instruction stays directly below the heading. Minimum region sizes keep ordinary questions aligned while allowing long content and enlarged text to grow without clipping. Text choices use four rows on mobile and two columns on desktop. Full-type questions use a searchable add field with removable type badges and a separate Check answers action. Submitted feedback lists correct picks, wrong picks, and missed types together. Pokémon choices share the same response height and reserve their full nameplates and revealed details, including concealed silhouettes. Short desktop screens retain the stacked structure rather than squeezing a second answer grid beside artwork.",
       "html": "<section class=\"ds-game-panel\"><div class=\"ds-topline\"><span>001 / 010</span><span class=\"ds-timer\">00:00:08</span></div><h2>Stat showdown</h2><p>Which one has the highest:</p><strong>Speed ↑</strong></section>",
-      "css": ".ds-game-panel { display: grid; width: min(32rem, 94vw); padding: clamp(1rem, 2.4vw, 1.5rem); justify-items: center; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: 0 0.28rem 0 var(--yellow, #eed23e), 0 0.62rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); } .ds-topline { display: flex; width: 100%; align-items: center; justify-content: space-between; color: var(--navy, #083b7e); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em; } .ds-timer { padding: 0.35rem 0.58rem; color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); border: 2px solid var(--navy, #083b7e); border-radius: 0.3rem; box-shadow: 0 0.16rem 0 var(--yellow, #eed23e); } .ds-game-panel h2 { margin: 0.85rem 0 0; color: var(--navy, #083b7e); font-size: clamp(1.65rem, 4.5vw, 2.3rem); font-weight: 800; line-height: 1.05; } .ds-game-panel p { margin: 0.8rem 0; font-weight: 650; line-height: 1.45; }"
+      "css": ".ds-game-panel { display: grid; width: min(42rem, 94vw); padding: clamp(1rem, 2.4vw, 1.5rem); justify-items: center; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: 0 0.28rem 0 var(--yellow, #eed23e), 0 0.62rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); } .ds-topline { display: flex; width: 100%; align-items: center; justify-content: space-between; color: var(--navy, #083b7e); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.04em; } .ds-timer { padding: 0.35rem 0.58rem; color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); border: 2px solid var(--navy, #083b7e); border-radius: 0.3rem; box-shadow: 0 0.16rem 0 var(--yellow, #eed23e); } .ds-game-panel h2 { margin: 0.85rem 0 0; color: var(--navy, #083b7e); font-size: clamp(1.65rem, 4.5vw, 2.3rem); font-weight: 800; line-height: 1.05; } .ds-game-panel p { margin: 0.8rem 0; font-weight: 650; line-height: 1.45; }"
     },
     {
       "name": "Pokémon Answer",
@@ -605,7 +605,14 @@
       "refersTo": "trainer-card",
       "description": "The 3:2 local profile card with an automatic rank-colored banner, layered game-object depth, and cream, bronze, silver, or gold finish.",
       "html": "<article class=\"ds-trainer ds-trainer--gold\"><header><span>Quizmon League</span><strong>Champion</strong></header><div><div class=\"ds-portrait\">025</div><section><h2>Trainer</h2><p>Type Specialist</p><dl><div><dt>ID No.</dt><dd>002531</dd></div><div><dt>Partner</dt><dd>Pikachu · No. 0025</dd></div></dl></section></div><footer>QUIZMON.RAVEH.DEV</footer></article>",
-      "css": ".ds-trainer { --ds-rank-accent: #f0c51f; --ds-rank-strong: #c58c00; --ds-rank-surface: #fff0a0; --ds-rank-rule: #efd36d; display: grid; width: min(34rem, 94vw); aspect-ratio: 3 / 2; overflow: hidden; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 4px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: inset 0 0 0 0.35rem var(--cream, #feec99), 0 0.3rem 0 var(--ds-rank-accent), 0 0.52rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); grid-template-rows: auto 1fr auto; } .ds-trainer header { display: flex; min-height: 3.4rem; padding: 0.65rem 1rem; align-items: center; justify-content: space-between; color: var(--navy, #083b7e); background: var(--ds-rank-accent); border-bottom: 7px solid var(--ds-rank-strong); } .ds-trainer header span { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; } .ds-trainer header strong { min-width: 5rem; padding: 0.4rem 0.65rem 0.45rem; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border: 2px solid var(--ds-rank-strong); border-radius: 0.25rem; box-shadow: 0 0.2rem 0 var(--ds-rank-strong); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; text-align: center; } .ds-trainer > div { display: grid; padding: 1rem; grid-template-columns: 8rem 1fr; align-items: center; gap: 1rem; } .ds-portrait { display: grid; aspect-ratio: 1; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border: 4px solid var(--ds-rank-strong); border-radius: 0.75rem; box-shadow: inset 0 -0.75rem 0 var(--ds-rank-rule); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 1.5rem; font-weight: 800; place-items: center; } .ds-trainer h2 { margin: 0; color: var(--navy, #083b7e); font-size: 2rem; line-height: 1; } .ds-trainer p { margin: 0.3rem 0 0.8rem; color: var(--navy, #083b7e); font-size: 0.82rem; font-weight: 800; } .ds-trainer dl { display: grid; margin: 0; gap: 0.45rem; } .ds-trainer dl > div { padding-bottom: 0.35rem; border-bottom: 2px solid var(--ds-rank-rule); } .ds-trainer dt { color: var(--muted, #446078); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; } .ds-trainer dd, .ds-trainer footer { font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; } .ds-trainer dd { margin: 0.1rem 0 0; color: var(--navy, #083b7e); } .ds-trainer footer { padding: 0.4rem 1rem 0.65rem; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border-top: 4px solid var(--ds-rank-strong); text-align: right; }"
+      "css": ".ds-trainer { --ds-rank-accent: #ffca28; --ds-rank-strong: #c58c00; --ds-rank-surface: #fff0a0; --ds-rank-rule: #efd36d; display: grid; width: min(34rem, 94vw); aspect-ratio: 3 / 2; overflow: hidden; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 4px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: inset 0 0 0 0.35rem var(--cream, #feec99), 0 0.3rem 0 var(--ds-rank-accent), 0 0.52rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); grid-template-rows: auto 1fr auto; } .ds-trainer header { display: flex; min-height: 3.4rem; padding: 0.65rem 1rem; align-items: center; justify-content: space-between; color: var(--navy, #083b7e); background: var(--ds-rank-accent); border-bottom: 7px solid var(--ds-rank-strong); } .ds-trainer header span { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; } .ds-trainer header strong { min-width: 5rem; padding: 0.4rem 0.65rem 0.45rem; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border: 2px solid var(--ds-rank-strong); border-radius: 0.25rem; box-shadow: 0 0.2rem 0 var(--ds-rank-strong); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; text-align: center; } .ds-trainer > div { display: grid; padding: 1rem; grid-template-columns: 8rem 1fr; align-items: center; gap: 1rem; } .ds-portrait { display: grid; aspect-ratio: 1; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border: 4px solid var(--ds-rank-strong); border-radius: 0.75rem; box-shadow: inset 0 -0.75rem 0 var(--ds-rank-rule); font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 1.5rem; font-weight: 800; place-items: center; } .ds-trainer h2 { margin: 0; color: var(--navy, #083b7e); font-size: 2rem; line-height: 1; } .ds-trainer p { margin: 0.3rem 0 0.8rem; color: var(--navy, #083b7e); font-size: 0.82rem; font-weight: 800; } .ds-trainer dl { display: grid; margin: 0; gap: 0.45rem; } .ds-trainer dl > div { padding-bottom: 0.35rem; border-bottom: 2px solid var(--ds-rank-rule); } .ds-trainer dt { color: var(--muted, #446078); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; } .ds-trainer dd, .ds-trainer footer { font-family: var(--font-data, 'Martian Mono Variable', ui-monospace, monospace); font-size: 0.72rem; font-weight: 800; } .ds-trainer dd { margin: 0.1rem 0 0; color: var(--navy, #083b7e); } .ds-trainer footer { padding: 0.4rem 1rem 0.65rem; color: var(--navy, #083b7e); background: var(--ds-rank-surface); border-top: 4px solid var(--ds-rank-strong); text-align: right; }"
+    },
+    {
+      "name": "Type Answer Picker",
+      "kind": "custom",
+      "description": "Search for a type, add it to the removable selection, then check all selected answers. Feedback shows correct picks, wrong picks, and missed types together.",
+      "html": "<div class=\"type-picker champion-search\"><label for=\"preview-type\">Your types</label><div class=\"type-picker__field\"><input id=\"preview-type\" placeholder=\"Add a type…\" /></div><div class=\"type-picker__selected\" role=\"group\" aria-label=\"Selected types\"><button class=\"type-picker__remove\" type=\"button\" aria-label=\"Remove Fire\"><img class=\"type-badge\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAUCAYAAADPym6aAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKwSURBVFhH3ZfBcYMwEEVpgRZ8z8WkA5hccqYEU0LcAi3QAi1QQmiBFmhB2bdosZBFwiEHEs38cZCW1fusEEr2r9vb27Uoy2tblkUvGk8iYbm2sHnM/VaWr5eqKu4ft9v02XfzPPTOjcMpBAtMsMEIq8feNhmo6rIcP7tu1psx0bXOtfdzCBb/YGGEFWaPv7T395e8lIGp9xXgxqZyri6cqy5uSoj+WHOiz/qP5tiNgwUm2IQRVphh9zayjFINXbtU4t6sBlBf5K4pLk/qLvkaY3G19PEb9mOC/lSOOHZvrk0cbDAKK8ywqwkc3ep6UhOULzDB0yDRPE9u0+ZZ4cIKNHmmcZ1MMgQTY7gnr9wTtjiWX67jubgmt+VTwUhOYYZdq7KpBqULbjAjNGCYCLVN/VSRPSOtxA19t46pWB5iLIw1I9ov4xbbVMVT5VSw+qrIbtbIS170ujvJZGE1UGiE5Fbq2AQ6YoQYleVMGZGm8/jYpAkEK3mFHQ8YGZdlJU8pCg6NhO1eV26MJjhiZJpG/bW/m/wRFxqxGJSaaxXMwo6HhxHKHQX+dkV0Scq4Li1pXKcqEi6t3YqgyMiytKIXHW2MeED6whjTESPEMBbnJC40og9MYhFGktu6Lq32sbR42fUjOHz/sseAsY4a2ctpRogLRXV+etl1C+ZT/3Hz2y8lrx/B9g0AhN1jAsASRWIyXX5RnAEa0F5OfnWHkpXBmEl3S4m3fCoYYRVm2NfjCoex9Wgik4ZLjAl4qt+ZQAACmorDTLhE9nJyDTRjJq43Sws2GIUVZtjVBA1HnF0mf5aJjyinECww+UrA6s9b28MjBzDOLuvH0TYAbjyDYPEPevkIJg6N1vjU8+K06zFeDGHqBIIFJthg3BwW95r9Y1VV14E9+gxaWA7+Y/V3W5Z9AT/1QC3hRq0PAAAAAElFTkSuQmCC\" alt=\"\" /><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" /></svg></button></div></div>",
+      "css": ":host { \n  color: var(--ink);\n  background: var(--page-background);\n  font-family: var(--font-interface);\n  font-synthesis: none;\n  text-rendering: optimizeLegibility;\n  --font-interface: 'Gabarito Variable', system-ui, sans-serif;\n  --font-data: 'Martian Mono Variable', ui-monospace, monospace;\n  --text-display: clamp(1.65rem, 4.5vw, 2.3rem);\n  --text-headline: clamp(1.35rem, 4vw, 1.75rem);\n  --text-body: 1rem;\n  --text-control: 1rem;\n  --text-label: 0.82rem;\n  --text-status: 0.85rem;\n  --text-footer: 0.875rem;\n  --text-compact-control: 0.88rem;\n  --text-small: 0.78rem;\n  --text-micro: 0.72rem;\n  --text-mini: 0.65rem;\n  --text-tiny: 0.56rem;\n  --text-numeric: 0.76rem;\n  --text-brand-detail: clamp(0.72rem, 0.89vw, 0.89rem);\n  --text-brand-control: clamp(1rem, 1.15vw, 1.125rem);\n  --text-answer: clamp(0.92rem, 2.6vw, 1.08rem);\n  --text-score: clamp(2rem, 8vw, 3.6rem);\n  --surface-radius: 0.75rem;\n  --button-radius: 0.5rem;\n  --icon-control-radius: 0.35rem;\n  --page-background: #72c3ee;\n  --navy: #083b7e;\n  --navy-shadow: #123f76;\n  --blue: #0d6be6;\n  --primary-text: #e8fcff;\n  --sky: #b7e1fa;\n  --yellow: #eed23e;\n  --metal-bronze: #c7a181;\n  --metal-bronze-edge: #866246;\n  --metal-bronze-light: #ead7bf;\n  --metal-silver: #b8cbd2;\n  --metal-silver-edge: #7895a2;\n  --metal-silver-light: #e5f0f4;\n  --metal-gold: #ffca28;\n  --metal-gold-edge: #a66a08;\n  --metal-gold-light: #fff5c4;\n  --cream: #feec99;\n  --paper: #fffbea;\n  --ink: #143149;\n  --footer-ink: #1b3e40;\n  --muted: #446078;\n  --disabled-surface: #e5ebed;\n  --hall-ink: #fff5d6;\n  --hall-muted: #bdcfe0;\n  --hall-night: #102f50;\n  --correct: #18763a;\n  --wrong: #a92843;\n  --focus: #083b7e;\n  --error-ink: #8b1e31;\n  --error-surface: #fff0f3;\n  --modal-scrim: rgba(8, 35, 73, 0.8); } * { box-sizing: border-box; } .champion-search {\n  display: grid;\n  width: min(100%, 34rem);\n  margin: 0;\n  align-self: start;\n  justify-self: center;\n  gap: 0.35rem;\n}\n\n.champion-search > label {\n  color: var(--navy);\n  font-size: var(--text-label);\n  font-weight: 800;\n}\n\n.champion-search__controls {\n  position: relative;\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  align-items: start;\n  gap: 0.65rem;\n}\n\n.champion-search__combobox {\n  min-width: 0;\n}\n\n.champion-search input {\n  width: 100%;\n  min-height: 3rem;\n  padding: 0.65rem 0.8rem;\n  color: var(--ink);\n  background: var(--paper);\n  border: 3px solid var(--navy);\n  border-radius: 0.5rem;\n  box-shadow: 0 0.2rem 0 var(--yellow);\n  font-weight: 700;\n}\n\n.champion-search input::placeholder {\n  color: var(--muted);\n  opacity: 1;\n}\n\n.champion-search input:disabled {\n  opacity: 1;\n}\n\n.champion-search--correct input {\n  color: var(--primary-text);\n  background: var(--correct);\n}\n\n.champion-search--wrong input {\n  color: var(--primary-text);\n  background: var(--wrong);\n}\n\n.champion-search__controls > .game-button {\n  min-width: 5.75rem;\n  min-height: 3rem;\n}\n\n.champion-search ul,\n.champion-search__empty {\n  position: absolute;\n  z-index: 3;\n  top: calc(100% + 0.45rem);\n  right: 0;\n  left: 0;\n  padding: 0.25rem;\n  margin: 0;\n  overflow-y: auto;\n  color: var(--ink);\n  background: var(--paper);\n  border: 3px solid var(--navy);\n  border-radius: 0.5rem;\n  box-shadow:\n    0 0.22rem 0 var(--yellow),\n    0 0.42rem 0 var(--navy-shadow);\n}\n\n.champion-search ul {\n  max-height: 13rem;\n  list-style: none;\n}\n\n.champion-search li {\n  display: flex;\n  min-height: 2.8rem;\n  padding: 0.5rem 0.65rem;\n  align-items: center;\n  justify-content: space-between;\n  gap: 0.75rem;\n  border-radius: 0.25rem;\n  cursor: pointer;\n  font-weight: 750;\n}\n\n.champion-search li small,\n.answer__nameplate small,\n.answer__identity small {\n  font-family: var(--font-data);\n  font-size: var(--text-mini);\n  font-weight: 800;\n  letter-spacing: 0.04em;\n}\n\n.champion-search li:hover,\n.champion-search li[aria-selected='true'] {\n  color: var(--primary-text);\n  background: var(--blue);\n}\n\n.champion-search__empty {\n  font-size: var(--text-label);\n  font-weight: 700;\n  text-align: center;\n}\n\n.type-picker__field {\n  position: relative;\n  min-width: 0;\n}\n\n.type-picker__selected {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem;\n  margin-top: 0.65rem;\n}\n\n.type-picker__remove {\n  display: flex;\n  min-height: 2.75rem;\n  padding: 0.35rem 0.55rem;\n  align-items: center;\n  gap: 0.65rem;\n  color: var(--navy);\n  background: var(--paper);\n  border: 2px solid var(--navy);\n  border-radius: 0.4rem;\n  cursor: pointer;\n}\n\n.type-picker__remove:hover {\n  background: var(--yellow);\n}\n\n.type-picker__remove svg {\n  width: 1rem;\n  height: 1rem;\n}\n\n.type-picker__results {\n  display: grid;\n  width: min(100%, 34rem);\n  gap: 0.5rem;\n  align-self: start;\n  justify-self: center;\n}\n\n.type-picker__result {\n  display: flex;\n  min-height: 2.75rem;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 0.65rem;\n  font-weight: 700;\n}\n\n.type-picker__result .answer-matchup__help {\n  position: static;\n  color: var(--navy);\n  margin-left: auto;\n  transform: none;\n}\n\n.question__response:has(.type-picker, .type-picker__results) {\n  min-height: 7rem;\n}\n .type-picker { font-family: var(--font-interface); } .type-badge { width: 50px; height: 20px; image-rendering: pixelated; } .type-picker__remove:focus-visible, input:focus-visible { outline: 0.2rem solid var(--navy); outline-offset: 0.2rem; }"
     }
   ],
   "narrative": {

@@ -133,8 +133,17 @@ export const test = base.extend({
 
 export const answerCurrentQuestion = async (page: Page) => {
   const search = page.getByRole('combobox', { name: 'Your answer' });
-  await expect(page.locator('.answer').or(search).first()).toBeVisible();
-  if (await search.count()) {
+  const types = page.getByRole('combobox', { name: 'Your types' });
+  await expect(
+    page.locator('.answer').or(search).or(types).first(),
+  ).toBeVisible();
+  if (await types.count()) {
+    await types.fill('bug');
+    await types.press('Enter');
+    await page
+      .getByRole('button', { name: 'Check answers', exact: true })
+      .click();
+  } else if (await search.count()) {
     const name = await page.evaluate(() => {
       const snapshot = JSON.parse(
         sessionStorage.getItem('quizmon.active-game.v1')!,

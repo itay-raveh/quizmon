@@ -58,17 +58,19 @@ const Subject = ({
   children?: ReactNode;
 }) => (
   <div className="question-visual__subject">
-    <span
-      className={
-        framed ? 'question-visual__pokemon-slot' : 'question-visual__portrait'
-      }
-    >
-      {concealed ? (
-        <span className="question-visual__question-mark">?</span>
-      ) : src ? (
-        <PixelSprite className="question-visual__pokemon" src={src} />
-      ) : null}
-    </span>
+    {src || concealed ? (
+      <span
+        className={
+          framed ? 'question-visual__pokemon-slot' : 'question-visual__portrait'
+        }
+      >
+        {concealed ? (
+          <span className="question-visual__question-mark">?</span>
+        ) : src ? (
+          <PixelSprite className="question-visual__pokemon" src={src} />
+        ) : null}
+      </span>
+    ) : null}
     <PokemonIdentity
       className="question-visual__subject-name"
       name={name}
