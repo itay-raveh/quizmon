@@ -380,3 +380,9 @@ Every question uses the same instruction, stimulus, response, and action regions
 Question subjects use a portrait with their identity underneath. Evolution Link shows the three chain stages with the middle stage concealed until submission, and keeps its answer choices text-only. Relationship and stat-direction arrows use the same outlined shape. Generation Roundup gives its requested generation a separate typographic label in the stimulus region.
 
 Champion starts with a compact clue, search field, and assistance action. Choices and supporting clues expand the panel when requested. Once supporting clues appear, their remaining details reserve space for stable reveals. Assistance and next actions use the shared action row. Undisclosed clues and identities remain hidden from both sight and assistive technology. Very narrow containers, including enlarged text, stack relationship subjects and Pokémon answers vertically. Page scrolling remains available.
+
+### Difficulty and Daily revision
+
+Daily uses one shared Level 3 challenge across all generations. The landing action starts or resumes it directly, and completion replaces that action with the saved result share. Date-only links use the existing landing action with the date. Links with play=1 start automatically. There is no inner Daily screen, scope picker, difficulty picker, or extra start action. Keep saved legacy results and attempts accessible under their original rules.
+
+Training retains its settings surface and generation/form grids, adds five numbered difficulty radios, and replaces the League/Custom switch with optional question customization. Difficulty labels never describe question types or rules. Results and shares use the saved configuration; new bests compare matching configurations and rules/catalog versions. Legacy results retain their original labels and scores. These requirements supersede the earlier Training-mode and Daily-layout descriptions above.

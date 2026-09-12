@@ -6,17 +6,17 @@ the topics you choose. No account is needed.
 
 ## Daily Challenge
 
-Play five questions each day, ending with a Champion question: identify a Pokémon
-from clues, revealing more if you need help. Everyone gets the same Daily, and
-you have one attempt per day in your browser. A new challenge arrives at midnight
-UTC. Complete consecutive days to build your Daily Combo.
+Play one five-question challenge each day, at Level 3 across all generations.
+Everyone playing the same date and version gets the same questions. You have
+one attempt per day, and can resume an unfinished attempt. Training settings
+do not change Daily. A new day starts at your local midnight. Completing the
+challenge advances your Daily Combo once that day.
 
 ## Training
 
 Training gives you ten questions per round and lets you play again as often as
-you like. Choose your generations in Settings. League Training covers the core
-question types; Custom Training lets you choose individual formats, including
-abilities, moves, and stats.
+you like. Choose a numbered level, generations, and forms in Settings. Questions
+are mixed automatically, with optional question selection for focused practice.
 
 Some questions ask you to pick one answer. Others ask you to select every matching
 Pokémon and then check your selection. After answering, you can see the correct
@@ -26,7 +26,8 @@ answer before moving on.
 
 A standard correct answer earns 1,000 knowledge points, plus a bonus for answering
 quickly. Your final score also includes a mastery bonus based on accuracy.
-Champion questions award more points when you use fewer clues.
+Champion points account for both supplied information and any help you request.
+Personal bests compare rounds with the same configuration and rules version.
 
 Daily and Training rounds contribute to your progress. Open your Trainer Card
 to see your badges, choose a partner Pokémon, and share your card as an image.
