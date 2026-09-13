@@ -173,9 +173,9 @@ export const App = () => {
     <>
       <AutomaticUpdate
         allowed={
-          !restoringGame &&
           session.phase !== 'questions' &&
-          catalogState.status === 'ready'
+          (catalogState.status === 'error' ||
+            (!restoringGame && catalogState.status === 'ready'))
         }
       />
       <AppView
