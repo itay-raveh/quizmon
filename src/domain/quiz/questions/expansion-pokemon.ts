@@ -1,3 +1,4 @@
+import { pokemonPrompt } from './prompts';
 import { statNames } from '../../pokemon/types';
 import { formatPokemonName } from '../../pokemon/format';
 import {
@@ -242,6 +243,7 @@ export const buildHidden: QuestionBuilder = (context) => {
       correct,
       options,
       {
+        prompt: pokemonPrompt(target, 'What is ', '’s Hidden Ability?'),
         media: targetMedia(target),
         explanation: `Hidden Ability: ${formatPokemonName(correct)}. Ordinary abilities: ${ordinary.map(formatPokemonName).join(', ') || 'none'}.`,
       },
@@ -290,8 +292,11 @@ export const buildEggGroups: QuestionBuilder = (context) => {
       options.map((candidate) => candidate.name),
       {
         prompt: {
-          kind: 'text',
-          text: prompt,
+          ...pokemonPrompt(
+            target,
+            'Which Pokémon shares an Egg Group with ',
+            '?',
+          ),
           ...(context.variant?.showEggGroups
             ? {
                 supportingText: `Egg Groups: ${groups.map(formatPokemonName).join(', ')}`,
@@ -374,8 +379,13 @@ export const buildEvYield: QuestionBuilder = (context) => {
       options,
       {
         prompt: {
-          kind: 'text',
-          text: prompt,
+          ...pokemonPrompt(
+            target,
+            context.variant?.completeEvYield
+              ? 'What EVs does defeating '
+              : 'Which stat gains EVs from defeating ',
+            context.variant?.completeEvYield ? ' give?' : '?',
+          ),
           supportingText: 'Base yield, before bonuses',
         },
         media: targetMedia(target),

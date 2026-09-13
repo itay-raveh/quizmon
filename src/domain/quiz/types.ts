@@ -87,6 +87,7 @@ export type QuestionPrompt =
       dexNumber: number;
       kind: 'pokemon';
       name: string;
+      supportingText?: string;
     };
 
 export interface QuestionRepetition {

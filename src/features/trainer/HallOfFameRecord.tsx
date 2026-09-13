@@ -1,3 +1,4 @@
+import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { site } from '@/app/site';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
 import { formatPokemonName, formatScore } from '@/domain/pokemon/format';
@@ -71,9 +72,7 @@ export const HallOfFameRecord = ({
                     ?
                   </span>
                 )}
-                <span className="visually-hidden">
-                  {formatPokemonName(name)}
-                </span>
+                <PokemonIdentity className="visually-hidden" name={name} />
               </li>
             ),
           )}

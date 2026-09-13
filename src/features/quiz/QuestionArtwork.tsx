@@ -312,7 +312,15 @@ export const QuestionArtwork = ({
       <div
         className="question-visual"
         aria-hidden="true"
-        style={{ visibility: 'hidden' }}
+        style={{
+          visibility: [
+            'ev-yields',
+            'hidden-abilities',
+            'egg-group-connections',
+          ].includes(question.questionType)
+            ? undefined
+            : 'hidden',
+        }}
       >
         {question.subject.kind === 'pokemon' ? (
           <Subject {...subject} />

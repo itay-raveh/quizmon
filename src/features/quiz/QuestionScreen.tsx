@@ -7,7 +7,6 @@ import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatDuration,
   formatDurationMilliseconds,
-  formatPokedexNumber,
   formatPokemonName,
   formatPokemonTypes,
   getModeLabel,
@@ -84,15 +83,19 @@ const QuestionPrompt = ({
     ) : (
       <>
         {prompt.before}
-        <span className="question__subject">
-          <b>{formatPokemonName(prompt.name)}</b>{' '}
-          {!hideNumbers ? (
-            <span className="question__subject-number">
-              ({formatPokedexNumber(prompt.dexNumber)})
-            </span>
-          ) : null}
-        </span>
+        <PokemonIdentity
+          className="question__subject"
+          inline
+          name={prompt.name}
+          dexNumber={hideNumbers ? undefined : prompt.dexNumber}
+          numberClassName="question__subject-number"
+        />
         {prompt.after}
+        {prompt.supportingText ? (
+          <span className="question__supporting-text">
+            {prompt.supportingText}
+          </span>
+        ) : null}
       </>
     )}
   </p>
@@ -171,6 +174,9 @@ export const QuestionScreen = ({
       !(question.namesOnly && question.visual)
     ) &&
     (Boolean(question.visual) ||
+      ['ev-yields', 'hidden-abilities', 'egg-group-connections'].includes(
+        question.questionType,
+      ) ||
       (question.questionType === 'nature-effects' &&
         Boolean(
           question.optionReveals?.[question.answer.correctOptions[0]!],

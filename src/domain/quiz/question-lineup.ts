@@ -112,6 +112,7 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
         text(prompt.before) &&
         text(prompt.after) &&
         text(prompt.name) &&
+        optional(prompt.supportingText, text) &&
         isSafeNonnegativeInteger(prompt.dexNumber)) &&
     variant(value.media, mediaChecks) &&
     optional(value.optionLabels, (v) => map(v, text)) &&

@@ -1,8 +1,5 @@
-import {
-  formatPokedexNumber,
-  formatPokemonName,
-  formatTypeMultiplier,
-} from '@/domain/pokemon/format';
+import { formatTypeMultiplier } from '@/domain/pokemon/format';
+import { PokemonIdentity } from '@/components/PokemonIdentity';
 import type { QuestionData } from '@/domain/quiz/types';
 import { NatureEffect } from './NatureEffect';
 
@@ -12,6 +9,33 @@ export const QuestionInstruction = ({
   question: QuestionData;
 }) => {
   const kind = question.visual?.kind;
+  const supportingText = question.prompt.supportingText;
+  const subjectInstruction =
+    question.questionType === 'ev-yields'
+      ? (question.prompt.kind === 'pokemon'
+          ? question.prompt.before
+          : question.prompt.text
+        ).startsWith('Which stat')
+        ? 'Which stat gains EVs from defeating this Pokémon?'
+        : 'What EVs does defeating this Pokémon give?'
+      : question.questionType === 'hidden-abilities'
+        ? 'What is this Pokémon’s Hidden Ability?'
+        : question.questionType === 'egg-group-connections'
+          ? 'Which Pokémon shares an Egg Group with this one?'
+          : kind === 'evolution-endpoints'
+            ? question.questionType === 'evolution-items'
+              ? 'Which item triggers this evolution?'
+              : 'What are the minimum requirements for this evolution?'
+            : undefined;
+  if (subjectInstruction)
+    return (
+      <>
+        {subjectInstruction}
+        {supportingText ? (
+          <span className="question__supporting-text">{supportingText}</span>
+        ) : null}
+      </>
+    );
   if (question.questionType === 'nature-effects') {
     const effect = question.optionReveals?.[question.answer.correctOptions[0]!];
     if (effect)
@@ -68,10 +92,12 @@ export const QuestionInstruction = ({
   return (
     <>
       {prompt.before}
-      <strong>{formatPokemonName(prompt.name)}</strong>{' '}
-      <small className="question__subject-number">
-        ({formatPokedexNumber(prompt.dexNumber)})
-      </small>
+      <PokemonIdentity
+        inline
+        name={prompt.name}
+        dexNumber={prompt.dexNumber}
+        numberClassName="question__subject-number"
+      />
       {prompt.after}
     </>
   );
