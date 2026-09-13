@@ -92,7 +92,6 @@ export const presentEvolutionQuestion = (
       : undefined);
   return {
     ...question,
-    namesOnly: false,
     options: numeric
       ? question.options.toSorted(
           (a, b) => Number(optionLabels[a]) - Number(optionLabels[b]),

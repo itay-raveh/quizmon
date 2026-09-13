@@ -1,3 +1,4 @@
+import { isQuestionRendering } from './question-rendering';
 import { isQuestionSubject } from './subject';
 import { isDifficulty } from './difficulty';
 import {
@@ -39,7 +40,7 @@ const mediaChecks = {
   'pixel-sprite': (value) => text(value.src),
   sprite: (value) =>
     text(value.src) &&
-    typeof value.silhouette === 'boolean' &&
+    optional(value.silhouette, (v) => typeof v === 'boolean') &&
     optional(value.revealAt, isSafeNonnegativeInteger),
   'pixel-peek': (value) =>
     text(value.src) &&
@@ -121,6 +122,7 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
     optional(value.explanation, text) &&
     optional(value.context, text) &&
     optional(value.variantLevel, isDifficulty) &&
+    optional(value.rendering, isQuestionRendering) &&
     optional(value.namesOnly, (v) => typeof v === 'boolean') &&
     optional(value.showTypes, (v) => typeof v === 'boolean') &&
     optional(value.assistanceUsed, isSafeNonnegativeInteger) &&

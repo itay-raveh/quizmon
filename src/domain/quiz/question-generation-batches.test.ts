@@ -128,22 +128,20 @@ it('assembles presentation explicitly without inferring it from the question cat
   };
   const names = makeQuestion(context, {
     ...common,
-    presentation: { kind: 'pokemon-names', numbers: false },
+    presentation: { kind: 'pokemon' },
   });
   expect(names.media).toEqual({ kind: 'none' });
-  expect(names.optionVisuals).toBeUndefined();
-  expect(names.optionDexNumbers).toBeUndefined();
+  expect(names.optionVisuals?.pikachu?.src).toBe(target.pokemon.sprite);
+  expect(names.optionDexNumbers?.pikachu).toBe(25);
 
   const sprites = makeQuestion(context, {
     ...common,
     presentation: {
-      kind: 'pokemon-sprites',
-      labels: 'concealed',
+      kind: 'pokemon',
       source: (pokemon) => pokemon.shinySprite,
     },
     details: { kind: 'classification' },
   });
-  expect(sprites.concealOptionLabels).toBe(true);
   expect(sprites.optionVisuals?.pikachu?.src).toBe(target.pokemon.shinySprite);
   expect(sprites.optionDexNumbers?.pikachu).toBe(25);
   expect(sprites.optionClassifications).toEqual({

@@ -1,3 +1,4 @@
+import type { QuestionRendering } from './question-rendering';
 import type { FormGroup, Generation, StatName } from '../pokemon/types';
 import type { Difficulty } from './difficulty';
 import type { DailyTrack } from './daily-track';
@@ -23,7 +24,7 @@ type QuestionMedia =
   | {
       kind: 'sprite';
       revealAt?: number;
-      silhouette: boolean;
+      silhouette?: boolean;
       src: string;
     }
   | {
@@ -130,6 +131,7 @@ export interface QuestionData {
   context?: string;
   variantLevel?: Difficulty;
   rulesVersion?: number;
+  rendering?: QuestionRendering;
   namesOnly?: boolean;
   showTypes?: boolean;
   initialClues?: number;

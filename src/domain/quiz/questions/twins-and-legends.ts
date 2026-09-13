@@ -70,7 +70,7 @@ export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
         '?',
       ),
       media: { kind: 'pixel-sprite', src: target.pokemon.sprite },
-      presentation: { kind: 'pokemon-sprites' },
+      presentation: { kind: 'pokemon' },
     }),
     visual: { kind: 'type-twins' },
   };
@@ -105,7 +105,7 @@ export const buildLegendHuntQuestion: QuestionBuilder = (context) => {
     correct: correctOptions,
     options,
     prompt: textPrompt('Select every Legendary or Mythical Pokémon.'),
-    presentation: { kind: 'pokemon-sprites', labels: 'concealed' },
+    presentation: { kind: 'pokemon' },
     details: { kind: 'classification' },
   });
 };

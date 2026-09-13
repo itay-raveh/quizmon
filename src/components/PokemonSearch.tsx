@@ -6,25 +6,28 @@ import {
 } from '@/domain/pokemon/search';
 import { SearchCombobox } from './SearchCombobox';
 import { useInteractionSound } from '@/lib/audio/sound-context';
-import { useId, useMemo } from 'react';
+import { useId, useMemo, type ReactNode } from 'react';
 import { GameButton } from './GameButton';
 
+interface SearchPokemon {
+  name: string;
+  dexNumber?: number;
+  sprite?: string | null;
+}
 interface PokemonSearchProps {
+  renderPokemon?: (pokemon: SearchPokemon) => ReactNode;
   disabled?: boolean;
   mode: 'partner' | 'champion';
   onClear?: () => void;
   onConfirm: (name: string) => void;
   onQueryChange: (query: string) => void;
-  options: readonly {
-    name: string;
-    dexNumber?: number;
-    sprite?: string | null;
-  }[];
+  options: readonly SearchPokemon[];
   query: string;
   result?: 'correct' | 'wrong' | null;
 }
 
 export const PokemonSearch = ({
+  renderPokemon,
   disabled = false,
   mode,
   onClear,
@@ -91,33 +94,37 @@ export const PokemonSearch = ({
           getKey={(suggestion) => suggestion.name}
           placeholder={champion ? 'Type a Pokémon name' : 'Search all Pokémon'}
           emptyMessage="No Pokémon found. Try another spelling."
-          renderOption={(suggestion) => (
-            <>
-              {!champion || suggestion.sprite ? (
-                <span aria-hidden="true" className="pokemon-picker__sprite">
-                  {suggestion.sprite ? (
-                    <img
-                      alt=""
-                      decoding="async"
-                      height="32"
-                      loading="lazy"
-                      onError={(event) => {
-                        event.currentTarget.hidden = true;
-                      }}
-                      src={suggestion.sprite}
-                      width="32"
-                    />
-                  ) : null}
-                </span>
-              ) : null}
-              <span>{suggestion.label}</span>
-              {champion && suggestion.dexNumber !== undefined ? (
-                <small aria-hidden="true">
-                  {formatPokedexNumber(suggestion.dexNumber)}
-                </small>
-              ) : null}
-            </>
-          )}
+          renderOption={(suggestion) =>
+            renderPokemon ? (
+              renderPokemon(suggestion)
+            ) : (
+              <>
+                {!champion || suggestion.sprite ? (
+                  <span aria-hidden="true" className="pokemon-picker__sprite">
+                    {suggestion.sprite ? (
+                      <img
+                        alt=""
+                        decoding="async"
+                        height="32"
+                        loading="lazy"
+                        onError={(event) => {
+                          event.currentTarget.hidden = true;
+                        }}
+                        src={suggestion.sprite}
+                        width="32"
+                      />
+                    ) : null}
+                  </span>
+                ) : null}
+                <span>{suggestion.label}</span>
+                {champion && suggestion.dexNumber !== undefined ? (
+                  <small aria-hidden="true">
+                    {formatPokedexNumber(suggestion.dexNumber)}
+                  </small>
+                ) : null}
+              </>
+            )
+          }
         />
         {champion ? (
           <GameButton

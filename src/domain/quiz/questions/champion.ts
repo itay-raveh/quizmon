@@ -40,11 +40,9 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
       prompt: textPrompt(`“${openingClue}”`),
       media: {
         kind: 'sprite',
-        revealAt: 4,
-        silhouette: true,
         src: target.pokemon.sprite,
       },
-      presentation: { kind: 'pokemon-names' },
+      presentation: { kind: 'pokemon' },
     }),
     clues: [
       `Known as the ${target.pokemon.genus} Pokémon.`,
@@ -63,6 +61,7 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
             pokemon.speciesName !== target.pokemon.speciesName),
       )
       .map(({ name, pokemon }) => ({
+        sprite: pokemon.sprite,
         dexNumber: pokemon.speciesId,
         name,
       })),

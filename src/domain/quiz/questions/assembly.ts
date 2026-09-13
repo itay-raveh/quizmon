@@ -12,7 +12,6 @@ export const getOptionVisuals = (
   getSource: (pokemon: PokemonKnowledge, option: string) => string | null = (
     pokemon,
   ) => pokemon.sprite,
-  silhouette = false,
 ): Record<string, PokemonOptionVisual> =>
   Object.fromEntries(
     options.flatMap((option) => {
@@ -25,7 +24,6 @@ export const getOptionVisuals = (
           option,
           {
             dexNumber: pokemon.speciesId,
-            silhouette,
             src,
             types: pokemon.types,
           },
@@ -44,18 +42,9 @@ const getOptionDexNumbers = (
     }),
   );
 export type AnswerPresentation =
+  | { kind: 'text' }
   | {
-      kind: 'text';
-    }
-  | {
-      kind: 'pokemon-names';
-      numbers?: boolean;
-    }
-  | {
-      kind: 'pokemon-sprites';
-      numbers?: boolean;
-      labels?: 'concealed';
-      silhouette?: boolean;
+      kind: 'pokemon';
       source?: (pokemon: PokemonKnowledge, option: string) => string | null;
     };
 type AnswerDetails =
@@ -116,20 +105,18 @@ export const makeQuestion = (
       types: target.pokemon.types,
     },
   };
-  if (presentation.kind !== 'text' && presentation.numbers !== false) {
+  if (presentation.kind !== 'text') {
     const numbers = getOptionDexNumbers(context, options);
     if (Object.keys(numbers).length > 0) question.optionDexNumbers = numbers;
   }
-  if (presentation.kind === 'pokemon-sprites') {
+  if (presentation.kind !== 'text') {
     question.optionVisuals = getOptionVisuals(
       context,
       options,
       presentation.source,
-      presentation.silhouette,
     );
-    if (presentation.labels === 'concealed')
-      question.concealOptionLabels = true;
   }
+
   if (details) {
     const pokemon = options.flatMap((name) => {
       const entry = context.catalog.pokemon[name];

@@ -49,7 +49,7 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
       prompt: textPrompt(
         `Select every Pokémon introduced in ${formatGeneration(generation)}.`,
       ),
-      presentation: { kind: 'pokemon-sprites', numbers: false },
+      presentation: { kind: 'pokemon' },
       details: { kind: 'generation' },
     }),
     visual: { kind: 'generation-roundup', generation },
@@ -125,7 +125,7 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
       prompt: textPrompt(
         `Complete the evolution chain: ${formatPokemonName(before)} → ? → ${formatPokemonName(after)}.`,
       ),
-      presentation: { kind: 'pokemon-names', numbers: false },
+      presentation: { kind: 'pokemon' },
     }),
     visual: {
       kind: 'evolution-link',

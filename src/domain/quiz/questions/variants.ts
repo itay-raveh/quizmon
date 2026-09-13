@@ -1,3 +1,4 @@
+import type { QuestionRendering } from '../question-rendering';
 import { attackMultiplier } from '../../pokemon/type-effectiveness';
 import {
   QUESTION_RULES_VERSION,
@@ -8,19 +9,16 @@ import type { QuestionContext, QuestionDraft } from './context';
 export const applyQuestionVariant = (
   draft: QuestionDraft,
   context: QuestionContext,
-  rules: VariantRules,
+  rules: VariantRules & { rendering: QuestionRendering },
   level: Difficulty,
 ): QuestionDraft => {
   const question = {
     ...draft,
     variantLevel: level,
     rulesVersion: QUESTION_RULES_VERSION,
-    namesOnly: rules.namesOnly,
+    rendering: rules.rendering,
     showTypes: rules.showTypes,
   };
-  if (rules.namesOnly) {
-    question.concealOptionLabels = false;
-  }
   if (question.media.kind === 'pixel-peek' && rules.cropScale) {
     question.media = {
       ...question.media,
@@ -44,9 +42,7 @@ export const applyQuestionVariant = (
       .map(({ name, pokemon }) => ({
         name,
         dexNumber: pokemon.speciesId,
-        ...(context.questionType === 'field-notes'
-          ? { sprite: pokemon.sprite }
-          : {}),
+        sprite: pokemon.sprite,
       }));
   }
   if (rules.typeGrid) {

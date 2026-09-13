@@ -17,7 +17,10 @@ import {
 import { buildEvolution } from './expansion-evolution';
 import { buildMedicine, buildEffect } from './expansion-effects';
 import { buildEncounter } from './expansion-encounters';
-import { getQuestionVariant } from '../question-variants';
+import {
+  getQuestionVariant,
+  resolveQuestionRendering,
+} from '../question-variants';
 import { applyQuestionVariant } from './variants';
 import {
   getPokemonRecency,
@@ -199,6 +202,7 @@ export const buildQuestionType = (
       ...draft,
       questionType,
     };
+    question.rendering ??= resolveQuestionRendering(questionType);
     const questionRarity = rarity(question);
     // Choosing a less-seen draft must not turn the initial rarity draw into more Megas.
     if (

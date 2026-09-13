@@ -14,7 +14,7 @@ const makeIdentityQuestion = (
   context: QuestionContext,
   {
     target,
-    presentation = { kind: 'pokemon-names' },
+    presentation = { kind: 'pokemon' },
     ...question
   }: Pick<QuestionAssembly, 'target' | 'options' | 'prompt' | 'media'> & {
     presentation?: AnswerPresentation;
@@ -75,36 +75,32 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
     target,
     options: pokemonOptions(context, { correct: target }),
     prompt: textPrompt('Who is this Pokémon?'),
-    media: { kind: 'sprite', silhouette: false, src: sprite },
+    media: { kind: 'sprite', src: sprite },
   });
 };
 
-const buildNamedPokemonQuestion =
-  (silhouette: boolean): QuestionBuilder =>
-  (context) => {
-    const eligible = context.pool.filter(({ pokemon }) => pokemon.sprite);
-    const target = pickFreshTarget(context, eligible);
-    if (!target) return undefined;
-    const options = pokemonOptions(context, {
-      correct: target,
-      candidates: eligible,
-    });
-    if (options.length !== 4) return undefined;
+const buildNamedPokemonQuestion: QuestionBuilder = (context) => {
+  const eligible = context.pool.filter(({ pokemon }) => pokemon.sprite);
+  const target = pickFreshTarget(context, eligible);
+  if (!target) return undefined;
+  const options = pokemonOptions(context, {
+    correct: target,
+    candidates: eligible,
+  });
+  if (options.length !== 4) return undefined;
 
-    return makeIdentityQuestion(context, {
-      target,
-      options,
-      prompt: pokemonPrompt(target, 'Find ', ''),
-      presentation: {
-        kind: 'pokemon-sprites',
-        labels: 'concealed',
-        silhouette,
-      },
-    });
-  };
+  return makeIdentityQuestion(context, {
+    target,
+    options,
+    prompt: pokemonPrompt(target, 'Find ', ''),
+    presentation: {
+      kind: 'pokemon',
+    },
+  });
+};
 
-export const buildSilhouetteMatchQuestion = buildNamedPokemonQuestion(true);
-export const buildSpriteMatchQuestion = buildNamedPokemonQuestion(false);
+export const buildSilhouetteMatchQuestion = buildNamedPokemonQuestion;
+export const buildSpriteMatchQuestion = buildNamedPokemonQuestion;
 
 export const buildWhosThatPokemonQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
@@ -114,7 +110,7 @@ export const buildWhosThatPokemonQuestion: QuestionBuilder = (context) => {
     target,
     options: pokemonOptions(context, { correct: target }),
     prompt: textPrompt('Who is this Pokémon?'),
-    media: { kind: 'sprite', silhouette: true, src: target.pokemon.sprite },
+    media: { kind: 'sprite', src: target.pokemon.sprite },
   });
 };
 
@@ -155,7 +151,7 @@ export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
     options,
     prompt: textPrompt('Which Pokémon is shown in its shiny colors?'),
     presentation: {
-      kind: 'pokemon-sprites',
+      kind: 'pokemon',
       source: (pokemon, option) =>
         option === target.name ? pokemon.shinySprite : pokemon.sprite,
     },

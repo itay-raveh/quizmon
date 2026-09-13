@@ -163,7 +163,7 @@ describe('Legend hunt', () => {
           'legend-hunt',
         );
         expect.assert(question);
-        expect(question.concealOptionLabels).toBe(true);
+        expect(question.rendering?.choices.name).toBe('always');
         expect(question.answer.interaction).toBe('multi-select');
         expect(question.options).toHaveLength(4);
         expect(new Set(question.options).size).toBe(4);

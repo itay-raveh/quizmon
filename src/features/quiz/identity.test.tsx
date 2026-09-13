@@ -49,20 +49,20 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
         name: question.subject.name,
       });
       expect(question.media.kind).toBe('none');
-      expect(question.concealOptionLabels).toBe(true);
+      expect(question.rendering?.choices.name).toBe('after-answer');
       for (const name of question.options) {
         expect(question.optionVisuals?.[name]).toMatchObject({
           src: catalog.pokemon[name]?.sprite,
-          silhouette: false,
         });
       }
     } else {
       expect(question.media).toEqual({
         kind: 'sprite',
-        silhouette: true,
         src: catalog.pokemon[question.subject.name]?.sprite,
       });
-      expect(question.optionVisuals).toBeUndefined();
+      expect(question.rendering?.subject.sprite).toBe('silhouette');
+      expect(question.rendering?.choices.sprite).toBe('never');
+      expect(Object.keys(question.optionVisuals ?? {})).toHaveLength(4);
     }
   });
   it.each([true, false])(

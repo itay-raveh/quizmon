@@ -37,6 +37,7 @@ describe('Daily Challenge', () => {
     expect(first.at(-1)?.searchOptions).toContainEqual({
       dexNumber: 33,
       name: 'nidorino',
+      sprite: catalog.pokemon.nidorino!.sprite,
     });
     expect(questionTypes).toEqual(
       expect.arrayContaining(schedule.slice(0, -1)),

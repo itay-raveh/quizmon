@@ -1,9 +1,10 @@
+import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import { isVisible, spriteState } from '@/domain/quiz/question-rendering';
+import { QuestionSprite, QuestionIdentity } from './QuestionEntity';
 import { supplementalItemSprites } from './item-sprites';
 import { GameButton } from '@/components/GameButton';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
-import { PixelSprite } from '@/components/PixelSprite';
-import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatGeneration,
@@ -33,12 +34,14 @@ const optionTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
 interface QuestionAnswersProps {
   typeRelations?: PokemonCatalog['typeRelations'];
   answered: boolean;
+  cluesShown?: number;
   onSelect: (option: string) => void;
   question: QuestionData;
   selectedOptions: readonly string[];
 }
 export const QuestionAnswers = ({
   typeRelations,
+  cluesShown = 0,
   answered,
   onSelect,
   question,
@@ -55,11 +58,9 @@ export const QuestionAnswers = ({
   const revealsOptionTypes =
     (answered || question.showTypes) && reservesOptionTypes;
   const multiSelect = question.answer.interaction === 'multi-select';
-  const concealed = Boolean(
-    question.concealOptionLabels &&
-    question.questionType !== 'legend-hunt' &&
-    !answered,
-  );
+  const policy = getQuestionRendering(question).choices;
+  const state = { answered, cluesShown };
+  const concealed = !isVisible(policy.name, state);
   const showdownStat =
     question.visual?.kind === 'stat-showdown'
       ? question.visual.stat
@@ -96,7 +97,9 @@ export const QuestionAnswers = ({
         )
           ? 'answers--evolution-levels'
           : '',
-        question.optionVisuals ? 'answers--pokemon' : '',
+        question.optionVisuals && policy.sprite !== 'never'
+          ? 'answers--pokemon'
+          : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
         question.options.length > 4 && !multiSelect ? 'answers--many' : '',
@@ -128,9 +131,13 @@ export const QuestionAnswers = ({
           (question.questionType === 'evolution-items'
             ? supplementalItemSprites[option]
             : undefined);
-        const visual = question.optionVisuals?.[option];
+        const visual =
+          policy.sprite === 'never'
+            ? undefined
+            : question.optionVisuals?.[option];
         const dexNumber =
-          question.optionDexNumbers?.[option] ?? visual?.dexNumber;
+          question.optionDexNumbers?.[option] ??
+          question.optionVisuals?.[option]?.dexNumber;
         const optionSelected = selected.has(option);
         const optionCorrect = correct.has(option);
         const optionClassName = !answered
@@ -206,7 +213,7 @@ export const QuestionAnswers = ({
           <GameButton
             aria-label={
               concealed
-                ? `${visual?.silhouette ? 'Silhouette' : 'Sprite'} ${index + 1}`
+                ? `${spriteState(policy.sprite, state).silhouette ? 'Silhouette' : 'Sprite'} ${index + 1}`
                 : `${label}${answered && reveal ? `. ${reveal}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={
@@ -222,27 +229,30 @@ export const QuestionAnswers = ({
             <kbd aria-hidden="true">{selectionMark}</kbd>
             {itemImage ? (
               <span className="answer__item-slot" aria-hidden="true">
-                <PixelSprite className="answer__item-sprite" src={itemImage} />
+                <QuestionSprite
+                  rule={policy.sprite}
+                  state={state}
+                  className="answer__item-sprite"
+                  src={itemImage}
+                />
               </span>
             ) : null}
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
-                  <PixelSprite
-                    className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
+                  <QuestionSprite
+                    rule={policy.sprite}
+                    state={state}
+                    className="answer__sprite"
                     src={visual.src}
                     fetchPriority="auto"
                   />
                 </span>
-                <PokemonIdentity
+                <QuestionIdentity
+                  policy={policy}
+                  state={state}
                   className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
-                  revealed={!concealed}
                   dexNumber={dexNumber}
-                  concealNumber={Boolean(
-                    (question.optionGenerations ||
-                      question.category === 'champion') &&
-                    !answered,
-                  )}
                   hideNumberFromAccessibility
                   name={option}
                   nameClassName="answer__name"
@@ -271,26 +281,23 @@ export const QuestionAnswers = ({
                   ) : null}
                   {detail}
                   {stat}
-                </PokemonIdentity>
+                </QuestionIdentity>
               </>
             ) : hasTypeOptionBadges ? (
               <TypeBadges className="answer__type-choice" types={[option]} />
             ) : dexNumber !== undefined ? (
-              <PokemonIdentity
+              <QuestionIdentity
+                policy={policy}
+                state={state}
                 className={`answer__identity ${hasStatValue ? 'answer__identity--stat' : ''}`.trim()}
                 dexNumber={dexNumber}
-                concealNumber={Boolean(
-                  (question.optionGenerations ||
-                    question.category === 'champion') &&
-                  !answered,
-                )}
                 hideNumberFromAccessibility
                 name={option}
                 nameClassName="answer__name"
               >
                 {detail}
                 {stat}
-              </PokemonIdentity>
+              </QuestionIdentity>
             ) : (
               <span className="answer__text">
                 <span>{label}</span>

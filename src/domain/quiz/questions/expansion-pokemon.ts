@@ -198,7 +198,7 @@ export const buildHidden: QuestionBuilder = (context) => {
     if (
       !hidden ||
       hidden.length !== 1 ||
-      (!context.variant?.namesOnly && !target.pokemon.sprite)
+      (!context.variant?.allowMissingSprites && !target.pokemon.sprite)
     )
       continue;
     const allowed = new Set(

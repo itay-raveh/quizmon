@@ -83,8 +83,8 @@ describe('Evolution link', () => {
           expect(catalog.pokemon[name]!.evolvesTo.length).toBeGreaterThan(0);
         }
         expect(question.media).toEqual({ kind: 'none' });
-        expect(question.optionVisuals).toBeUndefined();
-        expect(question.optionDexNumbers).toBeUndefined();
+        expect(Object.keys(question.optionVisuals ?? {})).toHaveLength(4);
+        expect(question.rendering?.choices.number).not.toBe('always');
       }
     },
   );
@@ -137,7 +137,7 @@ describe('Generation roundup', () => {
           catalog.pokemon[name]!.generation,
         );
       }
-      expect(question.optionDexNumbers).toBeUndefined();
+      expect(question.rendering?.choices.number).not.toBe('always');
     }
     expect(counts).toEqual(new Set([2, 3]));
   });

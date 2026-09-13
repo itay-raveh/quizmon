@@ -49,7 +49,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
       (candidate) => candidate.name === target.after,
     )!;
     if (
-      !context.variant?.namesOnly &&
+      !context.variant?.allowMissingSprites &&
       (!before.pokemon.sprite || !after.pokemon.sprite)
     )
       continue;
@@ -82,7 +82,10 @@ export const buildEvolution: QuestionBuilder = (context) => {
       const correct = topics.items.find(
         (item) => item.name === target.item && topicEligible(context, item),
       );
-      if (!correct || (!context.variant?.namesOnly && !correct.sprite))
+      if (
+        !correct ||
+        (!context.variant?.allowMissingSprites && !correct.sprite)
+      )
         continue;
       const invalid = topics.items.filter(
         (item) =>
@@ -90,7 +93,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
           !alternatives.some(
             (entry) => entry.item === item.name && entry.trigger === 'use-item',
           ) &&
-          (context.variant?.namesOnly || item.sprite),
+          (context.variant?.allowMissingSprites || item.sprite),
       );
       const seen = new Set([correct.category]);
       const wrong = ordered(context, invalid)

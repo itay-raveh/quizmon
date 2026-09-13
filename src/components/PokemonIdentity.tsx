@@ -10,6 +10,7 @@ interface PokemonIdentityProps {
   className?: string;
   dexNumber?: number;
   concealNumber?: boolean;
+  concealName?: boolean;
   hideNumberFromAccessibility?: boolean;
   name: string;
   nameClassName?: string;
@@ -23,6 +24,7 @@ export const PokemonIdentity = ({
   className = '',
   dexNumber,
   concealNumber = false,
+  concealName = false,
   hideNumberFromAccessibility = false,
   name,
   nameClassName = '',
@@ -48,7 +50,11 @@ export const PokemonIdentity = ({
       style={{ visibility: revealed ? undefined : 'hidden' }}
     >
       {inline ? null : number}
-      <span className={`pokemon-identity__name ${nameClassName}`.trim()}>
+      <span
+        style={{ visibility: concealName ? 'hidden' : undefined }}
+        aria-hidden={concealName || undefined}
+        className={`pokemon-identity__name ${nameClassName}`.trim()}
+      >
         {formatPokemonName(name)}
       </span>
       {inline ? <> {number}</> : null}

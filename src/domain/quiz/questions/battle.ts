@@ -165,7 +165,7 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
             '?',
           ),
           media: { kind: 'pixel-sprite', src: targetSprite },
-          presentation: { kind: 'pokemon-sprites' },
+          presentation: { kind: 'pokemon' },
         }),
         visual: { kind: 'counter-pick', multiplier },
       };

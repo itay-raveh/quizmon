@@ -1,10 +1,15 @@
+import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import type {
+  EntityRendering,
+  RevealState,
+} from '@/domain/quiz/question-rendering';
+import { isVisible, spriteState } from '@/domain/quiz/question-rendering';
+import { QuestionSprite, QuestionIdentity } from './QuestionEntity';
 import { supplementalItemSprites } from './item-sprites';
 import { presentEvolutionQuestion } from '@/domain/quiz/questions/evolution-presentation';
 import { presentEffectQuestion } from '@/domain/quiz/questions/effect-presentation';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
-import { PixelSprite } from '@/components/PixelSprite';
-import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatDuration,
@@ -56,10 +61,14 @@ const QuestionPrompt = ({
   className,
   prompt,
   itemSprite,
+  policy,
+  state,
 }: {
   className: string;
   prompt: QuestionPromptData;
   itemSprite?: string;
+  policy: EntityRendering;
+  state: RevealState;
 }) => (
   <p className={className} id="question-prompt">
     {prompt.kind === 'text' ? (
@@ -68,7 +77,12 @@ const QuestionPrompt = ({
         {prompt.supportingText || itemSprite ? (
           <span className="question__supporting-text">
             {itemSprite ? (
-              <PixelSprite src={itemSprite} className="question__inline-item" />
+              <QuestionSprite
+                rule={policy.sprite}
+                state={state}
+                src={itemSprite}
+                className="question__inline-item"
+              />
             ) : null}
             {prompt.supportingText}
           </span>
@@ -77,7 +91,9 @@ const QuestionPrompt = ({
     ) : (
       <>
         {prompt.before}
-        <PokemonIdentity
+        <QuestionIdentity
+          policy={policy}
+          state={state}
           className="question__subject"
           inline
           name={prompt.name}
@@ -155,6 +171,8 @@ export const QuestionScreen = ({
     if (answered && answerFlow !== 'instant') advanceButton.current?.focus();
   }, [answerFlow, answered]);
   const isChampion = question.category === 'champion';
+  const rendering = getQuestionRendering(question);
+  const revealState = { answered, cluesShown };
   const inlineItem =
     question.subject.kind !== 'pokemon' &&
     question.questionType !== 'item-identification' &&
@@ -192,7 +210,9 @@ export const QuestionScreen = ({
       ? getModeLabel(mode)
       : null;
   const revealArtworkInPlace =
-    question.media.kind === 'sprite' && question.media.silhouette;
+    question.media.kind === 'sprite' &&
+    spriteState(rendering.subject.sprite, { ...revealState, answered: false })
+      .silhouette;
   const usesSearch =
     question.answer.interaction === 'search' ||
     (isChampion && !question.rulesVersion);
@@ -264,7 +284,12 @@ export const QuestionScreen = ({
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       {visualInstruction ? (
-        <QuestionPrompt className="visually-hidden" prompt={question.prompt} />
+        <QuestionPrompt
+          policy={rendering.subject}
+          state={revealState}
+          className="visually-hidden"
+          prompt={question.prompt}
+        />
       ) : null}
       <div className="question__context">
         <div
@@ -275,6 +300,8 @@ export const QuestionScreen = ({
             <QuestionInstruction question={question} />
           ) : (
             <QuestionPrompt
+              policy={rendering.subject}
+              state={revealState}
               className="question__prompt"
               prompt={question.prompt}
               itemSprite={inlineItem}
@@ -290,7 +317,12 @@ export const QuestionScreen = ({
             </ol>
           </div>
         ) : null}
-        {!inlineItem && (!isChampion || cluesShown > 1 || answered) ? (
+        {!inlineItem &&
+        (spriteState(rendering.subject.sprite, revealState).visible ||
+          isVisible(rendering.subject.name, revealState) ||
+          isVisible(rendering.subject.number, revealState) ||
+          question.visual ||
+          cluesShown > 1) ? (
           <div className="question__stimulus">
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />
@@ -333,7 +365,8 @@ export const QuestionScreen = ({
         (!isChampion || !championChoicesVisible) &&
         question.searchOptions ? (
           <ChampionSearch
-            hideNumbers={isChampion}
+            policy={rendering.search}
+            cluesShown={cluesShown}
             answered={answered}
             correctOption={question.answer.correctOptions[0] ?? ''}
             disabled={interactionPaused}
@@ -343,6 +376,7 @@ export const QuestionScreen = ({
           />
         ) : (
           <QuestionAnswers
+            cluesShown={cluesShown}
             typeRelations={typeRelations}
             answered={answered}
             onSelect={selectOption}
@@ -356,9 +390,15 @@ export const QuestionScreen = ({
         <div className="question__answer-reveal">
           <strong>Correct answer</strong>
           {answerPokemon?.sprite && !revealArtworkInPlace ? (
-            <PixelSprite src={answerPokemon.sprite} />
+            <QuestionSprite
+              rule={rendering.related.sprite}
+              state={revealState}
+              src={answerPokemon.sprite}
+            />
           ) : null}
-          <PokemonIdentity
+          <QuestionIdentity
+            policy={rendering.related}
+            state={revealState}
             name={question.subject.name}
             dexNumber={answerPokemon?.speciesId}
           >
@@ -366,7 +406,7 @@ export const QuestionScreen = ({
               types={question.subject.types ?? []}
               label={formatPokemonTypes(question.subject.types ?? [])}
             />
-          </PokemonIdentity>
+          </QuestionIdentity>
         </div>
       ) : null}
 

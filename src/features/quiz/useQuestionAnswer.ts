@@ -1,3 +1,4 @@
+import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import {
   getAnswerPoints,
   getSpeedBonusPoints,
@@ -27,17 +28,31 @@ export interface UseQuestionAnswerOptions {
   question: QuestionData;
 }
 const preloadQuestionImages = (question: QuestionData) => {
+  const rendering = getQuestionRendering(question);
   const sources = [
-    ...(question.media.kind === 'none' ? [] : [question.media.src]),
-    ...(question.visual?.kind === 'evolution-link'
-      ? Object.values(question.visual.stages).map(({ src }) => src)
+    ...(question.media.kind === 'none' || rendering.subject.sprite === 'never'
+      ? []
+      : [question.media.src]),
+    ...(question.visual?.kind === 'evolution-link' ||
+    question.visual?.kind === 'evolution-endpoints'
+      ? Object.entries(question.visual.stages).flatMap(([name, { src }]) => {
+          const role =
+            question.visual?.kind === 'evolution-link' &&
+            name === question.subject.name
+              ? 'subject'
+              : 'related';
+          return rendering[role].sprite === 'never' ? [] : [src];
+        })
       : []),
-    ...(question.visual?.kind === 'evolution-shift'
+    ...(question.visual?.kind === 'evolution-shift' &&
+    rendering.related.sprite !== 'never'
       ? [question.visual.evolution.src]
       : []),
-    ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
+    ...(rendering.choices.sprite === 'never'
+      ? []
+      : Object.values(question.optionVisuals ?? {}).map(({ src }) => src)),
   ];
-  for (const src of sources) {
+  for (const src of new Set(sources)) {
     const image = new Image();
     image.decoding = 'async';
     image.fetchPriority = 'low';

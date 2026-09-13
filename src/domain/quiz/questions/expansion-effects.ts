@@ -15,7 +15,7 @@ export const buildMedicine: QuestionBuilder = (context) => {
     const item = topics.items.find(
       (item) => item.name === fact.name && topicEligible(context, item),
     );
-    return item && (context.variant?.namesOnly || item.sprite)
+    return item && (context.variant?.allowMissingSprites || item.sprite)
       ? [{ ...item, ...fact }]
       : [];
   });

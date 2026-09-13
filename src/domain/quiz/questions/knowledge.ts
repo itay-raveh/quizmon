@@ -45,7 +45,7 @@ export const buildDescriptionQuestion: QuestionBuilder = (context) => {
     prompt: textPrompt(
       `“${redactName(target.pokemon.description, target.name, target.pokemon.speciesName)}”`,
     ),
-    presentation: { kind: 'pokemon-sprites' },
+    presentation: { kind: 'pokemon' },
   });
 };
 
@@ -159,7 +159,7 @@ export const buildOddOneOutQuestion: QuestionBuilder = (context) => {
     correct: target.name,
     options,
     prompt: textPrompt('Three Pokémon share a type. Which one doesn’t?'),
-    presentation: { kind: 'pokemon-sprites' },
+    presentation: { kind: 'pokemon' },
   });
 };
 
@@ -186,7 +186,7 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
       prompt: textPrompt(
         `Select every ${formatPokemonName(type)}-type Pokémon.`,
       ),
-      presentation: { kind: 'pokemon-sprites' },
+      presentation: { kind: 'pokemon' },
     }),
     visual: { kind: 'type-roundup', type },
   };
@@ -372,7 +372,7 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
       prompt: textPrompt(
         `Which Pokémon has the ${direction} ${formatPokemonName(stat)}?`,
       ),
-      presentation: { kind: 'pokemon-sprites' },
+      presentation: { kind: 'pokemon' },
       details: { kind: 'stat', stat },
     }),
     visual: { direction, kind: 'stat-showdown', stat },

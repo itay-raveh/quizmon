@@ -304,11 +304,15 @@ describe('question building', () => {
     expect(question.clues).not.toContain(
       redactName(target.description, question.subject.name, target.speciesName),
     );
-    expect(question.media).toMatchObject({ kind: 'sprite', revealAt: 4 });
+    expect(question.rendering?.subject.sprite).toEqual({
+      afterClues: 4,
+      silhouette: true,
+    });
     expect(question.searchOptions).toEqual(
       expect.arrayContaining([
         {
           dexNumber: target.speciesId,
+          sprite: target.sprite,
           name: question.subject.name,
         },
       ]),
@@ -510,7 +514,7 @@ describe('question building', () => {
       'belongs to',
     );
   });
-  it('numbers Pokémon choices except formats where numbers expose the answer', () => {
+  it('retains Pokémon choice numbers independently of their visibility', () => {
     for (const questionType of questionTypes) {
       const question = buildSingleQuestion(
         questionType,
@@ -518,12 +522,7 @@ describe('question building', () => {
       );
       for (const option of question.options) {
         const pokemon = catalog.pokemon[option];
-        if (
-          questionType === 'evolution-link' ||
-          questionType === 'generation-roundup'
-        ) {
-          expect(question.optionDexNumbers).toBeUndefined();
-        } else if (pokemon) {
+        if (pokemon) {
           expect(question.optionDexNumbers?.[option]).toBe(pokemon.speciesId);
         }
       }

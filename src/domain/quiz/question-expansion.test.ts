@@ -52,7 +52,7 @@ it.each(cases)(
           ? catalog.topics!.regions.length
           : 4,
     );
-    expect(question.namesOnly).toBe(rules.namesOnly);
+    expect(question.rendering).toEqual(rules.rendering);
     expect(
       question.repetition.primary.every((name) => !!catalog.pokemon[name]),
     ).toBe(true);

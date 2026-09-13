@@ -1,3 +1,4 @@
+import { defaultQuestionRendering } from '@/domain/quiz/question-variants';
 import { ChampionSearch } from '@/features/quiz/ChampionSearch';
 import { PokemonPicker } from '@/features/trainer/PokemonPicker';
 import { fireEvent, render, screen } from '@testing-library/react';
@@ -32,6 +33,8 @@ describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
         <PokemonPicker options={options} value={null} onChange={onChoose} />
       ) : (
         <ChampionSearch
+          policy={defaultQuestionRendering.search}
+          cluesShown={0}
           answered={false}
           correctOption="charmander"
           disabled={false}

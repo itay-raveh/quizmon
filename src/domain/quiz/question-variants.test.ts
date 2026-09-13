@@ -147,8 +147,8 @@ it.each(generations)(
         type,
       );
       expect(question, type).toBeDefined();
-      expect(question!.namesOnly).toBe(
-        getQuestionVariant(type, 5)!.variant.namesOnly,
+      expect(question!.rendering).toEqual(
+        getQuestionVariant(type, 5)!.variant.rendering,
       );
       expect(question!.subject.generation).toBe(generation);
     }

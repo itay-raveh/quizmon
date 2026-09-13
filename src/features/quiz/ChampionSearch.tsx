@@ -1,9 +1,16 @@
+import { QuestionIdentity, QuestionSprite } from './QuestionEntity';
+import {
+  isVisible,
+  spriteState,
+  type EntityRendering,
+} from '@/domain/quiz/question-rendering';
 import { PokemonSearch } from '@/components/PokemonSearch';
 import type { PokemonSearchOption } from '@/domain/quiz/types';
 import { useMemo, useState } from 'react';
 
 interface ChampionSearchProps {
-  hideNumbers?: boolean;
+  policy: EntityRendering;
+  cluesShown: number;
   answered: boolean;
   correctOption: string;
   disabled: boolean;
@@ -13,7 +20,8 @@ interface ChampionSearchProps {
 }
 
 export const ChampionSearch = ({
-  hideNumbers = false,
+  policy,
+  cluesShown,
   answered,
   correctOption,
   disabled,
@@ -23,8 +31,17 @@ export const ChampionSearch = ({
 }: ChampionSearchProps) => {
   const [query, setQuery] = useState('');
   const searchOptions = useMemo(
-    () => (hideNumbers ? options.map(({ name }) => ({ name })) : options),
-    [hideNumbers, options],
+    () =>
+      options.map(({ name, dexNumber, sprite }) => ({
+        name,
+        dexNumber: isVisible(policy.number, { answered, cluesShown })
+          ? dexNumber
+          : undefined,
+        sprite: spriteState(policy.sprite, { answered, cluesShown }).visible
+          ? sprite
+          : undefined,
+      })),
+    [policy, answered, cluesShown, options],
   );
   const result = answered
     ? selectedOption === correctOption
@@ -36,6 +53,26 @@ export const ChampionSearch = ({
     <PokemonSearch
       disabled={disabled || answered}
       mode="champion"
+      renderPokemon={(pokemon) => (
+        <>
+          {pokemon.sprite ? (
+            <span className="pokemon-picker__sprite" aria-hidden="true">
+              <QuestionSprite
+                src={pokemon.sprite}
+                rule={policy.sprite}
+                state={{ answered, cluesShown }}
+              />
+            </span>
+          ) : null}
+          <QuestionIdentity
+            name={pokemon.name}
+            dexNumber={pokemon.dexNumber}
+            policy={policy}
+            state={{ answered, cluesShown }}
+            hideNumberFromAccessibility
+          />
+        </>
+      )}
       onConfirm={onAnswer}
       onQueryChange={setQuery}
       options={searchOptions}

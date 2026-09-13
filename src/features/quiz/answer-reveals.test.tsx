@@ -29,7 +29,7 @@ it.each([
       1,
     );
     expect(question).toBeDefined();
-    expect(question!.namesOnly).toBe(true);
+    expect(question!.rendering).toBeDefined();
     const content = (answered: boolean) => (
       <>
         <QuestionArtwork

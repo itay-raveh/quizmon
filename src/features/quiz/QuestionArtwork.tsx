@@ -1,10 +1,16 @@
+import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import {
+  isVisible,
+  spriteState,
+  type EntityRendering,
+  type RevealState,
+} from '@/domain/quiz/question-rendering';
+import { QuestionSprite, QuestionIdentity } from './QuestionEntity';
 import {
   evolutionChoiceDetails,
   formatEvolutionCondition,
 } from '@/domain/quiz/questions/evolution-presentation';
 import { GenerationLabel } from '@/components/GenerationLabel';
-import { PixelSprite } from '@/components/PixelSprite';
-import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { RelationArrow, TypeEffectArrow } from '@/components/RelationArrow';
 import { Sprite } from '@/components/Sprite';
 import { MysteryTypeBadge, TypeBadges } from '@/components/TypeBadge';
@@ -46,7 +52,8 @@ const Subject = ({
   name,
   dexNumber,
   src,
-  concealed = false,
+  policy,
+  state,
   framed = false,
   reservePortrait = false,
   children,
@@ -54,46 +61,75 @@ const Subject = ({
   name: string;
   dexNumber?: number;
   src?: string;
-  concealed?: boolean;
+  policy: EntityRendering;
+  state: RevealState;
   framed?: boolean;
   reservePortrait?: boolean;
   children?: ReactNode;
-}) => (
-  <div className="question-visual__subject">
-    {src || concealed || reservePortrait ? (
-      <span
-        className={
-          framed ? 'question-visual__pokemon-slot' : 'question-visual__portrait'
-        }
-      >
-        {concealed ? (
-          <span className="question-visual__question-mark">?</span>
-        ) : src ? (
-          <PixelSprite className="question-visual__pokemon" src={src} />
-        ) : null}
-      </span>
-    ) : null}
-    <PokemonIdentity
-      className="question-visual__subject-name"
-      name={name}
-      dexNumber={dexNumber}
-      numberClassName="question-visual__subject-number"
-      revealed={!concealed}
-    />
-    {children}
-  </div>
-);
+}) => {
+  const concealed =
+    !isVisible(policy.name, state) &&
+    !spriteState(policy.sprite, state).visible;
+  return (
+    <div className="question-visual__subject">
+      {src || concealed || reservePortrait ? (
+        <span
+          className={
+            framed
+              ? 'question-visual__pokemon-slot'
+              : 'question-visual__portrait'
+          }
+        >
+          {concealed ? (
+            <span className="question-visual__question-mark">?</span>
+          ) : src ? (
+            <QuestionSprite
+              rule={policy.sprite}
+              state={state}
+              className="question-visual__pokemon"
+              src={src}
+            />
+          ) : null}
+        </span>
+      ) : null}
+      <QuestionIdentity
+        policy={policy}
+        state={state}
+        className="question-visual__subject-name"
+        name={name}
+        dexNumber={dexNumber}
+        numberClassName="question-visual__subject-number"
+      />
+      {children}
+    </div>
+  );
+};
 export const QuestionArtwork = ({
   answered,
   cluesShown,
   question,
 }: QuestionArtworkProps) => {
   const { visual } = question;
+  const rendering = getQuestionRendering(question);
+  const state = { answered, cluesShown };
   const media = question.media;
-  const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;
+  const subjectVisual = question.optionVisuals?.[question.subject.name];
+  const pixelSprite =
+    media.kind === 'pixel-sprite'
+      ? media.src
+      : media.kind === 'none' && question.prompt.kind === 'pokemon'
+        ? subjectVisual?.src
+        : undefined;
   const subjectDexNumber =
-    question.prompt.kind === 'pokemon' ? question.prompt.dexNumber : undefined;
+    question.prompt.kind === 'pokemon'
+      ? question.prompt.dexNumber
+      : (subjectVisual?.dexNumber ??
+        question.searchOptions?.find(
+          ({ name }) => name === question.subject.name,
+        )?.dexNumber);
   const subject = {
+    policy: rendering.subject,
+    state,
     name: question.subject.name,
     dexNumber: subjectDexNumber,
     src: pixelSprite,
@@ -128,6 +164,8 @@ export const QuestionArtwork = ({
           <Fragment key={name}>
             {index ? <RelationArrow /> : null}
             <Subject
+              policy={rendering.related}
+              state={state}
               name={name}
               src={visual.stages[name]?.src}
               dexNumber={visual.stages[name]?.dexNumber}
@@ -163,7 +201,8 @@ export const QuestionArtwork = ({
                 name={name}
                 dexNumber={visual.stages[name]?.dexNumber}
                 src={visual.stages[name]?.src}
-                concealed={index === 1 && !answered}
+                policy={index === 1 ? rendering.subject : rendering.related}
+                state={state}
                 framed
               />
             </Fragment>
@@ -223,7 +262,8 @@ export const QuestionArtwork = ({
           dexNumber={evolution.dexNumber}
           reservePortrait
           src={evolution.src}
-          concealed={!answered}
+          policy={rendering.related}
+          state={state}
           framed
         >
           <span className="question-visual__evolution-types">
@@ -254,10 +294,25 @@ export const QuestionArtwork = ({
       >
         {visual.kind === 'type-matchup' ? (
           <MysteryType answered={answered} types={answer ? [answer] : []} />
+        ) : answer &&
+          answerVisual &&
+          (rendering.related.name !== 'never' ||
+            rendering.related.number !== 'never') ? (
+          <Subject
+            name={answer}
+            src={answerVisual.src}
+            dexNumber={answerVisual.dexNumber}
+            policy={rendering.related}
+            state={state}
+            framed
+          />
         ) : (
           <span className="question-visual__pokemon-slot">
-            {answered && answerVisual ? (
-              <PixelSprite
+            {spriteState(rendering.related.sprite, state).visible &&
+            answerVisual ? (
+              <QuestionSprite
+                rule={rendering.related.sprite}
+                state={state}
                 className="question-visual__pokemon"
                 src={answerVisual.src}
               />
@@ -277,49 +332,88 @@ export const QuestionArtwork = ({
     );
   }
   if (media.kind === 'sprite') {
-    const visible =
-      answered || media.revealAt === undefined || cluesShown >= media.revealAt;
+    const { visible, silhouette } = spriteState(
+      rendering.subject.sprite,
+      state,
+    );
     return (
-      <div
-        className="question__artwork"
-        aria-hidden={!visible || undefined}
-        style={{ visibility: visible ? undefined : 'hidden' }}
-      >
-        <Sprite silhouette={media.silhouette && !answered} src={media.src} />
+      <div className="question__artwork">
+        <div
+          aria-hidden={!visible || undefined}
+          style={{ visibility: visible ? undefined : 'hidden' }}
+        >
+          {rendering.subject.sprite !== 'never' ? (
+            <Sprite silhouette={silhouette} src={media.src} />
+          ) : null}
+        </div>
+        {rendering.subject.name !== 'never' ||
+        rendering.subject.number !== 'never' ? (
+          <QuestionIdentity
+            policy={rendering.subject}
+            state={state}
+            name={question.subject.name}
+            dexNumber={subjectDexNumber}
+          />
+        ) : null}
       </div>
     );
   }
   if (media.kind === 'pixel-peek') {
     return (
-      <div className={`pixel-peek ${answered ? 'pixel-peek--revealed' : ''}`}>
-        <PixelSprite
-          className="pixel-peek__image"
-          src={media.src}
-          alt={
-            answered
-              ? formatPokemonName(question.subject.name)
-              : 'Cropped Pokémon sprite'
-          }
-          style={
-            {
-              transformOrigin: `${media.focusX}% ${media.focusY}%`,
-              '--pixel-peek-transform':
-                media.zoom === undefined
-                  ? undefined
-                  : `translate(${50 - media.focusX}%, ${50 - media.focusY}%) scale(${media.zoom})`,
-            } as CSSProperties
-          }
-        />
-      </div>
+      <>
+        <div
+          className={`pixel-peek ${answered ? 'pixel-peek--revealed' : ''}`}
+          style={{
+            visibility: spriteState(rendering.subject.sprite, state).visible
+              ? undefined
+              : 'hidden',
+          }}
+        >
+          <QuestionSprite
+            rule={rendering.subject.sprite}
+            state={state}
+            className="pixel-peek__image"
+            src={media.src}
+            alt={
+              answered
+                ? formatPokemonName(question.subject.name)
+                : 'Cropped Pokémon sprite'
+            }
+            style={
+              {
+                transformOrigin: `${media.focusX}% ${media.focusY}%`,
+                '--pixel-peek-transform':
+                  media.zoom === undefined
+                    ? undefined
+                    : `translate(${50 - media.focusX}%, ${50 - media.focusY}%) scale(${media.zoom})`,
+              } as CSSProperties
+            }
+          />
+        </div>
+        {rendering.subject.name !== 'never' ||
+        rendering.subject.number !== 'never' ? (
+          <QuestionIdentity
+            policy={rendering.subject}
+            state={state}
+            name={question.subject.name}
+            dexNumber={subjectDexNumber}
+          />
+        ) : null}
+      </>
     );
   }
   if (pixelSprite && question.subject.kind !== 'pokemon')
     return (
       <div className="question-visual" aria-hidden="true">
-        <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
+        <QuestionSprite
+          rule={rendering.subject.sprite}
+          state={state}
+          className="question-visual__pokemon"
+          src={pixelSprite}
+        />
       </div>
     );
-  return pixelSprite ? (
+  return pixelSprite && rendering.subject.sprite !== 'never' ? (
     <div className="question-visual" aria-hidden="true">
       <Subject {...subject} />
     </div>
