@@ -23,6 +23,7 @@ const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'ability-effects', level: 5, count: 4 },
   { type: 'nature-effects', level: 5, count: 4 },
   { type: 'ev-yields', level: 5, count: 4 },
+  { type: 'hidden-abilities', level: 5, count: 4 },
   { type: 'berry-flavors', level: 5, count: 4 },
   { type: 'natural-gift', level: 5, count: 18 },
 ];
@@ -102,7 +103,7 @@ for (const { type, level, count } of cases)
       const labels = await answers.allTextContents();
       expect(labels.every((label) => !label.includes(' · '))).toBe(true);
     }
-    if (type === 'ev-yields') {
+    if (type === 'ev-yields' || type === 'hidden-abilities') {
       await expect(page.locator('.question-visual img')).toHaveCount(1);
       await expect(
         page.locator('.question-visual .pokemon-identity__number'),
