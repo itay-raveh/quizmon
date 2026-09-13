@@ -44,6 +44,7 @@ export interface PokemonOptionVisual {
 }
 
 export interface PokemonSearchOption {
+  sprite?: string | null;
   dexNumber: number;
   name: string;
 }

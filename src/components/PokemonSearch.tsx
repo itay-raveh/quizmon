@@ -93,7 +93,7 @@ export const PokemonSearch = ({
           emptyMessage="No Pokémon found. Try another spelling."
           renderOption={(suggestion) => (
             <>
-              {!champion ? (
+              {!champion || suggestion.sprite ? (
                 <span aria-hidden="true" className="pokemon-picker__sprite">
                   {suggestion.sprite ? (
                     <img

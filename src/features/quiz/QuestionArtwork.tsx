@@ -49,7 +49,6 @@ const Subject = ({
   concealed = false,
   framed = false,
   reservePortrait = false,
-  hideNumber = false,
   children,
 }: {
   name: string;
@@ -58,7 +57,6 @@ const Subject = ({
   concealed?: boolean;
   framed?: boolean;
   reservePortrait?: boolean;
-  hideNumber?: boolean;
   children?: ReactNode;
 }) => (
   <div className="question-visual__subject">
@@ -80,7 +78,6 @@ const Subject = ({
       name={name}
       dexNumber={dexNumber}
       numberClassName="question-visual__subject-number"
-      concealNumber={hideNumber}
       revealed={!concealed}
     />
     {children}
@@ -92,13 +89,7 @@ export const QuestionArtwork = ({
   question,
 }: QuestionArtworkProps) => {
   const { visual } = question;
-  const concealedMedia =
-    question.namesOnly &&
-    !['ev-yields', 'hidden-abilities', 'evolution-items'].includes(
-      question.questionType,
-    ) &&
-    !answered;
-  const media = concealedMedia ? { kind: 'none' as const } : question.media;
+  const media = question.media;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;
   const subjectDexNumber =
     question.prompt.kind === 'pokemon' ? question.prompt.dexNumber : undefined;
@@ -107,11 +98,10 @@ export const QuestionArtwork = ({
     dexNumber: subjectDexNumber,
     src: pixelSprite,
     reservePortrait: question.media.kind === 'pixel-sprite',
-    hideNumber: Boolean(concealedMedia),
   };
   if (
-    (visual?.kind === 'type-check' || visual?.kind === 'type-twins') &&
-    (pixelSprite || question.namesOnly)
+    pixelSprite &&
+    (visual?.kind === 'type-check' || visual?.kind === 'type-twins')
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
@@ -139,10 +129,9 @@ export const QuestionArtwork = ({
             {index ? <RelationArrow /> : null}
             <Subject
               name={name}
-              src={concealedMedia ? undefined : visual.stages[name]?.src}
+              src={visual.stages[name]?.src}
               dexNumber={visual.stages[name]?.dexNumber}
               reservePortrait
-              hideNumber={Boolean(concealedMedia)}
             />
           </Fragment>
         ))}
@@ -214,10 +203,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (
-    visual?.kind === 'evolution-shift' &&
-    (pixelSprite || question.namesOnly)
-  ) {
+  if (visual?.kind === 'evolution-shift') {
     const { evolution, gainedType } = visual;
     const retainedTypes = evolution.types.filter((type) => type !== gainedType);
     return (
@@ -236,8 +222,7 @@ export const QuestionArtwork = ({
           {...evolution}
           dexNumber={evolution.dexNumber}
           reservePortrait
-          hideNumber={Boolean(concealedMedia)}
-          src={concealedMedia ? undefined : evolution.src}
+          src={evolution.src}
           concealed={!answered}
           framed
         >
@@ -255,8 +240,8 @@ export const QuestionArtwork = ({
     );
   }
   if (
-    (visual?.kind === 'type-matchup' || visual?.kind === 'counter-pick') &&
-    (pixelSprite || question.namesOnly)
+    pixelSprite &&
+    (visual?.kind === 'type-matchup' || visual?.kind === 'counter-pick')
   ) {
     const answer = question.answer.correctOptions[0];
     const answerVisual = answer ? question.optionVisuals?.[answer] : undefined;
@@ -328,28 +313,6 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (concealedMedia && question.media.kind === 'pixel-sprite')
-    return (
-      <div
-        className="question-visual"
-        aria-hidden="true"
-        style={{
-          visibility: [
-            'ev-yields',
-            'hidden-abilities',
-            'egg-group-connections',
-          ].includes(question.questionType)
-            ? undefined
-            : 'hidden',
-        }}
-      >
-        {question.subject.kind === 'pokemon' ? (
-          <Subject {...subject} />
-        ) : (
-          <span className="question-visual__portrait" />
-        )}
-      </div>
-    );
   if (pixelSprite && question.subject.kind !== 'pokemon')
     return (
       <div className="question-visual" aria-hidden="true">

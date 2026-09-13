@@ -540,15 +540,10 @@ describe('question transitions', () => {
         },
       });
       expect(screen.getByText('?')).toBeVisible();
-      if (namesOnly) {
-        expect(
-          rendered.container.querySelector('#question-prompt'),
-        ).not.toHaveTextContent('No. 0095');
-        expect(screen.getByText('No. 0095')).not.toBeVisible();
-        expect(screen.getByText('No. 0208')).not.toBeVisible();
-      } else {
-        expect(screen.queryByText('No. 0208')).not.toBeVisible();
-      }
+      expect(
+        rendered.container.querySelector('.question-visual__subject-number'),
+      ).toBeVisible();
+      expect(screen.queryByText('No. 0208')).not.toBeVisible();
       expect(screen.queryByText('Steelix')).not.toBeVisible();
       expect(preloadedSources).toContain('https://example.com/steelix.png');
       fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
@@ -748,7 +743,7 @@ describe('question transitions', () => {
     expect(wrongPick).toHaveAttribute('aria-pressed', 'true');
     expect(missed).toHaveAttribute('aria-pressed', 'false');
   });
-  it('conceals Legend hunt identities until checking answers, then reveals classifications', () => {
+  it('shows Legend hunt identities before checking answers, then reveals classifications', () => {
     const context = createQuestionContext('concealed-legend-hunt');
     context.pool = context.pool.filter(({ name }) =>
       [
@@ -761,16 +756,14 @@ describe('question transitions', () => {
     const legendQuestion = buildQuestionType(context, 'legend-hunt');
     expect.assert(legendQuestion);
     renderQuestion({ question: legendQuestion });
-    for (const [index, name] of legendQuestion.options.entries()) {
+    for (const name of legendQuestion.options) {
       const button = screen.getByRole('button', {
-        name: `Sprite ${index + 1}`,
+        name: formatPokemonName(name),
       });
       expect(button.querySelector('.answer__sprite')).toBeVisible();
-      expect(button.querySelector('.pokemon-identity__name')).not.toBeVisible();
-      expect(
-        button.querySelector('.pokemon-identity__number'),
-      ).not.toBeVisible();
-      expect(button.querySelector('.pokemon-identity')).toHaveAttribute(
+      expect(button.querySelector('.pokemon-identity__name')).toBeVisible();
+      expect(button.querySelector('.pokemon-identity__number')).toBeVisible();
+      expect(button.querySelector('.answer__classification')).toHaveAttribute(
         'aria-hidden',
         'true',
       );
@@ -780,7 +773,7 @@ describe('question transitions', () => {
     expect(
       document.querySelectorAll('.answer__sprite--silhouette'),
     ).toHaveLength(0);
-    expect(screen.getByText('Mega Blastoise')).not.toBeVisible();
+    expect(screen.getByText('Mega Blastoise')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Check answers' }));
     for (const name of legendQuestion.options) {
       const classification = legendQuestion.optionClassifications![name]!;
@@ -861,7 +854,30 @@ describe('question transitions', () => {
       'pixel-peek--revealed',
     );
   });
-  it('shows Pokédex numbers in Champion search suggestions', () => {
+  it('shows Field notes search suggestions with sprites and numbers', () => {
+    const context = createQuestionContext('field-notes-search-artwork');
+    context.difficulty = 5;
+    const generated = buildQuestionType(context, 'field-notes')!;
+    expect(generated.answer.interaction).toBe('search');
+    const option = generated.searchOptions!.find(
+      ({ name, sprite }) => sprite && /^[a-z]{5,}$/.test(name),
+    )!;
+    renderQuestion({ question: generated });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Your answer' }), {
+      target: { value: option.name.slice(0, 4) },
+    });
+    const suggestion = screen.getByRole('option', {
+      name: formatPokemonName(option.name),
+    });
+    expect(suggestion.querySelector('img')).toHaveAttribute(
+      'src',
+      option.sprite,
+    );
+    expect(suggestion).toHaveTextContent(
+      `No. ${String(option.dexNumber).padStart(4, '0')}`,
+    );
+  });
+  it('conceals Pokédex numbers in Champion search suggestions', () => {
     renderQuestion({
       mode: { date: '2026-09-03', kind: 'daily' },
       number: 5,
@@ -873,7 +889,7 @@ describe('question transitions', () => {
       target: { value: 'pika' },
     });
     expect(screen.getByRole('option', { name: 'Pikachu' })).toBeVisible();
-    expect(screen.getByText('No. 0025')).toBeVisible();
+    expect(screen.queryByText('No. 0025')).not.toBeInTheDocument();
   });
   it('starts the Champion question as a keyboard-operable autocomplete', () => {
     const onAnswer = vi.fn();

@@ -44,13 +44,6 @@ export const QuestionAnswers = ({
   question,
   selectedOptions,
 }: QuestionAnswersProps) => {
-  const namesOnly =
-    question.namesOnly &&
-    question.questionType !== 'weight-comparison' &&
-    question.questionType !== 'height-comparison' &&
-    question.questionType !== 'medicine-cabinet' &&
-    question.questionType !== 'evolution-items';
-  const concealedMedia = namesOnly && !answered;
   const correct = new Set(question.answer.correctOptions);
   const selected = new Set(selectedOptions);
   const hasTypeOptionBadges = typeOptionQuestionTypes.has(
@@ -62,7 +55,11 @@ export const QuestionAnswers = ({
   const revealsOptionTypes =
     (answered || question.showTypes) && reservesOptionTypes;
   const multiSelect = question.answer.interaction === 'multi-select';
-  const concealed = Boolean(question.concealOptionLabels && !answered);
+  const concealed = Boolean(
+    question.concealOptionLabels &&
+    question.questionType !== 'legend-hunt' &&
+    !answered,
+  );
   const showdownStat =
     question.visual?.kind === 'stat-showdown'
       ? question.visual.stat
@@ -99,7 +96,7 @@ export const QuestionAnswers = ({
         )
           ? 'answers--evolution-levels'
           : '',
-        question.optionVisuals && !namesOnly ? 'answers--pokemon' : '',
+        question.optionVisuals ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
         question.options.length > 4 && !multiSelect ? 'answers--many' : '',
@@ -131,12 +128,9 @@ export const QuestionAnswers = ({
           (question.questionType === 'evolution-items'
             ? supplementalItemSprites[option]
             : undefined);
-        const optionVisual = question.optionVisuals?.[option];
-        const visual = optionVisual;
+        const visual = question.optionVisuals?.[option];
         const dexNumber =
-          concealedMedia && !visual
-            ? undefined
-            : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
+          question.optionDexNumbers?.[option] ?? visual?.dexNumber;
         const optionSelected = selected.has(option);
         const optionCorrect = correct.has(option);
         const optionClassName = !answered
@@ -159,8 +153,8 @@ export const QuestionAnswers = ({
                 : null
             : null;
         const typeAnnouncement =
-          revealsOptionTypes && optionVisual
-            ? `. ${optionVisual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(optionVisual.types)}.`
+          revealsOptionTypes && visual
+            ? `. ${visual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(visual.types)}.`
             : '';
         const resultAnnouncement =
           resultMarker === 'missed'
@@ -219,7 +213,7 @@ export const QuestionAnswers = ({
               question.options.length <= 9 ? String(index + 1) : undefined
             }
             aria-pressed={multiSelect ? optionSelected : undefined}
-            className={`${optionClassName} ${visual ? (namesOnly ? 'answer--names-only' : 'answer--pokemon') : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+            className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             disabled={answered}
             key={option}
             onClick={() => onSelect(option)}
@@ -228,35 +222,26 @@ export const QuestionAnswers = ({
             <kbd aria-hidden="true">{selectionMark}</kbd>
             {itemImage ? (
               <span className="answer__item-slot" aria-hidden="true">
-                {concealedMedia ? null : (
-                  <PixelSprite
-                    className="answer__item-sprite"
-                    src={itemImage}
-                  />
-                )}
+                <PixelSprite className="answer__item-sprite" src={itemImage} />
               </span>
             ) : null}
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
-                  {concealedMedia ? null : (
-                    <PixelSprite
-                      className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
-                      src={visual.src}
-                      fetchPriority="auto"
-                    />
-                  )}
+                  <PixelSprite
+                    className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
+                    src={visual.src}
+                    fetchPriority="auto"
+                  />
                 </span>
                 <PokemonIdentity
-                  className={
-                    namesOnly
-                      ? `answer__identity ${hasStatValue ? 'answer__identity--stat' : ''}`.trim()
-                      : `answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()
-                  }
+                  className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
                   revealed={!concealed}
                   dexNumber={dexNumber}
                   concealNumber={Boolean(
-                    concealedMedia || (question.optionGenerations && !answered),
+                    (question.optionGenerations ||
+                      question.category === 'champion') &&
+                    !answered,
                   )}
                   hideNumberFromAccessibility
                   name={option}
@@ -294,7 +279,11 @@ export const QuestionAnswers = ({
               <PokemonIdentity
                 className={`answer__identity ${hasStatValue ? 'answer__identity--stat' : ''}`.trim()}
                 dexNumber={dexNumber}
-                concealNumber={Boolean(question.optionGenerations && !answered)}
+                concealNumber={Boolean(
+                  (question.optionGenerations ||
+                    question.category === 'champion') &&
+                  !answered,
+                )}
                 hideNumberFromAccessibility
                 name={option}
                 nameClassName="answer__name"
@@ -306,7 +295,7 @@ export const QuestionAnswers = ({
               <span className="answer__text">
                 <span>{label}</span>
                 {detail}
-                {namesOnly && (classification || generation) ? (
+                {classification || generation ? (
                   <span
                     aria-hidden="true"
                     className="answer__text-detail"

@@ -153,7 +153,8 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
           (o) =>
             isRecord(o) &&
             text(o.name) &&
-            isSafeNonnegativeInteger(o.dexNumber),
+            isSafeNonnegativeInteger(o.dexNumber) &&
+            optional(o.sprite, (v) => v === null || text(v)),
         ),
     )
   );

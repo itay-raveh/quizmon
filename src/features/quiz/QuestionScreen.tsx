@@ -1,3 +1,4 @@
+import { supplementalItemSprites } from './item-sprites';
 import { presentEvolutionQuestion } from '@/domain/quiz/questions/evolution-presentation';
 import { presentEffectQuestion } from '@/domain/quiz/questions/effect-presentation';
 import { GameButton } from '@/components/GameButton';
@@ -54,15 +55,11 @@ interface QuestionScreenProps extends UseQuestionAnswerOptions {
 const QuestionPrompt = ({
   className,
   prompt,
-  hideNumbers = false,
   itemSprite,
-  showItem = true,
 }: {
   className: string;
-  hideNumbers?: boolean;
   prompt: QuestionPromptData;
   itemSprite?: string;
-  showItem?: boolean;
 }) => (
   <p className={className} id="question-prompt">
     {prompt.kind === 'text' ? (
@@ -71,11 +68,7 @@ const QuestionPrompt = ({
         {prompt.supportingText || itemSprite ? (
           <span className="question__supporting-text">
             {itemSprite ? (
-              <PixelSprite
-                src={itemSprite}
-                className="question__inline-item"
-                style={{ visibility: showItem ? 'visible' : 'hidden' }}
-              />
+              <PixelSprite src={itemSprite} className="question__inline-item" />
             ) : null}
             {prompt.supportingText}
           </span>
@@ -88,7 +81,7 @@ const QuestionPrompt = ({
           className="question__subject"
           inline
           name={prompt.name}
-          dexNumber={hideNumbers ? undefined : prompt.dexNumber}
+          dexNumber={prompt.dexNumber}
           numberClassName="question__subject-number"
         />
         {prompt.after}
@@ -167,12 +160,20 @@ export const QuestionScreen = ({
     question.questionType !== 'item-identification' &&
     question.media.kind === 'pixel-sprite'
       ? question.media.src
-      : undefined;
+      : question.subject.kind === 'item' &&
+          question.questionType !== 'item-identification'
+        ? supplementalItemSprites[question.subject.name]
+        : undefined;
   const visualInstruction =
     !(
       question.prompt.kind === 'pokemon' &&
       question.media.kind === 'none' &&
-      !(question.namesOnly && question.visual)
+      !(
+        question.visual &&
+        ['evolution-shift', 'evolution-endpoints', 'evolution-link'].includes(
+          question.visual.kind,
+        )
+      )
     ) &&
     (Boolean(question.visual) ||
       ['ev-yields', 'hidden-abilities', 'egg-group-connections'].includes(
@@ -263,11 +264,7 @@ export const QuestionScreen = ({
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       {visualInstruction ? (
-        <QuestionPrompt
-          className="visually-hidden"
-          hideNumbers={question.namesOnly && !answered}
-          prompt={question.prompt}
-        />
+        <QuestionPrompt className="visually-hidden" prompt={question.prompt} />
       ) : null}
       <div className="question__context">
         <div
@@ -279,10 +276,8 @@ export const QuestionScreen = ({
           ) : (
             <QuestionPrompt
               className="question__prompt"
-              hideNumbers={question.namesOnly && !answered}
               prompt={question.prompt}
               itemSprite={inlineItem}
-              showItem={!question.namesOnly || answered}
             />
           )}
         </div>
@@ -318,7 +313,7 @@ export const QuestionScreen = ({
       !(
         (question.visual?.kind === 'type-matchup' ||
           question.visual?.kind === 'counter-pick') &&
-        (question.media.kind === 'pixel-sprite' || question.namesOnly)
+        question.media.kind === 'pixel-sprite'
       ) &&
       (question.subject.types ?? []).length > 0 &&
       subjectTypeRevealQuestionTypes.has(question.questionType) ? (
@@ -338,7 +333,7 @@ export const QuestionScreen = ({
         (!isChampion || !championChoicesVisible) &&
         question.searchOptions ? (
           <ChampionSearch
-            hideNumbers={Boolean(question.rulesVersion)}
+            hideNumbers={isChampion}
             answered={answered}
             correctOption={question.answer.correctOptions[0] ?? ''}
             disabled={interactionPaused}

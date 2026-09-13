@@ -1,5 +1,4 @@
 import type { Page } from '@playwright/test';
-import { getQuestionVariant } from '../src/domain/quiz/question-variants';
 import type { PlayerSave } from '../src/domain/player/player-save';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import {
@@ -39,8 +38,8 @@ for (const outcome of ['correct', 'incorrect'] as const) {
     const values: number[] = [];
     for (const answer of await answers.all()) {
       await expect(answer.locator('.answer__stat')).toBeHidden();
-      if (getQuestionVariant('stat-showdown', 4)?.variant.namesOnly)
-        await expect(answer.locator('.answer__sprite')).toBeHidden();
+      await expect(answer.locator('.answer__sprite')).toBeVisible();
+      await expect(answer.locator('.pokemon-identity__number')).toBeVisible();
       const label = await answer.getAttribute('aria-label');
       const pokemon = findPokemonByLabel(label);
       if (!pokemon || !label) throw new Error('Missing showdown Pokémon');

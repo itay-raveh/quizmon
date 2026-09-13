@@ -15,7 +15,7 @@ it.each([
   ['generation-roundup', 4],
   ['evolution-shift', 4],
 ] as const)(
-  '%s reveals names-only artwork and numbers after submission',
+  '%s shows identity before submission except direct-answer clues',
   (questionType, difficulty) => {
     const [question] = buildQuestions(
       catalog,
@@ -46,14 +46,6 @@ it.each([
       </>
     );
     const { container, rerender } = render(content(false));
-    for (const number of container.querySelectorAll(
-      '.pokemon-identity__number',
-    ))
-      expect(number).not.toBeVisible();
-    expect(
-      container.querySelectorAll('.question-visual__pokemon, .answer__sprite'),
-    ).toHaveLength(0);
-    rerender(content(true));
     const sources = Object.values(question!.optionVisuals ?? {}).map(
       ({ src }) => src,
     );
@@ -66,6 +58,23 @@ it.each([
         sources.push(question!.media.src);
       numbers.push(question!.prompt.dexNumber);
     }
+    for (const src of sources)
+      expect(container.querySelector(`img[src="${src}"]`)).toBeVisible();
+    for (const number of container.querySelectorAll(
+      '.pokemon-identity__number',
+    )) {
+      if (
+        questionType === 'generation-roundup' ||
+        number.closest('.pokemon-identity[aria-hidden="true"]')
+      )
+        expect(number).not.toBeVisible();
+      else expect(number).toBeVisible();
+    }
+    if (question!.visual?.kind === 'evolution-shift')
+      expect(
+        container.querySelector(`img[src="${question!.visual.evolution.src}"]`),
+      ).not.toBeInTheDocument();
+    rerender(content(true));
     if (question!.visual?.kind === 'evolution-shift') {
       sources.push(question!.visual.evolution.src);
       numbers.push(question!.visual.evolution.dexNumber);

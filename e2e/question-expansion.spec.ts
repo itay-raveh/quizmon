@@ -24,6 +24,10 @@ const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'nature-effects', level: 5, count: 4 },
   { type: 'ev-yields', level: 5, count: 4 },
   { type: 'hidden-abilities', level: 5, count: 4 },
+  { type: 'egg-group-connections', level: 5, count: 4 },
+  { type: 'baby-pokemon', level: 5, count: 4 },
+  { type: 'pokedex-categories', level: 5, count: 4 },
+  { type: 'encounter-locations', level: 5, count: 4 },
   { type: 'berry-flavors', level: 5, count: 4 },
   { type: 'natural-gift', level: 5, count: 18 },
 ];
@@ -89,8 +93,13 @@ for (const { type, level, count } of cases)
       }
     } else if (type === 'medicine-cabinet' || type === 'evolution-items') {
       await expect(answers.locator('img')).toHaveCount(count);
-    } else if (question.namesOnly) {
-      await expect(answers.locator('img')).toHaveCount(0);
+    }
+    if (question.optionVisuals) {
+      await expect(answers.locator('img')).toHaveCount(count);
+      for (const number of await answers
+        .locator('.pokemon-identity__number')
+        .all())
+        await expect(number).toBeVisible();
     }
     if (type === 'evolution-items') {
       await expect(
@@ -112,7 +121,9 @@ for (const { type, level, count } of cases)
       const labels = await answers.allTextContents();
       expect(labels.every((label) => !label.includes(' · '))).toBe(true);
     }
-    if (type === 'ev-yields' || type === 'hidden-abilities') {
+    if (
+      ['ev-yields', 'hidden-abilities', 'egg-group-connections'].includes(type)
+    ) {
       await expect(page.locator('.question-visual img')).toHaveCount(1);
       await expect(
         page.locator('.question-visual .pokemon-identity__number'),

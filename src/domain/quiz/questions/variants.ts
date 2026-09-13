@@ -41,7 +41,13 @@ export const applyQuestionVariant = (
               pokemon.speciesName !==
                 context.catalog.pokemon[question.subject.name]?.speciesName)),
       )
-      .map(({ name, pokemon }) => ({ name, dexNumber: pokemon.speciesId }));
+      .map(({ name, pokemon }) => ({
+        name,
+        dexNumber: pokemon.speciesId,
+        ...(context.questionType === 'field-notes'
+          ? { sprite: pokemon.sprite }
+          : {}),
+      }));
   }
   if (rules.typeGrid) {
     question.options = Object.keys(context.catalog.typeRelations);

@@ -48,11 +48,11 @@ for (const questionType of ['type-twins', 'legend-hunt'] as const) {
         if (!entry) throw new Error('Missing answer metadata');
         options.push(entry);
         if (questionType === 'legend-hunt') {
-          await expect(answer).toHaveAccessibleName(`Sprite ${options.length}`);
-          await expect(answer.locator('.pokemon-identity__name')).toBeHidden();
+          await expect(answer).toHaveAccessibleName(name!);
+          await expect(answer.locator('.pokemon-identity__name')).toBeVisible();
           await expect(
             answer.locator('.pokemon-identity__number'),
-          ).toBeHidden();
+          ).toBeVisible();
         }
         await expect(
           answer.locator(

@@ -66,15 +66,6 @@
   gap: 0;
 }
 
-.answer--names-only {
-  --answer-sprite-size: 3rem;
-  grid-template-columns: auto var(--answer-sprite-size) minmax(0, 1fr);
-}
-
-.answer--names-only .answer__sprite-field {
-  min-height: var(--answer-sprite-size);
-}
-
 .answer__reveal--reserved {
   visibility: hidden;
 }
@@ -555,10 +546,6 @@
   max-width: 100%;
   height: auto;
   aspect-ratio: 5 / 2;
-}
-
-.answers--counter-pick .answer--names-only .answer__identity {
-  padding-right: 2.75rem;
 }
 
 .answer--selected .answer__name,
