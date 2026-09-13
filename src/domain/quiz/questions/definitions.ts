@@ -78,10 +78,6 @@ export const questionDefinitions = {
     description: 'Match raised and lowered stats to a nature.',
     group: 'battle',
   },
-  'egg-group-connections': {
-    description: 'Find Pokémon sharing an Egg Group.',
-    group: 'knowledge',
-  },
   'ev-yields': {
     description: 'Identify the base effort values awarded by a Pokémon.',
     group: 'battle',

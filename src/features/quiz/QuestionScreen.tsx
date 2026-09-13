@@ -194,9 +194,7 @@ export const QuestionScreen = ({
       )
     ) &&
     (Boolean(question.visual) ||
-      ['ev-yields', 'hidden-abilities', 'egg-group-connections'].includes(
-        question.questionType,
-      ) ||
+      ['ev-yields', 'hidden-abilities'].includes(question.questionType) ||
       (question.questionType === 'nature-effects' &&
         Boolean(
           question.optionReveals?.[question.answer.correctOptions[0]!],

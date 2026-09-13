@@ -39,7 +39,7 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
     name: 'Identity 7 / 7 selected',
   });
   const knowledgeGroup = dialog.getByRole('button', {
-    name: 'General knowledge 19 / 19 selected',
+    name: 'General knowledge 18 / 18 selected',
   });
   const battleGroup = dialog.getByRole('button', {
     name: 'Battle knowledge 13 / 13 selected',
@@ -63,6 +63,7 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
     }),
   ).toBeChecked();
   await expect(dialog.getByLabel('Baby Pokémon')).toHaveCount(0);
+  await expect(dialog.getByLabel('Egg-group connections')).toHaveCount(0);
   await expect(dialog.getByLabel('Evolution trail')).toHaveCount(0);
   await expect(dialog.getByLabel('Evolution order')).toHaveCount(0);
   await expect(

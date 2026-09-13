@@ -15,7 +15,6 @@ export const questionLabels = {
   'held-item-effects': 'Held-item effects',
   'hidden-abilities': 'Hidden abilities',
   'nature-effects': 'Nature effects',
-  'egg-group-connections': 'Egg-group connections',
   'ev-yields': 'EV yields',
   'encounter-locations': 'Encounter locations',
   'berry-flavors': 'Berry flavors',

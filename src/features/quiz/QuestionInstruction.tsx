@@ -20,15 +20,13 @@ export const QuestionInstruction = ({
         : 'What EVs does defeating this Pokémon give?'
       : question.questionType === 'hidden-abilities'
         ? 'What is this Pokémon’s Hidden Ability?'
-        : question.questionType === 'egg-group-connections'
-          ? 'Which Pokémon shares an Egg Group with this one?'
-          : kind === 'evolution-endpoints'
-            ? question.questionType === 'evolution-items'
-              ? 'Which item triggers this evolution?'
-              : question.prompt.kind === 'text'
-                ? question.prompt.text
-                : 'Which requirement completes this evolution?'
-            : undefined;
+        : kind === 'evolution-endpoints'
+          ? question.questionType === 'evolution-items'
+            ? 'Which item triggers this evolution?'
+            : question.prompt.kind === 'text'
+              ? question.prompt.text
+              : 'Which requirement completes this evolution?'
+          : undefined;
   if (subjectInstruction)
     return (
       <>

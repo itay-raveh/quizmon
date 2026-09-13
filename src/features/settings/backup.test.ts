@@ -467,56 +467,63 @@ it.each([
   );
 });
 
-it('restores progress and scores after retiring Baby Pokémon', () => {
-  populate();
-  const backup = createBackup();
-  const data = backup.save.data;
-  const historical: GameResult = {
-    ...result,
-    answers: [{ ...result.answers[0]!, questionType: 'baby-pokemon' }],
-    rules: {
-      version: 6,
-      difficulty: 3,
-      generations: ['I'],
-      formGroups: ['standard'],
-      questionTypes: ['baby-pokemon'],
-      automaticQuestionTypes: ['baby-pokemon', 'type-check'],
-    },
-  };
-  const saved = {
-    ...backup,
-    save: {
-      ...backup.save,
-      data: {
-        ...data,
-        settings: {
-          ...defaultGameSettings,
-          questionTypes: ['baby-pokemon', 'type-check'],
-        },
-        leagueLineup: {
-          seed: 'retired-family',
-          contentVersion: 8,
-          questions: [{ questionType: 'baby-pokemon' }],
-        },
-        results: {
-          ...data.results,
-          daily: { '2026-09-07': historical },
-          progress: {
-            ...data.results.progress,
-            correctQuestionTypes: { 'baby-pokemon': 3, 'type-check': 2 },
+it.each(['baby-pokemon', 'egg-group-connections'] as const)(
+  'restores progress and scores after retiring %s',
+  (questionType) => {
+    populate();
+    const backup = createBackup();
+    const data = backup.save.data;
+    const historical: GameResult = {
+      ...result,
+      answers: [{ ...result.answers[0]!, questionType }],
+      rules: {
+        version: 6,
+        difficulty: 3,
+        generations: ['I'],
+        formGroups: ['standard'],
+        questionTypes: [questionType],
+        automaticQuestionTypes: [questionType, 'type-check'],
+      },
+    };
+    const saved = {
+      ...backup,
+      save: {
+        ...backup.save,
+        data: {
+          ...data,
+          settings: {
+            ...defaultGameSettings,
+            questionTypes: [questionType, 'type-check'],
+          },
+          leagueLineup: {
+            seed: 'retired-family',
+            contentVersion: 8,
+            questions: [{ questionType }],
+          },
+          results: {
+            ...data.results,
+            daily: { '2026-09-07': historical },
+            progress: {
+              ...data.results.progress,
+              correctQuestionTypes: { [questionType]: 3, 'type-check': 2 },
+            },
           },
         },
       },
-    },
-  };
-  restoreBackup(parseBackup(JSON.stringify(saved)));
-  expect(readDailyResult('2026-09-07')).toEqual(historical);
-  expect(readPlayerSave().data).toMatchObject({
-    settings: { questionTypes: ['type-check'] },
-    leagueLineup: { seed: 'retired-family', contentVersion: 0, questions: [] },
-    profile: data.profile,
-    pokedex: data.pokedex,
-    results: { progress: { correctQuestionTypes: { 'type-check': 2 } } },
-  });
-  expect(canPersistPlayerData()).toBe(true);
-});
+    };
+    restoreBackup(parseBackup(JSON.stringify(saved)));
+    expect(readDailyResult('2026-09-07')).toEqual(historical);
+    expect(readPlayerSave().data).toMatchObject({
+      settings: { questionTypes: ['type-check'] },
+      leagueLineup: {
+        seed: 'retired-family',
+        contentVersion: 0,
+        questions: [],
+      },
+      profile: data.profile,
+      pokedex: data.pokedex,
+      results: { progress: { correctQuestionTypes: { 'type-check': 2 } } },
+    });
+    expect(canPersistPlayerData()).toBe(true);
+  },
+);

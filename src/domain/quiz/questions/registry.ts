@@ -3,7 +3,6 @@ import {
   buildMeasurement,
   buildCategory,
   buildHidden,
-  buildEggGroups,
   buildEvYield,
 } from './expansion-pokemon';
 import {
@@ -74,7 +73,6 @@ const questionBuilders = {
   'held-item-effects': buildEffect,
   'hidden-abilities': buildHidden,
   'nature-effects': buildNature,
-  'egg-group-connections': buildEggGroups,
   'ev-yields': buildEvYield,
   'encounter-locations': buildEncounter,
   'berry-flavors': buildBerry,

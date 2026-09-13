@@ -261,16 +261,6 @@ it.each(cases)(
           ).toBe(false);
           break;
         }
-        case 'egg-group-connections': {
-          expect(
-            question.options.filter((name) =>
-              catalog.pokemon[name]!.eggGroups!.some((group) =>
-                target!.eggGroups!.includes(group),
-              ),
-            ),
-          ).toEqual([correct]);
-          break;
-        }
         case 'ev-yields': {
           const stats = statNames.filter((stat) => target!.evYield![stat] > 0);
           expect(correct).toBe(

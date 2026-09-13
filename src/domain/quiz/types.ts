@@ -168,6 +168,7 @@ export type GameMode =
 export const legacyQuestionCategories = ['cry', 'scale'] as const;
 export const legacyQuestionTypes = [
   'baby-pokemon',
+  'egg-group-connections',
   'battle-view',
   'evolution-trail',
   'evolution-order',

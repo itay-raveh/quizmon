@@ -12,7 +12,7 @@ import type { QuestionData } from './types';
 import type { MeasurementRules } from './measurement-comparison';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 7;
+export const QUESTION_RULES_VERSION = 8;
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {
@@ -73,7 +73,6 @@ export interface ExpansionVariantRules {
   effectChoices?: 'broad' | 'related' | 'exact';
   hiddenAbility?: 'ordinary' | 'similar';
   natureChoices?: 'different-raised' | 'shared-stat';
-  showEggGroups?: boolean;
   completeEvYield?: boolean;
   encounterConditions?: boolean;
   completeFlavors?: boolean;
@@ -214,10 +213,6 @@ export const expansionVariants = {
   'nature-effects': {
     4: { natureChoices: 'different-raised' },
     5: { natureChoices: 'shared-stat' },
-  },
-  'egg-group-connections': {
-    4: { showEggGroups: true },
-    5: { showEggGroups: false, closeAlternatives: true },
   },
   'ev-yields': {
     4: { completeEvYield: false },
