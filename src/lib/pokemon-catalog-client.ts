@@ -8,7 +8,7 @@ import type { PokemonCatalog } from '@/domain/pokemon/types';
 
 const topicUrls = import.meta.glob<string>(
   '../domain/pokemon/data/topics-*.json',
-  { eager: true, query: '?url', import: 'default' },
+  { eager: true, query: '?url&no-inline', import: 'default' },
 );
 
 export const fetchPokemonCatalog = async (): Promise<PokemonCatalog> => {
