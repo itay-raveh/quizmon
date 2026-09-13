@@ -1,3 +1,4 @@
+import { formatLocationLabel } from '../../pokemon/location-label';
 import { formatPokemonName } from '../../pokemon/format';
 import { generations } from '../../pokemon/types';
 import type { QuestionBuilder } from './context';
@@ -104,7 +105,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
           wrong.some((candidate) => candidate.name === name),
         ),
     );
-    const location = target.label.replace(/^(.+) \(\1\)$/, '$1');
+    const location = formatLocationLabel(target.label);
     const prompt = `Which Pokémon can you find at ${location}?`;
     const supportingText = [
       `Pokémon ${game.label}`,

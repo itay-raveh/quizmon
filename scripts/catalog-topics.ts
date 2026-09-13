@@ -1,3 +1,4 @@
+import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
 import {
   reviewedMedicines,
   reviewedEffects,
@@ -226,11 +227,12 @@ export const buildTopicCatalog = async (
           generation: gen,
           region: location.region.name,
           area: area.name,
-          label:
+          label: formatLocationLabel(
             label(location) +
-            (area.names.find(english)?.name
-              ? ` (${area.names.find(english)!.name})`
-              : ''),
+              (area.names.find(english)?.name
+                ? ` (${area.names.find(english)!.name})`
+                : ''),
+          ),
           pokemon: [...new Set(context.pokemon)].sort(),
         });
     }
