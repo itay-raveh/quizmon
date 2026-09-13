@@ -221,7 +221,11 @@ export const QuestionScreen = ({
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
       {visualInstruction ? (
-        <QuestionPrompt className="visually-hidden" prompt={question.prompt} />
+        <QuestionPrompt
+          className="visually-hidden"
+          hideNumbers={question.namesOnly && !answered}
+          prompt={question.prompt}
+        />
       ) : null}
       <div className="question__context">
         <div

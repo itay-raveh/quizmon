@@ -114,6 +114,9 @@ describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
       'true',
     );
     fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+    expect(input).toHaveValue('char');
+    expect(onChoose).not.toHaveBeenCalled();
     fireEvent.keyDown(input, { key: 'Enter' });
     expect(input).toHaveValue('Charmander');
     expect(screen.queryByRole('listbox')).toBeNull();
@@ -126,6 +129,12 @@ describe.each(['partner', 'champion'] as const)('%s search', (kind) => {
 
   it('clears keyboard selection when dismissed or edited', () => {
     const { input, onChoose } = setup();
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.blur(input);
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(input).toHaveValue('char');
+    expect(onChoose).not.toHaveBeenCalled();
+    fireEvent.focus(input);
     fireEvent.keyDown(input, { key: 'ArrowDown' });
     fireEvent.keyDown(input, { key: 'Escape' });
     expect(screen.queryByRole('listbox')).toBeNull();

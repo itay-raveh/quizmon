@@ -97,6 +97,16 @@
   font-weight: 750;
 }
 
+.champion-search li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.champion-search li > small,
+.champion-search li > .type-badges {
+  flex-shrink: 0;
+}
+
 .champion-search li small,
 .answer__nameplate small,
 .answer__identity small {
@@ -113,6 +123,8 @@
 }
 
 .champion-search__empty {
+  position: static;
+  margin-top: 0.45rem;
   font-size: var(--text-label);
   font-weight: 700;
   text-align: center;

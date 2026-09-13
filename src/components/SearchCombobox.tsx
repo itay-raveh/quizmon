@@ -62,13 +62,17 @@ export const SearchCombobox = <Option,>({
         placeholder={placeholder}
         value={query}
         onFocus={() => navigation.setOpen(true)}
-        onBlur={() => navigation.setOpen(false)}
+        onBlur={() => {
+          navigation.setOpen(false);
+          navigation.resetActiveIndex();
+        }}
         onChange={(event) => {
           onQueryChange(event.target.value);
           navigation.resetActiveIndex();
           navigation.setOpen(true);
         }}
         onKeyDown={(event) => {
+          if (event.nativeEvent.isComposing || hideSuggestions) return;
           if (
             event.key === 'Enter' &&
             navigation.open &&

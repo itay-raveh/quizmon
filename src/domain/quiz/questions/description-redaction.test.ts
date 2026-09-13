@@ -29,11 +29,11 @@ it.each([
 it('matches the full variety before the shorter species name', () => {
   expect(
     redactName('Tatsugiri Curly and tatsugiri-curly.', 'tatsugiri-curly'),
-  ).toBe('This Pokémon and This Pokémon.');
+  ).toBe('This Pokémon and this Pokémon.');
 });
 it('preserves other species and words containing the name', () => {
   expect(redactName('Mewtwo meets Mew near a mewing Pokémon.', 'mew')).toBe(
-    'Mewtwo meets This Pokémon near a mewing Pokémon.',
+    'Mewtwo meets this Pokémon near a mewing Pokémon.',
   );
   expect(redactName('Tatsugiri rides inside Dondozo.', 'tatsugiri-curly')).toBe(
     'This Pokémon rides inside Dondozo.',
@@ -45,6 +45,9 @@ it('preserves other species and words containing the name', () => {
 it('retains possessive punctuation', () => {
   expect(redactName('Giratina’s shadow.', 'giratina-altered')).toBe(
     'This Pokémon’s shadow.',
+  );
+  expect(redactName('Each Spinda’s spot pattern is different.', 'spinda')).toBe(
+    'Each Pokémon’s spot pattern is different.',
   );
 });
 it.each([buildDescriptionQuestion, buildChampionQuestion])(

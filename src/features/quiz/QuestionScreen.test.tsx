@@ -541,6 +541,9 @@ describe('question transitions', () => {
       });
       expect(screen.getByText('?')).toBeVisible();
       if (namesOnly) {
+        expect(
+          rendered.container.querySelector('#question-prompt'),
+        ).not.toHaveTextContent('No. 0095');
         expect(screen.getByText('No. 0095')).not.toBeVisible();
         expect(screen.getByText('No. 0208')).not.toBeVisible();
       } else {
@@ -1071,12 +1074,16 @@ it('does not announce a missing Pokémon for an exact Champion answer', () => {
   renderQuestion({ question: championQuestion });
   const input = screen.getByRole('combobox', { name: 'Your answer' });
   fireEvent.change(input, { target: { value: 'Pikachu' } });
-  expect(screen.queryByText('No Pokémon found')).not.toBeInTheDocument();
+  expect(
+    screen.queryByText('No Pokémon found. Try another spelling.'),
+  ).not.toBeInTheDocument();
   expect(input).toHaveAttribute('aria-expanded', 'false');
   expect(input).not.toHaveAttribute('aria-controls');
   expect(screen.getByRole('button', { name: 'Guess' })).toBeEnabled();
   fireEvent.change(input, { target: { value: 'zzzzzz' } });
-  expect(screen.getByText('No Pokémon found')).toBeVisible();
+  expect(
+    screen.getByText('No Pokémon found. Try another spelling.'),
+  ).toBeVisible();
   expect(screen.getByRole('button', { name: 'Guess' })).toBeDisabled();
 });
 it('keeps structured generation clues concealed until their reveal', () => {

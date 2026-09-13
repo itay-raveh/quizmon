@@ -109,6 +109,31 @@
 }
 
 @container (max-width: 16rem) {
+  .champion-search__controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .champion-search__controls > .game-button {
+    justify-self: stretch;
+  }
+
+  .answers--type-options .answer-matchup > .answer {
+    padding: 0.65rem;
+    grid-template-columns: 1.45rem minmax(0, 1fr);
+  }
+
+  .answers--type-options .answer-matchup .answer__type-choice {
+    grid-column: 1 / -1;
+  }
+
+  .answers--type-options .answer-matchup__help {
+    top: 0.4rem;
+    right: 0.4rem;
+    min-height: 1.8rem;
+    padding-block: 0.1rem;
+    transform: none;
+  }
+
   .answer--names-only,
   .answer--item {
     grid-template-columns: auto minmax(0, 1fr);

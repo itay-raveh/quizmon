@@ -90,7 +90,7 @@ export const PokemonSearch = ({
           }}
           getKey={(suggestion) => suggestion.name}
           placeholder={champion ? 'Type a Pokémon name' : 'Search all Pokémon'}
-          emptyMessage="No Pokémon found"
+          emptyMessage="No Pokémon found. Try another spelling."
           renderOption={(suggestion) => (
             <>
               {!champion ? (

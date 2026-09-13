@@ -53,6 +53,12 @@ export const redactName = (
       `(?<![\\p{L}\\p{N}])(?:${forms.join('|')})(?![\\p{L}\\p{N}])`,
       'giu',
     ),
-    'This Pokémon',
+    (_match: string, offset: number) => {
+      const before = description.slice(0, offset);
+      if (/\b(?:each|every)\s+$/iu.test(before)) return 'Pokémon';
+      return /(?:^|[.!?])\s*[“"‘']?$/u.test(before)
+        ? 'This Pokémon'
+        : 'this Pokémon';
+    },
   );
 };

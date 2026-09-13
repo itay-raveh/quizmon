@@ -34,7 +34,7 @@ export const useSuggestionNavigation = <Suggestion>(
       setActiveIndex((current) =>
         current <= 0 ? suggestions.length - 1 : current - 1,
       );
-    } else if (event.key === 'Enter' && activeIndex >= 0) {
+    } else if (event.key === 'Enter' && open && activeIndex >= 0) {
       const suggestion = suggestions[activeIndex];
       if (suggestion) {
         event.preventDefault();
