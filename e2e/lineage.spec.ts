@@ -28,7 +28,9 @@ for (const questionType of ['evolution-link', 'generation-roundup'] as const) {
       ).toBeVisible();
       const answers = page.locator('.answer');
       await expect(answers).toHaveCount(4);
-      await expect(answers.locator('.pokemon-identity__number')).toHaveCount(0);
+      await expect(
+        answers.locator('.pokemon-identity__number:visible'),
+      ).toHaveCount(0);
       if (questionType === 'evolution-link') {
         const chain = page.locator('.question-evolution-link');
         const subjects = chain.locator('.question-visual__subject');

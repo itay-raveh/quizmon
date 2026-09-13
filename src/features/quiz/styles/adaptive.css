@@ -82,6 +82,7 @@
 
 @container (max-width: 16rem) {
   .question-evolution-link,
+  .question-evolution-endpoints,
   .question-relation,
   .question__response .answers--pokemon {
     grid-template-columns: minmax(0, 1fr);
@@ -93,6 +94,7 @@
   }
 
   .question-evolution-link .question-relation__arrow svg,
+  .question-evolution-endpoints .question-relation__arrow svg,
   .question-relation .question-relation__arrow svg {
     transform: rotate(90deg);
   }
@@ -103,5 +105,44 @@
 
   .question-visual__subject-name {
     max-width: 100%;
+  }
+}
+
+@container (max-width: 16rem) {
+  .answer--names-only,
+  .answer--item {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .answer--names-only .answer__identity,
+  .answer--item .answer__text {
+    grid-column: 1 / -1;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .answer--names-only .answer__sprite-field,
+  .answer--item .answer__item-slot {
+    justify-self: center;
+  }
+
+  .answers--counter-pick .answer--names-only .answer__identity {
+    padding-right: 0;
+  }
+
+  .answers--counter-pick .answer--names-only {
+    grid-template-columns: 1.45rem minmax(0, 1fr) 2.75rem;
+  }
+
+  .answers--counter-pick
+    .answer-matchup:has(.answer--names-only)
+    .answer-matchup__help {
+    bottom: auto;
+    min-height: 3rem;
+    height: 3rem;
+  }
+
+  .answer__identity--stat {
+    justify-items: start;
   }
 }

@@ -541,8 +541,8 @@ describe('question transitions', () => {
       });
       expect(screen.getByText('?')).toBeVisible();
       if (namesOnly) {
-        expect(screen.queryByText('No. 0095')).not.toBeInTheDocument();
-        expect(screen.queryByText('No. 0208')).not.toBeInTheDocument();
+        expect(screen.getByText('No. 0095')).not.toBeVisible();
+        expect(screen.getByText('No. 0208')).not.toBeVisible();
       } else {
         expect(screen.queryByText('No. 0208')).not.toBeVisible();
       }
@@ -1044,9 +1044,8 @@ it.for([
       questionType: 'generation-roundup',
     },
   });
-  expect(container.querySelectorAll('.pokemon-identity__number')).toHaveLength(
-    0,
-  );
+  for (const number of container.querySelectorAll('.pokemon-identity__number'))
+    expect(number).not.toBeVisible();
   expect(
     container.querySelectorAll('.answer__generation--reserved'),
   ).toHaveLength(4);

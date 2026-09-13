@@ -8,6 +8,7 @@ interface PokemonIdentityProps {
   children?: ReactNode;
   className?: string;
   dexNumber?: number;
+  concealNumber?: boolean;
   hideNumberFromAccessibility?: boolean;
   name: string;
   nameClassName?: string;
@@ -19,6 +20,7 @@ export const PokemonIdentity = ({
   children,
   className = '',
   dexNumber,
+  concealNumber = false,
   hideNumberFromAccessibility = false,
   name,
   nameClassName = '',
@@ -32,7 +34,8 @@ export const PokemonIdentity = ({
   >
     {dexNumber === undefined ? null : (
       <small
-        aria-hidden={hideNumberFromAccessibility || undefined}
+        aria-hidden={hideNumberFromAccessibility || concealNumber || undefined}
+        style={{ visibility: concealNumber ? 'hidden' : undefined }}
         className={`pokemon-identity__number ${numberClassName}`.trim()}
       >
         {formatPokedexNumber(dexNumber)}

@@ -81,6 +81,7 @@ export const QuestionAnswers = ({
         question.optionVisuals && !question.namesOnly ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
+        question.options.length > 4 && !multiSelect ? 'answers--many' : '',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -88,15 +89,20 @@ export const QuestionAnswers = ({
       {question.options.map((option, index) => {
         const label =
           question.optionLabels?.[option] ?? formatPokemonName(option);
-        const reveal = answered ? question.optionReveals?.[option] : undefined;
-        const itemImage = !question.namesOnly
-          ? question.optionImages?.[option]
-          : undefined;
+        const reveal = question.optionReveals?.[option];
+        const detail = reveal ? (
+          <span
+            aria-hidden="true"
+            className={`answer__reveal ${answered ? '' : 'answer__reveal--reserved'}`.trim()}
+          >
+            {reveal}
+          </span>
+        ) : null;
+        const itemImage = question.optionImages?.[option];
         const optionVisual = question.optionVisuals?.[option];
         const visual = optionVisual;
         const dexNumber =
-          (concealedMedia && !visual) ||
-          (question.optionGenerations && !answered && !question.namesOnly)
+          concealedMedia && !visual
             ? undefined
             : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
         const optionSelected = selected.has(option);
@@ -175,7 +181,7 @@ export const QuestionAnswers = ({
             aria-label={
               concealed
                 ? `${visual?.silhouette ? 'Silhouette' : 'Sprite'} ${index + 1}`
-                : `${label}${reveal ? `. ${reveal}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
+                : `${label}${answered && reveal ? `. ${reveal}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
             aria-keyshortcuts={
               question.options.length <= 9 ? String(index + 1) : undefined
@@ -189,7 +195,14 @@ export const QuestionAnswers = ({
           >
             <kbd aria-hidden="true">{selectionMark}</kbd>
             {itemImage ? (
-              <PixelSprite className="answer__item-sprite" src={itemImage} />
+              <span className="answer__item-slot" aria-hidden="true">
+                {concealedMedia ? null : (
+                  <PixelSprite
+                    className="answer__item-sprite"
+                    src={itemImage}
+                  />
+                )}
+              </span>
             ) : null}
             {visual ? (
               <>
@@ -205,14 +218,14 @@ export const QuestionAnswers = ({
                 <PokemonIdentity
                   className={
                     question.namesOnly
-                      ? 'answer__identity'
+                      ? `answer__identity ${hasStatValue ? 'answer__identity--stat' : ''}`.trim()
                       : `answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()
                   }
                   revealed={!concealed}
                   dexNumber={dexNumber}
-                  numberClassName={
-                    concealedMedia ? 'answer__number--concealed' : undefined
-                  }
+                  concealNumber={Boolean(
+                    concealedMedia || (question.optionGenerations && !answered),
+                  )}
                   hideNumberFromAccessibility
                   name={option}
                   nameClassName="answer__name"
@@ -239,6 +252,7 @@ export const QuestionAnswers = ({
                       <GenerationLabel generation={generation} />
                     </span>
                   ) : null}
+                  {detail}
                   {stat}
                 </PokemonIdentity>
               </>
@@ -248,15 +262,18 @@ export const QuestionAnswers = ({
               <PokemonIdentity
                 className={`answer__identity ${hasStatValue ? 'answer__identity--stat' : ''}`.trim()}
                 dexNumber={dexNumber}
+                concealNumber={Boolean(question.optionGenerations && !answered)}
                 hideNumberFromAccessibility
                 name={option}
                 nameClassName="answer__name"
               >
+                {detail}
                 {stat}
               </PokemonIdentity>
             ) : (
               <span className="answer__text">
                 <span>{label}</span>
+                {detail}
                 {question.namesOnly && (classification || generation) ? (
                   <span
                     aria-hidden="true"
@@ -271,7 +288,6 @@ export const QuestionAnswers = ({
                 ) : null}
               </span>
             )}
-            {reveal ? <span className="answer__reveal">{reveal}</span> : null}
           </GameButton>
         );
         return attackTypes && typeRelations ? (

@@ -44,6 +44,8 @@ const Subject = ({
   src,
   concealed = false,
   framed = false,
+  reservePortrait = false,
+  hideNumber = false,
   children,
 }: {
   name: string;
@@ -51,10 +53,12 @@ const Subject = ({
   src?: string;
   concealed?: boolean;
   framed?: boolean;
+  reservePortrait?: boolean;
+  hideNumber?: boolean;
   children?: ReactNode;
 }) => (
   <div className="question-visual__subject">
-    {src || concealed ? (
+    {src || concealed || reservePortrait ? (
       <span
         className={
           framed ? 'question-visual__pokemon-slot' : 'question-visual__portrait'
@@ -72,6 +76,7 @@ const Subject = ({
       name={name}
       dexNumber={dexNumber}
       numberClassName="question-visual__subject-number"
+      concealNumber={hideNumber}
       revealed={!concealed}
     />
     {children}
@@ -87,13 +92,13 @@ export const QuestionArtwork = ({
   const media = concealedMedia ? { kind: 'none' as const } : question.media;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;
   const subjectDexNumber =
-    !concealedMedia && question.prompt.kind === 'pokemon'
-      ? question.prompt.dexNumber
-      : undefined;
+    question.prompt.kind === 'pokemon' ? question.prompt.dexNumber : undefined;
   const subject = {
     name: question.subject.name,
     dexNumber: subjectDexNumber,
     src: pixelSprite,
+    reservePortrait: question.media.kind === 'pixel-sprite',
+    hideNumber: Boolean(concealedMedia),
   };
   if (
     (visual?.kind === 'type-check' || visual?.kind === 'type-twins') &&
@@ -119,13 +124,16 @@ export const QuestionArtwork = ({
   }
   if (visual?.kind === 'evolution-endpoints')
     return (
-      <div className="question-visual question-evolution-link">
+      <div className="question-visual question-evolution-endpoints">
         {[visual.before, visual.after].map((name, index) => (
           <Fragment key={name}>
             {index ? <RelationArrow /> : null}
             <Subject
               name={name}
-              src={question.namesOnly ? undefined : visual.stages[name]?.src}
+              src={concealedMedia ? undefined : visual.stages[name]?.src}
+              dexNumber={visual.stages[name]?.dexNumber}
+              reservePortrait
+              hideNumber={Boolean(concealedMedia)}
             />
           </Fragment>
         ))}
@@ -205,7 +213,9 @@ export const QuestionArtwork = ({
         </div>
         <Subject
           {...evolution}
-          dexNumber={concealedMedia ? undefined : evolution.dexNumber}
+          dexNumber={evolution.dexNumber}
+          reservePortrait
+          hideNumber={Boolean(concealedMedia)}
           src={concealedMedia ? undefined : evolution.src}
           concealed={!answered}
           framed
@@ -297,6 +307,20 @@ export const QuestionArtwork = ({
       </div>
     );
   }
+  if (concealedMedia && question.media.kind === 'pixel-sprite')
+    return (
+      <div
+        className="question-visual"
+        aria-hidden="true"
+        style={{ visibility: 'hidden' }}
+      >
+        {question.subject.kind === 'pokemon' ? (
+          <Subject {...subject} />
+        ) : (
+          <span className="question-visual__portrait" />
+        )}
+      </div>
+    );
   if (pixelSprite && question.subject.kind !== 'pokemon')
     return (
       <div className="question-visual" aria-hidden="true">

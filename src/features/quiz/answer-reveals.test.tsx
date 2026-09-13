@@ -46,11 +46,10 @@ it.each([
       </>
     );
     const { container, rerender } = render(content(false));
-    expect(
-      container.querySelectorAll(
-        '.pokemon-identity__number:not(.answer__number--concealed)',
-      ),
-    ).toHaveLength(0);
+    for (const number of container.querySelectorAll(
+      '.pokemon-identity__number',
+    ))
+      expect(number).not.toBeVisible();
     expect(
       container.querySelectorAll('.question-visual__pokemon, .answer__sprite'),
     ).toHaveLength(0);

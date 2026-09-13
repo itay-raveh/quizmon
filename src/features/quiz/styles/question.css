@@ -453,3 +453,9 @@
   margin-right: 0.35em;
   vertical-align: -0.08em;
 }
+
+.question-evolution-endpoints {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+}

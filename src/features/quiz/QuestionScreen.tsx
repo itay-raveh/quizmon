@@ -238,9 +238,15 @@ export const QuestionScreen = ({
             />
           )}
         </div>
-        {question.suppliedClues?.map((clue) => (
-          <p key={clue}>{clue}</p>
-        ))}
+        {question.suppliedClues?.length ? (
+          <div className="clue-board">
+            <ol>
+              {question.suppliedClues.map((clue) => (
+                <li key={clue}>{clue}</li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
         {!isChampion || cluesShown > 1 || answered ? (
           <div className="question__stimulus">
             {isChampion && !isLeague && cluesShown > 1 ? (
