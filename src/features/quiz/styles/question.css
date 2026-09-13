@@ -69,6 +69,14 @@
   margin: 0;
 }
 
+.question__supporting-text {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
 .question__instruction {
   align-self: start;
   width: min(100%, 60ch);

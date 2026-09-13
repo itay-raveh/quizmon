@@ -107,7 +107,7 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
       ? answer.correctOptions.length === 1
       : answer.interaction === 'multi-select') &&
     (prompt.kind === 'text'
-      ? text(prompt.text)
+      ? text(prompt.text) && optional(prompt.supportingText, text)
       : prompt.kind === 'pokemon' &&
         text(prompt.before) &&
         text(prompt.after) &&

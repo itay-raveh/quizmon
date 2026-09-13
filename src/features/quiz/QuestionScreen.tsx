@@ -61,7 +61,14 @@ const QuestionPrompt = ({
 }) => (
   <p className={className} id="question-prompt">
     {prompt.kind === 'text' ? (
-      prompt.text
+      <>
+        {prompt.text}
+        {prompt.supportingText ? (
+          <span className="question__supporting-text">
+            {prompt.supportingText}
+          </span>
+        ) : null}
+      </>
     ) : (
       <>
         {prompt.before}

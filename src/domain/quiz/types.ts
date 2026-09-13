@@ -80,7 +80,7 @@ interface QuestionAnswer {
 }
 
 export type QuestionPrompt =
-  | { kind: 'text'; text: string }
+  | { kind: 'text'; text: string; supportingText?: string }
   | {
       after: string;
       before: string;

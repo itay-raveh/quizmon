@@ -329,6 +329,18 @@ it.each(cases)(
               entries.some((entry) => entry.pokemon.includes(name)),
             ),
           ).toBe(false);
+          if (
+            question.prompt.kind === 'text' &&
+            !question.prompt.supportingText?.includes('Encounter:')
+          )
+            expect(
+              topics.encounters.some(
+                (entry) =>
+                  entry.game === game &&
+                  entry.area === area &&
+                  entry.pokemon.some((name) => wrong.includes(name)),
+              ),
+            ).toBe(false);
           if (rules.encounterConditions)
             for (const name of wrong)
               expect(

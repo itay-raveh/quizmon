@@ -96,14 +96,30 @@ export const buildEncounter: QuestionBuilder = (context) => {
     if (options.length < 4) continue;
     const game = topics.games[target.game];
     if (!game) continue;
-    const conditions = target.conditions.map(formatPokemonName).join(', ');
+    const needsMethod = topics.encounters.some(
+      (entry) =>
+        entry.game === target.game &&
+        entry.area === target.area &&
+        entry.pokemon.some((name) =>
+          wrong.some((candidate) => candidate.name === name),
+        ),
+    );
+    const location = target.label.replace(/^(.+) \(\1\)$/, '$1');
+    const prompt = `Which Pokémon can you find at ${location}?`;
+    const supportingText = [
+      `Pokémon ${game.label}`,
+      ...(needsMethod
+        ? [`Encounter: ${formatPokemonName(target.method)}`]
+        : []),
+    ].join(' · ');
     return expansionQuestion(
       context,
       { kind: 'location', name: target.area, generation: target.generation },
-      `In Pokémon ${game.label}, which Pokémon can be encountered at ${target.label} by ${formatPokemonName(target.method)}${conditions ? ` (${conditions})` : ''}? Use ordinary encounters without special events.`,
+      prompt,
       correct.name,
       options.map((candidate) => candidate.name),
       {
+        prompt: { kind: 'text', text: prompt, supportingText },
         context: JSON.stringify([
           target.game,
           target.area,
@@ -111,7 +127,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
           target.conditions,
         ]),
         ...picturedPokemon(context, options),
-        explanation: `${correct.pokemon.displayName} has a recorded encounter here for this game, method and conditions.`,
+        explanation: `${correct.pokemon.displayName} can be found at ${location} in Pokémon ${game.label}.`,
       },
     );
   }
