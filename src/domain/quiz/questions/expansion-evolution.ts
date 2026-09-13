@@ -264,10 +264,10 @@ export const buildEvolution: QuestionBuilder = (context) => {
         'evolution',
       );
       if (question)
-        return presentEvolutionQuestion({
-          ...question,
-          questionType: 'evolution-conditions',
-        });
+        return presentEvolutionQuestion(
+          { ...question, questionType: 'evolution-conditions' },
+          topics.evolutions,
+        );
     }
   }
 };

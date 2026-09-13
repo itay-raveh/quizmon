@@ -1,5 +1,6 @@
 import { formatPokemonName } from '../../pokemon/format';
 import type { QuestionData } from '../types';
+import type { EvolutionKnowledge } from '../topic-catalog';
 
 export const evolutionRequirement = (condition: string) => {
   const level = /^at level (\d+)$/.exec(condition);
@@ -38,7 +39,7 @@ export const evolutionRequirement = (condition: string) => {
   };
 };
 
-export const evolutionChoiceDetails = (options: readonly string[]) => {
+const evolutionChoiceDetails = (options: readonly string[]) => {
   const parts = options.map((option) => option.split(' · '));
   const shared = (parts[0] ?? []).filter((part) =>
     parts.every((values) => values.includes(part)),
@@ -56,7 +57,7 @@ export const evolutionChoiceDetails = (options: readonly string[]) => {
   return { shared, missing, requirements, focused };
 };
 
-export const formatEvolutionCondition = (condition: string) => {
+const formatEvolutionCondition = (condition: string) => {
   if (condition === 'Level Up') return 'Level up';
   if (condition === 'Use Item') return 'Use item';
   if (condition.startsWith('at level ')) return `Lv. ${condition.slice(9)}+`;
@@ -64,8 +65,47 @@ export const formatEvolutionCondition = (condition: string) => {
   return condition.charAt(0).toUpperCase() + condition.slice(1);
 };
 
+export const evolutionAnswerSummary = (option: string): string => {
+  const parts = option.split(' · ');
+  const level = parts.find((part) => part.startsWith('at level '));
+  const time = parts.find((part) => part.startsWith('during the '));
+  const summary = parts
+    .filter((part) => !(level && (part === 'Level Up' || part === time)))
+    .map((part) =>
+      part === level
+        ? `Level ${part.slice(9)}+${time ? ` at ${time.slice(11)}` : ''}`
+        : formatEvolutionCondition(part),
+    );
+  return summary.join(' · ');
+};
+
+const hasGameSpecificEvolution = (
+  question: QuestionData,
+  evolutions: readonly EvolutionKnowledge[],
+): boolean => {
+  const visual = question.visual;
+  if (visual?.kind !== 'evolution-endpoints') return true;
+  const methods = new Map<string, Set<string>>();
+  for (const entry of evolutions) {
+    if (entry.before !== visual.before || entry.after !== visual.after)
+      continue;
+    const gameMethods = methods.get(entry.game) ?? new Set<string>();
+    gameMethods.add(
+      JSON.stringify([entry.trigger, entry.item, [...entry.conditions].sort()]),
+    );
+    methods.set(entry.game, gameMethods);
+  }
+  if (!methods.size) return true;
+  return (
+    new Set(
+      [...methods.values()].map((values) => JSON.stringify([...values].sort())),
+    ).size > 1
+  );
+};
+
 export const presentEvolutionQuestion = (
   question: QuestionData,
+  evolutions?: readonly EvolutionKnowledge[],
 ): QuestionData => {
   if (question.questionType !== 'evolution-conditions') return question;
   const { shared, missing, requirements, focused } = evolutionChoiceDetails(
@@ -105,7 +145,10 @@ export const presentEvolutionQuestion = (
         : shared.length
           ? 'Which requirement completes this evolution?'
           : 'How does this Pokémon evolve?',
-      ...(game ? { supportingText: game } : {}),
+      ...(game &&
+      (!evolutions || hasGameSpecificEvolution(question, evolutions))
+        ? { supportingText: game }
+        : {}),
     },
   };
 };

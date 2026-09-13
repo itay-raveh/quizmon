@@ -134,6 +134,11 @@ const AppScreen = ({
     const currentQuestion = session.questions[session.questionIndex];
     return currentQuestion ? (
       <QuestionScreen
+        evolutions={
+          catalogState.status === 'ready'
+            ? catalogState.catalog.topics?.evolutions
+            : undefined
+        }
         answerPokemon={
           currentQuestion.subject.kind === 'pokemon'
             ? catalogState.catalog?.pokemon[currentQuestion.subject.name]

@@ -50,6 +50,7 @@ const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
 interface QuestionScreenProps extends UseQuestionAnswerOptions {
   answerPokemon?: PokemonKnowledge;
   typeRelations?: PokemonCatalog['typeRelations'];
+  evolutions?: NonNullable<PokemonCatalog['topics']>['evolutions'];
   elapsedSeconds: number;
   mode: GameMode;
   number: number;
@@ -121,6 +122,7 @@ export const QuestionScreen = ({
   answerPokemon,
   answerFlow,
   typeRelations,
+  evolutions,
   elapsedMilliseconds,
   questionStartedMilliseconds,
   elapsedSeconds,
@@ -138,8 +140,12 @@ export const QuestionScreen = ({
   total,
 }: QuestionScreenProps) => {
   const question = useMemo(
-    () => presentEvolutionQuestion(presentEffectQuestion(storedQuestion)),
-    [storedQuestion],
+    () =>
+      presentEvolutionQuestion(
+        presentEffectQuestion(storedQuestion),
+        evolutions,
+      ),
+    [storedQuestion, evolutions],
   );
   const heading = useRef<HTMLHeadingElement>(null);
   const advanceButton = useRef<HTMLButtonElement>(null);

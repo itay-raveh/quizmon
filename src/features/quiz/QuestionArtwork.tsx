@@ -6,10 +6,7 @@ import {
   type RevealState,
 } from '@/domain/quiz/question-rendering';
 import { QuestionSprite, QuestionIdentity } from './QuestionEntity';
-import {
-  evolutionChoiceDetails,
-  formatEvolutionCondition,
-} from '@/domain/quiz/questions/evolution-presentation';
+import { evolutionAnswerSummary } from '@/domain/quiz/questions/evolution-presentation';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { RelationArrow, TypeEffectArrow } from '@/components/RelationArrow';
 import { Sprite } from '@/components/Sprite';
@@ -173,17 +170,13 @@ export const QuestionArtwork = ({
             />
           </Fragment>
         ))}
-        {question.questionType === 'evolution-conditions' ? (
-          <ul
+        {question.questionType === 'evolution-conditions' && answered ? (
+          <p
             className="question-evolution-endpoints__conditions"
-            aria-label="Other evolution requirements"
+            aria-label="Evolution requirements"
           >
-            {evolutionChoiceDetails(question.options).shared.map(
-              (condition) => (
-                <li key={condition}>{formatEvolutionCondition(condition)}</li>
-              ),
-            )}
-          </ul>
+            {evolutionAnswerSummary(question.answer.correctOptions[0]!)}
+          </p>
         ) : null}
       </div>
     );
