@@ -6,6 +6,7 @@ import {
 import { type AnswerResult, type QuestionData } from '@/domain/quiz/types';
 import { answerFlowDelays, type AnswerFlow } from '@/domain/settings/types';
 import { useGameSounds } from '@/lib/audio/sound-context';
+import { orderRegionOptions } from './region-option-order';
 import {
   useCallback,
   useEffect,
@@ -186,7 +187,7 @@ export const useQuestionAnswer = ({
       return;
     }
     if (question.options.length > 9) return;
-    const option = question.options[Number(event.key) - 1];
+    const option = orderRegionOptions(question)[Number(event.key) - 1];
     if (option) selectOption(option);
   });
   useEffect(() => {

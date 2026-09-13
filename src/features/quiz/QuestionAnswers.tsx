@@ -15,6 +15,7 @@ import { Fragment } from 'react';
 import { TypeAnswerPicker } from './TypeAnswerPicker';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
 import { NatureEffect } from './NatureEffect';
+import { orderRegionOptions } from './region-option-order';
 const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
   'move-types',
   'natural-gift',
@@ -73,7 +74,7 @@ export const QuestionAnswers = ({
   const options =
     hasTypeOptionBadges && question.options.length > 4
       ? question.options.toSorted()
-      : question.options;
+      : orderRegionOptions(question);
   return (
     <div
       className={[

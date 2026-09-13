@@ -88,9 +88,31 @@ for (const { type, level, count } of cases)
       name: question.optionLabels?.[correct] ?? formatName(correct),
       exact: true,
     });
-    await correctButton.focus();
-    await page.keyboard.press('Enter');
+    if (type === 'name-that-region') {
+      const regions = [
+        'Kanto',
+        'Johto',
+        'Hoenn',
+        'Sinnoh',
+        'Unova',
+        'Kalos',
+        'Alola',
+        'Galar',
+        'Paldea',
+      ];
+      const labels = await answers.evaluateAll((buttons) =>
+        buttons.map((button) => button.getAttribute('aria-label')),
+      );
+      expect(labels).toEqual(regions);
+      await page.keyboard.press(
+        String(regions.indexOf(question.optionLabels![correct]!) + 1),
+      );
+    } else {
+      await correctButton.focus();
+      await page.keyboard.press('Enter');
+    }
     await expect(page.locator('.answer--correct')).toHaveCount(1);
+    await expect(page.locator('.answer--wrong')).toHaveCount(0);
     if (question.optionReveals)
       await expect(page.locator('.answer__reveal')).toHaveCount(count);
     if (question.explanation)
