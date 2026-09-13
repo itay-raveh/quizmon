@@ -279,11 +279,6 @@ export const QuestionScreen = ({
         />
       ) : null}
 
-      {answered && question.explanation ? (
-        <p role="status" className="question__explanation">
-          {question.explanation}
-        </p>
-      ) : null}
       <div className="question__response">
         {usesSearch &&
         (!isChampion || !championChoicesVisible) &&

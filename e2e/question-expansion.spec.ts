@@ -83,7 +83,7 @@ for (const { type, level, count } of cases)
     if (question.explanation)
       await expect(
         page.getByText(question.explanation, { exact: true }),
-      ).toBeVisible();
+      ).toHaveCount(0);
     await page.reload();
     await expect(
       page.getByRole('heading', { name: questionLabels[type], exact: true }),
