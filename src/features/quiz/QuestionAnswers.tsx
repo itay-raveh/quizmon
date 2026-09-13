@@ -69,6 +69,10 @@ export const QuestionAnswers = ({
       />
     );
   }
+  const options =
+    hasTypeOptionBadges && question.options.length > 4
+      ? question.options.toSorted()
+      : question.options;
   return (
     <div
       className={[
@@ -86,7 +90,7 @@ export const QuestionAnswers = ({
         .filter(Boolean)
         .join(' ')}
     >
-      {question.options.map((option, index) => {
+      {options.map((option, index) => {
         const label =
           question.optionLabels?.[option] ?? formatPokemonName(option);
         const reveal = question.optionReveals?.[option];

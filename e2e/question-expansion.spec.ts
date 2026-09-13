@@ -1,4 +1,9 @@
-import { expect, test, expectNoHorizontalOverflow } from './fixtures';
+import {
+  expect,
+  test,
+  expectNoHorizontalOverflow,
+  formatName,
+} from './fixtures';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import { generations } from '../src/domain/pokemon/types';
 import { questionLabels } from '../src/domain/quiz/question-labels';
@@ -72,12 +77,20 @@ for (const { type, level, count } of cases)
       );
     if (question.namesOnly) await expect(answers.locator('img')).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
-    const correct = question.options.indexOf(
-      question.answer.correctOptions[0]!,
-    );
-    await answers.nth(correct).focus();
+    if (type === 'move-types' || type === 'natural-gift') {
+      const labels = await answers.evaluateAll((buttons) =>
+        buttons.map((button) => button.getAttribute('aria-label')!),
+      );
+      expect(labels).toEqual(labels.toSorted());
+    }
+    const correct = question.answer.correctOptions[0]!;
+    const correctButton = page.getByRole('button', {
+      name: question.optionLabels?.[correct] ?? formatName(correct),
+      exact: true,
+    });
+    await correctButton.focus();
     await page.keyboard.press('Enter');
-    await expect(answers.nth(correct)).toHaveClass(/answer--correct/);
+    await expect(page.locator('.answer--correct')).toHaveCount(1);
     if (question.optionReveals)
       await expect(page.locator('.answer__reveal')).toHaveCount(count);
     if (question.explanation)
