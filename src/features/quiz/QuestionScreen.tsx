@@ -156,6 +156,8 @@ export const QuestionScreen = ({
     : mode.kind === 'daily'
       ? getModeLabel(mode)
       : null;
+  const revealArtworkInPlace =
+    question.media.kind === 'sprite' && question.media.silhouette;
   const usesSearch =
     question.answer.interaction === 'search' ||
     (isChampion && !question.rulesVersion);
@@ -252,7 +254,10 @@ export const QuestionScreen = ({
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />
             ) : null}
-            {answered && usesSearch && !question.visual ? null : (
+            {answered &&
+            usesSearch &&
+            !question.visual &&
+            !revealArtworkInPlace ? null : (
               <QuestionArtwork
                 answered={answered}
                 cluesShown={cluesShown}
@@ -309,7 +314,7 @@ export const QuestionScreen = ({
       {answered && usesSearch ? (
         <div className="question__answer-reveal">
           <strong>Correct answer</strong>
-          {answerPokemon?.sprite ? (
+          {answerPokemon?.sprite && !revealArtworkInPlace ? (
             <PixelSprite src={answerPokemon.sprite} />
           ) : null}
           <PokemonIdentity

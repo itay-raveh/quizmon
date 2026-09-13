@@ -28,17 +28,6 @@ export const applyQuestionVariant = (
       zoom: (question.media.zoom ?? 1) * rules.cropScale,
     };
   }
-  if (rules.shinyReference && question.optionVisuals) {
-    question.optionVisuals = Object.fromEntries(
-      Object.entries(question.optionVisuals).map(([name, visual]) => [
-        name,
-        {
-          ...visual,
-          referenceSrc: context.catalog.pokemon[name]?.sprite ?? undefined,
-        },
-      ]),
-    );
-  }
   if (rules.search) {
     question.answer = { ...question.answer, interaction: 'search' };
     question.optionVisuals = undefined;

@@ -184,12 +184,6 @@ export const QuestionAnswers = ({
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
-                  {visual.referenceSrc ? (
-                    <PixelSprite
-                      className="answer__sprite"
-                      src={visual.referenceSrc}
-                    />
-                  ) : null}
                   <PixelSprite
                     className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
                     src={visual.src}

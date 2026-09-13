@@ -36,7 +36,6 @@ type QuestionMedia =
   | { kind: 'none' };
 
 export interface PokemonOptionVisual {
-  referenceSrc?: string;
   dexNumber: number;
   silhouette?: boolean;
   src: string;

@@ -17,7 +17,6 @@ export interface VariantRules {
   typeGrid?: boolean;
   currentSprite?: boolean;
   cropScale?: number;
-  shinyReference?: boolean;
   plausibleProperties?: boolean;
   statGap?: readonly [number, number];
   multipliers?: readonly number[];
@@ -52,7 +51,7 @@ const questionVariants: Record<
     5: { search: true },
   },
   'pixel-peek': { 3: { cropScale: 0.65 }, 4: {}, 5: { search: true } },
-  'shiny-spotter': { 3: { shinyReference: true }, 4: {} },
+  'shiny-spotter': { 3: {}, 4: {} },
   'field-notes': { 2: {}, 3: { namesOnly: true }, 4: { search: true } },
   'type-check': {
     1: { singleType: true },
