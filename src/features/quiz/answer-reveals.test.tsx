@@ -47,7 +47,9 @@ it.each([
     );
     const { container, rerender } = render(content(false));
     expect(
-      container.querySelectorAll('.pokemon-identity__number'),
+      container.querySelectorAll(
+        '.pokemon-identity__number:not(.answer__number--concealed)',
+      ),
     ).toHaveLength(0);
     expect(
       container.querySelectorAll('.question-visual__pokemon, .answer__sprite'),

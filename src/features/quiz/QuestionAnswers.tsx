@@ -78,7 +78,7 @@ export const QuestionAnswers = ({
         )
           ? 'answers--statements'
           : '',
-        question.optionVisuals && !concealedMedia ? 'answers--pokemon' : '',
+        question.optionVisuals && !question.namesOnly ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
       ]
@@ -93,11 +93,10 @@ export const QuestionAnswers = ({
           ? question.optionImages?.[option]
           : undefined;
         const optionVisual = question.optionVisuals?.[option];
-        const visual = concealedMedia
-          ? undefined
-          : question.optionVisuals?.[option];
+        const visual = optionVisual;
         const dexNumber =
-          concealedMedia || (question.optionGenerations && !answered)
+          (concealedMedia && !visual) ||
+          (question.optionGenerations && !answered && !question.namesOnly)
             ? undefined
             : (question.optionDexNumbers?.[option] ?? visual?.dexNumber);
         const optionSelected = selected.has(option);
@@ -182,7 +181,7 @@ export const QuestionAnswers = ({
               question.options.length <= 9 ? String(index + 1) : undefined
             }
             aria-pressed={multiSelect ? optionSelected : undefined}
-            className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+            className={`${optionClassName} ${visual ? (question.namesOnly ? 'answer--names-only' : 'answer--pokemon') : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             disabled={answered}
             key={option}
             onClick={() => onSelect(option)}
@@ -195,16 +194,25 @@ export const QuestionAnswers = ({
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
-                  <PixelSprite
-                    className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
-                    src={visual.src}
-                    fetchPriority="auto"
-                  />
+                  {concealedMedia ? null : (
+                    <PixelSprite
+                      className={`answer__sprite ${visual.silhouette && !answered ? 'answer__sprite--silhouette' : ''}`.trim()}
+                      src={visual.src}
+                      fetchPriority="auto"
+                    />
+                  )}
                 </span>
                 <PokemonIdentity
-                  className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
+                  className={
+                    question.namesOnly
+                      ? 'answer__identity'
+                      : `answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()
+                  }
                   revealed={!concealed}
                   dexNumber={dexNumber}
+                  numberClassName={
+                    concealedMedia ? 'answer__number--concealed' : undefined
+                  }
                   hideNumberFromAccessibility
                   name={option}
                   nameClassName="answer__name"
@@ -249,18 +257,12 @@ export const QuestionAnswers = ({
             ) : (
               <span className="answer__text">
                 <span>{label}</span>
-                {question.namesOnly &&
-                ((reservesOptionTypes && optionVisual) ||
-                  classification ||
-                  generation) ? (
+                {question.namesOnly && (classification || generation) ? (
                   <span
                     aria-hidden="true"
                     className="answer__text-detail"
                     style={{ visibility: answered ? undefined : 'hidden' }}
                   >
-                    {reservesOptionTypes && optionVisual ? (
-                      <TypeBadges types={optionVisual.types} />
-                    ) : null}
                     {classification ? <span>{classification}</span> : null}
                     {generation ? (
                       <GenerationLabel generation={generation} />

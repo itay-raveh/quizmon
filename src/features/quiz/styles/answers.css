@@ -66,6 +66,19 @@
   gap: 0;
 }
 
+.answer--names-only {
+  --answer-sprite-size: 3rem;
+  grid-template-columns: auto var(--answer-sprite-size) minmax(0, 1fr);
+}
+
+.answer--names-only .answer__sprite-field {
+  min-height: var(--answer-sprite-size);
+}
+
+.answer__number--concealed {
+  visibility: hidden;
+}
+
 .answer--pokemon kbd {
   position: absolute;
   z-index: 1;
