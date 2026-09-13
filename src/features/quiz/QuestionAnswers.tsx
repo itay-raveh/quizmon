@@ -1,3 +1,4 @@
+import { supplementalItemSprites } from './item-sprites';
 import { GameButton } from '@/components/GameButton';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
@@ -47,7 +48,8 @@ export const QuestionAnswers = ({
     question.namesOnly &&
     question.questionType !== 'weight-comparison' &&
     question.questionType !== 'height-comparison' &&
-    question.questionType !== 'medicine-cabinet';
+    question.questionType !== 'medicine-cabinet' &&
+    question.questionType !== 'evolution-items';
   const concealedMedia = namesOnly && !answered;
   const correct = new Set(question.answer.correctOptions);
   const selected = new Set(selectedOptions);
@@ -124,7 +126,11 @@ export const QuestionAnswers = ({
             )}
           </span>
         ) : null;
-        const itemImage = question.optionImages?.[option];
+        const itemImage =
+          question.optionImages?.[option] ??
+          (question.questionType === 'evolution-items'
+            ? supplementalItemSprites[option]
+            : undefined);
         const optionVisual = question.optionVisuals?.[option];
         const visual = optionVisual;
         const dexNumber =

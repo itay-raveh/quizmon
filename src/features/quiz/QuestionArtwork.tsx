@@ -94,7 +94,9 @@ export const QuestionArtwork = ({
   const { visual } = question;
   const concealedMedia =
     question.namesOnly &&
-    !['ev-yields', 'hidden-abilities'].includes(question.questionType) &&
+    !['ev-yields', 'hidden-abilities', 'evolution-items'].includes(
+      question.questionType,
+    ) &&
     !answered;
   const media = concealedMedia ? { kind: 'none' as const } : question.media;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;

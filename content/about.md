@@ -43,7 +43,8 @@ between devices, and clearing site data removes them. After Quizmon has loaded,
 you can also install it and play offline; Pokémon images you have not loaded yet
 may be unavailable. Optional daily reminders need an internet connection.
 
-Quizmon uses Pokémon data from [PokéAPI](https://pokeapi.co/).
+Quizmon uses Pokémon data from [PokéAPI](https://pokeapi.co/). Additional
+evolution-item sprites come from [Serebii’s ItemDex](https://www.serebii.net/itemdex/).
 
 Quizmon is an unofficial, fan-made Pokémon quiz. It is not affiliated with,
 sponsored by, or endorsed by Nintendo, Creatures Inc., GAME FREAK, or The Pokémon

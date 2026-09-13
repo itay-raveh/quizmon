@@ -12,7 +12,7 @@ import type { QuestionType } from '../src/domain/quiz/types';
 const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'item-identification', level: 3, count: 4 },
   { type: 'medicine-cabinet', level: 4, count: 4 },
-  { type: 'evolution-items', level: 3, count: 4 },
+  { type: 'evolution-items', level: 4, count: 4 },
   { type: 'evolution-conditions', level: 3, count: 4 },
   { type: 'evolution-conditions', level: 4, count: 4 },
   { type: 'evolution-conditions', level: 5, count: 4 },
@@ -87,10 +87,19 @@ for (const { type, level, count } of cases)
         await expect(answer.locator('.pokemon-identity')).toContainText('No.');
         await expect(answer.locator('.pokemon-identity small')).toBeVisible();
       }
-    } else if (type === 'medicine-cabinet') {
+    } else if (type === 'medicine-cabinet' || type === 'evolution-items') {
       await expect(answers.locator('img')).toHaveCount(count);
     } else if (question.namesOnly) {
       await expect(answers.locator('img')).toHaveCount(0);
+    }
+    if (type === 'evolution-items') {
+      await expect(
+        page.locator('.question-evolution-endpoints img'),
+      ).toHaveCount(2);
+      for (const number of await page
+        .locator('.question-evolution-endpoints .pokemon-identity__number')
+        .all())
+        await expect(number).toBeVisible();
     }
     if (type === 'evolution-conditions') {
       await expect(
