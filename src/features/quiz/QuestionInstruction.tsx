@@ -41,7 +41,17 @@ export const QuestionInstruction = ({
   if (question.questionType === 'move-check')
     return 'Which move can it learn by leveling up?';
   const { prompt } = question;
-  if (prompt.kind === 'text') return prompt.text;
+  if (prompt.kind === 'text')
+    return (
+      <>
+        {prompt.text}
+        {prompt.supportingText ? (
+          <span className="question__supporting-text">
+            {prompt.supportingText}
+          </span>
+        ) : null}
+      </>
+    );
   return (
     <>
       {prompt.before}

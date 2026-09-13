@@ -77,6 +77,20 @@
   font-weight: 600;
 }
 
+.question__supporting-text:has(.question__inline-item) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.question__inline-item {
+  flex: 0 0 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
 .question__instruction {
   align-self: start;
   width: min(100%, 60ch);

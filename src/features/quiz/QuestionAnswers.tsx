@@ -77,6 +77,8 @@ export const QuestionAnswers = ({
     <div
       className={[
         'answers',
+        question.questionType === 'held-item-effects' ||
+        question.questionType === 'ability-effects' ||
         question.options.some(
           (option) => (question.optionLabels?.[option]?.length ?? 0) > 75,
         )

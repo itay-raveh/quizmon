@@ -124,18 +124,26 @@ export const buildBerry: QuestionBuilder = (context) => {
         ];
     const item = topics.items.find((item) => item.name === target.item);
     if (!item?.sprite) continue;
+    const prompt = gift
+      ? `Which type does Natural Gift have with ${item.label}?`
+      : context.variant?.completeFlavors
+        ? `Which flavors does ${item.label} have?`
+        : `What is the strongest flavor of ${item.label}?`;
     const question = expansionQuestion(
       context,
       {
         ...topicSubject(context, 'berry', target),
         ...(gift ? { generation: availableGiftGen! } : {}),
       },
-      gift
-        ? `In Generation ${availableGiftGen}, which type does Natural Gift have when used with ${item.label}?`
-        : `What ${context.variant?.completeFlavors ? 'complete combination of flavors does' : 'is the strongest flavor of'} ${item.label}${context.variant?.completeFlavors ? ' have' : ''}?`,
+      prompt,
       correct,
       options,
       {
+        prompt: {
+          kind: 'text',
+          text: prompt,
+          ...(gift ? { supportingText: `Generation ${availableGiftGen}` } : {}),
+        },
         media: { kind: 'pixel-sprite', src: item.sprite },
         optionLabels: Object.fromEntries(
           options.map((value) => [
@@ -327,10 +335,15 @@ export const buildMove: QuestionBuilder = (context) => {
             ...topicSubject(context, 'move', target),
             generation: rules.generation,
           },
-          `In Pokémon ${game.label}, which is a ${rules.damageClass} move?`,
+          `Which is a ${rules.damageClass} move?`,
           target.name,
           options.map((move) => move.name),
           {
+            prompt: {
+              kind: 'text',
+              text: `Which is a ${rules.damageClass} move?`,
+              supportingText: `Pokémon ${game.label}`,
+            },
             context: rules.game,
             optionLabels: Object.fromEntries(
               options.map((move) => [move.name, move.label]),
@@ -367,10 +380,15 @@ export const buildMove: QuestionBuilder = (context) => {
             ...topicSubject(context, 'move', target),
             generation: rules.generation,
           },
-          `In Pokémon ${game.label}, what is the default type of ${target.label}?${context.variant?.reviewedDescription ? ` ${target.reviewedDescription}` : ''}`,
+          `What is the default type of ${target.label}?${context.variant?.reviewedDescription ? ` ${target.reviewedDescription}` : ''}`,
           rules.type,
           options,
           {
+            prompt: {
+              kind: 'text',
+              text: `What is the default type of ${target.label}?${context.variant?.reviewedDescription ? ` ${target.reviewedDescription}` : ''}`,
+              supportingText: `Pokémon ${game.label}`,
+            },
             context: rules.game,
             optionLabels: Object.fromEntries(
               options.map((type) => [type, formatPokemonName(type)]),

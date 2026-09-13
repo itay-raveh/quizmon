@@ -58,7 +58,9 @@ export const buildEvolution: QuestionBuilder = (context) => {
         entry.after === target.after &&
         entry.game === target.game,
     );
-    const prompt = `In Pokémon ${game.label}, ${itemQuestion ? 'which item is used directly' : 'which complete minimum requirements evolve'} ${itemQuestion ? 'to evolve ' : ''}${before.pokemon.displayName} into ${after.pokemon.displayName}?${itemQuestion && target.conditions.length > 1 ? ` Additional requirements: ${target.conditions.slice(1).join(', ')}.` : ''}`;
+    const prompt = itemQuestion
+      ? `Which item evolves ${before.pokemon.displayName} into ${after.pokemon.displayName}?`
+      : `What are the minimum requirements to evolve ${before.pokemon.displayName} into ${after.pokemon.displayName}?`;
     const endpointVisuals = {
       kind: 'evolution-endpoints' as const,
       before: target.before,
@@ -109,6 +111,16 @@ export const buildEvolution: QuestionBuilder = (context) => {
         correct.name,
         options.map((item) => item.name),
         {
+          prompt: {
+            kind: 'text',
+            text: prompt,
+            supportingText: [
+              `Pokémon ${game.label}`,
+              ...(target.conditions.length > 1
+                ? target.conditions.slice(1)
+                : []),
+            ].join(' · '),
+          },
           context: target.game,
           visual: endpointVisuals,
           optionLabels: Object.fromEntries(
@@ -200,6 +212,11 @@ export const buildEvolution: QuestionBuilder = (context) => {
         correct,
         ...[...new Set(wrong)].filter((value) => value !== correct).slice(0, 3),
       ];
+      const shared = correct
+        .split(' · ')
+        .filter((part) =>
+          options.every((option) => option.split(' · ').includes(part)),
+        );
       const question = expansionQuestion(
         context,
         pokemonSubject(before),
@@ -207,10 +224,21 @@ export const buildEvolution: QuestionBuilder = (context) => {
         correct,
         options,
         {
+          prompt: {
+            kind: 'text',
+            text: prompt,
+            supportingText: [`Pokémon ${game.label}`, ...shared].join(' · '),
+          },
           context: target.game,
           visual: endpointVisuals,
           optionLabels: Object.fromEntries(
-            options.map((value) => [value, value]),
+            options.map((value) => [
+              value,
+              value
+                .split(' · ')
+                .filter((part) => !shared.includes(part))
+                .join(' · '),
+            ]),
           ),
           explanation: correct,
         },

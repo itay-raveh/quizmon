@@ -1,5 +1,6 @@
 import { formatPokemonName } from '../../pokemon/format';
 import type { QuestionBuilder } from './context';
+import { getEffectPresentation } from './effect-presentation';
 import {
   expansionQuestion,
   ordered,
@@ -104,6 +105,12 @@ export const buildEffect: QuestionBuilder = (context) => {
         ? fact.relatedWrong
         : fact.broadWrong;
     const options = [correct, ...wrong];
+    const presentation = getEffectPresentation(
+      fact,
+      target.label,
+      options,
+      exact,
+    );
     const item =
       kind === 'item'
         ? topics.items.find((item) => item.name === target.name)
@@ -112,7 +119,7 @@ export const buildEffect: QuestionBuilder = (context) => {
     return expansionQuestion(
       context,
       topicSubject(context, kind, target),
-      `${fact.context}. What does ${target.label} do?`,
+      presentation.prompt.text,
       correct,
       options,
       {
@@ -120,9 +127,7 @@ export const buildEffect: QuestionBuilder = (context) => {
         ...(item?.sprite
           ? { media: { kind: 'pixel-sprite' as const, src: item.sprite } }
           : {}),
-        optionLabels: Object.fromEntries(
-          options.map((value) => [value, value]),
-        ),
+        ...presentation,
         explanation: `${formatPokemonName(target.name)}: ${fact.exact}`,
       },
       kind === 'ability' ? 'ability' : 'knowledge',

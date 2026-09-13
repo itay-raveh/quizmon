@@ -281,13 +281,23 @@ export const buildEggGroups: QuestionBuilder = (context) => {
     if (!matches.length || wrong.length < 3) continue;
     const correct = matches[0]!;
     const options = [correct, ...wrong];
+    const prompt = `Which Pokémon shares an Egg Group with ${target.pokemon.displayName}?`;
     return expansionQuestion(
       context,
       pokemonSubject(target),
-      `Which Pokémon shares an Egg Group with ${target.pokemon.displayName}?${context.variant?.showEggGroups ? ` Its groups: ${groups.map(formatPokemonName).join(', ')}.` : ''}`,
+      prompt,
       correct.name,
       options.map((candidate) => candidate.name),
       {
+        prompt: {
+          kind: 'text',
+          text: prompt,
+          ...(context.variant?.showEggGroups
+            ? {
+                supportingText: `Egg Groups: ${groups.map(formatPokemonName).join(', ')}`,
+              }
+            : {}),
+        },
         ...picturedPokemon(context, options),
         media: targetMedia(target),
         optionReveals: Object.fromEntries(
@@ -353,13 +363,21 @@ export const buildEvYield: QuestionBuilder = (context) => {
       )
       .slice(0, 3);
     const options = [correct, ...wrong];
+    const prompt = context.variant?.completeEvYield
+      ? `What EVs does defeating ${target.pokemon.displayName} give?`
+      : `Which stat gains EVs from defeating ${target.pokemon.displayName}?`;
     const question = expansionQuestion(
       context,
       pokemonSubject(target),
-      `Which ${context.variant?.completeEvYield ? 'complete EV yield' : 'stat’s EVs'} does defeating ${target.pokemon.displayName} award, before bonuses?`,
+      prompt,
       correct,
       options,
       {
+        prompt: {
+          kind: 'text',
+          text: prompt,
+          supportingText: 'Base yield, before bonuses',
+        },
         media: targetMedia(target),
         optionLabels: Object.fromEntries(
           options.map((value) => [value, value]),

@@ -1,3 +1,4 @@
+import { presentEffectQuestion } from '@/domain/quiz/questions/effect-presentation';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
 import { PixelSprite } from '@/components/PixelSprite';
@@ -23,7 +24,7 @@ import type {
 import type { TimerDisplay } from '@/domain/settings/types';
 import { TrainerTitleMark } from '@/features/trainer/TrainerTitleMark';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ChampionSearch } from './ChampionSearch';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionArtwork } from './QuestionArtwork';
@@ -54,17 +55,28 @@ const QuestionPrompt = ({
   className,
   prompt,
   hideNumbers = false,
+  itemSprite,
+  showItem = true,
 }: {
   className: string;
   hideNumbers?: boolean;
   prompt: QuestionPromptData;
+  itemSprite?: string;
+  showItem?: boolean;
 }) => (
   <p className={className} id="question-prompt">
     {prompt.kind === 'text' ? (
       <>
         {prompt.text}
-        {prompt.supportingText ? (
+        {prompt.supportingText || itemSprite ? (
           <span className="question__supporting-text">
+            {itemSprite ? (
+              <PixelSprite
+                src={itemSprite}
+                className="question__inline-item"
+                style={{ visibility: showItem ? 'visible' : 'hidden' }}
+              />
+            ) : null}
             {prompt.supportingText}
           </span>
         ) : null}
@@ -86,7 +98,9 @@ const QuestionPrompt = ({
   </p>
 );
 const formatCorrectAnswer = (question: QuestionData): string => {
-  const names = question.answer.correctOptions.map(formatPokemonName);
+  const names = question.answer.correctOptions.map(
+    (option) => question.optionLabels?.[option] ?? formatPokemonName(option),
+  );
   if (names.length < 2) return names[0] ?? '';
   return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
 };
@@ -106,10 +120,14 @@ export const QuestionScreen = ({
   onAnswer,
   onFeedbackStart,
   onNewGame,
-  question,
+  question: storedQuestion,
   timerDisplay,
   total,
 }: QuestionScreenProps) => {
+  const question = useMemo(
+    () => presentEffectQuestion(storedQuestion),
+    [storedQuestion],
+  );
   const heading = useRef<HTMLHeadingElement>(null);
   const advanceButton = useRef<HTMLButtonElement>(null);
   const {
@@ -140,6 +158,12 @@ export const QuestionScreen = ({
     if (answered && answerFlow !== 'instant') advanceButton.current?.focus();
   }, [answerFlow, answered]);
   const isChampion = question.category === 'champion';
+  const inlineItem =
+    question.subject.kind !== 'pokemon' &&
+    question.questionType !== 'item-identification' &&
+    question.media.kind === 'pixel-sprite'
+      ? question.media.src
+      : undefined;
   const visualInstruction =
     !(
       question.prompt.kind === 'pokemon' &&
@@ -246,6 +270,8 @@ export const QuestionScreen = ({
               className="question__prompt"
               hideNumbers={question.namesOnly && !answered}
               prompt={question.prompt}
+              itemSprite={inlineItem}
+              showItem={!question.namesOnly || answered}
             />
           )}
         </div>
@@ -258,7 +284,7 @@ export const QuestionScreen = ({
             </ol>
           </div>
         ) : null}
-        {!isChampion || cluesShown > 1 || answered ? (
+        {!inlineItem && (!isChampion || cluesShown > 1 || answered) ? (
           <div className="question__stimulus">
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />

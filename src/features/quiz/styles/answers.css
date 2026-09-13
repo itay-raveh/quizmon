@@ -505,6 +505,10 @@
   color: var(--navy);
 }
 
+.answers--statements .answer__text {
+  white-space: pre-line;
+}
+
 .answers--statements {
   grid-template-columns: minmax(0, 1fr);
 }
