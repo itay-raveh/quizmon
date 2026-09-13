@@ -14,6 +14,7 @@ import type { QuestionData } from '@/domain/quiz/types';
 import { Fragment } from 'react';
 import { TypeAnswerPicker } from './TypeAnswerPicker';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
+import { NatureEffect } from './NatureEffect';
 const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
   'move-types',
   'natural-gift',
@@ -101,7 +102,11 @@ export const QuestionAnswers = ({
             aria-hidden="true"
             className={`answer__reveal ${answered ? '' : 'answer__reveal--reserved'}`.trim()}
           >
-            {reveal}
+            {question.questionType === 'nature-effects' ? (
+              <NatureEffect description={reveal} />
+            ) : (
+              reveal
+            )}
           </span>
         ) : null;
         const itemImage = question.optionImages?.[option];

@@ -69,6 +69,30 @@
   margin: 0;
 }
 
+.question__nature-effect {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.nature-effect {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1rem;
+}
+
+.nature-effect > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.nature-effect svg {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+}
+
 .question__supporting-text {
   display: block;
   margin-top: 0.5rem;

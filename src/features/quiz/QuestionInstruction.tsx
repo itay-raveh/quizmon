@@ -4,6 +4,7 @@ import {
   formatTypeMultiplier,
 } from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
+import { NatureEffect } from './NatureEffect';
 
 export const QuestionInstruction = ({
   question,
@@ -11,6 +12,18 @@ export const QuestionInstruction = ({
   question: QuestionData;
 }) => {
   const kind = question.visual?.kind;
+  if (question.questionType === 'nature-effects') {
+    const effect = question.optionReveals?.[question.answer.correctOptions[0]!];
+    if (effect)
+      return (
+        <>
+          Which nature?
+          <span className="question__nature-effect">
+            <NatureEffect description={effect} />
+          </span>
+        </>
+      );
+  }
   if (kind === 'type-check' && question.answer.interaction === 'multi-select')
     return 'Select every type this Pokémon has.';
   if (

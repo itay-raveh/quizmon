@@ -171,6 +171,10 @@ export const QuestionScreen = ({
       !(question.namesOnly && question.visual)
     ) &&
     (Boolean(question.visual) ||
+      (question.questionType === 'nature-effects' &&
+        Boolean(
+          question.optionReveals?.[question.answer.correctOptions[0]!],
+        )) ||
       question.questionType === 'ability-check' ||
       question.questionType === 'move-check');
   const isLeague = mode.kind === 'league';
