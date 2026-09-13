@@ -86,6 +86,12 @@ for (const { type, level, count } of cases)
     } else if (question.namesOnly) {
       await expect(answers.locator('img')).toHaveCount(0);
     }
+    if (type === 'ev-yields') {
+      await expect(page.locator('.question-visual img')).toHaveCount(1);
+      await expect(
+        page.locator('.question-visual .pokemon-identity__number'),
+      ).toBeVisible();
+    }
     await expectNoHorizontalOverflow(page);
     if (type === 'move-types' || type === 'natural-gift') {
       const labels = await answers.evaluateAll((buttons) =>

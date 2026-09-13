@@ -88,7 +88,8 @@ export const QuestionArtwork = ({
   question,
 }: QuestionArtworkProps) => {
   const { visual } = question;
-  const concealedMedia = question.namesOnly && !answered;
+  const concealedMedia =
+    question.namesOnly && question.questionType !== 'ev-yields' && !answered;
   const media = concealedMedia ? { kind: 'none' as const } : question.media;
   const pixelSprite = media.kind === 'pixel-sprite' ? media.src : undefined;
   const subjectDexNumber =
