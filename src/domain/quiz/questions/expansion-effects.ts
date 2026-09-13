@@ -24,8 +24,15 @@ export const buildMedicine: QuestionBuilder = (context) => {
     'freeze',
     'sleep',
     'paralysis',
-  ]);
+  ] as const);
   for (const status of statuses) {
+    const treatment = {
+      poison: 'cures poisoning',
+      burn: 'heals a burn',
+      freeze: 'thaws a frozen Pokémon',
+      sleep: 'wakes a sleeping Pokémon',
+      paralysis: 'cures paralysis',
+    }[status];
     const fits = (item: (typeof pool)[number]) =>
       item.cures.includes(status) &&
       (!context.variant?.combinedCure || item.hp === 'full' || item.hp >= 100);
@@ -52,7 +59,7 @@ export const buildMedicine: QuestionBuilder = (context) => {
       const question = expansionQuestion(
         context,
         topicSubject(context, 'item', target),
-        `Under standard Bag rules outside the Pokémon Legends games, which item cures ${status}${context.variant?.combinedCure ? ' and fully restores a conscious Pokémon from 100/200 HP' : ''}?`,
+        `Which item ${treatment}${context.variant?.combinedCure ? ' and restores HP from 100/200 to full' : ''}?`,
         target.name,
         options.map((item) => item.name),
         {
