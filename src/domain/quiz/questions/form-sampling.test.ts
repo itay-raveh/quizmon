@@ -9,7 +9,6 @@ import { buildQuestionType } from './registry';
 import { pickForm, pokemonWeight, speciesWeight } from './sampling';
 import { chooseTargets, pickFreshTarget } from './selection';
 import { getSpeciesHistory, speciesQuestion } from './species-history';
-
 it.each([
   ['pikachu', 4],
   ['rotom-wash', 4],
@@ -27,7 +26,6 @@ it.each([
 ])('assigns %s weight %s', (name, expected) => {
   expect(pokemonWeight(name)).toBe(expected);
 });
-
 const forms = (id: number): Candidate[] =>
   [
     `species-${id}`,
@@ -43,7 +41,6 @@ const forms = (id: number): Candidate[] =>
       sprite: `/sprite/${name}.png`,
     },
   }));
-
 const contextFor = (candidates: Candidate[], seed: string) => {
   const context = createQuestionContext(seed);
   context.catalog = {
@@ -55,7 +52,6 @@ const contextFor = (candidates: Candidate[], seed: string) => {
   context.pool = candidates;
   return context;
 };
-
 it('weights categories 4:2:1 without giving extra tickets to multiple Mega forms', () => {
   const candidates = forms(1);
   const selected = Array.from({ length: 700 }, (_, i) =>
@@ -76,7 +72,6 @@ it('weights categories 4:2:1 without giving extra tickets to multiple Mega forms
     200,
   );
 });
-
 it('selects species uniformly regardless of their number of forms', () => {
   const candidates = [...forms(1), forms(2)[0]!];
   const context = contextFor(candidates, 'species-frequency');
@@ -90,7 +85,6 @@ it('selects species uniformly regardless of their number of forms', () => {
   expect(Math.abs(firstSpecies - 3000)).toBeLessThan(180);
   expect(transformed.size).toBe(2);
 });
-
 it('rotates Daily species without assigning extra slots to their forms', () => {
   const candidates = [...forms(1), forms(2)[0]!];
   const context = contextFor(candidates, 'species-daily');
@@ -103,7 +97,6 @@ it('rotates Daily species without assigning extra slots to their forms', () => {
   });
   expect(selected.filter((id) => id === 1)).toHaveLength(3);
 });
-
 it('treats an unseen form of a used or previously seen species as a repeat', () => {
   const candidates = [...forms(1), forms(2)[0]!];
   const context = contextFor(candidates, 'species-history');
@@ -119,7 +112,6 @@ it('treats an unseen form of a used or previously seen species as a repeat', () 
   const onlyMegas = candidates.filter(({ name }) => name.includes('mega'));
   expect(onlyMegas).toContainEqual(pickFreshTarget(context, onlyMegas));
 });
-
 it('keeps category weights after species-level history selection', () => {
   const candidates = forms(1);
   const context = contextFor(candidates, 'category-history');
@@ -136,7 +128,6 @@ it('keeps category weights after species-level history selection', () => {
   for (const [index, expected] of [4000, 2000, 1000].entries())
     expect(Math.abs(counts[index]! - expected)).toBeLessThan(180);
 });
-
 it('shortlists distractor species and then chooses among all their eligible forms', () => {
   const candidates = [...forms(1), ...forms(2), ...forms(3), forms(4)[0]!];
   const context = contextFor(candidates, 'species-options');
@@ -163,7 +154,6 @@ it('shortlists distractor species and then chooses among all their eligible form
   expect(counts[1]! / counts[2]!).toBeGreaterThan(1.7);
   expect(counts[1]! / counts[2]!).toBeLessThan(2.3);
 });
-
 it('merges old form history and question identities without changing saved data', () => {
   const context = contextFor(forms(1), 'legacy-species');
   context.history = {
@@ -189,7 +179,6 @@ it('merges old form history and question identities without changing saved data'
   expect(savedHistory).toEqual(original);
   expect(original.pokemon).toEqual({ 'species-1': 2, 'species-1-mega-x': 4 });
 });
-
 it('does not favor an unseen Mega when comparing assembled questions', () => {
   const context = contextFor(forms(1), 'assembled-category-history');
   const history = {
@@ -204,17 +193,15 @@ it('does not favor an unseen Mega when comparing assembled questions', () => {
     context.history = history;
     context.used.clear();
     const question = buildQuestionType(context, 'type-check')!;
-    ordinary += Number(pokemonWeight(question.pokemonName) === 4);
+    ordinary += Number(pokemonWeight(question.subject.name) === 4);
   }
   expect(Math.abs(ordinary - 400)).toBeLessThan(60);
 });
-
 it('weights species by their best eligible category without adding form weights', () => {
   expect(speciesWeight(forms(1))).toBe(4);
   expect(speciesWeight(forms(1).slice(1))).toBe(2);
   expect(speciesWeight(forms(1).slice(2))).toBe(1);
 });
-
 it.each([false, true])(
   'preserves species rarity with history=%s',
   (withHistory) => {
@@ -237,7 +224,6 @@ it.each([false, true])(
       expect(Math.abs(counts[index]! - expected)).toBeLessThan(180);
   },
 );
-
 it('preserves species rarity across a complete Daily rotation', () => {
   const candidates = [forms(1)[0]!, forms(2)[1]!, ...forms(3).slice(2)];
   const context = contextFor(candidates, 'daily-eligible-rarity');
@@ -249,7 +235,6 @@ it('preserves species rarity across a complete Daily rotation', () => {
   }
   expect(counts).toEqual([4, 2, 1]);
 });
-
 it('keeps the first draft rarity when history compares different species', () => {
   const candidates = [forms(1)[0]!, forms(2)[1]!, ...forms(3).slice(2)];
   for (let i = 0; i < 100; i++) {
@@ -261,7 +246,7 @@ it('keeps the first draft rarity when history compares different species', () =>
       pokemon: { 'species-1': 2, 'species-2': 1 },
     };
     expect(
-      pokemonWeight(buildQuestionType(returning, 'type-check')!.pokemonName),
-    ).toBe(pokemonWeight(buildQuestionType(fresh, 'type-check')!.pokemonName));
+      pokemonWeight(buildQuestionType(returning, 'type-check')!.subject.name),
+    ).toBe(pokemonWeight(buildQuestionType(fresh, 'type-check')!.subject.name));
   }
 });

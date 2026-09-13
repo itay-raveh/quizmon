@@ -2,6 +2,7 @@
 
 import { DAILY_REMINDER_MESSAGE } from '@/features/reminders/reminder-config';
 import { spriteCachePlugin } from '@/lib/sprite-cache';
+import { isItemSpritePath } from '@/domain/pokemon/sprite-source';
 import { isObject } from '@/lib/validation';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
@@ -79,7 +80,9 @@ registerRoute(
 
 registerRoute(
   ({ sameOrigin, url }) =>
-    sameOrigin && url.pathname.startsWith('/sprites/pokemon/'),
+    sameOrigin &&
+    (url.pathname.startsWith('/sprites/pokemon/') ||
+      isItemSpritePath(url.pathname)),
   new CacheFirst({
     cacheName: 'quizmon-pokemon-sprites-v2',
     plugins: [

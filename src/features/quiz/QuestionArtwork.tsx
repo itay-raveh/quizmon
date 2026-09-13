@@ -7,13 +7,11 @@ import { MysteryTypeBadge, TypeBadges } from '@/components/TypeBadge';
 import { formatPokemonName, formatPokemonTypes } from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
-
 interface QuestionArtworkProps {
   answered: boolean;
   cluesShown: number;
   question: QuestionData;
 }
-
 const MysteryType = ({
   answered,
   types,
@@ -29,7 +27,6 @@ const MysteryType = ({
     {answered ? null : <MysteryTypeBadge />}
   </span>
 );
-
 const SubjectTypes = ({
   answered,
   types,
@@ -41,7 +38,6 @@ const SubjectTypes = ({
     <TypeBadges className="question-visual__subject-types" types={types} />
   </span>
 );
-
 const Subject = ({
   name,
   dexNumber,
@@ -81,7 +77,6 @@ const Subject = ({
     {children}
   </div>
 );
-
 export const QuestionArtwork = ({
   answered,
   cluesShown,
@@ -96,11 +91,10 @@ export const QuestionArtwork = ({
       ? question.prompt.dexNumber
       : undefined;
   const subject = {
-    name: question.pokemonName,
+    name: question.subject.name,
     dexNumber: subjectDexNumber,
     src: pixelSprite,
   };
-
   if (
     (visual?.kind === 'type-check' || visual?.kind === 'type-twins') &&
     (pixelSprite || question.namesOnly)
@@ -109,25 +103,41 @@ export const QuestionArtwork = ({
       <div className="question-visual" aria-hidden="true">
         <Subject {...subject}>
           {visual.kind === 'type-check' ? (
-            <MysteryType answered={answered} types={question.pokemonTypes} />
+            <MysteryType
+              answered={answered}
+              types={question.subject.types ?? []}
+            />
           ) : (
             <SubjectTypes
               answered={answered || Boolean(question.showTypes)}
-              types={question.pokemonTypes}
+              types={question.subject.types ?? []}
             />
           )}
         </Subject>
       </div>
     );
   }
-
+  if (visual?.kind === 'evolution-endpoints')
+    return (
+      <div className="question-visual question-evolution-link">
+        {[visual.before, visual.after].map((name, index) => (
+          <Fragment key={name}>
+            {index ? <RelationArrow /> : null}
+            <Subject
+              name={name}
+              src={question.namesOnly ? undefined : visual.stages[name]?.src}
+            />
+          </Fragment>
+        ))}
+      </div>
+    );
   if (visual?.kind === 'evolution-link') {
     return (
       <div
         className="question-visual question-evolution-link"
         aria-hidden="true"
       >
-        {[visual.before, question.pokemonName, visual.after].map(
+        {[visual.before, question.subject.name, visual.after].map(
           (name, index) => (
             <Fragment key={index}>
               {index > 0 && <RelationArrow />}
@@ -144,7 +154,6 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-
   if (visual?.kind === 'generation-roundup') {
     return (
       <div className="question-visual" aria-hidden="true">
@@ -154,7 +163,6 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-
   if (visual?.kind === 'type-roundup') {
     return (
       <div className="question-visual" aria-hidden="true">
@@ -165,7 +173,6 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-
   if (visual?.kind === 'stat-showdown') {
     return (
       <div className="question-visual" aria-hidden="true">
@@ -178,7 +185,6 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-
   if (
     visual?.kind === 'evolution-shift' &&
     (pixelSprite || question.namesOnly)
@@ -191,7 +197,7 @@ export const QuestionArtwork = ({
         aria-hidden="true"
       >
         <Subject {...subject} framed>
-          <TypeBadges types={question.pokemonTypes} />
+          <TypeBadges types={question.subject.types ?? []} />
         </Subject>
         <div className="question-relation__effect">
           <RelationArrow />
@@ -217,7 +223,6 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-
   if (
     (visual?.kind === 'type-matchup' || visual?.kind === 'counter-pick') &&
     (pixelSprite || question.namesOnly)
@@ -229,7 +234,7 @@ export const QuestionArtwork = ({
         className="question-visual question-relation question-relation--matchup"
         role="img"
         aria-hidden={!(answered || question.showTypes) || undefined}
-        aria-label={`${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`}
+        aria-label={`${formatPokemonName(question.subject.name)} ${(question.subject.types ?? []).length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.subject.types ?? [])}.`}
       >
         {visual.kind === 'type-matchup' ? (
           <MysteryType answered={answered} types={answer ? [answer] : []} />
@@ -249,13 +254,12 @@ export const QuestionArtwork = ({
         <Subject {...subject}>
           <SubjectTypes
             answered={answered || Boolean(question.showTypes)}
-            types={question.pokemonTypes}
+            types={question.subject.types ?? []}
           />
         </Subject>
       </div>
     );
   }
-
   if (media.kind === 'sprite') {
     const visible =
       answered || media.revealAt === undefined || cluesShown >= media.revealAt;
@@ -269,7 +273,6 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-
   if (media.kind === 'pixel-peek') {
     return (
       <div className={`pixel-peek ${answered ? 'pixel-peek--revealed' : ''}`}>
@@ -278,7 +281,7 @@ export const QuestionArtwork = ({
           src={media.src}
           alt={
             answered
-              ? formatPokemonName(question.pokemonName)
+              ? formatPokemonName(question.subject.name)
               : 'Cropped Pokémon sprite'
           }
           style={
@@ -294,7 +297,12 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-
+  if (pixelSprite && question.subject.kind !== 'pokemon')
+    return (
+      <div className="question-visual" aria-hidden="true">
+        <PixelSprite className="question-visual__pokemon" src={pixelSprite} />
+      </div>
+    );
   return pixelSprite ? (
     <div className="question-visual" aria-hidden="true">
       <Subject {...subject} />

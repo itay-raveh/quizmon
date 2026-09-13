@@ -1,6 +1,10 @@
 import type { Difficulty } from '../difficulty';
 import type { VariantRules } from '../question-variants';
-import type { PokemonCatalog, PokemonKnowledge } from '../../pokemon/types';
+import type {
+  Generation,
+  PokemonCatalog,
+  PokemonKnowledge,
+} from '../../pokemon/types';
 import type { QuestionHistory } from '../question-history';
 import type { QuestionData } from '../types';
 
@@ -10,6 +14,7 @@ export interface Candidate {
 }
 
 export interface QuestionContext {
+  generations?: Generation[];
   difficulty?: Difficulty;
   variant?: VariantRules;
   catalog: PokemonCatalog;
@@ -21,7 +26,7 @@ export interface QuestionContext {
   rotation?: number;
 }
 
-export type QuestionDraft = Omit<QuestionData, 'generation' | 'questionType'>;
+export type QuestionDraft = Omit<QuestionData, 'questionType'>;
 
 export type QuestionBuilder = (
   context: QuestionContext,

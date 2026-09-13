@@ -1,7 +1,27 @@
+import { expansionVariants } from '../question-expansion-variants';
+import {
+  buildMeasurement,
+  buildBaby,
+  buildCategory,
+  buildHidden,
+  buildEggGroups,
+  buildEvYield,
+} from './expansion-pokemon';
+import {
+  buildNature,
+  buildBerry,
+  buildRegion,
+  buildItemIdentification,
+  buildMove,
+} from './expansion-topics';
+import { buildEvolution } from './expansion-evolution';
+import { buildMedicine, buildEffect } from './expansion-effects';
+import { buildEncounter } from './expansion-encounters';
 import { getQuestionVariant } from '../question-variants';
 import { applyQuestionVariant } from './variants';
 import {
   getPokemonRecency,
+  getSubjectRecency,
   getQuestionRecency,
   questionRepeatPolicy,
   rememberQuestion,
@@ -37,8 +57,28 @@ import {
   buildLegendHuntQuestion,
   buildTypeTwinsQuestion,
 } from './twins-and-legends';
-
 const questionBuilders = {
+  'item-identification': buildItemIdentification,
+  'medicine-cabinet': buildMedicine,
+  'evolution-items': buildEvolution,
+  'weight-comparison': buildMeasurement('weight'),
+  'height-comparison': buildMeasurement('height'),
+  'move-types': buildMove,
+  'name-that-region': buildRegion,
+  'move-purpose': buildMove,
+  'baby-pokemon': buildBaby,
+  'pokedex-categories': buildCategory,
+  'evolution-conditions': buildEvolution,
+  'ability-effects': buildEffect,
+  'held-item-effects': buildEffect,
+  'hidden-abilities': buildHidden,
+  'nature-effects': buildNature,
+  'egg-group-connections': buildEggGroups,
+  'ev-yields': buildEvYield,
+  'encounter-locations': buildEncounter,
+  'berry-flavors': buildBerry,
+  'natural-gift': buildBerry,
+
   'pokedex-scan': buildPokedexScanQuestion,
   'silhouette-match': buildSilhouetteMatchQuestion,
   'sprite-match': buildSpriteMatchQuestion,
@@ -61,11 +101,12 @@ const questionBuilders = {
   'counter-pick': buildCounterPickQuestion,
   champion: buildChampionQuestion,
 } satisfies Record<QuestionData['questionType'], QuestionBuilder>;
-
 export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionData['questionType'],
 ): QuestionData | undefined => {
+  if (!context.difficulty && Object.hasOwn(expansionVariants, questionType))
+    return undefined;
   const resolved = context.difficulty
     ? getQuestionVariant(questionType, context.difficulty)
     : undefined;
@@ -100,6 +141,14 @@ export const buildQuestionType = (
       question,
     ).repetition;
     return (
+      (question.subject.kind === 'pokemon'
+        ? 0
+        : question.repetition.subjects.reduce(
+            (sum, subject) =>
+              sum +
+              getSubjectRecency(speciesHistory, question.questionType, subject),
+            0,
+          )) +
       primary.reduce(
         (sum, name) => sum + getPokemonRecency(speciesHistory, name),
         0,
@@ -132,7 +181,9 @@ export const buildQuestionType = (
     const original = build(variantContext);
     if (
       !original ||
-      (!resolved?.variant.search && original.options.length !== 4)
+      (!resolved?.variant.search &&
+        !resolved?.variant.fullList &&
+        original.options.length !== 4)
     )
       continue;
     const draft = resolved
@@ -143,11 +194,9 @@ export const buildQuestionType = (
           resolved.level,
         )
       : original;
-    const generation = context.catalog.pokemon[draft.pokemonName]?.generation;
-    if (!generation) continue;
+
     const question = {
       ...draft,
-      generation,
       questionType,
     };
     const questionRarity = rarity(question);
@@ -165,7 +214,8 @@ export const buildQuestionType = (
     if (history || context.rotation !== undefined) {
       for (const name of selected.repetition.subjects) context.used.add(name);
     }
-    context.used.add(selected.pokemonName);
+    if (selected.subject.kind === 'pokemon')
+      context.used.add(selected.subject.name);
     if (history) context.history = rememberQuestion(history, selected);
   }
   return selected;

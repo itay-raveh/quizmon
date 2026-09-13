@@ -6,7 +6,6 @@ import { ResultsScreen } from '@/features/quiz/ResultsScreen';
 import { SoundContext, silentSoundControls } from '@/lib/audio/sound-context';
 import { render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
-
 const makeResult = (
   questionCount: number,
   correctCount: number,
@@ -19,26 +18,27 @@ const makeResult = (
         category: 'identity',
         cluesUsed: 0,
         correct,
-        generation: 'I',
-        pokemonName: `pokemon-${index}`,
-        points: correct ? 1_000 : 0,
+        points: correct ? 1000 : 0,
         questionType: 'pokedex-scan',
-        speedBonus: correct ? 1_500 : 0,
+        speedBonus: correct ? 1500 : 0,
+        subject: {
+          kind: 'pokemon' as const,
+          generation: 'I',
+          name: `pokemon-${index}`,
+        },
       };
     },
   );
-
   return {
     answers,
     contentVersion: 5,
     correctCount,
     elapsedSeconds: 119,
     questionCount,
-    score: 15_000,
+    score: 15000,
     scoreVersion: 2,
   };
 };
-
 const createResults = (
   result: GameResult,
   overrides: Partial<ComponentProps<typeof ResultsScreen>> = {},
@@ -64,9 +64,7 @@ const createResults = (
     />
   </ReducedMotionContext>
 );
-
 const renderResults = (result: GameResult) => render(createResults(result));
-
 describe('results summary', () => {
   it.each([
     [6, '00:06'],
@@ -79,7 +77,6 @@ describe('results summary', () => {
       expect(screen.getByText(expected)).toBeVisible();
     },
   );
-
   it('preserves millisecond precision without an hours field', () => {
     render(
       createResults(
@@ -91,7 +88,6 @@ describe('results summary', () => {
     );
     expect(screen.getByText('00:06.123')).toBeVisible();
   });
-
   it.each([5, 10])(
     'plays the score roll alongside Trainer progress with %i correct answers',
     (correctCount) => {
@@ -132,17 +128,14 @@ describe('results summary', () => {
       expect(sounds.stopCelebration).toHaveBeenCalledOnce();
     },
   );
-
   it('focuses the result heading and summarizes ten questions with an answer trail', () => {
     renderResults(makeResult(10, 5));
-
     expect(
       screen.queryByRole('button', { name: 'Settings' }),
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'Training complete' }),
     ).toHaveFocus();
-
     expect(screen.getByText('01:59')).toBeVisible();
     expect(screen.queryByText(/seconds$/)).not.toBeInTheDocument();
     expect(screen.queryByText('Accuracy')).not.toBeInTheDocument();
@@ -153,10 +146,8 @@ describe('results summary', () => {
     expect(screen.getByText('Speed')).toBeVisible();
     expect(screen.getByText('7,500')).toBeVisible();
   });
-
   it('replaces the answer trail with a correct count for longer games', () => {
     renderResults(makeResult(11, 5));
-
     expect(screen.getByText('Correct')).toBeVisible();
     expect(screen.getByText('5 / 11')).toBeVisible();
     expect(
@@ -164,7 +155,6 @@ describe('results summary', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
   });
-
   it('celebrates a Daily Combo without adding another result statistic', () => {
     const result = makeResult(5, 3);
     render(
@@ -173,17 +163,14 @@ describe('results summary', () => {
         mode: { kind: 'daily', date: '2026-09-03' },
       }),
     );
-
     expect(
       screen.getByRole('img', { name: '7-day Daily Combo' }),
     ).toBeVisible();
     expect(screen.queryByText('Streak')).not.toBeInTheDocument();
     expect(screen.queryByText('Saved on this device.')).not.toBeInTheDocument();
   });
-
   it('uses header navigation and identifies the high-score key', () => {
     const rendered = renderResults(makeResult(10, 5));
-
     expect(screen.queryByText(/^Training$/)).not.toBeInTheDocument();
     expect(screen.getByText(/League best/)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Train again' })).toBeVisible();
@@ -193,7 +180,6 @@ describe('results summary', () => {
       rendered.container.querySelector('.share-result-button__icon'),
     ).toBeInTheDocument();
   });
-
   it('shows every badge and specialty that progressed', () => {
     const result = makeResult(10, 5);
     const titleProgress: TrainerProgressChange = {
@@ -227,7 +213,6 @@ describe('results summary', () => {
         ],
       }),
     );
-
     const progress = screen.getByRole('button', {
       name: /Many Paths: \+2, 6 \/ 10/,
     });
@@ -237,7 +222,6 @@ describe('results summary', () => {
     ).toHaveTextContent('Type Specialist');
     progress.click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
-
     rendered.rerender(
       createResults(result, {
         onOpenTrainerCard,
@@ -251,7 +235,6 @@ describe('results summary', () => {
       .click();
     expect(onOpenTrainerCard).toHaveBeenLastCalledWith('titles');
   });
-
   it('names a newly earned League Badge', () => {
     const result = makeResult(10, 10);
     const onOpenTrainerCard = vi.fn();
@@ -273,7 +256,6 @@ describe('results summary', () => {
         ],
       }),
     );
-
     const progress = screen.getByRole('button', {
       name: /Perfect Form.*Bronze unlocked/,
     });
@@ -281,7 +263,6 @@ describe('results summary', () => {
     progress.click();
     expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
   });
-
   it('shows a direct retry after a failed League challenge', () => {
     const result = makeResult(15, 14);
     const onRetryLeague = vi.fn();
@@ -291,7 +272,6 @@ describe('results summary', () => {
         onRetryLeague,
       }),
     );
-
     expect(
       screen.getByRole('heading', { name: 'League challenge ended' }),
     ).toBeVisible();
@@ -301,7 +281,6 @@ describe('results summary', () => {
     screen.getByRole('button', { name: 'Retry League' }).click();
     expect(onRetryLeague).toHaveBeenCalledOnce();
   });
-
   it('links a League victory to the dedicated Hall of Fame', () => {
     const result = makeResult(15, 15);
     const onOpenTrainerCard = vi.fn();
@@ -314,7 +293,6 @@ describe('results summary', () => {
         onOpenTrainerCard,
       }),
     );
-
     expect(
       screen.getByRole('heading', { name: 'League Champion' }),
     ).toBeVisible();
@@ -327,7 +305,6 @@ describe('results summary', () => {
     expect(onOpenTrainerCard).not.toHaveBeenCalled();
   });
 });
-
 it.each([1, 4, 9, 15])(
   'shows the five League stages after ending on question %i',
   (answered) => {
@@ -351,7 +328,6 @@ it.each([1, 4, 9, 15])(
     expect(stages.querySelectorAll('[aria-current="step"]')).toHaveLength(1);
   },
 );
-
 it('marks all five trials complete after a League victory', () => {
   render(createResults(makeResult(15, 15), { mode: { kind: 'league' } }));
   const stages = screen.getByRole('list', {

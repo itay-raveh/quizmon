@@ -389,9 +389,7 @@ test('remembers shown questions across abandoned games and preserves a lineup on
   await expect.poll(async () => (await readHistory()).sequence).toBe(2);
   const next = await readQuestions();
   expect(
-    next.some(
-      ({ pokemonName }) => `evolution-shift:${pokemonName}` === firstKey,
-    ),
+    next.some(({ subject }) => `evolution-shift:${subject.name}` === firstKey),
   ).toBe(false);
   expect(Object.keys((await readHistory()).questions)).toHaveLength(2);
 });

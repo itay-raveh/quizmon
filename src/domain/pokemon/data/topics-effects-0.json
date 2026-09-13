@@ -1,0 +1,214 @@
+{
+  "contentVersion": 18,
+  "key": "effects",
+  "values": [
+    {
+      "kind": "ability",
+      "name": "volt-absorb",
+      "generation": "III",
+      "context": "Generation IX battles; the ability is active and no effect bypasses it",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L5340"
+      ],
+      "broad": "Electric-type moves heal the holder instead of affecting it.",
+      "broadWrong": [
+        "Raises the holder’s physical Attack when it enters battle.",
+        "Prevents the holder from falling asleep.",
+        "Damages attackers that make contact."
+      ],
+      "relatedWrong": [
+        "Water-type moves heal the holder instead of affecting it.",
+        "Electric-type moves raise Speed instead of affecting the holder.",
+        "Electric-type moves raise Special Attack instead of affecting the holder."
+      ],
+      "exact": "An Electric-type move from another Pokémon restores up to 1/4 of maximum HP, including status moves.",
+      "exactWrong": [
+        "Only physical Electric-type moves from another Pokémon restore up to 1/4 of maximum HP.",
+        "Only special Electric-type moves from another Pokémon restore up to 1/4 of maximum HP.",
+        "Only status Electric-type moves from another Pokémon restore up to 1/4 of maximum HP."
+      ]
+    },
+    {
+      "kind": "item",
+      "name": "leftovers",
+      "generation": "II",
+      "context": "Generation IX battles; held-item effects and healing are active",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L3334"
+      ],
+      "broad": "Restores some of the holder’s HP at the end of each turn.",
+      "broadWrong": [
+        "Boosts Attack while restricting the holder to one move.",
+        "At full HP, is consumed to survive a lethal move hit with 1 HP.",
+        "Damages an attacker when its move makes contact with the holder."
+      ],
+      "relatedWrong": [
+        "Heals a Poison-type holder each turn but damages other types.",
+        "Restores HP based on damage the holder dealt with a move.",
+        "Increases healing from draining moves and certain ongoing recovery effects."
+      ],
+      "exact": "At the end of each turn, restores up to 1/16 of the holder’s maximum HP, regardless of its type.",
+      "exactWrong": [
+        "At the end of each turn, restores up to 1/8 of the holder’s maximum HP, regardless of its type.",
+        "At the end of each turn, restores up to 1/4 of the holder’s maximum HP, regardless of its type.",
+        "At the end of each turn, restores up to 1/16 of maximum HP only if the holder is Poison type."
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "earth-eater",
+      "generation": "IX",
+      "context": "Generation IX battles; the ability is active and no effect bypasses it",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L1133"
+      ],
+      "broad": "Ground-type moves heal the holder instead of affecting it.",
+      "broadWrong": [
+        "Prevents the holder from falling asleep.",
+        "Raises Attack after knocking out another Pokémon.",
+        "Damages attackers that make contact."
+      ],
+      "relatedWrong": [
+        "Electric-type moves heal the holder instead of affecting it.",
+        "Water-type moves heal the holder instead of affecting it.",
+        "Grass-type moves raise Attack instead of affecting the holder."
+      ],
+      "exact": "A Ground-type move from another Pokémon restores up to 1/4 of maximum HP, including status moves.",
+      "exactWrong": [
+        "Only physical Ground-type moves from another Pokémon restore up to 1/4 of maximum HP.",
+        "Only special Ground-type moves from another Pokémon restore up to 1/4 of maximum HP.",
+        "Only status Ground-type moves from another Pokémon restore up to 1/4 of maximum HP."
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "sap-sipper",
+      "generation": "V",
+      "context": "Generation IX battles; another Pokémon targets the holder, with its ability active and no bypass",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L4023"
+      ],
+      "broad": "Grass-type moves raise Attack instead of affecting the holder.",
+      "broadWrong": [
+        "Prevents the holder from falling asleep.",
+        "Heals the holder at the end of each turn.",
+        "Damages attackers that make contact."
+      ],
+      "relatedWrong": [
+        "Water-type moves raise Special Attack instead of affecting the holder.",
+        "Electric-type moves raise Speed instead of affecting the holder.",
+        "Grass-type moves restore HP instead of affecting the holder."
+      ],
+      "exact": "A Grass-type move raises Attack by one stage, including status moves.",
+      "exactWrong": [
+        "Only physical Grass-type moves raise Attack by one stage.",
+        "Only special Grass-type moves raise Attack by one stage.",
+        "Only status Grass-type moves raise Attack by one stage."
+      ]
+    },
+    {
+      "kind": "ability",
+      "name": "water-compaction",
+      "generation": "VII",
+      "context": "Generation IX battles; the holder survives the hit and its ability is active",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L5418"
+      ],
+      "broad": "A damaging Water-type hit raises the holder’s Defense. Damage still applies.",
+      "broadWrong": [
+        "Prevents the holder from falling asleep.",
+        "Heals the holder when it switches out.",
+        "Damages attackers that make contact."
+      ],
+      "relatedWrong": [
+        "Water-type moves restore HP instead of affecting the holder.",
+        "Water-type moves raise Special Attack instead of affecting the holder.",
+        "A damaging Water-type hit lowers the holder’s Defense. Damage still applies."
+      ],
+      "exact": "A damaging Water-type hit raises Defense by two stages, whether physical or special.",
+      "exactWrong": [
+        "Only physical Water-type hits raise Defense by two stages.",
+        "Only special Water-type hits raise Defense by two stages.",
+        "Only non-damaging Water-type moves raise Defense by two stages."
+      ]
+    },
+    {
+      "kind": "item",
+      "name": "black-sludge",
+      "generation": "IV",
+      "context": "Generation IX battles; held-item effects, healing and item damage are active",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L538"
+      ],
+      "broad": "Heals a Poison-type holder each turn but damages other types.",
+      "broadWrong": [
+        "Boosts Attack while restricting the holder to one move.",
+        "At full HP, is consumed to survive a lethal move hit with 1 HP.",
+        "Damages an attacker when its move makes contact with the holder."
+      ],
+      "relatedWrong": [
+        "Heals holders of every type at the end of each turn.",
+        "Restores HP based on damage the holder dealt with a move.",
+        "Increases healing from draining moves and certain ongoing recovery effects."
+      ],
+      "exact": "Each turn, restores up to 1/16 maximum HP to a Poison-type holder; other types lose 1/8 maximum HP.",
+      "exactWrong": [
+        "Each turn, restores up to 1/8 maximum HP to a Poison-type holder; other types lose 1/8 maximum HP.",
+        "Each turn, restores up to 1/16 maximum HP to a Poison-type holder; other types lose 1/16 maximum HP.",
+        "Each turn, restores up to 1/16 maximum HP to every type of holder."
+      ]
+    },
+    {
+      "kind": "item",
+      "name": "shell-bell",
+      "generation": "III",
+      "context": "Generation IX battles; the holder stays in battle after its attack and healing is active",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L5646"
+      ],
+      "broad": "Restores HP based on damage dealt by the holder’s move.",
+      "broadWrong": [
+        "Boosts Attack while restricting the holder to one move.",
+        "At full HP, is consumed to survive a lethal move hit with 1 HP.",
+        "Damages an attacker when its move makes contact with the holder."
+      ],
+      "relatedWrong": [
+        "Restores HP at the end of every turn without requiring an attack.",
+        "Heals a Poison-type holder each turn but damages other types.",
+        "Increases healing from draining moves and certain ongoing recovery effects."
+      ],
+      "exact": "After a damaging move, restores up to 1/8 of the damage dealt, with a minimum of 1 HP when healing succeeds.",
+      "exactWrong": [
+        "After a damaging move, restores up to 1/8 of the holder’s maximum HP.",
+        "After a damaging move, restores up to 1/4 of the damage dealt.",
+        "At the end of every turn, restores up to 1/8 of the holder’s maximum HP."
+      ]
+    },
+    {
+      "kind": "item",
+      "name": "rocky-helmet",
+      "generation": "V",
+      "context": "Generation IX battles; contact-triggered item effects and damage are active",
+      "sources": [
+        "https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L5291"
+      ],
+      "broad": "Damages an attacker after its damaging move makes contact with the holder.",
+      "broadWrong": [
+        "Boosts Attack while restricting the holder to one move.",
+        "Restores HP at the end of every turn.",
+        "At full HP, is consumed to survive a lethal move hit with 1 HP."
+      ],
+      "relatedWrong": [
+        "Damages the holder at the end of each turn.",
+        "Damages attackers after any damaging move, even without contact.",
+        "Damages attackers only after non-damaging moves."
+      ],
+      "exact": "After a damaging contact hit, the attacker loses 1/6 of its maximum HP.",
+      "exactWrong": [
+        "After a damaging contact hit, the attacker loses 1/8 of its maximum HP.",
+        "After a damaging contact hit, the attacker loses 1/4 of its maximum HP.",
+        "After any damaging hit, including without contact, the attacker loses 1/6 of its maximum HP."
+      ]
+    }
+  ]
+}

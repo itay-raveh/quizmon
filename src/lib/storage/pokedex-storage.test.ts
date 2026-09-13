@@ -6,7 +6,11 @@ import {
 import { generations } from '../../domain/pokemon/types';
 import { buildQuestions } from '../../domain/quiz/question-generation';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-import { questionTypes } from '../../domain/quiz/questions/definitions';
+import { questionTypes as registeredQuestionTypes } from '../../domain/quiz/questions/definitions';
+import { expansionVariants } from '../../domain/quiz/question-expansion-variants';
+const questionTypes = registeredQuestionTypes.filter(
+  (type) => !Object.hasOwn(expansionVariants, type),
+);
 import { isQuestionAnswerCorrect } from '../../domain/quiz/scoring';
 import { type QuestionData, type QuestionType } from '../../domain/quiz/types';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
@@ -22,7 +26,6 @@ import {
 import { createSeededRandom } from '../random';
 import { PLAYER_STORAGE_KEY, readPlayerSave } from './player-storage';
 import { registerPokedexAnswer } from './pokedex-storage';
-
 const questionFor = (questionType: QuestionType) => {
   const [question] = buildQuestions(
     catalog,
@@ -38,16 +41,14 @@ const questionFor = (questionType: QuestionType) => {
   expect(question?.questionType).toBe(questionType);
   return question!;
 };
-
 beforeEach(() => localStorage.clear());
 afterEach(() => vi.restoreAllMocks());
-
 it.each(questionTypes)(
   'registers subjects and correct Pokémon choices for %s',
   (type) => {
     const question = questionFor(type);
     const expected = new Set([
-      question.pokemonName,
+      question.subject.name,
       ...question.answer.correctOptions.filter((name) =>
         Object.hasOwn(catalog.pokemon, name),
       ),
@@ -66,20 +67,22 @@ it.each(questionTypes)(
     expect(writes).not.toHaveBeenCalled();
   },
 );
-
 it('registers a Champion answer without crediting names mentioned in its clue', () => {
   const question: QuestionData = {
     ...questionFor('field-notes'),
-    pokemonName: 'dondozo',
     questionType: 'champion',
     category: 'champion',
     answer: { interaction: 'single-choice', correctOptions: ['dondozo'] },
     prompt: { kind: 'text', text: 'It treats Tatsugiri like its boss.' },
+    subject: {
+      ...questionFor('field-notes').subject,
+      kind: 'pokemon' as const,
+      name: 'dondozo',
+    },
   };
   registerPokedexAnswer(question, true);
   expect(readPlayerSave().data.pokedex).toEqual(['dondozo']);
 });
-
 it('does not register wrong or partially correct multi-select answers', () => {
   const question = questionFor('generation-roundup');
   for (const selected of [
@@ -94,7 +97,6 @@ it('does not register wrong or partially correct multi-select answers', () => {
   }
   expect(readPlayerSave().data.pokedex).toEqual([]);
 });
-
 it('persists before round completion and includes discoveries in backup replacement', () => {
   const first = questionFor('type-twins');
   registerPokedexAnswer(first, true);
@@ -104,7 +106,6 @@ it('persists before round completion and includes discoveries in backup replacem
   restoreBackup(backup);
   expect(readPlayerSave().data.pokedex).toEqual(getQuestionPokemon(first));
 });
-
 it('migrates a version 1 save once, using only recorded correct Pokémon', () => {
   const data = emptyPlayerData();
   data.results.progress.correctPokemon = ['pikachu'];
@@ -114,9 +115,20 @@ it('migrates a version 1 save once, using only recorded correct Pokémon', () =>
         category: 'identity',
         correct: true,
         points: 1000,
-        pokemonName: 'eevee',
+        subject: {
+          kind: 'pokemon' as const,
+          name: 'eevee',
+        },
       },
-      { category: 'identity', correct: false, points: 0, pokemonName: 'ditto' },
+      {
+        category: 'identity',
+        correct: false,
+        points: 0,
+        subject: {
+          kind: 'pokemon' as const,
+          name: 'ditto',
+        },
+      },
       { category: 'identity', correct: true, points: 1000 },
     ],
     contentVersion: 1,
@@ -128,7 +140,7 @@ it('migrates a version 1 save once, using only recorded correct Pokémon', () =>
   const raw = JSON.stringify({ version: 1, restoreId: null, data });
   localStorage.setItem(PLAYER_STORAGE_KEY, raw);
   const migrated = readPlayerSave();
-  expect(migrated.version).toBe(4);
+  expect(migrated.version).toBe(5);
   expect(migrated.data.pokedex).toEqual(['pikachu', 'eevee']);
   expect(migrated.data.results).toEqual(data.results);
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(
@@ -136,7 +148,6 @@ it('migrates a version 1 save once, using only recorded correct Pokémon', () =>
   );
   expect(readPlayerSave()).toEqual(migrated);
 });
-
 it('leaves a version 1 document intact when migration cannot be written', () => {
   const data = emptyPlayerData();
   data.results.progress.correctPokemon = ['pikachu'];
@@ -152,7 +163,6 @@ it('leaves a version 1 document intact when migration cannot be written', () => 
   );
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(raw);
 });
-
 it('rejects invalid collection data without overwriting the save', () => {
   const save = {
     version: 2,
@@ -165,7 +175,6 @@ it('rejects invalid collection data without overwriting the save', () => {
   expect(registerPokedexAnswer(questionFor('pokedex-scan'), true)).toBe(false);
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(raw);
 });
-
 it('opens Pokédex through the same Trainer routing as the other achievements', () => {
   expect(parseTrainerRoute('?trainer=pokedex')).toBe('pokedex');
   expect(

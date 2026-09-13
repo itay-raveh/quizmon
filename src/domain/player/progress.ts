@@ -1,23 +1,18 @@
+import { expansionVariants } from '../quiz/question-expansion-variants';
 import { questionTypes } from '../quiz/questions/definitions';
-
 import { TRAINER_PROGRESS_VERSION, type SavedResults } from './results';
-
 import {
   isLeagueTraining,
   getTrainingSettings,
   TRAINING_QUESTION_COUNT,
 } from '../settings/game-settings';
-
 import { isChoice } from '../../lib/validation';
-
 import {
   questionCategories,
   type GameMode,
   type GameResult,
 } from '../quiz/types';
-
 import { type GameSettings } from '../settings/types';
-
 export interface TrainerStats extends Omit<
   SavedResults['progress'],
   'version'
@@ -26,7 +21,6 @@ export interface TrainerStats extends Omit<
   pokedex?: string[];
   leagueCompleted: boolean;
 }
-
 export const addResultToProgress = (
   progress: SavedResults['progress'],
   result: GameResult,
@@ -38,18 +32,17 @@ export const addResultToProgress = (
   const correctPokemon = new Set(progress.correctPokemon);
   const correctQuestionTypes = { ...progress.correctQuestionTypes };
   let championAnswersWithoutClues = progress.championAnswersWithoutClues;
-
   for (const answer of result.answers) {
     if (!answer.correct) continue;
-
     if (isChoice(answer.category, questionCategories)) {
       const category = answer.category;
       correctCategories[category] = (correctCategories[category] ?? 0) + 1;
     }
-    if (answer.pokemonName) correctPokemon.add(answer.pokemonName);
-    if (answer.generation) {
-      correctGenerations[answer.generation] =
-        (correctGenerations[answer.generation] ?? 0) + 1;
+    if (answer.subject?.kind === 'pokemon' && answer.subject.name)
+      correctPokemon.add(answer.subject.name);
+    if (answer.subject?.kind === 'pokemon' && answer.subject.generation) {
+      correctGenerations[answer.subject.generation] =
+        (correctGenerations[answer.subject.generation] ?? 0) + 1;
     }
     if (answer.questionType === 'champion') {
       championAnswersWithoutClues += Number(
@@ -61,7 +54,6 @@ export const addResultToProgress = (
         (correctQuestionTypes[questionType] ?? 0) + 1;
     }
   }
-
   const isPerfect = result.correctCount === result.questionCount;
   const isLeagueRound =
     mode.kind === 'training' &&
@@ -75,7 +67,11 @@ export const addResultToProgress = (
               difficulty: result.rules.difficulty,
               generations: result.rules.generations,
               questionSelection: 'automatic',
-            }).questionTypes;
+            }).questionTypes.filter(
+              (type) =>
+                result.rules!.version >= 3 ||
+                !Object.hasOwn(expansionVariants, type),
+            );
           return (
             automatic.length === result.rules.questionTypes.length &&
             automatic.every((type) =>
@@ -86,7 +82,6 @@ export const addResultToProgress = (
       : isLeagueTraining(settings));
   const earnedQuickAttack =
     isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60;
-
   return {
     championAnswersWithoutClues,
     correctCategories,
@@ -101,13 +96,11 @@ export const addResultToProgress = (
     version: TRAINER_PROGRESS_VERSION,
   };
 };
-
 const previousDailyDate = (date: string): string => {
   const previous = new Date(`${date}T00:00:00.000Z`);
   previous.setUTCDate(previous.getUTCDate() - 1);
   return previous.toISOString().slice(0, 10);
 };
-
 export const getDailyStreak = (
   dates: readonly string[],
   today: string,
@@ -115,30 +108,24 @@ export const getDailyStreak = (
   const creditedDates = new Set(dates);
   let date = creditedDates.has(today) ? today : previousDailyDate(today);
   let streak = 0;
-
   while (creditedDates.has(date)) {
     streak += 1;
     date = previousDailyDate(date);
   }
-
   return streak;
 };
-
 const getLongestStreak = (dates: readonly string[]): number => {
   let longest = 0;
   let current = 0;
   let previous: string | undefined;
-
   for (const date of [...new Set(dates)].sort()) {
     current =
       previous && previousDailyDate(date) === previous ? current + 1 : 1;
     longest = Math.max(longest, current);
     previous = date;
   }
-
   return longest;
 };
-
 export const getTrainerStats = (
   results: SavedResults,
   pokedex?: string[],

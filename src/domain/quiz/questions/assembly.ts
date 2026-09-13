@@ -6,7 +6,6 @@ import type {
   QuestionRepetition,
 } from '../types';
 import type { Candidate, QuestionContext, QuestionDraft } from './context';
-
 export const getOptionVisuals = (
   context: QuestionContext,
   options: readonly string[],
@@ -34,7 +33,6 @@ export const getOptionVisuals = (
       ];
     }),
   );
-
 const getOptionDexNumbers = (
   context: QuestionContext,
   options: readonly string[],
@@ -45,10 +43,14 @@ const getOptionDexNumbers = (
       return pokemon ? [[option, pokemon.speciesId] as const] : [];
     }),
   );
-
 export type AnswerPresentation =
-  | { kind: 'text' }
-  | { kind: 'pokemon-names'; numbers?: boolean }
+  | {
+      kind: 'text';
+    }
+  | {
+      kind: 'pokemon-names';
+      numbers?: boolean;
+    }
   | {
       kind: 'pokemon-sprites';
       numbers?: boolean;
@@ -56,12 +58,17 @@ export type AnswerPresentation =
       silhouette?: boolean;
       source?: (pokemon: PokemonKnowledge, option: string) => string | null;
     };
-
 type AnswerDetails =
-  | { kind: 'classification' }
-  | { kind: 'generation' }
-  | { kind: 'stat'; stat: StatName };
-
+  | {
+      kind: 'classification';
+    }
+  | {
+      kind: 'generation';
+    }
+  | {
+      kind: 'stat';
+      stat: StatName;
+    };
 export interface QuestionAssembly {
   repeat: (question: Omit<QuestionDraft, 'repetition'>) => QuestionRepetition;
   category: QuestionCategory;
@@ -73,12 +80,10 @@ export interface QuestionAssembly {
   presentation: AnswerPresentation;
   details?: AnswerDetails;
 }
-
 export const targetMedia = (target: Candidate): QuestionDraft['media'] =>
   target.pokemon.sprite
     ? { kind: 'pixel-sprite', src: target.pokemon.sprite }
     : { kind: 'none' };
-
 export const makeQuestion = (
   context: QuestionContext,
   {
@@ -103,9 +108,13 @@ export const makeQuestion = (
     id: `${category}:${target.name}`,
     media,
     options,
-    pokemonName: target.name,
-    pokemonTypes: target.pokemon.types,
     prompt,
+    subject: {
+      kind: 'pokemon' as const,
+      generation: target.pokemon.generation,
+      name: target.name,
+      types: target.pokemon.types,
+    },
   };
   if (presentation.kind !== 'text' && presentation.numbers !== false) {
     const numbers = getOptionDexNumbers(context, options);

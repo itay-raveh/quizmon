@@ -10,18 +10,15 @@ import {
 } from './daily';
 import { buildDailyQuestions } from './question-generation';
 import { questionTypes } from './questions/definitions';
-
 import {
   markDailyReminderOffered,
   shouldOfferDailyReminder,
 } from '../../features/reminders/daily-reminder-storage';
-
 describe('Daily Challenge', () => {
   it('reproduces a complete Daily lineup and varies it by date', () => {
     const first = buildDailyQuestions(catalog, '2026-09-01');
     const second = buildDailyQuestions(catalog, '2026-09-01');
     const schedule = getDailyQuestionTypes('2026-09-01');
-
     expect(first).toEqual(second);
     expect(first).toHaveLength(5);
     expect(first.map(({ questionType }) => questionType)).toEqual(schedule);
@@ -32,9 +29,9 @@ describe('Daily Challenge', () => {
           pokemon.hasDistinctDescription &&
           pokemon.genus &&
           pokemon.sprite &&
-          (pokemon === catalog.pokemon[first.at(-1)!.pokemonName] ||
+          (pokemon === catalog.pokemon[first.at(-1)!.subject.name] ||
             pokemon.speciesName !==
-              catalog.pokemon[first.at(-1)!.pokemonName]!.speciesName),
+              catalog.pokemon[first.at(-1)!.subject.name]!.speciesName),
       ).length,
     );
     expect(first.at(-1)?.searchOptions).toContainEqual({
@@ -47,7 +44,6 @@ describe('Daily Challenge', () => {
     expect(schedule).not.toEqual(getDailyQuestionTypes('2026-09-02'));
     expect(first).not.toEqual(buildDailyQuestions(catalog, '2026-09-02'));
   });
-
   it('allows question types to repeat before the Champion finale', () => {
     const schedules = Array.from({ length: 30 }, (_, day) =>
       getDailyQuestionTypes(
@@ -58,7 +54,6 @@ describe('Daily Challenge', () => {
       schedules.some((standard) => new Set(standard).size < standard.length),
     ).toBe(true);
   });
-
   it('uses all generations and the supplied experience settings', () => {
     expect(
       getDailySettings({
@@ -75,14 +70,12 @@ describe('Daily Challenge', () => {
       timerDisplay: 'milliseconds',
     });
   });
-
   describe('format coverage across September', () => {
     const excluded = ['ability-check', 'move-check', 'stat-showdown'];
     const dates = Array.from(
       { length: 30 },
       (_, day) => `2026-09-${String(day + 1).padStart(2, '0')}`,
     );
-
     it.each(dates)('excludes advanced formats on %s', (date) => {
       const schedule = getDailyQuestionTypes(date);
       const questions = buildDailyQuestions(catalog, date);
@@ -98,7 +91,6 @@ describe('Daily Challenge', () => {
         expect(excluded).not.toContain(type);
       }
     });
-
     it('covers all 18 Daily formats', () => {
       const seen = new Set(dates.flatMap(getDailyQuestionTypes));
       expect(seen.size).toBe(18);
@@ -107,12 +99,10 @@ describe('Daily Challenge', () => {
     });
   });
 });
-
 describe('daily dates', () => {
   it('uses the local calendar', () => {
     expect(getLocalDate(new Date(2026, 8, 1, 23, 59, 59))).toBe('2026-09-01');
   });
-
   it.each([
     ['?daily=2024-02-29', '2024-02-29'],
     ['?daily=2026-02-29', null],
@@ -135,7 +125,6 @@ describe('daily dates', () => {
   ])('parses %s as %s', (search, expected) => {
     expect(parseDailyDate(search)).toBe(expected);
   });
-
   it('validates stored dates without query decoding or type coercion', () => {
     expect(isDailyDate('2024-02-29')).toBe(true);
     for (const value of [
@@ -152,7 +141,6 @@ describe('daily dates', () => {
       expect(isDailyDate(value)).toBe(false);
     }
   });
-
   it.each([
     ['?daily=2026-09-01&play=1', true],
     ['?daily=2026-09-01', false],
@@ -163,10 +151,8 @@ describe('daily dates', () => {
     expect(shouldAutoStartDaily(search)).toBe(expected);
   });
 });
-
 describe('Daily reminder prompt', () => {
   beforeEach(() => window.localStorage.clear());
-
   it.each([-1, 0.5, '1', null])(
     'ignores malformed prompt counters: %j',
     (completedDailyCount) => {
@@ -177,7 +163,6 @@ describe('Daily reminder prompt', () => {
       expect(shouldOfferDailyReminder(1)).toBe(true);
     },
   );
-
   it('offers after the first Daily and waits three more before asking again', () => {
     expect(shouldOfferDailyReminder(1)).toBe(true);
     markDailyReminderOffered(1);
@@ -186,7 +171,6 @@ describe('Daily reminder prompt', () => {
     expect(shouldOfferDailyReminder(4)).toBe(true);
   });
 });
-
 it('keeps the shared Daily independent of locale-specific collation', () => {
   const expected = buildDailyQuestions(catalog, '2026-09-08');
   const compare = vi

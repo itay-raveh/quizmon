@@ -12,7 +12,6 @@ import {
 import { isQuestionData } from './question-lineup';
 import { getQuestionVariant } from './question-variants';
 import { questionTypes } from './questions/definitions';
-
 it.each(difficultyLevels)(
   'builds complete scoped Training and deterministic Daily at level %i',
   (difficulty) => {
@@ -41,7 +40,7 @@ it.each(difficultyLevels)(
       for (const question of [...questions, ...daily]) {
         expect(isQuestionData(question), question.id).toBe(true);
         expect(question.variantLevel).toBeLessThanOrEqual(difficulty);
-        expect(settings.generations).toContain(question.generation);
+        expect(settings.generations).toContain(question.subject.generation);
         for (const option of question.searchOptions ?? [])
           expect(settings.generations).toContain(
             catalog.pokemon[option.name]!.generation,
@@ -58,7 +57,6 @@ it.each(difficultyLevels)(
     }
   },
 );
-
 describe.each(questionTypes)('%s variants', (questionType) => {
   it.each(difficultyLevels)(
     'obeys the resolved rules at level %i',
@@ -93,7 +91,7 @@ describe.each(questionTypes)('%s variants', (questionType) => {
         if (resolved.variant.typeGrid)
           expect(question.options).toHaveLength(18);
         if (resolved.variant.singleType)
-          expect(question.pokemonTypes).toHaveLength(1);
+          expect(question.subject.types ?? []).toHaveLength(1);
         if (resolved.variant.statGap) {
           const winner =
             question.optionStats![question.answer.correctOptions[0]!]!;

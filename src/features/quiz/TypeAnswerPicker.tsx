@@ -7,7 +7,6 @@ import type { QuestionData } from '@/domain/quiz/types';
 import { SearchCombobox } from '@/components/SearchCombobox';
 import { useId, useMemo, useRef, useState } from 'react';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
-
 export const TypeAnswerPicker = ({
   question,
   selectedOptions,
@@ -39,7 +38,6 @@ export const TypeAnswerPicker = ({
   const suggestions = search(query)
     .map(({ name }) => name)
     .filter((type) => !selectedOptions.includes(type));
-
   if (answered) {
     const visible = question.options.filter(
       (type) =>
@@ -79,7 +77,7 @@ export const TypeAnswerPicker = ({
                   option={type}
                   isTypeOption
                   attackTypes={[type]}
-                  defenderTypes={question.pokemonTypes}
+                  defenderTypes={question.subject.types ?? []}
                   typeRelations={typeRelations}
                 />
               ) : null}
@@ -89,7 +87,6 @@ export const TypeAnswerPicker = ({
       </div>
     );
   }
-
   return (
     <div className="type-picker champion-search">
       <label htmlFor={`${id}-input`}>Your types</label>

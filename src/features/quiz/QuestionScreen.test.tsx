@@ -5,7 +5,6 @@ import { QuestionClues } from '@/features/quiz/QuestionClues';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createQuestionContext } from '../../../tests/fixtures/catalog';
 import { question, renderQuestion } from '../../../tests/fixtures/question';
-
 const championQuestion: QuestionData = {
   repetition: {
     identity: 'pikachu',
@@ -16,7 +15,6 @@ const championQuestion: QuestionData = {
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'champion',
   clues: ['An electric mouse.', 'Known for its red cheeks.'],
-  generation: 'I',
   id: 'champion:pikachu:4',
   media: {
     kind: 'sprite',
@@ -25,8 +23,6 @@ const championQuestion: QuestionData = {
     src: 'https://example.com/pikachu.png',
   },
   options: ['pikachu', 'eevee', 'ditto', 'mew'],
-  pokemonName: 'pikachu',
-  pokemonTypes: ['electric'],
   prompt: {
     kind: 'text',
     text: '“It has small electric sacs on both its cheeks.”',
@@ -40,8 +36,13 @@ const championQuestion: QuestionData = {
     { dexNumber: 25, name: 'pikachu' },
     { dexNumber: 26, name: 'raichu' },
   ],
+  subject: {
+    kind: 'pokemon' as const,
+    generation: 'I',
+    name: 'pikachu',
+    types: ['electric'],
+  },
 };
-
 describe('question transitions', () => {
   it.each([
     'type-check',
@@ -74,7 +75,7 @@ describe('question transitions', () => {
       if (questionType === 'type-check' || questionType === 'type-matchup')
         context.pool = context.pool.filter(({ name }) => name === targetName);
       const generated = buildQuestionType(context, questionType)!;
-      expect(generated.pokemonName).toBe(targetName);
+      expect(generated.subject.name).toBe(targetName);
       expect(generated.media).toEqual({ kind: 'none' });
       const rendered = renderQuestion({ question: generated });
       const prompt = rendered.container.querySelector('.question__instruction');
@@ -96,7 +97,6 @@ describe('question transitions', () => {
       }
     },
   );
-
   afterEach(() => vi.useRealTimers());
   it('keeps Leave game available while showing answer feedback', () => {
     const onNewGame = vi.fn();
@@ -109,18 +109,15 @@ describe('question transitions', () => {
     fireEvent.click(leave);
     expect(onNewGame).toHaveBeenCalledOnce();
   });
-
   afterEach(() => {
     vi.unstubAllGlobals();
   });
-
   it('focuses the question heading', () => {
     renderQuestion();
     expect(
       screen.getByRole('heading', { name: 'Stat showdown' }),
     ).toHaveFocus();
   });
-
   it('renders Pokémon answers as numbered sprite nameplates', () => {
     const rendered = renderQuestion({
       question: {
@@ -137,13 +134,11 @@ describe('question transitions', () => {
         ),
       },
     });
-
     expect(rendered.container.querySelectorAll('.answer__sprite')).toHaveLength(
       4,
     );
     expect(screen.getByText('No. 0001')).toBeInTheDocument();
   });
-
   it('renders Pokémon answers with their numbers even without artwork', () => {
     const rendered = renderQuestion({
       question: {
@@ -156,14 +151,12 @@ describe('question transitions', () => {
         },
       },
     });
-
     expect(
       rendered.container.querySelectorAll('.answer__identity'),
     ).toHaveLength(4);
     expect(screen.getByText('No. 0025')).toBeVisible();
     expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
-
   it.each(['odd-one-out', 'type-roundup', 'counter-pick'] as const)(
     'reveals each Pokémon option type after an answer in %s',
     (questionType) => {
@@ -185,7 +178,6 @@ describe('question transitions', () => {
           questionType,
         },
       });
-
       expect(
         rendered.container.querySelectorAll(
           '.answer__types--reserved .type-badge',
@@ -199,9 +191,7 @@ describe('question transitions', () => {
           name: 'Pikachu',
         }),
       ).toHaveAccessibleName('Pikachu');
-
       fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-
       expect(
         rendered.container.querySelectorAll('.answer__types--reserved'),
       ).toHaveLength(0);
@@ -220,7 +210,6 @@ describe('question transitions', () => {
       ).toBeDisabled();
     },
   );
-
   it('renders Type Check as a visual prompt and reveals the subject types', () => {
     const rendered = renderQuestion({
       question: {
@@ -246,7 +235,6 @@ describe('question transitions', () => {
         visual: { kind: 'type-check' },
       },
     });
-
     expect(
       rendered.container.querySelectorAll('.question__portrait'),
     ).toHaveLength(0);
@@ -273,9 +261,7 @@ describe('question transitions', () => {
       rendered.container.querySelectorAll('.answer__type-choice .type-badge'),
     ).toHaveLength(4);
     expect(screen.queryByRole('img', { name: /Pikachu type/ })).toBeNull();
-
     fireEvent.click(screen.getByRole('button', { name: 'Electric' }));
-
     expect(
       rendered.container.querySelectorAll('.type-badge--mystery'),
     ).toHaveLength(0);
@@ -283,7 +269,6 @@ describe('question transitions', () => {
       screen.getByRole('img', { name: 'Pikachu type: Electric.' }),
     ).toHaveClass('visually-hidden');
   });
-
   it('shows the Type Roundup instruction without repeating the pictured type', () => {
     const rendered = renderQuestion({
       question: {
@@ -301,7 +286,6 @@ describe('question transitions', () => {
         visual: { kind: 'type-roundup', type: 'electric' },
       },
     });
-
     const visiblePrompt = rendered.container.querySelector(
       '.question-visual__roundup-type',
     );
@@ -316,7 +300,6 @@ describe('question transitions', () => {
       document.querySelectorAll('.question-visual .type-badge'),
     ).toHaveLength(1);
   });
-
   it('reveals both ends of a Type Matchup diagram after answering', () => {
     const rendered = renderQuestion({
       question: {
@@ -331,8 +314,6 @@ describe('question transitions', () => {
           src: 'https://example.com/pikachu.png',
         },
         options: ['electric', 'normal', 'ground', 'fire'],
-        pokemonName: 'pikachu',
-        pokemonTypes: ['electric'],
         prompt: {
           after: '?',
           before: 'Which type is super effective against ',
@@ -342,9 +323,14 @@ describe('question transitions', () => {
         },
         questionType: 'type-matchup',
         visual: { kind: 'type-matchup', multiplier: 2 },
+        subject: {
+          ...question.subject,
+          kind: 'pokemon' as const,
+          name: 'pikachu',
+          types: ['electric'],
+        },
       },
     });
-
     expect(screen.getByText('×2')).toBeVisible();
     expect(screen.getByText('No. 0025')).toBeVisible();
     expect(
@@ -353,9 +339,7 @@ describe('question transitions', () => {
     expect(
       rendered.container.querySelector('.question-visual__subject-types'),
     ).not.toBeVisible();
-
     fireEvent.click(screen.getByRole('button', { name: 'Ground' }));
-
     expect(
       rendered.container.querySelectorAll('.type-badge--mystery'),
     ).toHaveLength(0);
@@ -365,7 +349,6 @@ describe('question transitions', () => {
       ),
     ).toHaveLength(1);
   });
-
   it('renders the Stat Showdown direction as part of the visual prompt', () => {
     const rendered = renderQuestion({
       question: {
@@ -378,7 +361,6 @@ describe('question transitions', () => {
         },
       },
     });
-
     expect(
       rendered.container.querySelector('.question__instruction'),
     ).toHaveTextContent('Which Pokémon has the lowest stat?');
@@ -392,7 +374,6 @@ describe('question transitions', () => {
       'visually-hidden',
     );
   });
-
   it.each(['Mew', 'Pikachu'])(
     'reveals every Stat Showdown value after choosing %s',
     (choice) => {
@@ -418,14 +399,11 @@ describe('question transitions', () => {
           },
         },
       });
-
       expect(
         rendered.container.querySelectorAll('.answer__stat--reserved'),
       ).toHaveLength(4);
       expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
-
       fireEvent.click(screen.getByRole('button', { name: choice }));
-
       expect(
         rendered.container.querySelectorAll('.answer__stat--reserved'),
       ).toHaveLength(0);
@@ -452,7 +430,6 @@ describe('question transitions', () => {
       );
     },
   );
-
   it('reveals the attacking Pokémon in Counter Pick', () => {
     const rendered = renderQuestion({
       question: {
@@ -472,8 +449,6 @@ describe('question transitions', () => {
             },
           ]),
         ),
-        pokemonName: 'squirtle',
-        pokemonTypes: ['water'],
         prompt: {
           after: ' super effectively?',
           before: 'Who can hit ',
@@ -483,9 +458,14 @@ describe('question transitions', () => {
         },
         questionType: 'counter-pick',
         visual: { kind: 'counter-pick', multiplier: 2 },
+        subject: {
+          ...question.subject,
+          kind: 'pokemon' as const,
+          name: 'squirtle',
+          types: ['water'],
+        },
       },
     });
-
     expect(screen.getByText('×2')).toBeVisible();
     expect(screen.getByText('No. 0007')).toBeVisible();
     expect(
@@ -493,9 +473,7 @@ describe('question transitions', () => {
         '.question-relation--matchup > .question-visual__pokemon-slot img',
       ),
     ).toBeNull();
-
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-
     expect(
       rendered.container.querySelector(
         '.question-relation--matchup > .question-visual__pokemon-slot img[src="https://example.com/pikachu.png"]',
@@ -507,70 +485,79 @@ describe('question transitions', () => {
       ),
     ).toHaveLength(1);
   });
-
-  it('preloads and reveals the evolved Pokémon in Evolution Shift', () => {
-    const preloadedSources: string[] = [];
-    class PreloadImage {
-      decoding = 'auto';
-      fetchPriority = 'auto';
-
-      set src(value: string) {
-        preloadedSources.push(value);
+  it.each([false, true])(
+    'preloads and reveals the evolved Pokémon in Evolution Shift (namesOnly: %s)',
+    (namesOnly) => {
+      const preloadedSources: string[] = [];
+      class PreloadImage {
+        decoding = 'auto';
+        fetchPriority = 'auto';
+        set src(value: string) {
+          preloadedSources.push(value);
+        }
       }
-    }
-    vi.stubGlobal('Image', PreloadImage);
-
-    const rendered = renderQuestion({
-      question: {
-        ...question,
-        answer: {
-          correctOptions: ['steel'],
-          interaction: 'single-choice',
-        },
-        category: 'evolution',
-        media: {
-          kind: 'pixel-sprite',
-          src: 'https://example.com/onix.png',
-        },
-        options: ['electric', 'steel', 'fighting', 'normal'],
-        pokemonName: 'onix',
-        pokemonTypes: ['rock', 'ground'],
-        prompt: {
-          after: ' gain after evolving?',
-          before: 'Which type can ',
-          dexNumber: 95,
-          kind: 'pokemon',
-          name: 'onix',
-        },
-        questionType: 'evolution-shift',
-        visual: {
-          evolution: {
-            dexNumber: 208,
-            name: 'steelix',
-            src: 'https://example.com/steelix.png',
-            types: ['steel', 'ground'],
+      vi.stubGlobal('Image', PreloadImage);
+      const rendered = renderQuestion({
+        question: {
+          ...question,
+          answer: {
+            correctOptions: ['steel'],
+            interaction: 'single-choice',
           },
-          gainedType: 'steel',
-          kind: 'evolution-shift',
+          category: 'evolution',
+          namesOnly,
+          media: namesOnly
+            ? { kind: 'none' }
+            : {
+                kind: 'pixel-sprite',
+                src: 'https://example.com/onix.png',
+              },
+          options: ['electric', 'steel', 'fighting', 'normal'],
+          prompt: {
+            after: ' gain after evolving?',
+            before: 'Which type can ',
+            dexNumber: 95,
+            kind: 'pokemon',
+            name: 'onix',
+          },
+          questionType: 'evolution-shift',
+          visual: {
+            evolution: {
+              dexNumber: 208,
+              name: 'steelix',
+              src: 'https://example.com/steelix.png',
+              types: ['steel', 'ground'],
+            },
+            gainedType: 'steel',
+            kind: 'evolution-shift',
+          },
+          subject: {
+            ...question.subject,
+            kind: 'pokemon' as const,
+            name: 'onix',
+            types: ['rock', 'ground'],
+          },
         },
-      },
-    });
-
-    expect(screen.getByText('?')).toBeVisible();
-    expect(screen.getByText('No. 0095')).toBeVisible();
-    expect(screen.queryByText('No. 0208')).not.toBeVisible();
-    expect(screen.queryByText('Steelix')).not.toBeVisible();
-    expect(preloadedSources).toContain('https://example.com/steelix.png');
-    fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
-    expect(screen.getByText('Steelix')).toBeVisible();
-    expect(screen.getByText('No. 0208')).toBeVisible();
-    expect(
-      rendered.container.querySelector(
-        'img[src="https://example.com/steelix.png"]',
-      ),
-    ).toBeInTheDocument();
-  });
-
+      });
+      expect(screen.getByText('?')).toBeVisible();
+      if (namesOnly) {
+        expect(screen.queryByText('No. 0095')).not.toBeInTheDocument();
+        expect(screen.queryByText('No. 0208')).not.toBeInTheDocument();
+      } else {
+        expect(screen.queryByText('No. 0208')).not.toBeVisible();
+      }
+      expect(screen.queryByText('Steelix')).not.toBeVisible();
+      expect(preloadedSources).toContain('https://example.com/steelix.png');
+      fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
+      expect(screen.getByText('Steelix')).toBeVisible();
+      expect(screen.getByText('No. 0208')).toBeVisible();
+      expect(
+        rendered.container.querySelector(
+          'img[src="https://example.com/steelix.png"]',
+        ),
+      ).toBeInTheDocument();
+    },
+  );
   it('reveals a silhouette after an answer is selected', () => {
     renderQuestion({
       question: {
@@ -587,32 +574,24 @@ describe('question transitions', () => {
         },
       },
     });
-
     const sprite = screen.getByRole('img', { name: /silhouette/ });
     expect(sprite).toHaveClass('sprite--silhouette');
-
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-
     expect(sprite).not.toHaveClass('sprite--silhouette');
   });
-
   it('ignores answer shortcuts while settings are open', () => {
     renderQuestion({ interactionPaused: true });
-
     fireEvent.keyDown(window, { key: '1' });
-
     expect(screen.getByRole('button', { name: 'Pikachu' })).toBeEnabled();
   });
-
   it('keeps answer feedback visual and assistive-only', () => {
     renderQuestion({
-      elapsedMilliseconds: 3_000,
+      elapsedMilliseconds: 3000,
       elapsedSeconds: 3,
-      onFeedbackStart: () => 3_000,
+      onFeedbackStart: () => 3000,
     });
     const answer = screen.getByRole('button', { name: 'Pikachu' });
     fireEvent.click(answer);
-
     expect(answer).toHaveClass('answer--correct');
     expect(answer.querySelector('kbd svg')).toBeInTheDocument();
     expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
@@ -621,20 +600,16 @@ describe('question transitions', () => {
     ).not.toBeInTheDocument();
     expect(document.querySelector('.answer-explanation')).toBeNull();
   });
-
   it('marks both the chosen wrong answer and the correct answer without color', () => {
     renderQuestion();
-
     const wrong = screen.getByRole('button', { name: 'Eevee' });
     const correct = screen.getByRole('button', { name: 'Pikachu' });
     fireEvent.click(wrong);
-
     expect(wrong).toHaveClass('answer--wrong');
     expect(wrong.querySelector('kbd svg')).toBeInTheDocument();
     expect(correct).toHaveClass('answer--correct');
     expect(correct.querySelector('kbd svg')).toBeInTheDocument();
   });
-
   it.each([
     {
       label: 'Next question',
@@ -651,10 +626,9 @@ describe('question transitions', () => {
   ])('waits for $label in $mode.kind', ({ label, mode, number, total }) => {
     const onAnswer = vi.fn();
     const onAnswerRecorded = vi.fn();
-    const onFeedbackStart = vi.fn(() => 5_000);
-
+    const onFeedbackStart = vi.fn(() => 5000);
     renderQuestion({
-      elapsedMilliseconds: 1_000,
+      elapsedMilliseconds: 1000,
       elapsedSeconds: 1,
       mode,
       number,
@@ -663,33 +637,29 @@ describe('question transitions', () => {
       onFeedbackStart,
       total,
     });
-
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     expect(onFeedbackStart).toHaveBeenCalledOnce();
     expect(onAnswerRecorded).toHaveBeenCalledWith(
-      expect.objectContaining({ responseMilliseconds: 4_000 }),
+      expect.objectContaining({ responseMilliseconds: 4000 }),
     );
     expect(onAnswer).not.toHaveBeenCalled();
     const advance = screen.getByRole('button', { name: label });
     expect(advance).toHaveFocus();
     fireEvent.click(advance);
     expect(onAnswer).toHaveBeenCalledWith(
-      expect.objectContaining({ responseMilliseconds: 4_000 }),
+      expect.objectContaining({ responseMilliseconds: 4000 }),
     );
   });
-
   it('keeps the 300 ms automatic advance in Instant mode', () => {
     vi.useFakeTimers();
     const onAnswer = vi.fn();
-
     renderQuestion({
-      elapsedMilliseconds: 1_000,
+      elapsedMilliseconds: 1000,
       elapsedSeconds: 1,
       onAnswer,
-      onFeedbackStart: () => 5_000,
+      onFeedbackStart: () => 5000,
       answerFlow: 'instant',
     });
-
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     expect(screen.queryByRole('button', { name: 'Next question' })).toBeNull();
     expect(
@@ -700,7 +670,6 @@ describe('question transitions', () => {
     vi.advanceTimersByTime(1);
     expect(onAnswer).toHaveBeenCalledOnce();
   });
-
   it.each(['button', 'timer'])(
     'advances Auto mode once when the %s wins',
     (first) => {
@@ -710,8 +679,7 @@ describe('question transitions', () => {
       renderQuestion({ answerFlow: 'auto', onAnswer, onAnswerRecorded });
       fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
       const next = screen.getByRole('button', { name: 'Next question' });
-
-      vi.advanceTimersByTime(1_999);
+      vi.advanceTimersByTime(1999);
       expect(onAnswer).not.toHaveBeenCalled();
       if (first === 'button') fireEvent.click(next);
       vi.advanceTimersByTime(1);
@@ -722,7 +690,6 @@ describe('question transitions', () => {
       );
     },
   );
-
   it('cancels a pending advance when the question unmounts', () => {
     vi.useFakeTimers();
     const onAnswer = vi.fn();
@@ -732,7 +699,6 @@ describe('question transitions', () => {
     vi.runAllTimers();
     expect(onAnswer).not.toHaveBeenCalled();
   });
-
   it('checks every selected answer in a multi-select question', () => {
     renderQuestion({
       question: {
@@ -743,14 +709,12 @@ describe('question transitions', () => {
         },
       },
     });
-
     const check = screen.getByRole('button', { name: 'Check answers' });
     expect(check).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     fireEvent.click(screen.getByRole('button', { name: 'Eevee' }));
     expect(check).toBeEnabled();
     fireEvent.keyDown(window, { key: 'Enter' });
-
     expect(screen.getByRole('button', { name: 'Pikachu' })).toHaveClass(
       'answer--correct',
     );
@@ -759,7 +723,6 @@ describe('question transitions', () => {
     );
     expect(screen.getByText('Correct.')).toHaveClass('visually-hidden');
   });
-
   it('distinguishes wrong picks from missed correct multi-select answers', () => {
     renderQuestion({
       question: {
@@ -770,11 +733,9 @@ describe('question transitions', () => {
         },
       },
     });
-
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     fireEvent.click(screen.getByRole('button', { name: 'Ditto' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check answers' }));
-
     const wrongPick = screen.getByRole('button', {
       name: 'Ditto Wrong pick.',
     });
@@ -784,7 +745,6 @@ describe('question transitions', () => {
     expect(wrongPick).toHaveAttribute('aria-pressed', 'true');
     expect(missed).toHaveAttribute('aria-pressed', 'false');
   });
-
   it('conceals Legend hunt identities until checking answers, then reveals classifications', () => {
     const context = createQuestionContext('concealed-legend-hunt');
     context.pool = context.pool.filter(({ name }) =>
@@ -798,7 +758,6 @@ describe('question transitions', () => {
     const legendQuestion = buildQuestionType(context, 'legend-hunt');
     expect.assert(legendQuestion);
     renderQuestion({ question: legendQuestion });
-
     for (const [index, name] of legendQuestion.options.entries()) {
       const button = screen.getByRole('button', {
         name: `Sprite ${index + 1}`,
@@ -820,7 +779,6 @@ describe('question transitions', () => {
     ).toHaveLength(0);
     expect(screen.getByText('Mega Blastoise')).not.toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Check answers' }));
-
     for (const name of legendQuestion.options) {
       const classification = legendQuestion.optionClassifications![name]!;
       const announcement =
@@ -835,7 +793,6 @@ describe('question transitions', () => {
       expect(button.querySelector('.answer__classification')).toBeVisible();
     }
   });
-
   it('reveals reverse-silhouette choices after an answer', () => {
     renderQuestion({
       question: {
@@ -854,20 +811,17 @@ describe('question transitions', () => {
         ),
       },
     });
-
     expect(screen.queryByText('Pikachu')).not.toBeVisible();
     expect(screen.queryByText('Silhouette 1')).not.toBeInTheDocument();
     expect(
       document.querySelectorAll('.answer__sprite--silhouette'),
     ).toHaveLength(4);
     fireEvent.click(screen.getByRole('button', { name: 'Silhouette 1' }));
-
     expect(screen.getByText('Pikachu')).toBeVisible();
     expect(
       document.querySelectorAll('.answer__sprite--silhouette'),
     ).toHaveLength(0);
   });
-
   it('includes the number in every visible Pokémon prompt', () => {
     renderQuestion({
       question: {
@@ -882,10 +836,8 @@ describe('question transitions', () => {
         questionType: 'silhouette-match',
       },
     });
-
     expect(screen.getByText('(No. 0025)')).toBeVisible();
   });
-
   it('reveals the full sprite after a pixel peek answer', () => {
     const rendered = renderQuestion({
       question: {
@@ -898,7 +850,6 @@ describe('question transitions', () => {
         },
       },
     });
-
     expect(rendered.container.querySelector('.pixel-peek')).not.toHaveClass(
       'pixel-peek--revealed',
     );
@@ -907,35 +858,30 @@ describe('question transitions', () => {
       'pixel-peek--revealed',
     );
   });
-
   it('shows Pokédex numbers in Champion search suggestions', () => {
     renderQuestion({
       mode: { date: '2026-09-03', kind: 'daily' },
       number: 5,
-      onFeedbackStart: () => 1_000,
+      onFeedbackStart: () => 1000,
       question: championQuestion,
       total: 5,
     });
-
     fireEvent.change(screen.getByRole('combobox', { name: 'Your answer' }), {
       target: { value: 'pika' },
     });
-
     expect(screen.getByRole('option', { name: 'Pikachu' })).toBeVisible();
     expect(screen.getByText('No. 0025')).toBeVisible();
   });
-
   it('starts the Champion question as a keyboard-operable autocomplete', () => {
     const onAnswer = vi.fn();
     renderQuestion({
       mode: { date: '2026-09-03', kind: 'daily' },
       number: 5,
       onAnswer,
-      onFeedbackStart: () => 1_000,
+      onFeedbackStart: () => 1000,
       question: championQuestion,
       total: 5,
     });
-
     const search = screen.getByRole('combobox', { name: 'Your answer' });
     expect(search).toBeVisible();
     expect(
@@ -951,23 +897,20 @@ describe('question transitions', () => {
     expect(search).toHaveValue('Pikachu');
     fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
     fireEvent.click(screen.getByRole('button', { name: 'See results' }));
-
     expect(onAnswer).toHaveBeenCalledWith(
-      expect.objectContaining({ correct: true, points: 1_000 }),
+      expect.objectContaining({ correct: true, points: 1000 }),
     );
   });
-
   it('uses the first Champion clue to reveal four choices', () => {
     const onAnswer = vi.fn();
     renderQuestion({
       mode: { date: '2026-09-03', kind: 'daily' },
       number: 5,
       onAnswer,
-      onFeedbackStart: () => 1_000,
+      onFeedbackStart: () => 1000,
       question: championQuestion,
       total: 5,
     });
-
     fireEvent.click(
       screen.getByRole('button', {
         name: 'Show 4 choices · 750 points',
@@ -979,23 +922,20 @@ describe('question transitions', () => {
     ).toHaveLength(4);
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
     fireEvent.click(screen.getByRole('button', { name: 'See results' }));
-
     expect(onAnswer).toHaveBeenCalledWith(
       expect.objectContaining({ correct: true, points: 750 }),
     );
   });
-
   it('keeps the League Champion question search-only and ends on a miss', () => {
     const onAnswer = vi.fn();
     renderQuestion({
       mode: { kind: 'league' },
       number: 15,
       onAnswer,
-      onFeedbackStart: () => 1_000,
+      onFeedbackStart: () => 1000,
       question: championQuestion,
       total: 15,
     });
-
     expect(
       screen.getByRole('list', {
         name: /Quizmon League progress.*Champion, Final Trial/,
@@ -1004,19 +944,16 @@ describe('question transitions', () => {
     expect(
       screen.queryByRole('button', { name: /Show 4 choices/ }),
     ).not.toBeInTheDocument();
-
     const search = screen.getByRole('combobox', { name: 'Your answer' });
     fireEvent.change(search, { target: { value: 'bulb' } });
     fireEvent.click(screen.getByRole('option', { name: 'Bulbasaur' }));
     fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
     fireEvent.click(screen.getByRole('button', { name: 'See result' }));
-
     expect(onAnswer).toHaveBeenCalledWith(
       expect.objectContaining({ correct: false }),
     );
   });
 });
-
 it.each(['Ivysaur', 'Bayleef'])(
   'renders Evolution link portraits with text-only choices before and after choosing %s',
   (answer) => {
@@ -1026,7 +963,6 @@ it.each(['Ivysaur', 'Bayleef'])(
         answer: { correctOptions: ['ivysaur'], interaction: 'single-choice' },
         category: 'evolution',
         options: ['ivysaur', 'bayleef', 'grovyle', 'gloom'],
-        pokemonName: 'ivysaur',
         prompt: {
           kind: 'text',
           text: 'Complete the evolution chain: Bulbasaur → ? → Venusaur.',
@@ -1046,6 +982,11 @@ it.each(['Ivysaur', 'Bayleef'])(
               },
             ]),
           ),
+        },
+        subject: {
+          ...question.subject,
+          kind: 'pokemon' as const,
+          name: 'ivysaur',
         },
       },
     });
@@ -1069,7 +1010,6 @@ it.each(['Ivysaur', 'Bayleef'])(
     ).toHaveLength(0);
   },
 );
-
 it.for([
   ['pikachu', 'eevee'],
   ['pikachu', 'chikorita'],
@@ -1128,7 +1068,6 @@ it.for([
     ).toBeDisabled();
   }
 });
-
 it('does not announce a missing Pokémon for an exact Champion answer', () => {
   renderQuestion({ question: championQuestion });
   const input = screen.getByRole('combobox', { name: 'Your answer' });
@@ -1141,7 +1080,6 @@ it('does not announce a missing Pokémon for an exact Champion answer', () => {
   expect(screen.getByText('No Pokémon found')).toBeVisible();
   expect(screen.getByRole('button', { name: 'Guess' })).toBeDisabled();
 });
-
 it('keeps structured generation clues concealed until their reveal', () => {
   const structured: QuestionData = {
     ...championQuestion,

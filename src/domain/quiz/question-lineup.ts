@@ -1,3 +1,4 @@
+import { isQuestionSubject } from './subject';
 import { isDifficulty } from './difficulty';
 import {
   isChoice,
@@ -8,13 +9,11 @@ import {
 import { generations, statNames } from '../pokemon/types';
 import { questionLabels } from './question-labels';
 import { questionCategories, type QuestionData } from './types';
-
 export interface QuestionLineup {
   seed: string;
   contentVersion: number;
   questions: QuestionData[];
 }
-
 const text = (value: unknown): value is string =>
   typeof value === 'string' && value.length <= 10000;
 const strings = (value: unknown): value is string[] =>
@@ -34,9 +33,7 @@ const generationClue = (value: unknown): boolean =>
   value.kind === 'generation' &&
   isChoice(value.generation, generations) &&
   strings(value.types);
-
 type VariantCheck = (value: Record<string, unknown>) => boolean;
-
 const mediaChecks = {
   none: () => true,
   'pixel-sprite': (value) => text(value.src),
@@ -53,11 +50,11 @@ const mediaChecks = {
       (zoom) => typeof zoom === 'number' && Number.isFinite(zoom) && zoom >= 1,
     ),
 } satisfies Record<QuestionData['media']['kind'], VariantCheck>;
-
 const multiplier = (value: Record<string, unknown>) =>
   isFiniteNonnegative(value.multiplier);
-
 const visualChecks = {
+  'evolution-endpoints': (value) =>
+    text(value.before) && text(value.after) && map(value.stages, sprite),
   'type-check': () => true,
   'type-twins': () => true,
   'type-roundup': (value) => text(value.type),
@@ -75,7 +72,6 @@ const visualChecks = {
   'type-matchup': multiplier,
   'counter-pick': multiplier,
 } satisfies Record<NonNullable<QuestionData['visual']>['kind'], VariantCheck>;
-
 const variant = (
   value: unknown,
   checks: Record<string, VariantCheck>,
@@ -84,7 +80,6 @@ const variant = (
   typeof value.kind === 'string' &&
   Object.hasOwn(checks, value.kind) &&
   checks[value.kind]!(value);
-
 export const isQuestionData = (value: unknown): value is QuestionData => {
   if (!isRecord(value) || !isRecord(value.answer) || !isRecord(value.prompt))
     return false;
@@ -97,12 +92,10 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
     strings(value.repetition.primary) &&
     strings(value.repetition.distractors) &&
     text(value.id) &&
-    text(value.pokemonName) &&
-    strings(value.pokemonTypes) &&
+    isQuestionSubject(value.subject) &&
     typeof value.questionType === 'string' &&
     Object.hasOwn(questionLabels, value.questionType) &&
     isChoice(value.category, questionCategories) &&
-    isChoice(value.generation, generations) &&
     strings(options) &&
     options.length > 0 &&
     new Set(options).size === options.length &&
@@ -121,6 +114,11 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
         text(prompt.name) &&
         isSafeNonnegativeInteger(prompt.dexNumber)) &&
     variant(value.media, mediaChecks) &&
+    optional(value.optionLabels, (v) => map(v, text)) &&
+    optional(value.optionImages, (v) => map(v, text)) &&
+    optional(value.optionReveals, (v) => map(v, text)) &&
+    optional(value.explanation, text) &&
+    optional(value.context, text) &&
     optional(value.variantLevel, isDifficulty) &&
     optional(value.namesOnly, (v) => typeof v === 'boolean') &&
     optional(value.showTypes, (v) => typeof v === 'boolean') &&
@@ -159,7 +157,6 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
     )
   );
 };
-
 export const isQuestionLineup = (value: unknown): value is QuestionLineup =>
   isRecord(value) &&
   text(value.seed) &&

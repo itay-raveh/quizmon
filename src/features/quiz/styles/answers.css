@@ -488,3 +488,24 @@
 .answer-matchup:has(.answer--missed) > .answer-matchup__help {
   color: var(--navy);
 }
+
+.answers--statements {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.answer--item {
+  grid-template-columns: auto 3rem minmax(0, 1fr);
+}
+
+.answer__item-sprite {
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+
+.answer__reveal {
+  grid-column: 1 / -1;
+  padding-inline: 0.5rem;
+  font-size: var(--text-small);
+  text-align: center;
+}

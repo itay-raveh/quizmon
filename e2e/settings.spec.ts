@@ -36,13 +36,13 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
     .getByRole('button', { name: 'Select all question types' })
     .click();
   const identityGroup = dialog.getByRole('button', {
-    name: 'Identity 6 / 6 selected',
+    name: 'Identity 7 / 7 selected',
   });
   const knowledgeGroup = dialog.getByRole('button', {
-    name: 'General knowledge 9 / 9 selected',
+    name: 'General knowledge 20 / 20 selected',
   });
   const battleGroup = dialog.getByRole('button', {
-    name: 'Battle knowledge 5 / 5 selected',
+    name: 'Battle knowledge 13 / 13 selected',
   });
   await expect(identityGroup).toHaveAttribute('aria-expanded', 'true');
   await expect(knowledgeGroup).toHaveAttribute('aria-expanded', 'false');

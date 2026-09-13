@@ -14,7 +14,6 @@ import { getTrainingSettingsValidation } from '@/features/settings/settings-vali
 import { createSeededRandom } from '@/lib/random';
 import { updatePlayerData } from '@/lib/storage/player-storage';
 import { catalog } from '../../../tests/fixtures/catalog';
-
 it('migrates old settings to all form groups and preserves valid selections', () => {
   expect(normalizeGameSettings({ generations: ['I'] }).formGroups).toEqual(
     formGroups,
@@ -27,7 +26,6 @@ it('migrates old settings to all form groups and preserves valid selections', ()
     formGroups,
   );
 });
-
 it('derives availability from the shipped forms and their introduction generations', () => {
   expect(getFormGroupGenerations(catalog)).toMatchObject({
     mega: ['VI', 'IX'],
@@ -55,7 +53,6 @@ it('derives availability from the shipped forms and their introduction generatio
   expect(getFormGroup('deoxys-attack')).toBe('standard');
   expect(getFormGroup('groudon-primal')).toBe('standard');
 });
-
 it('requires a selected group available in the selected generations', () => {
   const settings = {
     ...defaultGameSettings,
@@ -88,7 +85,6 @@ it('requires a selected group available in the selected generations', () => {
     }).isValid,
   ).toBe(true);
 });
-
 it.each(formGroups)(
   'uses only %s forms for Training targets, choices, and search',
   (group) => {
@@ -108,7 +104,7 @@ it.each(formGroups)(
       expect(questions).toHaveLength(10);
       for (const question of questions) {
         const names = [
-          question.pokemonName,
+          question.subject.name,
           ...question.repetition.primary,
           ...question.repetition.distractors,
           ...(question.searchOptions ?? []).map(({ name }) => name),
@@ -118,7 +114,6 @@ it.each(formGroups)(
     }
   },
 );
-
 it('keeps Daily and the League challenge independent of Training form preferences', () => {
   const settings = {
     ...defaultGameSettings,
@@ -128,7 +123,6 @@ it('keeps Daily and the League challenge independent of Training form preference
   expect(getDailySettings(settings).formGroups).toEqual(formGroups);
   expect(getLeagueSettings(settings).formGroups).toEqual(formGroups);
 });
-
 it('retains form preferences through a backup round trip', () => {
   updatePlayerData({
     settings: {

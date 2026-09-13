@@ -1,3 +1,4 @@
+import { migrateRoundSubjects } from '@/domain/quiz/subject';
 import {
   readStoredJson,
   removeStoredValue,
@@ -18,7 +19,24 @@ const restored =
 const current = new Map<string, unknown>();
 
 export const readUpdateState = <T>(key: string, fallback: T): T => {
-  const value = Object.hasOwn(restored, key) ? restored[key] : fallback;
+  const original = Object.hasOwn(restored, key) ? restored[key] : fallback;
+  const saved = key === 'session' ? migrateRoundSubjects(original) : original;
+  const value =
+    key === 'session' && isRecord(saved)
+      ? {
+          ...saved,
+          result: migrateRoundSubjects(saved.result),
+          bestResult: migrateRoundSubjects(saved.bestResult),
+          ...(isRecord(saved.leagueRecord)
+            ? {
+                leagueRecord: {
+                  ...saved.leagueRecord,
+                  result: migrateRoundSubjects(saved.leagueRecord.result),
+                },
+              }
+            : {}),
+        }
+      : saved;
   if (key === 'session' && isRecord(value) && 'modifiers' in value) {
     const { modifiers, ...session } = value;
     return { ...session, settings: modifiers } as T;

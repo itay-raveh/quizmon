@@ -34,14 +34,12 @@ import {
   useQuestionAnswer,
   type UseQuestionAnswerOptions,
 } from './useQuestionAnswer';
-
 const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
   'counter-pick',
   'type-check',
   'type-twins',
   'type-matchup',
 ]);
-
 interface QuestionScreenProps extends UseQuestionAnswerOptions {
   answerPokemon?: PokemonKnowledge;
   typeRelations?: PokemonCatalog['typeRelations'];
@@ -52,7 +50,6 @@ interface QuestionScreenProps extends UseQuestionAnswerOptions {
   timerDisplay: TimerDisplay;
   total: number;
 }
-
 const QuestionPrompt = ({
   className,
   prompt,
@@ -81,13 +78,11 @@ const QuestionPrompt = ({
     )}
   </p>
 );
-
 const formatCorrectAnswer = (question: QuestionData): string => {
   const names = question.answer.correctOptions.map(formatPokemonName);
   if (names.length < 2) return names[0] ?? '';
   return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
 };
-
 export const QuestionScreen = ({
   answerPokemon,
   answerFlow,
@@ -131,15 +126,12 @@ export const QuestionScreen = ({
     onFeedbackStart,
     question,
   });
-
   useEffect(() => {
     heading.current?.focus();
   }, []);
-
   useEffect(() => {
     if (answered && answerFlow !== 'instant') advanceButton.current?.focus();
   }, [answerFlow, answered]);
-
   const isChampion = question.category === 'champion';
   const visualInstruction =
     !(
@@ -187,7 +179,6 @@ export const QuestionScreen = ({
   ]
     .filter(Boolean)
     .join(' ');
-
   return (
     <section
       className={className}
@@ -222,7 +213,8 @@ export const QuestionScreen = ({
         ref={heading}
         tabIndex={-1}
       >
-        {question.category !== 'champion' ? (
+        {question.category !== 'champion' &&
+        question.category !== 'knowledge' ? (
           <TrainerTitleMark plain tier={0} specialty={question.category} />
         ) : null}
         <span>{getQuestionTitle(question)}</span>
@@ -274,7 +266,7 @@ export const QuestionScreen = ({
           question.visual?.kind === 'counter-pick') &&
         (question.media.kind === 'pixel-sprite' || question.namesOnly)
       ) &&
-      question.pokemonTypes.length > 0 &&
+      (question.subject.types ?? []).length > 0 &&
       subjectTypeRevealQuestionTypes.has(question.questionType) ? (
         <TypeBadges
           className={
@@ -282,11 +274,16 @@ export const QuestionScreen = ({
               ? 'visually-hidden'
               : 'question__types'
           }
-          label={`${formatPokemonName(question.pokemonName)} ${question.pokemonTypes.length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.pokemonTypes)}.`}
-          types={question.pokemonTypes}
+          label={`${formatPokemonName(question.subject.name)} ${(question.subject.types ?? []).length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.subject.types ?? [])}.`}
+          types={question.subject.types ?? []}
         />
       ) : null}
 
+      {answered && question.explanation ? (
+        <p role="status" className="question__explanation">
+          {question.explanation}
+        </p>
+      ) : null}
       <div className="question__response">
         {usesSearch &&
         (!isChampion || !championChoicesVisible) &&
@@ -318,12 +315,12 @@ export const QuestionScreen = ({
             <PixelSprite src={answerPokemon.sprite} />
           ) : null}
           <PokemonIdentity
-            name={question.pokemonName}
+            name={question.subject.name}
             dexNumber={answerPokemon?.speciesId}
           >
             <TypeBadges
-              types={question.pokemonTypes}
-              label={formatPokemonTypes(question.pokemonTypes)}
+              types={question.subject.types ?? []}
+              label={formatPokemonTypes(question.subject.types ?? [])}
             />
           </PokemonIdentity>
         </div>

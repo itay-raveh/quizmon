@@ -1,3 +1,4 @@
+import type { TopicCatalog } from '../quiz/topic-catalog';
 export const generations = [
   'I',
   'II',
@@ -53,6 +54,13 @@ export type PackedSpriteMeasurements = [
 ];
 
 export interface PokemonKnowledge {
+  height?: number;
+  weight?: number;
+  isBaby?: boolean;
+  isUnevolved?: boolean;
+  eggGroups?: string[];
+  abilitySlots?: { name: string; hidden: boolean; slot: number }[];
+  evYield?: Record<StatName, number>;
   abilities: string[];
   color: string;
   description: string;
@@ -88,6 +96,7 @@ interface TypeRelations {
 }
 
 export interface PokemonCatalog {
+  topics?: TopicCatalog;
   contentVersion: number;
   pokemon: Record<string, PokemonKnowledge>;
   typeRelations: Record<string, TypeRelations>;

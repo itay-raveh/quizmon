@@ -5,7 +5,6 @@ import type {
   QuestionData,
 } from '@/domain/quiz/types';
 import { defaultGameSettings } from '@/domain/settings/game-settings';
-
 const question: QuestionData = {
   repetition: {
     identity: 'pikachu',
@@ -15,43 +14,45 @@ const question: QuestionData = {
   },
   answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
   category: 'identity',
-  generation: 'I',
   id: 'identity:pikachu:0',
   media: { kind: 'none' },
   options: ['pikachu'],
-  pokemonName: 'pikachu',
-  pokemonTypes: ['electric'],
   prompt: { kind: 'text', text: 'Who is this Pokémon?' },
   questionType: 'pokedex-scan',
+  subject: {
+    kind: 'pokemon' as const,
+    generation: 'I',
+    name: 'pikachu',
+    types: ['electric'],
+  },
 };
-
 const answer: AnswerResult = {
   category: 'identity',
   cluesUsed: 0,
   correct: true,
-  generation: 'I',
-  pokemonName: 'pikachu',
-  points: 1_000,
+  points: 1000,
   questionType: 'pokedex-scan',
+  subject: {
+    kind: 'pokemon' as const,
+    generation: 'I',
+    name: 'pikachu',
+  },
 };
-
 const result: GameResult = {
   answers: [answer],
   contentVersion: 1,
   correctCount: 1,
   elapsedSeconds: 2,
   questionCount: 1,
-  score: 4_000,
+  score: 4000,
   scoreVersion: 2,
 };
-
 const roundDefaults = {
   contentVersion: 14,
   mode: { kind: 'training' as const },
   settings: defaultGameSettings,
   questions: [question],
 };
-
 describe('gameSessionReducer', () => {
   it('moves through a complete game without partial result state', () => {
     const started = gameSessionReducer(initialGameSession, {
@@ -65,7 +66,6 @@ describe('gameSessionReducer', () => {
       questionIndex: 0,
       questions: [question],
     });
-
     const completed = gameSessionReducer(started, {
       bestResult: result,
       isNewBest: true,
@@ -86,7 +86,6 @@ describe('gameSessionReducer', () => {
       progressChanges: [],
     });
   });
-
   it('advances answers and updates only live experience settings', () => {
     const started = gameSessionReducer(initialGameSession, {
       ...roundDefaults,
@@ -113,7 +112,6 @@ describe('gameSessionReducer', () => {
       },
       type: 'settings-updated',
     });
-
     expect(updated).toMatchObject({
       answers: [answer],
       settings: {
@@ -132,7 +130,6 @@ describe('gameSessionReducer', () => {
       initialGameSession,
     );
   });
-
   it.each([
     { answers: [], expectedIndex: 0 },
     { answers: [answer], expectedIndex: 1 },
@@ -147,7 +144,6 @@ describe('gameSessionReducer', () => {
         seed: 'saved-round',
         type: 'restored',
       });
-
       expect(restored).toMatchObject({
         answers,
         phase: 'questions',
@@ -156,13 +152,11 @@ describe('gameSessionReducer', () => {
       });
     },
   );
-
   it('ignores phase-specific actions outside an active game', () => {
     expect(
       gameSessionReducer(initialGameSession, { answer, type: 'advanced' }),
     ).toBe(initialGameSession);
   });
-
   it.each([0, 1, 2])(
     'records one answer when advancing after %i answer notifications',
     (notifications) => {
@@ -185,7 +179,6 @@ describe('gameSessionReducer', () => {
       ).toMatchObject({ answers: [answer], questionIndex: 1 });
     },
   );
-
   it('keeps the recorded answer and ignores advancement past the last question', () => {
     const session = gameSessionReducer(initialGameSession, {
       answers: [answer],

@@ -4,7 +4,6 @@ import {
 } from '../../../../tests/fixtures/catalog';
 import { generations } from '../../pokemon/types';
 import { buildQuestionType } from './registry';
-
 describe('Type twins', () => {
   it.each(generations)(
     'always uses a dual-type target and exactly one exact match in Generation %s',
@@ -15,14 +14,14 @@ describe('Type twins', () => {
           'type-twins',
         );
         expect.assert(question);
-        expect(question.pokemonTypes).toHaveLength(2);
+        expect(question.subject.types ?? []).toHaveLength(2);
         expect(question.options).toHaveLength(4);
         expect(new Set(question.options).size).toBe(4);
-        expect(question.options).not.toContain(question.pokemonName);
+        expect(question.options).not.toContain(question.subject.name);
         const matches = question.options.filter(
           (name) =>
             catalog.pokemon[name]!.types.toSorted().join() ===
-            question.pokemonTypes.toSorted().join(),
+            (question.subject.types ?? []).toSorted().join(),
         );
         expect(matches).toEqual(question.answer.correctOptions);
         expect(matches).toHaveLength(1);
@@ -31,7 +30,6 @@ describe('Type twins', () => {
       }
     },
   );
-
   it('matches reversed type order and rejects options that share only one type', () => {
     const current = createQuestionContext('reversed');
     const base = catalog.pokemon.bulbasaur!;
@@ -86,11 +84,10 @@ describe('Type twins', () => {
     const question = buildQuestionType(current, 'type-twins');
     expect(question?.options).toHaveLength(4);
     expect(
-      new Set([question?.pokemonName, ...question!.answer.correctOptions]),
+      new Set([question?.subject?.name, ...question!.answer.correctOptions]),
     ).toEqual(new Set(['target', 'twin']));
     expect(question?.answer.correctOptions).toHaveLength(1);
   });
-
   it('does not substitute a single-type target when no dual-type pair exists', () => {
     const current = createQuestionContext('single-types');
     current.pool = current.pool.filter(
@@ -104,7 +101,6 @@ describe('Type twins', () => {
     );
     expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
   });
-
   it('skips type pairs that only exist within one evolution family', () => {
     const current = createQuestionContext('ludicolo');
     current.pool = current.pool.filter(({ name }) =>
@@ -114,7 +110,6 @@ describe('Type twins', () => {
     );
     expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
   });
-
   it.each([
     {
       target: 'bulbasaur',
@@ -145,12 +140,11 @@ describe('Type twins', () => {
             .filter((name) => name !== target),
         );
         const question = buildQuestionType(current, 'type-twins');
-        expect(question?.pokemonName).toBe(target);
+        expect(question?.subject?.name).toBe(target);
         expect(new Set(question?.options)).toEqual(new Set(alternatives));
       }
     },
   );
-
   it('skips targets when excluding relatives leaves fewer than three distractors', () => {
     const current = createQuestionContext('few-unrelated');
     current.pool = current.pool.filter(({ name }) =>
@@ -159,7 +153,6 @@ describe('Type twins', () => {
     expect(buildQuestionType(current, 'type-twins')).toBeUndefined();
   });
 });
-
 describe('Legend hunt', () => {
   it.each(generations)(
     'uses only the selected Generation %s with two or three Legendary or Mythical answers',
@@ -197,7 +190,6 @@ describe('Legend hunt', () => {
       }
     },
   );
-
   it('includes both Legendary and Mythical Pokémon and ordinary distractors', () => {
     const current = createQuestionContext('both-kinds');
     current.pool = current.pool.filter(({ name }) =>
@@ -215,7 +207,6 @@ describe('Legend hunt', () => {
       eevee: 'Neither',
     });
   });
-
   it('skips pools without enough matches instead of presenting an invalid answer key', () => {
     const current = createQuestionContext('no-legends');
     current.pool = current.pool.filter(

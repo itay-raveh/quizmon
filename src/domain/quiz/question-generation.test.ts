@@ -18,9 +18,12 @@ import {
   getQuestionCount,
 } from './question-generation';
 import { getQuestionTitle } from './question-labels';
-import { questionTypes } from './questions/definitions';
+import { questionTypes as registeredQuestionTypes } from './questions/definitions';
+import { expansionVariants } from './question-expansion-variants';
+const questionTypes = registeredQuestionTypes.filter(
+  (type) => !Object.hasOwn(expansionVariants, type),
+);
 import { buildQuestionType } from './questions/registry';
-
 import {
   generations,
   type PokemonCatalog,
@@ -33,12 +36,10 @@ import {
 import { buildCounterPickQuestion } from './questions/battle';
 import { redactName } from './questions/prompts';
 import { type QuestionPrompt, type QuestionType } from './types';
-
 const getQuestionPromptText = (prompt: QuestionPrompt): string =>
   prompt.kind === 'text'
     ? prompt.text
     : `${prompt.before}${formatPokemonName(prompt.name)}${prompt.after}`;
-
 const makeKnowledge = (
   id: number,
   overrides: Partial<PokemonKnowledge> = {},
@@ -87,7 +88,6 @@ const makeKnowledge = (
   types: ['fire'],
   ...overrides,
 });
-
 const buildSingleQuestion = (questionType: QuestionType, seed: string) => {
   const [question] = buildQuestions(
     catalog,
@@ -103,7 +103,6 @@ const buildSingleQuestion = (questionType: QuestionType, seed: string) => {
   expect.assert.isDefined(question);
   return question;
 };
-
 describe('question building', () => {
   it.each(Array.from({ length: 20 }, (_, index) => index))(
     'keeps advanced formats out of League Training round %i',
@@ -122,17 +121,14 @@ describe('question building', () => {
       }
     },
   );
-
   it('filters the normalized catalog by generation', () => {
     const candidates = filterPokemon(catalog, { generations: ['IX'] });
-
     expect(candidates.length).toBeGreaterThan(100);
     for (const { name, pokemon } of candidates) {
       expect(pokemon.generation).toBe('IX');
       expect(pokemon).toBe(catalog.pokemon[name]);
     }
   });
-
   it('builds every selected question type with unique options', () => {
     const questions = buildQuestions(
       catalog,
@@ -145,7 +141,6 @@ describe('question building', () => {
       createSeededRandom('all-categories'),
       questionTypes.length,
     );
-
     expect(questions).toHaveLength(questionTypes.length);
     expect(new Set(questions.map(({ questionType }) => questionType))).toEqual(
       new Set(questionTypes),
@@ -157,7 +152,6 @@ describe('question building', () => {
       expect(new Set(question.options).size).toBe(4);
     }
   });
-
   it.each(questionTypes)(
     'uses distinct species in every %s answer set',
     (questionType) => {
@@ -178,7 +172,6 @@ describe('question building', () => {
       }
     },
   );
-
   it('fills distractors with distinct species even when similar forms crowd the shortlist', () => {
     const syntheticCatalog: PokemonCatalog = {
       contentVersion: 1,
@@ -241,7 +234,6 @@ describe('question building', () => {
       ),
     ).toEqual([]);
   });
-
   it('fills a requested sequence when its preferred format is unavailable', () => {
     const syntheticCatalog: PokemonCatalog = {
       contentVersion: 1,
@@ -255,7 +247,6 @@ describe('question building', () => {
         fire: { doubleTo: [], halfTo: [], noneTo: [] },
       },
     };
-
     const questions = buildQuestionSequence(
       syntheticCatalog,
       ['field-notes'],
@@ -266,10 +257,8 @@ describe('question building', () => {
       },
       createSeededRandom('sequence-fallback'),
     );
-
     expect(questions).toHaveLength(1);
     expect(questions[0]?.questionType).toBe('pokedex-scan');
-
     const unavailable = {
       ...defaultGameSettings,
       difficulty: undefined,
@@ -299,7 +288,6 @@ describe('question building', () => {
       ),
     ).toThrow('Unable to build champion question');
   });
-
   it('starts the Champion question with a Pokédex clue before paid assists', () => {
     const [question] = buildQuestionSequence(
       catalog,
@@ -307,27 +295,25 @@ describe('question building', () => {
       defaultGameSettings,
       createSeededRandom('champion-opening-clue'),
     );
-    const target = question && catalog.pokemon[question.pokemonName];
-
+    const target = question && catalog.pokemon[question.subject.name];
     expect.assert.isDefined(question);
     expect.assert.isDefined(target);
     expect(getQuestionPromptText(question.prompt)).toBe(
-      `“${redactName(target.description, question.pokemonName, target.speciesName)}”`,
+      `“${redactName(target.description, question.subject.name, target.speciesName)}”`,
     );
     expect(question.clues).not.toContain(
-      redactName(target.description, question.pokemonName, target.speciesName),
+      redactName(target.description, question.subject.name, target.speciesName),
     );
     expect(question.media).toMatchObject({ kind: 'sprite', revealAt: 4 });
     expect(question.searchOptions).toEqual(
       expect.arrayContaining([
         {
           dexNumber: target.speciesId,
-          name: question.pokemonName,
+          name: question.subject.name,
         },
       ]),
     );
   });
-
   it('keeps Pokémon distractors plausible but randomizes property distractors', () => {
     const similarNames = ['target', 'peer-one', 'peer-two', 'peer-three'];
     const syntheticCatalog: PokemonCatalog = {
@@ -363,13 +349,11 @@ describe('question building', () => {
         water: { doubleTo: [], halfTo: [], noneTo: [] },
       },
     };
-
     const expectedOptions = {
       'ability-check': ['blaze', 'ability-3', 'ability-4', 'ability-100'],
       'move-check': ['move-1', 'move-3', 'move-4', 'move-100'],
       'pokedex-scan': similarNames,
     } as const;
-
     for (const questionType of [
       'pokedex-scan',
       'ability-check',
@@ -390,26 +374,23 @@ describe('question building', () => {
         },
         questionType,
       );
-      expect(question?.pokemonName).toBe('target');
+      expect(question?.subject?.name).toBe('target');
       expect(new Set(question?.options)).toEqual(
         new Set(expectedOptions[questionType]),
       );
     }
   });
-
   it('does not treat nearby Pokédex numbers as semantic similarity', () => {
     const similarityToTarget = createPokemonSimilarityScorer(
       makeKnowledge(500),
     );
-
     expect(similarityToTarget(makeKnowledge(501))).toBe(
-      similarityToTarget(makeKnowledge(1_000)),
+      similarityToTarget(makeKnowledge(1000)),
     );
   });
-
   it('varies plausible Pokémon distractors and includes numerical spread', () => {
     const closeIds = Array.from({ length: 10 }, (_, index) => 501 + index);
-    const distantIds = [900, 1_000, 1_100, 1_200, 1_300];
+    const distantIds = [900, 1000, 1100, 1200, 1300];
     const syntheticCatalog: PokemonCatalog = {
       contentVersion: 1,
       pokemon: {
@@ -421,7 +402,7 @@ describe('question building', () => {
           ]),
         ),
         ...Object.fromEntries(
-          [1_400, 1_500, 1_600].map((id) => [
+          [1400, 1500, 1600].map((id) => [
             `unrelated-${id}`,
             makeKnowledge(id, {
               color: 'blue',
@@ -452,7 +433,6 @@ describe('question building', () => {
     const distractors = optionSets.flatMap((options) =>
       options.filter((name) => name !== target.name),
     );
-
     expect(new Set(distractors).size).toBeGreaterThan(3);
     for (const name of distractors) expect(name).toMatch(/^similar-/);
     for (const options of optionSets) {
@@ -470,7 +450,6 @@ describe('question building', () => {
       ).toBeGreaterThanOrEqual(400);
     }
   });
-
   it('adds visuals according to the question answer type', () => {
     const questions = buildQuestions(
       catalog,
@@ -495,24 +474,20 @@ describe('question building', () => {
     const byCategory = Object.fromEntries(
       questions.map((question) => [question.category, question]),
     );
-
     for (const question of questions) {
-      expect(question.pokemonTypes).toEqual(
-        catalog.pokemon[question.pokemonName]?.types,
+      expect(question.subject.types ?? []).toEqual(
+        catalog.pokemon[question.subject.name]?.types,
       );
     }
-
     for (const category of ['description', 'stat']) {
       const question = byCategory[category];
       expect(Object.keys(question?.optionVisuals ?? {})).toHaveLength(4);
       expect(question?.media.kind).toBe('none');
     }
-
     for (const category of ['ability', 'move', 'matchup']) {
       expect(byCategory[category]?.media.kind).toBe('pixel-sprite');
       expect(byCategory[category]?.optionVisuals).toBeUndefined();
     }
-
     for (const category of ['identity', 'evolution', 'type']) {
       const question = byCategory[category];
       expect(
@@ -520,32 +495,27 @@ describe('question building', () => {
           Object.keys(question.optionVisuals ?? {}).length > 0,
       ).toBe(true);
     }
-
     for (const category of ['ability', 'move', 'matchup']) {
       const question = byCategory[category];
       expect.assert(question?.prompt.kind === 'pokemon');
-      expect(question.prompt.name).toBe(question.pokemonName);
+      expect(question.prompt.name).toBe(question.subject.name);
       expect(question.prompt.dexNumber).toBe(
-        catalog.pokemon[question.pokemonName]?.speciesId,
+        catalog.pokemon[question.subject.name]?.speciesId,
       );
     }
-
     for (const category of ['description', 'stat']) {
       expect(byCategory[category]?.prompt.kind).toBe('text');
     }
-
     expect(getQuestionPromptText(byCategory.description!.prompt)).not.toContain(
       'belongs to',
     );
   });
-
   it('numbers Pokémon choices except formats where numbers expose the answer', () => {
     for (const questionType of questionTypes) {
       const question = buildSingleQuestion(
         questionType,
         `numbered-${questionType}`,
       );
-
       for (const option of question.options) {
         const pokemon = catalog.pokemon[option];
         if (
@@ -559,14 +529,12 @@ describe('question building', () => {
       }
     }
   });
-
   it('builds an exact multi-select answer key', () => {
     const multiSelect = buildSingleQuestion('type-roundup', 'multi-select');
     expect(multiSelect.answer.correctOptions.length).toBeGreaterThan(1);
     expect(multiSelect.options).toHaveLength(4);
     expect(multiSelect.visual).toMatchObject({ kind: 'type-roundup' });
   });
-
   it('builds both Stat Showdown directions with a unique extreme answer', () => {
     const questions = Array.from({ length: 40 }, (_, index) =>
       buildSingleQuestion('stat-showdown', `stat-direction-${index}`),
@@ -578,7 +546,6 @@ describe('question building', () => {
           : undefined,
       ),
     );
-
     expect(directions).toEqual(new Set(['highest', 'lowest']));
     for (const candidate of questions) {
       expect.assert(candidate.visual?.kind === 'stat-showdown');
@@ -598,7 +565,6 @@ describe('question building', () => {
       expect(getQuestionPromptText(candidate.prompt)).not.toContain('base');
     }
   });
-
   it('uses exact quarter-, half-, double-, and quadruple-damage matchups', () => {
     for (const questionType of ['type-matchup', 'counter-pick'] as const) {
       const questions = Array.from({ length: 24 }, (_, index) =>
@@ -612,17 +578,15 @@ describe('question building', () => {
             : [],
         ),
       );
-
       expect(multipliers).toEqual(new Set([0.25, 0.5, 2, 4]));
       for (const question of questions) {
-        const defender = catalog.pokemon[question.pokemonName]!;
+        const defender = catalog.pokemon[question.subject.name]!;
         const correct = question.answer.correctOptions[0]!;
         const visual = question.visual;
         expect.assert(
           visual?.kind === 'type-matchup' || visual?.kind === 'counter-pick',
         );
         const multiplier = visual.multiplier;
-
         if (questionType === 'type-matchup') {
           expect(attackMultiplier(catalog, correct, defender.types)).toBe(
             multiplier,
@@ -639,15 +603,13 @@ describe('question building', () => {
       }
     }
   });
-
   it('builds Counter Pick with exactly one matching answer', () => {
     const question = buildSingleQuestion('counter-pick', 'counter-pick');
     expect(getQuestionTitle(question)).toBe('Counter pick');
     expect(question.media.kind).toBe('pixel-sprite');
     expect(Object.keys(question.optionVisuals ?? {})).toHaveLength(4);
     expect.assert(question.visual?.kind === 'counter-pick');
-
-    const defender = catalog.pokemon[question.pokemonName]!;
+    const defender = catalog.pokemon[question.subject.name]!;
     const correct = question.answer.correctOptions[0];
     const { multiplier } = question.visual;
     for (const option of question.options) {
@@ -660,7 +622,6 @@ describe('question building', () => {
       expect(strongestMatchup === multiplier).toBe(option === correct);
     }
   });
-
   it('treats Venusaur as a ×4 attacker against Golem, never ×¼', () => {
     const matchups: Record<string, number> = {
       venusaur: 4,
@@ -683,7 +644,7 @@ describe('question building', () => {
         used: new Set(Object.keys(matchups)),
       });
       if (
-        question?.pokemonName !== 'golem' ||
+        question?.subject?.name !== 'golem' ||
         question.visual?.kind !== 'counter-pick'
       )
         continue;
@@ -704,13 +665,11 @@ describe('question building', () => {
     expect(observed).toEqual(new Set([4, 0.5, 0.25]));
     expect(venusaurCorrect).toBe(true);
   });
-
   it('builds Evolution Shift from a real typing change', () => {
     const question = buildSingleQuestion('evolution-shift', 'evolution-shift');
     expect(getQuestionTitle(question)).toBe('Evolution shift');
     expect(question.media.kind).toBe('pixel-sprite');
-
-    const target = catalog.pokemon[question.pokemonName]!;
+    const target = catalog.pokemon[question.subject.name]!;
     const evolution = catalog.pokemon[target.evolvesTo[0]!]!;
     const correct = question.answer.correctOptions[0]!;
     expect(target.types).not.toContain(correct);
@@ -726,7 +685,6 @@ describe('question building', () => {
       kind: 'evolution-shift',
     });
   });
-
   it('uses only pre-X/Y front and back sprites or the default pixel sprite for Pokédex Scan', () => {
     const sources = new Set(
       Array.from({ length: 80 }, (_, index) => {
@@ -740,7 +698,6 @@ describe('question building', () => {
         return question.media.kind === 'sprite' ? question.media.src : '';
       }),
     );
-
     expect(
       [...sources].some(
         (source) => source.includes('/versions/') && !source.includes('/back/'),
@@ -758,7 +715,6 @@ describe('question building', () => {
       expect(source).not.toContain('/other/');
     }
   });
-
   it.each([
     { front: ['red-blue'], back: ['red-blue'], paths: ['', 'back/'] },
     { front: ['red-blue'], back: [], paths: ['', ''] },
@@ -802,7 +758,7 @@ describe('question building', () => {
         1,
       );
       expect.assert.isDefined(question);
-      const pokemon = scanCatalog.pokemon[question.pokemonName]!;
+      const pokemon = scanCatalog.pokemon[question.subject.name]!;
       const path = paths[index];
       expect(question.media).toMatchObject({
         kind: 'sprite',
@@ -813,7 +769,6 @@ describe('question building', () => {
       });
     }
   });
-
   it('uses default pixel sprites for Pokémon without pre-X/Y versions', () => {
     const modernCatalog: PokemonCatalog = {
       ...catalog,
@@ -844,12 +799,11 @@ describe('question building', () => {
     for (const question of questions) {
       expect(question.media).toMatchObject({
         kind: 'sprite',
-        src: modernCatalog.pokemon[question.pokemonName]!.sprite,
+        src: modernCatalog.pokemon[question.subject.name]!.sprite,
       });
     }
   });
 });
-
 describe('utilities', () => {
   it('clamps question counts and does not mutate shuffled input', () => {
     expect(getQuestionCount(4, 100)).toBe(4);
@@ -857,17 +811,15 @@ describe('utilities', () => {
     expect(shuffle(input, () => 0)).toEqual([2, 3, 1]);
     expect(input).toEqual([1, 2, 3]);
   });
-
   it('formats durations and API names', () => {
     expect(formatDuration(3661)).toBe('01:01:01');
     expect(formatPokemonName('special-attack')).toBe('Special Attack');
     expect(formatPokedexNumber(25)).toBe('No. 0025');
   });
-
   it.each([
     [0, '00:00:00.000'],
     [999.9, '00:00:00.999'],
-    [3_600_123.5, '01:00:00.123'],
+    [3600123.5, '01:00:00.123'],
   ])('formats %d milliseconds without rounding up', (elapsed, expected) => {
     expect(formatDurationMilliseconds(elapsed)).toBe(expected);
   });

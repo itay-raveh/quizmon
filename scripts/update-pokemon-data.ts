@@ -1,4 +1,6 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readCatalogFiles, writeCatalogFiles } from './catalog-output.ts';
+import { addItemSpriteIdentities } from './item-sprite-identities.ts';
+import { writeFile } from 'node:fs/promises';
 import {
   MainClient,
   type Generation as ApiGeneration,
@@ -34,11 +36,10 @@ import {
   normalizeSpriteUrl,
 } from '../src/domain/pokemon/sprite-source.ts';
 import { measureCatalogSprites } from './sprite-measurements.ts';
+import { buildTopicCatalog } from './catalog-topics.ts';
+import { extractPokemonKnowledge } from './catalog-knowledge.ts';
 
-const DATA_PATH = new URL(
-  '../src/domain/pokemon/data/pokemon.json',
-  import.meta.url,
-);
+const DATA_DIRECTORY = new URL('../src/domain/pokemon/data/', import.meta.url);
 const CONCURRENCY = 4;
 const LABELS_PATH = new URL(
   '../src/domain/pokemon/data/pokemon-labels.json',
@@ -314,6 +315,7 @@ export const buildPokemonCatalog = async (
     if (family === undefined)
       throw new Error(`Missing evolution family for ${form.name}`);
     entries[key] = {
+      ...extractPokemonKnowledge(entry, species),
       abilities: entry.abilities
         .toSorted((left, right) => left.slot - right.slot)
         .map(({ ability }) => ability.name),
@@ -377,7 +379,7 @@ export const buildPokemonCatalog = async (
 
   return addSpriteMeasurements(
     {
-      contentVersion: 17,
+      contentVersion: 18,
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },
@@ -407,16 +409,66 @@ const addSpriteMeasurements = async (
   return catalog;
 };
 
+const addPokemonKnowledge = async (
+  catalog: PokemonCatalog,
+  client: CatalogClient,
+): Promise<PokemonCatalog> => {
+  const retained = Object.values(catalog.pokemon);
+  const pokemon = await client.resolveAll<Pokemon>(
+    [...new Set(retained.map(({ pokemonId }) => pokemonId))].map(
+      (id) => `https://pokeapi.co/api/v2/pokemon/${id}/`,
+    ),
+  );
+  const species = await client.resolveAll<PokemonSpecies>(
+    [...new Set(retained.map(({ speciesId }) => speciesId))].map(
+      (id) => `https://pokeapi.co/api/v2/pokemon-species/${id}/`,
+    ),
+  );
+  const pokemonById = new Map(pokemon.map((entry) => [entry.id, entry]));
+  const speciesById = new Map(species.map((entry) => [entry.id, entry]));
+  for (const entry of retained) {
+    const variety = pokemonById.get(entry.pokemonId);
+    const classification = speciesById.get(entry.speciesId);
+    if (
+      !variety ||
+      !classification ||
+      variety.species.name !== entry.speciesName
+    )
+      throw new Error(
+        `Missing or mismatched knowledge for form ${entry.formId}`,
+      );
+    Object.assign(entry, extractPokemonKnowledge(variety, classification));
+  }
+  return catalog;
+};
+
 if (import.meta.main) {
   const client = createCatalogClient();
-  const catalog = process.argv.includes('--sprites-only')
-    ? await addSpriteMeasurements(
-        JSON.parse(await readFile(DATA_PATH, 'utf8')) as PokemonCatalog,
-        (paths) => client.measureSprites(paths),
-      )
-    : await buildPokemonCatalog(client);
-  const output = await format(JSON.stringify(catalog), { parser: 'json' });
-  await writeFile(DATA_PATH, output);
+  const catalog = process.argv.includes('--topics-only')
+    ? await readCatalogFiles(DATA_DIRECTORY)
+    : process.argv.includes('--sprites-only')
+      ? await addSpriteMeasurements(
+          await readCatalogFiles(DATA_DIRECTORY),
+          (paths) => client.measureSprites(paths),
+        )
+      : process.argv.includes('--knowledge-only')
+        ? await addPokemonKnowledge(
+            await readCatalogFiles(DATA_DIRECTORY),
+            client,
+          )
+        : await buildPokemonCatalog(client);
+  if (
+    process.argv.includes('--topics-only') ||
+    !process.argv.some((argument) => argument.endsWith('-only'))
+  ) {
+    catalog.topics = await buildTopicCatalog(client, catalog);
+    await addItemSpriteIdentities(catalog.topics);
+    catalog.contentVersion = 18;
+  }
+  await writeCatalogFiles(
+    catalog,
+    new URL('../src/domain/pokemon/data/', import.meta.url),
+  );
   await writeFile(
     LABELS_PATH,
     await format(

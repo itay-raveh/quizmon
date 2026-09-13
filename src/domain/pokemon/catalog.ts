@@ -13,5 +13,7 @@ export const parsePokemonCatalog = (value: unknown): PokemonCatalog => {
     throw new Error('The Pokémon catalog has an invalid structure.');
   }
 
-  return value as unknown as PokemonCatalog;
+  const catalog = { ...value };
+  delete catalog.topicFiles;
+  return catalog as unknown as PokemonCatalog;
 };

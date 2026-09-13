@@ -12,17 +12,19 @@ const question: QuestionData = {
   },
   answer: { correctOptions: ['water'], interaction: 'single-choice' },
   category: 'matchup',
-  generation: 'VI',
   id: 'matchup:talonflame',
   media: { kind: 'none' },
   options: ['poison', 'dark', 'water', 'rock'],
-  pokemonName: 'talonflame',
-  pokemonTypes: ['fire', 'flying'],
   prompt: { kind: 'text', text: 'Which type deals ×2 damage?' },
   questionType: 'type-matchup',
   visual: { kind: 'type-matchup', multiplier: 2 },
+  subject: {
+    kind: 'pokemon' as const,
+    generation: 'VI',
+    name: 'talonflame',
+    types: ['fire', 'flying'],
+  },
 };
-
 it.each([
   ['water', ['fire', 'flying'], 2],
   ['rock', ['fire', 'flying'], 4],
@@ -34,7 +36,6 @@ it.each([
 ] as const)('calculates %s against %s', (type, defenders, expected) => {
   expect(attackMultiplier(catalog, type, defenders)).toBe(expected);
 });
-
 it('conceals calculations until answering, then explains all options outside disabled buttons', () => {
   const props = {
     question,
@@ -71,7 +72,6 @@ it('conceals calculations until answering, then explains all options outside dis
     ),
   ).toHaveTextContent('×2×22 × 2 = ×4');
 });
-
 it('shows separate attack calculations and takes the strongest type for Counter pick', () => {
   render(
     <QuestionAnswers

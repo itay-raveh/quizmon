@@ -1,3 +1,4 @@
+import { migrateRoundSubjects } from '../quiz/subject';
 import {
   isChoice,
   isDailyDate,
@@ -77,7 +78,14 @@ const normalizeLeague = (value: unknown): LeagueState => {
 };
 
 const readResultRecord = (value: unknown): Record<string, GameResult> =>
-  isRecord(value) ? (value as Record<string, GameResult>) : {};
+  isRecord(value)
+    ? Object.fromEntries(
+        Object.entries(value).map(([key, result]) => [
+          key,
+          migrateRoundSubjects(result) as GameResult,
+        ]),
+      )
+    : {};
 
 const normalizeStreak = (
   streak: Partial<DailyStreakState> | undefined,

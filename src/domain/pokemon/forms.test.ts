@@ -8,7 +8,6 @@ import { registerPokedexAnswer } from '../../lib/storage/pokedex-storage';
 import { buildQuestionType } from '../quiz/questions/registry';
 import { formatPokemonName } from './format';
 import { isSpritePath } from './sprite-source';
-
 it('ships distinct identities for the curated forms and retains every species', () => {
   const entries = Object.values(catalog.pokemon);
   expect(entries).toHaveLength(1236);
@@ -39,7 +38,6 @@ it('ships distinct identities for the curated forms and retains every species', 
     }
   }
 });
-
 it('can ask a valid named question about every retained form', () => {
   for (const [name, pokemon] of Object.entries(catalog.pokemon)) {
     const question = buildQuestionType(
@@ -51,7 +49,7 @@ it('can ask a valid named question about every retained form', () => {
       },
       'type-check',
     );
-    expect(question?.pokemonName, name).toBe(name);
+    expect(question?.subject?.name, name).toBe(name);
     expect(question?.options, name).toHaveLength(4);
     expect(
       question?.options.filter((option) => pokemon.types.includes(option)),
@@ -64,7 +62,6 @@ it('can ask a valid named question about every retained form', () => {
     });
   }
 });
-
 it.each([
   ['raichu-alola', 26, 'VII', 'I', ['electric', 'psychic']],
   ['typhlosion-hisui', 157, 'VIII', 'II', ['fire', 'ghost']],
@@ -82,7 +79,6 @@ it.each([
     });
   },
 );
-
 it('preserves regional breed names and gives collapsed entries their shared name', () => {
   for (const [name, label] of [
     ['tauros-paldea-aqua-breed', 'Paldean Tauros (Aqua Breed)'],
@@ -99,7 +95,6 @@ it('preserves regional breed names and gives collapsed entries their shared name
     expect(formatPokemonName(name), name).toBe(label);
   }
 });
-
 it('uses form-specific evolutions and retains a shared family across regional branches', () => {
   expect(catalog.pokemon['meowth-galar']?.evolvesTo).toEqual(['perrserker']);
   expect(catalog.pokemon.meowth?.evolvesTo).toEqual(['persian']);
@@ -108,7 +103,6 @@ it('uses form-specific evolutions and retains a shared family across regional br
     catalog.pokemon.persian?.evolutionFamily,
   );
 });
-
 it('does not give the original Typhlosion its Hisuian description or invent missing notes', () => {
   expect(catalog.pokemon.typhlosion?.description).not.toMatch(/souls|spirit/i);
   expect(catalog.pokemon.typhlosion?.description).not.toBe('');
@@ -116,7 +110,6 @@ it('does not give the original Typhlosion its Hisuian description or invent miss
   expect(catalog.pokemon.unown?.hasDistinctDescription).toBe(true);
   expect(catalog.pokemon['raichu-alola']?.hasDistinctDescription).toBe(true);
 });
-
 it.each([
   ['alcremie', 2],
   ['unown', 1],
@@ -171,7 +164,6 @@ it.each([
     ),
   ).toHaveLength(count);
 });
-
 it('excludes unapproved alternate forms', () => {
   for (const name of [
     'pikachu-alola-cap',
@@ -221,7 +213,6 @@ it('excludes unapproved alternate forms', () => {
   expect(catalog.pokemon.sinistea?.evolvesTo).toEqual(['polteageist']);
   expect(catalog.pokemon.poltchageist?.evolvesTo).toEqual(['sinistcha']);
 });
-
 it('retains the approved transformations and explicit exceptions', () => {
   for (const name of [
     'floette-mega',
@@ -260,7 +251,6 @@ it('retains the approved transformations and explicit exceptions', () => {
   ])
     expect(catalog.pokemon[name], name).toBeDefined();
 });
-
 it('avoids ambiguous same-species picture and description answers', () => {
   for (const type of [
     'pokedex-scan',
@@ -278,7 +268,7 @@ it('avoids ambiguous same-species picture and description answers', () => {
     );
     context.random = () => 0.7;
     const question = buildQuestionType(context, type)!;
-    expect(question.pokemonName).toBe('raichu-alola');
+    expect(question.subject.name).toBe('raichu-alola');
     expect(question.options).toHaveLength(4);
     expect(
       question.options.filter(
@@ -287,17 +277,16 @@ it('avoids ambiguous same-species picture and description answers', () => {
     ).toEqual(['raichu-alola']);
   }
 });
-
 it('keeps Champion targets and search choices limited to distinguishable descriptions', () => {
   const question = buildQuestionType(
     createQuestionContext('form-champion'),
     'champion',
   )!;
-  expect(catalog.pokemon[question.pokemonName]?.hasDistinctDescription).toBe(
+  expect(catalog.pokemon[question.subject.name]?.hasDistinctDescription).toBe(
     true,
   );
   expect(
-    question.searchOptions?.some(({ name }) => name === question.pokemonName),
+    question.searchOptions?.some(({ name }) => name === question.subject.name),
   ).toBe(true);
   expect(
     question.searchOptions?.every(
@@ -305,7 +294,6 @@ it('keeps Champion targets and search choices limited to distinguishable descrip
     ),
   ).toBe(true);
 });
-
 it('credits two forms of one species as two discoveries', () => {
   localStorage.clear();
   for (const name of ['raichu', 'raichu-alola']) {
@@ -326,7 +314,6 @@ it('credits two forms of one species as two discoveries', () => {
     'raichu-alola',
   ]);
 });
-
 it('rejects an odd-one-out puzzle where either Fire or Flying gives a different answer', () => {
   for (let seed = 0; seed < 10; seed += 1) {
     const context = createQuestionContext(`ambiguous-types-${seed}`);
@@ -339,7 +326,6 @@ it('rejects an odd-one-out puzzle where either Fire or Flying gives a different 
     expect(buildQuestionType(context, 'odd-one-out')).toBeUndefined();
   }
 });
-
 it('rejects an odd-one-out puzzle with repeated species even when its answer is unambiguous', () => {
   const context = createQuestionContext('unambiguous-types');
   context.pool = [
@@ -350,7 +336,6 @@ it('rejects an odd-one-out puzzle with repeated species even when its answer is 
   ].map((name) => ({ name, pokemon: catalog.pokemon[name]! }));
   expect(buildQuestionType(context, 'odd-one-out')).toBeUndefined();
 });
-
 it('offers only the requested Deoxys forme when a Champion description could also describe its species', () => {
   const context = createQuestionContext('deoxys-champion');
   context.used = new Set(
@@ -360,7 +345,7 @@ it('offers only the requested Deoxys forme when a Champion description could als
   );
   context.random = () => 0.6;
   const question = buildQuestionType(context, 'champion')!;
-  expect(question.pokemonName).toBe('deoxys-normal');
+  expect(question.subject.name).toBe('deoxys-normal');
   expect(
     question.searchOptions
       ?.filter(({ name }) => catalog.pokemon[name]!.speciesName === 'deoxys')

@@ -13,12 +13,9 @@ import {
   readTrainerStats,
   saveResult,
 } from './results-storage';
-
 describe('saved results', () => {
   beforeEach(() => window.localStorage.clear());
-
   afterEach(() => vi.useRealTimers());
-
   it('credits ten independent tracks, but only one shared combo day', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-12T12:00:00Z'));
@@ -55,7 +52,6 @@ describe('saved results', () => {
     );
     expect(readDailyStreak('2026-09-13')).toBe(2);
   });
-
   it('preserves a legacy Daily result alongside new tracks', () => {
     const date = '2026-09-12';
     saveResult({ kind: 'daily', date }, result);
@@ -65,7 +61,6 @@ describe('saved results', () => {
     expect(readDailyResult(date, track)?.score).toBe(10);
     expect(Object.keys(readPlayerData().results.daily)).toHaveLength(2);
   });
-
   it('keeps legacy bests and compares new results only inside their saved rules', () => {
     const mode = { kind: 'training' } as const;
     saveResult(mode, { ...result, score: 9000 });
@@ -101,7 +96,6 @@ describe('saved results', () => {
     expect(readPlayerData().results.training.league?.score).toBe(9000);
     expect(Object.keys(readPlayerData().results.training)).toHaveLength(3);
   });
-
   it('records a daily result once and restores it', () => {
     const mode = { kind: 'daily', date: '2026-09-01' } as const;
     expect(saveResult(mode, result)).toEqual({
@@ -111,7 +105,6 @@ describe('saved results', () => {
     });
     expect(readDailyResult(mode.date)).toEqual(result);
   });
-
   it('never overwrites the first daily attempt', () => {
     const mode = { kind: 'daily', date: '2026-09-01' } as const;
     saveResult(mode, result);
@@ -121,12 +114,11 @@ describe('saved results', () => {
       answers: result.answers.map((answer) => ({
         ...answer,
         correct: true,
-        points: 1_000,
+        points: 1000,
       })),
       correctCount: 2,
-      score: 4_000,
+      score: 4000,
     };
-
     expect(saveResult(mode, perfect)).toEqual({
       best: result,
       isNewBest: false,
@@ -135,18 +127,15 @@ describe('saved results', () => {
     expect(readDailyResult(mode.date)).toEqual(result);
     expect(readTrainerStats()).toEqual(progressBeforeRetry);
   });
-
   it('keeps one Daily best across challenge dates', () => {
     saveResult({ kind: 'daily', date: '2026-09-01' }, result);
     const lower = { ...result, score: 500 };
-
     expect(saveResult({ kind: 'daily', date: '2026-09-02' }, lower)).toEqual({
       best: result,
       isNewBest: false,
       isSaved: true,
     });
   });
-
   it('only credits new results completed on their local challenge date', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-03T12:00:00.000Z'));
@@ -158,10 +147,8 @@ describe('saved results', () => {
         training: {},
       }),
     );
-
     saveResult({ kind: 'daily', date: '2026-09-01' }, result);
     expect(readDailyStreak('2026-09-03')).toBe(0);
-
     const zeroScore = {
       ...result,
       answers: result.answers.map((answer) => ({
@@ -175,7 +162,6 @@ describe('saved results', () => {
     saveResult({ kind: 'daily', date: '2026-09-03' }, zeroScore);
     expect(readDailyStreak('2026-09-03')).toBe(1);
   });
-
   it("keeps yesterday's streak active and crosses a year boundary", () => {
     window.localStorage.setItem(
       'quizmon.results.v2',
@@ -191,11 +177,9 @@ describe('saved results', () => {
         training: {},
       }),
     );
-
     expect(readDailyStreak('2026-01-02')).toBe(2);
     expect(readDailyStreak('2026-01-03')).toBe(0);
   });
-
   it('keeps one League Training best across knowledge configurations', () => {
     const mode = { kind: 'training' } as const;
     saveResult(mode, result, defaultGameSettings);
@@ -209,7 +193,6 @@ describe('saved results', () => {
       correctCount: 0,
       score: 0,
     };
-
     expect(saveResult(mode, lower, defaultGameSettings)).toEqual({
       best: result,
       isNewBest: false,
@@ -233,10 +216,13 @@ describe('saved results', () => {
           category: 'type',
           cluesUsed: 0,
           correct: true,
-          generation: 'III',
-          pokemonName: 'rayquaza',
-          points: 1_000,
+          points: 1000,
           questionType: 'type-check',
+          subject: {
+            kind: 'pokemon' as const,
+            generation: 'III',
+            name: 'rayquaza',
+          },
         },
       ],
       correctCount: 2,
@@ -244,7 +230,6 @@ describe('saved results', () => {
     };
     expect(saveResult(mode, longer, defaultGameSettings).isNewBest).toBe(false);
   });
-
   it.each([
     [{ kind: 'daily', date: '2026-09-05' }, 'league', 'daily'],
     [{ kind: 'training' }, 'league', 'league'],
@@ -256,11 +241,9 @@ describe('saved results', () => {
       expect(getHighScoreKey(mode, { trainingMode })).toBe(expected);
     },
   );
-
   it('keeps League and Custom Training bests separate', () => {
     saveResult({ kind: 'training' }, result, defaultGameSettings);
     const customResult = { ...result, score: 500 };
-
     expect(
       saveResult({ kind: 'training' }, customResult, {
         ...defaultGameSettings,
@@ -272,20 +255,17 @@ describe('saved results', () => {
       isSaved: true,
     });
   });
-
   it('builds Trainer progression from correct answers', () => {
     const perfect = {
       ...result,
       answers: result.answers.map((answer) => ({
         ...answer,
         correct: true,
-        points: 1_000,
+        points: 1000,
       })),
       correctCount: result.questionCount,
     };
-
     saveResult({ kind: 'training' }, perfect, defaultGameSettings);
-
     expect(readTrainerStats()).toMatchObject({
       correctCategories: {
         identity: 1,
@@ -296,16 +276,19 @@ describe('saved results', () => {
       quickAttackCompleted: false,
     });
   });
-
   it('tracks League mastery without rewarding perfect Quick rounds', () => {
     const perfectAnswers: GameResult['answers'] = Array.from(
       { length: 10 },
       (_, index) => ({
         ...correctAnswer,
         category: index === 9 ? 'champion' : 'identity',
-        generation: index % 2 === 0 ? 'I' : 'II',
-        pokemonName: `pokemon-${index}`,
         questionType: index === 9 ? 'champion' : 'pokedex-scan',
+        subject: {
+          ...correctAnswer.subject,
+          kind: 'pokemon' as const,
+          generation: index % 2 === 0 ? 'I' : 'II',
+          name: `pokemon-${index}`,
+        },
       }),
     );
     const standard = {
@@ -320,25 +303,26 @@ describe('saved results', () => {
       correctCount: 5,
       questionCount: 5,
     };
-
     saveResult({ kind: 'training' }, quick, defaultGameSettings);
     expect(readTrainerStats().masteryRounds).toBe(0);
-
     saveResult({ kind: 'training' }, standard, defaultGameSettings);
     expect(readTrainerStats()).toMatchObject({
       championAnswersWithoutClues: 1,
       correctGenerations: { I: 8, II: 7 },
-      correctPokemon: perfectAnswers.map(({ pokemonName }) => pokemonName),
+      correctPokemon: perfectAnswers.map(({ subject }) => subject?.name),
       correctQuestionTypes: { 'pokedex-scan': 14 },
       masteryRounds: 1,
       quickAttackCompleted: true,
     });
   });
-
   it('keeps knowledge progress but pauses performance badges under custom rules', () => {
     const answers = Array.from({ length: 10 }, (_, index) => ({
       ...correctAnswer,
-      pokemonName: `pokemon-${index}`,
+      subject: {
+        ...correctAnswer.subject,
+        kind: 'pokemon' as const,
+        name: `pokemon-${index}`,
+      },
     }));
     const perfect = {
       ...result,
@@ -347,26 +331,27 @@ describe('saved results', () => {
       elapsedSeconds: 30,
       questionCount: 10,
     };
-
     saveResult({ kind: 'training' }, perfect, {
       ...defaultGameSettings,
       questionTypes: ['pokedex-scan'],
       trainingMode: 'custom',
     });
-
     expect(readTrainerStats()).toMatchObject({
-      correctPokemon: answers.map(({ pokemonName }) => pokemonName),
+      correctPokemon: answers.map(({ subject }) => subject?.name),
       masteryRounds: 0,
       quickAttackCompleted: false,
     });
   });
-
   it('requires both speed and accuracy for Quick Attack', () => {
     const answers = Array.from({ length: 10 }, (_, index) => ({
       ...correctAnswer,
       correct: index < 8,
-      pokemonName: `pokemon-${index}`,
-      points: index < 8 ? 1_000 : 0,
+      points: index < 8 ? 1000 : 0,
+      subject: {
+        ...correctAnswer.subject,
+        kind: 'pokemon' as const,
+        name: `pokemon-${index}`,
+      },
     }));
     const standard = {
       ...result,
@@ -375,14 +360,12 @@ describe('saved results', () => {
       elapsedSeconds: 59,
       questionCount: 10,
     };
-
     saveResult(
       { kind: 'training' },
       { ...standard, elapsedSeconds: 60 },
       defaultGameSettings,
     );
     expect(readTrainerStats().quickAttackCompleted).toBe(false);
-
     saveResult(
       { kind: 'training' },
       {
@@ -390,23 +373,24 @@ describe('saved results', () => {
         answers: answers.map((answer, index) => ({
           ...answer,
           correct: index < 7,
-          points: index < 7 ? 1_000 : 0,
+          points: index < 7 ? 1000 : 0,
         })),
         correctCount: 7,
       },
       defaultGameSettings,
     );
     expect(readTrainerStats().quickAttackCompleted).toBe(false);
-
     saveResult({ kind: 'training' }, standard, defaultGameSettings);
-
     expect(readTrainerStats().quickAttackCompleted).toBe(true);
   });
-
   it('awards League completion only for a perfect clear', () => {
     const answers = Array.from({ length: 15 }, (_, index) => ({
       ...correctAnswer,
-      pokemonName: `league-${index}`,
+      subject: {
+        ...correctAnswer.subject,
+        kind: 'pokemon' as const,
+        name: `league-${index}`,
+      },
     }));
     const leagueResult = {
       ...result,
@@ -414,7 +398,6 @@ describe('saved results', () => {
       correctCount: 15,
       questionCount: 15,
     };
-
     saveResult(
       { kind: 'league' },
       {
@@ -425,7 +408,6 @@ describe('saved results', () => {
       defaultGameSettings,
     );
     expect(readTrainerStats().leagueCompleted).toBe(false);
-
     saveResult(
       { kind: 'league' },
       {
@@ -437,18 +419,15 @@ describe('saved results', () => {
       defaultGameSettings,
     );
     expect(readTrainerStats().leagueCompleted).toBe(false);
-
     saveResult({ kind: 'league' }, leagueResult, defaultGameSettings);
     expect(readTrainerStats().leagueCompleted).toBe(true);
   });
-
   it('reports when browser storage cannot persist a result', () => {
     const setItem = vi
       .spyOn(Storage.prototype, 'setItem')
       .mockImplementation(() => {
         throw new DOMException('Storage disabled', 'QuotaExceededError');
       });
-
     expect(canPersistResults()).toBe(false);
     expect(saveResult({ kind: 'daily', date: '2026-09-01' }, result)).toEqual({
       best: result,
@@ -458,7 +437,6 @@ describe('saved results', () => {
     setItem.mockRestore();
   });
 });
-
 it('counts qualifying Quick Attack rounds without counting Custom or slow rounds', () => {
   window.localStorage.clear();
   const fast = {
@@ -487,7 +465,6 @@ it('counts qualifying Quick Attack rounds without counting Custom or slow rounds
   );
   expect(readTrainerStats().quickAttackRounds).toBe(2);
 });
-
 it('qualifies equivalent custom Training at Level 1 and rejects a narrowed family configuration', () => {
   localStorage.clear();
   const families = [
@@ -530,7 +507,6 @@ it('qualifies equivalent custom Training at Level 1 and rejects a narrowed famil
     quickAttackRounds: 1,
   });
 });
-
 it('credits only an explicitly unassisted new Champion search answer', () => {
   localStorage.clear();
   const champion = {

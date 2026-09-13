@@ -1,3 +1,4 @@
+import { expansionVariants } from '../quiz/question-expansion-variants';
 import { getQuestionVariant } from '../quiz/question-variants';
 import { isChoice, isObject } from '../../lib/validation';
 import { getFormGroup } from '../pokemon/forms';
@@ -67,7 +68,9 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
       )
     : isLeagueTraining(settings)
       ? [...coreQuestionTypes]
-      : [...settings.questionTypes],
+      : settings.questionTypes.filter(
+          (type) => !Object.hasOwn(expansionVariants, type),
+        ),
 });
 
 export const normalizeGameSettings = (candidate: unknown): GameSettings => {

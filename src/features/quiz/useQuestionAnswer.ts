@@ -13,7 +13,6 @@ import {
   useRef,
   useState,
 } from 'react';
-
 export interface UseQuestionAnswerOptions {
   answerFlow: AnswerFlow;
   elapsedMilliseconds: number;
@@ -26,7 +25,6 @@ export interface UseQuestionAnswerOptions {
   onFeedbackStart: () => number;
   question: QuestionData;
 }
-
 const preloadQuestionImages = (question: QuestionData) => {
   const sources = [
     ...(question.media.kind === 'none' ? [] : [question.media.src]),
@@ -38,7 +36,6 @@ const preloadQuestionImages = (question: QuestionData) => {
       : []),
     ...Object.values(question.optionVisuals ?? {}).map(({ src }) => src),
   ];
-
   for (const src of sources) {
     const image = new Image();
     image.decoding = 'async';
@@ -46,7 +43,6 @@ const preloadQuestionImages = (question: QuestionData) => {
     image.src = src;
   }
 };
-
 export const useQuestionAnswer = ({
   answerFlow,
   elapsedMilliseconds,
@@ -69,7 +65,6 @@ export const useQuestionAnswer = ({
   const questionStartedAt = useRef(
     questionStartedMilliseconds ?? elapsedMilliseconds,
   );
-
   useEffect(() => {
     preloadQuestionImages(question);
     if (nextQuestion) preloadQuestionImages(nextQuestion);
@@ -79,7 +74,6 @@ export const useQuestionAnswer = ({
       }
     };
   }, [nextQuestion, question]);
-
   const submitAnswer = useCallback(
     (answer: AnswerResult) => {
       if (answerAdvanced.current) return;
@@ -88,15 +82,12 @@ export const useQuestionAnswer = ({
     },
     [onAnswer],
   );
-
   const advanceAnswer = useCallback(() => {
     if (answerResult) submitAnswer(answerResult);
   }, [answerResult, submitAnswer]);
-
   const finishAnswer = useCallback(
     (options: string[]) => {
       if (interactionPaused || answered) return;
-
       const correct = isQuestionAnswerCorrect(question, options);
       const points = getAnswerPoints(
         question,
@@ -117,12 +108,15 @@ export const useQuestionAnswer = ({
           !question.initialClues &&
           cluesShown === 0,
         correct,
-        generation: question.generation,
-        pokemonName: question.pokemonName,
         points,
         questionType: question.questionType,
         responseMilliseconds,
         speedBonus: getSpeedBonusPoints(points, responseMilliseconds),
+        subject: {
+          kind: question.subject.kind,
+          generation: question.subject.generation,
+          name: question.subject.name,
+        },
       };
       setSelectedOptions(options);
       setAnswerResult(answer);
@@ -149,7 +143,6 @@ export const useQuestionAnswer = ({
       question,
     ],
   );
-
   const selectOption = useCallback(
     (option: string) => {
       if (interactionPaused || answered) return;
@@ -157,7 +150,6 @@ export const useQuestionAnswer = ({
         finishAnswer([option]);
         return;
       }
-
       setSelectedOptions((current) =>
         current.includes(option)
           ? current.filter((selected) => selected !== option)
@@ -166,7 +158,6 @@ export const useQuestionAnswer = ({
     },
     [answered, finishAnswer, interactionPaused, question.answer.interaction],
   );
-
   const answerWithKeyboard = useEffectEvent((event: KeyboardEvent) => {
     if (
       interactionPaused ||
@@ -181,7 +172,6 @@ export const useQuestionAnswer = ({
     ) {
       return;
     }
-
     if (
       event.key === 'Enter' &&
       question.answer.interaction === 'multi-select' &&
@@ -195,17 +185,14 @@ export const useQuestionAnswer = ({
       finishAnswer(selectedOptions);
       return;
     }
-
     if (question.options.length > 9) return;
     const option = question.options[Number(event.key) - 1];
     if (option) selectOption(option);
   });
-
   useEffect(() => {
     window.addEventListener('keydown', answerWithKeyboard);
     return () => window.removeEventListener('keydown', answerWithKeyboard);
   }, []);
-
   return {
     answerCorrect: answerResult?.correct === true,
     answered,

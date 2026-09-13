@@ -42,6 +42,7 @@ const createQuestionContext = (
 ): QuestionContext => ({
   catalog,
   difficulty: settings.difficulty,
+  generations: settings.generations,
   pool: filterPokemon(catalog, settings),
   random,
   used: new Set(),

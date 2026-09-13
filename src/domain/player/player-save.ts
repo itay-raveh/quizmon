@@ -1,3 +1,4 @@
+import { isAnswerSubject, migrateRoundSubjects } from '../quiz/subject';
 import {
   isChoice,
   isDailyDate,
@@ -49,33 +50,28 @@ import {
   TRAINER_NAME_MAX_LENGTH,
   type TrainerProfile,
 } from './trainer-profile';
-
 interface PlayerDataV1 {
   generationPromptAnswered: boolean;
   profile: TrainerProfile | null;
   results: SavedResults;
   settings: GameSettings | null;
 }
-
 export interface PlayerSaveV1 {
   data: PlayerDataV1;
   restoreId: string | null;
   version: 1;
 }
-
 export interface PlayerData extends PlayerDataV1 {
   questionHistory: QuestionHistory;
   leagueLineup: QuestionLineup | null;
   pokedex: string[];
   hallOfFame: LeagueVictoryRecord[];
 }
-
 export interface PlayerSave {
   data: PlayerData;
   restoreId: string | null;
-  version: 4;
+  version: 5;
 }
-
 export const emptyPlayerData = (): PlayerData => ({
   questionHistory: emptyQuestionHistory(),
   leagueLineup: null,
@@ -86,16 +82,13 @@ export const emptyPlayerData = (): PlayerData => ({
   results: normalizeResults(null),
   settings: null,
 });
-
 const isName = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0 && value.length <= 200;
-
 const isCounts = (value: unknown, keys: readonly string[]): boolean =>
   isRecord(value) &&
   Object.entries(value).every(
     ([key, count]) => keys.includes(key) && isSafeNonnegativeInteger(count),
   );
-
 const savedQuestionCategories = [
   ...questionCategories,
   ...legacyQuestionCategories,
@@ -105,7 +98,6 @@ const savedQuestionTypes = [
   'champion',
   ...legacyQuestionTypes,
 ] as const;
-
 const isResult = (value: unknown): value is GameResult => {
   if (
     !isRecord(value) ||
@@ -135,9 +127,7 @@ const isResult = (value: unknown): value is GameResult => {
       (answer.unassistedSearch === undefined ||
         typeof answer.unassistedSearch === 'boolean') &&
       typeof answer.correct === 'boolean' &&
-      (answer.generation === undefined ||
-        isChoice(answer.generation, generations)) &&
-      (answer.pokemonName === undefined || isName(answer.pokemonName)) &&
+      (answer.subject === undefined || isAnswerSubject(answer.subject)) &&
       isSafeNonnegativeInteger(answer.points) &&
       (answer.questionType === undefined ||
         isChoice(answer.questionType, savedQuestionTypes)) &&
@@ -147,7 +137,6 @@ const isResult = (value: unknown): value is GameResult => {
         isSafeNonnegativeInteger(answer.speedBonus)),
   );
 };
-
 const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
   isRecord(value) &&
   isName(value.id) &&
@@ -161,7 +150,6 @@ const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
   isResult(value.result) &&
   isLeagueVictory(value.result) &&
   value.result.answers.every((answer) => answer.correct);
-
 const isResults = (value: unknown): value is SavedResults => {
   if (
     !isRecord(value) ||
@@ -207,7 +195,6 @@ const isResults = (value: unknown): value is SavedResults => {
       isSafeNonnegativeInteger(progress.quickAttackRounds))
   );
 };
-
 const isSettings = (value: unknown): value is GameSettings =>
   isRecord(value) &&
   (value.difficulty === undefined || isDifficulty(value.difficulty)) &&
@@ -223,10 +210,42 @@ const isSettings = (value: unknown): value is GameSettings =>
   isNonemptyChoiceArray(value.generations, generations) &&
   isNonemptyChoiceArray(value.questionTypes, questionTypes);
 
+const migratePlayerSubjects = (value: unknown): unknown => {
+  if (!isRecord(value)) return value;
+  const records = (record: unknown) =>
+    isRecord(record)
+      ? Object.fromEntries(
+          Object.entries(record).map(([key, result]) => [
+            key,
+            migrateRoundSubjects(result),
+          ]),
+        )
+      : record;
+  return {
+    ...value,
+    leagueLineup: migrateRoundSubjects(value.leagueLineup),
+    hallOfFame: Array.isArray(value.hallOfFame)
+      ? value.hallOfFame.map((entry: unknown) =>
+          isRecord(entry)
+            ? { ...entry, result: migrateRoundSubjects(entry.result) }
+            : entry,
+        )
+      : value.hallOfFame,
+    results: isRecord(value.results)
+      ? {
+          ...value.results,
+          daily: records(value.results.daily),
+          training: records(value.results.training),
+        }
+      : value.results,
+  };
+};
+
 const parsePlayerData = (
-  value: unknown,
-  version: 1 | 2 | 3 | 4,
+  input: unknown,
+  version: 1 | 2 | 3 | 4 | 5,
 ): PlayerData => {
+  const value = migratePlayerSubjects(input);
   if (
     !isRecord(value) ||
     typeof value.generationPromptAnswered !== 'boolean' ||
@@ -238,7 +257,7 @@ const parsePlayerData = (
         new Set(
           value.hallOfFame.map((record: LeagueVictoryRecord) => record.id),
         ).size !== value.hallOfFame.length)) ||
-    (version === 4 &&
+    (version >= 4 &&
       (!isQuestionHistory(value.questionHistory) ||
         (value.leagueLineup !== null &&
           (!isQuestionLineup(value.leagueLineup) ||
@@ -263,11 +282,11 @@ const parsePlayerData = (
   }
   return {
     questionHistory:
-      version === 4
+      version >= 4
         ? (value.questionHistory as QuestionHistory)
         : emptyQuestionHistory(),
     leagueLineup:
-      version === 4
+      version >= 4
         ? (value.leagueLineup as QuestionLineup | null)
         : value.results.league.seed
           ? {
@@ -289,8 +308,10 @@ const parsePlayerData = (
               ]
                 .flatMap((result) => result?.answers ?? [])
                 .flatMap((answer) =>
-                  answer.correct && answer.pokemonName
-                    ? [answer.pokemonName]
+                  answer.correct &&
+                  answer.subject?.kind === 'pokemon' &&
+                  answer.subject.name
+                    ? [answer.subject.name]
                     : [],
                 ),
             ]
@@ -303,14 +324,14 @@ const parsePlayerData = (
       value.settings === null ? null : normalizeGameSettings(value.settings),
   };
 };
-
 export const parsePlayerSave = (value: unknown): PlayerSave => {
   if (
     !isRecord(value) ||
     (value.version !== 1 &&
       value.version !== 2 &&
       value.version !== 3 &&
-      value.version !== 4)
+      value.version !== 4 &&
+      value.version !== 5)
   ) {
     throw new Error(
       'This save uses an unsupported version. Update Quizmon or choose another backup.',
@@ -322,6 +343,6 @@ export const parsePlayerSave = (value: unknown): PlayerSave => {
   return {
     data: parsePlayerData(value.data, value.version),
     restoreId: value.restoreId,
-    version: 4,
+    version: 5,
   };
 };

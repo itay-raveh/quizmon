@@ -1,9 +1,6 @@
 import type { QuestionData, QuestionRepetition } from '../types';
-
-type RepeatSource = Pick<QuestionData, 'pokemonName' | 'options' | 'answer'>;
-
+type RepeatSource = Pick<QuestionData, 'subject' | 'options' | 'answer'>;
 type RepeatRule = (question: RepeatSource) => QuestionRepetition;
-
 export const targetRepetition =
   ({
     pokemonOptions,
@@ -17,21 +14,20 @@ export const targetRepetition =
   (question) => {
     const primary = [
       ...new Set([
-        question.pokemonName,
+        question.subject.name,
         ...related,
         ...(pokemonOptions ? question.answer.correctOptions : []),
       ]),
     ];
     return {
-      identity: [question.pokemonName, ...variant].join(':'),
-      subjects: [question.pokemonName],
+      identity: [question.subject.name, ...variant].join(':'),
+      subjects: [question.subject.name],
       primary,
       distractors: pokemonOptions
         ? question.options.filter((name) => !primary.includes(name))
         : [],
     };
   };
-
 export const optionSetRepetition =
   ({
     subjects,

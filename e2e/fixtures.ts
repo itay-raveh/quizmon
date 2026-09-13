@@ -1,13 +1,13 @@
 import { test as base, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import catalogData from '../src/domain/pokemon/data/pokemon.json' with { type: 'json' };
+import { catalog } from '../tests/fixtures/catalog';
 import { formatPokemonName as formatName } from '../src/domain/pokemon/format';
-import type { Generation, PokemonCatalog } from '../src/domain/pokemon/types';
+import type { Generation } from '../src/domain/pokemon/types';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import type { QuestionType } from '../src/domain/quiz/types';
 
-export { catalogData, expect };
-export const catalog = catalogData as unknown as PokemonCatalog;
+export { catalog, catalogData, expect };
 const imageBody = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
   'base64',

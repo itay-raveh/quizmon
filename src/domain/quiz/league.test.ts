@@ -9,7 +9,6 @@ import {
 } from './league';
 import { buildLeagueQuestions } from './question-generation';
 import { type GameResult } from './types';
-
 describe('Quizmon League', () => {
   it('builds the deterministic 15-format championship lineup', () => {
     const first = buildLeagueQuestions(catalog, 'league-lineup', {
@@ -24,7 +23,6 @@ describe('Quizmon League', () => {
       soundVolume: 1,
       timerDisplay: 'milliseconds',
     });
-
     expect(first).toEqual(second);
     expect(first).toHaveLength(15);
     expect(new Set(first.map(({ questionType }) => questionType))).toEqual(
@@ -32,17 +30,14 @@ describe('Quizmon League', () => {
     );
     expect(first.at(-1)?.questionType).toBe('champion');
   });
-
   it('keeps a fixed five-stage structure while varying its lineup by seed', () => {
     const first = getLeagueQuestionTypes('first');
     const second = getLeagueQuestionTypes('second');
-
     expect(first).not.toEqual(second);
     expect(getLeagueStage(1)).toMatchObject({ heading: 'Elite Trial I' });
     expect(getLeagueStage(12)).toMatchObject({ heading: 'Elite Trial IV' });
     expect(getLeagueStage(15)).toMatchObject({ heading: 'Champion' });
   });
-
   it('uses every generation and requires a complete perfect result', () => {
     expect(
       getLeagueSettings({
@@ -58,17 +53,19 @@ describe('Quizmon League', () => {
       soundVolume: 0,
       timerDisplay: 'hidden',
     });
-
     const answers: GameResult['answers'] = Array.from(
       { length: LEAGUE_QUESTION_COUNT },
       () => ({
         category: 'identity',
         cluesUsed: 0,
         correct: true,
-        generation: 'I',
-        pokemonName: 'pikachu',
-        points: 1_000,
+        points: 1000,
         questionType: 'pokedex-scan',
+        subject: {
+          kind: 'pokemon' as const,
+          generation: 'I',
+          name: 'pikachu',
+        },
       }),
     );
     const result: GameResult = {
@@ -77,10 +74,9 @@ describe('Quizmon League', () => {
       correctCount: LEAGUE_QUESTION_COUNT,
       elapsedSeconds: 30,
       questionCount: LEAGUE_QUESTION_COUNT,
-      score: 60_000,
+      score: 60000,
       scoreVersion: 2,
     };
-
     expect(isLeagueVictory(result)).toBe(true);
     expect(isLeagueVictory({ ...result, answers: answers.slice(0, -1) })).toBe(
       false,

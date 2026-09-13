@@ -1,3 +1,4 @@
+import { expansionVariants } from '../question-expansion-variants';
 import type { QuestionType } from '../types';
 
 interface QuestionDefinition {
@@ -23,6 +24,86 @@ export const questionTypeGroups = [
 export type QuestionTypeGroup = (typeof questionTypeGroups)[number]['id'];
 
 export const questionDefinitions = {
+  'item-identification': {
+    description: 'Identify an item from its sprite.',
+    group: 'identity',
+  },
+  'medicine-cabinet': {
+    description: 'Choose an item that meets the stated healing requirements.',
+    group: 'knowledge',
+  },
+  'evolution-items': {
+    description:
+      'Choose the item used directly to evolve the pictured Pokémon.',
+    group: 'knowledge',
+  },
+  'weight-comparison': {
+    description: 'Compare Pokémon weights.',
+    group: 'knowledge',
+  },
+  'height-comparison': {
+    description: 'Compare Pokémon heights.',
+    group: 'knowledge',
+  },
+  'move-types': { description: 'Identify a move’s type.', group: 'battle' },
+  'name-that-region': {
+    description: 'Match a location to its region.',
+    group: 'knowledge',
+  },
+  'move-purpose': {
+    description: 'Identify physical, special and status moves.',
+    group: 'battle',
+  },
+  'baby-pokemon': {
+    description: 'Find a Pokémon classified as a baby.',
+    group: 'knowledge',
+  },
+  'pokedex-categories': {
+    description: 'Match a Pokédex category to its Pokémon.',
+    group: 'knowledge',
+  },
+  'evolution-conditions': {
+    description: 'Identify a complete evolution method.',
+    group: 'knowledge',
+  },
+  'ability-effects': {
+    description: 'Match an ability to its effect.',
+    group: 'battle',
+  },
+  'held-item-effects': {
+    description: 'Identify what a held item does.',
+    group: 'battle',
+  },
+  'hidden-abilities': {
+    description: 'Identify a Pokémon’s Hidden Ability.',
+    group: 'battle',
+  },
+  'nature-effects': {
+    description: 'Match raised and lowered stats to a nature.',
+    group: 'battle',
+  },
+  'egg-group-connections': {
+    description: 'Find Pokémon sharing an Egg Group.',
+    group: 'knowledge',
+  },
+  'ev-yields': {
+    description: 'Identify the base effort values awarded by a Pokémon.',
+    group: 'battle',
+  },
+  'encounter-locations': {
+    description:
+      'Identify a Pokémon encountered in a stated game and location.',
+    group: 'knowledge',
+  },
+  'berry-flavors': {
+    description: 'Identify a berry’s flavors.',
+    group: 'knowledge',
+  },
+  'natural-gift': {
+    description: 'Identify Natural Gift’s type from its berry.',
+    group: 'battle',
+  },
+
   'pokedex-scan': {
     description: 'Identify Pokémon across generations of game sprites.',
     group: 'identity',
@@ -109,5 +190,7 @@ export const questionDefinitions = {
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
 
 export const coreQuestionTypes = questionTypes.filter(
-  (type) => !['ability-check', 'move-check', 'stat-showdown'].includes(type),
+  (type) =>
+    !Object.hasOwn(expansionVariants, type) &&
+    !['ability-check', 'move-check', 'stat-showdown'].includes(type),
 );

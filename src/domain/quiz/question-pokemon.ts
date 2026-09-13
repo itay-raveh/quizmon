@@ -1,17 +1,25 @@
 import type { QuestionData } from './types';
-
 export const getQuestionPokemon = (
   question: QuestionData,
   includeDistractors = false,
 ): string[] => {
-  const subjects = [question.pokemonName];
+  if (question.optionLabels)
+    return [
+      ...new Set([
+        ...question.repetition.primary,
+        ...(includeDistractors ? question.repetition.distractors : []),
+      ]),
+    ];
+  const subjects =
+    question.subject.kind === 'pokemon' ? [question.subject.name] : [];
   if (question.visual?.kind === 'evolution-link') {
     subjects.push(question.visual.before, question.visual.after);
   } else if (question.visual?.kind === 'evolution-shift') {
     subjects.push(question.visual.evolution.name);
   }
-
   switch (question.questionType) {
+    default:
+      return [...new Set(subjects)];
     case 'ability-check':
     case 'move-check':
     case 'type-check':

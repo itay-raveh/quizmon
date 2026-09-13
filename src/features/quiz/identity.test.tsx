@@ -12,7 +12,6 @@ import { fireEvent, screen } from '@testing-library/react';
 import { catalog } from '../../../tests/fixtures/catalog';
 import { renderQuestion } from '../../../tests/fixtures/question';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-
 const generate = (questionType: QuestionType) => {
   const questions = buildQuestions(
     catalog,
@@ -28,7 +27,6 @@ const generate = (questionType: QuestionType) => {
   expect(questions).toHaveLength(1);
   return questions[0]!;
 };
-
 for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
   it(`${questionType} generates a valid, repeatable question in the selected generation`, () => {
     const question = generate(questionType);
@@ -36,9 +34,9 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
     expect(question.questionType).toBe(questionType);
     expect(isQuestionData(question)).toBe(true);
     expect(new Set(question.options).size).toBe(4);
-    expect(question.answer.correctOptions).toEqual([question.pokemonName]);
-    expect(question.repetition.subjects).toEqual([question.pokemonName]);
-    expect(getQuestionPokemon(question)).toEqual([question.pokemonName]);
+    expect(question.answer.correctOptions).toEqual([question.subject.name]);
+    expect(question.repetition.subjects).toEqual([question.subject.name]);
+    expect(getQuestionPokemon(question)).toEqual([question.subject.name]);
     expect(new Set(getQuestionPokemon(question, true))).toEqual(
       new Set(question.options),
     );
@@ -48,7 +46,7 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
     if (questionType === 'sprite-match') {
       expect(question.prompt).toMatchObject({
         kind: 'pokemon',
-        name: question.pokemonName,
+        name: question.subject.name,
       });
       expect(question.media.kind).toBe('none');
       expect(question.concealOptionLabels).toBe(true);
@@ -62,12 +60,11 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
       expect(question.media).toEqual({
         kind: 'sprite',
         silhouette: true,
-        src: catalog.pokemon[question.pokemonName]?.sprite,
+        src: catalog.pokemon[question.subject.name]?.sprite,
       });
       expect(question.optionVisuals).toBeUndefined();
     }
   });
-
   it.each([true, false])(
     `${questionType} conceals and reveals correctly (correct: %s)`,
     (correct) => {
@@ -75,7 +72,7 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
       const onAnswer = vi.fn();
       const { container } = renderQuestion({ question, onAnswer });
       const selected = question.options.findIndex(
-        (name) => (name === question.pokemonName) === correct,
+        (name) => (name === question.subject.name) === correct,
       );
       if (questionType === 'sprite-match') {
         expect(
@@ -115,7 +112,6 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
     },
   );
 }
-
 it('builds sprite choices only from Pokémon with available sprites', () => {
   const pool = filterPokemon(catalog, { generations: ['I'] })
     .slice(0, 8)

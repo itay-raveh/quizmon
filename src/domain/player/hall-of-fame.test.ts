@@ -17,7 +17,6 @@ import type { GameResult } from '../quiz/types';
 import { defaultGameSettings } from '../settings/game-settings';
 import { createLeagueVictoryRecord } from './hall-of-fame';
 import { emptyPlayerData, parsePlayerSave } from './player-save';
-
 const questions = buildLeagueQuestions(
   catalog,
   'record-test',
@@ -28,9 +27,12 @@ const result: GameResult = {
     category: q.category,
     correct: true,
     points: 1000,
-    pokemonName: q.pokemonName,
     questionType: q.questionType,
     cluesUsed: 0,
+    subject: {
+      kind: 'pokemon' as const,
+      name: q.subject.name,
+    },
   })),
   contentVersion: catalog.contentVersion,
   correctCount: 15,
@@ -40,16 +42,14 @@ const result: GameResult = {
 };
 const victory = (seed = 'record-test') =>
   createLeagueVictoryRecord(result, questions, seed, 'Leaf');
-
 beforeEach(() => {
   localStorage.clear();
   sessionStorage.clear();
 });
-
 it('includes subjects, revealed evolutions and distractors but excludes types and hidden Champion choices', () => {
   const record = victory();
   for (const q of questions) {
-    expect(record.pokemon).toContain(q.pokemonName);
+    expect(record.pokemon).toContain(q.subject.name);
     for (const name of Object.keys(q.optionVisuals ?? {})) {
       if (q.questionType !== 'champion') expect(record.pokemon).toContain(name);
     }
@@ -68,9 +68,8 @@ it('includes subjects, revealed evolutions and distractors but excludes types an
     'champion',
     'Leaf',
   );
-  expect(championRecord.pokemon).toEqual([champion.pokemonName]);
+  expect(championRecord.pokemon).toEqual([champion.subject.name]);
 });
-
 it('keeps every distinct victory and deduplicates a restored completion without crediting progress twice', () => {
   const first = victory();
   expect(
@@ -84,7 +83,6 @@ it('keeps every distinct victory and deduplicates a restored completion without 
   saveResult({ kind: 'league' }, result, defaultGameSettings, second);
   expect(readPlayerSave().data.hallOfFame).toEqual([first, second]);
 });
-
 it('round-trips all victory records through backup and replacement restore', () => {
   const first = victory();
   const second = victory('rematch');
@@ -93,10 +91,9 @@ it('round-trips all victory records through backup and replacement restore', () 
   const backup = parseBackup(JSON.stringify(createBackup()));
   localStorage.clear();
   restoreBackup(backup);
-  expect(readPlayerSave().version).toBe(4);
+  expect(readPlayerSave().version).toBe(5);
   expect(readPlayerSave().data.hallOfFame).toEqual([first, second]);
 });
-
 it('migrates version 2 without fabricating old victory records or losing Champion status', () => {
   const data = emptyPlayerData();
   data.results.league.completed = true;
@@ -109,7 +106,7 @@ it('migrates version 2 without fabricating old victory records or losing Champio
     JSON.stringify({ version: 2, restoreId: null, data: oldData }),
   );
   expect(readPlayerSave()).toMatchObject({
-    version: 4,
+    version: 5,
     data: {
       hallOfFame: [],
       pokedex: ['pikachu'],
@@ -117,7 +114,6 @@ it('migrates version 2 without fabricating old victory records or losing Champio
     },
   });
 });
-
 it.each([
   { completedAt: '2026-02-31T12:00:00.000Z' },
   { pokemon: ['pikachu', 'pikachu'] },
@@ -137,7 +133,6 @@ it.each([
     ).toThrow('invalid progress');
   },
 );
-
 it('accepts a victory with a 20-character Trainer name', () => {
   const record = { ...victory(), trainerName: 'A'.repeat(20) };
   const saved = parsePlayerSave({
@@ -147,7 +142,6 @@ it('accepts a victory with a 20-character Trainer name', () => {
   });
   expect(saved.data.hallOfFame).toEqual([record]);
 });
-
 it('leaves existing victories intact if saving a new victory fails', () => {
   saveResult({ kind: 'league' }, result, defaultGameSettings, victory());
   const previous = localStorage.getItem(PLAYER_STORAGE_KEY);

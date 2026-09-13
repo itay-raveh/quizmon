@@ -5,7 +5,6 @@ import {
 } from '../question-variants';
 import type { Difficulty } from '../difficulty';
 import type { QuestionContext, QuestionDraft } from './context';
-
 export const applyQuestionVariant = (
   draft: QuestionDraft,
   context: QuestionContext,
@@ -38,9 +37,9 @@ export const applyQuestionVariant = (
           context.questionType !== 'field-notes' ||
           (pokemon.description &&
             pokemon.hasDistinctDescription &&
-            (name === question.pokemonName ||
+            (name === question.subject.name ||
               pokemon.speciesName !==
-                context.catalog.pokemon[question.pokemonName]?.speciesName)),
+                context.catalog.pokemon[question.subject.name]?.speciesName)),
       )
       .map(({ name, pokemon }) => ({ name, dexNumber: pokemon.speciesId }));
   }
@@ -50,14 +49,14 @@ export const applyQuestionVariant = (
       interaction: 'multi-select',
       correctOptions:
         context.questionType === 'type-check'
-          ? question.pokemonTypes
+          ? (question.subject.types ?? [])
           : question.options.filter(
               (type) =>
                 question.visual?.kind === 'type-matchup' &&
                 attackMultiplier(
                   context.catalog,
                   type,
-                  question.pokemonTypes,
+                  question.subject.types ?? [],
                 ) === question.visual.multiplier,
             ),
     };

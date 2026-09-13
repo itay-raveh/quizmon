@@ -276,6 +276,8 @@ describe('analytics endpoint', () => {
     const upstream = mockSpriteFetch();
     const { env } = makeEnv();
     const examples = [
+      ['/sprites/items/poke-ball.png', 'image/png'],
+      ['/sprites/items/full-restore.png', 'image/png'],
       [
         '/sprites/pokemon/versions/generation-ii/crystal/back/25.png',
         'image/png',
@@ -342,6 +344,11 @@ describe('analytics endpoint', () => {
       '/sprites/pokemon/versions/generation-v/black-white/83.html',
       '/sprites/pokemon/versions/generation-v/black-white/0.png',
       '/sprites/pokemon/unknown/83.png',
+      '/sprites/items/poke-ball.svg',
+      '/sprites/items/poke-ball.html',
+      '/sprites/items/subdirectory/poke-ball.png',
+      '/sprites/items/%2Fexample.com.png',
+      '/sprites/items/https:example.com.png',
     ]) {
       const response = await worker.fetch(
         new Request(`https://example.com${path}`),

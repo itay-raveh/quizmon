@@ -3,10 +3,8 @@ import { createSeededRandom } from '../../../lib/random';
 import { buildChampionQuestion } from './champion';
 import { buildDescriptionQuestion } from './knowledge';
 import { redactName as redactPokemonName } from './prompts';
-
 const redactName = (description: string, name: string) =>
   redactPokemonName(description, name, catalog.pokemon[name]!.speciesName);
-
 it.each([
   ['tatsugiri-curly', 'Tatsugiri'],
   ['deoxys-normal', 'DEOXYS'],
@@ -28,13 +26,11 @@ it.each([
     'This Pokémon appears. This Pokémon hides.',
   );
 });
-
 it('matches the full variety before the shorter species name', () => {
   expect(
     redactName('Tatsugiri Curly and tatsugiri-curly.', 'tatsugiri-curly'),
   ).toBe('This Pokémon and This Pokémon.');
 });
-
 it('preserves other species and words containing the name', () => {
   expect(redactName('Mewtwo meets Mew near a mewing Pokémon.', 'mew')).toBe(
     'Mewtwo meets This Pokémon near a mewing Pokémon.',
@@ -46,13 +42,11 @@ it('preserves other species and words containing the name', () => {
     'Its iron body is tough.',
   );
 });
-
 it('retains possessive punctuation', () => {
   expect(redactName('Giratina’s shadow.', 'giratina-altered')).toBe(
     'This Pokémon’s shadow.',
   );
 });
-
 it.each([buildDescriptionQuestion, buildChampionQuestion])(
   'conceals the species name in the generated opening clue',
   (build) => {
@@ -75,7 +69,7 @@ it.each([buildDescriptionQuestion, buildChampionQuestion])(
       used: new Set(),
       random: createSeededRandom('redaction'),
     });
-    expect(question?.pokemonName).toBe('tatsugiri-curly');
+    expect(question?.subject?.name).toBe('tatsugiri-curly');
     expect(question?.prompt).toEqual({
       kind: 'text',
       text: '“This Pokémon is an extremely cunning Pokémon. It feigns weakness to lure in prey, then orders its partner to attack.”',

@@ -4,11 +4,16 @@ import {
   type DifficultyVariants,
 } from './difficulty';
 import type { QuestionData } from './types';
+import {
+  expansionVariants,
+  type ExpansionQuestionType,
+  type ExpansionVariantRules,
+} from './question-expansion-variants';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 2;
+export const QUESTION_RULES_VERSION = 3;
 
-export interface VariantRules {
+export interface VariantRules extends ExpansionVariantRules {
   distractors?: 'dissimilar' | 'similar';
   search?: boolean;
   namesOnly?: boolean;
@@ -28,9 +33,10 @@ export interface VariantRules {
 }
 
 const questionVariants: Record<
-  QuestionData['questionType'],
+  QuestionData['questionType'] | ExpansionQuestionType,
   DifficultyVariants<VariantRules>
 > = {
+  ...expansionVariants,
   'pokedex-scan': {
     1: { currentSprite: true, distractors: 'dissimilar' },
     2: { currentSprite: true, distractors: 'similar' },
@@ -95,6 +101,6 @@ const questionVariants: Record<
 };
 
 export const getQuestionVariant = (
-  type: QuestionData['questionType'],
+  type: QuestionData['questionType'] | ExpansionQuestionType,
   difficulty: Difficulty,
 ) => resolveDifficultyVariant(questionVariants[type], difficulty);

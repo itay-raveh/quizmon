@@ -12,7 +12,6 @@ import {
 import { type GameSettings } from '../../settings/types';
 import { buildQuestions } from '../question-generation';
 import { buildQuestionType } from './registry';
-
 describe('Evolution link', () => {
   it.each(['graveler-alola', 'linoone-galar', 'sliggoo-hisui'])(
     'skips %s when only other regional categories provide enough distractors',
@@ -37,7 +36,6 @@ describe('Evolution link', () => {
       expect(context.used.size).toBe(0);
     },
   );
-
   it('keeps ordinary chains and fills all three distractors without regional forms', () => {
     const context = createQuestionContext('ordinary-chain');
     const names = new Set([
@@ -59,7 +57,6 @@ describe('Evolution link', () => {
       ['graveler', 'boldore', 'naclstack', 'pawmo'].toSorted(),
     );
   });
-
   it.each(generations)(
     'builds valid text-only chains and four middle-stage choices in Generation %s',
     (generation) => {
@@ -91,7 +88,6 @@ describe('Evolution link', () => {
       }
     },
   );
-
   it('rejects branching answers and regional-form-only links', () => {
     for (const target of ['kirlia', 'linoone', 'mr-mime']) {
       const current = createQuestionContext('ambiguous');
@@ -109,7 +105,6 @@ describe('Evolution link', () => {
     }
   });
 });
-
 describe('Generation roundup', () => {
   it('produces two or three correct choices from selected generations and reveals metadata for all four', () => {
     const counts = new Set<number>();
@@ -123,7 +118,7 @@ describe('Generation roundup', () => {
       expect(question.options).toHaveLength(4);
       expect(new Set(question.options).size).toBe(4);
       const correctGeneration =
-        catalog.pokemon[question.pokemonName]!.generation;
+        catalog.pokemon[question.subject.name]!.generation;
       expect(question.prompt).toEqual({
         kind: 'text',
         text: `Select every Pokémon introduced in Generation ${correctGeneration}.`,
@@ -146,7 +141,6 @@ describe('Generation roundup', () => {
     }
     expect(counts).toEqual(new Set([2, 3]));
   });
-
   it('skips single-generation pools without shortening League Training or widening filters', () => {
     expect(
       buildQuestionType(
@@ -165,11 +159,10 @@ describe('Generation roundup', () => {
     );
     expect(questions).toHaveLength(10);
     for (const question of questions) {
-      expect(question.generation).toBe('I');
+      expect(question.subject.generation).toBe('I');
       expect(question.questionType).not.toBe('generation-roundup');
     }
   });
-
   it('requires two generations whenever Custom includes Generation roundup', () => {
     const settings: GameSettings = {
       ...defaultGameSettings,

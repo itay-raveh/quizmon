@@ -1,0 +1,83 @@
+{
+  "contentVersion": 18,
+  "key": "games",
+  "values": {
+    "red": { "label": "Red", "generation": "I" },
+    "blue": { "label": "Blue", "generation": "I" },
+    "yellow": { "label": "Yellow", "generation": "I" },
+    "gold": { "label": "Gold", "generation": "II" },
+    "silver": { "label": "Silver", "generation": "II" },
+    "crystal": { "label": "Crystal", "generation": "II" },
+    "ruby": { "label": "Ruby", "generation": "III" },
+    "sapphire": { "label": "Sapphire", "generation": "III" },
+    "emerald": { "label": "Emerald", "generation": "III" },
+    "firered": { "label": "FireRed", "generation": "III" },
+    "leafgreen": { "label": "LeafGreen", "generation": "III" },
+    "diamond": { "label": "Diamond", "generation": "IV" },
+    "pearl": { "label": "Pearl", "generation": "IV" },
+    "platinum": { "label": "Platinum", "generation": "IV" },
+    "heartgold": { "label": "HeartGold", "generation": "IV" },
+    "soulsilver": { "label": "SoulSilver", "generation": "IV" },
+    "black": { "label": "Black", "generation": "V" },
+    "white": { "label": "White", "generation": "V" },
+    "colosseum": { "label": "Colosseum", "generation": "III" },
+    "xd": { "label": "XD", "generation": "III" },
+    "black-2": { "label": "Black 2", "generation": "V" },
+    "white-2": { "label": "White 2", "generation": "V" },
+    "x": { "label": "X", "generation": "VI" },
+    "y": { "label": "Y", "generation": "VI" },
+    "omega-ruby": { "label": "Omega Ruby", "generation": "VI" },
+    "alpha-sapphire": { "label": "Alpha Sapphire", "generation": "VI" },
+    "sun": { "label": "Sun", "generation": "VII" },
+    "moon": { "label": "Moon", "generation": "VII" },
+    "ultra-sun": { "label": "Ultra Sun", "generation": "VII" },
+    "ultra-moon": { "label": "Ultra Moon", "generation": "VII" },
+    "lets-go-pikachu": { "label": "Let’s Go, Pikachu!", "generation": "VII" },
+    "lets-go-eevee": { "label": "Let’s Go, Eevee!", "generation": "VII" },
+    "sword": { "label": "Sword", "generation": "VIII" },
+    "shield": { "label": "Shield", "generation": "VIII" },
+    "the-isle-of-armor-sword": {
+      "label": "Sword: The Isle of Armor",
+      "generation": "VIII"
+    },
+    "the-crown-tundra-sword": {
+      "label": "Sword: The Crown Tundra",
+      "generation": "VIII"
+    },
+    "brilliant-diamond": { "label": "Brilliant Diamond", "generation": "VIII" },
+    "shining-pearl": { "label": "Shining Pearl", "generation": "VIII" },
+    "legends-arceus": { "label": "Legends: Arceus", "generation": "VIII" },
+    "scarlet": { "label": "Scarlet", "generation": "IX" },
+    "violet": { "label": "Violet", "generation": "IX" },
+    "the-teal-mask-scarlet": {
+      "label": "Scarlet: The Teal Mask",
+      "generation": "IX"
+    },
+    "the-indigo-disk-scarlet": {
+      "label": "Scarlet: The Indigo Disk",
+      "generation": "IX"
+    },
+    "red-japan": { "label": "Red", "generation": "I" },
+    "green-japan": { "label": "Green", "generation": "I" },
+    "blue-japan": { "label": "Blue", "generation": "I" },
+    "legends-za": { "label": "Legends: Z-A", "generation": "IX" },
+    "mega-dimension": { "label": "Mega Dimension", "generation": "IX" },
+    "champions": { "label": "Champions", "generation": "IX" },
+    "the-isle-of-armor-shield": {
+      "label": "Shield: The Isle of Armor",
+      "generation": "VIII"
+    },
+    "the-crown-tundra-shield": {
+      "label": "Shield: The Crown Tundra",
+      "generation": "VIII"
+    },
+    "the-teal-mask-violet": {
+      "label": "Violet: The Teal Mask",
+      "generation": "IX"
+    },
+    "the-indigo-disk-violet": {
+      "label": "Violet: The Indigo Disk",
+      "generation": "IX"
+    }
+  }
+}

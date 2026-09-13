@@ -1,6 +1,95 @@
 import { createServer, type ServerResponse } from 'node:http';
 import { completeTrainingRound, expect, test } from './fixtures';
 
+const image = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5xkAAAAASUVORK5CYII=',
+  'base64',
+);
+
+test('caches item PNGs for offline use without caching missing item responses', async ({
+  baseURL,
+  context,
+  page,
+}) => {
+  let itemRequests = 0;
+  const server = createServer((request, response) => {
+    if (request.url === '/sprites/items/poke-ball.png') {
+      itemRequests++;
+      response.writeHead(200, { 'Content-Type': 'image/png' }).end(image);
+      return;
+    }
+    if (request.url === '/sprites/items/missing-item.png') {
+      response.writeHead(404, { 'Content-Type': 'text/html' }).end('Missing');
+      return;
+    }
+    void (async () => {
+      try {
+        const upstream = await fetch(new URL(request.url ?? '/', baseURL));
+        response
+          .writeHead(upstream.status, {
+            'Content-Type':
+              upstream.headers.get('content-type') ??
+              'application/octet-stream',
+          })
+          .end(Buffer.from(await upstream.arrayBuffer()));
+      } catch {
+        response.writeHead(502).end();
+      }
+    })();
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const address = server.address();
+  if (!address || typeof address === 'string') throw new Error('Missing port');
+  try {
+    await page.goto(`http://127.0.0.1:${address.port}/`);
+    await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
+    await page.reload();
+    await expect
+      .poll(() =>
+        page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+      )
+      .toBe(true);
+    expect(
+      await page.evaluate(
+        async () => (await fetch('/sprites/items/poke-ball.png')).status,
+      ),
+    ).toBe(200);
+    expect(
+      await page.evaluate(
+        async () => (await fetch('/sprites/items/missing-item.png')).status,
+      ),
+    ).toBe(404);
+    await expect
+      .poll(() =>
+        page.evaluate(async () =>
+          Boolean(await caches.match('/sprites/items/poke-ball.png')),
+        ),
+      )
+      .toBe(true);
+    expect(
+      await page.evaluate(async () =>
+        Boolean(await caches.match('/sprites/items/missing-item.png')),
+      ),
+    ).toBe(false);
+    await context.setOffline(true);
+    expect(
+      await page.evaluate(async () => {
+        const response = await fetch('/sprites/items/poke-ball.png');
+        return {
+          status: response.status,
+          type: response.headers.get('content-type'),
+          length: (await response.arrayBuffer()).byteLength,
+        };
+      }),
+    ).toEqual({ status: 200, type: 'image/png', length: image.length });
+    expect(itemRequests).toBe(1);
+  } finally {
+    await context.setOffline(false);
+    server.closeAllConnections();
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+  }
+});
+
 test('loads the installed app shell and catalog offline', async ({
   context,
   page,
@@ -43,6 +132,11 @@ test('defers an update through gameplay and restores results after automatic rel
   const server = createServer((request, response) => {
     if (request.url === '/sprites/pokemon/pwa-update.png') {
       pendingRequest.resolve(response);
+      return;
+    }
+    // Service-worker requests need sprite fixtures at the server boundary.
+    if (request.url?.startsWith('/sprites/pokemon/')) {
+      response.writeHead(200, { 'Content-Type': 'image/png' }).end(image);
       return;
     }
     void (async () => {

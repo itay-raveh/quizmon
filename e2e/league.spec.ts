@@ -5,9 +5,7 @@ import { buildLeagueQuestions } from '../src/domain/quiz/question-generation';
 import { getQuestionTitle } from '../src/domain/quiz/question-labels';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import { catalog, expect, test } from './fixtures';
-
 const leagueSeed = 'league-e2e-lineup';
-
 const unlockLeague = (completed = false) => {
   const savedDailyResult = {
     answers: [],
@@ -65,13 +63,11 @@ const unlockLeague = (completed = false) => {
     }),
   );
 };
-
 test('refreshes League attempts and retries while preserving reloads', async ({
   page,
 }) => {
   await page.addInitScript(unlockLeague, false);
   await page.goto('/');
-
   const leagueButton = page.getByRole('button', { name: 'Quizmon League' });
   await expect(leagueButton).toBeVisible();
   await leagueButton.click();
@@ -82,7 +78,6 @@ test('refreshes League attempts and retries while preserving reloads', async ({
     page.getByRole('navigation', { name: 'League views' }),
   ).toHaveCount(0);
   await page.getByRole('button', { name: 'Start League challenge' }).click();
-
   const readAttempt = async () => {
     await expect(
       page.getByRole('progressbar', { name: 'Quiz progress' }),
@@ -103,12 +98,10 @@ test('refreshes League attempts and retries while preserving reloads', async ({
   await expect(
     page.getByRole('list', { name: /Elite Trial I, Recognition/ }),
   ).toBeVisible();
-
   const wrongOption = first.options.find(
     (option) => !first.answer.correctOptions.includes(option),
   )!;
   await page.locator('.answer').nth(first.options.indexOf(wrongOption)).click();
-
   await expect(
     page.getByRole('heading', { name: 'League challenge ended' }),
   ).toBeVisible();
@@ -119,14 +112,12 @@ test('refreshes League attempts and retries while preserving reloads', async ({
   const retry = await readAttempt();
   expect(retry.seed).not.toBe(original.seed);
   expect(retry.questions).not.toEqual(original.questions);
-
   await page.reload();
   const restored = await readAttempt();
   expect(restored.seed).toBe(retry.seed);
   expect(restored.questions).toEqual(retry.questions);
   expect(restored.answers).toEqual(retry.answers);
   await page.getByRole('button', { name: 'Leave game' }).click();
-
   await page.getByRole('button', { name: 'Trainer profile' }).click();
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
@@ -139,7 +130,6 @@ test('refreshes League attempts and retries while preserving reloads', async ({
   expect(restarted.seed).not.toBe(retry.seed);
   expect(restarted.questions).not.toEqual(retry.questions);
 });
-
 test('keeps Hall of Fame deep links on the challenge before a League clear', async ({
   page,
 }) => {
@@ -163,7 +153,6 @@ test('keeps Hall of Fame deep links on the challenge before a League clear', asy
     page.getByRole('button', { name: 'Quizmon League', exact: true }),
   ).not.toContainText('Hall of Fame');
 });
-
 test('shows Champion and Hall of Fame after clearing the League', async ({
   page,
 }) => {
@@ -201,7 +190,6 @@ test('shows Champion and Hall of Fame after clearing the League', async ({
     0,
   );
 });
-
 test('a perfect clear opens the induction before its detailed results', async ({
   page,
 }) => {
@@ -225,11 +213,14 @@ test('a perfect clear opens the induction before its detailed results', async ({
       category: question.category,
       cluesUsed: 0,
       correct: true,
-      generation: question.generation,
-      pokemonName: question.pokemonName,
       points: 1000,
       questionType: question.questionType,
       responseMilliseconds: 1000,
+      subject: {
+        kind: 'pokemon' as const,
+        generation: question.subject.generation,
+        name: question.subject.name,
+      },
     })),
   };
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -295,7 +286,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
   );
   expect(saved).toHaveLength(1);
   expect(saved[0]?.result.score).toBe(30000);
-  expect(saved[0]?.pokemon).toContain(questions[0]!.pokemonName);
+  expect(saved[0]?.pokemon).toContain(questions[0]!.subject.name);
   await expect(page.locator('.league-trophy__rays')).toHaveCSS(
     'animation-name',
     'none',

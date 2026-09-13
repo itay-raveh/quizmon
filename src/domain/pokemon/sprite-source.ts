@@ -19,8 +19,13 @@ const VERSION_SPRITE_PATH = new RegExp(
     ')/(?:back/)?[1-9]\\d{0,5}(?:-[a-z0-9]+)*\\.png$',
 );
 
+export const isItemSpritePath = (path: string): boolean =>
+  /^\/sprites\/items\/[a-z0-9]+(?:-[a-z0-9]+)*\.png$/.test(path);
+
 export const isSpritePath = (path: string): boolean =>
-  SPRITE_PATH.test(path) || VERSION_SPRITE_PATH.test(path);
+  SPRITE_PATH.test(path) ||
+  VERSION_SPRITE_PATH.test(path) ||
+  isItemSpritePath(path);
 
 export const normalizeSpriteUrl = (url: string | null): string | null => {
   if (!url) return null;

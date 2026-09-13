@@ -1,0 +1,166 @@
+{
+  "contentVersion": 18,
+  "key": "natures",
+  "values": [
+    {
+      "id": 2,
+      "name": "bold",
+      "label": "Bold",
+      "generations": ["III"],
+      "raised": "defense",
+      "lowered": "attack"
+    },
+    {
+      "id": 3,
+      "name": "modest",
+      "label": "Modest",
+      "generations": ["III"],
+      "raised": "special-attack",
+      "lowered": "attack"
+    },
+    {
+      "id": 4,
+      "name": "calm",
+      "label": "Calm",
+      "generations": ["III"],
+      "raised": "special-defense",
+      "lowered": "attack"
+    },
+    {
+      "id": 5,
+      "name": "timid",
+      "label": "Timid",
+      "generations": ["III"],
+      "raised": "speed",
+      "lowered": "attack"
+    },
+    {
+      "id": 6,
+      "name": "lonely",
+      "label": "Lonely",
+      "generations": ["III"],
+      "raised": "attack",
+      "lowered": "defense"
+    },
+    {
+      "id": 8,
+      "name": "mild",
+      "label": "Mild",
+      "generations": ["III"],
+      "raised": "special-attack",
+      "lowered": "defense"
+    },
+    {
+      "id": 9,
+      "name": "gentle",
+      "label": "Gentle",
+      "generations": ["III"],
+      "raised": "special-defense",
+      "lowered": "defense"
+    },
+    {
+      "id": 10,
+      "name": "hasty",
+      "label": "Hasty",
+      "generations": ["III"],
+      "raised": "speed",
+      "lowered": "defense"
+    },
+    {
+      "id": 11,
+      "name": "adamant",
+      "label": "Adamant",
+      "generations": ["III"],
+      "raised": "attack",
+      "lowered": "special-attack"
+    },
+    {
+      "id": 12,
+      "name": "impish",
+      "label": "Impish",
+      "generations": ["III"],
+      "raised": "defense",
+      "lowered": "special-attack"
+    },
+    {
+      "id": 14,
+      "name": "careful",
+      "label": "Careful",
+      "generations": ["III"],
+      "raised": "special-defense",
+      "lowered": "special-attack"
+    },
+    {
+      "id": 15,
+      "name": "rash",
+      "label": "Rash",
+      "generations": ["III"],
+      "raised": "special-attack",
+      "lowered": "special-defense"
+    },
+    {
+      "id": 16,
+      "name": "jolly",
+      "label": "Jolly",
+      "generations": ["III"],
+      "raised": "speed",
+      "lowered": "special-attack"
+    },
+    {
+      "id": 17,
+      "name": "naughty",
+      "label": "Naughty",
+      "generations": ["III"],
+      "raised": "attack",
+      "lowered": "special-defense"
+    },
+    {
+      "id": 18,
+      "name": "lax",
+      "label": "Lax",
+      "generations": ["III"],
+      "raised": "defense",
+      "lowered": "special-defense"
+    },
+    {
+      "id": 20,
+      "name": "naive",
+      "label": "Naive",
+      "generations": ["III"],
+      "raised": "speed",
+      "lowered": "special-defense"
+    },
+    {
+      "id": 21,
+      "name": "brave",
+      "label": "Brave",
+      "generations": ["III"],
+      "raised": "attack",
+      "lowered": "speed"
+    },
+    {
+      "id": 22,
+      "name": "relaxed",
+      "label": "Relaxed",
+      "generations": ["III"],
+      "raised": "defense",
+      "lowered": "speed"
+    },
+    {
+      "id": 23,
+      "name": "quiet",
+      "label": "Quiet",
+      "generations": ["III"],
+      "raised": "special-attack",
+      "lowered": "speed"
+    },
+    {
+      "id": 24,
+      "name": "sassy",
+      "label": "Sassy",
+      "generations": ["III"],
+      "raised": "special-defense",
+      "lowered": "speed"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { migrateRoundSubjects } from '@/domain/quiz/subject';
 import { createTrainerProfile } from '@/domain/player/trainer-profile';
 import { buildQuestions } from '@/domain/quiz/question-generation';
 import { emptyQuestionHistory } from '@/domain/quiz/question-history';
@@ -26,19 +27,21 @@ import {
 import { readDailyResult, saveResult } from '@/lib/storage/results-storage';
 import { catalog } from '../../../tests/fixtures/catalog';
 import v1Fixture from '../../../tests/fixtures/player-backup.v1.json';
-
 const result: GameResult = {
   answers: [
     {
       category: 'identity',
       cluesUsed: 0,
       correct: true,
-      generation: 'I',
-      pokemonName: 'pikachu',
       points: 1000,
       questionType: 'pokedex-scan',
       responseMilliseconds: 1500,
       speedBonus: 2000,
+      subject: {
+        kind: 'pokemon' as const,
+        generation: 'I',
+        name: 'pikachu',
+      },
     },
   ],
   contentVersion: 8,
@@ -49,7 +52,6 @@ const result: GameResult = {
   score: 5000,
   scoreVersion: 3,
 };
-
 const populate = () => {
   saveResult({ kind: 'daily', date: '2026-09-07' }, result);
   const save = readPlayerSave();
@@ -87,7 +89,6 @@ const populate = () => {
     },
   });
 };
-
 const active = (
   overrides: Partial<Parameters<typeof writeActiveGame>[0]> = {},
 ) =>
@@ -106,13 +107,11 @@ const active = (
     seed: 'unfinished',
     ...overrides,
   });
-
 beforeEach(() => {
   localStorage.clear();
   sessionStorage.clear();
 });
 afterEach(() => vi.restoreAllMocks());
-
 it.each([
   [null, ''],
   ['', ''],
@@ -145,7 +144,6 @@ it.each([
     vi.unstubAllGlobals();
   }
 });
-
 it('round-trips every portable field and replaces rather than merges progress', () => {
   populate();
   const backup = parseBackup(JSON.stringify(createBackup()));
@@ -180,7 +178,6 @@ it('round-trips every portable field and replaces rather than merges progress', 
   expect(localStorage.getItem('unrelated')).toBe('keep');
   expect(JSON.stringify(backup)).not.toContain('device-only');
 });
-
 it('migrates all existing keys once and keeps the migrated save authoritative', () => {
   populate();
   const original = readPlayerSave().data;
@@ -210,7 +207,6 @@ it('migrates all existing keys once and keeps the migrated save authoritative', 
   expect(readPlayerSave().data).toEqual(migrated);
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(persisted);
 });
-
 it('keeps new-player settings and profile absent through a round trip', () => {
   const backup = createBackup();
   expect(backup.save.data.settings).toBeNull();
@@ -219,7 +215,6 @@ it('keeps new-player settings and profile absent through a round trip', () => {
   restoreBackup(backup);
   expect(readPlayerSave().data).toEqual(backup.save.data);
 });
-
 it.for<(backup: PlayerBackup) => void>([
   (backup) => Object.assign(backup, { format: 'other-app' }),
   (backup) => Object.assign(backup, { version: 99 }),
@@ -234,7 +229,12 @@ it.for<(backup: PlayerBackup) => void>([
       daily: {
         '2026-09-07': {
           ...result,
-          answers: [{ ...result.answers[0], generation: 'X' }],
+          answers: [
+            {
+              ...result.answers[0],
+              subject: { ...result.answers[0]?.subject, generation: 'X' },
+            },
+          ],
         },
       },
     }),
@@ -254,7 +254,6 @@ it.for<(backup: PlayerBackup) => void>([
   expect(() => parseBackup(JSON.stringify(backup))).toThrow();
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
 });
-
 it.for([[], ['unknown'], null, 'I'])(
   'rejects invalid backup selections without changing storage: %j',
   (value) => {
@@ -268,14 +267,12 @@ it.for([[], ['unknown'], null, 'I'])(
     }
   },
 );
-
 it('rejects malformed JSON and oversized files', () => {
   expect(() => parseBackup('{')).toThrow('valid JSON');
   expect(() => parseBackup(' '.repeat(MAX_BACKUP_BYTES + 1))).toThrow(
     'too large',
   );
 });
-
 it('revalidates a preview before committing it', () => {
   const backup = createBackup();
   backup.save.data.results.progress.masteryRounds = -1;
@@ -283,7 +280,6 @@ it('revalidates a preview before committing it', () => {
   expect(() => restoreBackup(backup)).toThrow();
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
 });
-
 it('leaves progress and the unfinished round unchanged when a restore write fails', () => {
   const backup = createBackup();
   populate();
@@ -297,7 +293,6 @@ it('leaves progress and the unfinished round unchanged when a restore write fail
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(before);
   expect(sessionStorage.getItem('quizmon.active-game.v1')).toBe(round);
 });
-
 it('does not replace a corrupt or newer existing save during normal play', () => {
   for (const raw of ['{', '{"version":99,"data":{"keep":"me"}}']) {
     localStorage.setItem(PLAYER_STORAGE_KEY, raw);
@@ -306,7 +301,6 @@ it('does not replace a corrupt or newer existing save during normal play', () =>
     expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(raw);
   }
 });
-
 it('preserves legacy bytes when migration cannot write, while allowing export', () => {
   localStorage.setItem(
     'quizmon.results.v2',
@@ -320,7 +314,6 @@ it('preserves legacy bytes when migration cannot write, while allowing export', 
   expect(localStorage.getItem('quizmon.results.v2')).toBe(legacy);
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBeNull();
 });
-
 it('preserves damaged legacy data instead of migrating empty progress over it', () => {
   localStorage.setItem('quizmon.results.v2', '{');
   expect(() => createBackup()).toThrow();
@@ -328,7 +321,6 @@ it('preserves damaged legacy data instead of migrating empty progress over it', 
   expect(localStorage.getItem('quizmon.results.v2')).toBe('{');
   expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBeNull();
 });
-
 it('invalidates an old active round even when session removal is blocked', () => {
   const backup = createBackup();
   active();
@@ -339,7 +331,6 @@ it('invalidates an old active round even when session removal is blocked', () =>
   expect(sessionStorage.getItem('quizmon.active-game.v1')).not.toBeNull();
   expect(readActiveGame(catalog)).toBeNull();
 });
-
 it('notifies another tab on restore, but not ordinary saves', () => {
   const onRestore = vi.fn();
   const stop = subscribeToPlayerRestore(onRestore);
@@ -367,17 +358,15 @@ it('notifies another tab on restore, but not ordinary saves', () => {
   expect(onRestore).toHaveBeenCalledOnce();
   stop();
 });
-
 it('does not save a stale round again while the tab unloads after restore', () => {
   const backup = createBackup();
   restoreBackup(backup);
   active({ seed: 'stale', playerRestoreId: null });
   expect(sessionStorage.getItem('quizmon.active-game.v1')).toBeNull();
 });
-
 it('keeps the published version 1 fixture readable without losing fields', () => {
   const backup = parseBackup(JSON.stringify(v1Fixture));
-  expect(backup.save.version).toBe(4);
+  expect(backup.save.version).toBe(5);
   expect(backup.save.data).toEqual({
     ...v1Fixture.save.data,
     settings: {
@@ -388,6 +377,16 @@ it('keeps the published version 1 fixture readable without losing fields', () =>
     },
     results: {
       ...v1Fixture.save.data.results,
+      daily: Object.fromEntries(
+        Object.entries(v1Fixture.save.data.results.daily).map(
+          ([key, value]) => [key, migrateRoundSubjects(value)],
+        ),
+      ),
+      training: Object.fromEntries(
+        Object.entries(v1Fixture.save.data.results.training).map(
+          ([key, value]) => [key, migrateRoundSubjects(value)],
+        ),
+      ),
       progress: {
         ...v1Fixture.save.data.results.progress,
         quickAttackRounds: 1,
@@ -407,7 +406,6 @@ it('keeps the published version 1 fixture readable without losing fields', () =>
   restoreBackup(backup);
   expect(readPlayerSave().data).toEqual(backup.save.data);
 });
-
 it('preserves temporarily unavailable custom families through backup restore', () => {
   const backup = createBackup();
   backup.save.data.settings = {
@@ -422,7 +420,6 @@ it('preserves temporarily unavailable custom families through backup restore', (
     backup.save.data.settings,
   );
 });
-
 it.each([
   { category: 'identity', correct: true, points: 1000 },
   { category: 'cry', correct: false, points: 0 },
@@ -433,7 +430,15 @@ it.each([
     points: 1000,
     questionType: 'evolution-trail',
   },
-  { ...result.answers[0], pokemonName: undefined, questionType: 'battle-view' },
+  {
+    ...result.answers[0],
+    questionType: 'battle-view',
+    subject: {
+      ...result.answers[0]?.subject,
+      kind: 'pokemon' as const,
+      name: undefined,
+    },
+  },
   { ...result.answers[0], questionType: 'evolution-order' },
 ])('migrates historical answers without inventing metadata (%#)', (answer) => {
   populate();

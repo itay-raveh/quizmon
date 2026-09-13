@@ -11,6 +11,7 @@ export const questionCategories = [
   'evolution',
   'identity',
   'matchup',
+  'knowledge',
   'move',
   'stat',
   'type',
@@ -49,7 +50,7 @@ export interface PokemonSearchOption {
 
 type QuestionVisual =
   | {
-      kind: 'evolution-link';
+      kind: 'evolution-link' | 'evolution-endpoints';
       before: string;
       after: string;
       stages: Record<string, PokemonOptionVisual>;
@@ -97,7 +98,34 @@ export interface QuestionRepetition {
   distractors: string[];
 }
 
+export const subjectKinds = [
+  'pokemon',
+  'item',
+  'move',
+  'ability',
+  'location',
+  'nature',
+  'berry',
+] as const;
+
+export interface AnswerSubject {
+  kind: (typeof subjectKinds)[number];
+  name?: string;
+  generation?: Generation;
+}
+
+export interface QuestionSubject extends AnswerSubject {
+  name: string;
+  generation: Generation;
+  types?: string[];
+}
+
 export interface QuestionData {
+  optionLabels?: Record<string, string>;
+  optionImages?: Record<string, string>;
+  optionReveals?: Record<string, string>;
+  explanation?: string;
+  context?: string;
   variantLevel?: Difficulty;
   rulesVersion?: number;
   namesOnly?: boolean;
@@ -113,7 +141,7 @@ export interface QuestionData {
     string | { kind: 'generation'; generation: Generation; types: string[] }
   )[];
   concealOptionLabels?: boolean;
-  generation: Generation;
+  subject: QuestionSubject;
   id: string;
   media: QuestionMedia;
   options: string[];
@@ -122,8 +150,6 @@ export interface QuestionData {
   optionGenerations?: Record<string, Generation>;
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
-  pokemonName: string;
-  pokemonTypes: string[];
   prompt: QuestionPrompt;
   questionType: keyof typeof questionLabels;
   searchOptions?: PokemonSearchOption[];
@@ -147,8 +173,7 @@ export interface SavedAnswerResult {
   unassistedSearch?: boolean;
   cluesUsed?: number;
   correct: boolean;
-  generation?: Generation;
-  pokemonName?: string;
+  subject?: AnswerSubject;
   points: number;
   questionType?:
     QuestionData['questionType'] | (typeof legacyQuestionTypes)[number];
@@ -159,8 +184,7 @@ export interface SavedAnswerResult {
 export interface AnswerResult extends SavedAnswerResult {
   category: QuestionCategory;
   cluesUsed: number;
-  generation: Generation;
-  pokemonName: string;
+  subject: AnswerSubject;
   questionType: QuestionData['questionType'];
 }
 

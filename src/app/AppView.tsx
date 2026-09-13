@@ -25,9 +25,7 @@ import type { usePokemonCatalog } from '@/hooks/usePokemonCatalog';
 import { SoundProvider } from '@/lib/audio/SoundProvider';
 import type { GameSession } from './game-session';
 import type { useGameNavigation } from './useGameNavigation';
-
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
-
 interface QuestionView {
   assistance: (count: number) => void;
   answer: (answer: AnswerResult) => void;
@@ -36,7 +34,6 @@ interface QuestionView {
   pauseTimer: () => number;
   recordAnswer: (answer: AnswerResult) => void;
 }
-
 interface AppViewProps {
   catalogState: CatalogState;
   daily: ReturnType<typeof useDailyChallenge>;
@@ -50,7 +47,6 @@ interface AppViewProps {
   trainer: ReturnType<typeof useTrainerCard>;
   training: ReturnType<typeof useTrainingGame>;
 }
-
 const AppScreen = ({
   catalogState,
   daily,
@@ -75,7 +71,6 @@ const AppScreen = ({
       />
     );
   }
-
   const leagueUnlocked =
     session.phase === 'landing' && isLeagueUnlocked(trainer.stats);
   const leagueVictory =
@@ -109,7 +104,6 @@ const AppScreen = ({
       />
     );
   }
-
   if (session.phase === 'landing') {
     return (
       <>
@@ -136,13 +130,14 @@ const AppScreen = ({
       </>
     );
   }
-
   if (session.phase === 'questions') {
     const currentQuestion = session.questions[session.questionIndex];
     return currentQuestion ? (
       <QuestionScreen
         answerPokemon={
-          catalogState.catalog?.pokemon[currentQuestion.pokemonName]
+          currentQuestion.subject.kind === 'pokemon'
+            ? catalogState.catalog?.pokemon[currentQuestion.subject.name]
+            : undefined
         }
         typeRelations={catalogState.catalog?.typeRelations}
         answerFlow={session.settings.answerFlow}
@@ -167,7 +162,6 @@ const AppScreen = ({
       />
     ) : null;
   }
-
   return (
     <ResultsScreen
       bestResult={session.bestResult}
@@ -194,7 +188,6 @@ const AppScreen = ({
     />
   );
 };
-
 const AppOverlays = ({
   catalogState,
   settings,
@@ -241,7 +234,6 @@ const AppOverlays = ({
     ) : null}
   </>
 );
-
 export const AppView = (props: AppViewProps) => (
   <MotionProvider reduceMotion={props.settings.reduceMotion}>
     <SoundProvider

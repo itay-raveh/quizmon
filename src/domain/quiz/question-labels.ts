@@ -1,6 +1,27 @@
 import type { QuestionData, SavedAnswerResult } from './types';
 
 export const questionLabels = {
+  'item-identification': 'Item identification',
+  'medicine-cabinet': 'Medicine cabinet',
+  'evolution-items': 'Evolution items',
+  'weight-comparison': 'Weight comparison',
+  'height-comparison': 'Height comparison',
+  'move-types': 'Move types',
+  'name-that-region': 'Name that region',
+  'move-purpose': 'Move purpose',
+  'baby-pokemon': 'Baby Pokémon',
+  'pokedex-categories': 'Pokédex categories',
+  'evolution-conditions': 'Evolution conditions',
+  'ability-effects': 'Ability effects',
+  'held-item-effects': 'Held-item effects',
+  'hidden-abilities': 'Hidden abilities',
+  'nature-effects': 'Nature effects',
+  'egg-group-connections': 'Egg-group connections',
+  'ev-yields': 'EV yields',
+  'encounter-locations': 'Encounter locations',
+  'berry-flavors': 'Berry flavors',
+  'natural-gift': 'Natural Gift',
+
   'pokedex-scan': 'Pokédex scan',
   'sprite-match': 'Sprite match',
   'silhouette-match': 'Silhouette match',
@@ -25,6 +46,7 @@ export const questionLabels = {
 } as const;
 
 const categoryLabels: Record<SavedAnswerResult['category'], string> = {
+  knowledge: 'General knowledge',
   ability: questionLabels['ability-check'],
   champion: questionLabels.champion,
   cry: 'Pokémon cry',

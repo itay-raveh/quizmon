@@ -1,3 +1,8 @@
+import {
+  isAnswerSubject,
+  migrateRoundSubjects,
+  migrateSubject,
+} from '../../domain/quiz/subject';
 import { generations, type PokemonCatalog } from '../../domain/pokemon/types';
 import {
   isQuestionData,
@@ -32,7 +37,6 @@ import {
   writeStoredJson,
 } from './browser-storage';
 import { readPlayerSave } from './player-storage';
-
 const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 const ACTIVE_GAME_VERSION = 2;
 const DAILY_ATTEMPTS_KEY = 'quizmon.daily-attempts.v1';
@@ -46,7 +50,6 @@ export interface ActiveGameSnapshot extends QuestionLineup {
   playerRestoreId?: string | null;
   version: number;
 }
-
 const parseMode = (value: unknown): GameMode | null => {
   if (!isRecord(value)) return null;
   if (value.kind === 'training') return { kind: 'training' };
@@ -61,16 +64,14 @@ const parseMode = (value: unknown): GameMode | null => {
   }
   return null;
 };
-
-const parseAnswer = (value: unknown): AnswerResult | null => {
+const parseAnswer = (input: unknown): AnswerResult | null => {
+  const value = migrateSubject(input);
   if (
     !isRecord(value) ||
     !isChoice(value.category, questionCategories) ||
     !isNonnegativeInteger(value.cluesUsed) ||
     typeof value.correct !== 'boolean' ||
-    !isChoice(value.generation, generations) ||
-    typeof value.pokemonName !== 'string' ||
-    value.pokemonName.length === 0 ||
+    !isAnswerSubject(value.subject) ||
     !isFiniteNonnegative(value.points) ||
     (value.questionType !== 'champion' &&
       !isChoice(value.questionType, questionTypes)) ||
@@ -80,7 +81,6 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
   ) {
     return null;
   }
-
   return {
     category: value.category,
     cluesUsed: value.cluesUsed,
@@ -88,17 +88,15 @@ const parseAnswer = (value: unknown): AnswerResult | null => {
       ? { unassistedSearch: value.unassistedSearch }
       : {}),
     correct: value.correct,
-    generation: value.generation,
-    pokemonName: value.pokemonName,
     points: value.points,
     questionType: value.questionType,
     ...(value.responseMilliseconds === undefined
       ? {}
       : { responseMilliseconds: value.responseMilliseconds }),
     ...(value.speedBonus === undefined ? {} : { speedBonus: value.speedBonus }),
+    subject: value.subject,
   };
 };
-
 const parseGameSettings = (value: unknown): GameSettings | null => {
   if (
     !isRecord(value) ||
@@ -108,7 +106,6 @@ const parseGameSettings = (value: unknown): GameSettings | null => {
   ) {
     return null;
   }
-
   const settings = normalizeGameSettings(value);
   if (value.difficulty === undefined) {
     delete settings.difficulty;
@@ -116,8 +113,8 @@ const parseGameSettings = (value: unknown): GameSettings | null => {
   }
   return settings;
 };
-
-const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
+const parseSnapshot = (input: unknown): ActiveGameSnapshot | null => {
+  const value = migrateRoundSubjects(input);
   if (
     !isRecord(value) ||
     value.version !== ACTIVE_GAME_VERSION ||
@@ -140,13 +137,11 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
   ) {
     return null;
   }
-
   const mode = parseMode(value.mode);
   const settings = parseGameSettings(value.modifiers ?? value.settings);
   const answers = value.answers.map(parseAnswer);
   if (!mode || !settings || !answers.every((answer) => answer !== null))
     return null;
-
   return {
     questions: value.questions,
     ...(value.roundId === undefined ? {} : { roundId: value.roundId }),
@@ -162,10 +157,8 @@ const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
     version: value.version,
   };
 };
-
 export const hasActiveGame = (): boolean =>
   readStoredJson('sessionStorage', ACTIVE_GAME_KEY) !== null;
-
 const normalizeQuestionPokemon = (
   question: QuestionData,
   catalog: PokemonCatalog,
@@ -179,18 +172,22 @@ const normalizeQuestionPokemon = (
   const numberedPokemon = [
     ...namedPokemon.map((pokemon) => [pokemon.name, pokemon] as const),
     ...Object.entries(question.optionVisuals ?? {}),
-    ...(visual?.kind === 'evolution-link' ? Object.entries(visual.stages) : []),
+    ...(visual?.kind === 'evolution-link' ||
+    visual?.kind === 'evolution-endpoints'
+      ? Object.entries(visual.stages)
+      : []),
   ];
   const names = [
     ...getQuestionPokemon(question, true),
-    ...question.repetition.subjects,
+    ...(question.subject.kind === 'pokemon'
+      ? question.repetition.subjects
+      : []),
     ...question.repetition.primary,
     ...question.repetition.distractors,
     ...numberedPokemon.map(([name]) => name),
     ...Object.keys(optionDexNumbers ?? {}),
   ];
   if (names.some((name) => !Object.hasOwn(catalog.pokemon, name))) return false;
-
   // The snapshot is freshly parsed, so normalization cannot mutate live state.
   for (const [name, pokemon] of numberedPokemon)
     pokemon.dexNumber = catalog.pokemon[name]!.speciesId;
@@ -199,7 +196,6 @@ const normalizeQuestionPokemon = (
       optionDexNumbers[name] = catalog.pokemon[name]!.speciesId;
   return true;
 };
-
 export const readActiveGame = (
   catalog: PokemonCatalog,
 ): ActiveGameSnapshot | null => {
@@ -223,9 +219,10 @@ export const readActiveGame = (
       const question = snapshot.questions[index];
       return (
         answer.category === question?.category &&
-        answer.generation === question.generation &&
+        answer.subject.kind === question.subject.kind &&
+        answer.subject.generation === question.subject.generation &&
         answer.questionType === question.questionType &&
-        answer.pokemonName === question.pokemonName
+        answer.subject.name === question.subject.name
       );
     })
   ) {
@@ -234,7 +231,6 @@ export const readActiveGame = (
   }
   return snapshot;
 };
-
 export const writeActiveGame = (
   snapshot: Omit<ActiveGameSnapshot, 'version'>,
 ): boolean => {
@@ -272,11 +268,9 @@ export const writeActiveGame = (
     return false;
   }
 };
-
 export const clearActiveGame = (): void => {
   removeStoredValue('sessionStorage', ACTIVE_GAME_KEY);
 };
-
 export const readDailyAttempts = (
   date: string,
   restoreId: string | null,
@@ -298,7 +292,6 @@ export const readDailyAttempts = (
   }
   return attempts;
 };
-
 export const clearDailyAttempt = (date: string, track: DailyTrack): void => {
   const attempts = readStoredJson('localStorage', DAILY_ATTEMPTS_KEY);
   if (!isRecord(attempts)) return;

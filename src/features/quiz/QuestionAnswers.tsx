@@ -14,20 +14,19 @@ import type { QuestionData } from '@/domain/quiz/types';
 import { Fragment } from 'react';
 import { TypeAnswerPicker } from './TypeAnswerPicker';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
-
 const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
+  'move-types',
+  'natural-gift',
   'evolution-shift',
   'type-check',
   'type-matchup',
 ]);
-
 const optionTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
   'counter-pick',
   'odd-one-out',
   'type-roundup',
   'type-twins',
 ]);
-
 interface QuestionAnswersProps {
   typeRelations?: PokemonCatalog['typeRelations'];
   answered: boolean;
@@ -35,7 +34,6 @@ interface QuestionAnswersProps {
   question: QuestionData;
   selectedOptions: readonly string[];
 }
-
 export const QuestionAnswers = ({
   typeRelations,
   answered,
@@ -60,7 +58,6 @@ export const QuestionAnswers = ({
     question.visual?.kind === 'stat-showdown'
       ? question.visual.stat
       : undefined;
-
   if (hasTypeOptionBadges && multiSelect && question.options.length > 4) {
     return (
       <TypeAnswerPicker
@@ -72,11 +69,15 @@ export const QuestionAnswers = ({
       />
     );
   }
-
   return (
     <div
       className={[
         'answers',
+        question.options.some(
+          (option) => (question.optionLabels?.[option]?.length ?? 0) > 75,
+        )
+          ? 'answers--statements'
+          : '',
         question.optionVisuals && !concealedMedia ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
@@ -85,6 +86,12 @@ export const QuestionAnswers = ({
         .join(' ')}
     >
       {question.options.map((option, index) => {
+        const label =
+          question.optionLabels?.[option] ?? formatPokemonName(option);
+        const reveal = answered ? question.optionReveals?.[option] : undefined;
+        const itemImage = !question.namesOnly
+          ? question.optionImages?.[option]
+          : undefined;
         const optionVisual = question.optionVisuals?.[option];
         const visual = concealedMedia
           ? undefined
@@ -157,7 +164,6 @@ export const QuestionAnswers = ({
           ) : (
             index + 1
           );
-
         const attackTypes = typeRelations
           ? question.questionType === 'type-matchup'
             ? [option]
@@ -170,17 +176,22 @@ export const QuestionAnswers = ({
             aria-label={
               concealed
                 ? `${visual?.silhouette ? 'Silhouette' : 'Sprite'} ${index + 1}`
-                : `${formatPokemonName(option)}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
+                : `${label}${reveal ? `. ${reveal}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
             }
-            aria-keyshortcuts={index < 9 ? String(index + 1) : undefined}
+            aria-keyshortcuts={
+              question.options.length <= 9 ? String(index + 1) : undefined
+            }
             aria-pressed={multiSelect ? optionSelected : undefined}
-            className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+            className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             disabled={answered}
             key={option}
             onClick={() => onSelect(option)}
             sound="none"
           >
             <kbd aria-hidden="true">{selectionMark}</kbd>
+            {itemImage ? (
+              <PixelSprite className="answer__item-sprite" src={itemImage} />
+            ) : null}
             {visual ? (
               <>
                 <span className="answer__sprite-field" aria-hidden="true">
@@ -237,7 +248,7 @@ export const QuestionAnswers = ({
               </PokemonIdentity>
             ) : (
               <span className="answer__text">
-                <span>{formatPokemonName(option)}</span>
+                <span>{label}</span>
                 {question.namesOnly &&
                 ((reservesOptionTypes && optionVisual) ||
                   classification ||
@@ -258,6 +269,7 @@ export const QuestionAnswers = ({
                 ) : null}
               </span>
             )}
+            {reveal ? <span className="answer__reveal">{reveal}</span> : null}
           </GameButton>
         );
         return attackTypes && typeRelations ? (
@@ -271,7 +283,7 @@ export const QuestionAnswers = ({
                 option={option}
                 isTypeOption={question.questionType === 'type-matchup'}
                 attackTypes={attackTypes}
-                defenderTypes={question.pokemonTypes}
+                defenderTypes={question.subject.types ?? []}
                 typeRelations={typeRelations}
               />
             ) : null}

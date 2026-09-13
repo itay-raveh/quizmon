@@ -32,10 +32,13 @@ import {
 } from './question-history';
 import { isQuestionData, isQuestionLineup } from './question-lineup';
 import type { QuestionBuilder, QuestionDraft } from './questions/context';
-import { questionTypes } from './questions/definitions';
+import { questionTypes as registeredQuestionTypes } from './questions/definitions';
+import { expansionVariants } from './question-expansion-variants';
+const questionTypes = registeredQuestionTypes.filter(
+  (type) => !Object.hasOwn(expansionVariants, type),
+);
 import { optionSetRepetition, targetRepetition } from './questions/repetition';
 import type { QuestionType } from './types';
-
 const genFive: Generation[] = ['I', 'II', 'III', 'IV', 'V'];
 const generate = (
   type: QuestionType,
@@ -56,12 +59,10 @@ const generate = (
     count,
     history,
   );
-
 beforeEach(() => {
   localStorage.clear();
   sessionStorage.clear();
 });
-
 it('retains history when generation selections change', () => {
   const initial = generate(
     'evolution-shift',
@@ -87,7 +88,6 @@ it('retains history when generation selections change', () => {
     new Set([...initial, ...expanded, ...restricted].map(getQuestionKey)).size,
   ).toBe(30);
 });
-
 it('counts only displayed questions and makes duplicate exposure notifications harmless', async () => {
   const questions = generate(
     'evolution-shift',
@@ -103,12 +103,11 @@ it('counts only displayed questions and makes duplicate exposure notifications h
     getQuestionKey(questions[0]!),
   ]);
   const next = generate('evolution-shift', history, 'after-abandon', 39);
-  expect(next.map(({ pokemonName }) => pokemonName)).not.toContain(
-    questions[0]!.pokemonName,
+  expect(next.map(({ subject }) => subject?.name)).not.toContain(
+    questions[0]!.subject.name,
   );
   expect(new Set(next.map(getQuestionKey)).size).toBe(39);
 });
-
 it('tracks all correct Pokémon in Legend Hunt and covers the restricted species pool', () => {
   let history = emptyQuestionHistory();
   const seen = new Set<string>();
@@ -139,7 +138,6 @@ it('tracks all correct Pokémon in Legend Hunt and covers the restricted species
   }
   expect(seen.size).toBe(total);
 });
-
 it('does not confuse button order or sprite crops with a new question', () => {
   const question = generate('pixel-peek')[0]!;
   const changed = {
@@ -157,15 +155,18 @@ it('does not confuse button order or sprite crops with a new question', () => {
   const group = generate('legend-hunt')[0]!;
   const reordered = {
     ...group,
-    pokemonName: group.answer.correctOptions[1]!,
     options: group.options.toReversed(),
+    subject: {
+      ...group.subject,
+      kind: 'pokemon' as const,
+      name: group.answer.correctOptions[1]!,
+    },
   };
   reordered.repetition = optionSetRepetition({ subjects: 'correct' })(
     reordered,
   );
   expect(getQuestionKey(reordered)).toBe(getQuestionKey(group));
 });
-
 it('distinguishes stat and matchup questions while keeping related Pokémon exposure', () => {
   const stat = generate('stat-showdown')[0]!;
   expect.assert(
@@ -197,14 +198,12 @@ it('distinguishes stat and matchup questions while keeping related Pokémon expo
   expect(exposure.primary).toHaveLength(3);
   expect(exposure.distractors).toHaveLength(3);
 });
-
 it('avoids recently featured Pokémon across question formats', () => {
   const question = generate('pokedex-scan')[0]!;
   const history = rememberQuestion(emptyQuestionHistory(), question);
   const next = generate('silhouette-match', history, 'different-format')[0]!;
-  expect(next.repetition.primary).not.toContain(question.pokemonName);
+  expect(next.repetition.primary).not.toContain(question.subject.name);
 });
-
 it.each(questionTypes)(
   'generates valid %s questions across repeated games',
   (type) => {
@@ -225,7 +224,6 @@ it.each(questionTypes)(
   },
   15000,
 );
-
 it('round-trips history and frozen lineups through saves and backup restore', async () => {
   const questions = generate(
     'evolution-shift',
@@ -269,7 +267,6 @@ it('round-trips history and frozen lineups through saves and backup restore', as
   expect(readActiveGame(catalog)?.questions).toEqual(questions);
   expect(readActiveGame(catalog)?.version).toBe(2);
 });
-
 it('keeps Daily independent of personal history and rotates Champion targets across dates', () => {
   const first = buildDailyQuestions(catalog, '2026-09-08');
   updatePlayerData({
@@ -283,11 +280,10 @@ it('keeps Daily independent of personal history and rotates Champion targets acr
       .slice(0, 10);
     const questions = buildDailyQuestions(catalog, date);
     expect(questions.every(isQuestionData)).toBe(true);
-    champions.add(questions.at(-1)!.pokemonName);
+    champions.add(questions.at(-1)!.subject.name);
   }
   expect(champions.size).toBe(45);
 }, 15000);
-
 it('rejects corrupt history and stops stale exposure events from moving history backwards', () => {
   const question = generate('evolution-shift')[0]!;
   const history = rememberShownQuestion(
@@ -315,7 +311,6 @@ it('rejects corrupt history and stops stale exposure events from moving history 
   ).toBe(false);
   expect(isQuestionHistory({ ...history, subjects: { bad: '1' } })).toBe(false);
 });
-
 it('retains the most recent round receipts rather than the rounds with the most answers', () => {
   const question = generate('evolution-shift')[0]!;
   let history = rememberShownQuestion(
@@ -339,7 +334,6 @@ it('retains the most recent round receipts rather than the rounds with the most 
   );
   expect(isQuestionHistory(history)).toBe(true);
 });
-
 it('cycles all 40 Evolution Shift targets in oldest-first order over twenty games', () => {
   let history = emptyQuestionHistory();
   const last = new Map<string, number>();
@@ -353,16 +347,15 @@ it('cycles all 40 Evolution Shift targets in oldest-first order over twenty game
     );
     expect(questions).toHaveLength(10);
     for (const question of questions) {
-      const previous = last.get(question.pokemonName);
+      const previous = last.get(question.subject.name);
       if (previous !== undefined) expect(position - previous).toBe(40);
-      last.set(question.pokemonName, position++);
+      last.set(question.subject.name, position++);
       history = rememberQuestion(history, question);
     }
   }
   expect(history.sequence).toBe(200);
   expect(last.size).toBe(40);
 }, 15000);
-
 it.each(['legend-hunt', 'stat-showdown'] as const)(
   'keeps assembled %s sets varied over 200 questions',
   (type) => {
@@ -380,7 +373,6 @@ it.each(['legend-hunt', 'stat-showdown'] as const)(
   },
   30000,
 );
-
 it('uses explicit metadata for a future format without knowing its presentation', () => {
   const question = {
     questionType: 'future-format',
@@ -409,7 +401,6 @@ it('uses explicit metadata for a future format without knowing its presentation'
     }),
   ).toBe(0);
 });
-
 it('requires builders and saved questions to provide repeat metadata', () => {
   const question = generate('pokedex-scan')[0]!;
   const { repetition, ...withoutRepetition } = question;
@@ -438,7 +429,6 @@ it('requires builders and saved questions to provide repeat metadata', () => {
     expect(isQuestionData({ ...question, repetition: invalid })).toBe(false);
   }
 });
-
 it('does not tie persisted history or lineups to the current catalog size', () => {
   const question = generate('pokedex-scan')[0]!;
   expect(
@@ -472,7 +462,6 @@ it('does not tie persisted history or lineups to the current catalog size', () =
     }),
   ).toBe(false);
 });
-
 it('rejects unknown visual and media variants in persisted questions', () => {
   const question = generate('pokedex-scan')[0]!;
   expect(

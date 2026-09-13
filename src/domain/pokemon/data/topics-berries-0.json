@@ -1,0 +1,720 @@
+{
+  "contentVersion": 18,
+  "key": "berries",
+  "values": [
+    {
+      "id": 1,
+      "name": "cheri",
+      "label": "Cheri",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "cheri-berry",
+      "flavors": { "spicy": 10, "dry": 0, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "fire"
+    },
+    {
+      "id": 2,
+      "name": "chesto",
+      "label": "Chesto",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "chesto-berry",
+      "flavors": { "spicy": 0, "dry": 10, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "water"
+    },
+    {
+      "id": 3,
+      "name": "pecha",
+      "label": "Pecha",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "pecha-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 10, "bitter": 0, "sour": 0 },
+      "giftType": "electric"
+    },
+    {
+      "id": 4,
+      "name": "rawst",
+      "label": "Rawst",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "rawst-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 10, "sour": 0 },
+      "giftType": "grass"
+    },
+    {
+      "id": 5,
+      "name": "aspear",
+      "label": "Aspear",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "aspear-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 0, "sour": 10 },
+      "giftType": "ice"
+    },
+    {
+      "id": 6,
+      "name": "leppa",
+      "label": "Leppa",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "leppa-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 0,
+        "sweet": 10,
+        "bitter": 10,
+        "sour": 10
+      },
+      "giftType": "fighting"
+    },
+    {
+      "id": 7,
+      "name": "oran",
+      "label": "Oran",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "oran-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 10,
+        "sweet": 0,
+        "bitter": 10,
+        "sour": 10
+      },
+      "giftType": "poison"
+    },
+    {
+      "id": 8,
+      "name": "persim",
+      "label": "Persim",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "persim-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 10,
+        "sweet": 10,
+        "bitter": 0,
+        "sour": 10
+      },
+      "giftType": "ground"
+    },
+    {
+      "id": 9,
+      "name": "lum",
+      "label": "Lum",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "lum-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 10,
+        "sweet": 10,
+        "bitter": 10,
+        "sour": 0
+      },
+      "giftType": "flying"
+    },
+    {
+      "id": 10,
+      "name": "sitrus",
+      "label": "Sitrus",
+      "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "sitrus-berry",
+      "flavors": {
+        "spicy": 0,
+        "dry": 10,
+        "sweet": 10,
+        "bitter": 10,
+        "sour": 10
+      },
+      "giftType": "psychic"
+    },
+    {
+      "id": 11,
+      "name": "figy",
+      "label": "Figy",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "figy-berry",
+      "flavors": { "spicy": 15, "dry": 0, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "bug"
+    },
+    {
+      "id": 12,
+      "name": "wiki",
+      "label": "Wiki",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "wiki-berry",
+      "flavors": { "spicy": 0, "dry": 15, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "rock"
+    },
+    {
+      "id": 13,
+      "name": "mago",
+      "label": "Mago",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "mago-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 15, "bitter": 0, "sour": 0 },
+      "giftType": "ghost"
+    },
+    {
+      "id": 14,
+      "name": "aguav",
+      "label": "Aguav",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "aguav-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 15, "sour": 0 },
+      "giftType": "dragon"
+    },
+    {
+      "id": 15,
+      "name": "iapapa",
+      "label": "Iapapa",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "iapapa-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 0, "sour": 15 },
+      "giftType": "dark"
+    },
+    {
+      "id": 16,
+      "name": "razz",
+      "label": "Razz",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "razz-berry",
+      "flavors": { "spicy": 10, "dry": 10, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "steel"
+    },
+    {
+      "id": 17,
+      "name": "bluk",
+      "label": "Bluk",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "bluk-berry",
+      "flavors": { "spicy": 0, "dry": 10, "sweet": 10, "bitter": 0, "sour": 0 },
+      "giftType": "fire"
+    },
+    {
+      "id": 18,
+      "name": "nanab",
+      "label": "Nanab",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "nanab-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 10, "bitter": 10, "sour": 0 },
+      "giftType": "water"
+    },
+    {
+      "id": 19,
+      "name": "wepear",
+      "label": "Wepear",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "wepear-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 10, "sour": 10 },
+      "giftType": "electric"
+    },
+    {
+      "id": 20,
+      "name": "pinap",
+      "label": "Pinap",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "pinap-berry",
+      "flavors": { "spicy": 10, "dry": 0, "sweet": 0, "bitter": 0, "sour": 10 },
+      "giftType": "grass"
+    },
+    {
+      "id": 21,
+      "name": "pomeg",
+      "label": "Pomeg",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "pomeg-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 0,
+        "sweet": 10,
+        "bitter": 10,
+        "sour": 0
+      },
+      "giftType": "ice"
+    },
+    {
+      "id": 22,
+      "name": "kelpsy",
+      "label": "Kelpsy",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "kelpsy-berry",
+      "flavors": {
+        "spicy": 0,
+        "dry": 10,
+        "sweet": 0,
+        "bitter": 10,
+        "sour": 10
+      },
+      "giftType": "fighting"
+    },
+    {
+      "id": 23,
+      "name": "qualot",
+      "label": "Qualot",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "qualot-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 0,
+        "sweet": 10,
+        "bitter": 0,
+        "sour": 10
+      },
+      "giftType": "poison"
+    },
+    {
+      "id": 24,
+      "name": "hondew",
+      "label": "Hondew",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "hondew-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 10,
+        "sweet": 0,
+        "bitter": 10,
+        "sour": 0
+      },
+      "giftType": "ground"
+    },
+    {
+      "id": 25,
+      "name": "grepa",
+      "label": "Grepa",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "grepa-berry",
+      "flavors": {
+        "spicy": 0,
+        "dry": 10,
+        "sweet": 10,
+        "bitter": 0,
+        "sour": 10
+      },
+      "giftType": "flying"
+    },
+    {
+      "id": 26,
+      "name": "tamato",
+      "label": "Tamato",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "tamato-berry",
+      "flavors": { "spicy": 20, "dry": 10, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "psychic"
+    },
+    {
+      "id": 27,
+      "name": "cornn",
+      "label": "Cornn",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "cornn-berry",
+      "flavors": { "spicy": 0, "dry": 20, "sweet": 10, "bitter": 0, "sour": 0 },
+      "giftType": "bug"
+    },
+    {
+      "id": 28,
+      "name": "magost",
+      "label": "Magost",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "magost-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 20, "bitter": 10, "sour": 0 },
+      "giftType": "rock"
+    },
+    {
+      "id": 29,
+      "name": "rabuta",
+      "label": "Rabuta",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "rabuta-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 20, "sour": 10 },
+      "giftType": "ghost"
+    },
+    {
+      "id": 30,
+      "name": "nomel",
+      "label": "Nomel",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "nomel-berry",
+      "flavors": { "spicy": 10, "dry": 0, "sweet": 0, "bitter": 0, "sour": 20 },
+      "giftType": "dragon"
+    },
+    {
+      "id": 31,
+      "name": "spelon",
+      "label": "Spelon",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "spelon-berry",
+      "flavors": { "spicy": 30, "dry": 10, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "dark"
+    },
+    {
+      "id": 32,
+      "name": "pamtre",
+      "label": "Pamtre",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "pamtre-berry",
+      "flavors": { "spicy": 0, "dry": 30, "sweet": 10, "bitter": 0, "sour": 0 },
+      "giftType": "steel"
+    },
+    {
+      "id": 33,
+      "name": "watmel",
+      "label": "Watmel",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "watmel-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 30, "bitter": 10, "sour": 0 },
+      "giftType": "fire"
+    },
+    {
+      "id": 34,
+      "name": "durin",
+      "label": "Durin",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "durin-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 30, "sour": 10 },
+      "giftType": "water"
+    },
+    {
+      "id": 35,
+      "name": "belue",
+      "label": "Belue",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "belue-berry",
+      "flavors": { "spicy": 10, "dry": 0, "sweet": 0, "bitter": 0, "sour": 30 },
+      "giftType": "electric"
+    },
+    {
+      "id": 36,
+      "name": "occa",
+      "label": "Occa",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "occa-berry",
+      "flavors": { "spicy": 15, "dry": 0, "sweet": 10, "bitter": 0, "sour": 0 },
+      "giftType": "fire"
+    },
+    {
+      "id": 37,
+      "name": "passho",
+      "label": "Passho",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "passho-berry",
+      "flavors": { "spicy": 0, "dry": 15, "sweet": 0, "bitter": 10, "sour": 0 },
+      "giftType": "water"
+    },
+    {
+      "id": 38,
+      "name": "wacan",
+      "label": "Wacan",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "wacan-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 15, "bitter": 0, "sour": 10 },
+      "giftType": "electric"
+    },
+    {
+      "id": 39,
+      "name": "rindo",
+      "label": "Rindo",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "rindo-berry",
+      "flavors": { "spicy": 10, "dry": 0, "sweet": 0, "bitter": 15, "sour": 0 },
+      "giftType": "grass"
+    },
+    {
+      "id": 40,
+      "name": "yache",
+      "label": "Yache",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "yache-berry",
+      "flavors": { "spicy": 0, "dry": 10, "sweet": 0, "bitter": 0, "sour": 15 },
+      "giftType": "ice"
+    },
+    {
+      "id": 41,
+      "name": "chople",
+      "label": "Chople",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "chople-berry",
+      "flavors": { "spicy": 15, "dry": 0, "sweet": 0, "bitter": 10, "sour": 0 },
+      "giftType": "fighting"
+    },
+    {
+      "id": 42,
+      "name": "kebia",
+      "label": "Kebia",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "kebia-berry",
+      "flavors": { "spicy": 0, "dry": 15, "sweet": 0, "bitter": 0, "sour": 10 },
+      "giftType": "poison"
+    },
+    {
+      "id": 43,
+      "name": "shuca",
+      "label": "Shuca",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "shuca-berry",
+      "flavors": { "spicy": 10, "dry": 0, "sweet": 15, "bitter": 0, "sour": 0 },
+      "giftType": "ground"
+    },
+    {
+      "id": 44,
+      "name": "coba",
+      "label": "Coba",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "coba-berry",
+      "flavors": { "spicy": 0, "dry": 10, "sweet": 0, "bitter": 15, "sour": 0 },
+      "giftType": "flying"
+    },
+    {
+      "id": 45,
+      "name": "payapa",
+      "label": "Payapa",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "payapa-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 10, "bitter": 0, "sour": 15 },
+      "giftType": "psychic"
+    },
+    {
+      "id": 46,
+      "name": "tanga",
+      "label": "Tanga",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "tanga-berry",
+      "flavors": { "spicy": 20, "dry": 0, "sweet": 0, "bitter": 0, "sour": 10 },
+      "giftType": "bug"
+    },
+    {
+      "id": 47,
+      "name": "charti",
+      "label": "Charti",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "charti-berry",
+      "flavors": { "spicy": 10, "dry": 20, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "rock"
+    },
+    {
+      "id": 48,
+      "name": "kasib",
+      "label": "Kasib",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "kasib-berry",
+      "flavors": { "spicy": 0, "dry": 10, "sweet": 20, "bitter": 0, "sour": 0 },
+      "giftType": "ghost"
+    },
+    {
+      "id": 49,
+      "name": "haban",
+      "label": "Haban",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "haban-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 10, "bitter": 20, "sour": 0 },
+      "giftType": "dragon"
+    },
+    {
+      "id": 50,
+      "name": "colbur",
+      "label": "Colbur",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "colbur-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 10, "sour": 20 },
+      "giftType": "dark"
+    },
+    {
+      "id": 51,
+      "name": "babiri",
+      "label": "Babiri",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "babiri-berry",
+      "flavors": { "spicy": 25, "dry": 10, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "steel"
+    },
+    {
+      "id": 52,
+      "name": "chilan",
+      "label": "Chilan",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "chilan-berry",
+      "flavors": { "spicy": 0, "dry": 25, "sweet": 10, "bitter": 0, "sour": 0 },
+      "giftType": "normal"
+    },
+    {
+      "id": 53,
+      "name": "liechi",
+      "label": "Liechi",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "liechi-berry",
+      "flavors": {
+        "spicy": 30,
+        "dry": 10,
+        "sweet": 30,
+        "bitter": 0,
+        "sour": 0
+      },
+      "giftType": "grass"
+    },
+    {
+      "id": 54,
+      "name": "ganlon",
+      "label": "Ganlon",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "ganlon-berry",
+      "flavors": {
+        "spicy": 0,
+        "dry": 30,
+        "sweet": 10,
+        "bitter": 30,
+        "sour": 0
+      },
+      "giftType": "ice"
+    },
+    {
+      "id": 55,
+      "name": "salac",
+      "label": "Salac",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "salac-berry",
+      "flavors": {
+        "spicy": 0,
+        "dry": 0,
+        "sweet": 30,
+        "bitter": 10,
+        "sour": 30
+      },
+      "giftType": "fighting"
+    },
+    {
+      "id": 56,
+      "name": "petaya",
+      "label": "Petaya",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "petaya-berry",
+      "flavors": {
+        "spicy": 30,
+        "dry": 0,
+        "sweet": 0,
+        "bitter": 30,
+        "sour": 10
+      },
+      "giftType": "poison"
+    },
+    {
+      "id": 57,
+      "name": "apicot",
+      "label": "Apicot",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "apicot-berry",
+      "flavors": {
+        "spicy": 10,
+        "dry": 30,
+        "sweet": 0,
+        "bitter": 0,
+        "sour": 30
+      },
+      "giftType": "ground"
+    },
+    {
+      "id": 58,
+      "name": "lansat",
+      "label": "Lansat",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "lansat-berry",
+      "flavors": {
+        "spicy": 30,
+        "dry": 10,
+        "sweet": 30,
+        "bitter": 10,
+        "sour": 30
+      },
+      "giftType": "flying"
+    },
+    {
+      "id": 59,
+      "name": "starf",
+      "label": "Starf",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "starf-berry",
+      "flavors": {
+        "spicy": 30,
+        "dry": 10,
+        "sweet": 30,
+        "bitter": 10,
+        "sour": 30
+      },
+      "giftType": "psychic"
+    },
+    {
+      "id": 60,
+      "name": "enigma",
+      "label": "Enigma",
+      "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "enigma-berry",
+      "flavors": { "spicy": 40, "dry": 10, "sweet": 0, "bitter": 0, "sour": 0 },
+      "giftType": "bug"
+    },
+    {
+      "id": 61,
+      "name": "micle",
+      "label": "Micle",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "micle-berry",
+      "flavors": { "spicy": 0, "dry": 40, "sweet": 10, "bitter": 0, "sour": 0 },
+      "giftType": "rock"
+    },
+    {
+      "id": 62,
+      "name": "custap",
+      "label": "Custap",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "custap-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 40, "bitter": 10, "sour": 0 },
+      "giftType": "ghost"
+    },
+    {
+      "id": 63,
+      "name": "jaboca",
+      "label": "Jaboca",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "jaboca-berry",
+      "flavors": { "spicy": 0, "dry": 0, "sweet": 0, "bitter": 40, "sour": 10 },
+      "giftType": "dragon"
+    },
+    {
+      "id": 64,
+      "name": "rowap",
+      "label": "Rowap",
+      "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
+      "item": "rowap-berry",
+      "flavors": { "spicy": 10, "dry": 0, "sweet": 0, "bitter": 0, "sour": 40 },
+      "giftType": "dark"
+    },
+    {
+      "id": 65,
+      "name": "kee",
+      "label": "Kee",
+      "generations": ["VI", "VII", "VIII", "IX"],
+      "item": "kee-berry",
+      "flavors": {},
+      "giftType": "fairy"
+    },
+    {
+      "id": 66,
+      "name": "maranga",
+      "label": "Maranga",
+      "generations": ["VI", "VII", "VIII", "IX"],
+      "item": "maranga-berry",
+      "flavors": {},
+      "giftType": "dark"
+    },
+    {
+      "id": 67,
+      "name": "hopo",
+      "label": "Hopo",
+      "generations": [],
+      "item": "hopo-berry",
+      "flavors": {},
+      "giftType": ""
+    },
+    {
+      "id": 68,
+      "name": "roseli",
+      "label": "Roseli",
+      "generations": ["VI", "VII", "VIII", "IX"],
+      "item": "roseli-berry",
+      "flavors": {},
+      "giftType": ""
+    }
+  ]
+}

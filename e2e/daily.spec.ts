@@ -13,7 +13,6 @@ import {
   seedBrowserRandom,
   test,
 } from './fixtures';
-
 test('keeps legacy Daily results shareable without granting another attempt', async ({
   page,
 }) => {
@@ -37,16 +36,19 @@ test('keeps legacy Daily results shareable without granting another attempt', as
               category: index === 9 ? 'champion' : 'identity',
               correct: index < 8,
               cluesUsed: 0,
-              generation: 'I',
-              pokemonName: 'pikachu',
               questionType: index === 9 ? 'champion' : 'pokedex-scan',
-              points: index < 8 ? 1_000 : 0,
+              points: index < 8 ? 1000 : 0,
+              subject: {
+                kind: 'pokemon' as const,
+                generation: 'I',
+                name: 'pikachu',
+              },
             })),
             contentVersion: 2,
             correctCount: 8,
             elapsedSeconds: 90,
             questionCount: 10,
-            score: 14_400,
+            score: 14400,
             scoreVersion: 2,
           },
         },
@@ -55,7 +57,6 @@ test('keeps legacy Daily results shareable without granting another attempt', as
       }),
     );
   });
-
   await page.goto('/?daily=2026-09-01');
   await expect(
     page.getByRole('button', { name: 'Share result' }),
@@ -64,7 +65,6 @@ test('keeps legacy Daily results shareable without granting another attempt', as
     page.getByRole('button', { name: /Play Daily Challenge/ }),
   ).toHaveCount(0);
   await page.getByRole('button', { name: 'Share result' }).click();
-
   await expect
     .poll(() =>
       page.evaluate(() => {
@@ -73,7 +73,6 @@ test('keeps legacy Daily results shareable without granting another attempt', as
       }),
     )
     .toContain('https://quizmon.raveh.dev/?daily=2026-09-01');
-
   const sharedText = await page.evaluate(() => {
     const data = window.sessionStorage.getItem('quizmon.test-share');
     return data ? (JSON.parse(data) as ShareData).text : undefined;
@@ -86,19 +85,16 @@ test('keeps legacy Daily results shareable without granting another attempt', as
     page.getByRole('button', { name: 'Share result' }),
   ).toBeVisible();
 });
-
 test('starts the selected daily challenge from a shared link', async ({
   page,
 }) => {
   await page.goto('/?daily=2026-09-01');
   await chooseDaily(page);
-
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 005');
   await expect(page.getByText('Daily Challenge · Sep 1, 2026')).toBeVisible();
 });
-
 test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -109,9 +105,7 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
   ]
     .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
     .join('-');
-
   await page.setViewportSize({ width: 320, height: 700 });
-
   await page.addInitScript(
     ({ dailyDate }) => {
       window.localStorage.setItem(
@@ -135,9 +129,7 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
     },
     { dailyDate: date },
   );
-
   await page.goto('/');
-
   await expect(
     page.getByRole('img', { name: '1-day Daily Combo' }),
   ).toBeVisible();
@@ -147,7 +139,6 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
     }),
   ).toBeVisible();
 });
-
 test('syncs a completed daily across open tabs', async ({ context, page }) => {
   const otherPage = await context.newPage();
   await Promise.all([
@@ -157,7 +148,6 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
   await expect(
     otherPage.getByRole('button', { name: /^Play Daily Challenge/ }),
   ).toBeVisible();
-
   await page.evaluate(() => {
     const save = JSON.parse(
       localStorage.getItem('quizmon.player')!,
@@ -167,10 +157,13 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
         category: index === 9 ? 'champion' : 'identity',
         cluesUsed: 0,
         correct: true,
-        generation: 'I',
-        pokemonName: 'pikachu',
         questionType: index === 9 ? 'champion' : 'pokedex-scan',
         points: 100,
+        subject: {
+          kind: 'pokemon' as const,
+          generation: 'I',
+          name: 'pikachu',
+        },
       })),
       contentVersion: 2,
       correctCount: 10,
@@ -181,7 +174,6 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
     };
     localStorage.setItem('quizmon.player', JSON.stringify(save));
   });
-
   await expect(
     otherPage.getByRole('button', { name: 'Share result' }),
   ).toBeVisible();
@@ -189,7 +181,6 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
     otherPage.getByRole('button', { name: /^Play Daily Challenge/ }),
   ).toHaveCount(0);
 });
-
 test('starts saved Training settings directly after completing Daily', async ({
   page,
 }) => {
@@ -248,7 +239,6 @@ test('starts saved Training settings directly after completing Daily', async ({
     },
   }).toEqual(beforeTraining);
 });
-
 for (const tag of [[], ['@cross-browser']]) {
   test(
     `generates the same complete Daily in the browser and Node ${tag.join(' ')}`,
@@ -271,7 +261,11 @@ for (const tag of [[], ['@cross-browser']]) {
           page.evaluate(() => {
             const snapshot = sessionStorage.getItem('quizmon.active-game.v1');
             return snapshot
-              ? (JSON.parse(snapshot) as { questions?: unknown }).questions
+              ? (
+                  JSON.parse(snapshot) as {
+                    questions?: unknown;
+                  }
+                ).questions
               : null;
           }),
         )
@@ -279,7 +273,6 @@ for (const tag of [[], ['@cross-browser']]) {
     },
   );
 }
-
 test('play links enter Daily without a setup screen', async ({ page }) => {
   await page.goto('/?daily=2026-09-01&play=1');
   await expect(
