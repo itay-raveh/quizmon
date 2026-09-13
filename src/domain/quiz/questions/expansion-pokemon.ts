@@ -140,12 +140,6 @@ export const buildBaby: QuestionBuilder = (context) => {
       options.map((candidate) => candidate.name),
       {
         ...picturedPokemon(context, options),
-        optionReveals: Object.fromEntries(
-          options.map((candidate) => [
-            candidate.name,
-            candidate.pokemon.isBaby ? 'Baby Pokémon' : 'Not a baby Pokémon',
-          ]),
-        ),
       },
     );
   }

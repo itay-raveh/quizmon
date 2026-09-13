@@ -96,7 +96,10 @@ export const QuestionAnswers = ({
       {options.map((option, index) => {
         const label =
           question.optionLabels?.[option] ?? formatPokemonName(option);
-        const reveal = question.optionReveals?.[option];
+        const reveal =
+          question.questionType === 'baby-pokemon'
+            ? undefined
+            : question.optionReveals?.[option];
         const detail = reveal ? (
           <span
             aria-hidden="true"
