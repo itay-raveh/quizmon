@@ -165,6 +165,7 @@ export const buildRegion: QuestionBuilder = (context) => {
   const regions = topics.regions.filter((entity) =>
     topicEligible(context, entity),
   );
+  if (regions.length < (context.variant?.fullList ? 2 : 4)) return;
   const pool = ordered(
     context,
     topics.locations.filter(

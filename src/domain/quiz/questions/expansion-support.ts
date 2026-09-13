@@ -65,7 +65,7 @@ export const expansionQuestion = (
     new Set(options).size !== options.length ||
     new Set(options.map((option) => labels[option] ?? option)).size !==
       options.length ||
-    options.length < (context.variant?.fullList ? 1 : 4)
+    options.length < (context.variant?.fullList ? 2 : 4)
   )
     return;
   const primary = [

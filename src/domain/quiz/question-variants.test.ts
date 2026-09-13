@@ -47,6 +47,8 @@ it.each(difficultyLevels)(
       );
       for (const question of [...questions, ...daily]) {
         expect(isQuestionData(question), question.id).toBe(true);
+        if (question.answer.interaction === 'single-choice')
+          expect(question.options.length, question.id).toBeGreaterThan(1);
         expect(question.variantLevel).toBeLessThanOrEqual(difficulty);
         expect(settings.generations).toContain(question.subject.generation);
         for (const option of question.searchOptions ?? [])
@@ -177,3 +179,26 @@ it('uses the closest distinct species for expert visual alternatives', () => {
   for (const name of options.filter((name) => name !== target.name))
     expect(score(catalog.pokemon[name]!)).toBeGreaterThanOrEqual(ranked[2]!);
 });
+
+it.each([3, 4, 5] as const)(
+  'requires an alternative region within the selected scope at level %i',
+  (difficulty) => {
+    expect(
+      buildQuestionType(
+        {
+          ...createQuestionContext('single-region', ['I']),
+          difficulty,
+        },
+        'name-that-region',
+      ),
+    ).toBeUndefined();
+    const question = buildQuestionType(
+      {
+        ...createQuestionContext('two-regions', ['I', 'II']),
+        difficulty,
+      },
+      'name-that-region',
+    );
+    expect(question?.options.toSorted()).toEqual(['johto', 'kanto']);
+  },
+);
