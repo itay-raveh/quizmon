@@ -1,4 +1,4 @@
-import { expansionVariants } from '../question-expansion-variants';
+import { expansionVariants } from '../question-variants';
 import type { QuestionType } from '../types';
 
 interface QuestionDefinition {

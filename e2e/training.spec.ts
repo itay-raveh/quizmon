@@ -1,10 +1,12 @@
 import type { Page } from '@playwright/test';
+import { getQuestionVariant } from '../src/domain/quiz/question-variants';
 import type { PlayerSave } from '../src/domain/player/player-save';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import {
   catalogData,
   expect,
   formatName,
+  findPokemonByLabel,
   seedBrowserRandom,
   seedQuestionTraining,
   test,
@@ -37,11 +39,13 @@ for (const outcome of ['correct', 'incorrect'] as const) {
     const values: number[] = [];
     for (const answer of await answers.all()) {
       await expect(answer.locator('.answer__stat')).toBeHidden();
-      const pokemon = findPokemonForSprite(
-        await answer.locator('.answer__sprite').getAttribute('src'),
-      );
-      if (!pokemon) throw new Error('Missing showdown Pokémon');
-      values.push(catalogData.pokemon[pokemon].stats[stat]);
+      if (getQuestionVariant('stat-showdown', 4)?.variant.namesOnly)
+        await expect(answer.locator('.answer__sprite')).toBeHidden();
+      const label = await answer.getAttribute('aria-label');
+      const pokemon = findPokemonByLabel(label);
+      if (!pokemon || !label) throw new Error('Missing showdown Pokémon');
+      await expect(answer.getByText(label, { exact: true })).toBeVisible();
+      values.push(pokemon.stats[stat]);
     }
     expect(values).toHaveLength(4);
     const prompt = await page.locator('#question-prompt').textContent();

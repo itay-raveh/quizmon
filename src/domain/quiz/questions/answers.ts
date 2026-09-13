@@ -1,4 +1,5 @@
 import { createSeededRandom, shuffle } from '../../../lib/random';
+import { questionTuning } from '../question-variants';
 import { statNames, type PokemonKnowledge } from '../../pokemon/types';
 import type { Candidate, QuestionContext } from './context';
 import { groupPokemon } from './sampling';
@@ -70,12 +71,21 @@ export const createPokemonSimilarityScorer = (
     const candidateStats = totalStats(candidate);
 
     return (
-      sharedTypes * 12 +
-      (target.shape === candidate.shape ? 8 : 0) +
-      (target.color === candidate.color ? 5 : 0) +
-      (target.generation === candidate.generation ? 4 : 0) +
-      (targetStage === evolutionStage(candidate) ? 3 : 0) +
-      Math.max(0, 3 - Math.abs(targetStats - candidateStats) / 80)
+      sharedTypes * questionTuning.similarity.sharedType +
+      (target.shape === candidate.shape ? questionTuning.similarity.shape : 0) +
+      (target.color === candidate.color ? questionTuning.similarity.color : 0) +
+      (target.generation === candidate.generation
+        ? questionTuning.similarity.generation
+        : 0) +
+      (targetStage === evolutionStage(candidate)
+        ? questionTuning.similarity.evolutionStage
+        : 0) +
+      Math.max(
+        0,
+        questionTuning.similarity.statMaximum -
+          Math.abs(targetStats - candidateStats) /
+            questionTuning.similarity.statScale,
+      )
     );
   };
 };
@@ -115,13 +125,25 @@ export const pokemonOptions = (
     })),
   );
   if (context.variant?.distractors === 'dissimilar') scored.reverse();
-  let shortlisted = scored.slice(0, 15);
-  if (scored.length < 15 && context.variant?.distractors !== 'dissimilar') {
+  const shortlistSize = Math.max(
+    3,
+    Math.floor(
+      context.variant?.distractorPoolSize ?? questionTuning.distractorPoolSize,
+    ),
+  );
+  let shortlisted = scored.slice(0, shortlistSize);
+  if (
+    context.variant?.distractorPoolSize === undefined &&
+    scored.length < shortlistSize &&
+    context.variant?.distractors !== 'dissimilar'
+  ) {
     const bestScore = scored[0]?.[0]
       ? similarityFor(scored[0][0].name)
       : similarityFor('');
     const semanticBand = scored.filter(
-      (group) => similarityFor(group[0]!.name) >= bestScore * 0.6,
+      (group) =>
+        similarityFor(group[0]!.name) >=
+        bestScore * questionTuning.smallPoolSimilarityRatio,
     );
     shortlisted = semanticBand.length >= 3 ? semanticBand : scored.slice(0, 3);
   }
@@ -144,7 +166,10 @@ export const pokemonOptions = (
     Math.abs(group[0]!.pokemon.speciesId - target.pokemon.speciesId);
   const spreadBand = [...shortlisted]
     .sort((left, right) => distanceFromTarget(right) - distanceFromTarget(left))
-    .slice(0, Math.ceil(shortlisted.length / 3))
+    .slice(
+      0,
+      Math.ceil(shortlisted.length * questionTuning.distantSpeciesFraction),
+    )
     .flat();
   const spreadSpecies = new Set(
     spreadBand.map(({ pokemon }) => pokemon.speciesId),

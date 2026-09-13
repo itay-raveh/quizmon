@@ -1,4 +1,4 @@
-import { expansionVariants } from '../quiz/question-expansion-variants';
+import { expansionVariants } from '../quiz/question-variants';
 import { questionTypes } from '../quiz/questions/definitions';
 import { TRAINER_PROGRESS_VERSION, type SavedResults } from './results';
 import {

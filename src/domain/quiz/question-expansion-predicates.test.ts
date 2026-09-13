@@ -6,8 +6,9 @@ import { formatPokemonName } from '../pokemon/format';
 import { statNames } from '../pokemon/types';
 import {
   expansionVariants,
+  getQuestionVariant,
   type ExpansionQuestionType,
-} from './question-expansion-variants';
+} from './question-variants';
 import { buildQuestionType } from './questions/registry';
 import type { Difficulty } from './difficulty';
 
@@ -21,6 +22,7 @@ const topics = catalog.topics!;
 it.each(cases)(
   'validates the actual $type predicate at Level $level',
   ({ type, level }) => {
+    const rules = getQuestionVariant(type, level)!.variant;
     for (let seed = 0; seed < 3; seed++) {
       const question = buildQuestionType(
         {
@@ -46,15 +48,18 @@ it.each(cases)(
               (choice) => choice.spriteIdentity === item.spriteIdentity,
             ),
           ).toHaveLength(1);
-          if (level === 1)
+          if (rules.itemChoices === 'different-categories')
             expect(new Set(choices.map((choice) => choice.category)).size).toBe(
               4,
             );
-          if (level >= 2)
+          if (
+            rules.itemChoices === 'pocket' ||
+            rules.itemChoices === 'category'
+          )
             expect(
               choices.every((choice) => choice.pocket === item.pocket),
             ).toBe(true);
-          if (level >= 3)
+          if (rules.itemChoices === 'category')
             expect(
               choices.every((choice) => choice.category === item.category),
             ).toBe(true);
@@ -74,7 +79,7 @@ it.each(cases)(
             );
           });
           expect(matches).toEqual([correct]);
-          if (level >= 2)
+          if (rules.itemChoices === 'medicines')
             expect(
               question.options.every(
                 (name) =>
@@ -101,10 +106,11 @@ it.each(cases)(
           const ratio = high
             ? sorted[3]! / sorted[2]!
             : sorted[1]! / sorted[0]!;
-          expect(ratio).toBeGreaterThanOrEqual(
-            { 1: 4, 2: 2, 3: 1.5, 4: 1.2, 5: 1.02 }[level],
+          expect(ratio).toBeGreaterThanOrEqual(rules.measurement!.minimumRatio);
+          expect(ratio).toBeLessThanOrEqual(rules.measurement!.maximumRatio);
+          expect(sorted[3]! / sorted[0]!).toBeLessThanOrEqual(
+            rules.measurement!.maximumSpread,
           );
-          if (level === 5) expect(ratio).toBeLessThanOrEqual(1.15);
           for (const name of question.options)
             expect(question.optionReveals?.[name]).toBe(
               `${catalog.pokemon[name]![key]! / 10} ${key === 'height' ? 'm' : 'kg'}`,
@@ -119,7 +125,7 @@ it.each(cases)(
             move.contexts.find((context) => context.game === question.context)
               ?.type,
           ).toBe(correct);
-          if (level === 1 && question.prompt.kind === 'text')
+          if (rules.reviewedDescription && question.prompt.kind === 'text')
             expect(question.prompt.text).toContain(move.reviewedDescription!);
           break;
         }
@@ -133,8 +139,9 @@ it.each(cases)(
           expect(
             rows.filter((row) => row.damageClass === answer.damageClass),
           ).toHaveLength(1);
-          if (level === 2) expect(answer.damageClass).toBe('status');
-          if (level >= 4)
+          if (rules.damageClass === 'status')
+            expect(answer.damageClass).toBe('status');
+          if (rules.sameMoveType)
             expect(new Set(rows.map((row) => row.type)).size).toBe(1);
           expect(question.subject.generation).not.toMatch(/^(I|II|III)$/);
           break;
@@ -157,7 +164,7 @@ it.each(cases)(
           expect(
             wrong.every((name) => catalog.pokemon[name]!.isBaby === false),
           ).toBe(true);
-          if (level >= 3)
+          if (rules.unevolvedDistractors)
             expect(
               wrong.every(
                 (name) => catalog.pokemon[name]!.isUnevolved === true,
@@ -176,7 +183,7 @@ it.each(cases)(
               (name) => catalog.pokemon[name]!.genus === target!.genus,
             ),
           ).toEqual([correct]);
-          if (level >= 3)
+          if (rules.sameColorOrShape)
             expect(
               wrong.every(
                 (name) =>
@@ -220,7 +227,7 @@ it.each(cases)(
             );
             expect(labels).toContain(correct);
             expect(wrong.some((option) => labels.includes(option))).toBe(false);
-            if (level === 5)
+            if (rules.evolutionConditions === 'one-condition')
               for (const option of wrong)
                 expect(
                   option
@@ -251,7 +258,7 @@ it.each(cases)(
           const alternatives = wrong.map((name) =>
             topics.natures.find((nature) => nature.name === name)!,
           );
-          if (level === 4)
+          if (rules.natureChoices === 'different-raised')
             expect(
               new Set([nature, ...alternatives].map((nature) => nature.raised))
                 .size,
@@ -286,7 +293,7 @@ it.each(cases)(
         case 'ev-yields': {
           const stats = statNames.filter((stat) => target!.evYield![stat] > 0);
           expect(correct).toBe(
-            level === 4
+            !rules.completeEvYield
               ? formatPokemonName(stats[0]!)
               : stats
                   .map(
@@ -295,7 +302,7 @@ it.each(cases)(
                   )
                   .join(' + '),
           );
-          if (level === 4) expect(stats).toHaveLength(1);
+          if (!rules.completeEvYield) expect(stats).toHaveLength(1);
           break;
         }
         case 'encounter-locations': {
@@ -322,7 +329,7 @@ it.each(cases)(
               entries.some((entry) => entry.pokemon.includes(name)),
             ),
           ).toBe(false);
-          if (level === 5)
+          if (rules.encounterConditions)
             for (const name of wrong)
               expect(
                 topics.encounters.some(
@@ -343,7 +350,7 @@ it.each(cases)(
             .filter((flavor) => berry.flavors[flavor]! > 0)
             .sort();
           if (type === 'natural-gift') expect(correct).toBe(berry.giftType);
-          else if (level === 5)
+          else if (rules.completeFlavors)
             expect(correct).toBe(flavors.map(formatPokemonName).join(' + '));
           else {
             const highest = Math.max(...Object.values(berry.flavors));
@@ -361,7 +368,9 @@ it.each(cases)(
             (fact) => fact.name === question.subject.name,
           )!;
           expect(fact.sources.length).toBeGreaterThan(0);
-          expect(correct).toBe(level === 5 ? fact.exact : fact.broad);
+          expect(correct).toBe(
+            rules.effectChoices === 'exact' ? fact.exact : fact.broad,
+          );
           break;
         }
       }

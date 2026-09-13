@@ -99,6 +99,14 @@ export const buildBerry: QuestionBuilder = (context) => {
             ),
           ]
         : Object.keys(target.flavors).map(formatPokemonName);
+    const flavorDistance = (value: string) => {
+      const flavors = value.split(' + ');
+      const answer = correct.split(' + ');
+      return (
+        flavors.filter((flavor) => !answer.includes(flavor)).length +
+        answer.filter((flavor) => !flavors.includes(flavor)).length
+      );
+    };
     const options = gift
       ? other
       : [
@@ -106,7 +114,13 @@ export const buildBerry: QuestionBuilder = (context) => {
           ...ordered(
             context,
             other.filter((value) => value && value !== correct),
-          ).slice(0, 3),
+          )
+            .sort((a, b) =>
+              context.variant?.closeAlternatives
+                ? flavorDistance(a) - flavorDistance(b)
+                : 0,
+            )
+            .slice(0, 3),
         ];
     const item = topics.items.find((item) => item.name === target.item);
     if (!item?.sprite) continue;

@@ -1,6 +1,8 @@
 import { formatPokemonName } from '../../pokemon/format';
 import { generations } from '../../pokemon/types';
 import type { QuestionBuilder } from './context';
+import { createPokemonSimilarityScorer } from './answers';
+import { questionTuning } from '../question-variants';
 import {
   distinctPokemon,
   expansionQuestion,
@@ -60,6 +62,21 @@ export const buildEncounter: QuestionBuilder = (context) => {
         )
         .flatMap((entry) => entry.pokemon),
     );
+    const sameMethod = new Set(
+      topics.encounters
+        .filter(
+          (entry) =>
+            entry.game === target.game &&
+            entry.region === target.region &&
+            entry.method === target.method,
+        )
+        .flatMap((entry) => entry.pokemon),
+    );
+    const similarity = createPokemonSimilarityScorer(correct.pokemon);
+    const score = (candidate: typeof correct) =>
+      (sameMethod.has(candidate.name)
+        ? questionTuning.sameEncounterMethodWeight
+        : 0) + similarity(candidate.pokemon);
     const wrong = distinctPokemon(
       orderedPokemon(
         context,
@@ -70,7 +87,11 @@ export const buildEncounter: QuestionBuilder = (context) => {
               regional.has(candidate.name)),
         ),
       ),
-    ).slice(0, 3);
+    )
+      .sort((a, b) =>
+        context.variant?.closeAlternatives ? score(b) - score(a) : 0,
+      )
+      .slice(0, 3);
     const options = distinctPokemon([correct, ...wrong]);
     if (options.length < 4) continue;
     const game = topics.games[target.game];

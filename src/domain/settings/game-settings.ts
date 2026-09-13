@@ -1,4 +1,4 @@
-import { expansionVariants } from '../quiz/question-expansion-variants';
+import { expansionVariants } from '../quiz/question-variants';
 import { getQuestionVariant } from '../quiz/question-variants';
 import { isChoice, isObject } from '../../lib/validation';
 import { getFormGroup } from '../pokemon/forms';

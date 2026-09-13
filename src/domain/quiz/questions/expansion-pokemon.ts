@@ -4,8 +4,10 @@ import {
   measurementWinner,
   formatMeasurement,
   isMeasurementSeparation,
+  isMeasurementClusterMember,
 } from '../measurement-comparison';
 import { targetMedia } from './assembly';
+import { createPokemonSimilarityScorer } from './answers';
 import type { QuestionBuilder } from './context';
 import {
   distinctPokemon,
@@ -20,8 +22,8 @@ import {
 export const buildMeasurement =
   (measurement: 'height' | 'weight'): QuestionBuilder =>
   (context) => {
-    const level = context.variant?.measurementLevel;
-    if (!level) return;
+    const rules = context.variant?.measurement;
+    if (!rules) return;
     const pool = distinctPokemon(
       orderedPokemon(
         context,
@@ -35,17 +37,24 @@ export const buildMeasurement =
     const direction = context.random() < 0.5 ? 'highest' : 'lowest';
     for (const target of pool) {
       const value = target.pokemon[measurement]!;
-      const candidates = pool.filter((candidate) =>
-        direction === 'highest'
-          ? candidate.pokemon[measurement]! < value
-          : candidate.pokemon[measurement]! > value,
+      const candidates = pool.filter(
+        (candidate) =>
+          (direction === 'highest'
+            ? candidate.pokemon[measurement]! < value
+            : candidate.pokemon[measurement]! > value) &&
+          isMeasurementClusterMember(
+            value,
+            candidate.pokemon[measurement]!,
+            direction,
+            rules,
+          ),
       );
       for (const nearest of candidates.filter((candidate) =>
         isMeasurementSeparation(
           value,
           candidate.pokemon[measurement]!,
           direction,
-          level,
+          rules,
         ),
       )) {
         const seen = new Set<number>([value, nearest.pokemon[measurement]!]);
@@ -69,7 +78,7 @@ export const buildMeasurement =
         const values = chosen.map(
           (candidate) => candidate.pokemon[measurement]!,
         );
-        if (measurementWinner(values, direction, level) !== 0) continue;
+        if (measurementWinner(values, direction, rules) !== 0) continue;
         return expansionQuestion(
           context,
           pokemonSubject(target),
@@ -104,6 +113,10 @@ export const buildBaby: QuestionBuilder = (context) => {
         !wrong.some(({ pokemon }) => pokemon.isUnevolved === true))
     )
       continue;
+    if (context.variant?.closeAlternatives) {
+      const similarity = createPokemonSimilarityScorer(target.pokemon);
+      wrong.sort((a, b) => similarity(b.pokemon) - similarity(a.pokemon));
+    }
     const chosen = context.variant?.unevolvedDistractors
       ? wrong.slice(0, 3)
       : [
@@ -144,6 +157,7 @@ export const buildCategory: QuestionBuilder = (context) => {
     ),
   );
   for (const target of pool) {
+    const similarity = createPokemonSimilarityScorer(target.pokemon);
     const wrong = pool
       .filter(
         ({ pokemon }) =>
@@ -151,6 +165,11 @@ export const buildCategory: QuestionBuilder = (context) => {
           (!context.variant?.sameColorOrShape ||
             (!!pokemon.color && pokemon.color === target.pokemon.color) ||
             (!!pokemon.shape && pokemon.shape === target.pokemon.shape)),
+      )
+      .sort((a, b) =>
+        context.variant?.closeAlternatives
+          ? similarity(b.pokemon) - similarity(a.pokemon)
+          : 0,
       )
       .slice(0, 3);
     if (wrong.length < 3) continue;
@@ -245,10 +264,18 @@ export const buildEggGroups: QuestionBuilder = (context) => {
         candidate.pokemon.speciesName !== target.pokemon.speciesName &&
         candidate.pokemon.eggGroups!.some((group) => groups.includes(group)),
     );
+    const similarity = createPokemonSimilarityScorer(target.pokemon);
+    if (context.variant?.closeAlternatives)
+      matches.sort((a, b) => similarity(a.pokemon) - similarity(b.pokemon));
     const wrong = pool
       .filter(
         (candidate) =>
           !candidate.pokemon.eggGroups!.some((group) => groups.includes(group)),
+      )
+      .sort((a, b) =>
+        context.variant?.closeAlternatives
+          ? similarity(b.pokemon) - similarity(a.pokemon)
+          : 0,
       )
       .slice(0, 3);
     if (!matches.length || wrong.length < 3) continue;
@@ -299,6 +326,17 @@ export const buildEvYield: QuestionBuilder = (context) => {
     const correct = context.variant?.completeEvYield
       ? yieldLabel(target.pokemon.evYield!)
       : formatPokemonName(stats[0]!);
+    const yieldDistances = new Map(
+      pool.map(({ pokemon }) => [
+        yieldLabel(pokemon.evYield!),
+        statNames.reduce(
+          (sum, stat) =>
+            sum +
+            Math.abs(target.pokemon.evYield![stat] - pokemon.evYield![stat]),
+          0,
+        ),
+      ]),
+    );
     const wrong = ordered(context, [
       ...new Set(
         context.variant?.completeEvYield
@@ -307,6 +345,12 @@ export const buildEvYield: QuestionBuilder = (context) => {
       ),
     ])
       .filter((value) => value !== correct)
+      .sort((a, b) =>
+        context.variant?.closeAlternatives
+          ? (yieldDistances.get(a) ?? Infinity) -
+            (yieldDistances.get(b) ?? Infinity)
+          : 0,
+      )
       .slice(0, 3);
     const options = [correct, ...wrong];
     const question = expansionQuestion(

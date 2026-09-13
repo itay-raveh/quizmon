@@ -51,6 +51,28 @@ describe('active game storage', () => {
       version: 2,
     });
   });
+  it('retains saved pre-expansion difficulty rules and assistance after a rule bump', () => {
+    const question = buildQuestionType(
+      { ...createQuestionContext('saved-expert'), difficulty: 5 },
+      'stat-showdown',
+    )!;
+    const savedQuestion = {
+      ...question,
+      rulesVersion: 3,
+      variantLevel: 4 as const,
+      namesOnly: false,
+    };
+    const saved = {
+      ...snapshot,
+      questionCount: 1,
+      settings: { ...snapshot.settings, difficulty: 5 as const },
+      questions: [savedQuestion],
+    };
+    writeActiveGame(saved);
+    const restored = readActiveGame(catalog);
+    expect(restored?.questions).toEqual([savedQuestion]);
+    expect(restored?.settings.difficulty).toBe(5);
+  });
   it('does not assign difficulty to a legacy unfinished round', () => {
     const settings = { ...snapshot.settings };
     delete settings.difficulty;

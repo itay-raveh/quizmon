@@ -19,7 +19,7 @@ import {
 } from './question-generation';
 import { getQuestionTitle } from './question-labels';
 import { questionTypes as registeredQuestionTypes } from './questions/definitions';
-import { expansionVariants } from './question-expansion-variants';
+import { expansionVariants } from './question-variants';
 const questionTypes = registeredQuestionTypes.filter(
   (type) => !Object.hasOwn(expansionVariants, type),
 );

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { catalog } from '../../../tests/fixtures/catalog';
+import {
+  catalog,
+  createQuestionContext,
+} from '../../../tests/fixtures/catalog';
 import { createSeededRandom } from '../../lib/random';
 import { generations } from '../pokemon/types';
 import { defaultGameSettings } from '../settings/game-settings';
@@ -12,6 +15,11 @@ import {
 import { isQuestionData } from './question-lineup';
 import { getQuestionVariant } from './question-variants';
 import { questionTypes } from './questions/definitions';
+import { buildQuestionType } from './questions/registry';
+import {
+  pokemonOptions,
+  createPokemonSimilarityScorer,
+} from './questions/answers';
 it.each(difficultyLevels)(
   'builds complete scoped Training and deterministic Daily at level %i',
   (difficulty) => {
@@ -47,13 +55,13 @@ it.each(difficultyLevels)(
           );
       }
       const finale = daily.at(-1)!;
-      expect(finale.initialClues).toBe([2, 1, 0, 0, 0][difficulty - 1]);
+      const finaleRules = getQuestionVariant('champion', difficulty)!.variant
+        .finale!;
+      expect(finale.initialClues).toBe(finaleRules.penalty);
       expect(finale.answer.interaction).toBe(
-        difficulty < 3 ? 'single-choice' : 'search',
+        finaleRules.opening === 'search' ? 'search' : 'single-choice',
       );
-      expect(finale.assistanceAllowed).toBe(
-        difficulty === 3 || difficulty === 4,
-      );
+      expect(finale.assistanceAllowed).toBe(finaleRules.assistance);
     }
   },
 );
@@ -88,6 +96,18 @@ describe.each(questionTypes)('%s variants', (questionType) => {
             question.answer.correctOptions[0],
           );
         }
+        if (resolved.variant.preferBackSprite) {
+          const back = catalog.pokemon[
+            question.subject.name
+          ]!.identitySprites.generations.filter(({ generation }) =>
+            ['I', 'II', 'III', 'IV', 'V'].includes(generation),
+          ).flatMap(({ back }) => back);
+          if (back.length) {
+            expect(question.media.kind).toBe('sprite');
+            if (question.media.kind === 'sprite')
+              expect(back).toContain(question.media.src);
+          }
+        }
         if (resolved.variant.typeGrid)
           expect(question.options).toHaveLength(18);
         if (resolved.variant.singleType)
@@ -106,4 +126,54 @@ describe.each(questionTypes)('%s variants', (questionType) => {
       }
     },
   );
+});
+
+it('retains every family at Level 5, including inherited softball variants', () => {
+  for (const type of questionTypes)
+    expect(getQuestionVariant(type, 5), type).toBeDefined();
+});
+
+it.each(generations)(
+  'can generate both expert comparisons within Gen %s',
+  (generation) => {
+    for (const type of ['height-comparison', 'weight-comparison'] as const) {
+      const question = buildQuestionType(
+        {
+          ...createQuestionContext(`expert:${generation}:${type}`, [
+            generation,
+          ]),
+          difficulty: 5,
+        },
+        type,
+      );
+      expect(question, type).toBeDefined();
+      expect(question!.namesOnly).toBe(
+        getQuestionVariant(type, 5)!.variant.namesOnly,
+      );
+      expect(question!.subject.generation).toBe(generation);
+    }
+  },
+);
+
+it('uses the closest distinct species for expert visual alternatives', () => {
+  const context = createQuestionContext('closest', ['I']);
+  context.pool = context.pool
+    .filter(({ name, pokemon }) => name === pokemon.speciesName)
+    .slice(0, 20);
+  const target = context.pool[0]!;
+  const score = createPokemonSimilarityScorer(target.pokemon);
+  const ranked = context.pool
+    .slice(1)
+    .map(({ pokemon }) => score(pokemon))
+    .sort((a, b) => b - a);
+  const options = pokemonOptions(
+    { ...context, variant: { distractors: 'similar', distractorPoolSize: 3 } },
+    { correct: target },
+  );
+  expect(options).toHaveLength(4);
+  expect(
+    new Set(options.map((name) => catalog.pokemon[name]!.speciesId)).size,
+  ).toBe(4);
+  for (const name of options.filter((name) => name !== target.name))
+    expect(score(catalog.pokemon[name]!)).toBeGreaterThanOrEqual(ranked[2]!);
 });

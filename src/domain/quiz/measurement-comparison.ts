@@ -1,31 +1,38 @@
-import type { Difficulty } from './difficulty';
-
-const separation: Record<Difficulty, readonly [number, number]> = {
-  1: [4, Infinity],
-  2: [2, Infinity],
-  3: [1.5, Infinity],
-  4: [1.2, Infinity],
-  5: [1.02, 1.15],
-};
+export interface MeasurementRules {
+  minimumRatio: number;
+  maximumRatio: number;
+  maximumSpread: number;
+}
 
 export const isMeasurementSeparation = (
   winner: number,
   competitor: number,
   direction: 'highest' | 'lowest',
-  difficulty: Difficulty,
+  rules: MeasurementRules,
 ) => {
-  const [minimum, maximum] = separation[difficulty];
+  const { minimumRatio: minimum, maximumRatio: maximum } = rules;
   const numerator = direction === 'highest' ? winner : competitor;
   const denominator = direction === 'highest' ? competitor : winner;
-  return (
-    numerator >= minimum * denominator && numerator <= maximum * denominator
-  );
+  const ratio = numerator / denominator;
+  return ratio >= minimum && ratio <= maximum;
+};
+
+export const isMeasurementClusterMember = (
+  winner: number,
+  competitor: number,
+  direction: 'highest' | 'lowest',
+  rules: MeasurementRules,
+) => {
+  const maximum = rules.maximumSpread;
+  return direction === 'highest'
+    ? winner / competitor <= maximum
+    : competitor / winner <= maximum;
 };
 
 export const measurementWinner = (
   values: readonly number[],
   direction: 'highest' | 'lowest',
-  difficulty: Difficulty,
+  rules: MeasurementRules,
 ): number | undefined => {
   if (
     values.length !== 4 ||
@@ -36,7 +43,10 @@ export const measurementWinner = (
   const sorted = values.toSorted((a, b) => a - b);
   const winner = direction === 'highest' ? sorted[3]! : sorted[0]!;
   const competitor = direction === 'highest' ? sorted[2]! : sorted[1]!;
-  return isMeasurementSeparation(winner, competitor, direction, difficulty)
+  return isMeasurementSeparation(winner, competitor, direction, rules) &&
+    values.every((value) =>
+      isMeasurementClusterMember(winner, value, direction, rules),
+    )
     ? values.indexOf(winner)
     : undefined;
 };

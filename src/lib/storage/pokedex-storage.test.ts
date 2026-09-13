@@ -7,7 +7,7 @@ import { generations } from '../../domain/pokemon/types';
 import { buildQuestions } from '../../domain/quiz/question-generation';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
 import { questionTypes as registeredQuestionTypes } from '../../domain/quiz/questions/definitions';
-import { expansionVariants } from '../../domain/quiz/question-expansion-variants';
+import { expansionVariants } from '../../domain/quiz/question-variants';
 const questionTypes = registeredQuestionTypes.filter(
   (type) => !Object.hasOwn(expansionVariants, type),
 );

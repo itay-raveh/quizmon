@@ -5,7 +5,7 @@ import { defaultGameSettings, filterPokemon } from '../settings/game-settings';
 import {
   expansionVariants,
   type ExpansionQuestionType,
-} from './question-expansion-variants';
+} from './question-variants';
 import { getQuestionVariant } from './question-variants';
 import { isQuestionData } from './question-lineup';
 import { buildQuestionType } from './questions/registry';
@@ -61,7 +61,7 @@ it.each(cases)(
     ).toBe(true);
   },
 );
-it('includes all thirteen additions through the active Daily settings path', () => {
+it('uses the configured additions through the active Daily settings path', () => {
   const settings = resolveTrainingSettings(catalog, {
     ...defaultGameSettings,
     difficulty: 3,
@@ -73,7 +73,15 @@ it('includes all thirteen additions through the active Daily settings path', () 
     settings.questionTypes.filter((type) =>
       Object.hasOwn(expansionVariants, type),
     ),
-  ).toHaveLength(13);
+  ).toEqual(
+    Object.keys(expansionVariants)
+      .filter((type) => getQuestionVariant(type as ExpansionQuestionType, 3))
+      .sort(
+        (a, b) =>
+          settings.questionTypes.indexOf(a as ExpansionQuestionType) -
+          settings.questionTypes.indexOf(b as ExpansionQuestionType),
+      ),
+  );
   const first = buildDailyTrackQuestions(
     catalog,
     '2026-09-13',

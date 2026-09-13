@@ -1,4 +1,4 @@
-import { expansionVariants } from '../question-expansion-variants';
+import { expansionVariants } from '../question-variants';
 import {
   buildMeasurement,
   buildBaby,

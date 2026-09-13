@@ -32,9 +32,19 @@ const makeIdentityQuestion = (
 const pickScanSprite = (
   pokemon: PokemonKnowledge,
   random: () => number,
+  preferBack = false,
 ): string | null => {
   if (!pokemon.sprite) return null;
 
+  if (preferBack) {
+    const back = pokemon.identitySprites.generations
+      .filter(({ generation }) =>
+        ['I', 'II', 'III', 'IV', 'V'].includes(generation),
+      )
+      .flatMap(({ back }) => back);
+    const sprite = pick(back, random);
+    if (sprite) return sprite;
+  }
   const generation = pick(
     pokemon.identitySprites.generations.filter(({ generation }) =>
       ['I', 'II', 'III', 'IV', 'V'].includes(generation),
@@ -55,7 +65,11 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   if (!target) return undefined;
   const sprite = context.variant?.currentSprite
     ? target.pokemon.sprite
-    : pickScanSprite(target.pokemon, context.random);
+    : pickScanSprite(
+        target.pokemon,
+        context.random,
+        context.variant?.preferBackSprite,
+      );
   if (!sprite) return undefined;
   return makeIdentityQuestion(context, {
     target,

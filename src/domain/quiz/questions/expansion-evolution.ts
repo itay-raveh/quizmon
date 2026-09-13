@@ -180,6 +180,22 @@ export const buildEvolution: QuestionBuilder = (context) => {
               ),
           )
           .map(method);
+      if (context.variant?.evolutionConditions === 'one-condition') {
+        const distance = (value: string) =>
+          value
+            .split(' · ')
+            .slice(1)
+            .reduce(
+              (sum, part, index) =>
+                sum +
+                Math.abs(
+                  Number(part.match(/\d+/)?.[0] ?? 0) -
+                    Number(target.conditions[index]?.match(/\d+/)?.[0] ?? 0),
+                ),
+              0,
+            );
+        wrong.sort((a, b) => distance(a) - distance(b));
+      }
       const options = [
         correct,
         ...[...new Set(wrong)].filter((value) => value !== correct).slice(0, 3),
