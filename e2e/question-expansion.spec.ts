@@ -25,7 +25,6 @@ const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'ev-yields', level: 5, count: 4 },
   { type: 'hidden-abilities', level: 5, count: 4 },
   { type: 'egg-group-connections', level: 5, count: 4 },
-  { type: 'baby-pokemon', level: 5, count: 4 },
   { type: 'pokedex-categories', level: 5, count: 4 },
   { type: 'encounter-locations', level: 5, count: 4 },
   { type: 'berry-flavors', level: 5, count: 4 },

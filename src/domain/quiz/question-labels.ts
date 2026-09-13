@@ -9,7 +9,6 @@ export const questionLabels = {
   'move-types': 'Move types',
   'name-that-region': 'Name that region',
   'move-purpose': 'Move purpose',
-  'baby-pokemon': 'Baby Pokémon',
   'pokedex-categories': 'Pokédex categories',
   'evolution-conditions': 'Evolution conditions',
   'ability-effects': 'Ability effects',

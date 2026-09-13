@@ -159,24 +159,6 @@ it.each(cases)(
           ).toBe(false);
           break;
         }
-        case 'baby-pokemon': {
-          expect(catalog.pokemon[correct]!.isBaby).toBe(true);
-          expect(
-            wrong.every((name) => catalog.pokemon[name]!.isBaby === false),
-          ).toBe(true);
-          if (rules.unevolvedDistractors)
-            expect(
-              wrong.every(
-                (name) => catalog.pokemon[name]!.isUnevolved === true,
-              ),
-            ).toBe(true);
-          else
-            expect(
-              new Set(wrong.map((name) => catalog.pokemon[name]!.isUnevolved))
-                .size,
-            ).toBe(2);
-          break;
-        }
         case 'pokedex-categories': {
           expect(
             question.options.filter(

@@ -8,17 +8,19 @@ import {
 import { formGroups, generations } from '../pokemon/types';
 import { isDifficulty } from './difficulty';
 import { questionTypes } from './questions/definitions';
-import type { GameResult, RoundRules } from './types';
+import { legacyQuestionTypes, type GameResult, type RoundRules } from './types';
+
+const savedQuestionTypes = [...questionTypes, ...legacyQuestionTypes];
 
 export const isRoundRules = (value: unknown): value is RoundRules =>
   isRecord(value) &&
   isSafeNonnegativeInteger(value.version) &&
   isDifficulty(value.difficulty) &&
   (value.automaticQuestionTypes === undefined ||
-    isNonemptyChoiceArray(value.automaticQuestionTypes, questionTypes)) &&
+    isNonemptyChoiceArray(value.automaticQuestionTypes, savedQuestionTypes)) &&
   isNonemptyChoiceArray(value.generations, generations) &&
   isNonemptyChoiceArray(value.formGroups, formGroups) &&
-  isNonemptyChoiceArray(value.questionTypes, questionTypes);
+  isNonemptyChoiceArray(value.questionTypes, savedQuestionTypes);
 
 export const getRulesScoreKey = (
   result: Pick<GameResult, 'contentVersion' | 'scoreVersion' | 'rules'>,

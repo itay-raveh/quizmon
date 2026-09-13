@@ -12,7 +12,7 @@ import type { QuestionData } from './types';
 import type { MeasurementRules } from './measurement-comparison';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 6;
+export const QUESTION_RULES_VERSION = 7;
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {
@@ -68,7 +68,6 @@ export interface ExpansionVariantRules {
   fullList?: 'types' | 'regions';
   damageClass?: 'status' | 'any';
   sameMoveType?: boolean;
-  unevolvedDistractors?: boolean;
   sameColorOrShape?: boolean;
   evolutionConditions?: 'simple' | 'combined' | 'one-condition';
   effectChoices?: 'broad' | 'related' | 'exact';
@@ -186,12 +185,6 @@ export const expansionVariants = {
     2: { damageClass: 'status' },
     3: { damageClass: 'any' },
     4: { damageClass: 'any', sameMoveType: true },
-  },
-  'baby-pokemon': {
-    2: {},
-    3: { unevolvedDistractors: true },
-    4: { unevolvedDistractors: true },
-    5: { unevolvedDistractors: true, closeAlternatives: true },
   },
   'pokedex-categories': {
     2: {},

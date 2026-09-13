@@ -167,6 +167,7 @@ export type GameMode =
 
 export const legacyQuestionCategories = ['cry', 'scale'] as const;
 export const legacyQuestionTypes = [
+  'baby-pokemon',
   'battle-view',
   'evolution-trail',
   'evolution-order',
@@ -206,10 +207,12 @@ export interface GameResult {
 }
 
 export interface RoundRules {
-  automaticQuestionTypes?: QuestionType[];
+  automaticQuestionTypes?: (
+    QuestionType | (typeof legacyQuestionTypes)[number]
+  )[];
   version: number;
   difficulty: Difficulty;
   generations: Generation[];
   formGroups: FormGroup[];
-  questionTypes: QuestionType[];
+  questionTypes: (QuestionType | (typeof legacyQuestionTypes)[number])[];
 }

@@ -186,7 +186,7 @@ const isResults = (value: unknown): value is SavedResults => {
     isSafeNonnegativeInteger(progress.championAnswersWithoutClues) &&
     isCounts(progress.correctCategories, questionCategories) &&
     isCounts(progress.correctGenerations, generations) &&
-    isCounts(progress.correctQuestionTypes, questionTypes) &&
+    isCounts(progress.correctQuestionTypes, savedQuestionTypes) &&
     Array.isArray(progress.correctPokemon) &&
     progress.correctPokemon.every(isName) &&
     isSafeNonnegativeInteger(progress.masteryRounds) &&
@@ -223,7 +223,33 @@ const migratePlayerSubjects = (value: unknown): unknown => {
       : record;
   return {
     ...value,
-    leagueLineup: migrateRoundSubjects(value.leagueLineup),
+    settings:
+      isRecord(value.settings) &&
+      Array.isArray(value.settings.questionTypes) &&
+      value.settings.questionTypes.some((type: unknown) =>
+        isChoice(type, legacyQuestionTypes),
+      )
+        ? {
+            ...value.settings,
+            questionTypes: value.settings.questionTypes.some(
+              (type: unknown) => !isChoice(type, legacyQuestionTypes),
+            )
+              ? value.settings.questionTypes.filter(
+                  (type: unknown) => !isChoice(type, legacyQuestionTypes),
+                )
+              : [...questionTypes],
+          }
+        : value.settings,
+    leagueLineup:
+      isRecord(value.leagueLineup) &&
+      Array.isArray(value.leagueLineup.questions) &&
+      value.leagueLineup.questions.some(
+        (question: unknown) =>
+          isRecord(question) &&
+          isChoice(question.questionType, legacyQuestionTypes),
+      )
+        ? { ...value.leagueLineup, contentVersion: 0, questions: [] }
+        : migrateRoundSubjects(value.leagueLineup),
     hallOfFame: Array.isArray(value.hallOfFame)
       ? value.hallOfFame.map((entry: unknown) =>
           isRecord(entry)

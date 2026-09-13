@@ -1,7 +1,6 @@
 import { expansionVariants } from '../question-variants';
 import {
   buildMeasurement,
-  buildBaby,
   buildCategory,
   buildHidden,
   buildEggGroups,
@@ -69,7 +68,6 @@ const questionBuilders = {
   'move-types': buildMove,
   'name-that-region': buildRegion,
   'move-purpose': buildMove,
-  'baby-pokemon': buildBaby,
   'pokedex-categories': buildCategory,
   'evolution-conditions': buildEvolution,
   'ability-effects': buildEffect,

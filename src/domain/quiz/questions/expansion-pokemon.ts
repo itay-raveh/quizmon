@@ -99,51 +99,6 @@ export const buildMeasurement =
       }
     }
   };
-export const buildBaby: QuestionBuilder = (context) => {
-  const pool = distinctPokemon(orderedPokemon(context, context.pool));
-  for (const target of pool.filter(({ pokemon }) => pokemon.isBaby === true)) {
-    const wrong = pool.filter(
-      ({ pokemon }) =>
-        pokemon.isBaby === false &&
-        (!context.variant?.unevolvedDistractors ||
-          pokemon.isUnevolved === true),
-    );
-    if (
-      !context.variant?.unevolvedDistractors &&
-      (!wrong.some(({ pokemon }) => pokemon.isUnevolved === false) ||
-        !wrong.some(({ pokemon }) => pokemon.isUnevolved === true))
-    )
-      continue;
-    if (context.variant?.closeAlternatives) {
-      const similarity = createPokemonSimilarityScorer(target.pokemon);
-      wrong.sort((a, b) => similarity(b.pokemon) - similarity(a.pokemon));
-    }
-    const chosen = context.variant?.unevolvedDistractors
-      ? wrong.slice(0, 3)
-      : [
-          wrong.find(({ pokemon }) => pokemon.isUnevolved === false),
-          wrong.find(({ pokemon }) => pokemon.isUnevolved === true),
-          ...wrong,
-        ]
-          .filter(
-            (candidate, index, all) =>
-              candidate && all.indexOf(candidate) === index,
-          )
-          .slice(0, 3);
-    if (chosen.length !== 3 || chosen.some((candidate) => !candidate)) continue;
-    const options = [target, ...chosen.filter((candidate) => !!candidate)];
-    return expansionQuestion(
-      context,
-      pokemonSubject(target),
-      'Which is classified as a baby Pokémon?',
-      target.name,
-      options.map((candidate) => candidate.name),
-      {
-        ...picturedPokemon(context, options),
-      },
-    );
-  }
-};
 export const buildCategory: QuestionBuilder = (context) => {
   const pool = distinctPokemon(
     orderedPokemon(

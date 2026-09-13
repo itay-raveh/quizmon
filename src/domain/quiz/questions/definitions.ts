@@ -54,10 +54,6 @@ export const questionDefinitions = {
     description: 'Identify physical, special and status moves.',
     group: 'battle',
   },
-  'baby-pokemon': {
-    description: 'Find a Pokémon classified as a baby.',
-    group: 'knowledge',
-  },
   'pokedex-categories': {
     description: 'Match a Pokédex category to its Pokémon.',
     group: 'knowledge',

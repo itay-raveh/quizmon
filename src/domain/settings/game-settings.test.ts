@@ -20,7 +20,7 @@ describe('normalizeGameSettings', () => {
     expect(
       normalizeGameSettings({
         generations: ['IX', 'not-a-generation'],
-        questionTypes: ['stat-showdown', 'not-a-type'],
+        questionTypes: ['stat-showdown', 'baby-pokemon', 'not-a-type'],
         speedrunMode: true,
       }),
     ).toEqual({
