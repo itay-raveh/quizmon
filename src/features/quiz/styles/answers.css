@@ -565,3 +565,17 @@
 .answer--missed .answer__name {
   text-shadow: none;
 }
+
+.answers.answers--evolution-levels {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.answers--evolution-levels .answer {
+  min-height: 4rem;
+  font-size: var(--text-headline);
+  font-variant-numeric: tabular-nums;
+}
+
+.question__response:has(.answers--evolution-levels) {
+  min-height: 0;
+}

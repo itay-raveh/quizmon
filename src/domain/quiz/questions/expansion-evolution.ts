@@ -1,3 +1,7 @@
+import {
+  evolutionRequirement,
+  presentEvolutionQuestion,
+} from './evolution-presentation';
 import { formatPokemonName } from '../../pokemon/format';
 import { generations } from '../../pokemon/types';
 import type { EvolutionKnowledge } from '../topic-catalog';
@@ -137,6 +141,12 @@ export const buildEvolution: QuestionBuilder = (context) => {
       );
       if (question) return question;
     } else {
+      const itemForRequirement = (condition: string) =>
+        topics.items.find(
+          (entry) =>
+            entry.name.replaceAll('-', ' ') ===
+            condition.replace(/^(use |holding )/, ''),
+        );
       if (
         context.variant?.evolutionConditions === 'simple' &&
         target.conditions.length !== 1
@@ -148,70 +158,58 @@ export const buildEvolution: QuestionBuilder = (context) => {
       )
         continue;
       const correct = method(target);
-      let wrong: string[];
-      if (context.variant?.evolutionConditions === 'one-condition') {
-        const replacements = [
-          ...new Set(pool.flatMap((entry) => entry.conditions)),
-        ];
-        wrong = ordered(context, replacements).flatMap((replacement) =>
-          target.conditions.flatMap((condition, index) => {
-            if (condition === replacement) return [];
-            const conditions = target.conditions.map((value, position) =>
-              position === index ? replacement : value,
-            );
-            const value = method({ ...target, conditions });
-            return alternatives.some((entry) => method(entry) === value)
-              ? []
-              : [value];
-          }),
+      let options: string[] = [];
+      for (const condition of ordered(context, target.conditions)) {
+        const requirement = evolutionRequirement(condition);
+        const itemRequirement = ['item', 'held-item'].includes(
+          requirement.kind,
         );
-        // Lower thresholds can still satisfy a method. Mutations must contradict a required value.
-        wrong = wrong.filter((value) => {
-          const changed = value
-            .split(' · ')
-            .slice(1)
-            .filter((part, index) => part !== target.conditions[index]);
-          return (
-            changed.length === 1 &&
-            target.conditions.some(
-              (condition) =>
-                condition.replace(/\d+/g, '#') ===
-                  changed[0]!.replace(/\d+/g, '#') &&
-                Number(changed[0]!.match(/\d+/)?.[0]) <
-                  Number(condition.match(/\d+/)?.[0]),
-            )
-          );
-        });
-      } else
-        wrong = ordered(context, pool)
-          .filter(
-            (entry) =>
-              entry.game === target.game &&
-              !alternatives.some(
-                (alternative) => method(alternative) === method(entry),
-              ),
-          )
-          .map(method);
-      if (context.variant?.evolutionConditions === 'one-condition') {
-        const distance = (value: string) =>
-          value
-            .split(' · ')
-            .slice(1)
-            .reduce(
-              (sum, part, index) =>
-                sum +
-                Math.abs(
-                  Number(part.match(/\d+/)?.[0] ?? 0) -
-                    Number(target.conditions[index]?.match(/\d+/)?.[0] ?? 0),
+        if (itemRequirement && !itemForRequirement(condition)?.sprite) continue;
+        const replacements = ordered(context, [
+          ...new Set(
+            topics.evolutions
+              .filter((entry) => entry.game === target.game || itemRequirement)
+              .flatMap((entry) => entry.conditions),
+          ),
+        ]).filter(
+          (replacement) =>
+            replacement !== condition &&
+            (!itemRequirement ||
+              Boolean(
+                itemForRequirement(replacement)?.sprite &&
+                itemForRequirement(replacement)?.generations.includes(
+                  target.generation,
                 ),
-              0,
-            );
-        wrong.sort((a, b) => distance(a) - distance(b));
+              )) &&
+            evolutionRequirement(replacement).kind === requirement.kind &&
+            !alternatives.some((entry) =>
+              entry.conditions.includes(replacement),
+            ),
+        );
+        if (
+          context.variant?.evolutionConditions === 'one-condition' &&
+          requirement.value !== undefined
+        )
+          replacements.sort(
+            (a, b) =>
+              Math.abs(evolutionRequirement(a).value! - requirement.value) -
+              Math.abs(evolutionRequirement(b).value! - requirement.value),
+          );
+        if (replacements.length < 3) continue;
+        options = [
+          correct,
+          ...replacements.slice(0, 3).map((replacement) =>
+            method({
+              ...target,
+              conditions: target.conditions.map((value) =>
+                value === condition ? replacement : value,
+              ),
+            }),
+          ),
+        ];
+        break;
       }
-      const options = [
-        correct,
-        ...[...new Set(wrong)].filter((value) => value !== correct).slice(0, 3),
-      ];
+      if (options.length !== 4) continue;
       const shared = correct
         .split(' · ')
         .filter((part) =>
@@ -232,19 +230,41 @@ export const buildEvolution: QuestionBuilder = (context) => {
           context: target.game,
           visual: endpointVisuals,
           optionLabels: Object.fromEntries(
-            options.map((value) => [
-              value,
-              value
+            options.map((value) => {
+              const part = value
                 .split(' · ')
-                .filter((part) => !shared.includes(part))
-                .join(' · '),
-            ]),
+                .find((part) => !shared.includes(part))!;
+              const label = ['item', 'held-item'].includes(
+                evolutionRequirement(part).kind,
+              )
+                ? itemForRequirement(part)!.label
+                : evolutionRequirement(part).label;
+              return [value, label];
+            }),
+          ),
+          optionImages: Object.fromEntries(
+            options.flatMap((option) => {
+              const part = option
+                .split(' · ')
+                .find((value) => !shared.includes(value));
+              if (
+                !part ||
+                !['item', 'held-item'].includes(evolutionRequirement(part).kind)
+              )
+                return [];
+              const item = itemForRequirement(part);
+              return item?.sprite ? [[option, item.sprite]] : [];
+            }),
           ),
           explanation: correct,
         },
         'evolution',
       );
-      if (question) return question;
+      if (question)
+        return presentEvolutionQuestion({
+          ...question,
+          questionType: 'evolution-conditions',
+        });
     }
   }
 };

@@ -25,7 +25,9 @@ export const QuestionInstruction = ({
           : kind === 'evolution-endpoints'
             ? question.questionType === 'evolution-items'
               ? 'Which item triggers this evolution?'
-              : 'What are the minimum requirements for this evolution?'
+              : question.prompt.kind === 'text'
+                ? question.prompt.text
+                : 'Which requirement completes this evolution?'
             : undefined;
   if (subjectInstruction)
     return (

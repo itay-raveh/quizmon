@@ -13,6 +13,9 @@ const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'item-identification', level: 3, count: 4 },
   { type: 'medicine-cabinet', level: 4, count: 4 },
   { type: 'evolution-items', level: 3, count: 4 },
+  { type: 'evolution-conditions', level: 3, count: 4 },
+  { type: 'evolution-conditions', level: 4, count: 4 },
+  { type: 'evolution-conditions', level: 5, count: 4 },
   { type: 'weight-comparison', level: 5, count: 4 },
   { type: 'height-comparison', level: 3, count: 4 },
   { type: 'move-types', level: 3, count: 18 },
@@ -24,7 +27,9 @@ const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'natural-gift', level: 5, count: 18 },
 ];
 for (const { type, level, count } of cases)
-  test(`answers and resumes ${type} on a narrow screen`, async ({ page }) => {
+  test(`answers and resumes ${type} level ${level} on a narrow screen`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     await page.addInitScript(
       ({ type, level, generations }) => {
@@ -86,6 +91,17 @@ for (const { type, level, count } of cases)
     } else if (question.namesOnly) {
       await expect(answers.locator('img')).toHaveCount(0);
     }
+    if (type === 'evolution-conditions') {
+      await expect(
+        page.locator('.question-evolution-endpoints img'),
+      ).toHaveCount(2);
+      for (const number of await page
+        .locator('.question-evolution-endpoints .pokemon-identity__number')
+        .all())
+        await expect(number).toBeVisible();
+      const labels = await answers.allTextContents();
+      expect(labels.every((label) => !label.includes(' · '))).toBe(true);
+    }
     if (type === 'ev-yields') {
       await expect(page.locator('.question-visual img')).toHaveCount(1);
       await expect(
@@ -104,7 +120,21 @@ for (const { type, level, count } of cases)
       name: question.optionLabels?.[correct] ?? formatName(correct),
       exact: true,
     });
-    if (type === 'name-that-region') {
+    if (
+      type === 'evolution-conditions' &&
+      question.options.every((option) =>
+        /^\d+$/.test(question.optionLabels?.[option] ?? ''),
+      )
+    ) {
+      const labels = await answers.evaluateAll((buttons) =>
+        buttons.map((button) => Number(button.getAttribute('aria-label'))),
+      );
+      expect(labels).toEqual(labels.toSorted((a, b) => a - b));
+      await page.keyboard.press(
+        String(labels.indexOf(Number(question.optionLabels![correct])) + 1),
+      );
+      await expect(page.locator('.answer--wrong')).toHaveCount(0);
+    } else if (type === 'name-that-region') {
       const regions = [
         'Kanto',
         'Johto',

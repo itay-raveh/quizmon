@@ -1,3 +1,7 @@
+import {
+  evolutionChoiceDetails,
+  formatEvolutionCondition,
+} from '@/domain/quiz/questions/evolution-presentation';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { PixelSprite } from '@/components/PixelSprite';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
@@ -138,6 +142,18 @@ export const QuestionArtwork = ({
             />
           </Fragment>
         ))}
+        {question.questionType === 'evolution-conditions' ? (
+          <ul
+            className="question-evolution-endpoints__conditions"
+            aria-label="Other evolution requirements"
+          >
+            {evolutionChoiceDetails(question.options).shared.map(
+              (condition) => (
+                <li key={condition}>{formatEvolutionCondition(condition)}</li>
+              ),
+            )}
+          </ul>
+        ) : null}
       </div>
     );
   if (visual?.kind === 'evolution-link') {

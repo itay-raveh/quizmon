@@ -7,7 +7,7 @@ import type { QuestionData } from './types';
 import type { MeasurementRules } from './measurement-comparison';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 4;
+export const QUESTION_RULES_VERSION = 5;
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {
@@ -197,7 +197,7 @@ export const expansionVariants = {
   'evolution-conditions': {
     3: { evolutionConditions: 'simple' },
     4: { evolutionConditions: 'combined' },
-    5: { evolutionConditions: 'one-condition', namesOnly: true },
+    5: { evolutionConditions: 'one-condition' },
   },
   'ability-effects': {
     3: { effectChoices: 'broad' },

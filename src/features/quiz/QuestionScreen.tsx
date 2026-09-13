@@ -1,3 +1,4 @@
+import { presentEvolutionQuestion } from '@/domain/quiz/questions/evolution-presentation';
 import { presentEffectQuestion } from '@/domain/quiz/questions/effect-presentation';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
@@ -128,7 +129,7 @@ export const QuestionScreen = ({
   total,
 }: QuestionScreenProps) => {
   const question = useMemo(
-    () => presentEffectQuestion(storedQuestion),
+    () => presentEvolutionQuestion(presentEffectQuestion(storedQuestion)),
     [storedQuestion],
   );
   const heading = useRef<HTMLHeadingElement>(null);

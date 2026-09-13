@@ -91,6 +91,12 @@ export const QuestionAnswers = ({
         )
           ? 'answers--statements'
           : '',
+        question.questionType === 'evolution-conditions' &&
+        question.options.every((option) =>
+          /^\d+$/.test(question.optionLabels?.[option] ?? ''),
+        )
+          ? 'answers--evolution-levels'
+          : '',
         question.optionVisuals && !namesOnly ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',

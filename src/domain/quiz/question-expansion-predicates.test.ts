@@ -227,15 +227,14 @@ it.each(cases)(
             );
             expect(labels).toContain(correct);
             expect(wrong.some((option) => labels.includes(option))).toBe(false);
-            if (rules.evolutionConditions === 'one-condition')
-              for (const option of wrong)
-                expect(
-                  option
-                    .split(' · ')
-                    .filter(
-                      (part, index) => part !== correct.split(' · ')[index],
-                    ),
-                ).toHaveLength(1);
+            for (const option of wrong)
+              expect(
+                option
+                  .split(' · ')
+                  .filter(
+                    (part, index) => part !== correct.split(' · ')[index],
+                  ),
+              ).toHaveLength(1);
           }
           break;
         }
