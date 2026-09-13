@@ -43,7 +43,11 @@ export const QuestionAnswers = ({
   question,
   selectedOptions,
 }: QuestionAnswersProps) => {
-  const concealedMedia = question.namesOnly && !answered;
+  const namesOnly =
+    question.namesOnly &&
+    question.questionType !== 'weight-comparison' &&
+    question.questionType !== 'height-comparison';
+  const concealedMedia = namesOnly && !answered;
   const correct = new Set(question.answer.correctOptions);
   const selected = new Set(selectedOptions);
   const hasTypeOptionBadges = typeOptionQuestionTypes.has(
@@ -86,7 +90,7 @@ export const QuestionAnswers = ({
         )
           ? 'answers--statements'
           : '',
-        question.optionVisuals && !question.namesOnly ? 'answers--pokemon' : '',
+        question.optionVisuals && !namesOnly ? 'answers--pokemon' : '',
         question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
         question.options.length > 4 && !multiSelect ? 'answers--many' : '',
@@ -202,7 +206,7 @@ export const QuestionAnswers = ({
               question.options.length <= 9 ? String(index + 1) : undefined
             }
             aria-pressed={multiSelect ? optionSelected : undefined}
-            className={`${optionClassName} ${visual ? (question.namesOnly ? 'answer--names-only' : 'answer--pokemon') : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+            className={`${optionClassName} ${visual ? (namesOnly ? 'answer--names-only' : 'answer--pokemon') : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
             disabled={answered}
             key={option}
             onClick={() => onSelect(option)}
@@ -232,7 +236,7 @@ export const QuestionAnswers = ({
                 </span>
                 <PokemonIdentity
                   className={
-                    question.namesOnly
+                    namesOnly
                       ? `answer__identity ${hasStatValue ? 'answer__identity--stat' : ''}`.trim()
                       : `answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()
                   }
@@ -289,7 +293,7 @@ export const QuestionAnswers = ({
               <span className="answer__text">
                 <span>{label}</span>
                 {detail}
-                {question.namesOnly && (classification || generation) ? (
+                {namesOnly && (classification || generation) ? (
                   <span
                     aria-hidden="true"
                     className="answer__text-detail"

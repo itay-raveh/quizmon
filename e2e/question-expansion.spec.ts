@@ -75,7 +75,15 @@ for (const { type, level, count } of cases)
       expect(await page.locator('.question-visual').innerText()).not.toContain(
         question.optionLabels![question.subject.name],
       );
-    if (question.namesOnly) await expect(answers.locator('img')).toHaveCount(0);
+    if (type === 'weight-comparison' || type === 'height-comparison') {
+      await expect(answers.locator('img')).toHaveCount(count);
+      for (const answer of await answers.all()) {
+        await expect(answer.locator('.pokemon-identity')).toContainText('No.');
+        await expect(answer.locator('.pokemon-identity small')).toBeVisible();
+      }
+    } else if (question.namesOnly) {
+      await expect(answers.locator('img')).toHaveCount(0);
+    }
     await expectNoHorizontalOverflow(page);
     if (type === 'move-types' || type === 'natural-gift') {
       const labels = await answers.evaluateAll((buttons) =>
