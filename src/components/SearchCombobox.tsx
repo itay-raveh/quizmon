@@ -1,5 +1,5 @@
 import { useSuggestionNavigation } from '@/hooks/useSuggestionNavigation';
-import { type ReactNode, type Ref } from 'react';
+import { useEffect, useRef, type ReactNode, type Ref } from 'react';
 
 export const SearchCombobox = <Option,>({
   id,
@@ -40,6 +40,24 @@ export const SearchCombobox = <Option,>({
   const showSuggestions =
     navigation.open && !disabled && !hideSuggestions && query.trim().length > 0;
   const expanded = showSuggestions && suggestions.length > 0;
+  const listbox = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    if (!expanded) return;
+    const viewport = window.visualViewport;
+    const resize = () => {
+      listbox.current?.style.setProperty(
+        '--suggestion-viewport-height',
+        `${viewport?.height ?? window.innerHeight}px`,
+      );
+    };
+    resize();
+    viewport?.addEventListener('resize', resize);
+    window.addEventListener('resize', resize);
+    return () => {
+      viewport?.removeEventListener('resize', resize);
+      window.removeEventListener('resize', resize);
+    };
+  }, [expanded]);
   return (
     <div className={className}>
       <input
@@ -86,7 +104,7 @@ export const SearchCombobox = <Option,>({
       />
       {showSuggestions ? (
         suggestions.length ? (
-          <ul id={id} role="listbox">
+          <ul id={id} role="listbox" ref={listbox}>
             {suggestions.map((option, index) => (
               <li
                 key={getKey(option)}

@@ -159,6 +159,24 @@ test('complete typing supports search, removal, and submission while Pokémon se
     exact: true,
   });
   await expect(check).toBeDisabled();
+  await picker.fill('a');
+  const suggestions = page.getByRole('listbox');
+  await expect(suggestions).toBeVisible();
+  await page.evaluate(() => {
+    Object.defineProperty(window.visualViewport, 'height', {
+      configurable: true,
+      value: 300,
+    });
+    window.visualViewport!.dispatchEvent(new Event('resize'));
+  });
+  await expect
+    .poll(async () => (await suggestions.boundingBox())!.height)
+    .toBeLessThanOrEqual(120);
+  expect(await page.evaluate(() => window.innerHeight)).toBe(800);
+  const listBounds = (await suggestions.boundingBox())!;
+  expect((await check.boundingBox())!.y).toBeGreaterThanOrEqual(
+    listBounds.y + listBounds.height,
+  );
   await picker.fill('not-a-type');
   await expect(page.getByRole('status')).toHaveText('No matching types');
   await picker.fill('fier');
