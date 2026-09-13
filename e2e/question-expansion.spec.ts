@@ -11,7 +11,7 @@ import type { QuestionType } from '../src/domain/quiz/types';
 
 const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'item-identification', level: 3, count: 4 },
-  { type: 'medicine-cabinet', level: 2, count: 4 },
+  { type: 'medicine-cabinet', level: 4, count: 4 },
   { type: 'evolution-items', level: 3, count: 4 },
   { type: 'weight-comparison', level: 5, count: 4 },
   { type: 'height-comparison', level: 3, count: 4 },
@@ -81,6 +81,8 @@ for (const { type, level, count } of cases)
         await expect(answer.locator('.pokemon-identity')).toContainText('No.');
         await expect(answer.locator('.pokemon-identity small')).toBeVisible();
       }
+    } else if (type === 'medicine-cabinet') {
+      await expect(answers.locator('img')).toHaveCount(count);
     } else if (question.namesOnly) {
       await expect(answers.locator('img')).toHaveCount(0);
     }

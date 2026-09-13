@@ -46,7 +46,8 @@ export const QuestionAnswers = ({
   const namesOnly =
     question.namesOnly &&
     question.questionType !== 'weight-comparison' &&
-    question.questionType !== 'height-comparison';
+    question.questionType !== 'height-comparison' &&
+    question.questionType !== 'medicine-cabinet';
   const concealedMedia = namesOnly && !answered;
   const correct = new Set(question.answer.correctOptions);
   const selected = new Set(selectedOptions);
