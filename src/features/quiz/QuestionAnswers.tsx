@@ -17,6 +17,7 @@ import { Fragment } from 'react';
 import { TypeAnswerPicker } from './TypeAnswerPicker';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
 import { NatureEffect } from './NatureEffect';
+import { MoveReveal } from './MoveReveal';
 import { orderRegionOptions } from './region-option-order';
 const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
   'move-types',
@@ -127,6 +128,8 @@ export const QuestionAnswers = ({
             >
               {question.questionType === 'nature-effects' ? (
                 <NatureEffect description={reveal} compact />
+              ) : question.questionType === 'move-purpose' ? (
+                <MoveReveal description={reveal} />
               ) : (
                 reveal
               )}

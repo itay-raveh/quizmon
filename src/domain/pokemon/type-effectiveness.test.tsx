@@ -104,8 +104,8 @@ it('shows separate attack calculations and takes the strongest type for Counter 
   expect(
     screen.queryByText('Type effectiveness only.'),
   ).not.toBeInTheDocument();
-  expect(screen.getByText('Rock').tagName).toBe('B');
-  expect(screen.getByText('Water').tagName).not.toBe('B');
+  expect(screen.getByLabelText('Rock').closest('b')).not.toBeNull();
+  expect(screen.getByLabelText('Water').closest('b')).toBeNull();
   expect(
     screen.getByLabelText(
       'Water: 2 against Fire times 1 against Flying equals 2',

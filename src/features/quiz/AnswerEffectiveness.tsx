@@ -63,9 +63,14 @@ export const AnswerEffectiveness = ({
             {!isTypeOption && calculations.length > 1 ? (
               <div className="matchup-help__attack">
                 {multiplier === total ? (
-                  <b>{formatPokemonName(type)}</b>
+                  <b>
+                    <TypeBadges
+                      types={[type]}
+                      label={formatPokemonName(type)}
+                    />
+                  </b>
                 ) : (
-                  formatPokemonName(type)
+                  <TypeBadges types={[type]} label={formatPokemonName(type)} />
                 )}
               </div>
             ) : null}

@@ -113,10 +113,7 @@ export const TypeAnswerPicker = ({
             : 'No matching types'
         }
         renderOption={(type) => (
-          <>
-            <span>{formatPokemonName(type)}</span>
-            <TypeBadges types={[type]} />
-          </>
+          <TypeBadges types={[type]} label={formatPokemonName(type)} />
         )}
       />
       <div
