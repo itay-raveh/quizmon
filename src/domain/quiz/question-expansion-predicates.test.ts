@@ -106,6 +106,7 @@ it.each(cases)(
           const ratio = high
             ? sorted[3]! / sorted[2]!
             : sorted[1]! / sorted[0]!;
+          expect(ratio).toBeGreaterThanOrEqual(1.3);
           expect(ratio).toBeGreaterThanOrEqual(rules.measurement!.minimumRatio);
           expect(ratio).toBeLessThanOrEqual(rules.measurement!.maximumRatio);
           expect(sorted[3]! / sorted[0]!).toBeLessThanOrEqual(

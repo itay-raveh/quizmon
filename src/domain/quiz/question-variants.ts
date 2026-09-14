@@ -13,7 +13,7 @@ import type { QuestionData } from './types';
 import type { MeasurementRules } from './measurement-comparison';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 13;
+export const QUESTION_RULES_VERSION = 14;
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {
@@ -125,16 +125,16 @@ export const expansionVariants = {
     },
     4: {
       measurement: {
-        minimumRatio: 1.08,
-        maximumRatio: 1.3,
-        maximumSpread: 1.5,
+        minimumRatio: 1.3,
+        maximumRatio: 2,
+        maximumSpread: 2,
       },
     },
     5: {
       measurement: {
-        minimumRatio: 1.001,
-        maximumRatio: 1.08,
-        maximumSpread: 1.2,
+        minimumRatio: 1.3,
+        maximumRatio: 1.5,
+        maximumSpread: 1.5,
       },
     },
   },
@@ -162,16 +162,16 @@ export const expansionVariants = {
     },
     4: {
       measurement: {
-        minimumRatio: 1.08,
-        maximumRatio: 1.3,
-        maximumSpread: 1.5,
+        minimumRatio: 1.3,
+        maximumRatio: 2,
+        maximumSpread: 2,
       },
     },
     5: {
       measurement: {
-        minimumRatio: 1.001,
-        maximumRatio: 1.08,
-        maximumSpread: 1.2,
+        minimumRatio: 1.3,
+        maximumRatio: 1.5,
+        maximumSpread: 1.5,
       },
     },
   },
