@@ -39,8 +39,8 @@ for (const { type, level, count } of cases)
     await page.setViewportSize({ width: 360, height: 780 });
     await page.addInitScript(
       ({ type, level, generations }) => {
-        if (localStorage.getItem('expansion-test-seeded')) return;
-        localStorage.setItem('expansion-test-seeded', '1');
+        if (localStorage.getItem('question-test-seeded')) return;
+        localStorage.setItem('question-test-seeded', '1');
         localStorage.setItem(
           'quizmon.training-settings.v2',
           JSON.stringify({

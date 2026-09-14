@@ -6,11 +6,7 @@ import {
 import { generations } from '../../domain/pokemon/types';
 import { buildQuestions } from '../../domain/quiz/question-generation';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-import { questionTypes as registeredQuestionTypes } from '../../domain/quiz/questions/definitions';
-import { expansionVariants } from '../../domain/quiz/question-variants';
-const questionTypes = registeredQuestionTypes.filter(
-  (type) => !Object.hasOwn(expansionVariants, type),
-);
+import { legacyQuestionTypes as questionTypes } from '../../domain/quiz/legacy-question-types';
 import { isQuestionAnswerCorrect } from '../../domain/quiz/scoring';
 import { type QuestionData, type QuestionType } from '../../domain/quiz/types';
 import { defaultGameSettings } from '../../domain/settings/game-settings';

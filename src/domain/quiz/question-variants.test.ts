@@ -6,14 +6,22 @@ import {
 import { createSeededRandom } from '../../lib/random';
 import { generations } from '../pokemon/types';
 import { defaultGameSettings } from '../settings/game-settings';
-import { difficultyLevels } from './difficulty';
+import {
+  difficultyLevels,
+  resolveDifficultyVariant,
+  type Difficulty,
+} from './difficulty';
 import {
   buildDailyTrackQuestions,
   buildQuestions,
   resolveTrainingSettings,
 } from './question-generation';
 import { isQuestionData } from './question-lineup';
-import { getQuestionVariant } from './question-variants';
+import {
+  getQuestionVariant,
+  questionVariants,
+  type VariantRules,
+} from './question-variants';
 import { questionTypes } from './questions/definitions';
 import { buildQuestionType } from './questions/registry';
 import {
@@ -202,3 +210,20 @@ it.each([3, 4, 5] as const)(
     expect(question?.options.toSorted()).toEqual(['johto', 'kanto']);
   },
 );
+
+it('retains entire checkpoint rules through plateaus', () => {
+  for (const variants of Object.values(questionVariants)) {
+    for (const level of difficultyLevels) {
+      const eligible = Object.keys(variants)
+        .map(Number)
+        .filter((n) => Number.isFinite(n) && n <= level);
+      const resolved = resolveDifficultyVariant<VariantRules>(variants, level);
+      if (!eligible.length) expect(resolved).toBeUndefined();
+      else
+        expect(resolved).toEqual({
+          level: Math.max(...eligible),
+          variant: variants[Math.max(...eligible) as Difficulty],
+        });
+    }
+  }
+});

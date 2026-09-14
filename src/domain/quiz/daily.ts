@@ -2,7 +2,7 @@ import { createSeededRandom, shuffle } from '../../lib/random';
 import { isDailyDate } from '../../lib/validation';
 import { getChallengeSettings } from '../settings/game-settings';
 import type { ExperienceSettings, GameSettings } from '../settings/types';
-import { coreQuestionTypes } from './questions/definitions';
+import { legacyLeagueQuestionTypes } from './legacy-question-types';
 import type { QuestionData } from './types';
 
 export const DAILY_CHALLENGE_VERSION = 15;
@@ -26,7 +26,7 @@ export const getDailySettings = (
   experience: ExperienceSettings,
 ): GameSettings => ({
   ...getChallengeSettings(experience),
-  questionTypes: [...coreQuestionTypes],
+  questionTypes: [...legacyLeagueQuestionTypes],
 });
 
 const dailyOrdinal = (date: string): number =>
@@ -40,9 +40,9 @@ export const getDailyQuestionTypes = (
 ): QuestionData['questionType'][] => [
   ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, (_, index) => {
     const slot = dailySlot(date, index);
-    const cycle = Math.floor(slot / coreQuestionTypes.length);
+    const cycle = Math.floor(slot / legacyLeagueQuestionTypes.length);
     const deck = shuffle(
-      coreQuestionTypes,
+      legacyLeagueQuestionTypes,
       createSeededRandom(`daily-types-v${DAILY_CHALLENGE_VERSION}:${cycle}`),
     );
     return deck[((slot % deck.length) + deck.length) % deck.length]!;
@@ -52,7 +52,7 @@ export const getDailyQuestionTypes = (
 
 export const getDailyRotation = (date: string): number[] => [
   ...Array.from({ length: DAILY_STANDARD_QUESTION_COUNT }, (_, index) =>
-    Math.floor(dailySlot(date, index) / coreQuestionTypes.length),
+    Math.floor(dailySlot(date, index) / legacyLeagueQuestionTypes.length),
   ),
   dailyOrdinal(date),
 ];

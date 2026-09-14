@@ -1,12 +1,9 @@
+import type { QuestionData } from './types';
 import { catalog } from '../../../tests/fixtures/catalog';
 import { createSeededRandom } from '../../lib/random';
 import { generations, formGroups } from '../pokemon/types';
 import { defaultGameSettings, filterPokemon } from '../settings/game-settings';
-import {
-  expansionVariants,
-  type ExpansionQuestionType,
-} from './question-variants';
-import { getQuestionVariant } from './question-variants';
+import { questionVariants, getQuestionVariant } from './question-variants';
 import { isQuestionData } from './question-lineup';
 import { buildQuestionType } from './questions/registry';
 import {
@@ -19,14 +16,16 @@ const pool = filterPokemon(catalog, {
   generations: [...generations],
   formGroups: [...formGroups],
 });
-const cases = Object.entries(expansionVariants).flatMap(([type, variants]) =>
-  Object.keys(variants).map((level) => ({
-    type: type as ExpansionQuestionType,
-    level: Number(level) as Difficulty,
-  })),
+const cases = Object.entries(questionVariants).flatMap(([type, variants]) =>
+  Object.keys(variants)
+    .filter((key) => key !== 'rendering')
+    .map((level) => ({
+      type: type as QuestionData['questionType'],
+      level: Number(level) as Difficulty,
+    })),
 );
 it.each(cases)(
-  'builds the approved $type checkpoint at Level $level from shipped facts',
+  'builds the configured $type checkpoint at Level $level from shipped facts',
   ({ type, level }) => {
     const question = buildQuestionType(
       {
@@ -34,7 +33,7 @@ it.each(cases)(
         pool,
         generations: [...generations],
         difficulty: level,
-        random: createSeededRandom(`expansion:${type}:${level}`),
+        random: createSeededRandom(`checkpoint:${type}:${level}`),
         used: new Set(),
       },
       type,
@@ -42,16 +41,17 @@ it.each(cases)(
     expect(question, `${type} Level ${level}`).toBeDefined();
     expect(isQuestionData(question)).toBe(true);
     if (!question) return;
-    expect(question.answer.interaction).toBe('single-choice');
-    expect(question.answer.correctOptions).toHaveLength(1);
     const rules = getQuestionVariant(type, level)!.variant;
-    expect(question.options.length).toBe(
-      rules.fullList === 'types'
-        ? Object.keys(catalog.typeRelations).length
-        : rules.fullList === 'regions'
-          ? catalog.topics!.regions.length
-          : 4,
-    );
+    if (question.answer.interaction === 'single-choice') {
+      expect(question.answer.correctOptions).toHaveLength(1);
+      expect(question.options.length).toBeGreaterThan(1);
+    }
+    if (rules.fullList === 'types')
+      expect(question.options).toHaveLength(
+        Object.keys(catalog.typeRelations).length,
+      );
+    if (rules.fullList === 'regions')
+      expect(question.options).toHaveLength(catalog.topics!.regions.length);
     expect(question.rendering).toEqual(rules.rendering);
     expect(
       question.repetition.primary.every((name) => !!catalog.pokemon[name]),
@@ -61,7 +61,7 @@ it.each(cases)(
     ).toBe(true);
   },
 );
-it('uses the configured additions through the active Daily settings path', () => {
+it('uses every eligible family through the active Daily settings path', () => {
   const settings = resolveTrainingSettings(catalog, {
     ...defaultGameSettings,
     difficulty: 3,
@@ -69,18 +69,14 @@ it('uses the configured additions through the active Daily settings path', () =>
     formGroups: [...formGroups],
     questionSelection: 'automatic',
   });
-  expect(
-    settings.questionTypes.filter((type) =>
-      Object.hasOwn(expansionVariants, type),
-    ),
-  ).toEqual(
-    Object.keys(expansionVariants)
-      .filter((type) => getQuestionVariant(type as ExpansionQuestionType, 3))
-      .sort(
-        (a, b) =>
-          settings.questionTypes.indexOf(a as ExpansionQuestionType) -
-          settings.questionTypes.indexOf(b as ExpansionQuestionType),
-      ),
+  expect([...settings.questionTypes].sort()).toEqual(
+    Object.keys(questionVariants)
+      .filter(
+        (type) =>
+          type !== 'champion' &&
+          getQuestionVariant(type as QuestionData['questionType'], 3),
+      )
+      .sort(),
   );
   const first = buildDailyTrackQuestions(
     catalog,
@@ -97,7 +93,7 @@ it('uses the configured additions through the active Daily settings path', () =>
 });
 
 it.each(generations)(
-  'keeps every new family inside the %s generation and base-form scope',
+  'keeps every family inside the %s generation and base-form scope',
   (generation) => {
     const restrictedPool = filterPokemon(catalog, {
       generations: [generation],
@@ -105,8 +101,8 @@ it.each(generations)(
     });
     const allowed = new Set(restrictedPool.map(({ name }) => name));
     for (const type of Object.keys(
-      expansionVariants,
-    ) as ExpansionQuestionType[]) {
+      questionVariants,
+    ) as QuestionData['questionType'][]) {
       const question = buildQuestionType(
         {
           catalog,

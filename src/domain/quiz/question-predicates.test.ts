@@ -1,22 +1,38 @@
+import type { QuestionType } from './types';
 import {
   catalog,
   createQuestionContext,
 } from '../../../tests/fixtures/catalog';
 import { formatPokemonName } from '../pokemon/format';
 import { statNames } from '../pokemon/types';
-import {
-  expansionVariants,
-  getQuestionVariant,
-  type ExpansionQuestionType,
-} from './question-variants';
+import { questionVariants, getQuestionVariant } from './question-variants';
 import { buildQuestionType } from './questions/registry';
 import type { Difficulty } from './difficulty';
 
-const cases = Object.entries(expansionVariants).flatMap(([type, variants]) =>
-  Object.keys(variants).map((level) => ({
-    type: type as ExpansionQuestionType,
-    level: Number(level) as Difficulty,
-  })),
+const predicateTypes: readonly QuestionType[] = [
+  'item-identification',
+  'medicine-cabinet',
+  'height-comparison',
+  'weight-comparison',
+  'move-types',
+  'move-purpose',
+  'name-that-region',
+  'pokedex-categories',
+  'evolution-items',
+  'evolution-conditions',
+  'hidden-abilities',
+  'nature-effects',
+  'ev-yields',
+  'encounter-locations',
+  'berry-flavors',
+  'natural-gift',
+  'ability-effects',
+  'held-item-effects',
+];
+const cases = predicateTypes.flatMap((type) =>
+  Object.keys(questionVariants[type])
+    .filter((key) => key !== 'rendering')
+    .map((level) => ({ type, level: Number(level) as Difficulty })),
 );
 const topics = catalog.topics!;
 it.each(cases)(

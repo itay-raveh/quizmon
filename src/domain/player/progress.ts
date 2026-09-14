@@ -1,4 +1,4 @@
-import { expansionVariants } from '../quiz/question-variants';
+import { supportsLegacyQuestion } from '../quiz/legacy-question-types';
 import { questionTypes } from '../quiz/questions/definitions';
 import { TRAINER_PROGRESS_VERSION, type SavedResults } from './results';
 import {
@@ -69,8 +69,7 @@ export const addResultToProgress = (
               questionSelection: 'automatic',
             }).questionTypes.filter(
               (type) =>
-                result.rules!.version >= 3 ||
-                !Object.hasOwn(expansionVariants, type),
+                result.rules!.version >= 3 || supportsLegacyQuestion(type),
             );
           return (
             automatic.length === result.rules.questionTypes.length &&

@@ -51,7 +51,7 @@ describe('active game storage', () => {
       version: 2,
     });
   });
-  it('retains saved pre-expansion difficulty rules and assistance after a rule bump', () => {
+  it('retains saved older difficulty rules and assistance after a rule bump', () => {
     const question = buildQuestionType(
       { ...createQuestionContext('saved-expert'), difficulty: 5 },
       'stat-showdown',

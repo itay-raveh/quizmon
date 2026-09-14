@@ -32,11 +32,7 @@ import {
 } from './question-history';
 import { isQuestionData, isQuestionLineup } from './question-lineup';
 import type { QuestionBuilder, QuestionDraft } from './questions/context';
-import { questionTypes as registeredQuestionTypes } from './questions/definitions';
-import { expansionVariants } from './question-variants';
-const questionTypes = registeredQuestionTypes.filter(
-  (type) => !Object.hasOwn(expansionVariants, type),
-);
+import { legacyQuestionTypes as questionTypes } from './legacy-question-types';
 import { optionSetRepetition, targetRepetition } from './questions/repetition';
 import type { QuestionType } from './types';
 const genFive: Generation[] = ['I', 'II', 'III', 'IV', 'V'];

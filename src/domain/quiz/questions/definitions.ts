@@ -1,4 +1,3 @@
-import { expansionVariants } from '../question-variants';
 import type { QuestionType } from '../types';
 
 interface QuestionDefinition {
@@ -180,9 +179,3 @@ export const questionDefinitions = {
 } satisfies Record<QuestionType, QuestionDefinition>;
 
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
-
-export const coreQuestionTypes = questionTypes.filter(
-  (type) =>
-    !Object.hasOwn(expansionVariants, type) &&
-    !['ability-check', 'move-check', 'stat-showdown'].includes(type),
-);

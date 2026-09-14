@@ -18,11 +18,7 @@ import {
   getQuestionCount,
 } from './question-generation';
 import { getQuestionTitle } from './question-labels';
-import { questionTypes as registeredQuestionTypes } from './questions/definitions';
-import { expansionVariants } from './question-variants';
-const questionTypes = registeredQuestionTypes.filter(
-  (type) => !Object.hasOwn(expansionVariants, type),
-);
+import { legacyQuestionTypes as questionTypes } from './legacy-question-types';
 import { buildQuestionType } from './questions/registry';
 import {
   generations,

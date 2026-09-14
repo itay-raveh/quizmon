@@ -20,17 +20,19 @@ import {
 import { readPlayerSave } from './player-storage';
 import { readActiveGame, writeActiveGame } from './active-game-storage';
 
-const questions = [
-  'item-identification',
-  'weight-comparison',
-  'move-types',
-  'name-that-region',
-  'evolution-conditions',
-  'berry-flavors',
-].map((type) =>
+const questions = (
+  [
+    'item-identification',
+    'weight-comparison',
+    'move-types',
+    'name-that-region',
+    'evolution-conditions',
+    'berry-flavors',
+  ] as const
+).map((type) =>
   buildQuestionType(
     { ...createQuestionContext(`save:${type}`), difficulty: 5 },
-    type as 'item-identification',
+    type,
   )!,
 );
 const answers: AnswerResult[] = questions.map((question) => ({

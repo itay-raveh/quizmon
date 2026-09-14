@@ -1,3 +1,4 @@
+import { supportsLegacyQuestion } from '../legacy-question-types';
 import {
   getPokemonRecency,
   getQuestionRecency,
@@ -6,7 +7,6 @@ import {
   rememberQuestion,
 } from '../question-history';
 import {
-  expansionVariants,
   getQuestionVariant,
   resolveQuestionRendering,
 } from '../question-variants';
@@ -95,7 +95,7 @@ export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionData['questionType'],
 ): QuestionData | undefined => {
-  if (!context.difficulty && Object.hasOwn(expansionVariants, questionType))
+  if (!context.difficulty && !supportsLegacyQuestion(questionType))
     return undefined;
   const resolved = context.difficulty
     ? getQuestionVariant(questionType, context.difficulty)

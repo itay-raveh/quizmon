@@ -1,5 +1,5 @@
 import { formGroups, generations } from '../pokemon/types';
-import { coreQuestionTypes } from '../quiz/questions/definitions';
+import { legacyLeagueQuestionTypes } from '../quiz/legacy-question-types';
 import {
   defaultGameSettings,
   getTrainingSettings,
@@ -71,12 +71,12 @@ describe('normalizeGameSettings', () => {
         questionTypes: ['evolution-shift'],
       }),
     ).toMatchObject({
-      questionTypes: coreQuestionTypes,
+      questionTypes: legacyLeagueQuestionTypes,
       trainingMode: 'league',
     });
-    expect(coreQuestionTypes).toHaveLength(17);
+    expect(legacyLeagueQuestionTypes).toHaveLength(17);
     for (const advanced of ['ability-check', 'move-check', 'stat-showdown']) {
-      expect(coreQuestionTypes).not.toContain(advanced);
+      expect(legacyLeagueQuestionTypes).not.toContain(advanced);
     }
     expect(
       getTrainingSettings({

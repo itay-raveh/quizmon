@@ -1,14 +1,14 @@
-import { expansionVariants } from '../quiz/question-variants';
+import {
+  supportsLegacyQuestion,
+  legacyLeagueQuestionTypes,
+} from '../quiz/legacy-question-types';
 import { getQuestionVariant } from '../quiz/question-variants';
 import { isChoice, isObject } from '../../lib/validation';
 import { getFormGroup } from '../pokemon/forms';
 import { formGroups, generations, type PokemonCatalog } from '../pokemon/types';
 import type { Candidate } from '../quiz/questions/context';
 import { isDifficulty } from '../quiz/difficulty';
-import {
-  coreQuestionTypes,
-  questionTypes,
-} from '../quiz/questions/definitions';
+import { questionTypes } from '../quiz/questions/definitions';
 import {
   answerFlows,
   timerDisplays,
@@ -67,10 +67,8 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
           (type !== 'generation-roundup' || settings.generations.length > 1),
       )
     : isLeagueTraining(settings)
-      ? [...coreQuestionTypes]
-      : settings.questionTypes.filter(
-          (type) => !Object.hasOwn(expansionVariants, type),
-        ),
+      ? [...legacyLeagueQuestionTypes]
+      : settings.questionTypes.filter((type) => supportsLegacyQuestion(type)),
 });
 
 export const normalizeGameSettings = (candidate: unknown): GameSettings => {

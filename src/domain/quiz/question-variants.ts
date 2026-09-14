@@ -32,7 +32,7 @@ export const questionTuning = {
   },
 };
 
-export interface VariantRules extends ExpansionVariantRules {
+export interface VariantRules {
   distractors?: 'dissimilar' | 'similar';
   distractorPoolSize?: number;
   search?: boolean;
@@ -50,9 +50,7 @@ export interface VariantRules extends ExpansionVariantRules {
     assistance: boolean;
     penalty: number;
   };
-}
 
-export interface ExpansionVariantRules {
   rendering?: RenderingOverrides;
   allowMissingSprites?: boolean;
   closeAlternatives?: boolean;
@@ -79,7 +77,19 @@ export interface ExpansionVariantRules {
   completeFlavors?: boolean;
 }
 
-export const expansionVariants = {
+// Family rendering is the baseline; each checkpoint overrides individual fields.
+// Generated questions keep a snapshot so later grid edits do not change saved rounds.
+export const defaultQuestionRendering: QuestionRendering = {
+  subject: { sprite: 'always', name: 'always', number: 'always' },
+  choices: { sprite: 'always', name: 'always', number: 'always' },
+  related: { sprite: 'always', name: 'always', number: 'always' },
+  search: { sprite: 'always', name: 'always', number: 'always' },
+};
+
+export const questionVariants: Record<
+  QuestionData['questionType'],
+  DifficultyVariants<VariantRules> & { rendering?: RenderingOverrides }
+> = {
   'item-identification': {
     1: { itemChoices: 'different-categories' },
     2: { itemChoices: 'pocket' },
@@ -228,27 +238,6 @@ export const expansionVariants = {
     5: { completeFlavors: true, closeAlternatives: true },
   },
   'natural-gift': { 5: { fullList: 'types' } },
-} satisfies Record<
-  string,
-  DifficultyVariants<ExpansionVariantRules> & { rendering?: RenderingOverrides }
->;
-
-export type ExpansionQuestionType = keyof typeof expansionVariants;
-
-// Family rendering is the baseline; each checkpoint overrides individual fields.
-// Generated questions keep a snapshot so later grid edits do not change saved rounds.
-export const defaultQuestionRendering: QuestionRendering = {
-  subject: { sprite: 'always', name: 'always', number: 'always' },
-  choices: { sprite: 'always', name: 'always', number: 'always' },
-  related: { sprite: 'always', name: 'always', number: 'always' },
-  search: { sprite: 'always', name: 'always', number: 'always' },
-};
-
-export const questionVariants: Record<
-  QuestionData['questionType'] | ExpansionQuestionType,
-  DifficultyVariants<VariantRules> & { rendering?: RenderingOverrides }
-> = {
-  ...expansionVariants,
   'pokedex-scan': {
     rendering: {
       subject: { name: 'never', number: 'never' },
