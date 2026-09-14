@@ -875,6 +875,30 @@ describe('question transitions', () => {
       'pixel-peek--revealed',
     );
   });
+  it('reveals the scan identity below its original sprite without types', () => {
+    const context = createQuestionContext('pokedex-scan-search-reveal');
+    context.difficulty = 5;
+    const generated = buildQuestionType(context, 'pokedex-scan')!;
+    const { container } = renderQuestion({ question: generated });
+    const sprite = container.querySelector('.question__stimulus img');
+    expect(sprite).toBeVisible();
+    expect(
+      container.querySelector('.question__stimulus .pokemon-identity'),
+    ).not.toBeVisible();
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: formatPokemonName(generated.subject.name) },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+    expect(container.querySelector('.question__stimulus img')).toBe(sprite);
+    expect(
+      container.querySelector('.question__stimulus .pokemon-identity'),
+    ).toBeVisible();
+    expect(
+      container.querySelector('.question__stimulus .pokemon-identity__number'),
+    ).toBeVisible();
+    expect(container.querySelector('.question__answer-reveal')).toBeNull();
+    expect(container.querySelectorAll('.type-badge')).toHaveLength(0);
+  });
   it('keeps the same pixel peek frame and sprite when a search answer is revealed', () => {
     const context = createQuestionContext('pixel-peek-search-reveal');
     context.difficulty = 5;

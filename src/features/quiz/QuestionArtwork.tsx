@@ -126,8 +126,17 @@ export const QuestionArtwork = ({
         question.searchOptions?.find(
           ({ name }) => name === question.subject.name,
         )?.dexNumber);
+  const subjectPolicy: EntityRendering =
+    question.questionType === 'pokedex-scan'
+      ? {
+          ...rendering.subject,
+          name: rendering.related.name === 'never' ? 'never' : 'after-answer',
+          number:
+            rendering.related.number === 'never' ? 'never' : 'after-answer',
+        }
+      : rendering.subject;
   const subject = {
-    policy: rendering.subject,
+    policy: subjectPolicy,
     state,
     name: question.subject.name,
     dexNumber: subjectDexNumber,
@@ -373,10 +382,11 @@ export const QuestionArtwork = ({
             <Sprite silhouette={silhouette} src={media.src} />
           ) : null}
         </div>
-        {rendering.subject.name !== 'never' ||
-        rendering.subject.number !== 'never' ? (
+        {subjectPolicy.name !== 'never' || subjectPolicy.number !== 'never' ? (
           <QuestionIdentity
-            policy={rendering.subject}
+            className="question-visual__subject-name"
+            numberClassName="question-visual__subject-number"
+            policy={subjectPolicy}
             state={state}
             name={question.subject.name}
             dexNumber={subjectDexNumber}
