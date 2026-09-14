@@ -1,47 +1,33 @@
-import { migrateRoundSubjects } from '@/domain/quiz/subject';
+import { PLAYER_SAVE_VERSION } from '@/domain/player/player-save';
 import {
   readStoredJson,
   removeStoredValue,
   writeStoredJson,
 } from '@/lib/storage/browser-storage';
+import { getSaveIssue } from '@/lib/storage/save-health';
 import { isRecord } from '@/lib/validation';
 import { useLayoutEffect, useState } from 'react';
 
 const UPDATE_STATE_KEY = 'quizmon.update-state.v1';
 const stored = readStoredJson('sessionStorage', UPDATE_STATE_KEY);
-removeStoredValue('sessionStorage', UPDATE_STATE_KEY);
 const restored =
   isRecord(stored) &&
+  stored.saveVersion === PLAYER_SAVE_VERSION &&
   stored.url === window.location.href &&
   isRecord(stored.values)
     ? stored.values
     : {};
+if (
+  isRecord(stored) &&
+  stored.saveVersion === PLAYER_SAVE_VERSION &&
+  typeof stored.url === 'string' &&
+  isRecord(stored.values)
+)
+  removeStoredValue('sessionStorage', UPDATE_STATE_KEY);
 const current = new Map<string, unknown>();
 
 export const readUpdateState = <T>(key: string, fallback: T): T => {
-  const original = Object.hasOwn(restored, key) ? restored[key] : fallback;
-  const saved = key === 'session' ? migrateRoundSubjects(original) : original;
-  const value =
-    key === 'session' && isRecord(saved)
-      ? {
-          ...saved,
-          result: migrateRoundSubjects(saved.result),
-          bestResult: migrateRoundSubjects(saved.bestResult),
-          ...(isRecord(saved.leagueRecord)
-            ? {
-                leagueRecord: {
-                  ...saved.leagueRecord,
-                  result: migrateRoundSubjects(saved.leagueRecord.result),
-                },
-              }
-            : {}),
-        }
-      : saved;
-  if (key === 'session' && isRecord(value) && 'modifiers' in value) {
-    const { modifiers, ...session } = value;
-    return { ...session, settings: modifiers } as T;
-  }
-  return value as T;
+  return (Object.hasOwn(restored, key) ? restored[key] : fallback) as T;
 };
 
 export const useUpdateSnapshot = (key: string, value: unknown) => {
@@ -61,21 +47,15 @@ export const useUpdateState = <T>(key: string, initial: T) => {
 };
 
 export const saveUpdateState = () =>
+  !getSaveIssue() &&
   writeStoredJson('sessionStorage', UPDATE_STATE_KEY, {
     url: window.location.href,
-    values: Object.fromEntries(
-      [...current].map(([key, value]) => {
-        if (key === 'session' && isRecord(value) && 'settings' in value) {
-          const { settings, ...session } = value;
-          return [key, { ...session, modifiers: settings }];
-        }
-        return [key, value];
-      }),
-    ),
+    saveVersion: PLAYER_SAVE_VERSION,
+    values: Object.fromEntries(current),
   });
 
 export const reloadAfterUpdate = () => {
-  if (!saveUpdateState()) return false;
+  if (!getSaveIssue() && !saveUpdateState()) return false;
   window.location.reload();
   return true;
 };

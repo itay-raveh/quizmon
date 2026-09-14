@@ -1,3 +1,4 @@
+import { seedPlayer } from './fixtures';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import {
   answerCurrentQuestion,
@@ -12,7 +13,7 @@ const snapshot = async (page: Parameters<typeof chooseDaily>[0]) =>
     () =>
       JSON.parse(
         sessionStorage.getItem('quizmon.active-game.v1')!,
-      ) as ActiveGameSnapshot & { modifiers: unknown },
+      ) as ActiveGameSnapshot,
   );
 
 for (const width of [360, 1280]) {
@@ -20,18 +21,15 @@ for (const width of [360, 1280]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 800 });
-    await page.addInitScript(() =>
-      localStorage.setItem(
-        'quizmon.training-settings.v2',
-        JSON.stringify({
-          difficulty: 5,
-          generations: ['I'],
-          formGroups: ['standard'],
-          answerFlow: 'manual',
-          soundVolume: 0,
-        }),
-      ),
-    );
+    await seedPlayer(page, {
+      settings: {
+        difficulty: 5,
+        generations: ['I'],
+        formGroups: ['standard'],
+        answerFlow: 'manual',
+        soundVolume: 0,
+      },
+    });
     await page.goto('/?daily=2026-09-12');
     await expect(page.locator('.daily-menu')).toHaveCount(0);
     await expect(
@@ -85,12 +83,9 @@ for (const width of [360, 1280]) {
 test('Daily assistance survives reload and cannot become an unassisted answer', async ({
   page,
 }) => {
-  await page.addInitScript(() =>
-    localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({ answerFlow: 'manual', soundVolume: 0 }),
-    ),
-  );
+  await seedPlayer(page, {
+    settings: { answerFlow: 'manual', soundVolume: 0 },
+  });
   await page.goto('/?daily=2026-09-12');
   await chooseDaily(page);
   for (let index = 0; index < 4; index++) {
@@ -133,21 +128,15 @@ test('complete typing supports search, removal, and submission while Pokémon se
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  await page.addInitScript(() => {
-    const search = location.search.includes('search=1');
-    localStorage.removeItem('quizmon.player');
-    sessionStorage.clear();
-    localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({
-        difficulty: search ? 5 : 4,
-        questionSelection: 'custom',
-        questionTypes: [search ? 'pokedex-scan' : 'type-check'],
-        generations: ['I'],
-        answerFlow: 'manual',
-        soundVolume: 0,
-      }),
-    );
+  await seedPlayer(page, {
+    settings: {
+      difficulty: 4,
+      questionSelection: 'custom',
+      questionTypes: ['type-check'],
+      generations: ['I'],
+      answerFlow: 'manual',
+      soundVolume: 0,
+    },
   });
   await page.goto('/');
   await page
@@ -199,6 +188,14 @@ test('complete typing supports search, removal, and submission while Pokémon se
   await expect(feedback).not.toContainText('Wrong pick');
   await expect(feedback).not.toContainText('Missed');
   await expectNoHorizontalOverflow(page);
+  await seedPlayer(page, {
+    settings: { difficulty: 5, questionTypes: ['pokedex-scan'] },
+  });
+  await page.getByRole('button', { name: 'Leave game', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: 'Leave this game?' })
+    .getByRole('button', { name: 'Leave game', exact: true })
+    .click();
   await page.goto('/?search=1');
   await page
     .getByRole('button', { name: 'Start training', exact: true })

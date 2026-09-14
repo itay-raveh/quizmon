@@ -1,4 +1,10 @@
-import type { QuestionData, SavedAnswerResult } from './types';
+import { getScoreMultiplier } from './score-multipliers';
+import type {
+  GameResult,
+  QuestionData,
+  SavedAnswerResult,
+  ScoreMultipliers,
+} from './types';
 
 const baseQuestionPoints = 1_000;
 const championPoints = [baseQuestionPoints, 750, 500, 250] as const;
@@ -44,13 +50,21 @@ export const getScoreBreakdown = (answers: readonly SavedAnswerResult[]) => {
   return { knowledge, speed, mastery };
 };
 
-export const SCORE_VERSION = 2;
+export const SCORE_VERSION = 3;
+
+export const getUnifiedScoreKey = (
+  result: Pick<GameResult, 'scoreVersion'>,
+): `score:${number}` => `score:${result.scoreVersion ?? SCORE_VERSION}`;
 
 export const calculateScore = (
   answers: readonly SavedAnswerResult[],
+  multipliers?: ScoreMultipliers,
 ): number => {
   const { knowledge, speed, mastery } = getScoreBreakdown(answers);
-  return knowledge + speed + mastery;
+  return Math.round(
+    (knowledge + speed + mastery) *
+      (multipliers ? getScoreMultiplier(multipliers) : 1),
+  );
 };
 
 export const isQuestionAnswerCorrect = (

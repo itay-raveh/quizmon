@@ -10,6 +10,7 @@ import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import { type GameSettings } from '../src/domain/settings/types';
 import { createSeededRandom } from '../src/lib/random';
 import {
+  seedPlayer,
   catalog,
   expect,
   expectNoHorizontalOverflow,
@@ -22,22 +23,8 @@ for (const width of [320, 1280]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.addInitScript(() => {
-      const data = JSON.parse(
-        localStorage.getItem('quizmon.player') ?? 'null',
-      ) as PlayerSave | null;
-      if (data) return;
-      localStorage.setItem(
-        'quizmon.results.v2',
-        JSON.stringify({
-          progress: {
-            version: 2,
-            correctPokemon: ['bulbasaur', 'ivysaur', 'venusaur', 'pikachu'],
-            quickAttackCompleted: false,
-            correctCategories: {},
-          },
-        }),
-      );
+    await seedPlayer(page, {
+      pokedex: ['bulbasaur', 'ivysaur', 'venusaur', 'pikachu'],
     });
     await page.goto('/?trainer=pokedex');
     await expect(
@@ -105,11 +92,12 @@ test('registers a correct answer immediately even when the round is abandoned', 
   expect(question).toBeDefined();
   await page.addInitScript(
     ({ data, settings, seed, contentVersion, questions }) => {
-      if (localStorage.getItem('quizmon.player')) return;
+      if (sessionStorage.getItem('pokedex-answer-seeded')) return;
+      sessionStorage.setItem('pokedex-answer-seeded', '1');
       localStorage.setItem(
         'quizmon.player',
         JSON.stringify({
-          version: 2,
+          version: 6,
           restoreId: null,
           data: { ...data, settings },
         }),
@@ -117,7 +105,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
       sessionStorage.setItem(
         'quizmon.active-game.v1',
         JSON.stringify({
-          version: 2,
+          version: 3,
           questions,
           playerRestoreId: null,
           answers: [],

@@ -112,7 +112,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
       sessionStorage.setItem(
         'quizmon.active-game.v1',
         JSON.stringify({
-          version: 2,
+          version: 3,
           playerRestoreId: null,
           contentVersion: 14,
           elapsedMilliseconds: 4321,
@@ -160,7 +160,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
   const version = await page.evaluate(
     () =>
       (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
-        .results.training.league?.contentVersion,
+        .results.training['score:2']?.contentVersion,
   );
   expect(version).toBe(14);
   expect(discoveries.toSorted()).toEqual(['raichu', 'raichu-alola']);

@@ -1,7 +1,5 @@
-import { migrateRoundSubjects } from '@/domain/quiz/subject';
 import { createTrainerProfile } from '@/domain/player/trainer-profile';
 import { buildQuestions } from '@/domain/quiz/question-generation';
-import { emptyQuestionHistory } from '@/domain/quiz/question-history';
 import type { GameResult } from '@/domain/quiz/types';
 import { defaultGameSettings } from '@/domain/settings/game-settings';
 import {
@@ -18,7 +16,6 @@ import {
   writeActiveGame,
 } from '@/lib/storage/active-game-storage';
 import {
-  canPersistPlayerData,
   PLAYER_STORAGE_KEY,
   readPlayerSave,
   subscribeToPlayerRestore,
@@ -79,7 +76,7 @@ const populate = () => {
       ...save.data.results,
       league: { completed: true, seed: 'fixed-league-retry' },
       streak: { version: 1, creditedDates: ['2026-09-07'] },
-      training: { league: result, custom: result },
+      training: { 'score:3': result },
       progress: {
         ...save.data.results.progress,
         championAnswersWithoutClues: 5,
@@ -178,35 +175,6 @@ it('round-trips every portable field and replaces rather than merges progress', 
   expect(localStorage.getItem('unrelated')).toBe('keep');
   expect(JSON.stringify(backup)).not.toContain('device-only');
 });
-it('migrates all existing keys once and keeps the migrated save authoritative', () => {
-  populate();
-  const original = readPlayerSave().data;
-  const migrated = {
-    ...original,
-    leagueLineup: {
-      seed: 'fixed-league-retry',
-      contentVersion: 0,
-      questions: [],
-    },
-  };
-  localStorage.clear();
-  localStorage.setItem('quizmon.results.v2', JSON.stringify(original.results));
-  localStorage.setItem(
-    'quizmon.training-settings.v2',
-    JSON.stringify(original.settings),
-  );
-  localStorage.setItem(
-    'quizmon.trainer-profile.v1',
-    JSON.stringify({ ...original.profile, cardNumber: 'obsolete' }),
-  );
-  localStorage.setItem('quizmon.generation-prompt.v1', '1');
-  expect(readPlayerSave().data).toEqual(migrated);
-  const persisted = localStorage.getItem(PLAYER_STORAGE_KEY);
-  expect(localStorage.getItem('quizmon.results.v2')).toBeNull();
-  localStorage.setItem('quizmon.results.v2', '{}');
-  expect(readPlayerSave().data).toEqual(migrated);
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(persisted);
-});
 it('keeps new-player settings and profile absent through a round trip', () => {
   const backup = createBackup();
   expect(backup.save.data.settings).toBeNull();
@@ -301,19 +269,6 @@ it('does not replace a corrupt or newer existing save during normal play', () =>
     expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(raw);
   }
 });
-it('preserves legacy bytes when migration cannot write, while allowing export', () => {
-  localStorage.setItem(
-    'quizmon.results.v2',
-    JSON.stringify({ daily: { '2026-09-07': result } }),
-  );
-  const legacy = localStorage.getItem('quizmon.results.v2');
-  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-    throw new DOMException('Full', 'QuotaExceededError');
-  });
-  expect(createBackup().save.data.results.daily['2026-09-07']).toEqual(result);
-  expect(localStorage.getItem('quizmon.results.v2')).toBe(legacy);
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBeNull();
-});
 it('preserves damaged legacy data instead of migrating empty progress over it', () => {
   localStorage.setItem('quizmon.results.v2', '{');
   expect(() => createBackup()).toThrow();
@@ -364,48 +319,6 @@ it('does not save a stale round again while the tab unloads after restore', () =
   active({ seed: 'stale', playerRestoreId: null });
   expect(sessionStorage.getItem('quizmon.active-game.v1')).toBeNull();
 });
-it('keeps the published version 1 fixture readable without losing fields', () => {
-  const backup = parseBackup(JSON.stringify(v1Fixture));
-  expect(backup.save.version).toBe(5);
-  expect(backup.save.data).toEqual({
-    ...v1Fixture.save.data,
-    settings: {
-      ...v1Fixture.save.data.settings,
-      difficulty: 3,
-      questionSelection: 'custom',
-      formGroups: defaultGameSettings.formGroups,
-    },
-    results: {
-      ...v1Fixture.save.data.results,
-      daily: Object.fromEntries(
-        Object.entries(v1Fixture.save.data.results.daily).map(
-          ([key, value]) => [key, migrateRoundSubjects(value)],
-        ),
-      ),
-      training: Object.fromEntries(
-        Object.entries(v1Fixture.save.data.results.training).map(
-          ([key, value]) => [key, migrateRoundSubjects(value)],
-        ),
-      ),
-      progress: {
-        ...v1Fixture.save.data.results.progress,
-        quickAttackRounds: 1,
-      },
-    },
-    questionHistory: emptyQuestionHistory(),
-    leagueLineup: v1Fixture.save.data.results.league.seed
-      ? {
-          seed: v1Fixture.save.data.results.league.seed,
-          contentVersion: 0,
-          questions: [],
-        }
-      : null,
-    hallOfFame: [],
-    pokedex: v1Fixture.save.data.results.progress.correctPokemon,
-  });
-  restoreBackup(backup);
-  expect(readPlayerSave().data).toEqual(backup.save.data);
-});
 it('preserves temporarily unavailable custom families through backup restore', () => {
   const backup = createBackup();
   backup.save.data.settings = {
@@ -420,110 +333,9 @@ it('preserves temporarily unavailable custom families through backup restore', (
     backup.save.data.settings,
   );
 });
-it.each([
-  { category: 'identity', correct: true, points: 1000 },
-  { category: 'cry', correct: false, points: 0 },
-  { category: 'scale', correct: true, points: 1000 },
-  {
-    category: 'evolution',
-    correct: true,
-    points: 1000,
-    questionType: 'evolution-trail',
-  },
-  {
-    ...result.answers[0],
-    questionType: 'battle-view',
-    subject: {
-      ...result.answers[0]?.subject,
-      kind: 'pokemon' as const,
-      name: undefined,
-    },
-  },
-  { ...result.answers[0], questionType: 'evolution-order' },
-  { ...result.answers[0], questionType: 'baby-pokemon' },
-])('migrates historical answers without inventing metadata (%#)', (answer) => {
-  populate();
-  const original = readPlayerSave().data;
-  const historical = { ...result, answers: [answer], scoreVersion: undefined };
-  const results = { ...original.results, daily: { '2026-09-07': historical } };
-  localStorage.clear();
-  localStorage.setItem('quizmon.results.v2', JSON.stringify(results));
-  localStorage.setItem(
-    'quizmon.trainer-profile.v1',
-    JSON.stringify(original.profile),
-  );
-  const migrated = readPlayerSave();
-  expect(migrated.data.results).toEqual(results);
-  expect(migrated.data.profile).toEqual(original.profile);
-  expect(canPersistPlayerData()).toBe(true);
-  expect(
-    saveResult({ kind: 'daily', date: '2026-09-08' }, result).isSaved,
-  ).toBe(true);
-  const backup = parseBackup(JSON.stringify(createBackup()));
-  restoreBackup(backup);
-  expect(readDailyResult('2026-09-07')).toEqual(historical);
-  expect(readPlayerSave().data.results.progress.correctPokemon).toEqual(
-    original.results.progress.correctPokemon,
-  );
-});
 
-it.each(['baby-pokemon', 'egg-group-connections'] as const)(
-  'restores progress and scores after retiring %s',
-  (questionType) => {
-    populate();
-    const backup = createBackup();
-    const data = backup.save.data;
-    const historical: GameResult = {
-      ...result,
-      answers: [{ ...result.answers[0]!, questionType }],
-      rules: {
-        version: 6,
-        difficulty: 3,
-        generations: ['I'],
-        formGroups: ['standard'],
-        questionTypes: [questionType],
-        automaticQuestionTypes: [questionType, 'type-check'],
-      },
-    };
-    const saved = {
-      ...backup,
-      save: {
-        ...backup.save,
-        data: {
-          ...data,
-          settings: {
-            ...defaultGameSettings,
-            questionTypes: [questionType, 'type-check'],
-          },
-          leagueLineup: {
-            seed: 'retired-family',
-            contentVersion: 8,
-            questions: [{ questionType }],
-          },
-          results: {
-            ...data.results,
-            daily: { '2026-09-07': historical },
-            progress: {
-              ...data.results.progress,
-              correctQuestionTypes: { [questionType]: 3, 'type-check': 2 },
-            },
-          },
-        },
-      },
-    };
-    restoreBackup(parseBackup(JSON.stringify(saved)));
-    expect(readDailyResult('2026-09-07')).toEqual(historical);
-    expect(readPlayerSave().data).toMatchObject({
-      settings: { questionTypes: ['type-check'] },
-      leagueLineup: {
-        seed: 'retired-family',
-        contentVersion: 0,
-        questions: [],
-      },
-      profile: data.profile,
-      pokedex: data.pokedex,
-      results: { progress: { correctQuestionTypes: { 'type-check': 2 } } },
-    });
-    expect(canPersistPlayerData()).toBe(true);
-  },
-);
+it('rejects the retired version 1 fixture without modifying it', () => {
+  const raw = JSON.stringify(v1Fixture);
+  expect(() => parseBackup(raw)).toThrow('retired');
+  expect(JSON.stringify(v1Fixture)).toBe(raw);
+});

@@ -176,24 +176,14 @@ export type GameMode =
   | { kind: 'daily'; date: string; track?: DailyTrack }
   | { kind: 'league' };
 
-export const legacyQuestionCategories = ['cry', 'scale'] as const;
-export const legacyQuestionTypes = [
-  'baby-pokemon',
-  'egg-group-connections',
-  'battle-view',
-  'evolution-trail',
-  'evolution-order',
-] as const;
-
 export interface SavedAnswerResult {
-  category: QuestionCategory | (typeof legacyQuestionCategories)[number];
+  category: QuestionCategory;
   unassistedSearch?: boolean;
   cluesUsed?: number;
   correct: boolean;
   subject?: AnswerSubject;
   points: number;
-  questionType?:
-    QuestionData['questionType'] | (typeof legacyQuestionTypes)[number];
+  questionType?: QuestionData['questionType'];
   responseMilliseconds?: number;
   speedBonus?: number;
 }
@@ -206,6 +196,7 @@ export interface AnswerResult extends SavedAnswerResult {
 }
 
 export interface GameResult {
+  scoreMultipliers?: ScoreMultipliers;
   dailyTrack?: DailyTrack;
   rules?: RoundRules;
   answers: SavedAnswerResult[];
@@ -218,13 +209,20 @@ export interface GameResult {
   scoreVersion?: number;
 }
 
+export interface ScoreMultipliers {
+  difficulty: Difficulty;
+  generations: number;
+  questionTypes: {
+    questionType: RoundRules['questionTypes'][number];
+    multiplier: 0.75 | 1 | 1.25;
+  }[];
+}
+
 export interface RoundRules {
-  automaticQuestionTypes?: (
-    QuestionType | (typeof legacyQuestionTypes)[number]
-  )[];
+  automaticQuestionTypes?: QuestionType[];
   version: number;
   difficulty: Difficulty;
   generations: Generation[];
   formGroups: FormGroup[];
-  questionTypes: (QuestionType | (typeof legacyQuestionTypes)[number])[];
+  questionTypes: QuestionType[];
 }

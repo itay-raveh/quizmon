@@ -1,7 +1,7 @@
 import {
-  supportsLegacyQuestion,
-  legacyLeagueQuestionTypes,
-} from '../quiz/legacy-question-types';
+  supportsStandardQuestion,
+  standardLeagueQuestionTypes,
+} from '../quiz/standard-question-types';
 import { getQuestionVariant } from '../quiz/question-variants';
 import { isChoice, isObject } from '../../lib/validation';
 import { getFormGroup } from '../pokemon/forms';
@@ -67,8 +67,8 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
           (type !== 'generation-roundup' || settings.generations.length > 1),
       )
     : isLeagueTraining(settings)
-      ? [...legacyLeagueQuestionTypes]
-      : settings.questionTypes.filter((type) => supportsLegacyQuestion(type)),
+      ? [...standardLeagueQuestionTypes]
+      : settings.questionTypes.filter((type) => supportsStandardQuestion(type)),
 });
 
 export const normalizeGameSettings = (candidate: unknown): GameSettings => {
@@ -95,18 +95,14 @@ export const normalizeGameSettings = (candidate: unknown): GameSettings => {
           ),
         }
       : {}),
-    difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : 3,
+    difficulty: isDifficulty(candidate.difficulty)
+      ? candidate.difficulty
+      : defaultGameSettings.difficulty,
     questionSelection:
-      candidate.questionSelection === 'custom' ||
-      (candidate.questionSelection === undefined &&
-        candidate.trainingMode === 'custom')
-        ? 'custom'
-        : 'automatic',
+      candidate.questionSelection === 'custom' ? 'custom' : 'automatic',
     answerFlow: isChoice(candidate.answerFlow, answerFlows)
       ? candidate.answerFlow
-      : candidate.speedrunMode === true
-        ? 'instant'
-        : defaultGameSettings.answerFlow,
+      : defaultGameSettings.answerFlow,
     formGroups:
       selectedFormGroups.length > 0 ? selectedFormGroups : [...formGroups],
     generations:
@@ -122,9 +118,7 @@ export const normalizeGameSettings = (candidate: unknown): GameSettings => {
       typeof candidate.soundVolume === 'number' &&
       Number.isFinite(candidate.soundVolume)
         ? Math.min(1, Math.max(0, candidate.soundVolume))
-        : candidate.soundEnabled === false
-          ? 0
-          : defaultGameSettings.soundVolume,
+        : defaultGameSettings.soundVolume,
     timerDisplay: isChoice(candidate.timerDisplay, timerDisplays)
       ? candidate.timerDisplay
       : defaultGameSettings.timerDisplay,

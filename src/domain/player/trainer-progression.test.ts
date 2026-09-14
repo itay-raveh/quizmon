@@ -24,6 +24,7 @@ const stats = (overrides: Partial<TrainerStats> = {}): TrainerStats => ({
   leagueCompleted: false,
   masteryRounds: 0,
   quickAttackCompleted: false,
+  quickAttackRounds: 0,
   ...overrides,
 });
 
@@ -52,6 +53,7 @@ describe('Trainer Card progression', () => {
         correctQuestionTypes: masteredQuestionTypes(10),
         masteryRounds: 3,
         quickAttackCompleted: true,
+        quickAttackRounds: 1,
       }),
     );
 
@@ -90,6 +92,7 @@ describe('Trainer Card progression', () => {
       ...veteran,
       bestDailyStreak: 7,
       quickAttackCompleted: true,
+      quickAttackRounds: 1,
     };
     const leagueChallenger = {
       ...sevenBadges,

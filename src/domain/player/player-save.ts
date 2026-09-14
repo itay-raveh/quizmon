@@ -1,4 +1,4 @@
-import { isAnswerSubject, migrateRoundSubjects } from '../quiz/subject';
+import { isAnswerSubject } from '../quiz/subject';
 import {
   isChoice,
   isDailyDate,
@@ -8,7 +8,7 @@ import {
   isSafeNonnegativeInteger,
   isUtcTimestamp,
 } from '../../lib/validation';
-import { generations } from '../pokemon/types';
+import { formGroups, generations } from '../pokemon/types';
 import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../quiz/league';
 import {
   emptyQuestionHistory,
@@ -17,7 +17,9 @@ import {
 } from '../quiz/question-history';
 import { isQuestionLineup, type QuestionLineup } from '../quiz/question-lineup';
 import { questionTypes } from '../quiz/questions/definitions';
-import { getRulesScoreKey, isRoundRules } from '../quiz/round-rules';
+import { isRoundRules } from '../quiz/round-rules';
+import { isScoreMultipliers } from '../quiz/score-multipliers';
+import { getUnifiedScoreKey } from '../quiz/scoring';
 import { isDifficulty } from '../quiz/difficulty';
 import {
   getDailyResultKey,
@@ -25,13 +27,13 @@ import {
   isDailyTrack,
   parseDailyResultKey,
 } from '../quiz/daily-track';
-import {
-  legacyQuestionCategories,
-  legacyQuestionTypes,
-  questionCategories,
-  type GameResult,
-} from '../quiz/types';
+import { questionCategories, type GameResult } from '../quiz/types';
 import { normalizeGameSettings } from '../settings/game-settings';
+import {
+  parseVersionedSave,
+  SaveError,
+  type SaveMigration,
+} from './save-schema';
 import {
   answerFlows,
   timerDisplays,
@@ -50,27 +52,23 @@ import {
   TRAINER_NAME_MAX_LENGTH,
   type TrainerProfile,
 } from './trainer-profile';
-interface PlayerDataV1 {
+export interface PlayerData {
   generationPromptAnswered: boolean;
   profile: TrainerProfile | null;
   results: SavedResults;
   settings: GameSettings | null;
-}
-export interface PlayerSaveV1 {
-  data: PlayerDataV1;
-  restoreId: string | null;
-  version: 1;
-}
-export interface PlayerData extends PlayerDataV1 {
   questionHistory: QuestionHistory;
   leagueLineup: QuestionLineup | null;
   pokedex: string[];
   hallOfFame: LeagueVictoryRecord[];
 }
+export const PLAYER_SAVE_VERSION = 6;
+const MINIMUM_PLAYER_SAVE_VERSION = 6;
+
 export interface PlayerSave {
   data: PlayerData;
   restoreId: string | null;
-  version: 5;
+  version: typeof PLAYER_SAVE_VERSION;
 }
 export const emptyPlayerData = (): PlayerData => ({
   questionHistory: emptyQuestionHistory(),
@@ -89,18 +87,12 @@ const isCounts = (value: unknown, keys: readonly string[]): boolean =>
   Object.entries(value).every(
     ([key, count]) => keys.includes(key) && isSafeNonnegativeInteger(count),
   );
-const savedQuestionCategories = [
-  ...questionCategories,
-  ...legacyQuestionCategories,
-] as const;
-const savedQuestionTypes = [
-  ...questionTypes,
-  'champion',
-  ...legacyQuestionTypes,
-] as const;
+const savedQuestionTypes = [...questionTypes, 'champion'] as const;
 const isResult = (value: unknown): value is GameResult => {
   if (
     !isRecord(value) ||
+    (value.scoreMultipliers !== undefined &&
+      !isScoreMultipliers(value.scoreMultipliers)) ||
     (value.rules !== undefined && !isRoundRules(value.rules)) ||
     (value.dailyTrack !== undefined && !isDailyTrack(value.dailyTrack)) ||
     !Array.isArray(value.answers) ||
@@ -121,7 +113,7 @@ const isResult = (value: unknown): value is GameResult => {
   return value.answers.every(
     (answer: unknown) =>
       isRecord(answer) &&
-      isChoice(answer.category, savedQuestionCategories) &&
+      isChoice(answer.category, questionCategories) &&
       (answer.cluesUsed === undefined ||
         isSafeNonnegativeInteger(answer.cluesUsed)) &&
       (answer.unassistedSearch === undefined ||
@@ -171,9 +163,7 @@ const isResults = (value: unknown): value is SavedResults => {
       );
     }) &&
     Object.entries(training).every(
-      ([key, result]) =>
-        isResult(result) &&
-        (isChoice(key, trainingModes) || getRulesScoreKey(result) === key),
+      ([key, result]) => isResult(result) && getUnifiedScoreKey(result) === key,
     ) &&
     typeof league.completed === 'boolean' &&
     (league.seed === null || isName(league.seed)) &&
@@ -191,15 +181,13 @@ const isResults = (value: unknown): value is SavedResults => {
     progress.correctPokemon.every(isName) &&
     isSafeNonnegativeInteger(progress.masteryRounds) &&
     typeof progress.quickAttackCompleted === 'boolean' &&
-    (progress.quickAttackRounds === undefined ||
-      isSafeNonnegativeInteger(progress.quickAttackRounds))
+    isSafeNonnegativeInteger(progress.quickAttackRounds)
   );
 };
 const isSettings = (value: unknown): value is GameSettings =>
   isRecord(value) &&
-  (value.difficulty === undefined || isDifficulty(value.difficulty)) &&
-  (value.questionSelection === undefined ||
-    value.questionSelection === 'automatic' ||
+  isDifficulty(value.difficulty) &&
+  (value.questionSelection === 'automatic' ||
     value.questionSelection === 'custom') &&
   isChoice(value.answerFlow, answerFlows) &&
   isChoice(value.timerDisplay, timerDisplays) &&
@@ -207,168 +195,67 @@ const isSettings = (value: unknown): value is GameSettings =>
   typeof value.reduceMotion === 'boolean' &&
   isFiniteNonnegative(value.soundVolume) &&
   value.soundVolume <= 1 &&
+  isNonemptyChoiceArray(value.formGroups, formGroups) &&
   isNonemptyChoiceArray(value.generations, generations) &&
   isNonemptyChoiceArray(value.questionTypes, questionTypes);
 
-const migratePlayerSubjects = (value: unknown): unknown => {
-  if (!isRecord(value)) return value;
-  const records = (record: unknown) =>
-    isRecord(record)
-      ? Object.fromEntries(
-          Object.entries(record).map(([key, result]) => [
-            key,
-            migrateRoundSubjects(result),
-          ]),
-        )
-      : record;
-  return {
-    ...value,
-    settings:
-      isRecord(value.settings) &&
-      Array.isArray(value.settings.questionTypes) &&
-      value.settings.questionTypes.some((type: unknown) =>
-        isChoice(type, legacyQuestionTypes),
-      )
-        ? {
-            ...value.settings,
-            questionTypes: value.settings.questionTypes.some(
-              (type: unknown) => !isChoice(type, legacyQuestionTypes),
-            )
-              ? value.settings.questionTypes.filter(
-                  (type: unknown) => !isChoice(type, legacyQuestionTypes),
-                )
-              : [...questionTypes],
-          }
-        : value.settings,
-    leagueLineup:
-      isRecord(value.leagueLineup) &&
-      Array.isArray(value.leagueLineup.questions) &&
-      value.leagueLineup.questions.some(
-        (question: unknown) =>
-          isRecord(question) &&
-          isChoice(question.questionType, legacyQuestionTypes),
-      )
-        ? { ...value.leagueLineup, contentVersion: 0, questions: [] }
-        : migrateRoundSubjects(value.leagueLineup),
-    hallOfFame: Array.isArray(value.hallOfFame)
-      ? value.hallOfFame.map((entry: unknown) =>
-          isRecord(entry)
-            ? { ...entry, result: migrateRoundSubjects(entry.result) }
-            : entry,
-        )
-      : value.hallOfFame,
-    results: isRecord(value.results)
-      ? {
-          ...value.results,
-          daily: records(value.results.daily),
-          training: records(value.results.training),
-        }
-      : value.results,
-  };
-};
-
-const parsePlayerData = (
-  input: unknown,
-  version: 1 | 2 | 3 | 4 | 5,
-): PlayerData => {
-  const value = migratePlayerSubjects(input);
+const parseCurrentPlayerData = (value: unknown): PlayerData => {
   if (
     !isRecord(value) ||
     typeof value.generationPromptAnswered !== 'boolean' ||
-    (version >= 2 &&
-      (!Array.isArray(value.pokedex) || !value.pokedex.every(isName))) ||
-    (version >= 3 &&
-      (!Array.isArray(value.hallOfFame) ||
-        !value.hallOfFame.every(isVictoryRecord) ||
-        new Set(
-          value.hallOfFame.map((record: LeagueVictoryRecord) => record.id),
-        ).size !== value.hallOfFame.length)) ||
-    (version >= 4 &&
-      (!isQuestionHistory(value.questionHistory) ||
-        (value.leagueLineup !== null &&
-          (!isQuestionLineup(value.leagueLineup) ||
-            (value.leagueLineup.questions.length !== LEAGUE_QUESTION_COUNT &&
-              !(
-                value.leagueLineup.contentVersion === 0 &&
-                value.leagueLineup.questions.length === 0
-              )))))) ||
+    !Array.isArray(value.pokedex) ||
+    !value.pokedex.every(isName) ||
+    !Array.isArray(value.hallOfFame) ||
+    !value.hallOfFame.every(isVictoryRecord) ||
+    new Set(value.hallOfFame.map((record: LeagueVictoryRecord) => record.id))
+      .size !== value.hallOfFame.length ||
+    !isQuestionHistory(value.questionHistory) ||
+    (value.leagueLineup !== null &&
+      (!isQuestionLineup(value.leagueLineup) ||
+        value.leagueLineup.questions.length !== LEAGUE_QUESTION_COUNT)) ||
     !isResults(value.results) ||
     (value.settings !== null && !isSettings(value.settings))
-  ) {
-    throw new Error(
-      'This save contains invalid progress or settings. Choose another backup.',
+  )
+    throw new SaveError(
+      'invalid',
+      'This save contains invalid progress or settings.',
     );
-  }
   const profile =
     value.profile === null ? null : normalizeTrainerProfile(value.profile);
-  if (value.profile !== null && !profile) {
-    throw new Error(
-      'This save contains an invalid Trainer profile. Choose another backup.',
+  if (value.profile !== null && !profile)
+    throw new SaveError(
+      'invalid',
+      'This save contains an invalid Trainer profile.',
     );
-  }
   return {
-    questionHistory:
-      version >= 4
-        ? (value.questionHistory as QuestionHistory)
-        : emptyQuestionHistory(),
-    leagueLineup:
-      version >= 4
-        ? (value.leagueLineup as QuestionLineup | null)
-        : value.results.league.seed
-          ? {
-              seed: value.results.league.seed,
-              contentVersion: 0,
-              questions: [],
-            }
-          : null,
+    questionHistory: value.questionHistory,
+    leagueLineup: value.leagueLineup,
     generationPromptAnswered: value.generationPromptAnswered,
-    hallOfFame: version >= 3 ? (value.hallOfFame as LeagueVictoryRecord[]) : [],
-    pokedex: [
-      ...new Set(
-        version === 1
-          ? [
-              ...value.results.progress.correctPokemon,
-              ...[
-                ...Object.values(value.results.daily),
-                ...Object.values(value.results.training),
-              ]
-                .flatMap((result) => result?.answers ?? [])
-                .flatMap((answer) =>
-                  answer.correct &&
-                  answer.subject?.kind === 'pokemon' &&
-                  answer.subject.name
-                    ? [answer.subject.name]
-                    : [],
-                ),
-            ]
-          : (value.pokedex as string[]),
-      ),
-    ],
+    hallOfFame: value.hallOfFame,
+    pokedex: [...new Set(value.pokedex)],
     profile,
     results: normalizeResults(value.results),
     settings:
       value.settings === null ? null : normalizeGameSettings(value.settings),
   };
 };
+
+const migrations: Readonly<Record<number, SaveMigration>> = {};
+
 export const parsePlayerSave = (value: unknown): PlayerSave => {
+  const { data } = parseVersionedSave(value, {
+    minimumVersion: MINIMUM_PLAYER_SAVE_VERSION,
+    currentVersion: PLAYER_SAVE_VERSION,
+    migrations,
+    parseCurrent: parseCurrentPlayerData,
+  });
   if (
     !isRecord(value) ||
-    (value.version !== 1 &&
-      value.version !== 2 &&
-      value.version !== 3 &&
-      value.version !== 4 &&
-      value.version !== 5)
-  ) {
-    throw new Error(
-      'This save uses an unsupported version. Update Quizmon or choose another backup.',
+    (value.restoreId !== null && !isName(value.restoreId))
+  )
+    throw new SaveError(
+      'invalid',
+      'This save has an invalid restore identifier.',
     );
-  }
-  if (value.restoreId !== null && !isName(value.restoreId)) {
-    throw new Error('This save is damaged. Choose another backup.');
-  }
-  return {
-    data: parsePlayerData(value.data, value.version),
-    restoreId: value.restoreId,
-    version: 5,
-  };
+  return { data, restoreId: value.restoreId, version: PLAYER_SAVE_VERSION };
 };

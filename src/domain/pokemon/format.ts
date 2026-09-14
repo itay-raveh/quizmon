@@ -32,6 +32,9 @@ export const formatTypeMultiplier = (multiplier: number): string =>
 export const formatScore = (score: number): string =>
   scoreFormatter.format(score);
 
+export const formatScoreMultiplier = (multiplier: number): string =>
+  `×${new Intl.NumberFormat('en-US', { maximumSignificantDigits: 4 }).format(multiplier)}`;
+
 export const formatGeneration = (generation: Generation): string =>
   `Generation ${generation}`;
 

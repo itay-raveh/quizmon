@@ -8,9 +8,9 @@ import {
 import { formGroups, generations } from '../pokemon/types';
 import { isDifficulty } from './difficulty';
 import { questionTypes } from './questions/definitions';
-import { legacyQuestionTypes, type GameResult, type RoundRules } from './types';
+import { type GameResult, type RoundRules } from './types';
 
-const savedQuestionTypes = [...questionTypes, ...legacyQuestionTypes];
+const savedQuestionTypes = [...questionTypes];
 
 export const isRoundRules = (value: unknown): value is RoundRules =>
   isRecord(value) &&

@@ -1,4 +1,3 @@
-import { supportsLegacyQuestion } from '../quiz/legacy-question-types';
 import { questionTypes } from '../quiz/questions/definitions';
 import { TRAINER_PROGRESS_VERSION, type SavedResults } from './results';
 import {
@@ -67,10 +66,7 @@ export const addResultToProgress = (
               difficulty: result.rules.difficulty,
               generations: result.rules.generations,
               questionSelection: 'automatic',
-            }).questionTypes.filter(
-              (type) =>
-                result.rules!.version >= 3 || supportsLegacyQuestion(type),
-            );
+            }).questionTypes;
           return (
             automatic.length === result.rules.questionTypes.length &&
             automatic.every((type) =>
@@ -88,9 +84,7 @@ export const addResultToProgress = (
     correctPokemon: [...correctPokemon],
     correctQuestionTypes,
     masteryRounds: progress.masteryRounds + Number(isLeagueRound && isPerfect),
-    quickAttackRounds:
-      (progress.quickAttackRounds ?? Number(progress.quickAttackCompleted)) +
-      Number(earnedQuickAttack),
+    quickAttackRounds: progress.quickAttackRounds + Number(earnedQuickAttack),
     quickAttackCompleted: progress.quickAttackCompleted || earnedQuickAttack,
     version: TRAINER_PROGRESS_VERSION,
   };

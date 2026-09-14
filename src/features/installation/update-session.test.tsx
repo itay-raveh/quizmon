@@ -71,30 +71,7 @@ it('does not keep state from dismissed screens and detects unavailable storage',
   storage.mockRestore();
 });
 
-it('restores an application session captured before the settings rename', async () => {
-  const settings = { trainingMode: 'league' };
-  sessionStorage.setItem(
-    'quizmon.update-state.v1',
-    JSON.stringify({
-      url: window.location.href,
-      values: {
-        session: {
-          phase: 'questions',
-          modifiers: settings,
-          seed: 'existing-round',
-        },
-      },
-    }),
-  );
-  const state = await import('./update-session');
-  expect(state.readUpdateState('session', null)).toEqual({
-    phase: 'questions',
-    settings,
-    seed: 'existing-round',
-  });
-});
-
-it('preserves the session wire format when saving renamed settings', async () => {
+it('saves the current schema and settings without legacy aliases', async () => {
   const state = await import('./update-session');
   const settings = { trainingMode: 'league' };
   renderHook(() =>
@@ -105,6 +82,28 @@ it('preserves the session wire format when saving renamed settings', async () =>
     sessionStorage.getItem('quizmon.update-state.v1')!,
   );
   expect(saved).toMatchObject({
-    values: { session: { phase: 'questions', modifiers: settings } },
+    saveVersion: 6,
+    values: { session: { phase: 'questions', settings } },
   });
+});
+
+it('reloads an update during recovery without replacing the preserved save', async () => {
+  const raw = '{"saveVersion":7,"values":{"draft":"Keep this"}}';
+  sessionStorage.setItem('quizmon.update-state.v1', raw);
+  const state = await import('./update-session');
+  const health = await import('@/lib/storage/save-health');
+  const { SaveError } = await import('@/domain/player/save-schema');
+  health.reportSaveIssue(
+    new SaveError('newer', 'A newer save needs an update.'),
+  );
+  expect(state.saveUpdateState()).toBe(false);
+  const reload = vi.fn();
+  vi.stubGlobal('window', { location: { reload } });
+  try {
+    expect(state.reloadAfterUpdate()).toBe(true);
+    expect(reload).toHaveBeenCalledOnce();
+    expect(sessionStorage.getItem('quizmon.update-state.v1')).toBe(raw);
+  } finally {
+    vi.unstubAllGlobals();
+  }
 });

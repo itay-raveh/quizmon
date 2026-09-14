@@ -27,7 +27,16 @@ answer before moving on.
 A standard correct answer earns 1,000 knowledge points, plus a bonus for answering
 quickly. Your final score also includes a mastery bonus based on accuracy.
 Champion points account for both supplied information and any help you request.
-Personal bests compare rounds with the same configuration and rules version.
+
+Training multiplies that score by your difficulty level, the number of selected
+generations, and the factors for your selected question types. Each available
+type contributes ×0.75, ×1, or ×1.25. Settings shows your combined multiplier
+before you play, and results show each factor as it applies.
+
+New Training rounds share one personal best across settings. Daily and League
+keep their own scoring. Current-format results and unfinished rounds retain
+their original scores and rules. If a save cannot be loaded, download its raw
+data from the recovery dialog before restoring a backup or starting fresh.
 
 Daily and Training rounds contribute to your progress. Open your Trainer Card
 to see your badges, choose a partner Pokémon, and share your card as an image.

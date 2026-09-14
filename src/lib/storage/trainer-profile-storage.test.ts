@@ -15,7 +15,7 @@ describe('Trainer profile storage', () => {
     expect(readTrainerProfile().name).toBe(saved.name);
   });
 
-  it('creates, migrates, and saves a normalized local profile', () => {
+  it('creates and saves a normalized local profile', () => {
     const profile = readTrainerProfile();
 
     expect(profile.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -42,18 +42,5 @@ describe('Trainer profile storage', () => {
       specialty: 'identity',
     });
     expect(readTrainerProfile()).toEqual(saved);
-
-    window.localStorage.clear();
-    window.localStorage.setItem(
-      'quizmon.trainer-profile.v1',
-      JSON.stringify({ ...saved, accent: 'violet', cardNumber: 'QZ-123456' }),
-    );
-    expect(readTrainerProfile()).toEqual(saved);
-    expect(
-      JSON.parse(window.localStorage.getItem('quizmon.player') ?? '{}'),
-    ).not.toHaveProperty('data.profile.cardNumber');
-    expect(
-      window.localStorage.getItem('quizmon.trainer-profile.v1'),
-    ).toBeNull();
   });
 });

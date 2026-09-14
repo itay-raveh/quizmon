@@ -3,6 +3,7 @@ import type {
   AnswerResult,
   GameResult,
   QuestionData,
+  ScoreMultipliers,
 } from '@/domain/quiz/types';
 import { defaultGameSettings } from '@/domain/settings/game-settings';
 const question: QuestionData = {
@@ -87,8 +88,14 @@ describe('gameSessionReducer', () => {
     });
   });
   it('advances answers and updates only live experience settings', () => {
+    const scoreMultipliers: ScoreMultipliers = {
+      difficulty: 3,
+      generations: 2,
+      questionTypes: [{ questionType: 'pokedex-scan', multiplier: 0.75 }],
+    };
     const started = gameSessionReducer(initialGameSession, {
       ...roundDefaults,
+      scoreMultipliers,
       questions: [question, { ...question, id: 'identity:eevee:1' }],
       seed: 'round-2',
       type: 'started',
@@ -124,6 +131,7 @@ describe('gameSessionReducer', () => {
       questionIndex: 1,
     });
     expect(updated).toMatchObject({
+      scoreMultipliers,
       settings: { generations: defaultGameSettings.generations },
     });
     expect(gameSessionReducer(updated, { type: 'returned-to-landing' })).toBe(

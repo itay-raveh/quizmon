@@ -32,6 +32,7 @@ const stats: TrainerStats = {
   leagueCompleted: false,
   masteryRounds: 3,
   quickAttackCompleted: false,
+  quickAttackRounds: 0,
 };
 
 const record = {

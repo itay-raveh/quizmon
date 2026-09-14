@@ -385,10 +385,16 @@ Champion starts with a compact clue, search field, and assistance action. Choice
 
 ### Difficulty and Daily revision
 
-Daily uses one shared Level 3 challenge across all generations. The landing action starts or resumes it directly, and completion replaces that action with the saved result share. Date-only links use the existing landing action with the date. Links with play=1 start automatically. There is no inner Daily screen, scope picker, difficulty picker, or extra start action. Keep saved legacy results and attempts accessible under their original rules.
+Daily uses one shared Level 3 challenge across all generations. The landing action starts or resumes it directly, and completion replaces that action with the saved result share. Date-only links use the existing landing action with the date. Links with play=1 start automatically. There is no inner Daily screen, scope picker, difficulty picker, or extra start action. Current-format results and attempts retain their saved rules. Retired save formats open recovery.
 
-Training retains its settings surface and generation/form grids, adds five numbered difficulty radios, and replaces the League/Custom switch with optional question customization. Difficulty labels never describe question types or rules. Results and shares use the saved configuration; new bests compare matching configurations and rules/catalog versions. Legacy results retain their original labels and scores. These requirements supersede the earlier Training-mode and Daily-layout descriptions above.
+Training retains its settings surface and generation/form grids, adds five numbered difficulty radios, and replaces the League/Custom switch with optional question customization. Difficulty labels never describe question types or rules. Results and shares use the saved configuration and multipliers. Training bests compare across settings within one scoring version. Current-format results retain their original scores. These requirements supersede the earlier Training-mode and Daily-layout descriptions above.
 
 ### Stat and Measurement Questions
 
 Stat Showdown, nature effects, and height/weight comparisons share the labeled cream stat indicator and outlined blue direction arrow. Nature questions pair raised and lowered stats in the stimulus and use compact versions of the same indicators in answer reveals. Measurement answers retain Pokémon portraits and Pokédex numbers and use the shared stat-value slot with explicit m/kg units. Narrow screens place numeric values below the identity so long names stay readable. Concealed values and nature effects reserve their reveal space to keep answer geometry stable.
+
+## Training score and save recovery
+
+Settings displays each available question type’s factor and a combined Training multiplier. The start action repeats the combined factor. Results count the base score, then apply difficulty, generations, and question types in three stages with navy text and a yellow highlight. Reduced motion shows the final score immediately. Keep the final accessible score stable during animation.
+
+Save recovery uses the existing cream and navy dialog styling and traps focus until the data is readable. Lead with the specific load failure and raw download action. Show current-backup restore and an explicit reset confirmation when supported. Newer saves request an app update and do not offer reset. Storage access failures offer retry. Gameplay stays unmounted while recovery is open.

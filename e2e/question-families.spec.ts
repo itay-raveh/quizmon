@@ -1,3 +1,4 @@
+import { seedPlayer } from './fixtures';
 import {
   expect,
   test,
@@ -37,25 +38,17 @@ for (const { type, level, count } of cases)
     page,
   }) => {
     await page.setViewportSize({ width: 360, height: 780 });
-    await page.addInitScript(
-      ({ type, level, generations }) => {
-        if (localStorage.getItem('question-test-seeded')) return;
-        localStorage.setItem('question-test-seeded', '1');
-        localStorage.setItem(
-          'quizmon.training-settings.v2',
-          JSON.stringify({
-            difficulty: level,
-            questionSelection: 'custom',
-            questionTypes: [type],
-            generations,
-            trainingMode: 'custom',
-            answerFlow: 'manual',
-            soundVolume: 0,
-          }),
-        );
+    await seedPlayer(page, {
+      settings: {
+        difficulty: level as 1 | 2 | 3 | 4 | 5,
+        questionSelection: 'custom',
+        questionTypes: [type],
+        generations: [...generations],
+        trainingMode: 'custom',
+        answerFlow: 'manual',
+        soundVolume: 0,
       },
-      { type, level, generations },
-    );
+    });
     await page.route('**/sprites/items/**', (route) =>
       route.fulfill({
         contentType: 'image/png',

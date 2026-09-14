@@ -14,6 +14,7 @@ import {
 } from '../../domain/quiz/result-ranking';
 import { type GameMode, type GameResult } from '../../domain/quiz/types';
 import { getRulesScoreKey } from '../../domain/quiz/round-rules';
+import { getUnifiedScoreKey } from '../../domain/quiz/scoring';
 import {
   getDailyResultKey,
   parseDailyResultKey,
@@ -126,8 +127,7 @@ export const saveResult = (
     };
   }
 
-  const key = (getRulesScoreKey(result) ??
-    settings.trainingMode) as keyof SavedResults['training'];
+  const key = getUnifiedScoreKey(result);
   const previous = results.training[key];
   const isNewBest = !previous || isBetterResult(result, previous);
   recordProgress();

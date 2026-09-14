@@ -1,3 +1,4 @@
+import { getTrainingScoreMultipliers } from '@/domain/quiz/score-multipliers';
 import { resolveTrainingSettings } from '@/domain/quiz/question-generation';
 import { getFormGroupGenerations } from '@/domain/pokemon/forms';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
@@ -45,6 +46,13 @@ export const getTrainingSettingsValidation = (
         ));
   const matchingCount = filterPokemon(catalog, settings).length;
   return {
+    scoreMultipliers:
+      matchingCount > 0 && formGroupsAreValid
+        ? getTrainingScoreMultipliers({
+            ...settings,
+            questionTypes: eligibleQuestionTypes,
+          })
+        : undefined,
     generationsAreValid,
     formGroupsAreValid,
     formGroupGenerations,

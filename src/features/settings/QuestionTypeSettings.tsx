@@ -1,3 +1,4 @@
+import { getQuestionTypeMultiplier } from '@/domain/quiz/score-multipliers';
 import { CaretDownIcon, QuestionIcon, XIcon } from '@/components/icons';
 import { SelectionTile } from '@/components/SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
@@ -9,6 +10,7 @@ import {
   type QuestionTypeGroup,
 } from '@/domain/quiz/questions/definitions';
 import type { QuestionType } from '@/domain/quiz/types';
+import { formatScoreMultiplier } from '@/domain/pokemon/format';
 import type { GameSettings } from '@/domain/settings/types';
 import {
   useState,
@@ -153,6 +155,12 @@ export const QuestionTypeSettings = ({
                   {group.types.map((questionType) => {
                     const label = questionLabels[questionType];
                     const checked = selectedQuestionTypes.has(questionType);
+                    const factor = draft.difficulty
+                      ? getQuestionTypeMultiplier(
+                          questionType,
+                          draft.difficulty,
+                        )
+                      : undefined;
                     return (
                       <div
                         className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}`}
@@ -161,6 +169,11 @@ export const QuestionTypeSettings = ({
                         <SelectionTile
                           checked={checked}
                           label={label}
+                          description={
+                            factor === undefined
+                              ? undefined
+                              : formatScoreMultiplier(factor)
+                          }
                           onChange={(event) =>
                             onChange((current) => ({
                               ...current,

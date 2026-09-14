@@ -6,7 +6,7 @@ import {
 import { generations } from '../../domain/pokemon/types';
 import { buildQuestions } from '../../domain/quiz/question-generation';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-import { legacyQuestionTypes as questionTypes } from '../../domain/quiz/legacy-question-types';
+import { standardQuestionTypes as questionTypes } from '../../domain/quiz/standard-question-types';
 import { isQuestionAnswerCorrect } from '../../domain/quiz/scoring';
 import { type QuestionData, type QuestionType } from '../../domain/quiz/types';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
@@ -102,66 +102,9 @@ it('persists before round completion and includes discoveries in backup replacem
   restoreBackup(backup);
   expect(readPlayerSave().data.pokedex).toEqual(getQuestionPokemon(first));
 });
-it('migrates a version 1 save once, using only recorded correct Pokémon', () => {
-  const data = emptyPlayerData();
-  data.results.progress.correctPokemon = ['pikachu'];
-  data.results.daily['2026-09-01'] = {
-    answers: [
-      {
-        category: 'identity',
-        correct: true,
-        points: 1000,
-        subject: {
-          kind: 'pokemon' as const,
-          name: 'eevee',
-        },
-      },
-      {
-        category: 'identity',
-        correct: false,
-        points: 0,
-        subject: {
-          kind: 'pokemon' as const,
-          name: 'ditto',
-        },
-      },
-      { category: 'identity', correct: true, points: 1000 },
-    ],
-    contentVersion: 1,
-    correctCount: 2,
-    elapsedSeconds: 12,
-    questionCount: 3,
-    score: 2000,
-  };
-  const raw = JSON.stringify({ version: 1, restoreId: null, data });
-  localStorage.setItem(PLAYER_STORAGE_KEY, raw);
-  const migrated = readPlayerSave();
-  expect(migrated.version).toBe(5);
-  expect(migrated.data.pokedex).toEqual(['pikachu', 'eevee']);
-  expect(migrated.data.results).toEqual(data.results);
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(
-    JSON.stringify(migrated),
-  );
-  expect(readPlayerSave()).toEqual(migrated);
-});
-it('leaves a version 1 document intact when migration cannot be written', () => {
-  const data = emptyPlayerData();
-  data.results.progress.correctPokemon = ['pikachu'];
-  const raw = JSON.stringify({ version: 1, restoreId: null, data });
-  localStorage.setItem(PLAYER_STORAGE_KEY, raw);
-  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-    throw new DOMException('Full', 'QuotaExceededError');
-  });
-  expect(readPlayerSave().data.pokedex).toEqual(['pikachu']);
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(raw);
-  expect(registerPokedexAnswer(questionFor('evolution-link'), true)).toBe(
-    false,
-  );
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(raw);
-});
 it('rejects invalid collection data without overwriting the save', () => {
   const save = {
-    version: 2,
+    version: 6,
     restoreId: null,
     data: { ...emptyPlayerData(), pokedex: ['pikachu', 42] },
   };

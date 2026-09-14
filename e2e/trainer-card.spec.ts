@@ -1,3 +1,4 @@
+import { seedPlayer } from './fixtures';
 import type { Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { emptyPlayerData } from '../src/domain/player/player-save';
@@ -11,25 +12,22 @@ const downloadTrainerImage = async (page: Page) => {
 };
 
 test('customizes and shares the Trainer Card collections', async ({ page }) => {
-  await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {},
-        progress: {
-          championAnswersWithoutClues: 0,
-          correctCategories: { type: 10 },
-          correctGenerations: {},
-          correctPokemon: [],
-          correctQuestionTypes: {},
-          masteryRounds: 0,
-          quickAttackCompleted: false,
-          version: 2,
-        },
-        streak: { creditedDates: [], version: 1 },
-        training: {},
-      }),
-    );
+  await seedPlayer(page, {
+    results: {
+      daily: {},
+      progress: {
+        championAnswersWithoutClues: 0,
+        correctCategories: { type: 10 },
+        correctGenerations: {},
+        correctPokemon: [],
+        correctQuestionTypes: {},
+        masteryRounds: 0,
+        quickAttackCompleted: false,
+        version: 2,
+      },
+      streak: { creditedDates: [], version: 1 },
+      training: {},
+    },
   });
 
   await page.goto('/');
@@ -228,7 +226,7 @@ test('shows saved Trainer records on a narrow screen', async ({ page }) => {
   data.results.streak.creditedDates = dates;
   await page.addInitScript(
     (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
-    { version: 2, restoreId: null, data },
+    { version: 6, restoreId: null, data },
   );
   await page.goto('/?trainer=card');
   const card = page.getByRole('article', { name: 'Trainer Card' });
@@ -288,7 +286,7 @@ test('stops the Champion finish animation when reduced motion is enabled', async
   data.results.league.completed = true;
   await page.addInitScript(
     (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
-    { version: 2, restoreId: null, data },
+    { version: 6, restoreId: null, data },
   );
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?trainer=card');

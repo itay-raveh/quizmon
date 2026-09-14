@@ -14,7 +14,7 @@ import {
 import { generations } from '@/domain/pokemon/types';
 import { isLeagueVictory } from '@/domain/quiz/league';
 import { getCategoryLabel } from '@/domain/quiz/question-labels';
-import { getScoreBreakdown } from '@/domain/quiz/scoring';
+import { calculateScore, getScoreBreakdown } from '@/domain/quiz/scoring';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
 import type { GameSettings } from '@/domain/settings/types';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
@@ -23,9 +23,9 @@ import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
 import { useEffect, useRef } from 'react';
-import { getHighScoreKey } from '../../domain/quiz/result-ranking';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
+import { MultipliedScore } from './MultipliedScore';
 
 interface ResultStat {
   label: string;
@@ -99,12 +99,7 @@ export const ResultsScreen = ({
     { label: 'Speed', value: formatScore(score.speed) },
     { label: 'Mastery', value: formatScore(score.mastery) },
   ];
-  const highScoreKey = getHighScoreKey(mode, settings);
-  const highScoreLabel = result.rules
-    ? 'Matching configuration'
-    : highScoreKey
-      ? { custom: 'Custom', daily: 'Daily', league: 'League' }[highScoreKey]
-      : null;
+  const highScoreLabel = isTraining ? 'Training' : isDaily ? 'Daily' : null;
   const resultTitle = isDaily
     ? 'Daily complete'
     : isLeague
@@ -199,19 +194,27 @@ export const ResultsScreen = ({
       ) : null}
 
       <div className="result-score">
-        <div
-          className="score"
-          aria-label={`Score ${formatScore(result.score)}`}
-        >
-          <span>Score</span>
-          <strong>
-            <AnimatedScore
-              playSound={playScoreCount}
-              format={formatScore}
-              value={result.score}
-            />
-          </strong>
-        </div>
+        {result.scoreMultipliers ? (
+          <MultipliedScore
+            baseScore={calculateScore(result.answers)}
+            multipliers={result.scoreMultipliers}
+            score={result.score}
+          />
+        ) : (
+          <div
+            className="score"
+            aria-label={`Score ${formatScore(result.score)}`}
+          >
+            <span>Score</span>
+            <strong>
+              <AnimatedScore
+                playSound={playScoreCount}
+                format={formatScore}
+                value={result.score}
+              />
+            </strong>
+          </div>
+        )}
 
         {!resultSaved ? (
           <p className="personal-best personal-best--warning" role="alert">
@@ -221,13 +224,7 @@ export const ResultsScreen = ({
         ) : highScoreLabel ? (
           <p className="personal-best">
             {isNewBest ? (
-              <strong>
-                {result.rules
-                  ? 'New best for this configuration!'
-                  : `New ${highScoreLabel} best!`}
-              </strong>
-            ) : result.rules ? (
-              'Best for this configuration'
+              <strong>{`New ${highScoreLabel} best!`}</strong>
             ) : (
               `${highScoreLabel} best`
             )}{' '}

@@ -1,4 +1,3 @@
-import { migrateRoundSubjects } from '../quiz/subject';
 import {
   isChoice,
   isDailyDate,
@@ -13,8 +12,7 @@ import {
   type QuestionCategory,
   type QuestionType,
 } from '../quiz/types';
-import { type TrainingMode } from '../settings/types';
-import { getRulesScoreKey } from '../quiz/round-rules';
+import { getUnifiedScoreKey } from '../quiz/scoring';
 import { hasDailyResultOnDate } from '../quiz/daily-track';
 
 export const STREAK_VERSION = 1;
@@ -27,7 +25,7 @@ interface TrainerProgress {
   correctQuestionTypes: Partial<Record<QuestionType, number>>;
   masteryRounds: number;
   quickAttackCompleted: boolean;
-  quickAttackRounds?: number;
+  quickAttackRounds: number;
   version: number;
 }
 
@@ -46,7 +44,7 @@ export interface SavedResults {
   league: LeagueState;
   progress: TrainerProgress;
   streak: DailyStreakState;
-  training: Partial<Record<TrainingMode | `rules:${string}`, GameResult>>;
+  training: Partial<Record<`score:${number}`, GameResult>>;
 }
 
 const emptyProgress = (): TrainerProgress => ({
@@ -78,14 +76,7 @@ const normalizeLeague = (value: unknown): LeagueState => {
 };
 
 const readResultRecord = (value: unknown): Record<string, GameResult> =>
-  isRecord(value)
-    ? Object.fromEntries(
-        Object.entries(value).map(([key, result]) => [
-          key,
-          migrateRoundSubjects(result) as GameResult,
-        ]),
-      )
-    : {};
+  isRecord(value) ? (value as Record<string, GameResult>) : {};
 
 const normalizeStreak = (
   streak: Partial<DailyStreakState> | undefined,
@@ -161,26 +152,18 @@ const normalizeProgress = (
     ),
     masteryRounds: normalizeProgressCount(progress.masteryRounds),
     quickAttackCompleted: progress.quickAttackCompleted,
-    quickAttackRounds: Math.max(
-      Number(progress.quickAttackCompleted),
-      normalizeProgressCount(progress.quickAttackRounds),
-    ),
+    quickAttackRounds: normalizeProgressCount(progress.quickAttackRounds),
     version: TRAINER_PROGRESS_VERSION,
   };
 };
 
 const normalizeTrainingRecords = (value: unknown): SavedResults['training'] => {
   const records = readResultRecord(value);
-  return {
-    ...Object.fromEntries(
-      Object.entries(records).filter(
-        ([key, result]) =>
-          key.startsWith('rules:') && getRulesScoreKey(result) === key,
-      ),
+  return Object.fromEntries(
+    Object.entries(records).filter(
+      ([key, result]) => getUnifiedScoreKey(result) === key,
     ),
-    ...(records.custom ? { custom: records.custom } : {}),
-    ...(records.league ? { league: records.league } : {}),
-  };
+  );
 };
 
 export const normalizeResults = (value: unknown): SavedResults => {

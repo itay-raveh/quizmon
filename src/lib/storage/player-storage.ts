@@ -3,84 +3,58 @@ import {
   parsePlayerSave,
   type PlayerData,
   type PlayerSave,
-  type PlayerSaveV1,
+  PLAYER_SAVE_VERSION,
 } from '../../domain/player/player-save';
-import { normalizeResults } from '../../domain/player/results';
-import { normalizeTrainerProfile } from '../../domain/player/trainer-profile';
-import { normalizeGameSettings } from '../../domain/settings/game-settings';
 import { isRecord } from '../validation';
+import { SaveError } from '../../domain/player/save-schema';
+import { getSaveIssue, reportSaveIssue } from './save-health';
 
 export const PLAYER_STORAGE_KEY = 'quizmon.player';
-const legacyKeys = {
+export const retiredPlayerKeys = {
   results: 'quizmon.results.v2',
   profile: 'quizmon.trainer-profile.v1',
   settings: 'quizmon.training-settings.v2',
   generationPromptAnswered: 'quizmon.generation-prompt.v1',
 } as const;
 
-const readLegacyJson = (key: string): unknown => {
-  const raw = window.localStorage.getItem(key);
-  return raw === null ? null : JSON.parse(raw);
-};
-
-const migrateLegacySave = (): PlayerSaveV1 => {
-  const settings = readLegacyJson(legacyKeys.settings);
-  const results = readLegacyJson(legacyKeys.results);
-  const profile = readLegacyJson(legacyKeys.profile);
-  if (
-    (results !== null && !isRecord(results)) ||
-    (profile !== null && !normalizeTrainerProfile(profile)) ||
-    (settings !== null && !isRecord(settings)) ||
-    (isRecord(results) &&
-      isRecord(results.progress) &&
-      results.progress.version !== 2) ||
-    (isRecord(results) &&
-      isRecord(results.streak) &&
-      results.streak.version !== 1)
-  ) {
-    throw new Error(
-      'Existing saved data is damaged or uses an unsupported version. It has been left unchanged.',
-    );
-  }
-  return {
-    data: {
-      generationPromptAnswered:
-        window.localStorage.getItem(legacyKeys.generationPromptAnswered) ===
-        '1',
-      profile: normalizeTrainerProfile(profile),
-      results: normalizeResults(results),
-      settings: settings === null ? null : normalizeGameSettings(settings),
-    },
-    restoreId: null,
-    version: 1,
-  };
-};
+export const createPlayerSave = (): PlayerSave => ({
+  data: emptyPlayerData(),
+  restoreId: null,
+  version: PLAYER_SAVE_VERSION,
+});
 
 export const readPlayerSave = (): PlayerSave => {
-  const raw = window.localStorage.getItem(PLAYER_STORAGE_KEY);
-  if (raw !== null) {
-    const stored: unknown = JSON.parse(raw);
-    const save = parsePlayerSave(stored);
-    if (isRecord(stored) && stored.version !== save.version) {
-      try {
-        window.localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(save));
-      } catch {
-        // Keep the previous version intact if the migrated document cannot be saved.
-      }
-    }
-    return save;
-  }
-  const migrated = parsePlayerSave(migrateLegacySave());
-  const concurrent = window.localStorage.getItem(PLAYER_STORAGE_KEY);
-  if (concurrent !== null) return parsePlayerSave(JSON.parse(concurrent));
   try {
-    window.localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(migrated));
-    for (const key of Object.values(legacyKeys))
-      window.localStorage.removeItem(key);
-  } catch {
-    // A full store can still be read and exported without deleting the legacy save.
+    const raw = window.localStorage.getItem(PLAYER_STORAGE_KEY);
+    if (raw !== null) {
+      const stored: unknown = JSON.parse(raw);
+      const save = parsePlayerSave(stored);
+      if (
+        isRecord(stored) &&
+        stored.version !== save.version &&
+        !getSaveIssue()
+      ) {
+        try {
+          window.localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(save));
+        } catch {
+          // A failed migration write must preserve the original document for recovery.
+        }
+      }
+      return save;
+    }
+    if (
+      Object.values(retiredPlayerKeys).some(
+        (key) => window.localStorage.getItem(key) !== null,
+      )
+    )
+      throw new SaveError(
+        'unsupported',
+        'This save uses a retired Quizmon format.',
+      );
+    return createPlayerSave();
+  } catch (error) {
+    throw reportSaveIssue(error);
   }
-  return migrated;
 };
 
 export const readPlayerData = (): PlayerData => {
@@ -92,6 +66,7 @@ export const readPlayerData = (): PlayerData => {
 };
 
 export const updatePlayerData = (patch: Partial<PlayerData>): boolean => {
+  if (getSaveIssue()) return false;
   try {
     const current = readPlayerSave();
     const next = parsePlayerSave({
@@ -106,6 +81,7 @@ export const updatePlayerData = (patch: Partial<PlayerData>): boolean => {
 };
 
 export const canPersistPlayerData = (): boolean => {
+  if (getSaveIssue()) return false;
   try {
     const current = readPlayerSave();
     window.localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(current));

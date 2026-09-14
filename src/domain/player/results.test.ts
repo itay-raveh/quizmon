@@ -13,25 +13,22 @@ it.each([
   [Number.NaN, 0],
   [Number.POSITIVE_INFINITY, 0],
   [Number.NEGATIVE_INFINITY, 0],
-])(
-  'preserves legacy progress count normalization for %s',
-  (value, expected) => {
-    const { progress } = normalizeResults({
-      progress: {
-        version: 2,
-        correctPokemon: [],
-        correctCategories: {},
-        quickAttackCompleted: false,
-        championAnswersWithoutClues: value,
-        masteryRounds: value,
-      },
-    });
-    expect(progress.championAnswersWithoutClues).toBe(expected);
-    expect(progress.masteryRounds).toBe(expected);
-  },
-);
+])('normalizes progress counts for %s', (value, expected) => {
+  const { progress } = normalizeResults({
+    progress: {
+      version: 2,
+      correctPokemon: [],
+      correctCategories: {},
+      quickAttackCompleted: false,
+      championAnswersWithoutClues: value,
+      masteryRounds: value,
+    },
+  });
+  expect(progress.championAnswersWithoutClues).toBe(expected);
+  expect(progress.masteryRounds).toBe(expected);
+});
 
-it('credits one historical Quick Attack and preserves new round totals', () => {
+it('does not invent Quick Attack rounds from the retired boolean counter', () => {
   const legacy = {
     version: 2,
     correctPokemon: [],
@@ -40,7 +37,7 @@ it('credits one historical Quick Attack and preserves new round totals', () => {
   };
   expect(
     normalizeResults({ progress: legacy }).progress.quickAttackRounds,
-  ).toBe(1);
+  ).toBe(0);
   expect(
     normalizeResults({ progress: { ...legacy, quickAttackRounds: 17 } })
       .progress.quickAttackRounds,
@@ -48,5 +45,5 @@ it('credits one historical Quick Attack and preserves new round totals', () => {
   expect(
     normalizeResults(normalizeResults({ progress: legacy })).progress
       .quickAttackRounds,
-  ).toBe(1);
+  ).toBe(0);
 });

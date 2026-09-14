@@ -1,7 +1,6 @@
 import type { QuestionData, QuestionType } from './types';
 
-// Saved rounds without difficulty and rules versions before 3 used this roster.
-export const legacyQuestionTypes: readonly QuestionType[] = [
+export const standardQuestionTypes: readonly QuestionType[] = [
   'pokedex-scan',
   'silhouette-match',
   'sprite-match',
@@ -24,10 +23,10 @@ export const legacyQuestionTypes: readonly QuestionType[] = [
   'counter-pick',
 ];
 
-export const supportsLegacyQuestion = (
+export const supportsStandardQuestion = (
   type: QuestionData['questionType'],
-): boolean => type === 'champion' || legacyQuestionTypes.includes(type);
+): boolean => type === 'champion' || standardQuestionTypes.includes(type);
 
-export const legacyLeagueQuestionTypes = legacyQuestionTypes.filter(
+export const standardLeagueQuestionTypes = standardQuestionTypes.filter(
   (type) => !['ability-check', 'move-check', 'stat-showdown'].includes(type),
 );

@@ -1,5 +1,5 @@
-import { formGroups, generations } from '../pokemon/types';
-import { legacyLeagueQuestionTypes } from '../quiz/legacy-question-types';
+import { formGroups } from '../pokemon/types';
+import { standardLeagueQuestionTypes } from '../quiz/standard-question-types';
 import {
   defaultGameSettings,
   getTrainingSettings,
@@ -21,10 +21,10 @@ describe('normalizeGameSettings', () => {
       normalizeGameSettings({
         generations: ['IX', 'not-a-generation'],
         questionTypes: ['stat-showdown', 'baby-pokemon', 'not-a-type'],
-        speedrunMode: true,
+        answerFlow: 'instant',
       }),
     ).toEqual({
-      difficulty: 3,
+      difficulty: 1,
       questionSelection: 'automatic',
       answerFlow: 'instant',
       formGroups: [...formGroups],
@@ -34,23 +34,6 @@ describe('normalizeGameSettings', () => {
       soundVolume: 1,
       timerDisplay: 'seconds',
       trainingMode: 'league',
-    });
-  });
-
-  it('migrates legacy preferences without changing scope or custom families', () => {
-    expect(
-      normalizeGameSettings({
-        generations: [...generations],
-        formGroups: ['regional'],
-        trainingMode: 'custom',
-        questionTypes: ['type-check'],
-      }),
-    ).toMatchObject({
-      difficulty: 3,
-      questionSelection: 'custom',
-      generations,
-      formGroups: ['regional'],
-      questionTypes: ['type-check'],
     });
   });
 
@@ -71,12 +54,12 @@ describe('normalizeGameSettings', () => {
         questionTypes: ['evolution-shift'],
       }),
     ).toMatchObject({
-      questionTypes: legacyLeagueQuestionTypes,
+      questionTypes: standardLeagueQuestionTypes,
       trainingMode: 'league',
     });
-    expect(legacyLeagueQuestionTypes).toHaveLength(17);
+    expect(standardLeagueQuestionTypes).toHaveLength(17);
     for (const advanced of ['ability-check', 'move-check', 'stat-showdown']) {
-      expect(legacyLeagueQuestionTypes).not.toContain(advanced);
+      expect(standardLeagueQuestionTypes).not.toContain(advanced);
     }
     expect(
       getTrainingSettings({

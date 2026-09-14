@@ -4,9 +4,12 @@ import { getLeagueSettings } from '../src/domain/quiz/league';
 import { buildLeagueQuestions } from '../src/domain/quiz/question-generation';
 import { getQuestionTitle } from '../src/domain/quiz/question-labels';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
-import { catalog, expect, test } from './fixtures';
+import { catalog, expect, seedPlayer, test } from './fixtures';
 const leagueSeed = 'league-e2e-lineup';
-const unlockLeague = (completed = false) => {
+const unlockLeague = (
+  page: Parameters<typeof seedPlayer>[0],
+  completed = false,
+) => {
   const savedDailyResult = {
     answers: [],
     contentVersion: 1,
@@ -20,15 +23,15 @@ const unlockLeague = (completed = false) => {
     { length: 7 },
     (_, index) => `2026-08-${String(25 + index).padStart(2, '0')}`,
   );
-  window.localStorage.setItem(
-    'quizmon.results.v2',
-    JSON.stringify({
+  return seedPlayer(page, {
+    results: {
       daily: Object.fromEntries(dates.map((date) => [date, savedDailyResult])),
       league: {
         completed,
         seed: completed ? null : 'league-e2e-lineup',
       },
       progress: {
+        quickAttackRounds: 1,
         championAnswersWithoutClues: 5,
         correctCategories: { identity: 50 },
         correctGenerations: Object.fromEntries(
@@ -60,13 +63,13 @@ const unlockLeague = (completed = false) => {
       },
       streak: { creditedDates: dates, version: 1 },
       training: {},
-    }),
-  );
+    },
+  });
 };
 test('refreshes League attempts and retries while preserving reloads', async ({
   page,
 }) => {
-  await page.addInitScript(unlockLeague, false);
+  await unlockLeague(page, false);
   await page.goto('/');
   const leagueButton = page.getByRole('button', { name: 'Quizmon League' });
   await expect(leagueButton).toBeVisible();
@@ -133,7 +136,7 @@ test('refreshes League attempts and retries while preserving reloads', async ({
 test('keeps Hall of Fame deep links on the challenge before a League clear', async ({
   page,
 }) => {
-  await page.addInitScript(unlockLeague, false);
+  await unlockLeague(page, false);
   await page.goto('/?league=hall');
   await expect(
     page.getByRole('heading', { name: 'League challenge', exact: true }),
@@ -156,7 +159,7 @@ test('keeps Hall of Fame deep links on the challenge before a League clear', asy
 test('shows Champion and Hall of Fame after clearing the League', async ({
   page,
 }) => {
-  await page.addInitScript(unlockLeague, true);
+  await unlockLeague(page, true);
   await page.goto('/');
   await page
     .getByRole('button', { name: 'Quizmon League', exact: true })
@@ -201,7 +204,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
   });
   const questions = buildLeagueQuestions(catalog, leagueSeed, settings);
   const snapshot = {
-    version: 2,
+    version: 3,
     questions,
     contentVersion: catalog.contentVersion,
     elapsedMilliseconds: 15000,
@@ -224,7 +227,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
     })),
   };
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.addInitScript(unlockLeague, false);
+  await unlockLeague(page, false);
   await page.addInitScript(
     (value) =>
       sessionStorage.setItem('quizmon.active-game.v1', JSON.stringify(value)),

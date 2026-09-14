@@ -47,13 +47,11 @@ const categoryLabels: Record<SavedAnswerResult['category'], string> = {
   knowledge: 'General knowledge',
   ability: questionLabels['ability-check'],
   champion: questionLabels.champion,
-  cry: 'Pokémon cry',
   description: questionLabels['field-notes'],
   evolution: questionLabels['evolution-shift'],
   identity: questionLabels['pokedex-scan'],
   matchup: questionLabels['type-matchup'],
   move: questionLabels['move-check'],
-  scale: 'Scale comparison',
   stat: questionLabels['stat-showdown'],
   type: questionLabels['type-check'],
 };

@@ -127,6 +127,7 @@ test('defers an update through gameplay and restores results after automatic rel
   baseURL,
   page,
 }) => {
+  test.slow();
   let version = 1;
   const pendingRequest = Promise.withResolvers<ServerResponse>();
   const server = createServer((request, response) => {

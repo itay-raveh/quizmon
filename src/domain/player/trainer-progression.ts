@@ -175,7 +175,7 @@ const trainerBadgeDefinitions = [
     label: 'Quick Attack',
     milestones: (stats) =>
       countMilestones(
-        stats.quickAttackRounds ?? Number(stats.quickAttackCompleted),
+        stats.quickAttackRounds,
         [1, 10, 50],
         (goal) =>
           `Finish ${goal} ten-question Training round${goal === 1 ? '' : 's'} in under 60 seconds each with at least 8 correct answers, using automatic questions or an equivalent custom selection`,

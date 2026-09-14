@@ -1,5 +1,6 @@
+import { emptyPlayerData } from '../../domain/player/player-save';
+import { updatePlayerData } from './player-storage';
 import { correctAnswer, result } from '../../../tests/fixtures/result';
-import { getHighScoreKey } from '../../domain/quiz/result-ranking';
 import type { GameResult } from '../../domain/quiz/types';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { readPlayerData } from './player-storage';
@@ -16,6 +17,64 @@ import {
 describe('saved results', () => {
   beforeEach(() => window.localStorage.clear());
   afterEach(() => vi.useRealTimers());
+  it('shares one Training best across settings for each scoring version', () => {
+    const mode = { kind: 'training' } as const;
+    saveResult(mode, { ...result, score: 900000 });
+    const weighted: GameResult = {
+      ...result,
+      scoreVersion: 3,
+      score: 500,
+      scoreMultipliers: {
+        difficulty: 1,
+        generations: 1,
+        questionTypes: [{ questionType: 'sprite-match', multiplier: 0.75 }],
+      },
+      rules: {
+        version: 1,
+        difficulty: 1,
+        generations: ['I'],
+        formGroups: ['standard'],
+        questionTypes: ['sprite-match'],
+      },
+    };
+    expect(saveResult(mode, weighted)).toMatchObject({
+      best: weighted,
+      isNewBest: true,
+    });
+    const other: GameResult = {
+      ...weighted,
+      contentVersion: weighted.contentVersion + 1,
+      score: 400,
+      rules: {
+        ...weighted.rules!,
+        version: 2,
+        difficulty: 5,
+        generations: ['I', 'II'],
+        formGroups: ['standard', 'regional'],
+      },
+    };
+    expect(saveResult(mode, other)).toMatchObject({
+      best: weighted,
+      isNewBest: false,
+    });
+    const record = { ...other, score: 600 };
+    expect(saveResult(mode, record)).toMatchObject({
+      best: record,
+      isNewBest: true,
+      isSaved: true,
+    });
+    expect(readPlayerData().results.training['score:3']).toEqual(record);
+    expect(readPlayerData().results.training['score:2']?.score).toBe(900000);
+    expect(Object.keys(readPlayerData().results.training)).toHaveLength(2);
+    expect(
+      parseBackup(JSON.stringify(createBackup())).save.data.results,
+    ).toEqual(readPlayerData().results);
+    const malformed = createBackup();
+    malformed.save.data.results.training[
+      'score:3'
+    ]!.scoreMultipliers!.generations = 10;
+    expect(() => parseBackup(JSON.stringify(malformed))).toThrow();
+  });
   it('credits ten independent tracks, but only one shared combo day', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-12T12:00:00Z'));
@@ -61,41 +120,6 @@ describe('saved results', () => {
     expect(readDailyResult(date, track)?.score).toBe(10);
     expect(Object.keys(readPlayerData().results.daily)).toHaveLength(2);
   });
-  it('keeps legacy bests and compares new results only inside their saved rules', () => {
-    const mode = { kind: 'training' } as const;
-    saveResult(mode, { ...result, score: 9000 });
-    const next: GameResult = {
-      ...result,
-      rules: {
-        version: 1,
-        difficulty: 1,
-        generations: ['I'],
-        formGroups: ['standard'],
-        questionTypes: ['pokedex-scan'],
-      },
-    };
-    expect(saveResult(mode, next)).toMatchObject({
-      best: next,
-      isNewBest: true,
-      isSaved: true,
-    });
-    expect(saveResult(mode, { ...next, score: 100 })).toMatchObject({
-      best: next,
-      isNewBest: false,
-    });
-    const harder: GameResult = {
-      ...next,
-      score: 200,
-      rules: { ...next.rules!, difficulty: 5 },
-    };
-    expect(saveResult(mode, harder)).toMatchObject({
-      best: harder,
-      isNewBest: true,
-      isSaved: true,
-    });
-    expect(readPlayerData().results.training.league?.score).toBe(9000);
-    expect(Object.keys(readPlayerData().results.training)).toHaveLength(3);
-  });
   it('records a daily result once and restores it', () => {
     const mode = { kind: 'daily', date: '2026-09-01' } as const;
     expect(saveResult(mode, result)).toEqual({
@@ -139,14 +163,6 @@ describe('saved results', () => {
   it('only credits new results completed on their local challenge date', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-03T12:00:00.000Z'));
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {},
-        streak: { creditedDates: [], version: 1 },
-        training: {},
-      }),
-    );
     saveResult({ kind: 'daily', date: '2026-09-01' }, result);
     expect(readDailyStreak('2026-09-03')).toBe(0);
     const zeroScore = {
@@ -163,9 +179,9 @@ describe('saved results', () => {
     expect(readDailyStreak('2026-09-03')).toBe(1);
   });
   it("keeps yesterday's streak active and crosses a year boundary", () => {
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
+    updatePlayerData({
+      results: {
+        ...emptyPlayerData().results,
         daily: {
           '2025-12-31': result,
           '2026-01-01': result,
@@ -175,8 +191,8 @@ describe('saved results', () => {
           version: 1,
         },
         training: {},
-      }),
-    );
+      },
+    });
     expect(readDailyStreak('2026-01-02')).toBe(2);
     expect(readDailyStreak('2026-01-03')).toBe(0);
   });
@@ -230,18 +246,7 @@ describe('saved results', () => {
     };
     expect(saveResult(mode, longer, defaultGameSettings).isNewBest).toBe(false);
   });
-  it.each([
-    [{ kind: 'daily', date: '2026-09-05' }, 'league', 'daily'],
-    [{ kind: 'training' }, 'league', 'league'],
-    [{ kind: 'training' }, 'custom', 'custom'],
-    [{ kind: 'league' }, 'league', null],
-  ] as const)(
-    '%j with %s settings uses the %s high-score key',
-    (mode, trainingMode, expected) => {
-      expect(getHighScoreKey(mode, { trainingMode })).toBe(expected);
-    },
-  );
-  it('keeps League and Custom Training bests separate', () => {
+  it('compares Training bests across preset and custom selections', () => {
     saveResult({ kind: 'training' }, result, defaultGameSettings);
     const customResult = { ...result, score: 500 };
     expect(
@@ -250,8 +255,8 @@ describe('saved results', () => {
         trainingMode: 'custom',
       }),
     ).toEqual({
-      best: customResult,
-      isNewBest: true,
+      best: result,
+      isNewBest: false,
       isSaved: true,
     });
   });

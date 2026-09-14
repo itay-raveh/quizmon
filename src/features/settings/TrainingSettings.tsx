@@ -3,6 +3,8 @@ import { SelectionTile } from '@/components/SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
 import { formGroups, generations } from '@/domain/pokemon/types';
 import { difficultyLevels } from '@/domain/quiz/difficulty';
+import { formatScoreMultiplier } from '@/domain/pokemon/format';
+import { getScoreMultiplier } from '@/domain/quiz/score-multipliers';
 import { type GameSettings } from '@/domain/settings/types';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { QuestionTypeSettings } from './QuestionTypeSettings';
@@ -40,6 +42,7 @@ export const TrainingSettings = ({
   questionTypesHeading,
   submitted,
   trainingChangesApplyNextGame,
+  scoreMultipliers,
 }: TrainingSettingsProps) => {
   const allGenerationsSelected =
     draft.generations.length === generations.length;
@@ -48,6 +51,14 @@ export const TrainingSettings = ({
 
   return (
     <>
+      {scoreMultipliers ? (
+        <p className="training-multiplier" role="status">
+          <span>Training multiplier</span>
+          <strong>
+            {formatScoreMultiplier(getScoreMultiplier(scoreMultipliers))}
+          </strong>
+        </p>
+      ) : null}
       {trainingChangesApplyNextGame ? (
         <p className="settings-note">
           Training changes apply to your next game.

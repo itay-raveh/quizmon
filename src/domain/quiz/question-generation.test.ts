@@ -18,7 +18,7 @@ import {
   getQuestionCount,
 } from './question-generation';
 import { getQuestionTitle } from './question-labels';
-import { legacyQuestionTypes as questionTypes } from './legacy-question-types';
+import { standardQuestionTypes as questionTypes } from './standard-question-types';
 import { buildQuestionType } from './questions/registry';
 import {
   generations,

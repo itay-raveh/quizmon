@@ -1,3 +1,10 @@
+import {
+  emptyPlayerData,
+  PLAYER_SAVE_VERSION,
+  type PlayerData,
+} from '../src/domain/player/player-save';
+import { defaultGameSettings } from '../src/domain/settings/game-settings';
+import type { GameSettings } from '../src/domain/settings/types';
 import { test as base, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import catalogData from '../src/domain/pokemon/data/pokemon.json' with { type: 'json' };
@@ -32,29 +39,60 @@ export const seedBrowserRandom = (page: Page, seed: string) =>
       Math.random = Math.seedrandom(${JSON.stringify(seed)}, { global: false });`,
   });
 
+type PlayerFixture = Omit<Partial<PlayerData>, 'settings' | 'results'> & {
+  settings?: Partial<GameSettings>;
+  results?: Omit<Partial<PlayerData['results']>, 'progress'> & {
+    progress?: Partial<PlayerData['results']['progress']>;
+  };
+};
+const trainingFixture: GameSettings = {
+  ...defaultGameSettings,
+  difficulty: 3,
+  questionSelection: 'custom',
+  generations: ['I'],
+  questionTypes: ['pokedex-scan'],
+  soundVolume: 0,
+  answerFlow: 'instant',
+  trainingMode: 'custom',
+};
+let fixtureNumber = 0;
+export const seedPlayer = (page: Page, patch: PlayerFixture) =>
+  page.addInitScript(
+    ({ patch, initial, marker }) => {
+      if (sessionStorage.getItem(marker)) return;
+      const raw = localStorage.getItem('quizmon.player');
+      const save = raw ? (JSON.parse(raw) as typeof initial) : initial;
+      const results = patch.results;
+      save.data = {
+        ...save.data,
+        ...patch,
+        settings: { ...save.data.settings, ...patch.settings },
+        results: {
+          ...save.data.results,
+          ...results,
+          progress: { ...save.data.results.progress, ...results?.progress },
+        },
+      };
+      localStorage.setItem('quizmon.player', JSON.stringify(save));
+      sessionStorage.setItem(marker, '1');
+    },
+    {
+      patch,
+      initial: {
+        version: PLAYER_SAVE_VERSION,
+        restoreId: null,
+        data: { ...emptyPlayerData(), settings: trainingFixture },
+      },
+      marker: 'quizmon.test-seed.' + fixtureNumber++,
+    },
+  );
 export const seedQuestionTraining = (
   page: Page,
   questionType: QuestionType,
   generations: readonly Generation[] = ['I'],
 ) =>
-  page.addInitScript(
-    ({ questionType, generations, difficulty }) => {
-      window.localStorage.setItem(
-        'quizmon.training-settings.v2',
-        JSON.stringify({
-          difficulty,
-          questionSelection: 'custom',
-          generations,
-          questionTypes: [questionType],
-          trainingMode: 'custom',
-          soundEnabled: false,
-          speedrunMode: false,
-        }),
-      );
-    },
-    {
-      questionType,
-      generations,
+  seedPlayer(page, {
+    settings: {
       difficulty:
         (
           {
@@ -70,10 +108,16 @@ export const seedQuestionTraining = (
             'counter-pick': 4,
             'stat-showdown': 4,
             'move-check': 4,
-          } as Partial<Record<QuestionType, number>>
+          } as Partial<Record<QuestionType, GameSettings['difficulty']>>
         )[questionType] ?? 3,
+      questionSelection: 'custom',
+      generations: [...generations],
+      questionTypes: [questionType],
+      trainingMode: 'custom',
+      soundVolume: 0,
+      answerFlow: 'manual',
     },
-  );
+  });
 
 export const expectNoHorizontalOverflow = async (page: Page) => {
   const { pageWidth, viewportWidth } = await page.evaluate(() => ({
@@ -109,19 +153,21 @@ export const completeTrainingRound = async (page: Page) => {
 
 export const test = base.extend({
   page: async ({ page }, run) => {
-    await page.addInitScript(() => {
-      if (window.location.search.includes('fresh=1')) return;
-      window.localStorage.setItem(
-        'quizmon.training-settings.v2',
-        JSON.stringify({
-          generations: ['I'],
-          questionTypes: ['pokedex-scan'],
-          soundEnabled: false,
-          speedrunMode: true,
-          trainingMode: 'custom',
-        }),
-      );
-    });
+    await page.addInitScript(
+      (save) => {
+        if (
+          location.search.includes('fresh=1') ||
+          localStorage.getItem('quizmon.player')
+        )
+          return;
+        localStorage.setItem('quizmon.player', JSON.stringify(save));
+      },
+      {
+        version: PLAYER_SAVE_VERSION,
+        restoreId: null,
+        data: { ...emptyPlayerData(), settings: trainingFixture },
+      },
+    );
 
     await page.route('**/sprites/pokemon/**', async (route) => {
       await route.fulfill({ contentType: 'image/png', body: imageBody });

@@ -5,8 +5,37 @@ import {
   getScoreBreakdown,
   getSpeedBonusPoints,
 } from './scoring';
+import type { ScoreMultipliers } from './types';
 
 describe('scoring', () => {
+  it('multiplies the whole base score and rounds only the final total', () => {
+    const answers = [
+      {
+        category: 'identity' as const,
+        correct: true,
+        points: 1000,
+        speedBonus: 250,
+      },
+    ];
+    const multipliers: ScoreMultipliers = {
+      difficulty: 4,
+      generations: 3,
+      questionTypes: [
+        { questionType: 'sprite-match', multiplier: 0.75 },
+        { questionType: 'type-check', multiplier: 1 },
+        { questionType: 'ev-yields', multiplier: 1.25 },
+      ],
+    };
+    expect(calculateScore(answers, multipliers)).toBe(25313);
+    expect(calculateScore(answers)).toBe(2250);
+    expect(calculateScore([], multipliers)).toBe(0);
+    expect(
+      calculateScore(answers, {
+        ...multipliers,
+        questionTypes: [...multipliers.questionTypes].reverse(),
+      }),
+    ).toBe(25313);
+  });
   it('awards 1,000 points for a normal correct answer', () => {
     const question = { category: 'stat' } as const;
     expect(getAnswerPoints(question, true)).toBe(1_000);

@@ -53,19 +53,28 @@ export const useGameCompletion = ({
     stats: ReturnType<typeof readTrainerStats>;
   } | null>(null);
   const complete = useCallback<CompleteGame>(
-    ({ answers, contentVersion, mode, settings, questions, seed }) => {
+    ({
+      answers,
+      contentVersion,
+      mode,
+      settings,
+      questions,
+      seed,
+      scoreMultipliers,
+    }) => {
       const result = {
         rules: snapshotRoundRules(settings, questions),
         ...(mode.kind === 'daily' && mode.track
           ? { dailyTrack: mode.track }
           : {}),
         answers,
+        ...(scoreMultipliers ? { scoreMultipliers } : {}),
         contentVersion,
         correctCount: answers.filter(({ correct }) => correct).length,
         ...getResponseTime(answers),
         questionCount: questions.length,
-        score: calculateScore(answers),
-        scoreVersion: SCORE_VERSION,
+        score: calculateScore(answers, scoreMultipliers),
+        scoreVersion: scoreMultipliers ? SCORE_VERSION : 2,
       };
       const previousData = readPlayerData();
       const previousTrainerStats =

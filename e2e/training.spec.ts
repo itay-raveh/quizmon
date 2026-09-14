@@ -165,7 +165,7 @@ test('plays and shares a complete Training round without a live API call', async
         correctCount: 10,
         mode: 'training',
         questionCount: 10,
-        scoreVersion: 2,
+        scoreVersion: 3,
         type: 'game_completed',
       },
     ]);
@@ -256,13 +256,12 @@ test('starts new players at Level 1 with Gen I and keeps settings editable', asy
   await expect(page.locator('.question')).toBeVisible();
   const snapshot = await page.evaluate(
     () =>
-      JSON.parse(sessionStorage.getItem('quizmon.active-game.v1')!) as Omit<
-        ActiveGameSnapshot,
-        'settings'
-      > & { modifiers: ActiveGameSnapshot['settings'] },
+      JSON.parse(
+        sessionStorage.getItem('quizmon.active-game.v1')!,
+      ) as ActiveGameSnapshot,
   );
-  expect(snapshot.modifiers.difficulty).toBe(1);
-  expect(snapshot.modifiers.generations).toEqual(['I']);
+  expect(snapshot.settings.difficulty).toBe(1);
+  expect(snapshot.settings.generations).toEqual(['I']);
   expect(snapshot.questions).toHaveLength(10);
   await page.getByRole('button', { name: 'Leave game' }).click();
   await page.getByRole('button', { name: 'Settings' }).click();

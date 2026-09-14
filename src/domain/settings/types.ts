@@ -5,7 +5,7 @@ export const trainingModes = ['league', 'custom'] as const;
 export const answerFlows = ['manual', 'auto', 'instant'] as const;
 export const timerDisplays = ['hidden', 'seconds', 'milliseconds'] as const;
 
-export type TrainingMode = (typeof trainingModes)[number];
+type TrainingMode = (typeof trainingModes)[number];
 export type AnswerFlow = (typeof answerFlows)[number];
 export type TimerDisplay = (typeof timerDisplays)[number];
 

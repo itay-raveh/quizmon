@@ -1,3 +1,4 @@
+import { seedPlayer } from './fixtures';
 import { generations, formGroups } from '../src/domain/pokemon/types';
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import type { PlayerSave } from '../src/domain/player/player-save';
@@ -16,6 +17,34 @@ import {
 test('keeps legacy Daily results shareable without granting another attempt', async ({
   page,
 }) => {
+  await seedPlayer(page, {
+    results: {
+      daily: {
+        '2026-09-01': {
+          answers: Array.from({ length: 10 }, (_, index) => ({
+            category: index === 9 ? 'champion' : 'identity',
+            correct: index < 8,
+            cluesUsed: 0,
+            questionType: index === 9 ? 'champion' : 'pokedex-scan',
+            points: index < 8 ? 1000 : 0,
+            subject: {
+              kind: 'pokemon' as const,
+              generation: 'I',
+              name: 'pikachu',
+            },
+          })),
+          contentVersion: 2,
+          correctCount: 8,
+          elapsedSeconds: 90,
+          questionCount: 10,
+          score: 14400,
+          scoreVersion: 2,
+        },
+      },
+      streak: { creditedDates: ['2026-09-01'], version: 1 },
+      training: {},
+    },
+  });
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'share', {
       configurable: true,
@@ -27,35 +56,6 @@ test('keeps legacy Daily results shareable without granting another attempt', as
         return Promise.resolve();
       },
     });
-    window.localStorage.setItem(
-      'quizmon.results.v2',
-      JSON.stringify({
-        daily: {
-          '2026-09-01': {
-            answers: Array.from({ length: 10 }, (_, index) => ({
-              category: index === 9 ? 'champion' : 'identity',
-              correct: index < 8,
-              cluesUsed: 0,
-              questionType: index === 9 ? 'champion' : 'pokedex-scan',
-              points: index < 8 ? 1000 : 0,
-              subject: {
-                kind: 'pokemon' as const,
-                generation: 'I',
-                name: 'pikachu',
-              },
-            })),
-            contentVersion: 2,
-            correctCount: 8,
-            elapsedSeconds: 90,
-            questionCount: 10,
-            score: 14400,
-            scoreVersion: 2,
-          },
-        },
-        streak: { creditedDates: ['2026-09-01'], version: 1 },
-        training: {},
-      }),
-    );
   });
   await page.goto('/?daily=2026-09-01');
   await expect(
@@ -106,29 +106,23 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
     .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
     .join('-');
   await page.setViewportSize({ width: 320, height: 700 });
-  await page.addInitScript(
-    ({ dailyDate }) => {
-      window.localStorage.setItem(
-        'quizmon.results.v2',
-        JSON.stringify({
-          daily: {
-            [dailyDate]: {
-              answers: [],
-              contentVersion: 2,
-              correctCount: 0,
-              elapsedSeconds: 10,
-              questionCount: 5,
-              score: 0,
-              scoreVersion: 2,
-            },
-          },
-          streak: { creditedDates: [dailyDate], version: 1 },
-          training: {},
-        }),
-      );
+  await seedPlayer(page, {
+    results: {
+      daily: {
+        [date]: {
+          answers: [],
+          contentVersion: 2,
+          correctCount: 0,
+          elapsedSeconds: 10,
+          questionCount: 5,
+          score: 0,
+          scoreVersion: 2,
+        },
+      },
+      streak: { creditedDates: [date], version: 1 },
+      training: {},
     },
-    { dailyDate: date },
-  );
+  });
   await page.goto('/');
   await expect(
     page.getByRole('img', { name: '1-day Daily Combo' }),
@@ -185,17 +179,14 @@ test('starts saved Training settings directly after completing Daily', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 780 });
-  await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'quizmon.training-settings.v2',
-      JSON.stringify({
-        generations: ['I'],
-        questionTypes: ['pokedex-scan'],
-        trainingMode: 'custom',
-        answerFlow: 'manual',
-        soundVolume: 0,
-      }),
-    );
+  await seedPlayer(page, {
+    settings: {
+      generations: ['I'],
+      questionTypes: ['pokedex-scan'],
+      trainingMode: 'custom',
+      answerFlow: 'manual',
+      soundVolume: 0,
+    },
   });
   await page.goto('/?daily=2026-09-01');
   await chooseDaily(page);

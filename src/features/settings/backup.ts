@@ -1,5 +1,7 @@
+import { downloadJson } from '@/lib/download';
+import { clearRetiredAndRoundData } from '@/lib/storage/save-recovery';
+import { clearSaveIssue } from '@/lib/storage/save-health';
 import { parsePlayerSave, type PlayerSave } from '@/domain/player/player-save';
-import { clearActiveGame } from '@/lib/storage/active-game-storage';
 import {
   PLAYER_STORAGE_KEY,
   readPlayerSave,
@@ -74,7 +76,8 @@ export const restoreBackup = (backup: PlayerBackup): void => {
       'Your browser could not save this backup. Free some storage or allow site storage, then try again. Your saved progress has not changed.',
     );
   }
-  clearActiveGame();
+  clearRetiredAndRoundData();
+  clearSaveIssue();
 };
 
 export const downloadBackup = (): void => {
@@ -82,15 +85,8 @@ export const downloadBackup = (): void => {
   const trainerName = (backup.save.data.profile?.name ?? '')
     .replace(/[<>:"/\\|?*\p{Cc}\p{Cf}\s]+/gu, '-')
     .replace(/^-+|-+$/g, '');
-  const blob = new Blob([JSON.stringify(backup)], {
-    type: 'application/json',
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `quizmon-backup-${trainerName ? `${trainerName}-` : ''}${backup.exportedAt.slice(0, 10)}.json`;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  downloadJson(
+    `quizmon-backup-${trainerName ? `${trainerName}-` : ''}${backup.exportedAt.slice(0, 10)}.json`,
+    backup,
+  );
 };

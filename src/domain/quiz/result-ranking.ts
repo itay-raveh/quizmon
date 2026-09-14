@@ -1,16 +1,4 @@
-import { type GameMode, type GameResult } from './types';
-
-import { type GameSettings, type TrainingMode } from '../settings/types';
-
-export const getHighScoreKey = (
-  mode: GameMode,
-  settings: Pick<GameSettings, 'trainingMode'>,
-): 'daily' | TrainingMode | null =>
-  mode.kind === 'daily'
-    ? 'daily'
-    : mode.kind === 'training'
-      ? settings.trainingMode
-      : null;
+import { type GameResult } from './types';
 
 export const isBetterResult = (
   candidate: GameResult,

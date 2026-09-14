@@ -103,6 +103,7 @@ export const useActiveGame = ({
       const { snapshot } = restoration;
       const { questions } = snapshot;
       const round = {
+        scoreMultipliers: snapshot.scoreMultipliers,
         contentVersion: snapshot.contentVersion,
         answers: snapshot.answers,
         mode: snapshot.mode,
@@ -166,6 +167,7 @@ export const useActiveGame = ({
     if (!catalog || session.phase !== 'questions') return;
 
     writeActiveGame({
+      scoreMultipliers: session.scoreMultipliers,
       answers: session.answers,
       contentVersion: session.contentVersion,
       elapsedMilliseconds: getElapsedMilliseconds(),

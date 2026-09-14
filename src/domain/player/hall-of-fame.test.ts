@@ -91,28 +91,8 @@ it('round-trips all victory records through backup and replacement restore', () 
   const backup = parseBackup(JSON.stringify(createBackup()));
   localStorage.clear();
   restoreBackup(backup);
-  expect(readPlayerSave().version).toBe(5);
+  expect(readPlayerSave().version).toBe(6);
   expect(readPlayerSave().data.hallOfFame).toEqual([first, second]);
-});
-it('migrates version 2 without fabricating old victory records or losing Champion status', () => {
-  const data = emptyPlayerData();
-  data.results.league.completed = true;
-  data.pokedex = ['pikachu'];
-  const oldData = Object.fromEntries(
-    Object.entries(data).filter(([key]) => key !== 'hallOfFame'),
-  );
-  localStorage.setItem(
-    PLAYER_STORAGE_KEY,
-    JSON.stringify({ version: 2, restoreId: null, data: oldData }),
-  );
-  expect(readPlayerSave()).toMatchObject({
-    version: 5,
-    data: {
-      hallOfFame: [],
-      pokedex: ['pikachu'],
-      results: { league: { completed: true } },
-    },
-  });
 });
 it.each([
   { completedAt: '2026-02-31T12:00:00.000Z' },
@@ -129,14 +109,14 @@ it.each([
       hallOfFame: [{ ...victory(), ...patch }],
     };
     expect(() =>
-      parsePlayerSave({ version: 3, restoreId: null, data }),
+      parsePlayerSave({ version: 6, restoreId: null, data }),
     ).toThrow('invalid progress');
   },
 );
 it('accepts a victory with a 20-character Trainer name', () => {
   const record = { ...victory(), trainerName: 'A'.repeat(20) };
   const saved = parsePlayerSave({
-    version: 3,
+    version: 6,
     restoreId: null,
     data: { ...emptyPlayerData(), hallOfFame: [record] },
   });

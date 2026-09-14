@@ -127,7 +127,6 @@ it('retains form preferences through a backup round trip', () => {
   updatePlayerData({
     settings: {
       ...defaultGameSettings,
-      difficulty: undefined,
       formGroups: ['standard', 'regional'],
     },
   });

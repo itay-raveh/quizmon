@@ -66,6 +66,37 @@ const createResults = (
 );
 const renderResults = (result: GameResult) => render(createResults(result));
 describe('results summary', () => {
+  it('shows a unified Training best and the saved factors despite changed settings', () => {
+    const result: GameResult = {
+      ...makeResult(10, 5),
+      scoreVersion: 3,
+      scoreMultipliers: {
+        difficulty: 3,
+        generations: 2,
+        questionTypes: [{ questionType: 'sprite-match', multiplier: 0.75 }],
+      },
+      rules: {
+        version: 1,
+        difficulty: 3,
+        generations: ['I', 'II'],
+        formGroups: ['standard'],
+        questionTypes: ['sprite-match'],
+      },
+    };
+    render(
+      createResults(result, {
+        isNewBest: true,
+        settings: { ...defaultGameSettings, difficulty: 5 },
+      }),
+    );
+    expect(screen.getByText('New Training best!')).toBeVisible();
+    expect(
+      screen.queryByText(/best for this configuration/i),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('×3')).toBeVisible();
+    expect(screen.getByText('×2')).toBeVisible();
+    expect(screen.getByText('×0.75')).toBeVisible();
+  });
   it.each([
     [6, '00:06'],
     [119, '01:59'],
@@ -172,7 +203,7 @@ describe('results summary', () => {
   it('uses header navigation and identifies the high-score key', () => {
     const rendered = renderResults(makeResult(10, 5));
     expect(screen.queryByText(/^Training$/)).not.toBeInTheDocument();
-    expect(screen.getByText(/League best/)).toBeVisible();
+    expect(screen.getByText(/Training best/)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Train again' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Back to start' })).toBeVisible();
     expect(screen.queryByText('Back to start')).not.toBeInTheDocument();

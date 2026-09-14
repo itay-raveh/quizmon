@@ -1,3 +1,4 @@
+import { getTrainingScoreMultipliers } from '@/domain/quiz/score-multipliers';
 import { useDailyChallenge } from '@/features/daily/useDailyChallenge';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
 import {
@@ -87,6 +88,9 @@ export const App = () => {
         roundId,
         seed,
         type: 'started',
+        ...(nextMode.kind === 'training'
+          ? { scoreMultipliers: getTrainingScoreMultipliers(nextSettings) }
+          : {}),
       });
       reset();
       start();
