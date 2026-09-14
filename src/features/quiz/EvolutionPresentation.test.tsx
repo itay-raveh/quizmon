@@ -15,7 +15,7 @@ const evolution = (before: string, after: string, difficulty: 3 | 4) => {
   return buildQuestionType({ ...context, difficulty }, 'evolution-conditions')!;
 };
 
-it('reveals Amaura’s full requirement only after answering and removes redundant game context', () => {
+it('reveals only Amaura’s additional requirement after answering and removes redundant game context', () => {
   const generated = evolution('amaura', 'aurorus', 4);
   expect(generated).toBeDefined();
   const question = presentEvolutionQuestion(
@@ -45,8 +45,26 @@ it('reveals Amaura’s full requirement only after answering and removes redunda
   expect(screen.queryByText('Level up')).not.toBeInTheDocument();
   rerender(<QuestionArtwork question={question} answered cluesShown={0} />);
   expect(screen.getByLabelText('Evolution requirements')).toHaveTextContent(
-    'Level 39+ at night',
+    'During the night',
   );
+});
+
+it('omits the requirements row when the level answer is the entire requirement', () => {
+  const generated = evolution('amaura', 'aurorus', 4);
+  const withoutNight = (option: string) =>
+    option.replace(' · during the night', '');
+  const question = {
+    ...generated,
+    options: generated.options.map(withoutNight),
+    answer: {
+      ...generated.answer,
+      correctOptions: generated.answer.correctOptions.map(withoutNight),
+    },
+  };
+  render(<QuestionArtwork question={question} answered cluesShown={0} />);
+  expect(
+    screen.queryByLabelText('Evolution requirements'),
+  ).not.toBeInTheDocument();
 });
 
 it('keeps game context for Magneton’s game-dependent evolution requirements', () => {

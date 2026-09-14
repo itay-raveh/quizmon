@@ -154,7 +154,11 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'evolution-endpoints')
+  if (visual?.kind === 'evolution-endpoints') {
+    const requirements =
+      question.questionType === 'evolution-conditions' && answered
+        ? evolutionAnswerSummary(question)
+        : '';
     return (
       <div className="question-visual question-evolution-endpoints">
         {[visual.before, visual.after].map((name, index) => (
@@ -170,16 +174,17 @@ export const QuestionArtwork = ({
             />
           </Fragment>
         ))}
-        {question.questionType === 'evolution-conditions' && answered ? (
+        {requirements ? (
           <p
             className="question-evolution-endpoints__conditions"
             aria-label="Evolution requirements"
           >
-            {evolutionAnswerSummary(question.answer.correctOptions[0]!)}
+            {requirements}
           </p>
         ) : null}
       </div>
     );
+  }
   if (visual?.kind === 'evolution-link') {
     return (
       <div

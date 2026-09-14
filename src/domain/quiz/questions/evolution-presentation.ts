@@ -65,7 +65,16 @@ const formatEvolutionCondition = (condition: string) => {
   return condition.charAt(0).toUpperCase() + condition.slice(1);
 };
 
-export const evolutionAnswerSummary = (option: string): string => {
+export const evolutionAnswerSummary = (question: QuestionData): string => {
+  const option = question.answer.correctOptions[0]!;
+  const { shared, requirements, focused } = evolutionChoiceDetails(
+    question.options,
+  );
+  if (focused && requirements.every(({ kind }) => kind === 'level'))
+    return shared
+      .filter((part) => part !== 'Level Up')
+      .map(formatEvolutionCondition)
+      .join(' · ');
   const parts = option.split(' · ');
   const level = parts.find((part) => part.startsWith('at level '));
   const time = parts.find((part) => part.startsWith('during the '));
