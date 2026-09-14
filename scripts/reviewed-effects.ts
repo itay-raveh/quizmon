@@ -147,22 +147,26 @@ export const reviewedEffects: EffectKnowledge[] = [
           value:
             'At the end of each turn, restores up to 1/16 of the holder’s maximum HP, regardless of its type.',
           label: '1/16 HP',
+          details: [{ value: '+1/16 HP', label: 'Each turn' }],
         },
         wrong: [
           {
             value:
               'At the end of each turn, restores up to 1/8 of the holder’s maximum HP, regardless of its type.',
             label: '1/8 HP',
+            details: [{ value: '+1/8 HP', label: 'Each turn' }],
           },
           {
             value:
               'At the end of each turn, restores up to 1/4 of the holder’s maximum HP, regardless of its type.',
             label: '1/4 HP',
+            details: [{ value: '+1/4 HP', label: 'Each turn' }],
           },
           {
             value:
               'At the end of each turn, restores up to 1/16 of maximum HP only if the holder is Poison type.',
             label: '1/16 HP · Poison types only',
+            details: [{ value: '+1/16 HP', label: 'Poison types only' }],
           },
         ],
       },
@@ -486,22 +490,35 @@ export const reviewedEffects: EffectKnowledge[] = [
           value:
             'Each turn, restores up to 1/16 maximum HP to a Poison-type holder; other types lose 1/8 maximum HP.',
           label: 'Poison: +1/16 HP\nOther types: −1/8 HP',
+          details: [
+            { value: '+1/16 HP', label: 'Poison types' },
+            { value: '−1/8 HP', label: 'Other types' },
+          ],
         },
         wrong: [
           {
             value:
               'Each turn, restores up to 1/8 maximum HP to a Poison-type holder; other types lose 1/8 maximum HP.',
             label: 'Poison: +1/8 HP\nOther types: −1/8 HP',
+            details: [
+              { value: '+1/8 HP', label: 'Poison types' },
+              { value: '−1/8 HP', label: 'Other types' },
+            ],
           },
           {
             value:
               'Each turn, restores up to 1/16 maximum HP to a Poison-type holder; other types lose 1/16 maximum HP.',
             label: 'Poison: +1/16 HP\nOther types: −1/16 HP',
+            details: [
+              { value: '+1/16 HP', label: 'Poison types' },
+              { value: '−1/16 HP', label: 'Other types' },
+            ],
           },
           {
             value:
               'Each turn, restores up to 1/16 maximum HP to every type of holder.',
             label: 'All types: +1/16 HP',
+            details: [{ value: '+1/16 HP', label: 'All types' }],
           },
         ],
       },
@@ -574,22 +591,31 @@ export const reviewedEffects: EffectKnowledge[] = [
           value:
             'After a damaging move, restores up to 1/8 of the damage dealt, with a minimum of 1 HP when healing succeeds.',
           label: 'After attacking: 1/8 of damage dealt (at least 1 HP)',
+          details: [
+            {
+              value: '+1/8 damage dealt',
+              label: 'After attacking · min. 1 HP',
+            },
+          ],
         },
         wrong: [
           {
             value:
               'After a damaging move, restores up to 1/8 of the holder’s maximum HP.',
             label: 'After attacking: 1/8 of maximum HP',
+            details: [{ value: '+1/8 max HP', label: 'After attacking' }],
           },
           {
             value:
               'After a damaging move, restores up to 1/4 of the damage dealt.',
             label: 'After attacking: 1/4 of damage dealt',
+            details: [{ value: '+1/4 damage dealt', label: 'After attacking' }],
           },
           {
             value:
               'At the end of every turn, restores up to 1/8 of the holder’s maximum HP.',
             label: 'Each turn: 1/8 of maximum HP',
+            details: [{ value: '+1/8 max HP', label: 'Each turn' }],
           },
         ],
       },
@@ -654,27 +680,31 @@ export const reviewedEffects: EffectKnowledge[] = [
       },
       exact: {
         prompt: 'How does Rocky Helmet damage the attacker?',
-        supportingText: 'Damage uses the attacker’s maximum HP',
+        supportingText: 'Attacker’s max HP',
         correct: {
           value:
             'After a damaging contact hit, the attacker loses 1/6 of its maximum HP.',
           label: 'Contact hit: loses 1/6 HP',
+          details: [{ value: '−1/6 HP', label: 'Contact hit' }],
         },
         wrong: [
           {
             value:
               'After a damaging contact hit, the attacker loses 1/8 of its maximum HP.',
             label: 'Contact hit: loses 1/8 HP',
+            details: [{ value: '−1/8 HP', label: 'Contact hit' }],
           },
           {
             value:
               'After a damaging contact hit, the attacker loses 1/4 of its maximum HP.',
             label: 'Contact hit: loses 1/4 HP',
+            details: [{ value: '−1/4 HP', label: 'Contact hit' }],
           },
           {
             value:
               'After any damaging hit, including without contact, the attacker loses 1/6 of its maximum HP.',
             label: 'Any damaging hit: loses 1/6 HP',
+            details: [{ value: '−1/6 HP', label: 'Any damaging hit' }],
           },
         ],
       },

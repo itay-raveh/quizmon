@@ -123,7 +123,13 @@ export interface QuestionSubject extends AnswerSubject {
   types?: string[];
 }
 
+export interface ChoiceDetail {
+  value: string;
+  label: string;
+}
+
 export interface QuestionData {
+  optionDetails?: Record<string, ChoiceDetail[]>;
   optionLabels?: Record<string, string>;
   optionImages?: Record<string, string>;
   optionReveals?: Record<string, string>;

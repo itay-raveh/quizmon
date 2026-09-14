@@ -97,6 +97,11 @@ export const QuestionAnswers = ({
         )
           ? 'answers--evolution-levels'
           : '',
+        question.options.every(
+          (option) => question.optionDetails?.[option]?.length,
+        )
+          ? 'answers--effect-details'
+          : '',
         question.optionVisuals && policy.sprite !== 'never'
           ? 'answers--pokemon'
           : '',
@@ -297,7 +302,18 @@ export const QuestionAnswers = ({
               </QuestionIdentity>
             ) : (
               <span className="answer__text">
-                <span>{label}</span>
+                {question.optionDetails?.[option]?.length ? (
+                  <span className="answer__effects" aria-hidden="true">
+                    {question.optionDetails[option].map((row, index) => (
+                      <span className="answer__effect" key={index}>
+                        <strong>{row.value}</strong>
+                        <span>{row.label}</span>
+                      </span>
+                    ))}
+                  </span>
+                ) : (
+                  <span>{label}</span>
+                )}
                 {detail}
                 {classification || generation ? (
                   <span

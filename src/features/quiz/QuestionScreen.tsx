@@ -63,22 +63,37 @@ const QuestionPrompt = ({
   className,
   prompt,
   itemSprite,
+  itemName,
   policy,
   state,
 }: {
   className: string;
   prompt: QuestionPromptData;
   itemSprite?: string;
+  itemName?: string;
   policy: EntityRendering;
   state: RevealState;
 }) => (
   <p className={className} id="question-prompt">
     {prompt.kind === 'text' ? (
       <>
-        {prompt.text}
+        {itemName ? (
+          <span className="question__item-subject">
+            {itemSprite ? (
+              <QuestionSprite
+                rule={policy.sprite}
+                state={state}
+                src={itemSprite}
+                className="question__item-portrait"
+              />
+            ) : null}
+            {isVisible(policy.name, state) ? <strong>{itemName}</strong> : null}
+          </span>
+        ) : null}
+        {itemName ? prompt.text.replace(itemName, 'it') : prompt.text}
         {prompt.supportingText || itemSprite ? (
           <span className="question__supporting-text">
-            {itemSprite ? (
+            {itemSprite && !itemName ? (
               <QuestionSprite
                 rule={policy.sprite}
                 state={state}
@@ -311,6 +326,11 @@ export const QuestionScreen = ({
               className="question__prompt"
               prompt={question.prompt}
               itemSprite={inlineItem}
+              itemName={
+                question.questionType === 'held-item-effects'
+                  ? formatPokemonName(question.subject.name)
+                  : undefined
+              }
             />
           )}
         </div>

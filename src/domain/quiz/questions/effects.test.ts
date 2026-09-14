@@ -60,6 +60,7 @@ it.each(
     ).toMatchObject({
       prompt: generated.prompt,
       optionLabels: generated.optionLabels,
+      optionDetails: generated.optionDetails,
       answer: generated.answer,
       options: generated.options,
     });

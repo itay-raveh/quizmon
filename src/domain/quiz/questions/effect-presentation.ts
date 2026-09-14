@@ -17,6 +17,11 @@ export const getEffectPresentation = (
       .filter(Boolean)
       .join(' · '),
   },
+  optionDetails: Object.fromEntries(
+    [variant.correct, ...variant.wrong].flatMap(({ value, details }) =>
+      details ? [[value, details]] : [],
+    ),
+  ),
   optionLabels: Object.fromEntries(
     [variant.correct, ...variant.wrong].map(({ value, label }) => [
       value,

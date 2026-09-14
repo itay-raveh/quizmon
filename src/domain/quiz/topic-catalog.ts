@@ -1,3 +1,4 @@
+import type { ChoiceDetail } from './types';
 import type { Generation, StatName } from '../pokemon/types';
 
 export interface TopicEntity {
@@ -49,6 +50,7 @@ interface EncounterKnowledge {
 }
 export type EffectMode = 'broad' | 'related' | 'exact';
 interface EffectChoice {
+  details?: ChoiceDetail[];
   value: string;
   label: string;
 }

@@ -116,6 +116,17 @@ export const isQuestionData = (value: unknown): value is QuestionData => {
         optional(prompt.supportingText, text) &&
         isSafeNonnegativeInteger(prompt.dexNumber)) &&
     variant(value.media, mediaChecks) &&
+    optional(value.optionDetails, (v) =>
+      map(
+        v,
+        (rows) =>
+          Array.isArray(rows) &&
+          rows.length > 0 &&
+          rows.every(
+            (row) => isRecord(row) && text(row.value) && text(row.label),
+          ),
+      ),
+    ) &&
     optional(value.optionLabels, (v) => map(v, text)) &&
     optional(value.optionImages, (v) => map(v, text)) &&
     optional(value.optionReveals, (v) => map(v, text)) &&

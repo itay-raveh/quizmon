@@ -535,3 +535,23 @@
 .question__effect-details p {
   margin-block: 0 0.75rem;
 }
+
+.question__item-subject {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block: 0.1rem 0.8rem;
+}
+
+.question__item-subject strong {
+  font-size: clamp(1.4rem, 4.7cqi, 1.9rem);
+  line-height: 1.15;
+}
+
+.question__item-portrait {
+  width: 4rem;
+  height: 4rem;
+  flex: 0 0 4rem;
+  object-fit: contain;
+}
