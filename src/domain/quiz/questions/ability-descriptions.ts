@@ -1,6 +1,6 @@
 import type { TopicCatalog } from '../topic-catalog';
 import type { QuestionContext } from './context';
-import { expansionQuestion, ordered, topicSubject } from './expansion-support';
+import { makeTopicQuestion, ordered, topicSubject } from './topic-support';
 
 const words = (text: string) =>
   new Set(
@@ -49,7 +49,7 @@ export const buildAbilityDescription = (
       if (choices.length === 4) break;
     }
     if (choices.length !== 4) continue;
-    return expansionQuestion(
+    return makeTopicQuestion(
       context,
       topicSubject(context, 'ability', target),
       `What does ${target.label} do?`,

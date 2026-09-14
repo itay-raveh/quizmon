@@ -1,11 +1,11 @@
-import { orderSpecies, distinctPokemon as uniquePokemon } from './selection';
-import { pickForm } from './sampling';
 import { shuffle } from '../../../lib/random';
 import { generations, type Generation } from '../../pokemon/types';
 import type { TopicEntity } from '../topic-catalog';
 import type { QuestionCategory, QuestionSubject } from '../types';
 import { getOptionVisuals } from './assembly';
 import type { Candidate, QuestionContext, QuestionDraft } from './context';
+import { pickForm } from './sampling';
+import { orderSpecies, distinctPokemon as uniquePokemon } from './selection';
 
 export const topicEligible = (context: QuestionContext, entity: TopicEntity) =>
   entity.generations.some((generation) =>
@@ -50,7 +50,7 @@ export const topicSubject = (
   name: target.name,
   generation: topicGeneration(context, target),
 });
-export const expansionQuestion = (
+export const makeTopicQuestion = (
   context: QuestionContext,
   subject: QuestionSubject,
   prompt: string,

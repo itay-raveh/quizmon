@@ -1,17 +1,73 @@
-import { formatLocationLabel } from '../../pokemon/location-label';
 import { formatPokemonName } from '../../pokemon/format';
+import { formatLocationLabel } from '../../pokemon/location-label';
 import { generations } from '../../pokemon/types';
-import type { QuestionBuilder } from './context';
-import { createPokemonSimilarityScorer } from './answers';
 import { questionTuning } from '../question-variants';
+import { createPokemonSimilarityScorer } from './answers';
+import type { QuestionBuilder } from './context';
 import {
   distinctPokemon,
-  expansionQuestion,
+  makeTopicQuestion,
   ordered,
   orderedPokemon,
   picturedPokemon,
-} from './expansion-support';
+  topicEligible,
+  topicSubject,
+} from './topic-support';
 
+export const buildRegion: QuestionBuilder = (context) => {
+  const topics = context.catalog.topics;
+  if (!topics) return;
+  const regions = topics.regions.filter((entity) =>
+    topicEligible(context, entity),
+  );
+  if (regions.length < (context.variant?.fullList ? 2 : 4)) return;
+  const pool = ordered(
+    context,
+    topics.locations.filter(
+      (location) =>
+        topicEligible(context, location) &&
+        regions.some((region) => region.name === location.region) &&
+        !topics.regions.some((region) =>
+          location.label.toLowerCase().includes(region.name.toLowerCase()),
+        ),
+    ),
+  );
+  for (const target of pool) {
+    const targetRegion = regions.find(
+      (region) => region.name === target.region,
+    )!;
+    if (
+      topics.locations.some(
+        (location) =>
+          location.label === target.label && location.region !== target.region,
+      )
+    )
+      continue;
+    const options = context.variant?.fullList
+      ? regions
+      : [
+          targetRegion,
+          ...ordered(
+            context,
+            regions.filter((region) => region.name !== target.region),
+          ).slice(0, 3),
+        ];
+    const question = makeTopicQuestion(
+      context,
+      topicSubject(context, 'location', target),
+      `Which region contains ${target.label}?`,
+      target.region,
+      options.map((region) => region.name),
+      {
+        optionLabels: Object.fromEntries(
+          options.map((region) => [region.name, region.label]),
+        ),
+        explanation: `${target.label} is in ${targetRegion.label}.`,
+      },
+    );
+    if (question) return question;
+  }
+};
 export const buildEncounter: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
@@ -113,7 +169,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
         ? [`Encounter: ${formatPokemonName(target.method)}`]
         : []),
     ].join(' · ');
-    return expansionQuestion(
+    return makeTopicQuestion(
       context,
       { kind: 'location', name: target.area, generation: target.generation },
       prompt,

@@ -1,18 +1,23 @@
+import { formatPokemonName } from '../../pokemon/format';
+import { generations } from '../../pokemon/types';
+import type { EvolutionKnowledge } from '../topic-catalog';
+import { pokemonOptions } from './answers';
+import { getOptionVisuals, makeQuestion } from './assembly';
+import type { QuestionBuilder } from './context';
 import {
   evolutionRequirement,
   presentEvolutionQuestion,
 } from './evolution-presentation';
-import { formatPokemonName } from '../../pokemon/format';
-import { generations } from '../../pokemon/types';
-import type { EvolutionKnowledge } from '../topic-catalog';
-import { getOptionVisuals } from './assembly';
-import type { QuestionBuilder } from './context';
+import { pokemonPrompt, textPrompt } from './prompts';
+import { targetRepetition } from './repetition';
+import { pickFreshTarget, pickTarget } from './selection';
 import {
-  expansionQuestion,
+  makeTopicQuestion,
   ordered,
   pokemonSubject,
   topicEligible,
-} from './expansion-support';
+} from './topic-support';
+import { typeOptions } from './type-options';
 
 const method = (entry: EvolutionKnowledge) =>
   [formatPokemonName(entry.trigger), ...entry.conditions].join(' · ');
@@ -111,7 +116,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
         })
         .slice(0, 3);
       const options = [correct, ...wrong];
-      const question = expansionQuestion(
+      const question = makeTopicQuestion(
         context,
         pokemonSubject(before),
         prompt,
@@ -218,7 +223,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
         .filter((part) =>
           options.every((option) => option.split(' · ').includes(part)),
         );
-      const question = expansionQuestion(
+      const question = makeTopicQuestion(
         context,
         pokemonSubject(before),
         prompt,
@@ -270,4 +275,133 @@ export const buildEvolution: QuestionBuilder = (context) => {
         );
     }
   }
+};
+export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
+  const poolNames = new Set(context.pool.map(({ name }) => name));
+  const target = pickTarget(context, ({ evolvesTo, types }) => {
+    if (evolvesTo.length !== 1) return false;
+    const evolutionName = evolvesTo[0];
+    const evolution = evolutionName
+      ? context.catalog.pokemon[evolutionName]
+      : undefined;
+    return Boolean(
+      evolutionName &&
+      poolNames.has(evolutionName) &&
+      evolution?.sprite &&
+      evolution.types.filter((type) => !types.includes(type)).length === 1,
+    );
+  });
+  if (!target?.pokemon.sprite) return undefined;
+  const evolutionName = target.pokemon.evolvesTo[0];
+  const evolution = evolutionName
+    ? context.catalog.pokemon[evolutionName]
+    : undefined;
+  const correct = evolution?.types.find(
+    (type) => !target.pokemon.types.includes(type),
+  );
+  if (!correct || !evolutionName || !evolution?.sprite) return undefined;
+
+  return {
+    ...makeQuestion(context, {
+      repeat: targetRepetition({
+        pokemonOptions: false,
+        related: [evolutionName],
+      }),
+      category: 'evolution',
+      target,
+      correct,
+      options: typeOptions(context, target, correct),
+      prompt: pokemonPrompt(target, 'Which type can ', ' gain after evolving?'),
+      media: { kind: 'pixel-sprite', src: target.pokemon.sprite },
+      presentation: { kind: 'text' },
+    }),
+    visual: {
+      evolution: {
+        dexNumber: evolution.speciesId,
+        name: evolutionName,
+        src: evolution.sprite,
+        types: evolution.types,
+      },
+      gainedType: correct,
+      kind: 'evolution-shift',
+    },
+  };
+};
+const regionalForm = (name: string): string | undefined =>
+  name.match(/-(alola|galar|hisui|paldea)(?:-|$)/)?.[1];
+export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
+  const poolNames = new Set(context.pool.map(({ name }) => name));
+  const middleStages = context.pool.filter(
+    ({ pokemon }) => pokemon.evolvesFrom && pokemon.evolvesTo.length > 0,
+  );
+  const regions = new Map(
+    middleStages.map(({ name }) => [name, regionalForm(name)]),
+  );
+  const chains = middleStages.flatMap((target) => {
+    const { name, pokemon } = target;
+    const before = pokemon.evolvesFrom;
+    const after = pokemon.evolvesTo[0];
+    if (
+      !before ||
+      !after ||
+      pokemon.evolvesTo.length !== 1 ||
+      !poolNames.has(before) ||
+      !poolNames.has(after)
+    )
+      return [];
+    const first = context.catalog.pokemon[before];
+    const last = context.catalog.pokemon[after];
+    if (
+      !first ||
+      !last ||
+      first.evolvesFrom ||
+      last.evolvesTo.length > 0 ||
+      !first.evolvesTo.includes(name) ||
+      last.evolvesFrom !== name
+    )
+      return [];
+    const region = regions.get(name);
+    const possibleAnswers = middleStages.filter(
+      ({ name: option, pokemon: candidate }) =>
+        option !== before &&
+        option !== after &&
+        candidate.speciesName !== pokemon.speciesName &&
+        regions.get(option) === region,
+    );
+    if (!context.variant?.search && possibleAnswers.length < 3) return [];
+    return [{ target, before, after, possibleAnswers }];
+  });
+  const selected = pickFreshTarget(
+    context,
+    chains.map(({ target }) => target),
+  );
+  const chain = chains.find(({ target }) => target === selected);
+  if (!chain) return undefined;
+  const { target, before, after, possibleAnswers } = chain;
+  return {
+    ...makeQuestion(context, {
+      repeat: targetRepetition({
+        pokemonOptions: true,
+        related: [before, after],
+      }),
+      category: 'evolution',
+      target,
+      correct: target.name,
+      options: pokemonOptions(context, {
+        correct: target,
+        excluded: [before, after],
+        candidates: possibleAnswers,
+      }),
+      prompt: textPrompt(
+        `Complete the evolution chain: ${formatPokemonName(before)} → ? → ${formatPokemonName(after)}.`,
+      ),
+      presentation: { kind: 'pokemon' },
+    }),
+    visual: {
+      kind: 'evolution-link',
+      before,
+      after,
+      stages: getOptionVisuals(context, [before, target.name, after]),
+    },
+  };
 };

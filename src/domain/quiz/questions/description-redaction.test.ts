@@ -1,7 +1,7 @@
 import { catalog } from '../../../../tests/fixtures/catalog';
 import { createSeededRandom } from '../../../lib/random';
 import { buildChampionQuestion } from './champion';
-import { buildDescriptionQuestion } from './knowledge';
+import { buildDescriptionQuestion } from './pokedex';
 import { redactName as redactPokemonName } from './prompts';
 const redactName = (description: string, name: string) =>
   redactPokemonName(description, name, catalog.pokemon[name]!.speciesName);

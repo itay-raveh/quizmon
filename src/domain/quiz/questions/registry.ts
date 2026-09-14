@@ -1,36 +1,28 @@
-import { expansionVariants } from '../question-variants';
-import {
-  buildMeasurement,
-  buildCategory,
-  buildHidden,
-  buildEvYield,
-} from './expansion-pokemon';
-import {
-  buildNature,
-  buildBerry,
-  buildRegion,
-  buildItemIdentification,
-  buildMove,
-} from './expansion-topics';
-import { buildEvolution } from './expansion-evolution';
-import { buildMedicine, buildEffect } from './expansion-effects';
-import { buildEncounter } from './expansion-encounters';
-import {
-  getQuestionVariant,
-  resolveQuestionRendering,
-} from '../question-variants';
-import { applyQuestionVariant } from './variants';
 import {
   getPokemonRecency,
-  getSubjectRecency,
   getQuestionRecency,
+  getSubjectRecency,
   questionRepeatPolicy,
   rememberQuestion,
 } from '../question-history';
+import {
+  expansionVariants,
+  getQuestionVariant,
+  resolveQuestionRendering,
+} from '../question-variants';
 import type { QuestionData } from '../types';
+import { buildHidden } from './abilities';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
+import { buildBerry } from './berries';
 import { buildChampionQuestion } from './champion';
 import { type QuestionBuilder, type QuestionContext } from './context';
+import { buildEffect } from './effects';
+import {
+  buildEvolution,
+  buildEvolutionLinkQuestion,
+  buildEvolutionShiftQuestion,
+} from './evolution';
+import { buildGenerationRoundupQuestion } from './generations';
 import {
   buildPixelPeekQuestion,
   buildPokedexScanQuestion,
@@ -39,25 +31,24 @@ import {
   buildSpriteMatchQuestion,
   buildWhosThatPokemonQuestion,
 } from './identity';
-import {
-  buildChooseAllTypeQuestion,
-  buildDescriptionQuestion,
-  buildEvolutionShiftQuestion,
-  buildOddOneOutQuestion,
-  buildPropertyQuestion,
-  buildStatQuestion,
-  buildTypeQuestion,
-} from './knowledge';
-import {
-  buildEvolutionLinkQuestion,
-  buildGenerationRoundupQuestion,
-} from './lineage';
+import { buildItemIdentification, buildMedicine } from './items';
+import { buildLegendHuntQuestion } from './legendaries';
+import { buildEncounter, buildRegion } from './locations';
+import { buildMeasurement } from './measurements';
+import { buildMove } from './moves';
+import { buildCategory, buildDescriptionQuestion } from './pokedex';
+import { buildPropertyQuestion } from './properties';
 import { pokemonWeight } from './sampling';
 import { getSpeciesHistory, speciesQuestion } from './species-history';
+import { buildEvYield, buildNature, buildStatQuestion } from './stats';
 import {
-  buildLegendHuntQuestion,
+  buildChooseAllTypeQuestion,
+  buildOddOneOutQuestion,
+  buildTypeQuestion,
   buildTypeTwinsQuestion,
-} from './twins-and-legends';
+} from './types';
+import { applyQuestionVariant } from './variants';
+
 const questionBuilders = {
   'item-identification': buildItemIdentification,
   'medicine-cabinet': buildMedicine,
