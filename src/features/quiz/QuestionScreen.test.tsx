@@ -875,6 +875,25 @@ describe('question transitions', () => {
       'pixel-peek--revealed',
     );
   });
+  it('keeps the same pixel peek frame and sprite when a search answer is revealed', () => {
+    const context = createQuestionContext('pixel-peek-search-reveal');
+    context.difficulty = 5;
+    const generated = buildQuestionType(context, 'pixel-peek')!;
+    const { container } = renderQuestion({ question: generated });
+    const frame = container.querySelector('.pixel-peek');
+    const sprite = frame?.querySelector('img');
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: formatPokemonName(generated.subject.name) },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+    expect(container.querySelector('.pixel-peek')).toBe(frame);
+    expect(frame?.querySelector('img')).toBe(sprite);
+    expect(frame).toHaveClass('pixel-peek--revealed');
+    expect(container.querySelector('.question__answer-reveal')).toBeNull();
+    expect(
+      container.querySelector('.question__stimulus .pokemon-identity'),
+    ).toBeVisible();
+  });
   it('shows Field notes search suggestions with sprites and numbers', () => {
     const context = createQuestionContext('field-notes-search-artwork');
     context.difficulty = 5;

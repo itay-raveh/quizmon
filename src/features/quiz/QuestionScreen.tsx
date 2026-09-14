@@ -235,9 +235,10 @@ export const QuestionScreen = ({
       ? getModeLabel(mode)
       : null;
   const revealArtworkInPlace =
-    question.media.kind === 'sprite' &&
-    spriteState(rendering.subject.sprite, { ...revealState, answered: false })
-      .silhouette;
+    question.media.kind === 'pixel-peek' ||
+    (question.media.kind === 'sprite' &&
+      spriteState(rendering.subject.sprite, { ...revealState, answered: false })
+        .silhouette);
   const usesSearch =
     question.answer.interaction === 'search' ||
     (isChampion && !question.rulesVersion);
@@ -416,7 +417,7 @@ export const QuestionScreen = ({
         )}
       </div>
 
-      {answered && usesSearch ? (
+      {answered && usesSearch && question.media.kind !== 'pixel-peek' ? (
         <div className="question__answer-reveal">
           <strong>Correct answer</strong>
           {answerPokemon?.sprite && !revealArtworkInPlace ? (

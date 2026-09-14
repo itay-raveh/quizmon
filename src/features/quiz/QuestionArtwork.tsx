@@ -417,15 +417,24 @@ export const QuestionArtwork = ({
             }
           />
         </div>
-        {rendering.subject.name !== 'never' ||
-        rendering.subject.number !== 'never' ? (
+        <div
+          className="question-visual__subject"
+          style={{ visibility: answered ? undefined : 'hidden' }}
+          aria-hidden={!answered || undefined}
+        >
           <QuestionIdentity
-            policy={rendering.subject}
+            className="question-visual__subject-name"
+            numberClassName="question-visual__subject-number"
+            policy={rendering.related}
             state={state}
             name={question.subject.name}
             dexNumber={subjectDexNumber}
           />
-        ) : null}
+          <TypeBadges
+            className="question-visual__subject-types"
+            types={question.subject.types ?? []}
+          />
+        </div>
       </>
     );
   }
