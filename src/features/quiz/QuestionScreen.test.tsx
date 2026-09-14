@@ -496,9 +496,10 @@ describe('question transitions', () => {
       ),
     ).toHaveLength(1);
   });
-  it.each([false, true])(
-    'preloads and reveals the evolved Pokémon in Evolution Shift (namesOnly: %s)',
-    (namesOnly) => {
+  it.each([3, 4, 5] as const)(
+    'reveals Evolution Shift identities and type clues at level %s',
+    (variantLevel) => {
+      const namesOnly = variantLevel === 4;
       const preloadedSources: string[] = [];
       class PreloadImage {
         decoding = 'auto';
@@ -515,6 +516,7 @@ describe('question transitions', () => {
             correctOptions: ['steel'],
             interaction: 'single-choice',
           },
+          variantLevel,
           category: 'evolution',
           namesOnly,
           media: namesOnly
@@ -557,7 +559,15 @@ describe('question transitions', () => {
       expect(screen.queryByText('No. 0208')).not.toBeVisible();
       expect(screen.queryByText('Steelix')).not.toBeVisible();
       expect(preloadedSources).toContain('https://example.com/steelix.png');
+      const typeClues = rendered.container.querySelectorAll(
+        '.question-relation--evolution .type-badges',
+      );
+      for (const clue of typeClues) {
+        if (variantLevel === 5) expect(clue).not.toBeVisible();
+      }
+      if (variantLevel < 5) expect(typeClues[0]).toBeVisible();
       fireEvent.click(screen.getByRole('button', { name: 'Steel' }));
+      for (const clue of typeClues) expect(clue).toBeVisible();
       expect(screen.getByText('Steelix')).toBeVisible();
       expect(screen.getByText('No. 0208')).toBeVisible();
       expect(

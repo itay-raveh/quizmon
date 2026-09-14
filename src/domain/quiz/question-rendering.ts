@@ -6,6 +6,7 @@ export interface EntityRendering {
   sprite: SpriteVisibility;
   name: Visibility;
   number: Visibility;
+  types?: Visibility;
 }
 
 const renderingRoles = ['subject', 'choices', 'related', 'search'] as const;
@@ -44,6 +45,7 @@ const mergeEntityRendering = (
   sprite: overrides?.sprite ?? defaults.sprite,
   name: overrides?.name ?? defaults.name,
   number: overrides?.number ?? defaults.number,
+  types: overrides?.types ?? defaults.types ?? 'always',
 });
 
 export const mergeRendering = (
@@ -84,6 +86,7 @@ export const isQuestionRendering = (
       record(entity) &&
       isSpriteVisibility(entity.sprite) &&
       isVisibility(entity.name) &&
-      isVisibility(entity.number)
+      isVisibility(entity.number) &&
+      (entity.types === undefined || isVisibility(entity.types))
     );
   });

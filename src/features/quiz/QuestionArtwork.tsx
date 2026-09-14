@@ -263,7 +263,15 @@ export const QuestionArtwork = ({
         aria-hidden="true"
       >
         <Subject {...subject} framed>
-          <TypeBadges types={question.subject.types ?? []} />
+          <span
+            style={{
+              visibility: isVisible(rendering.subject.types ?? 'always', state)
+                ? undefined
+                : 'hidden',
+            }}
+          >
+            <TypeBadges types={question.subject.types ?? []} />
+          </span>
         </Subject>
         <div className="question-relation__effect">
           <RelationArrow />
@@ -278,7 +286,14 @@ export const QuestionArtwork = ({
           state={state}
           framed
         >
-          <span className="question-visual__evolution-types">
+          <span
+            className="question-visual__evolution-types"
+            style={{
+              visibility: isVisible(rendering.related.types ?? 'always', state)
+                ? undefined
+                : 'hidden',
+            }}
+          >
             {retainedTypes.length > 0 ? (
               <>
                 <TypeBadges types={retainedTypes} />
