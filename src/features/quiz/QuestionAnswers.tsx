@@ -85,6 +85,7 @@ export const QuestionAnswers = ({
     <div
       className={[
         'answers',
+        question.questionType === 'nature-effects' ? 'answers--nature' : '',
         question.questionType === 'held-item-effects' ||
         question.questionType === 'ability-effects' ||
         question.options.some(
