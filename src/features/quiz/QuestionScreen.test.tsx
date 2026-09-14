@@ -44,7 +44,7 @@ const championQuestion: QuestionData = {
   },
 };
 describe('question transitions', () => {
-  it('offers the full ability explanation only after answering, initially collapsed', () => {
+  it('keeps the full ability explanation out of the answer reveal', () => {
     const explanation =
       'This ability restores HP when the Pokémon switches out.';
     renderQuestion({
@@ -52,9 +52,8 @@ describe('question transitions', () => {
     });
     expect(screen.queryByText(explanation)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
-    const details = screen.getByText('Effect details').closest('details');
-    expect(details).not.toHaveAttribute('open');
-    expect(details).toHaveTextContent(explanation);
+    expect(screen.queryByText('Effect details')).not.toBeInTheDocument();
+    expect(screen.queryByText(explanation)).not.toBeInTheDocument();
   });
   it.each([
     'type-check',

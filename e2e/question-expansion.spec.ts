@@ -180,23 +180,7 @@ for (const { type, level, count } of cases)
     await expect(page.locator('.answer--wrong')).toHaveCount(0);
     if (question.optionReveals)
       await expect(page.locator('.answer__reveal')).toHaveCount(count);
-    if (
-      type === 'ability-effects' &&
-      question.explanation &&
-      question.explanation !== correct
-    ) {
-      const details = page.locator('.question__effect-details');
-      await expect(details).not.toHaveAttribute('open');
-      await details.locator('summary').focus();
-      await page.keyboard.press('Enter');
-      await expect(details.locator('p')).toBeVisible();
-      await expect(details.locator('p')).toHaveText(question.explanation);
-      await expectNoHorizontalOverflow(page);
-      await page.keyboard.press('Enter');
-      await expect(details).not.toHaveAttribute('open');
-    } else if (type === 'ability-effects') {
-      await expect(page.locator('.question__effect-details')).toHaveCount(0);
-    } else if (question.explanation)
+    if (question.explanation && question.explanation !== correct)
       await expect(
         page.getByText(question.explanation, { exact: true }),
       ).toHaveCount(0);
