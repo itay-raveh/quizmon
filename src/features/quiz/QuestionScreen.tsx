@@ -421,7 +421,8 @@ export const QuestionScreen = ({
       {answered &&
       usesSearch &&
       question.media.kind !== 'pixel-peek' &&
-      question.questionType !== 'pokedex-scan' ? (
+      question.questionType !== 'pokedex-scan' &&
+      question.visual?.kind !== 'evolution-link' ? (
         <div className="question__answer-reveal">
           <strong>Correct answer</strong>
           {answerPokemon?.sprite && !revealArtworkInPlace ? (

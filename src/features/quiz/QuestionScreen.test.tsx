@@ -875,6 +875,23 @@ describe('question transitions', () => {
       'pixel-peek--revealed',
     );
   });
+  it('reveals a searched evolution link only in the chain', () => {
+    const context = createQuestionContext('evolution-link-search-reveal');
+    context.difficulty = 5;
+    const generated = buildQuestionType(context, 'evolution-link')!;
+    const { container } = renderQuestion({ question: generated });
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: formatPokemonName(generated.subject.name) },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+    expect(container.querySelector('.question__answer-reveal')).toBeNull();
+    expect(
+      screen.getByText(formatPokemonName(generated.subject.name)),
+    ).toBeVisible();
+    expect(
+      container.querySelectorAll('.question-evolution-link img'),
+    ).toHaveLength(3);
+  });
   it('reveals the scan identity below its original sprite without types', () => {
     const context = createQuestionContext('pokedex-scan-search-reveal');
     context.difficulty = 5;
