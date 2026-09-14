@@ -3,6 +3,7 @@ import {
   test,
   expectNoHorizontalOverflow,
   formatName,
+  seedQuestionTraining,
 } from './fixtures';
 import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
 import { generations } from '../src/domain/pokemon/types';
@@ -205,4 +206,38 @@ for (const { type, level, count } of cases)
       generation: question.subject.generation,
     });
     await expectNoHorizontalOverflow(page);
+  });
+
+for (const input of ['pointer', 'keyboard'] as const)
+  test(`keeps the viewport on a long answer list after ${input} selection`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 480 });
+    await seedQuestionTraining(page, 'move-types', generations);
+    await page.goto('/?fresh=1');
+    await page
+      .getByRole('button', { name: 'Start training', exact: true })
+      .click();
+    const answers = page.locator('.answer');
+    await expect(answers).toHaveCount(18);
+    const answer = answers.first();
+    await answer.scrollIntoViewIfNeeded();
+    await answer.focus();
+    const scrollBefore = await page.evaluate(() => window.scrollY);
+    const next = page.getByRole('button', {
+      name: 'Next question',
+      exact: true,
+    });
+    if (input === 'pointer') await answer.click();
+    else await page.keyboard.press('Enter');
+    await expect(next).toBeFocused();
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBe(scrollBefore);
+    await expect(answer).toBeInViewport();
+    await expect(next).not.toBeInViewport();
+    await page.keyboard.press('Enter');
+    await expect(
+      page.getByRole('progressbar', { name: 'Quiz progress' }),
+    ).toContainText('002 / 010');
   });

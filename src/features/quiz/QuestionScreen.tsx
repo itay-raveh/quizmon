@@ -191,7 +191,8 @@ export const QuestionScreen = ({
     heading.current?.focus();
   }, []);
   useEffect(() => {
-    if (answered && answerFlow !== 'instant') advanceButton.current?.focus();
+    if (answered && answerFlow !== 'instant')
+      advanceButton.current?.focus({ preventScroll: true });
   }, [answerFlow, answered]);
   const isChampion = question.category === 'champion';
   const rendering = getQuestionRendering(question);
