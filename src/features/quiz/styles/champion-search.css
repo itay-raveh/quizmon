@@ -89,14 +89,42 @@
 
 .champion-search li {
   display: flex;
-  min-height: 2.8rem;
-  padding: 0.5rem 0.65rem;
+  min-height: 3.25rem;
+  padding: 0.6rem 0.75rem;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0.75rem;
   border-radius: 0.25rem;
   cursor: pointer;
   font-weight: 750;
+}
+
+.champion-search li + li {
+  border-top: 1px solid rgb(12 53 96 / 15%);
+}
+
+.champion-search li > .pokemon-identity {
+  display: grid;
+  flex: 1;
+  grid-template-areas: 'name' 'number';
+  gap: 0.2rem;
+  line-height: 1.2;
+}
+
+.champion-search .pokemon-identity__name {
+  grid-area: name;
+  font-size: var(--text-label);
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.champion-search .pokemon-identity__number {
+  grid-area: number;
+  opacity: 0.8;
+}
+
+.champion-search li > .pokemon-picker__sprite {
+  flex: 0 0 2.5rem;
 }
 
 .champion-search li > span {
@@ -118,7 +146,11 @@
   letter-spacing: 0.04em;
 }
 
-.champion-search li:hover,
+.champion-search li:hover:not([aria-selected='true']) {
+  color: var(--navy);
+  background: var(--yellow);
+}
+
 .champion-search li[aria-selected='true'] {
   color: var(--primary-text);
   background: var(--blue);
