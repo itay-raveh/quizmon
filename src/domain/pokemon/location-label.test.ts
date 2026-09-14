@@ -1,6 +1,12 @@
 import { formatLocationLabel } from './location-label';
 
 it.each([
+  ['Johto Safari Zone (Safari Zone Forest)', 'Johto Safari Zone (Forest)'],
+  [
+    'Johto Safari Zone (Safari Zone Marshland)',
+    'Johto Safari Zone (Marshland)',
+  ],
+  ['Bell Tower (Bell Tower (Bell Tower (2F)))', 'Bell Tower (2F)'],
   ['Fields of Honor (Fields of Honor)', 'Fields of Honor'],
   [
     'Stony Wilderness (Stony Wilderness (Main Area))',

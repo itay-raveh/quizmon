@@ -13,7 +13,7 @@ import type { QuestionData } from './types';
 import type { MeasurementRules } from './measurement-comparison';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 12;
+export const QUESTION_RULES_VERSION = 13;
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {

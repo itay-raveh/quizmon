@@ -4,6 +4,7 @@ import { generations } from '../../pokemon/types';
 import { questionTuning } from '../question-variants';
 import { createPokemonSimilarityScorer } from './answers';
 import type { QuestionBuilder } from './context';
+import { orderEncounterLocations } from './encounter-order';
 import {
   distinctPokemon,
   makeTopicQuestion,
@@ -74,28 +75,18 @@ export const buildEncounter: QuestionBuilder = (context) => {
   const eligible = new Map(
     context.pool.map((candidate) => [candidate.name, candidate]),
   );
-  for (const target of ordered(context, topics.encounters)) {
-    if (
-      !target.complete ||
-      !(context.generations ?? generations).includes(target.generation)
-    )
-      continue;
-    if (
-      !context.variant?.encounterConditions &&
-      target.conditions.some(
-        (condition) =>
-          condition.startsWith('time-') || condition.startsWith('weather-'),
-      )
-    )
-      continue;
-    if (
-      context.variant?.encounterConditions &&
-      !target.conditions.some(
-        (condition) =>
-          condition.startsWith('time-') || condition.startsWith('weather-'),
-      )
-    )
-      continue;
+  const encounters = topics.encounters.filter(
+    (target) =>
+      target.complete &&
+      (context.generations ?? generations).includes(target.generation) &&
+      target.pokemon.some((name) => eligible.has(name)) &&
+      (context.variant?.encounterConditions ||
+        !target.conditions.some(
+          (condition) =>
+            condition.startsWith('time-') || condition.startsWith('weather-'),
+        )),
+  );
+  for (const target of orderEncounterLocations(context, encounters)) {
     const available = target.pokemon.flatMap((name) =>
       eligible.has(name) ? [eligible.get(name)!] : [],
     );
@@ -169,7 +160,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
         ? [`Encounter: ${formatPokemonName(target.method)}`]
         : []),
     ].join(' · ');
-    return makeTopicQuestion(
+    const question = makeTopicQuestion(
       context,
       { kind: 'location', name: target.area, generation: target.generation },
       prompt,
@@ -187,5 +178,6 @@ export const buildEncounter: QuestionBuilder = (context) => {
         explanation: `${correct.pokemon.displayName} can be found at ${location} in Pokémon ${game.label}.`,
       },
     );
+    if (question) return question;
   }
 };
