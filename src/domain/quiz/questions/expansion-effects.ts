@@ -87,30 +87,24 @@ export const buildMedicine: QuestionBuilder = (context) => {
 export const buildEffect: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
-  if (context.generations && !context.generations.includes('IX')) return;
   const kind = context.questionType === 'ability-effects' ? 'ability' : 'item';
   for (const fact of ordered(
     context,
     topics.effects.filter((fact) => fact.kind === kind),
   )) {
+    if (
+      context.generations &&
+      !context.generations.includes(fact.battleGeneration)
+    )
+      continue;
     const target = (kind === 'ability' ? topics.abilities : topics.items).find(
       (entity) => entity.name === fact.name && topicEligible(context, entity),
     );
     if (!target) continue;
-    const exact = context.variant?.effectChoices === 'exact';
-    const correct = exact ? fact.exact : fact.broad;
-    const wrong = exact
-      ? fact.exactWrong
-      : context.variant?.effectChoices === 'related'
-        ? fact.relatedWrong
-        : fact.broadWrong;
-    const options = [correct, ...wrong];
-    const presentation = getEffectPresentation(
-      fact,
-      target.label,
-      options,
-      exact,
-    );
+    const variant = fact.questions[context.variant?.effectChoices ?? 'broad'];
+    const correct = variant.correct.value;
+    const options = [correct, ...variant.wrong.map((choice) => choice.value)];
+    const presentation = getEffectPresentation(fact, target.label, variant);
     const item =
       kind === 'item'
         ? topics.items.find((item) => item.name === target.name)
@@ -128,7 +122,7 @@ export const buildEffect: QuestionBuilder = (context) => {
           ? { media: { kind: 'pixel-sprite' as const, src: item.sprite } }
           : {}),
         ...presentation,
-        explanation: `${formatPokemonName(target.name)}: ${fact.exact}`,
+        explanation: `${formatPokemonName(target.name)}: ${fact.explanation}`,
       },
       kind === 'ability' ? 'ability' : 'knowledge',
     );

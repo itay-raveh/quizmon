@@ -1,7 +1,7 @@
+import { reviewedEffects } from './reviewed-effects.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
 import {
   reviewedMedicines,
-  reviewedEffects,
   reviewedMoveDescriptions,
 } from './reviewed-topic-facts.ts';
 import {

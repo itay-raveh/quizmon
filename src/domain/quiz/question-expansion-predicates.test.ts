@@ -352,7 +352,7 @@ it.each(cases)(
           )!;
           expect(fact.sources.length).toBeGreaterThan(0);
           expect(correct).toBe(
-            rules.effectChoices === 'exact' ? fact.exact : fact.broad,
+            fact.questions[rules.effectChoices ?? 'broad'].correct.value,
           );
           break;
         }

@@ -51,6 +51,7 @@ interface QuestionScreenProps extends UseQuestionAnswerOptions {
   answerPokemon?: PokemonKnowledge;
   typeRelations?: PokemonCatalog['typeRelations'];
   evolutions?: NonNullable<PokemonCatalog['topics']>['evolutions'];
+  effects?: NonNullable<PokemonCatalog['topics']>['effects'];
   elapsedSeconds: number;
   mode: GameMode;
   number: number;
@@ -123,6 +124,7 @@ export const QuestionScreen = ({
   answerFlow,
   typeRelations,
   evolutions,
+  effects,
   elapsedMilliseconds,
   questionStartedMilliseconds,
   elapsedSeconds,
@@ -142,10 +144,10 @@ export const QuestionScreen = ({
   const question = useMemo(
     () =>
       presentEvolutionQuestion(
-        presentEffectQuestion(storedQuestion),
+        presentEffectQuestion(storedQuestion, effects),
         evolutions,
       ),
-    [storedQuestion, evolutions],
+    [storedQuestion, evolutions, effects],
   );
   const heading = useRef<HTMLHeadingElement>(null);
   const advanceButton = useRef<HTMLButtonElement>(null);

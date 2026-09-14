@@ -47,6 +47,28 @@ interface EncounterKnowledge {
   conditions: string[];
   pokemon: string[];
 }
+export type EffectMode = 'broad' | 'related' | 'exact';
+interface EffectChoice {
+  value: string;
+  label: string;
+}
+export interface EffectQuestion {
+  prompt?: string;
+  supportingText?: string;
+  correct: EffectChoice;
+  wrong: [EffectChoice, EffectChoice, EffectChoice];
+}
+export interface EffectKnowledge {
+  kind: 'ability' | 'item';
+  name: string;
+  generation: Generation;
+  battleGeneration: Generation;
+  context: string;
+  sources: string[];
+  explanation: string;
+  questions: Record<EffectMode, EffectQuestion>;
+}
+
 export interface TopicCatalog {
   medicines: {
     name: string;
@@ -54,18 +76,7 @@ export interface TopicCatalog {
     hp: number | 'full';
     source: string;
   }[];
-  effects: {
-    kind: 'ability' | 'item';
-    name: string;
-    generation: Generation;
-    context: string;
-    sources: string[];
-    broad: string;
-    broadWrong: string[];
-    relatedWrong: string[];
-    exact: string;
-    exactWrong: string[];
-  }[];
+  effects: EffectKnowledge[];
   items: ItemKnowledge[];
   moves: MoveKnowledge[];
   abilities: (TopicEntity & { effect: string })[];

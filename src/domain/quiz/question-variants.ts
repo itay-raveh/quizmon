@@ -1,3 +1,4 @@
+import type { EffectMode } from './topic-catalog';
 import {
   mergeRendering,
   type QuestionRendering,
@@ -12,7 +13,7 @@ import type { QuestionData } from './types';
 import type { MeasurementRules } from './measurement-comparison';
 
 // Bump when changing any executable variant rule. Saved lineups retain their rules.
-export const QUESTION_RULES_VERSION = 9;
+export const QUESTION_RULES_VERSION = 10;
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {
@@ -70,7 +71,7 @@ export interface ExpansionVariantRules {
   sameMoveType?: boolean;
   sameColorOrShape?: boolean;
   evolutionConditions?: 'simple' | 'combined' | 'one-condition';
-  effectChoices?: 'broad' | 'related' | 'exact';
+  effectChoices?: EffectMode;
   hiddenAbility?: 'ordinary' | 'similar';
   natureChoices?: 'different-raised' | 'shared-stat';
   completeEvYield?: boolean;
