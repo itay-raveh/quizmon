@@ -376,10 +376,10 @@ describe('question transitions', () => {
       rendered.container.querySelector('.question__instruction'),
     ).toHaveTextContent('Which Pokémon has the lowest stat?');
     expect(
-      rendered.container.querySelector('.question-visual__stat'),
+      rendered.container.querySelector('.stat-direction'),
     ).toHaveTextContent('Speed');
     expect(
-      rendered.container.querySelector('.question-visual__stat svg'),
+      rendered.container.querySelector('.stat-direction svg'),
     ).toBeInTheDocument();
     expect(screen.getByText('Which Pokémon has the lowest Speed?')).toHaveClass(
       'visually-hidden',

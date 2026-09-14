@@ -116,18 +116,22 @@ export const QuestionAnswers = ({
         const label =
           question.optionLabels?.[option] ?? formatPokemonName(option);
         const reveal = question.optionReveals?.[option];
-        const detail = reveal ? (
-          <span
-            aria-hidden="true"
-            className={`answer__reveal ${answered ? '' : 'answer__reveal--reserved'}`.trim()}
-          >
-            {question.questionType === 'nature-effects' ? (
-              <NatureEffect description={reveal} />
-            ) : (
-              reveal
-            )}
-          </span>
-        ) : null;
+        const measurement =
+          question.questionType === 'weight-comparison' ||
+          question.questionType === 'height-comparison';
+        const detail =
+          reveal && !measurement ? (
+            <span
+              aria-hidden="true"
+              className={`answer__reveal ${answered ? '' : 'answer__reveal--reserved'}`.trim()}
+            >
+              {question.questionType === 'nature-effects' ? (
+                <NatureEffect description={reveal} compact />
+              ) : (
+                reveal
+              )}
+            </span>
+          ) : null;
         const itemImage =
           question.optionImages?.[option] ??
           (question.questionType === 'evolution-items'
@@ -181,17 +185,19 @@ export const QuestionAnswers = ({
           answered && generation ? `. ${formatGeneration(generation)}.` : '';
         const statValue = question.optionStats?.[option];
         const hasStatValue =
-          showdownStat !== undefined && statValue !== undefined;
+          (showdownStat !== undefined && statValue !== undefined) ||
+          (measurement && reveal !== undefined);
         const revealsStat = answered && hasStatValue;
-        const statAnnouncement = revealsStat
-          ? `. ${formatPokemonName(showdownStat)}: ${statValue}.`
-          : '';
+        const statAnnouncement =
+          revealsStat && showdownStat !== undefined
+            ? `. ${formatPokemonName(showdownStat)}: ${statValue}.`
+            : '';
         const stat = hasStatValue ? (
           <span
             aria-hidden="true"
             className={`answer__stat ${revealsStat ? '' : 'answer__stat--reserved'}`.trim()}
           >
-            {statValue}
+            {measurement ? reveal : statValue}
           </span>
         ) : null;
         const selectionMark =

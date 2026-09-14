@@ -75,12 +75,27 @@
 }
 
 @container (max-width: 24rem) {
+  .answer__nameplate--stat,
+  .answer__identity--stat {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'number' 'name' 'stat';
+  }
+
+  .answer__stat {
+    margin-top: 0.3rem;
+    text-align: center;
+  }
+
   .question--champion .question__stimulus {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @container (max-width: 16rem) {
+  .nature-effect {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .question-evolution-link,
   .question-evolution-endpoints,
   .question-relation,

@@ -81,6 +81,7 @@ export const buildMeasurement =
           chosen.map((candidate) => candidate.name),
           {
             ...picturedPokemon(context, chosen),
+            visual: { kind: 'measurement-comparison', measurement, direction },
             optionReveals: Object.fromEntries(
               chosen.map((candidate) => [
                 candidate.name,

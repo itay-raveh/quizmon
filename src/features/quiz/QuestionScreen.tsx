@@ -1,3 +1,4 @@
+import { presentMeasurementQuestion } from '@/domain/quiz/questions/measurement-presentation';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import type {
   EntityRendering,
@@ -159,7 +160,9 @@ export const QuestionScreen = ({
   const question = useMemo(
     () =>
       presentEvolutionQuestion(
-        presentEffectQuestion(storedQuestion, effects),
+        presentMeasurementQuestion(
+          presentEffectQuestion(storedQuestion, effects),
+        ),
         evolutions,
       ),
     [storedQuestion, evolutions, effects],

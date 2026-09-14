@@ -1,20 +1,28 @@
-import { ArrowDownIcon, ArrowUpIcon } from '@/components/icons';
+import { StatDirection } from './StatDirection';
 
 const parseNatureEffect = (description: string) =>
   /^Raises (.+); lowers (.+)$/.exec(description);
 
-export const NatureEffect = ({ description }: { description: string }) => {
+export const NatureEffect = ({
+  description,
+  compact = false,
+}: {
+  description: string;
+  compact?: boolean;
+}) => {
   const effect = parseNatureEffect(description);
   if (!effect) return description;
   return (
-    <span className="nature-effect" aria-label={description} role="img">
+    <span
+      className={`nature-effect${compact ? ' nature-effect--compact' : ''}`}
+      aria-label={description}
+      role="img"
+    >
       <span aria-hidden="true">
-        <ArrowUpIcon weight="bold" />
-        {effect[1]}
+        <StatDirection label={effect[1]!} direction="up" compact={compact} />
       </span>
       <span aria-hidden="true">
-        <ArrowDownIcon weight="bold" />
-        {effect[2]}
+        <StatDirection label={effect[2]!} direction="down" compact={compact} />
       </span>
     </span>
   );

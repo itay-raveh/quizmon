@@ -1,3 +1,5 @@
+import { StatDirection } from './StatDirection';
+import { NatureEffect } from './NatureEffect';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import {
   isVisible,
@@ -228,15 +230,27 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'stat-showdown') {
+  if (question.questionType === 'nature-effects') {
+    const effect = question.optionReveals?.[question.answer.correctOptions[0]!];
+    if (effect)
+      return (
+        <div className="question-visual">
+          <NatureEffect description={effect} />
+        </div>
+      );
+  }
+  if (
+    visual?.kind === 'stat-showdown' ||
+    visual?.kind === 'measurement-comparison'
+  ) {
     return (
       <div className="question-visual" aria-hidden="true">
-        <div className="question-visual__stat">
-          <strong>{formatPokemonName(visual.stat)}</strong>
-          <RelationArrow
-            direction={visual.direction === 'highest' ? 'up' : 'down'}
-          />
-        </div>
+        <StatDirection
+          label={formatPokemonName(
+            visual.kind === 'stat-showdown' ? visual.stat : visual.measurement,
+          )}
+          direction={visual.direction === 'highest' ? 'up' : 'down'}
+        />
       </div>
     );
   }

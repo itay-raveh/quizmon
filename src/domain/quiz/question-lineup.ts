@@ -70,6 +70,9 @@ const visualChecks = {
   'stat-showdown': (value) =>
     isChoice(value.stat, statNames) &&
     isChoice(value.direction, ['highest', 'lowest'] as const),
+  'measurement-comparison': (value) =>
+    isChoice(value.measurement, ['height', 'weight'] as const) &&
+    isChoice(value.direction, ['highest', 'lowest'] as const),
   'type-matchup': multiplier,
   'counter-pick': multiplier,
 } satisfies Record<NonNullable<QuestionData['visual']>['kind'], VariantCheck>;

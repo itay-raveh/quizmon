@@ -179,7 +179,9 @@ for (const { type, level, count } of cases)
     }
     await expect(page.locator('.answer--correct')).toHaveCount(1);
     await expect(page.locator('.answer--wrong')).toHaveCount(0);
-    if (question.optionReveals)
+    if (type === 'weight-comparison' || type === 'height-comparison')
+      await expect(page.locator('.answer__stat')).toHaveCount(count);
+    else if (question.optionReveals)
       await expect(page.locator('.answer__reveal')).toHaveCount(count);
     if (question.explanation && question.explanation !== correct)
       await expect(

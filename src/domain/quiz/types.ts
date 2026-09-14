@@ -71,6 +71,11 @@ type QuestionVisual =
       kind: 'stat-showdown';
       stat: StatName;
     }
+  | {
+      kind: 'measurement-comparison';
+      measurement: 'height' | 'weight';
+      direction: 'highest' | 'lowest';
+    }
   | { kind: 'type-matchup'; multiplier: number }
   | { kind: 'counter-pick'; multiplier: number };
 

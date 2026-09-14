@@ -25,9 +25,7 @@ for (const outcome of ['correct', 'incorrect'] as const) {
     await expect(
       page.getByRole('heading', { name: 'Stat showdown' }),
     ).toBeVisible();
-    const label = await page
-      .locator('.question-visual__stat strong')
-      .textContent();
+    const label = await page.locator('.stat-direction strong').textContent();
     const stat = (
       Object.keys(
         catalogData.pokemon.pikachu.stats,
