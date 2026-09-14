@@ -347,6 +347,13 @@ it.each(cases)(
         }
         case 'ability-effects':
         case 'held-item-effects': {
+          const description = topics.abilities
+            .find((ability) => ability.name === question.subject.name)
+            ?.descriptions?.find((entry) => entry.text === correct);
+          if (description) {
+            expect(question.options).toHaveLength(4);
+            break;
+          }
           const fact = topics.effects.find(
             (fact) => fact.name === question.subject.name,
           )!;

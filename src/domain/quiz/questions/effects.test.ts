@@ -6,21 +6,6 @@ import { reviewedEffects } from '../../../../scripts/reviewed-effects';
 import { buildQuestionType } from './registry';
 import { presentEffectQuestion } from './effect-presentation';
 
-it('ships the reviewed effect records and tracks the remaining ability coverage', () => {
-  expect(catalog.topics!.effects).toEqual(reviewedEffects);
-  const covered = new Set(
-    reviewedEffects
-      .filter((fact) => fact.kind === 'ability')
-      .map((fact) => fact.name),
-  );
-  expect(covered.size).toBe(24);
-  expect(catalog.topics!.gaps.abilityEffectReview).toEqual(
-    catalog
-      .topics!.abilities.filter((ability) => !covered.has(ability.name))
-      .map((ability) => ability.name),
-  );
-});
-
 it.each(
   reviewedEffects.flatMap((fact) =>
     (
@@ -41,7 +26,13 @@ it.each(
         difficulty,
         catalog: {
           ...catalog,
-          topics: { ...catalog.topics!, effects: [fact] },
+          topics: {
+            ...catalog.topics!,
+            effects: [fact],
+            abilities: catalog
+              .topics!.abilities.filter((ability) => ability.name === fact.name)
+              .map((ability) => ({ ...ability, descriptions: [] })),
+          },
         },
       },
       fact.kind === 'ability' ? 'ability-effects' : 'held-item-effects',

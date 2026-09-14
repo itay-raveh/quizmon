@@ -21,7 +21,7 @@ npm run dev
 
 ## Data
 
-Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). Live games do not request PokéAPI data.
+Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). Ability effect choices use short descriptions from [Pokémon Showdown](https://github.com/smogon/pokemon-showdown), with generation-specific mechanics and fuller explanations available after answering. The importer pins its source revision in `scripts/ability-text.ts`. Live games do not request either source.
 
 ```sh
 npm run data:update
@@ -30,6 +30,8 @@ npm run data:update
 ## Licenses
 
 Quizmon is available under the [MIT License](LICENSE).
+
+Pokémon Showdown ability text is distributed under its [MIT license](public/licenses/pokemon-showdown.txt).
 
 Wordmark was made with [TextStudio](https://www.textstudio.co).
 

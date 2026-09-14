@@ -1,3 +1,4 @@
+import { buildAbilityDescription } from './ability-descriptions';
 import { formatPokemonName } from '../../pokemon/format';
 import type { QuestionBuilder } from './context';
 import { getEffectPresentation } from './effect-presentation';
@@ -88,19 +89,29 @@ export const buildEffect: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const kind = context.questionType === 'ability-effects' ? 'ability' : 'item';
-  for (const fact of ordered(
+  const entities = kind === 'ability' ? topics.abilities : topics.items;
+  for (const target of ordered(
     context,
-    topics.effects.filter((fact) => fact.kind === kind),
+    entities.filter((entity) => topicEligible(context, entity)),
   )) {
-    if (
-      context.generations &&
-      !context.generations.includes(fact.battleGeneration)
-    )
-      continue;
-    const target = (kind === 'ability' ? topics.abilities : topics.items).find(
-      (entity) => entity.name === fact.name && topicEligible(context, entity),
+    const fact = topics.effects.find(
+      (entry) =>
+        entry.kind === kind &&
+        entry.name === target.name &&
+        (!context.generations ||
+          context.generations.includes(entry.battleGeneration)),
     );
-    if (!target) continue;
+    if (
+      kind === 'ability' &&
+      (context.variant?.effectChoices === 'broad' || !fact)
+    ) {
+      const ability = topics.abilities.find(
+        (entry) => entry.name === target.name,
+      )!;
+      const question = buildAbilityDescription(context, ability);
+      if (question) return question;
+    }
+    if (!fact) continue;
     const variant = fact.questions[context.variant?.effectChoices ?? 'broad'];
     const correct = variant.correct.value;
     const options = [correct, ...variant.wrong.map((choice) => choice.value)];

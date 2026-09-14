@@ -20,6 +20,7 @@ const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'height-comparison', level: 3, count: 4 },
   { type: 'move-types', level: 3, count: 18 },
   { type: 'name-that-region', level: 3, count: 9 },
+  { type: 'ability-effects', level: 3, count: 4 },
   { type: 'ability-effects', level: 5, count: 4 },
   { type: 'nature-effects', level: 5, count: 4 },
   { type: 'ev-yields', level: 5, count: 4 },
@@ -178,7 +179,21 @@ for (const { type, level, count } of cases)
     await expect(page.locator('.answer--wrong')).toHaveCount(0);
     if (question.optionReveals)
       await expect(page.locator('.answer__reveal')).toHaveCount(count);
-    if (question.explanation)
+    if (
+      type === 'ability-effects' &&
+      question.explanation &&
+      question.explanation !== correct
+    ) {
+      const details = page.locator('.question__effect-details');
+      await expect(details).not.toHaveAttribute('open');
+      await details.locator('summary').focus();
+      await page.keyboard.press('Enter');
+      await expect(details.locator('p')).toBeVisible();
+      await expect(details.locator('p')).toHaveText(question.explanation);
+      await expectNoHorizontalOverflow(page);
+      await page.keyboard.press('Enter');
+      await expect(details).not.toHaveAttribute('open');
+    } else if (question.explanation)
       await expect(
         page.getByText(question.explanation, { exact: true }),
       ).toHaveCount(0);

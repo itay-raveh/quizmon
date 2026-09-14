@@ -416,6 +416,16 @@ export const QuestionScreen = ({
         </div>
       ) : null}
 
+      {answered &&
+      question.questionType === 'ability-effects' &&
+      question.explanation &&
+      question.explanation !== question.answer.correctOptions[0] ? (
+        <details className="question__effect-details" key={question.id}>
+          <summary>Effect details</summary>
+          <p>{question.explanation}</p>
+        </details>
+      ) : null}
+
       <span className="visually-hidden" aria-live="polite">
         {answerCorrect
           ? 'Correct.'

@@ -79,7 +79,15 @@ export interface TopicCatalog {
   effects: EffectKnowledge[];
   items: ItemKnowledge[];
   moves: MoveKnowledge[];
-  abilities: (TopicEntity & { effect: string })[];
+  abilities: (TopicEntity & {
+    effect: string;
+    descriptionSource?: string;
+    descriptions?: {
+      generation: Generation;
+      text: string;
+      explanation: string;
+    }[];
+  })[];
   natures: (TopicEntity & { raised: StatName; lowered: StatName })[];
   berries: (TopicEntity & {
     item: string;

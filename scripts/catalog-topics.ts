@@ -1,3 +1,4 @@
+import { addAbilityDescriptions } from './ability-text.ts';
 import { reviewedEffects } from './reviewed-effects.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
 import {
@@ -149,14 +150,6 @@ export const buildTopicCatalog = async (
     moveDescriptionReview: moves
       .filter((move) => !reviewedMoveDescriptions[move.name])
       .map((move) => move.name),
-    abilityEffectReview: abilities
-      .filter(
-        (ability) =>
-          !reviewedEffects.some(
-            (fact) => fact.kind === 'ability' && fact.name === ability.name,
-          ),
-      )
-      .map((ability) => ability.name),
     heldItemEffectReview: items
       .filter(
         (item) =>
@@ -294,7 +287,7 @@ export const buildTopicCatalog = async (
       }
     }
   }
-  return {
+  const topics: TopicCatalog = {
     games,
     encounters,
     evolutions,
@@ -410,4 +403,9 @@ export const buildTopicCatalog = async (
         : [];
     }),
   };
+  await addAbilityDescriptions(topics.abilities);
+  topics.gaps.abilityDescription = topics.abilities
+    .filter((ability) => !ability.descriptions?.length)
+    .map((ability) => ability.name);
+  return topics;
 };
