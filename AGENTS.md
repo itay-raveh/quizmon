@@ -12,6 +12,15 @@ and daily push reminders.
 - `.agents/context/DESIGN.md` defines the visual system. Read it before UI work.
 - `wrangler.jsonc` and `.github/workflows/ci.yml` define production deployment.
 
+## Documentation
+
+- Do not create `docs/` or another documentation directory without the user's
+  explicit approval of that path.
+- Keep task-relevant documentation in the existing `README.md` and
+  `.agents/context/` files.
+- Feature approval does not authorize reorganizing documentation. Ask before
+  moving documentation or introducing a new documentation structure.
+
 ## Repository structure
 
 | Path                                | Purpose                                                                           |
