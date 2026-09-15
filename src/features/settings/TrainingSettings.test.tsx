@@ -28,6 +28,45 @@ const TrainingSettingsHarness = ({ initial }: { initial: GameSettings }) => {
 };
 
 describe('Training settings', () => {
+  it.each([true, false])(
+    'restores question selection %s after an unavailable difficulty',
+    (selected) => {
+      render(
+        <TrainingSettingsHarness
+          initial={{
+            ...defaultGameSettings,
+            difficulty: 4,
+            questionSelection: 'custom',
+            questionTypes: selected
+              ? ['hidden-abilities', 'move-types']
+              : ['move-types'],
+          }}
+        />,
+      );
+      const level3 = screen.getByRole('radio', { name: 'Level 3' });
+      const level4 = screen.getByRole('radio', { name: 'Level 4' });
+      const hiddenAbilities = screen.getByLabelText('Hidden abilities', {
+        selector: 'input',
+      });
+      expect(hiddenAbilities).toBeEnabled();
+      expect(hiddenAbilities).toHaveProperty('checked', selected);
+      expect(hiddenAbilities).toHaveAccessibleDescription('×1.25');
+
+      fireEvent.click(level3);
+      expect(hiddenAbilities).toBeDisabled();
+      expect(hiddenAbilities).not.toBeChecked();
+      expect(hiddenAbilities).toHaveAccessibleDescription('Unavailable');
+      expect(
+        screen.getByLabelText('Move types', { selector: 'input' }),
+      ).toHaveAccessibleDescription('×1');
+
+      fireEvent.click(level4);
+      expect(hiddenAbilities).toBeEnabled();
+      expect(hiddenAbilities).toHaveProperty('checked', selected);
+      expect(hiddenAbilities).toHaveAccessibleDescription('×1.25');
+    },
+  );
+
   it('shows five numbered levels and retains generation and form controls', () => {
     render(<TrainingSettingsHarness initial={defaultGameSettings} />);
     expect(screen.getByRole('group', { name: 'Difficulty' })).toBeVisible();
@@ -48,6 +87,7 @@ describe('Training settings', () => {
       <TrainingSettingsHarness
         initial={{
           ...defaultGameSettings,
+          difficulty: 5,
           questionTypes: ['evolution-shift'],
         }}
       />,
@@ -83,6 +123,7 @@ describe('Training settings', () => {
       <TrainingSettingsHarness
         initial={{
           ...defaultGameSettings,
+          difficulty: 3,
           generations: ['I', 'II'],
           questionSelection: 'custom',
           questionTypes: ['generation-roundup'],

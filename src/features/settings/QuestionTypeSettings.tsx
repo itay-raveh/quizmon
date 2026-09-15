@@ -154,24 +154,27 @@ export const QuestionTypeSettings = ({
                 >
                   {group.types.map((questionType) => {
                     const label = questionLabels[questionType];
-                    const checked = selectedQuestionTypes.has(questionType);
                     const factor = draft.difficulty
                       ? getQuestionTypeMultiplier(
                           questionType,
                           draft.difficulty,
                         )
                       : undefined;
+                    const available = factor !== undefined;
+                    const checked =
+                      available && selectedQuestionTypes.has(questionType);
                     return (
                       <div
-                        className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}`}
+                        className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}${factor === undefined ? ' question-type-tile--unavailable' : ''}`}
                         key={questionType}
                       >
                         <SelectionTile
                           checked={checked}
+                          disabled={!available}
                           label={label}
                           description={
                             factor === undefined
-                              ? undefined
+                              ? 'Unavailable'
                               : formatScoreMultiplier(factor)
                           }
                           onChange={(event) =>

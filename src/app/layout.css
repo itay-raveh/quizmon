@@ -301,10 +301,6 @@
     justify-content: center;
   }
 
-  .selection-grid--question-types {
-    grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
-  }
-
   .selection-grid--generations {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

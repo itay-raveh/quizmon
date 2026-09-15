@@ -138,7 +138,8 @@
 }
 
 .selection-grid--question-types {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
 }
 
 .selection-tile {
@@ -208,10 +209,22 @@
 
 .selection-grid--question-types .selection-tile__surface {
   min-height: 3.15rem;
-  padding: 0.55rem 2.55rem 0.55rem 0.65rem;
+  padding: 0.65rem 3.25rem 0.65rem 0.75rem;
   align-items: center;
-  grid-template-columns: 1rem minmax(0, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: 1.1rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+}
+
+.selection-grid--question-types .selection-tile__description {
+  margin: 0;
+  grid-column: 3;
+  grid-row: 1;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.selection-grid--question-types .selection-tile__label {
+  overflow-wrap: anywhere;
 }
 
 .selection-grid--question-types .selection-tile__check {
@@ -221,6 +234,7 @@
   width: 1rem;
   height: 1rem;
   opacity: 1;
+  color: inherit;
   border: 2px solid currentColor;
   border-radius: 0.2rem;
   grid-column: 1;
@@ -419,8 +433,9 @@
 .question-type-tile__help {
   position: absolute;
   z-index: 1;
-  top: 0.2rem;
-  right: 0.08rem;
+  top: 50%;
+  right: 0.2rem;
+  transform: translateY(-50%);
   display: grid;
   width: 2.75rem;
   height: 2.75rem;
@@ -438,20 +453,20 @@
   display: grid;
   width: 1.8rem;
   height: 1.8rem;
-  background: var(--paper);
-  border: 2px solid currentColor;
-  border-radius: 0.3rem;
   place-items: center;
 }
 
 .question-type-tile__help svg {
-  width: 1rem;
-  height: 1rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .question-type-tile--selected .question-type-tile__help > span {
   color: var(--primary-text);
-  background: color-mix(in srgb, var(--navy) 18%, transparent);
+}
+
+.question-type-tile--unavailable .question-type-tile__help > span {
+  color: var(--muted);
 }
 
 .question-type-tile__help:hover {
@@ -742,7 +757,8 @@
   overflow-wrap: anywhere;
 }
 
-.selection-tile--form input:disabled + .selection-tile__surface {
+.selection-tile--form input:disabled + .selection-tile__surface,
+.selection-tile--question-type input:disabled + .selection-tile__surface {
   color: var(--muted);
   background: var(--disabled-surface);
   opacity: 1;
