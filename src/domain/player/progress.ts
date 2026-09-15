@@ -1,5 +1,5 @@
 import { questionTypes } from '../quiz/questions/definitions';
-import { TRAINER_PROGRESS_VERSION, type SavedResults } from './results';
+import { type SavedResults } from './results';
 import {
   isLeagueTraining,
   getTrainingSettings,
@@ -86,7 +86,6 @@ export const addResultToProgress = (
     masteryRounds: progress.masteryRounds + Number(isLeagueRound && isPerfect),
     quickAttackRounds: progress.quickAttackRounds + Number(earnedQuickAttack),
     quickAttackCompleted: progress.quickAttackCompleted || earnedQuickAttack,
-    version: TRAINER_PROGRESS_VERSION,
   };
 };
 const previousDailyDate = (date: string): string => {

@@ -41,7 +41,7 @@ test('keeps legacy Daily results shareable without granting another attempt', as
           scoreVersion: 2,
         },
       },
-      streak: { creditedDates: ['2026-09-01'], version: 1 },
+      streak: { creditedDates: ['2026-09-01'] },
       training: {},
     },
   });
@@ -119,7 +119,7 @@ test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
           scoreVersion: 2,
         },
       },
-      streak: { creditedDates: [date], version: 1 },
+      streak: { creditedDates: [date] },
       training: {},
     },
   });

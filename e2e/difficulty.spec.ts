@@ -1,5 +1,5 @@
 import { seedPlayer } from './fixtures';
-import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 import {
   answerCurrentQuestion,
   chooseDaily,

@@ -1,0 +1,41 @@
+{
+  "version": 7,
+  "restoreId": null,
+  "data": {
+    "generationPromptAnswered": false,
+    "profile": null,
+    "pokedex": [],
+    "hallOfFame": [],
+    "leagueLineup": null,
+    "questionHistory": {
+      "sequence": 0,
+      "subjects": {},
+      "questions": {},
+      "pokemon": {},
+      "distractors": {},
+      "rounds": {}
+    },
+    "settings": null,
+    "results": {
+      "daily": {},
+      "training": {},
+      "league": {
+        "completed": false,
+        "seed": null
+      },
+      "streak": {
+        "creditedDates": []
+      },
+      "progress": {
+        "championAnswersWithoutClues": 0,
+        "correctCategories": {},
+        "correctGenerations": {},
+        "correctPokemon": [],
+        "correctQuestionTypes": {},
+        "masteryRounds": 0,
+        "quickAttackCompleted": false,
+        "quickAttackRounds": 0
+      }
+    }
+  }
+}

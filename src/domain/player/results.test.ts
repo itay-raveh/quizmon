@@ -16,7 +16,6 @@ it.each([
 ])('normalizes progress counts for %s', (value, expected) => {
   const { progress } = normalizeResults({
     progress: {
-      version: 2,
       correctPokemon: [],
       correctCategories: {},
       quickAttackCompleted: false,
@@ -30,7 +29,6 @@ it.each([
 
 it('does not invent Quick Attack rounds from the retired boolean counter', () => {
   const legacy = {
-    version: 2,
     correctPokemon: [],
     correctCategories: {},
     quickAttackCompleted: true,

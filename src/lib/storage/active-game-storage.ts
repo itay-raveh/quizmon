@@ -1,49 +1,18 @@
-import { isAnswerSubject } from '../../domain/quiz/subject';
 import {
-  parseVersionedSave,
-  SaveError,
-  type SaveMigration,
-} from '../../domain/player/save-schema';
+  parseActiveGameSave,
+  type ActiveGameSnapshot,
+} from '../../domain/player/active-game';
+import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
+import { SaveError } from '../../domain/player/save-schema';
 import { getSaveIssue, reportSaveIssue } from './save-health';
-import {
-  formGroups,
-  generations,
-  type PokemonCatalog,
-} from '../../domain/pokemon/types';
-import {
-  isQuestionData,
-  type QuestionLineup,
-} from '../../domain/quiz/question-lineup';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-import { questionTypes } from '../../domain/quiz/questions/definitions';
-import {
-  questionCategories,
-  type AnswerResult,
-  type GameMode,
-  type QuestionData,
-  type ScoreMultipliers,
-} from '../../domain/quiz/types';
-import { isScoreMultipliers } from '../../domain/quiz/score-multipliers';
-import { isDifficulty } from '../../domain/quiz/difficulty';
+import type { QuestionData } from '../../domain/quiz/types';
 import {
   getDailyResultKey,
-  isDailyTrack,
   type DailyTrack,
 } from '../../domain/quiz/daily-track';
-import {
-  answerFlows,
-  timerDisplays,
-  trainingModes,
-  type GameSettings,
-} from '../../domain/settings/types';
-import {
-  isChoice,
-  isDailyDate,
-  isFiniteNonnegative,
-  isNonemptyChoiceArray,
-  isNonnegativeInteger,
-  isRecord,
-} from '../validation';
+import { isRecord } from '../validation';
 import {
   readStoredJson,
   readStoredValue,
@@ -52,139 +21,7 @@ import {
 } from './browser-storage';
 import { readPlayerSave } from './player-storage';
 export const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
-export const ACTIVE_GAME_VERSION = 3;
 export const DAILY_ATTEMPTS_KEY = 'quizmon.daily-attempts.v1';
-export interface ActiveGameSnapshot extends QuestionLineup {
-  scoreMultipliers?: ScoreMultipliers;
-  roundId?: string;
-  answers: AnswerResult[];
-  elapsedMilliseconds: number;
-  mode: GameMode;
-  settings: GameSettings;
-  questionCount: number;
-  playerRestoreId?: string | null;
-  version: number;
-}
-const parseMode = (value: unknown): GameMode | null => {
-  if (!isRecord(value)) return null;
-  if (value.kind === 'training') return { kind: 'training' };
-  if (value.kind === 'league') return { kind: 'league' };
-  if (value.kind === 'daily' && isDailyDate(value.date)) {
-    if (value.track !== undefined && !isDailyTrack(value.track)) return null;
-    return {
-      kind: 'daily',
-      date: value.date,
-      ...(value.track === undefined ? {} : { track: value.track }),
-    };
-  }
-  return null;
-};
-const parseAnswer = (value: unknown): AnswerResult | null => {
-  if (
-    !isRecord(value) ||
-    !isChoice(value.category, questionCategories) ||
-    !isNonnegativeInteger(value.cluesUsed) ||
-    typeof value.correct !== 'boolean' ||
-    !isAnswerSubject(value.subject) ||
-    !isFiniteNonnegative(value.points) ||
-    (value.questionType !== 'champion' &&
-      !isChoice(value.questionType, questionTypes)) ||
-    (value.responseMilliseconds !== undefined &&
-      !isFiniteNonnegative(value.responseMilliseconds)) ||
-    (value.speedBonus !== undefined && !isFiniteNonnegative(value.speedBonus))
-  ) {
-    return null;
-  }
-  return {
-    category: value.category,
-    cluesUsed: value.cluesUsed,
-    ...(typeof value.unassistedSearch === 'boolean'
-      ? { unassistedSearch: value.unassistedSearch }
-      : {}),
-    correct: value.correct,
-    points: value.points,
-    questionType: value.questionType,
-    ...(value.responseMilliseconds === undefined
-      ? {}
-      : { responseMilliseconds: value.responseMilliseconds }),
-    ...(value.speedBonus === undefined ? {} : { speedBonus: value.speedBonus }),
-    subject: value.subject,
-  };
-};
-const parseGameSettings = (value: unknown): GameSettings | null => {
-  if (
-    !isRecord(value) ||
-    !isNonemptyChoiceArray(value.generations, generations) ||
-    !isNonemptyChoiceArray(value.questionTypes, questionTypes) ||
-    !isChoice(value.trainingMode, trainingModes) ||
-    !isNonemptyChoiceArray(value.formGroups, formGroups) ||
-    !isChoice(value.answerFlow, answerFlows) ||
-    !isChoice(value.timerDisplay, timerDisplays) ||
-    typeof value.reduceMotion !== 'boolean' ||
-    !isFiniteNonnegative(value.soundVolume) ||
-    value.soundVolume > 1 ||
-    (value.difficulty !== undefined && !isDifficulty(value.difficulty)) ||
-    (value.questionSelection !== undefined &&
-      value.questionSelection !== 'custom' &&
-      value.questionSelection !== 'automatic') ||
-    (value.automaticQuestionTypes !== undefined &&
-      (!Array.isArray(value.automaticQuestionTypes) ||
-        !value.automaticQuestionTypes.every((type) =>
-          isChoice(type, questionTypes),
-        )))
-  ) {
-    return null;
-  }
-  return value as unknown as GameSettings;
-};
-const parseSnapshot = (value: unknown): ActiveGameSnapshot | null => {
-  if (
-    !isRecord(value) ||
-    value.version !== ACTIVE_GAME_VERSION ||
-    (value.scoreMultipliers !== undefined &&
-      !isScoreMultipliers(value.scoreMultipliers)) ||
-    !isNonnegativeInteger(value.contentVersion) ||
-    !isFiniteNonnegative(value.elapsedMilliseconds) ||
-    !isNonnegativeInteger(value.questionCount) ||
-    value.questionCount < 1 ||
-    typeof value.seed !== 'string' ||
-    value.seed.length === 0 ||
-    value.seed.length > 200 ||
-    !Array.isArray(value.answers) ||
-    value.answers.length > value.questionCount ||
-    !Array.isArray(value.questions) ||
-    value.questions.length !== value.questionCount ||
-    !value.questions.every(isQuestionData) ||
-    (value.roundId !== undefined &&
-      (typeof value.roundId !== 'string' ||
-        value.roundId.length > 200 ||
-        !value.roundId))
-  ) {
-    return null;
-  }
-  const mode = parseMode(value.mode);
-  const settings = parseGameSettings(value.settings);
-  const answers = value.answers.map(parseAnswer);
-  if (!mode || !settings || !answers.every((answer) => answer !== null))
-    return null;
-  return {
-    questions: value.questions,
-    ...(value.scoreMultipliers === undefined
-      ? {}
-      : { scoreMultipliers: value.scoreMultipliers }),
-    ...(value.roundId === undefined ? {} : { roundId: value.roundId }),
-    answers,
-    contentVersion: value.contentVersion,
-    elapsedMilliseconds: value.elapsedMilliseconds,
-    mode,
-    settings,
-    questionCount: value.questionCount,
-    playerRestoreId:
-      typeof value.playerRestoreId === 'string' ? value.playerRestoreId : null,
-    seed: value.seed,
-    version: value.version,
-  };
-};
 export const hasActiveGame = (): boolean =>
   readStoredJson('sessionStorage', ACTIVE_GAME_KEY) !== null;
 const normalizeQuestionPokemon = (
@@ -231,7 +68,7 @@ export const readActiveGame = (
   if (raw === null) return null;
   let snapshot: ActiveGameSnapshot;
   try {
-    snapshot = decodeSnapshot(JSON.parse(raw));
+    snapshot = parseActiveGameSave(JSON.parse(raw));
   } catch (error) {
     reportSaveIssue(error);
     return null;
@@ -285,7 +122,7 @@ export const writeActiveGame = (
     const value = {
       ...snapshot,
       playerRestoreId,
-      version: ACTIVE_GAME_VERSION,
+      version: SAVE_SCHEMA_VERSION,
     };
     const activeSaved = writeStoredJson(
       'sessionStorage',
@@ -332,7 +169,7 @@ export const readDailyAttempts = (
     if (!key.startsWith(`${date}:`)) continue;
     let snapshot: ActiveGameSnapshot;
     try {
-      snapshot = decodeSnapshot(value);
+      snapshot = parseActiveGameSave(value);
     } catch (error) {
       reportSaveIssue(error);
       continue;
@@ -362,27 +199,10 @@ export const clearDailyAttempt = (date: string, track: DailyTrack): void => {
   writeStoredJson('localStorage', DAILY_ATTEMPTS_KEY, attempts);
 };
 
-const snapshotMigrations: Readonly<Record<number, SaveMigration>> = {};
-const decodeSnapshot = (value: unknown): ActiveGameSnapshot =>
-  parseVersionedSave(
-    { version: isRecord(value) ? value.version : undefined, data: value },
-    {
-      minimumVersion: 3,
-      currentVersion: ACTIVE_GAME_VERSION,
-      migrations: snapshotMigrations,
-      parseCurrent: (data) => {
-        const snapshot = parseSnapshot(data);
-        if (!snapshot)
-          throw new SaveError('invalid', 'The unfinished round is invalid.');
-        return snapshot;
-      },
-    },
-  ).data;
-
 export const inspectRoundStorage = (): void => {
   const raw = window.sessionStorage.getItem(ACTIVE_GAME_KEY);
   if (raw !== null) {
-    const snapshot = decodeSnapshot(JSON.parse(raw));
+    const snapshot = parseActiveGameSave(JSON.parse(raw));
     if ((snapshot.playerRestoreId ?? null) !== readPlayerSave().restoreId)
       clearActiveGame();
   }
@@ -392,7 +212,7 @@ export const inspectRoundStorage = (): void => {
     if (!isRecord(attempts))
       throw new SaveError('invalid', 'Saved Daily attempts are invalid.');
     for (const [key, value] of Object.entries(attempts)) {
-      const snapshot = decodeSnapshot(value);
+      const snapshot = parseActiveGameSave(value);
       if (
         snapshot.mode.kind !== 'daily' ||
         !snapshot.mode.track ||

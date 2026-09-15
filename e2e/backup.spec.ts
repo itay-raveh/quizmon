@@ -7,10 +7,10 @@ import { expect, test } from './fixtures';
 
 const backup: PlayerBackup = {
   format: 'quizmon-backup',
-  version: 1,
+
   exportedAt: '2026-09-07T09:00:00.000Z',
   save: {
-    version: 6,
+    version: 7,
     restoreId: null,
     data: {
       ...emptyPlayerData(),
@@ -23,7 +23,6 @@ const backup: PlayerBackup = {
         trainingMode: 'custom',
       },
       profile: {
-        version: 1,
         createdAt: '2026-09-01',
         hasBeenRevealed: true,
         name: 'Leaf',

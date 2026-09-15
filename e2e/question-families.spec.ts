@@ -6,7 +6,7 @@ import {
   formatName,
   seedQuestionTraining,
 } from './fixtures';
-import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 import { generations } from '../src/domain/pokemon/types';
 import { questionLabels } from '../src/domain/quiz/question-labels';
 import type { QuestionType } from '../src/domain/quiz/types';

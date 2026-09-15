@@ -1,3 +1,4 @@
+import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
 import {
   createPlayerSave,
   readPlayerSave,
@@ -10,11 +11,7 @@ import {
   resetSavedData,
 } from './save-recovery';
 import { getSaveIssue } from './save-health';
-import {
-  ACTIVE_GAME_KEY,
-  ACTIVE_GAME_VERSION,
-  DAILY_ATTEMPTS_KEY,
-} from './active-game-storage';
+import { ACTIVE_GAME_KEY, DAILY_ATTEMPTS_KEY } from './active-game-storage';
 import { createBackup, restoreBackup } from '../../features/settings/backup';
 
 beforeEach(() => {
@@ -22,13 +19,13 @@ beforeEach(() => {
   sessionStorage.clear();
 });
 afterEach(() => vi.restoreAllMocks());
-it.each([1, 2, 3, 4, 5, 7])(
+it.each([1, 2, 3, 4, 5, 8])(
   'preserves rejected version %i byte for byte and blocks ordinary writes',
   (version) => {
     const raw = JSON.stringify({ ...createPlayerSave(), version }, null, 3);
     localStorage.setItem(PLAYER_STORAGE_KEY, raw);
     inspectSavedData();
-    expect(getSaveIssue()?.kind).toBe(version > 6 ? 'newer' : 'unsupported');
+    expect(getSaveIssue()?.kind).toBe(version > 7 ? 'newer' : 'unsupported');
     expect(updatePlayerData({ generationPromptAnswered: true })).toBe(false);
     expect(createRecoveryExport().entries).toContainEqual({
       storage: 'localStorage',
@@ -69,7 +66,7 @@ it.each([
   [
     'localStorage',
     DAILY_ATTEMPTS_KEY,
-    JSON.stringify({ attempt: { version: ACTIVE_GAME_VERSION } }),
+    JSON.stringify({ attempt: { version: SAVE_SCHEMA_VERSION } }),
   ],
 ])('detects invalid or retired rounds in %s', (storage, key, raw) => {
   window[storage as 'localStorage' | 'sessionStorage'].setItem(key, raw);
@@ -95,7 +92,7 @@ it('only clears saved gameplay data after a successful reset write', () => {
   expect(sessionStorage.getItem(ACTIVE_GAME_KEY)).toBe('{');
   write.mockRestore();
   resetSavedData();
-  expect(readPlayerSave().version).toBe(6);
+  expect(readPlayerSave().version).toBe(7);
   expect(readPlayerSave().restoreId).not.toBeNull();
   expect(localStorage.getItem('quizmon.results.v2')).toBeNull();
   expect(sessionStorage.getItem(ACTIVE_GAME_KEY)).toBeNull();

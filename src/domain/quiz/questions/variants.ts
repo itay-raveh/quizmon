@@ -1,9 +1,7 @@
+import { GAMEPLAY_REVISION } from '../gameplay-version';
 import type { QuestionRendering } from '../question-rendering';
 import { attackMultiplier } from '../../pokemon/type-effectiveness';
-import {
-  QUESTION_RULES_VERSION,
-  type VariantRules,
-} from '../question-variants';
+import { type VariantRules } from '../question-variants';
 import type { Difficulty } from '../difficulty';
 import type { QuestionContext, QuestionDraft } from './context';
 export const applyQuestionVariant = (
@@ -15,7 +13,7 @@ export const applyQuestionVariant = (
   const question = {
     ...draft,
     variantLevel: level,
-    rulesVersion: QUESTION_RULES_VERSION,
+    rulesVersion: GAMEPLAY_REVISION,
     rendering: rules.rendering,
     showTypes: rules.showTypes,
   };

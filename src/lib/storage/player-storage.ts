@@ -3,7 +3,7 @@ import {
   parsePlayerSave,
   type PlayerData,
   type PlayerSave,
-  PLAYER_SAVE_VERSION,
+  SAVE_SCHEMA_VERSION,
 } from '../../domain/player/player-save';
 import { isRecord } from '../validation';
 import { SaveError } from '../../domain/player/save-schema';
@@ -20,7 +20,7 @@ export const retiredPlayerKeys = {
 export const createPlayerSave = (): PlayerSave => ({
   data: emptyPlayerData(),
   restoreId: null,
-  version: PLAYER_SAVE_VERSION,
+  version: SAVE_SCHEMA_VERSION,
 });
 
 export const readPlayerSave = (): PlayerSave => {

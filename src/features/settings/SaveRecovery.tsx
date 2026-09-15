@@ -2,7 +2,7 @@ import { Footer } from '@/app/Footer';
 import { Logo } from '@/app/Logo';
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
-import { PLAYER_SAVE_VERSION } from '@/domain/player/player-save';
+import { SAVE_SCHEMA_VERSION } from '@/domain/player/player-save';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
 import { useModalDialog } from '@/hooks/useModalDialog';
 import { downloadJson } from '@/lib/download';
@@ -226,7 +226,7 @@ const SaveRecoveryDialog = ({
       <details>
         <summary>Save details</summary>
         <p>
-          {issue.message} Current save format: {PLAYER_SAVE_VERSION}.
+          {issue.message} Current save format: {SAVE_SCHEMA_VERSION}.
         </p>
       </details>
     </dialog>

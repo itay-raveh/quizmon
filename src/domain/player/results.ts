@@ -15,8 +15,6 @@ import {
 import { getUnifiedScoreKey } from '../quiz/scoring';
 import { hasDailyResultOnDate } from '../quiz/daily-track';
 
-export const STREAK_VERSION = 1;
-export const TRAINER_PROGRESS_VERSION = 2;
 interface TrainerProgress {
   championAnswersWithoutClues: number;
   correctCategories: Partial<Record<QuestionCategory, number>>;
@@ -26,12 +24,10 @@ interface TrainerProgress {
   masteryRounds: number;
   quickAttackCompleted: boolean;
   quickAttackRounds: number;
-  version: number;
 }
 
 interface DailyStreakState {
   creditedDates: string[];
-  version: number;
 }
 
 interface LeagueState {
@@ -56,7 +52,6 @@ const emptyProgress = (): TrainerProgress => ({
   masteryRounds: 0,
   quickAttackCompleted: false,
   quickAttackRounds: 0,
-  version: TRAINER_PROGRESS_VERSION,
 });
 
 const normalizeLeague = (value: unknown): LeagueState => {
@@ -82,10 +77,9 @@ const normalizeStreak = (
   streak: Partial<DailyStreakState> | undefined,
   daily: Record<string, GameResult>,
 ): DailyStreakState => {
-  const creditedDates =
-    streak?.version === STREAK_VERSION && Array.isArray(streak.creditedDates)
-      ? streak.creditedDates
-      : [];
+  const creditedDates = Array.isArray(streak?.creditedDates)
+    ? streak.creditedDates
+    : [];
 
   return {
     creditedDates: [
@@ -95,7 +89,6 @@ const normalizeStreak = (
         ),
       ),
     ].sort(),
-    version: STREAK_VERSION,
   };
 };
 
@@ -119,7 +112,7 @@ const normalizeProgress = (
   progress: Partial<TrainerProgress> | undefined,
 ): TrainerProgress => {
   if (
-    progress?.version !== TRAINER_PROGRESS_VERSION ||
+    !progress ||
     !Array.isArray(progress.correctPokemon) ||
     typeof progress.quickAttackCompleted !== 'boolean' ||
     !isRecord(progress.correctCategories)
@@ -153,7 +146,6 @@ const normalizeProgress = (
     masteryRounds: normalizeProgressCount(progress.masteryRounds),
     quickAttackCompleted: progress.quickAttackCompleted,
     quickAttackRounds: normalizeProgressCount(progress.quickAttackRounds),
-    version: TRAINER_PROGRESS_VERSION,
   };
 };
 

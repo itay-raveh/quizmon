@@ -47,7 +47,7 @@ describe('saved results', () => {
       score: 400,
       rules: {
         ...weighted.rules!,
-        version: 2,
+
         difficulty: 5,
         generations: ['I', 'II'],
         formGroups: ['standard', 'regional'],
@@ -188,7 +188,6 @@ describe('saved results', () => {
         },
         streak: {
           creditedDates: ['2025-12-31', '2026-01-01'],
-          version: 1,
         },
         training: {},
       },

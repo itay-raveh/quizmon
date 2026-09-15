@@ -1,6 +1,6 @@
 import {
   emptyPlayerData,
-  PLAYER_SAVE_VERSION,
+  SAVE_SCHEMA_VERSION,
   type PlayerData,
 } from '../src/domain/player/player-save';
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
@@ -11,7 +11,7 @@ import catalogData from '../src/domain/pokemon/data/pokemon.json' with { type: '
 import { catalog } from '../tests/fixtures/catalog';
 import { formatPokemonName as formatName } from '../src/domain/pokemon/format';
 import type { Generation } from '../src/domain/pokemon/types';
-import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 import type { QuestionType } from '../src/domain/quiz/types';
 
 export { catalog, catalogData, expect };
@@ -79,7 +79,7 @@ export const seedPlayer = (page: Page, patch: PlayerFixture) =>
     {
       patch,
       initial: {
-        version: PLAYER_SAVE_VERSION,
+        version: SAVE_SCHEMA_VERSION,
         restoreId: null,
         data: { ...emptyPlayerData(), settings: trainingFixture },
       },
@@ -163,7 +163,7 @@ export const test = base.extend({
         localStorage.setItem('quizmon.player', JSON.stringify(save));
       },
       {
-        version: PLAYER_SAVE_VERSION,
+        version: SAVE_SCHEMA_VERSION,
         restoreId: null,
         data: { ...emptyPlayerData(), settings: trainingFixture },
       },

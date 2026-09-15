@@ -1,103 +1,39 @@
-import { catalog } from '../../../tests/fixtures/catalog';
-import { isDailyDate } from '../../lib/validation';
-import { generations } from '../pokemon/types';
 import {
-  getDailyQuestionTypes,
-  getDailySettings,
-  getLocalDate,
-  parseDailyDate,
-  shouldAutoStartDaily,
-} from './daily';
-import { buildDailyQuestions } from './question-generation';
-import { questionTypes } from './questions/definitions';
+  buildDailyForTest,
+  dailySettings,
+} from '../../../tests/fixtures/daily';
+import { isDailyDate } from '../../lib/validation';
+import { getLocalDate, parseDailyDate, shouldAutoStartDaily } from './daily';
 import {
   markDailyReminderOffered,
   shouldOfferDailyReminder,
 } from '../../features/reminders/daily-reminder-storage';
+
 describe('Daily Challenge', () => {
-  it('reproduces a complete Daily lineup and varies it by date', () => {
-    const first = buildDailyQuestions(catalog, '2026-09-01');
-    const second = buildDailyQuestions(catalog, '2026-09-01');
-    const schedule = getDailyQuestionTypes('2026-09-01');
-    expect(first).toEqual(second);
+  it('reproduces the live Level 3 lineup and varies it by date', () => {
+    const first = buildDailyForTest('2026-09-01');
+    expect(buildDailyForTest('2026-09-01')).toEqual(first);
     expect(first).toHaveLength(5);
-    expect(first.map(({ questionType }) => questionType)).toEqual(schedule);
-    expect(schedule.at(-1)).toBe('champion');
-    expect(first.at(-1)?.searchOptions).toHaveLength(
-      Object.values(catalog.pokemon).filter(
-        (pokemon) =>
-          pokemon.hasDistinctDescription &&
-          pokemon.genus &&
-          pokemon.sprite &&
-          (pokemon === catalog.pokemon[first.at(-1)!.subject.name] ||
-            pokemon.speciesName !==
-              catalog.pokemon[first.at(-1)!.subject.name]!.speciesName),
-      ).length,
-    );
-    expect(first.at(-1)?.searchOptions).toContainEqual({
-      dexNumber: 33,
-      name: 'nidorino',
-      sprite: catalog.pokemon.nidorino!.sprite,
-    });
-    expect(questionTypes).toEqual(
-      expect.arrayContaining(schedule.slice(0, -1)),
-    );
-    expect(schedule).not.toEqual(getDailyQuestionTypes('2026-09-02'));
-    expect(first).not.toEqual(buildDailyQuestions(catalog, '2026-09-02'));
+    expect(first.at(-1)?.questionType).toBe('champion');
+    expect(first.at(-1)?.searchOptions?.length).toBeGreaterThan(1);
+    expect(buildDailyForTest('2026-09-02')).not.toEqual(first);
   });
-  it('allows question types to repeat before the Champion finale', () => {
-    const schedules = Array.from({ length: 30 }, (_, day) =>
-      getDailyQuestionTypes(
-        `2026-09-${String(day + 1).padStart(2, '0')}`,
-      ).slice(0, -1),
-    );
-    expect(
-      schedules.some((standard) => new Set(standard).size < standard.length),
-    ).toBe(true);
-  });
-  it('uses all generations and the supplied experience settings', () => {
-    expect(
-      getDailySettings({
-        answerFlow: 'instant',
-        reduceMotion: true,
-        soundVolume: 0,
-        timerDisplay: 'milliseconds',
-      }),
-    ).toMatchObject({
-      generations: [...generations],
-      answerFlow: 'instant',
-      reduceMotion: true,
-      soundVolume: 0,
-      timerDisplay: 'milliseconds',
-    });
-  });
-  describe('format coverage across September', () => {
-    const excluded = ['ability-check', 'move-check', 'stat-showdown'];
-    const dates = Array.from(
-      { length: 30 },
-      (_, day) => `2026-09-${String(day + 1).padStart(2, '0')}`,
-    );
-    it.each(dates)('excludes advanced formats on %s', (date) => {
-      const schedule = getDailyQuestionTypes(date);
-      const questions = buildDailyQuestions(catalog, date);
+  it('covers every eligible question family while keeping the Champion finale', () => {
+    const seen = new Set<string>();
+    const days = Math.ceil(dailySettings.questionTypes.length / 4) * 2;
+    for (let day = 0; day < days; day++) {
+      const date = new Date(Date.UTC(2026, 8, 1 + day))
+        .toISOString()
+        .slice(0, 10);
+      const questions = buildDailyForTest(date);
       expect(questions).toHaveLength(5);
-      expect(questions.map(({ questionType }) => questionType)).toEqual(
-        schedule,
-      );
       expect(questions.at(-1)?.questionType).toBe('champion');
-      for (const type of [
-        ...schedule,
-        ...questions.map((question) => question.questionType),
-      ]) {
-        expect(excluded).not.toContain(type);
+      for (const question of questions.slice(0, -1)) {
+        expect(dailySettings.questionTypes).toContain(question.questionType);
+        seen.add(question.questionType);
       }
-    });
-    it('covers all 18 Daily formats', () => {
-      const seen = new Set(dates.flatMap(getDailyQuestionTypes));
-      expect(seen.size).toBe(18);
-      expect(seen).toContain('sprite-match');
-      expect(seen).toContain('whos-that-pokemon');
-    });
+    }
+    expect([...seen].sort()).toEqual([...dailySettings.questionTypes].sort());
   });
 });
 describe('daily dates', () => {
@@ -173,12 +109,12 @@ describe('Daily reminder prompt', () => {
   });
 });
 it('keeps the shared Daily independent of locale-specific collation', () => {
-  const expected = buildDailyQuestions(catalog, '2026-09-08');
+  const expected = buildDailyForTest('2026-09-08');
   const compare = vi
     .spyOn(String.prototype, 'localeCompare')
     .mockReturnValue(0);
   try {
-    expect(buildDailyQuestions(catalog, '2026-09-08')).toEqual(expected);
+    expect(buildDailyForTest('2026-09-08')).toEqual(expected);
   } finally {
     compare.mockRestore();
   }

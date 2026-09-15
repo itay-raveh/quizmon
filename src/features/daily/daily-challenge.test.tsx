@@ -1,5 +1,5 @@
 import type { StartGame } from '@/app/game-session';
-import type { ActiveGameSnapshot } from '@/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '@/domain/player/active-game';
 import type { GameResult } from '@/domain/quiz/types';
 import { defaultGameSettings } from '@/domain/settings/game-settings';
 import { useDailyChallenge } from '@/features/daily/useDailyChallenge';

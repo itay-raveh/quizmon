@@ -17,14 +17,14 @@ import {
   shouldAutoStartDaily,
 } from '@/domain/quiz/daily';
 import { isDailyTrack, type DailyTrack } from '@/domain/quiz/daily-track';
-import { QUESTION_RULES_VERSION } from '@/domain/quiz/question-variants';
+import { GAMEPLAY_REVISION } from '@/domain/quiz/gameplay-version';
 import {
   buildDailyTrackQuestions,
   resolveTrainingSettings,
 } from '@/domain/quiz/question-generation';
 import type { GameResult } from '@/domain/quiz/types';
 import type { GameSettings } from '@/domain/settings/types';
-import { type ActiveGameSnapshot } from '@/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '@/domain/player/active-game';
 import { useCallback, useEffect, useState } from 'react';
 import { canPersistResults } from '@/lib/storage/results-storage';
 
@@ -126,8 +126,7 @@ export const useDailyChallenge = ({
       route.track &&
       track.difficulty === route.track.difficulty &&
       track.scope === route.track.scope &&
-      ((route.rules !== null &&
-        route.rules !== String(QUESTION_RULES_VERSION)) ||
+      ((route.rules !== null && route.rules !== String(GAMEPLAY_REVISION)) ||
         (route.catalog !== null &&
           route.catalog !== String(catalog.contentVersion)))
     ) {

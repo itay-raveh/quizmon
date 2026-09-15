@@ -3,7 +3,7 @@ import type { PlayerSave } from '../src/domain/player/player-save';
 import { getLeagueSettings } from '../src/domain/quiz/league';
 import { buildLeagueQuestions } from '../src/domain/quiz/question-generation';
 import { getQuestionTitle } from '../src/domain/quiz/question-labels';
-import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 import { catalog, expect, seedPlayer, test } from './fixtures';
 const leagueSeed = 'league-e2e-lineup';
 const unlockLeague = (
@@ -59,9 +59,8 @@ const unlockLeague = (
         ),
         masteryRounds: 3,
         quickAttackCompleted: true,
-        version: 2,
       },
-      streak: { creditedDates: dates, version: 1 },
+      streak: { creditedDates: dates },
       training: {},
     },
   });
@@ -204,7 +203,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
   });
   const questions = buildLeagueQuestions(catalog, leagueSeed, settings);
   const snapshot = {
-    version: 3,
+    version: 7,
     questions,
     contentVersion: catalog.contentVersion,
     elapsedMilliseconds: 15000,

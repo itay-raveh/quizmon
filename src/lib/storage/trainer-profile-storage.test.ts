@@ -24,7 +24,6 @@ describe('Trainer profile storage', () => {
       name: '',
       partnerPokemon: null,
       specialty: null,
-      version: 1,
     });
 
     const saved = saveTrainerProfile({

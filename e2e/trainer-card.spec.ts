@@ -23,9 +23,8 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
         correctQuestionTypes: {},
         masteryRounds: 0,
         quickAttackCompleted: false,
-        version: 2,
       },
-      streak: { creditedDates: [], version: 1 },
+      streak: { creditedDates: [] },
       training: {},
     },
   });
@@ -189,7 +188,6 @@ test('shows saved Trainer records on a narrow screen', async ({ page }) => {
   const data = emptyPlayerData();
   data.generationPromptAnswered = true;
   data.profile = {
-    version: 1,
     createdAt: '2026-09-01',
     hasBeenRevealed: true,
     name: 'Alexandria Evergreen',
@@ -226,7 +224,7 @@ test('shows saved Trainer records on a narrow screen', async ({ page }) => {
   data.results.streak.creditedDates = dates;
   await page.addInitScript(
     (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
-    { version: 6, restoreId: null, data },
+    { version: 7, restoreId: null, data },
   );
   await page.goto('/?trainer=card');
   const card = page.getByRole('article', { name: 'Trainer Card' });
@@ -276,7 +274,6 @@ test('stops the Champion finish animation when reduced motion is enabled', async
   const data = emptyPlayerData();
   data.generationPromptAnswered = true;
   data.profile = {
-    version: 1,
     createdAt: '2026-09-01',
     hasBeenRevealed: true,
     name: 'Leaf',
@@ -286,7 +283,7 @@ test('stops the Champion finish animation when reduced motion is enabled', async
   data.results.league.completed = true;
   await page.addInitScript(
     (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
-    { version: 6, restoreId: null, data },
+    { version: 7, restoreId: null, data },
   );
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?trainer=card');

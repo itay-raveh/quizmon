@@ -1,10 +1,9 @@
 import {
-  PLAYER_SAVE_VERSION,
+  SAVE_SCHEMA_VERSION,
   parsePlayerSave,
 } from '../../domain/player/player-save';
-import { SaveError } from '../../domain/player/save-schema';
 import { removeStoredValue } from './browser-storage';
-import { isRecord } from '../validation';
+import { parseUpdateSave } from '../../domain/player/update-save';
 import {
   ACTIVE_GAME_KEY,
   DAILY_ATTEMPTS_KEY,
@@ -32,20 +31,7 @@ export const inspectSavedData = (): void => {
     readPlayerSave();
     inspectRoundStorage();
     const update = window.sessionStorage.getItem('quizmon.update-state.v1');
-    if (update !== null) {
-      const value: unknown = JSON.parse(update);
-      if (!isRecord(value))
-        throw new SaveError('invalid', 'The saved app session is invalid.');
-      if (value.saveVersion !== PLAYER_SAVE_VERSION)
-        throw new SaveError(
-          Number(value.saveVersion) > PLAYER_SAVE_VERSION
-            ? 'newer'
-            : 'unsupported',
-          'The saved app session uses a different format.',
-        );
-      if (!isRecord(value.values) || typeof value.url !== 'string')
-        throw new SaveError('invalid', 'The saved app session is invalid.');
-    }
+    if (update !== null) parseUpdateSave(JSON.parse(update));
   } catch (error) {
     reportSaveIssue(error);
   }
@@ -53,7 +39,7 @@ export const inspectSavedData = (): void => {
 
 export const createRecoveryExport = () => ({
   format: 'quizmon-recovery',
-  version: 1,
+  version: SAVE_SCHEMA_VERSION,
   exportedAt: new Date().toISOString(),
   entries: Object.entries(recoveryKeys).flatMap(([storage, keys]) =>
     keys.flatMap((key) => {

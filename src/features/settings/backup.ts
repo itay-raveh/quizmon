@@ -14,14 +14,12 @@ export interface PlayerBackup {
   exportedAt: string;
   format: 'quizmon-backup';
   save: PlayerSave;
-  version: 1;
 }
 
 export const createBackup = (): PlayerBackup => ({
   exportedAt: new Date().toISOString(),
   format: 'quizmon-backup',
   save: readPlayerSave(),
-  version: 1,
 });
 
 export const validateBackupSize = (size: number): void => {
@@ -45,7 +43,7 @@ export const parseBackup = (text: string): PlayerBackup => {
       'This is not a Quizmon backup. Choose a file exported from Quizmon.',
     );
   }
-  if (value.version !== 1) {
+  if (value.version !== undefined && value.version !== 1) {
     throw new Error(
       'This backup uses an unsupported version. Update Quizmon or choose another backup.',
     );
@@ -59,7 +57,6 @@ export const parseBackup = (text: string): PlayerBackup => {
     exportedAt: value.exportedAt,
     format: 'quizmon-backup',
     save,
-    version: 1,
   };
 };
 

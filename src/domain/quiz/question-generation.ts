@@ -1,27 +1,19 @@
-import { QUESTION_RULES_VERSION } from './question-variants';
+import { GAMEPLAY_REVISION } from './gameplay-version';
 import { createSeededRandom, shuffle } from '../../lib/random';
 import type { PokemonCatalog } from '../pokemon/types';
 import {
   TRAINING_QUESTION_COUNT,
-  defaultGameSettings,
   filterPokemon,
   getTrainingSettings,
 } from '../settings/game-settings';
 import type { ExperienceSettings, GameSettings } from '../settings/types';
+import { DAILY_QUESTION_COUNT } from './daily';
 import {
-  DAILY_CHALLENGE_VERSION,
-  DAILY_QUESTION_COUNT,
-  getDailyQuestionTypes,
-  getDailyRotation,
-  getDailySettings,
-} from './daily';
-import {
-  LEAGUE_CHALLENGE_VERSION,
   LEAGUE_QUESTION_COUNT,
   getLeagueQuestionTypes,
   getLeagueSettings,
 } from './league';
-import { type QuestionHistory, emptyQuestionHistory } from './question-history';
+import { type QuestionHistory } from './question-history';
 import type { QuestionContext } from './questions/context';
 import { buildQuestionType } from './questions/registry';
 import type { QuestionData } from './types';
@@ -138,26 +130,6 @@ export const buildQuestionSequence = (
   });
 };
 
-export const buildDailyQuestions = (
-  catalog: PokemonCatalog,
-  date: string,
-): QuestionData[] => {
-  const questions = buildQuestionSequence(
-    catalog,
-    getDailyQuestionTypes(date),
-    getDailySettings(defaultGameSettings),
-    createSeededRandom(`quizmon-daily-v${DAILY_CHALLENGE_VERSION}:${date}`),
-    emptyQuestionHistory(),
-    getDailyRotation(date),
-  );
-
-  if (questions.length !== DAILY_QUESTION_COUNT) {
-    throw new Error('Daily Challenge must contain exactly five questions');
-  }
-
-  return questions;
-};
-
 export const buildLeagueQuestions = (
   catalog: PokemonCatalog,
   seed: string,
@@ -169,7 +141,7 @@ export const buildLeagueQuestions = (
     catalog,
     getLeagueQuestionTypes(seed),
     settings,
-    createSeededRandom(`quizmon-league-v${LEAGUE_CHALLENGE_VERSION}:${seed}`),
+    createSeededRandom(`quizmon-league-v${GAMEPLAY_REVISION}:${seed}`),
     history,
   );
 
@@ -192,7 +164,7 @@ export const buildDailyTrackQuestions = (
   settings: GameSettings,
   scope: string,
 ): QuestionData[] => {
-  const identity = `${scope}:${settings.difficulty}:rules${QUESTION_RULES_VERSION}:catalog${catalog.contentVersion}`;
+  const identity = `${scope}:${settings.difficulty}:rules${GAMEPLAY_REVISION}:catalog${catalog.contentVersion}`;
   const ordinal = Math.floor(Date.parse(`${date}T00:00:00Z`) / 86_400_000);
   const types = settings.questionTypes;
   if (!types.length) throw new Error('No eligible Daily questions.');

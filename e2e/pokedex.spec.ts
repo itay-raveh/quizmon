@@ -97,7 +97,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
       localStorage.setItem(
         'quizmon.player',
         JSON.stringify({
-          version: 6,
+          version: 7,
           restoreId: null,
           data: { ...data, settings },
         }),
@@ -105,7 +105,7 @@ test('registers a correct answer immediately even when the round is abandoned', 
       sessionStorage.setItem(
         'quizmon.active-game.v1',
         JSON.stringify({
-          version: 3,
+          version: 7,
           questions,
           playerRestoreId: null,
           answers: [],

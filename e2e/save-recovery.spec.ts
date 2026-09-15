@@ -65,7 +65,7 @@ for (const width of [360, 1280]) {
           restoreId: string;
         },
     );
-    expect(saved.version).toBe(6);
+    expect(saved.version).toBe(7);
     expect(saved.restoreId).toBeTruthy();
   });
 }
@@ -124,7 +124,7 @@ test('restores a current backup from a retired save @cross-browser', async ({
 test('keeps a newer save intact and does not offer a reset', async ({
   page,
 }) => {
-  const raw = JSON.stringify({ ...currentSave, version: 7 });
+  const raw = JSON.stringify({ ...currentSave, version: 8 });
   await page.addInitScript(
     (raw) => localStorage.setItem('quizmon.player', raw),
     raw,

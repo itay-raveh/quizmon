@@ -1,7 +1,7 @@
 import { createSeededRandom, shuffle } from '../../lib/random';
 import type { GameResult, QuestionData, QuestionType } from './types';
 
-export const LEAGUE_CHALLENGE_VERSION = 3;
+import { GAMEPLAY_REVISION } from './gameplay-version';
 
 const LEAGUE_STAGE_SIZE = 3;
 
@@ -65,14 +65,14 @@ export const getLeagueQuestionTypes = (
     shuffle(
       types,
       createSeededRandom(
-        `quizmon-league-types-v${LEAGUE_CHALLENGE_VERSION}:${seed}:${index}`,
+        `quizmon-league-types-v${GAMEPLAY_REVISION}:${seed}:${index}`,
       ),
     ),
   ),
   ...shuffle(
     ['odd-one-out', 'counter-pick'] as const,
     createSeededRandom(
-      `quizmon-league-types-v${LEAGUE_CHALLENGE_VERSION}:${seed}:champion`,
+      `quizmon-league-types-v${GAMEPLAY_REVISION}:${seed}:champion`,
     ),
   ),
   'champion',

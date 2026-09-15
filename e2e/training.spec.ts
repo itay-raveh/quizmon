@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import type { PlayerSave } from '../src/domain/player/player-save';
-import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 import {
   catalogData,
   expect,

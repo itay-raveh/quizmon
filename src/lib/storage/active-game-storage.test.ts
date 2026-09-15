@@ -10,8 +10,8 @@ import {
   clearActiveGame,
   readActiveGame,
   writeActiveGame,
-  type ActiveGameSnapshot,
 } from './active-game-storage';
+import type { ActiveGameSnapshot } from '@/domain/player/active-game';
 const snapshot: Omit<ActiveGameSnapshot, 'version'> = {
   answers: [],
   contentVersion: 8,
@@ -68,7 +68,7 @@ describe('active game storage', () => {
     expect(readActiveGame(catalog)).toEqual({
       ...snapshot,
       playerRestoreId: null,
-      version: 3,
+      version: 7,
     });
   });
   it('retains saved older difficulty rules and assistance after a rule bump', () => {
@@ -122,7 +122,7 @@ describe('active game storage', () => {
       ]) {
         window.sessionStorage.setItem(
           'quizmon.active-game.v1',
-          JSON.stringify({ ...snapshot, version: 3, ...patch }),
+          JSON.stringify({ ...snapshot, version: 7, ...patch }),
         );
         expect(readActiveGame(catalog)).toBeNull();
       }
@@ -136,7 +136,7 @@ describe('active game storage', () => {
           'quizmon.active-game.v1',
           JSON.stringify({
             ...snapshot,
-            version: 3,
+            version: 7,
             settings: { ...defaultGameSettings, [field]: value },
           }),
         );

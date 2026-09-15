@@ -1,3 +1,4 @@
+import { buildDailyForTest } from '../../../tests/fixtures/daily';
 import { catalog } from '../../../tests/fixtures/catalog';
 import {
   createBackup,
@@ -16,11 +17,7 @@ import {
 import { registerShownQuestion } from '../../lib/storage/question-history-storage';
 import type { Generation } from '../pokemon/types';
 import { defaultGameSettings } from '../settings/game-settings';
-import {
-  buildDailyQuestions,
-  buildLeagueQuestions,
-  buildQuestions,
-} from './question-generation';
+import { buildLeagueQuestions, buildQuestions } from './question-generation';
 import {
   emptyQuestionHistory,
   getQuestionKey,
@@ -261,20 +258,20 @@ it('round-trips history and frozen lineups through saves and backup restore', as
     questionHistory: questions.reduce(rememberQuestion, emptyQuestionHistory()),
   });
   expect(readActiveGame(catalog)?.questions).toEqual(questions);
-  expect(readActiveGame(catalog)?.version).toBe(3);
+  expect(readActiveGame(catalog)?.version).toBe(7);
 });
 it('keeps Daily independent of personal history and rotates Champion targets across dates', () => {
-  const first = buildDailyQuestions(catalog, '2026-09-08');
+  const first = buildDailyForTest('2026-09-08');
   updatePlayerData({
     questionHistory: first.reduce(rememberQuestion, emptyQuestionHistory()),
   });
-  expect(buildDailyQuestions(catalog, '2026-09-08')).toEqual(first);
+  expect(buildDailyForTest('2026-09-08')).toEqual(first);
   const champions = new Set<string>();
   for (let day = 0; day < 45; day++) {
     const date = new Date(Date.UTC(2026, 8, 1 + day))
       .toISOString()
       .slice(0, 10);
-    const questions = buildDailyQuestions(catalog, date);
+    const questions = buildDailyForTest(date);
     expect(questions.every(isQuestionData)).toBe(true);
     champions.add(questions.at(-1)!.subject.name);
   }

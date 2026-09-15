@@ -13,7 +13,7 @@ import {
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import { createSeededRandom } from '../src/lib/random';
 import { seedPlayer } from './fixtures';
-import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 import type { PlayerData } from '../src/domain/player/player-save';
 import { expect, expectNoHorizontalOverflow, test } from './fixtures';
 
@@ -198,7 +198,7 @@ for (const width of [320, 1280]) {
           JSON.stringify(snapshot),
         ),
       {
-        version: 3,
+        version: 7,
         playerRestoreId: null,
         mode: { kind: 'training' },
         settings: resolved,

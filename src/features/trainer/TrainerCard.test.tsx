@@ -19,7 +19,6 @@ const profile: TrainerProfile = {
   name: 'Leaf',
   partnerPokemon: 'bulbasaur',
   specialty: 'type',
-  version: 1,
 };
 
 const stats: TrainerStats = {

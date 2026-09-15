@@ -112,7 +112,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
       sessionStorage.setItem(
         'quizmon.active-game.v1',
         JSON.stringify({
-          version: 3,
+          version: 7,
           playerRestoreId: null,
           contentVersion: 14,
           elapsedMilliseconds: 4321,

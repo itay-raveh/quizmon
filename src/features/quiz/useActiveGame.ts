@@ -8,8 +8,8 @@ import {
   clearActiveGame,
   readActiveGame,
   writeActiveGame,
-  type ActiveGameSnapshot,
 } from '@/lib/storage/active-game-storage';
+import type { ActiveGameSnapshot } from '@/domain/player/active-game';
 import { readPlayerSave } from '@/lib/storage/player-storage';
 import { registerShownQuestion } from '@/lib/storage/question-history-storage';
 import { readDailyResult } from '@/lib/storage/results-storage';

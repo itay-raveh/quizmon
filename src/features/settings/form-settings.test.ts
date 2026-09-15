@@ -1,6 +1,5 @@
 import { getFormGroup, getFormGroupGenerations } from '@/domain/pokemon/forms';
 import { formGroups, generations } from '@/domain/pokemon/types';
-import { getDailySettings } from '@/domain/quiz/daily';
 import { getLeagueSettings } from '@/domain/quiz/league';
 import { buildQuestions } from '@/domain/quiz/question-generation';
 import {
@@ -114,13 +113,12 @@ it.each(formGroups)(
     }
   },
 );
-it('keeps Daily and the League challenge independent of Training form preferences', () => {
+it('keeps the League challenge independent of Training form preferences', () => {
   const settings = {
     ...defaultGameSettings,
     difficulty: undefined,
     formGroups: ['gigantamax'] as const,
   };
-  expect(getDailySettings(settings).formGroups).toEqual(formGroups);
   expect(getLeagueSettings(settings).formGroups).toEqual(formGroups);
 });
 it('retains form preferences through a backup round trip', () => {

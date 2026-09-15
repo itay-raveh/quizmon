@@ -91,7 +91,7 @@ it('round-trips all victory records through backup and replacement restore', () 
   const backup = parseBackup(JSON.stringify(createBackup()));
   localStorage.clear();
   restoreBackup(backup);
-  expect(readPlayerSave().version).toBe(6);
+  expect(readPlayerSave().version).toBe(7);
   expect(readPlayerSave().data.hallOfFame).toEqual([first, second]);
 });
 it.each([
@@ -109,14 +109,14 @@ it.each([
       hallOfFame: [{ ...victory(), ...patch }],
     };
     expect(() =>
-      parsePlayerSave({ version: 6, restoreId: null, data }),
+      parsePlayerSave({ version: 7, restoreId: null, data }),
     ).toThrow('invalid progress');
   },
 );
 it('accepts a victory with a 20-character Trainer name', () => {
   const record = { ...victory(), trainerName: 'A'.repeat(20) };
   const saved = parsePlayerSave({
-    version: 6,
+    version: 7,
     restoreId: null,
     data: { ...emptyPlayerData(), hallOfFame: [record] },
   });

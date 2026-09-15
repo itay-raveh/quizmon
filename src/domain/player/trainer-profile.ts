@@ -5,7 +5,6 @@ import {
   type TrainerSpecialty,
 } from './trainer-progression';
 
-const TRAINER_PROFILE_VERSION = 1;
 export const TRAINER_NAME_MAX_LENGTH = 20;
 
 export interface TrainerProfile {
@@ -14,7 +13,6 @@ export interface TrainerProfile {
   name: string;
   partnerPokemon: string | null;
   specialty: TrainerSpecialty | null;
-  version: number;
 }
 
 export const createTrainerProfile = (): TrainerProfile => ({
@@ -23,7 +21,6 @@ export const createTrainerProfile = (): TrainerProfile => ({
   name: '',
   partnerPokemon: null,
   specialty: null,
-  version: TRAINER_PROFILE_VERSION,
 });
 
 export const normalizeTrainerProfile = (
@@ -32,7 +29,6 @@ export const normalizeTrainerProfile = (
   if (!isRecord(value)) return null;
   const profile = value as Partial<TrainerProfile>;
   if (
-    profile.version !== TRAINER_PROFILE_VERSION ||
     !isDailyDate(profile.createdAt) ||
     typeof profile.hasBeenRevealed !== 'boolean' ||
     typeof profile.name !== 'string' ||
@@ -50,6 +46,5 @@ export const normalizeTrainerProfile = (
     name: profile.name.trim().slice(0, TRAINER_NAME_MAX_LENGTH),
     partnerPokemon: profile.partnerPokemon,
     specialty: profile.specialty as TrainerSpecialty | null,
-    version: TRAINER_PROFILE_VERSION,
   };
 };

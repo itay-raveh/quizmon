@@ -2,6 +2,7 @@ import { parseVersionedSave } from './save-schema';
 import { isRecord } from '../../lib/validation';
 import { parsePlayerSave } from './player-save';
 import fixture from '../../../tests/fixtures/player-save.v6.json';
+import currentFixture from '../../../tests/fixtures/player-save.v7.json';
 
 const parseNamed = (value: unknown) => {
   if (!isRecord(value) || typeof value.name !== 'string')
@@ -36,8 +37,13 @@ const schema = {
     },
   },
 };
-it('loads the frozen version 6 fixture without rewriting its fields', () => {
-  expect(parsePlayerSave(fixture)).toEqual(fixture);
+it('migrates the frozen version 6 fixture into the shared schema', () => {
+  const before = structuredClone(fixture);
+  expect(parsePlayerSave(fixture)).toEqual(currentFixture);
+  expect(fixture).toEqual(before);
+});
+it('loads the frozen current schema without changing it', () => {
+  expect(parsePlayerSave(currentFixture)).toEqual(currentFixture);
 });
 it('runs every intermediate migration in order and leaves the original untouched', () => {
   const original = { version: 6, data: { name: 'Leaf' } };

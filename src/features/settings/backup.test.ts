@@ -75,7 +75,7 @@ const populate = () => {
     results: {
       ...save.data.results,
       league: { completed: true, seed: 'fixed-league-retry' },
-      streak: { version: 1, creditedDates: ['2026-09-07'] },
+      streak: { creditedDates: ['2026-09-07'] },
       training: { 'score:3': result },
       progress: {
         ...save.data.results.progress,
@@ -208,7 +208,7 @@ it.for<(backup: PlayerBackup) => void>([
     }),
   (backup) =>
     Object.assign(backup.save.data, {
-      profile: { ...backup.save.data.profile, version: 99 },
+      profile: { ...backup.save.data.profile, partnerPokemon: 99 },
     }),
   (backup) =>
     Object.assign(backup.save.data.results.progress, {

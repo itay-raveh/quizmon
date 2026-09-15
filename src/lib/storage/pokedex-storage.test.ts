@@ -104,7 +104,7 @@ it('persists before round completion and includes discoveries in backup replacem
 });
 it('rejects invalid collection data without overwriting the save', () => {
   const save = {
-    version: 6,
+    version: 7,
     restoreId: null,
     data: { ...emptyPlayerData(), pokedex: ['pikachu', 42] },
   };

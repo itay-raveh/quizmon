@@ -82,13 +82,13 @@ it('saves the current schema and settings without legacy aliases', async () => {
     sessionStorage.getItem('quizmon.update-state.v1')!,
   );
   expect(saved).toMatchObject({
-    saveVersion: 6,
+    saveVersion: 7,
     values: { session: { phase: 'questions', settings } },
   });
 });
 
 it('reloads an update during recovery without replacing the preserved save', async () => {
-  const raw = '{"saveVersion":7,"values":{"draft":"Keep this"}}';
+  const raw = '{"saveVersion":8,"values":{"draft":"Keep this"}}';
   sessionStorage.setItem('quizmon.update-state.v1', raw);
   const state = await import('./update-session');
   const health = await import('@/lib/storage/save-health');
@@ -106,4 +106,38 @@ it('reloads an update during recovery without replacing the preserved save', asy
   } finally {
     vi.unstubAllGlobals();
   }
+});
+
+it('restores reload state from schema 6 when the application updates to schema 7', async () => {
+  sessionStorage.setItem(
+    'quizmon.update-state.v1',
+    JSON.stringify({
+      saveVersion: 6,
+      url: window.location.href,
+      values: { draft: 'Preserved draft' },
+    }),
+  );
+  const state = await import('./update-session');
+  expect(state.readUpdateState('draft', '')).toBe('Preserved draft');
+  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBeNull();
+});
+
+it('keeps reload state available for recovery until the application can load it', async () => {
+  const raw = JSON.stringify({
+    saveVersion: 6,
+    url: window.location.href,
+    values: { draft: 'Keep for recovery' },
+  });
+  sessionStorage.setItem('quizmon.update-state.v1', raw);
+  const state = await import('./update-session');
+  const health = await import('@/lib/storage/save-health');
+  const { SaveError } = await import('@/domain/player/save-schema');
+  health.reportSaveIssue(
+    new SaveError('invalid', 'The player save is invalid.'),
+  );
+  expect(state.readUpdateState('draft', '')).toBe('');
+  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBe(raw);
+  health.clearSaveIssue();
+  expect(state.readUpdateState('draft', '')).toBe('Keep for recovery');
+  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBeNull();
 });
