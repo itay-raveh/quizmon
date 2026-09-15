@@ -73,7 +73,7 @@ for (const width of [360, 1280]) {
 test('restores a current backup from a retired save @cross-browser', async ({
   page,
 }) => {
-  const raw = JSON.stringify({ ...currentSave, version: 5 });
+  const raw = JSON.stringify({ ...currentSave, version: 3 });
   await page.addInitScript((raw) => {
     if (sessionStorage.getItem('recovery-seeded')) return;
     sessionStorage.setItem('recovery-seeded', '1');

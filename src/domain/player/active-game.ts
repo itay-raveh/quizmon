@@ -8,6 +8,7 @@ import {
   SaveError,
   type SaveMigration,
 } from './save-schema';
+import { roundMigrationV4 } from './schemas/round-v4';
 import { parseRoundV7 } from './schemas/round-v7';
 export interface ActiveGameSnapshot extends QuestionLineup {
   scoreMultipliers?: ScoreMultipliers;
@@ -28,6 +29,8 @@ const parseCurrentRound = (value: unknown): ActiveGameSnapshot => {
   return snapshot;
 };
 const migrations: Readonly<Record<number, SaveMigration>> = {
+  4: roundMigrationV4,
+  5: { parse: (value) => value, upgrade: (value) => value },
   6: {
     parse(value) {
       if (!isRecord(value) || value.version !== 3)
@@ -49,10 +52,10 @@ const migrations: Readonly<Record<number, SaveMigration>> = {
 export const parseActiveGameSave = (value: unknown): ActiveGameSnapshot => {
   const version = isRecord(value) ? value.version : undefined;
   return parseVersionedSave(
-    // Round format 3 was shipped with player schema 6 before the counters were unified.
-    { version: version === 3 ? 6 : version, data: value },
+    // Round formats 2 and 3 shipped with player schemas 4–5 and 6.
+    { version: version === 2 ? 4 : version === 3 ? 6 : version, data: value },
     {
-      minimumVersion: 6,
+      minimumVersion: 4,
       currentVersion: SAVE_SCHEMA_VERSION,
       migrations,
       parseCurrent: parseCurrentRound,

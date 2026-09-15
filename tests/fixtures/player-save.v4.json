@@ -1,0 +1,95 @@
+{
+  "version": 4,
+  "restoreId": null,
+  "data": {
+    "generationPromptAnswered": false,
+    "profile": {
+      "version": 1,
+      "name": "Leaf",
+      "createdAt": "2026-09-01",
+      "hasBeenRevealed": true,
+      "partnerPokemon": "pikachu",
+      "specialty": null
+    },
+    "pokedex": ["pikachu"],
+    "hallOfFame": [],
+    "leagueLineup": null,
+    "questionHistory": {
+      "sequence": 0,
+      "subjects": {},
+      "questions": {},
+      "pokemon": {},
+      "distractors": {},
+      "rounds": {}
+    },
+    "settings": null,
+    "results": {
+      "daily": {
+        "2026-09-01": {
+          "answers": [
+            {
+              "category": "identity",
+              "questionType": "pokedex-scan",
+              "correct": true,
+              "points": 1000,
+              "cluesUsed": 0,
+              "pokemonName": "pikachu",
+              "generation": "I"
+            }
+          ],
+          "contentVersion": 13,
+          "scoreVersion": 2,
+          "questionCount": 10,
+          "correctCount": 1,
+          "score": 1000,
+          "elapsedSeconds": 20
+        }
+      },
+      "training": {
+        "league": {
+          "answers": [
+            {
+              "category": "identity",
+              "questionType": "pokedex-scan",
+              "correct": true,
+              "points": 1000,
+              "cluesUsed": 0,
+              "pokemonName": "pikachu",
+              "generation": "I"
+            }
+          ],
+          "contentVersion": 13,
+          "scoreVersion": 2,
+          "questionCount": 10,
+          "correctCount": 1,
+          "score": 1000,
+          "elapsedSeconds": 20
+        }
+      },
+      "league": {
+        "completed": false,
+        "seed": null
+      },
+      "streak": {
+        "version": 1,
+        "creditedDates": ["2026-09-01"]
+      },
+      "progress": {
+        "version": 2,
+        "championAnswersWithoutClues": 0,
+        "correctCategories": {
+          "identity": 1
+        },
+        "correctGenerations": {
+          "I": 1
+        },
+        "correctPokemon": ["pikachu"],
+        "correctQuestionTypes": {
+          "pokedex-scan": 1
+        },
+        "masteryRounds": 0,
+        "quickAttackCompleted": true
+      }
+    }
+  }
+}

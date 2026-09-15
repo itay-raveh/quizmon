@@ -8,19 +8,22 @@ import { generations, type Generation } from '../pokemon/types';
 import { questionTypes } from '../quiz/questions/definitions';
 import {
   questionCategories,
+  retiredQuestionCategories,
+  retiredQuestionTypes,
+  type SavedAnswerResult,
   type GameResult,
-  type QuestionCategory,
-  type QuestionType,
 } from '../quiz/types';
 import { getUnifiedScoreKey } from '../quiz/scoring';
 import { hasDailyResultOnDate } from '../quiz/daily-track';
 
 interface TrainerProgress {
   championAnswersWithoutClues: number;
-  correctCategories: Partial<Record<QuestionCategory, number>>;
+  correctCategories: Partial<Record<SavedAnswerResult['category'], number>>;
   correctGenerations: Partial<Record<Generation, number>>;
   correctPokemon: string[];
-  correctQuestionTypes: Partial<Record<QuestionType, number>>;
+  correctQuestionTypes: Partial<
+    Record<NonNullable<SavedAnswerResult['questionType']>, number>
+  >;
   masteryRounds: number;
   quickAttackCompleted: boolean;
   quickAttackRounds: number;
@@ -124,10 +127,10 @@ const normalizeProgress = (
     championAnswersWithoutClues: normalizeProgressCount(
       progress.championAnswersWithoutClues,
     ),
-    correctCategories: normalizeCounts(
-      progress.correctCategories,
-      questionCategories,
-    ),
+    correctCategories: normalizeCounts(progress.correctCategories, [
+      ...questionCategories,
+      ...retiredQuestionCategories,
+    ]),
     correctGenerations: normalizeCounts(
       progress.correctGenerations,
       generations,
@@ -139,10 +142,11 @@ const normalizeProgress = (
         ),
       ),
     ],
-    correctQuestionTypes: normalizeCounts(
-      progress.correctQuestionTypes,
-      questionTypes,
-    ),
+    correctQuestionTypes: normalizeCounts(progress.correctQuestionTypes, [
+      ...questionTypes,
+      ...retiredQuestionTypes,
+      'champion',
+    ]),
     masteryRounds: normalizeProgressCount(progress.masteryRounds),
     quickAttackCompleted: progress.quickAttackCompleted,
     quickAttackRounds: normalizeProgressCount(progress.quickAttackRounds),

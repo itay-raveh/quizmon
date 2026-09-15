@@ -118,48 +118,51 @@ it.each(['profile', 'progress', 'streak'] as const)(
   },
 );
 
-it('upgrades the previous round format for both the active round and saved Daily attempts', () => {
-  const date = '2026-09-15';
-  const questions = buildDailyForTest(date);
-  const snapshot = {
-    version: 3,
-    playerRestoreId: null,
-    questions,
-    answers: [],
-    mode: { kind: 'daily', date, track: { difficulty: 3, scope: 'all' } },
-    settings: dailySettings,
-    contentVersion: catalog.contentVersion,
-    seed: 'saved-daily',
-    questionCount: 5,
-    elapsedMilliseconds: 2500,
-  };
-  localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(populatedSave()));
-  sessionStorage.setItem(ACTIVE_GAME_KEY, JSON.stringify(snapshot));
-  localStorage.setItem(
-    DAILY_ATTEMPTS_KEY,
-    JSON.stringify({ [`${date}:3:all`]: snapshot }),
-  );
-  inspectSavedData();
-  expect(getSaveIssue()).toBeNull();
-  expect(readActiveGame(catalog)).toEqual({ ...snapshot, version: 7 });
-  expect(readDailyAttempts(date, null)[`${date}:3:all`]).toEqual({
-    ...snapshot,
-    version: 7,
-  });
-  expect(writeActiveGame(readActiveGame(catalog)!)).toBe(true);
-  expect(JSON.parse(sessionStorage.getItem(ACTIVE_GAME_KEY)!)).toHaveProperty(
-    'version',
-    7,
-  );
-  expect(
-    (
-      JSON.parse(localStorage.getItem(DAILY_ATTEMPTS_KEY)!) as Record<
-        string,
-        unknown
-      >
-    )[`${date}:3:all`],
-  ).toHaveProperty('version', 7);
-});
+it.each([2, 3])(
+  'upgrades round format %i for both the active round and saved Daily attempts',
+  (version) => {
+    const date = '2026-09-15';
+    const questions = buildDailyForTest(date);
+    const snapshot = {
+      version,
+      playerRestoreId: null,
+      questions,
+      answers: [],
+      mode: { kind: 'daily', date, track: { difficulty: 3, scope: 'all' } },
+      settings: dailySettings,
+      contentVersion: catalog.contentVersion,
+      seed: 'saved-daily',
+      questionCount: 5,
+      elapsedMilliseconds: 2500,
+    };
+    localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(populatedSave()));
+    sessionStorage.setItem(ACTIVE_GAME_KEY, JSON.stringify(snapshot));
+    localStorage.setItem(
+      DAILY_ATTEMPTS_KEY,
+      JSON.stringify({ [`${date}:3:all`]: snapshot }),
+    );
+    inspectSavedData();
+    expect(getSaveIssue()).toBeNull();
+    expect(readActiveGame(catalog)).toEqual({ ...snapshot, version: 7 });
+    expect(readDailyAttempts(date, null)[`${date}:3:all`]).toEqual({
+      ...snapshot,
+      version: 7,
+    });
+    expect(writeActiveGame(readActiveGame(catalog)!)).toBe(true);
+    expect(JSON.parse(sessionStorage.getItem(ACTIVE_GAME_KEY)!)).toHaveProperty(
+      'version',
+      7,
+    );
+    expect(
+      (
+        JSON.parse(localStorage.getItem(DAILY_ATTEMPTS_KEY)!) as Record<
+          string,
+          unknown
+        >
+      )[`${date}:3:all`],
+    ).toHaveProperty('version', 7);
+  },
+);
 
 it('preserves an old round verbatim when catalog validation rejects it', () => {
   const questions = buildDailyForTest('2026-09-15');

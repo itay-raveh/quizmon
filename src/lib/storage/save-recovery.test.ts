@@ -19,7 +19,7 @@ beforeEach(() => {
   sessionStorage.clear();
 });
 afterEach(() => vi.restoreAllMocks());
-it.each([1, 2, 3, 4, 5, 8])(
+it.each([1, 2, 3, 8])(
   'preserves rejected version %i byte for byte and blocks ordinary writes',
   (version) => {
     const raw = JSON.stringify({ ...createPlayerSave(), version }, null, 3);

@@ -2,7 +2,7 @@ import {
   emptyQuestionHistory,
   type QuestionHistory,
 } from '../quiz/question-history';
-import type { QuestionLineup } from '../quiz/question-lineup';
+import type { SavedQuestionLineup } from '../quiz/question-lineup';
 import type { GameSettings } from '../settings/types';
 import type { LeagueVictoryRecord } from './hall-of-fame';
 import { normalizeResults, type SavedResults } from './results';
@@ -14,6 +14,8 @@ import {
   type SaveMigration,
 } from './save-schema';
 import { parsePlayerDataV7 } from './schemas/player-v7';
+import { playerMigrationV4 } from './schemas/player-v4';
+import { playerMigrationV5 } from './schemas/player-v5';
 import { playerMigrationV6 } from './schemas/player-v6';
 export interface PlayerData {
   generationPromptAnswered: boolean;
@@ -21,12 +23,12 @@ export interface PlayerData {
   results: SavedResults;
   settings: GameSettings | null;
   questionHistory: QuestionHistory;
-  leagueLineup: QuestionLineup | null;
+  leagueLineup: SavedQuestionLineup | null;
   pokedex: string[];
   hallOfFame: LeagueVictoryRecord[];
 }
 export const SAVE_SCHEMA_VERSION = 7;
-const MINIMUM_SAVE_SCHEMA_VERSION = 6;
+const MINIMUM_SAVE_SCHEMA_VERSION = 4;
 
 export interface PlayerSave {
   data: PlayerData;
@@ -44,6 +46,8 @@ export const emptyPlayerData = (): PlayerData => ({
   settings: null,
 });
 const migrations: Readonly<Record<number, SaveMigration>> = {
+  4: playerMigrationV4,
+  5: playerMigrationV5,
   6: playerMigrationV6,
 };
 

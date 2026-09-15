@@ -9,11 +9,21 @@ import {
 } from '../../lib/validation';
 import { generations, statNames } from '../pokemon/types';
 import { questionLabels } from './question-labels';
-import { questionCategories, type QuestionData } from './types';
+import {
+  questionCategories,
+  retiredQuestionTypes,
+  type QuestionData,
+  type SavedAnswerResult,
+} from './types';
 export interface QuestionLineup {
   seed: string;
   contentVersion: number;
   questions: QuestionData[];
+}
+export interface SavedQuestionLineup extends Omit<QuestionLineup, 'questions'> {
+  questions: (Omit<QuestionData, 'questionType'> & {
+    questionType: NonNullable<SavedAnswerResult['questionType']>;
+  })[];
 }
 const text = (value: unknown): value is string =>
   typeof value === 'string' && value.length <= 10000;
@@ -183,3 +193,17 @@ export const isQuestionLineup = (value: unknown): value is QuestionLineup =>
   isSafeNonnegativeInteger(value.contentVersion) &&
   Array.isArray(value.questions) &&
   value.questions.every(isQuestionData);
+
+export const isSavedQuestionLineup = (
+  value: unknown,
+): value is SavedQuestionLineup =>
+  isRecord(value) &&
+  isQuestionLineup({ ...value, questions: [] }) &&
+  Array.isArray(value.questions) &&
+  value.questions.every(
+    (question: unknown) =>
+      isQuestionData(question) ||
+      (isRecord(question) &&
+        isChoice(question.questionType, retiredQuestionTypes) &&
+        isQuestionData({ ...question, questionType: 'pokedex-scan' })),
+  );

@@ -11,7 +11,7 @@ import {
 import { formGroups, generations } from '../../pokemon/types';
 import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../../quiz/league';
 import { isQuestionHistory } from '../../quiz/question-history';
-import { isQuestionLineup } from '../../quiz/question-lineup';
+import { isSavedQuestionLineup } from '../../quiz/question-lineup';
 import { questionTypes } from '../../quiz/questions/definitions';
 import { isRoundRules } from '../../quiz/round-rules';
 import { isScoreMultipliers } from '../../quiz/score-multipliers';
@@ -23,7 +23,12 @@ import {
   isDailyTrack,
   parseDailyResultKey,
 } from '../../quiz/daily-track';
-import { questionCategories, type GameResult } from '../../quiz/types';
+import {
+  questionCategories,
+  retiredQuestionCategories,
+  retiredQuestionTypes,
+  type GameResult,
+} from '../../quiz/types';
 import { normalizeGameSettings } from '../../settings/game-settings';
 import { SaveError } from '../save-schema';
 import type { PlayerData } from '../player-save';
@@ -46,8 +51,16 @@ const isCounts = (value: unknown, keys: readonly string[]): boolean =>
   Object.entries(value).every(
     ([key, count]) => keys.includes(key) && isSafeNonnegativeInteger(count),
   );
-const savedQuestionTypes = [...questionTypes, 'champion'] as const;
-const isResult = (value: unknown): value is GameResult => {
+const savedQuestionTypes = [
+  ...questionTypes,
+  ...retiredQuestionTypes,
+  'champion',
+] as const;
+const savedQuestionCategories = [
+  ...questionCategories,
+  ...retiredQuestionCategories,
+];
+export const isSavedResult = (value: unknown): value is GameResult => {
   if (
     !isRecord(value) ||
     (value.scoreMultipliers !== undefined &&
@@ -72,7 +85,7 @@ const isResult = (value: unknown): value is GameResult => {
   return value.answers.every(
     (answer: unknown) =>
       isRecord(answer) &&
-      isChoice(answer.category, questionCategories) &&
+      isChoice(answer.category, savedQuestionCategories) &&
       (answer.cluesUsed === undefined ||
         isSafeNonnegativeInteger(answer.cluesUsed)) &&
       (answer.unassistedSearch === undefined ||
@@ -98,7 +111,7 @@ const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
   value.pokemon.length > 0 &&
   value.pokemon.every(isName) &&
   new Set(value.pokemon).size === value.pokemon.length &&
-  isResult(value.result) &&
+  isSavedResult(value.result) &&
   isLeagueVictory(value.result) &&
   value.result.answers.every((answer) => answer.correct);
 const isResults = (value: unknown): value is SavedResults => {
@@ -117,12 +130,13 @@ const isResults = (value: unknown): value is SavedResults => {
       const parsed = parseDailyResultKey(key);
       return (
         parsed !== undefined &&
-        isResult(result) &&
+        isSavedResult(result) &&
         getDailyResultKey(parsed.date, result.dailyTrack) === key
       );
     }) &&
     Object.entries(training).every(
-      ([key, result]) => isResult(result) && getUnifiedScoreKey(result) === key,
+      ([key, result]) =>
+        isSavedResult(result) && getUnifiedScoreKey(result) === key,
     ) &&
     typeof league.completed === 'boolean' &&
     (league.seed === null || isName(league.seed)) &&
@@ -131,7 +145,7 @@ const isResults = (value: unknown): value is SavedResults => {
       (date: unknown) => isDailyDate(date) && hasDailyResultOnDate(daily, date),
     ) &&
     isSafeNonnegativeInteger(progress.championAnswersWithoutClues) &&
-    isCounts(progress.correctCategories, questionCategories) &&
+    isCounts(progress.correctCategories, savedQuestionCategories) &&
     isCounts(progress.correctGenerations, generations) &&
     isCounts(progress.correctQuestionTypes, savedQuestionTypes) &&
     Array.isArray(progress.correctPokemon) &&
@@ -168,8 +182,12 @@ export const parsePlayerDataV7 = (value: unknown): PlayerData => {
       .size !== value.hallOfFame.length ||
     !isQuestionHistory(value.questionHistory) ||
     (value.leagueLineup !== null &&
-      (!isQuestionLineup(value.leagueLineup) ||
-        value.leagueLineup.questions.length !== LEAGUE_QUESTION_COUNT)) ||
+      (!isSavedQuestionLineup(value.leagueLineup) ||
+        (value.leagueLineup.questions.length !== LEAGUE_QUESTION_COUNT &&
+          !(
+            value.leagueLineup.contentVersion === 0 &&
+            value.leagueLineup.questions.length === 0
+          )))) ||
     !isResults(value.results) ||
     (value.settings !== null && !isSettings(value.settings))
   )

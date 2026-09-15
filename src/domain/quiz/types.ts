@@ -176,14 +176,24 @@ export type GameMode =
   | { kind: 'daily'; date: string; track?: DailyTrack }
   | { kind: 'league' };
 
+export const retiredQuestionCategories = ['cry', 'scale'] as const;
+export const retiredQuestionTypes = [
+  'baby-pokemon',
+  'egg-group-connections',
+  'battle-view',
+  'evolution-trail',
+  'evolution-order',
+] as const;
+type SavedQuestionType = QuestionType | (typeof retiredQuestionTypes)[number];
+
 export interface SavedAnswerResult {
-  category: QuestionCategory;
+  category: QuestionCategory | (typeof retiredQuestionCategories)[number];
   unassistedSearch?: boolean;
   cluesUsed?: number;
   correct: boolean;
   subject?: AnswerSubject;
   points: number;
-  questionType?: QuestionData['questionType'];
+  questionType?: SavedQuestionType | 'champion';
   responseMilliseconds?: number;
   speedBonus?: number;
 }
@@ -213,16 +223,16 @@ export interface ScoreMultipliers {
   difficulty: Difficulty;
   generations: number;
   questionTypes: {
-    questionType: RoundRules['questionTypes'][number];
+    questionType: QuestionType;
     multiplier: 0.75 | 1 | 1.25;
   }[];
 }
 
 export interface RoundRules {
-  automaticQuestionTypes?: QuestionType[];
+  automaticQuestionTypes?: SavedQuestionType[];
   version: number;
   difficulty: Difficulty;
   generations: Generation[];
   formGroups: FormGroup[];
-  questionTypes: QuestionType[];
+  questionTypes: SavedQuestionType[];
 }
