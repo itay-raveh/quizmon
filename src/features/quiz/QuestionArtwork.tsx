@@ -122,7 +122,7 @@ export const QuestionArtwork = ({
       : media.kind === 'none' &&
           (question.prompt.kind === 'pokemon' ||
             (answered && question.questionType === 'field-notes'))
-        ? (subjectVisual?.src ?? subjectSearchOption?.sprite)
+        ? (subjectVisual?.src ?? subjectSearchOption?.sprite ?? undefined)
         : undefined;
   const subjectDexNumber =
     question.prompt.kind === 'pokemon'
