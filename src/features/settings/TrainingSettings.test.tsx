@@ -43,8 +43,8 @@ describe('Training settings', () => {
           }}
         />,
       );
-      const level3 = screen.getByRole('radio', { name: 'Level 3' });
-      const level4 = screen.getByRole('radio', { name: 'Level 4' });
+      const level3 = screen.getByLabelText(/^Level 3/, { selector: 'input' });
+      const level4 = screen.getByLabelText(/^Level 4/, { selector: 'input' });
       const hiddenAbilities = screen.getByLabelText('Hidden abilities', {
         selector: 'input',
       });
