@@ -1,5 +1,6 @@
 import { defaultGameSettings } from '@/domain/settings/game-settings';
 import type { GameSettings } from '@/domain/settings/types';
+import { QuestionTypeSettings } from '@/features/settings/QuestionTypeSettings';
 import { TrainingSettings } from '@/features/settings/TrainingSettings';
 import { getTrainingSettingsValidation } from '@/features/settings/settings-validation';
 import { fireEvent, render, screen } from '@testing-library/react';
@@ -31,20 +32,26 @@ describe('Training settings', () => {
   it.each([true, false])(
     'restores question selection %s after an unavailable difficulty',
     (selected) => {
-      render(
-        <TrainingSettingsHarness
-          initial={{
-            ...defaultGameSettings,
-            difficulty: 4,
-            questionSelection: 'custom',
-            questionTypes: selected
-              ? ['hidden-abilities', 'move-types']
-              : ['move-types'],
-          }}
-        />,
+      const initial: GameSettings = {
+        ...defaultGameSettings,
+        difficulty: 4,
+        questionSelection: 'custom',
+        questionTypes: selected
+          ? ['hidden-abilities', 'move-types']
+          : ['move-types'],
+      };
+      const onChange = vi.fn();
+      const picker = (difficulty: GameSettings['difficulty']) => (
+        <QuestionTypeSettings
+          draft={{ ...initial, difficulty }}
+          heading={{ current: null }}
+          matchingCount={10}
+          questionTypesAreValid
+          submitted={false}
+          onChange={onChange}
+        />
       );
-      const level3 = screen.getByLabelText(/^Level 3/, { selector: 'input' });
-      const level4 = screen.getByLabelText(/^Level 4/, { selector: 'input' });
+      const { rerender } = render(picker(4));
       const hiddenAbilities = screen.getByLabelText('Hidden abilities', {
         selector: 'input',
       });
@@ -52,7 +59,7 @@ describe('Training settings', () => {
       expect(hiddenAbilities).toHaveProperty('checked', selected);
       expect(hiddenAbilities).toHaveAccessibleDescription('×1.25');
 
-      fireEvent.click(level3);
+      rerender(picker(3));
       expect(hiddenAbilities).toBeDisabled();
       expect(hiddenAbilities).not.toBeChecked();
       expect(hiddenAbilities).toHaveAccessibleDescription('Unavailable');
@@ -60,10 +67,11 @@ describe('Training settings', () => {
         screen.getByLabelText('Move types', { selector: 'input' }),
       ).toHaveAccessibleDescription('×1');
 
-      fireEvent.click(level4);
+      rerender(picker(4));
       expect(hiddenAbilities).toBeEnabled();
       expect(hiddenAbilities).toHaveProperty('checked', selected);
       expect(hiddenAbilities).toHaveAccessibleDescription('×1.25');
+      expect(onChange).not.toHaveBeenCalled();
     },
   );
 
@@ -94,27 +102,27 @@ describe('Training settings', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('checkbox', { name: 'Customize questions' }),
+      screen.getByLabelText('Customize questions', { selector: 'input' }),
     );
     expect(
       screen.getByRole('heading', { name: 'Question types' }),
     ).toBeVisible();
     expect(
-      screen.getByRole('checkbox', { name: 'Evolution shift' }),
+      screen.getByLabelText('Evolution shift', { selector: 'input' }),
     ).toBeChecked();
 
     fireEvent.click(
-      screen.getByRole('checkbox', { name: 'Customize questions' }),
+      screen.getByLabelText('Customize questions', { selector: 'input' }),
     );
     expect(
       screen.queryByRole('heading', { name: 'Question types' }),
     ).not.toBeInTheDocument();
 
     fireEvent.click(
-      screen.getByRole('checkbox', { name: 'Customize questions' }),
+      screen.getByLabelText('Customize questions', { selector: 'input' }),
     );
     expect(
-      screen.getByRole('checkbox', { name: 'Evolution shift' }),
+      screen.getByLabelText('Evolution shift', { selector: 'input' }),
     ).toBeChecked();
   });
 
