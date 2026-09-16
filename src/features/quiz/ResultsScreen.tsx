@@ -138,7 +138,9 @@ export const ResultsScreen = ({
 
   return (
     <section className="results" aria-labelledby="results-title">
-      <div className="results__header">
+      <div
+        className={`results__header ${isDaily && dailyStreak > 0 ? 'results__header--with-combo' : ''}`.trim()}
+      >
         <GameButton
           aria-label="Back to start"
           className="results__close"
@@ -152,6 +154,14 @@ export const ResultsScreen = ({
           <h1 id="results-title" ref={heading} tabIndex={-1}>
             {resultTitle}
           </h1>
+          {result.dailyTrack ? (
+            <p className="results__subtitle">
+              {dailyTrackLabel(result.dailyTrack)}
+            </p>
+          ) : null}
+          {isDaily ? (
+            <p className="results__date">{formatDailyDate(mode.date)}</p>
+          ) : null}
           {!result.dailyTrack && result.rules ? (
             <details className="results__settings">
               <summary>
@@ -180,18 +190,14 @@ export const ResultsScreen = ({
             </details>
           ) : null}
         </div>
+        {isDaily && dailyStreak > 0 ? (
+          <CatchCombo
+            className="results__combo"
+            celebrate
+            count={dailyStreak}
+          />
+        ) : null}
       </div>
-      {result.dailyTrack ? (
-        <p className="game-mode">{dailyTrackLabel(result.dailyTrack)}</p>
-      ) : null}
-      {isDaily ? (
-        <div className="results__daily-meta">
-          <p className="game-mode">{formatDailyDate(mode.date)}</p>
-          {dailyStreak > 0 ? (
-            <CatchCombo celebrate count={dailyStreak} />
-          ) : null}
-        </div>
-      ) : null}
 
       <div className="result-score">
         {result.scoreMultipliers ? (

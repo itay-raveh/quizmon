@@ -8,9 +8,9 @@
 .results__header {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  align-items: start;
+  gap: 0.625rem;
+  margin-bottom: 0.75rem;
 }
 
 .results .results__header h1 {
@@ -32,8 +32,25 @@
   min-width: 0;
 }
 
-.results__header:has(.results__settings) {
-  align-items: start;
+.results__header--with-combo {
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+}
+
+.results__subtitle,
+.results__date {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.results__subtitle {
+  font-weight: 700;
+}
+
+.results__combo {
+  align-self: center;
 }
 
 .results__settings {
@@ -95,18 +112,6 @@
 .results__settings dd {
   margin: 0;
   overflow-wrap: anywhere;
-}
-
-.results__daily-meta {
-  display: flex;
-  min-height: 4.1rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.8rem;
-}
-
-.results__daily-meta .game-mode {
-  margin: 0;
 }
 
 .result-score,

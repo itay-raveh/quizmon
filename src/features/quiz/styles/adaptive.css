@@ -67,10 +67,15 @@
     grid-row: 1;
   }
 
-  .results__header h1 {
+  .results__heading {
     grid-column: 1 / -1;
     grid-row: 2;
-    overflow-wrap: anywhere;
+  }
+
+  .results__combo {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
   }
 }
 
