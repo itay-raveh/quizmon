@@ -892,6 +892,35 @@ describe('question transitions', () => {
       container.querySelectorAll('.question-evolution-link img'),
     ).toHaveLength(3);
   });
+  it.each(['champion', 'field-notes'] as const)(
+    'reveals %s identity under the sprite without a separate answer or types',
+    (questionType) => {
+      const context = createQuestionContext(`${questionType}-identity-reveal`);
+      context.difficulty = 5;
+      const generated = buildQuestionType(context, questionType)!;
+      const { container } = renderQuestion({ question: generated });
+      expect(
+        screen.queryByText(formatPokemonName(generated.subject.name)),
+      ).not.toBeInTheDocument();
+      const wrongAnswer = generated.searchOptions!.find(
+        ({ name }) => name !== generated.subject.name,
+      )!;
+      fireEvent.change(screen.getByRole('combobox'), {
+        target: { value: formatPokemonName(wrongAnswer.name) },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+      const stimulus = container.querySelector('.question__stimulus')!;
+      expect(stimulus.querySelector('img')).toBeVisible();
+      expect(stimulus.querySelector('.pokemon-identity')).toBeVisible();
+      expect(stimulus.querySelector('.pokemon-identity')).toHaveTextContent(
+        formatPokemonName(generated.subject.name),
+      );
+      expect(stimulus.querySelector('.pokemon-identity__number')).toBeVisible();
+      expect(container.querySelector('.question__answer-reveal')).toBeNull();
+      expect(screen.queryByText('Correct answer')).not.toBeInTheDocument();
+      expect(container.querySelectorAll('.type-badge')).toHaveLength(0);
+    },
+  );
   it('reveals the scan identity below its original sprite without types', () => {
     const context = createQuestionContext('pokedex-scan-search-reveal');
     context.difficulty = 5;

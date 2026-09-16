@@ -113,28 +113,32 @@ export const QuestionArtwork = ({
   const state = { answered, cluesShown };
   const media = question.media;
   const subjectVisual = question.optionVisuals?.[question.subject.name];
+  const subjectSearchOption = question.searchOptions?.find(
+    ({ name }) => name === question.subject.name,
+  );
   const pixelSprite =
     media.kind === 'pixel-sprite'
       ? media.src
-      : media.kind === 'none' && question.prompt.kind === 'pokemon'
-        ? subjectVisual?.src
+      : media.kind === 'none' &&
+          (question.prompt.kind === 'pokemon' ||
+            (answered && question.questionType === 'field-notes'))
+        ? (subjectVisual?.src ?? subjectSearchOption?.sprite)
         : undefined;
   const subjectDexNumber =
     question.prompt.kind === 'pokemon'
       ? question.prompt.dexNumber
-      : (subjectVisual?.dexNumber ??
-        question.searchOptions?.find(
-          ({ name }) => name === question.subject.name,
-        )?.dexNumber);
-  const subjectPolicy: EntityRendering =
-    question.questionType === 'pokedex-scan'
-      ? {
-          ...rendering.subject,
-          name: rendering.related.name === 'never' ? 'never' : 'after-answer',
-          number:
-            rendering.related.number === 'never' ? 'never' : 'after-answer',
-        }
-      : rendering.subject;
+      : (subjectVisual?.dexNumber ?? subjectSearchOption?.dexNumber);
+  const subjectPolicy: EntityRendering = [
+    'pokedex-scan',
+    'champion',
+    'field-notes',
+  ].includes(question.questionType)
+    ? {
+        ...rendering.subject,
+        name: rendering.related.name === 'never' ? 'never' : 'after-answer',
+        number: rendering.related.number === 'never' ? 'never' : 'after-answer',
+      }
+    : rendering.subject;
   const subject = {
     policy: subjectPolicy,
     state,

@@ -235,7 +235,9 @@ export const QuestionScreen = ({
       ? getModeLabel(mode)
       : null;
   const revealArtworkInPlace =
-    question.questionType === 'pokedex-scan' ||
+    ['pokedex-scan', 'champion', 'field-notes'].includes(
+      question.questionType,
+    ) ||
     question.media.kind === 'pixel-peek' ||
     (question.media.kind === 'sprite' &&
       spriteState(rendering.subject.sprite, { ...revealState, answered: false })
@@ -421,7 +423,9 @@ export const QuestionScreen = ({
       {answered &&
       usesSearch &&
       question.media.kind !== 'pixel-peek' &&
-      question.questionType !== 'pokedex-scan' &&
+      !['pokedex-scan', 'champion', 'field-notes'].includes(
+        question.questionType,
+      ) &&
       question.visual?.kind !== 'evolution-link' ? (
         <div className="question__answer-reveal">
           <strong>Correct answer</strong>
