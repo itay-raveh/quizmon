@@ -1,13 +1,9 @@
-import { getScoreMultiplier } from '@/domain/quiz/score-multipliers';
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
 import { ArrowRightIcon } from '@/components/icons';
-import {
-  formatDailyDate,
-  formatScoreMultiplier,
-} from '@/domain/pokemon/format';
+import { formatDailyDate } from '@/domain/pokemon/format';
 import { getLocalDate } from '@/domain/quiz/daily';
-import type { GameResult, ScoreMultipliers } from '@/domain/quiz/types';
+import type { GameResult } from '@/domain/quiz/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
 import { CatchCombo } from '@/features/quiz/CatchCombo';
 import { SettingsButton } from '@/features/settings/SettingsButton';
@@ -30,7 +26,6 @@ interface HomeScreenProps {
   onStartDaily: () => void;
   onStartLeague: () => void;
   storageAvailable: boolean;
-  scoreMultipliers?: ScoreMultipliers;
 }
 
 export const HomeScreen = ({
@@ -49,7 +44,6 @@ export const HomeScreen = ({
   onStartDaily,
   onStartLeague,
   storageAvailable,
-  scoreMultipliers,
 }: HomeScreenProps) => {
   const catalogReady = catalogStatus === 'ready';
   const dailyDetail = [
@@ -137,11 +131,6 @@ export const HomeScreen = ({
             onClick={onStart}
           >
             <span>Start training</span>
-            {scoreMultipliers && (
-              <span className="landing__multiplier">
-                {formatScoreMultiplier(getScoreMultiplier(scoreMultipliers))}
-              </span>
-            )}
           </GameButton>
         </div>
         {leagueUnlocked ? (

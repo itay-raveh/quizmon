@@ -126,7 +126,6 @@ const AppScreen = ({
             league.open(trainer.stats.leagueCompleted ? 'hall' : 'challenge')
           }
           storageAvailable={daily.storageAvailable}
-          scoreMultipliers={training.scoreMultipliers}
         />
       </>
     );
