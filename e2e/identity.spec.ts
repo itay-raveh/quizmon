@@ -4,9 +4,11 @@ import {
   expectNoHorizontalOverflow,
   formatName,
   seedBrowserRandom,
+  seedPlayer,
   seedQuestionTraining,
   test,
 } from './fixtures';
+import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 
 for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
   for (const correct of [true, false]) {
@@ -106,3 +108,54 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
     });
   }
 }
+
+test('Level 5 Who’s that Pokémon? reveals only the identity below its sprite', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await seedPlayer(page, {
+    settings: {
+      difficulty: 5,
+      questionSelection: 'custom',
+      questionTypes: ['whos-that-pokemon'],
+      trainingMode: 'custom',
+      answerFlow: 'manual',
+      soundVolume: 0,
+    },
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  const current = await page.evaluate(
+    () =>
+      JSON.parse(
+        sessionStorage.getItem('quizmon.active-game.v1')!,
+      ) as ActiveGameSnapshot,
+  );
+  const question = current.questions[0]!;
+  const wrong = question.searchOptions!.find(
+    (option) => option.name !== question.subject.name,
+  )!;
+  const artwork = page.locator('.question__artwork');
+  const sprite = artwork.locator('img');
+  await expect(sprite).toHaveCount(1);
+  await expect(artwork.locator('.pokemon-identity')).toBeHidden();
+  await page
+    .getByRole('combobox', { name: 'Your answer' })
+    .fill(formatName(wrong.name));
+  await page.getByRole('button', { name: 'Guess' }).click();
+  await expect(sprite).toHaveCount(1);
+  await expect(artwork.locator('.pokemon-identity')).toContainText(
+    formatName(question.subject.name),
+  );
+  await expect(artwork.locator('.pokemon-identity__number')).toBeVisible();
+  const spriteBounds = (await sprite.boundingBox())!;
+  const identityBounds = (await artwork
+    .locator('.pokemon-identity')
+    .boundingBox())!;
+  expect(identityBounds.y).toBeGreaterThanOrEqual(
+    spriteBounds.y + spriteBounds.height,
+  );
+  await expect(page.locator('.question__answer-reveal')).toHaveCount(0);
+  await expect(page.locator('.question__stimulus .type-badge')).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+});

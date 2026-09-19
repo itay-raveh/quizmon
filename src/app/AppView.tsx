@@ -144,11 +144,6 @@ const AppScreen = ({
             ? catalogState.catalog.topics?.evolutions
             : undefined
         }
-        answerPokemon={
-          currentQuestion.subject.kind === 'pokemon'
-            ? catalogState.catalog?.pokemon[currentQuestion.subject.name]
-            : undefined
-        }
         typeRelations={catalogState.catalog?.typeRelations}
         answerFlow={session.settings.answerFlow}
         key={currentQuestion.id}

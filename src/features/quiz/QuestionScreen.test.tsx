@@ -921,6 +921,39 @@ describe('question transitions', () => {
       expect(container.querySelectorAll('.type-badge')).toHaveLength(0);
     },
   );
+  it.each([3, 5] as const)(
+    'reveals Who’s That Pokémon? identity under the same sprite at Level %i',
+    (level) => {
+      const context = createQuestionContext(`whos-identity-reveal-${level}`);
+      context.difficulty = level;
+      const generated = buildQuestionType(context, 'whos-that-pokemon')!;
+      const { container } = renderQuestion({ question: generated });
+      const artwork = container.querySelector('.question__artwork')!;
+      const sprite = artwork.querySelector('img');
+      expect(sprite).toBeVisible();
+      expect(artwork.querySelector('.pokemon-identity')).not.toBeVisible();
+      if (level === 5) {
+        fireEvent.change(screen.getByRole('combobox'), {
+          target: { value: formatPokemonName(generated.subject.name) },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
+      } else {
+        fireEvent.click(
+          screen.getByRole('button', {
+            name: formatPokemonName(generated.subject.name),
+          }),
+        );
+      }
+      expect(artwork.querySelector('img')).toBe(sprite);
+      expect(artwork.querySelector('.pokemon-identity')).toBeVisible();
+      expect(artwork.querySelector('.pokemon-identity')).toHaveTextContent(
+        formatPokemonName(generated.subject.name),
+      );
+      expect(artwork.querySelector('.pokemon-identity__number')).toBeVisible();
+      expect(container.querySelector('.question__answer-reveal')).toBeNull();
+      expect(container.querySelectorAll('.type-badge')).toHaveLength(0);
+    },
+  );
   it('reveals the scan identity below its original sprite without types', () => {
     const context = createQuestionContext('pokedex-scan-search-reveal');
     context.difficulty = 5;
@@ -963,6 +996,10 @@ describe('question transitions', () => {
     expect(
       container.querySelector('.question__stimulus .pokemon-identity'),
     ).toBeVisible();
+    expect(
+      container.querySelector('.question__stimulus .pokemon-identity__number'),
+    ).toBeVisible();
+    expect(container.querySelectorAll('.type-badge')).toHaveLength(0);
   });
   it('shows Field notes search suggestions with sprites and numbers', () => {
     const context = createQuestionContext('field-notes-search-artwork');

@@ -147,6 +147,12 @@
   justify-items: center;
 }
 
+.question__artwork {
+  display: grid;
+  justify-items: center;
+  gap: 0.18rem;
+}
+
 .question__response {
   display: grid;
   width: 100%;
@@ -487,28 +493,6 @@
 
 .answer--muted .answer__sprite {
   opacity: 0.65;
-}
-
-.question__answer-reveal {
-  display: grid;
-  justify-items: center;
-  gap: 0.5rem;
-  margin-block: 1rem;
-}
-
-.question__response:has(+ .question__answer-reveal) {
-  min-height: 0;
-}
-
-.question__answer-reveal > img {
-  width: 5rem;
-  height: 5rem;
-}
-
-.question__answer-reveal .pokemon-identity {
-  display: grid;
-  justify-items: center;
-  gap: 0.25rem;
 }
 
 .question__title > svg {

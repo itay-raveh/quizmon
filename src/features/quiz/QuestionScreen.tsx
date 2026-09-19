@@ -19,7 +19,7 @@ import {
   formatPokemonTypes,
   getModeLabel,
 } from '@/domain/pokemon/format';
-import type { PokemonCatalog, PokemonKnowledge } from '@/domain/pokemon/types';
+import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getLeagueStageLabel } from '@/domain/quiz/league';
 import { getQuestionTitle } from '@/domain/quiz/question-labels';
 import { getAnswerPoints } from '@/domain/quiz/scoring';
@@ -49,7 +49,6 @@ const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
   'type-matchup',
 ]);
 interface QuestionScreenProps extends UseQuestionAnswerOptions {
-  answerPokemon?: PokemonKnowledge;
   typeRelations?: PokemonCatalog['typeRelations'];
   evolutions?: NonNullable<PokemonCatalog['topics']>['evolutions'];
   effects?: NonNullable<PokemonCatalog['topics']>['effects'];
@@ -136,7 +135,6 @@ const formatCorrectAnswer = (question: QuestionData): string => {
   return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
 };
 export const QuestionScreen = ({
-  answerPokemon,
   answerFlow,
   typeRelations,
   evolutions,
@@ -234,14 +232,6 @@ export const QuestionScreen = ({
     : mode.kind === 'daily'
       ? getModeLabel(mode)
       : null;
-  const revealArtworkInPlace =
-    ['pokedex-scan', 'champion', 'field-notes'].includes(
-      question.questionType,
-    ) ||
-    question.media.kind === 'pixel-peek' ||
-    (question.media.kind === 'sprite' &&
-      spriteState(rendering.subject.sprite, { ...revealState, answered: false })
-        .silhouette);
   const usesSearch =
     question.answer.interaction === 'search' ||
     (isChampion && !question.rulesVersion);
@@ -361,16 +351,11 @@ export const QuestionScreen = ({
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />
             ) : null}
-            {answered &&
-            usesSearch &&
-            !question.visual &&
-            !revealArtworkInPlace ? null : (
-              <QuestionArtwork
-                answered={answered}
-                cluesShown={cluesShown}
-                question={question}
-              />
-            )}
+            <QuestionArtwork
+              answered={answered}
+              cluesShown={cluesShown}
+              question={question}
+            />
           </div>
         ) : null}
       </div>
@@ -419,36 +404,6 @@ export const QuestionScreen = ({
           />
         )}
       </div>
-
-      {answered &&
-      usesSearch &&
-      question.media.kind !== 'pixel-peek' &&
-      !['pokedex-scan', 'champion', 'field-notes'].includes(
-        question.questionType,
-      ) &&
-      question.visual?.kind !== 'evolution-link' ? (
-        <div className="question__answer-reveal">
-          <strong>Correct answer</strong>
-          {answerPokemon?.sprite && !revealArtworkInPlace ? (
-            <QuestionSprite
-              rule={rendering.related.sprite}
-              state={revealState}
-              src={answerPokemon.sprite}
-            />
-          ) : null}
-          <QuestionIdentity
-            policy={rendering.related}
-            state={revealState}
-            name={question.subject.name}
-            dexNumber={answerPokemon?.speciesId}
-          >
-            <TypeBadges
-              types={question.subject.types ?? []}
-              label={formatPokemonTypes(question.subject.types ?? [])}
-            />
-          </QuestionIdentity>
-        </div>
-      ) : null}
 
       <span className="visually-hidden" aria-live="polite">
         {answerCorrect

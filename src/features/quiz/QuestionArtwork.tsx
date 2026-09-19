@@ -47,6 +47,26 @@ const SubjectTypes = ({
     <TypeBadges className="question-visual__subject-types" types={types} />
   </span>
 );
+const SubjectIdentity = ({
+  name,
+  dexNumber,
+  policy,
+  state,
+}: {
+  name: string;
+  dexNumber?: number;
+  policy: EntityRendering;
+  state: RevealState;
+}) => (
+  <QuestionIdentity
+    policy={policy}
+    state={state}
+    className="question-visual__subject-name"
+    name={name}
+    dexNumber={dexNumber}
+    numberClassName="question-visual__subject-number"
+  />
+);
 const Subject = ({
   name,
   dexNumber,
@@ -91,13 +111,11 @@ const Subject = ({
           ) : null}
         </span>
       ) : null}
-      <QuestionIdentity
+      <SubjectIdentity
         policy={policy}
         state={state}
-        className="question-visual__subject-name"
         name={name}
         dexNumber={dexNumber}
-        numberClassName="question-visual__subject-number"
       />
       {children}
     </div>
@@ -130,6 +148,7 @@ export const QuestionArtwork = ({
       : (subjectVisual?.dexNumber ?? subjectSearchOption?.dexNumber);
   const subjectPolicy: EntityRendering = [
     'pokedex-scan',
+    'whos-that-pokemon',
     'champion',
     'field-notes',
   ].includes(question.questionType)
@@ -387,9 +406,7 @@ export const QuestionArtwork = ({
           ) : null}
         </div>
         {subjectPolicy.name !== 'never' || subjectPolicy.number !== 'never' ? (
-          <QuestionIdentity
-            className="question-visual__subject-name"
-            numberClassName="question-visual__subject-number"
+          <SubjectIdentity
             policy={subjectPolicy}
             state={state}
             name={question.subject.name}
@@ -436,17 +453,11 @@ export const QuestionArtwork = ({
           style={{ visibility: answered ? undefined : 'hidden' }}
           aria-hidden={!answered || undefined}
         >
-          <QuestionIdentity
-            className="question-visual__subject-name"
-            numberClassName="question-visual__subject-number"
+          <SubjectIdentity
             policy={rendering.related}
             state={state}
             name={question.subject.name}
             dexNumber={subjectDexNumber}
-          />
-          <TypeBadges
-            className="question-visual__subject-types"
-            types={question.subject.types ?? []}
           />
         </div>
       </>
