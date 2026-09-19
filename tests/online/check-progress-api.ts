@@ -547,6 +547,64 @@ try {
   passed.push(
     'weighted Training shares one best across difficulties and preserves custom qualification',
   );
+  const collector = await signIn();
+  const collectorAction = (kind: Action['kind'], payload: unknown) =>
+    action(collector.datasetId, collector.generationId, kind, payload);
+  const equipItem = () =>
+    collectorAction('profile.patch', {
+      unit: 'specialty',
+      value: 'item',
+      expectedRevision: 0,
+    });
+  assert.equal(
+    (await outcomes(await upload(collector, [equipItem()])))[0]!.code,
+    'specialty_not_earned',
+  );
+  const items = completion(collector.datasetId, 'training', {
+    discoveries: [],
+  });
+  items.training.questionSelection = 'custom';
+  items.training.questionTypes = ['item-identification'];
+  items.result.rules!.questionTypes = ['item-identification'];
+  items.result.answers = items.result.answers.map((answer) => ({
+    ...answer,
+    category: 'knowledge',
+    questionType: 'item-identification',
+    subject: { kind: 'item', name: 'potion', generation: 'I' },
+    observation: {
+      ...answer.observation!,
+      options: ['potion', 'antidote'],
+      selected: ['potion'],
+      expected: ['potion'],
+    },
+  }));
+  items.result.scoreMultipliers = getTrainingScoreMultipliers(
+    items.result.rules!,
+  );
+  items.result.score = calculateScore(
+    items.result.answers,
+    items.result.scoreMultipliers,
+  );
+  assert.equal(
+    (
+      await outcomes(
+        await upload(collector, [collectorAction('completion.record', items)]),
+      )
+    )[0]!.status,
+    'accepted',
+  );
+  assert.equal(
+    (await outcomes(await upload(collector, [equipItem()])))[0]!.status,
+    'accepted',
+  );
+  const equipped = await db.query<{ edits: { specialty: string } }>(
+    'SELECT edits FROM account_state WHERE id=$1',
+    [collector.id],
+  );
+  assert.equal(equipped.rows[0]!.edits.specialty, 'item');
+  passed.push(
+    'Item Specialist requires earned format progress before equipping',
+  );
   console.log(JSON.stringify({ api: base, passed }, null, 2));
 } finally {
   server?.close();

@@ -1,3 +1,7 @@
+import {
+  getTrainerSpecialtyCount,
+  type TrainerSpecialty,
+} from '../src/domain/player/trainer-progression.ts';
 import { progressProjectionVersion } from '../src/domain/player/game-history.ts';
 import { rebuildAccountProgress } from './progress-rebuild.ts';
 import { isRecord, isUuid } from '../src/lib/validation.ts';
@@ -448,7 +452,10 @@ export async function applyAction(
       } else if (
         edit.unit === 'specialty' &&
         typeof edit.value === 'string' &&
-        (account.progress.correctCategories[edit.value] ?? 0) < 10
+        getTrainerSpecialtyCount(
+          account.progress.correctQuestionTypes,
+          edit.value as TrainerSpecialty,
+        ) < 10
       ) {
         outcome.status = 'rejected';
         outcome.code = 'specialty_not_earned';

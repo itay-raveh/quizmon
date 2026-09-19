@@ -24,10 +24,10 @@ const profile: TrainerProfile = {
 const stats: TrainerStats = {
   bestDailyStreak: 7,
   championAnswersWithoutClues: 1,
-  correctCategories: { type: 10 },
+  correctCategories: {},
   correctGenerations: { I: 2, II: 1, III: 1 },
   correctPokemon: ['bulbasaur'],
-  correctQuestionTypes: {},
+  correctQuestionTypes: { 'type-check': 10 },
   leagueCompleted: false,
   masteryRounds: 3,
   quickAttackCompleted: false,
@@ -96,7 +96,7 @@ describe('Trainer profile artifacts', () => {
       }),
     ).toBeVisible();
     const badge = screen.getByRole('button', {
-      name: /Many Paths\. Locked, 0 of 10\. Open badge details/,
+      name: /Many Paths\. Locked, 1 of \d+\. Open badge details/,
     });
     expect(badge).toBeVisible();
     expect(badge).toHaveTextContent('');

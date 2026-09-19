@@ -1,3 +1,4 @@
+import { questionTypes } from '../src/domain/quiz/questions/definitions';
 import { observeAnswer } from '../src/domain/quiz/answer-observation';
 import { seedPlayer } from './fixtures';
 import AxeBuilder from '@axe-core/playwright';
@@ -51,20 +52,14 @@ const unlockLeague = (
           { length: 151 },
           (_, index) => `pokemon-${index}`,
         ),
-        correctQuestionTypes: Object.fromEntries(
-          [
-            'ability-check',
-            'counter-pick',
-            'evolution-shift',
-            'field-notes',
-            'move-check',
-            'odd-one-out',
-            'pixel-peek',
-            'pokedex-scan',
-            'shiny-spotter',
-            'silhouette-match',
-          ].map((questionType) => [questionType, 1]),
-        ),
+        correctQuestionTypes: {
+          ...Object.fromEntries(
+            questionTypes
+              .slice(0, Math.ceil(questionTypes.length / 2))
+              .map((type) => [type, 1]),
+          ),
+          'pokedex-scan': 50,
+        },
         masteryRounds: 3,
         quickAttackCompleted: true,
       },

@@ -1,5 +1,6 @@
 import {
   ArrowsClockwiseIcon,
+  BackpackIcon,
   BinocularsIcon,
   ChartBarIcon,
   IdentificationCardIcon,
@@ -26,6 +27,7 @@ const titleMarks = {
   description: BinocularsIcon,
   evolution: ArrowsClockwiseIcon,
   identity: IdentificationCardIcon,
+  item: BackpackIcon,
   matchup: SwordIcon,
   move: LightningIcon,
   stat: ChartBarIcon,

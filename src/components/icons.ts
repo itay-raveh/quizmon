@@ -25,3 +25,4 @@ export { SwordIcon } from '@phosphor-icons/react/dist/icons/Sword';
 export { XIcon } from '@phosphor-icons/react/dist/icons/X';
 export { MinusIcon } from '@phosphor-icons/react/dist/icons/Minus';
 export { GearSixIcon } from '@phosphor-icons/react/dist/icons/GearSix';
+export { BackpackIcon } from '@phosphor-icons/react/dist/icons/Backpack';

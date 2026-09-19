@@ -1,3 +1,4 @@
+import { trainerSpecialtyDetails } from '../player/trainer-progression.ts';
 import {
   isAnswerObservation,
   observationCorrect,
@@ -436,9 +437,7 @@ export interface Edit {
   expectedRevision: number;
   predecessorId?: string;
 }
-const specialties = questionCategories.filter(
-  (category) => category !== 'champion',
-);
+const specialties = Object.keys(trainerSpecialtyDetails);
 export function validEdit(value: unknown): value is Edit {
   if (
     !isObject(value) ||

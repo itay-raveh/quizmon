@@ -1,6 +1,9 @@
 import { catalog } from '../../../tests/fixtures/catalog';
 import { generations } from '../pokemon/types';
-import { questionTypes } from '../quiz/questions/definitions';
+import {
+  questionDefinitions,
+  questionTypes,
+} from '../quiz/questions/definitions';
 import type { TrainerStats } from './progress';
 import {
   getCardFinish,
@@ -43,14 +46,16 @@ describe('Trainer Card progression', () => {
     const badges = getTrainerBadges(
       stats({
         bestDailyStreak: 7,
-        correctCategories: { identity: 50 },
         championAnswersWithoutClues: 5,
         correctGenerations: masteredGenerations(9),
         correctPokemon: Array.from(
           { length: 151 },
           (_, index) => `pokemon-${index}`,
         ),
-        correctQuestionTypes: masteredQuestionTypes(10),
+        correctQuestionTypes: {
+          ...masteredQuestionTypes(Math.ceil(questionTypes.length / 2)),
+          'pokedex-scan': 50,
+        },
         masteryRounds: 3,
         quickAttackCompleted: true,
         quickAttackRounds: 1,
@@ -73,7 +78,9 @@ describe('Trainer Card progression', () => {
 
   it('derives canonical Trainer ranks and card finishes from earned badges', () => {
     const oneBadge = stats({
-      correctQuestionTypes: masteredQuestionTypes(10),
+      correctQuestionTypes: masteredQuestionTypes(
+        Math.ceil(questionTypes.length / 2),
+      ),
     });
     const ace = {
       ...oneBadge,
@@ -84,7 +91,7 @@ describe('Trainer Card progression', () => {
     };
     const fourBadges = {
       ...ace,
-      correctCategories: { identity: 50 },
+      correctQuestionTypes: { ...ace.correctQuestionTypes, 'pokedex-scan': 50 },
       correctGenerations: masteredGenerations(9),
     };
     const veteran = { ...fourBadges, masteryRounds: 3 };
@@ -120,12 +127,12 @@ describe('Trainer Card progression', () => {
     const changes = getTrainerProgressChanges(
       stats({
         championAnswersWithoutClues: 4,
-        correctCategories: { identity: 8 },
+        correctQuestionTypes: { 'pokedex-scan': 8 },
         correctGenerations: masteredGenerations(8),
       }),
       stats({
         championAnswersWithoutClues: 5,
-        correctCategories: { identity: 10 },
+        correctQuestionTypes: { 'pokedex-scan': 10 },
         correctGenerations: masteredGenerations(9),
       }),
     );
@@ -180,9 +187,9 @@ describe('Trainer Card progression', () => {
 
   it('marks specialties earned at ten correct answers', () => {
     const specialtyStats = stats({
-      correctCategories: {
-        identity: 10,
-        type: 9,
+      correctQuestionTypes: {
+        'pokedex-scan': 10,
+        'type-check': 9,
       },
     });
 
@@ -229,7 +236,7 @@ it.each([
 it('requires the per-format and per-generation minimum, not a pooled total', () => {
   const progress = stats({
     correctQuestionTypes: Object.fromEntries(
-      questionTypes.map((type) => [type, 50]),
+      questionTypes.map((type) => [type, 30]),
     ),
     correctGenerations: Object.fromEntries(
       generations.map((generation) => [generation, 100]),
@@ -239,16 +246,14 @@ it('requires the per-format and per-generation minimum, not a pooled total', () 
     getTrainerBadges(progress).find((entry) => entry.id === id)!;
   expect(badge('many-paths').tier).toBe(3);
   expect(badge('world-tour').tier).toBe(3);
-  for (const type of questionTypes.slice(18)) {
-    delete progress.correctQuestionTypes[type];
-  }
-  expect(badge('many-paths').tier).toBe(3);
-  progress.correctQuestionTypes[questionTypes[0]!] = 49;
+  progress.correctQuestionTypes[questionTypes[0]!] = 29;
   progress.correctGenerations.IX = 99;
   expect(badge('many-paths').tier).toBe(2);
   expect(badge('world-tour').tier).toBe(2);
   progress.correctQuestionTypes = Object.fromEntries(
-    questionTypes.slice(0, 15).map((type) => [type, 10]),
+    questionTypes
+      .slice(0, Math.ceil((questionTypes.length * 70) / 100))
+      .map((type) => [type, 10]),
   );
   expect(badge('many-paths').tier).toBe(2);
   progress.correctQuestionTypes[questionTypes[0]!] = 9;
@@ -261,13 +266,15 @@ it('keeps the League gate at all eight bronze badges', () => {
   const bronze = stats({
     bestDailyStreak: 3,
     championAnswersWithoutClues: 1,
-    correctCategories: { identity: 50 },
     correctGenerations: masteredGenerations(9),
     correctPokemon: Array.from(
       { length: 151 },
       (_, index) => `pokemon-${index}`,
     ),
-    correctQuestionTypes: masteredQuestionTypes(10),
+    correctQuestionTypes: {
+      ...masteredQuestionTypes(Math.ceil(questionTypes.length / 2)),
+      'pokedex-scan': 50,
+    },
     masteryRounds: 3,
     quickAttackRounds: 1,
   });
@@ -311,9 +318,12 @@ it('upgrades all titles and keeps counting after gold', () => {
   for (const specialty of Object.keys(
     trainerSpecialtyDetails,
   ) as TrainerSpecialty[]) {
+    const type = questionTypes.find(
+      (type) => questionDefinitions[type].specialty === specialty,
+    )!;
     for (const [index, goal] of [10, 100, 1000].entries()) {
-      const before = stats({ correctCategories: { [specialty]: goal - 1 } });
-      const after = stats({ correctCategories: { [specialty]: goal } });
+      const before = stats({ correctQuestionTypes: { [type]: goal - 1 } });
+      const after = stats({ correctQuestionTypes: { [type]: goal } });
       expect(
         getTrainerTitles(before, specialty).find((title) => title.equipped)
           ?.tier,
@@ -333,13 +343,14 @@ it('upgrades all titles and keeps counting after gold', () => {
     }
   }
   expect(
-    getTrainerTitles(stats({ correctCategories: { type: 1200 } }), 'type').find(
-      (title) => title.equipped,
-    ),
+    getTrainerTitles(
+      stats({ correctQuestionTypes: { 'type-check': 1200 } }),
+      'type',
+    ).find((title) => title.equipped),
   ).toMatchObject({ tier: 3, current: 1200 });
   const changes = getTrainerProgressChanges(
-    stats({ correctCategories: { type: 100 } }),
-    stats({ correctCategories: { type: 101 } }),
+    stats({ correctQuestionTypes: { 'type-check': 100 } }),
+    stats({ correctQuestionTypes: { 'type-check': 101 } }),
   );
   expect(changes.find((change) => change.kind === 'specialty')).toMatchObject({
     earned: false,
@@ -355,8 +366,14 @@ it('reports uncapped gains at and beyond Gold without creating another tier', ()
     [1046, 1050, false],
   ] as const) {
     const changes = getTrainerProgressChanges(
-      stats({ correctCategories: { type: before }, masteryRounds: before }),
-      stats({ correctCategories: { type: after }, masteryRounds: after }),
+      stats({
+        correctQuestionTypes: { 'type-check': before },
+        masteryRounds: before,
+      }),
+      stats({
+        correctQuestionTypes: { 'type-check': after },
+        masteryRounds: after,
+      }),
     );
     expect(changes).toContainEqual(
       expect.objectContaining({
@@ -378,5 +395,62 @@ it('reports uncapped gains at and beyond Gold without creating another tier', ()
         earned: false,
       }),
     );
+  }
+});
+
+it('credits every newly covered format to its specialty and True Calling', () => {
+  const progress = stats({
+    correctQuestionTypes: {
+      'item-identification': 10,
+      'medicine-cabinet': 10,
+      'held-item-effects': 10,
+      'berry-flavors': 10,
+      'natural-gift': 10,
+      'field-notes': 1,
+      'pokedex-categories': 2,
+      'weight-comparison': 3,
+      'height-comparison': 4,
+      'name-that-region': 5,
+      'encounter-locations': 6,
+    },
+  });
+  expect(getTrainerTitles(progress, 'item')).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        specialty: 'item',
+        current: 50,
+        earned: true,
+        equipped: true,
+      }),
+      expect.objectContaining({
+        specialty: 'description',
+        current: 21,
+        earned: true,
+      }),
+    ]),
+  );
+  expect(getTrainerBadges(progress)).toContainEqual(
+    expect.objectContaining({ id: 'true-calling', current: 50, tier: 1 }),
+  );
+});
+
+it('recalculates format goals and earned tiers when the catalog grows', () => {
+  const allFormats = [...questionTypes];
+  const progress = stats({
+    correctQuestionTypes: Object.fromEntries(
+      questionTypes.slice(0, 11).map((type) => [type, 30]),
+    ),
+  });
+  const badge = () =>
+    getTrainerBadges(progress).find(({ id }) => id === 'many-paths')!;
+  questionTypes.splice(11);
+  try {
+    expect(badge().milestones.map(({ goal }) => goal)).toEqual([6, 8, 11]);
+    expect(badge().tier).toBe(3);
+    questionTypes.push(...allFormats.slice(11, 20));
+    expect(badge().milestones.map(({ goal }) => goal)).toEqual([10, 14, 20]);
+    expect(badge().tier).toBe(1);
+  } finally {
+    questionTypes.splice(0, questionTypes.length, ...allFormats);
   }
 });
