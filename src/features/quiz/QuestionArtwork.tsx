@@ -1,13 +1,18 @@
 import { StatDirection } from './StatDirection';
 import { NatureEffect } from './NatureEffect';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import { usesSearchAnswer } from '@/domain/quiz/question-interaction';
 import {
   isVisible,
   spriteState,
   type EntityRendering,
-  type RevealState,
 } from '@/domain/quiz/question-rendering';
-import { QuestionSprite, QuestionIdentity } from './QuestionEntity';
+import { QuestionSprite } from './QuestionEntity';
+import {
+  QuestionSubject,
+  QuestionSubjectIdentity,
+  QuestionSubjectTypes,
+} from './QuestionSubject';
 import { evolutionAnswerSummary } from '@/domain/quiz/questions/evolution-presentation';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { RelationArrow, TypeEffectArrow } from '@/components/RelationArrow';
@@ -15,7 +20,7 @@ import { Sprite } from '@/components/Sprite';
 import { MysteryTypeBadge, TypeBadges } from '@/components/TypeBadge';
 import { formatPokemonName, formatPokemonTypes } from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
-import { Fragment, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, type CSSProperties } from 'react';
 interface QuestionArtworkProps {
   answered: boolean;
   cluesShown: number;
@@ -36,93 +41,6 @@ const MysteryType = ({
     {answered ? null : <MysteryTypeBadge />}
   </span>
 );
-const SubjectTypes = ({
-  answered,
-  types,
-}: {
-  answered: boolean;
-  types: readonly string[];
-}) => (
-  <span style={{ visibility: answered ? undefined : 'hidden' }}>
-    <TypeBadges className="question-visual__subject-types" types={types} />
-  </span>
-);
-const SubjectIdentity = ({
-  name,
-  dexNumber,
-  policy,
-  state,
-}: {
-  name: string;
-  dexNumber?: number;
-  policy: EntityRendering;
-  state: RevealState;
-}) => (
-  <QuestionIdentity
-    policy={policy}
-    state={state}
-    className="question-visual__subject-name"
-    name={name}
-    dexNumber={dexNumber}
-    numberClassName="question-visual__subject-number"
-  />
-);
-const Subject = ({
-  name,
-  dexNumber,
-  src,
-  policy,
-  state,
-  framed = false,
-  reservePortrait = false,
-  concealment = 'question-mark',
-  children,
-}: {
-  name: string;
-  dexNumber?: number;
-  src?: string;
-  policy: EntityRendering;
-  state: RevealState;
-  framed?: boolean;
-  reservePortrait?: boolean;
-  concealment?: 'question-mark' | 'blank';
-  children?: ReactNode;
-}) => {
-  const concealed =
-    !isVisible(policy.name, state) &&
-    !spriteState(policy.sprite, state).visible;
-  return (
-    <div className="question-visual__subject">
-      {src || concealed || reservePortrait ? (
-        <span
-          className={
-            framed
-              ? 'question-visual__pokemon-slot'
-              : 'question-visual__portrait'
-          }
-        >
-          {concealed && concealment === 'question-mark' ? (
-            <span className="question-visual__question-mark">?</span>
-          ) : src ? (
-            <QuestionSprite
-              rule={policy.sprite}
-              state={state}
-              className="question-visual__pokemon"
-              src={src}
-            />
-          ) : null}
-        </span>
-      ) : null}
-      <SubjectIdentity
-        policy={policy}
-        state={state}
-        name={name}
-        dexNumber={dexNumber}
-      />
-      {children}
-    </div>
-  );
-};
 export const QuestionArtwork = ({
   answered,
   cluesShown,
@@ -133,8 +51,7 @@ export const QuestionArtwork = ({
   const state = { answered, cluesShown };
   const media = question.media;
   const answerOnlyPortrait =
-    question.questionType === 'field-notes' &&
-    question.answer.interaction === 'search';
+    question.questionType === 'field-notes' && usesSearchAnswer(question);
   const subjectVisual = question.optionVisuals?.[question.subject.name];
   const subjectSearchOption = question.searchOptions?.find(
     ({ name }) => name === question.subject.name,
@@ -165,7 +82,7 @@ export const QuestionArtwork = ({
         number: rendering.related.number === 'never' ? 'never' : 'after-answer',
       }
     : rendering.subject;
-  const subject: Parameters<typeof Subject>[0] = {
+  const subject: Parameters<typeof QuestionSubject>[0] = {
     policy: subjectPolicy,
     state,
     name: question.subject.name,
@@ -181,19 +98,19 @@ export const QuestionArtwork = ({
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
-        <Subject {...subject}>
+        <QuestionSubject {...subject}>
           {visual.kind === 'type-check' ? (
             <MysteryType
               answered={answered}
               types={question.subject.types ?? []}
             />
           ) : (
-            <SubjectTypes
+            <QuestionSubjectTypes
               answered={answered || Boolean(question.showTypes)}
               types={question.subject.types ?? []}
             />
           )}
-        </Subject>
+        </QuestionSubject>
       </div>
     );
   }
@@ -207,7 +124,7 @@ export const QuestionArtwork = ({
         {[visual.before, visual.after].map((name, index) => (
           <Fragment key={name}>
             {index ? <RelationArrow /> : null}
-            <Subject
+            <QuestionSubject
               policy={rendering.related}
               state={state}
               name={name}
@@ -238,7 +155,7 @@ export const QuestionArtwork = ({
           (name, index) => (
             <Fragment key={index}>
               {index > 0 && <RelationArrow />}
-              <Subject
+              <QuestionSubject
                 name={name}
                 dexNumber={visual.stages[name]?.dexNumber}
                 src={visual.stages[name]?.src}
@@ -303,7 +220,7 @@ export const QuestionArtwork = ({
         className="question-visual question-relation question-relation--evolution"
         aria-hidden="true"
       >
-        <Subject {...subject} framed>
+        <QuestionSubject {...subject} framed>
           <span
             style={{
               visibility: isVisible(rendering.subject.types ?? 'always', state)
@@ -313,12 +230,12 @@ export const QuestionArtwork = ({
           >
             <TypeBadges types={question.subject.types ?? []} />
           </span>
-        </Subject>
+        </QuestionSubject>
         <div className="question-relation__effect">
           <RelationArrow />
           <span className="question-relation__caption">evolves into</span>
         </div>
-        <Subject
+        <QuestionSubject
           {...evolution}
           dexNumber={evolution.dexNumber}
           reservePortrait
@@ -343,7 +260,7 @@ export const QuestionArtwork = ({
             ) : null}
             <MysteryType answered={answered} types={[gainedType]} />
           </span>
-        </Subject>
+        </QuestionSubject>
       </div>
     );
   }
@@ -366,7 +283,7 @@ export const QuestionArtwork = ({
           answerVisual &&
           (rendering.related.name !== 'never' ||
             rendering.related.number !== 'never') ? (
-          <Subject
+          <QuestionSubject
             name={answer}
             src={answerVisual.src}
             dexNumber={answerVisual.dexNumber}
@@ -390,12 +307,12 @@ export const QuestionArtwork = ({
           </span>
         )}
         <TypeEffectArrow multiplier={visual.multiplier} />
-        <Subject {...subject}>
-          <SubjectTypes
+        <QuestionSubject {...subject}>
+          <QuestionSubjectTypes
             answered={answered || Boolean(question.showTypes)}
             types={question.subject.types ?? []}
           />
-        </Subject>
+        </QuestionSubject>
       </div>
     );
   }
@@ -415,7 +332,7 @@ export const QuestionArtwork = ({
           ) : null}
         </div>
         {subjectPolicy.name !== 'never' || subjectPolicy.number !== 'never' ? (
-          <SubjectIdentity
+          <QuestionSubjectIdentity
             policy={subjectPolicy}
             state={state}
             name={question.subject.name}
@@ -462,7 +379,7 @@ export const QuestionArtwork = ({
           style={{ visibility: answered ? undefined : 'hidden' }}
           aria-hidden={!answered || undefined}
         >
-          <SubjectIdentity
+          <QuestionSubjectIdentity
             policy={rendering.related}
             state={state}
             name={question.subject.name}
@@ -489,7 +406,7 @@ export const QuestionArtwork = ({
       className="question-visual"
       aria-hidden={!answerOnlyPortrait || undefined}
     >
-      <Subject {...subject} />
+      <QuestionSubject {...subject} />
     </div>
   ) : null;
 };

@@ -1097,6 +1097,16 @@ describe('question transitions', () => {
       expect.objectContaining({ correct: true, points: 750 }),
     );
   });
+  it('uses choices and number shortcuts when a legacy Champion search has no options', () => {
+    renderQuestion({
+      question: { ...championQuestion, searchOptions: undefined },
+    });
+    expect(screen.queryByRole('combobox')).toBeNull();
+    const firstChoice = screen.getByRole('button', { name: 'Pikachu' });
+    expect(firstChoice).toBeVisible();
+    fireEvent.keyDown(window, { key: '1' });
+    expect(firstChoice).toHaveClass('answer--correct');
+  });
   it('keeps the League Champion question search-only and ends on a miss', () => {
     const onAnswer = vi.fn();
     renderQuestion({

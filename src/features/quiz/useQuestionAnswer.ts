@@ -1,4 +1,5 @@
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import { showsSearchResponse } from '@/domain/quiz/question-interaction';
 import {
   getAnswerPoints,
   getSpeedBonusPoints,
@@ -119,8 +120,7 @@ export const useQuestionAnswer = ({
         cluesUsed: cluesShown + (question.initialClues ?? 0),
         unassistedSearch:
           question.category === 'champion' &&
-          (question.answer.interaction === 'search' ||
-            !question.rulesVersion) &&
+          showsSearchResponse(question, 0) &&
           !question.initialClues &&
           cluesShown === 0,
         correct,
@@ -182,9 +182,7 @@ export const useQuestionAnswer = ({
       event.metaKey ||
       event.repeat ||
       event.target instanceof HTMLInputElement ||
-      ((question.answer.interaction === 'search' ||
-        (question.category === 'champion' && !question.rulesVersion)) &&
-        cluesShown === 0)
+      showsSearchResponse(question, cluesShown)
     ) {
       return;
     }

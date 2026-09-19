@@ -1,5 +1,6 @@
 import { presentMeasurementQuestion } from '@/domain/quiz/questions/measurement-presentation';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import { showsSearchResponse } from '@/domain/quiz/question-interaction';
 import type {
   EntityRendering,
   RevealState,
@@ -36,7 +37,10 @@ import { ChampionSearch } from './ChampionSearch';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionClues } from './QuestionClues';
-import { QuestionInstruction } from './QuestionInstruction';
+import {
+  QuestionInstruction,
+  usesVisualInstruction,
+} from './QuestionInstruction';
 import { RoundProgress } from './RoundProgress';
 import {
   useQuestionAnswer,
@@ -207,39 +211,15 @@ export const QuestionScreen = ({
           question.questionType !== 'item-identification'
         ? supplementalItemSprites[question.subject.name]
         : undefined;
-  const visualInstruction =
-    !(
-      question.prompt.kind === 'pokemon' &&
-      question.media.kind === 'none' &&
-      !(
-        question.visual &&
-        ['evolution-shift', 'evolution-endpoints', 'evolution-link'].includes(
-          question.visual.kind,
-        )
-      )
-    ) &&
-    (Boolean(question.visual) ||
-      ['ev-yields', 'hidden-abilities'].includes(question.questionType) ||
-      (question.questionType === 'nature-effects' &&
-        Boolean(
-          question.optionReveals?.[question.answer.correctOptions[0]!],
-        )) ||
-      question.questionType === 'ability-check' ||
-      question.questionType === 'move-check');
+  const visualInstruction = usesVisualInstruction(question);
   const isLeague = mode.kind === 'league';
   const modeLabel = isLeague
     ? getLeagueStageLabel(number)
     : mode.kind === 'daily'
       ? getModeLabel(mode)
       : null;
-  const usesSearch =
-    question.answer.interaction === 'search' ||
-    (isChampion && !question.rulesVersion);
-  const championChoicesVisible = isChampion && (!usesSearch || cluesShown > 0);
-  const searchVisible =
-    usesSearch &&
-    (!isChampion || !championChoicesVisible) &&
-    Boolean(question.searchOptions);
+  const searchVisible = showsSearchResponse(question, cluesShown);
+  const championChoicesVisible = isChampion && !searchVisible;
   const timerHidden = timerDisplay === 'hidden';
   const timerText =
     timerDisplay === 'milliseconds'
