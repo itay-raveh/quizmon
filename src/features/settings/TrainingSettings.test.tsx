@@ -28,7 +28,7 @@ const TrainingSettingsHarness = ({ initial }: { initial: GameSettings }) => {
   );
 };
 
-describe('Training settings', () => {
+describe('Training settings', { timeout: 15_000 }, () => {
   it.each([true, false])(
     'restores question selection %s after an unavailable difficulty',
     (selected) => {

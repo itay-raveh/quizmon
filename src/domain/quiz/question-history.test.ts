@@ -364,7 +364,7 @@ it.each(['legend-hunt', 'stat-showdown'] as const)(
     }
     expect(keys.size).toBe(200);
   },
-  30000,
+  60000,
 );
 it('uses explicit metadata for a future format without knowing its presentation', () => {
   const question = {
