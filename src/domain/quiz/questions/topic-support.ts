@@ -1,11 +1,11 @@
-import { shuffle } from '../../../lib/random';
-import { generations, type Generation } from '../../pokemon/types';
-import type { TopicEntity } from '../topic-catalog';
-import type { QuestionCategory, QuestionSubject } from '../types';
-import { getOptionVisuals } from './assembly';
-import type { Candidate, QuestionContext, QuestionDraft } from './context';
-import { pickForm } from './sampling';
-import { orderSpecies, distinctPokemon as uniquePokemon } from './selection';
+import { shuffle } from '../../../lib/random.ts';
+import { generations, type Generation } from '../../pokemon/types.ts';
+import type { TopicEntity } from '../topic-catalog.ts';
+import type { QuestionCategory, QuestionSubject } from '../types.ts';
+import { getOptionVisuals } from './assembly.ts';
+import type { Candidate, QuestionContext, QuestionDraft } from './context.ts';
+import { pickForm } from './sampling.ts';
+import { orderSpecies, distinctPokemon as uniquePokemon } from './selection.ts';
 
 export const topicEligible = (context: QuestionContext, entity: TopicEntity) =>
   entity.generations.some((generation) =>

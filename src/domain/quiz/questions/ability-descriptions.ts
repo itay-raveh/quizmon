@@ -1,6 +1,6 @@
-import type { TopicCatalog } from '../topic-catalog';
-import type { QuestionContext } from './context';
-import { makeTopicQuestion, ordered, topicSubject } from './topic-support';
+import type { TopicCatalog } from '../topic-catalog.ts';
+import type { QuestionContext } from './context.ts';
+import { makeTopicQuestion, ordered, topicSubject } from './topic-support.ts';
 
 const words = (text: string) =>
   new Set(

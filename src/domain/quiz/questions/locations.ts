@@ -1,10 +1,10 @@
-import { formatPokemonName } from '../../pokemon/format';
-import { formatLocationLabel } from '../../pokemon/location-label';
-import { generations } from '../../pokemon/types';
-import { questionTuning } from '../question-variants';
-import { createPokemonSimilarityScorer } from './answers';
-import type { QuestionBuilder } from './context';
-import { orderEncounterLocations } from './encounter-order';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import { formatLocationLabel } from '../../pokemon/location-label.ts';
+import { generations } from '../../pokemon/types.ts';
+import { questionTuning } from '../question-variants.ts';
+import { createPokemonSimilarityScorer } from './answers.ts';
+import type { QuestionBuilder } from './context.ts';
+import { orderEncounterLocations } from './encounter-order.ts';
 import {
   distinctPokemon,
   makeTopicQuestion,
@@ -13,7 +13,7 @@ import {
   picturedPokemon,
   topicEligible,
   topicSubject,
-} from './topic-support';
+} from './topic-support.ts';
 
 export const buildRegion: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;

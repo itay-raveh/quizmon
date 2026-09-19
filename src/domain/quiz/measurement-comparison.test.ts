@@ -1,5 +1,8 @@
-import { formatMeasurement, measurementWinner } from './measurement-comparison';
-import type { MeasurementRules } from './measurement-comparison';
+import {
+  formatMeasurement,
+  measurementWinner,
+} from './measurement-comparison.ts';
+import type { MeasurementRules } from './measurement-comparison.ts';
 
 const rules: MeasurementRules = {
   minimumRatio: 1.1,

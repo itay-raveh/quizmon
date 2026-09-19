@@ -1,39 +1,49 @@
-import { snapshotRoundRules } from '@/domain/quiz/round-rules';
+import { useCallback, useRef, type Dispatch } from 'react';
 import {
   recordSessionAnswer,
   type CompleteGame,
   type GameSession,
   type GameSessionAction,
-} from '@/app/game-session';
-import { createLeagueVictoryRecord } from '@/domain/player/hall-of-fame';
-import { getTrainerProgressChanges } from '@/domain/player/trainer-progression';
-import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { isLeagueVictory } from '@/domain/quiz/league';
+} from '../../app/game-session';
+import { createLeagueVictoryRecord } from '../../domain/player/hall-of-fame';
+import { getTrainerStats } from '../../domain/player/progress';
+import { getTrainerProgressChanges } from '../../domain/player/trainer-progression';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
+import { DAILY_CHALLENGE_VERSION } from '../../domain/quiz/daily';
 import {
+  LEAGUE_CHALLENGE_VERSION,
+  isLeagueVictory,
+} from '../../domain/quiz/league';
+import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
+import { snapshotRoundRules } from '../../domain/quiz/round-rules';
+import {
+  SCORE_VERSION,
   calculateScore,
   getResponseTime,
-  SCORE_VERSION,
-} from '@/domain/quiz/scoring';
-import type { AnswerResult, GameResult } from '@/domain/quiz/types';
-import { trackGameCompleted } from '@/lib/analytics';
+} from '../../domain/quiz/scoring';
+import type { AnswerResult, GameResult } from '../../domain/quiz/types';
+import { trainingConfig, versions } from '../../domain/sync/progress';
+import { trackGameCompleted } from '../../lib/analytics';
+import { writeActiveGame } from '../../lib/storage/active-game-storage';
 import {
-  clearActiveGame,
-  clearDailyAttempt,
-} from '@/lib/storage/active-game-storage';
-import { readPlayerData } from '@/lib/storage/player-storage';
-import { registerPokedexAnswer } from '@/lib/storage/pokedex-storage';
-import { useCallback, useRef, type Dispatch } from 'react';
-import { getTrainerStats } from '../../domain/player/progress';
+  readPlayerData,
+  reportSaveError,
+} from '../../lib/storage/player-storage';
+import { readTrainerStats } from '../../lib/storage/results-storage';
 import {
-  readTrainerStats,
-  saveResult,
-} from '../../lib/storage/results-storage';
+  commitRoundCompletion,
+  readLocalRound,
+} from '../../lib/storage/round-storage';
 
 interface GameCompletionOptions {
   catalog?: PokemonCatalog;
   dispatch: Dispatch<GameSessionAction>;
   pauseTimer: () => number;
-  recordDailyCompletion: (result: GameResult, isSaved: boolean) => void;
+  recordDailyCompletion: (
+    result: GameResult,
+    isSaved: boolean,
+    date: string,
+  ) => void;
   refreshTrainerStats: () => void;
   session: GameSession;
   startTimer: () => void;
@@ -52,8 +62,9 @@ export const useGameCompletion = ({
     seed: string;
     stats: ReturnType<typeof readTrainerStats>;
   } | null>(null);
+  const completionTimes = useRef(new Map<string, string>());
   const complete = useCallback<CompleteGame>(
-    ({
+    async ({
       answers,
       contentVersion,
       mode,
@@ -61,9 +72,17 @@ export const useGameCompletion = ({
       questions,
       seed,
       scoreMultipliers,
+      roundId = seed,
     }) => {
+      const completedAt =
+        readLocalRound()?.completedAt ??
+        completionTimes.current.get(roundId) ??
+        new Date().toISOString();
+      completionTimes.current.set(roundId, completedAt);
       const result = {
-        rules: snapshotRoundRules(settings, questions),
+        ...(snapshotRoundRules(settings, questions)
+          ? { rules: snapshotRoundRules(settings, questions) }
+          : {}),
         ...(mode.kind === 'daily' && mode.track
           ? { dailyTrack: mode.track }
           : {}),
@@ -74,7 +93,7 @@ export const useGameCompletion = ({
         ...getResponseTime(answers),
         questionCount: questions.length,
         score: calculateScore(answers, scoreMultipliers),
-        scoreVersion: scoreMultipliers ? SCORE_VERSION : 2,
+        scoreVersion: SCORE_VERSION,
       };
       const previousData = readPlayerData();
       const previousTrainerStats =
@@ -90,7 +109,42 @@ export const useGameCompletion = ({
               previousData.profile?.name ?? '',
             )
           : undefined;
-      const best = saveResult(mode, result, settings, leagueRecord);
+      const best = await commitRoundCompletion(
+        {
+          recordVersion: 1,
+          completionId: roundId,
+          completedAt,
+          contentVersion,
+          scoreVersion: result.scoreVersion,
+          progressVersion: versions.progress,
+          generatorVersion:
+            mode.kind === 'daily'
+              ? DAILY_CHALLENGE_VERSION
+              : mode.kind === 'league'
+                ? LEAGUE_CHALLENGE_VERSION
+                : 0,
+          mode: mode.kind,
+          dailyDate: mode.kind === 'daily' ? mode.date : null,
+          training: trainingConfig(settings),
+          result,
+          discoveries: [
+            ...new Set(
+              answers.flatMap((answer, index) =>
+                answer.correct && questions[index]
+                  ? getQuestionPokemon(questions[index])
+                  : [],
+              ),
+            ),
+          ].sort(),
+          victory: leagueRecord
+            ? {
+                trainerName: leagueRecord.trainerName,
+                pokemon: leagueRecord.pokemon,
+              }
+            : null,
+        },
+        leagueRecord,
+      );
       const progressChanges = best.isSaved
         ? getTrainerProgressChanges(
             previousTrainerStats,
@@ -99,9 +153,6 @@ export const useGameCompletion = ({
           )
         : [];
       progressStart.current = null;
-      clearActiveGame();
-      if (best.isSaved && mode.kind === 'daily' && mode.track)
-        clearDailyAttempt(mode.date, mode.track);
       refreshTrainerStats();
       trackGameCompleted(mode, result);
       dispatch({
@@ -114,7 +165,7 @@ export const useGameCompletion = ({
         type: 'completed',
       });
       if (mode.kind === 'daily') {
-        recordDailyCompletion(result, best.isSaved);
+        recordDailyCompletion(result, best.isSaved, mode.date);
       }
       pauseTimer();
     },
@@ -122,7 +173,7 @@ export const useGameCompletion = ({
   );
 
   const recordAnswer = useCallback(
-    (answer: AnswerResult) => {
+    async (answer: AnswerResult) => {
       if (session.phase !== 'questions') return;
       if (progressStart.current?.seed !== session.seed) {
         progressStart.current = {
@@ -130,26 +181,35 @@ export const useGameCompletion = ({
           stats: readTrainerStats(),
         };
       }
-      const question = session.questions[session.questionIndex];
-      if (question) registerPokedexAnswer(question, answer.correct);
+      const round = recordSessionAnswer(session, answer);
+      await writeActiveGame({
+        ...round,
+        questionCount: round.questions.length,
+        elapsedMilliseconds: getResponseTime(round.answers).elapsedMilliseconds,
+      });
       dispatch({ answer, type: 'answer-recorded' });
     },
     [dispatch, session],
   );
 
   const answerQuestion = useCallback(
-    (answer: AnswerResult) => {
+    async (answer: AnswerResult) => {
       if (session.phase !== 'questions') return;
-      if (
-        session.questionIndex === session.questions.length - 1 ||
-        (session.mode.kind === 'league' && !answer.correct)
-      ) {
-        complete(recordSessionAnswer(session, answer));
-        return;
-      }
+      try {
+        if (
+          session.questionIndex === session.questions.length - 1 ||
+          (session.mode.kind === 'league' && !answer.correct)
+        ) {
+          await complete(recordSessionAnswer(session, answer));
+          return;
+        }
 
-      dispatch({ answer, type: 'advanced' });
-      startTimer();
+        dispatch({ answer, type: 'advanced' });
+        startTimer();
+      } catch (error) {
+        reportSaveError(error);
+        throw error;
+      }
     },
     [complete, dispatch, session, startTimer],
   );

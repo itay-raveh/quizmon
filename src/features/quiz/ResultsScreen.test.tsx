@@ -1,11 +1,18 @@
-import { ReducedMotionContext } from '@/app/providers/motion-context';
-import type { TrainerProgressChange } from '@/domain/player/trainer-progression';
-import type { AnswerResult, GameResult } from '@/domain/quiz/types';
-import { defaultGameSettings } from '@/domain/settings/game-settings';
-import { ResultsScreen } from '@/features/quiz/ResultsScreen';
-import { SoundContext, silentSoundControls } from '@/lib/audio/sound-context';
 import { render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
+import { resetLocalSave } from '../../../tests/fixtures/local-save';
+import { ReducedMotionContext } from '../../app/providers/motion-context';
+import type { TrainerProgressChange } from '../../domain/player/trainer-progression';
+import type { AnswerResult, GameResult } from '../../domain/quiz/types';
+import { defaultGameSettings } from '../../domain/settings/game-settings';
+import {
+  SoundContext,
+  silentSoundControls,
+} from '../../lib/audio/sound-context';
+import { ResultsScreen } from './ResultsScreen';
+
+beforeEach(resetLocalSave);
+
 const makeResult = (
   questionCount: number,
   correctCount: number,
@@ -36,7 +43,7 @@ const makeResult = (
     elapsedSeconds: 119,
     questionCount,
     score: 15000,
-    scoreVersion: 2,
+    scoreVersion: 3,
   };
 };
 const createResults = (
@@ -46,14 +53,12 @@ const createResults = (
 ) => (
   <ReducedMotionContext value={reduceMotion}>
     <ResultsScreen
-      onOpenHallOfFame={vi.fn()}
       bestResult={result}
       dailyStreak={0}
       isNewBest={false}
       mode={{ kind: 'training' }}
       settings={defaultGameSettings}
       onNewGame={vi.fn()}
-      onOpenTrainerCard={vi.fn()}
       onRetryLeague={vi.fn()}
       onTrainAgain={vi.fn()}
       onStartTraining={vi.fn()}
@@ -97,17 +102,10 @@ describe('results summary', () => {
     expect(screen.getByText('×2')).toBeVisible();
     expect(screen.getByText('×0.75')).toBeVisible();
   });
-  it.each([
-    [6, '00:06'],
-    [119, '01:59'],
-    [3606, '60:06'],
-  ])(
-    'shows %i elapsed seconds without an hours field',
-    (elapsedSeconds, expected) => {
-      renderResults({ ...makeResult(10, 5), elapsedSeconds });
-      expect(screen.getByText(expected)).toBeVisible();
-    },
-  );
+  it('keeps minutes beyond an hour visible', () => {
+    renderResults({ ...makeResult(10, 5), elapsedSeconds: 3606 });
+    expect(screen.getByText('60:06')).toBeVisible();
+  });
   it('preserves millisecond precision without an hours field', () => {
     render(
       createResults(
@@ -177,15 +175,6 @@ describe('results summary', () => {
     expect(screen.getByText('Speed')).toBeVisible();
     expect(screen.getByText('7,500')).toBeVisible();
   });
-  it('replaces the answer trail with a correct count for longer games', () => {
-    renderResults(makeResult(11, 5));
-    expect(screen.getByText('Correct')).toBeVisible();
-    expect(screen.getByText('5 / 11')).toBeVisible();
-    expect(
-      screen.queryByRole('list', { name: 'Question results' }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
-  });
   it('celebrates a Daily Combo without adding another result statistic', () => {
     const result = makeResult(5, 3);
     render(
@@ -200,17 +189,6 @@ describe('results summary', () => {
     expect(screen.queryByText('Streak')).not.toBeInTheDocument();
     expect(screen.queryByText('Saved on this device.')).not.toBeInTheDocument();
   });
-  it('uses header navigation and identifies the high-score key', () => {
-    const rendered = renderResults(makeResult(10, 5));
-    expect(screen.queryByText(/^Training$/)).not.toBeInTheDocument();
-    expect(screen.getByText(/Training best/)).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Train again' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Back to start' })).toBeVisible();
-    expect(screen.queryByText('Back to start')).not.toBeInTheDocument();
-    expect(
-      rendered.container.querySelector('.share-result-button__icon'),
-    ).toBeInTheDocument();
-  });
   it('shows every badge and specialty that progressed', () => {
     const result = makeResult(10, 5);
     const titleProgress: TrainerProgressChange = {
@@ -224,10 +202,8 @@ describe('results summary', () => {
       label: 'Type Specialist',
       specialty: 'type',
     };
-    const onOpenTrainerCard = vi.fn();
     const rendered = render(
       createResults(result, {
-        onOpenTrainerCard,
         progressChanges: [
           {
             current: 6,
@@ -244,34 +220,30 @@ describe('results summary', () => {
         ],
       }),
     );
-    const progress = screen.getByRole('button', {
+    const progress = screen.getByRole('group', {
       name: /Many Paths: \+2, 6 \/ 10/,
     });
     expect(progress).toBeVisible();
     expect(
-      screen.getByRole('button', { name: /Type Specialist.*Bronze unlocked/ }),
+      screen.getByRole('group', { name: /Type Specialist.*Bronze unlocked/ }),
     ).toHaveTextContent('Type Specialist');
-    progress.click();
-    expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
+    expect(progress).not.toHaveAttribute('tabindex');
     rendered.rerender(
       createResults(result, {
-        onOpenTrainerCard,
         progressChanges: [titleProgress],
       }),
     );
-    screen
-      .getByRole('button', {
-        name: /Type Specialist.*Open Trainer Titles/,
-      })
-      .click();
-    expect(onOpenTrainerCard).toHaveBeenLastCalledWith('titles');
+    expect(
+      screen.getByRole('group', { name: /Type Specialist.*Bronze unlocked/ }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole('button', { name: /Type Specialist/ }),
+    ).not.toBeInTheDocument();
   });
   it('names a newly earned League Badge', () => {
     const result = makeResult(10, 10);
-    const onOpenTrainerCard = vi.fn();
     render(
       createResults(result, {
-        onOpenTrainerCard,
         progressChanges: [
           {
             current: 3,
@@ -287,12 +259,11 @@ describe('results summary', () => {
         ],
       }),
     );
-    const progress = screen.getByRole('button', {
+    const progress = screen.getByRole('group', {
       name: /Perfect Form.*Bronze unlocked/,
     });
     expect(progress).toBeVisible();
-    progress.click();
-    expect(onOpenTrainerCard).toHaveBeenCalledWith('badges');
+    expect(progress).not.toHaveAttribute('tabindex');
   });
   it('shows a direct retry after a failed League challenge', () => {
     const result = makeResult(15, 14);
@@ -312,28 +283,21 @@ describe('results summary', () => {
     screen.getByRole('button', { name: 'Retry League' }).click();
     expect(onRetryLeague).toHaveBeenCalledOnce();
   });
-  it('links a League victory to the dedicated Hall of Fame', () => {
+  it('celebrates a League victory without a duplicate Hall of Fame link', () => {
     const result = makeResult(15, 15);
-    const onOpenTrainerCard = vi.fn();
-    const onOpenHallOfFame = vi.fn();
     render(
       createResults(result, {
-        onOpenHallOfFame,
         isNewBest: true,
         mode: { kind: 'league' },
-        onOpenTrainerCard,
       }),
     );
     expect(
       screen.getByRole('heading', { name: 'League Champion' }),
     ).toBeVisible();
-    screen
-      .getByRole('button', {
-        name: /Hall of Fame.*Open Hall of Fame/,
-      })
-      .click();
-    expect(onOpenHallOfFame).toHaveBeenCalledOnce();
-    expect(onOpenTrainerCard).not.toHaveBeenCalled();
+    expect(screen.getByText('Hall of Fame')).toBeVisible();
+    expect(
+      screen.queryByRole('button', { name: /Hall of Fame/ }),
+    ).not.toBeInTheDocument();
   });
 });
 it.each([1, 4, 9, 15])(

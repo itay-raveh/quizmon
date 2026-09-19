@@ -1,5 +1,8 @@
 import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { fetchPokemonCatalog } from '@/lib/pokemon-catalog-client';
+import {
+  loadPokemonCatalog,
+  resetPokemonCatalog,
+} from '@/lib/pokemon-catalog-client';
 import { useCallback, useEffect, useState } from 'react';
 
 type CatalogState =
@@ -7,58 +10,28 @@ type CatalogState =
   | { status: 'ready'; catalog: PokemonCatalog }
   | { status: 'error'; catalog?: never };
 
-interface PokemonCatalogOptions {
-  loadImmediately?: boolean;
-}
-
-let catalogPromise: Promise<PokemonCatalog> | undefined;
-
-const loadCatalog = () => {
-  catalogPromise ??= fetchPokemonCatalog();
-  return catalogPromise;
-};
-
-const scheduleIdleCatalogLoad = (load: () => void) => {
-  if (typeof window.requestIdleCallback === 'function') {
-    const idleId = window.requestIdleCallback(load, { timeout: 1500 });
-    return () => window.cancelIdleCallback?.(idleId);
-  }
-
-  const timeoutId = window.setTimeout(load, 0);
-  return () => window.clearTimeout(timeoutId);
-};
-
-export const usePokemonCatalog = ({
-  loadImmediately = false,
-}: PokemonCatalogOptions = {}) => {
+export const usePokemonCatalog = () => {
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<CatalogState>({ status: 'loading' });
 
   useEffect(() => {
     let active = true;
 
-    const load = () => {
-      void loadCatalog()
-        .then((catalog) => {
-          if (active) setState({ status: 'ready', catalog });
-        })
-        .catch(() => {
-          if (active) setState({ status: 'error' });
-        });
-    };
-
-    let cancelScheduledLoad: (() => void) | undefined;
-    if (loadImmediately || attempt > 0) load();
-    else cancelScheduledLoad = scheduleIdleCatalogLoad(load);
+    void loadPokemonCatalog()
+      .then((catalog) => {
+        if (active) setState({ status: 'ready', catalog });
+      })
+      .catch(() => {
+        if (active) setState({ status: 'error' });
+      });
 
     return () => {
       active = false;
-      cancelScheduledLoad?.();
     };
-  }, [attempt, loadImmediately]);
+  }, [attempt]);
 
   const retry = useCallback(() => {
-    catalogPromise = undefined;
+    resetPokemonCatalog();
     setState({ status: 'loading' });
     setAttempt((current) => current + 1);
   }, []);

@@ -1,3 +1,4 @@
+import { observeAnswer } from '../../domain/quiz/answer-observation';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import { showsSearchResponse } from '@/domain/quiz/question-interaction';
 import {
@@ -16,15 +17,16 @@ import {
   useRef,
   useState,
 } from 'react';
+import { reportSaveError } from '../../lib/storage/player-storage';
 export interface UseQuestionAnswerOptions {
   answerFlow: AnswerFlow;
   elapsedMilliseconds: number;
   questionStartedMilliseconds?: number;
   interactionPaused: boolean;
   nextQuestion?: QuestionData;
-  onAnswer: (answer: AnswerResult) => void;
+  onAnswer: (answer: AnswerResult) => void | Promise<void>;
+  onAnswerRecorded?: (answer: AnswerResult) => void | Promise<void>;
   onAssistance?: (count: number) => void;
-  onAnswerRecorded?: (answer: AnswerResult) => void;
   onFeedbackStart: () => number;
   question: QuestionData;
 }
@@ -77,7 +79,9 @@ export const useQuestionAnswer = ({
   const [cluesShown, setCluesShown] = useState(question.assistanceUsed ?? 0);
   const answered = answerResult !== null;
   const { playCorrect, playWrong } = useGameSounds();
+  const answerStarted = useRef(false);
   const answerAdvanced = useRef(false);
+  const answerWrite = useRef<void | Promise<void>>(undefined);
   const answerTimeout = useRef<number | null>(null);
   const questionStartedAt = useRef(
     questionStartedMilliseconds ?? elapsedMilliseconds,
@@ -92,19 +96,32 @@ export const useQuestionAnswer = ({
     };
   }, [nextQuestion, question]);
   const submitAnswer = useCallback(
-    (answer: AnswerResult) => {
+    async (answer: AnswerResult) => {
       if (answerAdvanced.current) return;
       answerAdvanced.current = true;
-      onAnswer(answer);
+      const saveAndAdvance = async () => {
+        if (answerWrite.current) await answerWrite.current;
+        await onAnswer(answer);
+      };
+      try {
+        await saveAndAdvance();
+      } catch (error) {
+        reportSaveError(error, async () => {
+          answerWrite.current = onAnswerRecorded?.(answer);
+          await saveAndAdvance();
+        });
+      }
     },
-    [onAnswer],
+    [onAnswer, onAnswerRecorded],
   );
   const advanceAnswer = useCallback(() => {
-    if (answerResult) submitAnswer(answerResult);
+    if (answerResult) void submitAnswer(answerResult);
   }, [answerResult, submitAnswer]);
   const finishAnswer = useCallback(
     (options: string[]) => {
-      if (interactionPaused || answered) return;
+      if (interactionPaused || answered || answerStarted.current) return;
+      answerStarted.current = true;
+
       const correct = isQuestionAnswerCorrect(question, options);
       const points = getAnswerPoints(
         question,
@@ -113,9 +130,10 @@ export const useQuestionAnswer = ({
       );
       const responseMilliseconds = Math.max(
         0,
-        onFeedbackStart() - questionStartedAt.current,
+        Math.round(onFeedbackStart() - questionStartedAt.current),
       );
       const answer = {
+        observation: observeAnswer(question, options),
         category: question.category,
         cluesUsed: cluesShown + (question.initialClues ?? 0),
         unassistedSearch:
@@ -134,17 +152,27 @@ export const useQuestionAnswer = ({
           name: question.subject.name,
         },
       };
-      setSelectedOptions(options);
-      setAnswerResult(answer);
-      if (correct) playCorrect();
-      else playWrong();
-      onAnswerRecorded?.(answer);
-      if (answerFlow !== 'manual') {
-        answerTimeout.current = window.setTimeout(
-          () => submitAnswer(answer),
-          answerFlowDelays[answerFlow],
-        );
-      }
+      const reveal = () => {
+        setSelectedOptions(options);
+        setAnswerResult(answer);
+        if (correct) playCorrect();
+        else playWrong();
+        if (answerFlow !== 'manual')
+          answerTimeout.current = window.setTimeout(() => {
+            void submitAnswer(answer);
+          }, answerFlowDelays[answerFlow]);
+      };
+      const saveAnswer = async () => {
+        answerWrite.current = onAnswerRecorded?.(answer);
+        if (answerWrite.current) await answerWrite.current;
+        reveal();
+      };
+      answerWrite.current = onAnswerRecorded?.(answer);
+      if (answerWrite.current)
+        void answerWrite.current
+          .then(reveal)
+          .catch((error: unknown) => reportSaveError(error, saveAnswer));
+      else reveal();
     },
     [
       answerFlow,

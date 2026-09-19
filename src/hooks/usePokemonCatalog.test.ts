@@ -1,6 +1,11 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { gzipSync } from 'node:zlib';
 import { parsePokemonCatalog } from '../domain/pokemon/catalog';
-import { fetchPokemonCatalog } from '../lib/pokemon-catalog-client';
+import {
+  fetchPokemonCatalog,
+  loadPokemonCatalog,
+  resetPokemonCatalog,
+} from '../lib/pokemon-catalog-client';
 import { usePokemonCatalog } from './usePokemonCatalog';
 
 const catalog = {
@@ -10,17 +15,24 @@ const catalog = {
 };
 
 describe('Pokémon catalog loading', () => {
+  beforeEach(resetPokemonCatalog);
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
   it('loads the generated catalog from its asset URL', async () => {
-    const fetch = vi.fn().mockResolvedValue(Response.json(catalog));
+    const fetch = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(
+          new Response(Uint8Array.from(gzipSync(JSON.stringify(catalog)))),
+        ),
+      );
     vi.stubGlobal('fetch', fetch);
 
     await expect(fetchPokemonCatalog()).resolves.toEqual(catalog);
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/pokemon.*\.json/),
+      expect.stringMatching(/pokemon-catalog.*\.bin/),
     );
   });
 
@@ -41,30 +53,50 @@ describe('Pokémon catalog loading', () => {
     );
   });
 
-  it('defers loading until the browser is idle', async () => {
-    let runWhenIdle: IdleRequestCallback | undefined;
-    const fetch = vi.fn().mockResolvedValue(Response.json(catalog));
+  it('starts immediately and shares the startup preload with the mounted game', async () => {
+    const pending = Promise.withResolvers<Response>();
+    const fetch = vi.fn().mockReturnValue(pending.promise);
     vi.stubGlobal('fetch', fetch);
-    vi.stubGlobal(
-      'requestIdleCallback',
-      vi.fn((callback: IdleRequestCallback) => {
-        runWhenIdle = callback;
-        return 1;
-      }),
-    );
-    vi.stubGlobal('cancelIdleCallback', vi.fn());
-
+    const idle = vi.fn();
+    vi.stubGlobal('requestIdleCallback', idle);
+    const preload = loadPokemonCatalog();
     const { result, unmount } = renderHook(() => usePokemonCatalog());
 
     expect(result.current.status).toBe('loading');
-    expect(fetch).not.toHaveBeenCalled();
-
-    act(() => {
-      runWhenIdle?.({ didTimeout: false, timeRemaining: () => 10 });
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(idle).not.toHaveBeenCalled();
+    expect(loadPokemonCatalog()).toBe(preload);
+    await act(async () => {
+      pending.resolve(
+        new Response(Uint8Array.from(gzipSync(JSON.stringify(catalog)))),
+      );
+      await preload;
     });
-
     await waitFor(() => expect(result.current.status).toBe('ready'));
     expect(fetch).toHaveBeenCalledOnce();
     unmount();
+  });
+
+  it('retries a failed preload without keeping its rejected promise', async () => {
+    const fetch = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('Offline'))
+      .mockImplementation(() =>
+        Promise.resolve(
+          new Response(Uint8Array.from(gzipSync(JSON.stringify(catalog)))),
+        ),
+      );
+    vi.stubGlobal('fetch', fetch);
+    await expect(loadPokemonCatalog()).rejects.toThrow('Offline');
+    const { result } = renderHook(() => usePokemonCatalog());
+    await waitFor(() => expect(result.current.status).toBe('error'));
+    act(() => result.current.retry());
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects a damaged catalog archive', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('not gzip')));
+    await expect(fetchPokemonCatalog()).rejects.toThrow();
   });
 });

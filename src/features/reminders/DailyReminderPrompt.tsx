@@ -72,7 +72,7 @@ export const DailyReminderPrompt = ({ dailyDate }: { dailyDate: string }) => {
       <BellSimpleRingingIcon aria-hidden="true" weight="bold" />
       <span className="daily-reminder-offer__copy">
         <strong id="daily-reminder-title">Daily reminder?</strong>
-        <span>Get a reminder at 8:00 AM when the next Daily is ready.</span>
+        <span>Get a reminder for the Daily at 8:00 AM in your time zone.</span>
         {error ? <span role="alert">{error}</span> : null}
       </span>
       <span className="daily-reminder-offer__actions">

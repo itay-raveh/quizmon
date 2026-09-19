@@ -9,6 +9,7 @@ import { getQuestionPokemon } from '../src/domain/quiz/question-pokemon';
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import { type GameSettings } from '../src/domain/settings/types';
 import { createSeededRandom } from '../src/lib/random';
+import { readSave } from './database-fixture';
 import {
   seedPlayer,
   catalog,
@@ -135,13 +136,17 @@ test('registers a correct answer immediately even when the round is abandoned', 
       name: new RegExp(formatName(question!.answer.correctOptions[0]!)),
     })
     .click();
-  expect(
-    await page.evaluate(
-      () =>
-        (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
-          .pokedex,
-    ),
-  ).toEqual(getQuestionPokemon(question!));
+  await expect
+    .poll(async () => (await readSave(page)).data.pokedex.toSorted())
+    .toEqual(getQuestionPokemon(question!).toSorted());
+  await page.getByRole('button', { name: 'Leave game', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: 'Leave this game?' })
+    .getByRole('button', { name: 'Leave game', exact: true })
+    .click();
+  await expect(
+    page.getByRole('button', { name: 'Start training', exact: true }),
+  ).toBeVisible();
   await page.goto('/?trainer=pokedex');
   await expect(
     page.getByText(`2 / ${Object.keys(catalog.pokemon).length} found`, {
@@ -149,9 +154,9 @@ test('registers a correct answer immediately even when the round is abandoned', 
     }),
   ).toBeVisible();
   expect(
-    await page.evaluate(
-      () =>
-        (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
+    await readSave(page).then(
+      (saved) =>
+        (JSON.parse((saved ? JSON.stringify(saved) : null)!) as PlayerSave).data
           .results.progress.correctPokemon,
     ),
   ).toEqual([]);

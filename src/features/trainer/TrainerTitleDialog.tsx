@@ -7,8 +7,8 @@ import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitleDialogProps {
   onClose: () => void;
-  onEquip: (title: TrainerTitle) => void;
-  onUnequip: () => void;
+  onEquip: (title: TrainerTitle) => Promise<void>;
+  onUnequip: () => Promise<void>;
   title: TrainerTitle;
 }
 
@@ -21,6 +21,12 @@ export const TrainerTitleDialog = ({
   const { dialogProps, closeDialog } = useModalDialog(onClose, {
     dismissOnBackdrop: true,
   });
+
+  const changeTitle = async () => {
+    if (title.equipped) await onUnequip();
+    else await onEquip(title);
+    closeDialog();
+  };
 
   return (
     <dialog
@@ -46,9 +52,7 @@ export const TrainerTitleDialog = ({
               sound={title.equipped ? 'toggle-off' : 'toggle-on'}
               tone={title.equipped ? 'quiet' : 'primary'}
               onClick={() => {
-                if (title.equipped) onUnequip();
-                else onEquip(title);
-                closeDialog();
+                void changeTitle();
               }}
             >
               {title.equipped ? 'Unequip title' : 'Equip title'}

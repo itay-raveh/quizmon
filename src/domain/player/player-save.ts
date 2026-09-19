@@ -1,34 +1,26 @@
 import {
   emptyQuestionHistory,
   type QuestionHistory,
-} from '../quiz/question-history';
-import type { SavedQuestionLineup } from '../quiz/question-lineup';
-import type { GameSettings } from '../settings/types';
-import type { LeagueVictoryRecord } from './hall-of-fame';
-import { normalizeResults, type SavedResults } from './results';
-import type { TrainerProfile } from './trainer-profile';
-import { isRecord } from '../../lib/validation';
-import {
-  parseVersionedSave,
-  SaveError,
-  type SaveMigration,
-} from './save-schema';
-import { parsePlayerDataV7 } from './schemas/player-v7';
-import { playerMigrationV4 } from './schemas/player-v4';
-import { playerMigrationV5 } from './schemas/player-v5';
-import { playerMigrationV6 } from './schemas/player-v6';
+} from '../quiz/question-history.ts';
+import type { QuestionLineup } from '../quiz/question-lineup.ts';
+import type { GameSettings } from '../settings/types.ts';
+import type { LeagueVictoryRecord } from './hall-of-fame.ts';
+import { normalizeResults, type SavedResults } from './results.ts';
+import type { TrainerProfile } from './trainer-profile.ts';
+import { isRecord } from '../../lib/validation.ts';
+import { parseVersionedSave, SaveError } from './save-schema.ts';
+import { parsePlayerData } from './schemas/player-data.ts';
 export interface PlayerData {
   generationPromptAnswered: boolean;
   profile: TrainerProfile | null;
   results: SavedResults;
   settings: GameSettings | null;
   questionHistory: QuestionHistory;
-  leagueLineup: SavedQuestionLineup | null;
+  leagueLineup: QuestionLineup | null;
   pokedex: string[];
   hallOfFame: LeagueVictoryRecord[];
 }
 export const SAVE_SCHEMA_VERSION = 7;
-const MINIMUM_SAVE_SCHEMA_VERSION = 4;
 
 export interface PlayerSave {
   data: PlayerData;
@@ -45,18 +37,10 @@ export const emptyPlayerData = (): PlayerData => ({
   results: normalizeResults(null),
   settings: null,
 });
-const migrations: Readonly<Record<number, SaveMigration>> = {
-  4: playerMigrationV4,
-  5: playerMigrationV5,
-  6: playerMigrationV6,
-};
-
 export const parsePlayerSave = (value: unknown): PlayerSave => {
   const { data } = parseVersionedSave(value, {
-    minimumVersion: MINIMUM_SAVE_SCHEMA_VERSION,
     currentVersion: SAVE_SCHEMA_VERSION,
-    migrations,
-    parseCurrent: parsePlayerDataV7,
+    parseCurrent: parsePlayerData,
   });
   if (
     !isRecord(value) ||

@@ -1,10 +1,10 @@
-import { isDailyDate } from '../../lib/validation';
+import { gameVersions } from '../versions.ts';
+import { isDailyDate } from '../../lib/validation.ts';
 
+export const DAILY_CHALLENGE_VERSION = gameVersions.daily;
 export const DAILY_QUESTION_COUNT = 5;
-export const getLocalDate = (date = new Date()): string =>
-  [date.getFullYear(), date.getMonth() + 1, date.getDate()]
-    .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
-    .join('-');
+export const getUtcDate = (date = new Date()): string =>
+  date.toISOString().slice(0, 10);
 
 export const parseDailyDate = (search: string): string | null => {
   const value = new URLSearchParams(search).get('daily');

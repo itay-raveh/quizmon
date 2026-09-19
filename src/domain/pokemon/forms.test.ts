@@ -1,13 +1,17 @@
 import {
   catalog,
   createQuestionContext,
-} from '../../../tests/fixtures/catalog';
-import { createSeededRandom } from '../../lib/random';
-import { readPlayerData } from '../../lib/storage/player-storage';
-import { registerPokedexAnswer } from '../../lib/storage/pokedex-storage';
-import { buildQuestionType } from '../quiz/questions/registry';
-import { formatPokemonName } from './format';
-import { isSpritePath } from './sprite-source';
+} from '../../../tests/fixtures/catalog.ts';
+import { resetLocalSave } from '../../../tests/fixtures/local-save.ts';
+import { createSeededRandom } from '../../lib/random.ts';
+import { readPlayerData } from '../../lib/storage/player-storage.ts';
+import { registerPokedexAnswer } from '../../lib/storage/pokedex-storage.ts';
+import { buildQuestionType } from '../quiz/questions/registry.ts';
+import { formatPokemonName } from './format.ts';
+import { isSpritePath } from './sprite-source.ts';
+
+beforeEach(resetLocalSave);
+
 it('ships distinct identities for the curated forms and retains every species', () => {
   const entries = Object.values(catalog.pokemon);
   expect(entries).toHaveLength(1236);
@@ -294,7 +298,8 @@ it('keeps Champion targets and search choices limited to distinguishable descrip
     ),
   ).toBe(true);
 });
-it('credits two forms of one species as two discoveries', () => {
+
+it('credits two forms of one species as two discoveries', async () => {
   localStorage.clear();
   for (const name of ['raichu', 'raichu-alola']) {
     const pokemon = catalog.pokemon[name]!;
@@ -307,7 +312,7 @@ it('credits two forms of one species as two discoveries', () => {
       },
       'type-check',
     )!;
-    expect(registerPokedexAnswer(question, true)).toBe(true);
+    expect(await registerPokedexAnswer(question, true)).toBe(true);
   }
   expect(readPlayerData().pokedex.toSorted()).toEqual([
     'raichu',

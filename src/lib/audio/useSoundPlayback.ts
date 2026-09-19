@@ -1,3 +1,4 @@
+export { useRewardSounds } from './useRewardSounds';
 import { Howl } from 'howler';
 import { useCallback, useEffect, useRef } from 'react';
 import type { SoundPlayback } from './sound-context';
@@ -45,8 +46,8 @@ export default function useSound(
       progress: (endEarlyMilliseconds = 0) => {
         if (failed || instance.state() === 'unloaded') return undefined;
         if (ended) return 1;
-        const duration = instance.duration(id);
         if (instance.state() !== 'loaded') return 0;
+        const duration = instance.duration(id);
         const position = instance.seek(id);
         if (!duration || typeof position !== 'number') return 0;
         const animationDuration = Math.max(
@@ -72,5 +73,3 @@ export default function useSound(
 
   return [play, { stop }] as const;
 }
-
-export { useRewardSounds } from './useRewardSounds';

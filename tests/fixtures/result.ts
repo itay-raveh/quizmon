@@ -32,5 +32,5 @@ export const result: GameResult = {
   elapsedSeconds: 20,
   questionCount: 2,
   score: 1500,
-  scoreVersion: 2,
+  scoreVersion: 3,
 };

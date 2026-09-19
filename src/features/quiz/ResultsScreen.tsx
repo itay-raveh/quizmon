@@ -1,10 +1,7 @@
 import { dailyTrackLabel } from '@/domain/quiz/daily-track';
 import { GameButton } from '@/components/GameButton';
 import { CaretDownIcon, CheckIcon, XIcon } from '@/components/icons';
-import type {
-  TrainerProgressChange,
-  TrainerView,
-} from '@/domain/player/trainer-progression';
+import type { TrainerProgressChange } from '@/domain/player/trainer-progression';
 import {
   formatDailyDate,
   formatDuration,
@@ -22,7 +19,7 @@ import { DailyReminderPrompt } from '@/features/reminders/DailyReminderPrompt';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { MultipliedScore } from './MultipliedScore';
@@ -40,14 +37,13 @@ interface ResultsScreenProps {
   mode: GameMode;
   settings: GameSettings;
   onNewGame: () => void;
-  onOpenHallOfFame: () => void;
-  onOpenTrainerCard: (view: TrainerView) => void;
   onTrainAgain: () => void;
   onStartTraining: () => void;
   onRetryLeague: () => void;
   result: GameResult;
   resultSaved: boolean;
   progressChanges: TrainerProgressChange[];
+  onlineEntry?: ReactNode;
 }
 
 export const ResultsScreen = ({
@@ -57,14 +53,13 @@ export const ResultsScreen = ({
   mode,
   settings,
   onNewGame,
-  onOpenTrainerCard,
-  onOpenHallOfFame,
   onTrainAgain,
   onStartTraining,
   onRetryLeague,
   result,
   resultSaved,
   progressChanges,
+  onlineEntry,
 }: ResultsScreenProps) => {
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
@@ -282,14 +277,13 @@ export const ResultsScreen = ({
           </ol>
         ) : null}
       </div>
+      {onlineEntry}
       {isDaily && resultSaved ? (
         <DailyReminderPrompt dailyDate={mode.date} />
       ) : null}
 
       <TrainerProgressSummary
         leagueVictory={leagueVictory}
-        onOpenTrainerCard={onOpenTrainerCard}
-        onOpenHallOfFame={onOpenHallOfFame}
         progressChanges={progressChanges}
       />
 

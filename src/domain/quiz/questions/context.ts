@@ -1,12 +1,12 @@
-import type { Difficulty } from '../difficulty';
-import type { VariantRules } from '../question-variants';
+import type { Difficulty } from '../difficulty.ts';
+import type { VariantRules } from '../question-variants.ts';
 import type {
   Generation,
   PokemonCatalog,
   PokemonKnowledge,
-} from '../../pokemon/types';
-import type { QuestionHistory } from '../question-history';
-import type { QuestionData } from '../types';
+} from '../../pokemon/types.ts';
+import type { QuestionHistory } from '../question-history.ts';
+import type { QuestionData } from '../types.ts';
 
 export interface Candidate {
   name: string;

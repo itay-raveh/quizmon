@@ -34,6 +34,9 @@
     "e2e",
     "eslint.config.js",
     "playwright.config.ts",
-    "vite.config.ts"
+    "vite.config.ts",
+    "server",
+    "deploy",
+    "drizzle.config.ts"
   ]
 }

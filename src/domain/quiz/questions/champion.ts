@@ -1,10 +1,10 @@
-import type { PokemonKnowledge } from '../../pokemon/types';
-import { pokemonOptions } from './answers';
-import { makeQuestion } from './assembly';
-import { type QuestionBuilder } from './context';
-import { redactName, textPrompt } from './prompts';
-import { targetRepetition } from './repetition';
-import { pickTarget } from './selection';
+import type { PokemonKnowledge } from '../../pokemon/types.ts';
+import { pokemonOptions } from './answers.ts';
+import { makeQuestion } from './assembly.ts';
+import { type QuestionBuilder } from './context.ts';
+import { redactName, textPrompt } from './prompts.ts';
+import { targetRepetition } from './repetition.ts';
+import { pickTarget } from './selection.ts';
 
 const canIdentify = ({
   description,

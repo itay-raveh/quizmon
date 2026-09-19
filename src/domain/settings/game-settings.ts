@@ -1,21 +1,25 @@
 import {
   supportsStandardQuestion,
   standardLeagueQuestionTypes,
-} from '../quiz/standard-question-types';
-import { getQuestionVariant } from '../quiz/question-variants';
-import { isChoice, isObject } from '../../lib/validation';
-import { getFormGroup } from '../pokemon/forms';
-import { formGroups, generations, type PokemonCatalog } from '../pokemon/types';
-import type { Candidate } from '../quiz/questions/context';
-import { isDifficulty } from '../quiz/difficulty';
-import { questionTypes } from '../quiz/questions/definitions';
+} from '../quiz/standard-question-types.ts';
+import { getQuestionVariant } from '../quiz/question-variants.ts';
+import { isChoice, isObject } from '../../lib/validation.ts';
+import { getFormGroup } from '../pokemon/forms.ts';
+import {
+  formGroups,
+  generations,
+  type PokemonCatalog,
+} from '../pokemon/types.ts';
+import type { Candidate } from '../quiz/questions/context.ts';
+import { isDifficulty } from '../quiz/difficulty.ts';
+import { questionTypes } from '../quiz/questions/definitions.ts';
 import {
   answerFlows,
   timerDisplays,
   trainingModes,
   type ExperienceSettings,
   type GameSettings,
-} from './types';
+} from './types.ts';
 
 export const defaultGameSettings: GameSettings = {
   difficulty: 1,

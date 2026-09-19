@@ -1,5 +1,5 @@
-import { getQuestionPokemon } from '../quiz/question-pokemon';
-import type { GameResult, QuestionData } from '../quiz/types';
+import { getQuestionPokemon } from '../quiz/question-pokemon.ts';
+import type { GameResult, QuestionData } from '../quiz/types.ts';
 
 export interface LeagueVictoryRecord {
   id: string;

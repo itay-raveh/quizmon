@@ -1,17 +1,18 @@
-import { questionTypes } from '../quiz/questions/definitions';
-import { type SavedResults } from './results';
-import {
-  isLeagueTraining,
-  getTrainingSettings,
-  TRAINING_QUESTION_COUNT,
-} from '../settings/game-settings';
-import { isChoice } from '../../lib/validation';
+import { isChoice } from '../../lib/validation.ts';
+import { questionTypes } from '../quiz/questions/definitions.ts';
 import {
   questionCategories,
   type GameMode,
   type GameResult,
-} from '../quiz/types';
-import { type GameSettings } from '../settings/types';
+} from '../quiz/types.ts';
+import {
+  getTrainingSettings,
+  isLeagueTraining,
+  TRAINING_QUESTION_COUNT,
+} from '../settings/game-settings.ts';
+import { type GameSettings } from '../settings/types.ts';
+import { type SavedResults } from './results.ts';
+
 export interface TrainerStats extends Omit<
   SavedResults['progress'],
   'version'
@@ -61,6 +62,7 @@ export const addResultToProgress = (
       ? (() => {
           const automatic =
             result.rules.automaticQuestionTypes ??
+            settings.automaticQuestionTypes ??
             getTrainingSettings({
               ...settings,
               difficulty: result.rules.difficulty,

@@ -1,7 +1,7 @@
-import type { PlayerSave } from '../src/domain/player/player-save';
 import { buildQuestionType } from '../src/domain/quiz/questions/registry';
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import { createSeededRandom } from '../src/lib/random';
+import { readSave } from './database-fixture';
 import {
   catalog,
   expect,
@@ -45,6 +45,7 @@ for (const width of [320, 1280]) {
 test('selects curated partners and excludes collapsed variants', async ({
   page,
 }) => {
+  test.setTimeout(60_000);
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto('/?trainer=card');
   for (const name of [
@@ -69,7 +70,7 @@ test('selects curated partners and excludes collapsed variants', async ({
     );
     await expectNoHorizontalOverflow(page);
     await page.reload();
-    await expect(caption).toContainText(formatName(name));
+    await expect(caption).toContainText(formatName(name), { timeout: 10_000 });
   }
   await page.getByRole('button', { name: 'Edit card' }).click();
   const search = page.getByRole('combobox', { name: 'Partner Pokémon' });
@@ -141,6 +142,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
       })
       .click();
     if (index === 0) {
+      await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
       await page.reload();
       await expect(
         page.getByRole('progressbar', { name: 'Quiz progress' }),
@@ -152,16 +154,9 @@ test('resumes a saved round after a catalog update and credits regional forms se
   await expect(
     page.getByRole('heading', { name: 'Training complete' }),
   ).toBeVisible();
-  const discoveries = await page.evaluate(
-    () =>
-      (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
-        .pokedex,
-  );
-  const version = await page.evaluate(
-    () =>
-      (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
-        .results.training['score:2']?.contentVersion,
-  );
+  const saved = await readSave(page);
+  const discoveries = saved.data.pokedex;
+  const version = saved.data.results.training['score:3']?.contentVersion;
   expect(version).toBe(14);
   expect(discoveries.toSorted()).toEqual(['raichu', 'raichu-alola']);
 });

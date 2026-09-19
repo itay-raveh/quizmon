@@ -140,12 +140,9 @@ test('publishes complete, non-duplicated site metadata', async ({ page }) => {
   const markdownResponse = await page.request.get('/index.md');
   await expect(markdownResponse).toBeOK();
   const overview = await markdownResponse.text();
-  expect(overview).toContain('# About & How to Play');
+  expect(overview).toContain('# How to play');
   expect(overview).toContain('## Daily Challenge');
-  expect(overview).toContain(
-    '[Privacy policy](https://quizmon.raveh.dev/privacy)',
-  );
-  expect(overview).toContain('[Terms of Use](https://quizmon.raveh.dev/terms)');
+  expect(overview).toContain('[Play Quizmon](https://quizmon.raveh.dev/)');
   expect(overview).not.toContain('(privacy.md)');
   expect(overview).not.toContain('(terms.md)');
 });

@@ -1,4 +1,4 @@
-import type { QuestionData, QuestionRepetition } from '../types';
+import type { QuestionData, QuestionRepetition } from '../types.ts';
 type RepeatSource = Pick<QuestionData, 'subject' | 'options' | 'answer'>;
 type RepeatRule = (question: RepeatSource) => QuestionRepetition;
 export const targetRepetition =

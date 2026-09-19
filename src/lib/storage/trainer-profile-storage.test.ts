@@ -1,13 +1,16 @@
+import { resetLocalSave } from '../../../tests/fixtures/local-save';
 import {
   readTrainerProfile,
   saveTrainerProfile,
 } from './trainer-profile-storage';
 
+beforeEach(resetLocalSave);
+
 describe('Trainer profile storage', () => {
   beforeEach(() => window.localStorage.clear());
 
-  it('trims names before applying the 20-character limit', () => {
-    const saved = saveTrainerProfile({
+  it('trims names before applying the 20-character limit', async () => {
+    const saved = await saveTrainerProfile({
       ...readTrainerProfile(),
       name: `  ${'A'.repeat(21)}  `,
     });
@@ -15,7 +18,7 @@ describe('Trainer profile storage', () => {
     expect(readTrainerProfile().name).toBe(saved.name);
   });
 
-  it('creates and saves a normalized local profile', () => {
+  it('creates, migrates, and saves a normalized local profile', async () => {
     const profile = readTrainerProfile();
 
     expect(profile.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -26,7 +29,7 @@ describe('Trainer profile storage', () => {
       specialty: null,
     });
 
-    const saved = saveTrainerProfile({
+    const saved = await saveTrainerProfile({
       ...profile,
       hasBeenRevealed: true,
       name: '  Leaf  ',
@@ -41,5 +44,14 @@ describe('Trainer profile storage', () => {
       specialty: 'identity',
     });
     expect(readTrainerProfile()).toEqual(saved);
+
+    window.localStorage.setItem(
+      'quizmon.trainer-profile.v1',
+      JSON.stringify({ ...saved, accent: 'violet', cardNumber: 'QZ-123456' }),
+    );
+    expect(readTrainerProfile()).toEqual(saved);
+    expect(window.localStorage.getItem('quizmon.trainer-profile.v1')).toContain(
+      'cardNumber',
+    );
   });
 });

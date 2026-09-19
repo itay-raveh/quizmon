@@ -1,0 +1,13 @@
+config:
+  edition: 3
+streams:
+  my_progress:
+    auto_subscribe: true
+    queries:
+      - SELECT id, owner_id, generation_id, completion_id, revision, eligible, completion FROM completion_facts WHERE owner_id = auth.user_id()
+      - SELECT id, generation_id, revision, progress, edits, edit_revisions, profile_created_at FROM account_state WHERE id = auth.user_id()
+      - SELECT id, owner_id, generation_id, pokemon, discovered, correct FROM player_pokemon WHERE owner_id = auth.user_id()
+      - SELECT id, owner_id, generation_id, date, completion_id, result, streak_credit FROM daily_results WHERE owner_id = auth.user_id()
+      - SELECT id, owner_id, generation_id, mode, score_version, completion_id, result FROM training_bests WHERE owner_id = auth.user_id()
+      - SELECT id, owner_id, generation_id, completion_id, completed_at, trainer_name, pokemon, result FROM hall_of_fame WHERE owner_id = auth.user_id()
+      - SELECT id, owner_id, generation_id, operation_id, reason, payload, dismissed FROM sync_issues WHERE owner_id = auth.user_id()

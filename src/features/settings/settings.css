@@ -728,6 +728,20 @@
   }
 }
 
+.account-conflicts__values {
+  display: grid;
+  gap: 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.account-conflicts__values dt {
+  font-weight: 700;
+}
+
+.account-conflicts__values dd {
+  margin: 0 0 0.7rem;
+}
+
 .selection-grid--forms {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -821,4 +835,25 @@
 }
 .save-recovery summary {
   cursor: pointer;
+}
+
+.settings-backup {
+  margin-block: 0.5rem 1rem;
+  border-top: 2px solid color-mix(in srgb, var(--navy) 18%, transparent);
+}
+
+.settings-backup > summary {
+  padding-block: 0.85rem;
+  color: var(--navy);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.settings-backup > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.settings-backup .backup-settings > legend {
+  display: none;
 }

@@ -1,5 +1,5 @@
-import { createPokemonSimilarityScorer, rankedOptionSet } from './answers';
-import { type Candidate, type QuestionContext } from './context';
+import { createPokemonSimilarityScorer, rankedOptionSet } from './answers.ts';
+import { type Candidate, type QuestionContext } from './context.ts';
 
 export const typeOptions = (
   context: QuestionContext,

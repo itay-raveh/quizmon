@@ -1,11 +1,11 @@
-import type { PokemonKnowledge, StatName } from '../../pokemon/types';
+import type { PokemonKnowledge, StatName } from '../../pokemon/types.ts';
 import type {
   PokemonOptionVisual,
   QuestionCategory,
   QuestionPrompt,
   QuestionRepetition,
-} from '../types';
-import type { Candidate, QuestionContext, QuestionDraft } from './context';
+} from '../types.ts';
+import type { Candidate, QuestionContext, QuestionDraft } from './context.ts';
 export const getOptionVisuals = (
   context: QuestionContext,
   options: readonly string[],

@@ -1,44 +1,34 @@
+import { gameVersions } from '../src/domain/versions';
+import { completion } from '../tests/online/progress-fixtures';
 import { seedPlayer } from './fixtures';
-import { generations, formGroups } from '../src/domain/pokemon/types';
-import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import type { PlayerSave } from '../src/domain/player/player-save';
+import { formGroups, generations } from '../src/domain/pokemon/types';
 import {
   buildDailyTrackQuestions,
   resolveTrainingSettings,
 } from '../src/domain/quiz/question-generation';
+import { defaultGameSettings } from '../src/domain/settings/game-settings';
+import { readRound, readSave, writeSave } from './database-fixture';
 import {
   advanceToDailyFinale,
-  chooseDaily,
   catalog,
+  chooseDaily,
   expect,
   seedBrowserRandom,
   test,
 } from './fixtures';
-test('keeps legacy Daily results shareable without granting another attempt', async ({
+test('keeps completed Daily results shareable without granting another attempt', async ({
   page,
 }) => {
+  const result = completion(crypto.randomUUID(), 'daily', {
+    dailyDate: '2026-09-01',
+  }).result;
   await seedPlayer(page, {
     results: {
       daily: {
-        '2026-09-01': {
-          answers: Array.from({ length: 10 }, (_, index) => ({
-            category: index === 9 ? 'champion' : 'identity',
-            correct: index < 8,
-            cluesUsed: 0,
-            questionType: index === 9 ? 'champion' : 'pokedex-scan',
-            points: index < 8 ? 1000 : 0,
-            subject: {
-              kind: 'pokemon' as const,
-              generation: 'I',
-              name: 'pikachu',
-            },
-          })),
-          contentVersion: 2,
-          correctCount: 8,
-          elapsedSeconds: 90,
-          questionCount: 10,
-          score: 14400,
-          scoreVersion: 2,
+        '2026-09-01:3:all': {
+          ...result,
+          dailyTrack: { difficulty: 3, scope: 'all' },
         },
       },
       streak: { creditedDates: ['2026-09-01'] },
@@ -78,7 +68,9 @@ test('keeps legacy Daily results shareable without granting another attempt', as
     return data ? (JSON.parse(data) as ShareData).text : undefined;
   });
   const sharedUrl = sharedText?.split('\n').at(-1);
-  expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01');
+  expect(sharedUrl).toBe(
+    `https://quizmon.raveh.dev/?daily=2026-09-01&level=3&scope=all&rules=${gameVersions.questions}&catalog=${gameVersions.content}`,
+  );
   const { pathname, search } = new URL(sharedUrl!);
   await page.goto(`${pathname}${search}`);
   await expect(
@@ -97,26 +89,17 @@ test('starts the selected daily challenge from a shared link', async ({
 });
 test("shows yesterday's Daily Combo on today's challenge", async ({ page }) => {
   const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const date = [
-    yesterday.getFullYear(),
-    yesterday.getMonth() + 1,
-    yesterday.getDate(),
-  ]
-    .map((part, index) => part.toString().padStart(index === 0 ? 4 : 2, '0'))
-    .join('-');
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const date = yesterday.toISOString().slice(0, 10);
+
   await page.setViewportSize({ width: 320, height: 700 });
   await seedPlayer(page, {
     results: {
       daily: {
-        [date]: {
-          answers: [],
-          contentVersion: 2,
-          correctCount: 0,
-          elapsedSeconds: 10,
-          questionCount: 5,
-          score: 0,
-          scoreVersion: 2,
+        [`${date}:3:all`]: {
+          ...completion(crypto.randomUUID(), 'daily', { dailyDate: date })
+            .result,
+          dailyTrack: { difficulty: 3, scope: 'all' },
         },
       },
       streak: { creditedDates: [date] },
@@ -142,32 +125,15 @@ test('syncs a completed daily across open tabs', async ({ context, page }) => {
   await expect(
     otherPage.getByRole('button', { name: /^Play Daily Challenge/ }),
   ).toBeVisible();
-  await page.evaluate(() => {
-    const save = JSON.parse(
-      localStorage.getItem('quizmon.player')!,
-    ) as PlayerSave;
-    save.data.results.daily['2026-09-01'] = {
-      answers: Array.from({ length: 10 }, (_, index) => ({
-        category: index === 9 ? 'champion' : 'identity',
-        cluesUsed: 0,
-        correct: true,
-        questionType: index === 9 ? 'champion' : 'pokedex-scan',
-        points: 100,
-        subject: {
-          kind: 'pokemon' as const,
-          generation: 'I',
-          name: 'pikachu',
-        },
-      })),
-      contentVersion: 2,
-      correctCount: 10,
-      elapsedSeconds: 70,
-      questionCount: 10,
-      score: 1000,
-      scoreVersion: 2,
-    };
-    localStorage.setItem('quizmon.player', JSON.stringify(save));
-  });
+
+  const save = await readSave(page);
+  save.data.results.daily['2026-09-01:3:all'] = {
+    ...completion(crypto.randomUUID(), 'daily', { dailyDate: '2026-09-01' })
+      .result,
+    dailyTrack: { difficulty: 3, scope: 'all' },
+  };
+  await writeSave(page, save);
+
   await expect(
     otherPage.getByRole('button', { name: 'Share result' }),
   ).toBeVisible();
@@ -200,8 +166,8 @@ test('starts saved Training settings directly after completing Daily', async ({
   await expect(
     page.getByRole('button', { name: 'Share result' }),
   ).toBeVisible();
-  const savedDaily = await page.evaluate(() =>
-    window.localStorage.getItem('quizmon.player'),
+  const savedDaily = await readSave(page).then((saved) =>
+    saved ? JSON.stringify(saved) : null,
   );
   expect(savedDaily).not.toBeNull();
   await page
@@ -214,14 +180,15 @@ test('starts saved Training settings directly after completing Daily', async ({
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
   const beforeTraining = JSON.parse(savedDaily!) as PlayerSave;
-  const readSave = () =>
-    page.evaluate(
-      () => JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave,
+  const readCurrentSave = () =>
+    readSave(page).then(
+      (saved) =>
+        JSON.parse((saved ? JSON.stringify(saved) : null)!) as PlayerSave,
     );
   await expect
-    .poll(async () => (await readSave()).data.questionHistory.sequence)
+    .poll(async () => (await readCurrentSave()).data.questionHistory.sequence)
     .toBe(beforeTraining.data.questionHistory.sequence + 1);
-  const afterTraining = await readSave();
+  const afterTraining = await readCurrentSave();
   expect({
     ...afterTraining,
     data: {
@@ -247,20 +214,7 @@ for (const tag of [[], ['@cross-browser']]) {
       await page.goto(`/?daily=${date}`);
       await chooseDaily(page);
       await expect(page.locator('.question')).toBeVisible();
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const snapshot = sessionStorage.getItem('quizmon.active-game.v1');
-            return snapshot
-              ? (
-                  JSON.parse(snapshot) as {
-                    questions?: unknown;
-                  }
-                ).questions
-              : null;
-          }),
-        )
-        .toEqual(expected);
+      expect((await readRound(page))?.questions).toEqual(expected);
     },
   );
 }

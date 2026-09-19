@@ -1,20 +1,18 @@
+import { getUnifiedScoreKey } from '../quiz/scoring.ts';
 import {
   isChoice,
   isDailyDate,
   isFiniteNonnegative,
   isRecord,
-} from '../../lib/validation';
-import { generations, type Generation } from '../pokemon/types';
-import { questionTypes } from '../quiz/questions/definitions';
+} from '../../lib/validation.ts';
+import { generations, type Generation } from '../pokemon/types.ts';
+import { hasDailyResultOnDate } from '../quiz/daily-track.ts';
+import { questionTypes } from '../quiz/questions/definitions.ts';
 import {
   questionCategories,
-  retiredQuestionCategories,
-  retiredQuestionTypes,
   type SavedAnswerResult,
   type GameResult,
-} from '../quiz/types';
-import { getUnifiedScoreKey } from '../quiz/scoring';
-import { hasDailyResultOnDate } from '../quiz/daily-track';
+} from '../quiz/types.ts';
 
 interface TrainerProgress {
   championAnswersWithoutClues: number;
@@ -127,10 +125,10 @@ const normalizeProgress = (
     championAnswersWithoutClues: normalizeProgressCount(
       progress.championAnswersWithoutClues,
     ),
-    correctCategories: normalizeCounts(progress.correctCategories, [
-      ...questionCategories,
-      ...retiredQuestionCategories,
-    ]),
+    correctCategories: normalizeCounts(
+      progress.correctCategories,
+      questionCategories,
+    ),
     correctGenerations: normalizeCounts(
       progress.correctGenerations,
       generations,
@@ -144,7 +142,6 @@ const normalizeProgress = (
     ],
     correctQuestionTypes: normalizeCounts(progress.correctQuestionTypes, [
       ...questionTypes,
-      ...retiredQuestionTypes,
       'champion',
     ]),
     masteryRounds: normalizeProgressCount(progress.masteryRounds),

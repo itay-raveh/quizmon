@@ -17,11 +17,9 @@ const deliveryErrors = [
 
 const nextMorning = Date.parse('2026-09-09T08:00:00.000Z');
 
-const makeReminder = (completedDate?: string) => {
+const makeReminder = (completedDate?: string, timeZone = 'UTC') => {
   const storage = {
-    get: vi
-      .fn()
-      .mockResolvedValue({ subscription, timeZone: 'UTC', completedDate }),
+    get: vi.fn().mockResolvedValue({ subscription, timeZone, completedDate }),
     deleteAll: vi.fn().mockResolvedValue(undefined),
     setAlarm: vi.fn().mockResolvedValue(undefined),
   };
@@ -69,6 +67,48 @@ it('skips a completed daily while keeping the next morning reminder', async () =
   expect(storage.setAlarm).toHaveBeenCalledExactlyOnceWith(nextMorning);
   expect(storage.deleteAll).not.toHaveBeenCalled();
 });
+
+it.each([
+  {
+    timeZone: 'Asia/Tokyo',
+    now: '2026-09-07T23:00:00.000Z',
+    utcDate: '2026-09-07',
+    localDate: '2026-09-08',
+    nextAlarm: '2026-09-08T23:00:00.000Z',
+  },
+  {
+    timeZone: 'Pacific/Honolulu',
+    now: '2026-09-08T05:00:00.000Z',
+    utcDate: '2026-09-08',
+    localDate: '2026-09-07',
+    nextAlarm: '2026-09-08T18:00:00.000Z',
+  },
+])(
+  'links and suppresses the UTC Daily in $timeZone while scheduling locally',
+  async ({ timeZone, now, utcDate, localDate, nextAlarm }) => {
+    vi.setSystemTime(new Date(now));
+    const completed = makeReminder(utcDate, timeZone);
+    await completed.reminder.alarm();
+    expect(webpush.sendNotification).not.toHaveBeenCalled();
+    expect(completed.storage.setAlarm).toHaveBeenCalledExactlyOnceWith(
+      Date.parse(nextAlarm),
+    );
+
+    const otherDate = makeReminder(localDate, timeZone);
+    await otherDate.reminder.alarm();
+    expect(webpush.sendNotification).toHaveBeenCalledOnce();
+    expect(
+      JSON.parse(
+        vi.mocked(webpush.sendNotification).mock.calls[0]![1] as string,
+      ),
+    ).toMatchObject({
+      url: `/?daily=${utcDate}&play=1`,
+    });
+    expect(otherDate.storage.setAlarm).toHaveBeenCalledExactlyOnceWith(
+      Date.parse(nextAlarm),
+    );
+  },
+);
 
 it.each([undefined, '2026-09-07'])(
   'sends an uncompleted daily and rearms the alarm (last completion: %s)',

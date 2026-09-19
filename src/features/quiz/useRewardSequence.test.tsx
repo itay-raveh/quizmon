@@ -37,8 +37,6 @@ const rewardSummary = (
   <TrainerProgressSummary
     progressChanges={changes}
     leagueVictory={false}
-    onOpenTrainerCard={vi.fn()}
-    onOpenHallOfFame={vi.fn()}
     {...props}
   />
 );
@@ -56,14 +54,13 @@ afterEach(() => {
 it('credits progress before revealing Gold, then cancels on departure', () => {
   const playReward = vi.fn();
   const stopRewards = vi.fn();
-  const onOpenTrainerCard = vi.fn();
   const rendered = render(
     <SoundContext value={{ ...silentSoundControls, playReward, stopRewards }}>
-      {rewardSummary({ onOpenTrainerCard })}
+      {rewardSummary()}
     </SoundContext>,
   );
-  const type = screen.getByRole('button', { name: /Type Specialist: \+10/ });
-  const gold = screen.getByRole('button', {
+  const type = screen.getByRole('group', { name: /Type Specialist: \+10/ });
+  const gold = screen.getByRole('group', {
     name: /Perfect Form.*Gold unlocked/,
   });
   expect(type).toHaveTextContent('221 / 1,000');
@@ -71,8 +68,7 @@ it('credits progress before revealing Gold, then cancels on departure', () => {
   step(400);
   expect(type).not.toHaveTextContent('221 / 1,000');
   expect(type).not.toHaveTextContent('231 / 1,000');
-  type.click();
-  expect(onOpenTrainerCard).toHaveBeenCalledWith('titles');
+  expect(screen.queryByRole('button')).not.toBeInTheDocument();
   step(859);
   expect(gold).toHaveAttribute('data-tier', '2');
   step(860);
@@ -137,7 +133,7 @@ it('keeps every reward for long lists, finishes promptly, and settles when motio
     </ReducedMotionContext>
   );
   const rendered = render(renderSummary(false));
-  expect(screen.getAllByRole('button')).toHaveLength(16);
+  expect(screen.getAllByRole('group')).toHaveLength(16);
   step(2100);
   expect(screen.getAllByText('1,050 total')).toHaveLength(16);
   expect(screen.getAllByText('+4')).toHaveLength(16);
@@ -184,7 +180,7 @@ it.each([
         })}
       </SoundContext>,
     );
-    const reward = screen.getByRole('button');
+    const reward = screen.getByRole('group');
     step(679);
     expect(reward).toHaveAttribute('data-unlocked', 'false');
     expect(playReward).not.toHaveBeenCalledWith(0, sound);

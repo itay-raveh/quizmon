@@ -1,12 +1,10 @@
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
-import { ArrowRightIcon } from '@/components/icons';
+import { ArrowRightIcon, GearSixIcon } from '@/components/icons';
 import { formatDailyDate } from '@/domain/pokemon/format';
-import { getLocalDate } from '@/domain/quiz/daily';
 import type { GameResult } from '@/domain/quiz/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
 import { CatchCombo } from '@/features/quiz/CatchCombo';
-import { SettingsButton } from '@/features/settings/SettingsButton';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { Logo } from './Logo';
 
@@ -19,8 +17,7 @@ interface HomeScreenProps {
   dailyStreak: number;
   leagueUnlocked: boolean;
   leagueCompleted?: boolean;
-  onOpenTrainerCard: () => void;
-  onOpenSettings: () => void;
+  onCustomizeTraining: () => void;
   onRetryCatalog: () => void;
   onStart: () => void;
   onStartDaily: () => void;
@@ -37,8 +34,7 @@ export const HomeScreen = ({
   dailyStreak,
   leagueUnlocked,
   leagueCompleted = false,
-  onOpenTrainerCard,
-  onOpenSettings,
+  onCustomizeTraining,
   onRetryCatalog,
   onStart,
   onStartDaily,
@@ -47,7 +43,7 @@ export const HomeScreen = ({
 }: HomeScreenProps) => {
   const catalogReady = catalogStatus === 'ready';
   const dailyDetail = [
-    dailyDate === getLocalDate() ? null : formatDailyDate(dailyDate),
+    formatDailyDate(dailyDate),
     storageAvailable ? null : 'Browser storage required',
   ]
     .filter(Boolean)
@@ -80,6 +76,7 @@ export const HomeScreen = ({
         ) : null}
         {dailyResult ? (
           <ShareResultButton
+            aria-label="Share result"
             className={`daily-action daily-action--complete ${dailyStreak > 0 ? 'daily-action--with-combo' : ''}`.trim()}
             mode={{
               kind: 'daily',
@@ -89,7 +86,7 @@ export const HomeScreen = ({
             result={dailyResult}
           >
             <span className="daily-action__copy">
-              <strong className="daily-action__title">Share result</strong>
+              <strong className="daily-action__title">Daily Challenge</strong>
               <span className="daily-action__detail">
                 {dailyResult.score.toLocaleString()} points
                 {dailyResultSaved ? '' : ' · Not saved'}
@@ -115,15 +112,16 @@ export const HomeScreen = ({
         )}
       </div>
       <div className="landing__control-stack">
-        <div className="landing__actions" aria-label="Play and profile">
-          <SettingsButton disabled={!catalogReady} onClick={onOpenSettings} />
+        <div className="landing__actions" aria-label="Training">
           <GameButton
-            className="landing__trainer-button"
+            aria-label="Customize training"
+            title="Customize training"
+            className="landing__customize"
             disabled={!catalogReady}
             tone="quiet"
-            onClick={onOpenTrainerCard}
+            onClick={onCustomizeTraining}
           >
-            <span>Trainer profile</span>
+            <GearSixIcon aria-hidden="true" weight="bold" />
           </GameButton>
           <GameButton
             aria-label="Start training"

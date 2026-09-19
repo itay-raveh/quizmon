@@ -1,0 +1,105 @@
+.site-footer {
+  width: min(42rem, calc(100% - 1.25rem));
+  margin: 0.75rem auto 0;
+  padding: 0.5rem 0 max(1rem, env(safe-area-inset-bottom));
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  font-size: var(--text-small);
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  justify-self: center;
+}
+
+.site-footer__people,
+.site-footer__links,
+.site-footer__credits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  max-width: 48rem;
+  margin-inline: auto;
+  text-shadow:
+    0 1px 0 var(--paper),
+    0 -1px 0 var(--paper),
+    1px 0 0 var(--paper),
+    -1px 0 0 var(--paper);
+}
+
+.site-footer__people {
+  gap: 0 0.75rem;
+  margin-bottom: 0.1rem;
+  font-weight: 600;
+}
+
+.site-footer__links {
+  gap: 0 0.75rem;
+}
+
+.site-footer__credits {
+  gap: 0 0.75rem;
+  margin-top: 0.15rem;
+  font-size: var(--text-micro);
+}
+
+.site-footer__people > span,
+.site-footer__links a,
+.site-footer__credits > span {
+  white-space: nowrap;
+}
+
+.site-footer a {
+  display: inline-flex;
+  min-height: 1.5rem;
+  align-items: center;
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.site-footer .site-footer__support {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.9375rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5625rem;
+  border: 2px solid var(--navy);
+  border-radius: 0.5rem;
+  background: var(--paper);
+  color: var(--navy);
+  box-shadow:
+    0 3px 0 var(--yellow),
+    0 5px 0 var(--navy-shadow);
+  font-family: var(--font-interface);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.site-footer .site-footer__support:hover {
+  background: var(--cream);
+}
+
+.site-footer .site-footer__support:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 var(--yellow),
+    0 3px 0 var(--navy-shadow);
+}
+
+.site-footer__support svg {
+  flex: none;
+}
+
+@media print {
+  .site-footer {
+    display: none;
+  }
+}

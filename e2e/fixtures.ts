@@ -1,26 +1,26 @@
 import {
-  emptyPlayerData,
   SAVE_SCHEMA_VERSION,
+  emptyPlayerData,
   type PlayerData,
 } from '../src/domain/player/player-save';
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import type { GameSettings } from '../src/domain/settings/types';
+export { formatPokemonName as formatName } from '../src/domain/pokemon/format';
 import { test as base, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import catalogData from '../src/domain/pokemon/data/pokemon.json' with { type: 'json' };
 import { catalog } from '../tests/fixtures/catalog';
 import { formatPokemonName as formatName } from '../src/domain/pokemon/format';
 import type { Generation } from '../src/domain/pokemon/types';
-import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
 import type { QuestionType } from '../src/domain/quiz/types';
+import { readRound } from './database-fixture';
+import { installDatabaseFixture } from './database-fixture';
 
 export { catalog, catalogData, expect };
 const imageBody = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
   'base64',
 );
-
-export { formatPokemonName as formatName } from '../src/domain/pokemon/format';
 
 export const findPokemonByLabel = (label: string | null) =>
   Object.entries(catalogData.pokemon).find(
@@ -152,15 +152,16 @@ export const completeTrainingRound = async (page: Page) => {
 };
 
 export const test = base.extend({
-  page: async ({ page }, run) => {
+  page: async ({ page, baseURL }, run) => {
+    await installDatabaseFixture(page, baseURL);
     await page.addInitScript(
-      (save) => {
+      (initial) => {
         if (
           location.search.includes('fresh=1') ||
           localStorage.getItem('quizmon.player')
         )
           return;
-        localStorage.setItem('quizmon.player', JSON.stringify(save));
+        localStorage.setItem('quizmon.player', JSON.stringify(initial));
       },
       {
         version: SAVE_SCHEMA_VERSION,
@@ -190,13 +191,9 @@ export const answerCurrentQuestion = async (page: Page) => {
       .getByRole('button', { name: 'Check answers', exact: true })
       .click();
   } else if (await search.count()) {
-    const name = await page.evaluate(() => {
-      const snapshot = JSON.parse(
-        sessionStorage.getItem('quizmon.active-game.v1')!,
-      ) as ActiveGameSnapshot;
-      return snapshot.questions[snapshot.answers.length]!.answer
-        .correctOptions[0] as string;
-    });
+    const snapshot = (await readRound(page))!;
+    const name =
+      snapshot.questions[snapshot.answers.length]!.answer.correctOptions[0]!;
     await search.fill(formatName(name));
     await page.getByRole('button', { name: 'Guess', exact: true }).click();
   } else {

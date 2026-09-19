@@ -12,7 +12,10 @@ test(
     await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
     await page.getByRole('button', { name: 'Cancel' }).click();
 
-    await page.getByRole('button', { name: 'Trainer profile' }).click();
+    await page
+      .getByRole('navigation', { name: 'Main', exact: true })
+      .getByRole('button', { name: 'Trainer', exact: true })
+      .click();
     await expect(
       page.getByRole('article', { name: 'Trainer Card' }),
     ).toBeVisible();

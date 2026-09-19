@@ -1,32 +1,34 @@
-import { readDailyState } from './daily-state';
-import { getDailyStreak } from '@/domain/player/progress';
-import {
-  currentDailyTrack,
-  getDailyResultKey,
-} from '@/domain/quiz/daily-track';
-import type { StartGame } from '@/app/game-session';
+import { useCallback, useEffect, useState } from 'react';
+import type { StartGame } from '../../app/game-session';
+import { getDailyStreak } from '../../domain/player/progress';
 import {
   formGroups,
   generations,
   type PokemonCatalog,
-} from '@/domain/pokemon/types';
-import { parseTrainerRoute } from '@/features/trainer/trainer-route';
+} from '../../domain/pokemon/types';
 import {
-  getLocalDate,
+  getUtcDate,
   parseDailyDate,
   shouldAutoStartDaily,
-} from '@/domain/quiz/daily';
-import { isDailyTrack, type DailyTrack } from '@/domain/quiz/daily-track';
-import { GAMEPLAY_REVISION } from '@/domain/quiz/gameplay-version';
+} from '../../domain/quiz/daily';
+import {
+  currentDailyTrack,
+  getDailyResultKey,
+  isDailyTrack,
+  type DailyTrack,
+} from '../../domain/quiz/daily-track';
 import {
   buildDailyTrackQuestions,
   resolveTrainingSettings,
-} from '@/domain/quiz/question-generation';
-import type { GameResult } from '@/domain/quiz/types';
-import type { GameSettings } from '@/domain/settings/types';
-import type { ActiveGameSnapshot } from '@/domain/player/active-game';
-import { useCallback, useEffect, useState } from 'react';
-import { canPersistResults } from '@/lib/storage/results-storage';
+} from '../../domain/quiz/question-generation';
+import { QUESTION_RULES_VERSION } from '../../domain/quiz/question-variants';
+import type { GameResult } from '../../domain/quiz/types';
+import type { GameSettings } from '../../domain/settings/types';
+import { type ActiveGameSnapshot } from '../../lib/storage/active-game-storage';
+import { subscribeToPlayerChanges } from '../../lib/storage/player-storage';
+import { canPersistResults } from '../../lib/storage/results-storage';
+import { parseTrainerRoute } from '../trainer/trainer-route';
+import { readDailyState } from './daily-state';
 
 interface DailyChallengeOptions {
   catalog?: PokemonCatalog;
@@ -51,6 +53,8 @@ export const useDailyChallenge = ({
     };
     return {
       autoStart:
+        !params.has('screen') &&
+        !new URLSearchParams(window.location.hash.slice(1)).has('friend') &&
         !parseTrainerRoute(window.location.search) &&
         shouldAutoStartDaily(window.location.search),
       date: parseDailyDate(window.location.search),
@@ -59,52 +63,66 @@ export const useDailyChallenge = ({
       catalog: params.get('catalog'),
     };
   });
-  const [today, setToday] = useState(getLocalDate);
+  const [today, setToday] = useState(getUtcDate);
   const date = route.date ?? today;
   const [error, setError] = useState('');
   const [completion, setCompletion] = useState<{
+    date: string;
     result: GameResult | null;
     resultSaved: boolean;
-  }>({ result: null, resultSaved: false });
+  }>({ date, result: null, resultSaved: false });
   const [savedState, setSavedState] = useState(() => readDailyState(date));
   const streak = getDailyStreak(savedState.results.streak.creditedDates, today);
   const [storageAvailable, setStorageAvailable] = useState(canPersistResults);
   const refresh = useCallback(() => {
-    const nextDate = route.date ?? getLocalDate();
+    const currentDate = getUtcDate();
+    const nextDate = route.date ?? currentDate;
     const next = readDailyState(nextDate);
     setSavedState(next);
     setCompletion((current) => {
-      if (nextDate !== date) return { result: null, resultSaved: false };
+      if (nextDate !== current.date)
+        return { date: nextDate, result: null, resultSaved: false };
       const saved =
-        next.results.daily[getDailyResultKey(date, current.result?.dailyTrack)];
-      return saved ? { result: saved, resultSaved: true } : { ...current };
+        next.results.daily[
+          getDailyResultKey(nextDate, current.result?.dailyTrack)
+        ];
+      return saved
+        ? { date: nextDate, result: saved, resultSaved: true }
+        : { ...current };
     });
-    setToday(getLocalDate());
+    setToday(currentDate);
     refreshSavedData();
-  }, [date, route.date, refreshSavedData]);
+  }, [route.date, refreshSavedData]);
   useEffect(() => {
     const timer = window.setInterval(refresh, 30_000);
     window.addEventListener('focus', refresh);
     window.addEventListener('storage', refresh);
+    const unsubscribe = subscribeToPlayerChanges(refresh);
     return () => {
+      unsubscribe();
       window.clearInterval(timer);
       window.removeEventListener('focus', refresh);
       window.removeEventListener('storage', refresh);
     };
   }, [refresh]);
 
-  const choose = (track: DailyTrack = route.track ?? currentDailyTrack) => {
+  const choose = async (
+    track: DailyTrack = route.track ?? currentDailyTrack,
+  ) => {
     setError('');
-    const saved = readDailyState(date);
+    const currentDate = getUtcDate();
+    const selectedDate = route.date ?? currentDate;
+    setToday(currentDate);
+    const saved = readDailyState(selectedDate);
     setSavedState(saved);
     if (saved.readError) return;
-    const key = getDailyResultKey(date, track);
+    const key = getDailyResultKey(selectedDate, track);
     const exactResult = saved.results.daily[key];
     const exactAttempt = saved.attempts[key];
     const result =
       exactResult ?? (exactAttempt ? undefined : saved.completed[0]);
     if (result) {
-      setCompletion({ result, resultSaved: true });
+      setCompletion({ date: selectedDate, result, resultSaved: true });
       return;
     }
     if (!catalog || !canPersistResults()) return;
@@ -126,7 +144,8 @@ export const useDailyChallenge = ({
       route.track &&
       track.difficulty === route.track.difficulty &&
       track.scope === route.track.scope &&
-      ((route.rules !== null && route.rules !== String(GAMEPLAY_REVISION)) ||
+      ((route.rules !== null &&
+        route.rules !== String(QUESTION_RULES_VERSION)) ||
         (route.catalog !== null &&
           route.catalog !== String(catalog.contentVersion)))
     ) {
@@ -143,17 +162,17 @@ export const useDailyChallenge = ({
         formGroups: [...formGroups],
         questionSelection: 'automatic',
       });
-      const seed = `daily:${date}:${track.difficulty}:${track.scope}`;
+      const seed = `daily:${selectedDate}:${track.difficulty}:${track.scope}`;
       const questions = buildDailyTrackQuestions(
         catalog,
-        date,
+        selectedDate,
         next,
         track.scope,
       );
-      const started = startGame(
+      const started = await startGame(
         questions,
         next,
-        { kind: 'daily', date, track },
+        { kind: 'daily', date: selectedDate, track },
         seed,
       );
       if (started === false)
@@ -167,14 +186,16 @@ export const useDailyChallenge = ({
   const start = () => {
     setStorageAvailable(canPersistResults());
     refresh();
-    choose();
+    return choose();
   };
   const recordCompletion = useCallback(
-    (result: GameResult, saved: boolean) => {
-      setCompletion({ result, resultSaved: saved });
-      setSavedState(readDailyState(date));
+    (result: GameResult, saved: boolean, completedDate: string) => {
+      const currentDate = getUtcDate();
+      setCompletion({ date: completedDate, result, resultSaved: saved });
+      setToday(currentDate);
+      setSavedState(readDailyState(route.date ?? currentDate));
     },
-    [date],
+    [route.date],
   );
   const requestedKey = getDailyResultKey(date, route.track);
   const savedResult =
@@ -186,8 +207,11 @@ export const useDailyChallenge = ({
     linkedDate: route.date,
     date,
     choose,
-    result: savedResult ?? completion.result,
-    resultSaved: Boolean(savedResult) || completion.resultSaved,
+    result:
+      savedResult ?? (completion.date === date ? completion.result : null),
+    resultSaved:
+      Boolean(savedResult) ||
+      (completion.date === date && completion.resultSaved),
     error: savedState.readError
       ? 'Saved results could not be read. Open Settings, then Backup to restore a valid backup.'
       : error,

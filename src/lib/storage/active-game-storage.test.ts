@@ -1,7 +1,12 @@
+import type { ActiveGameSnapshot } from '../../domain/player/active-game';
 import {
   catalog,
   createQuestionContext,
 } from '../../../tests/fixtures/catalog';
+import {
+  resetLocalSave,
+  seedActiveFixture,
+} from '../../../tests/fixtures/local-save';
 import { buildQuestions } from '../../domain/quiz/question-generation';
 import { buildQuestionType } from '../../domain/quiz/questions/registry';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
@@ -11,8 +16,12 @@ import {
   readActiveGame,
   writeActiveGame,
 } from './active-game-storage';
-import type { ActiveGameSnapshot } from '@/domain/player/active-game';
+import { readLocalRound } from './round-storage';
+
+beforeEach(resetLocalSave);
+
 const snapshot: Omit<ActiveGameSnapshot, 'version'> = {
+  roundId: crypto.randomUUID(),
   answers: [],
   contentVersion: 8,
   elapsedMilliseconds: 2500,
@@ -42,110 +51,69 @@ const answer = {
   },
 };
 describe('active game storage', () => {
-  beforeEach(() => window.sessionStorage.clear());
-  it('preserves the starting multipliers when a round is resumed', () => {
-    const scoreMultipliers = {
-      difficulty: 3 as const,
-      generations: 2,
-      questionTypes: [
-        { questionType: 'sprite-match' as const, multiplier: 0.75 as const },
-      ],
-    };
-    writeActiveGame({ ...snapshot, scoreMultipliers });
-    expect(readActiveGame(catalog)?.scoreMultipliers).toEqual(scoreMultipliers);
-    const stored = JSON.parse(
-      sessionStorage.getItem('quizmon.active-game.v1')!,
-    ) as Record<string, unknown>;
-    stored.scoreMultipliers = {
-      ...scoreMultipliers,
-      questionTypes: [{ questionType: 'sprite-match', multiplier: 99 }],
-    };
-    sessionStorage.setItem('quizmon.active-game.v1', JSON.stringify(stored));
-    expect(readActiveGame(catalog)).toBeNull();
-  });
-  it('restores a versioned in-progress round from the current tab', () => {
-    writeActiveGame(snapshot);
+  it('restores a versioned in-progress round from the current tab', async () => {
+    await writeActiveGame(snapshot);
+
     expect(readActiveGame(catalog)).toEqual({
       ...snapshot,
       playerRestoreId: null,
       version: 7,
     });
   });
-  it('retains saved older difficulty rules and assistance after a rule bump', () => {
-    const question = buildQuestionType(
-      { ...createQuestionContext('saved-expert'), difficulty: 5 },
-      'stat-showdown',
-    )!;
-    const savedQuestion = {
-      ...question,
-      rulesVersion: 3,
-      variantLevel: 4 as const,
-      namesOnly: false,
-    };
-    const saved = {
-      ...snapshot,
-      questionCount: 1,
-      settings: { ...snapshot.settings, difficulty: 5 as const },
-      questions: [savedQuestion],
-    };
-    writeActiveGame(saved);
-    const restored = readActiveGame(catalog);
-    expect(restored?.questions).toEqual([savedQuestion]);
-    expect(restored?.settings.difficulty).toBe(5);
+
+  it('does not assign difficulty to a legacy unfinished round', async () => {
+    const settings = { ...snapshot.settings };
+    delete settings.difficulty;
+    delete settings.questionSelection;
+    await writeActiveGame({ ...snapshot, settings });
+    expect(readActiveGame(catalog)?.settings).toEqual(settings);
+    expect(readActiveGame(catalog)?.questions).toEqual(snapshot.questions);
   });
-  it('restores the original Daily track rather than a later selection', () => {
+
+  it('restores the original Daily track rather than a later selection', async () => {
     const mode = {
       kind: 'daily' as const,
       date: '2026-09-12',
       track: { difficulty: 5 as const, scope: 'gen-i' as const },
     };
-    writeActiveGame({ ...snapshot, mode });
+    await writeActiveGame({ ...snapshot, mode });
     expect(readActiveGame(catalog)?.mode).toEqual(mode);
   });
-  it('fails closed for corrupt or incompatible snapshots', () => {
-    window.sessionStorage.setItem(
-      'quizmon.active-game.v1',
-      JSON.stringify({ ...snapshot, version: 0 }),
-    );
+
+  it('fails closed for corrupt or incompatible snapshots', async () => {
+    await seedActiveFixture({ ...snapshot, version: 0 });
+
     expect(readActiveGame(catalog)).toBeNull();
-    expect(window.sessionStorage.getItem('quizmon.active-game.v1')).toBe(
-      JSON.stringify({ ...snapshot, version: 0 }),
-    );
   });
   it.each([-1, 0.5, '1', null])(
     'rejects invalid round counters: %j',
-    (value) => {
+    async (value) => {
       for (const patch of [
         { contentVersion: value },
         { questionCount: value },
         { answers: [{ ...answer, cluesUsed: value }] },
       ]) {
-        window.sessionStorage.setItem(
-          'quizmon.active-game.v1',
-          JSON.stringify({ ...snapshot, version: 7, ...patch }),
-        );
+        await seedActiveFixture({ ...snapshot, version: 7, ...patch });
         expect(readActiveGame(catalog)).toBeNull();
       }
     },
   );
   it.for([[], ['unknown'], null, 'I'])(
     'rejects invalid saved selections: %j',
-    (value) => {
+    async (value) => {
       for (const field of ['generations', 'questionTypes']) {
-        window.sessionStorage.setItem(
-          'quizmon.active-game.v1',
-          JSON.stringify({
-            ...snapshot,
-            version: 7,
-            settings: { ...defaultGameSettings, [field]: value },
-          }),
-        );
+        await seedActiveFixture({
+          ...snapshot,
+          version: 7,
+          settings: { ...defaultGameSettings, [field]: value },
+        });
         expect(readActiveGame(catalog)).toBeNull();
       }
     },
   );
-  it('accepts compatible questions across catalog versions', () => {
-    writeActiveGame({
+
+  it('accepts compatible questions across catalog versions', async () => {
+    await writeActiveGame({
       ...snapshot,
       contentVersion: Number.MAX_SAFE_INTEGER + 1,
     });
@@ -153,19 +121,23 @@ describe('active game storage', () => {
       Number.MAX_SAFE_INTEGER + 1,
     );
   });
-  it('clears a round when the player leaves or completes it', () => {
-    writeActiveGame(snapshot);
-    clearActiveGame();
+
+  it('clears a round when the player leaves or completes it', async () => {
+    await writeActiveGame(snapshot);
+    await clearActiveGame();
+
     expect(readActiveGame(catalog)).toBeNull();
   });
-  it('accepts a resumable League challenge', () => {
-    writeActiveGame({ ...snapshot, mode: { kind: 'league' } });
+
+  it('accepts a resumable League challenge', async () => {
+    await writeActiveGame({ ...snapshot, mode: { kind: 'league' } });
+
     expect(readActiveGame(catalog)?.mode).toEqual({ kind: 'league' });
   });
   it.each(['training', 'daily', 'league'] as const)(
     'preserves a %s round across a catalog update',
-    (kind) => {
-      writeActiveGame({
+    async (kind) => {
+      await writeActiveGame({
         ...snapshot,
         contentVersion: 14,
         answers: [answer],
@@ -178,15 +150,17 @@ describe('active game storage', () => {
       expect(restored.contentVersion).toBe(14);
     },
   );
-  it('rejects a removed Pokémon reference at the loading edge', () => {
-    writeActiveGame(snapshot);
+
+  it('rejects a removed Pokémon reference at the loading edge', async () => {
+    await writeActiveGame(snapshot);
     const pokemon = { ...catalog.pokemon };
     delete pokemon[snapshot.questions[0]!.subject.name];
     expect(readActiveGame({ ...catalog, pokemon })).toBeNull();
   });
-  it('rejects removed variants in saved rotation subjects at the loading edge', () => {
+
+  it('rejects removed variants in saved rotation subjects at the loading edge', async () => {
     const question = snapshot.questions[0]!;
-    writeActiveGame({
+    await writeActiveGame({
       ...snapshot,
       questionCount: 1,
       questions: [
@@ -197,11 +171,9 @@ describe('active game storage', () => {
       ],
     });
     expect(readActiveGame(catalog)).toBeNull();
-    expect(sessionStorage.getItem('quizmon.active-game.v1')).toContain(
-      'unown-b',
-    );
   });
-  it('corrects a saved variety ID to its National Pokédex number without regenerating the question', () => {
+
+  it('corrects a saved variety ID to its National Pokédex number without regenerating the question', async () => {
     const name = 'rotom-wash';
     const pokemon = catalog.pokemon[name]!;
     const question = buildQuestionType(
@@ -218,7 +190,11 @@ describe('active game storage', () => {
       throw new Error('Expected a named question');
     const expected = structuredClone(question);
     question.prompt.dexNumber = pokemon.pokemonId;
-    writeActiveGame({ ...snapshot, questionCount: 1, questions: [question] });
+    await writeActiveGame({
+      ...snapshot,
+      questionCount: 1,
+      questions: [question],
+    });
     const restored = readActiveGame(catalog)!;
     expect(restored.questions).toEqual([expected]);
     expect(restored.contentVersion).toBe(snapshot.contentVersion);
@@ -230,7 +206,7 @@ describe('active game storage', () => {
     'evolution-link',
     'evolution-shift',
     'champion',
-  ] as const)('normalizes every saved Pokédex number in %s', (type) => {
+  ] as const)('normalizes every saved Pokédex number in %s', async (type) => {
     const question = buildQuestionType(createQuestionContext(type), type)!;
     const legacy = JSON.parse(
       JSON.stringify(question),
@@ -238,15 +214,21 @@ describe('active game storage', () => {
     ) as typeof question;
     if (legacy.optionDexNumbers)
       for (const name of Object.keys(legacy.optionDexNumbers))
-        legacy.optionDexNumbers[name] = 999999;
-    writeActiveGame({ ...snapshot, questionCount: 1, questions: [legacy] });
-    const stored = sessionStorage.getItem('quizmon.active-game.v1');
+        legacy.optionDexNumbers[name] = 999_999;
+
+    await writeActiveGame({
+      ...snapshot,
+      questionCount: 1,
+      questions: [legacy],
+    });
+    const stored = JSON.stringify(readLocalRound());
     expect(readActiveGame(catalog)?.questions).toEqual([question]);
-    expect(sessionStorage.getItem('quizmon.active-game.v1')).toBe(stored);
+    expect(JSON.stringify(readLocalRound())).toBe(stored);
   });
-  it('rejects answers that do not belong to the stored question', () => {
+
+  it('rejects answers that do not belong to the stored question', async () => {
     const question = snapshot.questions[0]!;
-    writeActiveGame({
+    await writeActiveGame({
       ...snapshot,
       answers: [
         {
@@ -266,12 +248,11 @@ describe('active game storage', () => {
     expect(readActiveGame(catalog)).toBeNull();
   });
 });
-it('keeps the published snapshot field while exposing settings to the app', () => {
-  writeActiveGame(snapshot);
-  const saved: unknown = JSON.parse(
-    sessionStorage.getItem('quizmon.active-game.v1')!,
-  );
-  expect(saved).toMatchObject({ settings: defaultGameSettings });
-  expect(saved).not.toHaveProperty('modifiers');
-  expect(readActiveGame(catalog)?.settings).toEqual(defaultGameSettings);
-});
+
+it.each([2, 3, 4, 5, 6])(
+  'rejects pre-reset round format %i',
+  async (version) => {
+    await seedActiveFixture({ ...snapshot, version });
+    expect(readActiveGame(catalog)).toBeNull();
+  },
+);

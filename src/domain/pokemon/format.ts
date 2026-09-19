@@ -1,6 +1,6 @@
-import type { GameMode } from '../quiz/types';
+import type { GameMode } from '../quiz/types.ts';
 import pokemonLabels from './data/pokemon-labels.json' with { type: 'json' };
-import type { Generation } from './types';
+import type { Generation } from './types.ts';
 
 const scoreFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,

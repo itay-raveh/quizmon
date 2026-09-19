@@ -1,9 +1,9 @@
-import { pick } from '../../lib/random';
+import { pick } from '../../lib/random.ts';
 import {
   getPixelPeekCropSize,
   getPixelPeekFocusPoints,
-} from './pixel-peek-focus';
-import type { PackedSpriteMeasurements } from './types';
+} from './pixel-peek-focus.ts';
+import type { PackedSpriteMeasurements } from './types.ts';
 
 export const getPixelPeekCrop = (
   measurements: PackedSpriteMeasurements | null,

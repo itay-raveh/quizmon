@@ -1,5 +1,5 @@
-import type { QuestionPrompt } from '../types';
-import type { Candidate } from './context';
+import type { QuestionPrompt } from '../types.ts';
+import type { Candidate } from './context.ts';
 
 export const textPrompt = (text: string): QuestionPrompt => ({
   kind: 'text',

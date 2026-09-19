@@ -3,7 +3,7 @@ import {
   generations,
   type FormGroup,
   type PokemonCatalog,
-} from './types';
+} from './types.ts';
 
 export const getFormGroup = (name: string): FormGroup => {
   if (/-mega(?:-[xyz])?$/.test(name)) return 'mega';

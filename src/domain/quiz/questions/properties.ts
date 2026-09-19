@@ -1,10 +1,10 @@
-import { pick, shuffle } from '../../../lib/random';
-import { randomOptionSet } from './answers';
-import { makeQuestion, targetMedia } from './assembly';
-import { type QuestionBuilder } from './context';
-import { pokemonPrompt } from './prompts';
-import { targetRepetition } from './repetition';
-import { pickTarget } from './selection';
+import { pick, shuffle } from '../../../lib/random.ts';
+import { randomOptionSet } from './answers.ts';
+import { makeQuestion, targetMedia } from './assembly.ts';
+import { type QuestionBuilder } from './context.ts';
+import { pokemonPrompt } from './prompts.ts';
+import { targetRepetition } from './repetition.ts';
+import { pickTarget } from './selection.ts';
 
 export const buildPropertyQuestion = (
   category: 'ability' | 'move',

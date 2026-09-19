@@ -1,0 +1,132 @@
+{{- if .Values.powersync.enabled }}
+{{- $name := printf "%s-sync" (include "quizmon.name" .) }}
+{{- $configName := printf "%s-%s" $name (dict "values" .Values "chartVersion" .Chart.Version | toJson | sha256sum | trunc 12) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $configName }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+immutable: true
+data:
+  service.yaml: |
+    telemetry:
+      disable_telemetry_sharing: true
+    replication:
+      connections:
+        - type: postgresql
+          uri: !env PS_SOURCE_URI
+          sslmode: verify-full
+    storage:
+      type: postgresql
+      uri: !env PS_STORAGE_URI
+      sslmode: verify-full
+    port: 8080
+    sync_config:
+      path: /sync/sync-config.yaml
+    client_auth:
+      jwks_uri: {{ printf "%s/api/auth/jwks" .Values.runtimeConfig.origin | quote }}
+      audience: [{{ .Values.runtimeConfig.sync.audience | quote }}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: powersync
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app.kubernetes.io/component: powersync
+  template:
+    metadata:
+      labels:
+        {{- include "quizmon.labels" . | nindent 8 }}
+        app.kubernetes.io/component: powersync
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 901
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: sync-rules
+          image: {{ include "quizmon.image" . | quote }}
+          command: [cp]
+          args: [/opt/quizmon/deploy/powersync/sync-config.yaml, /sync/sync-config.yaml]
+          securityContext:
+            {{- include "quizmon.containerSecurity" . | nindent 12 }}
+            runAsUser: 1000
+            runAsGroup: 901
+          resources:
+            {{- toYaml .Values.release.resources | nindent 12 }}
+          volumeMounts:
+            - { name: sync, mountPath: /sync }
+      containers:
+        - name: powersync
+          image: journeyapps/powersync-service@sha256:39f6a534f757afd1c633e91a19b23fde03186d16b5543b4af0f5c8f09d4cb79d
+          args: [start, -r, unified]
+          securityContext:
+            {{- include "quizmon.containerSecurity" . | nindent 12 }}
+            runAsUser: 901
+            runAsGroup: 901
+          env:
+            - { name: POWERSYNC_CONFIG_PATH, value: /config/service.yaml }
+            - { name: NODE_OPTIONS, value: --max-old-space-size=512 }
+            - name: PS_SOURCE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.powersync.sourceSecret.name | quote }}
+                  key: {{ .Values.powersync.sourceSecret.key | quote }}
+            - name: PS_STORAGE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.powersync.storageSecret.name | quote }}
+                  key: {{ .Values.powersync.storageSecret.key | quote }}
+          ports:
+            - { name: http, containerPort: 8080 }
+          startupProbe:
+            httpGet: { path: /probes/startup, port: http }
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: { path: /probes/readiness, port: http }
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.powersync.resources | nindent 12 }}
+          volumeMounts:
+            - { name: config, mountPath: /config, readOnly: true }
+            - { name: sync, mountPath: /sync, readOnly: true }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: config
+          configMap:
+            name: {{ $configName }}
+        - name: sync
+          emptyDir: {}
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
+{{- end }}

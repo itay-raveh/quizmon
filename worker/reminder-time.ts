@@ -9,7 +9,7 @@ interface ZonedDateParts {
   year: number;
 }
 
-export const getZonedDateParts = (
+const getZonedDateParts = (
   timestamp: number,
   timeZone: string,
 ): ZonedDateParts => {
@@ -35,9 +35,6 @@ export const getZonedDateParts = (
     year: Number(values.year),
   };
 };
-
-export const dateFromParts = ({ day, month, year }: ZonedDateParts): string =>
-  `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
 const datePartsAsUtc = (parts: ZonedDateParts): number =>
   Date.UTC(

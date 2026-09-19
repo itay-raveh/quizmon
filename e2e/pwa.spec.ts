@@ -1,4 +1,5 @@
 import { createServer, type ServerResponse } from 'node:http';
+import { installDatabaseFixture, readSave } from './database-fixture';
 import { completeTrainingRound, expect, test } from './fixtures';
 
 const image = Buffer.from(
@@ -42,6 +43,9 @@ test('caches item PNGs for offline use without caching missing item responses', 
   if (!address || typeof address === 'string') throw new Error('Missing port');
   try {
     await page.goto(`http://127.0.0.1:${address.port}/`);
+    await expect(
+      page.getByRole('button', { name: 'Start training', exact: true }),
+    ).toBeEnabled();
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
     await page.reload();
     await expect
@@ -127,7 +131,7 @@ test('defers an update through gameplay and restores results after automatic rel
   baseURL,
   page,
 }) => {
-  test.slow();
+  test.setTimeout(60_000);
   let version = 1;
   const pendingRequest = Promise.withResolvers<ServerResponse>();
   const server = createServer((request, response) => {
@@ -165,8 +169,13 @@ test('defers an update through gameplay and restores results after automatic rel
   if (!address || typeof address === 'string') throw new Error('Missing port');
 
   try {
+    const origin = `http://127.0.0.1:${address.port}/`;
+    await installDatabaseFixture(page, origin);
     await page.unroute('**/sprites/pokemon/**');
-    await page.goto(`http://127.0.0.1:${address.port}/`);
+    await page.goto(origin);
+    await expect(
+      page.getByRole('button', { name: 'Start training', exact: true }),
+    ).toBeEnabled();
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
     await page.reload();
     await expect
@@ -201,8 +210,8 @@ test('defers an update through gameplay and restores results after automatic rel
       page.getByRole('progressbar', { name: 'Quiz progress' }),
     ).toBeVisible();
     await completeTrainingRound(page);
-    const savedBefore = await page.evaluate(() =>
-      localStorage.getItem('quizmon.player'),
+    const savedBefore = await readSave(page).then((saved) =>
+      saved ? JSON.stringify(saved) : null,
     );
 
     expect(savedBefore).not.toBeNull();
@@ -216,15 +225,19 @@ test('defers an update through gameplay and restores results after automatic rel
       page.getByRole('heading', { name: 'Training complete' }),
     ).toBeVisible();
     expect(
-      await page.evaluate(() => localStorage.getItem('quizmon.player')),
+      await readSave(page).then((saved) =>
+        saved ? JSON.stringify(saved) : null,
+      ),
     ).toBe(savedBefore);
     expect(
       await page.evaluate(() => sessionStorage.getItem('pwa-update-test')),
     ).toBe('preserved');
 
     await page.getByRole('button', { name: 'Back to start' }).click();
-    await page.getByRole('button', { name: 'Settings', exact: true }).click();
-    const settings = page.getByRole('dialog', { name: 'Settings' });
+    await page
+      .getByRole('button', { name: 'Customize training', exact: true })
+      .click();
+    const settings = page.getByRole('dialog', { name: 'Customize training' });
     await settings
       .getByRole('button', { name: 'Select all generations' })
       .click();
@@ -238,7 +251,10 @@ test('defers an update through gameplay and restores results after automatic rel
     await expect(settings.getByLabel('IX', { exact: true })).toBeChecked();
     await settings.getByRole('button', { name: 'Save settings' }).click();
 
-    await page.getByRole('button', { name: 'Trainer profile' }).click();
+    await page
+      .getByRole('navigation', { name: 'Main', exact: true })
+      .getByRole('button', { name: 'Trainer', exact: true })
+      .click();
     await page.getByRole('button', { name: 'Edit card' }).click();
     await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
     await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('pika');

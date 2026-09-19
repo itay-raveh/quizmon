@@ -1,9 +1,12 @@
-import { createQuestionContext } from '../../../tests/fixtures/catalog';
-import { pokemonOptions, selectPokemonAnswerGroups } from './questions/answers';
-import { makeQuestion } from './questions/assembly';
-import { textPrompt } from './questions/prompts';
-import { buildQuestionType } from './questions/registry';
-import { targetRepetition } from './questions/repetition';
+import { createQuestionContext } from '../../../tests/fixtures/catalog.ts';
+import {
+  pokemonOptions,
+  selectPokemonAnswerGroups,
+} from './questions/answers.ts';
+import { makeQuestion } from './questions/assembly.ts';
+import { textPrompt } from './questions/prompts.ts';
+import { buildQuestionType } from './questions/registry.ts';
+import { targetRepetition } from './questions/repetition.ts';
 
 it('requires descriptions for every Field notes option', () => {
   const context = createQuestionContext('field-notes-descriptions');

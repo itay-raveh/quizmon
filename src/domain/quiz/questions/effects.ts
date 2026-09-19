@@ -1,13 +1,13 @@
-import { formatPokemonName } from '../../pokemon/format';
-import { buildAbilityDescription } from './ability-descriptions';
-import type { QuestionBuilder } from './context';
-import { getEffectPresentation } from './effect-presentation';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import { buildAbilityDescription } from './ability-descriptions.ts';
+import type { QuestionBuilder } from './context.ts';
+import { getEffectPresentation } from './effect-presentation.ts';
 import {
   makeTopicQuestion,
   ordered,
   topicEligible,
   topicSubject,
-} from './topic-support';
+} from './topic-support.ts';
 
 export const buildEffect: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;

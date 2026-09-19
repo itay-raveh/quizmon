@@ -1,14 +1,14 @@
-import { pick } from '../../../lib/random';
-import { getPixelPeekCrop } from '../../pokemon/pixel-peek';
-import type { PokemonKnowledge } from '../../pokemon/types';
-import { pokemonOptions } from './answers';
-import type { AnswerPresentation, QuestionAssembly } from './assembly';
-import { makeQuestion } from './assembly';
-import type { QuestionContext } from './context';
-import { type QuestionBuilder, type QuestionDraft } from './context';
-import { pokemonPrompt, textPrompt } from './prompts';
-import { targetRepetition } from './repetition';
-import { pickFreshTarget, pickTarget } from './selection';
+import { pick } from '../../../lib/random.ts';
+import { getPixelPeekCrop } from '../../pokemon/pixel-peek.ts';
+import type { PokemonKnowledge } from '../../pokemon/types.ts';
+import { pokemonOptions } from './answers.ts';
+import type { AnswerPresentation, QuestionAssembly } from './assembly.ts';
+import { makeQuestion } from './assembly.ts';
+import type { QuestionContext } from './context.ts';
+import { type QuestionBuilder, type QuestionDraft } from './context.ts';
+import { pokemonPrompt, textPrompt } from './prompts.ts';
+import { targetRepetition } from './repetition.ts';
+import { pickFreshTarget, pickTarget } from './selection.ts';
 
 const makeIdentityQuestion = (
   context: QuestionContext,

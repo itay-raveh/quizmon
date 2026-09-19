@@ -2,7 +2,7 @@
   "name": "quizmon",
   "version": "1.0.0",
   "private": true,
-  "description": "The ultimate Pokémon knowledge test",
+  "description": "The ultimate Pok\u00e9mon knowledge test",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -10,29 +10,50 @@
     "check:dead-code": "knip",
     "commitlint": "commitlint",
     "data:update": "node scripts/update-pokemon-data.ts",
-    "deploy": "wrangler deploy",
     "deploy:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
-    "dev": "vite",
+    "dev": "node scripts/dev/start.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "dev:client": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "dev:api": "node scripts/dev/game-api.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node deploy/migrate.ts",
+    "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts tests/online/publication-plan.test.ts tests/online/release-selection.test.ts",
+    "test:accounts": "node tests/online/check-friends.ts --game-worker",
+    "test:sync": "node tests/online/check-progress-api.ts",
+    "test:accounts:browser": "node tests/online/check-main-game.ts",
+    "test:migrations": "node tests/online/check-migrations.ts",
+    "check:chart": "node tests/online/check-helm-chart.ts",
+    "release:package": "node deploy/package-release.ts",
+    "release:plan": "node deploy/plan-publication.ts",
+    "release:check": "node deploy/release-command.ts",
+    "test:release:image": "node tests/online/check-release-image.ts",
+    "test:release:preflight": "node tests/online/check-release-preflight.ts",
+    "test:release:runtime": "node tests/online/check-runtime-config.ts",
+    "test:online:db": "node --test tests/online/email.test.ts tests/online/email-budget.test.ts tests/online/release-coordinator.test.ts tests/online/cloudflare-release.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/gabarito": "^5.3.0",
     "@fontsource-variable/martian-mono": "^5.3.0",
     "@phosphor-icons/react": "^2.1.10",
+    "@powersync/web": "2.3.1",
     "@zumer/snapdom": "^2.24.15",
+    "better-auth": "1.7.4",
     "fuse.js": "7.5.0",
     "howler": "2.2.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-share": "5.3.0",
     "seedrandom": "3.0.5",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "drizzle-orm": "0.45.2",
+    "hono": "4.13.7",
+    "pg": "8.23.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -70,7 +91,11 @@
     "workbox-precaching": "^7.4.1",
     "workbox-routing": "^7.4.1",
     "workbox-strategies": "^7.4.1",
-    "wrangler": "4.127.1"
+    "wrangler": "4.127.1",
+    "@cloudflare/workers-types": "5.20260910.1",
+    "@hono/node-server": "2.1.1",
+    "@types/pg": "8.20.0",
+    "drizzle-kit": "0.31.10"
   },
   "engines": {
     "node": ">=24.15.0"
@@ -89,9 +114,22 @@
       "@fontsource-variable/gabarito",
       "@fontsource-variable/martian-mono",
       "cloudflare"
+    ],
+    "workspaces": {
+      ".": {
+        "entry": [
+          "e2e/database-driver.ts",
+          "server/auth-schema-config.ts"
+        ]
+      }
+    },
+    "ignoreBinaries": [
+      "mise",
+      "openssl"
     ]
   },
   "prettier": {
-    "singleQuote": true
+    "singleQuote": true,
+    "proseWrap": "never"
   }
 }

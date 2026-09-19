@@ -1,7 +1,7 @@
-import { generations, type PokemonCatalog } from '../pokemon/types';
-import { questionTypes } from '../quiz/questions/definitions';
-import { type QuestionCategory } from '../quiz/types';
-import type { TrainerStats } from './progress';
+import { generations, type PokemonCatalog } from '../pokemon/types.ts';
+import { questionTypes } from '../quiz/questions/definitions.ts';
+import { type QuestionCategory } from '../quiz/types.ts';
+import type { TrainerStats } from './progress.ts';
 
 const TRAINER_SPECIALTY_GOALS = [10, 100, 1000] as const;
 export type TrainerTier = 0 | 1 | 2 | 3;

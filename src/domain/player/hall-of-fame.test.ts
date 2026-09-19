@@ -1,22 +1,28 @@
-import { catalog } from '../../../tests/fixtures/catalog';
+import { completion } from '../../../tests/online/progress-fixtures.ts';
+import { commitRoundCompletion } from '../../lib/storage/round-storage.ts';
+import { catalog } from '../../../tests/fixtures/catalog.ts';
+import {
+  resetLocalSave,
+  saveResult,
+} from '../../../tests/fixtures/local-save.ts';
 import {
   createBackup,
   parseBackup,
   restoreBackup,
-} from '../../features/settings/backup';
+} from '../../features/settings/backup.ts';
 import {
-  PLAYER_STORAGE_KEY,
+  getPlayerDatabase,
   readPlayerSave,
-} from '../../lib/storage/player-storage';
-import {
-  readTrainerStats,
-  saveResult,
-} from '../../lib/storage/results-storage';
-import { buildLeagueQuestions } from '../quiz/question-generation';
-import type { GameResult } from '../quiz/types';
-import { defaultGameSettings } from '../settings/game-settings';
-import { createLeagueVictoryRecord } from './hall-of-fame';
-import { emptyPlayerData, parsePlayerSave } from './player-save';
+} from '../../lib/storage/player-storage.ts';
+import { readTrainerStats } from '../../lib/storage/results-storage.ts';
+import { buildLeagueQuestions } from '../quiz/question-generation.ts';
+import type { GameResult } from '../quiz/types.ts';
+import { defaultGameSettings } from '../settings/game-settings.ts';
+import { createLeagueVictoryRecord } from './hall-of-fame.ts';
+import { emptyPlayerData, parsePlayerSave } from './player-save.ts';
+
+beforeEach(resetLocalSave);
+
 const questions = buildLeagueQuestions(
   catalog,
   'record-test',
@@ -70,30 +76,37 @@ it('includes subjects, revealed evolutions and distractors but excludes types an
   );
   expect(championRecord.pokemon).toEqual([champion.subject.name]);
 });
-it('keeps every distinct victory and deduplicates a restored completion without crediting progress twice', () => {
+
+it('keeps every distinct victory and deduplicates a restored completion without crediting progress twice', async () => {
   const first = victory();
   expect(
-    saveResult({ kind: 'league' }, result, defaultGameSettings, first).isSaved,
+    (await saveResult({ kind: 'league' }, result, defaultGameSettings, first))
+      .isSaved,
   ).toBe(true);
   const stats = readTrainerStats();
-  saveResult({ kind: 'league' }, result, defaultGameSettings, first);
+  await saveResult({ kind: 'league' }, result, defaultGameSettings, first);
   expect(readTrainerStats()).toEqual(stats);
   expect(readPlayerSave().data.hallOfFame).toEqual([first]);
   const second = victory('rematch');
-  saveResult({ kind: 'league' }, result, defaultGameSettings, second);
+  await saveResult({ kind: 'league' }, result, defaultGameSettings, second);
   expect(readPlayerSave().data.hallOfFame).toEqual([first, second]);
 });
-it('round-trips all victory records through backup and replacement restore', () => {
-  const first = victory();
-  const second = victory('rematch');
-  for (const record of [first, second])
-    saveResult({ kind: 'league' }, result, defaultGameSettings, record);
-  const backup = parseBackup(JSON.stringify(createBackup()));
+
+it('round-trips all victory records through backup and replacement restore', async () => {
+  for (let index = 0; index < 2; index++)
+    await commitRoundCompletion(
+      completion(crypto.randomUUID(), 'league', {
+        completedAt: `2026-09-${11 + index}T10:00:00.000Z`,
+      }),
+    );
+  const expected = readPlayerSave().data.hallOfFame;
+  const backup = parseBackup(JSON.stringify(await createBackup()));
   localStorage.clear();
-  restoreBackup(backup);
+  await restoreBackup(backup);
   expect(readPlayerSave().version).toBe(7);
-  expect(readPlayerSave().data.hallOfFame).toEqual([first, second]);
+  expect(readPlayerSave().data.hallOfFame).toEqual(expected);
 });
+
 it.each([
   { completedAt: '2026-02-31T12:00:00.000Z' },
   { pokemon: ['pikachu', 'pikachu'] },
@@ -122,18 +135,31 @@ it('accepts a victory with a 20-character Trainer name', () => {
   });
   expect(saved.data.hallOfFame).toEqual([record]);
 });
-it('leaves existing victories intact if saving a new victory fails', () => {
-  saveResult({ kind: 'league' }, result, defaultGameSettings, victory());
-  const previous = localStorage.getItem(PLAYER_STORAGE_KEY);
-  const write = vi
-    .spyOn(Storage.prototype, 'setItem')
-    .mockImplementation(() => {
-      throw new DOMException('Full', 'QuotaExceededError');
-    });
-  expect(
-    saveResult({ kind: 'league' }, result, defaultGameSettings, victory('next'))
-      .isSaved,
-  ).toBe(false);
-  write.mockRestore();
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(previous);
+
+it('leaves existing victories intact if a transaction fails', async () => {
+  await saveResult(
+    { kind: 'league' },
+    result,
+    defaultGameSettings,
+    createLeagueVictoryRecord(result, questions, 'first', 'Leaf'),
+  );
+  const before = readPlayerSave();
+  const db = getPlayerDatabase();
+  const run = db.writeTransaction.bind(db);
+  vi.spyOn(db, 'writeTransaction').mockImplementation((callback) =>
+    run(async (tx) => {
+      await callback(tx);
+      throw new Error('Storage full');
+    }),
+  );
+  await expect(
+    saveResult(
+      { kind: 'league' },
+      result,
+      defaultGameSettings,
+      createLeagueVictoryRecord(result, questions, 'second', 'Leaf'),
+    ),
+  ).rejects.toThrow('Storage full');
+  vi.restoreAllMocks();
+  expect(readPlayerSave()).toEqual(before);
 });

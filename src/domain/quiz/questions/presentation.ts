@@ -1,8 +1,8 @@
-import type { EffectKnowledge, EvolutionKnowledge } from '../topic-catalog';
-import type { QuestionData } from '../types';
-import { presentEffectQuestion } from './effect-presentation';
-import { presentEvolutionQuestion } from './evolution-presentation';
-import { presentMeasurementQuestion } from './measurement-presentation';
+import type { EffectKnowledge, EvolutionKnowledge } from '../topic-catalog.ts';
+import type { QuestionData } from '../types.ts';
+import { presentEffectQuestion } from './effect-presentation.ts';
+import { presentEvolutionQuestion } from './evolution-presentation.ts';
+import { presentMeasurementQuestion } from './measurement-presentation.ts';
 
 export const presentQuestion = (
   question: QuestionData,

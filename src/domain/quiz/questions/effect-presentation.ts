@@ -1,6 +1,6 @@
-import { formatPokemonName } from '../../pokemon/format';
-import type { QuestionData } from '../types';
-import type { EffectKnowledge, EffectQuestion } from '../topic-catalog';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import type { QuestionData } from '../types.ts';
+import type { EffectKnowledge, EffectQuestion } from '../topic-catalog.ts';
 
 export const getEffectPresentation = (
   fact: EffectKnowledge,

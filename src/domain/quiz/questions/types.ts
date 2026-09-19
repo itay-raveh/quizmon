@@ -1,21 +1,21 @@
-import { pick, shuffle } from '../../../lib/random';
-import { formatPokemonName } from '../../pokemon/format';
-import { pokemonOptions, selectPokemonAnswerGroups } from './answers';
-import { makeQuestion, targetMedia } from './assembly';
+import { pick, shuffle } from '../../../lib/random.ts';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import { pokemonOptions, selectPokemonAnswerGroups } from './answers.ts';
+import { makeQuestion, targetMedia } from './assembly.ts';
 import {
   type Candidate,
   type QuestionBuilder,
   type QuestionContext,
-} from './context';
-import { pokemonPrompt, textPrompt } from './prompts';
-import { optionSetRepetition, targetRepetition } from './repetition';
+} from './context.ts';
+import { pokemonPrompt, textPrompt } from './prompts.ts';
+import { optionSetRepetition, targetRepetition } from './repetition.ts';
 import {
   chooseTargets,
   distinctPokemon,
   pickFreshTarget,
   pickTarget,
-} from './selection';
-import { typeOptions } from './type-options';
+} from './selection.ts';
+import { typeOptions } from './type-options.ts';
 
 export const buildTypeQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ types }) => types.length > 0);

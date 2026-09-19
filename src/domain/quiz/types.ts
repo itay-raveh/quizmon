@@ -1,8 +1,8 @@
-import type { QuestionRendering } from './question-rendering';
-import type { FormGroup, Generation, StatName } from '../pokemon/types';
-import type { Difficulty } from './difficulty';
-import type { DailyTrack } from './daily-track';
-import type { questionLabels } from './question-labels';
+import type { QuestionRendering } from './question-rendering.ts';
+import type { FormGroup, Generation, StatName } from '../pokemon/types.ts';
+import type { Difficulty } from './difficulty.ts';
+import type { DailyTrack } from './daily-track.ts';
+import type { questionLabels } from './question-labels.ts';
 export type QuestionType = Exclude<keyof typeof questionLabels, 'champion'>;
 
 export const questionCategories = [
@@ -176,24 +176,29 @@ export type GameMode =
   | { kind: 'daily'; date: string; track?: DailyTrack }
   | { kind: 'league' };
 
-export const retiredQuestionCategories = ['cry', 'scale'] as const;
-export const retiredQuestionTypes = [
-  'baby-pokemon',
-  'egg-group-connections',
-  'battle-view',
-  'evolution-trail',
-  'evolution-order',
-] as const;
-type SavedQuestionType = QuestionType | (typeof retiredQuestionTypes)[number];
+export interface AnswerObservation {
+  labels?: Record<string, string>;
+  clues?: QuestionData['clues'];
+  suppliedClues?: string[];
+  questionId: string;
+  prompt: QuestionPrompt;
+  context?: string;
+  difficulty?: Difficulty;
+  interaction: QuestionInteraction;
+  options: string[];
+  expected: string[];
+  selected: string[];
+}
 
 export interface SavedAnswerResult {
-  category: QuestionCategory | (typeof retiredQuestionCategories)[number];
+  observation?: AnswerObservation;
+  category: QuestionCategory;
   unassistedSearch?: boolean;
   cluesUsed?: number;
   correct: boolean;
   subject?: AnswerSubject;
   points: number;
-  questionType?: SavedQuestionType | 'champion';
+  questionType?: QuestionType | 'champion';
   responseMilliseconds?: number;
   speedBonus?: number;
 }
@@ -229,10 +234,10 @@ export interface ScoreMultipliers {
 }
 
 export interface RoundRules {
-  automaticQuestionTypes?: SavedQuestionType[];
+  automaticQuestionTypes?: QuestionType[];
   version: number;
   difficulty: Difficulty;
   generations: Generation[];
   formGroups: FormGroup[];
-  questionTypes: SavedQuestionType[];
+  questionTypes: QuestionType[];
 }

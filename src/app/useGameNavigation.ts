@@ -1,5 +1,6 @@
-import { clearActiveGame } from '@/lib/storage/active-game-storage';
 import { useCallback, useState, type Dispatch } from 'react';
+import { clearActiveGame } from '../lib/storage/active-game-storage';
+import { reportSaveError } from '../lib/storage/player-storage';
 import type { GameSession, GameSessionAction } from './game-session';
 
 interface GameNavigationOptions {
@@ -19,8 +20,13 @@ export const useGameNavigation = ({
 }: GameNavigationOptions) => {
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
 
-  const returnToLanding = useCallback(() => {
-    clearActiveGame();
+  const returnToLanding = useCallback(async () => {
+    try {
+      await clearActiveGame();
+    } catch (error) {
+      reportSaveError(error);
+      return;
+    }
     resetTimer();
     setLeaveConfirmationOpen(false);
     dispatch({ type: 'returned-to-landing' });
@@ -28,7 +34,7 @@ export const useGameNavigation = ({
 
   const requestLeave = useCallback(() => {
     if (session.phase !== 'questions' || session.answers.length === 0) {
-      returnToLanding();
+      void returnToLanding();
       return;
     }
 

@@ -1,4 +1,5 @@
 import { catalog } from '../../../tests/fixtures/catalog';
+import { resetLocalSave } from '../../../tests/fixtures/local-save';
 import {
   emptyPlayerData,
   parsePlayerSave,
@@ -20,8 +21,11 @@ import {
   setTrainerRoute,
 } from '../../features/trainer/trainer-route';
 import { createSeededRandom } from '../random';
-import { PLAYER_STORAGE_KEY, readPlayerSave } from './player-storage';
+import { readPlayerSave } from './player-storage';
 import { registerPokedexAnswer } from './pokedex-storage';
+
+beforeEach(resetLocalSave);
+
 const questionFor = (questionType: QuestionType) => {
   const [question] = buildQuestions(
     catalog,
@@ -41,7 +45,7 @@ beforeEach(() => localStorage.clear());
 afterEach(() => vi.restoreAllMocks());
 it.each(questionTypes)(
   'registers subjects and correct Pokémon choices for %s',
-  (type) => {
+  async (type) => {
     const question = questionFor(type);
     const expected = new Set([
       question.subject.name,
@@ -56,14 +60,15 @@ it.each(questionTypes)(
     if (question.visual?.kind === 'evolution-shift')
       expected.add(question.visual.evolution.name);
     expect(new Set(getQuestionPokemon(question))).toEqual(expected);
-    expect(registerPokedexAnswer(question, true)).toBe(true);
+    expect(await registerPokedexAnswer(question, true)).toBe(true);
     expect(new Set(readPlayerSave().data.pokedex)).toEqual(expected);
-    const writes = vi.spyOn(Storage.prototype, 'setItem');
-    registerPokedexAnswer(question, true);
-    expect(writes).not.toHaveBeenCalled();
+    const saved = readPlayerSave();
+    await registerPokedexAnswer(question, true);
+    expect(readPlayerSave()).toEqual(saved);
   },
 );
-it('registers a Champion answer without crediting names mentioned in its clue', () => {
+
+it('registers a Champion answer without crediting names mentioned in its clue', async () => {
   const question: QuestionData = {
     ...questionFor('field-notes'),
     questionType: 'champion',
@@ -76,43 +81,44 @@ it('registers a Champion answer without crediting names mentioned in its clue', 
       name: 'dondozo',
     },
   };
-  registerPokedexAnswer(question, true);
+  await registerPokedexAnswer(question, true);
   expect(readPlayerSave().data.pokedex).toEqual(['dondozo']);
 });
-it('does not register wrong or partially correct multi-select answers', () => {
+
+it('does not register wrong or partially correct multi-select answers', async () => {
   const question = questionFor('generation-roundup');
   for (const selected of [
     [],
     question.answer.correctOptions.slice(0, 1),
     question.options,
   ]) {
-    registerPokedexAnswer(
+    await registerPokedexAnswer(
       question,
       isQuestionAnswerCorrect(question, selected),
     );
   }
   expect(readPlayerSave().data.pokedex).toEqual([]);
 });
-it('persists before round completion and includes discoveries in backup replacement', () => {
+
+it('persists before round completion and includes discoveries in backup replacement', async () => {
   const first = questionFor('type-twins');
-  registerPokedexAnswer(first, true);
+  await registerPokedexAnswer(first, true);
   expect(readPlayerSave().data.results.progress.correctPokemon).toEqual([]);
-  const backup = parseBackup(JSON.stringify(createBackup()));
-  registerPokedexAnswer(questionFor('evolution-link'), true);
-  restoreBackup(backup);
+  const backup = parseBackup(JSON.stringify(await createBackup()));
+  await registerPokedexAnswer(questionFor('evolution-link'), true);
+  await restoreBackup(backup);
   expect(readPlayerSave().data.pokedex).toEqual(getQuestionPokemon(first));
 });
-it('rejects invalid collection data without overwriting the save', () => {
+
+it('rejects invalid collection data without mutating the input', () => {
   const save = {
     version: 7,
     restoreId: null,
     data: { ...emptyPlayerData(), pokedex: ['pikachu', 42] },
   };
-  expect(() => parsePlayerSave(save)).toThrow();
   const raw = JSON.stringify(save);
-  localStorage.setItem(PLAYER_STORAGE_KEY, raw);
-  expect(registerPokedexAnswer(questionFor('pokedex-scan'), true)).toBe(false);
-  expect(localStorage.getItem(PLAYER_STORAGE_KEY)).toBe(raw);
+  expect(() => parsePlayerSave(save)).toThrow();
+  expect(JSON.stringify(save)).toBe(raw);
 });
 it('opens Pokédex through the same Trainer routing as the other achievements', () => {
   expect(parseTrainerRoute('?trainer=pokedex')).toBe('pokedex');

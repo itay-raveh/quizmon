@@ -1,4 +1,4 @@
-import type { QuestionData, SavedAnswerResult } from './types';
+import type { QuestionData, SavedAnswerResult } from './types.ts';
 
 export const questionLabels = {
   'item-identification': 'Item identification',
@@ -44,8 +44,6 @@ export const questionLabels = {
 } as const;
 
 const categoryLabels: Record<SavedAnswerResult['category'], string> = {
-  cry: 'Pokémon cry',
-  scale: 'Scale comparison',
   knowledge: 'General knowledge',
   ability: questionLabels['ability-check'],
   champion: questionLabels.champion,

@@ -1,9 +1,9 @@
-import { GAMEPLAY_REVISION } from '../gameplay-version';
-import type { QuestionRendering } from '../question-rendering';
-import { attackMultiplier } from '../../pokemon/type-effectiveness';
-import { type VariantRules } from '../question-variants';
-import type { Difficulty } from '../difficulty';
-import type { QuestionContext, QuestionDraft } from './context';
+import { GAMEPLAY_REVISION } from '../gameplay-version.ts';
+import type { QuestionRendering } from '../question-rendering.ts';
+import { attackMultiplier } from '../../pokemon/type-effectiveness.ts';
+import { type VariantRules } from '../question-variants.ts';
+import type { Difficulty } from '../difficulty.ts';
+import type { QuestionContext, QuestionDraft } from './context.ts';
 export const applyQuestionVariant = (
   draft: QuestionDraft,
   context: QuestionContext,

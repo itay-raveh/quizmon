@@ -1,10 +1,14 @@
+import { useCallback, useEffect, useState } from 'react';
 import {
   defaultGameSettings,
   normalizeGameSettings,
-} from '@/domain/settings/game-settings';
-import type { GameSettings } from '@/domain/settings/types';
-import { readPlayerData, updatePlayerData } from '@/lib/storage/player-storage';
-import { useCallback, useState } from 'react';
+} from '../../domain/settings/game-settings';
+import type { GameSettings } from '../../domain/settings/types';
+import {
+  readPlayerData,
+  subscribeToPlayerChanges,
+  updatePlayerData,
+} from '../../lib/storage/player-storage';
 
 export const useGameSettings = () => {
   const [settings, setSettingsState] = useState(
@@ -12,11 +16,24 @@ export const useGameSettings = () => {
       readPlayerData().settings ?? normalizeGameSettings(defaultGameSettings),
   );
 
-  const setSettings = useCallback((nextSettings: GameSettings) => {
-    const normalized = normalizeGameSettings(nextSettings);
-    setSettingsState(normalized);
+  useEffect(
+    () =>
+      subscribeToPlayerChanges(() => {
+        const next =
+          readPlayerData().settings ??
+          normalizeGameSettings(defaultGameSettings);
+        setSettingsState((current) =>
+          JSON.stringify(current) === JSON.stringify(next) ? current : next,
+        );
+      }),
+    [],
+  );
 
-    updatePlayerData({ settings: normalized });
+  const setSettings = useCallback(async (nextSettings: GameSettings) => {
+    const normalized = normalizeGameSettings(nextSettings);
+    const saved = await updatePlayerData({ settings: normalized });
+    if (saved) setSettingsState(normalized);
+    return saved;
   }, []);
 
   return [settings, setSettings] as const;

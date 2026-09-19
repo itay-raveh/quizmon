@@ -6,7 +6,6 @@ export { BinocularsIcon } from '@phosphor-icons/react/dist/icons/Binoculars';
 export { BookOpenIcon } from '@phosphor-icons/react/dist/icons/BookOpen';
 export { CardholderIcon } from '@phosphor-icons/react/dist/icons/Cardholder';
 export { CaretDownIcon } from '@phosphor-icons/react/dist/icons/CaretDown';
-export { CaretRightIcon } from '@phosphor-icons/react/dist/icons/CaretRight';
 export { CertificateIcon } from '@phosphor-icons/react/dist/icons/Certificate';
 export { ChartBarIcon } from '@phosphor-icons/react/dist/icons/ChartBar';
 export { CheckIcon } from '@phosphor-icons/react/dist/icons/Check';
@@ -25,3 +24,4 @@ export { SlidersHorizontalIcon } from '@phosphor-icons/react/dist/icons/SlidersH
 export { SwordIcon } from '@phosphor-icons/react/dist/icons/Sword';
 export { XIcon } from '@phosphor-icons/react/dist/icons/X';
 export { MinusIcon } from '@phosphor-icons/react/dist/icons/Minus';
+export { GearSixIcon } from '@phosphor-icons/react/dist/icons/GearSix';

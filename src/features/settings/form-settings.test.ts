@@ -13,6 +13,9 @@ import { getTrainingSettingsValidation } from '@/features/settings/settings-vali
 import { createSeededRandom } from '@/lib/random';
 import { updatePlayerData } from '@/lib/storage/player-storage';
 import { catalog } from '../../../tests/fixtures/catalog';
+import { resetLocalSave } from '../../../tests/fixtures/local-save';
+beforeEach(resetLocalSave);
+
 it('migrates old settings to all form groups and preserves valid selections', () => {
   expect(normalizeGameSettings({ generations: ['I'] }).formGroups).toEqual(
     formGroups,
@@ -121,14 +124,16 @@ it('keeps the League challenge independent of Training form preferences', () => 
   };
   expect(getLeagueSettings(settings).formGroups).toEqual(formGroups);
 });
-it('retains form preferences through a backup round trip', () => {
-  updatePlayerData({
+
+it('retains form preferences through a backup round trip', async () => {
+  await updatePlayerData({
     settings: {
       ...defaultGameSettings,
       formGroups: ['standard', 'regional'],
     },
   });
   expect(
-    parseBackup(JSON.stringify(createBackup())).save.data.settings?.formGroups,
+    parseBackup(JSON.stringify(await createBackup())).save.data.settings
+      ?.formGroups,
   ).toEqual(['standard', 'regional']);
 });

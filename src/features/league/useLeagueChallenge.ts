@@ -1,11 +1,11 @@
-import type { GameSession, StartGame } from '@/app/game-session';
-import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { getLeagueSettings } from '@/domain/quiz/league';
-import { buildLeagueQuestions } from '@/domain/quiz/question-generation';
-import type { GameSettings } from '@/domain/settings/types';
-import { createRoundSeed } from '@/lib/random';
-import { readPlayerSave } from '@/lib/storage/player-storage';
 import { useCallback } from 'react';
+import type { GameSession, StartGame } from '../../app/game-session';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
+import { getLeagueSettings } from '../../domain/quiz/league';
+import { buildLeagueQuestions } from '../../domain/quiz/question-generation';
+import type { GameSettings } from '../../domain/settings/types';
+import { createRoundSeed } from '../../lib/random';
+import { readPlayerSave } from '../../lib/storage/player-storage';
 
 interface LeagueChallengeOptions {
   catalog?: PokemonCatalog;
@@ -24,7 +24,7 @@ export const useLeagueChallenge = ({
     if (!catalog) return;
     const seed = createRoundSeed();
     const leagueSettings = getLeagueSettings(settings);
-    startGame(
+    void startGame(
       buildLeagueQuestions(
         catalog,
         seed,

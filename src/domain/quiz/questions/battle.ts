@@ -1,14 +1,14 @@
-import { pick, shuffle } from '../../../lib/random';
-import { formatTypeMultiplier } from '../../pokemon/format';
-import { attackMultiplier } from '../../pokemon/type-effectiveness';
-import type { PokemonCatalog } from '../../pokemon/types';
-import { pokemonOptions, rankedOptionSet } from './answers';
-import { makeQuestion, targetMedia } from './assembly';
-import { type Candidate, type QuestionBuilder } from './context';
-import { pokemonPrompt } from './prompts';
-import { targetRepetition } from './repetition';
-import { pickForm } from './sampling';
-import { orderSpecies, pickFreshTarget } from './selection';
+import { pick, shuffle } from '../../../lib/random.ts';
+import { formatTypeMultiplier } from '../../pokemon/format.ts';
+import { attackMultiplier } from '../../pokemon/type-effectiveness.ts';
+import type { PokemonCatalog } from '../../pokemon/types.ts';
+import { pokemonOptions, rankedOptionSet } from './answers.ts';
+import { makeQuestion, targetMedia } from './assembly.ts';
+import { type Candidate, type QuestionBuilder } from './context.ts';
+import { pokemonPrompt } from './prompts.ts';
+import { targetRepetition } from './repetition.ts';
+import { pickForm } from './sampling.ts';
+import { orderSpecies, pickFreshTarget } from './selection.ts';
 
 const matchupMultipliers = [4, 2, 0.5, 0.25] as const;
 

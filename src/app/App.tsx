@@ -1,28 +1,24 @@
 import { getTrainingScoreMultipliers } from '@/domain/quiz/score-multipliers';
 import { useDailyChallenge } from '@/features/daily/useDailyChallenge';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
+import { useCallback, useReducer, useRef } from 'react';
 import {
   readUpdateState,
   useUpdateSnapshot,
-} from '@/features/installation/update-session';
-import { useLeagueChallenge } from '@/features/league/useLeagueChallenge';
-import { useLeagueDestination } from '@/features/league/useLeagueDestination';
-import { useActiveGame } from '@/features/quiz/useActiveGame';
-import { useGameCompletion } from '@/features/quiz/useGameCompletion';
-import { useTrainingGame } from '@/features/quiz/useTrainingGame';
-import { useGameSettings } from '@/features/settings/useGameSettings';
-import { useSettingsDialog } from '@/features/settings/useSettingsDialog';
-import { useTrainerCard } from '@/features/trainer/useTrainerCard';
-import { usePokemonCatalog } from '@/hooks/usePokemonCatalog';
-import { useStopwatch } from '@/hooks/useStopwatch';
-import { trackGameStarted } from '@/lib/analytics';
-import { createRoundSeed } from '@/lib/random';
-import {
-  clearActiveGame,
-  hasActiveGame,
-  writeActiveGame,
-} from '@/lib/storage/active-game-storage';
-import { useCallback, useReducer, useState } from 'react';
+} from '../features/installation/update-session';
+import { useLeagueChallenge } from '../features/league/useLeagueChallenge';
+import { useLeagueDestination } from '../features/league/useLeagueDestination';
+import { useActiveGame } from '../features/quiz/useActiveGame';
+import { useGameCompletion } from '../features/quiz/useGameCompletion';
+import { useTrainingGame } from '../features/quiz/useTrainingGame';
+import { useGameSettings } from '../features/settings/useGameSettings';
+import { useSettingsDialog } from '../features/settings/useSettingsDialog';
+import { useTrainerCard } from '../features/trainer/useTrainerCard';
+import { usePokemonCatalog } from '../hooks/usePokemonCatalog';
+import { useStopwatch } from '../hooks/useStopwatch';
+import { trackGameStarted } from '../lib/analytics';
+import { writeActiveGame } from '../lib/storage/active-game-storage';
+import { reportSaveError } from '../lib/storage/player-storage';
 import { AppView } from './AppView';
 import {
   gameSessionReducer,
@@ -33,12 +29,7 @@ import { useGameNavigation } from './useGameNavigation';
 
 export const App = () => {
   const leagueDestination = useLeagueDestination();
-  const [loadCatalogImmediately] = useState(
-    () => window.location.search.length > 0 || hasActiveGame(),
-  );
-  const catalogState = usePokemonCatalog({
-    loadImmediately: loadCatalogImmediately,
-  });
+  const catalogState = usePokemonCatalog();
   const { catalog } = catalogState;
   const [settings, setSettings] = useGameSettings();
   const [session, dispatchSession] = useReducer(
@@ -57,43 +48,49 @@ export const App = () => {
     start,
   } = useStopwatch(settings.timerDisplay === 'milliseconds');
 
+  const startingGame = useRef(false);
   const startGame = useCallback<StartGame>(
-    (nextQuestions, nextSettings, nextMode, seed) => {
-      if (!catalog) return;
-      const roundId = createRoundSeed();
-      if (
-        nextMode.kind === 'daily' &&
-        nextMode.track &&
-        !writeActiveGame({
+    async (nextQuestions, nextSettings, nextMode, seed) => {
+      if (!catalog || startingGame.current) return false;
+      startingGame.current = true;
+      const roundId = crypto.randomUUID();
+      try {
+        await writeActiveGame({
+          answers: [],
+          contentVersion: catalog.contentVersion,
+          mode: nextMode,
+          settings: nextSettings,
           questions: nextQuestions,
           questionCount: nextQuestions.length,
-          settings: nextSettings,
-          mode: nextMode,
-          seed,
           roundId,
-          answers: [],
+          seed,
+          ...(nextMode.kind === 'training'
+            ? { scoreMultipliers: getTrainingScoreMultipliers(nextSettings) }
+            : {}),
           elapsedMilliseconds: 0,
+        });
+        trackGameStarted(nextMode, nextQuestions.length);
+        dispatchSession({
           contentVersion: catalog.contentVersion,
-        })
-      ) {
-        clearActiveGame();
+          mode: nextMode,
+          settings: nextSettings,
+          questions: nextQuestions,
+          roundId,
+          seed,
+          type: 'started',
+          ...(nextMode.kind === 'training'
+            ? { scoreMultipliers: getTrainingScoreMultipliers(nextSettings) }
+            : {}),
+        });
+        reset();
+        start();
+        return true;
+      } catch (error) {
+        reportSaveError(error);
         return false;
+      } finally {
+        startingGame.current = false;
       }
-      trackGameStarted(nextMode, nextQuestions.length);
-      dispatchSession({
-        contentVersion: catalog.contentVersion,
-        mode: nextMode,
-        settings: nextSettings,
-        questions: nextQuestions,
-        roundId,
-        seed,
-        type: 'started',
-        ...(nextMode.kind === 'training'
-          ? { scoreMultipliers: getTrainingScoreMultipliers(nextSettings) }
-          : {}),
-      });
-      reset();
-      start();
     },
     [catalog, reset, start],
   );
@@ -102,7 +99,9 @@ export const App = () => {
     catalog,
     settings,
     session,
-    setSettings,
+    setSettings: (settings) => {
+      void setSettings(settings);
+    },
     startGame,
   });
 
@@ -121,7 +120,7 @@ export const App = () => {
       dispatchSession({ ...snapshot, type: 'restored' });
       reset(snapshot.elapsedMilliseconds);
       if (snapshot.answers.length === snapshot.questions.length)
-        completeGame(snapshot);
+        void Promise.resolve(completeGame(snapshot)).catch(reportSaveError);
       else start();
     },
     startGame,
@@ -169,7 +168,9 @@ export const App = () => {
     linkedDailyDate: daily.linkedDate,
     resetTimer: reset,
     session,
-    startDailyGame: daily.start,
+    startDailyGame: () => {
+      void daily.start();
+    },
     startTimer: start,
   });
 

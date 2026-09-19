@@ -1,4 +1,4 @@
-/.wrangler/
+.wrangler/
 /coverage/
 /dist/
 /node_modules/
@@ -22,3 +22,12 @@
 .DS_Store
 *.tsbuildinfo
 npm-debug.log*
+
+# Keep specification documents local.
+*_SPEC.md
+SPEC.md
+*_spec.md
+*-spec.md
+*.spec.md
+spec.md
+specs/

@@ -1,9 +1,9 @@
-import { isDailyDate, isRecord } from '../../lib/validation';
-import { getLocalDate } from '../quiz/daily';
+import { isDailyDate, isRecord } from '../../lib/validation.ts';
+import { getUtcDate } from '../quiz/daily.ts';
 import {
   trainerSpecialtyDetails,
   type TrainerSpecialty,
-} from './trainer-progression';
+} from './trainer-progression.ts';
 
 export const TRAINER_NAME_MAX_LENGTH = 20;
 
@@ -16,7 +16,7 @@ export interface TrainerProfile {
 }
 
 export const createTrainerProfile = (): TrainerProfile => ({
-  createdAt: getLocalDate(),
+  createdAt: getUtcDate(),
   hasBeenRevealed: false,
   name: '',
   partnerPokemon: null,

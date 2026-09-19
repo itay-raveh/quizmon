@@ -1,3 +1,8 @@
+import { observeAnswer } from '../../domain/quiz/answer-observation';
+import { completion } from '../../../tests/online/progress-fixtures';
+import { hash } from '../../domain/sync/progress';
+import { resetLocalSave } from '../../../tests/fixtures/local-save';
+beforeEach(resetLocalSave);
 import {
   catalog,
   createQuestionContext,
@@ -45,6 +50,8 @@ const answers: AnswerResult[] = questions.map((question) => ({
   correct: true,
   cluesUsed: 0,
   points: 1000,
+  responseMilliseconds: 5000,
+  speedBonus: 0,
 }));
 const result: GameResult = {
   answers,
@@ -58,10 +65,10 @@ beforeEach(() => {
   localStorage.clear();
   sessionStorage.clear();
 });
-it('retains actual subjects, full lists, methods and reveals through active-round reload', () => {
+it('retains actual subjects, full lists, methods and reveals through active-round reload', async () => {
   expect(questions.every(Boolean)).toBe(true);
   expect(
-    writeActiveGame({
+    await writeActiveGame({
       questions,
       answers: answers.slice(0, 2),
       contentVersion: catalog.contentVersion,
@@ -71,23 +78,42 @@ it('retains actual subjects, full lists, methods and reveals through active-roun
       settings: { ...defaultGameSettings, difficulty: 5 },
       seed: 'expanded-save',
     }),
-  ).toBe(true);
+  ).toBeUndefined();
   const restored = readActiveGame(catalog)!;
   expect(restored.questions).toEqual(questions);
   expect(restored.answers).toEqual(answers.slice(0, 2));
   expect(JSON.stringify(restored)).not.toContain('pokemonName');
   expect(JSON.stringify(restored)).not.toContain('pokemonTypes');
 });
-it('round-trips non-Pokémon results and namespaced history through a backup', () => {
-  const backup = createBackup();
-  backup.save.data.results.training['score:3'] = result;
+it('round-trips non-Pokémon results and namespaced history through a backup', async () => {
+  const backup = await createBackup();
+  const game = completion(backup.state.datasetId);
+  game.result = {
+    ...game.result,
+    ...result,
+    scoreVersion: 3,
+    elapsedMilliseconds: 30000,
+    answers: questions.map((question, index) => ({
+      ...answers[index]!,
+      observation: observeAnswer(question, question.answer.correctOptions),
+    })),
+  };
+  backup.records.local_completions.push({
+    id: game.completionId,
+    payload: JSON.stringify({
+      hash: await hash(game),
+      completion: game,
+      eligible: true,
+      outcome: { best: game.result, isSaved: true, isNewBest: true },
+    }),
+  });
   backup.save.data.questionHistory = questions.reduce(
     (history, question) => rememberQuestion(history, question),
     emptyQuestionHistory(),
   );
-  restoreBackup(parseBackup(JSON.stringify(backup)));
+  await restoreBackup(parseBackup(JSON.stringify(backup)));
   const restored = readPlayerSave().data;
-  expect(restored.results.training['score:3']).toEqual(result);
+  expect(restored.results.training['score:3']).toEqual(game.result);
   expect(restored.questionHistory).toEqual(backup.save.data.questionHistory);
   expect(
     Object.keys(restored.questionHistory.pokemon).every(

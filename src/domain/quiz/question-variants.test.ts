@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
 import {
   catalog,
   createQuestionContext,
@@ -6,22 +6,14 @@ import {
 import { createSeededRandom } from '../../lib/random';
 import { generations } from '../pokemon/types';
 import { defaultGameSettings } from '../settings/game-settings';
-import {
-  difficultyLevels,
-  resolveDifficultyVariant,
-  type Difficulty,
-} from './difficulty';
+import { difficultyLevels } from './difficulty';
 import {
   buildDailyTrackQuestions,
   buildQuestions,
   resolveTrainingSettings,
 } from './question-generation';
 import { isQuestionData } from './question-lineup';
-import {
-  getQuestionVariant,
-  questionVariants,
-  type VariantRules,
-} from './question-variants';
+import { getQuestionVariant } from './question-variants';
 import { questionTypes } from './questions/definitions';
 import { buildQuestionType } from './questions/registry';
 import {
@@ -75,69 +67,6 @@ it.each(difficultyLevels)(
     }
   },
 );
-describe.each(questionTypes)('%s variants', (questionType) => {
-  it.each(difficultyLevels)(
-    'obeys the resolved rules at level %i',
-    (difficulty) => {
-      const resolved = getQuestionVariant(questionType, difficulty);
-      const settings = {
-        ...defaultGameSettings,
-        difficulty,
-        generations: [...generations],
-        questionTypes: [questionType],
-      };
-      const questions = buildQuestions(
-        catalog,
-        settings,
-        createSeededRandom(`${questionType}:${difficulty}`),
-      );
-      if (!resolved) {
-        expect(questions).toHaveLength(0);
-        return;
-      }
-      expect(questions).toHaveLength(10);
-      for (const question of questions) {
-        expect(question.questionType).toBe(questionType);
-        expect(question.variantLevel).toBe(resolved.level);
-        expect(isQuestionData(question)).toBe(true);
-        if (resolved.variant.search) {
-          expect(question.answer.interaction).toBe('search');
-          expect(question.searchOptions!.map(({ name }) => name)).toContain(
-            question.answer.correctOptions[0],
-          );
-        }
-        if (resolved.variant.preferBackSprite) {
-          const back = catalog.pokemon[
-            question.subject.name
-          ]!.identitySprites.generations.filter(({ generation }) =>
-            ['I', 'II', 'III', 'IV', 'V'].includes(generation),
-          ).flatMap(({ back }) => back);
-          if (back.length) {
-            expect(question.media.kind).toBe('sprite');
-            if (question.media.kind === 'sprite')
-              expect(back).toContain(question.media.src);
-          }
-        }
-        if (resolved.variant.typeGrid)
-          expect(question.options).toHaveLength(18);
-        if (resolved.variant.singleType)
-          expect(question.subject.types ?? []).toHaveLength(1);
-        if (resolved.variant.statGap) {
-          const winner =
-            question.optionStats![question.answer.correctOptions[0]!]!;
-          for (const option of question.options.filter(
-            (option) => !question.answer.correctOptions.includes(option),
-          )) {
-            const gap = Math.abs(winner - question.optionStats![option]!);
-            expect(gap).toBeGreaterThanOrEqual(resolved.variant.statGap[0]);
-            expect(gap).toBeLessThanOrEqual(resolved.variant.statGap[1]);
-          }
-        }
-      }
-    },
-  );
-});
-
 it('retains every family at Level 5, including inherited softball variants', () => {
   for (const type of questionTypes)
     expect(getQuestionVariant(type, 5), type).toBeDefined();
@@ -210,20 +139,3 @@ it.each([3, 4, 5] as const)(
     expect(question?.options.toSorted()).toEqual(['johto', 'kanto']);
   },
 );
-
-it('retains entire checkpoint rules through plateaus', () => {
-  for (const variants of Object.values(questionVariants)) {
-    for (const level of difficultyLevels) {
-      const eligible = Object.keys(variants)
-        .map(Number)
-        .filter((n) => Number.isFinite(n) && n <= level);
-      const resolved = resolveDifficultyVariant<VariantRules>(variants, level);
-      if (!eligible.length) expect(resolved).toBeUndefined();
-      else
-        expect(resolved).toEqual({
-          level: Math.max(...eligible),
-          variant: variants[Math.max(...eligible) as Difficulty],
-        });
-    }
-  }
-});

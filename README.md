@@ -19,6 +19,8 @@ mise run setup
 npm run dev
 ```
 
+Optional accounts sync completed progress and add friends and Daily leaderboards. Local development requires Docker. The [Helm chart](charts/quizmon/) packages the online services; `deploy/` contains their release tooling.
+
 ## Data
 
 Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). Ability effect choices use short descriptions from [Pokémon Showdown](https://github.com/smogon/pokemon-showdown), with generation-specific mechanics and fuller explanations available after answering. The importer pins its source revision in `scripts/ability-text.ts`. Live games do not request either source.
@@ -39,7 +41,4 @@ Card animation from [Sparkles](https://opengameart.org/content/sparkles).
 
 Sound effects from [Kenney](https://kenney.nl/assets/interface-sounds).
 
-Quizmon is an unofficial, fan-made Pokémon quiz. It is not affiliated with,
-sponsored by, or endorsed by Nintendo, Creatures Inc., GAME FREAK, or The Pokémon
-Company. Pokémon and related names, characters, images, and trademarks belong to
-their respective owners.
+Quizmon is an unofficial, fan-made Pokémon quiz. It is not affiliated with, sponsored by, or endorsed by Nintendo, Creatures Inc., GAME FREAK, or The Pokémon Company. Pokémon and related names, characters, images, and trademarks belong to their respective owners.

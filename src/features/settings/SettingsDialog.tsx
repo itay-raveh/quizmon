@@ -1,44 +1,37 @@
-import { DialogCloseButton } from '@/components/DialogCloseButton';
-import { GameButton } from '@/components/GameButton';
-import { SoundButton } from '@/components/SoundButton';
-import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { formGroups } from '@/domain/pokemon/types';
-import type { GameSettings } from '@/domain/settings/types';
-import { useUpdateState } from '@/features/installation/update-session';
-import { useModalDialog } from '@/hooks/useModalDialog';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { DialogCloseButton } from '../../components/DialogCloseButton';
+import { GameButton } from '../../components/GameButton';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
+import { formGroups } from '../../domain/pokemon/types';
+import type { GameSettings } from '../../domain/settings/types';
+import { useModalDialog } from '../../hooks/useModalDialog';
+import { useUpdateState } from '../installation/update-session';
 import { BackupSettings } from './BackupSettings';
 import { ExperienceSettings } from './ExperienceSettings';
-import { TrainingSettings } from './TrainingSettings';
 import { getTrainingSettingsValidation } from './settings-validation';
+import { TrainingSettings } from './TrainingSettings';
 
-const settingsTabLabels = {
-  training: 'Training',
-  experience: 'Experience',
-  backup: 'Backup',
-} as const;
-type SettingsTab = keyof typeof settingsTabLabels;
-const settingsTabs = Object.keys(settingsTabLabels) as SettingsTab[];
+export type SettingsSection = 'training' | 'general';
 
 interface SettingsDialogProps {
   catalog: PokemonCatalog;
+  section?: SettingsSection;
   settings: GameSettings;
   onClose: () => void;
-  onSave: (settings: GameSettings) => void;
+  onSave: (settings: GameSettings) => void | Promise<void>;
   trainingChangesApplyNextGame?: boolean;
 }
 
 export const SettingsDialog = ({
   catalog,
+  section = 'general',
   settings,
   onClose,
   onSave,
   trainingChangesApplyNextGame = false,
 }: SettingsDialogProps) => {
-  const [activeTab, setActiveTab] = useUpdateState<SettingsTab>(
-    'settings-tab',
-    'training',
-  );
+  const [saving, setSaving] = useState(false);
+  const [backupOpen, setBackupOpen] = useState(false);
   const [storedDraft, setDraft] = useUpdateState('settings-draft', settings);
   const draft = useMemo(
     () => ({
@@ -56,11 +49,6 @@ export const SettingsDialog = ({
   const generationsHeading = useRef<HTMLHeadingElement>(null);
   const formGroupsHeading = useRef<HTMLHeadingElement>(null);
   const questionTypesHeading = useRef<HTMLHeadingElement>(null);
-  const tabButtons = useRef<Record<SettingsTab, HTMLButtonElement | null>>({
-    backup: null,
-    experience: null,
-    training: null,
-  });
 
   const {
     difficulty,
@@ -72,15 +60,18 @@ export const SettingsDialog = ({
   } = draft;
   const validation = useMemo(
     () =>
-      getTrainingSettingsValidation(catalog, {
-        difficulty,
-        questionSelection,
-        trainingMode,
-        generations,
-        formGroups: selectedForms,
-        questionTypes,
-      }),
+      section === 'training'
+        ? getTrainingSettingsValidation(catalog, {
+            difficulty,
+            questionSelection,
+            trainingMode,
+            generations,
+            formGroups: selectedForms,
+            questionTypes,
+          })
+        : null,
     [
+      section,
       catalog,
       difficulty,
       questionSelection,
@@ -91,26 +82,10 @@ export const SettingsDialog = ({
     ],
   );
 
-  const selectTab = (tab: SettingsTab, moveFocus = false) => {
-    setActiveTab(tab);
-    if (moveFocus) tabButtons.current[tab]?.focus();
-  };
-
-  const moveTabFocus = (
-    current: SettingsTab,
-    direction: 'next' | 'previous',
-  ) => {
-    const currentIndex = settingsTabs.indexOf(current);
-    const offset = direction === 'next' ? 1 : -1;
-    const nextIndex =
-      (currentIndex + offset + settingsTabs.length) % settingsTabs.length;
-    selectTab(settingsTabs[nextIndex] ?? 'training', true);
-  };
-
-  const submit = () => {
+  const submit = async () => {
+    if (saving) return;
     setSubmitted(true);
-    if (!validation.isValid) {
-      selectTab('training');
+    if (validation && !validation.isValid) {
       window.setTimeout(() => {
         const target = !validation.generationsAreValid
           ? generationsHeading.current
@@ -123,8 +98,13 @@ export const SettingsDialog = ({
       return;
     }
 
-    dialog.current?.close();
-    onSave(draft);
+    setSaving(true);
+    try {
+      await onSave(draft);
+      dialog.current?.close();
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -135,93 +115,60 @@ export const SettingsDialog = ({
     >
       <header className="settings-dialog__header">
         <h2 id="settings-title" ref={dialogTitle} tabIndex={-1}>
-          Settings
+          {section === 'training' ? 'Customize training' : 'Settings'}
         </h2>
-        <DialogCloseButton label="Close settings" onClick={closeDialog} />
+        <DialogCloseButton
+          label={
+            section === 'training'
+              ? 'Close training settings'
+              : 'Close settings'
+          }
+          onClick={closeDialog}
+        />
       </header>
-
-      <div
-        className="settings-tabs"
-        aria-label="Settings sections"
-        role="tablist"
-      >
-        {settingsTabs.map((tab) => (
-          <SoundButton
-            ref={(element) => {
-              tabButtons.current[tab] = element;
-            }}
-            aria-controls={`settings-panel-${tab}`}
-            aria-selected={activeTab === tab}
-            className="settings-tab"
-            id={`settings-tab-${tab}`}
-            key={tab}
-            onClick={() => selectTab(tab)}
-            onKeyDown={(event) => {
-              if (event.key === 'ArrowRight') {
-                event.preventDefault();
-                moveTabFocus(tab, 'next');
-              }
-              if (event.key === 'ArrowLeft') {
-                event.preventDefault();
-                moveTabFocus(tab, 'previous');
-              }
-            }}
-            role="tab"
-            tabIndex={activeTab === tab ? 0 : -1}
-          >
-            {settingsTabLabels[tab]}
-          </SoundButton>
-        ))}
-      </div>
 
       <form
         className="settings-form"
         onSubmit={(event) => {
           event.preventDefault();
-          submit();
+          void submit();
         }}
       >
-        <div className="settings-form__body">
-          <div
-            aria-labelledby="settings-tab-training"
-            hidden={activeTab !== 'training'}
-            id="settings-panel-training"
-            role="tabpanel"
-          >
-            <TrainingSettings
-              draft={draft}
-              generationsHeading={generationsHeading}
-              formGroupsHeading={formGroupsHeading}
-              onChange={setDraft}
-              questionTypesHeading={questionTypesHeading}
-              submitted={submitted}
-              trainingChangesApplyNextGame={trainingChangesApplyNextGame}
-              {...validation}
-            />
-          </div>
-          <div
-            aria-labelledby="settings-tab-experience"
-            hidden={activeTab !== 'experience'}
-            id="settings-panel-experience"
-            role="tabpanel"
-          >
-            <ExperienceSettings draft={draft} onChange={setDraft} />
-          </div>
-          <div
-            aria-labelledby="settings-tab-backup"
-            hidden={activeTab !== 'backup'}
-            id="settings-panel-backup"
-            role="tabpanel"
-          >
-            <BackupSettings />
-          </div>
+        <div className="settings-form__body" inert={saving}>
+          {validation ? (
+            <>
+              <TrainingSettings
+                draft={draft}
+                generationsHeading={generationsHeading}
+                formGroupsHeading={formGroupsHeading}
+                onChange={setDraft}
+                questionTypesHeading={questionTypesHeading}
+                submitted={submitted}
+                trainingChangesApplyNextGame={trainingChangesApplyNextGame}
+                {...validation}
+              />
+            </>
+          ) : (
+            <>
+              <ExperienceSettings draft={draft} onChange={setDraft} />
+              <details
+                className="settings-backup"
+                onToggle={(event) => setBackupOpen(event.currentTarget.open)}
+              >
+                <summary>Backup &amp; restore</summary>
+                {backupOpen && <BackupSettings />}
+              </details>
+            </>
+          )}
         </div>
 
         <div className="settings-form__actions">
           <GameButton tone="quiet" onClick={closeDialog}>
             Cancel
           </GameButton>
-          <GameButton type="submit">Save settings</GameButton>
+          <GameButton type="submit" disabled={saving}>
+            {saving ? 'Saving settings…' : 'Save settings'}
+          </GameButton>
         </div>
       </form>
     </dialog>

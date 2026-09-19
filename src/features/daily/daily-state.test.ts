@@ -1,17 +1,21 @@
 import { saveResult } from '@/lib/storage/results-storage';
+import { resetLocalSave } from '../../../tests/fixtures/local-save';
+import * as playerStorage from '../../lib/storage/player-storage';
 import { readDailyState } from './daily-state';
+beforeEach(resetLocalSave);
+afterEach(() => vi.restoreAllMocks());
 
 beforeEach(() => localStorage.clear());
 afterEach(() => localStorage.clear());
 
-it('keeps legacy and track results for the requested date', () => {
+it('keeps legacy and track results for the requested date', async () => {
   for (const [date, track] of [
     ['2026-09-01', undefined],
     ['2026-09-01', { difficulty: 1, scope: 'gen-i' }],
     ['2026-09-01', { difficulty: 3, scope: 'all' }],
     ['2026-08-31', { difficulty: 5, scope: 'all' }],
   ] as const) {
-    saveResult(
+    await saveResult(
       { kind: 'daily', date, track },
       {
         answers: [],
@@ -34,11 +38,13 @@ it('keeps legacy and track results for the requested date', () => {
 });
 
 it('reports an unreadable save without overwriting it', () => {
-  localStorage.setItem('quizmon.player', '{broken');
+  vi.spyOn(playerStorage, 'readPlayerSave').mockImplementation(() => {
+    throw new Error('Unreadable save');
+  });
   expect(readDailyState('2026-09-01')).toMatchObject({
     readError: true,
     completed: [],
     attempts: {},
   });
-  expect(localStorage.getItem('quizmon.player')).toBe('{broken');
+  expect(playerStorage.readPlayerSave).toHaveBeenCalled();
 });

@@ -1,5 +1,5 @@
-import type { ChoiceDetail } from './types';
-import type { Generation, StatName } from '../pokemon/types';
+import type { ChoiceDetail } from './types.ts';
+import type { Generation, StatName } from '../pokemon/types.ts';
 
 export interface TopicEntity {
   id: number;

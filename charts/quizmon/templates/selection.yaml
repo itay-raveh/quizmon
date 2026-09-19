@@ -1,0 +1,45 @@
+{{- if eq .Values.release.mode "deploy" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quizmon.selectionName" . }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+data:
+  operation.json: {{ include "quizmon.operation" . | quote }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "quizmon.selectionName" . }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "quizmon.selectionName" . }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: [configmaps]
+    resourceNames: [{{ include "quizmon.selectionName" . | quote }}]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "quizmon.selectionName" . }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "quizmon.selectionName" . }}
+    namespace: {{ .Release.Namespace | quote }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "quizmon.selectionName" . }}
+{{- end }}

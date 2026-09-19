@@ -2,28 +2,34 @@ import {
   parseActiveGameSave,
   type ActiveGameSnapshot,
 } from '../../domain/player/active-game';
+export type { ActiveGameSnapshot } from '../../domain/player/active-game';
 import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
 import { SaveError } from '../../domain/player/save-schema';
-import { getSaveIssue, reportSaveIssue } from './save-health';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
-import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
 import type { QuestionData } from '../../domain/quiz/types';
-import {
-  getDailyResultKey,
-  type DailyTrack,
-} from '../../domain/quiz/daily-track';
+import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
+import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import { isRecord } from '../validation';
 import {
-  readStoredJson,
-  readStoredValue,
-  removeStoredValue,
-  writeStoredJson,
-} from './browser-storage';
-import { readPlayerSave } from './player-storage';
+  readLocalDailyAttempts,
+  readPlayerSave,
+  reportSaveError,
+} from './player-storage';
+import {
+  persistLocalRound,
+  readLocalRound,
+  removeLocalRound,
+} from './round-storage';
+import { reportSaveIssue } from './save-health';
 export const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
 export const DAILY_ATTEMPTS_KEY = 'quizmon.daily-attempts.v1';
-export const hasActiveGame = (): boolean =>
-  readStoredJson('sessionStorage', ACTIVE_GAME_KEY) !== null;
+export const inspectRoundStorage = () => {
+  const active = readLocalRound();
+  if (active) parseActiveGameSave(active);
+  for (const value of Object.values(readLocalDailyAttempts()))
+    parseActiveGameSave(value);
+};
+
 const normalizeQuestionPokemon = (
   question: QuestionData,
   catalog: PokemonCatalog,
@@ -64,18 +70,18 @@ const normalizeQuestionPokemon = (
 export const readActiveGame = (
   catalog: PokemonCatalog,
 ): ActiveGameSnapshot | null => {
-  const raw = readStoredValue('sessionStorage', ACTIVE_GAME_KEY);
-  if (raw === null) return null;
+  const stored = readLocalRound();
+  if (!stored) return null;
   let snapshot: ActiveGameSnapshot;
   try {
-    snapshot = parseActiveGameSave(JSON.parse(raw));
+    snapshot = parseActiveGameSave(stored);
   } catch (error) {
     reportSaveIssue(error);
     return null;
   }
   try {
     if ((snapshot?.playerRestoreId ?? null) !== readPlayerSave().restoreId) {
-      clearActiveGame();
+      void clearActiveGame().catch(reportSaveError);
       return null;
     }
   } catch {
@@ -90,10 +96,10 @@ export const readActiveGame = (
       const question = snapshot.questions[index];
       return (
         answer.category === question?.category &&
-        answer.subject.kind === question.subject.kind &&
-        answer.subject.generation === question.subject.generation &&
         answer.questionType === question.questionType &&
-        answer.subject.name === question.subject.name
+        answer.subject.kind === question.subject.kind &&
+        answer.subject.name === question.subject.name &&
+        answer.subject.generation === question.subject.generation
       );
     })
   ) {
@@ -107,73 +113,36 @@ export const readActiveGame = (
   }
   return snapshot;
 };
-export const writeActiveGame = (
+
+export const writeActiveGame = async (
   snapshot: Omit<ActiveGameSnapshot, 'version'>,
-): boolean => {
-  if (getSaveIssue()) return false;
-  try {
-    inspectRoundStorage();
-    const playerRestoreId = readPlayerSave().restoreId;
-    if (
-      snapshot.playerRestoreId !== undefined &&
-      snapshot.playerRestoreId !== playerRestoreId
-    )
-      return false;
-    const value = {
-      ...snapshot,
-      playerRestoreId,
-      version: SAVE_SCHEMA_VERSION,
-    };
-    const activeSaved = writeStoredJson(
-      'sessionStorage',
-      ACTIVE_GAME_KEY,
-      value,
-    );
-    if (snapshot.mode.kind === 'daily' && snapshot.mode.track) {
-      const stored = readStoredJson('localStorage', DAILY_ATTEMPTS_KEY);
-      const attempts = isRecord(stored) ? stored : {};
-      attempts[getDailyResultKey(snapshot.mode.date, snapshot.mode.track)] =
-        value;
-      return (
-        writeStoredJson('localStorage', DAILY_ATTEMPTS_KEY, attempts) &&
-        activeSaved
-      );
-    }
-    return activeSaved;
-  } catch (error) {
-    reportSaveIssue(error);
-    return false;
-  }
+): Promise<void> => {
+  const playerRestoreId = readPlayerSave().restoreId;
+  if (
+    snapshot.playerRestoreId !== undefined &&
+    snapshot.playerRestoreId !== playerRestoreId
+  )
+    throw new Error('Another tab restored a save. Reload before continuing.');
+  await persistLocalRound({
+    ...snapshot,
+    roundId: snapshot.roundId ?? crypto.randomUUID(),
+    playerRestoreId,
+    version: SAVE_SCHEMA_VERSION,
+  });
 };
-export const clearActiveGame = (): void => {
-  if (getSaveIssue()) return;
-  removeStoredValue('sessionStorage', ACTIVE_GAME_KEY);
-};
+
+export const clearActiveGame = removeLocalRound;
+
 export const readDailyAttempts = (
   date: string,
   restoreId: string | null,
 ): Record<string, ActiveGameSnapshot> => {
-  let stored: unknown;
-  try {
-    const raw = window.localStorage.getItem(DAILY_ATTEMPTS_KEY);
-    if (raw === null) return {};
-    stored = JSON.parse(raw);
-    if (!isRecord(stored))
-      throw new SaveError('invalid', 'Saved Daily attempts are invalid.');
-  } catch (error) {
-    reportSaveIssue(error);
-    return {};
-  }
+  const stored = readLocalDailyAttempts();
+  if (!isRecord(stored)) return {};
   const attempts: Record<string, ActiveGameSnapshot> = {};
   for (const [key, value] of Object.entries(stored)) {
     if (!key.startsWith(`${date}:`)) continue;
-    let snapshot: ActiveGameSnapshot;
-    try {
-      snapshot = parseActiveGameSave(value);
-    } catch (error) {
-      reportSaveIssue(error);
-      continue;
-    }
+    const snapshot = parseActiveGameSave(value);
     if (
       snapshot?.mode.kind === 'daily' &&
       snapshot.mode.track &&
@@ -184,44 +153,4 @@ export const readDailyAttempts = (
       attempts[key] = snapshot;
   }
   return attempts;
-};
-export const clearDailyAttempt = (date: string, track: DailyTrack): void => {
-  if (getSaveIssue()) return;
-  try {
-    inspectRoundStorage();
-  } catch (error) {
-    reportSaveIssue(error);
-    return;
-  }
-  const attempts = readStoredJson('localStorage', DAILY_ATTEMPTS_KEY);
-  if (!isRecord(attempts)) return;
-  delete attempts[getDailyResultKey(date, track)];
-  writeStoredJson('localStorage', DAILY_ATTEMPTS_KEY, attempts);
-};
-
-export const inspectRoundStorage = (): void => {
-  const raw = window.sessionStorage.getItem(ACTIVE_GAME_KEY);
-  if (raw !== null) {
-    const snapshot = parseActiveGameSave(JSON.parse(raw));
-    if ((snapshot.playerRestoreId ?? null) !== readPlayerSave().restoreId)
-      clearActiveGame();
-  }
-  const daily = window.localStorage.getItem(DAILY_ATTEMPTS_KEY);
-  if (daily !== null) {
-    const attempts: unknown = JSON.parse(daily);
-    if (!isRecord(attempts))
-      throw new SaveError('invalid', 'Saved Daily attempts are invalid.');
-    for (const [key, value] of Object.entries(attempts)) {
-      const snapshot = parseActiveGameSave(value);
-      if (
-        snapshot.mode.kind !== 'daily' ||
-        !snapshot.mode.track ||
-        getDailyResultKey(snapshot.mode.date, snapshot.mode.track) !== key
-      )
-        throw new SaveError(
-          'invalid',
-          'A saved Daily attempt has an invalid date or track.',
-        );
-    }
-  }
 };

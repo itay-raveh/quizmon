@@ -1,11 +1,11 @@
-import { pick } from '../../../lib/random';
-import { formatGeneration } from '../../pokemon/format';
-import { generations, type Generation } from '../../pokemon/types';
-import { selectPokemonAnswerGroups } from './answers';
-import { makeQuestion } from './assembly';
-import { type QuestionBuilder } from './context';
-import { textPrompt } from './prompts';
-import { optionSetRepetition } from './repetition';
+import { pick } from '../../../lib/random.ts';
+import { formatGeneration } from '../../pokemon/format.ts';
+import { generations, type Generation } from '../../pokemon/types.ts';
+import { selectPokemonAnswerGroups } from './answers.ts';
+import { makeQuestion } from './assembly.ts';
+import { type QuestionBuilder } from './context.ts';
+import { textPrompt } from './prompts.ts';
+import { optionSetRepetition } from './repetition.ts';
 
 export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);

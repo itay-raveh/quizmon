@@ -1,15 +1,15 @@
-import { GameButton } from '@/components/GameButton';
-import { Toast } from '@/components/Toast';
-import type { PlayerData } from '@/domain/player/player-save';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { GameButton } from '../../components/GameButton';
+import { Toast } from '../../components/Toast';
+import type { PlayerData } from '../../domain/player/player-save';
+import { readPlayerData } from '../../lib/storage/player-storage';
 import {
   downloadBackup,
   parseBackup,
   restoreBackup,
   validateBackupSize,
   type PlayerBackup,
-} from '@/features/settings/backup';
-import { readPlayerData } from '@/lib/storage/player-storage';
-import { useCallback, useEffect, useRef, useState } from 'react';
+} from './backup';
 
 const previewRows: {
   label: string;
@@ -38,6 +38,7 @@ export const BackupSettings = () => {
   const dismissDownloadNotice = useCallback(() => setDownloadNotice(0), []);
   const [busy, setBusy] = useState(false);
   const current = readPlayerData();
+  const accountBackup = preview?.version === 3 && !!preview.state.account;
 
   useEffect(() => {
     if (preview) previewHeading.current?.focus();
@@ -62,6 +63,39 @@ export const BackupSettings = () => {
     }
   };
 
+  const handleDownload = async () => {
+    setError('');
+    setBusy(true);
+    try {
+      await downloadBackup();
+      setDownloadNotice((notice) => notice + 1);
+    } catch {
+      dismissDownloadNotice();
+      setError(
+        'Your saved data could not be exported. Check that site storage is available and try again.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!preview) return;
+    setError('');
+    setBusy(true);
+    try {
+      await restoreBackup(preview);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Restore failed. Your saved progress has not changed.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <fieldset className="experience-setting backup-settings">
       <legend>Backup & restore</legend>
@@ -71,16 +105,7 @@ export const BackupSettings = () => {
           tone="quiet"
           disabled={busy}
           onClick={() => {
-            setError('');
-            try {
-              downloadBackup();
-              setDownloadNotice((notice) => notice + 1);
-            } catch {
-              dismissDownloadNotice();
-              setError(
-                'Your saved data could not be exported. Check that site storage is available and try again.',
-              );
-            }
+            void handleDownload();
           }}
         >
           Download backup
@@ -126,7 +151,9 @@ export const BackupSettings = () => {
           aria-live="polite"
         >
           <h3 ref={previewHeading} tabIndex={-1}>
-            Restore this backup?
+            {accountBackup
+              ? 'Recover pending account changes?'
+              : 'Restore this backup?'}
           </h3>
           <p>
             Exported{' '}
@@ -154,8 +181,9 @@ export const BackupSettings = () => {
             </tbody>
           </table>
           <p>
-            Replaces saved progress, profile, and settings, and ends unfinished
-            rounds. Reminders stay on this device.
+            {accountBackup
+              ? 'Restores missing pending changes to the same account. Shared progress comes from sync. This does not replace account history or restore unfinished rounds.'
+              : 'Replaces saved progress, profile, and settings, and ends unfinished rounds. Reminders stay on this device.'}
           </p>
           <div className="backup-settings__actions">
             <GameButton
@@ -168,21 +196,14 @@ export const BackupSettings = () => {
               Cancel restore
             </GameButton>
             <GameButton
+              disabled={busy}
               onClick={() => {
-                setError('');
-                try {
-                  restoreBackup(preview);
-                  window.location.assign('/');
-                } catch (error) {
-                  setError(
-                    error instanceof Error
-                      ? error.message
-                      : 'Restore failed. Your saved progress has not changed.',
-                  );
-                }
+                void handleRestore();
               }}
             >
-              Replace and restore
+              {accountBackup
+                ? 'Recover pending changes'
+                : 'Replace and restore'}
             </GameButton>
           </div>
         </div>

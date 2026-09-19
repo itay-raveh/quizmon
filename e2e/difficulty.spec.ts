@@ -1,5 +1,5 @@
 import { seedPlayer } from './fixtures';
-import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
+import { readRound, readSave, writeSave } from './database-fixture';
 import {
   answerCurrentQuestion,
   chooseDaily,
@@ -8,13 +8,11 @@ import {
   test,
 } from './fixtures';
 
-const snapshot = async (page: Parameters<typeof chooseDaily>[0]) =>
-  page.evaluate(
-    () =>
-      JSON.parse(
-        sessionStorage.getItem('quizmon.active-game.v1')!,
-      ) as ActiveGameSnapshot,
-  );
+const snapshot = async (page: Parameters<typeof chooseDaily>[0]) => {
+  const round = await readRound(page);
+  expect(round).not.toBeNull();
+  return round!;
+};
 
 for (const width of [360, 1280]) {
   test(`Daily is fixed at Level 3 and resumes one attempt at ${width}px`, async ({
@@ -106,6 +104,7 @@ test('Daily assistance survives reload and cannot become an unassisted answer', 
   );
   await expect(page.locator('.answer')).toHaveCount(4);
   await answerCurrentQuestion(page);
+  await expect.poll(async () => (await snapshot(page)).answers.length).toBe(5);
   const saved = await snapshot(page);
   expect(saved.answers[4]?.cluesUsed).toBe(1);
   expect(saved.answers[4]?.unassistedSearch).toBe(false);
@@ -188,14 +187,21 @@ test('complete typing supports search, removal, and submission while Pokémon se
   await expect(feedback).not.toContainText('Wrong pick');
   await expect(feedback).not.toContainText('Missed');
   await expectNoHorizontalOverflow(page);
-  await seedPlayer(page, {
-    settings: { difficulty: 5, questionTypes: ['pokedex-scan'] },
-  });
   await page.getByRole('button', { name: 'Leave game', exact: true }).click();
   await page
     .getByRole('dialog', { name: 'Leave this game?' })
     .getByRole('button', { name: 'Leave game', exact: true })
     .click();
+  await expect(
+    page.getByRole('button', { name: 'Start training', exact: true }),
+  ).toBeEnabled();
+  const save = await readSave(page);
+  save.data.settings = {
+    ...save.data.settings!,
+    difficulty: 5,
+    questionTypes: ['pokedex-scan'],
+  };
+  await writeSave(page, save);
   await page.goto('/?search=1');
   await page
     .getByRole('button', { name: 'Start training', exact: true })
@@ -214,7 +220,7 @@ test('complete typing supports search, removal, and submission while Pokémon se
 test('Daily explains a catalog failure and retries without losing the challenge date', async ({
   page,
 }) => {
-  await page.route('**/*pokemon*.json', (route) => route.abort());
+  await page.route('**/*pokemon-catalog*.bin', (route) => route.abort());
   await page.goto('/?daily=2026-09-01');
   await expect(page.getByRole('alert')).toContainText(
     'Daily Challenge could not be loaded',
@@ -223,7 +229,7 @@ test('Daily explains a catalog failure and retries without losing the challenge 
   await expect(
     page.getByRole('button', { name: /^Play Daily Challenge/ }),
   ).toBeDisabled();
-  await page.unroute('**/*pokemon*.json');
+  await page.unroute('**/*pokemon-catalog*.bin');
   await page.getByRole('button', { name: 'Try again', exact: true }).click();
   await page.getByRole('button', { name: /^Play Daily Challenge/ }).click();
   await expect(page.locator('.question')).toBeVisible();

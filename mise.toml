@@ -29,6 +29,7 @@ run = [
   "betterleaks git --redact --no-banner --no-color .",
   "npm run check:dead-code",
   "npm test",
+  "npm run test:online",
   "npm run build",
   "npm run test:e2e",
   "prek validate-config prek.toml",
@@ -46,10 +47,3 @@ flag "--source <path>" help="Aseprite source file" default="art/badges.aseprite"
 flag "--output <pattern>" help="PNG output pattern" default="src/assets/images/badges/{slice}.png"
 '''
 run = 'aseprite --batch "{{usage.source}}" --save-as "{{usage.output}}"'
-
-[tasks.deploy]
-description = "Build and deploy Quizmon to Cloudflare Workers"
-run = [
-  "npm run build",
-  "npm run deploy",
-]

@@ -1,8 +1,10 @@
+import { site } from './site.ts';
+
 export const contentPages = [
   {
     path: '/about',
     label: 'How to play',
-    title: 'About & How to Play',
+    title: 'How to play',
     description:
       'Learn how Quizmon’s Daily Challenge, Training, scores, badges, and Pokémon League work, and how your progress is saved.',
     source: 'about.md',
@@ -24,3 +26,23 @@ export const contentPages = [
     source: 'terms.md',
   },
 ];
+
+export const footerLinks = [
+  { href: site.repositoryUrl, label: 'GitHub', external: true },
+  ...contentPages.map(({ path, label }) => ({ href: path, label })),
+];
+
+export const footerCredits = [
+  {
+    label: 'Art by',
+    name: '@beresteyskaya',
+    href: 'https://www.fiverr.com/beresteyskaya',
+  },
+  { label: 'Data', name: 'PokéAPI', href: 'https://pokeapi.co' },
+];
+
+export const wordmarkCredit = {
+  label: 'Logo',
+  name: 'TextStudio',
+  href: 'https://www.textstudio.com',
+};

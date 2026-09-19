@@ -7,14 +7,14 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   {
     ignores: [
-      '.wrangler',
+      '**/.wrangler/**',
       'commitlint.config.js',
-      'coverage',
-      'dist',
+      '**/coverage/**',
+      '**/dist/**',
       'eslint.config.js',
-      'node_modules',
-      'playwright-report',
-      'test-results',
+      '**/node_modules/**',
+      '**/playwright-report/**',
+      '**/test-results/**',
     ],
   },
   js.configs.recommended,

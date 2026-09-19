@@ -1,18 +1,17 @@
-import type { EffectMode } from './topic-catalog';
+import type { EffectMode } from './topic-catalog.ts';
 import {
   mergeRendering,
   type QuestionRendering,
   type RenderingOverrides,
-} from './question-rendering';
+} from './question-rendering.ts';
+import { gameVersions } from '../versions.ts';
 import {
   resolveDifficultyVariant,
   type Difficulty,
   type DifficultyVariants,
-} from './difficulty';
-import type { QuestionData } from './types';
-import type { MeasurementRules } from './measurement-comparison';
-
-// Bump when changing any executable variant rule. Saved lineups retain their rules.
+} from './difficulty.ts';
+import type { QuestionData } from './types.ts';
+import type { MeasurementRules } from './measurement-comparison.ts';
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {
@@ -30,6 +29,7 @@ export const questionTuning = {
     statScale: 80,
   },
 };
+export const QUESTION_RULES_VERSION = gameVersions.questions;
 
 export interface VariantRules {
   distractors?: 'dissimilar' | 'similar';
