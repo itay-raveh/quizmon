@@ -18,7 +18,10 @@ import { GenerationLabel } from '@/components/GenerationLabel';
 import { RelationArrow, TypeEffectArrow } from '@/components/RelationArrow';
 import { Sprite } from '@/components/Sprite';
 import { MysteryTypeBadge, TypeBadges } from '@/components/TypeBadge';
-import { formatPokemonName, formatPokemonTypes } from '@/domain/pokemon/format';
+import {
+  formatPokemonName,
+  formatPokemonTypeAnnouncement,
+} from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
 import { Fragment, type CSSProperties } from 'react';
 interface QuestionArtworkProps {
@@ -275,7 +278,10 @@ export const QuestionArtwork = ({
         className="question-visual question-relation question-relation--matchup"
         role="img"
         aria-hidden={!(answered || question.showTypes) || undefined}
-        aria-label={`${formatPokemonName(question.subject.name)} ${(question.subject.types ?? []).length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.subject.types ?? [])}.`}
+        aria-label={formatPokemonTypeAnnouncement(
+          question.subject.types ?? [],
+          question.subject.name,
+        )}
       >
         {visual.kind === 'type-matchup' ? (
           <MysteryType answered={answered} types={answer ? [answer] : []} />

@@ -5,7 +5,7 @@ import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatGeneration,
   formatPokemonName,
-  formatPokemonTypes,
+  formatPokemonTypeAnnouncement,
 } from '@/domain/pokemon/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
@@ -94,7 +94,7 @@ export const QuestionAnswerChoice = ({
   const optionClassName = `answer${outcome === 'idle' ? '' : ` answer--${outcome}`}`;
   const typeAnnouncement =
     revealsOptionTypes && visual
-      ? `. ${visual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(visual.types)}.`
+      ? `. ${formatPokemonTypeAnnouncement(visual.types)}`
       : '';
   const resultAnnouncement =
     outcome === 'missed'

@@ -1,5 +1,8 @@
 import { TypeBadges } from '@/components/TypeBadge';
-import { formatPokemonName, formatPokemonTypes } from '@/domain/pokemon/format';
+import {
+  formatPokemonName,
+  formatPokemonTypeAnnouncement,
+} from '@/domain/pokemon/format';
 import type {
   QuestionData,
   QuestionPrompt as QuestionPromptData,
@@ -185,7 +188,10 @@ export const QuestionPresentation = ({
               ? 'visually-hidden'
               : 'question__types'
           }
-          label={`${formatPokemonName(question.subject.name)} ${(question.subject.types ?? []).length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.subject.types ?? [])}.`}
+          label={formatPokemonTypeAnnouncement(
+            question.subject.types ?? [],
+            question.subject.name,
+          )}
           types={question.subject.types ?? []}
         />
       ) : null}
