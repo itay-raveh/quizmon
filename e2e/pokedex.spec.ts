@@ -139,6 +139,9 @@ test('registers a correct answer immediately even when the round is abandoned', 
   await expect
     .poll(async () => (await readSave(page)).data.pokedex.toSorted())
     .toEqual(getQuestionPokemon(question!).toSorted());
+  await expect(
+    page.getByRole('button', { name: 'Next question', exact: true }),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'Leave game', exact: true }).click();
   await page
     .getByRole('dialog', { name: 'Leave this game?' })

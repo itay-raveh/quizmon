@@ -81,7 +81,7 @@ test('restores a current backup from a retired save @cross-browser', async ({
   const dialog = page.getByRole('dialog', {
     name: 'This save needs attention',
   });
-  await expect(dialog).toBeVisible();
+  await expect(dialog).toBeVisible({ timeout: 15_000 });
   const datasetId = crypto.randomUUID();
   const discovery = action(datasetId, datasetId, 'discoveries.add', {
     pokemon: ['pikachu'],

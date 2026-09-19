@@ -128,6 +128,7 @@ test('plays and shares a complete Training round without a live API call', async
   });
 
   await seedBrowserRandom(page, 'visual-identity-2');
+  await page.clock.install();
   await page.goto('/');
   await expect(page.getByRole('img', { name: /Quizmon/ })).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeVisible();
@@ -140,9 +141,11 @@ test('plays and shares a complete Training round without a live API call', async
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
   await expect(page.getByRole('contentinfo')).toHaveCount(0);
+  await page.clock.pauseAt(new Date());
   const answer = await answerPokedexQuestion(page, 'keyboard');
   await expect(answer).toHaveClass(/answer--correct/);
   await expect(page.getByText(/\+[\d,]+ points/)).toHaveCount(0);
+  await page.clock.resume();
   for (let number = 2; number <= 10; number += 1) {
     await expect(
       page.getByRole('progressbar', { name: 'Quiz progress' }),
