@@ -23,6 +23,7 @@ export const TypeAnswerPicker = ({
   const id = useId();
   const input = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
+  const multiSelect = question.answer.interaction === 'multi-select';
   const normalized = normalizeSearch(query);
   const search = useMemo(
     () =>
@@ -37,7 +38,7 @@ export const TypeAnswerPicker = ({
   );
   const suggestions = search(query)
     .map(({ name }) => name)
-    .filter((type) => !selectedOptions.includes(type));
+    .filter((type) => !multiSelect || !selectedOptions.includes(type));
   if (answered) {
     const visible = question.options.filter(
       (type) =>
@@ -89,7 +90,9 @@ export const TypeAnswerPicker = ({
   }
   return (
     <div className="type-picker champion-search">
-      <label htmlFor={`${id}-input`}>Your types</label>
+      <label htmlFor={`${id}-input`}>
+        {multiSelect ? 'Your types' : 'Your type'}
+      </label>
       <SearchCombobox
         id={id}
         inputRef={input}
@@ -102,11 +105,13 @@ export const TypeAnswerPicker = ({
         exactOption={suggestions.includes(normalized) ? normalized : undefined}
         onChoose={(type) => {
           onSelect(type);
-          setQuery('');
-          input.current?.focus();
+          if (multiSelect) {
+            setQuery('');
+            input.current?.focus();
+          }
         }}
         getKey={(type) => type}
-        placeholder="Add a type…"
+        placeholder={multiSelect ? 'Add a type…' : 'Choose a type…'}
         emptyMessage={
           selectedOptions.includes(normalized)
             ? 'Already selected'
@@ -116,27 +121,29 @@ export const TypeAnswerPicker = ({
           <TypeBadges types={[type]} label={formatPokemonName(type)} />
         )}
       />
-      <div
-        className="type-picker__selected"
-        role="group"
-        aria-label="Selected types"
-      >
-        {selectedOptions.map((type) => (
-          <button
-            type="button"
-            className="type-picker__remove"
-            key={type}
-            aria-label={`Remove ${formatPokemonName(type)}`}
-            onClick={() => {
-              onSelect(type);
-              input.current?.focus();
-            }}
-          >
-            <TypeBadges types={[type]} />
-            <XIcon aria-hidden="true" />
-          </button>
-        ))}
-      </div>
+      {multiSelect ? (
+        <div
+          className="type-picker__selected"
+          role="group"
+          aria-label="Selected types"
+        >
+          {selectedOptions.map((type) => (
+            <button
+              type="button"
+              className="type-picker__remove"
+              key={type}
+              aria-label={`Remove ${formatPokemonName(type)}`}
+              onClick={() => {
+                onSelect(type);
+                input.current?.focus();
+              }}
+            >
+              <TypeBadges types={[type]} />
+              <XIcon aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

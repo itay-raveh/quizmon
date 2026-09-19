@@ -66,7 +66,11 @@ export const QuestionAnswers = ({
     question.visual?.kind === 'stat-showdown'
       ? question.visual.stat
       : undefined;
-  if (hasTypeOptionBadges && multiSelect && question.options.length > 4) {
+  if (
+    hasTypeOptionBadges &&
+    question.options.length > 4 &&
+    (multiSelect || question.questionType === 'natural-gift')
+  ) {
     return (
       <TypeAnswerPicker
         question={question}

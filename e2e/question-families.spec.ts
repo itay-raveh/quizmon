@@ -76,7 +76,13 @@ for (const { type, level, count } of cases)
       type === 'berry-flavors' ? 'multi-select' : 'single-choice',
     );
     const answers = page.locator('.answer');
-    await expect(answers).toHaveCount(count);
+    await expect(answers).toHaveCount(type === 'natural-gift' ? 0 : count);
+    if (type === 'natural-gift') {
+      expect(question.options).toHaveLength(count);
+      await expect(
+        page.getByRole('combobox', { name: 'Your type' }),
+      ).toBeVisible();
+    }
     if (type === 'item-identification')
       expect(await page.locator('.question-visual').innerText()).not.toContain(
         question.optionLabels![question.subject.name],
@@ -124,7 +130,7 @@ for (const { type, level, count } of cases)
       ).toBeVisible();
     }
     await expectNoHorizontalOverflow(page);
-    if (type === 'move-types' || type === 'natural-gift') {
+    if (type === 'move-types') {
       const labels = await answers.evaluateAll((buttons) =>
         buttons.map((button) => button.getAttribute('aria-label')!),
       );
@@ -168,6 +174,20 @@ for (const { type, level, count } of cases)
       await page.keyboard.press(
         String(regions.indexOf(question.optionLabels![correct]!) + 1),
       );
+    } else if (type === 'natural-gift') {
+      const picker = page.getByRole('combobox', { name: 'Your type' });
+      await picker.fill(correct);
+      await page
+        .getByRole('option', { name: formatName(correct), exact: true })
+        .click();
+      await expect(
+        page.getByRole('button', { name: 'Check answers' }),
+      ).toHaveCount(0);
+      await expect(
+        page
+          .getByRole('list', { name: 'Type answers' })
+          .getByRole('img', { name: formatName(correct), exact: true }),
+      ).toBeVisible();
     } else if (type === 'berry-flavors') {
       for (const flavor of question.answer.correctOptions) {
         const button = page.getByRole('button', {
@@ -183,7 +203,7 @@ for (const { type, level, count } of cases)
       await page.keyboard.press('Enter');
     }
     await expect(page.locator('.answer--correct')).toHaveCount(
-      question.answer.correctOptions.length,
+      type === 'natural-gift' ? 0 : question.answer.correctOptions.length,
     );
     await expect(page.locator('.answer--wrong')).toHaveCount(0);
     if (type === 'weight-comparison' || type === 'height-comparison')
