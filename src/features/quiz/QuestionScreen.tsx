@@ -1,8 +1,6 @@
-import { presentMeasurementQuestion } from '@/domain/quiz/questions/measurement-presentation';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import { showsSearchResponse } from '@/domain/quiz/question-interaction';
-import { presentEvolutionQuestion } from '@/domain/quiz/questions/evolution-presentation';
-import { presentEffectQuestion } from '@/domain/quiz/questions/effect-presentation';
+import { presentQuestion } from '@/domain/quiz/questions/presentation';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
 import {
@@ -68,13 +66,7 @@ export const QuestionScreen = ({
   total,
 }: QuestionScreenProps) => {
   const question = useMemo(
-    () =>
-      presentEvolutionQuestion(
-        presentMeasurementQuestion(
-          presentEffectQuestion(storedQuestion, effects),
-        ),
-        evolutions,
-      ),
+    () => presentQuestion(storedQuestion, { effects, evolutions }),
     [storedQuestion, evolutions, effects],
   );
   const heading = useRef<HTMLHeadingElement>(null);
