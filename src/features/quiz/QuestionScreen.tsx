@@ -1,55 +1,33 @@
 import { presentMeasurementQuestion } from '@/domain/quiz/questions/measurement-presentation';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import { showsSearchResponse } from '@/domain/quiz/question-interaction';
-import type {
-  EntityRendering,
-  RevealState,
-} from '@/domain/quiz/question-rendering';
-import { isVisible } from '@/domain/quiz/question-rendering';
-import { QuestionSprite, QuestionIdentity } from './QuestionEntity';
-import { supplementalItemSprites } from './item-sprites';
 import { presentEvolutionQuestion } from '@/domain/quiz/questions/evolution-presentation';
 import { presentEffectQuestion } from '@/domain/quiz/questions/effect-presentation';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
-import { TypeBadges } from '@/components/TypeBadge';
 import {
   formatDuration,
   formatDurationMilliseconds,
   formatPokemonName,
-  formatPokemonTypes,
   getModeLabel,
 } from '@/domain/pokemon/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getLeagueStageLabel } from '@/domain/quiz/league';
 import { getQuestionTitle } from '@/domain/quiz/question-labels';
 import { getAnswerPoints } from '@/domain/quiz/scoring';
-import type {
-  GameMode,
-  QuestionData,
-  QuestionPrompt as QuestionPromptData,
-} from '@/domain/quiz/types';
+import type { GameMode, QuestionData } from '@/domain/quiz/types';
 import type { TimerDisplay } from '@/domain/settings/types';
 import { TrainerTitleMark } from '@/features/trainer/TrainerTitleMark';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
 import { useEffect, useMemo, useRef } from 'react';
 import { ChampionSearch } from './ChampionSearch';
 import { QuestionAnswers } from './QuestionAnswers';
-import { QuestionArtwork } from './QuestionArtwork';
-import { QuestionClues } from './QuestionClues';
-import { QuestionInstruction } from './QuestionInstruction';
-import { usesVisualInstruction } from './question-instruction-policy';
+import { QuestionPresentation } from './QuestionPresentation';
 import { RoundProgress } from './RoundProgress';
 import {
   useQuestionAnswer,
   type UseQuestionAnswerOptions,
 } from './useQuestionAnswer';
-const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
-  'counter-pick',
-  'type-check',
-  'type-twins',
-  'type-matchup',
-]);
 interface QuestionScreenProps extends UseQuestionAnswerOptions {
   typeRelations?: PokemonCatalog['typeRelations'];
   evolutions?: NonNullable<PokemonCatalog['topics']>['evolutions'];
@@ -61,74 +39,6 @@ interface QuestionScreenProps extends UseQuestionAnswerOptions {
   timerDisplay: TimerDisplay;
   total: number;
 }
-const QuestionPrompt = ({
-  className,
-  prompt,
-  itemSprite,
-  itemName,
-  policy,
-  state,
-}: {
-  className: string;
-  prompt: QuestionPromptData;
-  itemSprite?: string;
-  itemName?: string;
-  policy: EntityRendering;
-  state: RevealState;
-}) => (
-  <p className={className} id="question-prompt">
-    {prompt.kind === 'text' ? (
-      <>
-        {itemName ? (
-          <span className="question__item-subject">
-            {itemSprite ? (
-              <QuestionSprite
-                rule={policy.sprite}
-                state={state}
-                src={itemSprite}
-                className="question__item-portrait"
-              />
-            ) : null}
-            {isVisible(policy.name, state) ? <strong>{itemName}</strong> : null}
-          </span>
-        ) : null}
-        {itemName ? prompt.text.replace(itemName, 'it') : prompt.text}
-        {prompt.supportingText || itemSprite ? (
-          <span className="question__supporting-text">
-            {itemSprite && !itemName ? (
-              <QuestionSprite
-                rule={policy.sprite}
-                state={state}
-                src={itemSprite}
-                className="question__inline-item"
-              />
-            ) : null}
-            {prompt.supportingText}
-          </span>
-        ) : null}
-      </>
-    ) : (
-      <>
-        {prompt.before}
-        <QuestionIdentity
-          policy={policy}
-          state={state}
-          className="question__subject"
-          inline
-          name={prompt.name}
-          dexNumber={prompt.dexNumber}
-          numberClassName="question__subject-number"
-        />
-        {prompt.after}
-        {prompt.supportingText ? (
-          <span className="question__supporting-text">
-            {prompt.supportingText}
-          </span>
-        ) : null}
-      </>
-    )}
-  </p>
-);
 const formatCorrectAnswer = (question: QuestionData): string => {
   const names = question.answer.correctOptions.map(
     (option) => question.optionLabels?.[option] ?? formatPokemonName(option),
@@ -199,17 +109,6 @@ export const QuestionScreen = ({
   }, [answerFlow, answered]);
   const isChampion = question.category === 'champion';
   const rendering = getQuestionRendering(question);
-  const revealState = { answered, cluesShown };
-  const inlineItem =
-    question.subject.kind !== 'pokemon' &&
-    question.questionType !== 'item-identification' &&
-    question.media.kind === 'pixel-sprite'
-      ? question.media.src
-      : question.subject.kind === 'item' &&
-          question.questionType !== 'item-identification'
-        ? supplementalItemSprites[question.subject.name]
-        : undefined;
-  const visualInstruction = usesVisualInstruction(question);
   const isLeague = mode.kind === 'league';
   const modeLabel = isLeague
     ? getLeagueStageLabel(number)
@@ -283,77 +182,13 @@ export const QuestionScreen = ({
         <span>{getQuestionTitle(question)}</span>
       </h1>
       {modeLabel ? <p className="game-mode">{modeLabel}</p> : null}
-      {visualInstruction ? (
-        <QuestionPrompt
-          policy={rendering.subject}
-          state={revealState}
-          className="visually-hidden"
-          prompt={question.prompt}
-        />
-      ) : null}
-      <div className="question__context">
-        <div
-          className="question__instruction"
-          aria-hidden={visualInstruction || undefined}
-        >
-          {visualInstruction ? (
-            <QuestionInstruction question={question} />
-          ) : (
-            <QuestionPrompt
-              policy={rendering.subject}
-              state={revealState}
-              className="question__prompt"
-              prompt={question.prompt}
-              itemSprite={inlineItem}
-              itemName={
-                question.questionType === 'held-item-effects'
-                  ? formatPokemonName(question.subject.name)
-                  : undefined
-              }
-            />
-          )}
-        </div>
-        {question.suppliedClues?.length ? (
-          <div className="clue-board">
-            <ol>
-              {question.suppliedClues.map((clue) => (
-                <li key={clue}>{clue}</li>
-              ))}
-            </ol>
-          </div>
-        ) : null}
-        {!inlineItem ? (
-          <div className="question__stimulus">
-            {isChampion && !isLeague && cluesShown > 1 ? (
-              <QuestionClues cluesShown={cluesShown} question={question} />
-            ) : null}
-            <QuestionArtwork
-              answered={answered}
-              cluesShown={cluesShown}
-              question={question}
-            />
-          </div>
-        ) : null}
-      </div>
-
-      {(answered || question.showTypes) &&
-      !(
-        (question.visual?.kind === 'type-matchup' ||
-          question.visual?.kind === 'counter-pick') &&
-        question.media.kind === 'pixel-sprite'
-      ) &&
-      (question.subject.types ?? []).length > 0 &&
-      subjectTypeRevealQuestionTypes.has(question.questionType) ? (
-        <TypeBadges
-          className={
-            question.visual && visualInstruction
-              ? 'visually-hidden'
-              : 'question__types'
-          }
-          label={`${formatPokemonName(question.subject.name)} ${(question.subject.types ?? []).length === 1 ? 'type' : 'types'}: ${formatPokemonTypes(question.subject.types ?? [])}.`}
-          types={question.subject.types ?? []}
-        />
-      ) : null}
+      <QuestionPresentation
+        question={question}
+        rendering={rendering}
+        answered={answered}
+        cluesShown={cluesShown}
+        isLeague={isLeague}
+      />
 
       <div
         className={`question__response ${searchVisible ? 'question__response--search' : ''}`.trim()}
