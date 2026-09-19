@@ -350,9 +350,17 @@ it.each(cases)(
             .filter((flavor) => berry.flavors[flavor]! > 0)
             .sort();
           if (type === 'natural-gift') expect(correct).toBe(berry.giftType);
-          else if (rules.completeFlavors)
-            expect(correct).toBe(flavors.map(formatPokemonName).join(' + '));
-          else {
+          else if (rules.completeFlavors) {
+            expect(question.answer.interaction).toBe('multi-select');
+            expect(question.answer.correctOptions.toSorted()).toEqual(
+              flavors.map(formatPokemonName).toSorted(),
+            );
+            expect(question.options.toSorted()).toEqual(
+              ['spicy', 'dry', 'sweet', 'bitter', 'sour']
+                .map(formatPokemonName)
+                .toSorted(),
+            );
+          } else {
             const highest = Math.max(...Object.values(berry.flavors));
             const strongest = flavors.filter(
               (flavor) => berry.flavors[flavor] === highest,

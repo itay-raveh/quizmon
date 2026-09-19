@@ -63,7 +63,7 @@ export interface VariantRules {
   combinedCure?: boolean;
   measurement?: MeasurementRules;
   reviewedDescription?: boolean;
-  fullList?: 'types' | 'regions';
+  fullList?: 'types' | 'regions' | 'flavors';
   damageClass?: 'status' | 'any';
   sameMoveType?: boolean;
   sameColorOrShape?: boolean;
@@ -234,7 +234,7 @@ export const questionVariants: Record<
   },
   'berry-flavors': {
     4: { completeFlavors: false },
-    5: { completeFlavors: true, closeAlternatives: true },
+    5: { completeFlavors: true, fullList: 'flavors' },
   },
   'natural-gift': { 5: { fullList: 'types' } },
   'pokedex-scan': {

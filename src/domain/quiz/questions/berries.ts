@@ -35,47 +35,26 @@ export const buildBerry: QuestionBuilder = (context) => {
     );
     if (!gift && !context.variant?.completeFlavors && strongest.length !== 1)
       continue;
+    const strongestFlavor = formatPokemonName(strongest[0]!);
     const correct = gift
       ? target.giftType
       : context.variant?.completeFlavors
-        ? positive.map(formatPokemonName).join(' + ')
-        : formatPokemonName(strongest[0]!);
+        ? positive.map(formatPokemonName)
+        : strongestFlavor;
     const other = gift
       ? Object.keys(context.catalog.typeRelations)
-      : context.variant?.completeFlavors
-        ? [
-            ...new Set(
-              pool.map((berry) =>
-                positiveFlavors(berry.flavors)
-                  .map(formatPokemonName)
-                  .join(' + '),
-              ),
-            ),
-          ]
-        : Object.keys(target.flavors).map(formatPokemonName);
-    const flavorDistance = (value: string) => {
-      const flavors = value.split(' + ');
-      const answer = correct.split(' + ');
-      return (
-        flavors.filter((flavor) => !answer.includes(flavor)).length +
-        answer.filter((flavor) => !flavors.includes(flavor)).length
-      );
-    };
+      : Object.keys(target.flavors).map(formatPokemonName);
     const options = gift
       ? other
-      : [
-          correct,
-          ...ordered(
-            context,
-            other.filter((value) => value && value !== correct),
-          )
-            .sort((a, b) =>
-              context.variant?.closeAlternatives
-                ? flavorDistance(a) - flavorDistance(b)
-                : 0,
-            )
-            .slice(0, 3),
-        ];
+      : context.variant?.completeFlavors
+        ? other
+        : [
+            strongestFlavor,
+            ...ordered(
+              context,
+              other.filter((value) => value && value !== strongestFlavor),
+            ).slice(0, 3),
+          ];
     const item = topics.items.find((item) => item.name === target.item);
     if (!item?.sprite) continue;
     const prompt = gift

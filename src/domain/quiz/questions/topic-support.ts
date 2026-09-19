@@ -54,14 +54,16 @@ export const makeTopicQuestion = (
   context: QuestionContext,
   subject: QuestionSubject,
   prompt: string,
-  correct: string,
+  correct: string | string[],
   options: string[],
   details: Partial<QuestionDraft> = {},
   category: QuestionCategory = 'knowledge',
 ): QuestionDraft | undefined => {
   const labels = details.optionLabels ?? {};
+  const correctOptions = typeof correct === 'string' ? [correct] : correct;
   if (
-    !options.includes(correct) ||
+    correctOptions.length === 0 ||
+    !correctOptions.every((value) => options.includes(value)) ||
     new Set(options).size !== options.length ||
     new Set(options.map((option) => labels[option] ?? option)).size !==
       options.length ||
@@ -79,7 +81,7 @@ export const makeTopicQuestion = (
     subject.kind,
     subject.name,
     details.context ?? null,
-    correct,
+    typeof correct === 'string' ? correct : [...correctOptions].sort(),
     [...options].sort(),
   ]);
   return {
@@ -88,7 +90,11 @@ export const makeTopicQuestion = (
     category,
     prompt: { kind: 'text', text: prompt },
     options: ordered(context, options),
-    answer: { interaction: 'single-choice', correctOptions: [correct] },
+    answer: {
+      interaction:
+        typeof correct === 'string' ? 'single-choice' : 'multi-select',
+      correctOptions,
+    },
     media: { kind: 'none' },
     repetition: {
       identity,
@@ -98,10 +104,13 @@ export const makeTopicQuestion = (
           : `${subject.kind}/${subject.name}`,
       ],
       primary: [
-        ...new Set([...primary, ...pokemon.filter((name) => name === correct)]),
+        ...new Set([
+          ...primary,
+          ...pokemon.filter((name) => correctOptions.includes(name)),
+        ]),
       ],
       distractors: pokemon.filter(
-        (name) => name !== correct && !primary.includes(name),
+        (name) => !correctOptions.includes(name) && !primary.includes(name),
       ),
     },
     ...details,

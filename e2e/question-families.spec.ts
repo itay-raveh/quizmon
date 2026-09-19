@@ -30,7 +30,7 @@ const cases: { type: QuestionType; level: number; count: number }[] = [
   { type: 'hidden-abilities', level: 5, count: 4 },
   { type: 'pokedex-categories', level: 5, count: 4 },
   { type: 'encounter-locations', level: 5, count: 4 },
-  { type: 'berry-flavors', level: 5, count: 4 },
+  { type: 'berry-flavors', level: 5, count: 5 },
   { type: 'natural-gift', level: 5, count: 18 },
 ];
 for (const { type, level, count } of cases)
@@ -72,7 +72,9 @@ for (const { type, level, count } of cases)
         ) as ActiveGameSnapshot,
     );
     const question = snapshot.questions[0]!;
-    expect(question.answer.interaction).toBe('single-choice');
+    expect(question.answer.interaction).toBe(
+      type === 'berry-flavors' ? 'multi-select' : 'single-choice',
+    );
     const answers = page.locator('.answer');
     await expect(answers).toHaveCount(count);
     if (type === 'item-identification')
@@ -166,11 +168,23 @@ for (const { type, level, count } of cases)
       await page.keyboard.press(
         String(regions.indexOf(question.optionLabels![correct]!) + 1),
       );
+    } else if (type === 'berry-flavors') {
+      for (const flavor of question.answer.correctOptions) {
+        const button = page.getByRole('button', {
+          name: question.optionLabels?.[flavor] ?? formatName(flavor),
+          exact: true,
+        });
+        await button.focus();
+        await page.keyboard.press('Enter');
+      }
+      await page.getByRole('button', { name: 'Check answers' }).click();
     } else {
       await correctButton.focus();
       await page.keyboard.press('Enter');
     }
-    await expect(page.locator('.answer--correct')).toHaveCount(1);
+    await expect(page.locator('.answer--correct')).toHaveCount(
+      question.answer.correctOptions.length,
+    );
     await expect(page.locator('.answer--wrong')).toHaveCount(0);
     if (type === 'weight-comparison' || type === 'height-comparison')
       await expect(page.locator('.answer__stat')).toHaveCount(count);
