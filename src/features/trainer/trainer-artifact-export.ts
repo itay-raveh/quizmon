@@ -79,10 +79,7 @@ export const renderTrainerArtifactImage = async (
   }
 };
 
-export const downloadTrainerArtifact = (
-  blob: Blob,
-  view: TrainerArtifactView,
-) => {
+const downloadTrainerArtifact = (blob: Blob, view: TrainerArtifactView) => {
   const details = artifactDetails[view];
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -123,4 +120,42 @@ export const shareTrainerArtifact = async (
     text: `My ${site.name} ${details.label}\n${site.url}`,
     title: `${site.name} ${details.label}`,
   });
+};
+
+export type TrainerArtifactExportOutcome =
+  | 'shared'
+  | 'cancelled'
+  | 'downloaded'
+  | 'unsupported-downloaded'
+  | 'share-failed-downloaded';
+
+export const exportTrainerArtifact = async (
+  element: HTMLElement,
+  view: TrainerArtifactView,
+  {
+    attemptShare,
+    onShareError,
+  }: {
+    attemptShare: boolean;
+    onShareError: 'download' | 'throw';
+  },
+): Promise<TrainerArtifactExportOutcome> => {
+  const image = await renderTrainerArtifactImage(element);
+  if (!attemptShare) {
+    downloadTrainerArtifact(image, view);
+    return 'downloaded';
+  }
+
+  let shareOutcome: Awaited<ReturnType<typeof shareTrainerArtifact>>;
+  try {
+    shareOutcome = await shareTrainerArtifact(image, view);
+  } catch (error) {
+    if (onShareError === 'throw') throw error;
+    downloadTrainerArtifact(image, view);
+    return 'share-failed-downloaded';
+  }
+  if (shareOutcome === 'shared' || shareOutcome === 'cancelled')
+    return shareOutcome;
+  downloadTrainerArtifact(image, view);
+  return 'unsupported-downloaded';
 };

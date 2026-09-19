@@ -27,9 +27,7 @@ import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getLocalDate } from '@/domain/quiz/daily';
 import { useUpdateState } from '@/features/installation/update-session';
 import {
-  downloadTrainerArtifact,
-  renderTrainerArtifactImage,
-  shareTrainerArtifact,
+  exportTrainerArtifact as exportArtifactImage,
   supportsTrainerArtifactSharing,
 } from '@/features/trainer/trainer-artifact-export';
 import { readPlayerData } from '@/lib/storage/player-storage';
@@ -199,31 +197,24 @@ export const TrainerPassport = ({
     setPreparingArtifact(true);
     setShareNotice(null);
     try {
-      const image = await renderTrainerArtifactImage(artifact);
-      if (!canShareArtifact) {
-        downloadTrainerArtifact(image, view);
-        return;
-      }
-
-      try {
-        const outcome = await shareTrainerArtifact(image, view);
-        if (outcome === 'unsupported') {
-          downloadTrainerArtifact(image, view);
-          setShareNotice({
-            message: 'PNG downloaded. Share it from your photos.',
-            visible: true,
-          });
-        } else if (outcome === 'shared') {
-          setShareNotice({
-            message: `${trainerViewLabels[view]} shared.`,
-            visible: false,
-          });
-        }
-      } catch {
-        downloadTrainerArtifact(image, view);
+      const outcome = await exportArtifactImage(artifact, view, {
+        attemptShare: canShareArtifact,
+        onShareError: 'download',
+      });
+      if (outcome === 'unsupported-downloaded') {
+        setShareNotice({
+          message: 'PNG downloaded. Share it from your photos.',
+          visible: true,
+        });
+      } else if (outcome === 'share-failed-downloaded') {
         setShareNotice({
           message: 'Sharing was unavailable, so the PNG was downloaded.',
           visible: true,
+        });
+      } else if (outcome === 'shared') {
+        setShareNotice({
+          message: `${trainerViewLabels[view]} shared.`,
+          visible: false,
         });
       }
     } catch {

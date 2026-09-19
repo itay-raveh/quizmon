@@ -13,9 +13,7 @@ import { LEAGUE_QUESTION_COUNT, type LeagueView } from '@/domain/quiz/league';
 import '@/features/league/league.css';
 import { HallOfFameRecord } from '@/features/trainer/HallOfFameRecord';
 import {
-  downloadTrainerArtifact,
-  renderTrainerArtifactImage,
-  shareTrainerArtifact,
+  exportTrainerArtifact,
   supportsTrainerArtifactSharing,
 } from '@/features/trainer/trainer-artifact-export';
 import { readPlayerData } from '@/lib/storage/player-storage';
@@ -79,17 +77,12 @@ export const LeagueDestination = ({
     setError('');
     setNotice('');
     try {
-      const image = await renderTrainerArtifactImage(artifact.current);
-      if (canShare) {
-        const outcome = await shareTrainerArtifact(image, 'hall');
-        if (outcome === 'cancelled') return;
-        if (outcome === 'shared') {
-          setNotice('Victory shared.');
-          return;
-        }
-      }
-      downloadTrainerArtifact(image, 'hall');
-      setNotice('Victory image downloaded.');
+      const outcome = await exportTrainerArtifact(artifact.current, 'hall', {
+        attemptShare: canShare,
+        onShareError: 'throw',
+      });
+      if (outcome === 'shared') setNotice('Victory shared.');
+      else if (outcome !== 'cancelled') setNotice('Victory image downloaded.');
     } catch {
       setError('The victory image could not be shared. Try again.');
     } finally {
