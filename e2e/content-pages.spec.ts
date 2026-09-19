@@ -1,14 +1,16 @@
 import { expect, test } from '@playwright/test';
 
 test('public information is readable and linked without JavaScript', async ({
+  baseURL,
   browser,
 }) => {
   const context = await browser.newContext({
+    baseURL,
     javaScriptEnabled: false,
     viewport: { width: 288, height: 780 },
   });
   const page = await context.newPage();
-  await page.goto('http://127.0.0.1:4173/about');
+  await page.goto('/about');
   await expect(
     page.getByRole('heading', { name: 'About & How to Play', exact: true }),
   ).toBeVisible();
