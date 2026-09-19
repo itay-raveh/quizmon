@@ -12,6 +12,7 @@ import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import { isVisible, spriteState } from '@/domain/quiz/question-rendering';
 import type { QuestionData } from '@/domain/quiz/types';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
+import { answerOptionState } from './answer-option-state';
 import { supplementalItemSprites } from './item-sprites';
 import { MoveReveal } from './MoveReveal';
 import { NatureEffect } from './NatureEffect';
@@ -84,33 +85,21 @@ export const QuestionAnswerChoice = ({
     question.optionVisuals?.[option]?.dexNumber;
   const optionSelected = selectedOptions.includes(option);
   const optionCorrect = question.answer.correctOptions.includes(option);
-  const optionClassName = !answered
-    ? optionSelected
-      ? 'answer answer--selected'
-      : 'answer'
-    : optionCorrect
-      ? multiSelect && !optionSelected
-        ? 'answer answer--missed'
-        : 'answer answer--correct'
-      : optionSelected
-        ? 'answer answer--wrong'
-        : 'answer answer--muted';
-  const resultMarker =
-    answered && multiSelect
-      ? optionCorrect && !optionSelected
-        ? 'missed'
-        : !optionCorrect && optionSelected
-          ? 'wrong'
-          : null
-      : null;
+  const outcome = answerOptionState({
+    answered,
+    multiSelect,
+    selected: optionSelected,
+    correct: optionCorrect,
+  });
+  const optionClassName = `answer${outcome === 'idle' ? '' : ` answer--${outcome}`}`;
   const typeAnnouncement =
     revealsOptionTypes && visual
       ? `. ${visual.types.length === 1 ? 'Type' : 'Types'}: ${formatPokemonTypes(visual.types)}.`
       : '';
   const resultAnnouncement =
-    resultMarker === 'missed'
+    outcome === 'missed'
       ? ' Correct answer, not selected.'
-      : resultMarker === 'wrong'
+      : outcome === 'wrong' && multiSelect
         ? ' Wrong pick.'
         : '';
   const classification = question.optionClassifications?.[option];
@@ -139,7 +128,7 @@ export const QuestionAnswerChoice = ({
     </span>
   ) : null;
   const selectionMark =
-    resultMarker === 'missed' ? (
+    outcome === 'missed' ? (
       <MinusIcon weight="bold" />
     ) : answered && optionCorrect ? (
       <CheckIcon weight="bold" />

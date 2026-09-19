@@ -7,6 +7,7 @@ import type { QuestionData } from '@/domain/quiz/types';
 import { SearchCombobox } from '@/components/SearchCombobox';
 import { useId, useMemo, useRef, useState } from 'react';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
+import { answerOptionState } from './answer-option-state';
 export const TypeAnswerPicker = ({
   question,
   selectedOptions,
@@ -52,23 +53,29 @@ export const TypeAnswerPicker = ({
         aria-label="Type answers"
       >
         {visible.map((type) => {
-          const correct = question.answer.correctOptions.includes(type);
-          const status = !correct
-            ? 'Wrong pick'
-            : selectedOptions.includes(type)
-              ? 'Correct'
-              : 'Missed';
+          const outcome = answerOptionState({
+            answered: true,
+            multiSelect,
+            selected: selectedOptions.includes(type),
+            correct: question.answer.correctOptions.includes(type),
+          });
+          const status =
+            outcome === 'wrong'
+              ? 'Wrong pick'
+              : outcome === 'missed'
+                ? 'Missed'
+                : 'Correct';
           return (
             <div
-              className={`type-picker__result type-picker__result--${!correct ? 'wrong' : selectedOptions.includes(type) ? 'correct' : 'missed'}`}
+              className={`type-picker__result type-picker__result--${outcome}`}
               role="listitem"
               key={type}
             >
               <TypeBadges types={[type]} label={formatPokemonName(type)} />
               <span className="visually-hidden">{status}</span>
-              {status === 'Missed' ? (
+              {outcome === 'missed' ? (
                 <MinusIcon aria-hidden="true" weight="bold" />
-              ) : correct ? (
+              ) : outcome === 'correct' ? (
                 <CheckIcon aria-hidden="true" weight="bold" />
               ) : (
                 <XIcon aria-hidden="true" weight="bold" />
