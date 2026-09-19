@@ -37,10 +37,8 @@ import { ChampionSearch } from './ChampionSearch';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionClues } from './QuestionClues';
-import {
-  QuestionInstruction,
-  usesVisualInstruction,
-} from './QuestionInstruction';
+import { QuestionInstruction } from './QuestionInstruction';
+import { usesVisualInstruction } from './question-instruction-policy';
 import { RoundProgress } from './RoundProgress';
 import {
   useQuestionAnswer,
