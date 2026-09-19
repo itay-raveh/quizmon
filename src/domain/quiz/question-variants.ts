@@ -85,6 +85,50 @@ export const defaultQuestionRendering: QuestionRendering = {
   search: { sprite: 'always', name: 'always', number: 'always' },
 };
 
+const measurementVariants: DifficultyVariants<VariantRules> = {
+  1: {
+    measurement: {
+      minimumRatio: 4,
+      maximumRatio: Infinity,
+      maximumSpread: Infinity,
+    },
+  },
+  2: {
+    measurement: {
+      minimumRatio: 2,
+      maximumRatio: Infinity,
+      maximumSpread: Infinity,
+    },
+  },
+  3: {
+    measurement: {
+      minimumRatio: 1.3,
+      maximumRatio: Infinity,
+      maximumSpread: Infinity,
+    },
+  },
+  4: {
+    measurement: {
+      minimumRatio: 1.3,
+      maximumRatio: 2,
+      maximumSpread: 2,
+    },
+  },
+  5: {
+    measurement: {
+      minimumRatio: 1.3,
+      maximumRatio: 1.5,
+      maximumSpread: 1.5,
+    },
+  },
+};
+
+const effectVariants: DifficultyVariants<VariantRules> = {
+  3: { effectChoices: 'broad' },
+  4: { effectChoices: 'related' },
+  5: { effectChoices: 'exact', allowMissingSprites: true },
+};
+
 export const questionVariants: Record<
   QuestionData['questionType'],
   DifficultyVariants<VariantRules> & { rendering?: RenderingOverrides }
@@ -110,80 +154,8 @@ export const questionVariants: Record<
     3: { itemChoices: 'direct-use' },
     4: { itemChoices: 'direct-use', allowMissingSprites: true },
   },
-  'weight-comparison': {
-    1: {
-      measurement: {
-        minimumRatio: 4,
-        maximumRatio: Infinity,
-        maximumSpread: Infinity,
-      },
-    },
-    2: {
-      measurement: {
-        minimumRatio: 2,
-        maximumRatio: Infinity,
-        maximumSpread: Infinity,
-      },
-    },
-    3: {
-      measurement: {
-        minimumRatio: 1.3,
-        maximumRatio: Infinity,
-        maximumSpread: Infinity,
-      },
-    },
-    4: {
-      measurement: {
-        minimumRatio: 1.3,
-        maximumRatio: 2,
-        maximumSpread: 2,
-      },
-    },
-    5: {
-      measurement: {
-        minimumRatio: 1.3,
-        maximumRatio: 1.5,
-        maximumSpread: 1.5,
-      },
-    },
-  },
-  'height-comparison': {
-    1: {
-      measurement: {
-        minimumRatio: 4,
-        maximumRatio: Infinity,
-        maximumSpread: Infinity,
-      },
-    },
-    2: {
-      measurement: {
-        minimumRatio: 2,
-        maximumRatio: Infinity,
-        maximumSpread: Infinity,
-      },
-    },
-    3: {
-      measurement: {
-        minimumRatio: 1.3,
-        maximumRatio: Infinity,
-        maximumSpread: Infinity,
-      },
-    },
-    4: {
-      measurement: {
-        minimumRatio: 1.3,
-        maximumRatio: 2,
-        maximumSpread: 2,
-      },
-    },
-    5: {
-      measurement: {
-        minimumRatio: 1.3,
-        maximumRatio: 1.5,
-        maximumSpread: 1.5,
-      },
-    },
-  },
+  'weight-comparison': measurementVariants,
+  'height-comparison': measurementVariants,
   'move-types': {
     1: { reviewedDescription: true },
     2: {},
@@ -206,16 +178,8 @@ export const questionVariants: Record<
     4: { evolutionConditions: 'combined' },
     5: { evolutionConditions: 'one-condition' },
   },
-  'ability-effects': {
-    3: { effectChoices: 'broad' },
-    4: { effectChoices: 'related' },
-    5: { effectChoices: 'exact', allowMissingSprites: true },
-  },
-  'held-item-effects': {
-    3: { effectChoices: 'broad' },
-    4: { effectChoices: 'related' },
-    5: { effectChoices: 'exact', allowMissingSprites: true },
-  },
+  'ability-effects': effectVariants,
+  'held-item-effects': effectVariants,
   'hidden-abilities': {
     4: { hiddenAbility: 'ordinary' },
     5: { hiddenAbility: 'similar', allowMissingSprites: true },
