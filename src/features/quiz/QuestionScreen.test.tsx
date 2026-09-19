@@ -899,9 +899,11 @@ describe('question transitions', () => {
       context.difficulty = 5;
       const generated = buildQuestionType(context, questionType)!;
       const { container } = renderQuestion({ question: generated });
-      expect(
-        screen.queryByText(formatPokemonName(generated.subject.name)),
-      ).not.toBeInTheDocument();
+      const stimulus = container.querySelector('.question__stimulus')!;
+      const reservedSprite = stimulus.querySelector('img');
+      const reservedIdentity = stimulus.querySelector('.pokemon-identity');
+      expect(reservedSprite).not.toBeVisible();
+      expect(reservedIdentity).not.toBeVisible();
       const wrongAnswer = generated.searchOptions!.find(
         ({ name }) => name !== generated.subject.name,
       )!;
@@ -909,9 +911,12 @@ describe('question transitions', () => {
         target: { value: formatPokemonName(wrongAnswer.name) },
       });
       fireEvent.click(screen.getByRole('button', { name: 'Guess' }));
-      const stimulus = container.querySelector('.question__stimulus')!;
-      expect(stimulus.querySelector('img')).toBeVisible();
-      expect(stimulus.querySelector('.pokemon-identity')).toBeVisible();
+      expect(stimulus.querySelector('img')).toBe(reservedSprite);
+      expect(reservedSprite).toBeVisible();
+      expect(stimulus.querySelector('.pokemon-identity')).toBe(
+        reservedIdentity,
+      );
+      expect(reservedIdentity).toBeVisible();
       expect(stimulus.querySelector('.pokemon-identity')).toHaveTextContent(
         formatPokemonName(generated.subject.name),
       );
@@ -1036,7 +1041,7 @@ describe('question transitions', () => {
       target: { value: 'pika' },
     });
     expect(screen.getByRole('option', { name: 'Pikachu' })).toBeVisible();
-    expect(screen.queryByText('No. 0025')).not.toBeInTheDocument();
+    expect(screen.queryByText('No. 0025')).not.toBeVisible();
   });
   it('starts the Champion question as a keyboard-operable autocomplete', () => {
     const onAnswer = vi.fn();

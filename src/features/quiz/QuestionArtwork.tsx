@@ -75,6 +75,7 @@ const Subject = ({
   state,
   framed = false,
   reservePortrait = false,
+  concealment = 'question-mark',
   children,
 }: {
   name: string;
@@ -84,6 +85,7 @@ const Subject = ({
   state: RevealState;
   framed?: boolean;
   reservePortrait?: boolean;
+  concealment?: 'question-mark' | 'blank';
   children?: ReactNode;
 }) => {
   const concealed =
@@ -99,7 +101,7 @@ const Subject = ({
               : 'question-visual__portrait'
           }
         >
-          {concealed ? (
+          {concealed && concealment === 'question-mark' ? (
             <span className="question-visual__question-mark">?</span>
           ) : src ? (
             <QuestionSprite
@@ -130,6 +132,9 @@ export const QuestionArtwork = ({
   const rendering = getQuestionRendering(question);
   const state = { answered, cluesShown };
   const media = question.media;
+  const answerOnlyPortrait =
+    question.questionType === 'field-notes' &&
+    question.answer.interaction === 'search';
   const subjectVisual = question.optionVisuals?.[question.subject.name];
   const subjectSearchOption = question.searchOptions?.find(
     ({ name }) => name === question.subject.name,
@@ -139,6 +144,7 @@ export const QuestionArtwork = ({
       ? media.src
       : media.kind === 'none' &&
           (question.prompt.kind === 'pokemon' ||
+            answerOnlyPortrait ||
             (answered && question.questionType === 'field-notes'))
         ? (subjectVisual?.src ?? subjectSearchOption?.sprite ?? undefined)
         : undefined;
@@ -154,17 +160,20 @@ export const QuestionArtwork = ({
   ].includes(question.questionType)
     ? {
         ...rendering.subject,
+        sprite: answerOnlyPortrait ? 'after-answer' : rendering.subject.sprite,
         name: rendering.related.name === 'never' ? 'never' : 'after-answer',
         number: rendering.related.number === 'never' ? 'never' : 'after-answer',
       }
     : rendering.subject;
-  const subject = {
+  const subject: Parameters<typeof Subject>[0] = {
     policy: subjectPolicy,
     state,
     name: question.subject.name,
     dexNumber: subjectDexNumber,
     src: pixelSprite,
-    reservePortrait: question.media.kind === 'pixel-sprite',
+    reservePortrait:
+      question.media.kind === 'pixel-sprite' || answerOnlyPortrait,
+    concealment: answerOnlyPortrait ? 'blank' : 'question-mark',
   };
   if (
     pixelSprite &&
@@ -474,8 +483,12 @@ export const QuestionArtwork = ({
         />
       </div>
     );
-  return pixelSprite && rendering.subject.sprite !== 'never' ? (
-    <div className="question-visual" aria-hidden="true">
+  return answerOnlyPortrait ||
+    (pixelSprite && subjectPolicy.sprite !== 'never') ? (
+    <div
+      className="question-visual"
+      aria-hidden={!answerOnlyPortrait || undefined}
+    >
       <Subject {...subject} />
     </div>
   ) : null;

@@ -109,6 +109,87 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
   }
 }
 
+for (const questionType of [
+  'field-notes',
+  'pokedex-scan',
+  'whos-that-pokemon',
+  'pixel-peek',
+] as const) {
+  test(`${questionType} keeps search response geometry stable through reveal on mobile`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await seedPlayer(page, {
+      settings: {
+        difficulty: 5,
+        questionSelection: 'custom',
+        questionTypes: [questionType],
+        generations: ['I'],
+        trainingMode: 'custom',
+        answerFlow: 'manual',
+        soundVolume: 0,
+      },
+    });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start training' }).click();
+    const response = page.locator('.question__response--search');
+    await expect(response).toBeVisible();
+    const before = await response.evaluate(
+      (element) => element.getBoundingClientRect().top + window.scrollY,
+    );
+    const question = await page.evaluate(() => {
+      const snapshot = JSON.parse(
+        sessionStorage.getItem('quizmon.active-game.v1')!,
+      ) as ActiveGameSnapshot;
+      return snapshot.questions[0]!;
+    });
+    const wrong = question.searchOptions!.find(
+      (option) => option.name !== question.subject.name,
+    )!;
+    await page
+      .getByRole('combobox', { name: 'Your answer' })
+      .fill(formatName(wrong.name));
+    await page.getByRole('button', { name: 'Guess' }).click();
+    const after = await response.evaluate(
+      (element) => element.getBoundingClientRect().top + window.scrollY,
+    );
+    expect(Math.abs(after - before)).toBeLessThan(5);
+    const responseBounds = (await response.boundingBox())!;
+    const advance = (await page
+      .getByRole('button', { name: 'Next question' })
+      .boundingBox())!;
+    expect(advance.y - responseBounds.y - responseBounds.height).toBeLessThan(
+      70,
+    );
+    await expectNoHorizontalOverflow(page);
+  });
+}
+
+test('Field notes uses compact search response spacing on desktop', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await seedPlayer(page, {
+    settings: {
+      difficulty: 5,
+      questionSelection: 'custom',
+      questionTypes: ['field-notes'],
+      generations: ['I'],
+      trainingMode: 'custom',
+      answerFlow: 'manual',
+      soundVolume: 0,
+    },
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start training' }).click();
+  const response = page.locator('.question__response--search');
+  await expect(response).toBeVisible();
+  const responseBounds = (await response.boundingBox())!;
+  const action = (await page.locator('.question__action-slot').boundingBox())!;
+  expect(action.y - responseBounds.y - responseBounds.height).toBeLessThan(70);
+  await expectNoHorizontalOverflow(page);
+});
+
 test('Level 5 Who’s that Pokémon? reveals only the identity below its sprite', async ({
   page,
 }) => {

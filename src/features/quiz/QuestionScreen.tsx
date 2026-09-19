@@ -4,7 +4,7 @@ import type {
   EntityRendering,
   RevealState,
 } from '@/domain/quiz/question-rendering';
-import { isVisible, spriteState } from '@/domain/quiz/question-rendering';
+import { isVisible } from '@/domain/quiz/question-rendering';
 import { QuestionSprite, QuestionIdentity } from './QuestionEntity';
 import { supplementalItemSprites } from './item-sprites';
 import { presentEvolutionQuestion } from '@/domain/quiz/questions/evolution-presentation';
@@ -236,6 +236,10 @@ export const QuestionScreen = ({
     question.answer.interaction === 'search' ||
     (isChampion && !question.rulesVersion);
   const championChoicesVisible = isChampion && (!usesSearch || cluesShown > 0);
+  const searchVisible =
+    usesSearch &&
+    (!isChampion || !championChoicesVisible) &&
+    Boolean(question.searchOptions);
   const timerHidden = timerDisplay === 'hidden';
   const timerText =
     timerDisplay === 'milliseconds'
@@ -255,7 +259,6 @@ export const QuestionScreen = ({
   const className = [
     'question',
     isChampion ? 'question--champion' : '',
-    isChampion && !championChoicesVisible ? 'question--champion-search' : '',
     isLeague ? 'question--league' : '',
     number === 1 ? 'question--enter' : '',
   ]
@@ -341,12 +344,7 @@ export const QuestionScreen = ({
             </ol>
           </div>
         ) : null}
-        {!inlineItem &&
-        (spriteState(rendering.subject.sprite, revealState).visible ||
-          isVisible(rendering.subject.name, revealState) ||
-          isVisible(rendering.subject.number, revealState) ||
-          question.visual ||
-          cluesShown > 1) ? (
+        {!inlineItem ? (
           <div className="question__stimulus">
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />
@@ -379,10 +377,10 @@ export const QuestionScreen = ({
         />
       ) : null}
 
-      <div className="question__response">
-        {usesSearch &&
-        (!isChampion || !championChoicesVisible) &&
-        question.searchOptions ? (
+      <div
+        className={`question__response ${searchVisible ? 'question__response--search' : ''}`.trim()}
+      >
+        {searchVisible && question.searchOptions ? (
           <ChampionSearch
             policy={rendering.search}
             cluesShown={cluesShown}

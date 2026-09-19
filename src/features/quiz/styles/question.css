@@ -160,6 +160,10 @@
   min-height: var(--question-response-size);
 }
 
+.question__response--search {
+  min-height: 0;
+}
+
 .question-visual {
   display: grid;
   width: 100%;
@@ -471,10 +475,6 @@
 
 .question-relation__arrow--down svg {
   transform: rotate(90deg);
-}
-
-.question--champion-search .question__response {
-  min-height: 0;
 }
 
 .question--champion .question__stimulus {
