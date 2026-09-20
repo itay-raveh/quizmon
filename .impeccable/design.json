@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-20T18:21:40Z",
+  "generatedAt": "2026-09-20T20:09:30Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -550,6 +550,13 @@
       "description": "Play, Trainer, Leaderboards, and Account or Sign in share four primary destinations. Settings stays a quiet header control. Navigation moves to the bottom on phones.",
       "html": "<div class=\"ds-header\"><nav class=\"ds-nav\" aria-label=\"Main\"><button>Play</button><button>Trainer</button><button>Leaderboards</button><button>Sign in</button></nav><button class=\"ds-settings\">Settings</button></div>",
       "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; font-family: var(--font-interface, system-ui, sans-serif); } .ds-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem; } .ds-nav button { padding: 0.65rem 0.85rem; color: var(--navy, #083b7e); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font: 700 1rem var(--font-interface, system-ui, sans-serif); cursor: pointer; } .ds-nav button:hover { filter: brightness(1.07); transform: translateY(-1px); } .ds-nav button:focus-visible, .ds-settings:focus-visible { outline: 0.2rem solid var(--navy, #083b7e); outline-offset: 0.2rem; } .ds-settings { color: var(--navy, #083b7e); background: none; border: 0; font: 800 1rem var(--font-interface, system-ui, sans-serif); cursor: pointer; } @media (max-width: 50rem) { .ds-header { justify-content: flex-end; padding-bottom: 6.25rem; } .ds-nav { position: fixed; right: 0; bottom: 0; left: 0; padding: 0.6rem 0.65rem 0.8rem; grid-template-columns: 0.8fr 0.9fr 1.55fr 0.9fr; background: var(--paper, #fffbea); border-top: 2px solid var(--navy, #083b7e); } .ds-nav button { padding: 0.35rem 0.2rem; font-size: 0.85rem; } }"
+    },
+    {
+      "name": "Leaderboards",
+      "kind": "custom",
+      "description": "Daily and Training share a two-button mode switch. Global and Friends are secondary controls, with the UTC date shown only for Daily. One highlighted player rank leads into a compact standings table; loading and empty states each have one clear treatment.",
+      "html": "<section class=\"ds-leaderboard\"><h1>Leaderboards</h1><div class=\"ds-leaderboard-modes\" role=\"group\" aria-label=\"Leaderboard mode\"><button aria-pressed=\"true\">Daily</button><button aria-pressed=\"false\">Training</button></div><div role=\"group\" aria-label=\"Leaderboard players\"><button aria-pressed=\"true\">Global</button><button aria-pressed=\"false\">Friends</button></div><p class=\"ds-leaderboard-rank\">Your place <strong>#4</strong></p><table><thead><tr><th>Rank</th><th>Trainer</th><th>Score / time</th></tr></thead><tbody><tr><td>4</td><th>Trainer</th><td>9,533</td></tr></tbody></table></section>",
+      "css": ".ds-leaderboard { width: min(42rem, 94vw); padding: 1rem; color: var(--ink, #143149); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.75rem; box-shadow: 0 0.28rem 0 var(--yellow, #eed23e), 0 0.62rem 0 var(--navy-shadow, #123f76); } .ds-leaderboard-modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; } .ds-leaderboard-modes button { min-width: 0; padding: 0.62rem 1.1rem; border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; font: 700 1rem var(--font-interface, system-ui, sans-serif); } .ds-leaderboard-modes button[aria-pressed=true] { color: var(--primary-text, #e8fcff); background: var(--blue, #0d6be6); } .ds-leaderboard-rank { padding: 0.65rem 0.8rem; background: var(--yellow, #eed23e); border: 2px solid var(--navy, #083b7e); border-radius: 0.5rem; } .ds-leaderboard table { width: 100%; border-collapse: collapse; } .ds-leaderboard thead { color: var(--paper, #fffbea); background: var(--blue, #0d6be6); } .ds-leaderboard th, .ds-leaderboard td { padding: 0.65rem; text-align: left; border-bottom: 1px solid var(--navy, #083b7e); }"
     },
     {
       "name": "Daily Challenge Action",

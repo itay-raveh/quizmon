@@ -1,5 +1,8 @@
 import type { DailyLeaderboard } from '../../domain/social/leaderboards';
-import { readDailyLeaderboard } from './leaderboards-client';
+import {
+  readDailyLeaderboard,
+  readTrainingLeaderboard,
+} from './leaderboards-client';
 
 const state = vi.hoisted(() => ({ owner: 'viewer' }));
 vi.mock('../account/account', () => ({ accountSnapshot: () => state }));
@@ -47,6 +50,26 @@ it('reads the selected board using the session', async () => {
     expect.objectContaining({
       credentials: 'same-origin',
     }),
+  );
+});
+
+it('reads Training standings without a date', async () => {
+  const training = Object.fromEntries(
+    Object.entries(data).filter(([key]) => key !== 'date'),
+  );
+  const fetch = vi.fn().mockResolvedValue(Response.json(training));
+  vi.stubGlobal('fetch', fetch);
+  await expect(
+    readTrainingLeaderboard(
+      'viewer',
+      'friends',
+      null,
+      new AbortController().signal,
+    ),
+  ).resolves.toEqual(training);
+  expect(fetch).toHaveBeenCalledWith(
+    '/api/leaderboards/training?scope=friends',
+    expect.objectContaining({ credentials: 'same-origin' }),
   );
 });
 

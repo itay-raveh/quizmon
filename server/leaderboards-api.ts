@@ -3,8 +3,10 @@ import { and, eq, exists, or, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Hono } from 'hono';
 import { dailyDefinition } from '../src/domain/quiz/daily-definition.ts';
+import { SCORE_VERSION } from '../src/domain/quiz/scoring.ts';
 import type {
   DailyLeaderboard,
+  Leaderboard,
   LeaderboardScope,
 } from '../src/domain/social/leaderboards.ts';
 import { isDailyDate } from '../src/lib/validation.ts';
@@ -143,6 +145,132 @@ async function dailyStandings(
   );
 }
 
+async function trainingStandings(
+  db: NodePgDatabase,
+  accountId: string,
+  scope: LeaderboardScope,
+  offset: number,
+  limit: number,
+): Promise<Leaderboard> {
+  return db.transaction(
+    async (tx) => {
+      const score = sql<number>`(${completionFacts.completion}->'result'->>'score')::integer`;
+      const elapsed = sql<number>`(${completionFacts.completion}->'result'->>'elapsedMilliseconds')::integer`;
+      const friends = tx
+        .select({ id: friendRequests.id })
+        .from(friendRequests)
+        .where(
+          and(
+            eq(friendRequests.status, 'accepted'),
+            or(
+              and(
+                eq(friendRequests.userLow, accountId),
+                eq(friendRequests.userHigh, completionFacts.ownerId),
+              ),
+              and(
+                eq(friendRequests.userHigh, accountId),
+                eq(friendRequests.userLow, completionFacts.ownerId),
+              ),
+            ),
+          ),
+        );
+      const best = tx.$with('best').as(
+        tx
+          .select({
+            ownerId: completionFacts.ownerId,
+            score: score.mapWith(Number).as('score'),
+            elapsedMilliseconds: elapsed
+              .mapWith(Number)
+              .as('elapsed_milliseconds'),
+            position:
+              sql<number>`row_number() OVER (PARTITION BY ${completionFacts.ownerId} ORDER BY ${score} DESC, ${elapsed} ASC, ${completionFacts.completedAt} ASC, ${completionFacts.completionId} ASC)`
+                .mapWith(Number)
+                .as('position'),
+          })
+          .from(completionFacts)
+          .innerJoin(
+            accountState,
+            and(
+              eq(accountState.id, completionFacts.ownerId),
+              eq(accountState.generationId, completionFacts.generationId),
+            ),
+          )
+          .where(
+            and(
+              eq(completionFacts.mode, 'training'),
+              eq(completionFacts.eligible, true),
+              eq(completionFacts.scoreVersion, SCORE_VERSION),
+              scope === 'friends'
+                ? or(eq(completionFacts.ownerId, accountId), exists(friends))
+                : undefined,
+            ),
+          ),
+      );
+      const ranked = tx.$with('ranked').as(
+        tx
+          .with(best)
+          .select({
+            ownerId: best.ownerId,
+            score: best.score,
+            elapsedMilliseconds: best.elapsedMilliseconds,
+            rank: sql<number>`rank() OVER (ORDER BY ${best.score} DESC, ${best.elapsedMilliseconds} ASC)`
+              .mapWith(Number)
+              .as('rank'),
+          })
+          .from(best)
+          .where(eq(best.position, 1)),
+      );
+      const selected = await tx
+        .with(best, ranked)
+        .select()
+        .from(ranked)
+        .orderBy(
+          sql`${ranked.score} DESC`,
+          ranked.elapsedMilliseconds,
+          ranked.ownerId,
+        )
+        .limit(limit + 1)
+        .offset(offset);
+      const [own] = await tx
+        .with(best, ranked)
+        .select()
+        .from(ranked)
+        .where(eq(ranked.ownerId, accountId));
+      const [count] = await tx
+        .with(best, ranked)
+        .select({ total: sql<number>`count(*)`.mapWith(Number) })
+        .from(ranked);
+      const page = selected.slice(0, limit);
+      const players = new Map(
+        (
+          await publicPlayers(tx, [
+            ...new Set([
+              ...page.map((row) => row.ownerId),
+              ...(own ? [own.ownerId] : []),
+            ]),
+          ])
+        ).map((player) => [player.id, player]),
+      );
+      const entry = (row: (typeof selected)[number]) => ({
+        player: players.get(row.ownerId)!,
+        rank: row.rank,
+        score: row.score,
+        elapsedMilliseconds: row.elapsedMilliseconds,
+      });
+      return {
+        accountId,
+        scope,
+        checkedAt: new Date().toISOString(),
+        total: count!.total,
+        items: page.map(entry),
+        viewer: own ? entry(own) : null,
+        nextCursor: selected.length > limit ? String(offset + limit) : null,
+      };
+    },
+    { isolationLevel: 'repeatable read', accessMode: 'read only' },
+  );
+}
+
 export const leaderboardApi = new Hono<AccountEnv>();
 leaderboardApi.get('/daily', async (context) => {
   const date =
@@ -166,6 +294,30 @@ leaderboardApi.get('/daily', async (context) => {
       context.get('db'),
       context.get('accountId'),
       date,
+      scope,
+      Number(after),
+      Number(limit),
+    ),
+  );
+});
+
+leaderboardApi.get('/training', async (context) => {
+  const scope = context.req.query('scope') ?? 'global';
+  const after = context.req.query('after') ?? '0';
+  const limit = context.req.query('limit') ?? '50';
+  if (
+    (scope !== 'global' && scope !== 'friends') ||
+    !/^\d{1,9}$/.test(after) ||
+    !/^\d{1,3}$/.test(limit) ||
+    Number(limit) < 1 ||
+    Number(limit) > 100
+  )
+    return context.json({ error: 'invalid_leaderboard' }, 400);
+  context.header('Cache-Control', 'no-store');
+  return context.json(
+    await trainingStandings(
+      context.get('db'),
+      context.get('accountId'),
       scope,
       Number(after),
       Number(limit),

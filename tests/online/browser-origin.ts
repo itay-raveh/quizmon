@@ -1,4 +1,5 @@
 import { freePort, startAccountWorker } from './account-fixture.ts';
+import { createServer } from 'node:http';
 import { preview } from 'vite';
 import { localEnv } from '../../scripts/dev/local-env.ts';
 import { localSync } from '../../scripts/dev/local-sync.ts';
@@ -13,6 +14,29 @@ export async function startBrowserOrigin() {
     connectionString:
       'postgresql://postgres:unused@127.0.0.1:5548/quizmon_pilot',
     secret: localEnv.BETTER_AUTH_SECRET!,
+  });
+  // Local PowerSync reads JWKS from the fixed Docker host port.
+  const jwks = createServer((request, response) => {
+    if (request.method !== 'GET' || request.url !== '/api/auth/jwks') {
+      response.writeHead(404).end();
+      return;
+    }
+    void (async () => {
+      try {
+        const upstream = await fetch(`${api.base}/api/auth/jwks`);
+        response.writeHead(upstream.status, {
+          'content-type':
+            upstream.headers.get('content-type') ?? 'application/json',
+        });
+        response.end(await upstream.text());
+      } catch {
+        response.writeHead(502).end();
+      }
+    })();
+  });
+  await new Promise<void>((resolve, reject) => {
+    jwks.once('error', reject);
+    jwks.listen(8790, '0.0.0.0', resolve);
   });
   const { httpServer } = await preview({
     configFile: false,
@@ -45,6 +69,7 @@ export async function startBrowserOrigin() {
     stop,
     close: async () => {
       await stop();
+      await new Promise<void>((resolve) => jwks.close(() => resolve()));
       await api.close();
     },
   };

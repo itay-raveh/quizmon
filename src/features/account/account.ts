@@ -493,6 +493,11 @@ async function refreshAccount() {
   );
   const unresolved = issues.filter((issue) => !issue.resolving);
   const status = account.currentStatus;
+  const syncError = navigator.onLine
+    ? (status.dataFlowStatus.uploadError?.message ??
+      status.dataFlowStatus.downloadError?.message ??
+      '')
+    : '';
   update({
     pending: count?.count ?? 0,
     issues,
@@ -500,16 +505,14 @@ async function refreshAccount() {
       ? 'Some changes need your review.'
       : !navigator.onLine
         ? 'Saved on this device. Will sync when connected.'
-        : (count?.count ?? 0) > 0
-          ? 'Saved on this device. Syncing…'
-          : status.connected && status.hasSynced
-            ? 'Synced'
-            : 'Saved on this device. Connecting…',
-    error: !navigator.onLine
-      ? ''
-      : (status.dataFlowStatus.uploadError?.message ??
-        status.dataFlowStatus.downloadError?.message ??
-        ''),
+        : syncError
+          ? 'Sync paused'
+          : (count?.count ?? 0) > 0
+            ? 'Saved on this device. Syncing…'
+            : status.connected && status.hasSynced
+              ? 'Synced'
+              : 'Saved on this device. Connecting…',
+    error: syncError,
   });
 }
 const refresh = () => {
@@ -581,7 +584,23 @@ export async function startAccountSync() {
   void refresh();
   void account
     .connect(connector(binding))
-    .catch((error: Error) => update({ error: error.message }));
+    .catch((error: Error) =>
+      update({ error: error.message, status: 'Sync paused' }),
+    );
+}
+
+export async function retryAccountSync() {
+  if (!account || !binding) return;
+  update({ error: '', status: 'Reconnecting…' });
+  try {
+    await account.connect(connector(binding));
+    await refresh();
+  } catch (error) {
+    update({
+      error: error instanceof Error ? error.message : 'Sync could not connect.',
+      status: 'Sync paused',
+    });
+  }
 }
 export async function signOutAccount() {
   await account?.disconnect();

@@ -42,7 +42,7 @@ describe('app destinations', () => {
     window.history.replaceState(null, '', '/');
     const { result } = renderHook(useAppDestination);
     act(() => result.current.open('leaderboards', '2026-09-17'));
-    act(() => result.current.selectStandings('2026-09-16', 'friends'));
+    act(() => result.current.selectStandings('2026-09-16', 'friends', 'daily'));
     act(() => result.current.open('friends'));
     act(() => result.current.back());
     await waitFor(() =>
@@ -56,7 +56,9 @@ describe('app destinations', () => {
     window.history.replaceState(null, '', '/');
     const { result } = renderHook(useAppDestination);
     act(() => result.current.open('leaderboards', '2026-09-17'));
-    act(() => result.current.selectStandings('2026-09-16', 'friends'));
+    act(() =>
+      result.current.selectStandings('2026-09-16', 'friends', 'training'),
+    );
     const standingsUrl = window.location.href;
 
     act(() => result.current.trainer());
@@ -68,6 +70,7 @@ describe('app destinations', () => {
     expect(result.current.destination).toBe('leaderboards');
     expect(result.current.standingsDate).toBe('2026-09-16');
     expect(result.current.standingsScope).toBe('friends');
+    expect(result.current.standingsMode).toBe('training');
   });
 
   it('also returns through the existing Trainer history marker', async () => {

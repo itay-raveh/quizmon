@@ -22,6 +22,7 @@ const account = vi.hoisted(() => {
     verify: vi.fn(),
     finish: vi.fn(),
     continue: vi.fn(),
+    retry: vi.fn(),
     signOut: vi.fn(),
   };
 });
@@ -38,6 +39,7 @@ vi.mock('./account', () => ({
   verifySignInCode: account.verify,
   finishSignIn: account.finish,
   continueSignIn: account.continue,
+  retryAccountSync: account.retry,
   signOutAccount: account.signOut,
   resolveAccountIssue: vi.fn(),
 }));
@@ -58,6 +60,7 @@ beforeEach(() => {
   account.send.mockResolvedValue(undefined);
   account.verify.mockResolvedValue(undefined);
   account.finish.mockResolvedValue(undefined);
+  account.retry.mockResolvedValue(undefined);
 });
 
 it('submits email and a six-digit code with Enter in separate steps', async () => {
@@ -147,9 +150,12 @@ it('shows account management without sign-in controls', () => {
     status: 'Synced',
   };
   render(<AccountSettings />);
-  expect(screen.getByText('Synced')).toBeVisible();
+  expect(screen.getByText('Progress synced')).toBeVisible();
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  expect(screen.getByText('Account options')).toBeVisible();
+  screen.getByText('Account options').click();
   expect(
-    screen.getByRole('button', { name: 'Export account data' }),
+    screen.getByRole('button', { name: 'Download account data' }),
   ).toBeVisible();
   expect(screen.getByRole('button', { name: 'Sign out' })).toBeVisible();
   expect(
@@ -158,6 +164,43 @@ it('shows account management without sign-in controls', () => {
   expect(
     screen.queryByLabelText('Email', { exact: true }),
   ).not.toBeInTheDocument();
+});
+
+it('shows a real retry for a network sync error without suggesting sign-in', async () => {
+  account.snapshot = {
+    ...account.snapshot,
+    owner: 'existing',
+    status: 'Saved on this device. Syncing…',
+    error: 'Failed to fetch',
+    pending: 28,
+  };
+  render(<AccountSettings />);
+  expect(screen.getByText('Sync paused')).toBeVisible();
+  expect(
+    screen.getByText('Your progress is safe on this device.'),
+  ).toBeVisible();
+  expect(screen.getByText('28')).toBeVisible();
+  expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Sign in again' }),
+  ).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Retry sync' }));
+  expect(account.retry).toHaveBeenCalledOnce();
+});
+
+it('shows progress while changes are syncing', () => {
+  account.snapshot = {
+    ...account.snapshot,
+    owner: 'existing',
+    status: 'Saved on this device. Syncing…',
+    pending: 3,
+  };
+  render(<AccountSettings />);
+  expect(screen.getByText('Syncing progress')).toBeVisible();
+  expect(
+    screen.getByRole('progressbar', { name: 'Syncing progress' }),
+  ).toBeVisible();
+  expect(screen.getByText('3')).toBeVisible();
 });
 
 it('allows reauthentication only after explicitly opening it from a sync error', async () => {

@@ -48,9 +48,7 @@ for (const width of [360, 1280]) {
     });
     const multiplierLabel = await preview.locator('strong').textContent();
     await expectNoHorizontalOverflow(page);
-    await page
-      .getByRole('button', { name: 'Save settings', exact: true })
-      .click();
+    await page.getByRole('button', { name: 'Save', exact: true }).click();
     await page
       .getByRole('button', { name: 'Start training', exact: true })
       .click();

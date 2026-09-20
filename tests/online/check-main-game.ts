@@ -45,7 +45,7 @@ async function account(p: Page) {
   });
   if (await closeSettings.isVisible()) await closeSettings.click();
   await p
-    .locator('.app-utilities')
+    .getByRole('navigation', { name: 'Main', exact: true })
     .getByRole('button', { name: /^(Sign in|Account|Review account)$/ })
     .click();
   await expect(
@@ -92,13 +92,13 @@ async function signIn(p: Page, address: string, merge?: 'add' | 'keep') {
   await p
     .getByRole('button', { name: 'Read local test mailbox', exact: true })
     .click();
-  await expect(p.getByLabel('Sign-in code', { exact: true })).toHaveValue(
+  await expect(p.getByRole('textbox', { name: 'Six-digit code' })).toHaveValue(
     /^\d{6}$/,
   );
   if (merge) {
     await p
       .getByRole('region', { name: /^(Account|Sign in)$/, exact: true })
-      .getByRole('button', { name: 'Sign in', exact: true })
+      .getByRole('button', { name: 'Verify and sign in', exact: true })
       .click();
     const choice = p.getByRole('button', {
       name: merge === 'add' ? 'Add browser progress' : 'Use account progress',
@@ -111,7 +111,7 @@ async function signIn(p: Page, address: string, merge?: 'add' | 'keep') {
       p.waitForEvent('load'),
       p
         .getByRole('region', { name: /^(Account|Sign in)$/, exact: true })
-        .getByRole('button', { name: 'Sign in', exact: true })
+        .getByRole('button', { name: 'Verify and sign in', exact: true })
         .click(),
     ]);
   }
@@ -122,7 +122,7 @@ async function signIn(p: Page, address: string, merge?: 'add' | 'keep') {
   await expect(
     p
       .getByRole('region', { name: /^(Account|Sign in)$/, exact: true })
-      .getByText('Synced', { exact: true }),
+      .getByText('Progress synced', { exact: true }),
   ).toBeVisible({ timeout: 65_000 });
 }
 async function backup(p: Page) {
@@ -146,9 +146,10 @@ async function accountExport(
   assert.ok(expected.version === 3 && expected.state.account);
   const owner = expected.state.account;
   await account(p);
+  await p.getByText('Account options', { exact: true }).click();
   const pending = p.waitForEvent('download');
   await p
-    .getByRole('button', { name: 'Export account data', exact: true })
+    .getByRole('button', { name: 'Download account data', exact: true })
     .click();
   const download = await pending;
   assert.equal(await download.failure(), null);
@@ -194,10 +195,7 @@ async function accountExport(
   );
   assert.deepEqual(exported.state.progress, stored.rows[0]!.progress);
   await expect(
-    p.getByText(
-      'Account export received. Check your browser downloads for the file.',
-      { exact: true },
-    ),
+    p.getByText('Account data downloaded.', { exact: true }),
   ).toBeVisible();
   await play(p);
   return exported;
@@ -247,7 +245,7 @@ async function configureTraining(p: Page) {
     await identity.click();
   await p.getByRole('checkbox', { name: 'Pokédex scan', exact: true }).focus();
   await p.keyboard.press('Space');
-  await p.getByRole('button', { name: 'Save settings', exact: true }).click();
+  await p.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(
     p.getByRole('dialog', { name: 'Customize training', exact: true }),
   ).toBeHidden();
@@ -326,6 +324,7 @@ try {
     .getByRole('button', { name: 'Back to start', exact: true })
     .click();
   await account(page);
+  await page.getByText('Account options', { exact: true }).click();
   await Promise.all([
     page.waitForEvent('load'),
     page.getByRole('button', { name: 'Sign out', exact: true }).click(),
@@ -345,6 +344,7 @@ try {
     .click();
   const separateGuest = await backup(page);
   await signIn(page, email, 'keep');
+  await page.getByText('Account options', { exact: true }).click();
   await Promise.all([
     page.waitForEvent('load'),
     page.getByRole('button', { name: 'Sign out', exact: true }).click(),

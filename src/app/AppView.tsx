@@ -86,6 +86,7 @@ const AppScreen = ({
         onManageFriends={() => destination.open('friends')}
         initialDate={destination.standingsDate}
         initialScope={destination.standingsScope}
+        initialMode={destination.standingsMode}
         onSelectionChange={destination.selectStandings}
       />
     );

@@ -249,7 +249,7 @@ test('defers an update through gameplay and restores results after automatic rel
     await settingsReloaded;
     await expect(settings).toBeVisible();
     await expect(settings.getByLabel('IX', { exact: true })).toBeChecked();
-    await settings.getByRole('button', { name: 'Save settings' }).click();
+    await settings.getByRole('button', { name: 'Save' }).click();
 
     await page
       .getByRole('navigation', { name: 'Main', exact: true })

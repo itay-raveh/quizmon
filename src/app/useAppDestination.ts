@@ -1,5 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
 import type { TrainerView } from '../domain/player/trainer-progression';
+import type { LeaderboardMode } from '../domain/social/leaderboards';
 import { setTrainerRoute } from '../features/trainer/trainer-route';
 import { isRecord } from '../lib/validation';
 
@@ -27,6 +28,7 @@ const clearDestination = (url: URL) => {
     'returnTo',
     'standings',
     'players',
+    'ranking',
     'trainer',
     'league',
   ])
@@ -99,10 +101,11 @@ export function useAppDestination() {
   );
 
   const selectStandings = useCallback(
-    (date: string, scope: 'global' | 'friends') => {
+    (date: string, scope: 'global' | 'friends', mode: LeaderboardMode) => {
       const target = new URL(window.location.href);
       target.searchParams.set('standings', date);
       target.searchParams.set('players', scope);
+      target.searchParams.set('ranking', mode);
       window.history.replaceState(window.history.state, '', target);
       window.dispatchEvent(new PopStateEvent('popstate'));
     },
@@ -123,6 +126,10 @@ export function useAppDestination() {
       url.searchParams.get('players') === 'friends'
         ? ('friends' as const)
         : ('global' as const),
+    standingsMode:
+      url.searchParams.get('ranking') === 'training'
+        ? ('training' as const)
+        : ('daily' as const),
     selectStandings,
   };
 }

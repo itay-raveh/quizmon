@@ -82,9 +82,19 @@
 }
 
 .leaderboard-viewer {
-  padding: 0.8rem;
-  background: var(--cream);
-  border-block: 2px solid var(--navy);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  color: var(--navy);
+  background: var(--yellow);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+}
+
+.leaderboard-viewer strong {
+  font-family: var(--font-data);
 }
 
 .friends-panel {
@@ -142,6 +152,16 @@
   gap: 0.75rem;
 }
 
+.leaderboard-modes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.leaderboard-modes .game-button {
+  width: 100%;
+}
+
 .leaderboard-controls label,
 .leaderboard-table th[scope='row'] {
   overflow-wrap: anywhere;
@@ -173,10 +193,70 @@
   gap: 0.75rem;
 }
 
+.leaderboard-loading {
+  display: grid;
+  gap: 0.7rem;
+  padding-block: 0.4rem;
+}
+.leaderboard-loading span {
+  height: 3.8rem;
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  animation: leaderboard-pulse 1.2s ease-in-out infinite alternate;
+}
+.leaderboard-loading span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.leaderboard-loading span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes leaderboard-pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaderboard-loading span {
+    animation: none;
+  }
+}
+
+.leaderboard-empty {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  padding: 2rem 1rem;
+  color: var(--navy);
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  text-align: center;
+}
+.leaderboard-empty p {
+  margin: 0;
+}
+
 .leaderboard-table {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--text-status);
+}
+
+.leaderboard-table thead {
+  color: var(--paper);
+  background: var(--blue);
+}
+
+.leaderboard-table th:first-child,
+.leaderboard-table td:first-child {
+  padding-left: 0.7rem;
+}
+
+.leaderboard-table th:last-child,
+.leaderboard-table td:last-child {
+  padding-right: 0.7rem;
+  text-align: right;
 }
 
 .leaderboard-table th,
@@ -199,6 +279,12 @@
 
 .leaderboard-table tr[aria-current='true'] {
   background: var(--cream);
+}
+
+.leaderboard-table tbody tr[aria-current='true'] th,
+.leaderboard-table tbody tr[aria-current='true'] td:first-child {
+  color: var(--blue);
+  font-weight: 800;
 }
 
 .friends-field {

@@ -4,27 +4,32 @@ import { LockSimpleIcon } from '../../components/icons';
 import { formatPokemonName } from '../../domain/pokemon/format';
 import { isDailyDate } from '../../lib/validation';
 import { getUtcDate } from '../../domain/quiz/daily';
-import { formatFriendCode } from '../../domain/social/friends';
 import type {
-  DailyLeaderboard,
+  Leaderboard,
+  LeaderboardMode,
   LeaderboardScope,
 } from '../../domain/social/leaderboards';
 import { accountSnapshot, subscribeAccount } from '../account/account';
-import { readDailyLeaderboard } from './leaderboards-client';
+import {
+  readDailyLeaderboard,
+  readTrainingLeaderboard,
+} from './leaderboards-client';
 import './friends.css';
 
 function Standings({
   owner,
+  mode,
   date,
   scope,
   onManageFriends,
 }: {
   owner: string;
+  mode: LeaderboardMode;
   date: string;
   scope: LeaderboardScope;
   onManageFriends: () => void;
 }) {
-  const [data, setData] = useState<DailyLeaderboard>();
+  const [data, setData] = useState<Leaderboard>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(true);
   const [request, setRequest] = useState({
@@ -33,12 +38,21 @@ function Standings({
   });
   useEffect(() => {
     const controller = new AbortController();
-    void readDailyLeaderboard(
-      owner,
-      date,
-      scope,
-      request.after,
-      controller.signal,
+    void (
+      mode === 'daily'
+        ? readDailyLeaderboard(
+            owner,
+            date,
+            scope,
+            request.after,
+            controller.signal,
+          )
+        : readTrainingLeaderboard(
+            owner,
+            scope,
+            request.after,
+            controller.signal,
+          )
     )
       .then((next) => {
         if (!controller.signal.aborted) {
@@ -60,7 +74,7 @@ function Standings({
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [owner, date, scope, request]);
+  }, [owner, mode, date, scope, request]);
   const load = (after: string | null) => {
     setBusy(true);
     setRequest((current) => ({ after, revision: current.revision + 1 }));
@@ -68,10 +82,21 @@ function Standings({
   return (
     <section
       className="leaderboard-standings"
-      aria-label={`${scope === 'global' ? 'Global' : 'Friends'} Daily standings`}
+      aria-label={`${scope === 'global' ? 'Global' : 'Friends'} ${mode === 'daily' ? 'Daily' : 'Training'} standings`}
       aria-busy={busy}
     >
-      {busy && <p role="status">Loading standings…</p>}
+      {busy && !data && (
+        <div
+          className="leaderboard-loading"
+          role="status"
+          aria-label="Loading standings"
+        >
+          <p className="visually-hidden">Loading standings</p>
+          <span />
+          <span />
+          <span />
+        </div>
+      )}
       {error && (
         <p role="alert" className="settings-error">
           {error}
@@ -82,25 +107,20 @@ function Standings({
         <>
           {data.viewer ? (
             <div className="leaderboard-viewer">
-              <p>
-                Your rank <strong>{data.viewer.rank}</strong> of {data.total}
-              </p>
-              <p>
-                {data.viewer.score.toLocaleString()} points ·{' '}
-                {(data.viewer.elapsedMilliseconds / 1000).toFixed(3)}s
-              </p>
+              <span>
+                Your place <strong>#{data.viewer.rank}</strong>
+              </span>
+              <span>
+                <strong>{data.viewer.score.toLocaleString()}</strong> points
+              </span>
             </div>
-          ) : (
-            <p>
-              {date === getUtcDate()
-                ? 'No ranked result yet. Eligible Daily results appear automatically after syncing.'
-                : 'You have no ranked result for this date.'}
-            </p>
-          )}
+          ) : null}
           {data.items.length ? (
             <table className="leaderboard-table">
               <caption className="visually-hidden">
-                Daily standings for {date}
+                {mode === 'daily'
+                  ? `Daily standings for ${date}`
+                  : 'Training standings'}
               </caption>
               <thead>
                 <tr>
@@ -126,9 +146,6 @@ function Standings({
                           {formatPokemonName(row.player.partnerPokemon)}
                         </small>
                       )}
-                      {row.player.code && (
-                        <small>{formatFriendCode(row.player.code)}</small>
-                      )}
                     </th>
                     <td>
                       <strong>{row.score.toLocaleString()}</strong>
@@ -141,16 +158,20 @@ function Standings({
               </tbody>
             </table>
           ) : (
-            <p>
-              {scope === 'friends'
-                ? 'No scores from you or your friends for this Daily yet.'
-                : 'No scores for this Daily yet.'}
+            <div className="leaderboard-empty">
+              <strong>No scores yet</strong>
+              <p>
+                {mode === 'daily'
+                  ? 'Completed Daily rounds appear here after syncing.'
+                  : 'Finish a Training round to join the standings.'}
+              </p>
+            </div>
+          )}
+          {data.items.length > 0 && (
+            <p className="social-screen__note">
+              {data.total} {data.total === 1 ? 'trainer' : 'trainers'}
             </p>
           )}
-          <p className="social-screen__note">
-            {data.total} {data.total === 1 ? 'player' : 'players'} · Updated{' '}
-            {new Date(data.checkedAt).toLocaleTimeString()}
-          </p>
           <div className="friends-actions">
             {request.after && (
               <GameButton
@@ -175,7 +196,7 @@ function Standings({
       )}
       <div className="friends-actions">
         <GameButton tone="quiet" disabled={busy} onClick={() => load(null)}>
-          Refresh leaderboard
+          Refresh
         </GameButton>
         {scope === 'friends' && (
           <GameButton tone="quiet" onClick={onManageFriends}>
@@ -191,15 +212,22 @@ export function LeaderboardScreen({
   onManageFriends,
   initialDate,
   initialScope = 'global',
+  initialMode = 'daily',
   onSelectionChange,
 }: {
   onManageFriends: () => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
-  onSelectionChange?: (date: string, scope: LeaderboardScope) => void;
+  initialMode?: LeaderboardMode;
+  onSelectionChange?: (
+    date: string,
+    scope: LeaderboardScope,
+    mode: LeaderboardMode,
+  ) => void;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const [scope, setScope] = useState<LeaderboardScope>(initialScope);
+  const [mode, setMode] = useState<LeaderboardMode>(initialMode);
   const [date, setDate] = useState(() =>
     initialDate && isDailyDate(initialDate) && initialDate <= getUtcDate()
       ? initialDate
@@ -213,30 +241,54 @@ export function LeaderboardScreen({
         setToday(next);
         if (date === today) {
           setDate(next);
-          onSelectionChange?.(next, scope);
+          onSelectionChange?.(next, scope, mode);
         }
       }
     }, 30_000);
     return () => window.clearInterval(timer);
-  }, [today, date, scope, onSelectionChange]);
+  }, [today, date, scope, mode, onSelectionChange]);
   const chooseScope = (next: LeaderboardScope) => {
     setScope(next);
-    onSelectionChange?.(date, next);
+    onSelectionChange?.(date, next, mode);
+  };
+  const chooseMode = (next: LeaderboardMode) => {
+    setMode(next);
+    onSelectionChange?.(date, scope, next);
   };
   const chooseDate = (next: string) => {
     if (isDailyDate(next) && next <= today) {
       setDate(next);
-      onSelectionChange?.(next, scope);
+      onSelectionChange?.(next, scope, mode);
     }
   };
   return (
     <section className="social-screen" aria-labelledby="leaderboard-title">
       <header className="social-screen__header">
-        <h1 id="leaderboard-title">Daily leaderboard</h1>
+        <h1 id="leaderboard-title">Leaderboards</h1>
       </header>
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
           <>
+            <div
+              className="leaderboard-modes"
+              role="group"
+              aria-label="Leaderboard mode"
+            >
+              <GameButton
+                tone={mode === 'daily' ? 'primary' : 'quiet'}
+                aria-pressed={mode === 'daily'}
+                onClick={() => chooseMode('daily')}
+              >
+                Daily
+              </GameButton>
+              <GameButton
+                tone={mode === 'training' ? 'primary' : 'quiet'}
+                aria-pressed={mode === 'training'}
+                onClick={() => chooseMode('training')}
+              >
+                Training
+              </GameButton>
+            </div>
             <div className="leaderboard-controls">
               <div
                 className="friends-actions"
@@ -258,19 +310,22 @@ export function LeaderboardScreen({
                   Friends
                 </GameButton>
               </div>
-              <label>
-                Daily date (UTC)
-                <input
-                  type="date"
-                  value={date}
-                  max={today}
-                  onChange={(event) => chooseDate(event.target.value)}
-                />
-              </label>
+              {mode === 'daily' && (
+                <label>
+                  Daily date (UTC)
+                  <input
+                    type="date"
+                    value={date}
+                    max={today}
+                    onChange={(event) => chooseDate(event.target.value)}
+                  />
+                </label>
+              )}
             </div>
             <Standings
-              key={`${account.owner}:${date}:${scope}`}
+              key={`${account.owner}:${mode}:${date}:${scope}`}
               owner={account.owner}
+              mode={mode}
               date={date}
               scope={scope}
               onManageFriends={onManageFriends}
@@ -283,9 +338,9 @@ export function LeaderboardScreen({
                 change.
               </p>
               <p>
-                Daily results qualify when completed on their assigned UTC date.
-                Eligible saved results join automatically when you sign in and
-                sync.
+                {mode === 'daily'
+                  ? 'Daily rounds qualify on their assigned UTC date.'
+                  : 'Your best Training score in the current scoring version counts.'}
               </p>
             </details>
           </>

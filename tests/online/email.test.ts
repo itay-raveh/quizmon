@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { test } from 'node:test';
 import { Client } from 'pg';
 import { createAccountApi } from '../../server/api.ts';
+import { isRecord } from '../../src/lib/validation.ts';
 import {
   EmailDeliveryError,
   cloudflareBindingDelivery,
@@ -20,13 +21,25 @@ const connectionString =
   'postgresql://postgres:unused@127.0.0.1:5548/quizmon_pilot';
 
 await test('Worker binding rejects missing acknowledgement and normalizes quota errors', async () => {
+  let message: unknown;
   const deliver = cloudflareBindingDelivery(
     {
-      send: () => Promise.resolve({ messageId: 'provider-message-id' }),
+      send: (value) => {
+        message = value;
+        return Promise.resolve({ messageId: 'provider-message-id' });
+      },
     },
     from,
   );
   await deliver(recipient, code);
+  assert.ok(isRecord(message));
+  assert.deepEqual(message.from, { email: from, name: 'Quizmon' });
+  assert.ok(typeof message.html === 'string');
+  assert.ok(typeof message.text === 'string');
+  assert.match(message.html, /assets\/images\/logo\.png/);
+  assert.match(message.html, /Your sign-in code/);
+  assert.match(message.html, /123456/);
+  assert.match(message.text, /123456/);
   for (const failureCode of [
     'E_RATE_LIMIT_EXCEEDED',
     'E_DAILY_LIMIT_EXCEEDED',
@@ -64,9 +77,12 @@ await test('Worker binding rejects missing acknowledgement and normalizes quota 
 
 await test('REST accepts recipient-specific queued/delivered outcomes and rejects bounces or unknown outcomes', async () => {
   const config = { accountId: 'a'.repeat(32), token: 'test-token', from };
+  let message: unknown;
   for (const accepted of ['delivered', 'queued']) {
-    await cloudflareRestDelivery(config, () =>
-      Promise.resolve(
+    await cloudflareRestDelivery(config, (_url, init) => {
+      assert.ok(typeof init?.body === 'string');
+      message = JSON.parse(init.body) as unknown;
+      return Promise.resolve(
         Response.json({
           success: true,
           result: {
@@ -76,8 +92,10 @@ await test('REST accepts recipient-specific queued/delivered outcomes and reject
             [accepted]: [recipient],
           },
         }),
-      ),
-    )(recipient, code);
+      );
+    })(recipient, code);
+    assert.ok(isRecord(message));
+    assert.deepEqual(message.from, { address: from, name: 'Quizmon' });
   }
   for (const result of [
     { delivered: [], queued: [], permanent_bounces: [recipient] },

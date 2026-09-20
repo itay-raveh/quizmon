@@ -1,5 +1,6 @@
 import type {
   DailyLeaderboard,
+  Leaderboard,
   LeaderboardEntry,
   LeaderboardScope,
 } from '../../domain/social/leaderboards';
@@ -29,11 +30,38 @@ export async function readDailyLeaderboard(
   after: string | null,
   signal: AbortSignal,
 ): Promise<DailyLeaderboard> {
+  return readLeaderboard(
+    owner,
+    'daily',
+    date,
+    scope,
+    after,
+    signal,
+  ) as Promise<DailyLeaderboard>;
+}
+
+export async function readTrainingLeaderboard(
+  owner: string,
+  scope: LeaderboardScope,
+  after: string | null,
+  signal: AbortSignal,
+): Promise<Leaderboard> {
+  return readLeaderboard(owner, 'training', undefined, scope, after, signal);
+}
+
+async function readLeaderboard(
+  owner: string,
+  mode: 'daily' | 'training',
+  date: string | undefined,
+  scope: LeaderboardScope,
+  after: string | null,
+  signal: AbortSignal,
+): Promise<Leaderboard> {
   const changed = 'Your account changed. Reopen the leaderboard.';
   if (accountSnapshot().owner !== owner) throw new Error(changed);
-  const query = new URLSearchParams({ date, scope });
+  const query = new URLSearchParams(date ? { date, scope } : { scope });
   if (after) query.set('after', after);
-  const response = await fetch(`/api/leaderboards/daily?${query}`, {
+  const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
     credentials: 'same-origin',
     signal: AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
   });
@@ -47,7 +75,7 @@ export async function readDailyLeaderboard(
   if (
     !isRecord(value) ||
     value.accountId !== owner ||
-    value.date !== date ||
+    (mode === 'daily' ? value.date !== date : 'date' in value) ||
     value.scope !== scope ||
     typeof value.checkedAt !== 'string' ||
     !Number.isFinite(Date.parse(value.checkedAt)) ||
@@ -66,7 +94,7 @@ export async function readDailyLeaderboard(
     );
   return {
     accountId: owner,
-    date,
+    ...(date ? { date } : {}),
     scope,
     checkedAt: value.checkedAt,
     total: value.total,

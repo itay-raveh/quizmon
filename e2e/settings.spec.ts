@@ -15,9 +15,7 @@ test('keeps training customization separate from general settings on a phone', a
   await expect(
     dialog.getByRole('heading', { name: 'Customize training' }),
   ).toBeFocused();
-  await expect(
-    dialog.getByRole('button', { name: 'Save settings' }),
-  ).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Save' })).toBeVisible();
   await expect(dialog.getByRole('contentinfo')).toHaveCount(0);
   await expect(dialog.getByRole('tablist')).toHaveCount(0);
   await expect(
@@ -88,7 +86,7 @@ test('keeps training customization separate from general settings on a phone', a
       name: 'Pokédex scan',
     }),
   ).not.toBeChecked();
-  await dialog.getByRole('button', { name: 'Save settings' }).click();
+  await dialog.getByRole('button', { name: 'Save' }).click();
   await expect(
     dialog.getByText('Choose at least one question type.'),
   ).toBeVisible();
@@ -170,7 +168,7 @@ test('keeps unavailable custom preferences without blocking other eligible famil
   const dialog = page.getByRole('dialog', { name: 'Customize training' });
   await dialog.getByRole('button', { name: /General knowledge/ }).click();
   await dialog.getByText('Generation roundup', { exact: true }).click();
-  await dialog.getByRole('button', { name: 'Save settings' }).click();
+  await dialog.getByRole('button', { name: 'Save' }).click();
   await expect(dialog).toBeHidden();
   const settings = (await readSave(page)).data.settings!;
   expect(settings.questionTypes).toEqual([
@@ -233,7 +231,7 @@ for (const width of [390, 1280]) {
         (element) => element.scrollWidth <= element.clientWidth,
       ),
     ).toBe(true);
-    await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await dialog.getByRole('button', { name: 'Save' }).click();
     await expect(dialog).toBeHidden();
     await page.reload();
     await page
@@ -254,7 +252,7 @@ for (const width of [390, 1280]) {
       .locator('..')
       .click();
     await gmax.locator('..').click();
-    await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await dialog.getByRole('button', { name: 'Save' }).click();
     await expect(dialog.getByRole('alert')).toHaveText(
       'Choose at least one available form group.',
     );
@@ -262,7 +260,7 @@ for (const width of [390, 1280]) {
       dialog.getByRole('heading', { name: 'Forms', exact: true }),
     ).toBeFocused();
     await gmax.locator('..').click();
-    await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await dialog.getByRole('button', { name: 'Save' }).click();
     await expect(dialog).not.toBeVisible();
   });
 }

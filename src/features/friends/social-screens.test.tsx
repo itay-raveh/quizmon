@@ -8,7 +8,10 @@ import {
   ownPlayer,
   sendRequest,
 } from './friends-client';
-import { readDailyLeaderboard } from './leaderboards-client';
+import {
+  readDailyLeaderboard,
+  readTrainingLeaderboard,
+} from './leaderboards-client';
 
 const account = vi.hoisted(() => ({ owner: '', mergeRequired: false }));
 vi.mock('../account/account', () => ({
@@ -22,7 +25,10 @@ vi.mock('./friends-client', () => ({
   sendRequest: vi.fn(),
   changeRequest: vi.fn(),
 }));
-vi.mock('./leaderboards-client', () => ({ readDailyLeaderboard: vi.fn() }));
+vi.mock('./leaderboards-client', () => ({
+  readDailyLeaderboard: vi.fn(),
+  readTrainingLeaderboard: vi.fn(),
+}));
 vi.mock('../../domain/quiz/daily', () => ({ getUtcDate: () => '2026-09-19' }));
 
 const me = {
@@ -52,6 +58,17 @@ beforeEach(() => {
     Promise.resolve({
       accountId: owner,
       date,
+      scope,
+      checkedAt: '2026-09-19T10:00:00Z',
+      total: 0,
+      viewer: null,
+      items: [],
+      nextCursor: null,
+    }),
+  );
+  vi.mocked(readTrainingLeaderboard).mockImplementation((owner, scope) =>
+    Promise.resolve({
+      accountId: owner,
       scope,
       checkedAt: '2026-09-19T10:00:00Z',
       total: 0,
@@ -158,9 +175,7 @@ it('opens Global for the requested date without telling players to replay histor
   render(
     <LeaderboardScreen onManageFriends={manage} initialDate="2026-09-12" />,
   );
-  expect(
-    await screen.findByText('You have no ranked result for this date.'),
-  ).toBeVisible();
+  expect(await screen.findByText('No scores yet')).toBeVisible();
   expect(readDailyLeaderboard).toHaveBeenCalledWith(
     'me',
     '2026-09-12',
@@ -209,9 +224,7 @@ it('retains loaded standings when refreshing fails', async () => {
     .mockRejectedValueOnce(new Error('Connection lost.'));
   render(<LeaderboardScreen onManageFriends={vi.fn()} />);
   expect(await screen.findByText('My Trainer (you)')).toBeVisible();
-  await userEvent.click(
-    screen.getByRole('button', { name: 'Refresh leaderboard' }),
-  );
+  await userEvent.click(screen.getByRole('button', { name: 'Refresh' }));
   expect(await screen.findByRole('alert')).toHaveTextContent(
     'Showing the last loaded standings.',
   );
@@ -229,17 +242,35 @@ it('restores a selected scope and reports changes for navigation to retain', asy
       onSelectionChange={changed}
     />,
   );
-  expect(
-    await screen.findByText(
-      'No scores from you or your friends for this Daily yet.',
-    ),
-  ).toBeVisible();
+  expect(await screen.findByText('No scores yet')).toBeVisible();
   expect(screen.getByRole('button', { name: 'Friends' })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
   await userEvent.click(screen.getByRole('button', { name: 'Global' }));
-  expect(changed).toHaveBeenCalledWith('2026-09-12', 'global');
+  expect(changed).toHaveBeenCalledWith('2026-09-12', 'global', 'daily');
+});
+
+it('switches to Training and keeps its selection', async () => {
+  account.owner = 'me';
+  const changed = vi.fn();
+  render(
+    <LeaderboardScreen onManageFriends={vi.fn()} onSelectionChange={changed} />,
+  );
+  await userEvent.click(screen.getByRole('button', { name: 'Training' }));
+  await waitFor(() =>
+    expect(readTrainingLeaderboard).toHaveBeenCalledWith(
+      'me',
+      'global',
+      null,
+      expect.any(AbortSignal),
+    ),
+  );
+  expect(screen.queryByLabelText('Daily date (UTC)')).not.toBeInTheDocument();
+  expect(changed).toHaveBeenCalledWith('2026-09-19', 'global', 'training');
+  expect(
+    await screen.findByText('Finish a Training round to join the standings.'),
+  ).toBeVisible();
 });
 
 it.each(['not-a-date', '2026-09-31', '2026-09-20'])(

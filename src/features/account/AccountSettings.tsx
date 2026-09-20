@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
+import { ArrowsClockwiseIcon, CheckIcon, XIcon } from '../../components/icons';
 import { isRecord } from '../../lib/validation';
 import { downloadAccountExport } from './account-export';
 import {
@@ -12,6 +13,7 @@ import {
   accountSnapshot,
   continueSignIn,
   finishSignIn,
+  retryAccountSync,
   resolveAccountIssue,
   sendSignInCode,
   signOutAccount,
@@ -83,6 +85,13 @@ export const AccountSettings = () => {
   };
   const showSignIn = !account.owner || reauthenticating;
   const codeError = codeForm.formState.errors.code?.message || (sent && error);
+  const syncNeedsSignIn = /^(Sign in|Account changed)/.test(account.error);
+  const syncPaused = !!account.error;
+  const syncOffline = account.status.includes('Will sync when connected');
+  const syncNeedsReview = account.issues.length > 0;
+  const syncComplete = account.status === 'Synced' && !syncPaused;
+  const syncWorking =
+    !syncPaused && !syncOffline && !syncNeedsReview && !syncComplete;
 
   return (
     <div className="account-settings">
@@ -352,33 +361,83 @@ export const AccountSettings = () => {
       ) : (
         <>
           <section
-            className="account-settings__section"
+            className={`account-settings__section account-settings__sync${syncPaused ? ' account-settings__sync--paused' : ''}`}
             aria-labelledby="account-sync-title"
           >
-            <h2 id="account-sync-title">Your progress</h2>
-            <p role="status">{account.status}</p>
-            <p>
-              Completed progress is shared across your devices. Unfinished
-              rounds stay here.
-            </p>
+            <div className="account-settings__sync-heading" role="status">
+              <span
+                className={`account-settings__sync-icon${syncWorking ? ' account-settings__sync-icon--working' : ''}`}
+                aria-hidden="true"
+              >
+                {syncComplete ? (
+                  <CheckIcon weight="bold" />
+                ) : syncPaused ? (
+                  <XIcon weight="bold" />
+                ) : (
+                  <ArrowsClockwiseIcon weight="bold" />
+                )}
+              </span>
+              <div>
+                <h2 id="account-sync-title">
+                  {syncPaused
+                    ? 'Sync paused'
+                    : syncOffline
+                      ? 'Waiting for connection'
+                      : syncNeedsReview
+                        ? 'Review changes'
+                        : syncComplete
+                          ? 'Progress synced'
+                          : 'Syncing progress'}
+                </h2>
+                <p>
+                  {syncPaused
+                    ? syncNeedsSignIn
+                      ? 'Sign in again to continue.'
+                      : 'Your progress is safe on this device.'
+                    : syncComplete
+                      ? 'Up to date on your devices.'
+                      : syncNeedsReview
+                        ? 'Choose how to resolve the changes below.'
+                        : 'Your progress is safe on this device.'}
+                </p>
+              </div>
+            </div>
+            {syncWorking && (
+              <div
+                className="account-settings__sync-track"
+                role="progressbar"
+                aria-label="Syncing progress"
+              />
+            )}
             {account.pending > 0 && (
-              <p>
-                {account.pending} {account.pending === 1 ? 'change' : 'changes'}{' '}
-                waiting to sync.
+              <p className="account-settings__pending">
+                <strong>{account.pending}</strong>{' '}
+                {account.pending === 1 ? 'change' : 'changes'} waiting
               </p>
             )}
-            {account.error && (
-              <>
-                <p className="settings-error" role="alert">
-                  {account.error}
-                </p>
+            {syncPaused && (
+              <div className="account-settings__sync-recovery">
                 <GameButton
-                  tone="quiet"
-                  onClick={() => setReauthenticating(true)}
+                  disabled={busy}
+                  onClick={() =>
+                    syncNeedsSignIn
+                      ? setReauthenticating(true)
+                      : run(retryAccountSync)
+                  }
                 >
-                  Sign in again
+                  {syncNeedsSignIn
+                    ? 'Sign in again'
+                    : busy
+                      ? 'Reconnecting…'
+                      : 'Retry sync'}
                 </GameButton>
-              </>
+                {!syncNeedsSignIn && (
+                  <details className="account-settings__error-details">
+                    <summary>Error details</summary>
+                    <p>{account.error}</p>
+                  </details>
+                )}
+              </div>
             )}
           </section>
           {account.issues.length > 0 && (
@@ -388,47 +447,31 @@ export const AccountSettings = () => {
               disabled={busy}
             />
           )}
-          <section
-            className="account-settings__section"
-            aria-labelledby="account-export-title"
-          >
-            <h2 id="account-export-title">Account data</h2>
-            <p>
-              Download the data saved to your account. Changes waiting to sync
-              are included in this device’s browser backup.
-            </p>
-            <GameButton
-              tone="quiet"
-              disabled={busy}
-              onClick={() =>
-                run(async () => {
-                  await downloadAccountExport();
-                  setMessage(
-                    'Account export received. Check your browser downloads for the file.',
-                  );
-                })
-              }
-            >
-              Export account data
-            </GameButton>
-          </section>
-          <section
-            className="account-settings__section"
-            aria-labelledby="account-sign-out-title"
-          >
-            <h2 id="account-sign-out-title">Sign out on this device</h2>
-            <p>
-              You’ll return to your separate guest save. This account’s
-              downloaded progress and pending changes stay on this device.
-            </p>
-            <GameButton
-              tone="quiet"
-              disabled={busy}
-              onClick={() => run(signOutAccount)}
-            >
-              Sign out
-            </GameButton>
-          </section>
+          <details className="account-settings__options">
+            <summary>Account options</summary>
+            <div className="account-settings__option-actions">
+              <GameButton
+                tone="quiet"
+                disabled={busy}
+                onClick={() =>
+                  run(async () => {
+                    await downloadAccountExport();
+                    setMessage('Account data downloaded.');
+                  })
+                }
+              >
+                Download account data
+              </GameButton>
+              <GameButton
+                tone="quiet"
+                disabled={busy}
+                onClick={() => run(signOutAccount)}
+              >
+                Sign out
+              </GameButton>
+              <p>Signing out returns to your separate guest save.</p>
+            </div>
+          </details>
         </>
       )}
       {busy && !showSignIn && (

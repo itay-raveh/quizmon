@@ -7,7 +7,11 @@ import {
   getResponseTime,
   getSpeedBonusPoints,
 } from '../../src/domain/quiz/scoring.ts';
-import type { DailyLeaderboard } from '../../src/domain/social/leaderboards.ts';
+import type {
+  DailyLeaderboard,
+  Leaderboard,
+} from '../../src/domain/social/leaderboards.ts';
+import { SCORE_VERSION } from '../../src/domain/quiz/scoring.ts';
 import { isRecord } from '../../src/lib/validation.ts';
 import { action, completion } from './progress-fixtures.ts';
 
@@ -37,6 +41,7 @@ export async function checkLeaderboards(
     date: string,
     time: number,
     completedAt = `${date}T12:00:00.000Z`,
+    mode: 'daily' | 'training' = 'daily',
   ) {
     const response = await request('/api/account', actor);
     const state: unknown = await response.json();
@@ -54,27 +59,30 @@ export async function checkLeaderboards(
       ).status,
       200,
     );
-    const round = completion(datasetId, 'daily', {
+    const round = completion(datasetId, mode, {
       dailyDate: date,
       completedAt,
     });
     const revision = dailyDefinition;
     round.scoreVersion = revision.score;
-    round.generatorVersion = revision.generator;
+    if (mode === 'daily') round.generatorVersion = revision.generator;
     round.result.scoreVersion = revision.score;
-    round.training = {
-      ...round.training,
-      difficulty: 3,
-      formGroups: [...formGroups],
-    };
-    round.result.rules = {
-      version: revision.rules,
-      difficulty: 3,
-      formGroups: [...formGroups],
-      generations: [...round.training.generations],
-      questionTypes: [...round.training.questionTypes],
-    };
-    round.result.dailyTrack = { difficulty: 3, scope: 'all' };
+    if (mode === 'daily')
+      round.training = {
+        ...round.training,
+        difficulty: 3,
+        formGroups: [...formGroups],
+      };
+    if (mode === 'daily')
+      round.result.rules = {
+        version: revision.rules,
+        difficulty: 3,
+        formGroups: [...formGroups],
+        generations: [...round.training.generations],
+        questionTypes: [...round.training.questionTypes],
+      };
+    if (mode === 'daily')
+      round.result.dailyTrack = { difficulty: 3, scope: 'all' };
     round.result.answers = round.result.answers.map((answer) => ({
       ...answer,
       responseMilliseconds: time,
@@ -82,7 +90,10 @@ export async function checkLeaderboards(
       ...(answer.questionType === 'champion' ? { unassistedSearch: true } : {}),
     }));
     Object.assign(round.result, getResponseTime(round.result.answers), {
-      score: calculateScore(round.result.answers),
+      score: calculateScore(
+        round.result.answers,
+        round.result.scoreMultipliers,
+      ),
     });
     const operation = action(
       datasetId,
@@ -243,9 +254,51 @@ export async function checkLeaderboards(
     'update completion_facts set generator_version = $2 where owner_id=$1',
     [d.id, dailyDefinition.generator],
   );
+  const training = async (
+    actor: Actor,
+    scope = 'global',
+    query = '',
+  ): Promise<Leaderboard> => {
+    const response = await request(
+      `/api/leaderboards/training?scope=${scope}${query}`,
+      actor,
+    );
+    assert.equal(response.status, 200, await response.clone().text());
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    const value = (await response.json()) as Leaderboard;
+    assert.equal(value.accountId, actor.id);
+    assert.equal(value.date, undefined);
+    return value;
+  };
+  assert.equal((await request('/api/leaderboards/training')).status, 401);
+  assert.equal(
+    (await request('/api/leaderboards/training?scope=other', a)).status,
+    400,
+  );
+  assert.equal((await training(a)).total, 0);
+  await upload(a, today, 1000, `${today}T13:00:00.000Z`, 'training');
+  await upload(a, today, 100, `${today}T14:00:00.000Z`, 'training');
+  await upload(b, today, 100, `${today}T15:00:00.000Z`, 'training');
+  await upload(c, today, 1000, `${today}T16:00:00.000Z`, 'training');
+  const trainingGlobal = await training(a, 'global', '&limit=1');
+  assert.equal(trainingGlobal.total, 3);
+  assert.ok([a.id, b.id].includes(trainingGlobal.items[0]!.player.id));
+  assert.equal(trainingGlobal.viewer?.rank, 1);
+  assert.equal(trainingGlobal.nextCursor, '1');
+  assert.deepEqual(
+    (await training(a)).items.map((row) => row.rank),
+    [1, 1, 3],
+  );
+  assert.equal((await training(a, 'friends')).total, 2);
+  await pool.query(
+    'update completion_facts set score_version = $2 where owner_id=$1 and mode=$3',
+    [c.id, SCORE_VERSION - 1, 'training'],
+  );
+  assert.equal((await training(a)).total, 2);
   return [
     'Daily Global/Friends filtering, score/time ties, viewer rank outside the first page, and pagination',
     'Automatic historical uploads, first accepted Daily, duplicate retries, and same-UTC-date eligibility',
     'Friend acceptance/removal updates existing scores; unknown challenge versions and private fields stay out',
+    'Training keeps one best current-version score per Trainer with Global/Friends filtering, ties, and pagination',
   ];
 }
