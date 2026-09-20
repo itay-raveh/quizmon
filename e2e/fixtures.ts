@@ -179,11 +179,10 @@ export const test = base.extend({
 });
 
 export const answerCurrentQuestion = async (page: Page) => {
+  const answers = page.locator('.answer:not(:disabled)');
   const search = page.getByRole('combobox', { name: 'Your answer' });
   const types = page.getByRole('combobox', { name: 'Your types' });
-  await expect(
-    page.locator('.answer').or(search).or(types).first(),
-  ).toBeVisible();
+  await expect(answers.or(search).or(types).first()).toBeVisible();
   if (await types.count()) {
     await types.fill('bug');
     await types.press('Enter');
@@ -197,7 +196,7 @@ export const answerCurrentQuestion = async (page: Page) => {
     await search.fill(formatName(name));
     await page.getByRole('button', { name: 'Guess', exact: true }).click();
   } else {
-    await page.locator('.answer').first().click();
+    await answers.first().click();
     const check = page.getByRole('button', {
       name: 'Check answers',
       exact: true,

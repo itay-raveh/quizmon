@@ -206,6 +206,9 @@ for (const { type, level, count } of cases)
       await expect(
         page.getByText(question.explanation, { exact: true }),
       ).toHaveCount(0);
+    await expect
+      .poll(async () => (await readRound(page))?.answers.length)
+      .toBe(1);
     await page.reload();
     await expect(
       page.getByRole('heading', { name: questionLabels[type], exact: true }),

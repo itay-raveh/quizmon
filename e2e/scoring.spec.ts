@@ -71,6 +71,9 @@ for (const width of [360, 1280]) {
     );
 
     for (let index = 0; index < 10; index++) {
+      await expect(page.getByRole('progressbar')).toHaveText(
+        `${String(index + 1).padStart(3, '0')} / 010`,
+      );
       const round = (await readRound(page))!;
       const question = round.questions[round.answers.length]!;
       const answerIndices = question.answer.correctOptions.map((value) =>

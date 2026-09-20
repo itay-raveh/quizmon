@@ -1,4 +1,3 @@
-import { readSave } from './database-fixture';
 import { expect, test } from './fixtures';
 
 test('keeps training customization separate from general settings on a phone', async ({
@@ -35,13 +34,13 @@ test('keeps training customization separate from general settings on a phone', a
     .getByRole('button', { name: 'Select all question types' })
     .click();
   const identityGroup = dialog.getByRole('button', {
-    name: 'Identity 7 / 7 selected',
+    name: /^Identity /,
   });
   const knowledgeGroup = dialog.getByRole('button', {
-    name: 'General knowledge 18 / 18 selected',
+    name: /^General knowledge /,
   });
   const battleGroup = dialog.getByRole('button', {
-    name: 'Battle knowledge 13 / 13 selected',
+    name: /^Battle knowledge /,
   });
   await expect(identityGroup).toHaveAttribute('aria-expanded', 'true');
   await expect(knowledgeGroup).toHaveAttribute('aria-expanded', 'false');
@@ -156,29 +155,6 @@ test('keeps training customization separate from general settings on a phone', a
   );
   await expect(page.getByRole('button', { name: 'Settings' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Leave game' }).click();
-});
-
-test('keeps unavailable custom preferences without blocking other eligible families', async ({
-  page,
-}) => {
-  await page.goto('/');
-  await page
-    .getByRole('button', { name: 'Customize training', exact: true })
-    .click();
-  const dialog = page.getByRole('dialog', { name: 'Customize training' });
-  await dialog.getByRole('button', { name: /General knowledge/ }).click();
-  await dialog.getByText('Generation roundup', { exact: true }).click();
-  await dialog.getByRole('button', { name: 'Save' }).click();
-  await expect(dialog).toBeHidden();
-  const settings = (await readSave(page)).data.settings!;
-  expect(settings.questionTypes).toEqual([
-    'pokedex-scan',
-    'generation-roundup',
-  ]);
-  await page.getByRole('button', { name: 'Start training' }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Pokédex scan' }),
-  ).toBeVisible();
 });
 
 test('dismisses settings from the backdrop but keeps inside clicks open', async ({

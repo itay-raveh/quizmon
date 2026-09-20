@@ -48,6 +48,7 @@ for (const width of [360, 1280]) {
     await page
       .getByRole('button', { name: 'Next question', exact: true })
       .click();
+    await expect(page.getByRole('progressbar')).toHaveText('002 / 005');
     await page.goto('/?daily=2026-09-12&level=5&scope=all');
 
     await expect(page.getByRole('progressbar')).toHaveText('002 / 005');

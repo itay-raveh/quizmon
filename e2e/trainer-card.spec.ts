@@ -194,7 +194,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(page).toHaveURL('/');
   await mainNavigation.getByRole('button', { name: 'Leaderboards' }).click();
   await expect(
-    page.getByRole('heading', { name: 'Daily leaderboard' }),
+    page.getByRole('heading', { name: 'Leaderboards', exact: true }),
   ).toBeVisible();
   await expect(page.getByRole('button', { name: 'Back' })).toHaveCount(0);
   await mainNavigation.getByRole('button', { name: 'Play' }).click();
