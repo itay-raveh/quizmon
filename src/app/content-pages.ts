@@ -34,7 +34,7 @@ export const footerLinks = [
 
 export const footerCredits = [
   {
-    label: 'Art by',
+    label: 'badges by',
     name: '@beresteyskaya',
     href: 'https://www.fiverr.com/beresteyskaya',
   },
