@@ -1,4 +1,5 @@
 import { defaultGameSettings } from '@/domain/settings/game-settings';
+import { generations } from '@/domain/pokemon/types';
 import type { GameSettings } from '@/domain/settings/types';
 import { QuestionTypeSettings } from '@/features/settings/QuestionTypeSettings';
 import { TrainingSettings } from '@/features/settings/TrainingSettings';
@@ -35,6 +36,7 @@ describe('Training settings', { timeout: 15_000 }, () => {
       const initial: GameSettings = {
         ...defaultGameSettings,
         difficulty: 4,
+        generations: [...generations],
         questionSelection: 'custom',
         questionTypes: selected
           ? ['hidden-abilities', 'move-types']
@@ -43,6 +45,10 @@ describe('Training settings', { timeout: 15_000 }, () => {
       const onChange = vi.fn();
       const picker = (difficulty: GameSettings['difficulty']) => (
         <QuestionTypeSettings
+          availableQuestionTypes={
+            getTrainingSettingsValidation(catalog, { ...initial, difficulty })
+              .availableQuestionTypes
+          }
           draft={{ ...initial, difficulty }}
           heading={{ current: null }}
           matchingCount={10}
@@ -126,7 +132,7 @@ describe('Training settings', { timeout: 15_000 }, () => {
     ).toBeChecked();
   });
 
-  it('keeps Generation roundup selectable when fewer than two generations are selected', () => {
+  it('disables Generation roundup with one generation and restores its saved selection', () => {
     render(
       <TrainingSettingsHarness
         initial={{
@@ -143,14 +149,37 @@ describe('Training settings', { timeout: 15_000 }, () => {
       name: 'Generation roundup',
     });
     fireEvent.click(screen.getByRole('checkbox', { name: 'II' }));
+    expect(roundup).toBeDisabled();
+    expect(roundup).not.toBeChecked();
+    expect(
+      screen.queryByText(/Some selected questions are unavailable/),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'II' }));
     expect(roundup).toBeEnabled();
     expect(roundup).toBeChecked();
-    fireEvent.click(roundup);
-    expect(roundup).not.toBeChecked();
+  });
+
+  it('selects only available question types with Select all', () => {
+    render(
+      <TrainingSettingsHarness
+        initial={{
+          ...defaultGameSettings,
+          difficulty: 3,
+          questionSelection: 'custom',
+          questionTypes: ['pokedex-scan'],
+        }}
+      />,
+    );
+    const roundup = screen.getByLabelText('Generation roundup', {
+      selector: 'input',
+    });
+    expect(roundup).toBeDisabled();
     fireEvent.click(
       screen.getByRole('button', { name: 'Select all question types' }),
     );
-    expect(roundup).toBeChecked();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'II' }));
+    expect(roundup).toBeEnabled();
+    expect(roundup).not.toBeChecked();
   });
 });
 

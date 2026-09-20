@@ -30,13 +30,13 @@ interface TrainingSettingsProps extends Omit<
 export const TrainingSettings = ({
   draft,
   availableFormGroups,
+  availableQuestionTypes,
   formGroupGenerations,
   formGroupsAreValid,
   formGroupsHeading,
   generationsAreValid,
   generationsHeading,
   matchingCount,
-  unavailableSelectedCount,
   onChange,
   questionTypesAreValid,
   questionTypesHeading,
@@ -216,14 +216,9 @@ export const TrainingSettings = ({
         />
       </section>
 
-      {customized && unavailableSelectedCount > 0 ? (
-        <p className="settings-note">
-          Some selected questions are unavailable for this configuration and
-          will be skipped.
-        </p>
-      ) : null}
       {!customized ? null : (
         <QuestionTypeSettings
+          availableQuestionTypes={availableQuestionTypes}
           draft={draft}
           heading={questionTypesHeading}
           matchingCount={matchingCount}

@@ -32,10 +32,13 @@ export const getTrainingSettingsValidation = (
     availableFormGroups.includes(group),
   );
   const generationsAreValid = settings.generations.length > 0;
-  const eligibleQuestionTypes = settings.difficulty
+  const resolved = settings.difficulty
     ? resolveTrainingSettings(catalog, { ...defaultGameSettings, ...settings })
-        .questionTypes
-    : settings.questionTypes;
+    : null;
+  const eligibleQuestionTypes =
+    resolved?.questionTypes ?? settings.questionTypes;
+  const availableQuestionTypes =
+    resolved?.automaticQuestionTypes ?? settings.questionTypes;
   const questionTypesAreValid = settings.difficulty
     ? eligibleQuestionTypes.length > 0
     : isLeagueTraining(settings) ||
@@ -57,17 +60,12 @@ export const getTrainingSettingsValidation = (
     formGroupsAreValid,
     formGroupGenerations,
     availableFormGroups,
+    availableQuestionTypes,
     isValid:
       generationsAreValid &&
       formGroupsAreValid &&
       questionTypesAreValid &&
       matchingCount > 0,
-    unavailableSelectedCount:
-      settings.questionSelection === 'custom'
-        ? settings.questionTypes.filter(
-            (type) => !eligibleQuestionTypes.includes(type),
-          ).length
-        : 0,
     matchingCount,
     questionTypesAreValid,
   };

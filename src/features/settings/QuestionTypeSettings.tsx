@@ -25,7 +25,7 @@ import {
 
 interface QuestionTypeSettingsProps extends Pick<
   TrainingSettingsValidation,
-  'matchingCount' | 'questionTypesAreValid'
+  'availableQuestionTypes' | 'matchingCount' | 'questionTypesAreValid'
 > {
   draft: GameSettings;
   heading: RefObject<HTMLHeadingElement | null>;
@@ -54,6 +54,7 @@ const getInitialExpandedGroup = (
 };
 
 export const QuestionTypeSettings = ({
+  availableQuestionTypes,
   draft,
   heading,
   matchingCount,
@@ -67,7 +68,10 @@ export const QuestionTypeSettings = ({
     () => getInitialExpandedGroup(draft.questionTypes),
   );
   const selectedQuestionTypes = new Set(draft.questionTypes);
-  const allSelected = draft.questionTypes.length === questionTypes.length;
+  const available = new Set(availableQuestionTypes);
+  const allSelected =
+    availableQuestionTypes.length > 0 &&
+    availableQuestionTypes.every((type) => selectedQuestionTypes.has(type));
   const hasError = submitted && (!questionTypesAreValid || matchingCount === 0);
 
   return (
@@ -85,10 +89,17 @@ export const QuestionTypeSettings = ({
           <SoundButton
             aria-label={`${allSelected ? 'Deselect' : 'Select'} all question types`}
             className="selection-toggle"
+            disabled={availableQuestionTypes.length === 0}
             onClick={() =>
               onChange((current) => ({
                 ...current,
-                questionTypes: allSelected ? [] : [...questionTypes],
+                questionTypes: allSelected
+                  ? current.questionTypes.filter((type) => !available.has(type))
+                  : questionTypes.filter(
+                      (type) =>
+                        available.has(type) ||
+                        current.questionTypes.includes(type),
+                    ),
               }))
             }
             sound={allSelected ? 'toggle-off' : 'toggle-on'}
@@ -109,8 +120,11 @@ export const QuestionTypeSettings = ({
           </p>
         ) : null}
         {groupedQuestionTypes.map((group) => {
-          const selectedCount = group.types.filter((questionType) =>
-            selectedQuestionTypes.has(questionType),
+          const availableCount = group.types.filter((type) =>
+            available.has(type),
+          ).length;
+          const selectedCount = group.types.filter(
+            (type) => available.has(type) && selectedQuestionTypes.has(type),
           ).length;
           const expanded = expandedGroup === group.id;
           const titleId = `question-type-group-${group.id}-title`;
@@ -136,7 +150,7 @@ export const QuestionTypeSettings = ({
                 >
                   <span>{group.label}</span>
                   <span className="question-type-group__count">
-                    {selectedCount} / {group.types.length}
+                    {selectedCount} / {availableCount}
                     <span className="visually-hidden"> selected</span>
                   </span>
                   <CaretDownIcon aria-hidden="true" weight="bold" />
@@ -160,20 +174,20 @@ export const QuestionTypeSettings = ({
                           draft.difficulty,
                         )
                       : undefined;
-                    const available = factor !== undefined;
+                    const selectable = available.has(questionType);
                     const checked =
-                      available && selectedQuestionTypes.has(questionType);
+                      selectable && selectedQuestionTypes.has(questionType);
                     return (
                       <div
-                        className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}${factor === undefined ? ' question-type-tile--unavailable' : ''}`}
+                        className={`question-type-tile${checked ? ' question-type-tile--selected' : ''}${!selectable ? ' question-type-tile--unavailable' : ''}`}
                         key={questionType}
                       >
                         <SelectionTile
                           checked={checked}
-                          disabled={!available}
+                          disabled={!selectable}
                           label={label}
                           description={
-                            factor === undefined
+                            !selectable || factor === undefined
                               ? 'Unavailable'
                               : formatScoreMultiplier(factor)
                           }
