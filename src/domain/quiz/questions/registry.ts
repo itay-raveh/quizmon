@@ -1,28 +1,28 @@
-import { supportsStandardQuestion } from '../standard-question-types';
+import { supportsStandardQuestion } from '../standard-question-types.ts';
 import {
   getPokemonRecency,
   getQuestionRecency,
   getSubjectRecency,
   questionRepeatPolicy,
   rememberQuestion,
-} from '../question-history';
+} from '../question-history.ts';
 import {
   getQuestionVariant,
   resolveQuestionRendering,
-} from '../question-variants';
-import type { QuestionData } from '../types';
-import { buildHidden } from './abilities';
-import { buildCounterPickQuestion, buildMatchupQuestion } from './battle';
-import { buildBerry } from './berries';
-import { buildChampionQuestion } from './champion';
-import { type QuestionBuilder, type QuestionContext } from './context';
-import { buildEffect } from './effects';
+} from '../question-variants.ts';
+import type { QuestionData } from '../types.ts';
+import { buildHidden } from './abilities.ts';
+import { buildCounterPickQuestion, buildMatchupQuestion } from './battle.ts';
+import { buildBerry } from './berries.ts';
+import { buildChampionQuestion } from './champion.ts';
+import { type QuestionBuilder, type QuestionContext } from './context.ts';
+import { buildEffect } from './effects.ts';
 import {
   buildEvolution,
   buildEvolutionLinkQuestion,
   buildEvolutionShiftQuestion,
-} from './evolution';
-import { buildGenerationRoundupQuestion } from './generations';
+} from './evolution.ts';
+import { buildGenerationRoundupQuestion } from './generations.ts';
 import {
   buildPixelPeekQuestion,
   buildPokedexScanQuestion,
@@ -30,24 +30,24 @@ import {
   buildSilhouetteMatchQuestion,
   buildSpriteMatchQuestion,
   buildWhosThatPokemonQuestion,
-} from './identity';
-import { buildItemIdentification, buildMedicine } from './items';
-import { buildLegendHuntQuestion } from './legendaries';
-import { buildEncounter, buildRegion } from './locations';
-import { buildMeasurement } from './measurements';
-import { buildMove } from './moves';
-import { buildCategory, buildDescriptionQuestion } from './pokedex';
-import { buildPropertyQuestion } from './properties';
-import { pokemonWeight } from './sampling';
-import { getSpeciesHistory, speciesQuestion } from './species-history';
-import { buildEvYield, buildNature, buildStatQuestion } from './stats';
+} from './identity.ts';
+import { buildItemIdentification, buildMedicine } from './items.ts';
+import { buildLegendHuntQuestion } from './legendaries.ts';
+import { buildEncounter, buildRegion } from './locations.ts';
+import { buildMeasurement } from './measurements.ts';
+import { buildMove } from './moves.ts';
+import { buildCategory, buildDescriptionQuestion } from './pokedex.ts';
+import { buildPropertyQuestion } from './properties.ts';
+import { pokemonWeight } from './sampling.ts';
+import { getSpeciesHistory, speciesQuestion } from './species-history.ts';
+import { buildEvYield, buildNature, buildStatQuestion } from './stats.ts';
 import {
   buildChooseAllTypeQuestion,
   buildOddOneOutQuestion,
   buildTypeQuestion,
   buildTypeTwinsQuestion,
-} from './types';
-import { applyQuestionVariant } from './variants';
+} from './types.ts';
+import { applyQuestionVariant } from './variants.ts';
 
 const questionBuilders = {
   'item-identification': buildItemIdentification,

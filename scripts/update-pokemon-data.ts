@@ -41,10 +41,6 @@ import { extractPokemonKnowledge } from './catalog-knowledge.ts';
 
 const DATA_DIRECTORY = new URL('../src/domain/pokemon/data/', import.meta.url);
 const CONCURRENCY = 4;
-const LABELS_PATH = new URL(
-  '../src/domain/pokemon/data/pokemon-labels.json',
-  import.meta.url,
-);
 
 export type CatalogForm = PokemonForm & {
   flavor_text_entries?: PokemonSpecies['flavor_text_entries'];
@@ -469,20 +465,24 @@ if (import.meta.main) {
     catalog,
     new URL('../src/domain/pokemon/data/', import.meta.url),
   );
-  await writeFile(
-    LABELS_PATH,
-    await format(
-      JSON.stringify(
-        Object.fromEntries(
-          Object.entries(catalog.pokemon).map(([name, pokemon]) => [
-            name,
-            pokemon.displayName,
-          ]),
+  for (const [file, field] of [
+    ['pokemon-labels.json', 'displayName'],
+    ['pokemon-generations.json', 'generation'],
+  ] as const)
+    await writeFile(
+      new URL(file, DATA_DIRECTORY),
+      await format(
+        JSON.stringify(
+          Object.fromEntries(
+            Object.entries(catalog.pokemon).map(([name, pokemon]) => [
+              name,
+              pokemon[field],
+            ]),
+          ),
         ),
+        { parser: 'json' },
       ),
-      { parser: 'json' },
-    ),
-  );
+    );
   const pokemonCount = Object.keys(catalog.pokemon).length;
   const typeCount = Object.keys(catalog.typeRelations).length;
   console.log(

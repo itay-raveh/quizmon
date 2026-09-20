@@ -1,98 +1,78 @@
 import { parseVersionedSave } from './save-schema';
 import { isRecord } from '../../lib/validation';
-import { parsePlayerSave } from './player-save';
-import fixture from '../../../tests/fixtures/player-save.v6.json';
-import currentFixture from '../../../tests/fixtures/player-save.v7.json';
+import { parsePlayerSave, SAVE_SCHEMA_VERSION } from './player-save';
+import fixture from '../../../tests/fixtures/player-save.v7.json';
 
-const parseNamed = (value: unknown) => {
-  if (!isRecord(value) || typeof value.name !== 'string')
-    throw new Error('name');
-  return { name: value.name };
-};
-const parseCurrent = (value: unknown) => {
-  if (
-    !isRecord(value) ||
-    typeof value.label !== 'string' ||
-    typeof value.enabled !== 'boolean'
-  )
-    throw new Error('current');
-  return { label: value.label, enabled: value.enabled };
-};
 const schema = {
-  minimumVersion: 6,
-  currentVersion: 8,
-  parseCurrent,
-  migrations: {
-    6: {
-      parse: parseNamed,
-      upgrade: (data: unknown) => ({ label: parseNamed(data).name }),
-    },
-    7: {
-      parse: (data: unknown) => {
-        if (!isRecord(data) || typeof data.label !== 'string')
-          throw new Error('label');
-        return data;
-      },
-      upgrade: (data: unknown) => ({ ...(data as object), enabled: true }),
-    },
+  currentVersion: SAVE_SCHEMA_VERSION,
+  parseCurrent(value: unknown) {
+    if (!isRecord(value) || typeof value.name !== 'string')
+      throw new Error('name');
+    return { name: value.name };
   },
 };
-it('migrates the frozen version 6 fixture into the shared schema', () => {
-  const before = structuredClone(fixture);
-  expect(parsePlayerSave(fixture)).toEqual(currentFixture);
-  expect(fixture).toEqual(before);
+
+it('keeps the post-reset version 7 save readable without mutating its input', () => {
+  const original = {
+    ...fixture,
+    data: { ...fixture.data, pokedex: ['pikachu'] },
+  };
+  const saved = parsePlayerSave(original);
+  expect(fixture.version).toBe(7);
+  expect(saved.version).toBe(SAVE_SCHEMA_VERSION);
+  expect(saved.data.pokedex).toContain('pikachu');
+  expect(original.data.pokedex).toEqual(['pikachu']);
+  saved.data.pokedex.push('eevee');
+  expect(original.data.pokedex).toEqual(['pikachu']);
 });
-it('loads the frozen current schema without changing it', () => {
-  expect(parsePlayerSave(currentFixture)).toEqual(currentFixture);
-});
-it('runs every intermediate migration in order and leaves the original untouched', () => {
-  const original = { version: 6, data: { name: 'Leaf' } };
-  expect(parseVersionedSave(original, schema)).toEqual({
-    version: 8,
-    data: { label: 'Leaf', enabled: true },
-  });
-  expect(original).toEqual({ version: 6, data: { name: 'Leaf' } });
-});
-it('loads current data without invoking migration functions', () => {
-  const upgrade = vi.fn();
-  const data = { label: 'Leaf', enabled: false };
-  expect(
-    parseVersionedSave(
-      { version: 8, data },
-      { ...schema, migrations: { 6: { parse: parseNamed, upgrade } } },
-    ).data,
-  ).toEqual(data);
-  expect(upgrade).not.toHaveBeenCalled();
-});
+it.each([1, 2, 3, 4, 5, 6])(
+  'rejects pre-reset schema %i without an upgrade path',
+  (version) => {
+    const old = { ...fixture, version };
+    const raw = JSON.stringify(old);
+    expect(() => parsePlayerSave(old)).toThrow(
+      expect.objectContaining({ kind: 'unsupported' }),
+    );
+    expect(JSON.stringify(old)).toBe(raw);
+  },
+);
 it.each([
-  [5, 'unsupported'],
-  [9, 'newer'],
-  ['6', 'invalid'],
+  [SAVE_SCHEMA_VERSION + 1, 'newer'],
+  ['7', 'invalid'],
   [1.5, 'invalid'],
+  [0, 'invalid'],
 ])('classifies version %s as %s', (version, kind) => {
   expect(() => parseVersionedSave({ version, data: {} }, schema)).toThrow(
     expect.objectContaining({ kind }),
   );
 });
-it('rejects a missing step and validates both the source and final schema', () => {
+it('validates current data and returns a separate value', () => {
+  const value = { version: SAVE_SCHEMA_VERSION, data: { name: 'Leaf' } };
+  expect(parseVersionedSave(value, schema)).toEqual(value);
   expect(() =>
-    parseVersionedSave(
-      { version: 6, data: { name: 'Leaf' } },
-      { ...schema, migrations: {} },
-    ),
+    parseVersionedSave({ ...value, data: { name: 1 } }, schema),
+  ).toThrow(expect.objectContaining({ kind: 'invalid' }));
+});
+it('upgrades supported versions one step at a time', () => {
+  const old = { version: 7, data: { name: 'Leaf' } };
+  const next = parseVersionedSave(old, {
+    currentVersion: 9,
+    migrations: {
+      7: (data) => ({ ...(data as object), partner: 'pikachu' }),
+      8: (data) => ({ ...(data as object), wins: 0 }),
+    },
+    parseCurrent: (data) => data,
+  });
+  expect(next).toEqual({
+    version: 9,
+    data: { name: 'Leaf', partner: 'pikachu', wins: 0 },
+  });
+  expect(old).toEqual({ version: 7, data: { name: 'Leaf' } });
+  expect(() =>
+    parseVersionedSave(old, {
+      currentVersion: 9,
+      migrations: { 8: (data) => data },
+      parseCurrent: (data) => data,
+    }),
   ).toThrow(expect.objectContaining({ kind: 'unsupported' }));
-  expect(() =>
-    parseVersionedSave({ version: 6, data: { name: 1 } }, schema),
-  ).toThrow(expect.objectContaining({ kind: 'invalid' }));
-  expect(() =>
-    parseVersionedSave(
-      { version: 7, data: { label: 'Leaf' } },
-      {
-        ...schema,
-        migrations: {
-          7: { parse: (data) => data, upgrade: () => ({ label: 'Leaf' }) },
-        },
-      },
-    ),
-  ).toThrow(expect.objectContaining({ kind: 'invalid' }));
 });

@@ -1,24 +1,25 @@
-import type { PlayerSave } from '../src/domain/player/player-save';
+import { readSave } from './database-fixture';
 import { expect, test } from './fixtures';
 
-test('keeps grouped settings reachable outside active questions on a phone', async ({
+test('keeps training customization separate from general settings on a phone', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: 'Settings' }).click();
+  await page
+    .getByRole('button', { name: 'Customize training', exact: true })
+    .click();
 
-  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  const dialog = page.getByRole('dialog', { name: 'Customize training' });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('heading', { name: 'Settings' })).toBeFocused();
+  await expect(
+    dialog.getByRole('heading', { name: 'Customize training' }),
+  ).toBeFocused();
   await expect(
     dialog.getByRole('button', { name: 'Save settings' }),
   ).toBeVisible();
   await expect(dialog.getByRole('contentinfo')).toHaveCount(0);
-  await expect(dialog.getByRole('tab', { name: 'Training' })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  await expect(dialog.getByRole('tablist')).toHaveCount(0);
   await expect(
     dialog.getByRole('checkbox', { name: 'Customize questions' }),
   ).toBeChecked();
@@ -104,24 +105,49 @@ test('keeps grouped settings reachable outside active questions on a phone', asy
   await expect(
     dialog.getByRole('heading', { name: 'Question types' }),
   ).toHaveCount(0);
-  await dialog.getByRole('tab', { name: 'Experience' }).click();
-  await expect(
-    dialog.getByRole('group', { name: 'Answer flow' }),
-  ).toBeVisible();
-  await expect(dialog.getByRole('radio', { name: /Instant/ })).toBeChecked();
-  await expect(dialog.getByRole('group', { name: 'Timer' })).toBeVisible();
-  await expect(
-    dialog.getByRole('radio', { name: 'Seconds', exact: true }),
-  ).toBeChecked();
-  await expect(
-    dialog.getByRole('slider', { name: 'Sound effects' }),
-  ).toHaveValue('0');
-  await expect(dialog.getByLabel('Reduce motion')).not.toBeChecked();
-  await dialog.getByRole('tab', { name: 'Experience' }).press('ArrowLeft');
-  await expect(dialog.getByRole('tab', { name: 'Training' })).toBeFocused();
-
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
+  await expect(
+    page.getByRole('button', { name: 'Customize training', exact: true }),
+  ).toBeFocused();
+
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const settings = page.getByRole('dialog', { name: 'Settings', exact: true });
+  await expect(
+    settings.getByRole('heading', { name: 'Settings', exact: true }),
+  ).toBeFocused();
+  await expect(settings.getByRole('tablist')).toHaveCount(0);
+  await expect(
+    settings.getByRole('group', { name: 'Answer flow' }),
+  ).toBeVisible();
+  await expect(settings.getByRole('radio', { name: /Instant/ })).toBeChecked();
+  await expect(settings.getByRole('group', { name: 'Timer' })).toBeVisible();
+  await expect(
+    settings.getByRole('radio', { name: 'Seconds', exact: true }),
+  ).toBeChecked();
+  await expect(
+    settings.getByRole('slider', { name: 'Sound effects' }),
+  ).toHaveValue('0');
+  await expect(settings.getByLabel('Reduce motion')).not.toBeChecked();
+  const backup = settings
+    .locator('summary')
+    .filter({ hasText: 'Backup & restore' });
+  await expect(
+    settings.getByRole('button', { name: 'Download backup' }),
+  ).toHaveCount(0);
+  await backup.focus();
+  await backup.press('Enter');
+  await expect(
+    settings.getByRole('button', { name: 'Download backup' }),
+  ).toBeVisible();
+  await backup.press('Space');
+  await expect(
+    settings.getByRole('button', { name: 'Download backup' }),
+  ).toHaveCount(0);
+  await expect(backup).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(settings).toBeHidden();
   await expect(page.getByRole('button', { name: 'Settings' })).toBeFocused();
 
   await page.getByRole('button', { name: 'Start training' }).click();
@@ -138,17 +164,15 @@ test('keeps unavailable custom preferences without blocking other eligible famil
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Settings' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  await page
+    .getByRole('button', { name: 'Customize training', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog', { name: 'Customize training' });
   await dialog.getByRole('button', { name: /General knowledge/ }).click();
   await dialog.getByText('Generation roundup', { exact: true }).click();
   await dialog.getByRole('button', { name: 'Save settings' }).click();
   await expect(dialog).toBeHidden();
-  const settings = await page.evaluate(
-    () =>
-      (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
-        .settings!,
-  );
+  const settings = (await readSave(page)).data.settings!;
   expect(settings.questionTypes).toEqual([
     'pokedex-scan',
     'generation-roundup',
@@ -163,7 +187,7 @@ test('dismisses settings from the backdrop but keeps inside clicks open', async 
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Settings' });
   await dialog.getByRole('heading', { name: 'Settings' }).click();
   await expect(dialog).toBeVisible();
@@ -177,8 +201,10 @@ for (const width of [390, 1280]) {
   }, testInfo) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/');
-    await page.getByRole('button', { name: 'Settings', exact: true }).click();
-    const dialog = page.getByRole('dialog', { name: 'Settings' });
+    await page
+      .getByRole('button', { name: 'Customize training', exact: true })
+      .click();
+    const dialog = page.getByRole('dialog', { name: 'Customize training' });
     const mega = dialog.getByRole('checkbox', { name: 'Mega', exact: true });
     const gmax = dialog.getByRole('checkbox', {
       name: 'Gigantamax',
@@ -208,8 +234,11 @@ for (const width of [390, 1280]) {
       ),
     ).toBe(true);
     await dialog.getByRole('button', { name: 'Save settings' }).click();
+    await expect(dialog).toBeHidden();
     await page.reload();
-    await page.getByRole('button', { name: 'Settings', exact: true }).click();
+    await page
+      .getByRole('button', { name: 'Customize training', exact: true })
+      .click();
     await dialog
       .getByRole('checkbox', { name: 'VI', exact: true })
       .locator('..')

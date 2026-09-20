@@ -1,12 +1,12 @@
-import type { GameSettings } from '../settings/types';
-import { difficultyLevels, type Difficulty } from './difficulty';
-import { getQuestionVariant } from './question-variants';
-import type { QuestionType } from './types';
-import { isRecord } from '../../lib/validation';
-import { generations } from '../pokemon/types';
-import { isDifficulty } from './difficulty';
-import { questionTypes } from './questions/definitions';
-import { type ScoreMultipliers } from './types';
+import type { GameSettings } from '../settings/types.ts';
+import { difficultyLevels, type Difficulty } from './difficulty.ts';
+import { getQuestionVariant } from './question-variants.ts';
+import type { QuestionType } from './types.ts';
+import { isRecord } from '../../lib/validation.ts';
+import { generations } from '../pokemon/types.ts';
+import { isDifficulty } from './difficulty.ts';
+import { questionTypes } from './questions/definitions.ts';
+import { type ScoreMultipliers } from './types.ts';
 
 const savedQuestionTypes: readonly string[] = [...questionTypes];
 

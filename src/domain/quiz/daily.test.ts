@@ -1,13 +1,13 @@
 import {
-  buildDailyForTest,
-  dailySettings,
-} from '../../../tests/fixtures/daily';
-import { isDailyDate } from '../../lib/validation';
-import { getLocalDate, parseDailyDate, shouldAutoStartDaily } from './daily';
-import {
   markDailyReminderOffered,
   shouldOfferDailyReminder,
-} from '../../features/reminders/daily-reminder-storage';
+} from '../../features/reminders/daily-reminder-storage.ts';
+import { isDailyDate } from '../../lib/validation.ts';
+import { getUtcDate, parseDailyDate, shouldAutoStartDaily } from './daily.ts';
+import {
+  buildDailyForTest,
+  dailySettings,
+} from '../../../tests/fixtures/daily.ts';
 
 describe('Daily Challenge', () => {
   it('reproduces the live Level 3 lineup and varies it by date', () => {
@@ -37,8 +37,14 @@ describe('Daily Challenge', () => {
   });
 });
 describe('daily dates', () => {
-  it('uses the local calendar', () => {
-    expect(getLocalDate(new Date(2026, 8, 1, 23, 59, 59))).toBe('2026-09-01');
+  it.each([
+    ['2026-09-01T23:59:59.999Z', '2026-09-01'],
+    ['2026-09-02T00:00:00.000Z', '2026-09-02'],
+    ['2026-09-02T08:00:00+09:00', '2026-09-01'],
+    ['2026-09-01T19:00:00-10:00', '2026-09-02'],
+    ['2027-01-01T00:00:00+14:00', '2026-12-31'],
+  ])('uses the UTC calendar for %s', (timestamp, expected) => {
+    expect(getUtcDate(new Date(timestamp))).toBe(expected);
   });
   it.each([
     ['?daily=2024-02-29', '2024-02-29'],

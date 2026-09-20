@@ -1,4 +1,6 @@
-import { GameButton } from '@/components/GameButton';
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from 'react';
+import { GameButton } from '../../components/GameButton';
+import { SoundButton } from '../../components/SoundButton';
 import {
   ArrowLeftIcon,
   BookOpenIcon,
@@ -8,9 +10,12 @@ import {
   MedalIcon,
   PencilSimpleIcon,
   ShareNetworkIcon,
-} from '@/components/icons';
-import { SoundButton } from '@/components/SoundButton';
-import { TRAINER_NAME_MAX_LENGTH } from '@/domain/player/trainer-profile';
+} from '../../components/icons';
+import {
+  getDailyStreak,
+  type TrainerStats,
+} from '../../domain/player/progress';
+import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
 import {
   getCardFinish,
   getTrainerBadges,
@@ -22,22 +27,13 @@ import {
   type TrainerSpecialty,
   type TrainerTitle,
   type TrainerView,
-} from '@/domain/player/trainer-progression';
-import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { getLocalDate } from '@/domain/quiz/daily';
-import { useUpdateState } from '@/features/installation/update-session';
-import {
-  exportTrainerArtifact as exportArtifactImage,
-  supportsTrainerArtifactSharing,
-} from '@/features/trainer/trainer-artifact-export';
-import { readPlayerData } from '@/lib/storage/player-storage';
-import { useEffect, useMemo, useRef, useState, type SubmitEvent } from 'react';
-import {
-  getDailyStreak,
-  type TrainerStats,
-} from '../../domain/player/progress';
+} from '../../domain/player/trainer-progression';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
+import { getUtcDate } from '../../domain/quiz/daily';
 import { requestPersistentStorage } from '../../lib/storage/persistent-storage';
+import { readPlayerData } from '../../lib/storage/player-storage';
 import { type TrainerProfile } from '../../lib/storage/trainer-profile-storage';
+import { useUpdateState } from '../installation/update-session';
 import { PokemonPicker } from './PokemonPicker';
 import { TrainerBadgeCase } from './TrainerBadgeCase';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';
@@ -45,11 +41,15 @@ import { TrainerCard } from './TrainerCard';
 import { TrainerPokedex } from './TrainerPokedex';
 import { TrainerTitleDialog } from './TrainerTitleDialog';
 import { TrainerTitles } from './TrainerTitles';
+import {
+  exportTrainerArtifact as exportArtifactImage,
+  supportsTrainerArtifactSharing,
+} from './trainer-artifact-export';
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
   onBack: () => void;
-  onProfileChange: (profile: TrainerProfile) => void;
+  onProfileChange: (profile: TrainerProfile) => Promise<void>;
   onViewChange: (view: TrainerView) => void;
   profile: TrainerProfile;
   requestedView: TrainerView;
@@ -88,10 +88,7 @@ export const TrainerPassport = ({
     const found = new Set(data.pokedex);
     const pokemon = Object.keys(catalog.pokemon);
     return {
-      dayCombo: getDailyStreak(
-        data.results.streak.creditedDates,
-        getLocalDate(),
-      ),
+      dayCombo: getDailyStreak(data.results.streak.creditedDates, getUtcDate()),
       pokedexFound: pokemon.filter((name) => found.has(name)).length,
       pokedexTotal: pokemon.length,
     };
@@ -140,7 +137,7 @@ export const TrainerPassport = ({
 
   useEffect(() => {
     if (!profile.hasBeenRevealed) {
-      onProfileChange({ ...profile, hasBeenRevealed: true });
+      void onProfileChange({ ...profile, hasBeenRevealed: true });
     }
   }, [onProfileChange, profile]);
 
@@ -157,9 +154,9 @@ export const TrainerPassport = ({
     onViewChange(nextView);
   };
 
-  const save = (event: SubmitEvent<HTMLFormElement>) => {
+  const save = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onProfileChange({
+    await onProfileChange({
       ...profile,
       name,
       partnerPokemon: partner,
@@ -179,8 +176,8 @@ export const TrainerPassport = ({
     setEditing(true);
   };
 
-  const setTitle = (specialty: TrainerSpecialty | null) => {
-    onProfileChange({ ...profile, specialty });
+  const setTitle = async (specialty: TrainerSpecialty | null) => {
+    await onProfileChange({ ...profile, specialty });
     setShareNotice({
       message: specialty
         ? `${trainerSpecialtyDetails[specialty].label} equipped.`
@@ -278,7 +275,12 @@ export const TrainerPassport = ({
       ) : null}
 
       {editing ? (
-        <form className="trainer-customizer" onSubmit={save}>
+        <form
+          className="trainer-customizer"
+          onSubmit={(event) => {
+            void save(event);
+          }}
+        >
           <div className="trainer-customizer__name">
             <label htmlFor="trainer-name">Trainer name</label>
             <input

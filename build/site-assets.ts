@@ -74,7 +74,7 @@ const llms = `# ${site.name}
 
 > ${site.description}
 
-${site.name} is a free, unofficial browser game with no accounts. Player settings and saved results remain on the device. Cloudflare handles hosting, analytics, and optional daily reminders.
+${site.name} is a free, unofficial browser game. You can play without an account. Signing in syncs completed progress and enables friends and Daily leaderboards. Gameplay and unfinished rounds remain on the device. Cloudflare handles hosting, analytics, and optional daily reminders.
 
 ## Game
 

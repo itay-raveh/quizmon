@@ -1,11 +1,15 @@
-import { pick, shuffle } from '../../../lib/random';
-import { formatPokemonName } from '../../pokemon/format';
-import { statNames, type StatName } from '../../pokemon/types';
-import { makeQuestion, targetMedia } from './assembly';
-import type { Candidate, QuestionBuilder } from './context';
-import { pokemonPrompt, textPrompt } from './prompts';
-import { optionSetRepetition } from './repetition';
-import { chooseTargets, distinctPokemon, pickFreshTarget } from './selection';
+import { pick, shuffle } from '../../../lib/random.ts';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import { statNames, type StatName } from '../../pokemon/types.ts';
+import { makeQuestion, targetMedia } from './assembly.ts';
+import type { Candidate, QuestionBuilder } from './context.ts';
+import { pokemonPrompt, textPrompt } from './prompts.ts';
+import { optionSetRepetition } from './repetition.ts';
+import {
+  chooseTargets,
+  distinctPokemon,
+  pickFreshTarget,
+} from './selection.ts';
 import {
   makeTopicQuestion,
   ordered,
@@ -13,7 +17,7 @@ import {
   pokemonSubject,
   topicEligible,
   topicSubject,
-} from './topic-support';
+} from './topic-support.ts';
 
 const yieldLabel = (yieldValues: Record<string, number>) =>
   statNames

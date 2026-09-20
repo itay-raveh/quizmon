@@ -1,22 +1,22 @@
-import { GAMEPLAY_REVISION } from './gameplay-version';
-import { createSeededRandom, shuffle } from '../../lib/random';
-import type { PokemonCatalog } from '../pokemon/types';
+import { GAMEPLAY_REVISION } from './gameplay-version.ts';
+import { createSeededRandom, shuffle } from '../../lib/random.ts';
+import type { PokemonCatalog } from '../pokemon/types.ts';
 import {
   TRAINING_QUESTION_COUNT,
   filterPokemon,
   getTrainingSettings,
-} from '../settings/game-settings';
-import type { ExperienceSettings, GameSettings } from '../settings/types';
-import { DAILY_QUESTION_COUNT } from './daily';
+} from '../settings/game-settings.ts';
+import type { ExperienceSettings, GameSettings } from '../settings/types.ts';
+import { DAILY_QUESTION_COUNT } from './daily.ts';
 import {
   LEAGUE_QUESTION_COUNT,
   getLeagueQuestionTypes,
   getLeagueSettings,
-} from './league';
-import { type QuestionHistory } from './question-history';
-import type { QuestionContext } from './questions/context';
-import { buildQuestionType } from './questions/registry';
-import type { QuestionData } from './types';
+} from './league.ts';
+import { type QuestionHistory } from './question-history.ts';
+import type { QuestionContext } from './questions/context.ts';
+import { buildQuestionType } from './questions/registry.ts';
+import type { QuestionData } from './types.ts';
 
 export const getQuestionCount = (
   availableCount: number,

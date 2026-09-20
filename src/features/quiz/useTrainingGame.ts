@@ -1,10 +1,9 @@
-import { getTrainingScoreMultipliers } from '@/domain/quiz/score-multipliers';
 import type { GameSession, StartGame } from '@/app/game-session';
 import {
   generations,
   type Generation,
   type PokemonCatalog,
-} from '@/domain/pokemon/types';
+} from '../../domain/pokemon/types';
 import {
   buildQuestions,
   resolveTrainingSettings,
@@ -14,7 +13,7 @@ import { type GameSettings } from '@/domain/settings/types';
 import { useUpdateState } from '@/features/installation/update-session';
 import { createRoundSeed, createSeededRandom } from '@/lib/random';
 import { readPlayerData } from '@/lib/storage/player-storage';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   markGenerationPromptAnswered,
   shouldShowGenerationPrompt,
@@ -35,15 +34,6 @@ export const useTrainingGame = ({
   setSettings,
   startGame,
 }: TrainingGameOptions) => {
-  const scoreMultipliers = useMemo(
-    () =>
-      catalog
-        ? getTrainingScoreMultipliers(
-            resolveTrainingSettings(catalog, settings),
-          )
-        : undefined,
-    [catalog, settings],
-  );
   const [error, setError] = useState('');
   const [generationPromptOpen, setGenerationPromptOpen] = useUpdateState(
     'generation-prompt',
@@ -81,7 +71,7 @@ export const useTrainingGame = ({
         return;
       }
       setError('');
-      startGame(questions, gameSettings, { kind: 'training' }, seed);
+      void startGame(questions, gameSettings, { kind: 'training' }, seed);
     },
     [catalog, startGame],
   );
@@ -126,7 +116,6 @@ export const useTrainingGame = ({
   }, [session, settings, startRound]);
 
   return {
-    scoreMultipliers,
     error,
     chooseAllGenerations: () => startWithGenerations([...generations]),
     chooseGenOne: () => startWithGenerations(['I']),

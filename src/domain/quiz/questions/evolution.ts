@@ -1,23 +1,23 @@
-import { formatPokemonName } from '../../pokemon/format';
-import { generations } from '../../pokemon/types';
-import type { EvolutionKnowledge } from '../topic-catalog';
-import { pokemonOptions } from './answers';
-import { getOptionVisuals, makeQuestion } from './assembly';
-import type { QuestionBuilder } from './context';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import { generations } from '../../pokemon/types.ts';
+import type { EvolutionKnowledge } from '../topic-catalog.ts';
+import { pokemonOptions } from './answers.ts';
+import { getOptionVisuals, makeQuestion } from './assembly.ts';
+import type { QuestionBuilder } from './context.ts';
 import {
   evolutionRequirement,
   presentEvolutionQuestion,
-} from './evolution-presentation';
-import { pokemonPrompt, textPrompt } from './prompts';
-import { targetRepetition } from './repetition';
-import { pickFreshTarget, pickTarget } from './selection';
+} from './evolution-presentation.ts';
+import { pokemonPrompt, textPrompt } from './prompts.ts';
+import { targetRepetition } from './repetition.ts';
+import { pickFreshTarget, pickTarget } from './selection.ts';
 import {
   makeTopicQuestion,
   ordered,
   pokemonSubject,
   topicEligible,
-} from './topic-support';
-import { typeOptions } from './type-options';
+} from './topic-support.ts';
+import { typeOptions } from './type-options.ts';
 
 const method = (entry: EvolutionKnowledge) =>
   [formatPokemonName(entry.trigger), ...entry.conditions].join(' · ');

@@ -1,19 +1,22 @@
+import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
 import type {
   CompleteGame,
   GameSession,
   GameSessionAction,
-} from '@/app/game-session';
-import type { PokemonCatalog } from '@/domain/pokemon/types';
+} from '../../app/game-session';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
 import {
   clearActiveGame,
   readActiveGame,
   writeActiveGame,
-} from '@/lib/storage/active-game-storage';
-import type { ActiveGameSnapshot } from '@/domain/player/active-game';
-import { readPlayerSave } from '@/lib/storage/player-storage';
-import { registerShownQuestion } from '@/lib/storage/question-history-storage';
-import { readDailyResult } from '@/lib/storage/results-storage';
-import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
+  type ActiveGameSnapshot,
+} from '../../lib/storage/active-game-storage';
+import {
+  readPlayerSave,
+  reportSaveError,
+} from '../../lib/storage/player-storage';
+import { registerShownQuestion } from '../../lib/storage/question-history-storage';
+import { readDailyResult } from '../../lib/storage/results-storage';
 
 interface ActiveGameOptions {
   autoStartDaily: boolean;
@@ -36,7 +39,6 @@ type Restoration =
 
 const resolveRestoration = (
   snapshot: ActiveGameSnapshot | null,
-  dailyDate: string,
   linkedDailyDate: string | null,
 ): Restoration => {
   if (!snapshot) return { kind: 'discard', shouldClear: false };
@@ -44,13 +46,12 @@ const resolveRestoration = (
   const conflictsWithDailyLink =
     linkedDailyDate !== null &&
     (snapshot.mode.kind !== 'daily' || snapshot.mode.date !== linkedDailyDate);
-  const staleDaily =
-    snapshot.mode.kind === 'daily' && snapshot.mode.date !== dailyDate;
   const completedDaily =
     snapshot.mode.kind === 'daily' &&
     Boolean(readDailyResult(snapshot.mode.date, snapshot.mode.track));
 
-  if (conflictsWithDailyLink || staleDaily || completedDaily) {
+  const finished = snapshot.answers.length === snapshot.questionCount;
+  if (conflictsWithDailyLink || (completedDaily && !finished)) {
     return { kind: 'discard', shouldClear: true };
   }
 
@@ -91,11 +92,11 @@ export const useActiveGame = ({
 
       const restoration = resolveRestoration(
         readActiveGame(catalog),
-        dailyDate,
         linkedDailyDate,
       );
       if (restoration.kind === 'discard') {
-        if (restoration.shouldClear) clearActiveGame();
+        if (restoration.shouldClear)
+          void clearActiveGame().catch(reportSaveError);
         if (autoStartDaily && session.phase === 'landing') startDailyGame();
         return;
       }
@@ -120,7 +121,9 @@ export const useActiveGame = ({
         (snapshot.mode.kind === 'league' &&
           snapshot.answers.some(({ correct }) => !correct))
       ) {
-        completeGame(round);
+        void Promise.resolve(completeGame(round)).catch((error: unknown) =>
+          reportSaveError(error, async () => completeGame(round)),
+        );
       } else {
         startTimer();
       }
@@ -166,7 +169,7 @@ export const useActiveGame = ({
   const persist = useCallback(() => {
     if (!catalog || session.phase !== 'questions') return;
 
-    writeActiveGame({
+    void writeActiveGame({
       scoreMultipliers: session.scoreMultipliers,
       answers: session.answers,
       contentVersion: session.contentVersion,
@@ -178,7 +181,7 @@ export const useActiveGame = ({
       roundId: session.roundId ?? session.seed,
       playerRestoreId,
       seed: session.seed,
-    });
+    }).catch(reportSaveError);
   }, [catalog, getElapsedMilliseconds, playerRestoreId, session]);
 
   useEffect(() => {

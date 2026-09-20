@@ -1,7 +1,10 @@
-import { generations, type PokemonCatalog } from '../pokemon/types';
-import { questionTypes } from '../quiz/questions/definitions';
-import { type QuestionCategory } from '../quiz/types';
-import type { TrainerStats } from './progress';
+import { generations, type PokemonCatalog } from '../pokemon/types.ts';
+import {
+  questionDefinitions,
+  questionTypes,
+} from '../quiz/questions/definitions.ts';
+import type { QuestionType } from '../quiz/types.ts';
+import type { TrainerStats } from './progress.ts';
 
 const TRAINER_SPECIALTY_GOALS = [10, 100, 1000] as const;
 export type TrainerTier = 0 | 1 | 2 | 3;
@@ -35,20 +38,24 @@ const getProgress = (milestones: readonly TrainerMilestone[]) => {
 export const trainerSpecialtyDetails = {
   ability: {
     label: 'Ability Specialist',
-    description: 'Know which abilities a Pokémon can have.',
+    description: 'Know Pokémon abilities, Hidden Abilities, and their effects.',
   },
   description: {
     label: 'Field Researcher',
-    description: 'Match Pokédex entries to their Pokémon.',
+    description: 'Know Pokédex entries, Pokémon sizes, regions, and habitats.',
   },
   evolution: {
     label: 'Evolution Specialist',
-    description: 'Track how Pokémon types change through evolution.',
+    description: 'Know evolution chains, items, conditions, and type changes.',
   },
   identity: {
     label: 'Pokédex Specialist',
     description:
-      'Identify Pokémon from sprites, silhouettes, crops, and colors.',
+      'Recognize Pokémon, their generations, and Legendary or Mythical status.',
+  },
+  item: {
+    label: 'Item Specialist',
+    description: 'Know items, medicine, held effects, and berries.',
   },
   matchup: {
     label: 'Battle Strategist',
@@ -56,24 +63,35 @@ export const trainerSpecialtyDetails = {
   },
   move: {
     label: 'Move Specialist',
-    description: 'Know which moves Pokémon learn by leveling up.',
+    description: 'Know move types, damage classes, and level-up learnsets.',
   },
   stat: {
     label: 'Stat Specialist',
-    description: 'Compare Pokémon stats to find the highest or lowest.',
+    description: 'Compare Pokémon stats and understand natures and EV yields.',
   },
   type: {
     label: 'Type Specialist',
     description: 'Recognize Pokémon types and hidden type patterns.',
   },
-} as const satisfies Partial<
-  Record<QuestionCategory, { label: string; description: string }>
->;
+} as const;
 
 export type TrainerSpecialty = keyof typeof trainerSpecialtyDetails;
 const trainerSpecialties = Object.keys(
   trainerSpecialtyDetails,
 ) as TrainerSpecialty[];
+
+export const getTrainerSpecialtyCount = (
+  correctQuestionTypes: Partial<Record<QuestionType, number>>,
+  specialty: TrainerSpecialty,
+): number =>
+  questionTypes.reduce(
+    (total, type) =>
+      total +
+      (questionDefinitions[type].specialty === specialty
+        ? (correctQuestionTypes[type] ?? 0)
+        : 0),
+    0,
+  );
 
 export type TrainerRank =
   'Youngster' | 'Ace' | 'Veteran' | 'League Challenger' | 'Champion';
@@ -110,17 +128,20 @@ const trainerBadgeDefinitions = [
     milestones: (stats) =>
       (
         [
-          [10, 1],
-          [15, 10],
-          [18, 50],
+          [50, 1],
+          [70, 10],
+          [100, 30],
         ] as const
-      ).map(([goal, minimum]) => ({
-        current: questionTypes.filter(
-          (type) => (stats.correctQuestionTypes[type] ?? 0) >= minimum,
-        ).length,
-        goal,
-        requirement: `Answer ${minimum} question${minimum === 1 ? '' : 's'} correctly in each of ${goal} different formats`,
-      })),
+      ).map(([percentage, minimum]) => {
+        const goal = Math.ceil((questionTypes.length * percentage) / 100);
+        return {
+          current: questionTypes.filter(
+            (type) => (stats.correctQuestionTypes[type] ?? 0) >= minimum,
+          ).length,
+          goal,
+          requirement: `Answer ${minimum} question${minimum === 1 ? '' : 's'} correctly in each of ${goal} formats (${percentage}% of all formats)`,
+        };
+      }),
   },
   {
     id: 'pokedex-trail',
@@ -162,8 +183,8 @@ const trainerBadgeDefinitions = [
       countMilestones(
         Math.max(
           0,
-          ...trainerSpecialties.map(
-            (category) => stats.correctCategories[category] ?? 0,
+          ...trainerSpecialties.map((specialty) =>
+            getTrainerSpecialtyCount(stats.correctQuestionTypes, specialty),
           ),
         ),
         [50, 250, 1000],
@@ -278,7 +299,10 @@ export const getTrainerTitles = (
   equipped: TrainerSpecialty | null,
 ): TrainerTitle[] =>
   trainerSpecialties.map((specialty) => {
-    const current = stats.correctCategories[specialty] ?? 0;
+    const current = getTrainerSpecialtyCount(
+      stats.correctQuestionTypes,
+      specialty,
+    );
     return {
       ...getProgress(
         countMilestones(

@@ -1,0 +1,219 @@
+.social-screen {
+  width: min(42rem, 94vw);
+  min-width: 0;
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: var(--surface-radius);
+  box-shadow:
+    0 0.28rem 0 var(--yellow),
+    0 0.62rem 0 var(--navy-shadow);
+  text-align: left;
+}
+
+.social-screen__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.social-screen__header > .game-button {
+  flex: none;
+  width: 2.8rem;
+  padding: 0.4rem;
+}
+
+.social-screen__header h1 {
+  margin: 0;
+  color: var(--navy);
+  font-size: var(--text-headline);
+}
+
+.social-screen__intro,
+.friends-add {
+  display: grid;
+  gap: 1rem;
+}
+
+.social-screen__intro h2,
+.social-screen__intro p,
+.friends-add h2 {
+  margin: 0;
+}
+
+.social-screen__intro > .game-button {
+  justify-self: start;
+}
+
+.social-screen__note {
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.leaderboard-locked {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 1rem;
+  min-height: 12rem;
+  text-align: center;
+  color: var(--navy);
+}
+
+.leaderboard-locked svg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.friends-options summary,
+.leaderboard-rules summary {
+  cursor: pointer;
+  padding-block: 0.5rem;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.friends-options summary:focus-visible,
+.leaderboard-rules summary:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 2px;
+}
+
+.leaderboard-viewer {
+  padding: 0.8rem;
+  background: var(--cream);
+  border-block: 2px solid var(--navy);
+}
+
+.friends-panel {
+  align-content: start;
+}
+
+.friends-panel {
+  display: grid;
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+
+.friends-panel p,
+.friends-panel h2 {
+  margin: 0 0 0.5rem;
+}
+
+.leaderboard-locked p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.friends-player {
+  display: grid;
+  gap: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.friends-player small {
+  font-family: var(--font-data);
+}
+
+.friends-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.friends-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.friends-list li {
+  padding-block: 0.75rem;
+  border-top: 1px solid var(--navy);
+}
+
+.leaderboard-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.leaderboard-controls label,
+.leaderboard-table th[scope='row'] {
+  overflow-wrap: anywhere;
+}
+
+.leaderboard-controls label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.leaderboard-controls input {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.6rem;
+  border: 2px solid var(--navy);
+  border-radius: 0.25rem;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.leaderboard-controls .game-button,
+.leaderboard-standings .game-button {
+  width: auto;
+}
+
+.leaderboard-standings {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 0.65rem 0.25rem;
+  border-bottom: 1px solid var(--navy);
+  text-align: left;
+}
+
+.leaderboard-table td {
+  font-family: var(--font-data);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.leaderboard-table small {
+  display: block;
+  font-weight: normal;
+}
+
+.leaderboard-table tr[aria-current='true'] {
+  background: var(--cream);
+}
+
+.friends-field {
+  display: grid;
+  gap: 0.35rem;
+  margin-block: 0.7rem;
+}
+
+.friends-field input {
+  min-width: 0;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  color: var(--ink);
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: 0.5rem;
+  font: inherit;
+}

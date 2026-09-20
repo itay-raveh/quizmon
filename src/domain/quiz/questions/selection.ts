@@ -1,9 +1,9 @@
-import { createSeededRandom, shuffle } from '../../../lib/random';
-import type { PokemonKnowledge } from '../../pokemon/types';
-import { getPokemonRecency, getSubjectRecency } from '../question-history';
-import type { Candidate, QuestionContext } from './context';
-import { groupPokemon, pickForm, speciesWeight } from './sampling';
-import { getSpeciesHistory, speciesName } from './species-history';
+import { createSeededRandom, shuffle } from '../../../lib/random.ts';
+import type { PokemonKnowledge } from '../../pokemon/types.ts';
+import { getPokemonRecency, getSubjectRecency } from '../question-history.ts';
+import type { Candidate, QuestionContext } from './context.ts';
+import { groupPokemon, pickForm, speciesWeight } from './sampling.ts';
+import { getSpeciesHistory, speciesName } from './species-history.ts';
 
 export const orderSpecies = (
   context: QuestionContext,

@@ -11,7 +11,7 @@ hooks = [
   { id = "check-case-conflict" },
   { id = "check-json" },
   { id = "check-toml" },
-  { id = "check-yaml" },
+  { id = "check-yaml", exclude = "^charts/quizmon/templates/" },
   { id = "check-merge-conflict" },
   { id = "detect-private-key" },
 ]
@@ -56,3 +56,11 @@ language = "system"
 pass_filenames = false
 always_run = true
 stages = ["pre-push"]
+
+[[repos.hooks]]
+id = "helm-chart"
+name = "validate Helm chart"
+entry = "npm run check:chart"
+language = "system"
+pass_filenames = false
+files = "^charts/quizmon/"

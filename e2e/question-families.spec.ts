@@ -6,7 +6,7 @@ import {
   formatName,
   seedQuestionTraining,
 } from './fixtures';
-import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
+import { readRound } from './database-fixture';
 import { generations } from '../src/domain/pokemon/types';
 import { questionLabels } from '../src/domain/quiz/question-labels';
 import type { QuestionType } from '../src/domain/quiz/types';
@@ -65,12 +65,7 @@ for (const { type, level, count } of cases)
     await expect(
       page.getByRole('heading', { name: questionLabels[type], exact: true }),
     ).toBeVisible();
-    const snapshot = await page.evaluate(
-      () =>
-        JSON.parse(
-          sessionStorage.getItem('quizmon.active-game.v1')!,
-        ) as ActiveGameSnapshot,
-    );
+    const snapshot = (await readRound(page))!;
     const question = snapshot.questions[0]!;
     expect(question.answer.interaction).toBe(
       type === 'berry-flavors' ? 'multi-select' : 'single-choice',
@@ -222,12 +217,7 @@ for (const { type, level, count } of cases)
       page.getByRole('progressbar', { name: 'Quiz progress' }),
     ).toContainText('002 / 010');
     await expect(page.locator('.answer--correct')).toHaveCount(0);
-    const resumed = await page.evaluate(
-      () =>
-        JSON.parse(
-          sessionStorage.getItem('quizmon.active-game.v1')!,
-        ) as ActiveGameSnapshot,
-    );
+    const resumed = (await readRound(page))!;
     expect(resumed.questions).toEqual(snapshot.questions);
     expect(resumed.answers[0]?.subject).toEqual({
       kind: question.subject.kind,

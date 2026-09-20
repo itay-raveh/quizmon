@@ -1,5 +1,5 @@
-import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
-import type { TrainerProgressChange } from '@/domain/player/trainer-progression';
+import type { LeagueVictoryRecord } from '../domain/player/hall-of-fame';
+import type { TrainerProgressChange } from '../domain/player/trainer-progression';
 import type {
   AnswerResult,
   GameMode,
@@ -15,7 +15,7 @@ export type StartGame = (
   settings: GameSettings,
   mode: GameMode,
   seed: string,
-) => boolean | void;
+) => boolean | void | Promise<boolean | void>;
 
 export type GameSession =
   | { phase: 'landing' }
@@ -49,7 +49,9 @@ type GameRound = Omit<
   'phase' | 'questionIndex'
 >;
 
-export type CompleteGame = (round: GameRound) => boolean | void;
+export type CompleteGame = (
+  round: GameRound,
+) => boolean | void | Promise<boolean | void>;
 
 export type GameSessionAction =
   | (Omit<GameRound, 'answers'> & { type: 'started' })

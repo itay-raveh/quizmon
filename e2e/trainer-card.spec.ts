@@ -1,4 +1,5 @@
 import { seedPlayer } from './fixtures';
+import { questionTypes } from '../src/domain/quiz/questions/definitions';
 import type { Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { emptyPlayerData } from '../src/domain/player/player-save';
@@ -17,10 +18,10 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
       daily: {},
       progress: {
         championAnswersWithoutClues: 0,
-        correctCategories: { type: 10 },
+        correctCategories: {},
         correctGenerations: {},
         correctPokemon: [],
-        correctQuestionTypes: {},
+        correctQuestionTypes: { 'type-check': 10 },
         masteryRounds: 0,
         quickAttackCompleted: false,
       },
@@ -30,7 +31,10 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'Trainer profile' }).click();
+  await page
+    .getByRole('navigation', { name: 'Main', exact: true })
+    .getByRole('button', { name: 'Trainer', exact: true })
+    .click();
   await expect(page).toHaveURL(/\?trainer=card$/);
   await expect(
     page.getByRole('article', { name: 'Trainer Card' }),
@@ -123,7 +127,11 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(
     page.getByRole('dialog').getByRole('heading', { name: 'Many Paths' }),
   ).toBeVisible();
-  await expect(page.getByRole('dialog').getByText('0 / 10')).toBeVisible();
+  await expect(
+    page
+      .getByRole('dialog')
+      .getByText(`1 / ${Math.ceil(questionTypes.length / 2)}`),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'Close badge details' }).click();
 
   await page.getByRole('button', { name: 'Titles', exact: true }).click();
@@ -151,7 +159,9 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
     titleDialog.getByRole('heading', { name: 'Ability Specialist' }),
   ).toBeVisible();
   await expect(
-    titleDialog.getByText('Know which abilities a Pokémon can have.'),
+    titleDialog.getByText(
+      'Know Pokémon abilities, Hidden Abilities, and their effects.',
+    ),
   ).toBeVisible();
   await expect(
     titleDialog.getByText('Answer 10 questions correctly in this field.'),

@@ -1,11 +1,3 @@
-import { getLocalDate } from '@/domain/quiz/daily';
-import { isIos, isStandalone } from '@/features/installation/install-platform';
-import {
-  readStoredValue,
-  removeStoredValue,
-  writeStoredValue,
-} from '@/lib/storage/browser-storage';
-import { readDailyResult } from '@/lib/storage/results-storage';
 import {
   useCallback,
   useEffect,
@@ -13,6 +5,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { getUtcDate } from '../../domain/quiz/daily';
+import {
+  readStoredValue,
+  removeStoredValue,
+  writeStoredValue,
+} from '../../lib/storage/browser-storage';
+import { readDailyState } from '../daily/daily-state';
+import { isIos, isStandalone } from '../installation/install-platform';
 import {
   DailyReminderContext,
   type DailyReminderStatus,
@@ -47,13 +47,14 @@ const registerSubscription = async (
   id: string,
   subscription: PushSubscription,
 ) => {
-  const today = getLocalDate();
+  const today = getUtcDate();
   const response = await fetch(`/api/daily-reminders/${id}`, {
     body: JSON.stringify({
-      completedDate: readDailyResult(today)
-        ? today
-        : (readStoredValue('localStorage', LAST_COMPLETED_DAILY_KEY) ??
-          undefined),
+      completedDate:
+        readDailyState(today).completed.length > 0
+          ? today
+          : (readStoredValue('localStorage', LAST_COMPLETED_DAILY_KEY) ??
+            undefined),
       subscription: subscription.toJSON(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     }),

@@ -1,6 +1,6 @@
-import type { FormGroup, Generation } from '../pokemon/types';
-import type { QuestionType } from '../quiz/types';
-import type { Difficulty } from '../quiz/difficulty';
+import type { FormGroup, Generation } from '../pokemon/types.ts';
+import type { QuestionType } from '../quiz/types.ts';
+import type { Difficulty } from '../quiz/difficulty.ts';
 export const trainingModes = ['league', 'custom'] as const;
 export const answerFlows = ['manual', 'auto', 'instant'] as const;
 export const timerDisplays = ['hidden', 'seconds', 'milliseconds'] as const;

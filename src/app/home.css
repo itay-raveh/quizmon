@@ -3,7 +3,8 @@
   width: 100%;
   min-height: 0;
   align-self: stretch;
-  align-content: center;
+  align-content: start;
+  padding-top: clamp(1rem, 5svh, 3rem);
   justify-items: center;
   gap: clamp(1.15rem, 3.5svh, 2.35rem);
 }
@@ -99,7 +100,6 @@
   font-size: var(--text-brand-detail);
   font-weight: 800;
   line-height: 1.2;
-  opacity: 0.9;
 }
 
 .catch-combo {
@@ -191,7 +191,7 @@
   display: grid;
   width: 100%;
   min-height: 3.25rem;
-  grid-template-columns: 3.25rem repeat(2, minmax(0, 1fr));
+  grid-template-columns: 3.25rem minmax(0, 1fr);
   gap: 0.55rem;
 }
 
@@ -202,13 +202,6 @@
   padding: 0.25rem 0.5rem;
   font-size: var(--text-brand-control);
   overflow-wrap: anywhere;
-}
-
-.landing__actions .settings-button.game-button {
-  width: 3.25rem;
-  min-width: 3.25rem;
-  height: 3.25rem;
-  min-height: 3.25rem;
 }
 
 .landing__actions .game-button > span {
@@ -279,4 +272,18 @@
 .landing__league-copy > span {
   font-size: var(--text-micro);
   color: var(--hall-muted);
+}
+
+@media (max-height: 40rem) {
+  .landing {
+    gap: 1rem;
+  }
+  .logo-picture {
+    width: min(80vw, 37svh, 26rem);
+  }
+}
+
+.landing__customize svg {
+  width: 1.5rem;
+  height: 1.5rem;
 }

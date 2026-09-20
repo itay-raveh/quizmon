@@ -1,5 +1,9 @@
-import { isDailyDate, isRecord } from '../../lib/validation';
-import { difficultyLevels, isDifficulty, type Difficulty } from './difficulty';
+import { isDailyDate, isRecord } from '../../lib/validation.ts';
+import {
+  difficultyLevels,
+  isDifficulty,
+  type Difficulty,
+} from './difficulty.ts';
 
 export interface DailyTrack {
   difficulty: Difficulty;

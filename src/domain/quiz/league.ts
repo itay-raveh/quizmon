@@ -1,7 +1,7 @@
-import { createSeededRandom, shuffle } from '../../lib/random';
-import type { GameResult, QuestionData, QuestionType } from './types';
+import { createSeededRandom, shuffle } from '../../lib/random.ts';
+import type { GameResult, QuestionData, QuestionType } from './types.ts';
 
-import { GAMEPLAY_REVISION } from './gameplay-version';
+import { GAMEPLAY_REVISION } from './gameplay-version.ts';
 
 const LEAGUE_STAGE_SIZE = 3;
 
@@ -56,7 +56,7 @@ const stageQuestionTypes: readonly (readonly QuestionType[])[] = [
   ['move-check', 'stat-showdown', 'type-matchup'],
 ];
 
-export { getChallengeSettings as getLeagueSettings } from '../settings/game-settings';
+export { getChallengeSettings as getLeagueSettings } from '../settings/game-settings.ts';
 
 export const getLeagueQuestionTypes = (
   seed: string,

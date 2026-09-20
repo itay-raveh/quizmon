@@ -100,23 +100,20 @@ const buildSingleQuestion = (questionType: QuestionType, seed: string) => {
   return question;
 };
 describe('question building', () => {
-  it.each(Array.from({ length: 20 }, (_, index) => index))(
-    'keeps advanced formats out of League Training round %i',
-    (index) => {
-      const settings = getTrainingSettings(defaultGameSettings);
-      const questions = buildQuestions(
-        catalog,
-        settings,
-        createSeededRandom(`core-training-${index}`),
-      );
-      expect(questions).toHaveLength(10);
-      for (const question of questions) {
-        expect(['ability-check', 'move-check', 'stat-showdown']).not.toContain(
-          question.questionType,
-        );
-      }
-    },
-  );
+  it('keeps advanced formats out of beginner Training', () => {
+    const settings = getTrainingSettings(defaultGameSettings);
+    const excluded = ['ability-check', 'move-check', 'stat-showdown'];
+    for (const type of excluded)
+      expect(settings.questionTypes).not.toContain(type);
+    const questions = buildQuestions(
+      catalog,
+      settings,
+      createSeededRandom('beginner-training'),
+    );
+    expect(questions).toHaveLength(10);
+    for (const question of questions)
+      expect(excluded).not.toContain(question.questionType);
+  });
   it('filters the normalized catalog by generation', () => {
     const candidates = filterPokemon(catalog, { generations: ['IX'] });
     expect(candidates.length).toBeGreaterThan(100);

@@ -1,4 +1,4 @@
-import type { TopicCatalog } from '../quiz/topic-catalog';
+import type { TopicCatalog } from '../quiz/topic-catalog.ts';
 export const generations = [
   'I',
   'II',

@@ -1,7 +1,7 @@
-import { getSubjectRecency } from '../question-history';
-import type { TopicCatalog } from '../topic-catalog';
-import type { QuestionContext } from './context';
-import { ordered } from './topic-support';
+import { getSubjectRecency } from '../question-history.ts';
+import type { TopicCatalog } from '../topic-catalog.ts';
+import type { QuestionContext } from './context.ts';
+import { ordered } from './topic-support.ts';
 
 type Encounter = TopicCatalog['encounters'][number];
 

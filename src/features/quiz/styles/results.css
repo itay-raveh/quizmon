@@ -293,7 +293,6 @@
   border: 0;
   font: inherit;
   text-align: left;
-  cursor: pointer;
 }
 .reward::before {
   content: '';
@@ -304,14 +303,6 @@
   opacity: 0;
   z-index: -1;
   pointer-events: none;
-}
-.reward:focus-visible {
-  outline: 3px solid var(--blue);
-  outline-offset: 3px;
-}
-.reward:hover .reward__name {
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 .reward__art {
   position: relative;

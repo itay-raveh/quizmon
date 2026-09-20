@@ -3,15 +3,15 @@ import {
   isMeasurementClusterMember,
   isMeasurementSeparation,
   measurementWinner,
-} from '../measurement-comparison';
-import type { QuestionBuilder } from './context';
+} from '../measurement-comparison.ts';
+import type { QuestionBuilder } from './context.ts';
 import {
   distinctPokemon,
   makeTopicQuestion,
   orderedPokemon,
   picturedPokemon,
   pokemonSubject,
-} from './topic-support';
+} from './topic-support.ts';
 
 export const buildMeasurement =
   (measurement: 'height' | 'weight'): QuestionBuilder =>

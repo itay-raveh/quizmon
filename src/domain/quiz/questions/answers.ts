@@ -1,9 +1,9 @@
-import { createSeededRandom, shuffle } from '../../../lib/random';
-import { questionTuning } from '../question-variants';
-import { statNames, type PokemonKnowledge } from '../../pokemon/types';
-import type { Candidate, QuestionContext } from './context';
-import { groupPokemon } from './sampling';
-import { chooseTargets, distinctPokemon } from './selection';
+import { createSeededRandom, shuffle } from '../../../lib/random.ts';
+import { questionTuning } from '../question-variants.ts';
+import { statNames, type PokemonKnowledge } from '../../pokemon/types.ts';
+import type { Candidate, QuestionContext } from './context.ts';
+import { groupPokemon } from './sampling.ts';
+import { chooseTargets, distinctPokemon } from './selection.ts';
 
 export const rankedOptionSet = (
   correct: string,

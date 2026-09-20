@@ -1,14 +1,14 @@
-import { formatPokemonName } from '../../pokemon/format';
-import { targetMedia } from './assembly';
-import type { QuestionBuilder } from './context';
-import { pokemonPrompt } from './prompts';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import { targetMedia } from './assembly.ts';
+import type { QuestionBuilder } from './context.ts';
+import { pokemonPrompt } from './prompts.ts';
 import {
   makeTopicQuestion,
   ordered,
   orderedPokemon,
   pokemonSubject,
   topicEligible,
-} from './topic-support';
+} from './topic-support.ts';
 
 export const buildHidden: QuestionBuilder = (context) => {
   const pool = orderedPokemon(context, context.pool);

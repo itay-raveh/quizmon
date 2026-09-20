@@ -1,38 +1,45 @@
-import { Disclaimer, Footer } from '@/app/Footer';
-import { HomeScreen } from '@/app/HomeScreen';
-import { MotionProvider } from '@/app/providers/MotionProvider';
-import { isLeagueUnlocked } from '@/domain/player/trainer-progression';
-import { getLocalDate } from '@/domain/quiz/daily';
-import { isLeagueVictory } from '@/domain/quiz/league';
-import type { AnswerResult } from '@/domain/quiz/types';
-import type { GameSettings } from '@/domain/settings/types';
-import type { useDailyChallenge } from '@/features/daily/useDailyChallenge';
-import { InstallProvider } from '@/features/installation/InstallProvider';
-import { LeagueDestination } from '@/features/league/LeagueDestination';
-import type { useLeagueChallenge } from '@/features/league/useLeagueChallenge';
-import type { useLeagueDestination } from '@/features/league/useLeagueDestination';
-import { LeaveGameDialog } from '@/features/quiz/LeaveGameDialog';
-import { QuestionScreen } from '@/features/quiz/QuestionScreen';
-import { ResultsScreen } from '@/features/quiz/ResultsScreen';
-import type { useTrainingGame } from '@/features/quiz/useTrainingGame';
-import { DailyReminderProvider } from '@/features/reminders/DailyReminderProvider';
-import { GenerationPromptDialog } from '@/features/settings/GenerationPromptDialog';
-import { SettingsDialog } from '@/features/settings/SettingsDialog';
-import type { useSettingsDialog } from '@/features/settings/useSettingsDialog';
-import { TrainerPassport } from '@/features/trainer/TrainerPassport';
-import type { useTrainerCard } from '@/features/trainer/useTrainerCard';
-import type { usePokemonCatalog } from '@/hooks/usePokemonCatalog';
-import { SoundProvider } from '@/lib/audio/SoundProvider';
+import { isLeagueUnlocked } from '../domain/player/trainer-progression';
+import { getUtcDate } from '../domain/quiz/daily';
+import { isLeagueVictory } from '../domain/quiz/league';
+import type { AnswerResult } from '../domain/quiz/types';
+import type { GameSettings } from '../domain/settings/types';
+import type { useDailyChallenge } from '../features/daily/useDailyChallenge';
+import { InstallProvider } from '../features/installation/InstallProvider';
+import { LeagueDestination } from '../features/league/LeagueDestination';
+import type { useLeagueChallenge } from '../features/league/useLeagueChallenge';
+import type { useLeagueDestination } from '../features/league/useLeagueDestination';
+import { LeaveGameDialog } from '../features/quiz/LeaveGameDialog';
+import { QuestionScreen } from '../features/quiz/QuestionScreen';
+import { ResultsScreen } from '../features/quiz/ResultsScreen';
+import type { useTrainingGame } from '../features/quiz/useTrainingGame';
+import { DailyReminderProvider } from '../features/reminders/DailyReminderProvider';
+import { GenerationPromptDialog } from '../features/settings/GenerationPromptDialog';
+import { SettingsDialog } from '../features/settings/SettingsDialog';
+import type { useSettingsDialog } from '../features/settings/useSettingsDialog';
+import { TrainerPassport } from '../features/trainer/TrainerPassport';
+import type { useTrainerCard } from '../features/trainer/useTrainerCard';
+import type { usePokemonCatalog } from '../hooks/usePokemonCatalog';
+import { SoundProvider } from '../lib/audio/SoundProvider';
+import { Footer } from './Footer';
 import type { GameSession } from './game-session';
+import { HomeScreen } from './HomeScreen';
+import { MotionProvider } from './providers/MotionProvider';
 import type { useGameNavigation } from './useGameNavigation';
+import { AccountScreen } from '../features/account/AccountScreen';
+import { FriendsScreen } from '../features/friends/FriendsScreen';
+import { LeaderboardScreen } from '../features/friends/LeaderboardScreen';
+import { AppNavigation } from './AppNavigation';
+import { useAppDestination } from './useAppDestination';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { accountSnapshot, subscribeAccount } from '../features/account/account';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
 interface QuestionView {
   assistance: (count: number) => void;
-  answer: (answer: AnswerResult) => void;
+  answer: (answer: AnswerResult) => void | Promise<void>;
   elapsedMilliseconds: number;
   elapsedSeconds: number;
   pauseTimer: () => number;
-  recordAnswer: (answer: AnswerResult) => void;
+  recordAnswer: (answer: AnswerResult) => void | Promise<void>;
 }
 interface AppViewProps {
   catalogState: CatalogState;
@@ -47,6 +54,7 @@ interface AppViewProps {
   trainer: ReturnType<typeof useTrainerCard>;
   training: ReturnType<typeof useTrainingGame>;
 }
+type DestinationNavigation = ReturnType<typeof useAppDestination>;
 const AppScreen = ({
   catalogState,
   daily,
@@ -57,12 +65,43 @@ const AppScreen = ({
   settingsDialog,
   trainer,
   training,
-}: AppViewProps) => {
-  if (trainer.isOpen && catalogState.status === 'ready') {
+  destination,
+}: AppViewProps & { destination: DestinationNavigation }) => {
+  const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
+  if (session.phase !== 'questions' && destination.destination === 'account') {
+    return <AccountScreen onBack={() => destination.back()} />;
+  }
+  if (session.phase !== 'questions' && destination.destination === 'friends') {
+    return (
+      <FriendsScreen
+        onBack={() => destination.back('leaderboards')}
+        initialInput={destination.friendCode}
+      />
+    );
+  }
+  if (
+    session.phase !== 'questions' &&
+    destination.destination === 'leaderboards'
+  ) {
+    return (
+      <LeaderboardScreen
+        onBack={() => destination.back()}
+        onManageFriends={() => destination.open('friends')}
+        initialDate={destination.standingsDate}
+        initialScope={destination.standingsScope}
+        onSelectionChange={destination.selectStandings}
+      />
+    );
+  }
+  if (
+    session.phase !== 'questions' &&
+    trainer.isOpen &&
+    catalogState.status === 'ready'
+  ) {
     return (
       <TrainerPassport
         catalog={catalogState.catalog}
-        onBack={trainer.close}
+        onBack={() => destination.back('play')}
         onViewChange={trainer.showView}
         onProfileChange={trainer.updateProfile}
         profile={trainer.profile}
@@ -89,7 +128,7 @@ const AppScreen = ({
         celebrate={leagueVictory}
         onBack={() => {
           league.close();
-          navigation.returnToLanding();
+          void navigation.returnToLanding();
         }}
         onStart={league.start}
         onViewResults={
@@ -114,14 +153,15 @@ const AppScreen = ({
           dailyResult={daily.result}
           dailyResultSaved={daily.resultSaved}
           dailyError={daily.error}
-          dailyStreak={daily.date === getLocalDate() ? daily.streak : 0}
+          dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
           leagueUnlocked={leagueUnlocked}
           leagueCompleted={trainer.stats.leagueCompleted}
-          onOpenSettings={settingsDialog.open}
-          onOpenTrainerCard={() => trainer.open('front')}
+          onCustomizeTraining={settingsDialog.openTraining}
           onRetryCatalog={catalogState.retry}
           onStart={training.start}
-          onStartDaily={daily.start}
+          onStartDaily={() => {
+            void daily.start();
+          }}
           onStartLeague={() =>
             league.open(trainer.stats.leagueCompleted ? 'hall' : 'challenge')
           }
@@ -160,7 +200,9 @@ const AppScreen = ({
         onAnswer={question.answer}
         onAnswerRecorded={question.recordAnswer}
         onFeedbackStart={question.pauseTimer}
-        onNewGame={navigation.requestLeave}
+        onNewGame={() => {
+          void navigation.requestLeave();
+        }}
         question={currentQuestion}
         timerDisplay={session.settings.timerDisplay}
         total={session.questions.length}
@@ -171,18 +213,15 @@ const AppScreen = ({
     <ResultsScreen
       bestResult={session.bestResult}
       dailyStreak={
-        session.mode.kind === 'daily' && session.mode.date === getLocalDate()
+        session.mode.kind === 'daily' && session.mode.date === getUtcDate()
           ? daily.streak
           : 0
       }
       isNewBest={session.isNewBest}
       mode={session.mode}
       settings={session.settings}
-      onNewGame={navigation.returnToLanding}
-      onOpenTrainerCard={trainer.open}
-      onOpenHallOfFame={() => {
-        league.open('hall');
-        league.setShowResults(false);
+      onNewGame={() => {
+        void navigation.returnToLanding();
       }}
       onRetryLeague={league.retry}
       onTrainAgain={training.trainAgain}
@@ -190,6 +229,15 @@ const AppScreen = ({
       result={session.result}
       resultSaved={session.resultSaved}
       progressChanges={session.progressChanges}
+      onlineEntry={
+        session.resultSaved ? (
+          <p className="result-save-status" role="status">
+            {account.owner
+              ? 'Saved to this device. Eligible Daily scores appear in Leaderboards after syncing.'
+              : 'Saved on this device.'}
+          </p>
+        ) : undefined
+      }
     />
   );
 };
@@ -213,6 +261,7 @@ const AppOverlays = ({
     {settingsDialog.isOpen && catalogState.status === 'ready' ? (
       <SettingsDialog
         catalog={catalogState.catalog}
+        section={settingsDialog.section}
         settings={settings}
         onClose={settingsDialog.close}
         onSave={settingsDialog.save}
@@ -234,34 +283,104 @@ const AppOverlays = ({
           Boolean(session.mode.track)
         }
         onCancel={navigation.cancelLeave}
-        onConfirm={navigation.returnToLanding}
+        onConfirm={() => {
+          void navigation.returnToLanding();
+        }}
       />
     ) : null}
   </>
 );
-export const AppView = (props: AppViewProps) => (
-  <MotionProvider reduceMotion={props.settings.reduceMotion}>
-    <SoundProvider
-      prepareScoreCount={props.session.phase !== 'landing'}
-      volume={props.settings.soundVolume}
-    >
-      <InstallProvider>
-        <DailyReminderProvider>
-          <div
-            className={`app app--${props.trainer.isOpen ? 'trainer' : props.session.phase}`}
-          >
-            <div className="background" aria-hidden="true" />
-            <div className="app__screen">
-              <main>
-                <AppScreen {...props} />
-              </main>
-              <Footer showSupport={props.session.phase !== 'questions'} />
+export const AppView = (props: AppViewProps) => {
+  const destination = useAppDestination();
+  const main = useRef<HTMLElement>(null);
+  const screenKey =
+    props.session.phase === 'questions'
+      ? 'questions'
+      : (destination.destination ??
+        (props.trainer.isOpen
+          ? `trainer:${props.trainer.view}`
+          : props.session.phase));
+  const previousScreen = useRef(screenKey);
+  useEffect(() => {
+    if (previousScreen.current === screenKey) return;
+    previousScreen.current = screenKey;
+    const heading = main.current?.querySelector<HTMLElement>('h1');
+    if (heading) {
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+    }
+    window.scrollTo(0, 0);
+  }, [screenKey]);
+  const showNavigation = props.session.phase !== 'questions';
+  const active =
+    destination.destination === 'account'
+      ? null
+      : destination.destination === 'leaderboards' ||
+          destination.destination === 'friends'
+        ? 'leaderboards'
+        : props.trainer.isOpen
+          ? 'trainer'
+          : 'play';
+  const onAccount = () => {
+    if (destination.destination !== 'account') destination.account();
+  };
+  return (
+    <MotionProvider reduceMotion={props.settings.reduceMotion}>
+      <SoundProvider
+        prepareScoreCount={props.session.phase !== 'landing'}
+        volume={props.settings.soundVolume}
+      >
+        <InstallProvider>
+          <DailyReminderProvider>
+            <div
+              className={`app app--${props.trainer.isOpen && showNavigation ? 'trainer' : props.session.phase}${showNavigation ? ' app--with-navigation' : ''}${destination.destination && showNavigation ? ' app--destination' : ''}`}
+            >
+              <div className="background" aria-hidden="true" />
+              <div className="app__screen">
+                {showNavigation ? (
+                  <AppNavigation
+                    active={active}
+                    accountOpen={destination.destination === 'account'}
+                    onAccount={onAccount}
+                    onSettings={props.settingsDialog.open}
+                    trainerAvailable={props.catalogState.status === 'ready'}
+                    onNavigate={(next) => {
+                      if (next === 'trainer') destination.trainer();
+                      else if (next === 'leaderboards')
+                        destination.open(
+                          'leaderboards',
+                          props.session.phase === 'results' &&
+                            props.session.mode.kind === 'daily'
+                            ? props.session.mode.date
+                            : undefined,
+                        );
+                      else {
+                        destination.play();
+                        props.league.close();
+                        void props.navigation.returnToLanding();
+                      }
+                    }}
+                  />
+                ) : null}
+                <main ref={main}>
+                  <AppScreen {...props} destination={destination} />
+                </main>
+                {showNavigation ? (
+                  <Footer
+                    showWordmarkCredit={
+                      props.session.phase === 'landing' &&
+                      !destination.destination &&
+                      !props.trainer.isOpen &&
+                      !props.league.isOpen
+                    }
+                  />
+                ) : null}
+              </div>
+              <AppOverlays {...props} />
             </div>
-            <Disclaimer />
-            <AppOverlays {...props} />
-          </div>
-        </DailyReminderProvider>
-      </InstallProvider>
-    </SoundProvider>
-  </MotionProvider>
-);
+          </DailyReminderProvider>
+        </InstallProvider>
+      </SoundProvider>
+    </MotionProvider>
+  );
+};

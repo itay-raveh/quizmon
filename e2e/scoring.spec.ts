@@ -1,3 +1,5 @@
+import { observeAnswer } from '../src/domain/quiz/answer-observation';
+import { readSave, readRound } from './database-fixture';
 import { catalog } from './fixtures';
 import { generations } from '../src/domain/pokemon/types';
 import { questionTypes } from '../src/domain/quiz/questions/definitions';
@@ -13,8 +15,6 @@ import {
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import { createSeededRandom } from '../src/lib/random';
 import { seedPlayer } from './fixtures';
-import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
-import type { PlayerData } from '../src/domain/player/player-save';
 import { expect, expectNoHorizontalOverflow, test } from './fixtures';
 
 for (const width of [360, 1280]) {
@@ -37,7 +37,9 @@ for (const width of [360, 1280]) {
       },
     });
     await page.goto('/');
-    await page.getByRole('button', { name: 'Settings', exact: true }).click();
+    await page
+      .getByRole('button', { name: 'Customize training', exact: true })
+      .click();
     const preview = page.locator('.training-multiplier');
     await expect(preview).toContainText('Training multiplier');
     await page.screenshot({
@@ -53,12 +55,7 @@ for (const width of [360, 1280]) {
       .getByRole('button', { name: 'Start training', exact: true })
       .click();
     await expect(page.locator('.question')).toBeVisible();
-    const initial = await page.evaluate(
-      () =>
-        JSON.parse(
-          sessionStorage.getItem('quizmon.active-game.v1')!,
-        ) as ActiveGameSnapshot,
-    );
+    const initial = (await readRound(page))!;
     expect(initial.scoreMultipliers).toMatchObject({
       difficulty: 3,
       generations: 2,
@@ -76,15 +73,11 @@ for (const width of [360, 1280]) {
     );
 
     for (let index = 0; index < 10; index++) {
-      const answerIndices = await page.evaluate(() => {
-        const round = JSON.parse(
-          sessionStorage.getItem('quizmon.active-game.v1')!,
-        ) as ActiveGameSnapshot;
-        const question = round.questions[round.answers.length]!;
-        return question.answer.correctOptions.map((value) =>
-          question.options.indexOf(value),
-        );
-      });
+      const round = (await readRound(page))!;
+      const question = round.questions[round.answers.length]!;
+      const answerIndices = question.answer.correctOptions.map((value) =>
+        question.options.indexOf(value),
+      );
       for (const answerIndex of answerIndices)
         await page.locator('.answer').nth(answerIndex).click();
       const submit = page.getByRole('button', {
@@ -101,12 +94,7 @@ for (const width of [360, 1280]) {
       if (index === 0) {
         await page.reload();
         await expect(page.getByRole('progressbar')).toHaveText('002 / 010');
-        const resumed = await page.evaluate(
-          () =>
-            JSON.parse(
-              sessionStorage.getItem('quizmon.active-game.v1')!,
-            ) as ActiveGameSnapshot,
-        );
+        const resumed = (await readRound(page))!;
         expect(resumed.scoreMultipliers).toEqual(initial.scoreMultipliers);
       }
     }
@@ -114,12 +102,7 @@ for (const width of [360, 1280]) {
     await expect(
       page.getByRole('heading', { name: 'Training complete' }),
     ).toBeVisible();
-    const saved = await page.evaluate(() => {
-      const player = JSON.parse(localStorage.getItem('quizmon.player')!) as {
-        data: PlayerData;
-      };
-      return player.data.results.training['score:3']!;
-    });
+    const saved = (await readSave(page)).data.results.training['score:3']!;
     expect(saved.correctCount).toBe(10);
     expect(saved.scoreMultipliers).toEqual(initial.scoreMultipliers);
     const knowledge = saved.answers.reduce(
@@ -178,6 +161,7 @@ for (const width of [320, 1280]) {
       createSeededRandom('large-score'),
     );
     const answers = questions.map((question) => ({
+      observation: observeAnswer(question, question.answer.correctOptions),
       category: question.category,
       questionType: question.questionType,
       subject: question.subject,

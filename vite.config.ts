@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 import { contentPageEntries } from './build/content-pages.ts';
 import { siteMetadata } from './build/site-metadata.ts';
+import { pokemonCatalog } from './build/pokemon-catalog.ts';
 import { SPRITE_SOURCE } from './src/domain/pokemon/sprite-source.ts';
 
 const spriteProxy = {
@@ -11,6 +12,15 @@ const spriteProxy = {
     target: SPRITE_SOURCE,
     changeOrigin: true,
   },
+};
+const proxy = {
+  ...spriteProxy,
+  '/api/auth': { target: 'http://127.0.0.1:8790' },
+  '/api/account': { target: 'http://127.0.0.1:8790' },
+  '/api/sync': { target: 'http://127.0.0.1:8790' },
+  '/api/dev': { target: 'http://127.0.0.1:8790' },
+  '/api/friends': { target: 'http://127.0.0.1:8790' },
+  '/api/leaderboards': { target: 'http://127.0.0.1:8790' },
 };
 
 export default defineConfig({
@@ -20,15 +30,17 @@ export default defineConfig({
       input: ['index.html', ...contentPageEntries],
     },
   },
+  optimizeDeps: { exclude: ['@powersync/web'] },
   plugins: [
     react(),
     siteMetadata(),
+    pokemonCatalog(),
     VitePWA({
       filename: 'sw.ts',
       injectRegister: 'auto',
       injectManifest: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        globPatterns: ['**/*.{js,css,html,woff2,json,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,woff2,json,webmanifest,wasm,bin}'],
       },
       manifest: false,
       registerType: 'prompt',
@@ -42,10 +54,10 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: spriteProxy,
+    proxy,
   },
   preview: {
-    proxy: spriteProxy,
+    proxy,
   },
   test: {
     alias: {
@@ -54,7 +66,7 @@ export default defineConfig({
       ),
     },
     environment: 'jsdom',
-    exclude: ['e2e/**', 'node_modules/**'],
+    exclude: ['e2e/**', '**/node_modules/**', 'tests/online/**'],
     globals: true,
     setupFiles: ['./tests/setup.ts'],
   },

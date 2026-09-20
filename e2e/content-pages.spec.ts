@@ -12,7 +12,7 @@ test('public information is readable and linked without JavaScript', async ({
   const page = await context.newPage();
   await page.goto('/about');
   await expect(
-    page.getByRole('heading', { name: 'About & How to Play', exact: true }),
+    page.getByRole('heading', { name: 'How to play', exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Daily Challenge', exact: true }),
@@ -45,7 +45,7 @@ test('information pages keep distinct metadata and canonical URLs with query par
 }) => {
   const descriptions = new Set<string>();
   for (const [path, title] of [
-    ['/about', 'About & How to Play'],
+    ['/about', 'How to play'],
     ['/privacy', 'Privacy and Cookies'],
     ['/terms', 'Terms of Use'],
   ] as const) {

@@ -1,5 +1,5 @@
-import { isRecord, isSafeNonnegativeInteger } from '../../lib/validation';
-import type { QuestionRepetition } from './types';
+import { isRecord, isSafeNonnegativeInteger } from '../../lib/validation.ts';
+import type { QuestionRepetition } from './types.ts';
 
 interface HistoryQuestion {
   questionType: string;

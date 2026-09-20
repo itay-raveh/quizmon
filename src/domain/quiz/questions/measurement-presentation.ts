@@ -1,4 +1,4 @@
-import type { QuestionData } from '../types';
+import type { QuestionData } from '../types.ts';
 
 export const presentMeasurementQuestion = (
   question: QuestionData,

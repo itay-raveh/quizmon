@@ -1,10 +1,19 @@
+import { questionTypes } from '../src/domain/quiz/questions/definitions';
+import { observeAnswer } from '../src/domain/quiz/answer-observation';
+import { seedPlayer } from './fixtures';
 import AxeBuilder from '@axe-core/playwright';
 import type { PlayerSave } from '../src/domain/player/player-save';
 import { getLeagueSettings } from '../src/domain/quiz/league';
 import { buildLeagueQuestions } from '../src/domain/quiz/question-generation';
 import { getQuestionTitle } from '../src/domain/quiz/question-labels';
-import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
-import { catalog, expect, seedPlayer, test } from './fixtures';
+import {
+  calculateScore,
+  getSpeedBonusPoints,
+} from '../src/domain/quiz/scoring';
+import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import { readRound, readSave } from './database-fixture';
+import { catalog, expect, test } from './fixtures';
+
 const leagueSeed = 'league-e2e-lineup';
 const unlockLeague = (
   page: Parameters<typeof seedPlayer>[0],
@@ -17,7 +26,7 @@ const unlockLeague = (
     elapsedSeconds: 0,
     questionCount: 1,
     score: 0,
-    scoreVersion: 2,
+    scoreVersion: 3,
   };
   const dates = Array.from(
     { length: 7 },
@@ -43,20 +52,14 @@ const unlockLeague = (
           { length: 151 },
           (_, index) => `pokemon-${index}`,
         ),
-        correctQuestionTypes: Object.fromEntries(
-          [
-            'ability-check',
-            'counter-pick',
-            'evolution-shift',
-            'field-notes',
-            'move-check',
-            'odd-one-out',
-            'pixel-peek',
-            'pokedex-scan',
-            'shiny-spotter',
-            'silhouette-match',
-          ].map((questionType) => [questionType, 1]),
-        ),
+        correctQuestionTypes: {
+          ...Object.fromEntries(
+            questionTypes
+              .slice(0, Math.ceil(questionTypes.length / 2))
+              .map((type) => [type, 1]),
+          ),
+          'pokedex-scan': 50,
+        },
         masteryRounds: 3,
         quickAttackCompleted: true,
       },
@@ -84,10 +87,10 @@ test('refreshes League attempts and retries while preserving reloads', async ({
     await expect(
       page.getByRole('progressbar', { name: 'Quiz progress' }),
     ).toBeVisible();
-    return page.evaluate(
-      () =>
+    return readRound(page).then(
+      (saved) =>
         JSON.parse(
-          sessionStorage.getItem('quizmon.active-game.v1')!,
+          (saved ? JSON.stringify(saved) : null)!,
         ) as ActiveGameSnapshot,
     );
   };
@@ -120,7 +123,10 @@ test('refreshes League attempts and retries while preserving reloads', async ({
   expect(restored.questions).toEqual(retry.questions);
   expect(restored.answers).toEqual(retry.answers);
   await page.getByRole('button', { name: 'Leave game' }).click();
-  await page.getByRole('button', { name: 'Trainer profile' }).click();
+  await page
+    .getByRole('navigation', { name: 'Main', exact: true })
+    .getByRole('button', { name: 'Trainer', exact: true })
+    .click();
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Start League challenge' }),
@@ -176,7 +182,9 @@ test('shows Champion and Hall of Fame after clearing the League', async ({
     (await new AxeBuilder({ page }).include('.league-hall').analyze())
       .violations,
   ).toEqual([]);
-  await expect(page.getByRole('button', { name: /settings/i })).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Settings', exact: true }),
+  ).toBeVisible();
   await page.reload();
   await expect(
     page.getByRole('heading', { name: 'Hall of Fame' }),
@@ -185,7 +193,10 @@ test('shows Champion and Hall of Fame after clearing the League', async ({
   await expect(
     page.getByRole('button', { name: 'Quizmon League', exact: true }),
   ).toBeVisible();
-  await page.getByRole('button', { name: 'Trainer profile' }).click();
+  await page
+    .getByRole('navigation', { name: 'Main', exact: true })
+    .getByRole('button', { name: 'Trainer', exact: true })
+    .click();
   await expect(page.getByText('Champion', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Badges', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Hall of Fame' })).toHaveCount(
@@ -212,17 +223,20 @@ test('a perfect clear opens the induction before its detailed results', async ({
     questionCount: 15,
     seed: leagueSeed,
     answers: questions.map((question) => ({
+      observation: observeAnswer(question, question.answer.correctOptions),
       category: question.category,
+      subject: {
+        kind: question.subject.kind,
+        name: question.subject.name,
+        generation: question.subject.generation,
+      },
+      ...(question.category === 'champion' ? { unassistedSearch: true } : {}),
       cluesUsed: 0,
       correct: true,
       points: 1000,
       questionType: question.questionType,
       responseMilliseconds: 1000,
-      subject: {
-        kind: 'pokemon' as const,
-        generation: question.subject.generation,
-        name: question.subject.name,
-      },
+      speedBonus: getSpeedBonusPoints(1000, 1000),
     })),
   };
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -281,25 +295,36 @@ test('a perfect clear opens the induction before its detailed results', async ({
   ).toEqual(positions);
   expect(await portrait.boundingBox()).toEqual(frame);
   await expect(lineup.locator('li')).not.toHaveCount(1);
-  const saved = await page.evaluate(
-    () =>
-      (JSON.parse(localStorage.getItem('quizmon.player')!) as PlayerSave).data
+  const saved = await readSave(page).then(
+    (saved) =>
+      (JSON.parse((saved ? JSON.stringify(saved) : null)!) as PlayerSave).data
         .hallOfFame,
   );
   expect(saved).toHaveLength(1);
-  expect(saved[0]?.result.score).toBe(30000);
+  expect(saved[0]?.result.score).toBe(calculateScore(snapshot.answers));
   expect(saved[0]?.pokemon).toContain(questions[0]!.subject.name);
   await expect(page.locator('.league-trophy__rays')).toHaveCSS(
     'animation-name',
     'none',
   );
-  await expect(page.getByRole('button', { name: /settings/i })).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Settings', exact: true }),
+  ).toBeVisible();
   await page.getByRole('button', { name: 'View results' }).click();
   await expect(
     page.getByRole('heading', { name: 'League Champion', exact: true }),
   ).toBeVisible();
+  await expect(
+    page
+      .getByRole('region', { name: 'Trainer progress' })
+      .getByText('Hall of Fame', { exact: true }),
+  ).toBeVisible();
   await page
-    .getByRole('button', { name: /Hall of Fame.*Open Hall of Fame/ })
+    .getByRole('navigation', { name: 'Main', exact: true })
+    .getByRole('button', { name: 'Play', exact: true })
+    .click();
+  await page
+    .getByRole('button', { name: 'Quizmon League', exact: true })
     .click();
   await expect(
     page.getByRole('heading', { name: 'Hall of Fame', exact: true }),

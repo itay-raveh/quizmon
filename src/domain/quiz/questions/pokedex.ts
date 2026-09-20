@@ -1,16 +1,16 @@
-import { createPokemonSimilarityScorer, pokemonOptions } from './answers';
-import { makeQuestion } from './assembly';
-import type { QuestionBuilder } from './context';
-import { redactName, textPrompt } from './prompts';
-import { targetRepetition } from './repetition';
-import { pickTarget } from './selection';
+import { createPokemonSimilarityScorer, pokemonOptions } from './answers.ts';
+import { makeQuestion } from './assembly.ts';
+import type { QuestionBuilder } from './context.ts';
+import { redactName, textPrompt } from './prompts.ts';
+import { targetRepetition } from './repetition.ts';
+import { pickTarget } from './selection.ts';
 import {
   distinctPokemon,
   makeTopicQuestion,
   orderedPokemon,
   picturedPokemon,
   pokemonSubject,
-} from './topic-support';
+} from './topic-support.ts';
 
 export const buildCategory: QuestionBuilder = (context) => {
   const pool = distinctPokemon(

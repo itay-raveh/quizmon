@@ -1,20 +1,15 @@
-import { CaretRightIcon } from '@/components/icons';
 import { Trophy } from '@/components/Trophy';
 import {
   trainerTierLabels,
   type TrainerProgressChange,
-  type TrainerView,
 } from '@/domain/player/trainer-progression';
 import { useRewardSequence } from '@/features/quiz/useRewardSequence';
-import { useInteractionSound } from '@/lib/audio/sound-context';
 import type { CSSProperties } from 'react';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerProgressSummaryProps {
   leagueVictory: boolean;
-  onOpenHallOfFame: () => void;
-  onOpenTrainerCard: (view: TrainerView) => void;
   progressChanges: TrainerProgressChange[];
 }
 
@@ -22,12 +17,9 @@ const format = (value: number) => Math.round(value).toLocaleString();
 
 export const TrainerProgressSummary = ({
   leagueVictory,
-  onOpenTrainerCard,
-  onOpenHallOfFame,
   progressChanges,
 }: TrainerProgressSummaryProps) => {
   const { elapsed, starts } = useRewardSequence(progressChanges);
-  const playInteractionSound = useInteractionSound();
   if (!leagueVictory && progressChanges.length === 0) return null;
 
   return (
@@ -39,20 +31,13 @@ export const TrainerProgressSummary = ({
       <ul aria-label="Rewards">
         {leagueVictory ? (
           <li>
-            <button
-              className="reward reward--victory"
-              onClick={() => {
-                playInteractionSound('tap');
-                onOpenHallOfFame();
-              }}
-            >
+            <div className="reward reward--victory">
               <Trophy className="reward__hall-mark" />
               <span className="reward__body">
                 <strong className="reward__name">Hall of Fame</strong>
-                <small>League Champion · Open Hall of Fame</small>
+                <small>League Champion</small>
               </span>
-              <CaretRightIcon aria-hidden="true" />
-            </button>
+            </div>
           </li>
         ) : null}
         {progressChanges.map((change, index) => {
@@ -82,13 +67,12 @@ export const TrainerProgressSummary = ({
               ? `${format(change.current)} total`
               : `${format(change.current)} / ${format(change.goal)}`;
           const unlockLabel = `${trainerTierLabels[change.tier]} unlocked`;
-          const destination =
-            change.kind === 'badge' ? 'badge case' : 'Trainer Titles';
           return (
             <li
               key={`${change.kind}-${change.kind === 'badge' ? change.id : change.specialty}`}
             >
-              <button
+              <div
+                role="group"
                 className="reward"
                 data-tier={tier}
                 data-tier-unlock={celebrating}
@@ -96,13 +80,7 @@ export const TrainerProgressSummary = ({
                 style={
                   { '--reward-delay': `${starts[index]}ms` } as CSSProperties
                 }
-                aria-label={`${change.label}: +${change.delta}, ${total}${change.earned ? `, ${unlockLabel}` : ''}. Open ${destination}`}
-                onClick={() => {
-                  playInteractionSound('tap');
-                  onOpenTrainerCard(
-                    change.kind === 'badge' ? 'badges' : 'titles',
-                  );
-                }}
+                aria-label={`${change.label}: +${change.delta}, ${total}${change.earned ? `, ${unlockLabel}` : ''}`}
               >
                 <span className="reward__art" aria-hidden="true">
                   {change.kind === 'badge' ? (
@@ -136,7 +114,7 @@ export const TrainerProgressSummary = ({
                 <b className="reward__gain" aria-hidden="true">
                   +{format(credited)}
                 </b>
-              </button>
+              </div>
             </li>
           );
         })}

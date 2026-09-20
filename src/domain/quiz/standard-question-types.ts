@@ -1,4 +1,4 @@
-import type { QuestionData, QuestionType } from './types';
+import type { QuestionData, QuestionType } from './types.ts';
 
 export const standardQuestionTypes: readonly QuestionType[] = [
   'pokedex-scan',

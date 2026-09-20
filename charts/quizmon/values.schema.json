@@ -1,0 +1,322 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "releaseImage",
+    "runtimeConfig",
+    "inputs",
+    "release",
+    "powersync"
+  ],
+  "properties": {
+    "releaseImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "digest"],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9./_-]*$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    },
+    "runtimeConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "workerName",
+        "origin",
+        "sync",
+        "hyperdriveId",
+        "mailFrom",
+        "analyticsDataset",
+        "authRateLimitNamespace",
+        "apiRateLimitNamespace"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "workerName": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{0,62}$"
+        },
+        "origin": {
+          "type": "string",
+          "pattern": "^https://[^/@?#:]+(?:[.][^/@?#:]+)+$"
+        },
+        "sync": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "endpoint", "audience"],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "endpoint": {
+              "type": "string",
+              "pattern": "^https://[^/@?#:]+(?:[.][^/@?#:]+)+$"
+            },
+            "audience": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "hyperdriveId": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
+        "mailFrom": {
+          "type": "string",
+          "pattern": "^[^ @<>]+@[^ @<>]+[.][^ @<>]+$"
+        },
+        "analyticsDataset": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]{1,64}$"
+        },
+        "authRateLimitNamespace": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "apiRateLimitNamespace": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workerSecrets", "migrationConnection"],
+      "properties": {
+        "workerSecrets": {
+          "$ref": "#/definitions/secretKey"
+        },
+        "migrationConnection": {
+          "$ref": "#/definitions/secretKey"
+        },
+        "cloudflare": {
+          "$ref": "#/definitions/optionalSecretKey"
+        }
+      }
+    },
+    "powersync": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "sourceSecret", "storageSecret", "resources"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "sourceSecret": {
+          "$ref": "#/definitions/optionalSecretKey"
+        },
+        "storageSecret": {
+          "$ref": "#/definitions/optionalSecretKey"
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "requests": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sourceSecret": {
+                "$ref": "#/definitions/secretKey"
+              },
+              "storageSecret": {
+                "$ref": "#/definitions/secretKey"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "activeDeadlineSeconds",
+        "backoffLimit",
+        "resources"
+      ],
+      "properties": {
+        "activeDeadlineSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "backoffLimit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "requests": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        "mode": {
+          "enum": ["preflight", "deploy"]
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "release": {
+            "properties": {
+              "mode": {
+                "const": "deploy"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "inputs": {
+            "required": ["cloudflare"],
+            "properties": {
+              "cloudflare": {
+                "$ref": "#/properties/inputs/properties/workerSecrets"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "secretKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "key", "revision"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 253,
+          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "optionalSecretKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "key", "revision"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

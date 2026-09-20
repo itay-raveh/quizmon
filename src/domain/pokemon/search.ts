@@ -1,5 +1,5 @@
 import Fuse from 'fuse.js';
-import { formatPokemonName } from './format';
+import { formatPokemonName } from './format.ts';
 
 interface SearchEntry {
   label: string;

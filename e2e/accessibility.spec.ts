@@ -121,6 +121,15 @@ test('keeps the core experience accessible', async ({ page }) => {
   await expectNoAccessibilityViolations(page);
   await page.getByRole('button', { name: 'Cancel' }).click();
 
+  await page
+    .getByRole('button', { name: 'Customize training', exact: true })
+    .click();
+  await expect(
+    page.getByRole('dialog', { name: 'Customize training' }),
+  ).toBeVisible();
+  await expectNoAccessibilityViolations(page);
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(page.locator('.question')).toBeVisible();
   await expectNoAccessibilityViolations(page);
@@ -129,7 +138,10 @@ test('keeps the core experience accessible', async ({ page }) => {
   await expectNoAccessibilityViolations(page);
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'Trainer profile' }).click();
+  await page
+    .getByRole('navigation', { name: 'Main', exact: true })
+    .getByRole('button', { name: 'Trainer', exact: true })
+    .click();
   await expect(
     page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();
@@ -171,6 +183,16 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   await expectNoHorizontalClipping(page);
   await page.getByRole('button', { name: 'Cancel' }).click();
 
+  await page
+    .getByRole('button', { name: 'Customize training', exact: true })
+    .click();
+  await expect(
+    page.getByRole('dialog', { name: 'Customize training' }),
+  ).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await expectNoHorizontalClipping(page);
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(page.locator('.question')).toBeVisible();
   await expectNoHorizontalOverflow(page);
@@ -185,7 +207,10 @@ test('reflows when text is enlarged to 200%', async ({ page }) => {
   await page.evaluate(() => {
     document.documentElement.style.fontSize = '200%';
   });
-  await page.getByRole('button', { name: 'Trainer profile' }).click();
+  await page
+    .getByRole('navigation', { name: 'Main', exact: true })
+    .getByRole('button', { name: 'Trainer', exact: true })
+    .click();
   await expect(
     page.getByRole('article', { name: 'Trainer Card' }),
   ).toBeVisible();

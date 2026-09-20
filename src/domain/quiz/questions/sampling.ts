@@ -1,6 +1,6 @@
-import { pick } from '../../../lib/random';
-import { getFormGroup } from '../../pokemon/forms';
-import type { Candidate } from './context';
+import { pick } from '../../../lib/random.ts';
+import { getFormGroup } from '../../pokemon/forms.ts';
+import type { Candidate } from './context.ts';
 
 const pokemonWeights = {
   ordinary: 4,

@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import type { PlayerSave } from '../src/domain/player/player-save';
-import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
+import type { ActiveGameSnapshot } from '../src/lib/storage/active-game-storage';
+import { readRound, readSave } from './database-fixture';
 import {
   catalogData,
   expect,
@@ -127,6 +128,7 @@ test('plays and shares a complete Training round without a live API call', async
   });
 
   await seedBrowserRandom(page, 'visual-identity-2');
+  await page.clock.install();
   await page.goto('/');
   await expect(page.getByRole('img', { name: /Quizmon/ })).toBeVisible();
   await expect(page.getByRole('contentinfo')).toBeVisible();
@@ -138,10 +140,12 @@ test('plays and shares a complete Training round without a live API call', async
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
   ).toHaveText('001 / 010');
-  await expect(page.getByRole('contentinfo')).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toHaveCount(0);
+  await page.clock.pauseAt(new Date());
   const answer = await answerPokedexQuestion(page, 'keyboard');
   await expect(answer).toHaveClass(/answer--correct/);
   await expect(page.getByText(/\+[\d,]+ points/)).toHaveCount(0);
+  await page.clock.resume();
   for (let number = 2; number <= 10; number += 1) {
     await expect(
       page.getByRole('progressbar', { name: 'Quiz progress' }),
@@ -254,18 +258,15 @@ test('starts new players at Level 1 with Gen I and keeps settings editable', asy
   await page.goto('/?fresh=1');
   await page.getByRole('button', { name: 'Start training' }).click();
   await expect(page.locator('.question')).toBeVisible();
-  const snapshot = await page.evaluate(
-    () =>
-      JSON.parse(
-        sessionStorage.getItem('quizmon.active-game.v1')!,
-      ) as ActiveGameSnapshot,
-  );
+  const snapshot = (await readRound(page))!;
   expect(snapshot.settings.difficulty).toBe(1);
   expect(snapshot.settings.generations).toEqual(['I']);
   expect(snapshot.questions).toHaveLength(10);
   await page.getByRole('button', { name: 'Leave game' }).click();
-  await page.getByRole('button', { name: 'Settings' }).click();
-  const settings = page.getByRole('dialog', { name: 'Settings' });
+  await page
+    .getByRole('button', { name: 'Customize training', exact: true })
+    .click();
+  const settings = page.getByRole('dialog', { name: 'Customize training' });
   await expect(
     settings.getByRole('radio', { name: 'Level 1', exact: true }),
   ).toBeChecked();
@@ -324,6 +325,12 @@ for (const answeredCount of [1, 10]) {
           .getByRole('button', { name: 'Next question', exact: true })
           .click();
     }
+    await expect(
+      page.getByRole('button', {
+        name: answeredCount === 10 ? 'See results' : 'Next question',
+        exact: true,
+      }),
+    ).toBeVisible();
     await page.reload();
 
     if (answeredCount === 10) {
@@ -359,16 +366,16 @@ test('remembers shown questions across abandoned games and preserves a lineup on
     page.getByRole('heading', { name: 'Evolution shift' }),
   ).toBeVisible();
   const readHistory = () =>
-    page.evaluate(() => {
+    readSave(page).then((saved) => {
       const save = JSON.parse(
-        localStorage.getItem('quizmon.player')!,
+        (saved ? JSON.stringify(saved) : null)!,
       ) as PlayerSave;
       return save.data.questionHistory;
     });
   const readQuestions = () =>
-    page.evaluate(() => {
+    readRound(page).then((saved) => {
       const active = JSON.parse(
-        sessionStorage.getItem('quizmon.active-game.v1')!,
+        (saved ? JSON.stringify(saved) : null)!,
       ) as ActiveGameSnapshot;
       return active.questions;
     });

@@ -4,16 +4,13 @@ import webpush, {
   type PushSubscription as WebPushSubscription,
 } from 'web-push';
 import { site } from '../src/app/site';
+import { getUtcDate } from '../src/domain/quiz/daily';
 import {
   DAILY_REMINDER_MESSAGE,
   VAPID_PUBLIC_KEY,
 } from '../src/features/reminders/reminder-config';
 import { isDailyDate, isObject } from '../src/lib/validation';
-import {
-  dateFromParts,
-  getNextReminderAt,
-  getZonedDateParts,
-} from './reminder-time';
+import { getNextReminderAt } from './reminder-time';
 import { noStoreResponse } from './responses';
 
 const REMINDER_PATH =
@@ -168,9 +165,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
     if (!registration) return;
 
-    const dailyDate = dateFromParts(
-      getZonedDateParts(Date.now(), registration.timeZone),
-    );
+    const dailyDate = getUtcDate();
     if (registration.completedDate !== dailyDate) {
       try {
         await webpush.sendNotification(

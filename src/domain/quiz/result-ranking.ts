@@ -1,4 +1,4 @@
-import { type GameResult } from './types';
+import { type GameResult } from './types.ts';
 
 export const isBetterResult = (
   candidate: GameResult,

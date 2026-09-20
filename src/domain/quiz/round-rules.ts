@@ -1,34 +1,28 @@
-import type { GameSettings } from '../settings/types';
-import type { QuestionData } from './types';
+import type { GameSettings } from '../settings/types.ts';
+import type { QuestionData } from './types.ts';
 import {
   isNonemptyChoiceArray,
   isRecord,
   isSafeNonnegativeInteger,
-} from '../../lib/validation';
-import { formGroups, generations } from '../pokemon/types';
-import { isDifficulty } from './difficulty';
-import { questionTypes } from './questions/definitions';
-import {
-  retiredQuestionTypes,
-  type GameResult,
-  type RoundRules,
-} from './types';
-
-const savedQuestionTypes = [...questionTypes, ...retiredQuestionTypes];
+} from '../../lib/validation.ts';
+import { formGroups, generations } from '../pokemon/types.ts';
+import { isDifficulty } from './difficulty.ts';
+import { questionTypes } from './questions/definitions.ts';
+import { type GameResult, type RoundRules } from './types.ts';
 
 export const isRoundRules = (value: unknown): value is RoundRules =>
   isRecord(value) &&
   isSafeNonnegativeInteger(value.version) &&
   isDifficulty(value.difficulty) &&
   (value.automaticQuestionTypes === undefined ||
-    isNonemptyChoiceArray(value.automaticQuestionTypes, savedQuestionTypes)) &&
+    isNonemptyChoiceArray(value.automaticQuestionTypes, questionTypes)) &&
   isNonemptyChoiceArray(value.generations, generations) &&
   isNonemptyChoiceArray(value.formGroups, formGroups) &&
-  isNonemptyChoiceArray(value.questionTypes, savedQuestionTypes);
+  isNonemptyChoiceArray(value.questionTypes, questionTypes);
 
 export const getRulesScoreKey = (
   result: Pick<GameResult, 'contentVersion' | 'scoreVersion' | 'rules'>,
-): string | undefined => {
+): `rules:${string}` | undefined => {
   const rules = result.rules;
   if (!rules) return undefined;
   const ordered = (values: readonly string[]) => [...new Set(values)].sort();
@@ -50,7 +44,9 @@ export const snapshotRoundRules = (
   const version = questions[0]?.rulesVersion;
   return settings.difficulty && version
     ? {
-        automaticQuestionTypes: settings.automaticQuestionTypes,
+        ...(settings.automaticQuestionTypes
+          ? { automaticQuestionTypes: [...settings.automaticQuestionTypes] }
+          : {}),
         version,
         difficulty: settings.difficulty,
         generations: [...settings.generations],

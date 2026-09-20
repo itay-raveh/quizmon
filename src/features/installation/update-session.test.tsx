@@ -1,7 +1,5 @@
 import { render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import fixture from '../../../tests/fixtures/player-save.v4.json';
-import { defaultGameSettings } from '@/domain/settings/game-settings';
 
 beforeEach(() => {
   sessionStorage.clear();
@@ -110,23 +108,25 @@ it('reloads an update during recovery without replacing the preserved save', asy
   }
 });
 
-it('restores reload state from schema 6 when the application updates to schema 7', async () => {
-  sessionStorage.setItem(
-    'quizmon.update-state.v1',
-    JSON.stringify({
-      saveVersion: 6,
+it.each([undefined, 4, 5, 6])(
+  'preserves retired reload format %s for recovery',
+  async (saveVersion) => {
+    const raw = JSON.stringify({
+      saveVersion,
       url: window.location.href,
-      values: { draft: 'Preserved draft' },
-    }),
-  );
-  const state = await import('./update-session');
-  expect(state.readUpdateState('draft', '')).toBe('Preserved draft');
-  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBeNull();
-});
+      values: { draft: 'Old draft' },
+    });
+    sessionStorage.setItem('quizmon.update-state.v1', raw);
+    const state = await import('./update-session');
+    expect(state.readUpdateState('draft', '')).toBe('');
+    expect(sessionStorage.getItem('quizmon.update-state.v1')).toBe(raw);
+    expect(state.saveUpdateState()).toBe(false);
+  },
+);
 
 it('keeps reload state available for recovery until the application can load it', async () => {
   const raw = JSON.stringify({
-    saveVersion: 6,
+    saveVersion: 7,
     url: window.location.href,
     values: { draft: 'Keep for recovery' },
   });
@@ -142,76 +142,4 @@ it('keeps reload state available for recovery until the application can load it'
   health.clearSaveIssue();
   expect(state.readUpdateState('draft', '')).toBe('Keep for recovery');
   expect(sessionStorage.getItem('quizmon.update-state.v1')).toBeNull();
-});
-
-it('migrates an unversioned reload from schemas 4 and 5 with its nested results and drafts intact', async () => {
-  const result = fixture.data.results.training.league;
-  sessionStorage.setItem(
-    'quizmon.update-state.v1',
-    JSON.stringify({
-      url: window.location.href,
-      values: {
-        draft: 'Preserved draft',
-        session: {
-          phase: 'results',
-          modifiers: defaultGameSettings,
-          answers: result.answers,
-          result,
-          bestResult: result,
-          leagueRecord: { id: 'saved-victory', result },
-        },
-      },
-    }),
-  );
-  const state = await import('./update-session');
-  const saved = state.readUpdateState('session', null);
-  expect(saved).toMatchObject({
-    phase: 'results',
-    settings: defaultGameSettings,
-    result: {
-      score: 1000,
-      answers: [
-        { subject: { kind: 'pokemon', name: 'pikachu', generation: 'I' } },
-      ],
-    },
-    bestResult: { answers: [{ subject: { name: 'pikachu' } }] },
-    leagueRecord: {
-      id: 'saved-victory',
-      result: { answers: [{ subject: { name: 'pikachu' } }] },
-    },
-  });
-  expect(saved).not.toHaveProperty('modifiers');
-  expect(saved).not.toHaveProperty('answers.0.pokemonName');
-  expect(state.readUpdateState('draft', '')).toBe('Preserved draft');
-  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBeNull();
-});
-
-it('preserves a malformed historical reload instead of consuming it', async () => {
-  const raw = JSON.stringify({
-    url: window.location.href,
-    values: {
-      session: {
-        modifiers: defaultGameSettings,
-        result: { ...fixture.data.results.training.league, score: -1 },
-      },
-    },
-  });
-  sessionStorage.setItem('quizmon.update-state.v1', raw);
-  const state = await import('./update-session');
-  expect(state.readUpdateState('session', null)).toBeNull();
-  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBe(raw);
-  expect(state.saveUpdateState()).toBe(false);
-});
-
-it('restores an unversioned landing session without requiring round settings', async () => {
-  sessionStorage.setItem(
-    'quizmon.update-state.v1',
-    JSON.stringify({
-      url: window.location.href,
-      values: { session: { phase: 'landing' }, draft: 'Keep this' },
-    }),
-  );
-  const state = await import('./update-session');
-  expect(state.readUpdateState('session', null)).toEqual({ phase: 'landing' });
-  expect(state.readUpdateState('draft', '')).toBe('Keep this');
 });

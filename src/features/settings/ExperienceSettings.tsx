@@ -37,12 +37,6 @@ export const ExperienceSettings = ({
 
   return (
     <div className="experience-settings">
-      <InstallSetting />
-      <fieldset className="experience-setting">
-        <legend>Daily Challenge Reminder</legend>
-        <DailyReminderSetting />
-      </fieldset>
-
       <fieldset className="experience-setting">
         <legend>Answer flow</legend>
         <div className="experience-options experience-options--flow">
@@ -122,6 +116,11 @@ export const ExperienceSettings = ({
             }))
           }
         />
+      </fieldset>
+      <InstallSetting />
+      <fieldset className="experience-setting">
+        <legend>Daily Challenge Reminder</legend>
+        <DailyReminderSetting />
       </fieldset>
     </div>
   );

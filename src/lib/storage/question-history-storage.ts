@@ -1,6 +1,6 @@
 import { rememberShownQuestion } from '../../domain/quiz/question-history';
 import type { QuestionData } from '../../domain/quiz/types';
-import { readPlayerSave, updatePlayerData } from './player-storage';
+import { reportSaveError, transactPlayer } from './player-storage';
 
 export const registerShownQuestion = async (
   question: QuestionData,
@@ -8,25 +8,19 @@ export const registerShownQuestion = async (
   index: number,
   restoreId: string | null,
 ): Promise<boolean> => {
-  const record = () => {
-    try {
-      const save = readPlayerSave();
-      if (save.restoreId !== restoreId) return false;
-      const previous = save.data.questionHistory;
-      const questionHistory = rememberShownQuestion(
-        previous,
+  try {
+    return await transactPlayer((state) => {
+      if (state.save.restoreId !== restoreId) return false;
+      state.save.data.questionHistory = rememberShownQuestion(
+        state.save.data.questionHistory,
         question,
         roundId,
         index,
       );
-      return (
-        questionHistory === previous || updatePlayerData({ questionHistory })
-      );
-    } catch {
-      return false;
-    }
-  };
-  return navigator.locks
-    ? navigator.locks.request('quizmon.question-history', record)
-    : record();
+      return true;
+    });
+  } catch (error) {
+    reportSaveError(error);
+    return false;
+  }
 };

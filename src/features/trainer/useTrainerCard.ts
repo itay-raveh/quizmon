@@ -1,12 +1,13 @@
-import type { TrainerView } from '@/domain/player/trainer-progression';
-import { readTrainerStats } from '@/lib/storage/results-storage';
+import { useCallback, useEffect, useState } from 'react';
+import type { TrainerView } from '../../domain/player/trainer-progression';
+import { subscribeToPlayerChanges } from '../../lib/storage/player-storage';
+import { readTrainerStats } from '../../lib/storage/results-storage';
 import {
   readTrainerProfile,
   saveTrainerProfile,
   type TrainerProfile,
-} from '@/lib/storage/trainer-profile-storage';
-import { isRecord } from '@/lib/validation';
-import { useCallback, useEffect, useState } from 'react';
+} from '../../lib/storage/trainer-profile-storage';
+import { isRecord } from '../../lib/validation';
 import { parseTrainerRoute, setTrainerRoute } from './trainer-route';
 
 export const useTrainerCard = () => {
@@ -49,14 +50,16 @@ export const useTrainerCard = () => {
     setView(null);
   }, []);
 
-  const updateProfile = useCallback((nextProfile: TrainerProfile) => {
-    setProfile(saveTrainerProfile(nextProfile));
+  const updateProfile = useCallback(async (nextProfile: TrainerProfile) => {
+    setProfile(await saveTrainerProfile(nextProfile));
   }, []);
 
   const refresh = useCallback(() => {
     setProfile(readTrainerProfile());
     setStats(readTrainerStats());
   }, []);
+
+  useEffect(() => subscribeToPlayerChanges(refresh), [refresh]);
 
   const refreshStats = useCallback(() => {
     setStats(readTrainerStats());

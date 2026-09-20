@@ -1,4 +1,4 @@
-import type { PokemonCatalog } from './types';
+import type { PokemonCatalog } from './types.ts';
 
 export const attackMultiplier = (
   catalog: Pick<PokemonCatalog, 'typeRelations'>,

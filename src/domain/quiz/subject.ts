@@ -1,10 +1,10 @@
-import { isChoice, isRecord } from '../../lib/validation';
-import { generations } from '../pokemon/types';
+import { isChoice, isRecord } from '../../lib/validation.ts';
+import { generations } from '../pokemon/types.ts';
 import {
   subjectKinds,
   type AnswerSubject,
   type QuestionSubject,
-} from './types';
+} from './types.ts';
 
 export const isAnswerSubject = (value: unknown): value is AnswerSubject =>
   isRecord(value) &&

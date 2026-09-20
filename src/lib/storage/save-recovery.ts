@@ -1,3 +1,4 @@
+import { localTables, type LocalRow } from './local-database';
 import {
   SAVE_SCHEMA_VERSION,
   parsePlayerSave,
@@ -14,6 +15,9 @@ import {
   createPlayerSave,
   readPlayerSave,
   retiredPlayerKeys,
+  recoveryDatabase,
+  recoverPlayer,
+  canRecoverGuestSave,
 } from './player-storage';
 import { clearSaveIssue, reportSaveIssue } from './save-health';
 
@@ -37,10 +41,28 @@ export const inspectSavedData = (): void => {
   }
 };
 
-export const createRecoveryExport = () => ({
+export const createRecoveryExport = async () => ({
   format: 'quizmon-recovery',
   version: SAVE_SCHEMA_VERSION,
   exportedAt: new Date().toISOString(),
+  database: await recoveryDatabase().readTransaction(async (transaction) =>
+    Object.fromEntries(
+      await Promise.all(
+        [
+          ...localTables,
+          ...(!canRecoverGuestSave() ? ['pending_actions'] : []),
+        ].map(
+          async (table) =>
+            [
+              table,
+              await transaction.getAll<LocalRow>(
+                `SELECT id,payload FROM ${table}`,
+              ),
+            ] as const,
+        ),
+      ),
+    ),
+  ),
   entries: Object.entries(recoveryKeys).flatMap(([storage, keys]) =>
     keys.flatMap((key) => {
       const raw = window[storage as keyof typeof recoveryKeys].getItem(key);
@@ -49,19 +71,24 @@ export const createRecoveryExport = () => ({
   ),
 });
 
-export const clearRetiredAndRoundData = (): void => {
+const clearRetiredAndRoundData = (): void => {
   for (const [storage, keys] of Object.entries(recoveryKeys))
     for (const key of keys)
       if (key !== PLAYER_STORAGE_KEY)
         removeStoredValue(storage as keyof typeof recoveryKeys, key);
 };
 
-export const resetSavedData = (): void => {
+export const resetSavedData = async (): Promise<void> => {
   const save = parsePlayerSave({
     ...createPlayerSave(),
     restoreId: crypto.randomUUID(),
   });
-  window.localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(save));
+  await recoverPlayer(async (state, transaction) => {
+    for (const table of localTables)
+      await transaction.execute(`DELETE FROM ${table}`);
+    state.save = save;
+  });
   clearRetiredAndRoundData();
+  removeStoredValue('localStorage', PLAYER_STORAGE_KEY);
   clearSaveIssue();
 };

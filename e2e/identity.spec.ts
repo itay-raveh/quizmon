@@ -8,7 +8,7 @@ import {
   seedQuestionTraining,
   test,
 } from './fixtures';
-import type { ActiveGameSnapshot } from '../src/domain/player/active-game';
+import { readRound } from './database-fixture';
 
 for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
   for (const correct of [true, false]) {
@@ -137,12 +137,7 @@ for (const questionType of [
     const before = await response.evaluate(
       (element) => element.getBoundingClientRect().top + window.scrollY,
     );
-    const question = await page.evaluate(() => {
-      const snapshot = JSON.parse(
-        sessionStorage.getItem('quizmon.active-game.v1')!,
-      ) as ActiveGameSnapshot;
-      return snapshot.questions[0]!;
-    });
+    const question = (await readRound(page))!.questions[0]!;
     const wrong = question.searchOptions!.find(
       (option) => option.name !== question.subject.name,
     )!;
@@ -206,12 +201,7 @@ test('Level 5 Who’s that Pokémon? reveals only the identity below its sprite'
   });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start training' }).click();
-  const current = await page.evaluate(
-    () =>
-      JSON.parse(
-        sessionStorage.getItem('quizmon.active-game.v1')!,
-      ) as ActiveGameSnapshot,
-  );
+  const current = (await readRound(page))!;
   const question = current.questions[0]!;
   const wrong = question.searchOptions!.find(
     (option) => option.name !== question.subject.name,

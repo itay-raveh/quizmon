@@ -1,12 +1,12 @@
-import { formatPokemonName } from '../../pokemon/format';
-import { generations } from '../../pokemon/types';
-import type { QuestionBuilder } from './context';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import { generations } from '../../pokemon/types.ts';
+import type { QuestionBuilder } from './context.ts';
 import {
   makeTopicQuestion,
   ordered,
   topicEligible,
   topicSubject,
-} from './topic-support';
+} from './topic-support.ts';
 
 const positiveFlavors = (flavors: Record<string, number>) =>
   Object.keys(flavors)

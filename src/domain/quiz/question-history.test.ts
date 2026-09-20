@@ -1,23 +1,24 @@
-import { buildDailyForTest } from '../../../tests/fixtures/daily';
-import { catalog } from '../../../tests/fixtures/catalog';
+import { buildDailyForTest } from '../../../tests/fixtures/daily.ts';
+import { catalog } from '../../../tests/fixtures/catalog.ts';
+import { resetLocalSave } from '../../../tests/fixtures/local-save.ts';
 import {
   createBackup,
   parseBackup,
   restoreBackup,
-} from '../../features/settings/backup';
-import { createSeededRandom } from '../../lib/random';
+} from '../../features/settings/backup.ts';
+import { createSeededRandom } from '../../lib/random.ts';
 import {
   readActiveGame,
   writeActiveGame,
-} from '../../lib/storage/active-game-storage';
+} from '../../lib/storage/active-game-storage.ts';
 import {
   readPlayerSave,
   updatePlayerData,
-} from '../../lib/storage/player-storage';
-import { registerShownQuestion } from '../../lib/storage/question-history-storage';
-import type { Generation } from '../pokemon/types';
-import { defaultGameSettings } from '../settings/game-settings';
-import { buildLeagueQuestions, buildQuestions } from './question-generation';
+} from '../../lib/storage/player-storage.ts';
+import { registerShownQuestion } from '../../lib/storage/question-history-storage.ts';
+import type { Generation } from '../pokemon/types.ts';
+import { defaultGameSettings } from '../settings/game-settings.ts';
+import { buildLeagueQuestions, buildQuestions } from './question-generation.ts';
 import {
   emptyQuestionHistory,
   getQuestionKey,
@@ -26,12 +27,18 @@ import {
   isQuestionHistory,
   rememberQuestion,
   rememberShownQuestion,
-} from './question-history';
-import { isQuestionData, isQuestionLineup } from './question-lineup';
-import type { QuestionBuilder, QuestionDraft } from './questions/context';
-import { standardQuestionTypes as questionTypes } from './standard-question-types';
-import { optionSetRepetition, targetRepetition } from './questions/repetition';
-import type { QuestionType } from './types';
+} from './question-history.ts';
+import { isQuestionData, isQuestionLineup } from './question-lineup.ts';
+import type { QuestionBuilder, QuestionDraft } from './questions/context.ts';
+import { standardQuestionTypes as questionTypes } from './standard-question-types.ts';
+import {
+  optionSetRepetition,
+  targetRepetition,
+} from './questions/repetition.ts';
+import type { QuestionType } from './types.ts';
+
+beforeEach(resetLocalSave);
+
 const genFive: Generation[] = ['I', 'II', 'III', 'IV', 'V'];
 const generate = (
   type: QuestionType,
@@ -234,16 +241,16 @@ it('round-trips history and frozen lineups through saves and backup restore', as
       defaultGameSettings,
     ),
   };
-  updatePlayerData({ leagueLineup });
-  const backup = parseBackup(JSON.stringify(createBackup()));
+  await updatePlayerData({ leagueLineup });
+  const backup = parseBackup(JSON.stringify(await createBackup()));
   localStorage.clear();
-  restoreBackup(backup);
+  await restoreBackup(backup);
   expect(readPlayerSave().data.questionHistory.sequence).toBe(1);
   expect(readPlayerSave().data.leagueLineup).toEqual(leagueLineup);
   expect(await registerShownQuestion(questions[1]!, 'stale-tab', 1, null)).toBe(
     false,
   );
-  writeActiveGame({
+  await writeActiveGame({
     answers: [],
     questions,
     roundId: 'saved-run',
@@ -254,15 +261,16 @@ it('round-trips history and frozen lineups through saves and backup restore', as
     questionCount: questions.length,
     seed: 'saved',
   });
-  updatePlayerData({
+  await updatePlayerData({
     questionHistory: questions.reduce(rememberQuestion, emptyQuestionHistory()),
   });
   expect(readActiveGame(catalog)?.questions).toEqual(questions);
   expect(readActiveGame(catalog)?.version).toBe(7);
 });
-it('keeps Daily independent of personal history and rotates Champion targets across dates', () => {
+
+it('keeps Daily independent of personal history and rotates Champion targets across dates', async () => {
   const first = buildDailyForTest('2026-09-08');
-  updatePlayerData({
+  await updatePlayerData({
     questionHistory: first.reduce(rememberQuestion, emptyQuestionHistory()),
   });
   expect(buildDailyForTest('2026-09-08')).toEqual(first);

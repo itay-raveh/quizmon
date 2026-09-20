@@ -1,6 +1,6 @@
-import { formatPokemonName } from '../../pokemon/format';
-import type { QuestionData } from '../types';
-import type { EvolutionKnowledge } from '../topic-catalog';
+import { formatPokemonName } from '../../pokemon/format.ts';
+import type { QuestionData } from '../types.ts';
+import type { EvolutionKnowledge } from '../topic-catalog.ts';
 
 export const evolutionRequirement = (condition: string) => {
   const level = /^at level (\d+)$/.exec(condition);

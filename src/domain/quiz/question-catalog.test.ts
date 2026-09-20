@@ -1,16 +1,16 @@
-import type { QuestionData } from './types';
-import { catalog } from '../../../tests/fixtures/catalog';
-import { createSeededRandom } from '../../lib/random';
-import { generations, formGroups } from '../pokemon/types';
-import { defaultGameSettings, filterPokemon } from '../settings/game-settings';
-import { questionVariants, getQuestionVariant } from './question-variants';
-import { isQuestionData } from './question-lineup';
-import { buildQuestionType } from './questions/registry';
+import type { QuestionData } from './types.ts';
+import { catalog } from '../../../tests/fixtures/catalog.ts';
+import { createSeededRandom } from '../../lib/random.ts';
+import { generations, formGroups } from '../pokemon/types.ts';
 import {
-  buildDailyTrackQuestions,
-  resolveTrainingSettings,
-} from './question-generation';
-import type { Difficulty } from './difficulty';
+  defaultGameSettings,
+  filterPokemon,
+} from '../settings/game-settings.ts';
+import { questionVariants, getQuestionVariant } from './question-variants.ts';
+import { isQuestionData } from './question-lineup.ts';
+import { buildQuestionType } from './questions/registry.ts';
+import { buildQuestions } from './question-generation.ts';
+import type { Difficulty } from './difficulty.ts';
 
 const pool = filterPokemon(catalog, {
   generations: [...generations],
@@ -27,71 +27,95 @@ const cases = Object.entries(questionVariants).flatMap(([type, variants]) =>
 it.each(cases)(
   'builds the configured $type checkpoint at Level $level from shipped facts',
   ({ type, level }) => {
-    const question = buildQuestionType(
-      {
-        catalog,
-        pool,
-        generations: [...generations],
-        difficulty: level,
-        random: createSeededRandom(`checkpoint:${type}:${level}`),
-        used: new Set(),
-      },
-      type,
-    );
-    expect(question, `${type} Level ${level}`).toBeDefined();
-    expect(isQuestionData(question)).toBe(true);
-    if (!question) return;
-    const rules = getQuestionVariant(type, level)!.variant;
-    if (question.answer.interaction === 'single-choice') {
-      expect(question.answer.correctOptions).toHaveLength(1);
-      expect(question.options.length).toBeGreaterThan(1);
+    const random = createSeededRandom(`checkpoint:${type}:${level}`);
+    const questions =
+      type === 'champion'
+        ? [
+            buildQuestionType(
+              {
+                catalog,
+                pool,
+                generations: [...generations],
+                difficulty: level,
+                random,
+                used: new Set(),
+              },
+              type,
+            ),
+          ]
+        : buildQuestions(
+            catalog,
+            {
+              ...defaultGameSettings,
+              difficulty: level,
+              questionSelection: 'custom',
+              generations: [...generations],
+              formGroups: [...formGroups],
+              questionTypes: [type],
+            },
+            random,
+          );
+    expect(questions).toHaveLength(type === 'champion' ? 1 : 10);
+    for (const question of questions) {
+      expect.assert.isDefined(question);
+      expect(isQuestionData(question)).toBe(true);
+      const rules = getQuestionVariant(type, level)!.variant;
+      if (question.answer.interaction === 'single-choice') {
+        expect(question.answer.correctOptions).toHaveLength(1);
+        expect(question.options.length).toBeGreaterThan(1);
+      }
+      if (rules.fullList === 'types')
+        expect(question.options).toHaveLength(
+          Object.keys(catalog.typeRelations).length,
+        );
+      if (rules.fullList === 'regions')
+        expect(question.options).toHaveLength(catalog.topics!.regions.length);
+      expect(question.questionType).toBe(type);
+      expect(question.variantLevel).toBe(level);
+      expect(question.rendering).toEqual(rules.rendering);
+      if (rules.search) {
+        expect(question.answer.interaction).toBe('search');
+        expect(question.searchOptions!.map(({ name }) => name)).toContain(
+          question.answer.correctOptions[0],
+        );
+      }
+      if (rules.preferBackSprite) {
+        const back = catalog.pokemon[
+          question.subject.name
+        ]!.identitySprites.generations.filter(({ generation }) =>
+          ['I', 'II', 'III', 'IV', 'V'].includes(generation),
+        ).flatMap(({ back }) => back);
+        if (back.length) {
+          expect(question.media.kind).toBe('sprite');
+          if (question.media.kind === 'sprite')
+            expect(back).toContain(question.media.src);
+        }
+      }
+      if (rules.typeGrid) expect(question.options).toHaveLength(18);
+      if (rules.singleType)
+        expect(question.subject.types ?? []).toHaveLength(1);
+      if (rules.statGap) {
+        const winner =
+          question.optionStats![question.answer.correctOptions[0]!]!;
+        for (const option of question.options.filter(
+          (option) => !question.answer.correctOptions.includes(option),
+        )) {
+          const gap = Math.abs(winner - question.optionStats![option]!);
+          expect(gap).toBeGreaterThanOrEqual(rules.statGap[0]);
+          expect(gap).toBeLessThanOrEqual(rules.statGap[1]);
+        }
+      }
+      expect(
+        question.repetition.primary.every((name) => !!catalog.pokemon[name]),
+      ).toBe(true);
+      expect(
+        question.repetition.distractors.every(
+          (name) => !!catalog.pokemon[name],
+        ),
+      ).toBe(true);
     }
-    if (rules.fullList === 'types')
-      expect(question.options).toHaveLength(
-        Object.keys(catalog.typeRelations).length,
-      );
-    if (rules.fullList === 'regions')
-      expect(question.options).toHaveLength(catalog.topics!.regions.length);
-    expect(question.rendering).toEqual(rules.rendering);
-    expect(
-      question.repetition.primary.every((name) => !!catalog.pokemon[name]),
-    ).toBe(true);
-    expect(
-      question.repetition.distractors.every((name) => !!catalog.pokemon[name]),
-    ).toBe(true);
   },
 );
-it('uses every eligible family through the active Daily settings path', () => {
-  const settings = resolveTrainingSettings(catalog, {
-    ...defaultGameSettings,
-    difficulty: 3,
-    generations: [...generations],
-    formGroups: [...formGroups],
-    questionSelection: 'automatic',
-  });
-  expect([...settings.questionTypes].sort()).toEqual(
-    Object.keys(questionVariants)
-      .filter(
-        (type) =>
-          type !== 'champion' &&
-          getQuestionVariant(type as QuestionData['questionType'], 3),
-      )
-      .sort(),
-  );
-  const first = buildDailyTrackQuestions(
-    catalog,
-    '2026-09-13',
-    settings,
-    'all',
-  );
-  expect(first).toEqual(
-    buildDailyTrackQuestions(catalog, '2026-09-13', settings, 'all'),
-  );
-  expect(first).toHaveLength(5);
-  expect(first.at(-1)?.questionType).toBe('champion');
-  expect(first.every((question) => question.variantLevel! <= 3)).toBe(true);
-});
-
 it.each(generations)(
   'keeps every family inside the %s generation and base-form scope',
   (generation) => {

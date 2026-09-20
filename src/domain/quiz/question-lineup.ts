@@ -1,29 +1,19 @@
-import { isQuestionRendering } from './question-rendering';
-import { isQuestionSubject } from './subject';
-import { isDifficulty } from './difficulty';
+import { isQuestionRendering } from './question-rendering.ts';
+import { isQuestionSubject } from './subject.ts';
+import { isDifficulty } from './difficulty.ts';
 import {
   isChoice,
   isFiniteNonnegative,
   isRecord,
   isSafeNonnegativeInteger,
-} from '../../lib/validation';
-import { generations, statNames } from '../pokemon/types';
-import { questionLabels } from './question-labels';
-import {
-  questionCategories,
-  retiredQuestionTypes,
-  type QuestionData,
-  type SavedAnswerResult,
-} from './types';
+} from '../../lib/validation.ts';
+import { generations, statNames } from '../pokemon/types.ts';
+import { questionLabels } from './question-labels.ts';
+import { questionCategories, type QuestionData } from './types.ts';
 export interface QuestionLineup {
   seed: string;
   contentVersion: number;
   questions: QuestionData[];
-}
-export interface SavedQuestionLineup extends Omit<QuestionLineup, 'questions'> {
-  questions: (Omit<QuestionData, 'questionType'> & {
-    questionType: NonNullable<SavedAnswerResult['questionType']>;
-  })[];
 }
 const text = (value: unknown): value is string =>
   typeof value === 'string' && value.length <= 10000;
@@ -193,17 +183,3 @@ export const isQuestionLineup = (value: unknown): value is QuestionLineup =>
   isSafeNonnegativeInteger(value.contentVersion) &&
   Array.isArray(value.questions) &&
   value.questions.every(isQuestionData);
-
-export const isSavedQuestionLineup = (
-  value: unknown,
-): value is SavedQuestionLineup =>
-  isRecord(value) &&
-  isQuestionLineup({ ...value, questions: [] }) &&
-  Array.isArray(value.questions) &&
-  value.questions.every(
-    (question: unknown) =>
-      isQuestionData(question) ||
-      (isRecord(question) &&
-        isChoice(question.questionType, retiredQuestionTypes) &&
-        isQuestionData({ ...question, questionType: 'pokedex-scan' })),
-  );

@@ -1,7 +1,7 @@
-import type { PokemonCatalog } from '../../pokemon/types';
-import type { QuestionHistory } from '../question-history';
-import type { QuestionData } from '../types';
-import type { QuestionContext } from './context';
+import type { PokemonCatalog } from '../../pokemon/types.ts';
+import type { QuestionHistory } from '../question-history.ts';
+import type { QuestionData } from '../types.ts';
+import type { QuestionContext } from './context.ts';
 
 export const speciesName = (catalog: PokemonCatalog, name: string): string =>
   catalog.pokemon[name]?.speciesName ?? name;

@@ -1,0 +1,16 @@
+# Local PostgreSQL uses trust authentication. Hyperdrive still requires a password.
+filter = '''
+finding["rule_id"] == "generic-credential-uri" &&
+filter.matchesAny(attributes["path"], [
+  `^deploy/wrangler(?:\.dev)?\.jsonc$`,
+  `^deploy/powersync/service\.yaml$`,
+  `^scripts/dev/game-api\.ts$`,
+  `^tests/online/[^/]+\.ts$`
+]) &&
+filter.matchesAny(finding["match"], [
+  `^postgresql://postgres:unused@(?:127\.0\.0\.1:5548|db:5432)/`
+])
+'''
+
+[extend]
+useDefault = true

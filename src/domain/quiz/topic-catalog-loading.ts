@@ -1,5 +1,5 @@
-import { isRecord } from '../../lib/validation';
-import type { TopicCatalog } from './topic-catalog';
+import { isRecord } from '../../lib/validation.ts';
+import type { TopicCatalog } from './topic-catalog.ts';
 
 const arrayKeys = [
   'items',
