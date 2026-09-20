@@ -63,6 +63,7 @@ jobs:
           node tests/online/check-release-preflight.ts
       - name: Check real sync isolation
         run: |
+          docker compose -f compose.yaml pull powersync
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-runtime-config.ts
       - name: Publish the checked image
