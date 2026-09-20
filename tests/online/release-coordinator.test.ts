@@ -57,6 +57,7 @@ async function fixture(
       activations.push(selected.id);
       return Promise.resolve(receipt());
     },
+    inspectActivation: () => Promise.reject(new PendingActivationError()),
     verifyDeployment: (actual) => {
       verification.push(actual.deploymentId);
       return Promise.resolve();
@@ -231,6 +232,95 @@ try {
         coordinateRelease({ ...options, operation: operation() }),
         PendingActivationError,
       );
+      assert.equal(activations.length, 1);
+    }));
+
+  await test('recovery persists the confirmed receipt before verification and never repeats migrations or activation', () =>
+    fixture(async ({ client, options, activations }) => {
+      await assert.rejects(
+        coordinateRelease({
+          ...options,
+          activate: (selected) => {
+            activations.push(selected.id);
+            return Promise.reject(new Error('response lost'));
+          },
+        }),
+        PendingActivationError,
+      );
+      const confirmed = receipt();
+      let inspections = 0;
+      const recovery = {
+        ...options,
+        migrationsFolder: '/missing-migrations',
+        configure: () => Promise.reject(new Error('must not configure')),
+        inspectActivation: () => {
+          inspections++;
+          return Promise.resolve(confirmed);
+        },
+      };
+      await assert.rejects(
+        coordinateRelease({ ...recovery, operation: operation() }),
+        PendingActivationError,
+      );
+      assert.equal(inspections, 0);
+      await assert.rejects(
+        coordinateRelease({
+          ...recovery,
+          verifyDeployment: () => Promise.reject(new Error('read failed')),
+        }),
+        /verification failed/,
+      );
+      assert.deepEqual(
+        (
+          await client.query(
+            'SELECT phase, receipt FROM quizmon_release.operations',
+          )
+        ).rows,
+        [{ phase: 'verifying', receipt: confirmed }],
+      );
+      const result = await coordinateRelease(recovery);
+      assert.equal(result.status, 'verified-existing');
+      assert.deepEqual(result.receipt, confirmed);
+      assert.equal(inspections, 1);
+      assert.equal(activations.length, 1);
+    }));
+
+  await test('failed receipt persistence leaves recovery retryable without another activation', () =>
+    fixture(async ({ client, options, activations }) => {
+      await assert.rejects(
+        coordinateRelease({
+          ...options,
+          activate: (selected) => {
+            activations.push(selected.id);
+            return Promise.reject(new Error('response lost'));
+          },
+        }),
+        PendingActivationError,
+      );
+      await client.query(`CREATE FUNCTION reject_receipt() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN RAISE EXCEPTION 'receipt write failed'; END $$`);
+      await client.query(`CREATE TRIGGER reject_receipt BEFORE UPDATE ON quizmon_release.operations
+        FOR EACH ROW EXECUTE FUNCTION reject_receipt()`);
+      const confirmed = receipt();
+      const recovery = {
+        ...options,
+        inspectActivation: () => Promise.resolve(confirmed),
+      };
+      await assert.rejects(coordinateRelease(recovery), /receipt write failed/);
+      assert.deepEqual(
+        (
+          await client.query(
+            'SELECT phase, receipt FROM quizmon_release.operations',
+          )
+        ).rows,
+        [{ phase: 'activating', receipt: null }],
+      );
+      await client.query(
+        'DROP TRIGGER reject_receipt ON quizmon_release.operations',
+      );
+      const result = await coordinateRelease(recovery);
+      assert.equal(result.status, 'verified-existing');
+      assert.deepEqual(result.receipt, confirmed);
       assert.equal(activations.length, 1);
     }));
 

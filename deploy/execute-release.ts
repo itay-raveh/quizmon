@@ -86,6 +86,7 @@ export async function executeRelease(
           signal,
           assertSelected: () => options.assertSelected(operation),
         }),
+      inspectActivation: (signal) => deployment.inspect(undefined, signal),
       verifyDeployment: (receipt) => deployment.verify(receipt),
     });
   } finally {

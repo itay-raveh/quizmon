@@ -98,7 +98,7 @@ let activations=0;
 const release={connection:{connectionString:options.connectionString},migrationsFolder:options.migrationsFolder,
   operation:{version:1,id:crypto.randomUUID(),artifact:'sha256:'+'1'.repeat(64),configuration:'sha256:'+'2'.repeat(64)},
   preflight:async()=>{},assertSelected:async()=>{},configure:publishPlayerTables,
-  activate:async()=>{activations++;return{versionId:crypto.randomUUID(),deploymentId:crypto.randomUUID()};},verifyDeployment:async()=>{}};
+  activate:async()=>{activations++;return{versionId:crypto.randomUUID(),deploymentId:crypto.randomUUID()};},inspectActivation:async()=>{throw new Error('No uncertain activation expected');},verifyDeployment:async()=>{}};
 assert.equal((await coordinateRelease(release)).status,'activated');
 assert.equal((await coordinateRelease(release)).status,'verified-existing');
 assert.equal(activations,1);

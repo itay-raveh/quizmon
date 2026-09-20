@@ -1,4 +1,5 @@
 import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
+import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { openLocalDatabase } from '../../../tests/fixtures/local-database';
 import { emptyPlayerData } from '../../domain/player/player-save';
 import { emptyContribution, type Action } from '../../domain/sync/progress';
@@ -263,6 +264,44 @@ it('does not resurrect a rejected edit when its synced issue is dismissed and lo
   await projectAccount(state, db);
   expect(state.save.data.profile?.name).toBe('Accepted');
   expect(state.predecessors).toEqual({});
+});
+
+it('restores account defaults after rejecting its first edits and preserves device preferences', async () => {
+  await db.execute('UPDATE account_state SET edits=?,edit_revisions=?', [
+    '{}',
+    '{}',
+  ]);
+  const specialty = await appendLocalAction(state, db, 'profile.patch', {
+    unit: 'specialty',
+    value: 'type',
+    expectedRevision: 0,
+  });
+  const timer = await appendLocalAction(state, db, 'preferences.patch', {
+    unit: 'timerDisplay',
+    value: 'hidden',
+    expectedRevision: 0,
+  });
+  state.save.data.settings = {
+    ...defaultGameSettings,
+    soundVolume: 0.2,
+    reduceMotion: true,
+  };
+  await projectAccount(state, db);
+  expect(state.save.data.profile).toMatchObject({
+    name: 'Offline edit',
+    specialty: 'type',
+  });
+  expect(state.save.data.settings?.timerDisplay).toBe('hidden');
+  await receipt();
+  await receipt(specialty, 'specialty_not_earned');
+  await receipt(timer);
+  await projectAccount(state, db);
+  expect(state.save.data.profile).toMatchObject({ name: '', specialty: null });
+  expect(state.save.data.settings).toMatchObject({
+    timerDisplay: defaultGameSettings.timerDisplay,
+    soundVolume: 0.2,
+    reduceMotion: true,
+  });
 });
 
 it('makes a failed dismissal reviewable without hiding the original conflict', async () => {

@@ -21,7 +21,7 @@ const digest = /^sha256:[a-f0-9]{64}$/;
 export class PendingActivationError extends Error {
   constructor() {
     super(
-      'A release has an unresolved deployment. Establish its outcome before another activation.',
+      'A release has an unresolved deployment. Retry that same selected operation to verify its outcome before another activation.',
     );
   }
 }
@@ -99,6 +99,7 @@ export interface ReleaseCoordinatorOptions {
     operation: ReleaseOperation,
     signal: AbortSignal,
   ) => Promise<DeploymentReceipt>;
+  inspectActivation: (signal: AbortSignal) => Promise<DeploymentReceipt>;
   verifyDeployment: (receipt: DeploymentReceipt) => Promise<void>;
 }
 
@@ -136,11 +137,7 @@ export async function coordinateRelease(options: ReleaseCoordinatorOptions) {
       throw new Error(
         'A release operation cannot be reused with different inputs.',
       );
-    if (
-      entries.some(
-        (entry) => entry.phase === 'activating' || entry.id !== operation.id,
-      )
-    )
+    if (entries.some((entry) => entry.id !== operation.id))
       throw new PendingActivationError();
     const verify = async (receipt: DeploymentReceipt) => {
       try {
@@ -158,6 +155,17 @@ export async function coordinateRelease(options: ReleaseCoordinatorOptions) {
       return receipt;
     };
     if (own) {
+      if (own.phase === 'activating') {
+        const receipt = readReceipt(
+          await options.inspectActivation(session.signal),
+        );
+        assertConnected();
+        await client.query(
+          `UPDATE quizmon_release.operations SET phase = 'verifying', receipt = $2, updated_at = now() WHERE id = $1`,
+          [operation.id, JSON.stringify(receipt)],
+        );
+        own.receipt = receipt;
+      }
       const receipt = await verify(readReceipt(own.receipt));
       return { status: 'verified-existing' as const, receipt };
     }

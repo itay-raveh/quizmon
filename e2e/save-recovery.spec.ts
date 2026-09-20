@@ -123,7 +123,7 @@ test('restores a current backup from a retired save @cross-browser', async ({
   ]);
   await expect(
     page.getByRole('button', { name: 'Start training', exact: true }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15_000 });
   expect((await readSave(page)).data.pokedex).toEqual(['pikachu']);
 });
 

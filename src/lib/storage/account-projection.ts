@@ -85,6 +85,9 @@ export async function projectAccount(
   data.profile = {
     ...(data.profile ?? createTrainerProfile()),
     createdAt: base.profile_created_at,
+    name: '',
+    partnerPokemon: null,
+    specialty: null,
   };
   const edits = JSON.parse(base.edits) as Record<string, unknown>;
   state.editRevisions = JSON.parse(base.edit_revisions) as Partial<
@@ -119,7 +122,12 @@ export async function projectAccount(
   for (const unit of ['name', 'partnerPokemon', 'specialty'] as const)
     if (Object.hasOwn(edits, unit))
       Object.assign(data.profile, { [unit]: edits[unit] });
-  data.settings = { ...defaultGameSettings, ...data.settings };
+  data.settings = {
+    ...defaultGameSettings,
+    soundVolume: data.settings?.soundVolume ?? defaultGameSettings.soundVolume,
+    reduceMotion:
+      data.settings?.reduceMotion ?? defaultGameSettings.reduceMotion,
+  };
   for (const unit of ['answerFlow', 'timerDisplay'] as const)
     if (Object.hasOwn(edits, unit))
       Object.assign(data.settings, { [unit]: edits[unit] });

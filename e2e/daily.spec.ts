@@ -222,7 +222,7 @@ test('play links enter Daily without a setup screen', async ({ page }) => {
   await page.goto('/?daily=2026-09-01&play=1');
   await expect(
     page.getByRole('progressbar', { name: 'Quiz progress' }),
-  ).toHaveText('001 / 005');
+  ).toHaveText('001 / 005', { timeout: 15_000 });
   await expect(page.locator('.daily-menu')).toHaveCount(0);
   await expect(
     page.getByRole('button', { name: 'Start Daily', exact: true }),

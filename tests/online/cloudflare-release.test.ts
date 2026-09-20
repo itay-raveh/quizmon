@@ -163,6 +163,7 @@ await test('inactive historical versions, split traffic, malformed responses and
         ),
     });
     await assert.rejects(api.inspect(versionId), PendingActivationError);
+    await assert.rejects(api.inspect(), PendingActivationError);
   }
 });
 
@@ -347,7 +348,7 @@ await test('cancellation stops descendants in the release process group', async 
   }
 });
 
-await test('real PostgreSQL journal prevents another activation after a lost process or API response', async () => {
+await test('real PostgreSQL journal recovers confirmed activations after a lost process or API response without redeploying', async () => {
   const admin = new Client({
     connectionString: 'postgresql://postgres:unused@127.0.0.1:5548/postgres',
   });
@@ -378,10 +379,11 @@ await test('real PostgreSQL journal prevents another activation after a lost pro
           join(cli, 'cli.js'),
           `const fs=require('node:fs');fs.appendFileSync(${JSON.stringify(marker)}, ${JSON.stringify('activated\n')});fs.writeFileSync(process.env.WRANGLER_OUTPUT_FILE_PATH, ${JSON.stringify(output)});process.exit(${mode === 'lost-process-response' ? 1 : 0});`,
         );
+        let apiUnavailable = mode === 'lost-api-response';
         const api = cloudflareRelease({
           ...connection,
           fetch: (url) =>
-            mode === 'lost-api-response'
+            apiUnavailable
               ? Promise.reject(new Error('Lost response'))
               : response(
                   url.endsWith('/deployments')
@@ -406,6 +408,8 @@ await test('real PostgreSQL journal prevents another activation after a lost pro
               signal,
               assertSelected: () => Promise.resolve(),
             }),
+          inspectActivation: (signal: AbortSignal) =>
+            api.inspect(undefined, signal),
           verifyDeployment: (receipt: {
             versionId: string;
             deploymentId: string;
@@ -422,18 +426,22 @@ await test('real PostgreSQL journal prevents another activation after a lost pro
             coordinateRelease(options),
             PendingActivationError,
           );
-          await assert.rejects(
-            coordinateRelease(options),
-            PendingActivationError,
+          if (apiUnavailable)
+            await assert.rejects(
+              coordinateRelease(options),
+              PendingActivationError,
+            );
+          apiUnavailable = false;
+          assert.equal(
+            (await coordinateRelease(options)).status,
+            'verified-existing',
           );
         }
         assert.equal(await readFile(marker, 'utf8'), 'activated\n');
         const journal = await client.query<{ phase: string }>(
           'SELECT phase FROM quizmon_release.operations',
         );
-        assert.deepEqual(journal.rows, [
-          { phase: mode === 'success' ? 'active' : 'activating' },
-        ]);
+        assert.deepEqual(journal.rows, [{ phase: 'active' }]);
       } finally {
         await client.end();
         await admin.query('DROP DATABASE ' + database + ' WITH (FORCE)');

@@ -1,4 +1,5 @@
 import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
+import { parseActiveGameSave } from '../../domain/player/active-game';
 import {
   UpdateType,
   type PowerSyncBackendConnector,
@@ -194,22 +195,14 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
       const actions = await guest.getAll<LocalRow>(
         'SELECT id,payload FROM local_actions',
       );
-      const hasGuest = actions.length > 0;
+      const guestRounds = await guest.getAll<LocalRow>(
+        'SELECT id,payload FROM local_rounds',
+      );
+      const hasGuest =
+        actions.length > 0 ||
+        guestRounds.length > 0 ||
+        Object.keys(source.dailyAttempts ?? {}).length > 0;
       if (hasGuest && !useAccountOnly) {
-        const unfinished = await guest.getAll<LocalRow>(
-          'SELECT id,payload FROM local_rounds',
-        );
-        if (
-          unfinished.some((row) => {
-            const round: unknown = JSON.parse(row.payload);
-            return !isRecord(round) || !round.completedAt;
-          })
-        ) {
-          update({ mergeRequired: true });
-          throw new Error(
-            'Finish or leave the unfinished guest round in its original tab before adding this save. You can use account progress and keep that guest round separate.',
-          );
-        }
         const linked = await accountRequest('/api/account/link', {
           expectedAccountId: destination.id,
           ...destination,
@@ -307,6 +300,54 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
                 `INSERT OR IGNORE INTO ${table}(id,payload) VALUES (?,?)`,
                 [row.id, row.payload],
               );
+          for (const row of guestRounds) {
+            const round = parseActiveGameSave(JSON.parse(row.payload));
+            if (round.completedAt) {
+              const [completion] = await guest.getAll<LocalRow>(
+                'SELECT id,payload FROM local_completions WHERE id = ?',
+                [round.roundId],
+              );
+              if (completion) continue;
+            }
+            const [existing] = await tx.getAll<LocalRow>(
+              'SELECT id,payload FROM local_rounds WHERE id = ?',
+              [row.id],
+            );
+            if (existing) {
+              if (
+                parseActiveGameSave(JSON.parse(existing.payload)).roundId ===
+                round.roundId
+              )
+                continue;
+              await tx.execute(
+                'INSERT OR IGNORE INTO local_rounds(id,payload) VALUES (?,?)',
+                [`handoff:${source.datasetId}:${row.id}`, existing.payload],
+              );
+            }
+            await tx.execute(
+              'INSERT OR REPLACE INTO local_rounds(id,payload) VALUES (?,?)',
+              [
+                row.id,
+                JSON.stringify({
+                  ...round,
+                  playerRestoreId: finalState.save.restoreId,
+                }),
+              ],
+            );
+          }
+          const guestAttempts = Object.fromEntries(
+            Object.entries(source.dailyAttempts ?? {}).map(([key, value]) => [
+              key,
+              {
+                ...parseActiveGameSave(value),
+                playerRestoreId: finalState.save.restoreId,
+              },
+            ]),
+          );
+          finalState.dailyAttempts = {
+            ...guestAttempts,
+            ...finalState.dailyAttempts,
+          };
           const [hasState] = await tx.getAll<LocalRow>(
             "SELECT id,payload FROM local_state WHERE id = 'player'",
           );
