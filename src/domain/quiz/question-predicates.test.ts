@@ -35,6 +35,23 @@ const cases = predicateTypes.flatMap((type) =>
     .map((level) => ({ type, level: Number(level) as Difficulty })),
 );
 const topics = catalog.topics!;
+it.each([2, 3, 4, 5] as const)(
+  'omits Full Heal and Full Restore from Level %s medicine questions',
+  (level) => {
+    for (let seed = 0; seed < 5; seed++) {
+      const question = buildQuestionType(
+        {
+          ...createQuestionContext(`medicine:${level}:${seed}`),
+          difficulty: level,
+        },
+        'medicine-cabinet',
+      );
+      expect(question?.options).toHaveLength(4);
+      expect(question?.options).not.toContain('full-heal');
+      expect(question?.options).not.toContain('full-restore');
+    }
+  },
+);
 it.each(cases)(
   'validates the actual $type predicate at Level $level',
   ({ type, level }) => {

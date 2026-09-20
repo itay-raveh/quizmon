@@ -60,7 +60,6 @@ export interface VariantRules {
     | 'medicines'
     | 'stones'
     | 'direct-use';
-  combinedCure?: boolean;
   measurement?: MeasurementRules;
   reviewedDescription?: boolean;
   fullList?: 'types' | 'regions' | 'flavors';
@@ -142,11 +141,6 @@ export const questionVariants: Record<
     1: { itemChoices: 'different-categories' },
     2: { itemChoices: 'medicines' },
     3: { itemChoices: 'medicines', allowMissingSprites: true },
-    4: {
-      itemChoices: 'medicines',
-      allowMissingSprites: true,
-      combinedCure: true,
-    },
   },
   'evolution-items': {
     1: { itemChoices: 'different-categories' },

@@ -68,6 +68,12 @@ export const buildMedicine: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const pool = topics.medicines.flatMap((fact) => {
+    if (
+      context.difficulty &&
+      context.difficulty > 1 &&
+      (fact.name === 'full-heal' || fact.name === 'full-restore')
+    )
+      return [];
     const item = topics.items.find(
       (item) => item.name === fact.name && topicEligible(context, item),
     );
@@ -90,9 +96,7 @@ export const buildMedicine: QuestionBuilder = (context) => {
       sleep: 'wakes a sleeping Pokémon',
       paralysis: 'cures paralysis',
     }[status];
-    const fits = (item: (typeof pool)[number]) =>
-      item.cures.includes(status) &&
-      (!context.variant?.combinedCure || item.hp === 'full' || item.hp >= 100);
+    const fits = (item: (typeof pool)[number]) => item.cures.includes(status);
     for (const target of ordered(context, pool.filter(fits))) {
       const seen = new Set([target.category]);
       const wrong = ordered(
@@ -116,14 +120,14 @@ export const buildMedicine: QuestionBuilder = (context) => {
       const question = makeTopicQuestion(
         context,
         topicSubject(context, 'item', target),
-        `Which item ${treatment}${context.variant?.combinedCure ? ' and restores HP from 100/200 to full' : ''}?`,
+        `Which item ${treatment}?`,
         target.name,
         options.map((item) => item.name),
         {
           context: JSON.stringify([
             'Core-series Bag use, excluding Legends games',
             status,
-            context.variant?.combinedCure ? 100 : 0,
+            0,
           ]),
           optionLabels: Object.fromEntries(
             options.map((item) => [item.name, item.label]),
