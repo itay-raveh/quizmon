@@ -102,6 +102,30 @@
   line-height: 1.2;
 }
 
+.landing__spinner {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-right: 0.4rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: landing-spin 800ms linear infinite;
+  vertical-align: -0.05rem;
+}
+
+@keyframes landing-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing__spinner {
+    animation: none;
+  }
+}
+
 .catch-combo {
   display: grid;
   width: 4.1rem;

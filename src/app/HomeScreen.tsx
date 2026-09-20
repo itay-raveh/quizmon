@@ -56,11 +56,6 @@ export const HomeScreen = ({
       </h1>
       <Logo />
       <div className="landing__primary">
-        {catalogStatus === 'loading' ? (
-          <p className="landing__status" role="status">
-            Loading Daily Challenge…
-          </p>
-        ) : null}
         {catalogStatus === 'error' ? (
           <div className="landing__status landing__status--error" role="alert">
             <span>The Daily Challenge could not be loaded.</span>
@@ -103,7 +98,12 @@ export const HomeScreen = ({
           >
             <span className="daily-action__copy">
               <strong className="daily-action__title">Daily Challenge</strong>
-              {dailyDetail ? (
+              {catalogStatus === 'loading' ? (
+                <span className="daily-action__detail" role="status">
+                  <span className="landing__spinner" aria-hidden="true" />
+                  Preparing Daily Challenge…
+                </span>
+              ) : dailyDetail ? (
                 <span className="daily-action__detail">{dailyDetail}</span>
               ) : null}
             </span>
