@@ -42,17 +42,7 @@
   }
 
   .trainer-passport__header {
-    display: flex;
     flex-wrap: wrap;
-  }
-
-  .trainer-passport__header > div {
-    min-width: 0;
-    flex: 1 1 5rem;
-  }
-
-  .trainer-passport__header > :last-child {
-    margin-left: auto;
   }
 
   .trainer-passport__header h1 {
@@ -63,16 +53,6 @@
     min-height: 2.75rem;
     padding-inline: 0.65rem;
     font-size: var(--text-small);
-  }
-
-  .trainer-passport__header .trainer-passport__back {
-    width: 2.75rem;
-    min-width: 2.75rem;
-    padding: 0;
-  }
-
-  .trainer-passport__header-space {
-    width: 2.75rem;
   }
 
   .trainer-passport__view {

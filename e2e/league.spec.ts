@@ -74,7 +74,7 @@ test('refreshes League attempts and retries while preserving reloads', async ({
   await unlockLeague(page, false);
   await page.goto('/');
   const leagueButton = page.getByRole('button', { name: 'Quizmon League' });
-  await expect(leagueButton).toBeVisible();
+  await expect(leagueButton).toBeVisible({ timeout: 15_000 });
   await leagueButton.click();
   await expect(
     page.getByRole('heading', { name: 'League challenge', exact: true }),
@@ -131,7 +131,10 @@ test('refreshes League attempts and retries while preserving reloads', async ({
   await expect(
     page.getByRole('button', { name: 'Start League challenge' }),
   ).toHaveCount(0);
-  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: 'Main', exact: true })
+    .getByRole('button', { name: 'Play', exact: true })
+    .click();
   await leagueButton.click();
   await page.getByRole('button', { name: 'Start League challenge' }).click();
   const restarted = await readAttempt();

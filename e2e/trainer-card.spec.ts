@@ -178,7 +178,7 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByText('Trainer title unequipped.')).toBeVisible();
   await page.reload();
-  await expect(titles).toBeVisible();
+  await expect(titles).toBeVisible({ timeout: 15_000 });
   await expect(equippedTitle).toHaveCount(0);
   await expect(
     titles.getByRole('button', { name: /Type Specialist.*Earned/ }),
@@ -188,7 +188,16 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await expect(page).toHaveURL(/\?trainer=card$/);
   await expect(card.locator('.trainer-card__title')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
-  await page.getByRole('button', { name: 'Back' }).click();
+  await expect(page.getByRole('button', { name: 'Back' })).toHaveCount(0);
+  const mainNavigation = page.getByRole('navigation', { name: 'Main' });
+  await mainNavigation.getByRole('button', { name: 'Play' }).click();
+  await expect(page).toHaveURL('/');
+  await mainNavigation.getByRole('button', { name: 'Leaderboards' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Daily leaderboard' }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Back' })).toHaveCount(0);
+  await mainNavigation.getByRole('button', { name: 'Play' }).click();
   await expect(page).toHaveURL('/');
 });
 

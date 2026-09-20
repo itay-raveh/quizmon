@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../../components/GameButton';
-import { ArrowLeftIcon, LockSimpleIcon } from '../../components/icons';
+import { LockSimpleIcon } from '../../components/icons';
 import { formatPokemonName } from '../../domain/pokemon/format';
 import { isDailyDate } from '../../lib/validation';
 import { getUtcDate } from '../../domain/quiz/daily';
@@ -188,13 +188,11 @@ function Standings({
 }
 
 export function LeaderboardScreen({
-  onBack,
   onManageFriends,
   initialDate,
   initialScope = 'global',
   onSelectionChange,
 }: {
-  onBack?: () => void;
   onManageFriends: () => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
@@ -234,11 +232,6 @@ export function LeaderboardScreen({
   return (
     <section className="social-screen" aria-labelledby="leaderboard-title">
       <header className="social-screen__header">
-        {onBack && (
-          <GameButton tone="quiet" aria-label="Back" onClick={onBack}>
-            <ArrowLeftIcon aria-hidden="true" weight="bold" />
-          </GameButton>
-        )}
         <h1 id="leaderboard-title">Daily leaderboard</h1>
       </header>
       <div className="friends-panel">

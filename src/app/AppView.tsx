@@ -85,7 +85,6 @@ const AppScreen = ({
   ) {
     return (
       <LeaderboardScreen
-        onBack={() => destination.back()}
         onManageFriends={() => destination.open('friends')}
         initialDate={destination.standingsDate}
         initialScope={destination.standingsScope}
@@ -101,7 +100,6 @@ const AppScreen = ({
     return (
       <TrainerPassport
         catalog={catalogState.catalog}
-        onBack={() => destination.back('play')}
         onViewChange={trainer.showView}
         onProfileChange={trainer.updateProfile}
         profile={trainer.profile}

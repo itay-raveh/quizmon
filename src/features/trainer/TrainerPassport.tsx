@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, type SubmitEvent } from 'react';
 import { GameButton } from '../../components/GameButton';
 import { SoundButton } from '../../components/SoundButton';
 import {
-  ArrowLeftIcon,
   BookOpenIcon,
   CardholderIcon,
   CertificateIcon,
@@ -48,7 +47,6 @@ import {
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
-  onBack: () => void;
   onProfileChange: (profile: TrainerProfile) => Promise<void>;
   onViewChange: (view: TrainerView) => void;
   profile: TrainerProfile;
@@ -76,7 +74,6 @@ const shareLabels = {
 
 export const TrainerPassport = ({
   catalog,
-  onBack,
   onProfileChange,
   onViewChange,
   profile,
@@ -230,18 +227,7 @@ export const TrainerPassport = ({
       aria-labelledby="trainer-passport-title"
     >
       <header className="trainer-passport__header">
-        <GameButton
-          aria-label="Back"
-          className="trainer-passport__back"
-          title="Back"
-          tone="quiet"
-          onClick={onBack}
-        >
-          <ArrowLeftIcon aria-hidden="true" weight="bold" />
-        </GameButton>
-        <div>
-          <h1 id="trainer-passport-title">{trainerViewLabels[view]}</h1>
-        </div>
+        <h1 id="trainer-passport-title">{trainerViewLabels[view]}</h1>
         {view === 'front' ? (
           <GameButton
             className="trainer-passport__edit"
@@ -253,9 +239,7 @@ export const TrainerPassport = ({
             )}
             {editing ? 'Cancel' : 'Edit card'}
           </GameButton>
-        ) : (
-          <span aria-hidden="true" className="trainer-passport__header-space" />
-        )}
+        ) : null}
       </header>
 
       {!editing ? (
