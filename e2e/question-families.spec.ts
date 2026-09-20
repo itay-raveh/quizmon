@@ -4,7 +4,6 @@ import {
   test,
   expectNoHorizontalOverflow,
   formatName,
-  seedQuestionTraining,
 } from './fixtures';
 import { readRound } from './database-fixture';
 import { generations } from '../src/domain/pokemon/types';
@@ -71,8 +70,10 @@ for (const { type, level, count } of cases)
       type === 'berry-flavors' ? 'multi-select' : 'single-choice',
     );
     const answers = page.locator('.answer');
-    await expect(answers).toHaveCount(type === 'natural-gift' ? 0 : count);
-    if (type === 'natural-gift') {
+    await expect(answers).toHaveCount(
+      type === 'natural-gift' || type === 'move-types' ? 0 : count,
+    );
+    if (type === 'natural-gift' || type === 'move-types') {
       expect(question.options).toHaveLength(count);
       await expect(
         page.getByRole('combobox', { name: 'Your type' }),
@@ -125,12 +126,6 @@ for (const { type, level, count } of cases)
       ).toBeVisible();
     }
     await expectNoHorizontalOverflow(page);
-    if (type === 'move-types') {
-      const labels = await answers.evaluateAll((buttons) =>
-        buttons.map((button) => button.getAttribute('aria-label')!),
-      );
-      expect(labels).toEqual(labels.toSorted());
-    }
     const correct = question.answer.correctOptions[0]!;
     const correctButton = page.getByRole('button', {
       name: question.optionLabels?.[correct] ?? formatName(correct),
@@ -169,7 +164,7 @@ for (const { type, level, count } of cases)
       await page.keyboard.press(
         String(regions.indexOf(question.optionLabels![correct]!) + 1),
       );
-    } else if (type === 'natural-gift') {
+    } else if (type === 'natural-gift' || type === 'move-types') {
       const picker = page.getByRole('combobox', { name: 'Your type' });
       await picker.fill(correct);
       await page
@@ -198,7 +193,9 @@ for (const { type, level, count } of cases)
       await page.keyboard.press('Enter');
     }
     await expect(page.locator('.answer--correct')).toHaveCount(
-      type === 'natural-gift' ? 0 : question.answer.correctOptions.length,
+      type === 'natural-gift' || type === 'move-types'
+        ? 0
+        : question.answer.correctOptions.length,
     );
     await expect(page.locator('.answer--wrong')).toHaveCount(0);
     if (type === 'weight-comparison' || type === 'height-comparison')
@@ -225,38 +222,4 @@ for (const { type, level, count } of cases)
       generation: question.subject.generation,
     });
     await expectNoHorizontalOverflow(page);
-  });
-
-for (const input of ['pointer', 'keyboard'] as const)
-  test(`keeps the viewport on a long answer list after ${input} selection`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width: 360, height: 480 });
-    await seedQuestionTraining(page, 'move-types', generations);
-    await page.goto('/?fresh=1');
-    await page
-      .getByRole('button', { name: 'Start training', exact: true })
-      .click();
-    const answers = page.locator('.answer');
-    await expect(answers).toHaveCount(18);
-    const answer = answers.first();
-    await answer.scrollIntoViewIfNeeded();
-    await answer.focus();
-    const scrollBefore = await page.evaluate(() => window.scrollY);
-    const next = page.getByRole('button', {
-      name: 'Next question',
-      exact: true,
-    });
-    if (input === 'pointer') await answer.click();
-    else await page.keyboard.press('Enter');
-    await expect(next).toBeFocused();
-    await expect
-      .poll(() => page.evaluate(() => window.scrollY))
-      .toBe(scrollBefore);
-    await expect(answer).toBeInViewport();
-    await expect(next).not.toBeInViewport();
-    await page.keyboard.press('Enter');
-    await expect(
-      page.getByRole('progressbar', { name: 'Quiz progress' }),
-    ).toContainText('002 / 010');
   });
