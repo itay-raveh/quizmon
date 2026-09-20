@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-20T10:13:47Z",
+  "generatedAt": "2026-09-20T17:47:07Z",
   "title": "Design System: Quizmon",
   "extensions": {
     "colorMeta": {
@@ -545,6 +545,13 @@
       "css": ".ds-button { min-height: 2.8rem; padding: 0.62rem 1.1rem; color: var(--navy, #083b7e); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: inset 0 0.1rem 0 #fff, inset 0 -0.14rem 0 rgba(8, 59, 126, 0.1), 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font-family: var(--font-interface, 'Gabarito Variable', system-ui, sans-serif); font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 100ms ease, box-shadow 100ms ease, filter 100ms ease; } .ds-button:hover { filter: brightness(1.03); transform: translateY(-1px); } .ds-button:focus-visible { outline: 0.2rem solid var(--focus, #083b7e); outline-offset: 0.2rem; } .ds-button:active { box-shadow: inset 0 0.1rem 0 #fff, 0 0.08rem 0 var(--yellow, #eed23e), 0 0.12rem 0 var(--navy-shadow, #123f76); transform: translateY(0.22rem); }"
     },
     {
+      "name": "Main Navigation",
+      "kind": "nav",
+      "description": "Play, Trainer, Leaderboards, and Account or Sign in share four primary destinations. Settings stays a quiet header control. Navigation moves to the bottom on phones.",
+      "html": "<div class=\"ds-header\"><nav class=\"ds-nav\" aria-label=\"Main\"><button>Play</button><button>Trainer</button><button>Leaderboards</button><button>Sign in</button></nav><button class=\"ds-settings\">Settings</button></div>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; font-family: var(--font-interface, system-ui, sans-serif); } .ds-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem; } .ds-nav button { padding: 0.65rem 0.85rem; color: var(--navy, #083b7e); background: var(--paper, #fffbea); border: 3px solid var(--navy, #083b7e); border-radius: 0.5rem; box-shadow: 0 0.22rem 0 var(--yellow, #eed23e), 0 0.3rem 0 var(--navy-shadow, #123f76); font: 700 1rem var(--font-interface, system-ui, sans-serif); cursor: pointer; } .ds-nav button:hover { filter: brightness(1.07); transform: translateY(-1px); } .ds-nav button:focus-visible, .ds-settings:focus-visible { outline: 0.2rem solid var(--navy, #083b7e); outline-offset: 0.2rem; } .ds-settings { color: var(--navy, #083b7e); background: none; border: 0; font: 800 1rem var(--font-interface, system-ui, sans-serif); cursor: pointer; } @media (max-width: 50rem) { .ds-header { justify-content: flex-end; padding-bottom: 6.25rem; } .ds-nav { position: fixed; right: 0; bottom: 0; left: 0; padding: 0.6rem 0.65rem 0.8rem; grid-template-columns: 0.8fr 0.9fr 1.55fr 0.9fr; background: var(--paper, #fffbea); border-top: 2px solid var(--navy, #083b7e); } .ds-nav button { padding: 0.35rem 0.2rem; font-size: 0.85rem; } }"
+    },
+    {
       "name": "Daily Challenge Action",
       "kind": "button",
       "refersTo": "daily-action",
@@ -617,7 +624,7 @@
   ],
   "narrative": {
     "northStar": "Logo Echo",
-    "overview": "Quizmon's Logo Echo world starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.\n\nThe landing screen remains open and asset-led. The wordmark occupies the sky, one large Daily Challenge button anchors the primary action, and the Settings, Trainer Card, and Training controls stay small beneath it. After the player earns every League Badge, one quiet Quizmon League action appears below that compact row without competing with the daily. Question, result, and setup states may use one contained cream surface because they need sustained reading and interaction, but they must still feel like parts of the same compact game system.\n\nThe result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.",
+    "overview": "Quizmon's Logo Echo world starts with two binding identity assets: the exact Pokémon-like wordmark and the crisp pixel-art landscape. Interface chrome borrows their visual confidence without simulating a whole handheld console. Small cream and cobalt surfaces use deep navy outlines, slim yellow lower edges, compact corners, and modest hard shadows.\n\nThe landing screen centers the exact wordmark above compact Daily and Training controls. The existing landscape, fonts, palette, buttons, and Trainer artwork remain unchanged. Question, result, and setup states retain the same compact cream and navy visual language.\n\nThe result is playful, direct, and tactile. It avoids generic application chrome and keeps the quiz itself visually dominant.",
     "keyCharacteristics": [
       "Exact wordmark and crisp landscape remain the primary identity.",
       "Cream, cobalt, navy, and yellow controls echo the wordmark in restrained doses.",
@@ -664,13 +671,13 @@
     ],
     "dos": [
       "Do preserve the exact wordmark and crisp pixel-art landscape.",
-      "Do keep landing controls small and let open scenery dominate the first viewport.",
+      "Do keep the home screen compact, button-led, and surrounded by scenery.",
       "Do use Gabarito for interface text and reserve Martian Mono for compact data and scores.",
       "Do preserve hard edges on pixel sprites and natural rendering on illustrated Pokémon artwork.",
       "Do give buttons a physical pressed state through synchronized translation and compressed lower shadows.",
       "Do animate the start and finish of a round, keep its question surface stable, and honor reduced motion.",
       "Do prefer AVIF and WebP while retaining the provenance-bearing PNG plate fallbacks.",
-      "Do keep ownership, production credits, and the visible Pokémon legal credit in three concise linked tiers."
+      "Do keep footer support, contact, help, and production credits readable; place full ownership and affiliation notices on the Terms page."
     ],
     "donts": [
       "Don't build a giant HUD, simulated handheld frame, or full-page landing card.",
