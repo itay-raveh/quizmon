@@ -1,4 +1,6 @@
 import { site } from '@/app/site';
+import { trainerAvatarOptions } from '@/domain/player/trainer-avatars';
+import type { PackedSpriteMeasurements } from '@/domain/pokemon/types';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { Trophy } from '@/components/Trophy';
 import {
@@ -11,7 +13,7 @@ import {
 } from '@/domain/player/trainer-progression';
 import { CatchCombo } from '@/features/quiz/CatchCombo';
 import type { TrainerProfile } from '@/lib/storage/trainer-profile-storage';
-import type { Ref } from 'react';
+import { useState, type Ref } from 'react';
 import { TrainerArtifactFrame } from './TrainerArtifactFrame';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
@@ -19,7 +21,9 @@ import { TrainerTitleMark } from './TrainerTitleMark';
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
   partnerDexNumber: number | null;
+  partnerHeight?: number;
   partnerSprite: string | null;
+  partnerSpriteMeasurements?: PackedSpriteMeasurements | null;
   profile: TrainerProfile;
   rank: TrainerRank;
   titleTier?: TrainerTier;
@@ -30,10 +34,34 @@ interface TrainerCardProps {
   };
 }
 
+const getAvatarBottom = (image: HTMLImageElement): number => {
+  const { naturalWidth: width, naturalHeight: height } = image;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d');
+  if (!context) return 1;
+
+  try {
+    context.drawImage(image, 0, 0);
+    const pixels = context.getImageData(0, 0, width, height).data;
+    for (let row = height - 1; row >= 0; row--) {
+      for (let column = 0; column < width; column++) {
+        if (pixels[(row * width + column) * 4 + 3]) return (row + 1) / height;
+      }
+    }
+  } catch {
+    return 1;
+  }
+  return 1;
+};
+
 export const TrainerCard = ({
   cardRef,
   partnerDexNumber,
+  partnerHeight,
   partnerSprite,
+  partnerSpriteMeasurements,
   profile,
   rank,
   titleTier = 1,
@@ -42,6 +70,21 @@ export const TrainerCard = ({
   const finish = getCardFinish(rank);
   const isChampion = rank === 'Champion';
   const partnerName = profile.partnerPokemon ?? 'Choose partner';
+  const avatar = trainerAvatarOptions.find(({ id }) => id === profile.avatar);
+  const [avatarBottom, setAvatarBottom] = useState<{
+    id: string;
+    fraction: number;
+  } | null>(null);
+  const groundOffset =
+    avatar && avatarBottom?.id === avatar.id
+      ? (1 - avatarBottom.fraction) * 100
+      : 0;
+  const height = partnerHeight ?? 8;
+  const visibleHeight = Math.min(29, Math.max(5, (height * 29) / 16));
+  const spriteSize = Math.min(
+    48,
+    visibleHeight / Math.max(partnerSpriteMeasurements?.[2] ?? 1, 0.25),
+  );
 
   return (
     <TrainerArtifactFrame
@@ -74,12 +117,44 @@ export const TrainerCard = ({
             </p>
           ) : null}
         </div>
-        <div className="trainer-card__partner">
-          <div className="trainer-card__portrait" aria-hidden="true">
-            {partnerSprite ? (
-              <img src={partnerSprite} alt="" width="96" height="96" />
+        <div className="trainer-card__avatar">
+          <div className="trainer-card__portrait">
+            {avatar ? (
+              <img
+                className="trainer-card__portrait-image"
+                src={`/trainer-avatars/${avatar.id}.png`}
+                alt={`${avatar.name} trainer avatar`}
+                width="80"
+                height="80"
+                onLoad={(event) =>
+                  setAvatarBottom({
+                    id: avatar.id,
+                    fraction: getAvatarBottom(event.currentTarget),
+                  })
+                }
+              />
             ) : (
-              <span className="trainer-card__partner-mark">?</span>
+              <span
+                className="trainer-card__avatar-mark"
+                aria-label="No trainer avatar selected"
+              >
+                ?
+              </span>
+            )}
+            {partnerSprite && (
+              <img
+                className={`trainer-card__partner-sprite${height > 16 ? ' trainer-card__partner-sprite--behind' : ''}`}
+                src={partnerSprite}
+                alt=""
+                width="96"
+                height="96"
+                style={{
+                  width: `${spriteSize}cqw`,
+                  height: `${spriteSize}cqw`,
+                  left: `${(height > 16 ? 4 : 8) - spriteSize * (partnerSpriteMeasurements?.[3] ?? 0.5)}cqw`,
+                  bottom: `calc(${groundOffset}% - ${spriteSize * (1 - (partnerSpriteMeasurements?.[4] ?? 1))}cqw)`,
+                }}
+              />
             )}
           </div>
           <PokemonIdentity

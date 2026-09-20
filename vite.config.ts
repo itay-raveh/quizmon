@@ -40,7 +40,10 @@ export default defineConfig({
       injectRegister: 'auto',
       injectManifest: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        globPatterns: ['**/*.{js,css,html,woff2,json,webmanifest,wasm,bin}'],
+        globPatterns: [
+          '**/*.{js,css,html,woff2,json,webmanifest,wasm,bin}',
+          'trainer-avatars/*.png',
+        ],
       },
       manifest: false,
       registerType: 'prompt',

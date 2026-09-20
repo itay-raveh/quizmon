@@ -6,6 +6,7 @@ import { generations } from '../pokemon/types.ts';
 import {
   contribution,
   trainingBestKey,
+  validEdit,
   validateCompletion,
 } from './progress.ts';
 import type { GameSettings } from '../settings/types.ts';
@@ -50,6 +51,16 @@ beforeEach(resetLocalSave);
 afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
+});
+
+it('accepts only shipped trainer avatars in profile edits', () => {
+  const edit = {
+    unit: 'avatar',
+    value: 'leaf-gen3',
+    expectedRevision: 0,
+  };
+  expect(validEdit(edit)).toBe(true);
+  expect(validEdit({ ...edit, value: 'unknown-sprite' })).toBe(false);
 });
 const makeCompletion = (
   questions: QuestionData[],
@@ -219,8 +230,10 @@ it('preserves independent edits and chains successive edits to the same field', 
   await Promise.all([
     updatePlayerData({ profile: { ...profile, name: 'Leaf' } }),
     updatePlayerData({ profile: { ...profile, partnerPokemon: 'pikachu' } }),
+    updatePlayerData({ profile: { ...profile, avatar: 'leaf-gen3' } }),
   ]);
   expect(readPlayerData().profile).toMatchObject({
+    avatar: 'leaf-gen3',
     name: 'Leaf',
     partnerPokemon: 'pikachu',
   });
@@ -240,6 +253,10 @@ it('preserves independent edits and chains successive edits to the same field', 
   expect(names[1]!.payload.predecessorId).toBe(names[0]!.operationId);
   expect(
     actions.find((action) => action.payload.unit === 'partnerPokemon')!.payload
+      .predecessorId,
+  ).toBeUndefined();
+  expect(
+    actions.find((action) => action.payload.unit === 'avatar')!.payload
       .predecessorId,
   ).toBeUndefined();
 });

@@ -1,5 +1,6 @@
 import { isDailyDate, isRecord } from '../../lib/validation.ts';
 import { getUtcDate } from '../quiz/daily.ts';
+import { isTrainerAvatar } from './trainer-avatars.ts';
 import {
   trainerSpecialtyDetails,
   type TrainerSpecialty,
@@ -8,6 +9,7 @@ import {
 export const TRAINER_NAME_MAX_LENGTH = 20;
 
 export interface TrainerProfile {
+  avatar: string | null;
   createdAt: string;
   hasBeenRevealed: boolean;
   name: string;
@@ -16,6 +18,7 @@ export interface TrainerProfile {
 }
 
 export const createTrainerProfile = (): TrainerProfile => ({
+  avatar: null,
   createdAt: getUtcDate(),
   hasBeenRevealed: false,
   name: '',
@@ -30,6 +33,9 @@ export const normalizeTrainerProfile = (
   const profile = value as Partial<TrainerProfile>;
   if (
     !isDailyDate(profile.createdAt) ||
+    (profile.avatar !== undefined &&
+      profile.avatar !== null &&
+      !isTrainerAvatar(profile.avatar)) ||
     typeof profile.hasBeenRevealed !== 'boolean' ||
     typeof profile.name !== 'string' ||
     (profile.partnerPokemon !== null &&
@@ -41,6 +47,7 @@ export const normalizeTrainerProfile = (
   }
 
   return {
+    avatar: profile.avatar ?? null,
     createdAt: profile.createdAt,
     hasBeenRevealed: profile.hasBeenRevealed,
     name: profile.name.trim().slice(0, TRAINER_NAME_MAX_LENGTH),

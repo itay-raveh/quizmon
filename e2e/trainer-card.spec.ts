@@ -55,11 +55,15 @@ test('customizes and shares the Trainer Card collections', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Trainer name' }).fill('Leaf');
   await page.getByRole('combobox', { name: 'Partner Pokémon' }).fill('Pikachu');
   await page.getByRole('option', { name: 'Pikachu', exact: true }).click();
+  await page.getByRole('button', { name: 'Leaf, Kanto' }).click();
   await page.getByRole('button', { name: 'Save card' }).click();
 
   const card = page.getByRole('article', { name: 'Trainer Card' });
   await expect(card.getByText('Play at')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Leaf' })).toBeVisible();
+  await expect(
+    card.getByRole('img', { name: 'Leaf trainer avatar' }),
+  ).toHaveJSProperty('naturalWidth', 80);
   await expect(card.locator('.trainer-card__partner-caption')).toHaveText(
     'No. 0025Pikachu',
   );
@@ -207,6 +211,7 @@ test('shows saved Trainer records on a narrow screen', async ({ page }) => {
   const data = emptyPlayerData();
   data.generationPromptAnswered = true;
   data.profile = {
+    avatar: 'leaf-gen3',
     createdAt: '2026-09-01',
     hasBeenRevealed: true,
     name: 'Alexandria Evergreen',
@@ -293,6 +298,7 @@ test('stops the Champion finish animation when reduced motion is enabled', async
   const data = emptyPlayerData();
   data.generationPromptAnswered = true;
   data.profile = {
+    avatar: 'leaf-gen3',
     createdAt: '2026-09-01',
     hasBeenRevealed: true,
     name: 'Leaf',

@@ -1,4 +1,5 @@
 import { trainerSpecialtyDetails } from '../player/trainer-progression.ts';
+import { isTrainerAvatar } from '../player/trainer-avatars.ts';
 import {
   isAnswerObservation,
   observationCorrect,
@@ -424,6 +425,7 @@ export function validateCompletion(value: unknown): string | null {
 }
 
 export type EditUnit =
+  | 'avatar'
   | 'name'
   | 'partnerPokemon'
   | 'specialty'
@@ -454,6 +456,8 @@ export function validEdit(value: unknown): value is Edit {
       );
     case 'partnerPokemon':
       return value.value === null || pokemonKey(value.value);
+    case 'avatar':
+      return value.value === null || isTrainerAvatar(value.value);
     case 'specialty':
       return value.value === null || member(value.value, specialties);
     case 'answerFlow':

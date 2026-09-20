@@ -28,6 +28,7 @@ export interface AccountIssue {
 }
 
 const defaultEdits: Record<EditUnit, EditValue> = {
+  avatar: null,
   name: '',
   partnerPokemon: null,
   specialty: null,
@@ -194,6 +195,7 @@ export async function queueIssueResolution(
         'Another edit to this setting is waiting to sync. Review it after syncing.',
       );
     const kind: Action['kind'] = [
+      'avatar',
       'name',
       'partnerPokemon',
       'specialty',

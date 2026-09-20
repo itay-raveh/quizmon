@@ -391,9 +391,12 @@ export async function applyAction(
       outcome.code = 'invalid_edit';
     } else {
       const edit = action.payload;
-      const profileUnit = ['name', 'partnerPokemon', 'specialty'].includes(
-        edit.unit,
-      );
+      const profileUnit = [
+        'avatar',
+        'name',
+        'partnerPokemon',
+        'specialty',
+      ].includes(edit.unit);
       if ((action.kind === 'profile.patch') !== profileUnit) {
         outcome.status = 'rejected';
         outcome.code = 'invalid_edit_unit';

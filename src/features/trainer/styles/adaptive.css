@@ -148,6 +148,7 @@
     grid-template-areas:
       'name'
       'partner'
+      'avatar'
       'save';
     grid-template-columns: minmax(0, 1fr);
   }

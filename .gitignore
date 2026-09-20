@@ -1,6 +1,7 @@
 .wrangler/
 /coverage/
 /dist/
+/public/trainer-avatars/
 /node_modules/
 /.playwright-cli/
 /playwright-report/
