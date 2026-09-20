@@ -41,11 +41,7 @@ export const QuestionAnswers = ({
   );
   const multiSelect = question.answer.interaction === 'multi-select';
   const policy = getQuestionRendering(question).choices;
-  if (
-    hasTypeOptionBadges &&
-    question.options.length > 4 &&
-    (multiSelect || question.questionType === 'natural-gift')
-  ) {
+  if (hasTypeOptionBadges && question.options.length > 4) {
     return (
       <TypeAnswerPicker
         question={question}
@@ -56,10 +52,7 @@ export const QuestionAnswers = ({
       />
     );
   }
-  const options =
-    hasTypeOptionBadges && question.options.length > 4
-      ? question.options.toSorted()
-      : orderRegionOptions(question);
+  const options = orderRegionOptions(question);
   return (
     <div
       className={[
