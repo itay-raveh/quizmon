@@ -105,7 +105,7 @@ it('keeps an invalid Training draft open and focuses the invalid generation sect
       onSave={onSave}
     />,
   );
-  fireEvent.click(screen.getByRole('button', { name: 'Save settings' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }));
   expect(onSave).not.toHaveBeenCalled();
   expect(screen.getByText('Choose at least one generation.')).toHaveAttribute(
     'role',
@@ -120,7 +120,7 @@ it('keeps an invalid Training draft open and focuses the invalid generation sect
   fireEvent.click(
     screen.getByRole('button', { name: 'Select all generations' }),
   );
-  fireEvent.click(screen.getByRole('button', { name: 'Save settings' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }));
   await waitFor(() =>
     expect(onSave).toHaveBeenCalledWith({
       ...defaultGameSettings,
@@ -143,7 +143,7 @@ it('saves general changes without validating inaccessible Training controls', as
   fireEvent.change(screen.getByRole('slider', { name: 'Sound effects' }), {
     target: { value: '0.2' },
   });
-  fireEvent.click(screen.getByRole('button', { name: 'Save settings' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Save' }));
   await waitFor(() =>
     expect(onSave).toHaveBeenCalledWith({ ...settings, soundVolume: 0.2 }),
   );

@@ -167,7 +167,7 @@ export const SettingsDialog = ({
             Cancel
           </GameButton>
           <GameButton type="submit" disabled={saving}>
-            {saving ? 'Saving settings…' : 'Save settings'}
+            {saving ? 'Saving…' : 'Save'}
           </GameButton>
         </div>
       </form>
