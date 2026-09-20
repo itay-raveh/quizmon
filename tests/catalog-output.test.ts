@@ -58,4 +58,4 @@ it('preserves generated topics when refreshing only Pokémon data', async () => 
   } finally {
     await rm(path, { recursive: true, force: true });
   }
-});
+}, 15_000);

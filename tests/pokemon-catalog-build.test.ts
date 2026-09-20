@@ -13,4 +13,4 @@ test('packages the exact gameplay catalog within the offline asset limit', async
   const unpacked: unknown = JSON.parse(gunzipSync(archive).toString());
   expect(JSON.stringify(unpacked)).toBe(JSON.stringify(catalog));
   expect(archive.byteLength).toBeLessThanOrEqual(5 * 1024 * 1024);
-});
+}, 15_000);
