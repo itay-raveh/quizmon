@@ -106,7 +106,7 @@ try {
   const a = (kind: Action['kind'], payload: unknown) =>
     action(first.datasetId, first.generationId, kind, payload);
   const round = completion(first.datasetId);
-  const recorded = a('completion.record', round);
+  const recorded = { ...a('completion.record', round), payloadVersion: 1 };
   const original = await outcomes(await upload(first, [recorded]));
   for (const retry of await Promise.all(
     Array.from({ length: 4 }, () => upload(first, [recorded])),

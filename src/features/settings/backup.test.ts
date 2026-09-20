@@ -1,4 +1,5 @@
 import { completion } from '../../../tests/online/progress-fixtures';
+import baselineSave from '../../../tests/fixtures/player-save.v7.json';
 import { commitRoundCompletion } from '../../lib/storage/round-storage';
 import { catalog } from '../../../tests/fixtures/catalog';
 import {
@@ -36,6 +37,31 @@ import {
 } from './backup';
 
 beforeEach(resetLocalSave);
+
+it('keeps the post-reset version 3 backup readable', () => {
+  const backup = {
+    exportedAt: '2026-09-20T00:00:00.000Z',
+    format: 'quizmon-backup',
+    version: 3,
+    state: {
+      version: 1,
+      datasetId: '15ee44ef-96c6-4438-9441-5b1908502c4c',
+      save: {
+        ...baselineSave,
+        data: { ...baselineSave.data, pokedex: ['pikachu'] },
+      },
+      predecessors: {},
+    },
+    records: {
+      local_actions: [],
+      local_completions: [],
+      completion_facts: [],
+    },
+  };
+  const restored = parseBackup(JSON.stringify(backup));
+  expect(restored.state.save.version).toBeGreaterThanOrEqual(7);
+  expect(restored.state.save.data.pokedex).toContain('pikachu');
+});
 
 const result: GameResult = {
   answers: [

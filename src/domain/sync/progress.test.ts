@@ -429,6 +429,19 @@ it('rejects pre-reset completion versions without rewriting their evidence', () 
   );
 });
 
+it('accepts the post-reset completion versions after future game updates', () => {
+  const round = onlineCompletion(crypto.randomUUID());
+  round.recordVersion = 1;
+  round.contentVersion = 18;
+  round.scoreVersion = 3;
+  round.progressVersion = 3;
+  round.generatorVersion = 0;
+  round.result.contentVersion = 18;
+  round.result.scoreVersion = 3;
+  round.result.rules = { ...round.result.rules!, version: 16 };
+  expect(validateCompletion(round)).toBeNull();
+});
+
 it('preserves weighted results with item, move, and region subjects through final-answer recovery and backup', async () => {
   const { createQuestionContext } =
     await import('../../../tests/fixtures/catalog.ts');

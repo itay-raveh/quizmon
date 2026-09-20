@@ -12,13 +12,18 @@ const schema = {
   },
 };
 
-it('loads the current save without mutating its input', () => {
-  const original = structuredClone(fixture);
+it('keeps the post-reset version 7 save readable without mutating its input', () => {
+  const original = {
+    ...fixture,
+    data: { ...fixture.data, pokedex: ['pikachu'] },
+  };
   const saved = parsePlayerSave(original);
-  expect(saved).toEqual(fixture);
-  expect(original).toEqual(fixture);
-  saved.data.pokedex.push('pikachu');
-  expect(original.data.pokedex).toEqual([]);
+  expect(fixture.version).toBe(7);
+  expect(saved.version).toBe(SAVE_SCHEMA_VERSION);
+  expect(saved.data.pokedex).toContain('pikachu');
+  expect(original.data.pokedex).toEqual(['pikachu']);
+  saved.data.pokedex.push('eevee');
+  expect(original.data.pokedex).toEqual(['pikachu']);
 });
 it.each([1, 2, 3, 4, 5, 6])(
   'rejects pre-reset schema %i without an upgrade path',
@@ -47,4 +52,27 @@ it('validates current data and returns a separate value', () => {
   expect(() =>
     parseVersionedSave({ ...value, data: { name: 1 } }, schema),
   ).toThrow(expect.objectContaining({ kind: 'invalid' }));
+});
+it('upgrades supported versions one step at a time', () => {
+  const old = { version: 7, data: { name: 'Leaf' } };
+  const next = parseVersionedSave(old, {
+    currentVersion: 9,
+    migrations: {
+      7: (data) => ({ ...(data as object), partner: 'pikachu' }),
+      8: (data) => ({ ...(data as object), wins: 0 }),
+    },
+    parseCurrent: (data) => data,
+  });
+  expect(next).toEqual({
+    version: 9,
+    data: { name: 'Leaf', partner: 'pikachu', wins: 0 },
+  });
+  expect(old).toEqual({ version: 7, data: { name: 'Leaf' } });
+  expect(() =>
+    parseVersionedSave(old, {
+      currentVersion: 9,
+      migrations: { 8: (data) => data },
+      parseCurrent: (data) => data,
+    }),
+  ).toThrow(expect.objectContaining({ kind: 'unsupported' }));
 });

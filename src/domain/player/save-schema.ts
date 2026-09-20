@@ -13,6 +13,7 @@ export class SaveError extends Error {
 
 interface SaveSchema<T> {
   currentVersion: number;
+  migrations?: Partial<Record<number, (data: unknown) => unknown>>;
   parseCurrent: (data: unknown) => T;
 }
 
@@ -27,18 +28,23 @@ export const parseVersionedSave = <T>(
   )
     throw new SaveError('invalid', 'The save has an invalid version.');
   const version = Number(value.version);
-  if (version < schema.currentVersion)
-    throw new SaveError(
-      'unsupported',
-      'This save uses a retired Quizmon format.',
-    );
   if (version > schema.currentVersion)
     throw new SaveError(
       'newer',
       'This save was created by a newer version of Quizmon.',
     );
   try {
-    return { data: schema.parseCurrent(structuredClone(value.data)), version };
+    let data: unknown = structuredClone(value.data);
+    for (let from = version; from < schema.currentVersion; from++) {
+      const migrate = schema.migrations?.[from];
+      if (!migrate)
+        throw new SaveError(
+          'unsupported',
+          'This save uses a retired Quizmon format.',
+        );
+      data = migrate(data);
+    }
+    return { data: schema.parseCurrent(data), version: schema.currentVersion };
   } catch (error) {
     if (error instanceof SaveError) throw error;
     throw new SaveError(
