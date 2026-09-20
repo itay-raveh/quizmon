@@ -72,12 +72,6 @@
 .app--destination main {
   align-items: start;
 }
-.result-save-status {
-  color: var(--muted);
-  text-align: center;
-  font-size: var(--text-status);
-}
-
 @media (max-width: 50rem) {
   .app-header {
     justify-content: flex-end;

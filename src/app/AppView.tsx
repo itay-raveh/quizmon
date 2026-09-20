@@ -30,8 +30,7 @@ import { FriendsScreen } from '../features/friends/FriendsScreen';
 import { LeaderboardScreen } from '../features/friends/LeaderboardScreen';
 import { AppNavigation } from './AppNavigation';
 import { useAppDestination } from './useAppDestination';
-import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { accountSnapshot, subscribeAccount } from '../features/account/account';
+import { useEffect, useRef } from 'react';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
 interface QuestionView {
   assistance: (count: number) => void;
@@ -67,7 +66,6 @@ const AppScreen = ({
   training,
   destination,
 }: AppViewProps & { destination: DestinationNavigation }) => {
-  const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   if (session.phase !== 'questions' && destination.destination === 'account') {
     return <AccountScreen />;
   }
@@ -227,15 +225,6 @@ const AppScreen = ({
       result={session.result}
       resultSaved={session.resultSaved}
       progressChanges={session.progressChanges}
-      onlineEntry={
-        session.resultSaved ? (
-          <p className="result-save-status" role="status">
-            {account.owner
-              ? 'Saved to this device. Eligible Daily scores appear in Leaderboards after syncing.'
-              : 'Saved on this device.'}
-          </p>
-        ) : undefined
-      }
     />
   );
 };

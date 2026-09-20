@@ -223,6 +223,11 @@ describe('results summary', () => {
     const progress = screen.getByRole('group', {
       name: /Many Paths: \+2, 6 \/ 10/,
     });
+    const actions = screen.getByRole('button', { name: 'Train again' });
+    expect(
+      actions.compareDocumentPosition(progress) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(progress).toBeVisible();
     expect(
       screen.getByRole('group', { name: /Type Specialist.*Bronze unlocked/ }),

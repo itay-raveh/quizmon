@@ -19,7 +19,7 @@ import { DailyReminderPrompt } from '@/features/reminders/DailyReminderPrompt';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
 import { MultipliedScore } from './MultipliedScore';
@@ -43,7 +43,6 @@ interface ResultsScreenProps {
   result: GameResult;
   resultSaved: boolean;
   progressChanges: TrainerProgressChange[];
-  onlineEntry?: ReactNode;
 }
 
 export const ResultsScreen = ({
@@ -59,7 +58,6 @@ export const ResultsScreen = ({
   result,
   resultSaved,
   progressChanges,
-  onlineEntry,
 }: ResultsScreenProps) => {
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
     useGameSounds();
@@ -277,16 +275,6 @@ export const ResultsScreen = ({
           </ol>
         ) : null}
       </div>
-      {onlineEntry}
-      {isDaily && resultSaved ? (
-        <DailyReminderPrompt dailyDate={mode.date} />
-      ) : null}
-
-      <TrainerProgressSummary
-        leagueVictory={leagueVictory}
-        progressChanges={progressChanges}
-      />
-
       {!isLeague ? (
         <div className="results__actions results__actions--paired">
           <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
@@ -308,6 +296,14 @@ export const ResultsScreen = ({
           </GameButton>
         </div>
       )}
+      {isDaily && resultSaved ? (
+        <DailyReminderPrompt dailyDate={mode.date} />
+      ) : null}
+
+      <TrainerProgressSummary
+        leagueVictory={leagueVictory}
+        progressChanges={progressChanges}
+      />
     </section>
   );
 };
