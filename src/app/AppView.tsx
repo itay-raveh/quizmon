@@ -69,7 +69,7 @@ const AppScreen = ({
 }: AppViewProps & { destination: DestinationNavigation }) => {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   if (session.phase !== 'questions' && destination.destination === 'account') {
-    return <AccountScreen onBack={() => destination.back()} />;
+    return <AccountScreen />;
   }
   if (session.phase !== 'questions' && destination.destination === 'friends') {
     return (

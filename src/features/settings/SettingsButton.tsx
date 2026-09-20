@@ -1,4 +1,4 @@
-import { GameButton } from '@/components/GameButton';
+import { SoundButton } from '@/components/SoundButton';
 import { GearSixIcon } from '@/components/icons';
 
 interface SettingsButtonProps {
@@ -7,14 +7,8 @@ interface SettingsButtonProps {
 }
 
 export const SettingsButton = ({ disabled, onClick }: SettingsButtonProps) => (
-  <GameButton
-    aria-label="Settings"
-    className="settings-button"
-    disabled={disabled}
-    onClick={onClick}
-    title="Settings"
-    tone="quiet"
-  >
+  <SoundButton className="settings-link" disabled={disabled} onClick={onClick}>
     <GearSixIcon aria-hidden="true" weight="bold" />
-  </GameButton>
+    <span>Settings</span>
+  </SoundButton>
 );

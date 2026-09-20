@@ -1,10 +1,8 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { GameButton } from '../../components/GameButton';
-import { ArrowLeftIcon } from '../../components/icons';
 import { AccountSettings } from './AccountSettings';
 import { accountSnapshot, subscribeAccount } from './account';
 
-export function AccountScreen({ onBack }: { onBack: () => void }) {
+export function AccountScreen() {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const signingIn = !account.owner && !account.mergeRequired;
   const heading = useRef<HTMLHeadingElement>(null);
@@ -16,9 +14,6 @@ export function AccountScreen({ onBack }: { onBack: () => void }) {
       aria-labelledby="account-title"
     >
       <header className="account-screen__header">
-        <GameButton tone="quiet" aria-label="Back" onClick={onBack}>
-          <ArrowLeftIcon aria-hidden="true" weight="bold" />
-        </GameButton>
         <h1 id="account-title" tabIndex={-1} ref={heading}>
           {signingIn ? 'Sign in' : 'Account'}
         </h1>

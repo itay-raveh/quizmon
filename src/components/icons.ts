@@ -23,6 +23,7 @@ export { ShapesIcon } from '@phosphor-icons/react/dist/icons/Shapes';
 export { ShareNetworkIcon } from '@phosphor-icons/react/dist/icons/ShareNetwork';
 export { SlidersHorizontalIcon } from '@phosphor-icons/react/dist/icons/SlidersHorizontal';
 export { SwordIcon } from '@phosphor-icons/react/dist/icons/Sword';
+export { UserCircleIcon } from '@phosphor-icons/react/dist/icons/UserCircle';
 export { XIcon } from '@phosphor-icons/react/dist/icons/X';
 export { MinusIcon } from '@phosphor-icons/react/dist/icons/Minus';
 export { GearSixIcon } from '@phosphor-icons/react/dist/icons/GearSix';

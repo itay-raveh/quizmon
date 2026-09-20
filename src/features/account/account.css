@@ -28,17 +28,6 @@
   color: var(--navy);
 }
 
-.account-screen__header .game-button {
-  min-width: 2.8rem;
-  min-height: 2.8rem;
-  padding: 0.5rem;
-}
-
-.account-screen__header svg {
-  width: 1.45rem;
-  height: 1.45rem;
-}
-
 .account-settings,
 .account-settings__section {
   display: grid;

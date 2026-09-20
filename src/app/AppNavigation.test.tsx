@@ -44,10 +44,13 @@ it('reuses the account utility for a signed-in player and keeps sync status on t
     'title',
     'Synced',
   );
-  for (const button of within(
-    screen.getByRole('navigation', { name: 'Main' }),
-  ).getAllByRole('button')) {
-    expect(button).not.toHaveAttribute('aria-current');
+  for (const label of ['Play', 'Trainer', 'Leaderboards']) {
+    expect(
+      within(screen.getByRole('navigation', { name: 'Main' })).getByRole(
+        'button',
+        { name: label },
+      ),
+    ).not.toHaveAttribute('aria-current');
   }
 });
 

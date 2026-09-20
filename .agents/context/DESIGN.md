@@ -239,7 +239,7 @@ The palette takes its interactive colors from the wordmark, then uses warm pale 
 
 The landscape is a fixed full-viewport plate with centered cover cropping. Main content is centered within the safe viewport height and uses fluid outer padding from `0.85rem` to `1.75rem`.
 
-Play, Trainer, and Leaderboards form the main navigation, at the top on desktop and fixed to the bottom on phones. The header provides one Account or Sign in action and one Settings control; authentication has its own Account screen. Friends management belongs to the Friends view of Leaderboards. Trainer and result bodies do not repeat these navigation actions. From Daily results, the main Leaderboards action opens that challenge's exact date. Navigation and header utilities are hidden during live questions.
+Play, Trainer, Leaderboards, and Account or Sign in form the main navigation, at the top on desktop and fixed to the bottom on phones. The header keeps a quiet Settings control; authentication has its own Account screen. Friends management belongs to the Friends view of Leaderboards. Trainer and result bodies do not repeat these navigation actions. From Daily results, the main Leaderboards action opens that challenge's exact date. Navigation and header utilities are hidden during live questions.
 
 The landing layout is a centered game menu with the wordmark, Daily action, and a row with sliders for Customize training and the Start training button. The unlocked Quizmon League action follows Training. Do not wrap these controls in another panel or add repeated headings, rules, configuration summaries, or promotional paragraphs. Play controls fit within the first viewport at normal text size; the shared footer follows below.
 

@@ -4,6 +4,7 @@ import {
   CardholderIcon,
   ChartBarIcon,
   PuzzlePieceIcon,
+  UserCircleIcon,
 } from '../components/icons';
 import { accountSnapshot, subscribeAccount } from '../features/account/account';
 import { SettingsButton } from '../features/settings/SettingsButton';
@@ -47,20 +48,21 @@ export function AppNavigation({
             {label}
           </GameButton>
         ))}
-      </nav>
-      <div className="app-utilities">
         <GameButton
           title={account.owner ? account.status : undefined}
           aria-current={accountOpen ? 'page' : undefined}
           tone={accountOpen ? 'primary' : 'quiet'}
           onClick={onAccount}
         >
+          <UserCircleIcon aria-hidden="true" weight="bold" />
           {account.owner
             ? account.error || account.issues.length
               ? 'Review account'
               : 'Account'
             : 'Sign in'}
         </GameButton>
+      </nav>
+      <div className="app-utilities">
         <SettingsButton disabled={!trainerAvailable} onClick={onSettings} />
       </div>
     </header>
