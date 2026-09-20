@@ -38,7 +38,6 @@ export const footerCredits = [
     name: '@beresteyskaya',
     href: 'https://www.fiverr.com/beresteyskaya',
   },
-  { label: 'Data', name: 'PokéAPI', href: 'https://pokeapi.co' },
   {
     label: 'Wordmark made with',
     name: 'TextStudio',
