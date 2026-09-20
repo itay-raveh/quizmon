@@ -1,5 +1,5 @@
 export const VAPID_PUBLIC_KEY =
-  'BCDroJr2O5euhbVmo8al8CqyyDJUDsvWfBx0r0WV-CrN1nlTy7U5ZOprKL4aUo55VJgwR2HHdqEwr4VUrwxfvE4';
+  'BC755gsK5_FLrrQNSwrJ_bVYGP7OzckRJQmiix_BCtirLY6bzp-fOADOtE0iS4lIh-vXzryptGx5_hSpHGpkUJ4';
 
 export const DAILY_REMINDER_MESSAGE = {
   body: 'Five questions are waiting.',
