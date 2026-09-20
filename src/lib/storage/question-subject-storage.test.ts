@@ -104,17 +104,19 @@ it('round-trips non-Pokémon results and namespaced history through a backup', a
       hash: await hash(game),
       completion: game,
       eligible: true,
-      outcome: { best: game.result, isSaved: true, isNewBest: true },
+      outcome: { best: game.result, isNewBest: true },
     }),
   });
-  backup.save.data.questionHistory = questions.reduce(
+  backup.state.save.data.questionHistory = questions.reduce(
     (history, question) => rememberQuestion(history, question),
     emptyQuestionHistory(),
   );
   await restoreBackup(parseBackup(JSON.stringify(backup)));
   const restored = readPlayerSave().data;
   expect(restored.results.training['score:3']).toEqual(game.result);
-  expect(restored.questionHistory).toEqual(backup.save.data.questionHistory);
+  expect(restored.questionHistory).toEqual(
+    backup.state.save.data.questionHistory,
+  );
   expect(
     Object.keys(restored.questionHistory.pokemon).every(
       (name) => !!catalog.pokemon[name],

@@ -1,19 +1,13 @@
 import { reportSaveIssue } from './save-health';
 import { parseActiveGameSave } from '../../domain/player/active-game';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
-import { createLeagueVictoryRecord } from '../../domain/player/hall-of-fame';
-import { getDailyResultKey } from '../../domain/quiz/daily-track';
-import { isLeagueVictory } from '../../domain/quiz/league';
-import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-import { snapshotRoundRules } from '../../domain/quiz/round-rules';
 import {
-  SCORE_VERSION,
-  calculateScore,
-  getResponseTime,
-} from '../../domain/quiz/scoring';
+  completeRound,
+  roundDiscoveries,
+} from '../../domain/player/game-history';
+import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import type { RoundCompletion } from '../../domain/sync/progress';
-import { trainingConfig, versions } from '../../domain/sync/progress';
 import type { ActiveGameSnapshot } from './active-game-storage';
 import type { LocalRow, LocalTransaction } from './local-database';
 import {
@@ -45,73 +39,15 @@ export const initializeLocalRound = async () => {
 };
 const finalizeLocalRound = async () => {
   if (active?.completedAt) {
-    const round = active;
-    const result = {
-      ...(snapshotRoundRules(round.settings, round.questions)
-        ? { rules: snapshotRoundRules(round.settings, round.questions) }
-        : {}),
-      ...(round.mode.kind === 'daily' && round.mode.track
-        ? { dailyTrack: round.mode.track }
-        : {}),
-      answers: round.answers,
-      contentVersion: round.contentVersion,
-      correctCount: round.answers.filter((answer) => answer.correct).length,
-      questionCount: round.questions.length,
-      score: calculateScore(round.answers, round.scoreMultipliers),
-      ...(round.scoreMultipliers
-        ? { scoreMultipliers: round.scoreMultipliers }
-        : {}),
-      scoreVersion: SCORE_VERSION,
-      ...getResponseTime(round.answers),
-    };
-    const victory =
-      round.mode.kind === 'league' && isLeagueVictory(result)
-        ? createLeagueVictoryRecord(
-            result,
-            round.questions,
-            round.seed,
-            readPlayerData().profile?.name ?? '',
-          )
-        : undefined;
-    await commitRoundCompletion(
-      {
-        recordVersion: 1,
-        completionId: round.roundId!,
-        completedAt: round.completedAt!,
-        contentVersion: round.contentVersion,
-        scoreVersion: SCORE_VERSION,
-        progressVersion: versions.progress,
-        generatorVersion:
-          round.mode.kind === 'daily'
-            ? versions.daily
-            : round.mode.kind === 'league'
-              ? versions.league
-              : 0,
-        mode: round.mode.kind,
-        dailyDate: round.mode.kind === 'daily' ? round.mode.date : null,
-        training: trainingConfig(round.settings),
-        result,
-        discoveries: discoveries(round),
-        victory: victory
-          ? { trainerName: victory.trainerName, pokemon: victory.pokemon }
-          : null,
-      },
-      victory,
-      true,
+    const { completion, victory } = completeRound(
+      active,
+      active.completedAt,
+      readPlayerData().profile?.name ?? '',
     );
+    await commitRoundCompletion(completion, victory, true);
   }
 };
 export const readLocalRound = () => structuredClone(active);
-const discoveries = (round: ActiveGameSnapshot) =>
-  [
-    ...new Set(
-      round.answers.flatMap((answer, index) =>
-        answer.correct && round.questions[index]
-          ? getQuestionPokemon(round.questions[index])
-          : [],
-      ),
-    ),
-  ].sort();
 const addDiscoveries = async (
   state: LocalPlayerState,
   transaction: LocalTransaction,
@@ -158,7 +94,7 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     )
       round.completedAt =
         previous?.completedAt ?? round.completedAt ?? new Date().toISOString();
-    await addDiscoveries(state, transaction, discoveries(round));
+    await addDiscoveries(state, transaction, roundDiscoveries(round));
     if (round.mode.kind === 'daily' && round.mode.track) {
       state.dailyAttempts ??= {};
       state.dailyAttempts[
@@ -175,10 +111,6 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     [tabId],
   );
   active = row ? parseActiveGameSave(JSON.parse(row.payload)) : null;
-  if (active && !active.settings)
-    active.settings = (
-      active as unknown as { modifiers: ActiveGameSnapshot['settings'] }
-    ).modifiers;
   await finalizeLocalRound();
 };
 export const removeLocalRound = async () => {
@@ -267,7 +199,7 @@ export const commitRoundCompletion = async (
               : undefined),
           payload.completedAt.slice(0, 10),
         )
-      : { best: payload.result, isSaved: true, isNewBest: false };
+      : { best: payload.result, isNewBest: false };
     if (payload.mode === 'daily' && payload.result.dailyTrack)
       delete state.dailyAttempts?.[
         getDailyResultKey(payload.dailyDate!, payload.result.dailyTrack)

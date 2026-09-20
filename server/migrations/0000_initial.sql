@@ -120,17 +120,6 @@ CREATE TABLE "daily_results" (
 	CONSTRAINT "daily_score" CHECK ("daily_results"."score" >= 0 AND "daily_results"."elapsed_milliseconds" >= 0)
 );
 --> statement-breakpoint
-CREATE TABLE "hall_of_fame" (
-	"id" uuid PRIMARY KEY NOT NULL,
-	"owner_id" text NOT NULL,
-	"generation_id" uuid NOT NULL,
-	"completion_id" uuid NOT NULL,
-	"completed_at" text NOT NULL,
-	"trainer_name" text NOT NULL,
-	"pokemon" jsonb NOT NULL,
-	"result" jsonb NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "linked_datasets" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"owner_id" text NOT NULL,
@@ -173,16 +162,6 @@ CREATE TABLE "sync_issues" (
 	"dismissed" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "training_bests" (
-	"id" uuid PRIMARY KEY NOT NULL,
-	"owner_id" text NOT NULL,
-	"generation_id" uuid NOT NULL,
-	"mode" text NOT NULL,
-	"score_version" integer NOT NULL,
-	"completion_id" uuid NOT NULL,
-	"result" jsonb NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "friend_requests" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"user_low" text NOT NULL,
@@ -209,14 +188,10 @@ ALTER TABLE "account_state" ADD CONSTRAINT "account_state_id_user_id_fk" FOREIGN
 ALTER TABLE "completion_facts" ADD CONSTRAINT "completion_facts_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "daily_results" ADD CONSTRAINT "daily_results_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "daily_results" ADD CONSTRAINT "daily_results_owner_id_generation_id_completion_id_completion_facts_owner_id_generation_id_completion_id_fk" FOREIGN KEY ("owner_id","generation_id","completion_id") REFERENCES "public"."completion_facts"("owner_id","generation_id","completion_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "hall_of_fame" ADD CONSTRAINT "hall_of_fame_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "hall_of_fame" ADD CONSTRAINT "hall_of_fame_owner_id_generation_id_completion_id_completion_facts_owner_id_generation_id_completion_id_fk" FOREIGN KEY ("owner_id","generation_id","completion_id") REFERENCES "public"."completion_facts"("owner_id","generation_id","completion_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "linked_datasets" ADD CONSTRAINT "linked_datasets_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "operation_outcomes" ADD CONSTRAINT "operation_outcomes_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "player_pokemon" ADD CONSTRAINT "player_pokemon_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sync_issues" ADD CONSTRAINT "sync_issues_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "training_bests" ADD CONSTRAINT "training_bests_owner_id_user_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "training_bests" ADD CONSTRAINT "training_bests_owner_id_generation_id_completion_id_completion_facts_owner_id_generation_id_completion_id_fk" FOREIGN KEY ("owner_id","generation_id","completion_id") REFERENCES "public"."completion_facts"("owner_id","generation_id","completion_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "friend_requests" ADD CONSTRAINT "friend_requests_user_low_user_id_fk" FOREIGN KEY ("user_low") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "friend_requests" ADD CONSTRAINT "friend_requests_user_high_user_id_fk" FOREIGN KEY ("user_high") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "social_players" ADD CONSTRAINT "social_players_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -225,12 +200,10 @@ CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> state
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");--> statement-breakpoint
 CREATE INDEX "daily_ranking" ON "daily_results" USING btree ("date","score" DESC NULLS LAST,"elapsed_milliseconds");--> statement-breakpoint
 CREATE UNIQUE INDEX "daily_identity" ON "daily_results" USING btree ("owner_id","generation_id","date");--> statement-breakpoint
-CREATE UNIQUE INDEX "hall_identity" ON "hall_of_fame" USING btree ("owner_id","generation_id","completion_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "operation_identity" ON "operation_outcomes" USING btree ("owner_id","generation_id","operation_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "player_pokemon_identity" ON "player_pokemon" USING btree ("owner_id","generation_id","pokemon");--> statement-breakpoint
 CREATE UNIQUE INDEX "issue_identity" ON "sync_issues" USING btree ("owner_id","generation_id","operation_id");--> statement-breakpoint
 CREATE INDEX "issues_owner" ON "sync_issues" USING btree ("owner_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "training_best_identity" ON "training_bests" USING btree ("owner_id","generation_id","mode","score_version");--> statement-breakpoint
 CREATE UNIQUE INDEX "friend_request_active_pair" ON "friend_requests" USING btree ("user_low","user_high") WHERE "friend_requests"."status" IN ('pending', 'accepted');--> statement-breakpoint
 CREATE INDEX "friend_request_low_status" ON "friend_requests" USING btree ("user_low","status","id");--> statement-breakpoint
 CREATE INDEX "friend_request_high_status" ON "friend_requests" USING btree ("user_high","status","id");

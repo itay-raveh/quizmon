@@ -49,9 +49,6 @@ for (const name of ['a','b']) {
   assert.deepEqual(await readFile(prepared+'/worker/index.js'),await readFile('worker/index.js'));
   for(const file of Object.keys(manifest.files).filter(file=>file.startsWith('assets/') && file!=='assets/_headers'))
     assert.deepEqual(await readFile(prepared+'/'+file),await readFile(file));
-  const auth=JSON.parse(await readFile(prepared+'/sync-auth.json','utf8'));
-  assert.equal(auth.client_auth.jwks_uri, config.origin+'/api/auth/jwks');
-  assert.deepEqual(auth.client_auth.audience,[config.sync.audience]);
   const headers=await readFile(prepared+'/assets/_headers','utf8');
   assert.ok(headers.includes(config.sync.endpoint));
   assert.ok(headers.includes('wss://sync-'+name+'.example.test'));

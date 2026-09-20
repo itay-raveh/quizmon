@@ -2,7 +2,7 @@ import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { openLocalDatabase } from '../../../tests/fixtures/local-database';
 import { emptyPlayerData } from '../../domain/player/player-save';
-import { emptyContribution, type Action } from '../../domain/sync/progress';
+import { type Action } from '../../domain/sync/progress';
 import {
   queueIssueResolution,
   readAccountIssues,
@@ -36,19 +36,15 @@ beforeEach(async () => {
   for (const sql of [
     'CREATE TABLE pending_actions(id TEXT PRIMARY KEY,payload TEXT,sequence INTEGER)',
     'CREATE TABLE sync_issues(id TEXT PRIMARY KEY,owner_id TEXT,generation_id TEXT,operation_id TEXT,reason TEXT,payload TEXT,dismissed INTEGER)',
-    'CREATE TABLE account_state(id TEXT PRIMARY KEY,generation_id TEXT,revision INTEGER,progress TEXT,edits TEXT,edit_revisions TEXT,profile_created_at TEXT)',
+    'CREATE TABLE account_state(id TEXT PRIMARY KEY,generation_id TEXT,revision INTEGER,edits TEXT,edit_revisions TEXT,profile_created_at TEXT)',
     'CREATE TABLE completion_facts(id TEXT,completion_id TEXT,generation_id TEXT,revision INTEGER,eligible INTEGER,completion TEXT)',
     'CREATE TABLE player_pokemon(generation_id TEXT,pokemon TEXT,discovered INTEGER,correct INTEGER)',
-    'CREATE TABLE daily_results(generation_id TEXT,date TEXT,result TEXT,streak_credit INTEGER)',
-    'CREATE TABLE training_bests(generation_id TEXT,mode TEXT,score_version INTEGER,result TEXT)',
-    'CREATE TABLE hall_of_fame(generation_id TEXT,completion_id TEXT,completed_at TEXT,trainer_name TEXT,pokemon TEXT,result TEXT)',
   ])
     await db.execute(sql);
-  await db.execute('INSERT INTO account_state VALUES (?,?,?,?,?,?,?)', [
+  await db.execute('INSERT INTO account_state VALUES (?,?,?,?,?,?)', [
     state.account!.id,
     state.account!.generationId,
     7,
-    JSON.stringify(emptyContribution()),
     JSON.stringify({ name: 'Accepted' }),
     JSON.stringify({ name: 6 }),
     '2026-09-01',

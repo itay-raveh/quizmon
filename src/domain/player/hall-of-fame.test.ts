@@ -79,10 +79,7 @@ it('includes subjects, revealed evolutions and distractors but excludes types an
 
 it('keeps every distinct victory and deduplicates a restored completion without crediting progress twice', async () => {
   const first = victory();
-  expect(
-    (await saveResult({ kind: 'league' }, result, defaultGameSettings, first))
-      .isSaved,
-  ).toBe(true);
+  await saveResult({ kind: 'league' }, result, defaultGameSettings, first);
   const stats = readTrainerStats();
   await saveResult({ kind: 'league' }, result, defaultGameSettings, first);
   expect(readTrainerStats()).toEqual(stats);

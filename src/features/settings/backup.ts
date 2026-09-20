@@ -1,10 +1,6 @@
 import { readRecordedGame } from '../../domain/player/game-history';
 import { rebuildGuestProgress } from '../../lib/storage/game-history';
 import { getSaveIssue, clearSaveIssue } from '../../lib/storage/save-health';
-import {
-  parsePlayerSave,
-  type PlayerSave,
-} from '../../domain/player/player-save';
 import { readAccountIssues } from '../../lib/storage/account-issues';
 import { localTables, type LocalRow } from '../../lib/storage/local-database';
 import {
@@ -19,10 +15,9 @@ import { isRecord, isUtcTimestamp, isUuid } from '../../lib/validation';
 
 export const MAX_BACKUP_BYTES = 512 * 1024 * 1024;
 
-interface LocalBackup {
+export interface PlayerBackup {
   exportedAt: string;
   format: 'quizmon-backup';
-  save: PlayerSave;
   version: 3;
   state: LocalPlayerState;
   reviewIssues?: { operationId: string; reason: string; payload: unknown }[];
@@ -33,17 +28,15 @@ interface LocalBackup {
     completion_facts: LocalRow[];
   };
 }
-export type PlayerBackup = LocalBackup;
 
-export const createBackup = async (): Promise<LocalBackup> =>
+export const createBackup = async (): Promise<PlayerBackup> =>
   getPlayerDatabase().readTransaction(async (transaction) => {
     const state = await readState(transaction);
     delete state.dailyAttempts;
-    const backup: LocalBackup = {
+    const backup: PlayerBackup = {
       exportedAt: new Date().toISOString(),
       format: 'quizmon-backup',
       version: 3,
-      save: state.save,
       state,
       ...(state.account
         ? {
@@ -110,125 +103,112 @@ export const parseBackup = (text: string): PlayerBackup => {
   if (!isUtcTimestamp(value.exportedAt)) {
     throw new Error('This backup has an invalid date. Choose another backup.');
   }
-  const save = parsePlayerSave(value.save);
-  if (value.version === 3) {
-    const state = parseLocalPlayerState(value.state);
-    let reviewIssues: LocalBackup['reviewIssues'];
-    if (value.reviewIssues !== undefined) {
-      if (!state.account || !Array.isArray(value.reviewIssues))
-        throw new Error('The backup contains invalid account review details.');
-      reviewIssues = value.reviewIssues.map((issue: unknown) => {
-        if (
-          !isRecord(issue) ||
-          !isUuid(issue.operationId) ||
-          typeof issue.reason !== 'string' ||
-          !Object.hasOwn(issue, 'payload')
-        )
-          throw new Error(
-            'The backup contains invalid account review details.',
-          );
-        return {
-          operationId: issue.operationId,
-          reason: issue.reason,
-          payload: issue.payload,
-        };
-      });
+  const state = parseLocalPlayerState(value.state);
+  let reviewIssues: PlayerBackup['reviewIssues'];
+  if (value.reviewIssues !== undefined) {
+    if (!state.account || !Array.isArray(value.reviewIssues))
+      throw new Error('The backup contains invalid account review details.');
+    reviewIssues = value.reviewIssues.map((issue: unknown) => {
       if (
-        new Set(reviewIssues.map((issue) => issue.operationId)).size !==
-        reviewIssues.length
+        !isRecord(issue) ||
+        !isUuid(issue.operationId) ||
+        typeof issue.reason !== 'string' ||
+        !Object.hasOwn(issue, 'payload')
+      )
+        throw new Error('The backup contains invalid account review details.');
+      return {
+        operationId: issue.operationId,
+        reason: issue.reason,
+        payload: issue.payload,
+      };
+    });
+    if (
+      new Set(reviewIssues.map((issue) => issue.operationId)).size !==
+      reviewIssues.length
+    )
+      throw new Error('The backup contains duplicate account review details.');
+  }
+  if (!isRecord(value.records))
+    throw new Error('The backup contains invalid local records.');
+  const readRows = (key: string): LocalRow[] => {
+    const rows = value.records as Record<string, unknown>;
+    const list = rows[key];
+    if (
+      !Array.isArray(list) ||
+      !list.every(
+        (row: unknown) =>
+          isRecord(row) && isUuid(row.id) && typeof row.payload === 'string',
+      )
+    )
+      throw new Error('The backup contains invalid local records.');
+    const records = list as LocalRow[];
+    if (new Set(records.map((row) => row.id)).size !== records.length)
+      throw new Error('The backup contains duplicate record IDs.');
+    for (const row of records) {
+      const payload: unknown = JSON.parse(row.payload);
+      if (!isRecord(payload))
+        throw new Error('The backup contains a damaged record.');
+      if (
+        key === 'local_actions' &&
+        (payload.operationId !== row.id ||
+          (!state.account && payload.datasetId !== state.datasetId) ||
+          !isUuid(payload.datasetId) ||
+          payload.generationId !==
+            (state.account?.generationId ?? state.datasetId) ||
+          payload.payloadVersion !== 1 ||
+          ![
+            'completion.record',
+            'discoveries.add',
+            'profile.patch',
+            'preferences.patch',
+            'issue.dismiss',
+          ].includes(String(payload.kind)) ||
+          (payload.kind === 'issue.dismiss'
+            ? !state.account || !isUuid(payload.payload)
+            : !isRecord(payload.payload)))
       )
         throw new Error(
-          'The backup contains duplicate account review details.',
+          'The backup contains an unsupported or mismatched action.',
         );
-    }
-    if (
-      JSON.stringify(state.save) !== JSON.stringify(save) ||
-      !isRecord(value.records)
-    )
-      throw new Error('The backup save and its records do not match.');
-    const readRows = (key: string): LocalRow[] => {
-      const rows = value.records as Record<string, unknown>;
-      const list = rows[key];
       if (
-        !Array.isArray(list) ||
-        !list.every(
-          (row: unknown) =>
-            isRecord(row) && isUuid(row.id) && typeof row.payload === 'string',
-        )
+        key === 'local_completions' &&
+        (typeof payload.hash !== 'string' ||
+          !/^[a-f0-9]{64}$/.test(payload.hash) ||
+          !isRecord(payload.outcome) ||
+          typeof payload.outcome.isNewBest !== 'boolean')
       )
-        throw new Error('The backup contains invalid local records.');
-      const records = list as LocalRow[];
-      if (new Set(records.map((row) => row.id)).size !== records.length)
-        throw new Error('The backup contains duplicate record IDs.');
-      for (const row of records) {
-        const payload: unknown = JSON.parse(row.payload);
-        if (!isRecord(payload))
-          throw new Error('The backup contains a damaged record.');
+        throw new Error('The backup contains an invalid completion receipt.');
+      if (key === 'local_completions' || key === 'completion_facts') {
+        const game = readRecordedGame(payload.completion);
         if (
-          key === 'local_actions' &&
-          (payload.operationId !== row.id ||
-            (!state.account && payload.datasetId !== state.datasetId) ||
-            !isUuid(payload.datasetId) ||
-            payload.generationId !==
-              (state.account?.generationId ?? state.datasetId) ||
-            payload.payloadVersion !== 1 ||
-            ![
-              'completion.record',
-              'discoveries.add',
-              'profile.patch',
-              'preferences.patch',
-              'issue.dismiss',
-            ].includes(String(payload.kind)) ||
-            (payload.kind === 'issue.dismiss'
-              ? !state.account || !isUuid(payload.payload)
-              : !isRecord(payload.payload)))
+          game.completionId !== row.id ||
+          ![true, false, 0, 1].includes(payload.eligible as boolean)
         )
-          throw new Error(
-            'The backup contains an unsupported or mismatched action.',
-          );
-        if (
-          key === 'local_completions' &&
-          (typeof payload.hash !== 'string' ||
-            !/^[a-f0-9]{64}$/.test(payload.hash) ||
-            !isRecord(payload.outcome) ||
-            typeof payload.outcome.isSaved !== 'boolean' ||
-            typeof payload.outcome.isNewBest !== 'boolean')
-        )
-          throw new Error('The backup contains an invalid completion receipt.');
-        if (key === 'local_completions' || key === 'completion_facts') {
-          const game = readRecordedGame(payload.completion);
-          if (
-            game.completionId !== row.id ||
-            ![true, false, 0, 1].includes(payload.eligible as boolean)
-          )
-            throw new Error('The backup contains an invalid game record.');
-        }
+          throw new Error('The backup contains an invalid game record.');
       }
-      return records;
-    };
-    return {
-      exportedAt: value.exportedAt,
-      format: 'quizmon-backup',
-      version: 3,
-      save,
-      state,
-      ...(reviewIssues ? { reviewIssues } : {}),
-      records: {
-        ...(state.account
-          ? { pending_actions: readRows('pending_actions') }
-          : {}),
-        local_actions: readRows('local_actions'),
-        local_completions: readRows('local_completions'),
-        completion_facts: readRows('completion_facts'),
-      },
-    };
-  }
-  throw new Error('Unsupported backup format.');
+    }
+    return records;
+  };
+  return {
+    exportedAt: value.exportedAt,
+    format: 'quizmon-backup',
+    version: 3,
+    state,
+    ...(reviewIssues ? { reviewIssues } : {}),
+    records: {
+      ...(state.account
+        ? { pending_actions: readRows('pending_actions') }
+        : {}),
+      local_actions: readRows('local_actions'),
+      local_completions: readRows('local_completions'),
+      completion_facts: readRows('completion_facts'),
+    },
+  };
 };
 
 export const downloadBackup = async (): Promise<void> => {
   const backup = await createBackup();
-  const trainerName = (backup.save.data.profile?.name ?? '')
+  const trainerName = (backup.state.save.data.profile?.name ?? '')
     .replace(/[<>:"/\\|?*\p{Cc}\p{Cf}\s]+/gu, '-')
     .replace(/^-+|-+$/g, '');
   const blob = new Blob([JSON.stringify(backup)], {
@@ -249,7 +229,7 @@ export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {
   const recovery = Boolean(getSaveIssue());
   await (recovery ? recoverPlayer : transactPlayer)(
     async (state, transaction) => {
-      if (validated.version === 3 && validated.state.account) {
+      if (validated.state.account) {
         if (
           JSON.stringify(state.account) !==
           JSON.stringify(validated.state.account)
@@ -298,16 +278,14 @@ export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {
         if (table !== 'local_state')
           await transaction.execute(`DELETE FROM ${table}`);
       }
-      if (validated.version === 3) {
-        for (const table of ['local_actions', 'local_completions'] as const)
-          for (const row of validated.records[table])
-            await transaction.execute(
-              `INSERT INTO ${table}(id,payload) VALUES (?,?)`,
-              [row.id, row.payload],
-            );
-        Object.assign(state, validated.state);
-      }
-      state.save = { ...validated.save, restoreId: crypto.randomUUID() };
+      for (const table of ['local_actions', 'local_completions'] as const)
+        for (const row of validated.records[table])
+          await transaction.execute(
+            `INSERT INTO ${table}(id,payload) VALUES (?,?)`,
+            [row.id, row.payload],
+          );
+      Object.assign(state, validated.state);
+      state.save = { ...validated.state.save, restoreId: crypto.randomUUID() };
       state.dailyAttempts = {};
       await rebuildGuestProgress(state, transaction);
     },

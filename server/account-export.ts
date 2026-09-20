@@ -11,10 +11,16 @@ const sections = {
     'SELECT id, owner_id, generation_id, pokemon, discovered, correct FROM player_pokemon WHERE owner_id = $1 ORDER BY id',
   dailyResults:
     'SELECT id, owner_id, generation_id, date, completion_id, result, streak_credit FROM daily_results WHERE owner_id = $1 ORDER BY id',
-  trainingBests:
-    'SELECT id, owner_id, generation_id, mode, score_version, completion_id, result FROM training_bests WHERE owner_id = $1 ORDER BY id',
-  hallOfFame:
-    'SELECT id, owner_id, generation_id, completion_id, completed_at, trainer_name, pokemon, result FROM hall_of_fame WHERE owner_id = $1 ORDER BY id',
+  trainingBests: `SELECT DISTINCT ON (generation_id, score_version)
+      id, owner_id, generation_id, 'score:' || score_version AS mode, score_version,
+      completion_id, completion->'result' AS result
+      FROM completion_facts WHERE owner_id = $1 AND eligible AND mode = 'training'
+      ORDER BY generation_id, score_version, (completion->'result'->>'score')::numeric DESC,
+        (completion->'result'->>'elapsedMilliseconds')::numeric, revision`,
+  hallOfFame: `SELECT id, owner_id, generation_id, completion_id, completed_at,
+      completion->'victory'->>'trainerName' AS trainer_name,
+      completion->'victory'->'pokemon' AS pokemon, completion->'result' AS result
+      FROM completion_facts WHERE owner_id = $1 AND eligible AND completion->'victory' <> 'null'::jsonb ORDER BY id`,
   linkedDatasets:
     'SELECT id, owner_id, generation_id, link_id FROM linked_datasets WHERE owner_id = $1 ORDER BY id',
   operationOutcomes:

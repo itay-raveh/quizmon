@@ -7,7 +7,6 @@ import { rebuildAccountProgress } from './progress-rebuild.ts';
 import { isRecord, isUuid } from '../src/lib/validation.ts';
 import { and, eq, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { trainingBestKey } from '../src/domain/sync/progress.ts';
 import {
   canonical,
   combine,
@@ -285,57 +284,6 @@ async function applyCompletion(
       completionId: round.completionId,
       result: round.result,
       streakCredit: utcDay(round.completedAt) === round.dailyDate,
-    });
-  if (round.mode === 'training') {
-    const [best] = await tx
-      .select()
-      .from(schema.trainingBests)
-      .where(
-        and(
-          eq(schema.trainingBests.ownerId, ownerId),
-          eq(schema.trainingBests.generationId, generationId),
-          eq(schema.trainingBests.mode, trainingBestKey(round)),
-          eq(schema.trainingBests.scoreVersion, round.scoreVersion),
-        ),
-      );
-    if (
-      !best ||
-      round.result.score > best.result.score ||
-      (round.result.score === best.result.score &&
-        round.result.elapsedMilliseconds < best.result.elapsedMilliseconds)
-    ) {
-      await tx
-        .insert(schema.trainingBests)
-        .values({
-          id: best?.id ?? crypto.randomUUID(),
-          ownerId,
-          generationId,
-          mode: trainingBestKey(round),
-          scoreVersion: round.scoreVersion,
-          completionId: round.completionId,
-          result: round.result,
-        })
-        .onConflictDoUpdate({
-          target: [
-            schema.trainingBests.ownerId,
-            schema.trainingBests.generationId,
-            schema.trainingBests.mode,
-            schema.trainingBests.scoreVersion,
-          ],
-          set: { completionId: round.completionId, result: round.result },
-        });
-    }
-  }
-  if (round.victory)
-    await tx.insert(schema.hallOfFame).values({
-      id: crypto.randomUUID(),
-      ownerId,
-      generationId,
-      completionId: round.completionId,
-      completedAt: round.completedAt,
-      trainerName: round.victory.trainerName,
-      pokemon: round.victory.pokemon,
-      result: round.result,
     });
   return {
     code: daily ? 'daily_already_recorded' : 'recorded',

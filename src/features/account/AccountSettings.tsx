@@ -17,11 +17,7 @@ import {
 import { AccountConflicts } from './AccountConflicts';
 import './account.css';
 
-export const AccountSettings = ({
-  onComplete,
-}: {
-  onComplete?: () => void;
-}) => {
+export const AccountSettings = () => {
   useEffect(() => {
     void loadAccountConfig();
   }, []);
@@ -34,29 +30,20 @@ export const AccountSettings = ({
   const [reauthenticating, setReauthenticating] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const signingIn = useRef(false);
   const codeInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (sent) codeInput.current?.focus();
   }, [sent]);
-  useEffect(() => {
-    if (signingIn.current && account.owner && !account.mergeRequired && !busy) {
-      signingIn.current = false;
-      onComplete?.();
-    }
-  }, [account.owner, account.mergeRequired, busy, onComplete]);
 
   const run = (work: () => Promise<void>, signIn = false) => {
     if (busy) return;
-    if (signIn) signingIn.current = true;
     setBusy(true);
     setPreparingAccount(signIn);
     setError('');
     setMessage('');
     void work()
       .catch((cause: unknown) => {
-        signingIn.current = false;
         setError(cause instanceof Error ? cause.message : 'Please try again.');
       })
       .finally(() => setBusy(false));

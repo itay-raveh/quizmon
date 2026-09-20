@@ -4,13 +4,11 @@ import {
   contribution,
   combine,
   emptyContribution,
-  trainingBestKey,
 } from '../src/domain/sync/progress.ts';
 import {
   progressProjectionVersion,
   readRecordedGame,
 } from '../src/domain/player/game-history.ts';
-import { isBetterResult } from '../src/domain/quiz/result-ranking.ts';
 import * as schema from './progress-schema.ts';
 
 export async function rebuildAccountProgress(
@@ -54,13 +52,7 @@ export async function rebuildAccountProgress(
         ),
       );
     let progress = emptyContribution();
-    const bests = new Map<string, ReturnType<typeof readRecordedGame>>();
-    for (const table of [
-      schema.dailyResults,
-      schema.trainingBests,
-      schema.hallOfFame,
-      schema.playerPokemon,
-    ])
+    for (const table of [schema.dailyResults, schema.playerPokemon])
       await tx
         .delete(table)
         .where(
@@ -86,36 +78,9 @@ export async function rebuildAccountProgress(
           result: game.result,
           streakCredit: game.completedAt.slice(0, 10) === game.dailyDate,
         });
-      if (fact.eligible && game.mode === 'training') {
-        const key = trainingBestKey(game);
-        const best = bests.get(key);
-        if (!best || isBetterResult(game.result, best.result))
-          bests.set(key, game);
-      }
-      if (fact.eligible && game.victory)
-        await tx.insert(schema.hallOfFame).values({
-          id: crypto.randomUUID(),
-          ownerId,
-          generationId,
-          completionId: game.completionId,
-          completedAt: game.completedAt,
-          trainerName: game.victory.trainerName,
-          pokemon: game.victory.pokemon,
-          result: game.result,
-        });
     }
     for (const outcome of discoveries)
       progress = combine(progress, outcome.effect);
-    for (const game of bests.values())
-      await tx.insert(schema.trainingBests).values({
-        id: crypto.randomUUID(),
-        ownerId,
-        generationId,
-        mode: trainingBestKey(game),
-        scoreVersion: game.scoreVersion,
-        completionId: game.completionId,
-        result: game.result,
-      });
     for (const pokemon of new Set([
       ...progress.discoveries,
       ...progress.correctPokemon,

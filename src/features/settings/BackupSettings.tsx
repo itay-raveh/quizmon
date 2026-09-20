@@ -175,7 +175,7 @@ export const BackupSettings = () => {
                 <tr key={label}>
                   <th scope="row">{label}</th>
                   <td>{value(current)}</td>
-                  <td>{value(preview.save.data)}</td>
+                  <td>{value(preview.state.save.data)}</td>
                 </tr>
               ))}
             </tbody>

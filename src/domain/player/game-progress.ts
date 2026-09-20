@@ -17,7 +17,7 @@ export const applyResult = (
   settings: GameSettings = defaultGameSettings,
   victory?: LeagueVictoryRecord,
   completedDate = getUtcDate(),
-): { best: GameResult; isNewBest: boolean; isSaved: boolean } => {
+): { best: GameResult; isNewBest: boolean } => {
   const { results, hallOfFame } = data;
   const recordProgress = () => {
     results.progress = addResultToProgress(
@@ -35,7 +35,7 @@ export const applyResult = (
       : result;
     const previous = results.daily[key];
     if (previous) {
-      return { best: previous, isNewBest: false, isSaved: true };
+      return { best: previous, isNewBest: false };
     }
     const previousBest = getBestResult(
       Object.values(results.daily).filter(
@@ -55,35 +55,28 @@ export const applyResult = (
       results.streak.creditedDates.push(mode.date);
       results.streak.creditedDates.sort();
     }
-    const isSaved = true;
     return {
       best: isNewBest ? dailyResult : previousBest,
-      isNewBest: isNewBest && isSaved,
-      isSaved,
+      isNewBest,
     };
   }
 
   if (mode.kind === 'league') {
     if (victory && hallOfFame.some(({ id }) => id === victory.id)) {
-      return { best: result, isNewBest: false, isSaved: true };
+      return { best: result, isNewBest: false };
     }
     recordProgress();
     const completed = Boolean(victory) || isLeagueVictory(result);
     results.league.completed = results.league.completed || completed;
     if (completed) results.league.seed = null;
-    const isSaved = Boolean(
-      Object.assign(data, {
-        results,
-        ...(completed ? { leagueLineup: null } : {}),
-        ...(completed && victory
-          ? { hallOfFame: [...hallOfFame, victory] }
-          : {}),
-      }),
-    );
+    Object.assign(data, {
+      results,
+      ...(completed ? { leagueLineup: null } : {}),
+      ...(completed && victory ? { hallOfFame: [...hallOfFame, victory] } : {}),
+    });
     return {
       best: result,
-      isNewBest: completed && isSaved,
-      isSaved,
+      isNewBest: completed,
     };
   }
 
@@ -92,10 +85,8 @@ export const applyResult = (
   const isNewBest = !previous || isBetterResult(result, previous);
   recordProgress();
   if (isNewBest) results.training[key] = result;
-  const isSaved = true;
   return {
     best: isNewBest ? result : previous,
-    isNewBest: isNewBest && isSaved,
-    isSaved,
+    isNewBest,
   };
 };

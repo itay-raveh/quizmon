@@ -174,10 +174,10 @@ const SaveRecoveryDialog = ({
         >
           <h2>Restore this backup?</h2>
           <p>
-            {preview.save.data.pokedex.length} Pokédex entries and{' '}
-            {Object.keys(preview.save.data.results.daily).length} Daily results.
-            This replaces saved progress, profile, settings, and unfinished
-            rounds on this device.
+            {preview.state.save.data.pokedex.length} Pokédex entries and{' '}
+            {Object.keys(preview.state.save.data.results.daily).length} Daily
+            results. This replaces saved progress, profile, settings, and
+            unfinished rounds on this device.
           </p>
           <div className="save-recovery__actions">
             <GameButton

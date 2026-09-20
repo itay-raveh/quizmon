@@ -1,3 +1,4 @@
+import type { AccountEnv } from './api.ts';
 import { and, eq, exists, or, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Hono } from 'hono';
@@ -14,10 +15,6 @@ import {
   completionFacts,
   dailyResults,
 } from './progress-schema.ts';
-
-interface LeaderboardEnv {
-  Bindings: { db: NodePgDatabase; accountId: string };
-}
 
 async function dailyStandings(
   db: NodePgDatabase,
@@ -146,8 +143,8 @@ async function dailyStandings(
   );
 }
 
-export const leaderboardApi = new Hono<LeaderboardEnv>();
-leaderboardApi.get('/api/leaderboards/daily', async (context) => {
+export const leaderboardApi = new Hono<AccountEnv>();
+leaderboardApi.get('/daily', async (context) => {
   const date =
     context.req.query('date') ?? new Date().toISOString().slice(0, 10);
   const scope = context.req.query('scope') ?? 'global';
@@ -166,8 +163,8 @@ leaderboardApi.get('/api/leaderboards/daily', async (context) => {
   context.header('Cache-Control', 'no-store');
   return context.json(
     await dailyStandings(
-      context.env.db,
-      context.env.accountId,
+      context.get('db'),
+      context.get('accountId'),
       date,
       scope,
       Number(after),

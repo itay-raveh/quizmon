@@ -5,24 +5,12 @@ import {
   type GameSession,
   type GameSessionAction,
 } from '../../app/game-session';
-import { createLeagueVictoryRecord } from '../../domain/player/hall-of-fame';
+import { completeRound } from '../../domain/player/game-history';
 import { getTrainerStats } from '../../domain/player/progress';
 import { getTrainerProgressChanges } from '../../domain/player/trainer-progression';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
-import { DAILY_CHALLENGE_VERSION } from '../../domain/quiz/daily';
-import {
-  LEAGUE_CHALLENGE_VERSION,
-  isLeagueVictory,
-} from '../../domain/quiz/league';
-import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-import { snapshotRoundRules } from '../../domain/quiz/round-rules';
-import {
-  SCORE_VERSION,
-  calculateScore,
-  getResponseTime,
-} from '../../domain/quiz/scoring';
+import { getResponseTime } from '../../domain/quiz/scoring';
 import type { AnswerResult, GameResult } from '../../domain/quiz/types';
-import { trainingConfig, versions } from '../../domain/sync/progress';
 import { trackGameCompleted } from '../../lib/analytics';
 import { writeActiveGame } from '../../lib/storage/active-game-storage';
 import {
@@ -64,94 +52,30 @@ export const useGameCompletion = ({
   } | null>(null);
   const completionTimes = useRef(new Map<string, string>());
   const complete = useCallback<CompleteGame>(
-    async ({
-      answers,
-      contentVersion,
-      mode,
-      settings,
-      questions,
-      seed,
-      scoreMultipliers,
-      roundId = seed,
-    }) => {
+    async (round) => {
+      const { mode, seed, roundId = seed } = round;
       const completedAt =
         readLocalRound()?.completedAt ??
         completionTimes.current.get(roundId) ??
         new Date().toISOString();
       completionTimes.current.set(roundId, completedAt);
-      const result = {
-        ...(snapshotRoundRules(settings, questions)
-          ? { rules: snapshotRoundRules(settings, questions) }
-          : {}),
-        ...(mode.kind === 'daily' && mode.track
-          ? { dailyTrack: mode.track }
-          : {}),
-        answers,
-        ...(scoreMultipliers ? { scoreMultipliers } : {}),
-        contentVersion,
-        correctCount: answers.filter(({ correct }) => correct).length,
-        ...getResponseTime(answers),
-        questionCount: questions.length,
-        score: calculateScore(answers, scoreMultipliers),
-        scoreVersion: SCORE_VERSION,
-      };
       const previousData = readPlayerData();
       const previousTrainerStats =
         progressStart.current?.seed === seed
           ? progressStart.current.stats
           : getTrainerStats(previousData.results, previousData.pokedex);
-      const leagueRecord =
-        mode.kind === 'league' && isLeagueVictory(result)
-          ? createLeagueVictoryRecord(
-              result,
-              questions,
-              seed,
-              previousData.profile?.name ?? '',
-            )
-          : undefined;
-      const best = await commitRoundCompletion(
-        {
-          recordVersion: 1,
-          completionId: roundId,
-          completedAt,
-          contentVersion,
-          scoreVersion: result.scoreVersion,
-          progressVersion: versions.progress,
-          generatorVersion:
-            mode.kind === 'daily'
-              ? DAILY_CHALLENGE_VERSION
-              : mode.kind === 'league'
-                ? LEAGUE_CHALLENGE_VERSION
-                : 0,
-          mode: mode.kind,
-          dailyDate: mode.kind === 'daily' ? mode.date : null,
-          training: trainingConfig(settings),
-          result,
-          discoveries: [
-            ...new Set(
-              answers.flatMap((answer, index) =>
-                answer.correct && questions[index]
-                  ? getQuestionPokemon(questions[index])
-                  : [],
-              ),
-            ),
-          ].sort(),
-          victory: leagueRecord
-            ? {
-                trainerName: leagueRecord.trainerName,
-                pokemon: leagueRecord.pokemon,
-              }
-            : null,
-        },
-        leagueRecord,
+      const { completion, victory: leagueRecord } = completeRound(
+        round,
+        completedAt,
+        previousData.profile?.name ?? '',
       );
-      const progressChanges = best.isSaved
-        ? getTrainerProgressChanges(
-            previousTrainerStats,
-            readTrainerStats(),
-            catalog,
-          )
-        : [];
+      const { result } = completion;
+      const best = await commitRoundCompletion(completion, leagueRecord);
+      const progressChanges = getTrainerProgressChanges(
+        previousTrainerStats,
+        readTrainerStats(),
+        catalog,
+      );
       progressStart.current = null;
       refreshTrainerStats();
       trackGameCompleted(mode, result);
@@ -159,13 +83,13 @@ export const useGameCompletion = ({
         bestResult: best.best,
         isNewBest: best.isNewBest,
         result,
-        resultSaved: best.isSaved,
+        resultSaved: true,
         leagueRecord,
         progressChanges,
         type: 'completed',
       });
       if (mode.kind === 'daily') {
-        recordDailyCompletion(result, best.isSaved, mode.date);
+        recordDailyCompletion(result, true, mode.date);
       }
       pauseTimer();
     },

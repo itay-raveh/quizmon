@@ -272,10 +272,22 @@ try {
   await ready(second);
   await signIn(second, email);
   const downloaded = await backup(second);
-  assert.deepEqual(downloaded.save.data.results, first.save.data.results);
-  assert.deepEqual(downloaded.save.data.pokedex, first.save.data.pokedex);
-  assert.deepEqual(downloaded.save.data.profile, first.save.data.profile);
-  assert.deepEqual(downloaded.save.data.settings, first.save.data.settings);
+  assert.deepEqual(
+    downloaded.state.save.data.results,
+    first.state.save.data.results,
+  );
+  assert.deepEqual(
+    downloaded.state.save.data.pokedex,
+    first.state.save.data.pokedex,
+  );
+  assert.deepEqual(
+    downloaded.state.save.data.profile,
+    first.state.save.data.profile,
+  );
+  assert.deepEqual(
+    downloaded.state.save.data.settings,
+    first.state.save.data.settings,
+  );
   const secondExport = await accountExport(second, downloaded, guest);
   for (const section of [
     'completionFacts',
@@ -322,8 +334,8 @@ try {
     page.getByRole('button', { name: 'Start training', exact: true }),
   ).toBeVisible();
   const guestAfter = await backup(page);
-  assert.deepEqual(guestAfter.save.data.pokedex, []);
-  assert.deepEqual(guestAfter.save.data.results.training, {});
+  assert.deepEqual(guestAfter.state.save.data.pokedex, []);
+  assert.deepEqual(guestAfter.state.save.data.results.training, {});
   console.log('Signing out opened a separate empty guest save.');
 
   await configureTraining(page);
@@ -339,8 +351,8 @@ try {
   ]);
   await ready(page);
   assert.deepEqual(
-    (await backup(page)).save.data.results,
-    separateGuest.save.data.results,
+    (await backup(page)).state.save.data.results,
+    separateGuest.state.save.data.results,
   );
   await signIn(page, email, 'add');
   await expect

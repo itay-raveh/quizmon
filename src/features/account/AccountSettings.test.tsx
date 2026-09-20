@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AccountSettings } from './AccountSettings';
 
@@ -57,11 +57,6 @@ beforeEach(() => {
   account.finish.mockResolvedValue(undefined);
 });
 
-function publish(patch: Partial<typeof account.snapshot>) {
-  account.snapshot = { ...account.snapshot, ...patch };
-  account.listeners.forEach((listener) => listener());
-}
-
 it('submits email and a six-digit code with Enter in separate steps', async () => {
   const user = userEvent.setup();
   render(<AccountSettings />);
@@ -97,14 +92,13 @@ it('submits email and a six-digit code with Enter in separate steps', async () =
   );
 });
 
-it('shows account management without sign-in controls or a completion redirect', () => {
+it('shows account management without sign-in controls', () => {
   account.snapshot = {
     ...account.snapshot,
     owner: 'existing',
     status: 'Synced',
   };
-  const onComplete = vi.fn();
-  render(<AccountSettings onComplete={onComplete} />);
+  render(<AccountSettings />);
   expect(screen.getByText('Synced')).toBeVisible();
   expect(
     screen.getByRole('button', { name: 'Export account data' }),
@@ -116,7 +110,6 @@ it('shows account management without sign-in controls or a completion redirect',
   expect(
     screen.queryByLabelText('Email', { exact: true }),
   ).not.toBeInTheDocument();
-  expect(onComplete).not.toHaveBeenCalled();
 });
 
 it('allows reauthentication only after explicitly opening it from a sync error', async () => {
@@ -140,34 +133,21 @@ it('allows reauthentication only after explicitly opening it from a sync error',
 it.each([
   ['Add browser progress', true, undefined],
   ['Use account progress', false, true],
-] as const)(
-  'preserves the %s merge choice and completes only after successful handoff',
-  async (name, merge, only) => {
-    account.snapshot = { ...account.snapshot, mergeRequired: true };
-    const onComplete = vi.fn();
-    account.finish.mockImplementation(() => {
-      publish({ owner: 'signed-in', mergeRequired: false });
-      return Promise.resolve();
-    });
-    render(<AccountSettings onComplete={onComplete} />);
-    expect(screen.queryByRole('form')).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name }));
-    if (only)
-      expect(account.finish).toHaveBeenCalledExactlyOnceWith(merge, only);
-    else expect(account.finish).toHaveBeenCalledExactlyOnceWith(merge);
-    await waitFor(() => expect(onComplete).toHaveBeenCalledOnce());
-    act(() => publish({ pending: 1 }));
-    expect(onComplete).toHaveBeenCalledOnce();
-  },
-);
+] as const)('preserves the %s merge choice', async (name, merge, only) => {
+  account.snapshot = { ...account.snapshot, mergeRequired: true };
+  render(<AccountSettings />);
+  expect(screen.queryByRole('form')).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name }));
+  if (only) expect(account.finish).toHaveBeenCalledExactlyOnceWith(merge, only);
+  else expect(account.finish).toHaveBeenCalledExactlyOnceWith(merge);
+});
 
-it('keeps a failed merge choice available without reporting completion', async () => {
+it('keeps a failed merge choice available for retry', async () => {
   account.snapshot = { ...account.snapshot, mergeRequired: true };
   account.finish.mockRejectedValue(
     new Error('Finish the unfinished guest round first.'),
   );
-  const onComplete = vi.fn();
-  render(<AccountSettings onComplete={onComplete} />);
+  render(<AccountSettings />);
   await userEvent.click(
     screen.getByRole('button', { name: 'Add browser progress' }),
   );
@@ -177,5 +157,4 @@ it('keeps a failed merge choice available without reporting completion', async (
   expect(
     screen.getByRole('button', { name: 'Use account progress' }),
   ).toBeEnabled();
-  expect(onComplete).not.toHaveBeenCalled();
 });

@@ -36,6 +36,7 @@ export async function checkSourceRecovery(
   const exported = (await (
     await exportAccount(connectionString, owner, new AbortController().signal)
   ).json()) as Record<string, unknown>;
+  const source = new URL(connectionString);
   const dump = execFileSync(
     'docker',
     [
@@ -43,9 +44,9 @@ export async function checkSourceRecovery(
       container,
       'pg_dump',
       '-U',
-      'friends_test',
+      source.username,
       '-d',
-      'friends_test',
+      source.pathname.slice(1),
       '-Fc',
     ],
     { timeout: 30_000, maxBuffer: 8 * 1024 * 1024 },
@@ -59,7 +60,7 @@ export async function checkSourceRecovery(
       container,
       'pg_restore',
       '-U',
-      'friends_test',
+      source.username,
       '-d',
       'quizmon_recovery_check',
       '--exit-on-error',

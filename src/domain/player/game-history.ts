@@ -1,3 +1,14 @@
+import type { ActiveGameSnapshot } from './active-game.ts';
+import { createLeagueVictoryRecord } from './hall-of-fame.ts';
+import { isLeagueVictory } from '../quiz/league.ts';
+import { getQuestionPokemon } from '../quiz/question-pokemon.ts';
+import { snapshotRoundRules } from '../quiz/round-rules.ts';
+import {
+  SCORE_VERSION,
+  calculateScore,
+  getResponseTime,
+} from '../quiz/scoring.ts';
+import { trainingConfig, versions } from '../sync/progress.ts';
 import { formatVersions } from '../versions.ts';
 import {
   isRecord,
@@ -11,6 +22,86 @@ import { defaultGameSettings } from '../settings/game-settings.ts';
 import type { RoundCompletion } from '../sync/progress.ts';
 import { emptyPlayerData, type PlayerData } from './player-save.ts';
 import { applyResult } from './game-progress.ts';
+
+export function roundDiscoveries(
+  round: Pick<ActiveGameSnapshot, 'answers' | 'questions'>,
+) {
+  return [
+    ...new Set(
+      round.answers.flatMap((answer, index) =>
+        answer.correct && round.questions[index]
+          ? getQuestionPokemon(round.questions[index])
+          : [],
+      ),
+    ),
+  ].sort();
+}
+
+export function completeRound(
+  round: Pick<
+    ActiveGameSnapshot,
+    | 'answers'
+    | 'questions'
+    | 'settings'
+    | 'mode'
+    | 'contentVersion'
+    | 'seed'
+    | 'scoreMultipliers'
+    | 'roundId'
+  >,
+  completedAt: string,
+  trainerName: string,
+) {
+  const { answers, questions, settings, mode, scoreMultipliers } = round;
+  const rules = snapshotRoundRules(settings, questions);
+  const result = {
+    ...(rules ? { rules } : {}),
+    ...(mode.kind === 'daily' && mode.track ? { dailyTrack: mode.track } : {}),
+    answers,
+    ...(scoreMultipliers ? { scoreMultipliers } : {}),
+    contentVersion: round.contentVersion,
+    correctCount: answers.filter(({ correct }) => correct).length,
+    ...getResponseTime(answers),
+    questionCount: questions.length,
+    score: calculateScore(answers, scoreMultipliers),
+    scoreVersion: SCORE_VERSION,
+  };
+  const victory =
+    mode.kind === 'league' && isLeagueVictory(result)
+      ? {
+          ...createLeagueVictoryRecord(
+            result,
+            questions,
+            round.seed,
+            trainerName,
+          ),
+          completedAt,
+        }
+      : undefined;
+  const completion: Omit<RoundCompletion, 'datasetId'> = {
+    recordVersion: versions.record,
+    completionId: round.roundId ?? round.seed,
+    completedAt,
+    contentVersion: round.contentVersion,
+    scoreVersion: result.scoreVersion,
+    progressVersion: versions.progress,
+    generatorVersion:
+      mode.kind === 'daily'
+        ? versions.daily
+        : mode.kind === 'league'
+          ? versions.league
+          : 0,
+    mode: mode.kind,
+    dailyDate: mode.kind === 'daily' ? mode.date : null,
+    training: trainingConfig(settings),
+    result,
+    discoveries: roundDiscoveries(round),
+    victory: victory
+      ? { trainerName: victory.trainerName, pokemon: victory.pokemon }
+      : null,
+  };
+  return { completion, victory };
+}
 
 export const progressProjectionVersion = 1;
 export interface RecordedGame {

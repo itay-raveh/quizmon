@@ -159,56 +159,6 @@ export const dailyResults = pgTable(
     }),
   ],
 );
-export const trainingBests = pgTable(
-  'training_bests',
-  {
-    id: uuid().primaryKey(),
-    ...scope(),
-    mode: text().notNull(),
-    scoreVersion: integer('score_version').notNull(),
-    completionId: uuid('completion_id').notNull(),
-    result: jsonb().$type<RoundCompletion['result']>().notNull(),
-  },
-  (t) => [
-    uniqueIndex('training_best_identity').on(
-      t.ownerId,
-      t.generationId,
-      t.mode,
-      t.scoreVersion,
-    ),
-    foreignKey({
-      columns: [t.ownerId, t.generationId, t.completionId],
-      foreignColumns: [
-        completionFacts.ownerId,
-        completionFacts.generationId,
-        completionFacts.completionId,
-      ],
-    }),
-  ],
-);
-export const hallOfFame = pgTable(
-  'hall_of_fame',
-  {
-    id: uuid().primaryKey(),
-    ...scope(),
-    completionId: uuid('completion_id').notNull(),
-    completedAt: text('completed_at').notNull(),
-    trainerName: text('trainer_name').notNull(),
-    pokemon: jsonb().$type<string[]>().notNull(),
-    result: jsonb().$type<RoundCompletion['result']>().notNull(),
-  },
-  (t) => [
-    uniqueIndex('hall_identity').on(t.ownerId, t.generationId, t.completionId),
-    foreignKey({
-      columns: [t.ownerId, t.generationId, t.completionId],
-      foreignColumns: [
-        completionFacts.ownerId,
-        completionFacts.generationId,
-        completionFacts.completionId,
-      ],
-    }),
-  ],
-);
 export const syncIssues = pgTable(
   'sync_issues',
   {

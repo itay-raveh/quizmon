@@ -1,14 +1,16 @@
+import {
+  accountRequest,
+  json,
+  signIn as authenticate,
+  startAccountWorker,
+  testDatabase,
+} from './account-fixture.ts';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { bootstrap } from '../../server/progress-api.ts';
 import { getTrainingScoreMultipliers } from '../../src/domain/quiz/score-multipliers.ts';
 import { calculateScore } from '../../src/domain/quiz/scoring.ts';
-import { serve } from '@hono/node-server';
-import { createAccountApi } from '../../server/api.ts';
-import { localSync } from '../../scripts/dev/local-sync.ts';
-import { localEnv } from '../../scripts/dev/local-env.ts';
 import { QUESTION_RULES_VERSION } from '../../src/domain/quiz/question-variants.ts';
 import assert from 'node:assert/strict';
-import { Client } from 'pg';
 import { isRecord } from '../../src/lib/validation.ts';
 import {
   combine,
@@ -19,122 +21,71 @@ import {
 } from '../../src/domain/sync/progress.ts';
 import { action, completion } from './progress-fixtures.ts';
 
-const origin = process.env.QUIZMON_GAME_ORIGIN ?? 'http://127.0.0.1:4173';
-const server = process.env.QUIZMON_API_URL
-  ? undefined
-  : serve({
-      fetch: createAccountApi({
-        sync: localSync,
-        connectionString:
-          'postgresql://postgres:unused@127.0.0.1:5548/quizmon_pilot',
-        origin,
-        secret: localEnv.BETTER_AUTH_SECRET!,
-        mail: { mode: 'test-mailbox' },
-      }).fetch,
-      hostname: '127.0.0.1',
-      port: 0,
-    });
-if (server && !server.listening)
-  await new Promise<void>((resolve) => server.once('listening', resolve));
-const address = server?.address();
-const base =
-  process.env.QUIZMON_API_URL ??
-  `http://127.0.0.1:${address && typeof address !== 'string' ? address.port : 0}`;
-const db = new Client({
-  connectionString: 'postgresql://postgres:unused@127.0.0.1:5548/quizmon_pilot',
-});
-await db.connect();
-const request = (path: string, cookie = '', body?: unknown) =>
-  fetch(`${base}${path}`, {
-    method: body === undefined ? 'GET' : 'POST',
-    headers: {
-      Origin: origin,
-      'Content-Type': 'application/json',
-      Cookie: cookie,
-    },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
-async function json(response: Response) {
-  const value: unknown = await response.json();
-  assert.ok(isRecord(value));
-  return value;
-}
-async function signIn(claim = true) {
-  const email = `progress-${crypto.randomUUID()}@example.test`;
-  assert.equal(
-    (
-      await request('/api/auth/email-otp/send-verification-otp', '', {
-        email,
-        type: 'sign-in',
-      })
-    ).status,
-    200,
-  );
-  const mail = await json(
-    await request(`/api/dev/mailbox?email=${encodeURIComponent(email)}`),
-  );
-  const signedIn = await request('/api/auth/sign-in/email-otp', '', {
-    email,
-    otp: mail.code,
-  });
-  assert.equal(signedIn.status, 200);
-  const cookie = signedIn.headers
-    .getSetCookie()
-    .map((v) => v.split(';')[0])
-    .join('; ');
-  const state = await json(await request('/api/account', cookie));
-  assert.equal(typeof state.id, 'string');
-  assert.equal(typeof state.generationId, 'string');
-  assert.equal(typeof state.serverEpoch, 'string');
-  const binding = {
-    id: state.id as string,
-    generationId: state.generationId as string,
-    serverEpoch: state.serverEpoch as string,
-    datasetId: crypto.randomUUID(),
-    cookie,
-  };
-  if (claim)
-    assert.equal(
-      (
-        await request('/api/account/link', cookie, {
-          expectedAccountId: binding.id,
-          generationId: binding.generationId,
-          serverEpoch: binding.serverEpoch,
-          datasetId: binding.datasetId,
-          linkId: crypto.randomUUID(),
-          merge: false,
-        })
-      ).status,
-      200,
-    );
-  return binding;
-}
-type Actor = Awaited<ReturnType<typeof signIn>>;
-const upload = (
-  actor: Actor,
-  actions: Action[],
-  expectedAccountId = actor.id,
-) =>
-  request('/api/sync/operations', actor.cookie, {
-    expectedAccountId,
-    serverEpoch: actor.serverEpoch,
-    actions,
-  });
-async function outcomes(response: Response): Promise<Outcome[]> {
-  assert.equal(response.status, 200);
-  const body = await json(response);
-  assert.ok(Array.isArray(body.outcomes));
-  return body.outcomes as Outcome[];
-}
-async function progress(owner: string) {
-  const result = await db.query<{ progress: Contribution; revision: number }>(
-    'SELECT progress,revision FROM account_state WHERE id=$1',
-    [owner],
-  );
-  return result.rows[0]!;
-}
-const passed: string[] = [];
+const database = await testDatabase();
+const db = database.pool;
+let worker: Awaited<ReturnType<typeof startAccountWorker>> | undefined;
 try {
+  worker = await startAccountWorker({
+    connectionString: database.connectionString,
+  });
+  const base = worker.base;
+  const send = accountRequest(base, worker.origin);
+  const request = (path: string, cookie = '', body?: unknown) =>
+    send(path, { cookie }, body);
+  async function signIn(claim = true) {
+    const { cookie } = await authenticate(send);
+    const state = await json(await request('/api/account', cookie));
+    assert.equal(typeof state.id, 'string');
+    assert.equal(typeof state.generationId, 'string');
+    assert.equal(typeof state.serverEpoch, 'string');
+    const binding = {
+      id: state.id as string,
+      generationId: state.generationId as string,
+      serverEpoch: state.serverEpoch as string,
+      datasetId: crypto.randomUUID(),
+      cookie,
+    };
+    if (claim)
+      assert.equal(
+        (
+          await request('/api/account/link', cookie, {
+            expectedAccountId: binding.id,
+            generationId: binding.generationId,
+            serverEpoch: binding.serverEpoch,
+            datasetId: binding.datasetId,
+            linkId: crypto.randomUUID(),
+            merge: false,
+          })
+        ).status,
+        200,
+      );
+    return binding;
+  }
+  type Actor = Awaited<ReturnType<typeof signIn>>;
+  const upload = (
+    actor: Actor,
+    actions: Action[],
+    expectedAccountId = actor.id,
+  ) =>
+    request('/api/sync/operations', actor.cookie, {
+      expectedAccountId,
+      serverEpoch: actor.serverEpoch,
+      actions,
+    });
+  async function outcomes(response: Response): Promise<Outcome[]> {
+    assert.equal(response.status, 200);
+    const body = await json(response);
+    assert.ok(Array.isArray(body.outcomes));
+    return body.outcomes as Outcome[];
+  }
+  async function progress(owner: string) {
+    const result = await db.query<{ progress: Contribution; revision: number }>(
+      'SELECT progress,revision FROM account_state WHERE id=$1',
+      [owner],
+    );
+    return result.rows[0]!;
+  }
+  const passed: string[] = [];
   assert.equal(
     (await json(await request('/api/account/config'))).emailDelivery,
     'test-mailbox',
@@ -309,12 +260,14 @@ try {
     ]),
   );
   assert.equal((await progress(first.id)).progress.leagueCompleted, true);
-  const hall = await db.query<{ trainer_name: string }>(
-    'SELECT trainer_name FROM hall_of_fame WHERE owner_id=$1',
-    [first.id],
-  );
+  const hall = (await json(await request('/api/account/export', first.cookie)))
+    .hallOfFame;
+  assert.ok(Array.isArray(hall));
   assert.deepEqual(
-    hall.rows.map((r) => r.trainer_name),
+    hall.map((row: unknown) => {
+      assert.ok(isRecord(row));
+      return row.trainer_name;
+    }),
     ['Pilot Trainer'],
   );
   passed.push('early League failure and immutable Hall of Fame');
@@ -416,7 +369,6 @@ try {
   await db.query("UPDATE account_state SET progress='{}' WHERE id=$1", [
     first.id,
   ]);
-  await db.query('DELETE FROM training_bests WHERE owner_id=$1', [first.id]);
   await db.query('UPDATE account_state SET projection_version=0 WHERE id=$1', [
     first.id,
   ]);
@@ -432,12 +384,12 @@ try {
     ).rows,
     retainedGames,
   );
+  const rebuiltExport = await json(
+    await request('/api/account/export', first.cookie),
+  );
   assert.ok(
-    (
-      await db.query('SELECT id FROM training_bests WHERE owner_id=$1', [
-        first.id,
-      ])
-    ).rowCount,
+    Array.isArray(rebuiltExport.trainingBests) &&
+      rebuiltExport.trainingBests.length > 0,
   );
   passed.push(
     'raw-record rebuild after corrupted aggregates without rewriting recorded games',
@@ -467,9 +419,6 @@ try {
         'account_state',
         'completion_facts',
         'player_pokemon',
-        'daily_results',
-        'training_bests',
-        'hall_of_fame',
         'sync_issues',
       ].includes(tablename),
     ),
@@ -534,12 +483,19 @@ try {
       'accepted',
     );
   }
-  const bests = await db.query<{ result: { rules: { difficulty: number } } }>(
-    'SELECT result FROM training_bests WHERE owner_id=$1',
-    [levels.id],
-  );
+  const bests = (
+    await json(await request('/api/account/export', levels.cookie))
+  ).trainingBests;
+  assert.ok(Array.isArray(bests));
   assert.deepEqual(
-    bests.rows.map(({ result }) => result.rules.difficulty).sort(),
+    bests
+      .map((row: unknown) => {
+        assert.ok(
+          isRecord(row) && isRecord(row.result) && isRecord(row.result.rules),
+        );
+        return row.result.rules.difficulty;
+      })
+      .sort(),
     [5],
   );
   assert.equal((await progress(levels.id)).progress.masteryRounds, 0);
@@ -607,6 +563,6 @@ try {
   );
   console.log(JSON.stringify({ api: base, passed }, null, 2));
 } finally {
-  server?.close();
-  await db.end();
+  await worker?.close();
+  await database.close();
 }

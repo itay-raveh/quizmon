@@ -1,16 +1,17 @@
-import { localSync } from '../../scripts/dev/local-sync.ts';
+import {
+  accountRequest,
+  json,
+  migrationsFolder,
+  signIn as authenticate,
+  startAccountWorker,
+  testDatabase,
+} from './account-fixture.ts';
 import { checkSourceRecovery } from './recovery-checks.ts';
 import { checkEmptyExport, checkAccountHistory } from './account-checks.ts';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { serve } from '@hono/node-server';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import { Pool } from 'pg';
-import { createTestHarness, type TestHarness } from 'wrangler';
 import { isRecord } from '../../src/lib/validation.ts';
-import { createAccountApi, type AccountServices } from '../../server/api.ts';
 import type { friendRequestView } from '../../server/friends.ts';
 import { checkLeaderboards } from './leaderboard-checks.ts';
 import {
@@ -23,235 +24,89 @@ interface Actor {
   id: string;
   cookie: string;
 }
-const docker = (...args: string[]) =>
-  execFileSync('docker', args, { encoding: 'utf8', timeout: 30_000 }).trim();
-assert.equal(
-  docker('context', 'inspect', '--format', '{{.Endpoints.docker.Host}}'),
-  'unix:///var/run/docker.sock',
-);
-const container = `quizmon-friends-test-${crypto.randomUUID().slice(0, 8)}`;
 const passed: string[] = [];
-const combinedWorker = process.argv.includes('--game-worker');
-const workerRuntime = process.argv.includes('--worker') || combinedWorker;
-const prebuiltWorkerDir = process.env.QUIZMON_PREBUILT_WORKER;
-assert.ok(!prebuiltWorkerDir || workerRuntime);
-const originalLocalDatabase =
-  process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB;
-let started = false;
-let pool: Pool | undefined;
-let server: ReturnType<typeof serve> | undefined;
-let worker: TestHarness | undefined;
-let base = '';
-let trustedOrigin = '';
-const request = (
-  path: string,
-  actor?: Actor,
-  body?: unknown,
-  origin = trustedOrigin,
-) =>
-  fetch(base + path, {
-    method: body === undefined ? 'GET' : 'POST',
-    headers: {
-      Origin: origin,
-      Cookie: actor?.cookie ?? '',
-      'Content-Type': 'application/json',
-    },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
-async function json(response: Response) {
-  const value: unknown = await response.json();
-  assert.ok(isRecord(value));
-  return value;
-}
-function relation(value: unknown): Relation {
-  assert.ok(isRecord(value));
-  assert.deepEqual(Object.keys(value).sort(), [
-    'createdAt',
-    'direction',
-    'id',
-    'peerId',
-    'status',
-    'updatedAt',
-  ]);
-  for (const entry of Object.values(value))
-    assert.equal(typeof entry, 'string');
-  return value as Relation;
-}
-async function mutation(response: Response) {
-  assert.equal(response.status, 200, await response.clone().text());
-  assert.equal(response.headers.get('Cache-Control'), 'no-store');
-  return relation((await json(response)).request);
-}
-async function list(actor: Actor, path = '/api/friends') {
-  const response = await request(path, actor);
-  assert.equal(response.status, 200);
-  assert.equal(response.headers.get('Cache-Control'), 'no-store');
-  const value = await json(response);
-  assert.equal(value.accountId, actor.id);
-  assert.ok(Array.isArray(value.items));
-  assert.ok(Array.isArray(value.players));
-  for (const player of value.players) {
-    assert.ok(isRecord(player));
-    assert.deepEqual(Object.keys(player).sort(), [
-      'code',
-      'id',
-      'name',
-      'partnerPokemon',
-    ]);
-    assert.ok(
-      value.items.some(
-        (item: unknown) => isRecord(item) && item.peerId === player.id,
-      ),
-    );
-  }
-  assert.ok(value.nextCursor === null || typeof value.nextCursor === 'string');
-  return { items: value.items.map(relation), nextCursor: value.nextCursor };
-}
-const send = (
-  from: Actor,
-  to: Actor,
-  requestId: string = crypto.randomUUID(),
-) =>
-  request('/api/friends/requests', from, {
-    expectedAccountId: from.id,
-    peerId: to.id,
-    requestId,
-  });
-const change = (
-  actor: Actor,
-  id: string,
-  action: 'accept' | 'decline' | 'cancel' | 'remove',
-) =>
-  request(
-    action === 'remove'
-      ? `/api/friends/${id}/remove`
-      : `/api/friends/requests/${id}/${action}`,
-    actor,
-    { expectedAccountId: actor.id },
-  );
-async function signIn(): Promise<Actor> {
-  const email = `friends-${crypto.randomUUID()}@example.test`;
-  assert.equal(
-    (
-      await request('/api/auth/email-otp/send-verification-otp', undefined, {
-        email,
-        type: 'sign-in',
-      })
-    ).status,
-    200,
-  );
-  const mail = await json(
-    await request(`/api/dev/mailbox?email=${encodeURIComponent(email)}`),
-  );
-  assert.equal(typeof mail.code, 'string');
-  const signedIn = await request('/api/auth/sign-in/email-otp', undefined, {
-    email,
-    otp: mail.code,
-  });
-  assert.equal(signedIn.status, 200);
-  const cookie = signedIn.headers
-    .getSetCookie()
-    .map((value) => value.split(';')[0])
-    .join('; ');
-  const me = await json(await request('/api/me', { id: '', cookie }));
-  assert.ok(typeof me.id === 'string');
-  return { id: me.id, cookie };
-}
+const database = await testDatabase();
+const { container, connectionString, pool } = database;
+let worker: Awaited<ReturnType<typeof startAccountWorker>> | undefined;
 try {
-  docker(
-    'run',
-    '--detach',
-    '--rm',
-    '--pull=never',
-    '--name',
-    container,
-    '--memory=512m',
-    '--tmpfs',
-    '/var/lib/postgresql:rw,size=256m',
-    '--publish',
-    '127.0.0.1::5432',
-    '--env',
-    'POSTGRES_HOST_AUTH_METHOD=trust',
-    '--env',
-    'POSTGRES_USER=friends_test',
-    '--env',
-    'POSTGRES_DB=friends_test',
-    'postgres:18',
-  );
-  started = true;
-  const port = Number(docker('port', container, '5432/tcp').split(':').at(-1));
-  const connectionString = `postgresql://friends_test:unused@127.0.0.1:${port}/friends_test`;
-  pool = new Pool({ connectionString, connectionTimeoutMillis: 1000 });
-  let ready = false;
-  for (let i = 0; i < 40; i += 1) {
-    try {
-      await pool.query('select 1');
-      ready = true;
-      break;
-    } catch {
-      await new Promise((resolve) => setTimeout(resolve, 250));
-    }
+  worker = await startAccountWorker({ connectionString });
+  const base = worker.base;
+  const trustedOrigin = worker.origin;
+  const request = accountRequest(base, trustedOrigin);
+  const signIn = () => authenticate(request);
+  function relation(value: unknown): Relation {
+    assert.ok(isRecord(value));
+    assert.deepEqual(Object.keys(value).sort(), [
+      'createdAt',
+      'direction',
+      'id',
+      'peerId',
+      'status',
+      'updatedAt',
+    ]);
+    for (const entry of Object.values(value))
+      assert.equal(typeof entry, 'string');
+    return value as Relation;
   }
-  assert.ok(ready);
-  const migrationsFolder = fileURLToPath(
-    new URL('../../server/migrations', import.meta.url),
-  );
-  await migrate(drizzle(pool), { migrationsFolder });
-  const services: AccountServices = {
-    sync: localSync,
-    connectionString,
-    secret: crypto.randomUUID() + crypto.randomUUID(),
-    origin: 'http://127.0.0.1',
-    mail: { mode: 'test-mailbox' },
-  };
-  if (workerRuntime) {
-    process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB =
-      connectionString;
-    trustedOrigin = 'http://localhost:4188';
-    worker = createTestHarness({
-      workers: [
-        {
-          configPath: new URL(
-            combinedWorker
-              ? '../../deploy/wrangler.jsonc'
-              : '../../deploy/wrangler.dev.jsonc',
-            import.meta.url,
-          ),
-          ...(prebuiltWorkerDir ? { prebuiltWorkerDir } : {}),
-          vars: {
-            AUTH_ORIGIN: trustedOrigin,
-            MAIL_DELIVERY: 'test-mailbox',
-            MAIL_FROM: '',
-          },
-          secrets: {
-            BETTER_AUTH_SECRET: services.secret,
-            ...(combinedWorker
-              ? { VAPID_PRIVATE_KEY: crypto.randomUUID() }
-              : {}),
-          },
-        },
-      ],
-    });
-    base = (await worker.listen()).url.origin;
-  } else {
-    const app = createAccountApi(services);
-    server = await new Promise<ReturnType<typeof serve>>((resolve) => {
-      const instance = serve(
-        { fetch: app.fetch, hostname: '127.0.0.1', port: 0 },
-        () => resolve(instance),
+  async function mutation(response: Response) {
+    assert.equal(response.status, 200, await response.clone().text());
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    return relation((await json(response)).request);
+  }
+  async function list(actor: Actor, path = '/api/friends') {
+    const response = await request(path, actor);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    const value = await json(response);
+    assert.equal(value.accountId, actor.id);
+    assert.ok(Array.isArray(value.items));
+    assert.ok(Array.isArray(value.players));
+    for (const player of value.players) {
+      assert.ok(isRecord(player));
+      assert.deepEqual(Object.keys(player).sort(), [
+        'code',
+        'id',
+        'name',
+        'partnerPokemon',
+      ]);
+      assert.ok(
+        value.items.some(
+          (item: unknown) => isRecord(item) && item.peerId === player.id,
+        ),
       );
-    });
-    const address = server.address();
-    assert.ok(address && typeof address === 'object');
-    base = `http://127.0.0.1:${address.port}`;
-    trustedOrigin = base;
-    services.origin = base;
+    }
+    assert.ok(
+      value.nextCursor === null || typeof value.nextCursor === 'string',
+    );
+    return { items: value.items.map(relation), nextCursor: value.nextCursor };
   }
+  const send = (
+    from: Actor,
+    to: Actor,
+    requestId: string = crypto.randomUUID(),
+  ) =>
+    request('/api/friends/requests', from, {
+      expectedAccountId: from.id,
+      peerId: to.id,
+      requestId,
+    });
+  const change = (
+    actor: Actor,
+    id: string,
+    action: 'accept' | 'decline' | 'cancel' | 'remove',
+  ) =>
+    request(
+      action === 'remove'
+        ? `/api/friends/${id}/remove`
+        : `/api/friends/requests/${id}/${action}`,
+      actor,
+      { expectedAccountId: actor.id },
+    );
   assert.equal(
     (await json(await request('/api/account/config'))).emailDelivery,
     'test-mailbox',
   );
-  if (combinedWorker) {
+  {
     await checkGameRoutes(base);
     await checkAccountNavigations(base);
     passed.push(
@@ -269,9 +124,7 @@ try {
   const c = await signIn();
   const d = await signIn();
   const e = await signIn();
-  passed.push(
-    `Real local email-code sign-in and sessions through the ${workerRuntime ? 'Workers' : 'Node'} HTTP server`,
-  );
+  passed.push('Real local email-code sign-in and sessions through Workers');
   const identities = await Promise.all(
     Array.from({ length: 6 }, async () => {
       const response = await request('/api/friends/identity', a, {
@@ -535,12 +388,6 @@ try {
     ),
     (error: unknown) => isRecord(error) && error.code === '23514',
   );
-  if (workerRuntime) {
-    console.log(
-      'Waiting for the existing API rate-limit window before leaderboard checks.',
-    );
-    await new Promise((resolve) => setTimeout(resolve, 60_000));
-  }
   passed.push(...(await checkLeaderboards(request, pool, [a, b, c, d, e])));
   passed.push(
     ...(await checkAccountHistory(
@@ -568,11 +415,8 @@ try {
   const postgres = (
     await pool.query<{ server_version: string }>('show server_version')
   ).rows[0];
-  if (combinedWorker) {
-    await pool.end();
-    pool = undefined;
-    docker('stop', '--time', '1', container);
-    started = false;
+  {
+    await database.close();
     await checkGameRoutes(base);
     const unavailable = await fetch(base + '/api/account', {
       signal: AbortSignal.timeout(10_000),
@@ -588,27 +432,13 @@ try {
       {
         passed,
         postgres,
-        runtime: combinedWorker
-          ? 'combined game/account local workerd'
-          : workerRuntime
-            ? 'local workerd'
-            : process.version,
+        runtime: 'combined game/account local workerd',
       },
       null,
       2,
     ),
   );
 } finally {
-  if (worker) await worker.close();
-  if (originalLocalDatabase === undefined)
-    delete process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB;
-  else
-    process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB =
-      originalLocalDatabase;
-  if (server)
-    await new Promise<void>((resolve, reject) =>
-      server!.close((error) => (error ? reject(error) : resolve())),
-    );
-  if (pool) await pool.end();
-  if (started) docker('rm', '--force', container);
+  await worker?.close();
+  await database.close();
 }

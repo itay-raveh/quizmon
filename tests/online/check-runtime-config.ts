@@ -1,5 +1,12 @@
+import {
+  accountRequest,
+  docker,
+  freePort,
+  json,
+  signIn,
+  startAccountWorker,
+} from './account-fixture.ts';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import {
   chmod,
   mkdir,
@@ -8,11 +15,9 @@ import {
   rm,
   writeFile,
 } from 'node:fs/promises';
-import { createServer } from 'node:net';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Client } from 'pg';
-import { createTestHarness, type TestHarness } from 'wrangler';
 import { isRecord } from '../../src/lib/validation.ts';
 import { readSyncConnection } from '../../src/domain/sync/connection.ts';
 import { migrateDatabase } from '../../deploy/migration-runner.ts';
@@ -23,8 +28,6 @@ assert.ok(
   prebuiltWorkerDir,
   'Set QUIZMON_PREBUILT_WORKER to a checked combined Worker bundle.',
 );
-const docker = (...args: string[]) =>
-  execFileSync('docker', args, { encoding: 'utf8', timeout: 30_000 }).trim();
 assert.equal(
   docker('context', 'inspect', '--format', '{{.Endpoints.docker.Host}}'),
   'unix:///var/run/docker.sock',
@@ -45,59 +48,16 @@ await mkdir(temporaryRoot, { recursive: true });
 const directory = await mkdtemp(join(temporaryRoot, 'runtime-'));
 await chmod(directory, 0o755);
 const containers: string[] = [];
-const workers: TestHarness[] = [];
-const originalDb =
-  process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB;
+const workers: Awaited<ReturnType<typeof startAccountWorker>>[] = [];
 let admin: Client | undefined;
-async function freePort() {
-  const server = createServer();
-  await new Promise<void>((resolve, reject) => {
-    server.once('error', reject);
-    server.listen(0, '127.0.0.1', resolve);
-  });
-  const address = server.address();
-  assert.ok(address && typeof address !== 'string');
-  await new Promise<void>((resolve, reject) =>
-    server.close((error) => (error ? reject(error) : resolve())),
-  );
-  return address.port;
-}
 async function object(response: Response) {
   assert.equal(response.status, 200, await response.clone().text());
-  const value: unknown = await response.json();
-  assert.ok(isRecord(value));
-  return value;
+  return json(response);
 }
 async function actor(base: string) {
-  const email = `runtime-${crypto.randomUUID()}@example.test`;
-  const send = (path: string, body: unknown) =>
-    fetch(base + path, {
-      method: 'POST',
-      headers: {
-        Origin: 'http://localhost:4188',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-  await object(
-    await send('/api/auth/email-otp/send-verification-otp', {
-      email,
-      type: 'sign-in',
-    }),
+  const { cookie } = await signIn(
+    accountRequest(base, 'http://localhost:4188'),
   );
-  const mail = await object(
-    await fetch(base + '/api/dev/mailbox?email=' + encodeURIComponent(email)),
-  );
-  const signed = await send('/api/auth/sign-in/email-otp', {
-    email,
-    otp: mail.code,
-  });
-  assert.equal(signed.status, 200);
-  const cookie = signed.headers
-    .getSetCookie()
-    .map((value) => value.split(';')[0])
-    .join('; ');
-  await signed.arrayBuffer();
   const bootstrap = await object(
     await fetch(base + '/api/account', { headers: { Cookie: cookie } }),
   );
@@ -219,29 +179,13 @@ try {
     });
     const syncPort = await freePort();
     const endpoint = `http://127.0.0.1:${syncPort}`;
-    process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB =
-      dbUrl(`source_${name}`);
-    const worker = createTestHarness({
-      workers: [
-        {
-          configPath: new URL('../../deploy/wrangler.jsonc', import.meta.url),
-          prebuiltWorkerDir,
-          vars: {
-            POWERSYNC_URL: endpoint,
-            POWERSYNC_AUDIENCE: `quizmon-${name}`,
-            AUTH_ORIGIN: 'http://localhost:4188',
-            MAIL_DELIVERY: 'test-mailbox',
-            MAIL_FROM: '',
-          },
-          secrets: {
-            BETTER_AUTH_SECRET: crypto.randomUUID() + crypto.randomUUID(),
-            VAPID_PRIVATE_KEY: crypto.randomUUID(),
-          },
-        },
-      ],
+    const worker = await startAccountWorker({
+      connectionString: dbUrl(`source_${name}`),
+      prebuiltWorkerDir,
+      sync: { version: 1, endpoint, audience: `quizmon-${name}` },
     });
     workers.push(worker);
-    const base = (await worker.listen()).url.origin;
+    const base = worker.base;
     assert.equal((await fetch(base + '/api/account')).status, 401);
     const owner = await actor(base);
     assert.equal(owner.sync.endpoint, endpoint);
@@ -373,10 +317,5 @@ try {
       /* A failed start may already have removed the container. */
     }
   }
-  if (originalDb === undefined)
-    delete process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB;
-  else
-    process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB =
-      originalDb;
   await rm(directory, { recursive: true, force: true });
 }

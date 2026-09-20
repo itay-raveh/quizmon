@@ -269,7 +269,7 @@ it.each([
 it('round-trips every portable field and replaces rather than merges progress', async () => {
   await populate();
   const backup = parseBackup(JSON.stringify(await createBackup()));
-  expect(backup.save.data.profile?.name).toBe('Leaf');
+  expect(backup.state.save.data.profile?.name).toBe('Leaf');
   await saveResult({ kind: 'daily', date: '2026-09-06' }, result);
   localStorage.setItem('quizmon.daily-reminder-subscription.v1', 'device-only');
   localStorage.setItem(
@@ -284,7 +284,7 @@ it('round-trips every portable field and replaces rather than merges progress', 
   await active();
   expect(readActiveGame(catalog)).not.toBeNull();
   await restoreBackup(backup);
-  expect(readPlayerSave().data).toEqual(backup.save.data);
+  expect(readPlayerSave().data).toEqual(backup.state.save.data);
   expect(readPlayerSave().restoreId).not.toBeNull();
   expect(readDailyResult('2026-09-06')).toBeNull();
   expect(readActiveGame(catalog)).toBeNull();
@@ -318,13 +318,13 @@ it.for<(backup: PlayerBackup) => void>([
       });
   },
   (backup) => Object.assign(backup, { exportedAt: '2026-02-30T12:00:00.000Z' }),
-  (backup) => Object.assign(backup.save, { version: 99 }),
+  (backup) => Object.assign(backup.state.save, { version: 99 }),
   (backup) =>
-    Object.assign(backup.save.data, {
+    Object.assign(backup.state.save.data, {
       settings: { ...defaultGameSettings, soundVolume: 9 },
     }),
   (backup) =>
-    Object.assign(backup.save.data.results, {
+    Object.assign(backup.state.save.data.results, {
       daily: {
         '2026-09-07': {
           ...result,
@@ -338,11 +338,11 @@ it.for<(backup: PlayerBackup) => void>([
       },
     }),
   (backup) =>
-    Object.assign(backup.save.data, {
-      profile: { ...backup.save.data.profile, partnerPokemon: 99 },
+    Object.assign(backup.state.save.data, {
+      profile: { ...backup.state.save.data.profile, partnerPokemon: 99 },
     }),
   (backup) =>
-    Object.assign(backup.save.data.results.progress, {
+    Object.assign(backup.state.save.data.results.progress, {
       correctCategories: { identity: -1 },
     }),
 ])('rejects invalid imports without changing storage (%#)', async (damage) => {
@@ -360,7 +360,10 @@ it.for([[], ['unknown'], null, 'I'])(
     const before = readPlayerSave();
     for (const field of ['generations', 'questionTypes']) {
       const backup = await createBackup();
-      backup.save.data.settings = { ...defaultGameSettings, [field]: value };
+      backup.state.save.data.settings = {
+        ...defaultGameSettings,
+        [field]: value,
+      };
       expect(() => parseBackup(JSON.stringify(backup))).toThrow();
       expect(readPlayerSave()).toEqual(before);
     }
@@ -411,7 +414,7 @@ it('rolls back every restored record when the transaction fails', async () => {
 it('revalidates a preview and leaves the save unchanged on malformed imports', async () => {
   const backup = await createBackup();
   const before = readPlayerSave();
-  backup.save.data.results.progress.masteryRounds = -1;
+  backup.state.save.data.results.progress.masteryRounds = -1;
   await expect(restoreBackup(backup)).rejects.toThrow();
   expect(readPlayerSave()).toEqual(before);
 });
@@ -443,7 +446,7 @@ it('rejects mismatched action identities in a new backup', async () => {
 
 it('preserves temporarily unavailable custom families through backup restore', async () => {
   const backup = await createBackup();
-  backup.save.data.settings = {
+  backup.state.save.data.settings = {
     ...defaultGameSettings,
     difficulty: 3,
     questionSelection: 'custom',
@@ -452,7 +455,7 @@ it('preserves temporarily unavailable custom families through backup restore', a
   };
   await restoreBackup(backup);
   expect(readPlayerSave().data.settings).toMatchObject(
-    backup.save.data.settings,
+    backup.state.save.data.settings,
   );
 });
 

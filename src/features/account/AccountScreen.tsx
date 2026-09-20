@@ -4,13 +4,7 @@ import { ArrowLeftIcon } from '../../components/icons';
 import { AccountSettings } from './AccountSettings';
 import { accountSnapshot, subscribeAccount } from './account';
 
-export function AccountScreen({
-  onBack,
-  onComplete,
-}: {
-  onBack: () => void;
-  onComplete?: () => void;
-}) {
+export function AccountScreen({ onBack }: { onBack: () => void }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const signingIn = !account.owner && !account.mergeRequired;
   const heading = useRef<HTMLHeadingElement>(null);
@@ -29,7 +23,7 @@ export function AccountScreen({
           {signingIn ? 'Sign in' : 'Account'}
         </h1>
       </header>
-      <AccountSettings onComplete={onComplete} />
+      <AccountSettings />
     </section>
   );
 }

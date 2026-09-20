@@ -8,7 +8,7 @@ import type { PlayerBackup } from '../src/features/settings/backup';
 import { readRound, readSave } from './database-fixture';
 import { expect, test } from './fixtures';
 
-const save: PlayerBackup['save'] = {
+const save: PlayerBackup['state']['save'] = {
   version: 7,
   restoreId: null,
   data: {
@@ -39,7 +39,6 @@ const backup: PlayerBackup = {
   format: 'quizmon-backup',
   version: 3,
   exportedAt: '2026-09-07T09:00:00.000Z',
-  save,
   state: {
     version: 1,
     datasetId: 'e65109a4-a8cf-4f8d-8b84-a471c5bcc001',
@@ -147,11 +146,11 @@ for (const width of [320, 390, 1280]) {
             (
               JSON.parse(
                 (saved ? JSON.stringify(saved) : null)!,
-              ) as PlayerBackup['save']
+              ) as PlayerBackup['state']['save']
             ).data,
         ),
       )
-      .toEqual(backup.save.data);
+      .toEqual(backup.state.save.data);
 
     await page.getByRole('button', { name: 'Settings', exact: true }).click();
     await page.getByText('Backup & restore', { exact: true }).click();
@@ -169,7 +168,7 @@ for (const width of [320, 390, 1280]) {
     const path = await download.path();
     expect(path).not.toBeNull();
     const exported = JSON.parse(await readFile(path, 'utf8')) as PlayerBackup;
-    expect(exported.save.data).toEqual(backup.save.data);
+    expect(exported.state.save.data).toEqual(backup.state.save.data);
     expect(exported.format).toBe('quizmon-backup');
     await page.getByRole('button', { name: 'Dismiss notification' }).click();
     await expect(page.locator('.toast').getByRole('status')).toHaveCount(0);
@@ -232,7 +231,7 @@ for (const browser of ['', '@cross-browser']) {
       await readSave(page).then((saved) => {
         const save = JSON.parse(
           (saved ? JSON.stringify(saved) : null) ?? '{}',
-        ) as PlayerBackup['save'];
+        ) as PlayerBackup['state']['save'];
         return save.data.results.daily['2026-09-01:3:all'];
       }),
     ).toEqual(historical);

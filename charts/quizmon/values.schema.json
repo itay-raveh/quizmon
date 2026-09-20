@@ -96,60 +96,13 @@
       "required": ["workerSecrets", "migrationConnection"],
       "properties": {
         "workerSecrets": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name", "key", "revision"],
-          "properties": {
-            "name": {
-              "type": "string",
-              "maxLength": 253,
-              "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
-            },
-            "key": {
-              "type": "string",
-              "pattern": "^[a-zA-Z0-9._-]+$"
-            },
-            "revision": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
+          "$ref": "#/definitions/secretKey"
         },
         "migrationConnection": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name", "key", "revision"],
-          "properties": {
-            "name": {
-              "type": "string",
-              "maxLength": 253,
-              "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
-            },
-            "key": {
-              "type": "string",
-              "pattern": "^[a-zA-Z0-9._-]+$"
-            },
-            "revision": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
+          "$ref": "#/definitions/secretKey"
         },
         "cloudflare": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name", "key", "revision"],
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "key": {
-              "type": "string"
-            },
-            "revision": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/optionalSecretKey"
         }
       }
     },
@@ -162,36 +115,10 @@
           "type": "boolean"
         },
         "sourceSecret": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name", "key", "revision"],
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "key": {
-              "type": "string"
-            },
-            "revision": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/optionalSecretKey"
         },
         "storageSecret": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name", "key", "revision"],
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "key": {
-              "type": "string"
-            },
-            "revision": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/optionalSecretKey"
         },
         "resources": {
           "type": "object",
@@ -248,44 +175,10 @@
           "then": {
             "properties": {
               "sourceSecret": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["name", "key", "revision"],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "maxLength": 253,
-                    "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
-                  },
-                  "key": {
-                    "type": "string",
-                    "pattern": "^[a-zA-Z0-9._-]+$"
-                  },
-                  "revision": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                }
+                "$ref": "#/definitions/secretKey"
               },
               "storageSecret": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["name", "key", "revision"],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "maxLength": 253,
-                    "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
-                  },
-                  "key": {
-                    "type": "string",
-                    "pattern": "^[a-zA-Z0-9._-]+$"
-                  },
-                  "revision": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                }
+                "$ref": "#/definitions/secretKey"
               }
             }
           }
@@ -387,5 +280,43 @@
         }
       }
     }
-  ]
+  ],
+  "definitions": {
+    "secretKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "key", "revision"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 253,
+          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "optionalSecretKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "key", "revision"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }

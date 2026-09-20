@@ -61,15 +61,14 @@ describe('saved results', () => {
     expect(await saveResult(mode, record)).toMatchObject({
       best: record,
       isNewBest: true,
-      isSaved: true,
     });
     expect(readPlayerData().results.training['score:3']).toEqual(record);
     expect(Object.keys(readPlayerData().results.training)).toHaveLength(1);
     expect(
-      parseBackup(JSON.stringify(await createBackup())).save.data.results,
+      parseBackup(JSON.stringify(await createBackup())).state.save.data.results,
     ).toEqual(readPlayerData().results);
     const malformed = await createBackup();
-    malformed.save.data.results.training[
+    malformed.state.save.data.results.training[
       'score:3'
     ]!.scoreMultipliers!.generations = 10;
     expect(() => parseBackup(JSON.stringify(malformed))).toThrow();
@@ -80,7 +79,6 @@ describe('saved results', () => {
     for (const track of dailyTracks) {
       const mode = { kind: 'daily' as const, date: '2026-09-12', track };
       expect(await saveResult(mode, result)).toMatchObject({
-        isSaved: true,
         isNewBest: true,
       });
       expect(readDailyResult(mode.date, track)).toEqual({
@@ -89,7 +87,6 @@ describe('saved results', () => {
       });
       const progress = readTrainerStats();
       expect(await saveResult(mode, { ...result, score: 9999 })).toMatchObject({
-        isSaved: true,
         isNewBest: false,
       });
       expect(readTrainerStats()).toEqual(progress);
@@ -101,7 +98,7 @@ describe('saved results', () => {
     ]);
     expect(readCompletedDailyCount()).toBe(1);
     expect(
-      parseBackup(JSON.stringify(await createBackup())).save.data.results,
+      parseBackup(JSON.stringify(await createBackup())).state.save.data.results,
     ).toEqual(readPlayerData().results);
     vi.setSystemTime(new Date('2026-09-13T12:00:00Z'));
     await saveResult(
@@ -124,7 +121,6 @@ describe('saved results', () => {
     expect(await saveResult(mode, result)).toEqual({
       best: result,
       isNewBest: true,
-      isSaved: true,
     });
     expect(readDailyResult(mode.date)).toEqual(result);
   });
@@ -145,7 +141,6 @@ describe('saved results', () => {
     expect(await saveResult(mode, perfect)).toEqual({
       best: result,
       isNewBest: false,
-      isSaved: true,
     });
     expect(readDailyResult(mode.date)).toEqual(result);
     expect(readTrainerStats()).toEqual(progressBeforeRetry);
@@ -158,7 +153,6 @@ describe('saved results', () => {
     ).toEqual({
       best: result,
       isNewBest: false,
-      isSaved: true,
     });
   });
   it('only credits new results completed on their local challenge date', async () => {
@@ -212,7 +206,6 @@ describe('saved results', () => {
     expect(await saveResult(mode, lower, defaultGameSettings)).toEqual({
       best: result,
       isNewBest: false,
-      isSaved: true,
     });
     expect(
       await saveResult(mode, lower, {
@@ -222,7 +215,6 @@ describe('saved results', () => {
     ).toEqual({
       best: result,
       isNewBest: false,
-      isSaved: true,
     });
     const longer: GameResult = {
       ...result,
@@ -259,7 +251,6 @@ describe('saved results', () => {
     ).toEqual({
       best: result,
       isNewBest: false,
-      isSaved: true,
     });
   });
   it('builds Trainer progression from correct answers', async () => {

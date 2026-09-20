@@ -263,7 +263,7 @@ const adapter=(input)=>{
       const applied=(await admin.query('SELECT count(*)::int AS count FROM drizzle.__drizzle_migrations')).rows[0].count;
       assert.equal(applied,1);
       const tables=(await admin.query("SELECT tablename FROM pg_publication_tables WHERE pubname='powersync'")).rows;
-      assert.equal(tables.length,7);
+      assert.deepEqual(tables.map(row=>row.tablename).sort(),['account_state','completion_facts','player_pokemon','sync_issues']);
       assert.equal(JSON.parse(await readFile(input.secretsFile,'utf8')).BETTER_AUTH_SECRET,originalSecret);
       assert.deepEqual(await readFile(input.preparedDirectory+'/worker/index.js'),await readFile(directory+'/worker/index.js'));
       assert.equal(JSON.parse(await readFile(input.preparedDirectory+'/wrangler.json','utf8')).no_bundle,true);

@@ -9,8 +9,8 @@ import {
 import { readCloudflareConnection } from './release-inputs.ts';
 import { resolve } from 'node:path';
 import { verifyArtifact } from './release-artifact.ts';
-import { prepareRelease } from './prepare-release.ts';
-import { preflightRelease } from './release-preflight.ts';
+import { prepareRelease, readPreparedRelease } from './prepare-release.ts';
+import { preflightRelease, readReleaseInputs } from './release-preflight.ts';
 
 const [
   command,
@@ -26,7 +26,7 @@ if (!['verify', 'prepare', 'preflight', 'deploy'].includes(command ?? ''))
     'Usage: release-command.ts verify <artifact> | prepare <artifact> <config.json> <new-output-directory> | preflight <artifact> <config.json> <worker-secrets.json> <migration-connection.json> | deploy <artifact> <config.json> <worker-secrets.json> <migration-connection.json> <operation.json> <cloudflare.json>',
   );
 const root = resolve(directory);
-const manifest = await verifyArtifact(root);
+const manifest = command === 'deploy' ? undefined : await verifyArtifact(root);
 if (command === 'deploy') {
   try {
     if (
@@ -48,7 +48,7 @@ if (command === 'deploy') {
       configMap: process.env.QUIZMON_SELECTION_CONFIGMAP ?? '',
       credentialsDirectory,
     });
-    const result = await executeRelease({
+    const { source, ...release } = await executeRelease({
       artifactRoot: root,
       configFile,
       secretsFile: destination,
@@ -61,7 +61,7 @@ if (command === 'deploy') {
       ),
       assertSelected,
     });
-    console.log(JSON.stringify({ release: result, source: manifest.source }));
+    console.log(JSON.stringify({ release, source }));
   } catch (error) {
     console.error(
       error instanceof PendingActivationError ||
@@ -79,24 +79,25 @@ if (command === 'deploy') {
   console.log(
     JSON.stringify({
       preflight: await preflightRelease(
-        root,
-        configFile,
-        destination,
-        databaseFile,
+        await readReleaseInputs(root, configFile, destination, databaseFile),
       ),
-      source: manifest.source,
+      source: manifest!.source,
     }),
   );
 } else if (command === 'prepare') {
   if (!configFile || !destination)
     throw new Error('Configuration and a new output directory are required.');
-  await prepareRelease(root, configFile, destination);
-  console.log(JSON.stringify({ prepared: true, source: manifest.source }));
+  await prepareRelease(
+    root,
+    await readPreparedRelease(root, configFile),
+    destination,
+  );
+  console.log(JSON.stringify({ prepared: true, source: manifest!.source }));
 } else
   console.log(
     JSON.stringify({
       verified: true,
-      source: manifest.source,
-      migrations: manifest.migrations,
+      source: manifest!.source,
+      migrations: manifest!.migrations,
     }),
   );

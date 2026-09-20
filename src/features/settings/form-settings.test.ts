@@ -133,7 +133,7 @@ it('retains form preferences through a backup round trip', async () => {
     },
   });
   expect(
-    parseBackup(JSON.stringify(await createBackup())).save.data.settings
+    parseBackup(JSON.stringify(await createBackup())).state.save.data.settings
       ?.formGroups,
   ).toEqual(['standard', 'regional']);
 });

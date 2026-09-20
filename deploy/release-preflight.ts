@@ -1,9 +1,7 @@
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { Client, type ClientConfig } from 'pg';
 import { VAPID_PUBLIC_KEY } from '../src/features/reminders/reminder-config.ts';
-import { readReleaseConfig, renderWorkerConfig } from './release-config.ts';
-import { accountAssetHeaders } from './asset-headers.ts';
+import { readPreparedRelease } from './prepare-release.ts';
 import {
   readMigrationConnection,
   readWorkerSecrets,
@@ -56,24 +54,13 @@ async function checkMigrationConnection(config: ClientConfig) {
   }
 }
 
-export async function preflightRelease(
+export async function readReleaseInputs(
   root: string,
   configFile: string,
   secretsFile: string,
   databaseFile: string,
 ) {
-  const config = readReleaseConfig(
-    await readInput(configFile, 'release configuration'),
-  );
-  const template = await readInput(
-    join(root, 'worker/template.json'),
-    'Worker template',
-  );
-  renderWorkerConfig(template, config);
-  accountAssetHeaders(
-    await readFile(join(root, 'assets/_headers'), 'utf8'),
-    config.sync,
-  );
+  const prepared = await readPreparedRelease(root, configFile);
   readWorkerSecrets(
     await readInput(secretsFile, 'Worker secrets'),
     VAPID_PUBLIC_KEY,
@@ -81,6 +68,12 @@ export async function preflightRelease(
   const database = readMigrationConnection(
     await readInput(databaseFile, 'migration connection'),
   );
+  return { prepared, database };
+}
+
+export async function preflightRelease({
+  database,
+}: Awaited<ReturnType<typeof readReleaseInputs>>) {
   await checkMigrationConnection(database);
   return {
     configuration: true,

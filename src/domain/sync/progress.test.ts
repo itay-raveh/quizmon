@@ -296,7 +296,7 @@ it('records a completed round before the player advances past final feedback', a
   expect((await createBackup()).records.local_completions).toEqual(
     saved.records.local_completions,
   );
-  expect(readPlayerData()).toEqual(saved.save.data);
+  expect(readPlayerData()).toEqual(saved.state.save.data);
   expect(readLocalRound()).toBeNull();
 });
 
@@ -363,12 +363,12 @@ it('keeps difficulty and form selections in preferences and shares the Training 
     questionSelection: 'custom',
     questionTypes: ['type-check'],
   });
-  expect(Object.keys(backup.save.data.results.training)).toHaveLength(1);
+  expect(Object.keys(backup.state.save.data.results.training)).toHaveLength(1);
   for (const completion of completions) {
     const record = { ...completion, datasetId: backup.state.datasetId };
     expect(validateCompletion(record)).toBeNull();
     expect(
-      backup.save.data.results.training[trainingBestKey(record)]?.rules
+      backup.state.save.data.results.training[trainingBestKey(record)]?.rules
         ?.difficulty,
     ).toBe(completions[1]!.training.difficulty);
     expect(contribution(record).masteryRounds).toBe(0);
@@ -473,10 +473,10 @@ it('preserves weighted results with item, move, and region subjects through fina
   const recorded = { ...completion, datasetId: backup.state.datasetId };
   expect(validateCompletion(recorded)).toBeNull();
   expect(backup.records.local_completions).toHaveLength(1);
-  expect(backup.save.data.results.training['score:3']).toEqual(
+  expect(backup.state.save.data.results.training['score:3']).toEqual(
     completion.result,
   );
-  expect(backup.save.data.pokedex).toEqual([]);
+  expect(backup.state.save.data.pokedex).toEqual([]);
   await restoreBackup(backup);
   expect(readPlayerSave().data.results.training['score:3']).toEqual(
     completion.result,

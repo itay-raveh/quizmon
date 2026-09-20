@@ -151,8 +151,8 @@ for (const tag of ['', '@cross-browser'])
       difficulty: 3,
       scope: 'all',
     });
-    expect(Object.keys(backup.save.data.results.daily)).toEqual([key]);
-    expect(backup.save.data.results.streak.creditedDates).toEqual([]);
+    expect(Object.keys(backup.state.save.data.results.daily)).toEqual([key]);
+    expect(backup.state.save.data.results.streak.creditedDates).toEqual([]);
     expect(backup.records.local_completions).toHaveLength(1);
     const actions = backup.records.local_actions
       .map((row) => JSON.parse(row.payload) as Action)
@@ -242,7 +242,9 @@ for (const tag of ['', '@cross-browser'])
     expect(backup.version).toBe(3);
     if (backup.version !== 3)
       throw new Error('Expected the new local backup format.');
-    const trainingBests = Object.values(backup.save.data.results.training);
+    const trainingBests = Object.values(
+      backup.state.save.data.results.training,
+    );
     expect(trainingBests).toHaveLength(1);
     expect(trainingBests[0]?.answers).toHaveLength(10);
     expect(trainingBests[0]?.rules).toMatchObject({
@@ -286,11 +288,11 @@ for (const tag of ['', '@cross-browser'])
         throw new Error('Expected the new local backup format.');
       expect(restored.state.datasetId).toBe(backup.state.datasetId);
       expect({
-        ...restored.save.data,
-        pokedex: restored.save.data.pokedex.toSorted(),
+        ...restored.state.save.data,
+        pokedex: restored.state.save.data.pokedex.toSorted(),
       }).toEqual({
-        ...backup.save.data,
-        pokedex: backup.save.data.pokedex.toSorted(),
+        ...backup.state.save.data,
+        pokedex: backup.state.save.data.pokedex.toSorted(),
       });
       expect(restored.records).toEqual(backup.records);
     } finally {

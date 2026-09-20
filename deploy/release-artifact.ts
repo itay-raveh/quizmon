@@ -52,18 +52,7 @@ export async function sealArtifact(
     throw new Error('A full source revision is required.');
   const manifest = {
     version: 1,
-    configurationVersions: [1],
     source,
-    bindings: [
-      'ASSETS',
-      'ANALYTICS',
-      'DAILY_REMINDERS',
-      'ACCOUNT_DB',
-      'EMAIL',
-      'AUTH_RATE_LIMIT',
-      'API_RATE_LIMIT',
-    ],
-    secrets: ['BETTER_AUTH_SECRET', 'VAPID_PRIVATE_KEY'],
     migrations: migrationIdentities(root),
     files: await contentHashes(root),
   };

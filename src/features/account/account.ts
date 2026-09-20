@@ -569,9 +569,6 @@ export async function startAccountSync() {
       tables: [
         'account_state',
         'player_pokemon',
-        'daily_results',
-        'training_bests',
-        'hall_of_fame',
         'pending_actions',
         'sync_issues',
         'completion_facts',

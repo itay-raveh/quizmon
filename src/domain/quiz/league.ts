@@ -1,9 +1,7 @@
-import { gameVersions } from '../versions.ts';
 import { createSeededRandom, shuffle } from '../../lib/random.ts';
 import type { GameResult, QuestionData, QuestionType } from './types.ts';
 
 import { GAMEPLAY_REVISION } from './gameplay-version.ts';
-export const LEAGUE_CHALLENGE_VERSION = gameVersions.league;
 
 const LEAGUE_STAGE_SIZE = 3;
 
