@@ -1,6 +1,6 @@
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
-import { ArrowRightIcon, GearSixIcon } from '@/components/icons';
+import { ArrowRightIcon, SlidersHorizontalIcon } from '@/components/icons';
 import { formatDailyDate } from '@/domain/pokemon/format';
 import type { GameResult } from '@/domain/quiz/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
@@ -121,7 +121,7 @@ export const HomeScreen = ({
             tone="quiet"
             onClick={onCustomizeTraining}
           >
-            <GearSixIcon aria-hidden="true" weight="bold" />
+            <SlidersHorizontalIcon aria-hidden="true" weight="bold" />
           </GameButton>
           <GameButton
             aria-label="Start training"

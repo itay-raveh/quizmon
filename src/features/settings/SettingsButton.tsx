@@ -1,5 +1,5 @@
 import { GameButton } from '@/components/GameButton';
-import { SlidersHorizontalIcon } from '@/components/icons';
+import { GearSixIcon } from '@/components/icons';
 
 interface SettingsButtonProps {
   disabled?: boolean;
@@ -15,6 +15,6 @@ export const SettingsButton = ({ disabled, onClick }: SettingsButtonProps) => (
     title="Settings"
     tone="quiet"
   >
-    <SlidersHorizontalIcon aria-hidden="true" weight="bold" />
+    <GearSixIcon aria-hidden="true" weight="bold" />
   </GameButton>
 );
