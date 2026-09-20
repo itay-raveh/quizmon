@@ -32,6 +32,9 @@ export const footerLinks = [
   ...contentPages.map(({ path, label }) => ({ href: path, label })),
 ];
 
+export const footerDisclaimer =
+  'Quizmon is unofficial and not affiliated with Nintendo. Pokémon and related names, characters, images, and trademarks belong to their respective owners.';
+
 export const footerCredits = [
   {
     label: 'badges by',

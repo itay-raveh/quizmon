@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import {
   contentPages,
   footerCredits,
+  footerDisclaimer,
   footerLinks,
 } from '../src/app/content-pages.ts';
 import { site } from '../src/app/site.ts';
@@ -41,6 +42,7 @@ const footer = (currentPath?: string) => `<footer class="site-footer">
   <div class="site-footer__credits">
     ${footerCredits.map(credit).join('')}
   </div>
+  <p class="site-footer__disclaimer">${footerDisclaimer}</p>
 </footer>`;
 
 const layout = (content: string, currentPath?: string) =>

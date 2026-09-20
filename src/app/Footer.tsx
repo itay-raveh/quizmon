@@ -1,4 +1,8 @@
-import { footerCredits, footerLinks } from '@/app/content-pages';
+import {
+  footerCredits,
+  footerDisclaimer,
+  footerLinks,
+} from '@/app/content-pages';
 import { site } from '@/app/site';
 import { CoffeeIcon } from '@/components/icons';
 import './footer.css';
@@ -49,5 +53,6 @@ export const Footer = () => (
         </span>
       ))}
     </div>
+    <p className="site-footer__disclaimer">{footerDisclaimer}</p>
   </footer>
 );

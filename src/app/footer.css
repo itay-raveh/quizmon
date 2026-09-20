@@ -44,6 +44,15 @@
   font-size: var(--text-micro);
 }
 
+.site-footer__disclaimer {
+  margin: 0.35rem auto 0;
+  text-shadow:
+    0 1px 0 var(--paper),
+    0 -1px 0 var(--paper),
+    1px 0 0 var(--paper),
+    -1px 0 0 var(--paper);
+}
+
 .site-footer__people > span,
 .site-footer__links a,
 .site-footer__credits > span {
