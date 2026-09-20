@@ -100,6 +100,9 @@ for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
       await expect(
         page.getByRole('button', { name: 'Next question' }),
       ).toBeVisible();
+      await expect
+        .poll(async () => (await readRound(page))?.answers.length)
+        .toBe(1);
       await page.reload();
       await expect(
         page.getByRole('progressbar', { name: 'Quiz progress' }),

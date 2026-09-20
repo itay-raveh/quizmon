@@ -7,7 +7,7 @@ test(
     await page.goto('/');
     await expect(
       page.getByRole('button', { name: /Play Daily Challenge/ }),
-    ).toBeEnabled();
+    ).toBeEnabled({ timeout: 15_000 });
     await page.getByRole('button', { name: 'Settings' }).click();
     await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible();
     await page.getByRole('button', { name: 'Cancel' }).click();

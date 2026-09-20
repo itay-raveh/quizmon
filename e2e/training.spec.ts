@@ -331,6 +331,18 @@ for (const answeredCount of [1, 10]) {
         exact: true,
       }),
     ).toBeVisible();
+    if (answeredCount === 10)
+      await expect
+        .poll(async () =>
+          Object.values((await readSave(page)).data.results.training).some(
+            (result) => result?.answers.length === 10,
+          ),
+        )
+        .toBe(true);
+    else
+      await expect
+        .poll(async () => (await readRound(page))?.answers.length)
+        .toBe(1);
     await page.reload();
 
     if (answeredCount === 10) {
