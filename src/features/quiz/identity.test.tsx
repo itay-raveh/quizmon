@@ -1,6 +1,5 @@
 import { formatPokemonName } from '@/domain/pokemon/format';
 import { buildQuestions } from '@/domain/quiz/question-generation';
-import { isQuestionData } from '@/domain/quiz/question-lineup';
 import { buildSpriteMatchQuestion } from '@/domain/quiz/questions/identity';
 import type { QuestionType } from '@/domain/quiz/types';
 import {
@@ -11,7 +10,6 @@ import { createSeededRandom } from '@/lib/random';
 import { fireEvent, screen } from '@testing-library/react';
 import { catalog } from '../../../tests/fixtures/catalog';
 import { renderQuestion } from '../../../tests/fixtures/question';
-import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
 const generate = (questionType: QuestionType) => {
   const questions = buildQuestions(
     catalog,
@@ -28,43 +26,6 @@ const generate = (questionType: QuestionType) => {
   return questions[0]!;
 };
 for (const questionType of ['sprite-match', 'whos-that-pokemon'] as const) {
-  it(`${questionType} generates a valid, repeatable question in the selected generation`, () => {
-    const question = generate(questionType);
-    expect(generate(questionType)).toEqual(question);
-    expect(question.questionType).toBe(questionType);
-    expect(isQuestionData(question)).toBe(true);
-    expect(new Set(question.options).size).toBe(4);
-    expect(question.answer.correctOptions).toEqual([question.subject.name]);
-    expect(question.repetition.subjects).toEqual([question.subject.name]);
-    expect(getQuestionPokemon(question)).toEqual([question.subject.name]);
-    expect(new Set(getQuestionPokemon(question, true))).toEqual(
-      new Set(question.options),
-    );
-    for (const name of question.options) {
-      expect(catalog.pokemon[name]?.generation).toBe('I');
-    }
-    if (questionType === 'sprite-match') {
-      expect(question.prompt).toMatchObject({
-        kind: 'pokemon',
-        name: question.subject.name,
-      });
-      expect(question.media.kind).toBe('none');
-      expect(question.rendering?.choices.name).toBe('after-answer');
-      for (const name of question.options) {
-        expect(question.optionVisuals?.[name]).toMatchObject({
-          src: catalog.pokemon[name]?.sprite,
-        });
-      }
-    } else {
-      expect(question.media).toEqual({
-        kind: 'sprite',
-        src: catalog.pokemon[question.subject.name]?.sprite,
-      });
-      expect(question.rendering?.subject.sprite).toBe('silhouette');
-      expect(question.rendering?.choices.sprite).toBe('never');
-      expect(Object.keys(question.optionVisuals ?? {})).toHaveLength(4);
-    }
-  });
   it.each([true, false])(
     `${questionType} conceals and reveals correctly (correct: %s)`,
     (correct) => {

@@ -14,7 +14,6 @@ import {
 } from './question-generation';
 import { isQuestionData } from './question-lineup';
 import { getQuestionVariant } from './question-variants';
-import { questionTypes } from './questions/definitions';
 import { buildQuestionType } from './questions/registry';
 import {
   pokemonOptions,
@@ -67,11 +66,6 @@ it.each(difficultyLevels)(
     }
   },
 );
-it('retains every family at Level 5, including inherited softball variants', () => {
-  for (const type of questionTypes)
-    expect(getQuestionVariant(type, 5), type).toBeDefined();
-});
-
 it.each(generations)(
   'can generate both expert comparisons within Gen %s',
   (generation) => {

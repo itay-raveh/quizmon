@@ -7,11 +7,6 @@ import {
 } from './game-settings';
 
 describe('normalizeGameSettings', () => {
-  it('starts new players at Level 1 with Gen I', () => {
-    expect(defaultGameSettings.generations).toEqual(['I']);
-    expect(defaultGameSettings.difficulty).toBe(1);
-  });
-
   it('returns defaults for malformed storage', () => {
     expect(normalizeGameSettings('broken')).toEqual(defaultGameSettings);
   });

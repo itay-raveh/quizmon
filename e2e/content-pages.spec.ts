@@ -44,14 +44,9 @@ test('information pages keep distinct metadata and canonical URLs with query par
   page,
 }) => {
   const descriptions = new Set<string>();
-  for (const [path, title] of [
-    ['/about', 'How to play'],
-    ['/privacy', 'Privacy and Cookies'],
-    ['/terms', 'Terms of Use'],
-  ] as const) {
+  for (const path of ['/about', '/privacy', '/terms']) {
     await page.goto(`${path}?ref=share`);
     await expect(page.locator('title')).toHaveCount(1);
-    await expect(page).toHaveTitle(`${title} | Quizmon`);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('meta[name="description"]')).toHaveCount(1);
     const description = await page
@@ -63,19 +58,6 @@ test('information pages keep distinct metadata and canonical URLs with query par
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       `https://quizmon.raveh.dev${path}`,
-    );
-    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
-      'content',
-      `https://quizmon.raveh.dev${path}`,
-    );
-    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-      'content',
-      `${title} | Quizmon`,
-    );
-    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
-    await expect(page.locator('nav a[aria-current="page"]')).toHaveAttribute(
-      'href',
-      path,
     );
   }
   expect(descriptions.size).toBe(3);

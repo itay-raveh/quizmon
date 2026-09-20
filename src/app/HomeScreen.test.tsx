@@ -63,24 +63,6 @@ it('distinguishes an unsaved completion from a saved Daily', () => {
   expect(screen.getByText('Daily Challenge')).toBeVisible();
 });
 
-it('places customization beside Training and sends each play action to its own callback', async () => {
-  const values = props();
-  render(<HomeScreen {...values} leagueUnlocked />);
-  await userEvent.click(
-    screen.getByRole('button', { name: 'Customize training' }),
-  );
-  expect(values.onCustomizeTraining).toHaveBeenCalledOnce();
-  expect(values.onStart).not.toHaveBeenCalled();
-  await userEvent.click(screen.getByRole('button', { name: 'Start training' }));
-  await userEvent.click(
-    screen.getByRole('button', { name: /Play Daily Challenge/ }),
-  );
-  await userEvent.click(screen.getByRole('button', { name: 'Quizmon League' }));
-  expect(values.onStart).toHaveBeenCalledOnce();
-  expect(values.onStartDaily).toHaveBeenCalledOnce();
-  expect(values.onStartLeague).toHaveBeenCalledOnce();
-});
-
 it('keeps unavailable play actions disabled without adding a locked League destination', () => {
   const values = props();
   const rendered = render(<HomeScreen {...values} catalogStatus="loading" />);

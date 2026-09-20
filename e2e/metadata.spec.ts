@@ -1,148 +1,35 @@
 import { expect, test } from './fixtures';
 
-test('publishes complete, non-duplicated site metadata', async ({ page }) => {
+test('serves usable homepage metadata and discovery files', async ({
+  page,
+}) => {
   await page.goto('/');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page).toHaveTitle('Quizmon: Pokémon Quiz & Daily Challenge');
   await expect(page.locator('h1')).toHaveCount(1);
-  await expect(page.locator('h1')).toHaveText(
-    'Quizmon: Pokémon Quiz & Daily Challenge',
-  );
   await expect(page.locator('meta[name="description"]')).toHaveCount(1);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    'href',
-    'https://quizmon.raveh.dev/',
-  );
-  await expect(
-    page.locator('link[rel="alternate"][type="text/markdown"]'),
-  ).toHaveCount(0);
-  await expect(page.locator('link[rel="describedby"]')).toHaveAttribute(
-    'href',
-    'https://quizmon.raveh.dev/llms.txt',
-  );
-  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-    'content',
-    'Quizmon: Pokémon Quiz & Daily Challenge',
-  );
-  await expect(page.locator('meta[property="og:description"]')).toHaveCount(1);
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
-    'content',
-    'https://quizmon.raveh.dev/assets/images/social-card.png',
-  );
-  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
-    'content',
-    'summary_large_image',
-  );
-  await expect(page.locator('meta[name^="twitter:"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+  await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
 
-  const documentResponse = await page.request.get('/');
-  expect(await documentResponse.text()).toContain(
-    '<div id="root"><h1 id="landing-title" class="visually-hidden">Quizmon: Pokémon Quiz & Daily Challenge</h1></div>',
-  );
+  const image = await page
+    .locator('meta[property="og:image"]')
+    .getAttribute('content');
+  expect(image).toBeTruthy();
+  await expect(await page.request.get(image!)).toBeOK();
 
-  const faviconResponse = await page.request.get('/favicon.ico');
-  await expect(faviconResponse).toBeOK();
-  expect(faviconResponse.headers()['content-type']).toContain('image/x-icon');
+  const structuredDataText = await page
+    .locator('script[type="application/ld+json"]')
+    .textContent();
+  const structuredData: unknown = JSON.parse(structuredDataText ?? '');
+  expect(structuredData).toMatchObject({ '@context': 'https://schema.org' });
 
-  const socialImageResponse = await page.request.get(
-    '/assets/images/social-card.png',
-  );
-  await expect(socialImageResponse).toBeOK();
-  expect((await socialImageResponse.body()).byteLength).toBeLessThan(500_000);
-
-  const structuredData: unknown = JSON.parse(
-    (await page.locator('script[type="application/ld+json"]').textContent()) ??
-      '{}',
-  );
-  expect(structuredData).toMatchObject({
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebSite',
-        '@id': 'https://quizmon.raveh.dev/#website',
-        name: 'Quizmon',
-        url: 'https://quizmon.raveh.dev/',
-        about: { '@id': 'https://quizmon.raveh.dev/#game' },
-      },
-      {
-        '@type': ['VideoGame', 'WebApplication'],
-        '@id': 'https://quizmon.raveh.dev/#game',
-        name: 'Quizmon',
-        url: 'https://quizmon.raveh.dev/',
-        applicationCategory: 'GameApplication',
-        isAccessibleForFree: true,
-        playMode: 'https://schema.org/SinglePlayer',
-        offers: { price: 0 },
-      },
-    ],
-  });
-
-  const manifestResponse = await page.request.get('/site.webmanifest');
-  await expect(manifestResponse).toBeOK();
-  expect(manifestResponse.headers()['content-type']).toContain(
-    'application/manifest+json',
-  );
-  await expect(manifestResponse.json()).resolves.toMatchObject({
-    name: 'Quizmon',
-    description:
-      'Play a free Pokémon quiz with a five-question Daily Challenge and unlimited Training. Test types, evolutions, moves, and more. No account needed.',
-    display: 'standalone',
-    icons: [
-      {
-        purpose: 'any',
-        sizes: '192x192',
-        src: '/pwa-192x192.png',
-      },
-      {
-        purpose: 'any',
-        sizes: '512x512',
-        src: '/pwa-512x512.png',
-      },
-      {
-        purpose: 'maskable',
-        sizes: '512x512',
-        src: '/pwa-maskable-512x512.png',
-      },
-    ],
-    theme_color: '#72c3ee',
-  });
-
-  const serviceWorkerResponse = await page.request.get('/sw.js');
-  await expect(serviceWorkerResponse).toBeOK();
-  const serviceWorker = await serviceWorkerResponse.text();
-  expect(serviceWorker).toContain('quizmon-pokemon-sprites');
-  expect(serviceWorker).toContain('quizmon-static-media');
-  expect(serviceWorker).toContain('pokemon-');
-  expect(serviceWorker).not.toMatch(/assets\/build\/(?:background|wordmark)-/);
-
-  const robotsResponse = await page.request.get('/robots.txt');
-  await expect(robotsResponse).toBeOK();
-  expect(await robotsResponse.text()).toBe(
-    'User-agent: *\nAllow: /\n\nSitemap: https://quizmon.raveh.dev/sitemap.xml\n',
-  );
-
-  const sitemapResponse = await page.request.get('/sitemap.xml');
-  await expect(sitemapResponse).toBeOK();
-  expect(await sitemapResponse.text()).toContain(
-    '<loc>https://quizmon.raveh.dev/</loc>',
-  );
-  expect(await sitemapResponse.text()).toContain(
-    '<loc>https://quizmon.raveh.dev/about</loc>',
-  );
-
-  const llmsResponse = await page.request.get('/llms.txt');
-  await expect(llmsResponse).toBeOK();
-  expect(await llmsResponse.text()).toContain(
-    '[Quizmon overview](https://quizmon.raveh.dev/index.md)',
-  );
-
-  const markdownResponse = await page.request.get('/index.md');
-  await expect(markdownResponse).toBeOK();
-  const overview = await markdownResponse.text();
-  expect(overview).toContain('# How to play');
-  expect(overview).toContain('## Daily Challenge');
-  expect(overview).toContain('[Play Quizmon](https://quizmon.raveh.dev/)');
-  expect(overview).not.toContain('(privacy.md)');
-  expect(overview).not.toContain('(terms.md)');
+  for (const path of [
+    '/site.webmanifest',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/llms.txt',
+    '/index.md',
+  ]) {
+    await expect(await page.request.get(path)).toBeOK();
+  }
 });

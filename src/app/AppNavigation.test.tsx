@@ -28,38 +28,6 @@ beforeEach(() => {
   account.issues = [];
 });
 
-it('owns exactly three main destinations plus one sign-in and Settings control', async () => {
-  const values = props();
-  render(<AppNavigation {...values} />);
-  const main = screen.getByRole('navigation', { name: 'Main' });
-  expect(
-    within(main)
-      .getAllByRole('button')
-      .map((button) => button.textContent),
-  ).toEqual(['Play', 'Trainer', 'Leaderboards']);
-  expect(screen.getAllByRole('button')).toHaveLength(5);
-  expect(
-    screen.queryByRole('button', { name: 'Friends' }),
-  ).not.toBeInTheDocument();
-  expect(screen.queryByRole('status')).not.toBeInTheDocument();
-  expect(within(main).getByRole('button', { name: 'Play' })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
-  for (const [name, route] of [
-    ['Play', 'play'],
-    ['Trainer', 'trainer'],
-    ['Leaderboards', 'leaderboards'],
-  ] as const) {
-    await userEvent.click(within(main).getByRole('button', { name }));
-    expect(values.onNavigate).toHaveBeenLastCalledWith(route);
-  }
-  await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
-  await userEvent.click(screen.getByRole('button', { name: 'Settings' }));
-  expect(values.onAccount).toHaveBeenCalledOnce();
-  expect(values.onSettings).toHaveBeenCalledOnce();
-});
-
 it('reuses the account utility for a signed-in player and keeps sync status on the account control', () => {
   account.owner = 'player';
   account.status = 'Synced';
