@@ -5,6 +5,9 @@ import type { Generation } from './types.ts';
 const scoreFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,
 });
+const scoreMultiplierFormatter = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 2,
+});
 
 const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
@@ -39,7 +42,7 @@ export const formatScore = (score: number): string =>
   scoreFormatter.format(score);
 
 export const formatScoreMultiplier = (multiplier: number): string =>
-  `×${new Intl.NumberFormat('en-US', { maximumSignificantDigits: 4 }).format(multiplier)}`;
+  `×${scoreMultiplierFormatter.format(multiplier)}`;
 
 export const formatGeneration = (generation: Generation): string =>
   `Generation ${generation}`;
