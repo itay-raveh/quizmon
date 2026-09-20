@@ -60,9 +60,10 @@ beforeEach(() => {
 it('submits email and a six-digit code with Enter in separate steps', async () => {
   const user = userEvent.setup();
   render(<AccountSettings />);
-  expect(
-    screen.getByText('Your Trainer name, partner and Daily scores are public.'),
-  ).toBeVisible();
+  expect(screen.getByText('Sync between devices')).toBeVisible();
+  expect(screen.getByText('Compete with the world')).toBeVisible();
+  expect(screen.getByText('Connect with friends')).toBeVisible();
+  expect(screen.queryByText(/Daily scores are public/)).not.toBeInTheDocument();
   await user.type(
     screen.getByLabelText('Email', { exact: true }),
     'trainer@example.test{Enter}',
@@ -78,11 +79,6 @@ it('submits email and a six-digit code with Enter in separate steps', async () =
   expect(
     screen.queryByLabelText('Email', { exact: true }),
   ).not.toBeInTheDocument();
-  expect(
-    screen.queryByText(
-      'Your Trainer name, partner and Daily scores are public.',
-    ),
-  ).not.toBeInTheDocument();
   await user.type(code, '012345{Enter}');
   await waitFor(() =>
     expect(account.verify).toHaveBeenCalledExactlyOnceWith(
@@ -90,6 +86,27 @@ it('submits email and a six-digit code with Enter in separate steps', async () =
       '012345',
     ),
   );
+});
+
+it('shows an inline email error and clears it when the address becomes valid', async () => {
+  const user = userEvent.setup();
+  render(<AccountSettings />);
+  const email = screen.getByLabelText('Email');
+  await user.type(email, 'invalid');
+  expect(await screen.findByText('Enter a valid email address.')).toBeVisible();
+  expect(email).toHaveAttribute('aria-invalid', 'true');
+  expect(email).toHaveAccessibleDescription('Enter a valid email address.');
+  expect(account.send).not.toHaveBeenCalled();
+  await user.type(email, '@example.test');
+  await waitFor(() =>
+    expect(
+      screen.queryByText('Enter a valid email address.'),
+    ).not.toBeInTheDocument(),
+  );
+  expect(email).toHaveAttribute('aria-invalid', 'false');
+  expect(
+    screen.getByRole('button', { name: 'Send sign-in code' }),
+  ).toBeEnabled();
 });
 
 it('shows account management without sign-in controls', () => {

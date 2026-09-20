@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
 import { isRecord } from '../../lib/validation';
 import { downloadAccountExport } from './account-export';
@@ -17,24 +20,43 @@ import {
 import { AccountConflicts } from './AccountConflicts';
 import './account.css';
 
+const emailSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Enter your email address.')
+    .pipe(z.email('Enter a valid email address.')),
+});
+const codeSchema = z.object({
+  code: z.string().regex(/^\d{6}$/, 'Enter the six-digit code.'),
+});
+
 export const AccountSettings = () => {
   useEffect(() => {
     void loadAccountConfig();
   }, []);
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [preparingAccount, setPreparingAccount] = useState(false);
   const [reauthenticating, setReauthenticating] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const codeInput = useRef<HTMLInputElement>(null);
+  const emailForm = useForm<z.input<typeof emailSchema>>({
+    resolver: zodResolver(emailSchema),
+    mode: 'onChange',
+    defaultValues: { email: '' },
+  });
+  const codeForm = useForm<z.input<typeof codeSchema>>({
+    resolver: zodResolver(codeSchema),
+    mode: 'onChange',
+    defaultValues: { code: '' },
+  });
+  const focusCode = codeForm.setFocus;
 
   useEffect(() => {
-    if (sent) codeInput.current?.focus();
-  }, [sent]);
+    if (sent) focusCode('code');
+  }, [sent, focusCode]);
 
   const run = (work: () => Promise<void>, signIn = false) => {
     if (busy) return;
@@ -48,10 +70,10 @@ export const AccountSettings = () => {
       })
       .finally(() => setBusy(false));
   };
-  const send = async () => {
-    await sendSignInCode(email.trim());
+  const send = async (email: string) => {
+    await sendSignInCode(email);
     setSent(true);
-    setCode('');
+    codeForm.reset();
     setMessage('Code requested. Expires in five minutes.');
   };
   const showSignIn = !account.owner || reauthenticating;
@@ -90,62 +112,106 @@ export const AccountSettings = () => {
           {account.owner ? (
             <p>Sign in to the same account to resume syncing.</p>
           ) : !sent ? (
-            <p>Sync your progress and join Daily leaderboards.</p>
+            <ul className="account-settings__benefits">
+              <li>Sync between devices</li>
+              <li>Compete with the world</li>
+              <li>Connect with friends</li>
+            </ul>
           ) : null}
           <form
             className="account-settings__section"
             aria-label="Sign in"
+            noValidate
             onSubmit={(event) => {
-              event.preventDefault();
-              run(
-                sent ? () => verifySignInCode(email.trim(), code) : send,
-                sent,
-              );
+              void (
+                sent
+                  ? codeForm.handleSubmit(({ code }) =>
+                      run(
+                        () =>
+                          verifySignInCode(
+                            emailForm.getValues('email').trim(),
+                            code,
+                          ),
+                        true,
+                      ),
+                    )
+                  : emailForm.handleSubmit(({ email }) =>
+                      run(() => send(email)),
+                    )
+              )(event);
             }}
           >
             {sent ? (
               <>
                 <h2>Check your email</h2>
                 <p>
-                  Enter the six-digit code for <strong>{email.trim()}</strong>.
+                  Enter the six-digit code for{' '}
+                  <strong>{emailForm.getValues('email').trim()}</strong>.
                 </p>
-                <label className="account-settings__field">
-                  Sign-in code
+                <div className="account-settings__field">
+                  <label htmlFor="sign-in-code">Sign-in code</label>
                   <input
-                    ref={codeInput}
-                    name="code"
+                    id="sign-in-code"
                     type="text"
                     inputMode="numeric"
                     autoComplete="one-time-code"
-                    pattern="[0-9]{6}"
                     maxLength={6}
-                    required
-                    value={code}
                     disabled={busy}
-                    onChange={(event) => setCode(event.target.value)}
+                    aria-invalid={!!codeForm.formState.errors.code}
+                    aria-describedby={
+                      codeForm.formState.errors.code
+                        ? 'sign-in-code-error'
+                        : undefined
+                    }
+                    {...codeForm.register('code')}
                   />
-                </label>
+                  {codeForm.formState.errors.code && (
+                    <span
+                      id="sign-in-code-error"
+                      className="account-settings__error"
+                      role="alert"
+                    >
+                      {codeForm.formState.errors.code.message}
+                    </span>
+                  )}
+                </div>
               </>
             ) : (
-              <label className="account-settings__field">
-                Email
+              <div className="account-settings__field">
+                <label htmlFor="sign-in-email">Email</label>
                 <input
-                  name="email"
+                  id="sign-in-email"
                   type="email"
                   autoComplete="email"
                   spellCheck={false}
-                  required
-                  value={email}
                   disabled={busy}
-                  onChange={(event) => setEmail(event.target.value)}
+                  aria-invalid={!!emailForm.formState.errors.email}
+                  aria-describedby={
+                    emailForm.formState.errors.email
+                      ? 'sign-in-email-error'
+                      : undefined
+                  }
+                  {...emailForm.register('email')}
                 />
-              </label>
+                {emailForm.formState.errors.email && (
+                  <span
+                    id="sign-in-email-error"
+                    className="account-settings__error"
+                    role="alert"
+                  >
+                    {emailForm.formState.errors.email.message}
+                  </span>
+                )}
+              </div>
             )}
             <div className="account-settings__actions">
               <GameButton
                 type="submit"
                 disabled={
-                  busy || !email.trim() || (sent && !/^\d{6}$/.test(code))
+                  busy ||
+                  !(sent
+                    ? codeForm.formState.isValid
+                    : emailForm.formState.isValid)
                 }
               >
                 {sent ? 'Sign in' : 'Send sign-in code'}
@@ -155,7 +221,9 @@ export const AccountSettings = () => {
                   <GameButton
                     tone="quiet"
                     disabled={busy}
-                    onClick={() => run(send)}
+                    onClick={() =>
+                      run(() => send(emailForm.getValues('email').trim()))
+                    }
                   >
                     Resend code
                   </GameButton>
@@ -164,7 +232,7 @@ export const AccountSettings = () => {
                     disabled={busy}
                     onClick={() => {
                       setSent(false);
-                      setCode('');
+                      codeForm.reset();
                       setMessage('');
                       setError('');
                     }}
@@ -188,11 +256,6 @@ export const AccountSettings = () => {
                 </GameButton>
               )}
             </div>
-            {!account.owner && !sent && (
-              <p className="account-settings__privacy">
-                Your Trainer name, partner and Daily scores are public.
-              </p>
-            )}
           </form>
           {account.emailDelivery === 'test-mailbox' && (
             <aside
@@ -207,12 +270,14 @@ export const AccountSettings = () => {
                   onClick={() =>
                     run(async () => {
                       const mail = await accountRequest(
-                        `/api/dev/mailbox?email=${encodeURIComponent(email.trim())}`,
+                        `/api/dev/mailbox?email=${encodeURIComponent(emailForm.getValues('email').trim())}`,
                       );
                       if (!isRecord(mail) || typeof mail.code !== 'string')
                         throw new Error('No recent code. Request a new one.');
-                      setCode(mail.code);
-                      codeInput.current?.focus();
+                      codeForm.setValue('code', mail.code, {
+                        shouldValidate: true,
+                      });
+                      codeForm.setFocus('code');
                     })
                   }
                 >
