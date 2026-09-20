@@ -45,11 +45,26 @@ const countPokemonTypes = (candidates: readonly Candidate[]) => {
   }
   return counts;
 };
+const distinctTypeFamilies = (
+  context: QuestionContext,
+  candidates: readonly Candidate[],
+): Candidate[] => {
+  const seen = new Set<string>();
+  return shuffle(candidates, context.random).filter(({ pokemon }) => {
+    const key = `${pokemon.evolutionFamily}:${[...pokemon.types].sort().join(',')}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
 const pickTypePuzzlePool = (
   context: QuestionContext,
   matchingCount: number,
 ) => {
-  const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
+  const pool = distinctTypeFamilies(
+    context,
+    context.pool.filter(({ pokemon }) => pokemon.sprite),
+  );
   const typeCounts = countPokemonTypes(pool);
   const type = pick(
     shuffle(Object.keys(context.catalog.typeRelations), context.random).filter(

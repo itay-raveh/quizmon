@@ -1,4 +1,7 @@
-import { catalog } from '../../../tests/fixtures/catalog';
+import {
+  catalog,
+  createQuestionContext,
+} from '../../../tests/fixtures/catalog';
 import { createSeededRandom, shuffle } from '../../lib/random';
 import {
   formatDuration,
@@ -613,6 +616,29 @@ describe('question building', () => {
       );
       expect(strongestMatchup === multiplier).toBe(option === correct);
     }
+  });
+  it('keeps same-type relatives apart in Odd One Out', () => {
+    for (let seed = 0; seed < 20; seed++) {
+      const context = createQuestionContext(`odd-family-${seed}`);
+      context.pool = context.pool.filter(({ name }) =>
+        ['jynx', 'kadabra', 'alakazam', 'hypno', 'omastar'].includes(name),
+      );
+      const question = buildQuestionType(context, 'odd-one-out')!;
+      expect(question.options).toHaveLength(4);
+      expect(question.options).not.toEqual(
+        expect.arrayContaining(['kadabra', 'alakazam']),
+      );
+    }
+  });
+  it('allows relatives with different types in Odd One Out', () => {
+    const context = createQuestionContext('odd-different-types');
+    context.pool = context.pool.filter(({ name }) =>
+      ['charmander', 'charizard', 'vulpix', 'squirtle'].includes(name),
+    );
+    const question = buildQuestionType(context, 'odd-one-out');
+    expect(new Set(question?.options)).toEqual(
+      new Set(['charmander', 'charizard', 'vulpix', 'squirtle']),
+    );
   });
   it('treats Venusaur as a ×4 attacker against Golem, never ×¼', () => {
     const matchups: Record<string, number> = {
