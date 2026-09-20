@@ -1,33 +1,21 @@
-import {
-  footerCredits,
-  footerLinks,
-  wordmarkCredit,
-} from '@/app/content-pages';
+import { footerCredits, footerLinks } from '@/app/content-pages';
 import { site } from '@/app/site';
 import { CoffeeIcon } from '@/components/icons';
 import './footer.css';
 
-export const Footer = ({
-  showSupport = true,
-  showWordmarkCredit = false,
-}: {
-  showSupport?: boolean;
-  showWordmarkCredit?: boolean;
-}) => (
+export const Footer = () => (
   <footer className="site-footer">
     <div className="site-footer__support-row">
-      {showSupport ? (
-        <a
-          className="site-footer__support"
-          href={site.supportUrl}
-          target="_blank"
-          rel="noopener"
-          referrerPolicy="origin"
-        >
-          <CoffeeIcon size={22} weight="bold" aria-hidden="true" />
-          Buy me a coffee
-        </a>
-      ) : null}
+      <a
+        className="site-footer__support"
+        href={site.supportUrl}
+        target="_blank"
+        rel="noopener"
+        referrerPolicy="origin"
+      >
+        <CoffeeIcon size={22} weight="bold" aria-hidden="true" />
+        Buy me a coffee
+      </a>
     </div>
     <div className="site-footer__people">
       <span>
@@ -52,16 +40,14 @@ export const Footer = ({
       ))}
     </nav>
     <div className="site-footer__credits">
-      {[...footerCredits, ...(showWordmarkCredit ? [wordmarkCredit] : [])].map(
-        ({ label, name, href }) => (
-          <span key={href}>
-            {label}{' '}
-            <a href={href} rel="noreferrer" target="_blank">
-              {name}
-            </a>
-          </span>
-        ),
-      )}
+      {footerCredits.map(({ label, name, href }) => (
+        <span key={href}>
+          {label}{' '}
+          <a href={href} rel="noreferrer" target="_blank">
+            {name}
+          </a>
+        </span>
+      ))}
     </div>
   </footer>
 );

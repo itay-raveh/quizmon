@@ -260,7 +260,7 @@ export const SaveRecoveryBoundary = ({ children }: { children: ReactNode }) => {
         <main>
           <Logo />
         </main>
-        <Footer showSupport={false} />
+        <Footer />
       </div>
       <SaveRecoveryDialog
         key={issue.kind}

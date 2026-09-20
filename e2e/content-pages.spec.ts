@@ -17,6 +17,10 @@ test('public information is readable and linked without JavaScript', async ({
   await expect(
     page.getByRole('heading', { name: 'Daily Challenge', exact: true }),
   ).toBeVisible();
+  await expect(page.locator('.site-footer')).toContainText(
+    'Wordmark made with TextStudio',
+  );
+  await expect(page.locator('.site-footer__support svg')).toHaveCount(1);
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(

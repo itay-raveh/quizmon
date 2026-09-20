@@ -9,8 +9,11 @@ html:has(.legal-page),
 .legal-page {
   position: relative;
   isolation: isolate;
+  display: grid;
+  min-height: 100svh;
   padding: 1rem max(0.75rem, env(safe-area-inset-left))
     max(2rem, env(safe-area-inset-bottom));
+  grid-template-rows: auto 1fr auto;
   line-height: 1.65;
 }
 
@@ -40,6 +43,8 @@ html:has(.legal-page),
   display: block;
   place-items: normal;
   min-height: auto;
+  grid-row: 2;
+  align-self: start;
   padding: clamp(1rem, 4vw, 2.5rem);
   background: var(--paper);
   border: 3px solid var(--navy);
@@ -48,6 +53,10 @@ html:has(.legal-page),
     0 0.25rem 0 var(--yellow),
     0 0.4rem 0 var(--navy-shadow);
   overflow-wrap: anywhere;
+}
+
+.legal-page .site-footer {
+  grid-row: 3;
 }
 
 .legal-content h1 {

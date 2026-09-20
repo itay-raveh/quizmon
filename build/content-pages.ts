@@ -1,5 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { Marked } from 'marked';
+import { CoffeeIcon } from '@phosphor-icons/react/ssr';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import {
   contentPages,
   footerCredits,
@@ -20,10 +23,13 @@ const markdown = new Marked({
 
 const credit = ({ label, name, href }: (typeof footerCredits)[number]) =>
   `<span>${label} <a href="${href}" target="_blank" rel="noreferrer">${name}</a></span>`;
+const coffeeIcon = renderToStaticMarkup(
+  createElement(CoffeeIcon, { size: 22, weight: 'bold', 'aria-hidden': true }),
+);
 
 const footer = (currentPath?: string) => `<footer class="site-footer">
   <div class="site-footer__support-row">
-    <a class="site-footer__support" href="${site.supportUrl}" target="_blank" rel="noopener" referrerpolicy="origin">Buy me a coffee</a>
+    <a class="site-footer__support" href="${site.supportUrl}" target="_blank" rel="noopener" referrerpolicy="origin">${coffeeIcon}Buy me a coffee</a>
   </div>
   <div class="site-footer__people">
     <span>© ${new Date().getFullYear()} <a href="${site.authorUrl}" target="_blank" rel="noreferrer">${site.authorName}</a></span>

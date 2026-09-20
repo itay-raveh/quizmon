@@ -363,16 +363,7 @@ export const AppView = (props: AppViewProps) => {
                 <main ref={main}>
                   <AppScreen {...props} destination={destination} />
                 </main>
-                {showNavigation ? (
-                  <Footer
-                    showWordmarkCredit={
-                      props.session.phase === 'landing' &&
-                      !destination.destination &&
-                      !props.trainer.isOpen &&
-                      !props.league.isOpen
-                    }
-                  />
-                ) : null}
+                {showNavigation ? <Footer /> : null}
               </div>
               <AppOverlays {...props} />
             </div>

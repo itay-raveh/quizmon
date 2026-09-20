@@ -38,7 +38,7 @@ export const mountGame = (root: HTMLElement) => {
               storageAvailable={true}
             />
           </main>
-          <Footer showWordmarkCredit />
+          <Footer />
         </div>
       </div>
     </StrictMode>,
