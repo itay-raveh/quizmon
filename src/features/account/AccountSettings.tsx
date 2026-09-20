@@ -1,6 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { OTPInput, REGEXP_ONLY_DIGITS } from 'input-otp';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
 import { isRecord } from '../../lib/validation';
@@ -28,7 +29,10 @@ const emailSchema = z.object({
     .pipe(z.email('Enter a valid email address.')),
 });
 const codeSchema = z.object({
-  code: z.string().regex(/^\d{6}$/, 'Enter the six-digit code.'),
+  code: z
+    .string()
+    .length(6, 'Enter the six-digit code.')
+    .regex(new RegExp(REGEXP_ONLY_DIGITS), 'Use digits only.'),
 });
 
 export const AccountSettings = () => {
@@ -70,13 +74,15 @@ export const AccountSettings = () => {
       })
       .finally(() => setBusy(false));
   };
-  const send = async (email: string) => {
+  const send = async (email: string, resend = false) => {
     await sendSignInCode(email);
     setSent(true);
     codeForm.reset();
-    setMessage('Code requested. Expires in five minutes.');
+    setMessage(resend ? 'New code sent. Check your inbox.' : '');
+    if (resend) focusCode('code');
   };
   const showSignIn = !account.owner || reauthenticating;
+  const codeError = codeForm.formState.errors.code?.message || (sent && error);
 
   return (
     <div className="account-settings">
@@ -119,7 +125,7 @@ export const AccountSettings = () => {
             </ul>
           ) : null}
           <form
-            className="account-settings__section"
+            className={`account-settings__section${sent ? ' account-settings__verification' : ''}`}
             aria-label="Sign in"
             noValidate
             onSubmit={(event) => {
@@ -143,35 +149,84 @@ export const AccountSettings = () => {
           >
             {sent ? (
               <>
-                <h2>Check your email</h2>
-                <p>
-                  Enter the six-digit code for{' '}
-                  <strong>{emailForm.getValues('email').trim()}</strong>.
-                </p>
-                <div className="account-settings__field">
-                  <label htmlFor="sign-in-code">Sign-in code</label>
-                  <input
-                    id="sign-in-code"
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    maxLength={6}
-                    disabled={busy}
-                    aria-invalid={!!codeForm.formState.errors.code}
-                    aria-describedby={
-                      codeForm.formState.errors.code
-                        ? 'sign-in-code-error'
-                        : undefined
-                    }
-                    {...codeForm.register('code')}
+                <div className="account-settings__verify-intro">
+                  <h2>Check your inbox</h2>
+                  <p>We sent a six-digit code to</p>
+                  <div className="account-settings__destination">
+                    <strong>{emailForm.getValues('email').trim()}</strong>
+                    <button
+                      className="account-settings__text-action"
+                      type="button"
+                      disabled={busy}
+                      onClick={() => {
+                        setSent(false);
+                        codeForm.reset();
+                        setMessage('');
+                        setError('');
+                      }}
+                    >
+                      Change email
+                    </button>
+                  </div>
+                </div>
+                <div className="account-settings__code-field">
+                  <label htmlFor="sign-in-code">Six-digit code</label>
+                  <Controller
+                    name="code"
+                    control={codeForm.control}
+                    render={({ field }) => (
+                      <OTPInput
+                        {...field}
+                        id="sign-in-code"
+                        maxLength={6}
+                        pattern={REGEXP_ONLY_DIGITS}
+                        inputMode="numeric"
+                        disabled={busy}
+                        aria-invalid={!!codeError}
+                        aria-describedby={
+                          codeError ? 'sign-in-code-error' : 'sign-in-code-hint'
+                        }
+                        containerClassName="account-settings__otp"
+                        className="account-settings__otp-input"
+                        onChange={(value) => {
+                          field.onChange(value);
+                          if (error) setError('');
+                        }}
+                        render={({ slots }) => (
+                          <div
+                            className="account-settings__code-slots"
+                            aria-hidden="true"
+                          >
+                            {slots.map((slot, index) => (
+                              <span
+                                className={`account-settings__code-slot${slot.isActive ? ' account-settings__code-slot--active' : ''}`}
+                                key={index}
+                              >
+                                {slot.char}
+                                {slot.hasFakeCaret && (
+                                  <span className="account-settings__code-caret" />
+                                )}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      />
+                    )}
                   />
-                  {codeForm.formState.errors.code && (
+                  {codeError ? (
                     <span
                       id="sign-in-code-error"
                       className="account-settings__error"
                       role="alert"
                     >
-                      {codeForm.formState.errors.code.message}
+                      {codeError}
+                    </span>
+                  ) : (
+                    <span
+                      id="sign-in-code-hint"
+                      className="account-settings__code-hint"
+                    >
+                      Code expires in five minutes.
                     </span>
                   )}
                 </div>
@@ -207,6 +262,7 @@ export const AccountSettings = () => {
             <div className="account-settings__actions">
               <GameButton
                 type="submit"
+                className={sent ? 'account-settings__verify-button' : ''}
                 disabled={
                   busy ||
                   !(sent
@@ -214,33 +270,14 @@ export const AccountSettings = () => {
                     : emailForm.formState.isValid)
                 }
               >
-                {sent ? 'Sign in' : 'Send sign-in code'}
+                {sent
+                  ? busy && preparingAccount
+                    ? 'Verifying…'
+                    : 'Verify and sign in'
+                  : busy
+                    ? 'Sending…'
+                    : 'Send sign-in code'}
               </GameButton>
-              {sent && (
-                <>
-                  <GameButton
-                    tone="quiet"
-                    disabled={busy}
-                    onClick={() =>
-                      run(() => send(emailForm.getValues('email').trim()))
-                    }
-                  >
-                    Resend code
-                  </GameButton>
-                  <GameButton
-                    tone="quiet"
-                    disabled={busy}
-                    onClick={() => {
-                      setSent(false);
-                      codeForm.reset();
-                      setMessage('');
-                      setError('');
-                    }}
-                  >
-                    Change email
-                  </GameButton>
-                </>
-              )}
               {reauthenticating && (
                 <GameButton
                   tone="quiet"
@@ -256,6 +293,22 @@ export const AccountSettings = () => {
                 </GameButton>
               )}
             </div>
+            {sent && (
+              <div className="account-settings__resend">
+                <span>Didn’t get the code?</span>
+                <button
+                  className="account-settings__text-action"
+                  type="button"
+                  disabled={busy}
+                  onClick={() =>
+                    run(() => send(emailForm.getValues('email').trim(), true))
+                  }
+                >
+                  {busy && !preparingAccount ? 'Sending…' : 'Resend code'}
+                </button>
+                {message && <span role="status">{message}</span>}
+              </div>
+            )}
           </form>
           {account.emailDelivery === 'test-mailbox' && (
             <aside
@@ -378,15 +431,15 @@ export const AccountSettings = () => {
           </section>
         </>
       )}
-      {busy && (
+      {busy && !showSignIn && (
         <p role="status">
           {preparingAccount
             ? 'Preparing your account progress…'
             : 'Please wait…'}
         </p>
       )}
-      {message && <p role="status">{message}</p>}
-      {error && (
+      {message && !sent && <p role="status">{message}</p>}
+      {error && !sent && (
         <p className="settings-error" role="alert">
           {error}
         </p>

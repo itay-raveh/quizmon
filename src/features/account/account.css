@@ -46,7 +46,7 @@
 }
 
 .account-settings h2 {
-  font-size: 1.2rem;
+  font-size: var(--text-headline);
 }
 
 .account-settings__section + .account-settings__section {
@@ -112,11 +112,6 @@
   font: inherit;
 }
 
-.account-settings__field input[name='code'] {
-  font-family: var(--font-data);
-  letter-spacing: 0.15em;
-}
-
 .account-settings__field input[aria-invalid='true'] {
   border-color: var(--error-ink);
   background: var(--error-surface);
@@ -126,4 +121,149 @@
   color: var(--error-ink);
   font-size: var(--text-status);
   font-weight: 700;
+}
+
+.account-settings__verification {
+  gap: 1.15rem;
+}
+
+.account-settings__verify-intro {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.account-settings__verify-intro h2 {
+  color: var(--navy);
+}
+
+.account-settings__destination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.7rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--sky);
+}
+
+.account-settings__destination strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--navy);
+}
+
+.account-settings__text-action {
+  min-height: 2.75rem;
+  padding: 0.25rem 0;
+  color: var(--blue);
+  background: none;
+  border: 0;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.account-settings__text-action:hover:not(:disabled) {
+  color: var(--navy);
+}
+
+.account-settings__text-action:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.account-settings__code-field {
+  display: grid;
+  gap: 0.55rem;
+  font-weight: 700;
+}
+
+.account-settings__otp {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.account-settings__otp-input:focus-visible {
+  outline: none;
+}
+
+.account-settings__code-slots {
+  display: flex;
+  gap: clamp(0.25rem, 1.5vw, 0.5rem);
+  width: 100%;
+}
+
+.account-settings__code-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  height: clamp(2.75rem, 11vw, 3.25rem);
+  color: var(--navy);
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  font-family: var(--font-data);
+  font-size: var(--text-headline);
+  box-shadow: 0 0.16rem 0 var(--yellow);
+}
+
+.account-settings__code-slot--active {
+  background: var(--cream);
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.account-settings__otp:has(input[aria-invalid='true'])
+  .account-settings__code-slot {
+  border-color: var(--error-ink);
+}
+
+.account-settings__code-caret {
+  position: absolute;
+  width: 2px;
+  height: 1.4rem;
+  background: var(--navy);
+  animation: account-code-caret 1s steps(1) infinite;
+}
+
+@keyframes account-code-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-settings__code-caret {
+    animation: none;
+  }
+}
+
+.account-settings__code-hint {
+  color: var(--muted);
+  font-size: var(--text-status);
+  font-weight: 400;
+}
+
+.account-settings__verify-button.game-button {
+  width: 100%;
+}
+
+.account-settings__resend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0 0.35rem;
+  color: var(--muted);
+  font-size: var(--text-status);
+}
+
+.account-settings__resend [role='status'] {
+  flex-basis: 100%;
+  color: var(--navy);
+  text-align: center;
 }

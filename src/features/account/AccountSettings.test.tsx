@@ -2,6 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AccountSettings } from './AccountSettings';
 
+// jsdom does not implement hit testing used by input-otp's focus handling.
+Object.defineProperty(document, 'elementFromPoint', { value: () => null });
+
 const account = vi.hoisted(() => {
   const snapshot = {
     owner: '',
@@ -73,9 +76,14 @@ it('submits email and a six-digit code with Enter in separate steps', async () =
       'trainer@example.test',
     ),
   );
-  const code = await screen.findByLabelText('Sign-in code');
+  const code = await screen.findByLabelText('Six-digit code');
   expect(code).toHaveAttribute('autocomplete', 'one-time-code');
   expect(code).toHaveFocus();
+  expect(
+    document.querySelectorAll('.account-settings__code-slot'),
+  ).toHaveLength(6);
+  expect(screen.getByText('Code expires in five minutes.')).toBeVisible();
+  expect(screen.queryByText(/Code requested/)).not.toBeInTheDocument();
   expect(
     screen.queryByLabelText('Email', { exact: true }),
   ).not.toBeInTheDocument();
@@ -86,6 +94,29 @@ it('submits email and a six-digit code with Enter in separate steps', async () =
       '012345',
     ),
   );
+});
+
+it('shows a rejected code beside the six slots and allows a new code', async () => {
+  const user = userEvent.setup();
+  account.verify.mockRejectedValueOnce(
+    new Error('Code expired. Request another.'),
+  );
+  render(<AccountSettings />);
+  await user.type(
+    screen.getByLabelText('Email'),
+    'trainer@example.test{Enter}',
+  );
+  const code = await screen.findByLabelText('Six-digit code');
+  await user.type(code, '012345{Enter}');
+  expect(
+    await screen.findByText('Code expired. Request another.'),
+  ).toBeVisible();
+  expect(code).toHaveAccessibleDescription('Code expired. Request another.');
+  await user.click(screen.getByRole('button', { name: 'Resend code' }));
+  expect(
+    await screen.findByText('New code sent. Check your inbox.'),
+  ).toBeVisible();
+  expect(code).toHaveValue('');
 });
 
 it('shows an inline email error and clears it when the address becomes valid', async () => {
