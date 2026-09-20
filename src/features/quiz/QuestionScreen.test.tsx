@@ -468,6 +468,8 @@ describe('question transitions', () => {
           name: 'squirtle',
         },
         questionType: 'counter-pick',
+        variantLevel: 3,
+        showTypes: true,
         visual: { kind: 'counter-pick', multiplier: 2 },
         subject: {
           ...question.subject,
@@ -480,11 +482,20 @@ describe('question transitions', () => {
     expect(screen.getByText('×2')).toBeVisible();
     expect(screen.getByText('No. 0007')).toBeVisible();
     expect(
+      rendered.container.querySelector('.question-visual__subject-types'),
+    ).not.toBeVisible();
+    expect(
+      rendered.container.querySelector('.question-relation--matchup'),
+    ).toHaveAttribute('aria-hidden', 'true');
+    expect(
+      rendered.container.querySelector('.answer__types .type-badge'),
+    ).toBeVisible();
+    expect(
       rendered.container.querySelector(
         '.question-relation--matchup > .question-visual__pokemon-slot img',
       ),
     ).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Pikachu/ }));
     expect(
       rendered.container.querySelector(
         '.question-relation--matchup > .question-visual__pokemon-slot img[src="https://example.com/pikachu.png"]',

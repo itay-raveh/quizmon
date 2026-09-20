@@ -1,1 +1,1 @@
-export const GAMEPLAY_REVISION = 16;
+export const GAMEPLAY_REVISION = 17;

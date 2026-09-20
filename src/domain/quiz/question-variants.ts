@@ -336,7 +336,11 @@ export const questionVariants: Record<
       related: { sprite: 'after-answer', name: 'never', number: 'never' },
     },
     2: { singleType: true, showTypes: true, multipliers: [2] },
-    3: { showTypes: true, multipliers: [2, 4] },
+    3: {
+      showTypes: true,
+      multipliers: [2, 4],
+      rendering: { subject: { types: 'after-answer' } },
+    },
     4: { multipliers: [0.25, 0.5, 2, 4] },
     5: {
       distractors: 'similar',

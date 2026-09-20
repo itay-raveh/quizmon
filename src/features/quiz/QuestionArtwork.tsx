@@ -52,6 +52,10 @@ export const QuestionArtwork = ({
   const { visual } = question;
   const rendering = getQuestionRendering(question);
   const state = { answered, cluesShown };
+  const subjectTypesVisible =
+    answered ||
+    (Boolean(question.showTypes) &&
+      isVisible(rendering.subject.types ?? 'always', state));
   const media = question.media;
   const answerOnlyPortrait =
     question.questionType === 'field-notes' && usesSearchAnswer(question);
@@ -277,7 +281,7 @@ export const QuestionArtwork = ({
       <div
         className="question-visual question-relation question-relation--matchup"
         role="img"
-        aria-hidden={!(answered || question.showTypes) || undefined}
+        aria-hidden={!subjectTypesVisible || undefined}
         aria-label={formatPokemonTypeAnnouncement(
           question.subject.types ?? [],
           question.subject.name,
@@ -315,7 +319,7 @@ export const QuestionArtwork = ({
         <TypeEffectArrow multiplier={visual.multiplier} />
         <QuestionSubject {...subject}>
           <QuestionSubjectTypes
-            answered={answered || Boolean(question.showTypes)}
+            answered={subjectTypesVisible}
             types={question.subject.types ?? []}
           />
         </QuestionSubject>
