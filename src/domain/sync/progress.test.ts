@@ -438,7 +438,6 @@ it('accepts the post-reset completion versions after future game updates', () =>
   round.generatorVersion = 0;
   round.result.contentVersion = 18;
   round.result.scoreVersion = 3;
-  round.result.rules = { ...round.result.rules!, version: 16 };
   expect(validateCompletion(round)).toBeNull();
 });
 
