@@ -398,7 +398,7 @@ it('reports uncapped gains at and beyond Gold without creating another tier', ()
   }
 });
 
-it('credits every newly covered format to its specialty and True Calling', () => {
+it('credits berry formats separately from items and True Calling', () => {
   const progress = stats({
     correctQuestionTypes: {
       'item-identification': 10,
@@ -414,13 +414,19 @@ it('credits every newly covered format to its specialty and True Calling', () =>
       'encounter-locations': 6,
     },
   });
+  expect(getTrainerTitles(progress, 'item')).toHaveLength(10);
   expect(getTrainerTitles(progress, 'item')).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
         specialty: 'item',
-        current: 50,
+        current: 30,
         earned: true,
         equipped: true,
+      }),
+      expect.objectContaining({
+        specialty: 'berry',
+        current: 20,
+        earned: true,
       }),
       expect.objectContaining({
         specialty: 'description',
@@ -430,7 +436,7 @@ it('credits every newly covered format to its specialty and True Calling', () =>
     ]),
   );
   expect(getTrainerBadges(progress)).toContainEqual(
-    expect.objectContaining({ id: 'true-calling', current: 50, tier: 1 }),
+    expect.objectContaining({ id: 'true-calling', current: 30, tier: 0 }),
   );
 });
 

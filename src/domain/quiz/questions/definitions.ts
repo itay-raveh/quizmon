@@ -108,12 +108,12 @@ export const questionDefinitions = {
     group: 'knowledge',
   },
   'berry-flavors': {
-    specialty: 'item',
+    specialty: 'berry',
     description: 'Identify a berry’s flavors.',
     group: 'knowledge',
   },
   'natural-gift': {
-    specialty: 'item',
+    specialty: 'berry',
     description: 'Identify Natural Gift’s type from its berry.',
     group: 'battle',
   },

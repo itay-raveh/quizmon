@@ -13,6 +13,7 @@ export { CoffeeIcon } from '@phosphor-icons/react/dist/icons/Coffee';
 export { DownloadSimpleIcon } from '@phosphor-icons/react/dist/icons/DownloadSimple';
 export { IdentificationCardIcon } from '@phosphor-icons/react/dist/icons/IdentificationCard';
 export { LightningIcon } from '@phosphor-icons/react/dist/icons/Lightning';
+export { LeafIcon } from '@phosphor-icons/react/dist/icons/Leaf';
 export { LockSimpleIcon } from '@phosphor-icons/react/dist/icons/LockSimple';
 export { MedalIcon } from '@phosphor-icons/react/dist/icons/Medal';
 export { PencilSimpleIcon } from '@phosphor-icons/react/dist/icons/PencilSimple';

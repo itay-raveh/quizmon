@@ -4,6 +4,7 @@ import {
   BinocularsIcon,
   ChartBarIcon,
   IdentificationCardIcon,
+  LeafIcon,
   LightningIcon,
   LockSimpleIcon,
   PuzzlePieceIcon,
@@ -24,6 +25,7 @@ interface TrainerTitleMarkProps {
 
 const titleMarks = {
   ability: PuzzlePieceIcon,
+  berry: LeafIcon,
   description: BinocularsIcon,
   evolution: ArrowsClockwiseIcon,
   identity: IdentificationCardIcon,

@@ -40,6 +40,10 @@ export const trainerSpecialtyDetails = {
     label: 'Ability Specialist',
     description: 'Know Pokémon abilities, Hidden Abilities, and their effects.',
   },
+  berry: {
+    label: 'Berry Specialist',
+    description: 'Know berry flavors and the types they give Natural Gift.',
+  },
   description: {
     label: 'Field Researcher',
     description: 'Know Pokédex entries, Pokémon sizes, regions, and habitats.',
@@ -55,7 +59,7 @@ export const trainerSpecialtyDetails = {
   },
   item: {
     label: 'Item Specialist',
-    description: 'Know items, medicine, held effects, and berries.',
+    description: 'Know items, medicine, and held effects.',
   },
   matchup: {
     label: 'Battle Strategist',
