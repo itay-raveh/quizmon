@@ -8,7 +8,7 @@ export const site = {
   tagline,
   title,
   authorName: 'Itay Raveh',
-  authorUrl: 'https://itai.rave.dev',
+  authorUrl: 'https://itay.raveh.dev',
   contactEmail: 'quizmon@raveh.dev',
   description:
     'Play a free Pokémon quiz with a five-question Daily Challenge and unlimited Training. Test types, evolutions, moves, and more. No account needed.',
