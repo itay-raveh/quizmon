@@ -28,7 +28,7 @@ export const Footer = () => (
           {site.authorName}
         </a>
       </span>
-      <a href={`mailto:${site.contactEmail}`}>Contact me</a>
+      <a href={`mailto:${site.contactEmail}`}>Contact</a>
     </div>
     <nav className="site-footer__links" aria-label="Help and information">
       {footerLinks.map(({ href, label, ...link }) => (

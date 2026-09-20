@@ -34,7 +34,7 @@ const footer = (currentPath?: string) => `<footer class="site-footer">
   </div>
   <div class="site-footer__people">
     <span>© ${new Date().getFullYear()} <a href="${site.authorUrl}" target="_blank" rel="noreferrer">${site.authorName}</a></span>
-    <a href="mailto:${site.contactEmail}">Contact me</a>
+    <a href="mailto:${site.contactEmail}">Contact</a>
   </div>
   <nav class="site-footer__links" aria-label="Help and information">
     ${footerLinks.map(({ href, label, ...link }) => `<a href="${href}"${href === currentPath ? ' aria-current="page"' : ''}${'external' in link && link.external ? ' target="_blank" rel="noreferrer"' : ''}>${label}</a>`).join('')}
