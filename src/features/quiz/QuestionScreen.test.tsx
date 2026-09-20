@@ -2,7 +2,7 @@ import { formatPokemonName } from '@/domain/pokemon/format';
 import { buildQuestionType } from '@/domain/quiz/questions/registry';
 import type { QuestionData } from '@/domain/quiz/types';
 import { QuestionClues } from '@/features/quiz/QuestionClues';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createQuestionContext } from '../../../tests/fixtures/catalog';
 import { question, renderQuestion } from '../../../tests/fixtures/question';
 const championQuestion: QuestionData = {
@@ -628,6 +628,27 @@ describe('question transitions', () => {
     expect(wrong.querySelector('kbd svg')).toBeInTheDocument();
     expect(correct).toHaveClass('answer--correct');
     expect(correct.querySelector('kbd svg')).toBeInTheDocument();
+  });
+  it('reveals feedback before the answer save finishes', async () => {
+    let finishSave: (() => void) | undefined;
+    const save = new Promise<void>((resolve) => {
+      finishSave = resolve;
+    });
+    const onAnswer = vi.fn();
+    renderQuestion({ onAnswer, onAnswerRecorded: () => save });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pikachu' }));
+    expect(screen.getByRole('button', { name: 'Pikachu' })).toHaveClass(
+      'answer--correct',
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next question' }));
+    expect(onAnswer).not.toHaveBeenCalled();
+
+    await act(async () => {
+      finishSave?.();
+      await save;
+    });
+    expect(onAnswer).toHaveBeenCalledOnce();
   });
   it.each([
     {

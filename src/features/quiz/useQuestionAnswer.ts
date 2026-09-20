@@ -165,14 +165,13 @@ export const useQuestionAnswer = ({
       const saveAnswer = async () => {
         answerWrite.current = onAnswerRecorded?.(answer);
         if (answerWrite.current) await answerWrite.current;
-        reveal();
       };
+      reveal();
       answerWrite.current = onAnswerRecorded?.(answer);
       if (answerWrite.current)
-        void answerWrite.current
-          .then(reveal)
-          .catch((error: unknown) => reportSaveError(error, saveAnswer));
-      else reveal();
+        void answerWrite.current.catch((error: unknown) =>
+          reportSaveError(error, saveAnswer),
+        );
     },
     [
       answerFlow,
