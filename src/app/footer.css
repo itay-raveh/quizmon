@@ -5,9 +5,9 @@
   color: var(--ink);
   background: transparent;
   border: 0;
-  font-size: var(--text-small);
+  font-size: var(--text-footer);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.35;
   text-align: center;
   justify-self: center;
 }
@@ -41,7 +41,7 @@
 .site-footer__credits {
   gap: 0 0.75rem;
   margin-top: 0.15rem;
-  font-size: var(--text-micro);
+  font-size: var(--text-small);
 }
 
 .site-footer__disclaimer {

@@ -282,7 +282,7 @@
   }
 
   .answer__nameplate small {
-    font-size: var(--text-tiny);
+    font-size: var(--text-small);
   }
 
   .answer__name {

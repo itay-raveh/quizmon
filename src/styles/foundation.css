@@ -231,7 +231,6 @@ main {
 }
 
 .game-button:hover:not(:disabled) {
-  filter: brightness(1.07);
   transform: translateY(-1px);
 }
 

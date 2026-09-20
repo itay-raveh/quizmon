@@ -607,14 +607,14 @@
 
 .backup-settings__preview h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-body);
 }
 
 .backup-settings table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: 0.85rem;
+  font-size: var(--text-status);
 }
 
 .backup-settings th,
@@ -814,7 +814,7 @@
   font-size: var(--text-body);
 }
 .save-recovery p {
-  font-size: 1rem;
+  font-size: var(--text-body);
   line-height: 1.5;
 }
 .save-recovery a {

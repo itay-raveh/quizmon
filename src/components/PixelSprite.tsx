@@ -12,7 +12,7 @@ export const PixelSprite = ({
   alt = '',
   style,
   className = '',
-  fetchPriority = 'high',
+  fetchPriority = 'auto',
 }: PixelSpriteProps) => (
   <img
     className={`pixel-sprite ${className}`.trim()}

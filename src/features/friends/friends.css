@@ -176,7 +176,7 @@
 .leaderboard-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: var(--text-status);
 }
 
 .leaderboard-table th,
@@ -188,7 +188,7 @@
 
 .leaderboard-table td {
   font-family: var(--font-data);
-  font-size: 0.8rem;
+  font-size: var(--text-label);
   white-space: nowrap;
 }
 
@@ -214,6 +214,6 @@
   color: var(--ink);
   background: white;
   border: 2px solid var(--navy);
-  border-radius: 0.5rem;
+  border-radius: var(--button-radius);
   font: inherit;
 }
