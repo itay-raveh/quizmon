@@ -72,7 +72,10 @@ const AppScreen = ({
   if (session.phase !== 'questions' && destination.destination === 'friends') {
     return (
       <FriendsScreen
+        key={destination.friendCode}
         onBack={() => destination.back('leaderboards')}
+        onCloseInvitation={() => destination.open('friends')}
+        onSignIn={() => destination.account()}
         initialInput={destination.friendCode}
       />
     );

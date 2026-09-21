@@ -56,7 +56,7 @@ export function useAppDestination() {
     target.searchParams.set('screen', next);
     target.searchParams.delete('returnTo');
     if (date) target.searchParams.set('standings', date);
-    if (next !== 'friends') target.hash = '';
+    target.hash = '';
     navigate(target);
   };
 

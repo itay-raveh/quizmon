@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
 import {
   formatFriendCode,
@@ -19,13 +19,13 @@ import {
 const views = ['incoming', 'friends', 'outgoing'] as const;
 type View = (typeof views)[number];
 const labels = {
-  incoming: 'Incoming requests',
+  incoming: 'Friend requests',
   friends: 'Your friends',
   outgoing: 'Sent requests',
 };
 const empty = {
   incoming: 'No incoming requests.',
-  friends: 'No friends yet. Share your link or enter a friend code.',
+  friends: 'No friends yet. Use Add friend to connect with someone.',
   outgoing: 'No sent requests.',
 };
 const errorMessage = (error: unknown) =>
@@ -60,11 +60,12 @@ async function loadFriends(owner: string, signal: AbortSignal) {
 export function FriendsPanel({
   owner,
   initialInput,
+  adding,
 }: {
   owner: string;
   initialInput: string;
+  adding: boolean;
 }) {
-  const [adding, setAdding] = useState(Boolean(initialInput));
   const [me, setMe] = useState<SocialPlayer>();
   const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>({});
   const [input, setInput] = useState(initialInput);
@@ -84,12 +85,16 @@ export function FriendsPanel({
     foundRegion.current?.scrollIntoView({ block: 'center' });
   }, [found, busy]);
 
-  async function refresh(signal: AbortSignal) {
-    const data = await loadFriends(owner, signal);
-    if (signal.aborted) return;
-    setMe(data.me);
-    setPages(data.pages);
-  }
+  const refresh = useCallback(
+    async (signal: AbortSignal) => {
+      const data = await loadFriends(owner, signal);
+      if (signal.aborted) return;
+      setMe(data.me);
+      setPages(data.pages);
+      setError('');
+    },
+    [owner],
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -116,6 +121,37 @@ export function FriendsPanel({
       });
     return () => controller.abort();
   }, [owner, initialInput]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let refreshing = false;
+    const update = () => {
+      if (
+        busy ||
+        refreshing ||
+        document.visibilityState !== 'visible' ||
+        !navigator.onLine
+      )
+        return;
+      refreshing = true;
+      void refresh(controller.signal)
+        .catch((cause: unknown) => {
+          if (!controller.signal.aborted) setError(errorMessage(cause));
+        })
+        .finally(() => {
+          refreshing = false;
+        });
+    };
+    const timer = window.setInterval(update, 60_000);
+    document.addEventListener('visibilitychange', update);
+    window.addEventListener('online', update);
+    return () => {
+      controller.abort();
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', update);
+      window.removeEventListener('online', update);
+    };
+  }, [busy, refresh]);
 
   function run(work: (signal: AbortSignal) => Promise<void>) {
     const signal = lifetime.current?.signal;
@@ -197,14 +233,6 @@ export function FriendsPanel({
   const initialLoading = busy && !me && !pages.friends && !error;
   return (
     <div className="friends-panel">
-      <div className="friends-actions friends-panel__toolbar">
-        <GameButton
-          tone={adding ? 'quiet' : 'primary'}
-          onClick={() => setAdding(!adding)}
-        >
-          {adding ? 'Back to friends' : 'Add friend'}
-        </GameButton>
-      </div>
       {error && (
         <p className="settings-error" role="alert">
           {error}
@@ -218,13 +246,28 @@ export function FriendsPanel({
       {notice && <p role="status">{notice}</p>}
       {adding && (
         <section className="friends-add" aria-labelledby="add-friend-title">
-          <h2 id="add-friend-title">Add friend</h2>
-          <p>
-            Share your link or enter a friend's code. A request needs to be
-            accepted before you become friends.
-          </p>
+          <h2 id="add-friend-title">
+            {initialInput ? 'Friend link' : 'Add a friend'}
+          </h2>
+          {initialInput && (
+            <p>
+              This link finds a Trainer. It does not send a request until you
+              choose to send one.
+            </p>
+          )}
+          {initialInput && busy && !found && (
+            <div className="friends-link-loading" aria-hidden="true">
+              <span className="social-skeleton" />
+              <span className="social-skeleton" />
+            </div>
+          )}
           {found && (
-            <section aria-label="Found player" ref={foundRegion} tabIndex={-1}>
+            <section
+              className="friends-found"
+              aria-label="Found Trainer"
+              ref={foundRegion}
+              tabIndex={-1}
+            >
               <Player player={found.player} />
               {found.player.id === owner ? (
                 <p>This is you.</p>
@@ -281,79 +324,94 @@ export function FriendsPanel({
               )}
             </section>
           )}
-          {me && (
-            <section aria-label="Your friend details">
-              <Player player={me} />
-              <label className="friends-field">
-                Your friend code
-                <input
-                  readOnly
-                  value={me.code ? formatFriendCode(me.code) : ''}
-                  onFocus={(event) => event.target.select()}
-                />
-              </label>
-              <label className="friends-field">
-                Your friend link
-                <input
-                  readOnly
-                  value={link}
-                  onFocus={(event) => event.target.select()}
-                />
-              </label>
+          {!initialInput && me && (
+            <section
+              className="friends-add__share"
+              aria-label="Share your link"
+            >
+              <h3>Share your link</h3>
+              <p>
+                Send this link to a friend. They can ask to connect, and you
+                choose whether to accept.
+              </p>
               <GameButton
-                tone="quiet"
                 disabled={busy}
                 onClick={() =>
                   run(async (signal) => {
                     try {
                       await navigator.clipboard.writeText(link);
                     } catch {
-                      throw new Error('Select and copy the friend link above.');
+                      throw new Error(
+                        'Could not copy the link. Open Show link and code to select it.',
+                      );
                     }
                     if (!signal.aborted) setNotice('Friend link copied.');
                   })
                 }
               >
-                Copy friend link
+                Copy my link
               </GameButton>
+              <details className="friends-code">
+                <summary>Show link and code</summary>
+                <label className="friends-field">
+                  Your link
+                  <input
+                    readOnly
+                    value={link}
+                    onFocus={(event) => event.target.select()}
+                  />
+                </label>
+                <label className="friends-field">
+                  Your friend code
+                  <input
+                    readOnly
+                    value={me.code ? formatFriendCode(me.code) : ''}
+                    onFocus={(event) => event.target.select()}
+                  />
+                </label>
+              </details>
             </section>
           )}
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              run(async (signal) => {
-                setFound(undefined);
-                const code = parseFriendInput(input, location.origin);
-                if (!code)
-                  throw new Error(
-                    'Enter the full friend code or a Quizmon friend link.',
-                  );
-                const result = await lookupPlayer(owner, code, signal);
-                if (!signal.aborted) {
-                  revealFound.current = true;
-                  setFound(result);
-                }
-              });
-            }}
-          >
-            <label className="friends-field">
-              Friend code or link
-              <input
-                value={input}
-                maxLength={2048}
-                autoComplete="off"
-                spellCheck={false}
-                disabled={busy}
-                onChange={(event) => {
-                  setInput(event.target.value);
+          {(!initialInput || Boolean(error)) && (
+            <form
+              className="friends-add__find"
+              onSubmit={(event) => {
+                event.preventDefault();
+                run(async (signal) => {
                   setFound(undefined);
-                }}
-              />
-            </label>
-            <GameButton type="submit" disabled={busy || !input.trim()}>
-              Find player
-            </GameButton>
-          </form>
+                  const code = parseFriendInput(input, location.origin);
+                  if (!code)
+                    throw new Error(
+                      'Enter the full friend code or a Quizmon friend link.',
+                    );
+                  const result = await lookupPlayer(owner, code, signal);
+                  if (!signal.aborted) {
+                    revealFound.current = true;
+                    setFound(result);
+                  }
+                });
+              }}
+            >
+              <h3>Find a Trainer</h3>
+              <label className="friends-field">
+                Their friend code or link
+                <input
+                  value={input}
+                  maxLength={2048}
+                  autoComplete="off"
+                  spellCheck={false}
+                  disabled={busy}
+                  onChange={(event) => {
+                    setInput(event.target.value);
+                    setFound(undefined);
+                  }}
+                />
+              </label>
+              <GameButton type="submit" disabled={busy || !input.trim()}>
+                Find Trainer
+              </GameButton>
+            </form>
+          )}
         </section>
       )}
       {!adding && initialLoading && (
@@ -381,18 +439,14 @@ export function FriendsPanel({
             (view) => view === 'friends' || Boolean(pages[view]?.items.length),
           )
           .map((view) => (
-            <section key={view} aria-label={labels[view]}>
+            <section
+              key={view}
+              className={`friends-section friends-section--${view}`}
+              aria-label={labels[view]}
+            >
               <h2>{labels[view]}</h2>
               {pages[view] && !pages[view].items.length && (
-                <div>
-                  <p>{empty[view]}</p>
-                  {view === 'friends' && (
-                    <p>
-                      Your friends' Daily scores will appear alongside yours on
-                      the Friends leaderboard.
-                    </p>
-                  )}
-                </div>
+                <p className="friends-empty">{empty[view]}</p>
               )}
               <ul className="friends-list">
                 {pages[view]?.items.map((row) => {
@@ -437,18 +491,6 @@ export function FriendsPanel({
               )}
             </section>
           ))}
-      <GameButton
-        tone="quiet"
-        disabled={busy}
-        onClick={() =>
-          run(async (signal) => {
-            setFound(undefined);
-            await refresh(signal);
-          })
-        }
-      >
-        Refresh friends
-      </GameButton>
     </div>
   );
 }

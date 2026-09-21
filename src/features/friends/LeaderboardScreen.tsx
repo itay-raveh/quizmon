@@ -64,14 +64,12 @@ function Standings({
   mode,
   date,
   scope,
-  onManageFriends,
 }: {
   owner: string;
   catalog?: PokemonCatalog;
   mode: LeaderboardMode;
   date: string;
   scope: LeaderboardScope;
-  onManageFriends: () => void;
 }) {
   const cacheKey = `${owner}:${mode}:${date}:${scope}`;
   const [data, setData] = useState<Leaderboard | undefined>(() =>
@@ -262,13 +260,6 @@ function Standings({
           )}
         </>
       )}
-      {scope === 'friends' && (
-        <div className="friends-actions">
-          <GameButton tone="quiet" onClick={onManageFriends}>
-            Manage friends
-          </GameButton>
-        </div>
-      )}
     </section>
   );
 }
@@ -332,6 +323,13 @@ export function LeaderboardScreen({
     <section className="social-screen" aria-labelledby="leaderboard-title">
       <header className="social-screen__header">
         <h1 id="leaderboard-title">Rankings</h1>
+        <GameButton
+          className="social-screen__header-action"
+          tone="quiet"
+          onClick={onManageFriends}
+        >
+          Friends
+        </GameButton>
       </header>
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
@@ -403,7 +401,6 @@ export function LeaderboardScreen({
               mode={mode}
               date={date}
               scope={scope}
-              onManageFriends={onManageFriends}
             />
           </>
         ) : (
