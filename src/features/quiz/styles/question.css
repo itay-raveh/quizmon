@@ -69,6 +69,17 @@
   margin: 0;
 }
 
+.question__move-description {
+  display: block;
+  max-width: 42ch;
+  margin: 0.5rem auto 0;
+  color: var(--muted);
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
 .nature-effect {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

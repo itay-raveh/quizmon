@@ -31,6 +31,7 @@ const QuestionPrompt = ({
   prompt,
   itemSprite,
   itemName,
+  isMoveType,
   policy,
   state,
 }: {
@@ -38,62 +39,78 @@ const QuestionPrompt = ({
   prompt: QuestionPromptData;
   itemSprite?: string;
   itemName?: string;
+  isMoveType?: boolean;
   policy: EntityRendering;
   state: RevealState;
-}) => (
-  <p className={className} id="question-prompt">
-    {prompt.kind === 'text' ? (
-      <>
-        {itemName ? (
-          <span className="question__item-subject">
-            {itemSprite ? (
-              <QuestionSprite
-                rule={policy.sprite}
-                state={state}
-                src={itemSprite}
-                className="question__item-portrait"
-              />
-            ) : null}
-            {isVisible(policy.name, state) ? <strong>{itemName}</strong> : null}
-          </span>
-        ) : null}
-        {itemName ? prompt.text.replace(itemName, 'it') : prompt.text}
-        {prompt.supportingText || itemSprite ? (
-          <span className="question__supporting-text">
-            {itemSprite && !itemName ? (
-              <QuestionSprite
-                rule={policy.sprite}
-                state={state}
-                src={itemSprite}
-                className="question__inline-item"
-              />
-            ) : null}
-            {prompt.supportingText}
-          </span>
-        ) : null}
-      </>
-    ) : (
-      <>
-        {prompt.before}
-        <QuestionIdentity
-          policy={policy}
-          state={state}
-          className="question__subject"
-          inline
-          name={prompt.name}
-          dexNumber={prompt.dexNumber}
-          numberClassName="question__subject-number"
-        />
-        {prompt.after}
-        {prompt.supportingText ? (
-          <span className="question__supporting-text">
-            {prompt.supportingText}
-          </span>
-        ) : null}
-      </>
-    )}
-  </p>
-);
+}) => {
+  const descriptionStart =
+    isMoveType && prompt.kind === 'text' ? prompt.text.indexOf('? ') : -1;
+  return (
+    <p className={className} id="question-prompt">
+      {prompt.kind === 'text' ? (
+        <>
+          {itemName ? (
+            <span className="question__item-subject">
+              {itemSprite ? (
+                <QuestionSprite
+                  rule={policy.sprite}
+                  state={state}
+                  src={itemSprite}
+                  className="question__item-portrait"
+                />
+              ) : null}
+              {isVisible(policy.name, state) ? (
+                <strong>{itemName}</strong>
+              ) : null}
+            </span>
+          ) : null}
+          {descriptionStart < 0
+            ? itemName
+              ? prompt.text.replace(itemName, 'it')
+              : prompt.text
+            : prompt.text.slice(0, descriptionStart + 1)}
+          {descriptionStart >= 0 ? (
+            <span className="question__move-description">
+              {prompt.text.slice(descriptionStart + 2)}
+            </span>
+          ) : null}
+          {prompt.supportingText || itemSprite ? (
+            <span className="question__supporting-text">
+              {itemSprite && !itemName ? (
+                <QuestionSprite
+                  rule={policy.sprite}
+                  state={state}
+                  src={itemSprite}
+                  className="question__inline-item"
+                />
+              ) : null}
+              {prompt.supportingText}
+            </span>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {prompt.before}
+          <QuestionIdentity
+            policy={policy}
+            state={state}
+            className="question__subject"
+            inline
+            name={prompt.name}
+            dexNumber={prompt.dexNumber}
+            numberClassName="question__subject-number"
+          />
+          {prompt.after}
+          {prompt.supportingText ? (
+            <span className="question__supporting-text">
+              {prompt.supportingText}
+            </span>
+          ) : null}
+        </>
+      )}
+    </p>
+  );
+};
 export const QuestionPresentation = ({
   question,
   rendering,
@@ -127,6 +144,7 @@ export const QuestionPresentation = ({
           state={revealState}
           className="visually-hidden"
           prompt={question.prompt}
+          isMoveType={question.questionType === 'move-types'}
         />
       ) : null}
       <div className="question__context">
@@ -142,6 +160,7 @@ export const QuestionPresentation = ({
               state={revealState}
               className="question__prompt"
               prompt={question.prompt}
+              isMoveType={question.questionType === 'move-types'}
               itemSprite={inlineItem}
               itemName={
                 question.questionType === 'held-item-effects'
