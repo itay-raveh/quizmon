@@ -52,6 +52,12 @@
   outline-offset: -2px;
 }
 
+@media (max-width: 50rem) {
+  .app--with-navigation .toast[popover] {
+    bottom: calc(6.25rem + env(safe-area-inset-bottom));
+  }
+}
+
 @media (max-width: 42rem) {
   .settings-dialog .toast[popover] {
     bottom: calc(5.5rem + env(safe-area-inset-bottom));

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
+import { Toast } from '../../components/Toast';
 import { EyeIcon, TrashIcon } from '../../components/icons';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
@@ -249,6 +250,8 @@ export function FriendsPanel({
       if (signal.aborted) return;
       if (found?.player.id === row.peerId) setFound(undefined);
       sendIds.current.delete(row.peerId);
+      await refresh(signal);
+      if (signal.aborted) return;
       setNotice(
         {
           accept: 'Friend request accepted.',
@@ -257,8 +260,7 @@ export function FriendsPanel({
           remove: 'Friend removed.',
         }[action],
       );
-      await refresh(signal);
-      if (action === 'remove' && !signal.aborted)
+      if (action === 'remove')
         requestAnimationFrame(() =>
           (adding ? addHeading : friendsHeading).current?.focus(),
         );
@@ -319,7 +321,7 @@ export function FriendsPanel({
           Loading friends
         </p>
       )}
-      {notice && <p role="status">{notice}</p>}
+      {notice && <Toast message={notice} onDismiss={() => setNotice('')} />}
       {adding && (
         <section className="friends-add" aria-labelledby="add-friend-title">
           <h2 id="add-friend-title" ref={addHeading} tabIndex={-1}>
