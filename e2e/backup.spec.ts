@@ -22,6 +22,7 @@ const save: PlayerBackup['state']['save'] = {
       trainingMode: 'custom',
     },
     profile: {
+      avatar: null,
       createdAt: '2026-09-01',
       hasBeenRevealed: true,
       name: 'Leaf',

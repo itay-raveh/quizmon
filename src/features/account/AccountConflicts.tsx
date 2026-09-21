@@ -5,12 +5,14 @@ import {
   type TrainerSpecialty,
 } from '../../domain/player/trainer-progression';
 import { formatPokemonName } from '../../domain/pokemon/format';
+import { trainerAvatarOptions } from '../../domain/player/trainer-avatars';
 import { questionLabels } from '../../domain/quiz/question-labels';
 import type { EditUnit, EditValue } from '../../domain/sync/progress';
 import type { AccountIssue } from '../../lib/storage/account-issues';
 import { isDailyDate, isRecord } from '../../lib/validation';
 
 const labels: Record<EditUnit, string> = {
+  avatar: 'Trainer avatar',
   name: 'Trainer name',
   partnerPokemon: 'Partner Pokémon',
   specialty: 'Trainer title',
@@ -23,6 +25,8 @@ function describeValue(unit: EditUnit, value: EditValue) {
   if (value === null || value === '') return 'None';
   if (typeof value === 'string') {
     if (unit === 'name') return value;
+    if (unit === 'avatar')
+      return trainerAvatarOptions.find(({ id }) => id === value)?.name ?? value;
     if (unit === 'specialty')
       return trainerSpecialtyDetails[value as TrainerSpecialty].label;
     return formatPokemonName(value);

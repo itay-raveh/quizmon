@@ -15,6 +15,7 @@ import {
   type TrainerStats,
 } from '../../domain/player/progress';
 import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
+import { trainerAvatarOptions } from '../../domain/player/trainer-avatars';
 import {
   getCardFinish,
   getTrainerBadges,
@@ -95,6 +96,8 @@ export const TrainerPassport = ({
   );
   const [editing, setEditing] = useUpdateState('trainer-editing', false);
   const [name, setName] = useUpdateState('trainer-name', profile.name);
+  const [avatar, setAvatar] = useUpdateState('trainer-avatar', profile.avatar);
+  const [avatarQuery, setAvatarQuery] = useState('');
   const [partner, setPartner] = useUpdateState(
     'trainer-partner',
     profile.partnerPokemon,
@@ -125,6 +128,9 @@ export const TrainerPassport = ({
   const savedPartner = profile.partnerPokemon
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
+  const matchingAvatars = trainerAvatarOptions.filter(({ name, id }) =>
+    `${name} ${id}`.toLowerCase().includes(avatarQuery.trim().toLowerCase()),
+  );
   const visibleProfile = { ...profile, specialty: savedSpecialty };
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
@@ -155,6 +161,7 @@ export const TrainerPassport = ({
     event.preventDefault();
     await onProfileChange({
       ...profile,
+      avatar,
       name,
       partnerPokemon: partner,
     });
@@ -169,6 +176,7 @@ export const TrainerPassport = ({
     }
 
     setName(profile.name);
+    setAvatar(profile.avatar);
     setPartner(profile.partnerPokemon);
     setEditing(true);
   };
@@ -282,6 +290,47 @@ export const TrainerPassport = ({
             options={pokemonOptions}
             value={partner}
           />
+          <fieldset className="trainer-avatar-picker">
+            <legend>Trainer avatar</legend>
+            <input
+              aria-label="Search trainer avatars"
+              onChange={(event) => setAvatarQuery(event.target.value)}
+              placeholder="Search trainer sprites"
+              type="search"
+              value={avatarQuery}
+            />
+            <div className="trainer-avatar-picker__options">
+              {matchingAvatars.map(({ id, name }) => (
+                <button
+                  aria-label={name}
+                  aria-pressed={avatar === id}
+                  key={id}
+                  onClick={() => setAvatar(id)}
+                  title={name}
+                  type="button"
+                >
+                  <img
+                    alt=""
+                    height="80"
+                    loading="lazy"
+                    src={`/trainer-avatars/${id}.png`}
+                    width="80"
+                  />
+                  <span>{name}</span>
+                </button>
+              ))}
+              {!matchingAvatars.length && <p>No matching trainers.</p>}
+            </div>
+            {avatar && (
+              <GameButton
+                tone="quiet"
+                type="button"
+                onClick={() => setAvatar(null)}
+              >
+                Clear avatar
+              </GameButton>
+            )}
+          </fieldset>
           <GameButton type="submit">Save card</GameButton>
         </form>
       ) : null}
@@ -308,7 +357,9 @@ export const TrainerPassport = ({
           <TrainerCard
             cardRef={artifactRef}
             partnerDexNumber={savedPartner?.speciesId ?? null}
+            partnerHeight={savedPartner?.height}
             partnerSprite={savedPartner?.sprite ?? null}
+            partnerSpriteMeasurements={savedPartner?.spriteMeasurements}
             profile={visibleProfile}
             record={record}
             rank={rank}

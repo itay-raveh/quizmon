@@ -311,6 +311,34 @@ try {
     (
       await outcomes(
         await upload(first, [
+          a('profile.patch', {
+            unit: 'avatar',
+            value: 'leaf-gen3',
+            expectedRevision: 0,
+          }),
+        ]),
+      )
+    )[0]!.status,
+    'accepted',
+  );
+  assert.equal(
+    (
+      await outcomes(
+        await upload(first, [
+          a('profile.patch', {
+            unit: 'avatar',
+            value: 'unknown-sprite',
+            expectedRevision: 1,
+          }),
+        ]),
+      )
+    )[0]!.code,
+    'invalid_edit',
+  );
+  assert.equal(
+    (
+      await outcomes(
+        await upload(first, [
           a('preferences.patch', {
             unit: 'answerFlow',
             value: 'instant',
@@ -326,6 +354,7 @@ try {
     [first.id],
   );
   assert.equal(profile.rows[0]!.edits.name, 'Second');
+  assert.equal(profile.rows[0]!.edits.avatar, 'leaf-gen3');
   passed.push(
     'successive edits, conflicting descendants, independent preference units',
   );

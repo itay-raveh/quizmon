@@ -29,11 +29,15 @@ Quizmon builds an offline dataset of Pokémon species and selected forms from [P
 npm run data:update
 ```
 
+The build fetches uncredited 80 × 80 trainer sprites from [Pokémon Showdown's trainer sprite index](https://play.pokemonshowdown.com/sprites/trainers/) and generates the avatar catalog. Sprite PNGs are ignored in Git and copied into `dist/` by Vite. Run `npm run avatars:update` to refresh the catalog for local development.
+
 ## Licenses
 
 Quizmon is available under the [MIT License](LICENSE).
 
 Pokémon Showdown ability text is distributed under its [MIT license](public/licenses/pokemon-showdown.txt).
+
+Trainer sprites are Pokémon artwork, not MIT-licensed code. Pokémon Showdown's [sprite repository](https://github.com/smogon/sprites#license) identifies Nintendo, GAME FREAK, and The Pokémon Company as the owners of the original artwork.
 
 Wordmark was made with [TextStudio](https://www.textstudio.co).
 

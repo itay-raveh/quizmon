@@ -334,7 +334,7 @@
   min-width: 0;
   min-height: 0;
   padding: 5cqw 5cqw 2cqw 6cqw;
-  grid-template-areas: 'rank partner' 'identity partner';
+  grid-template-areas: 'rank avatar' 'identity avatar';
   grid-template-columns: minmax(0, 1fr) 33%;
   grid-template-rows: auto minmax(0, 1fr);
   align-items: center;
@@ -504,12 +504,12 @@
   font-size: 1.408cqw;
 }
 
-.trainer-card__partner {
+.trainer-card__avatar {
   display: grid;
   min-width: 0;
   min-height: 0;
   height: 100%;
-  grid-area: partner;
+  grid-area: avatar;
   grid-template-rows: minmax(0, 1fr) auto;
   justify-items: center;
   gap: 1cqw;
@@ -527,12 +527,29 @@
   place-items: center;
 }
 
-.trainer-card__portrait img,
+.trainer-card__portrait-image {
+  position: relative;
+  z-index: 2;
+}
+
+.trainer-card__portrait-image,
 .trainer-pokedex__portrait img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   image-rendering: pixelated;
+}
+
+.trainer-card__partner-sprite {
+  position: absolute;
+  z-index: 3;
+  max-width: none;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.trainer-card__partner-sprite--behind {
+  z-index: 1;
 }
 
 .trainer-card__partner-caption {
@@ -558,7 +575,7 @@
   white-space: normal;
 }
 
-.trainer-card__partner-mark {
+.trainer-card__avatar-mark {
   color: var(--navy);
   font-family: var(--font-interface);
   font-size: 16cqw;

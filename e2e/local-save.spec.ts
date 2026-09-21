@@ -19,6 +19,9 @@ const test = base.extend<{
   };
 }>({
   origin: async ({ browserName }, run) => {
+    const { body, files } = JSON.parse(
+      await readFile(process.env.QUIZMON_E2E_DATABASE_FIXTURE!, 'utf8'),
+    ) as { body: string; files: Record<string, string> };
     const headerBlock = (await readFile('public/_headers', 'utf8')).split(
       '\n\n',
     )[0]!;
@@ -37,6 +40,31 @@ const test = base.extend<{
     const { httpServer } = await preview({
       configFile: false,
       logLevel: 'silent',
+      plugins: [
+        {
+          name: 'quizmon-e2e-database-fixture',
+          configurePreviewServer(server) {
+            server.middlewares.use((request, response, next) => {
+              const path = new URL(
+                request.url ?? '/',
+                'http://localhost',
+              ).pathname.slice(1);
+              const data =
+                path === '__quizmon_database_fixture.js'
+                  ? Buffer.from(body)
+                  : files[path]
+                    ? Buffer.from(files[path], 'base64')
+                    : null;
+              if (!data) return next();
+              response.setHeader(
+                'Content-Type',
+                path.endsWith('.wasm') ? 'application/wasm' : 'text/javascript',
+              );
+              response.end(data);
+            });
+          },
+        },
+      ],
       build: { outDir: process.env.QUIZMON_E2E_DIST_DIR ?? 'dist' },
       preview: { host: '127.0.0.1', port: 0, headers },
     });
@@ -89,6 +117,7 @@ for (const tag of ['', '@cross-browser'])
   }) => {
     test.setTimeout(120_000);
     await page.clock.setFixedTime(new Date('2026-09-12T23:59:59.900Z'));
+    await installDatabaseFixture(page, origin.url);
     await page.goto(origin.url);
     await page.evaluate(async () => {
       await navigator.serviceWorker.ready;

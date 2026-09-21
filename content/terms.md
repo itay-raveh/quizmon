@@ -45,6 +45,8 @@ Pokémon © [Nintendo / Creatures Inc. / GAME FREAK / The Pokémon Company](http
 
 Pokémon data comes from [PokéAPI](https://pokeapi.co/), with additional evolution-item sprites from [Serebii’s ItemDex](https://www.serebii.net/itemdex/). Ability text from [Pokémon Showdown](https://github.com/smogon/pokemon-showdown) is distributed under its [MIT license](/licenses/pokemon-showdown.txt).
 
+Trainer avatar sprites are sourced from [Pokémon Showdown's trainer index](https://play.pokemonshowdown.com/sprites/trainers/). They are Pokémon artwork owned by their respective rights holders, not covered by the Pokémon Showdown code license.
+
 The wordmark was made with [TextStudio](https://www.textstudio.com). Artwork is by [@beresteyskaya](https://www.fiverr.com/beresteyskaya). Sound effects are from [Kenney](https://kenney.nl/assets/interface-sounds).
 
 Third-party websites and services have their own terms.

@@ -1,4 +1,5 @@
 import { resetLocalSave } from '../../../tests/fixtures/local-save';
+import { normalizeTrainerProfile } from '../../domain/player/trainer-profile';
 import {
   readTrainerProfile,
   saveTrainerProfile,
@@ -23,6 +24,7 @@ describe('Trainer profile storage', () => {
 
     expect(profile.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(profile).toMatchObject({
+      avatar: null,
       hasBeenRevealed: false,
       name: '',
       partnerPokemon: null,
@@ -31,6 +33,7 @@ describe('Trainer profile storage', () => {
 
     const saved = await saveTrainerProfile({
       ...profile,
+      avatar: 'leaf-gen3',
       hasBeenRevealed: true,
       name: '  Leaf  ',
       partnerPokemon: 'bulbasaur',
@@ -38,6 +41,7 @@ describe('Trainer profile storage', () => {
     });
 
     expect(saved).toMatchObject({
+      avatar: 'leaf-gen3',
       hasBeenRevealed: true,
       name: 'Leaf',
       partnerPokemon: 'bulbasaur',
@@ -53,5 +57,17 @@ describe('Trainer profile storage', () => {
     expect(window.localStorage.getItem('quizmon.trainer-profile.v1')).toContain(
       'cardNumber',
     );
+  });
+
+  it('normalizes older profiles without an avatar', () => {
+    const oldProfile = {
+      ...readTrainerProfile(),
+      avatar: undefined,
+      name: 'Old Trainer',
+    };
+    expect(normalizeTrainerProfile(oldProfile)).toMatchObject({
+      avatar: null,
+      name: 'Old Trainer',
+    });
   });
 });

@@ -349,7 +349,12 @@ export const updatePlayerData = async (
           });
       }
       const next = parsePlayerSave({ ...state.save, data: merged }).data;
-      for (const unit of ['name', 'partnerPokemon', 'specialty'] as const) {
+      for (const unit of [
+        'avatar',
+        'name',
+        'partnerPokemon',
+        'specialty',
+      ] as const) {
         if (next.profile && next.profile[unit] !== previous.profile?.[unit])
           await recordEdit(
             state,

@@ -84,6 +84,7 @@ export async function projectAccount(
   ];
   data.profile = {
     ...(data.profile ?? createTrainerProfile()),
+    avatar: null,
     createdAt: base.profile_created_at,
     name: '',
     partnerPokemon: null,
@@ -119,7 +120,7 @@ export async function projectAccount(
     if (validEdit(action.payload))
       predecessors[action.payload.unit] = action.operationId;
   }
-  for (const unit of ['name', 'partnerPokemon', 'specialty'] as const)
+  for (const unit of ['avatar', 'name', 'partnerPokemon', 'specialty'] as const)
     if (Object.hasOwn(edits, unit))
       Object.assign(data.profile, { [unit]: edits[unit] });
   data.settings = {
