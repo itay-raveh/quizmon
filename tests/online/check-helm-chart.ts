@@ -42,7 +42,6 @@ const runtimeConfig = {
   },
   hyperdriveId: 'a'.repeat(32),
   mailFrom: 'signin@example.test',
-  analyticsDataset: 'quizmon_test',
   authRateLimitNamespace: '2001',
   apiRateLimitNamespace: '2002',
 };

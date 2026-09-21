@@ -1,6 +1,8 @@
 import { progressProjectionVersion } from '../../domain/player/game-history';
 import { rebuildGuestProgress } from './game-history';
 import { SaveError } from '../../domain/player/save-schema';
+import { trackFailure } from '../analytics';
+import { captureUnexpectedError } from '../sentry';
 import { getSaveIssue, clearSaveIssue } from './save-health';
 import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
 import {
@@ -60,6 +62,9 @@ export const reportSaveError = (
   error: unknown,
   retry?: () => Promise<unknown>,
 ) => {
+  trackFailure('save.write');
+  if (!(error instanceof SaveError))
+    captureUnexpectedError('save.write', error);
   saveError =
     error instanceof Error
       ? error.message

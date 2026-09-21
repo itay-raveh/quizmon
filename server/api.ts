@@ -6,6 +6,7 @@ import { APIError, createAuthMiddleware } from 'better-auth/api';
 import { eq } from 'drizzle-orm';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Hono, type Context } from 'hono';
+import * as Sentry from '@sentry/cloudflare';
 import { bodyLimit } from 'hono/body-limit';
 import { matchedRoutes } from 'hono/route';
 import { Client } from 'pg';
@@ -191,6 +192,11 @@ export function createAccountApi(services: AccountServices) {
     if (!session)
       return context.json({ error: 'Sign in to continue syncing.' }, 401);
     context.set('accountId', session.user.id);
+    try {
+      Sentry.setUser({ id: session.user.id, email: session.user.email });
+    } catch {
+      // Monitoring cannot interrupt authenticated requests.
+    }
     await next();
   });
   signedIn.get('/me', (context) =>

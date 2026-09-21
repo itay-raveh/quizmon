@@ -1,26 +1,13 @@
 import catalog from '../src/domain/pokemon/data/pokemon.json';
-import worker, { DailyReminder } from '../worker/index';
+import worker, { DailyReminder } from '../worker/game';
 import { getNextReminderAt } from '../worker/reminder-time';
 
-const validEvent = {
-  contentVersion: 3,
-  correctCount: 4,
-  elapsedSeconds: 42,
-  mode: 'daily',
-  questionCount: 5,
-  score: 12_345,
-  scoreVersion: 2,
-  type: 'game_completed',
-};
-
 const makeEnv = () => {
-  const writeDataPoint = vi.fn();
   const reminderFetch = vi
     .fn()
     .mockResolvedValue(new Response(null, { status: 204 }));
   return {
     env: {
-      ANALYTICS: { writeDataPoint },
       ASSETS: { fetch: vi.fn() },
       DAILY_REMINDERS: {
         getByName: vi.fn(() => ({ fetch: reminderFetch })),
@@ -28,7 +15,6 @@ const makeEnv = () => {
       VAPID_PRIVATE_KEY: 'test-private-key',
     },
     reminderFetch,
-    writeDataPoint,
   };
 };
 
@@ -173,115 +159,8 @@ describe('Daily reminders', () => {
   });
 });
 
-describe('analytics endpoint', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it.each([
-    ['a page view', { type: 'page_view' }, { indexes: ['page_view'] }],
-    [
-      'a game start',
-      { mode: 'training', questionCount: 10, type: 'game_started' },
-      {
-        blobs: ['training'],
-        doubles: [10],
-        indexes: ['game_started'],
-      },
-    ],
-    [
-      'a Daily completion',
-      validEvent,
-      {
-        blobs: ['daily'],
-        doubles: [5, 4, 12_345, 42, 3, 2],
-        indexes: ['game_completed'],
-      },
-    ],
-    [
-      'a League completion',
-      { ...validEvent, mode: 'league' },
-      {
-        blobs: ['league'],
-        doubles: [5, 4, 12_345, 42, 3, 2],
-        indexes: ['game_completed'],
-      },
-    ],
-  ])('records %s without identifying data', async (_name, event, dataPoint) => {
-    const { env, writeDataPoint } = makeEnv();
-    const response = await worker.fetch(
-      new Request('https://quizmon.raveh.dev/api/events', {
-        body: JSON.stringify(event),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-      }),
-      env,
-    );
-
-    expect(response.status).toBe(204);
-    expect(response.headers.get('Cache-Control')).toBe('no-store');
-    expect(writeDataPoint).toHaveBeenCalledExactlyOnceWith(dataPoint);
-  });
-
-  it.each([
-    ['a GET request', undefined, {}, 405, 'Method not allowed'],
-    [
-      'a non-JSON request',
-      'event',
-      { method: 'POST', headers: { 'Content-Type': 'text/plain' } },
-      415,
-      'Expected application/json',
-    ],
-    [
-      'an invalid event',
-      JSON.stringify({ ...validEvent, correctCount: 6 }),
-      { method: 'POST', headers: { 'Content-Type': 'application/json' } },
-      400,
-      'Invalid event',
-    ],
-    [
-      'malformed JSON',
-      '{',
-      { method: 'POST', headers: { 'Content-Type': 'application/json' } },
-      400,
-      'Invalid event',
-    ],
-    [
-      'an oversized declared body',
-      '{}',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': '1025',
-        },
-      },
-      413,
-      'Request body too large',
-    ],
-    [
-      'an oversized actual body',
-      ' '.repeat(1025),
-      { method: 'POST', headers: { 'Content-Type': 'application/json' } },
-      413,
-      'Request body too large',
-    ],
-  ])('rejects %s', async (_name, body, init, status, message) => {
-    const { env, writeDataPoint } = makeEnv();
-    const response = await worker.fetch(
-      new Request('https://quizmon.raveh.dev/api/events', {
-        body,
-        ...init,
-      }),
-      env,
-    );
-
-    expect(response.status).toBe(status);
-    expect(response.headers.get('Cache-Control')).toBe('no-store');
-    expect(response.headers.get('Allow')).toBe(status === 405 ? 'POST' : null);
-    expect(await response.text()).toBe(message);
-    expect(writeDataPoint).not.toHaveBeenCalled();
-  });
+describe('sprite proxy', () => {
+  afterEach(() => vi.unstubAllGlobals());
 
   it('proxies supported sprite families with matching content types', async () => {
     const upstream = mockSpriteFetch();

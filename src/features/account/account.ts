@@ -36,6 +36,7 @@ import {
 } from '../../lib/storage/player-storage';
 import { isRecord } from '../../lib/validation';
 import { readSyncConnection } from '../../domain/sync/connection';
+import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 
 const selectionKey = 'quizmon.baseline.account';
 const auth = createAuthClient({ plugins: [emailOTPClient(), jwtClient()] });
@@ -77,6 +78,15 @@ export const subscribeAccount = (listener: () => void) => {
 };
 export const selectedAccount = () =>
   localStorage.getItem(selectionKey) ?? undefined;
+const refreshSentryIdentity = async () => {
+  const version = clearSentryUser();
+  const selected = selectedAccount();
+  if (!selected || localStorage.getItem('quizmon.baseline.revocation-pending'))
+    return;
+  const { data } = await auth.getSession();
+  if (data?.user.id === selected && data.user.email)
+    await setVerifiedSentryUser(data.user.id, data.user.email, version);
+};
 export async function accountRequest(path: string, body?: unknown) {
   const response = await fetch(path, {
     method: body === undefined ? 'GET' : 'POST',
@@ -92,6 +102,7 @@ export async function accountRequest(path: string, body?: unknown) {
       );
     return null;
   });
+  if (response.status === 401) clearSentryUser();
   if (!response.ok)
     throw new Error(
       response.status === 401
@@ -135,6 +146,7 @@ export async function sendSignInCode(email: string) {
     throw new Error(result.error.message ?? 'The code could not be sent.');
 }
 export async function verifySignInCode(email: string, otp: string) {
+  clearSentryUser();
   const result = await auth.signIn.emailOtp({ email, otp });
   if (result.error)
     throw new Error(result.error.message ?? 'Check your code and try again.');
@@ -367,6 +379,7 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
           [JSON.stringify(finalState)],
         );
       });
+      clearSentryUser();
       localStorage.setItem(selectionKey, destination.id);
       if (hasGuest && !useAccountOnly)
         await guest.writeTransaction(async (tx) => {
@@ -554,6 +567,7 @@ export function loadAccountConfig() {
     .catch(() => {});
 }
 export async function startAccountSync() {
+  void refreshSentryIdentity().catch(clearSentryUser);
   void revokePendingSession().catch(() =>
     update({
       error:
@@ -562,9 +576,17 @@ export async function startAccountSync() {
   );
   window.addEventListener('online', () => {
     void revokePendingSession().catch(() => {});
+    void refreshSentryIdentity().catch(clearSentryUser);
+  });
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible')
+      void refreshSentryIdentity().catch(clearSentryUser);
   });
   window.addEventListener('storage', (event) => {
-    if (event.key === selectionKey) window.location.assign('/');
+    if (event.key === selectionKey) {
+      clearSentryUser();
+      window.location.assign('/');
+    }
   });
   const state = await readState(getPlayerDatabase());
   if (!state.account) return;
@@ -617,6 +639,7 @@ export async function retryAccountSync() {
   }
 }
 export async function signOutAccount() {
+  clearSentryUser();
   await account?.disconnect();
   try {
     const { error } = await auth.signOut();

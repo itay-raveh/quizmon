@@ -18,7 +18,6 @@ const config = {
   },
   hyperdriveId: '1'.repeat(32),
   mailFrom: 'signin@example.test',
-  analyticsDataset: 'quizmon_test',
   authRateLimitNamespace: '2011',
   apiRateLimitNamespace: '2012',
 };
@@ -98,7 +97,6 @@ await test('release configuration keeps its actionable validation errors', () =>
       'A provisioned Hyperdrive identifier is required.',
     ],
     [{ mailFrom: 'invalid' }, 'A sender address is required.'],
-    [{ analyticsDataset: 'invalid-name' }, 'Invalid analytics dataset.'],
     [
       { apiRateLimitNamespace: config.authRateLimitNamespace },
       'Distinct rate-limit namespace identifiers are required.',

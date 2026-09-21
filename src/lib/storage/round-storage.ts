@@ -160,7 +160,7 @@ export const commitRoundCompletion = async (
         await transaction.execute('DELETE FROM local_rounds WHERE id = ?', [
           tabId,
         ]);
-      return receipt.outcome;
+      return { ...receipt.outcome, recorded: false };
     }
     await addDiscoveries(state, transaction, payload.discoveries);
     const eligible =
@@ -200,7 +200,7 @@ export const commitRoundCompletion = async (
       await transaction.execute('DELETE FROM local_rounds WHERE id = ?', [
         tabId,
       ]);
-    return outcome;
+    return { ...outcome, recorded: true };
   });
   if (!keepRound) active = null;
   return outcome;

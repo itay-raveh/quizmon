@@ -7,6 +7,18 @@ on:
         required: true
       CLOUDFLARE_API_TOKEN:
         required: true
+      SENTRY_AUTH_TOKEN:
+        required: true
+      SENTRY_ORG:
+        required: true
+      SENTRY_BROWSER_PROJECT:
+        required: true
+      SENTRY_WORKER_PROJECT:
+        required: true
+      SENTRY_BROWSER_DSN:
+        required: true
+      SENTRY_WORKER_DSN:
+        required: true
 
 permissions: {}
 
@@ -42,10 +54,25 @@ jobs:
           docker compose -f compose.yaml up -d --wait db
           node tests/online/check-migrations.ts
       - name: Build and prepare Worker
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_BROWSER_PROJECT: ${{ secrets.SENTRY_BROWSER_PROJECT }}
+          SENTRY_WORKER_PROJECT: ${{ secrets.SENTRY_WORKER_PROJECT }}
+          VITE_SENTRY_DSN: ${{ secrets.SENTRY_BROWSER_DSN }}
+          VITE_SENTRY_RELEASE: ${{ github.sha }}
+          SENTRY_WORKER_DSN: ${{ secrets.SENTRY_WORKER_DSN }}
         run: |
+          for name in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_BROWSER_PROJECT SENTRY_WORKER_PROJECT VITE_SENTRY_DSN SENTRY_WORKER_DSN; do
+            test -n "${!name}" || { echo "::error::Missing $name"; exit 1; }
+          done
           npm run build
+          test -z "$(find dist -name '*.map' -print -quit)"
           node deploy/prepare-worker-deploy.ts .wrangler/infra
-          npx wrangler deploy --config .wrangler.production.json --dry-run --outdir .wrangler/release-worker
+          npx wrangler deploy --config .wrangler.production.json --dry-run --upload-source-maps --outdir .wrangler/release-worker
+          ./node_modules/.bin/sentry-cli sourcemaps inject .wrangler/release-worker
+          ./node_modules/.bin/sentry-cli sourcemaps upload --strict --wait --release "$GITHUB_SHA" --org "$SENTRY_ORG" --project "$SENTRY_WORKER_PROJECT" .wrangler/release-worker
+          test -f .wrangler/release-worker/index.js.map
       - name: Build checked migration image
         run: |
           mkdir -p .wrangler
@@ -66,7 +93,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: 4.127.1
-          command: deploy --config .wrangler.production.json --keep-vars
+          command: deploy .wrangler/release-worker/index.js --config .wrangler.production.json --no-bundle --keep-vars
       - name: Publish checked migration image
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}

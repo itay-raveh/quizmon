@@ -37,3 +37,20 @@ await test('missing or multiple policies and unsafe endpoints fail closed', () =
     /unsafe/,
   );
 });
+
+await test('allows only the configured Sentry ingest origin', () => {
+  const headers = accountAssetHeaders(
+    template,
+    sync,
+    'https://public-key@o123.ingest.sentry.io/456',
+  );
+  assert.match(
+    headers,
+    /connect-src [^;]+ https:\/\/o123\.ingest\.sentry\.io;/,
+  );
+  assert.doesNotMatch(headers, /public-key/);
+  assert.throws(
+    () => accountAssetHeaders(template, sync, 'http://key@example.com/1'),
+    /HTTPS/,
+  );
+});

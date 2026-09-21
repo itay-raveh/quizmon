@@ -17,7 +17,6 @@ export const releaseConfigSchema = z.object({
   }),
   hyperdriveId: z.string().regex(/^[a-fA-F0-9]{32}$/),
   mailFrom: z.string().regex(/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/),
-  analyticsDataset: z.string().regex(/^[a-zA-Z0-9_]{1,64}$/),
   authRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
   apiRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
 });
@@ -53,7 +52,6 @@ export function readReleaseConfig(value: unknown): ReleaseConfig {
     'origin',
     'hyperdriveId',
     'mailFrom',
-    'analyticsDataset',
     'authRateLimitNamespace',
     'apiRateLimitNamespace',
   ])
@@ -79,8 +77,6 @@ export function readReleaseConfig(value: unknown): ReleaseConfig {
   )
     throw new Error('A provisioned Hyperdrive identifier is required.');
   if (invalid.has('mailFrom')) throw new Error('A sender address is required.');
-  if (invalid.has('analyticsDataset'))
-    throw new Error('Invalid analytics dataset.');
   if (
     invalid.has('authRateLimitNamespace') ||
     invalid.has('apiRateLimitNamespace') ||
@@ -96,7 +92,6 @@ export function readReleaseConfig(value: unknown): ReleaseConfig {
     sync,
     hyperdriveId: config.hyperdriveId,
     mailFrom: config.mailFrom,
-    analyticsDataset: config.analyticsDataset,
     authRateLimitNamespace: config.authRateLimitNamespace,
     apiRateLimitNamespace: config.apiRateLimitNamespace,
   };
@@ -123,9 +118,6 @@ export function renderWorkerConfig(template: unknown, config: ReleaseConfig) {
     },
     assets: { ...template.assets, directory: './assets' },
     hyperdrive: [{ binding: 'ACCOUNT_DB', id: config.hyperdriveId }],
-    analytics_engine_datasets: [
-      { binding: 'ANALYTICS', dataset: config.analyticsDataset },
-    ],
     ratelimits: template.ratelimits.map((limit: unknown) => {
       if (
         !isRecord(limit) ||

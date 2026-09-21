@@ -1,43 +1,61 @@
 import type { GameMode, GameResult } from '../domain/quiz/types';
+import { Sentry, sentryEnabled } from './sentry';
 
-type AnalyticsEvent =
-  | { type: 'page_view' }
-  | {
-      mode: GameMode['kind'];
-      questionCount: number;
-      type: 'game_started';
-    }
-  | ({
-      mode: GameMode['kind'];
-      type: 'game_completed';
-    } & Omit<GameResult, 'answers'>);
-
-const trackEvent = (event: AnalyticsEvent) => {
-  void fetch('/api/events', {
-    body: JSON.stringify(event),
-    headers: { 'Content-Type': 'application/json' },
-    keepalive: true,
-    method: 'POST',
-  }).catch(() => undefined);
+const record = (send: () => void) => {
+  if (!sentryEnabled) return;
+  try {
+    send();
+  } catch {
+    // Telemetry cannot affect a saved game.
+  }
 };
 
-export const trackPageViewed = () => trackEvent({ type: 'page_view' });
+export const trackPageViewed = () =>
+  record(() => Sentry.metrics.count('quizmon.page_view'));
 
 export const trackGameStarted = (mode: GameMode, questionCount: number) =>
-  trackEvent({
-    mode: mode.kind,
-    questionCount,
-    type: 'game_started',
+  record(() => {
+    const options = { attributes: { 'game.mode': mode.kind } };
+    Sentry.metrics.count('quizmon.game_started', 1, options);
+    Sentry.metrics.distribution(
+      'quizmon.game.question_count',
+      questionCount,
+      options,
+    );
   });
 
 export const trackGameCompleted = (mode: GameMode, result: GameResult) =>
-  trackEvent({
-    contentVersion: result.contentVersion,
-    correctCount: result.correctCount,
-    elapsedSeconds: result.elapsedSeconds,
-    mode: mode.kind,
-    questionCount: result.questionCount,
-    score: result.score,
-    scoreVersion: result.scoreVersion,
-    type: 'game_completed',
+  record(() => {
+    const options = {
+      attributes: {
+        'game.mode': mode.kind,
+        'game.content_version': result.contentVersion,
+        'game.score_version': result.scoreVersion,
+      },
+    };
+    Sentry.metrics.count('quizmon.game_completed', 1, options);
+    Sentry.metrics.distribution('quizmon.game.score', result.score, options);
+    Sentry.metrics.distribution(
+      'quizmon.game.elapsed_seconds',
+      result.elapsedSeconds,
+      { ...options, unit: 'second' },
+    );
+    Sentry.metrics.distribution(
+      'quizmon.game.correct_count',
+      result.correctCount,
+      options,
+    );
+    Sentry.metrics.distribution(
+      'quizmon.game.question_count',
+      result.questionCount,
+      options,
+    );
+  });
+
+export const trackFailure = (kind: string) =>
+  record(() => {
+    Sentry.metrics.count('quizmon.failure', 1, {
+      attributes: { 'error.kind': kind },
+    });
+    Sentry.logger.warn('quizmon.failure', { 'error.kind': kind });
   });
