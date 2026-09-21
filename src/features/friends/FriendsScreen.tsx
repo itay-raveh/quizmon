@@ -40,8 +40,8 @@ export function FriendsScreen({
               : 'Add friends to see your Daily scores together. Both players choose to accept a friendship.'}
           </p>
           <p>
-            Your Trainer name and partner Pokémon are visible to other players.
-            Your email stays private.
+            Your Trainer name is visible to other players. Your email stays
+            private.
           </p>
           <p>Use Sign in in the header to get started.</p>
           <p className="social-screen__note">

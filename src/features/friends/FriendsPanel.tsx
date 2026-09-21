@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
-import { formatPokemonName } from '../../domain/pokemon/format';
 import {
   formatFriendCode,
   parseFriendInput,
@@ -40,9 +39,6 @@ function Player({ player }: { player: SocialPlayer }) {
   return (
     <div className="friends-player">
       <strong>{player.name}</strong>
-      {player.partnerPokemon && (
-        <span>Partner: {formatPokemonName(player.partnerPokemon)}</span>
-      )}
       {player.code && <small>{formatFriendCode(player.code)}</small>}
     </div>
   );
@@ -198,6 +194,7 @@ export function FriendsPanel({
   }
 
   const link = me?.code ? `${location.origin}/#friend=${me.code}` : '';
+  const initialLoading = busy && !me && !pages.friends && !error;
   return (
     <div className="friends-panel">
       <div className="friends-actions friends-panel__toolbar">
@@ -213,7 +210,12 @@ export function FriendsPanel({
           {error}
         </p>
       )}
-      <p role="status">{busy ? 'Loading friends…' : notice}</p>
+      {busy && (
+        <p className="visually-hidden" role="status">
+          Loading friends
+        </p>
+      )}
+      {notice && <p role="status">{notice}</p>}
       {adding && (
         <section className="friends-add" aria-labelledby="add-friend-title">
           <h2 id="add-friend-title">Add friend</h2>
@@ -354,7 +356,26 @@ export function FriendsPanel({
           </form>
         </section>
       )}
+      {!adding && initialLoading && (
+        <section className="friends-loading" aria-label="Loading your friends">
+          <h2>Your friends</h2>
+          <ul className="friends-list" aria-hidden="true">
+            {[0, 1, 2].map((row) => (
+              <li key={row}>
+                <div className="friends-player">
+                  <span className="social-skeleton" />
+                  <small className="social-skeleton" />
+                </div>
+                <div className="friends-actions">
+                  <span className="social-skeleton" />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       {!adding &&
+        !initialLoading &&
         views
           .filter(
             (view) => view === 'friends' || Boolean(pages[view]?.items.length),

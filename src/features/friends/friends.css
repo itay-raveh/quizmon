@@ -235,22 +235,50 @@
 }
 
 .leaderboard-loading {
-  display: grid;
-  gap: 0.7rem;
-  padding-block: 0.4rem;
+  width: 100%;
 }
-.leaderboard-loading span {
-  height: 3.8rem;
+
+.social-skeleton {
+  display: block;
+  height: 0.85em;
   background: var(--cream);
-  border: 2px solid var(--navy);
-  border-radius: var(--button-radius);
+  border-radius: 0.25rem;
   animation: leaderboard-pulse 1.2s ease-in-out infinite alternate;
 }
-.leaderboard-loading span:nth-child(2) {
-  animation-delay: 0.15s;
+
+.leaderboard-loading tbody tr {
+  height: 3.8rem;
 }
-.leaderboard-loading span:nth-child(3) {
-  animation-delay: 0.3s;
+
+.leaderboard-loading td:first-child .social-skeleton {
+  width: 1.7rem;
+}
+
+.leaderboard-loading th .social-skeleton {
+  width: min(11rem, 100%);
+}
+
+.leaderboard-loading td:last-child .social-skeleton {
+  width: 4.2rem;
+  margin-left: auto;
+}
+
+.leaderboard-loading td:last-child .social-skeleton + .social-skeleton {
+  width: 3rem;
+  margin-top: 0.35rem;
+}
+
+.friends-loading .friends-player > .social-skeleton {
+  width: min(12rem, 70%);
+}
+
+.friends-loading .friends-player > small.social-skeleton {
+  width: 9rem;
+}
+
+.friends-loading .friends-actions > .social-skeleton {
+  width: 7rem;
+  height: 2.75rem;
 }
 @keyframes leaderboard-pulse {
   to {
@@ -258,7 +286,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaderboard-loading span {
+  .social-skeleton {
     animation: none;
   }
 }

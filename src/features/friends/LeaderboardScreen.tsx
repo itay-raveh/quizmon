@@ -1,7 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../../components/GameButton';
 import { LockSimpleIcon } from '../../components/icons';
-import { formatPokemonName } from '../../domain/pokemon/format';
 import { isDailyDate } from '../../lib/validation';
 import { getUtcDate } from '../../domain/quiz/daily';
 import { currentDailyTrack } from '../../domain/quiz/daily-track';
@@ -21,6 +20,43 @@ import {
 import './friends.css';
 
 const standingsCache = new Map<string, Leaderboard>();
+
+function StandingsSkeleton() {
+  return (
+    <div
+      className="leaderboard-loading"
+      role="status"
+      aria-label="Loading standings"
+    >
+      <p className="visually-hidden">Loading standings</p>
+      <table className="leaderboard-table" aria-hidden="true">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Trainer</th>
+            <th>Score / time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {[0, 1, 2].map((row) => (
+            <tr key={row}>
+              <td>
+                <span className="social-skeleton" />
+              </td>
+              <th>
+                <span className="social-skeleton" />
+              </th>
+              <td>
+                <span className="social-skeleton" />
+                <span className="social-skeleton" />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 function Standings({
   owner,
@@ -131,18 +167,7 @@ function Standings({
       aria-label={`${scope === 'global' ? 'Global' : 'Friends'} ${mode === 'daily' ? 'Daily' : 'Training'} standings`}
       aria-busy={busy}
     >
-      {busy && !data && (
-        <div
-          className="leaderboard-loading"
-          role="status"
-          aria-label="Loading standings"
-        >
-          <p className="visually-hidden">Loading standings</p>
-          <span />
-          <span />
-          <span />
-        </div>
-      )}
+      {busy && !data && <StandingsSkeleton />}
       {error && (
         <p role="alert" className="settings-error">
           {error}
@@ -187,11 +212,6 @@ function Standings({
                         {row.player.name}
                         {row.player.id === owner ? ' (you)' : ''}
                       </span>
-                      {row.player.partnerPokemon && (
-                        <small>
-                          {formatPokemonName(row.player.partnerPokemon)}
-                        </small>
-                      )}
                     </th>
                     <td>
                       <strong>{row.score.toLocaleString()}</strong>
