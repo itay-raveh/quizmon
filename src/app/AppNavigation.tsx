@@ -35,6 +35,7 @@ export function AppNavigation({
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   return (
     <header className="app-header">
+      <SettingsButton disabled={!trainerAvailable} onClick={onSettings} />
       <nav className="app-navigation" aria-label="Main">
         {destinations.map(([destination, label, Icon]) => (
           <GameButton
@@ -62,9 +63,6 @@ export function AppNavigation({
             : 'Sign in'}
         </GameButton>
       </nav>
-      <div className="app-utilities">
-        <SettingsButton disabled={!trainerAvailable} onClick={onSettings} />
-      </div>
     </header>
   );
 }

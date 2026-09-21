@@ -37,12 +37,12 @@ export const footerDisclaimer =
 
 export const footerCredits = [
   {
-    label: 'badges by',
+    label: 'Badges:',
     name: '@beresteyskaya',
     href: 'https://www.fiverr.com/beresteyskaya',
   },
   {
-    label: 'Wordmark made with',
+    label: 'Logo:',
     name: 'TextStudio',
     href: 'https://www.textstudio.com',
   },

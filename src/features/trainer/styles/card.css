@@ -27,6 +27,7 @@
 
 .trainer-passport__header {
   display: flex;
+  min-height: 3.25rem;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;

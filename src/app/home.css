@@ -4,9 +4,9 @@
   min-height: 0;
   align-self: stretch;
   align-content: start;
-  padding-top: clamp(1rem, 5svh, 3rem);
+  padding-top: 0.25rem;
   justify-items: center;
-  gap: clamp(1.15rem, 3.5svh, 2.35rem);
+  gap: clamp(0.8rem, 2svh, 1.4rem);
 }
 
 .logo-picture {
