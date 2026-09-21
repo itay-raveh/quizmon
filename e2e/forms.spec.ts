@@ -1,7 +1,7 @@
 import { buildQuestionType } from '../src/domain/quiz/questions/registry';
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import { createSeededRandom } from '../src/lib/random';
-import { readSave } from './database-fixture';
+import { readRound, readSave } from './database-fixture';
 import {
   catalog,
   expect,
@@ -143,6 +143,9 @@ test('resumes a saved round after a catalog update and credits regional forms se
       .click();
     if (index === 0) {
       await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
+      await expect
+        .poll(async () => (await readRound(page))?.answers.length)
+        .toBe(1);
       await page.reload();
       await expect(
         page.getByRole('progressbar', { name: 'Quiz progress' }),

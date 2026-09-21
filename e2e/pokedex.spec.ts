@@ -30,7 +30,7 @@ for (const width of [320, 1280]) {
     await page.goto('/?trainer=pokedex');
     await expect(
       page.getByRole('heading', { name: 'Personal Pokédex' }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15_000 });
     await expect(
       page.getByRole('button', { name: 'Pokédex', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');

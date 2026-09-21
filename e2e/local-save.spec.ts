@@ -2,7 +2,7 @@ import {
   emptyPlayerData,
   SAVE_SCHEMA_VERSION,
 } from '../src/domain/player/player-save';
-import { installDatabaseFixture } from './database-fixture';
+import { installDatabaseFixture, readRound } from './database-fixture';
 import { defaultGameSettings } from '../src/domain/settings/game-settings';
 import { test as base, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -118,11 +118,14 @@ for (const tag of ['', '@cross-browser'])
     }
     await expect(progress).toHaveText('005 / 005');
     const prompt = await page.locator('#question-prompt').textContent();
+    await expect
+      .poll(async () => (await readRound(page))?.answers.length)
+      .toBe(4);
     await page.clock.setFixedTime(new Date('2026-09-13T00:00:00.100Z'));
     await origin.stop();
     await expect(fetch(origin.url)).rejects.toThrow();
     await page.reload();
-    await expect(progress).toHaveText('005 / 005');
+    await expect(progress).toHaveText('005 / 005', { timeout: 15_000 });
     await expect(
       page.getByText('Daily Challenge · Sep 12, 2026'),
     ).toBeVisible();

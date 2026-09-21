@@ -188,6 +188,7 @@ test('complete typing supports search, removal, and submission while Pokémon se
   await expect(feedback).not.toContainText('Wrong pick');
   await expect(feedback).not.toContainText('Missed');
   await expectNoHorizontalOverflow(page);
+  await expect.poll(async () => (await snapshot(page)).answers.length).toBe(1);
   await page.getByRole('button', { name: 'Leave game', exact: true }).click();
   await page
     .getByRole('dialog', { name: 'Leave this game?' })

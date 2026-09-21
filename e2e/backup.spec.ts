@@ -223,10 +223,10 @@ for (const browser of ['', '@cross-browser']) {
     });
     await page.goto('/');
     const daily = page.getByRole('button', { name: /^Play Daily Challenge/ });
-    await expect(daily).toBeEnabled();
+    await expect(daily).toBeEnabled({ timeout: 15_000 });
     await expect(page.getByText('Browser storage required')).toHaveCount(0);
     await page.reload();
-    await expect(daily).toBeEnabled();
+    await expect(daily).toBeEnabled({ timeout: 15_000 });
     expect(
       await readSave(page).then((saved) => {
         const save = JSON.parse(

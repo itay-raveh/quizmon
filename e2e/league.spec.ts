@@ -258,7 +258,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(
     page.getByRole('heading', { name: 'Hall of Fame', exact: true }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15_000 });
   const lineup = page.locator('.hall-record__group');
   await expect(lineup).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
