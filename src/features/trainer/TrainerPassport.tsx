@@ -16,6 +16,7 @@ import {
 } from '../../domain/player/progress';
 import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
 import { trainerAvatarOptions } from '../../domain/player/trainer-avatars';
+import { createSearch, normalizeSearch } from '../../domain/pokemon/search';
 import {
   getCardFinish,
   getTrainerBadges,
@@ -73,6 +74,15 @@ const shareLabels = {
   titles: 'titles',
 } satisfies Record<Exclude<TrainerView, 'pokedex'>, string>;
 
+const searchAvatars = createSearch(
+  trainerAvatarOptions.map((avatar) => ({
+    ...avatar,
+    label: avatar.name,
+    normalized: normalizeSearch(avatar.name),
+    aliases: [normalizeSearch(avatar.id)],
+  })),
+);
+
 export const TrainerPassport = ({
   catalog,
   onProfileChange,
@@ -128,9 +138,9 @@ export const TrainerPassport = ({
   const savedPartner = profile.partnerPokemon
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
-  const matchingAvatars = trainerAvatarOptions.filter(({ name, id }) =>
-    `${name} ${id}`.toLowerCase().includes(avatarQuery.trim().toLowerCase()),
-  );
+  const matchingAvatars = avatarQuery.trim()
+    ? searchAvatars(avatarQuery)
+    : trainerAvatarOptions;
   const visibleProfile = { ...profile, specialty: savedSpecialty };
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();

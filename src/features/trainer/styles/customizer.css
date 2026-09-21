@@ -96,7 +96,8 @@
 }
 
 .trainer-customizer label,
-.pokemon-picker > label {
+.pokemon-picker > label,
+.trainer-avatar-picker legend {
   color: var(--navy);
   font-size: var(--text-label);
   font-weight: 800;
