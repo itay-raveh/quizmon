@@ -124,15 +124,8 @@ export const getTrainerStats = (
   results: SavedResults,
   pokedex?: string[],
 ): TrainerStats => ({
+  ...results.progress,
   pokedex,
   bestDailyStreak: getLongestStreak(results.streak.creditedDates),
-  championAnswersWithoutClues: results.progress.championAnswersWithoutClues,
-  correctCategories: results.progress.correctCategories,
-  correctGenerations: results.progress.correctGenerations,
-  correctPokemon: results.progress.correctPokemon,
-  correctQuestionTypes: results.progress.correctQuestionTypes,
   leagueCompleted: results.league.completed,
-  masteryRounds: results.progress.masteryRounds,
-  quickAttackCompleted: results.progress.quickAttackCompleted,
-  quickAttackRounds: results.progress.quickAttackRounds,
 });

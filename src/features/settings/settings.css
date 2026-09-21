@@ -424,7 +424,8 @@
   place-items: center;
 }
 
-.question-type-tile__help svg {
+.question-type-tile__help svg,
+.question-type-help__close svg {
   width: 1.25rem;
   height: 1.25rem;
 }
@@ -483,11 +484,6 @@
   border: 0;
   cursor: pointer;
   place-items: center;
-}
-
-.question-type-help__close svg {
-  width: 1.25rem;
-  height: 1.25rem;
 }
 
 .checkbox {

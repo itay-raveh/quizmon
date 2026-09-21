@@ -80,7 +80,8 @@
 }
 
 @container (max-width: 24rem) {
-  .nature-effect {
+  .nature-effect,
+  .question--champion .question__stimulus {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -102,17 +103,14 @@
     margin-top: 0.3rem;
     text-align: center;
   }
-
-  .question--champion .question__stimulus {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 @container (max-width: 16rem) {
   .question-evolution-link,
   .question-evolution-endpoints,
   .question-relation,
-  .question__response .answers--pokemon {
+  .question__response .answers--pokemon,
+  .champion-search__controls {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -133,10 +131,6 @@
 
   .question-visual__subject-name {
     max-width: 100%;
-  }
-
-  .champion-search__controls {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .champion-search__controls > .game-button {

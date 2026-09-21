@@ -500,7 +500,8 @@
   white-space: pre-line;
 }
 
-.answers--statements {
+.answers--statements,
+.answers--effect-details {
   grid-template-columns: minmax(0, 1fr);
 }
 
@@ -565,10 +566,6 @@
 
 .question__response:has(.answers--evolution-levels) {
   min-height: 0;
-}
-
-.answers--effect-details {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .answers--effect-details .answer {

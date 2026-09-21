@@ -1,4 +1,5 @@
 import { site } from '@/app/site';
+import { downloadBlob } from '@/lib/download';
 import {
   trainerViewLabels,
   type TrainerView,
@@ -80,13 +81,7 @@ const renderTrainerArtifactImage = async (
 };
 
 const downloadTrainerArtifact = (blob: Blob, view: TrainerArtifactView) => {
-  const details = artifactDetails[view];
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = details.filename;
-  link.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(artifactDetails[view].filename, blob);
 };
 
 export const supportsTrainerArtifactSharing = () => {

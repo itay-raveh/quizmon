@@ -1,4 +1,5 @@
 import { formatVersions } from '../../domain/versions';
+import { downloadBlob } from '../../lib/download';
 import { isRecord } from '../../lib/validation';
 import { accountSnapshot } from './account';
 
@@ -30,12 +31,5 @@ export async function downloadAccountExport() {
     throw new Error(
       'Account changed or the export could not be verified. Try again.',
     );
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'quizmon-account.json';
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  downloadBlob('quizmon-account.json', blob);
 }

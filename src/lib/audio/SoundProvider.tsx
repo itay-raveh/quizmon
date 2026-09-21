@@ -25,57 +25,26 @@ interface SoundProviderProps {
   volume: number;
 }
 
-interface ScoreCountControls {
-  play: SoundControls['playScoreCount'];
-  stop: () => void;
-}
-
 type SoundModule = typeof import('./useSoundPlayback');
 type UseSound = SoundModule['default'];
-
-const silentScoreCount: ScoreCountControls = {
-  play: () => undefined,
-  stop: () => undefined,
-};
-
-const ScoreCountSound = ({
-  onReady,
-  useSound,
-  volume,
-}: {
-  onReady: (controls: ScoreCountControls) => void;
-  useSound: UseSound;
-  volume: number;
-}) => {
-  const [play, { stop }] = useSound(scoreCountSound, 0.24 * volume, true);
-
-  useEffect(() => {
-    onReady({ play, stop });
-    return () => {
-      stop();
-      onReady(silentScoreCount);
-    };
-  }, [onReady, play, stop]);
-
-  return null;
-};
 
 const SoundEngine = ({
   useRewardSounds,
   onReady,
-  prepareScoreCount,
   useSound,
   volume,
 }: {
   useRewardSounds: SoundModule['useRewardSounds'];
   onReady: (controls: SoundControls) => void;
-  prepareScoreCount: boolean;
   useSound: UseSound;
   volume: number;
 }) => {
   const { play: playReward, stop: stopRewards } = useRewardSounds(volume);
-  const [scoreCountControls, setScoreCountControls] =
-    useState<ScoreCountControls>(silentScoreCount);
+  const [playScoreCount, { stop: stopScoreCount }] = useSound(
+    scoreCountSound,
+    0.24 * volume,
+    true,
+  );
   const [playTap] = useSound(tapSound, 0.16 * volume);
   const [playToggleOff] = useSound(toggleOffSound, 0.18 * volume);
   const [playToggleOn] = useSound(toggleOnSound, 0.18 * volume);
@@ -93,8 +62,8 @@ const SoundEngine = ({
   const stopCelebration = useCallback(() => {
     stopResults();
     stopPerfect();
-    scoreCountControls.stop();
-  }, [scoreCountControls, stopPerfect, stopResults]);
+    stopScoreCount();
+  }, [stopScoreCount, stopPerfect, stopResults]);
 
   useEffect(() => stopCelebration, [stopCelebration]);
 
@@ -105,7 +74,7 @@ const SoundEngine = ({
       playCorrect,
       playPerfect,
       playResults,
-      playScoreCount: scoreCountControls.play,
+      playScoreCount,
       playTap,
       playToggleOff,
       playToggleOn,
@@ -118,7 +87,7 @@ const SoundEngine = ({
       playCorrect,
       playPerfect,
       playResults,
-      scoreCountControls,
+      playScoreCount,
       playTap,
       playToggleOff,
       playToggleOn,
@@ -132,13 +101,7 @@ const SoundEngine = ({
     return () => onReady(silentSoundControls);
   }, [controls, onReady]);
 
-  return prepareScoreCount ? (
-    <ScoreCountSound
-      onReady={setScoreCountControls}
-      useSound={useSound}
-      volume={volume}
-    />
-  ) : null;
+  return null;
 };
 
 export const SoundProvider = ({
@@ -184,7 +147,6 @@ export const SoundProvider = ({
       {volume > 0 && soundModule ? (
         <SoundEngine
           onReady={setControls}
-          prepareScoreCount={prepareScoreCount}
           useSound={soundModule.default}
           useRewardSounds={soundModule.useRewardSounds}
           volume={volume}
