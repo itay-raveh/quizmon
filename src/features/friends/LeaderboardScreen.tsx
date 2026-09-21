@@ -366,7 +366,7 @@ export function LeaderboardScreen({
                     : 'leaderboard-controls__date--hidden'
                 }
               >
-                Daily date (UTC)
+                Date (UTC)
                 <input
                   type="date"
                   value={date}

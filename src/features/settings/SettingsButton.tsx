@@ -8,12 +8,13 @@ interface SettingsButtonProps {
 
 export const SettingsButton = ({ disabled, onClick }: SettingsButtonProps) => (
   <GameButton
+    aria-label="Settings"
+    title="Settings"
     className="settings-link"
     disabled={disabled}
     onClick={onClick}
     tone="quiet"
   >
     <GearSixIcon aria-hidden="true" weight="bold" />
-    <span>Settings</span>
   </GameButton>
 );

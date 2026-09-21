@@ -143,17 +143,22 @@
 }
 
 .leaderboard-modes {
-  display: flex;
-  gap: 1.5rem;
-  border-bottom: 1px solid var(--navy);
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  overflow: hidden;
+  gap: 2px;
+  background: var(--navy);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  box-shadow: 0 0.18rem 0 var(--yellow);
 }
 
 .leaderboard-modes button,
 .leaderboard-scope {
   min-height: 2.75rem;
-  padding: 0.45rem 0.1rem;
+  padding: 0.45rem 0.8rem;
   border: 0;
-  background: none;
   color: var(--muted);
   font: inherit;
   font-weight: 700;
@@ -161,13 +166,18 @@
 }
 
 .leaderboard-modes button {
-  margin-bottom: -1px;
-  border-bottom: 3px solid transparent;
+  min-width: 7rem;
+  background: var(--paper);
 }
 
 .leaderboard-modes button[aria-pressed='true'] {
-  border-bottom-color: var(--blue);
-  color: var(--navy);
+  background: var(--blue);
+  color: var(--primary-text);
+}
+
+.leaderboard-scope {
+  padding-inline: 0.25rem;
+  background: none;
 }
 
 .leaderboard-scope[aria-pressed='true'] {
@@ -177,7 +187,7 @@
   text-underline-offset: 0.35rem;
 }
 
-.leaderboard-modes button:hover,
+.leaderboard-modes button:hover:not([aria-pressed='true']),
 .leaderboard-scope:hover {
   color: var(--navy);
 }
@@ -221,7 +231,7 @@
   display: grid;
   align-content: start;
   gap: 0.75rem;
-  min-height: 18rem;
+  min-height: 12rem;
 }
 
 .leaderboard-loading {

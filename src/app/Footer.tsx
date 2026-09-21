@@ -10,7 +10,7 @@ export const Footer = ({ currentPath }: { currentPath?: string }) => (
   <footer className="site-footer">
     <div className="site-footer__support-row">
       <a
-        className="site-footer__support"
+        className="game-button game-button--quiet site-footer__support"
         href={site.supportUrl}
         target="_blank"
         rel="noopener"

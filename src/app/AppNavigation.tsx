@@ -63,7 +63,9 @@ export function AppNavigation({
           <UserCircleIcon aria-hidden="true" weight="bold" />
           {account.owner ? 'Account' : 'Sign in'}
           {account.owner && (account.error || account.issues.length) ? (
-            <span className="app-navigation__alert" aria-hidden="true" />
+            <span className="app-navigation__alert" aria-hidden="true">
+              !
+            </span>
           ) : null}
         </GameButton>
       </nav>

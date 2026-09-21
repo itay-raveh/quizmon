@@ -124,7 +124,7 @@ export const AccountSettings = () => {
             <p>Sign in to the same account to resume syncing.</p>
           ) : !sent ? (
             <div className="account-settings__pitch">
-              <p>Your Trainer story goes wherever you play.</p>
+              <p>Take your Trainer story with you.</p>
               <div>
                 <UserCircleIcon aria-hidden="true" /> Keep your completed
                 progress across devices
@@ -370,7 +370,6 @@ export const AccountSettings = () => {
             >
               Sign out
             </GameButton>
-            <p>Signing out returns to your separate guest save.</p>
           </div>
           {(syncPaused || syncOffline || syncNeedsReview) && (
             <section

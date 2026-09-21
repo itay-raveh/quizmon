@@ -42,10 +42,11 @@
   }
 
   .trainer-passport__header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .trainer-passport__header h1 {
+    min-width: 0;
     font-size: var(--text-headline);
   }
 

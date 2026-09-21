@@ -25,14 +25,14 @@
 
 .site-footer__more {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.1rem;
   max-width: 56rem;
-  margin-top: 3rem;
+  margin-top: 0;
   margin-inline: auto;
 }
 
 .site-footer__people {
-  margin-top: 0.25rem;
+  margin-top: 0;
   font-weight: 600;
 }
 
@@ -58,6 +58,10 @@
   text-decoration: none;
 }
 
+.site-footer .site-footer__people a {
+  min-height: 1.25rem;
+}
+
 .site-footer a:is(:hover, :focus-visible) {
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -73,10 +77,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5625rem;
-  border: 2px solid var(--navy);
-  border-radius: var(--button-radius);
-  background: var(--yellow);
-  box-shadow: 0 0.2rem 0 var(--navy-shadow);
+  border-color: var(--navy);
+  background: var(--paper);
   color: var(--navy);
   font-family: var(--font-interface);
   font-size: var(--text-footer);
@@ -86,13 +88,7 @@
 }
 
 .site-footer .site-footer__support:is(:hover, :focus-visible) {
-  background: var(--cream);
   text-decoration: none;
-}
-
-.site-footer .site-footer__support:active {
-  transform: translateY(0.12rem);
-  box-shadow: 0 0.08rem 0 var(--navy-shadow);
 }
 
 .site-footer__support svg {
