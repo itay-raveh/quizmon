@@ -83,13 +83,6 @@ export const defaultQuestionRendering: QuestionRendering = {
 };
 
 const measurementVariants: DifficultyVariants<VariantRules> = {
-  1: {
-    measurement: {
-      minimumRatio: 4,
-      maximumRatio: Infinity,
-      maximumSpread: Infinity,
-    },
-  },
   2: {
     measurement: {
       minimumRatio: 2,

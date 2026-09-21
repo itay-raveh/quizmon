@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { difficultyLevels, resolveDifficultyVariant } from './difficulty';
+import { getQuestionVariant } from './question-variants';
 
 describe('difficulty variants', () => {
   it.each([
@@ -23,3 +24,12 @@ describe('difficulty variants', () => {
     expect(resolveDifficultyVariant(variants, 1)).toBeUndefined();
   });
 });
+
+it.each(['height-comparison', 'weight-comparison'] as const)(
+  '%s starts at Level 2',
+  (type) => {
+    expect(
+      difficultyLevels.map((level) => getQuestionVariant(type, level)?.level),
+    ).toEqual([undefined, 2, 3, 4, 5]);
+  },
+);
