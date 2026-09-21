@@ -1,4 +1,3 @@
-import { Checkbox } from '@/components/Checkbox';
 import { SelectionTile } from '@/components/SelectionTile';
 import {
   answerFlowDelays,
@@ -90,20 +89,6 @@ export const ExperienceSettings = ({
         </label>
       </fieldset>
 
-      <fieldset className="experience-setting">
-        <legend>Motion</legend>
-        <Checkbox
-          checked={draft.reduceMotion}
-          description="Minimize non-essential animation. Device preferences are always respected."
-          label="Reduce motion"
-          onChange={(event) =>
-            onChange((current) => ({
-              ...current,
-              reduceMotion: event.target.checked,
-            }))
-          }
-        />
-      </fieldset>
       <fieldset className="experience-setting">
         <legend>Timer</legend>
         <div className="experience-options experience-options--timer">

@@ -319,7 +319,7 @@ export const AppView = (props: AppViewProps) => {
     if (destination.destination !== 'account') destination.account();
   };
   return (
-    <MotionProvider reduceMotion={props.settings.reduceMotion}>
+    <MotionProvider>
       <SoundProvider
         prepareScoreCount={props.session.phase !== 'landing'}
         volume={props.settings.soundVolume}

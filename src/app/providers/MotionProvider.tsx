@@ -3,19 +3,13 @@ import { ReducedMotionContext } from './motion-context';
 
 interface MotionProviderProps {
   children: ReactNode;
-  reduceMotion: boolean;
 }
 
-export const MotionProvider = ({
-  children,
-  reduceMotion,
-}: MotionProviderProps) => {
+export const MotionProvider = ({ children }: MotionProviderProps) => {
   const [devicePrefersReducedMotion, setDevicePrefersReducedMotion] = useState(
     () =>
       window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
   );
-  const reducedMotion = reduceMotion || devicePrefersReducedMotion;
-
   useEffect(() => {
     const preference = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const updatePreference = () =>
@@ -27,13 +21,13 @@ export const MotionProvider = ({
   useEffect(() => {
     document.documentElement.toggleAttribute(
       'data-reduce-motion',
-      reducedMotion,
+      devicePrefersReducedMotion,
     );
     return () => document.documentElement.removeAttribute('data-reduce-motion');
-  }, [reducedMotion]);
+  }, [devicePrefersReducedMotion]);
 
   return (
-    <ReducedMotionContext value={reducedMotion}>
+    <ReducedMotionContext value={devicePrefersReducedMotion}>
       {children}
     </ReducedMotionContext>
   );

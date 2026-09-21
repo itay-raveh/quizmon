@@ -12,7 +12,6 @@ test.each([
       'Daily Challenge reminder',
       'Answer flow',
       'Sound',
-      'Motion',
       'Timer',
       'Install Quizmon',
     ],
@@ -24,7 +23,6 @@ test.each([
       'Install Quizmon',
       'Answer flow',
       'Sound',
-      'Motion',
       'Timer',
     ],
   ],
@@ -65,4 +63,5 @@ test.each([
       ([, label]) => label,
     ),
   ).toEqual(expected);
+  expect(markup).not.toContain('Reduce motion');
 });
