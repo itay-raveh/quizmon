@@ -38,10 +38,10 @@ const codeSchema = z.object({
 });
 
 export const AccountSettings = () => {
-  useEffect(() => {
-    void loadAccountConfig();
-  }, []);
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
+  useEffect(() => {
+    if (!account.owner) void loadAccountConfig();
+  }, [account.owner]);
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [preparingAccount, setPreparingAccount] = useState(false);
@@ -127,11 +127,7 @@ export const AccountSettings = () => {
           {account.owner ? (
             <p>Sign in to the same account to resume syncing.</p>
           ) : !sent ? (
-            <ul className="account-settings__benefits">
-              <li>Sync between devices</li>
-              <li>Compete with the world</li>
-              <li>Connect with friends</li>
-            </ul>
+            <p>Sync your progress and join the rankings.</p>
           ) : null}
           <form
             className={`account-settings__section${sent ? ' account-settings__verification' : ''}`}
@@ -389,17 +385,17 @@ export const AccountSettings = () => {
                           ? 'Progress synced'
                           : 'Syncing progress'}
                 </h2>
-                <p>
-                  {syncPaused
-                    ? syncNeedsSignIn
-                      ? 'Sign in again to continue.'
-                      : 'Your progress is safe on this device.'
-                    : syncComplete
-                      ? 'Up to date on your devices.'
+                {(syncPaused || syncOffline || syncNeedsReview) && (
+                  <p>
+                    {syncPaused
+                      ? syncNeedsSignIn
+                        ? 'Sign in again to continue.'
+                        : 'Saved on this device. Try reconnecting.'
                       : syncNeedsReview
                         ? 'Choose how to resolve the changes below.'
-                        : 'Your progress is safe on this device.'}
-                </p>
+                        : 'Saved on this device. Sync will resume online.'}
+                  </p>
+                )}
               </div>
             </div>
             {syncWorking && (
@@ -431,12 +427,6 @@ export const AccountSettings = () => {
                       ? 'Reconnecting…'
                       : 'Retry sync'}
                 </GameButton>
-                {!syncNeedsSignIn && (
-                  <details className="account-settings__error-details">
-                    <summary>Error details</summary>
-                    <p>{account.error}</p>
-                  </details>
-                )}
               </div>
             )}
           </section>

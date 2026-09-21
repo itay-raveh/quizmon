@@ -147,13 +147,11 @@
   gap: 0.45rem;
 }
 
-.account-settings__error-details,
 .account-settings__options {
   color: var(--muted);
   font-size: var(--text-status);
 }
 
-.account-settings__error-details summary,
 .account-settings__options summary {
   width: fit-content;
   min-height: 2.75rem;
@@ -161,11 +159,6 @@
   color: var(--navy);
   font-weight: 700;
   cursor: pointer;
-}
-
-.account-settings__error-details p {
-  margin-top: 0.25rem;
-  overflow-wrap: anywhere;
 }
 
 .account-settings__options {
@@ -202,31 +195,6 @@ html[data-reduce-motion] .account-settings__sync-track::after {
   gap: 0.65rem;
   color: var(--muted);
   font-size: var(--text-body);
-}
-
-.account-settings__benefits {
-  display: grid;
-  gap: 0.55rem;
-  margin: 0;
-  padding: 0;
-  color: var(--navy);
-  font-weight: 700;
-  list-style: none;
-}
-
-.account-settings__benefits li {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.account-settings__benefits li::before {
-  content: '';
-  flex: 0 0 0.65rem;
-  height: 0.65rem;
-  background: var(--yellow);
-  border: 2px solid var(--navy);
-  border-radius: 50%;
 }
 
 .account-settings__actions {

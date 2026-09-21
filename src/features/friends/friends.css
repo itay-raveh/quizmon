@@ -63,16 +63,14 @@
   height: 4rem;
 }
 
-.friends-options summary,
-.leaderboard-rules summary {
+.friends-options summary {
   cursor: pointer;
   padding-block: 0.5rem;
   color: var(--navy);
   font-weight: 700;
 }
 
-.friends-options summary:focus-visible,
-.leaderboard-rules summary:focus-visible {
+.friends-options summary:focus-visible {
   outline: 3px solid var(--navy);
   outline-offset: 2px;
 }
@@ -97,7 +95,6 @@
   align-content: start;
   display: grid;
   gap: 1rem;
-  padding-bottom: 1rem;
 }
 
 .friends-panel p,
@@ -146,13 +143,49 @@
 }
 
 .leaderboard-modes {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--navy);
 }
 
-.leaderboard-modes .game-button {
-  width: 100%;
+.leaderboard-modes button,
+.leaderboard-scope {
+  min-height: 2.75rem;
+  padding: 0.45rem 0.1rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.leaderboard-modes button {
+  margin-bottom: -1px;
+  border-bottom: 3px solid transparent;
+}
+
+.leaderboard-modes button[aria-pressed='true'] {
+  border-bottom-color: var(--blue);
+  color: var(--navy);
+}
+
+.leaderboard-scope[aria-pressed='true'] {
+  color: var(--blue);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35rem;
+}
+
+.leaderboard-modes button:hover,
+.leaderboard-scope:hover {
+  color: var(--navy);
+}
+
+.leaderboard-modes button:focus-visible,
+.leaderboard-scope:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
 }
 
 .leaderboard-controls label,

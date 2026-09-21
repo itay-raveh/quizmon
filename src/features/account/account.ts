@@ -536,11 +536,7 @@ export function loadAccountConfig() {
       if (isRecord(value) && typeof value.emailDelivery === 'string')
         update({ emailDelivery: value.emailDelivery });
     })
-    .catch(() =>
-      update({
-        error: 'Sign-in is unavailable. You can keep playing on this device.',
-      }),
-    );
+    .catch(() => {});
 }
 export async function startAccountSync() {
   void revokePendingSession().catch(() =>

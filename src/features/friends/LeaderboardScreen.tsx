@@ -92,6 +92,23 @@ function Standings({
       });
     return () => controller.abort();
   }, [owner, catalog, mode, date, scope, request]);
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === 'visible' && navigator.onLine)
+        setRequest((current) => ({
+          ...current,
+          revision: current.revision + 1,
+        }));
+    };
+    const timer = window.setInterval(refresh, 60_000);
+    document.addEventListener('visibilitychange', refresh);
+    window.addEventListener('online', refresh);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', refresh);
+      window.removeEventListener('online', refresh);
+    };
+  }, []);
   const load = (after: string | null) => {
     setBusy(true);
     setRequest((current) => ({ after, revision: current.revision + 1 }));
@@ -189,38 +206,37 @@ function Standings({
               {data.total} {data.total === 1 ? 'trainer' : 'trainers'}
             </p>
           )}
-          <div className="friends-actions">
-            {request.after && (
-              <GameButton
-                tone="quiet"
-                disabled={busy}
-                onClick={() => load(null)}
-              >
-                First page
-              </GameButton>
-            )}
-            {data.nextCursor && (
-              <GameButton
-                tone="quiet"
-                disabled={busy}
-                onClick={() => load(data.nextCursor)}
-              >
-                Next page
-              </GameButton>
-            )}
-          </div>
+          {(request.after || data.nextCursor) && (
+            <div className="friends-actions">
+              {request.after && (
+                <GameButton
+                  tone="quiet"
+                  disabled={busy}
+                  onClick={() => load(null)}
+                >
+                  First page
+                </GameButton>
+              )}
+              {data.nextCursor && (
+                <GameButton
+                  tone="quiet"
+                  disabled={busy}
+                  onClick={() => load(data.nextCursor)}
+                >
+                  Next page
+                </GameButton>
+              )}
+            </div>
+          )}
         </>
       )}
-      <div className="friends-actions">
-        <GameButton tone="quiet" disabled={busy} onClick={() => load(null)}>
-          Refresh
-        </GameButton>
-        {scope === 'friends' && (
+      {scope === 'friends' && (
+        <div className="friends-actions">
           <GameButton tone="quiet" onClick={onManageFriends}>
             Manage friends
           </GameButton>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -283,7 +299,7 @@ export function LeaderboardScreen({
   return (
     <section className="social-screen" aria-labelledby="leaderboard-title">
       <header className="social-screen__header">
-        <h1 id="leaderboard-title">Leaderboards</h1>
+        <h1 id="leaderboard-title">Rankings</h1>
       </header>
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
@@ -291,22 +307,22 @@ export function LeaderboardScreen({
             <div
               className="leaderboard-modes"
               role="group"
-              aria-label="Leaderboard mode"
+              aria-label="Game mode"
             >
-              <GameButton
-                tone={mode === 'daily' ? 'primary' : 'quiet'}
+              <button
+                type="button"
                 aria-pressed={mode === 'daily'}
                 onClick={() => chooseMode('daily')}
               >
                 Daily
-              </GameButton>
-              <GameButton
-                tone={mode === 'training' ? 'primary' : 'quiet'}
+              </button>
+              <button
+                type="button"
                 aria-pressed={mode === 'training'}
                 onClick={() => chooseMode('training')}
               >
                 Training
-              </GameButton>
+              </button>
             </div>
             <div className="leaderboard-controls">
               <div
@@ -314,20 +330,22 @@ export function LeaderboardScreen({
                 role="group"
                 aria-label="Leaderboard players"
               >
-                <GameButton
-                  tone={scope === 'global' ? 'primary' : 'quiet'}
+                <button
+                  className="leaderboard-scope"
+                  type="button"
                   aria-pressed={scope === 'global'}
                   onClick={() => chooseScope('global')}
                 >
                   Global
-                </GameButton>
-                <GameButton
-                  tone={scope === 'friends' ? 'primary' : 'quiet'}
+                </button>
+                <button
+                  className="leaderboard-scope"
+                  type="button"
                   aria-pressed={scope === 'friends'}
                   onClick={() => chooseScope('friends')}
                 >
                   Friends
-                </GameButton>
+                </button>
               </div>
               {mode === 'daily' && (
                 <label>
@@ -350,24 +368,11 @@ export function LeaderboardScreen({
               scope={scope}
               onManageFriends={onManageFriends}
             />
-            <details className="leaderboard-rules">
-              <summary>How ranking works</summary>
-              <p>
-                Highest score first; faster answer time breaks ties. Exact ties
-                share rank. Offline results can arrive later, so standings can
-                change.
-              </p>
-              <p>
-                {mode === 'daily'
-                  ? 'Daily rounds qualify on their assigned UTC date.'
-                  : 'Your best Training score in the current scoring version counts.'}
-              </p>
-            </details>
           </>
         ) : (
           <div className="leaderboard-locked">
             <LockSimpleIcon aria-hidden="true" weight="duotone" />
-            <p>Sign in to view leaderboards.</p>
+            <p>Sign in to view rankings.</p>
           </div>
         )}
       </div>

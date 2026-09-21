@@ -14,7 +14,7 @@ export type MainDestination = 'play' | 'trainer' | 'leaderboards';
 const destinations = [
   ['play', 'Play', PuzzlePieceIcon],
   ['trainer', 'Trainer', CardholderIcon],
-  ['leaderboards', 'Leaderboards', ChartBarIcon],
+  ['leaderboards', 'Rankings', ChartBarIcon],
 ] as const;
 
 export function AppNavigation({
