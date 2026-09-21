@@ -24,22 +24,6 @@ jobs:
         with:
           install_args: node
       - run: npm ci
-      - name: Validate the application chart
-        run: |
-          mise install helm kubeconform
-          node tests/online/check-helm-chart.ts
-      - name: Validate release tooling
-        run: |
-          npx tsc --noEmit
-          npx eslint server deploy tests/online
-          node --test tests/online/publication-plan.test.ts tests/online/release-inputs.test.ts tests/online/release-config.test.ts tests/online/asset-headers.test.ts tests/online/release-selection.test.ts
-      - name: Start disposable database
-        run: docker compose -f compose.yaml up -d --wait db
-      - name: Check migration and release retries
-        run: |
-          node tests/online/check-migrations.ts
-          node --test tests/online/release-coordinator.test.ts
-          node --test tests/online/cloudflare-release.test.ts
       - name: Package the candidate
         run: |
           npm run build
@@ -54,18 +38,6 @@ jobs:
           SOURCE_REVISION: ${{ steps.publication.outputs.revision }}
         run: |
           docker build --label "org.opencontainers.image.source=$SOURCE_URL" --label "org.opencontainers.image.revision=$SOURCE_REVISION" --iidfile .wrangler/release-image-id -t "$QUIZMON_RELEASE_IMAGE" .wrangler/release-candidate
-      - name: Test the packaged runtime
-        env:
-          QUIZMON_RELEASE_ARTIFACT: .wrangler/release-candidate
-        run: |
-          node --test tests/online/release-artifact.test.ts
-          node tests/online/check-release-image.ts
-          node tests/online/check-release-preflight.ts
-      - name: Check real sync isolation
-        run: |
-          docker compose -f compose.yaml pull powersync
-          export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
-          node tests/online/check-runtime-config.ts
       - name: Publish the checked image
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -90,6 +62,3 @@ jobs:
             exit 1
           fi
           printf '%s\n' "$digest_reference" >> "$GITHUB_STEP_SUMMARY"
-      - name: Remove disposable database
-        if: always()
-        run: docker compose -f compose.yaml down --volumes

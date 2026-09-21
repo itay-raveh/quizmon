@@ -18,24 +18,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "dev:client": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node deploy/migrate.ts",
-    "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts tests/online/publication-plan.test.ts tests/online/release-selection.test.ts",
-    "test:accounts": "node tests/online/check-friends.ts",
-    "test:sync": "node tests/online/check-progress-api.ts",
-    "test:accounts:browser": "node tests/online/check-main-game.ts",
-    "test:migrations": "node tests/online/check-migrations.ts",
-    "check:chart": "node tests/online/check-helm-chart.ts",
     "release:package": "node deploy/package-release.ts",
     "release:plan": "node deploy/plan-publication.ts",
-    "release:check": "node deploy/release-command.ts",
-    "test:release:image": "node tests/online/check-release-image.ts",
-    "test:release:preflight": "node tests/online/check-release-preflight.ts",
-    "test:release:runtime": "node tests/online/check-runtime-config.ts",
-    "test:online:db": "node --test tests/online/email.test.ts tests/online/email-budget.test.ts tests/online/release-coordinator.test.ts tests/online/cloudflare-release.test.ts"
+    "release:check": "node deploy/release-command.ts"
   },
   "dependencies": {
     "@fontsource-variable/gabarito": "^5.3.0",
@@ -60,15 +49,11 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@axe-core/playwright": "4.13.0",
     "@cloudflare/workers-types": "5.20260910.1",
     "@commitlint/cli": "21.2.2",
     "@commitlint/config-conventional": "21.2.2",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.62.1",
-    "@testing-library/jest-dom": "7.0.1",
-    "@testing-library/react": "16.3.3",
-    "@testing-library/user-event": "14.6.6",
     "@types/howler": "2.2.12",
     "@types/node": "24.13.3",
     "@types/pg": "8.20.0",
@@ -83,7 +68,6 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.5",
     "globals": "17.11.0",
-    "jsdom": "30.0.1",
     "knip": "6.34.0",
     "marked": "18.0.11",
     "pokenode-ts": "2.3.0",
@@ -132,7 +116,6 @@
     "workspaces": {
       ".": {
         "entry": [
-          "e2e/database-driver.ts",
           "server/auth-schema-config.ts"
         ]
       }

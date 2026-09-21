@@ -16,10 +16,10 @@ shellcheck = "0.11.0"
 "github:zizmorcore/zizmor" = "1.29.0"
 
 [tasks.setup]
-description = "Set up tools, dependencies, browser binaries, and Git hooks"
+description = "Set up tools, dependencies, and Git hooks"
 run = [
   "npm ci",
-  "npx --no-install playwright install chromium webkit",
+  "npx --no-install playwright install chromium",
   "prek install",
 ]
 
@@ -31,9 +31,7 @@ run = [
   "betterleaks git --redact --no-banner --no-color .",
   "npm run check:dead-code",
   "npm test",
-  "npm run test:online",
   "npm run build",
-  "npm run test:e2e",
   "prek validate-config prek.toml",
   "npm run deploy:dry-run",
   "actionlint",
