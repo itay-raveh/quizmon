@@ -83,9 +83,14 @@ export function PublicTrainerScreen({
       aria-labelledby="public-trainer-title"
     >
       <header className="trainer-passport__header trainer-passport__public-header">
-        <GameButton onClick={onBack} tone="quiet">
+        <GameButton
+          aria-label={backLabel}
+          className="trainer-passport__back"
+          onClick={onBack}
+          tone="quiet"
+        >
           <ArrowLeftIcon aria-hidden="true" weight="bold" />
-          {backLabel}
+          <span className="trainer-passport__back-label">{backLabel}</span>
         </GameButton>
         <h1 id="public-trainer-title">Trainer profile</h1>
       </header>

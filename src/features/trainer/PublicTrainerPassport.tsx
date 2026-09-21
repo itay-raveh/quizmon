@@ -67,9 +67,14 @@ export function PublicTrainerPassport({
       aria-labelledby="public-trainer-title"
     >
       <header className="trainer-passport__header trainer-passport__public-header">
-        <GameButton tone="quiet" onClick={onBack}>
+        <GameButton
+          aria-label={backLabel}
+          className="trainer-passport__back"
+          tone="quiet"
+          onClick={onBack}
+        >
           <ArrowLeftIcon aria-hidden="true" weight="bold" />
-          {backLabel}
+          <span className="trainer-passport__back-label">{backLabel}</span>
         </GameButton>
         <div className="trainer-passport__public-heading">
           <h1 id="public-trainer-title" tabIndex={-1}>

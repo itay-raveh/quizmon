@@ -2,6 +2,20 @@
   justify-content: flex-start;
 }
 
+.trainer-passport__back.game-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: 0.4rem;
+}
+
+.trainer-passport__back svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+}
+
 .trainer-passport__public-heading {
   min-width: 0;
 }
@@ -47,6 +61,15 @@
 
 @media (max-width: 42rem) {
   .trainer-passport__public-header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+  }
+
+  .trainer-passport__back.game-button {
+    width: 2.75rem;
+    padding: 0;
+  }
+
+  .trainer-passport__back-label {
+    display: none;
   }
 }
