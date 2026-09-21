@@ -547,11 +547,6 @@
   max-width: none;
   object-fit: contain;
   image-rendering: pixelated;
-  transition: opacity 100ms ease-out;
-}
-
-.trainer-card__partner-sprite--pending {
-  opacity: 0;
 }
 
 .trainer-card__partner-sprite--behind {

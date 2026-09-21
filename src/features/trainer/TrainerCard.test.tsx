@@ -1,9 +1,10 @@
 import { createTrainerProfile } from '@/domain/player/trainer-profile';
+import { trainerAvatarOptions } from '@/domain/player/trainer-avatars';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
 import { TrainerCard } from './TrainerCard';
 
-test('holds the partner until the trainer avatar establishes its ground line', () => {
+test('positions the partner at the trainer ground line on first render', () => {
   const profile = {
     ...createTrainerProfile(),
     avatar: 'aaron',
@@ -20,8 +21,12 @@ test('holds the partner until the trainer avatar establishes its ground line', (
       />,
     );
 
+  const bottom = trainerAvatarOptions.find(
+    ({ id }) => id === profile.avatar,
+  )!.bottom;
   expect(render(profile.avatar)).toContain(
-    'trainer-card__partner-sprite trainer-card__partner-sprite--pending',
+    `bottom:calc(${(1 - bottom) * 100}% - `,
   );
-  expect(render(null)).not.toContain('trainer-card__partner-sprite--pending');
+  expect(render(profile.avatar)).not.toContain('partner-sprite--pending');
+  expect(render(null)).toContain('bottom:calc(0% - ');
 });

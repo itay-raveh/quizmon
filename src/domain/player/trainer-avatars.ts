@@ -1,5 +1,6 @@
-import avatarIds from './data/trainer-avatars.json' with { type: 'json' };
+import avatars from './data/trainer-avatars.json' with { type: 'json' };
 
+const avatarIds = Object.keys(avatars);
 const trainerAvatarIds = new Set<string>(avatarIds);
 const trainerAvatarBases = new Set(avatarIds.map((id) => id.split('-')[0]));
 
@@ -96,10 +97,13 @@ const avatarName = (id: string): string => {
   return `${name}${genderLabel}${variantLabel.length ? ` · ${variantLabel.join(' · ')}` : ''}`;
 };
 
-export const trainerAvatarOptions = avatarIds.map((id) => ({
-  id,
-  name: avatarName(id),
-}));
+export const trainerAvatarOptions = Object.entries(avatars).map(
+  ([id, bottom]) => ({
+    id,
+    bottom,
+    name: avatarName(id),
+  }),
+);
 
 export const isTrainerAvatar = (value: unknown): value is string =>
   typeof value === 'string' && trainerAvatarIds.has(value);

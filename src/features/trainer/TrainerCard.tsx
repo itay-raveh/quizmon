@@ -13,7 +13,7 @@ import {
 } from '@/domain/player/trainer-progression';
 import { CatchCombo } from '@/features/quiz/CatchCombo';
 import type { TrainerProfile } from '@/lib/storage/trainer-profile-storage';
-import { useState, type Ref } from 'react';
+import type { Ref } from 'react';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
@@ -33,28 +33,6 @@ interface TrainerCardProps {
   };
 }
 
-const getAvatarBottom = (image: HTMLImageElement): number => {
-  const { naturalWidth: width, naturalHeight: height } = image;
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext('2d');
-  if (!context) return 1;
-
-  try {
-    context.drawImage(image, 0, 0);
-    const pixels = context.getImageData(0, 0, width, height).data;
-    for (let row = height - 1; row >= 0; row--) {
-      for (let column = 0; column < width; column++) {
-        if (pixels[(row * width + column) * 4 + 3]) return (row + 1) / height;
-      }
-    }
-  } catch {
-    return 1;
-  }
-  return 1;
-};
-
 export const TrainerCard = ({
   cardRef,
   partnerDexNumber,
@@ -70,15 +48,7 @@ export const TrainerCard = ({
   const isChampion = rank === 'Champion';
   const partnerName = profile.partnerPokemon ?? 'Choose partner';
   const avatar = trainerAvatarOptions.find(({ id }) => id === profile.avatar);
-  const [avatarBottom, setAvatarBottom] = useState<{
-    id: string;
-    fraction: number;
-  } | null>(null);
-  const groundOffset =
-    avatar && avatarBottom?.id === avatar.id
-      ? (1 - avatarBottom.fraction) * 100
-      : 0;
-  const partnerPositionReady = !avatar || avatarBottom?.id === avatar.id;
+  const groundOffset = avatar ? (1 - avatar.bottom) * 100 : 0;
   const height = partnerHeight ?? 8;
   const visibleHeight = Math.min(29, Math.max(5, (height * 29) / 16));
   const spriteSize = Math.min(
@@ -126,13 +96,6 @@ export const TrainerCard = ({
                 alt={`${avatar.name} trainer avatar`}
                 width="80"
                 height="80"
-                onLoad={(event) =>
-                  setAvatarBottom({
-                    id: avatar.id,
-                    fraction: getAvatarBottom(event.currentTarget),
-                  })
-                }
-                onError={() => setAvatarBottom({ id: avatar.id, fraction: 1 })}
               />
             ) : (
               <span
@@ -144,7 +107,7 @@ export const TrainerCard = ({
             )}
             {partnerSprite && (
               <img
-                className={`trainer-card__partner-sprite${height > 16 ? ' trainer-card__partner-sprite--behind' : ''}${partnerPositionReady ? '' : ' trainer-card__partner-sprite--pending'}`}
+                className={`trainer-card__partner-sprite${height > 16 ? ' trainer-card__partner-sprite--behind' : ''}`}
                 src={partnerSprite}
                 alt=""
                 width="96"
