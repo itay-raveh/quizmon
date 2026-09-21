@@ -47,6 +47,7 @@ let snapshot = {
   owner: '',
   status: 'Saved on this device',
   error: '',
+  diagnostic: '',
   pending: 0,
   mergeRequired: false,
   emailDelivery: '',
@@ -57,6 +58,16 @@ const update = (patch: Partial<typeof snapshot>) => {
   snapshot = { ...snapshot, ...patch };
   listeners.forEach((listener) => listener());
 };
+const syncDiagnostic = (phase: string, error: Error) =>
+  [
+    phase,
+    `${error.name}: ${error.message}`,
+    error.stack,
+    error.cause instanceof Error &&
+      `Cause: ${error.cause.stack ?? error.cause.message}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 export const accountSnapshot = () => snapshot;
 export const subscribeAccount = (listener: () => void) => {
   listeners.add(listener);
@@ -490,11 +501,9 @@ async function refreshAccount() {
   );
   const unresolved = issues.filter((issue) => !issue.resolving);
   const status = account.currentStatus;
-  const syncError = navigator.onLine
-    ? (status.dataFlowStatus.uploadError?.message ??
-      status.dataFlowStatus.downloadError?.message ??
-      '')
-    : '';
+  const uploadError = navigator.onLine ? status.uploadError : undefined;
+  const downloadError = navigator.onLine ? status.downloadError : undefined;
+  const syncError = uploadError?.message ?? downloadError?.message ?? '';
   update({
     pending: count?.count ?? 0,
     issues,
@@ -510,12 +519,18 @@ async function refreshAccount() {
               ? 'Synced'
               : 'Saved on this device. Connecting…',
     error: syncError,
+    diagnostic: uploadError
+      ? syncDiagnostic('Upload', uploadError)
+      : downloadError
+        ? syncDiagnostic('Download', downloadError)
+        : '',
   });
 }
 const refresh = () => {
   refreshing = refreshing.then(refreshAccount).catch((error: Error) =>
     update({
       error: error.message,
+      diagnostic: syncDiagnostic('Local refresh', error),
       status: 'Saved on this device. Sync is paused.',
     }),
   );
@@ -575,22 +590,28 @@ export async function startAccountSync() {
   window.addEventListener('online', changed);
   window.addEventListener('offline', changed);
   void refresh();
-  void account
-    .connect(connector(binding))
-    .catch((error: Error) =>
-      update({ error: error.message, status: 'Sync paused' }),
-    );
+  void account.connect(connector(binding)).catch((error: Error) =>
+    update({
+      error: error.message,
+      diagnostic: syncDiagnostic('Connect', error),
+      status: 'Sync paused',
+    }),
+  );
 }
 
 export async function retryAccountSync() {
   if (!account || !binding) return;
-  update({ error: '', status: 'Reconnecting…' });
+  update({ error: '', diagnostic: '', status: 'Reconnecting…' });
   try {
     await account.connect(connector(binding));
     await refresh();
   } catch (error) {
     update({
       error: error instanceof Error ? error.message : 'Sync could not connect.',
+      diagnostic:
+        error instanceof Error
+          ? syncDiagnostic('Reconnect', error)
+          : `Reconnect: ${String(error)}`,
       status: 'Sync paused',
     });
   }

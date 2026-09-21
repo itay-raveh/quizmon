@@ -422,6 +422,12 @@ export const AccountSettings = () => {
               )}
             </section>
           )}
+          {new URLSearchParams(window.location.search).has('syncDebug') &&
+            account.diagnostic && (
+              <pre className="account-settings__diagnostic">
+                {account.diagnostic}
+              </pre>
+            )}
           {account.issues.length > 0 && (
             <AccountConflicts
               issues={account.issues}
