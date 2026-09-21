@@ -33,6 +33,7 @@ const read = () =>
     'viewer',
     data.date,
     'friends',
+    'a'.repeat(64),
     null,
     new AbortController().signal,
   );
@@ -46,7 +47,7 @@ it('reads the selected board using the session', async () => {
   vi.stubGlobal('fetch', fetch);
   await expect(read()).resolves.toEqual(data);
   expect(fetch).toHaveBeenCalledWith(
-    '/api/leaderboards/daily?date=2026-09-14&scope=friends',
+    `/api/leaderboards/daily?date=2026-09-14&scope=friends&puzzle=${'a'.repeat(64)}`,
     expect.objectContaining({
       credentials: 'same-origin',
     }),

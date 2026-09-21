@@ -1,8 +1,7 @@
 import type { QuestionData } from './types';
 
 export const usesSearchAnswer = (question: QuestionData): boolean =>
-  question.answer.interaction === 'search' ||
-  (question.category === 'champion' && !question.rulesVersion);
+  question.answer.interaction === 'search';
 
 export const showsSearchResponse = (
   question: QuestionData,

@@ -1,11 +1,13 @@
 import './app/styles.css';
 import { mountGame } from './app/mount-game';
+import { discardOldBrowserData } from './lib/storage/reset-browser';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing root element');
 
 const showGame = mountGame(root);
-void import('./app/initialize-game')
+void discardOldBrowserData()
+  .then(() => import('./app/initialize-game'))
   .then(({ initializeGame }) => initializeGame())
   .then(showGame)
   .catch(() => {

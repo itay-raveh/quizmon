@@ -112,7 +112,7 @@ it('persists before round completion and includes discoveries in backup replacem
 
 it('rejects invalid collection data without mutating the input', () => {
   const save = {
-    version: 7,
+    version: 1,
     restoreId: null,
     data: { ...emptyPlayerData(), pokedex: ['pikachu', 42] },
   };

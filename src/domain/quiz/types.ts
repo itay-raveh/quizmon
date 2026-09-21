@@ -213,6 +213,7 @@ export interface AnswerResult extends SavedAnswerResult {
 export interface GameResult {
   scoreMultipliers?: ScoreMultipliers;
   dailyTrack?: DailyTrack;
+  puzzleId?: string;
   rules?: RoundRules;
   answers: SavedAnswerResult[];
   contentVersion: number;

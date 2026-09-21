@@ -1,7 +1,7 @@
 import { readStoredJson, writeStoredJson } from '@/lib/storage/browser-storage';
 import { isNonnegativeInteger, isObject } from '@/lib/validation';
 
-const PROMPT_KEY = 'quizmon.daily-reminder-prompt.v1';
+const PROMPT_KEY = 'quizmon.baseline.daily-reminder-prompt';
 const PROMPT_AGAIN_AFTER_DAILIES = 3;
 
 interface PromptHistory {

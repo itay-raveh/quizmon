@@ -96,17 +96,17 @@ test('registers a correct answer immediately even when the round is abandoned', 
       if (sessionStorage.getItem('pokedex-answer-seeded')) return;
       sessionStorage.setItem('pokedex-answer-seeded', '1');
       localStorage.setItem(
-        'quizmon.player',
+        'quizmon.baseline.fixture-save',
         JSON.stringify({
-          version: 7,
+          version: 1,
           restoreId: null,
           data: { ...data, settings },
         }),
       );
       sessionStorage.setItem(
-        'quizmon.active-game.v1',
+        'quizmon.baseline.fixture-round',
         JSON.stringify({
-          version: 7,
+          version: 1,
           questions,
           playerRestoreId: null,
           answers: [],

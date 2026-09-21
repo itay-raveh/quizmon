@@ -8,7 +8,7 @@ import { getSaveIssue, reportSaveIssue } from '@/lib/storage/save-health';
 import { parseUpdateSave } from '@/domain/player/update-save';
 import { useLayoutEffect, useState } from 'react';
 
-const UPDATE_STATE_KEY = 'quizmon.update-state.v1';
+const UPDATE_STATE_KEY = 'quizmon.baseline.update-state';
 const stored = readStoredJson('sessionStorage', UPDATE_STATE_KEY);
 let pendingConsumption = false;
 const loadUpdateState = () => {

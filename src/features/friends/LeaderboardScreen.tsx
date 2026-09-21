@@ -4,6 +4,10 @@ import { LockSimpleIcon } from '../../components/icons';
 import { formatPokemonName } from '../../domain/pokemon/format';
 import { isDailyDate } from '../../lib/validation';
 import { getUtcDate } from '../../domain/quiz/daily';
+import { currentDailyTrack } from '../../domain/quiz/daily-track';
+import { getDailyPuzzleId } from '../../domain/quiz/puzzle-id';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
+import { readDailyResult } from '../../lib/storage/results-storage';
 import type {
   Leaderboard,
   LeaderboardMode,
@@ -18,12 +22,14 @@ import './friends.css';
 
 function Standings({
   owner,
+  catalog,
   mode,
   date,
   scope,
   onManageFriends,
 }: {
   owner: string;
+  catalog?: PokemonCatalog;
   mode: LeaderboardMode;
   date: string;
   scope: LeaderboardScope;
@@ -38,22 +44,33 @@ function Standings({
   });
   useEffect(() => {
     const controller = new AbortController();
-    void (
-      mode === 'daily'
-        ? readDailyLeaderboard(
-            owner,
-            date,
-            scope,
-            request.after,
-            controller.signal,
-          )
-        : readTrainingLeaderboard(
-            owner,
-            scope,
-            request.after,
-            controller.signal,
-          )
-    )
+    const read = async () => {
+      if (mode === 'daily') {
+        let savedId: string | undefined;
+        try {
+          savedId = readDailyResult(date, currentDailyTrack)?.puzzleId;
+        } catch {
+          // The leaderboard can load before the local save opens.
+        }
+        if (!savedId && !catalog)
+          throw new Error('Daily catalog is unavailable.');
+        return readDailyLeaderboard(
+          owner,
+          date,
+          scope,
+          savedId ?? (await getDailyPuzzleId(catalog!, date)),
+          request.after,
+          controller.signal,
+        );
+      }
+      return readTrainingLeaderboard(
+        owner,
+        scope,
+        request.after,
+        controller.signal,
+      );
+    };
+    void read()
       .then((next) => {
         if (!controller.signal.aborted) {
           setData(next);
@@ -74,7 +91,7 @@ function Standings({
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [owner, mode, date, scope, request]);
+  }, [owner, catalog, mode, date, scope, request]);
   const load = (after: string | null) => {
     setBusy(true);
     setRequest((current) => ({ after, revision: current.revision + 1 }));
@@ -209,12 +226,14 @@ function Standings({
 }
 
 export function LeaderboardScreen({
+  catalog,
   onManageFriends,
   initialDate,
   initialScope = 'global',
   initialMode = 'daily',
   onSelectionChange,
 }: {
+  catalog?: PokemonCatalog;
   onManageFriends: () => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
@@ -325,6 +344,7 @@ export function LeaderboardScreen({
             <Standings
               key={`${account.owner}:${mode}:${date}:${scope}`}
               owner={account.owner}
+              catalog={catalog}
               mode={mode}
               date={date}
               scope={scope}

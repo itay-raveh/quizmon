@@ -1,8 +1,6 @@
 import { createSeededRandom, shuffle } from '../../lib/random.ts';
 import type { GameResult, QuestionData, QuestionType } from './types.ts';
 
-import { GAMEPLAY_REVISION } from './gameplay-version.ts';
-
 const LEAGUE_STAGE_SIZE = 3;
 
 export type LeagueView = 'challenge' | 'hall';
@@ -62,18 +60,11 @@ export const getLeagueQuestionTypes = (
   seed: string,
 ): QuestionData['questionType'][] => [
   ...stageQuestionTypes.flatMap((types, index) =>
-    shuffle(
-      types,
-      createSeededRandom(
-        `quizmon-league-types-v${GAMEPLAY_REVISION}:${seed}:${index}`,
-      ),
-    ),
+    shuffle(types, createSeededRandom(`quizmon-league-types:${seed}:${index}`)),
   ),
   ...shuffle(
     ['odd-one-out', 'counter-pick'] as const,
-    createSeededRandom(
-      `quizmon-league-types-v${GAMEPLAY_REVISION}:${seed}:champion`,
-    ),
+    createSeededRandom(`quizmon-league-types:${seed}:champion`),
   ),
   'champion',
 ];

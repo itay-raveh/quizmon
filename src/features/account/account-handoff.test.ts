@@ -150,7 +150,7 @@ it('imports guest progress without dropping live-tab or closed-tab unfinished ro
   });
   expect(await target.getAll('SELECT id FROM pending_actions')).toHaveLength(1);
   expect(await rounds(guest)).toEqual({});
-  expect(localStorage.getItem('quizmon.account.v1')).toBe(destination.id);
+  expect(localStorage.getItem('quizmon.baseline.account')).toBe(destination.id);
 });
 
 it('keeps unfinished guest rounds separate when choosing account progress', async () => {

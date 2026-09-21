@@ -75,7 +75,7 @@ const makeCompletion = (
       cluesUsed: question.initialClues ?? 0,
       unassistedSearch:
         question.category === 'champion' &&
-        (question.answer.interaction === 'search' || !question.rulesVersion) &&
+        question.answer.interaction === 'search' &&
         !question.initialClues,
       correct: true,
       subject: {
@@ -98,12 +98,13 @@ const makeCompletion = (
     contentVersion: catalog.contentVersion,
     scoreVersion,
     progressVersion: versions.progress,
-    generatorVersion: mode === 'daily' ? versions.daily : 0,
+    generatorVersion: 0,
     mode,
     dailyDate: mode === 'daily' ? new Date().toISOString().slice(0, 10) : null,
     training: trainingConfig(settings),
     completedAt: new Date().toISOString(),
     result: {
+      ...(mode === 'daily' ? { puzzleId: 'a'.repeat(64) } : {}),
       ...(snapshotRoundRules(settings, questions)
         ? { rules: snapshotRoundRules(settings, questions) }
         : {}),
@@ -424,7 +425,7 @@ it('rejects pre-reset completion versions without rewriting their evidence', () 
   const round = {
     ...onlineCompletion(crypto.randomUUID()),
     contentVersion: 17,
-    scoreVersion: 3,
+    scoreVersion: 1,
     progressVersion: 2,
   };
   round.result.contentVersion = 17;
@@ -446,16 +447,27 @@ it('rejects pre-reset completion versions without rewriting their evidence', () 
   );
 });
 
-it('accepts the post-reset completion versions after future game updates', () => {
+it('accepts baseline completion versions', () => {
   const round = onlineCompletion(crypto.randomUUID());
   round.recordVersion = 1;
-  round.contentVersion = 18;
-  round.scoreVersion = 3;
-  round.progressVersion = 3;
+  round.contentVersion = 1;
+  round.scoreVersion = 1;
+  round.progressVersion = 1;
   round.generatorVersion = 0;
-  round.result.contentVersion = 18;
-  round.result.scoreVersion = 3;
+  round.result.contentVersion = 1;
+  round.result.scoreVersion = 1;
   expect(validateCompletion(round)).toBeNull();
+});
+
+it('requires a puzzle identity for baseline Daily completions', () => {
+  const round = onlineCompletion(crypto.randomUUID(), 'daily');
+  expect(validateCompletion(round)).toBeNull();
+  expect(
+    validateCompletion({
+      ...round,
+      result: { ...round.result, puzzleId: undefined },
+    }),
+  ).toBe('invalid_result');
 });
 
 it('preserves weighted results with item, move, and region subjects through final-answer recovery and backup', async () => {
@@ -502,12 +514,12 @@ it('preserves weighted results with item, move, and region subjects through fina
   const recorded = { ...completion, datasetId: backup.state.datasetId };
   expect(validateCompletion(recorded)).toBeNull();
   expect(backup.records.local_completions).toHaveLength(1);
-  expect(backup.state.save.data.results.training['score:3']).toEqual(
+  expect(backup.state.save.data.results.training['score:1']).toEqual(
     completion.result,
   );
   expect(backup.state.save.data.pokedex).toEqual([]);
   await restoreBackup(backup);
-  expect(readPlayerSave().data.results.training['score:3']).toEqual(
+  expect(readPlayerSave().data.results.training['score:1']).toEqual(
     completion.result,
   );
   const invalid = structuredClone(recorded);

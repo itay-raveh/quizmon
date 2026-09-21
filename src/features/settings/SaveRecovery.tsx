@@ -26,11 +26,6 @@ import {
 } from './backup';
 
 const messages = {
-  unsupported: {
-    title: 'This save needs attention',
-    message:
-      'Your saved data uses a retired Quizmon format. Download a copy before restoring a current backup or starting fresh.',
-  },
   newer: {
     title: 'Update Quizmon to load this save',
     message:

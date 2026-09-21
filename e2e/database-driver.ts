@@ -21,7 +21,7 @@ export async function open(worker: string, seed = false) {
         ]),
       ),
     ),
-    database: { dbFilename: 'quizmon-guest-v2.sqlite', worker },
+    database: { dbFilename: 'quizmon-guest-baseline.sqlite', worker },
     sync: { worker },
   });
   await db.init();
@@ -31,7 +31,7 @@ export async function open(worker: string, seed = false) {
       "SELECT payload FROM local_state WHERE id = 'player'",
     );
     if (existing.length) return;
-    const raw = localStorage.getItem('quizmon.player');
+    const raw = localStorage.getItem('quizmon.baseline.fixture-save');
     const save =
       raw === null
         ? {
@@ -45,13 +45,13 @@ export async function open(worker: string, seed = false) {
       "INSERT INTO local_state(id,payload) VALUES ('player',?)",
       [payload],
     );
-    const oldRound = sessionStorage.getItem('quizmon.active-game.v1');
+    const oldRound = sessionStorage.getItem('quizmon.baseline.fixture-round');
     if (oldRound) {
       const round = JSON.parse(oldRound) as ActiveGameSnapshot;
       round.roundId ??= crypto.randomUUID();
       const tabId =
-        sessionStorage.getItem('quizmon.tab.v1') ?? crypto.randomUUID();
-      sessionStorage.setItem('quizmon.tab.v1', tabId);
+        sessionStorage.getItem('quizmon.baseline.tab') ?? crypto.randomUUID();
+      sessionStorage.setItem('quizmon.baseline.tab', tabId);
       await transaction.execute(
         'INSERT INTO local_rounds(id,payload) VALUES (?,?)',
         [tabId, JSON.stringify(round)],
@@ -81,7 +81,7 @@ export async function writeSave(save: PlayerSave) {
 export async function readRound(): Promise<ActiveGameSnapshot | null> {
   const [row] = await db.getAll<Row>(
     'SELECT payload FROM local_rounds WHERE id = ?',
-    [sessionStorage.getItem('quizmon.tab.v1')],
+    [sessionStorage.getItem('quizmon.baseline.tab')],
   );
   return row ? (JSON.parse(row.payload) as ActiveGameSnapshot) : null;
 }

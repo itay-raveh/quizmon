@@ -36,7 +36,7 @@ it('preserves original scores and answer evidence independently of current game 
   expect(archived).toEqual(game);
   expect(
     projectGameHistory([{ completion: archived, eligible: true }]).results
-      .training['score:3']?.score,
+      .training['score:1']?.score,
   ).toBe(game.result.score);
 });
 

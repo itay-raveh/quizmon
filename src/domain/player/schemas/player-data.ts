@@ -54,6 +54,9 @@ const isSavedResult = (value: unknown): value is GameResult => {
       !isScoreMultipliers(value.scoreMultipliers)) ||
     (value.rules !== undefined && !isRoundRules(value.rules)) ||
     (value.dailyTrack !== undefined && !isDailyTrack(value.dailyTrack)) ||
+    (value.puzzleId !== undefined &&
+      (typeof value.puzzleId !== 'string' ||
+        !/^[a-f0-9]{64}$/.test(value.puzzleId))) ||
     !Array.isArray(value.answers) ||
     !isSafeNonnegativeInteger(value.contentVersion) ||
     (value.scoreVersion !== undefined &&

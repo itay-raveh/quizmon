@@ -18,7 +18,7 @@ export const MAX_BACKUP_BYTES = 512 * 1024 * 1024;
 export interface PlayerBackup {
   exportedAt: string;
   format: 'quizmon-backup';
-  version: 3;
+  version: 1;
   state: LocalPlayerState;
   reviewIssues?: { operationId: string; reason: string; payload: unknown }[];
   records: {
@@ -36,7 +36,7 @@ export const createBackup = async (): Promise<PlayerBackup> =>
     const backup: PlayerBackup = {
       exportedAt: new Date().toISOString(),
       format: 'quizmon-backup',
-      version: 3,
+      version: 1,
       state,
       ...(state.account
         ? {
@@ -95,7 +95,7 @@ export const parseBackup = (text: string): PlayerBackup => {
       'This is not a Quizmon backup. Choose a file exported from Quizmon.',
     );
   }
-  if (value.version !== 3) {
+  if (value.version !== 1) {
     throw new Error(
       'This backup uses an unsupported version. Update Quizmon or choose another backup.',
     );
@@ -192,7 +192,7 @@ export const parseBackup = (text: string): PlayerBackup => {
   return {
     exportedAt: value.exportedAt,
     format: 'quizmon-backup',
-    version: 3,
+    version: 1,
     state,
     ...(reviewIssues ? { reviewIssues } : {}),
     records: {

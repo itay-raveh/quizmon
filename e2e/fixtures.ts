@@ -60,7 +60,7 @@ export const seedPlayer = (page: Page, patch: PlayerFixture) =>
   page.addInitScript(
     ({ patch, initial, marker }) => {
       if (sessionStorage.getItem(marker)) return;
-      const raw = localStorage.getItem('quizmon.player');
+      const raw = localStorage.getItem('quizmon.baseline.fixture-save');
       const save = raw ? (JSON.parse(raw) as typeof initial) : initial;
       const results = patch.results;
       save.data = {
@@ -73,7 +73,10 @@ export const seedPlayer = (page: Page, patch: PlayerFixture) =>
           progress: { ...save.data.results.progress, ...results?.progress },
         },
       };
-      localStorage.setItem('quizmon.player', JSON.stringify(save));
+      localStorage.setItem(
+        'quizmon.baseline.fixture-save',
+        JSON.stringify(save),
+      );
       sessionStorage.setItem(marker, '1');
     },
     {
@@ -83,7 +86,7 @@ export const seedPlayer = (page: Page, patch: PlayerFixture) =>
         restoreId: null,
         data: { ...emptyPlayerData(), settings: trainingFixture },
       },
-      marker: 'quizmon.test-seed.' + fixtureNumber++,
+      marker: 'quizmon.baseline.test-seed.' + fixtureNumber++,
     },
   );
 export const seedQuestionTraining = (
@@ -158,10 +161,13 @@ export const test = base.extend({
       (initial) => {
         if (
           location.search.includes('fresh=1') ||
-          localStorage.getItem('quizmon.player')
+          localStorage.getItem('quizmon.baseline.fixture-save')
         )
           return;
-        localStorage.setItem('quizmon.player', JSON.stringify(initial));
+        localStorage.setItem(
+          'quizmon.baseline.fixture-save',
+          JSON.stringify(initial),
+        );
       },
       {
         version: SAVE_SCHEMA_VERSION,
@@ -182,13 +188,20 @@ export const answerCurrentQuestion = async (page: Page) => {
   const answers = page.locator('.answer:not(:disabled)');
   const search = page.getByRole('combobox', { name: 'Your answer' });
   const types = page.getByRole('combobox', { name: 'Your types' });
-  await expect(answers.or(search).or(types).first()).toBeVisible();
+  const type = page.getByRole('combobox', { name: 'Your type', exact: true });
+  await expect(answers.or(search).or(types).or(type).first()).toBeVisible();
   if (await types.count()) {
     await types.fill('bug');
     await types.press('Enter');
     await page
       .getByRole('button', { name: 'Check answers', exact: true })
       .click();
+  } else if (await type.count()) {
+    const snapshot = (await readRound(page))!;
+    const answer =
+      snapshot.questions[snapshot.answers.length]!.answer.correctOptions[0]!;
+    await type.fill(answer);
+    await type.press('Enter');
   } else if (await search.count()) {
     const snapshot = (await readRound(page))!;
     const name =

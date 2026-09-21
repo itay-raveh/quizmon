@@ -103,7 +103,7 @@ for (const width of [360, 1280]) {
     await expect(
       page.getByRole('heading', { name: 'Training complete' }),
     ).toBeVisible();
-    const saved = (await readSave(page)).data.results.training['score:3']!;
+    const saved = (await readSave(page)).data.results.training['score:1']!;
     expect(saved.correctCount).toBe(10);
     expect(saved.scoreMultipliers).toEqual(initial.scoreMultipliers);
     const knowledge = saved.answers.reduce(
@@ -179,11 +179,11 @@ for (const width of [320, 1280]) {
     await page.addInitScript(
       (snapshot) =>
         sessionStorage.setItem(
-          'quizmon.active-game.v1',
+          'quizmon.baseline.fixture-round',
           JSON.stringify(snapshot),
         ),
       {
-        version: 7,
+        version: 1,
         playerRestoreId: null,
         mode: { kind: 'training' },
         settings: resolved,

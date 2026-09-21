@@ -22,8 +22,8 @@ import { applyResult } from './results-storage';
 let tabId: string;
 let active: ActiveGameSnapshot | null = null;
 export const initializeLocalRound = async () => {
-  tabId = sessionStorage.getItem('quizmon.tab.v1') ?? crypto.randomUUID();
-  sessionStorage.setItem('quizmon.tab.v1', tabId);
+  tabId = sessionStorage.getItem('quizmon.baseline.tab') ?? crypto.randomUUID();
+  sessionStorage.setItem('quizmon.baseline.tab', tabId);
   const [row] = await getPlayerDatabase().getAll<LocalRow>(
     'SELECT id,payload FROM local_rounds WHERE id = ?',
     [tabId],
@@ -39,7 +39,7 @@ export const initializeLocalRound = async () => {
 };
 const finalizeLocalRound = async () => {
   if (active?.completedAt) {
-    const { completion, victory } = completeRound(
+    const { completion, victory } = await completeRound(
       active,
       active.completedAt,
       readPlayerData().profile?.name ?? '',

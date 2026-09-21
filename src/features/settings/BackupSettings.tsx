@@ -38,7 +38,7 @@ export const BackupSettings = () => {
   const dismissDownloadNotice = useCallback(() => setDownloadNotice(0), []);
   const [busy, setBusy] = useState(false);
   const current = readPlayerData();
-  const accountBackup = preview?.version === 3 && !!preview.state.account;
+  const accountBackup = !!preview?.state.account;
 
   useEffect(() => {
     if (preview) previewHeading.current?.focus();

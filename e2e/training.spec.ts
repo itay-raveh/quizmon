@@ -169,7 +169,7 @@ test('plays and shares a complete Training round without a live API call', async
         correctCount: 10,
         mode: 'training',
         questionCount: 10,
-        scoreVersion: 3,
+        scoreVersion: 1,
         type: 'game_completed',
       },
     ]);

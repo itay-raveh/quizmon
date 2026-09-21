@@ -16,7 +16,7 @@ interface InstallPromptEvent extends Event {
   prompt: () => Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const DISMISSED_KEY = 'quizmon.install-offer-dismissed.v1';
+const DISMISSED_KEY = 'quizmon.baseline.install-offer-dismissed';
 
 export const InstallProvider = ({ children }: { children: ReactNode }) => {
   const [guide] = useState(getInstallGuide);

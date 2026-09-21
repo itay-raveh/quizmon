@@ -19,7 +19,9 @@ const nextMorning = Date.parse('2026-09-09T08:00:00.000Z');
 
 const makeReminder = (completedDate?: string, timeZone = 'UTC') => {
   const storage = {
-    get: vi.fn().mockResolvedValue({ subscription, timeZone, completedDate }),
+    get: vi
+      .fn()
+      .mockResolvedValue({ version: 1, subscription, timeZone, completedDate }),
     deleteAll: vi.fn().mockResolvedValue(undefined),
     setAlarm: vi.fn().mockResolvedValue(undefined),
   };

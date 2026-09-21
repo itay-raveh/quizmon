@@ -21,7 +21,6 @@ import {
   buildDailyTrackQuestions,
   resolveTrainingSettings,
 } from '../../domain/quiz/question-generation';
-import { QUESTION_RULES_VERSION } from '../../domain/quiz/question-variants';
 import type { GameResult } from '../../domain/quiz/types';
 import type { GameSettings } from '../../domain/settings/types';
 import { type ActiveGameSnapshot } from '../../lib/storage/active-game-storage';
@@ -59,8 +58,6 @@ export const useDailyChallenge = ({
         shouldAutoStartDaily(window.location.search),
       date: parseDailyDate(window.location.search),
       track: isDailyTrack(candidate) ? candidate : undefined,
-      rules: params.get('rules'),
-      catalog: params.get('catalog'),
     };
   });
   const [today, setToday] = useState(getUtcDate);
@@ -137,20 +134,6 @@ export const useDailyChallenge = ({
     ) {
       setError(
         'This challenge is no longer available. Your saved attempts and results are unchanged.',
-      );
-      return;
-    }
-    if (
-      route.track &&
-      track.difficulty === route.track.difficulty &&
-      track.scope === route.track.scope &&
-      ((route.rules !== null &&
-        route.rules !== String(QUESTION_RULES_VERSION)) ||
-        (route.catalog !== null &&
-          route.catalog !== String(catalog.contentVersion)))
-    ) {
-      setError(
-        'This challenge version is no longer available. Your saved attempts and results are unchanged.',
       );
       return;
     }

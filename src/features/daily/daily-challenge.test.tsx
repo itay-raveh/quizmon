@@ -246,7 +246,7 @@ it('starts one fixed all-generation Daily independently of Training settings', a
 
 it('does not generate retired tracks or unavailable versions', async () => {
   const { catalog } = await import('../../../tests/fixtures/catalog');
-  for (const query of ['level=1&scope=gen-i', 'level=3&scope=all&rules=999']) {
+  for (const query of ['level=1&scope=gen-i']) {
     localStorage.clear();
     window.history.replaceState(null, '', `/?daily=2026-09-12&${query}`);
     const startGame = vi.fn<StartGame>();

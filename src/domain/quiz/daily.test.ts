@@ -100,7 +100,7 @@ describe('Daily reminder prompt', () => {
     'ignores malformed prompt counters: %j',
     (completedDailyCount) => {
       window.localStorage.setItem(
-        'quizmon.daily-reminder-prompt.v1',
+        'quizmon.baseline.daily-reminder-prompt',
         JSON.stringify({ completedDailyCount, version: 1 }),
       );
       expect(shouldOfferDailyReminder(1)).toBe(true);

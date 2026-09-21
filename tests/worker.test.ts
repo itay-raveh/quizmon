@@ -45,6 +45,18 @@ const mockSpriteFetch = () => {
 };
 
 describe('Daily reminders', () => {
+  it('deletes pre-reset registrations before sending another reminder', async () => {
+    const storage = {
+      get: vi.fn().mockResolvedValue({ subscription: {}, timeZone: 'UTC' }),
+      deleteAlarm: vi.fn(),
+      deleteAll: vi.fn(),
+    };
+    const reminder = new DailyReminder({ storage }, makeEnv().env);
+    await reminder.alarm();
+    expect(storage.deleteAlarm).toHaveBeenCalledOnce();
+    expect(storage.deleteAll).toHaveBeenCalledOnce();
+  });
+
   it('schedules 8:00 AM in the saved time zone across a DST change', () => {
     expect(
       new Date(
@@ -68,6 +80,7 @@ describe('Daily reminders', () => {
     'validates completion date %j before storing reminders',
     async (completedDate, status) => {
       const registration = {
+        version: 1,
         subscription: {
           endpoint: 'https://example.com/push',
           keys: { auth: 'test-auth', p256dh: 'test-key' },

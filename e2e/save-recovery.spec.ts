@@ -1,9 +1,7 @@
-import { action } from '../tests/online/progress-fixtures';
-import { emptyPlayerData } from '../src/domain/player/player-save';
 import { readSave, readRawPlayer } from './database-fixture';
 import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
-import currentSave from '../tests/fixtures/player-save.v7.json' with { type: 'json' };
+import currentSave from '../tests/fixtures/player-save.v1.json' with { type: 'json' };
 import { expect, expectNoHorizontalOverflow, test } from './fixtures';
 
 for (const width of [360, 1280]) {
@@ -15,7 +13,7 @@ for (const width of [360, 1280]) {
     await page.addInitScript((raw) => {
       if (sessionStorage.getItem('recovery-seeded')) return;
       sessionStorage.setItem('recovery-seeded', '1');
-      localStorage.setItem('quizmon.player', raw);
+      localStorage.setItem('quizmon.baseline.fixture-save', raw);
     }, raw);
     await page.goto('/');
     const dialog = page.getByRole('dialog', {
@@ -51,7 +49,9 @@ for (const width of [360, 1280]) {
       .click();
     await dialog.getByRole('button', { name: 'Keep saved data' }).click();
     expect(
-      await page.evaluate(() => localStorage.getItem('quizmon.player')),
+      await page.evaluate(() =>
+        localStorage.getItem('quizmon.baseline.fixture-save'),
+      ),
     ).toBe(raw);
     await dialog
       .getByRole('button', { name: 'Start fresh', exact: true })
@@ -63,76 +63,17 @@ for (const width of [360, 1280]) {
       page.getByRole('button', { name: 'Start training', exact: true }),
     ).toBeVisible();
     const saved = await readSave(page);
-    expect(saved.version).toBe(7);
+    expect(saved.version).toBe(1);
     expect(saved.restoreId).toBeTruthy();
   });
 }
-
-test('restores a current backup from a retired save @cross-browser', async ({
-  page,
-}) => {
-  const raw = JSON.stringify({ ...currentSave, version: 3 });
-  await page.addInitScript((raw) => {
-    if (sessionStorage.getItem('recovery-seeded')) return;
-    sessionStorage.setItem('recovery-seeded', '1');
-    localStorage.setItem('quizmon.player', raw);
-  }, raw);
-  await page.goto('/');
-  const dialog = page.getByRole('dialog', {
-    name: 'This save needs attention',
-  });
-  await expect(dialog).toBeVisible({ timeout: 15_000 });
-  const datasetId = crypto.randomUUID();
-  const discovery = action(datasetId, datasetId, 'discoveries.add', {
-    pokemon: ['pikachu'],
-  });
-  const save = {
-    version: 7,
-    restoreId: null,
-    data: { ...emptyPlayerData(), pokedex: ['pikachu'] },
-  };
-  await page.getByLabel('Choose recovery backup').setInputFiles({
-    name: 'backup.json',
-    mimeType: 'application/json',
-    buffer: Buffer.from(
-      JSON.stringify({
-        format: 'quizmon-backup',
-        version: 3,
-        exportedAt: '2026-09-15T12:00:00.000Z',
-        save,
-        state: { version: 1, datasetId, predecessors: {}, save },
-        records: {
-          local_actions: [
-            { id: discovery.operationId, payload: JSON.stringify(discovery) },
-          ],
-          local_completions: [],
-          completion_facts: [],
-        },
-      }),
-    ),
-  });
-  await expect(
-    dialog.getByRole('region', { name: 'Restore preview' }),
-  ).toContainText('1 Pokédex entries');
-  expect(
-    await page.evaluate(() => localStorage.getItem('quizmon.player')),
-  ).toBe(raw);
-  await Promise.all([
-    page.waitForEvent('load'),
-    dialog.getByRole('button', { name: 'Replace and restore' }).click(),
-  ]);
-  await expect(
-    page.getByRole('button', { name: 'Start training', exact: true }),
-  ).toBeVisible({ timeout: 15_000 });
-  expect((await readSave(page)).data.pokedex).toEqual(['pikachu']);
-});
 
 test('keeps a newer save intact and does not offer a reset', async ({
   page,
 }) => {
   const raw = JSON.stringify({ ...currentSave, version: 8 });
   await page.addInitScript(
-    (raw) => localStorage.setItem('quizmon.player', raw),
+    (raw) => localStorage.setItem('quizmon.baseline.fixture-save', raw),
     raw,
   );
   await page.goto('/');
@@ -147,6 +88,8 @@ test('keeps a newer save intact and does not offer a reset', async ({
     dialog.getByRole('button', { name: 'Download saved data' }),
   ).toBeEnabled();
   expect(
-    await page.evaluate(() => localStorage.getItem('quizmon.player')),
+    await page.evaluate(() =>
+      localStorage.getItem('quizmon.baseline.fixture-save'),
+    ),
   ).toBe(raw);
 });

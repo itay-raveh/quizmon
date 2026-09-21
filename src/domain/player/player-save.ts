@@ -20,7 +20,7 @@ export interface PlayerData {
   pokedex: string[];
   hallOfFame: LeagueVictoryRecord[];
 }
-export const SAVE_SCHEMA_VERSION = 7;
+export const SAVE_SCHEMA_VERSION = 1;
 
 export interface PlayerSave {
   data: PlayerData;

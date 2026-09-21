@@ -27,7 +27,7 @@ it('captures the latest state for this tab and restores it once', async () => {
   vi.resetModules();
   const restored = await import('@/features/installation/update-session');
   expect(restored.readUpdateState('draft', null)).toEqual({ name: 'After' });
-  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBeNull();
+  expect(sessionStorage.getItem('quizmon.baseline.update-state')).toBeNull();
   const next = renderHook(() => restored.useUpdateState('draft', { name: '' }));
   expect(next.result.current[0]).toEqual({ name: 'After' });
   next.unmount();
@@ -36,7 +36,7 @@ it('captures the latest state for this tab and restores it once', async () => {
 
 it('ignores a snapshot from a different page and malformed storage', async () => {
   sessionStorage.setItem(
-    'quizmon.update-state.v1',
+    'quizmon.baseline.update-state',
     JSON.stringify({
       url: 'https://example.com/another-page',
       values: { draft: 'Wrong page' },
@@ -45,7 +45,7 @@ it('ignores a snapshot from a different page and malformed storage', async () =>
   const state = await import('@/features/installation/update-session');
   expect(state.readUpdateState('draft', 'Default')).toBe('Default');
   vi.resetModules();
-  sessionStorage.setItem('quizmon.update-state.v1', '{broken');
+  sessionStorage.setItem('quizmon.baseline.update-state', '{broken');
   const invalid = await import('@/features/installation/update-session');
   expect(invalid.readUpdateState('draft', 'Default')).toBe('Default');
 });
@@ -57,7 +57,7 @@ it('does not keep state from dismissed screens and detects unavailable storage',
   expect(state.saveUpdateState()).toBe(true);
   expect(
     (
-      JSON.parse(sessionStorage.getItem('quizmon.update-state.v1')!) as {
+      JSON.parse(sessionStorage.getItem('quizmon.baseline.update-state')!) as {
         values: unknown;
       }
     ).values,
@@ -79,17 +79,17 @@ it('saves the current schema and settings without legacy aliases', async () => {
   );
   expect(state.saveUpdateState()).toBe(true);
   const saved: unknown = JSON.parse(
-    sessionStorage.getItem('quizmon.update-state.v1')!,
+    sessionStorage.getItem('quizmon.baseline.update-state')!,
   );
   expect(saved).toMatchObject({
-    saveVersion: 7,
+    saveVersion: 1,
     values: { session: { phase: 'questions', settings } },
   });
 });
 
 it('reloads an update during recovery without replacing the preserved save', async () => {
   const raw = '{"saveVersion":8,"values":{"draft":"Keep this"}}';
-  sessionStorage.setItem('quizmon.update-state.v1', raw);
+  sessionStorage.setItem('quizmon.baseline.update-state', raw);
   const state = await import('./update-session');
   const health = await import('@/lib/storage/save-health');
   const { SaveError } = await import('@/domain/player/save-schema');
@@ -102,7 +102,7 @@ it('reloads an update during recovery without replacing the preserved save', asy
   try {
     expect(state.reloadAfterUpdate()).toBe(true);
     expect(reload).toHaveBeenCalledOnce();
-    expect(sessionStorage.getItem('quizmon.update-state.v1')).toBe(raw);
+    expect(sessionStorage.getItem('quizmon.baseline.update-state')).toBe(raw);
   } finally {
     vi.unstubAllGlobals();
   }
@@ -116,21 +116,21 @@ it.each([undefined, 4, 5, 6])(
       url: window.location.href,
       values: { draft: 'Old draft' },
     });
-    sessionStorage.setItem('quizmon.update-state.v1', raw);
+    sessionStorage.setItem('quizmon.baseline.update-state', raw);
     const state = await import('./update-session');
     expect(state.readUpdateState('draft', '')).toBe('');
-    expect(sessionStorage.getItem('quizmon.update-state.v1')).toBe(raw);
+    expect(sessionStorage.getItem('quizmon.baseline.update-state')).toBe(raw);
     expect(state.saveUpdateState()).toBe(false);
   },
 );
 
 it('keeps reload state available for recovery until the application can load it', async () => {
   const raw = JSON.stringify({
-    saveVersion: 7,
+    saveVersion: 1,
     url: window.location.href,
     values: { draft: 'Keep for recovery' },
   });
-  sessionStorage.setItem('quizmon.update-state.v1', raw);
+  sessionStorage.setItem('quizmon.baseline.update-state', raw);
   const state = await import('./update-session');
   const health = await import('@/lib/storage/save-health');
   const { SaveError } = await import('@/domain/player/save-schema');
@@ -138,8 +138,8 @@ it('keeps reload state available for recovery until the application can load it'
     new SaveError('invalid', 'The player save is invalid.'),
   );
   expect(state.readUpdateState('draft', '')).toBe('');
-  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBe(raw);
+  expect(sessionStorage.getItem('quizmon.baseline.update-state')).toBe(raw);
   health.clearSaveIssue();
   expect(state.readUpdateState('draft', '')).toBe('Keep for recovery');
-  expect(sessionStorage.getItem('quizmon.update-state.v1')).toBeNull();
+  expect(sessionStorage.getItem('quizmon.baseline.update-state')).toBeNull();
 });

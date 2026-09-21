@@ -4,7 +4,6 @@ import {
   type QuestionRendering,
   type RenderingOverrides,
 } from './question-rendering.ts';
-import { gameVersions } from '../versions.ts';
 import {
   resolveDifficultyVariant,
   type Difficulty,
@@ -29,7 +28,6 @@ export const questionTuning = {
     statScale: 80,
   },
 };
-export const QUESTION_RULES_VERSION = gameVersions.questions;
 
 export interface VariantRules {
   distractors?: 'dissimilar' | 'similar';

@@ -57,7 +57,7 @@ describe('active game storage', () => {
     expect(readActiveGame(catalog)).toEqual({
       ...snapshot,
       playerRestoreId: null,
-      version: 7,
+      version: 1,
     });
   });
 
@@ -93,7 +93,7 @@ describe('active game storage', () => {
         { questionCount: value },
         { answers: [{ ...answer, cluesUsed: value }] },
       ]) {
-        await seedActiveFixture({ ...snapshot, version: 7, ...patch });
+        await seedActiveFixture({ ...snapshot, version: 1, ...patch });
         expect(readActiveGame(catalog)).toBeNull();
       }
     },
@@ -104,7 +104,7 @@ describe('active game storage', () => {
       for (const field of ['generations', 'questionTypes']) {
         await seedActiveFixture({
           ...snapshot,
-          version: 7,
+          version: 1,
           settings: { ...defaultGameSettings, [field]: value },
         });
         expect(readActiveGame(catalog)).toBeNull();

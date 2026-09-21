@@ -111,9 +111,9 @@ test('resumes a saved round after a catalog update and credits regional forms se
       if (sessionStorage.getItem('seeded-form-round')) return;
       sessionStorage.setItem('seeded-form-round', 'true');
       sessionStorage.setItem(
-        'quizmon.active-game.v1',
+        'quizmon.baseline.fixture-round',
         JSON.stringify({
-          version: 7,
+          version: 1,
           playerRestoreId: null,
           contentVersion: 14,
           elapsedMilliseconds: 4321,
@@ -159,7 +159,7 @@ test('resumes a saved round after a catalog update and credits regional forms se
   ).toBeVisible();
   const saved = await readSave(page);
   const discoveries = saved.data.pokedex;
-  const version = saved.data.results.training['score:3']?.contentVersion;
+  const version = saved.data.results.training['score:1']?.contentVersion;
   expect(version).toBe(14);
   expect(discoveries.toSorted()).toEqual(['raichu', 'raichu-alola']);
 });

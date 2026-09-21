@@ -35,7 +35,51 @@ try {
   await admin.query(`CREATE DATABASE ${database}`);
   created = true;
   await client.connect();
-  await run();
+  await cp(migrationsFolder, fixture, { recursive: true });
+  const initialJournalPath = join(fixture, 'meta/_journal.json');
+  const initialJournal = JSON.parse(
+    await readFile(initialJournalPath, 'utf8'),
+  ) as { entries: unknown[] };
+  initialJournal.entries.length = 1;
+  await writeFile(initialJournalPath, JSON.stringify(initialJournal));
+  await rm(join(fixture, '0001_reset-baseline.sql'));
+  await run(fixture);
+  await client.query(
+    `INSERT INTO "user" (id,name,email,email_verified,created_at,updated_at) VALUES ('migration-check','Migration check','migration@example.test',true,now(),now())`,
+  );
+  await client.query(
+    `INSERT INTO "user" (id,name,email,email_verified,created_at,updated_at) VALUES ('migration-other','Migration other','other@example.test',true,now(),now())`,
+  );
+  await client.query(
+    `INSERT INTO account_state (id,generation_id,progress) VALUES ('migration-check',$1,'{}')`,
+    [crypto.randomUUID()],
+  );
+  await client.query(
+    `INSERT INTO friend_requests (id,user_low,user_high,sender_id) VALUES ($1,'migration-check','migration-other','migration-check')`,
+    [crypto.randomUUID()],
+  );
+  await client.query(
+    `INSERT INTO verification (id,identifier,value,expires_at) VALUES ('migration-code','migration@example.test','secret',now() + interval '1 hour')`,
+  );
+  await client.query(
+    `INSERT INTO test_mailbox (email,code) VALUES ('migration@example.test','secret')`,
+  );
+  assert.deepEqual(await run(), { applied: 1, total: 2 });
+  for (const table of [
+    'user',
+    'account_state',
+    'friend_requests',
+    'verification',
+    'test_mailbox',
+  ])
+    assert.equal(
+      (
+        await client.query<{ count: number }>(
+          `SELECT count(*)::int AS count FROM "${table}"`,
+        )
+      ).rows[0]!.count,
+      0,
+    );
   await client.query(
     `INSERT INTO "user" (id,name,email,email_verified,created_at,updated_at) VALUES ('migration-check','Migration check','migration@example.test',true,now(),now())`,
   );
@@ -43,7 +87,7 @@ try {
     `INSERT INTO account_state (id,generation_id,progress) VALUES ('migration-check',$1,'{}')`,
     [crypto.randomUUID()],
   );
-  assert.deepEqual(await run(), { applied: 0, total: 1 });
+  assert.deepEqual(await run(), { applied: 0, total: 2 });
   assert.equal(
     (
       await client.query<{ count: number }>(
@@ -58,7 +102,7 @@ try {
         'SELECT count(*)::int AS count FROM drizzle.__drizzle_migrations',
       )
     ).rows[0]!.count,
-    1,
+    2,
   );
   const competing = await Promise.allSettled(
     Array.from({ length: 6 }, () => run()),
@@ -80,14 +124,14 @@ try {
     }[];
   };
   journal.entries.push({
-    idx: 1,
+    idx: 2,
     version: '7',
     when: journal.entries.at(-1)!.when + 1,
-    tag: '0001_check',
+    tag: '0002_check',
     breakpoints: true,
   });
   await writeFile(journalPath, JSON.stringify(journal));
-  const nextSql = join(fixture, '0001_check.sql');
+  const nextSql = join(fixture, '0002_check.sql');
   await writeFile(nextSql, 'CREATE TABLE migration_probe (id integer);');
   const original = (
     await client.query<{ hash: string }>(
@@ -124,9 +168,9 @@ try {
     ).rows[0]!.name,
     null,
   );
-  assert.deepEqual(await run(), { applied: 0, total: 1 });
+  assert.deepEqual(await run(), { applied: 0, total: 2 });
   await writeFile(nextSql, 'CREATE TABLE migration_probe (id integer);');
-  assert.deepEqual(await run(fixture), { applied: 1, total: 2 });
+  assert.deepEqual(await run(fixture), { applied: 1, total: 3 });
   await assert.rejects(run(), /history does not match/);
   const appliedSql = await readFile(nextSql, 'utf8');
   await writeFile(nextSql, appliedSql + '\n-- changed bytes');
@@ -147,7 +191,7 @@ try {
     /Interrupted after migration commit/,
   );
   assert.equal(configured, true);
-  assert.deepEqual(await run(fixture), { applied: 0, total: 2 });
+  assert.deepEqual(await run(fixture), { applied: 0, total: 3 });
 
   await assert.rejects(
     migrateDatabase({
@@ -165,7 +209,7 @@ try {
       },
     }),
   );
-  assert.deepEqual(await run(fixture), { applied: 0, total: 2 });
+  assert.deepEqual(await run(fixture), { applied: 0, total: 3 });
 
   const holder = new Client({ connectionString });
   holder.on('error', () => {});
@@ -180,8 +224,8 @@ try {
   } finally {
     await holder.end();
   }
-  assert.deepEqual(await run(fixture), { applied: 0, total: 2 });
-  journal.entries[1]!.when = journal.entries[0]!.when;
+  assert.deepEqual(await run(fixture), { applied: 0, total: 3 });
+  journal.entries[2]!.when = journal.entries[1]!.when;
   await writeFile(journalPath, JSON.stringify(journal));
   await assert.rejects(run(fixture), /strictly increasing/);
   assert.equal(
