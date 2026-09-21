@@ -1,7 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import type { ComponentProps } from 'react';
 import userEvent from '@testing-library/user-event';
 import { FriendsScreen } from './FriendsScreen';
 import { LeaderboardScreen } from './LeaderboardScreen';
+import type { PokemonCatalog } from '../../domain/pokemon/types';
+import { getDailyPuzzleId } from '../../domain/quiz/puzzle-id';
 import {
   friendPage,
   lookupPlayer,
@@ -29,7 +32,14 @@ vi.mock('./leaderboards-client', () => ({
   readDailyLeaderboard: vi.fn(),
   readTrainingLeaderboard: vi.fn(),
 }));
+vi.mock('../../domain/quiz/puzzle-id', () => ({
+  getDailyPuzzleId: vi.fn().mockResolvedValue('a'.repeat(64)),
+}));
 vi.mock('../../domain/quiz/daily', () => ({ getUtcDate: () => '2026-09-19' }));
+
+const Leaderboard = (props: ComponentProps<typeof LeaderboardScreen>) => (
+  <LeaderboardScreen catalog={{} as PokemonCatalog} {...props} />
+);
 
 const me = {
   id: 'me',
@@ -172,14 +182,17 @@ it('reveals a manually found player after keyboard submission', async () => {
 it('opens Global for the requested date without telling players to replay history', async () => {
   account.owner = 'me';
   const manage = vi.fn();
-  render(
-    <LeaderboardScreen onManageFriends={manage} initialDate="2026-09-12" />,
-  );
+  render(<Leaderboard onManageFriends={manage} initialDate="2026-09-12" />);
   expect(await screen.findByText('No scores yet')).toBeVisible();
+  expect(getDailyPuzzleId).toHaveBeenCalledWith(
+    expect.anything(),
+    '2026-09-12',
+  );
   expect(readDailyLeaderboard).toHaveBeenCalledWith(
     'me',
     '2026-09-12',
     'global',
+    'a'.repeat(64),
     null,
     expect.any(AbortSignal),
   );
@@ -194,6 +207,7 @@ it('opens Global for the requested date without telling players to replay histor
       'me',
       '2026-09-12',
       'friends',
+      'a'.repeat(64),
       null,
       expect.any(AbortSignal),
     ),
@@ -222,7 +236,7 @@ it('retains loaded standings when refreshing fails', async () => {
       nextCursor: null,
     })
     .mockRejectedValueOnce(new Error('Connection lost.'));
-  render(<LeaderboardScreen onManageFriends={vi.fn()} />);
+  render(<Leaderboard onManageFriends={vi.fn()} />);
   expect(await screen.findByText('My Trainer (you)')).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Refresh' }));
   expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -235,7 +249,7 @@ it('restores a selected scope and reports changes for navigation to retain', asy
   account.owner = 'me';
   const changed = vi.fn();
   render(
-    <LeaderboardScreen
+    <Leaderboard
       onManageFriends={vi.fn()}
       initialDate="2026-09-12"
       initialScope="friends"
@@ -254,9 +268,7 @@ it('restores a selected scope and reports changes for navigation to retain', asy
 it('switches to Training and keeps its selection', async () => {
   account.owner = 'me';
   const changed = vi.fn();
-  render(
-    <LeaderboardScreen onManageFriends={vi.fn()} onSelectionChange={changed} />,
-  );
+  render(<Leaderboard onManageFriends={vi.fn()} onSelectionChange={changed} />);
   await userEvent.click(screen.getByRole('button', { name: 'Training' }));
   await waitFor(() =>
     expect(readTrainingLeaderboard).toHaveBeenCalledWith(
@@ -277,14 +289,13 @@ it.each(['not-a-date', '2026-09-31', '2026-09-20'])(
   'uses today instead of invalid or future date %s',
   async (initialDate) => {
     account.owner = 'me';
-    render(
-      <LeaderboardScreen onManageFriends={vi.fn()} initialDate={initialDate} />,
-    );
+    render(<Leaderboard onManageFriends={vi.fn()} initialDate={initialDate} />);
     await waitFor(() =>
       expect(readDailyLeaderboard).toHaveBeenCalledWith(
         'me',
         '2026-09-19',
         'global',
+        'a'.repeat(64),
         null,
         expect.any(AbortSignal),
       ),

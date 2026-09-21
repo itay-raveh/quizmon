@@ -87,7 +87,7 @@ const makeCompletion = (
     contentVersion: catalog.contentVersion,
     scoreVersion,
     progressVersion: versions.progress,
-    generatorVersion: mode === 'daily' ? versions.daily : 0,
+    generatorVersion: 0,
     mode,
     dailyDate: mode === 'daily' ? new Date().toISOString().slice(0, 10) : null,
     training: trainingConfig(settings),

@@ -27,6 +27,7 @@ export async function readDailyLeaderboard(
   owner: string,
   date: string,
   scope: LeaderboardScope,
+  puzzleId: string,
   after: string | null,
   signal: AbortSignal,
 ): Promise<DailyLeaderboard> {
@@ -35,6 +36,7 @@ export async function readDailyLeaderboard(
     'daily',
     date,
     scope,
+    puzzleId,
     after,
     signal,
   ) as Promise<DailyLeaderboard>;
@@ -46,7 +48,15 @@ export async function readTrainingLeaderboard(
   after: string | null,
   signal: AbortSignal,
 ): Promise<Leaderboard> {
-  return readLeaderboard(owner, 'training', undefined, scope, after, signal);
+  return readLeaderboard(
+    owner,
+    'training',
+    undefined,
+    scope,
+    undefined,
+    after,
+    signal,
+  );
 }
 
 async function readLeaderboard(
@@ -54,12 +64,14 @@ async function readLeaderboard(
   mode: 'daily' | 'training',
   date: string | undefined,
   scope: LeaderboardScope,
+  puzzleId: string | undefined,
   after: string | null,
   signal: AbortSignal,
 ): Promise<Leaderboard> {
   const changed = 'Your account changed. Reopen the leaderboard.';
   if (accountSnapshot().owner !== owner) throw new Error(changed);
   const query = new URLSearchParams(date ? { date, scope } : { scope });
+  if (puzzleId) query.set('puzzle', puzzleId);
   if (after) query.set('after', after);
   const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
     credentials: 'same-origin',

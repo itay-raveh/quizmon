@@ -9,7 +9,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { bootstrap } from '../../server/progress-api.ts';
 import { getTrainingScoreMultipliers } from '../../src/domain/quiz/score-multipliers.ts';
 import { calculateScore } from '../../src/domain/quiz/scoring.ts';
-import { QUESTION_RULES_VERSION } from '../../src/domain/quiz/question-variants.ts';
+import { gameVersions } from '../../src/domain/versions.ts';
 import assert from 'node:assert/strict';
 import { isRecord } from '../../src/lib/validation.ts';
 import {
@@ -460,7 +460,7 @@ try {
       questionTypes: ['type-check'],
     };
     round.result.rules = {
-      version: QUESTION_RULES_VERSION,
+      version: gameVersions.content,
       difficulty,
       formGroups: ['standard'],
       generations: [...round.training.generations],

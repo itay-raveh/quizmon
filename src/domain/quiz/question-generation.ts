@@ -1,4 +1,3 @@
-import { GAMEPLAY_REVISION } from './gameplay-version.ts';
 import { createSeededRandom, shuffle } from '../../lib/random.ts';
 import type { PokemonCatalog } from '../pokemon/types.ts';
 import {
@@ -141,7 +140,7 @@ export const buildLeagueQuestions = (
     catalog,
     getLeagueQuestionTypes(seed),
     settings,
-    createSeededRandom(`quizmon-league-v${GAMEPLAY_REVISION}:${seed}`),
+    createSeededRandom(`quizmon-league:${seed}`),
     history,
   );
 
@@ -164,7 +163,7 @@ export const buildDailyTrackQuestions = (
   settings: GameSettings,
   scope: string,
 ): QuestionData[] => {
-  const identity = `${scope}:${settings.difficulty}:rules${GAMEPLAY_REVISION}:catalog${catalog.contentVersion}`;
+  const identity = `${scope}:${settings.difficulty}:catalog${catalog.contentVersion}`;
   const ordinal = Math.floor(Date.parse(`${date}T00:00:00Z`) / 86_400_000);
   const types = settings.questionTypes;
   if (!types.length) throw new Error('No eligible Daily questions.');

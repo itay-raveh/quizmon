@@ -39,7 +39,7 @@ export const initializeLocalRound = async () => {
 };
 const finalizeLocalRound = async () => {
   if (active?.completedAt) {
-    const { completion, victory } = completeRound(
+    const { completion, victory } = await completeRound(
       active,
       active.completedAt,
       readPlayerData().profile?.name ?? '',

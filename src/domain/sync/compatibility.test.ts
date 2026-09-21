@@ -7,9 +7,9 @@ const current = {
   contentVersion: gameVersions.content,
   scoreVersion: gameVersions.score,
   progressVersion: gameVersions.progress,
-  generatorVersion: gameVersions.daily,
+  generatorVersion: 0,
   mode: 'daily',
-  result: { rules: { version: gameVersions.questions } },
+  result: { rules: { version: gameVersions.content } },
 };
 
 test('uses only shipped Pokémon names and generations for sync validation', () => {
@@ -26,14 +26,20 @@ test('uses only shipped Pokémon names and generations for sync validation', () 
   );
 });
 
+test('retains older Daily completion metadata in personal history', () => {
+  expect(
+    completionCompatibility({
+      ...current,
+      generatorVersion: 19,
+      result: { rules: { version: 19 } },
+    }),
+  ).toEqual(completionCompatibility(current));
+});
+
 test.each([
   { contentVersion: 17 },
   { scoreVersion: 2 },
   { progressVersion: 2 },
-  { generatorVersion: 15 },
-  { result: { rules: { version: 15 } } },
-  { result: {} },
-  { generatorVersion: 999 },
   { mode: 'unknown' },
 ])('rejects a completion outside the current baseline: %j', (patch) => {
   expect(completionCompatibility({ ...current, ...patch })).toBeUndefined();
@@ -41,14 +47,11 @@ test.each([
 
 test.each([
   ['training', 0, 10],
-  ['daily', gameVersions.daily, 5],
-  ['league', gameVersions.league, 15],
-])(
-  'validates the current %s generator and question count',
-  (mode, generatorVersion, count) => {
-    expect(
-      completionCompatibility({ ...current, mode, generatorVersion })
-        ?.questionCount,
-    ).toBe(count);
-  },
-);
+  ['daily', 0, 5],
+  ['league', 0, 15],
+])('validates the %s question count', (mode, generatorVersion, count) => {
+  expect(
+    completionCompatibility({ ...current, mode, generatorVersion })
+      ?.questionCount,
+  ).toBe(count);
+});

@@ -104,6 +104,12 @@ for (const tag of ['', '@cross-browser'])
       if (await types.isVisible()) {
         await types.fill('bug');
         await types.press('Enter');
+      } else if (
+        await page.getByRole('combobox', { name: 'Your type' }).isVisible()
+      ) {
+        const type = page.getByRole('combobox', { name: 'Your type' });
+        await type.fill('bug');
+        await type.press('Enter');
       } else {
         await page.locator('.answer').first().click();
       }

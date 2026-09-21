@@ -79,17 +79,12 @@ export function completion(
     contentVersion: versions.content,
     progressVersion: versions.progress,
     scoreVersion: 3,
-    generatorVersion:
-      mode === 'daily'
-        ? versions.daily
-        : mode === 'league'
-          ? versions.league
-          : 0,
+    generatorVersion: 0,
     completedAt: options.completedAt ?? '2026-09-11T10:00:00.000Z',
     discoveries: options.discoveries ?? ['bulbasaur'],
     result: {
       rules: {
-        version: versions.questions,
+        version: versions.content,
         difficulty: 3,
         generations: [...generations],
         formGroups: ['standard', 'regional', 'mega', 'gigantamax'],

@@ -83,6 +83,9 @@ const AppScreen = ({
   ) {
     return (
       <LeaderboardScreen
+        catalog={
+          catalogState.status === 'ready' ? catalogState.catalog : undefined
+        }
         onManageFriends={() => destination.open('friends')}
         initialDate={destination.standingsDate}
         initialScope={destination.standingsScope}

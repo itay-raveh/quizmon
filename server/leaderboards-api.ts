@@ -22,11 +22,12 @@ async function dailyStandings(
   db: NodePgDatabase,
   accountId: string,
   date: string,
+  puzzleId: string,
   scope: LeaderboardScope,
   offset: number,
   limit: number,
 ): Promise<DailyLeaderboard> {
-  const revision = dailyDefinition;
+  const definition = dailyDefinition;
   return db.transaction(
     async (tx) => {
       const friends = tx
@@ -79,14 +80,12 @@ async function dailyStandings(
               eq(dailyResults.streakCredit, true),
               eq(completionFacts.eligible, true),
               eq(completionFacts.mode, 'daily'),
-              eq(completionFacts.contentVersion, revision.content),
-              eq(completionFacts.scoreVersion, revision.score),
-              eq(completionFacts.generatorVersion, revision.generator),
-              sql`${dailyResults.result}->'dailyTrack' = ${JSON.stringify(revision.track)}::jsonb`,
-              sql`${dailyResults.result}->'rules'->'version' = ${String(revision.rules)}::jsonb`,
-              sql`${dailyResults.result}->'rules'->'difficulty' = ${String(revision.track.difficulty)}::jsonb`,
-              sql`${dailyResults.result}->'rules'->'generations' @> ${JSON.stringify(revision.generations)}::jsonb`,
-              sql`${dailyResults.result}->'rules'->'formGroups' @> ${JSON.stringify(revision.formGroups)}::jsonb`,
+              eq(completionFacts.scoreVersion, definition.score),
+              sql`${dailyResults.result}->>'puzzleId' = ${puzzleId}`,
+              sql`${dailyResults.result}->'dailyTrack' = ${JSON.stringify(definition.track)}::jsonb`,
+              sql`${dailyResults.result}->'rules'->'difficulty' = ${String(definition.track.difficulty)}::jsonb`,
+              sql`${dailyResults.result}->'rules'->'generations' @> ${JSON.stringify(definition.generations)}::jsonb`,
+              sql`${dailyResults.result}->'rules'->'formGroups' @> ${JSON.stringify(definition.formGroups)}::jsonb`,
               scope === 'friends'
                 ? or(eq(dailyResults.ownerId, accountId), exists(friends))
                 : undefined,
@@ -276,11 +275,14 @@ leaderboardApi.get('/daily', async (context) => {
   const date =
     context.req.query('date') ?? new Date().toISOString().slice(0, 10);
   const scope = context.req.query('scope') ?? 'global';
+  const puzzleId = context.req.query('puzzle');
   const after = context.req.query('after') ?? '0';
   const limit = context.req.query('limit') ?? '50';
   if (
     !isDailyDate(date) ||
     date > new Date().toISOString().slice(0, 10) ||
+    !puzzleId ||
+    !/^[a-f0-9]{64}$/.test(puzzleId) ||
     (scope !== 'global' && scope !== 'friends') ||
     !/^\d{1,9}$/.test(after) ||
     !/^\d{1,3}$/.test(limit) ||
@@ -294,6 +296,7 @@ leaderboardApi.get('/daily', async (context) => {
       context.get('db'),
       context.get('accountId'),
       date,
+      puzzleId,
       scope,
       Number(after),
       Number(limit),

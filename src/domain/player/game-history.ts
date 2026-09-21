@@ -3,6 +3,7 @@ import { createLeagueVictoryRecord } from './hall-of-fame.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
 import { getQuestionPokemon } from '../quiz/question-pokemon.ts';
 import { snapshotRoundRules } from '../quiz/round-rules.ts';
+import { getPuzzleId } from '../quiz/puzzle-id.ts';
 import {
   SCORE_VERSION,
   calculateScore,
@@ -37,7 +38,7 @@ export function roundDiscoveries(
   ].sort();
 }
 
-export function completeRound(
+export async function completeRound(
   round: Pick<
     ActiveGameSnapshot,
     | 'answers'
@@ -54,9 +55,12 @@ export function completeRound(
 ) {
   const { answers, questions, settings, mode, scoreMultipliers } = round;
   const rules = snapshotRoundRules(settings, questions);
+  const puzzleId =
+    mode.kind === 'daily' ? await getPuzzleId(questions) : undefined;
   const result = {
     ...(rules ? { rules } : {}),
     ...(mode.kind === 'daily' && mode.track ? { dailyTrack: mode.track } : {}),
+    ...(puzzleId ? { puzzleId } : {}),
     answers,
     ...(scoreMultipliers ? { scoreMultipliers } : {}),
     contentVersion: round.contentVersion,
@@ -85,12 +89,7 @@ export function completeRound(
     contentVersion: round.contentVersion,
     scoreVersion: result.scoreVersion,
     progressVersion: versions.progress,
-    generatorVersion:
-      mode.kind === 'daily'
-        ? versions.daily
-        : mode.kind === 'league'
-          ? versions.league
-          : 0,
+    generatorVersion: 0,
     mode: mode.kind,
     dailyDate: mode.kind === 'daily' ? mode.date : null,
     training: trainingConfig(settings),
@@ -147,6 +146,9 @@ export function readRecordedGame(value: unknown): RoundCompletion {
     );
   const result = value.result;
   if (
+    (result.puzzleId !== undefined &&
+      (typeof result.puzzleId !== 'string' ||
+        !/^[a-f0-9]{64}$/.test(result.puzzleId))) ||
     !Array.isArray(result.answers) ||
     !result.answers.length ||
     !isSafeNonnegativeInteger(result.questionCount) ||

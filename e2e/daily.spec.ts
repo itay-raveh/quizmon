@@ -1,4 +1,3 @@
-import { gameVersions } from '../src/domain/versions';
 import { completion } from '../tests/online/progress-fixtures';
 import { seedPlayer } from './fixtures';
 import type { PlayerSave } from '../src/domain/player/player-save';
@@ -68,9 +67,7 @@ test('keeps completed Daily results shareable without granting another attempt',
     return data ? (JSON.parse(data) as ShareData).text : undefined;
   });
   const sharedUrl = sharedText?.split('\n').at(-1);
-  expect(sharedUrl).toBe(
-    `https://quizmon.raveh.dev/?daily=2026-09-01&level=3&scope=all&rules=${gameVersions.questions}&catalog=${gameVersions.content}`,
-  );
+  expect(sharedUrl).toBe('https://quizmon.raveh.dev/?daily=2026-09-01');
   const { pathname, search } = new URL(sharedUrl!);
   await page.goto(`${pathname}${search}`);
   await expect(

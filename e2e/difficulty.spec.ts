@@ -1,5 +1,6 @@
 import { seedPlayer } from './fixtures';
 import { readRound, readSave, writeSave } from './database-fixture';
+import { getPuzzleId } from '../src/domain/quiz/puzzle-id';
 import {
   answerCurrentQuestion,
   chooseDaily,
@@ -66,6 +67,9 @@ for (const width of [360, 1280]) {
     await expect(
       page.getByRole('heading', { name: 'Daily complete' }),
     ).toBeVisible();
+    expect(
+      (await readSave(page)).data.results.daily['2026-09-12:3:all']?.puzzleId,
+    ).toBe(await getPuzzleId(first.questions));
     await expect(
       page.getByText('Level 3 · All generations', { exact: true }),
     ).toBeVisible();
@@ -111,12 +115,10 @@ test('Daily assistance survives reload and cannot become an unassisted answer', 
   expect(saved.answers[4]?.unassistedSearch).toBe(false);
 });
 
-test('unavailable linked versions explain the problem without substituting questions', async ({
+test('retired Daily tracks explain the problem without substituting questions', async ({
   page,
 }) => {
-  await page.goto(
-    '/?daily=2026-09-12&level=3&scope=gen-i&rules=999&catalog=999',
-  );
+  await page.goto('/?daily=2026-09-12&level=3&scope=gen-i');
   await chooseDaily(page);
   await expect(page.getByRole('alert')).toContainText('no longer available');
   await expect(page.locator('.question')).toHaveCount(0);

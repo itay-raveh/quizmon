@@ -36,6 +36,7 @@ export async function checkLeaderboards(
   const lastWeek = new Date(Date.now() - 7 * 86_400_000)
     .toISOString()
     .slice(0, 10);
+  const puzzleId = 'a'.repeat(64);
   async function upload(
     actor: Actor,
     date: string,
@@ -63,10 +64,9 @@ export async function checkLeaderboards(
       dailyDate: date,
       completedAt,
     });
-    const revision = dailyDefinition;
-    round.scoreVersion = revision.score;
-    if (mode === 'daily') round.generatorVersion = revision.generator;
-    round.result.scoreVersion = revision.score;
+    const definition = dailyDefinition;
+    round.scoreVersion = definition.score;
+    round.result.scoreVersion = definition.score;
     if (mode === 'daily')
       round.training = {
         ...round.training,
@@ -75,7 +75,7 @@ export async function checkLeaderboards(
       };
     if (mode === 'daily')
       round.result.rules = {
-        version: revision.rules,
+        version: round.contentVersion,
         difficulty: 3,
         formGroups: [...formGroups],
         generations: [...round.training.generations],
@@ -83,6 +83,7 @@ export async function checkLeaderboards(
       };
     if (mode === 'daily')
       round.result.dailyTrack = { difficulty: 3, scope: 'all' };
+    if (mode === 'daily') round.result.puzzleId = puzzleId;
     round.result.answers = round.result.answers.map((answer) => ({
       ...answer,
       responseMilliseconds: time,
@@ -123,7 +124,7 @@ export async function checkLeaderboards(
     date = today,
   ): Promise<DailyLeaderboard> {
     const response = await request(
-      `/api/leaderboards/daily?date=${date}&scope=${scope}${query}`,
+      `/api/leaderboards/daily?date=${date}&scope=${scope}&puzzle=${puzzleId}${query}`,
       actor,
     );
     assert.equal(response.status, 200, await response.clone().text());
@@ -246,13 +247,13 @@ export async function checkLeaderboards(
   assert.equal((await board(a, 'global')).total, 4);
 
   await pool.query(
-    'update completion_facts set generator_version = null where owner_id=$1',
-    [d.id],
+    "update daily_results set result = jsonb_set(result, '{puzzleId}', to_jsonb($2::text)) where owner_id=$1",
+    [d.id, 'b'.repeat(64)],
   );
   assert.equal((await board(a)).total, 2);
   await pool.query(
-    'update completion_facts set generator_version = $2 where owner_id=$1',
-    [d.id, dailyDefinition.generator],
+    "update daily_results set result = jsonb_set(result, '{puzzleId}', to_jsonb($2::text)) where owner_id=$1",
+    [d.id, puzzleId],
   );
   const training = async (
     actor: Actor,

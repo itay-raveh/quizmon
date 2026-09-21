@@ -182,13 +182,20 @@ export const answerCurrentQuestion = async (page: Page) => {
   const answers = page.locator('.answer:not(:disabled)');
   const search = page.getByRole('combobox', { name: 'Your answer' });
   const types = page.getByRole('combobox', { name: 'Your types' });
-  await expect(answers.or(search).or(types).first()).toBeVisible();
+  const type = page.getByRole('combobox', { name: 'Your type', exact: true });
+  await expect(answers.or(search).or(types).or(type).first()).toBeVisible();
   if (await types.count()) {
     await types.fill('bug');
     await types.press('Enter');
     await page
       .getByRole('button', { name: 'Check answers', exact: true })
       .click();
+  } else if (await type.count()) {
+    const snapshot = (await readRound(page))!;
+    const answer =
+      snapshot.questions[snapshot.answers.length]!.answer.correctOptions[0]!;
+    await type.fill(answer);
+    await type.press('Enter');
   } else if (await search.count()) {
     const snapshot = (await readRound(page))!;
     const name =

@@ -1,4 +1,3 @@
-import { GAMEPLAY_REVISION } from '../gameplay-version.ts';
 import type { QuestionRendering } from '../question-rendering.ts';
 import { attackMultiplier } from '../../pokemon/type-effectiveness.ts';
 import { type VariantRules } from '../question-variants.ts';
@@ -13,7 +12,7 @@ export const applyQuestionVariant = (
   const question = {
     ...draft,
     variantLevel: level,
-    rulesVersion: GAMEPLAY_REVISION,
+    rulesVersion: context.catalog.contentVersion,
     rendering: rules.rendering,
     showTypes: rules.showTypes,
   };
