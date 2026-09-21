@@ -108,8 +108,6 @@ export const makeQuestion = (
   if (presentation.kind !== 'text') {
     const numbers = getOptionDexNumbers(context, options);
     if (Object.keys(numbers).length > 0) question.optionDexNumbers = numbers;
-  }
-  if (presentation.kind !== 'text') {
     question.optionVisuals = getOptionVisuals(
       context,
       options,

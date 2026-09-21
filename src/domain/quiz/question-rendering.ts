@@ -1,3 +1,5 @@
+import { isRecord } from '../../lib/validation.ts';
+
 export type Visibility = 'always' | 'after-answer' | 'never';
 export type SpriteVisibility =
   Visibility | 'silhouette' | { afterClues: number; silhouette?: boolean };
@@ -65,12 +67,10 @@ const visibilityValues: readonly Visibility[] = [
 ];
 const isVisibility = (value: unknown): value is Visibility =>
   visibilityValues.some((visibility) => value === visibility);
-const record = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 const isSpriteVisibility = (value: unknown): value is SpriteVisibility =>
   isVisibility(value) ||
   value === 'silhouette' ||
-  (record(value) &&
+  (isRecord(value) &&
     Number.isSafeInteger(value.afterClues) &&
     typeof value.afterClues === 'number' &&
     value.afterClues >= 0 &&
@@ -79,11 +79,11 @@ const isSpriteVisibility = (value: unknown): value is SpriteVisibility =>
 export const isQuestionRendering = (
   value: unknown,
 ): value is QuestionRendering =>
-  record(value) &&
+  isRecord(value) &&
   renderingRoles.every((role) => {
     const entity = value[role];
     return (
-      record(entity) &&
+      isRecord(entity) &&
       isSpriteVisibility(entity.sprite) &&
       isVisibility(entity.name) &&
       isVisibility(entity.number) &&

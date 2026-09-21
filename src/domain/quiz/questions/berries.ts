@@ -44,9 +44,8 @@ export const buildBerry: QuestionBuilder = (context) => {
     const other = gift
       ? Object.keys(context.catalog.typeRelations)
       : Object.keys(target.flavors).map(formatPokemonName);
-    const options = gift
-      ? other
-      : context.variant?.completeFlavors
+    const options =
+      gift || context.variant?.completeFlavors
         ? other
         : [
             strongestFlavor,

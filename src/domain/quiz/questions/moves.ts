@@ -8,6 +8,14 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
+const purposeExcludedMoves = new Set([
+  'photon-geyser',
+  'light-that-burns-the-sky',
+  'shell-side-arm',
+  'tera-blast',
+  'tera-starstorm',
+]);
+
 export const buildMove: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
@@ -22,17 +30,7 @@ export const buildMove: QuestionBuilder = (context) => {
   );
   for (const target of pool) {
     const purpose = context.questionType === 'move-purpose';
-    if (
-      purpose &&
-      [
-        'photon-geyser',
-        'light-that-burns-the-sky',
-        'shell-side-arm',
-        'tera-blast',
-        'tera-starstorm',
-      ].includes(target.name)
-    )
-      continue;
+    if (purpose && purposeExcludedMoves.has(target.name)) continue;
     const contexts = target.contexts.filter(
       (entry) =>
         (context.generations ?? generations).includes(entry.generation) &&
@@ -52,13 +50,7 @@ export const buildMove: QuestionBuilder = (context) => {
         const wrong = pool
           .filter(
             (move) =>
-              ![
-                'photon-geyser',
-                'light-that-burns-the-sky',
-                'shell-side-arm',
-                'tera-blast',
-                'tera-starstorm',
-              ].includes(move.name) &&
+              !purposeExcludedMoves.has(move.name) &&
               move.contexts.some(
                 (entry) =>
                   entry.game === rules.game &&
