@@ -55,6 +55,10 @@ Run commands from the repository root.
 
 `mise run setup` also installs the Git hooks. Pre-commit checks changed-file formatting and lint, secrets, and Helm chart changes; pre-push runs fast game tests. Run `mise run check` for the complete gate. Use conventional commit messages.
 
+## Testing philosophy
+
+Write the smallest deterministic test that would catch a meaningful regression. Prioritize unit tests for game rules, scoring, progression, question generation, saved-data validation, and other nontrivial logic; assert exact numeric results when those numbers are the rule being tested. Derive fixtures from shared definitions instead of hardcoding game versions. Add a focused component test only for complex UI state or interaction that cannot be covered at the logic boundary, and assert the behavior or state change rather than exact screen prose, incidental DOM structure, or displayed fixture numbers. Do not add Playwright tests for now. Keep Worker, account and sync, migration, Helm, and other focused integration checks when they prove a contract that unit tests cannot, without repeating every lower-level case. Keep pre-push fast by running game unit tests; move valuable slow checks to CI rather than deleting them to meet a rigid time limit. Tests should survive unrelated copy, data, and version changes. This follows [behavior-focused unit testing](https://abseil.io/resources/swe-book/html/ch12.html) and the [practical test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html), adapted to this repository.
+
 ## Deployment
 
 Pull requests and pushes to `main` run `.github/workflows/ci.yml`. After checks pass, a push to `main` calls `.github/workflows/release.yml` to build, test, and publish the release image. GitHub does not deploy the Worker.
