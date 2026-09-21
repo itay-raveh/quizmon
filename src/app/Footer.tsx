@@ -1,13 +1,12 @@
+import { CoffeeIcon } from '@phosphor-icons/react/ssr';
 import {
   footerCredits,
   footerDisclaimer,
   footerLinks,
-} from '@/app/content-pages';
-import { site } from '@/app/site';
-import { CoffeeIcon } from '@/components/icons';
-import './footer.css';
+} from './content-pages.ts';
+import { site } from './site.ts';
 
-export const Footer = () => (
+export const Footer = ({ currentPath }: { currentPath?: string }) => (
   <footer className="site-footer">
     <div className="site-footer__support-row">
       <a
@@ -35,6 +34,7 @@ export const Footer = () => (
         <a
           key={href}
           href={href}
+          aria-current={href === currentPath ? 'page' : undefined}
           {...('external' in link && link.external
             ? { target: '_blank', rel: 'noreferrer' }
             : {})}

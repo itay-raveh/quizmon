@@ -116,8 +116,8 @@ export const siteMetadata = (): Plugin => {
     transformIndexHtml: {
       // Expand the shared shell before Vite bundles its stylesheet.
       order: 'pre',
-      handler(html, context) {
-        const page = renderContentPage(context.path);
+      async handler(html, context) {
+        const page = await renderContentPage(context.path);
         if (page) {
           const title = `${page.title} | ${site.name}`;
           return {
