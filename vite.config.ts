@@ -63,9 +63,16 @@ export default defineConfig({
     proxy,
   },
   test: {
-    environment: 'node',
-    include: ['src/domain/**/*.test.ts'],
+    alias: {
+      'cloudflare:workers': fileURLToPath(
+        new URL('./tests/cloudflare-workers.ts', import.meta.url),
+      ),
+    },
+    environment: 'jsdom',
     maxWorkers: 4,
+    testTimeout: 30_000,
+    exclude: ['**/node_modules/**', 'tests/online/**'],
     globals: true,
+    setupFiles: ['./tests/setup.ts'],
   },
 });

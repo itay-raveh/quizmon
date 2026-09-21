@@ -1,5 +1,5 @@
 default_stages = ["pre-commit"]
-default_install_hook_types = ["pre-commit", "commit-msg"]
+default_install_hook_types = ["pre-commit", "commit-msg", "pre-push"]
 
 [[repos]]
 repo = "builtin"
@@ -29,16 +29,15 @@ pass_filenames = false
 [[repos.hooks]]
 id = "format"
 name = "format"
-entry = "npm run format:check"
+entry = "npx --no-install prettier --check --ignore-unknown"
 language = "system"
-pass_filenames = false
 
 [[repos.hooks]]
 id = "lint"
 name = "lint"
-entry = "npm run lint"
+entry = "npx --no-install eslint"
 language = "system"
-pass_filenames = false
+files = "\\.[cm]?[jt]sx?$"
 
 [[repos.hooks]]
 id = "commitlint"
@@ -47,6 +46,15 @@ entry = "npm run commitlint -- --edit"
 language = "system"
 always_run = true
 stages = ["commit-msg"]
+
+[[repos.hooks]]
+id = "fast-tests"
+name = "fast game tests"
+entry = "npm run test:push"
+language = "system"
+pass_filenames = false
+always_run = true
+stages = ["pre-push"]
 
 [[repos.hooks]]
 id = "helm-chart"
