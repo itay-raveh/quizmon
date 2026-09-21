@@ -5,6 +5,7 @@ import { pokemonOptions } from './answers.ts';
 import { getOptionVisuals, makeQuestion } from './assembly.ts';
 import type { QuestionBuilder } from './context.ts';
 import {
+  evolutionChoiceDetails,
   evolutionRequirement,
   presentEvolutionQuestion,
 } from './evolution-presentation.ts';
@@ -218,11 +219,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
         break;
       }
       if (options.length !== 4) continue;
-      const shared = correct
-        .split(' · ')
-        .filter((part) =>
-          options.every((option) => option.split(' · ').includes(part)),
-        );
+      const { shared, missing } = evolutionChoiceDetails(options);
       const question = makeTopicQuestion(
         context,
         pokemonSubject(before),
@@ -238,23 +235,18 @@ export const buildEvolution: QuestionBuilder = (context) => {
           context: target.game,
           visual: endpointVisuals,
           optionLabels: Object.fromEntries(
-            options.map((value) => {
-              const part = value
-                .split(' · ')
-                .find((part) => !shared.includes(part))!;
-              const label = ['item', 'held-item'].includes(
-                evolutionRequirement(part).kind,
-              )
+            options.map((value, index) => {
+              const part = missing[index]![0]!;
+              const requirement = evolutionRequirement(part);
+              const label = ['item', 'held-item'].includes(requirement.kind)
                 ? itemForRequirement(part)!.label
-                : evolutionRequirement(part).label;
+                : requirement.label;
               return [value, label];
             }),
           ),
           optionImages: Object.fromEntries(
-            options.flatMap((option) => {
-              const part = option
-                .split(' · ')
-                .find((value) => !shared.includes(value));
+            options.flatMap((option, index) => {
+              const part = missing[index]![0];
               if (
                 !part ||
                 !['item', 'held-item'].includes(evolutionRequirement(part).kind)

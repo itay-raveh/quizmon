@@ -51,54 +51,51 @@ export function useAppDestination() {
         ? 'friends'
         : null;
 
-  const open = useCallback((next: Destination, date?: string) => {
+  const open = (next: Destination, date?: string) => {
     const target = new URL(window.location.href);
     target.searchParams.set('screen', next);
     target.searchParams.delete('returnTo');
     if (date) target.searchParams.set('standings', date);
     if (next !== 'friends') target.hash = '';
     navigate(target);
-  }, []);
+  };
 
-  const account = useCallback((returnTo?: string) => {
+  const account = (returnTo?: string) => {
     const target = new URL(window.location.href);
     const origin =
       returnTo ?? `${target.pathname}${target.search}${target.hash}`;
     target.searchParams.set('screen', 'account');
     target.searchParams.set('returnTo', origin);
     navigate(target);
-  }, []);
+  };
 
-  const trainer = useCallback((view: TrainerView = 'front') => {
+  const trainer = (view: TrainerView = 'front') => {
     const target = clearDestination(new URL(window.location.href));
     setTrainerRoute(target, view);
     navigate(target);
-  }, []);
+  };
 
-  const play = useCallback(() => {
+  const play = () => {
     navigate(clearDestination(new URL(window.location.href)));
-  }, []);
+  };
 
-  const back = useCallback(
-    (fallback: 'play' | 'trainer' | 'leaderboards' = 'play') => {
-      const state: unknown = window.history.state;
-      if (
-        isRecord(state) &&
-        (state.quizmonDestination === true || state.quizmonTrainerCard === true)
-      ) {
-        window.history.back();
-      } else {
-        const target = clearDestination(new URL(window.location.href));
-        if (fallback === 'trainer') setTrainerRoute(target, 'front');
-        if (fallback === 'leaderboards') {
-          target.searchParams.set('screen', 'leaderboards');
-          target.searchParams.set('players', 'friends');
-        }
-        navigate(target, true);
-      }
-    },
-    [],
-  );
+  const back = (fallback: 'play' | 'trainer' | 'leaderboards' = 'play') => {
+    const state: unknown = window.history.state;
+    if (
+      isRecord(state) &&
+      (state.quizmonDestination === true || state.quizmonTrainerCard === true)
+    ) {
+      window.history.back();
+      return;
+    }
+    const target = clearDestination(new URL(window.location.href));
+    if (fallback === 'trainer') setTrainerRoute(target, 'front');
+    if (fallback === 'leaderboards') {
+      target.searchParams.set('screen', 'leaderboards');
+      target.searchParams.set('players', 'friends');
+    }
+    navigate(target, true);
+  };
 
   const selectStandings = useCallback(
     (date: string, scope: 'global' | 'friends', mode: LeaderboardMode) => {

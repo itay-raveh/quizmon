@@ -1,4 +1,5 @@
 import { readCatalogFiles, writeCatalogFiles } from './catalog-output.ts';
+import { clean, english, titleCase } from './catalog-text.ts';
 import { addItemSpriteIdentities } from './item-sprite-identities.ts';
 import { writeFile } from 'node:fs/promises';
 import {
@@ -76,14 +77,7 @@ export const createCatalogClient = (
 });
 
 const cleanText = (value: string): string =>
-  value
-    .replaceAll('\u00ad', '')
-    .replace(/pokémon/giu, 'Pokémon')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const isEnglish = ({ language }: { language: { name: string } }): boolean =>
-  language.name === 'en';
+  clean(value.replaceAll('\u00ad', '').replace(/pokémon/giu, 'Pokémon'));
 
 const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   const values = new Map(
@@ -144,19 +138,13 @@ const getIdentitySprites = (
   };
 };
 
-const titleCase = (value: string) =>
-  value
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-
 const formLabel = (form: CatalogForm, species: PokemonSpecies) => {
-  const label = form.names.find(isEnglish)?.name;
+  const label = form.names.find(english)?.name;
   if (label) return label;
   const speciesLabel =
-    species.names.find(isEnglish)?.name ?? titleCase(species.name);
+    species.names.find(english)?.name ?? titleCase(species.name);
   const formName =
-    form.form_names.find(isEnglish)?.name ?? titleCase(form.form_name);
+    form.form_names.find(english)?.name ?? titleCase(form.form_name);
   return formName ? `${speciesLabel} (${formName})` : speciesLabel;
 };
 
@@ -305,7 +293,7 @@ export const buildPokemonCatalog = async (
       (isSpeciesDefault
         ? mainSeriesDescription(species.flavor_text_entries, alternateVersions)
         : '');
-    const genus = species.genera.find(isEnglish)?.genus;
+    const genus = species.genera.find(english)?.genus;
     const family = chains.find((chain) =>
       species.evolution_chain.url.endsWith(`/evolution-chain/${chain.id}/`),
     )?.id;
@@ -321,7 +309,7 @@ export const buildPokemonCatalog = async (
       displayName:
         groupedFormLabels[key] ??
         (genericNames.has(key)
-          ? (species.names.find(isEnglish)?.name ?? titleCase(species.name))
+          ? (species.names.find(english)?.name ?? titleCase(species.name))
           : formLabel(form, species)),
       hasDistinctDescription:
         Boolean(description) &&

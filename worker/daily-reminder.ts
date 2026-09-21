@@ -122,7 +122,6 @@ const parseRegistration = async (
 export class DailyReminder extends DurableObject<DailyReminderEnv> {
   async fetch(request: Request): Promise<Response> {
     if (request.method === 'DELETE') {
-      await this.ctx.storage.deleteAlarm();
       await this.ctx.storage.deleteAll();
       return noStoreResponse(null, 204);
     }
@@ -169,7 +168,6 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
     if (!registration) return;
     if (registration.version !== 1) {
-      await this.ctx.storage.deleteAlarm();
       await this.ctx.storage.deleteAll();
       return;
     }
@@ -222,10 +220,7 @@ export const handleDailyReminderRequest = async (
     return noStoreResponse('Forbidden', 403);
   }
 
-  const id = match[1];
-  if (!id) {
-    return noStoreResponse('Invalid reminder', 400);
-  }
+  const id = match[1]!;
   if (!reminderMethods.includes(request.method)) {
     return methodNotAllowed();
   }

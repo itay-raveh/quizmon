@@ -3,7 +3,6 @@ import { absoluteSiteUrl, site } from '../src/app/site.ts';
 import { contentPages } from '../src/app/content-pages.ts';
 
 export const markdownUrl = absoluteSiteUrl('/index.md');
-export const llmsUrl = absoluteSiteUrl('/llms.txt');
 const sitemapUrl = absoluteSiteUrl('/sitemap.xml');
 
 const manifest = `${JSON.stringify(
@@ -70,28 +69,6 @@ const pageMarkdown = readFileSync(
   .replaceAll('(terms.md)', `(${absoluteSiteUrl('/terms')})`)
   .replaceAll('](/)', `](${site.url})`);
 
-const llms = `# ${site.name}
-
-> ${site.description}
-
-${site.name} is a free, unofficial browser game. You can play without an account. Signing in syncs completed progress and enables friends and Daily leaderboards. Gameplay and unfinished rounds remain on the device. Cloudflare handles hosting, analytics, and optional daily reminders.
-
-## Game
-
-- [How to play](${absoluteSiteUrl('/about')}): Daily Challenge, Training, scoring, badges, and the Quizmon League.
-- [${site.name} overview](${markdownUrl}): Game modes, question coverage, data use, offline behavior, and attribution.
-- [Play ${site.name}](${site.url}): The interactive game.
-
-## Project
-
-- [Source repository](${site.repositoryUrl}): Source code, setup instructions, and license.
-- [PokéAPI](https://pokeapi.co/): Source of Pokémon data and sprite artwork.
-
-## Optional
-
-- [MIT License](${site.repositoryUrl}/blob/main/LICENSE): License for ${site.name}'s source code.
-`;
-
 export const structuredData = JSON.stringify({
   '@context': 'https://schema.org',
   '@graph': [
@@ -139,11 +116,6 @@ export const generatedAssets = [
     fileName: 'sitemap.xml',
     contentType: 'application/xml; charset=utf-8',
     source: sitemap,
-  },
-  {
-    fileName: 'llms.txt',
-    contentType: 'text/plain; charset=utf-8',
-    source: llms,
   },
   {
     fileName: 'index.md',

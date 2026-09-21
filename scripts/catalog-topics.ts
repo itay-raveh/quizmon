@@ -1,4 +1,5 @@
 import { addAbilityDescriptions } from './ability-text.ts';
+import { clean, english, titleCase } from './catalog-text.ts';
 import { reviewedEffects } from './reviewed-effects.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
 import {
@@ -39,24 +40,12 @@ import {
   normalizeSpriteUrl,
 } from '../src/domain/pokemon/sprite-source.ts';
 
-const english = (value: { language: { name: string } }) =>
-  value.language.name === 'en';
-const clean = (value: string) =>
-  value
-    .replace(/[\n\f\r]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
 const generation = (name: string): Generation | undefined =>
   generations.find((value) => `generation-${value.toLowerCase()}` === name);
 const label = (entity: {
   name: string;
   names?: { name: string; language: { name: string } }[];
-}) =>
-  entity.names?.find(english)?.name ??
-  entity.name
-    .split('-')
-    .map((part) => part[0]!.toUpperCase() + part.slice(1))
-    .join(' ');
+}) => entity.names?.find(english)?.name ?? titleCase(entity.name);
 
 export const buildTopicCatalog = async (
   client: CatalogClient,

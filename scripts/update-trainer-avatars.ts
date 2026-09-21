@@ -17,12 +17,11 @@ if (ids.length < 100) throw new Error('Trainer index format changed');
 const destination = new URL('../public/trainer-avatars/', import.meta.url);
 await rm(destination, { recursive: true, force: true });
 await mkdir(destination, { recursive: true });
-const queue = [...ids];
 const selected: string[] = [];
 await Promise.all(
   Array.from({ length: 16 }, async () => {
-    while (queue.length) {
-      const id = queue.shift()!;
+    while (ids.length) {
+      const id = ids.shift()!;
       const image = await fetch(`${source}${id}.png`);
       if (!image.ok) throw new Error(`${id}: HTTP ${image.status}`);
       const bytes = new Uint8Array(await image.arrayBuffer());

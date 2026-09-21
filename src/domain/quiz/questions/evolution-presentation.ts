@@ -39,7 +39,7 @@ export const evolutionRequirement = (condition: string) => {
   };
 };
 
-const evolutionChoiceDetails = (options: readonly string[]) => {
+export const evolutionChoiceDetails = (options: readonly string[]) => {
   const parts = options.map((option) => option.split(' · '));
   const shared = (parts[0] ?? []).filter((part) =>
     parts.every((values) => values.includes(part)),

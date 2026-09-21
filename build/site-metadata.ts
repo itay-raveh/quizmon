@@ -2,12 +2,7 @@ import { resolve } from 'node:path';
 import { normalizePath, type HtmlTagDescriptor, type Plugin } from 'vite';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
 import { contentPageEntries, renderContentPage } from './content-pages.ts';
-import {
-  generatedAssets,
-  llmsUrl,
-  markdownUrl,
-  structuredData,
-} from './site-assets.ts';
+import { generatedAssets, markdownUrl, structuredData } from './site-assets.ts';
 
 const meta = (
   attribute: 'name' | 'property',
@@ -48,11 +43,6 @@ const pageTags = (
 const tags: HtmlTagDescriptor[] = [
   ...pageTags(site.title, site.description, site.url),
   meta('name', 'theme-color', site.themeColor),
-  {
-    tag: 'link',
-    attrs: { rel: 'describedby', type: 'text/markdown', href: llmsUrl },
-    injectTo: 'head',
-  },
   {
     tag: 'script',
     attrs: { type: 'application/ld+json' },

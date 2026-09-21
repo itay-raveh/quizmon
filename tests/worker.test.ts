@@ -48,12 +48,10 @@ describe('Daily reminders', () => {
   it('deletes pre-reset registrations before sending another reminder', async () => {
     const storage = {
       get: vi.fn().mockResolvedValue({ subscription: {}, timeZone: 'UTC' }),
-      deleteAlarm: vi.fn(),
       deleteAll: vi.fn(),
     };
     const reminder = new DailyReminder({ storage }, makeEnv().env);
     await reminder.alarm();
-    expect(storage.deleteAlarm).toHaveBeenCalledOnce();
     expect(storage.deleteAll).toHaveBeenCalledOnce();
   });
 

@@ -1,6 +1,6 @@
 import type { LeagueView } from '@/domain/quiz/league';
 import { useUpdateState } from '@/features/installation/update-session';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const readView = (): LeagueView | null => {
   const value = new URLSearchParams(window.location.search).get('league');
@@ -17,20 +17,20 @@ export const useLeagueDestination = () => {
     return () => window.removeEventListener('popstate', syncRoute);
   }, []);
 
-  const open = useCallback((next: LeagueView) => {
+  const open = (next: LeagueView) => {
     const url = new URL(window.location.href);
     url.searchParams.set('league', next);
     window.history.pushState(null, '', url);
     setView(next);
-  }, []);
+  };
 
-  const close = useCallback(() => {
+  const close = () => {
     const url = new URL(window.location.href);
     url.searchParams.delete('league');
     window.history.replaceState(window.history.state, '', url);
     setView(null);
     setShowResults(false);
-  }, [setShowResults]);
+  };
 
   return {
     isOpen: view !== null,

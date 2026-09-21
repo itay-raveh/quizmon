@@ -1,4 +1,4 @@
-import { useCallback, type Dispatch } from 'react';
+import type { Dispatch } from 'react';
 import type { GameSession, GameSessionAction } from '../../app/game-session';
 import type { GameSettings } from '../../domain/settings/types';
 import { useUpdateState } from '../installation/update-session';
@@ -27,36 +27,27 @@ export const useSettingsDialog = ({
     'general',
   );
 
-  const openSection = useCallback(
-    (nextSection: SettingsSection) => {
-      if (phase === 'questions') pauseTimer();
-      setSection(nextSection);
-      setIsOpen(true);
-    },
-    [pauseTimer, phase, setIsOpen, setSection],
-  );
-  const open = useCallback(() => openSection('general'), [openSection]);
-  const openTraining = useCallback(
-    () => openSection('training'),
-    [openSection],
-  );
+  const openSection = (nextSection: SettingsSection) => {
+    if (phase === 'questions') pauseTimer();
+    setSection(nextSection);
+    setIsOpen(true);
+  };
+  const open = () => openSection('general');
+  const openTraining = () => openSection('training');
 
-  const close = useCallback(() => {
+  const close = () => {
     setIsOpen(false);
     if (phase === 'questions') startTimer();
-  }, [phase, startTimer, setIsOpen]);
+  };
 
-  const save = useCallback(
-    async (nextSettings: GameSettings) => {
-      if (!(await setSettings(nextSettings))) return;
-      markGenerationKnown();
-      if (phase === 'questions' || phase === 'results') {
-        dispatch({ settings: nextSettings, type: 'settings-updated' });
-      }
-      close();
-    },
-    [close, dispatch, markGenerationKnown, phase, setSettings],
-  );
+  const save = async (nextSettings: GameSettings) => {
+    if (!(await setSettings(nextSettings))) return;
+    markGenerationKnown();
+    if (phase === 'questions' || phase === 'results') {
+      dispatch({ settings: nextSettings, type: 'settings-updated' });
+    }
+    close();
+  };
 
   return { close, open, openTraining, save, isOpen, section };
 };

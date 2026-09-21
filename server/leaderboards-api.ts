@@ -18,6 +18,31 @@ import {
   dailyResults,
 } from './progress-schema.ts';
 
+function friendsOf(
+  db: NodePgDatabase,
+  accountId: string,
+  ownerId: typeof dailyResults.ownerId | typeof completionFacts.ownerId,
+) {
+  return db
+    .select({ id: friendRequests.id })
+    .from(friendRequests)
+    .where(
+      and(
+        eq(friendRequests.status, 'accepted'),
+        or(
+          and(
+            eq(friendRequests.userLow, accountId),
+            eq(friendRequests.userHigh, ownerId),
+          ),
+          and(
+            eq(friendRequests.userHigh, accountId),
+            eq(friendRequests.userLow, ownerId),
+          ),
+        ),
+      ),
+    );
+}
+
 async function dailyStandings(
   db: NodePgDatabase,
   accountId: string,
@@ -30,24 +55,7 @@ async function dailyStandings(
   const definition = dailyDefinition;
   return db.transaction(
     async (tx) => {
-      const friends = tx
-        .select({ id: friendRequests.id })
-        .from(friendRequests)
-        .where(
-          and(
-            eq(friendRequests.status, 'accepted'),
-            or(
-              and(
-                eq(friendRequests.userLow, accountId),
-                eq(friendRequests.userHigh, dailyResults.ownerId),
-              ),
-              and(
-                eq(friendRequests.userHigh, accountId),
-                eq(friendRequests.userLow, dailyResults.ownerId),
-              ),
-            ),
-          ),
-        );
+      const friends = friendsOf(tx, accountId, dailyResults.ownerId);
       const rows = tx.$with('ranked').as(
         tx
           .select({
@@ -155,24 +163,7 @@ async function trainingStandings(
     async (tx) => {
       const score = sql<number>`(${completionFacts.completion}->'result'->>'score')::integer`;
       const elapsed = sql<number>`(${completionFacts.completion}->'result'->>'elapsedMilliseconds')::integer`;
-      const friends = tx
-        .select({ id: friendRequests.id })
-        .from(friendRequests)
-        .where(
-          and(
-            eq(friendRequests.status, 'accepted'),
-            or(
-              and(
-                eq(friendRequests.userLow, accountId),
-                eq(friendRequests.userHigh, completionFacts.ownerId),
-              ),
-              and(
-                eq(friendRequests.userHigh, accountId),
-                eq(friendRequests.userLow, completionFacts.ownerId),
-              ),
-            ),
-          ),
-        );
+      const friends = friendsOf(tx, accountId, completionFacts.ownerId);
       const best = tx.$with('best').as(
         tx
           .select({
