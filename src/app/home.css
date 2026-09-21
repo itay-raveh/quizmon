@@ -313,6 +313,12 @@
 @media (max-width: 50rem) {
   .landing {
     justify-content: flex-end;
+    padding-top: clamp(0.5rem, 2svh, 1.5rem);
+    gap: clamp(0.65rem, 1.5svh, 1.4rem);
+  }
+
+  .logo-picture {
+    width: min(90vw, clamp(17rem, 42svh, 20rem));
   }
 }
 

@@ -113,7 +113,11 @@
   .app--with-navigation main {
     min-height: max(
       calc(100svh - 18.25rem - env(safe-area-inset-bottom)),
-      29.25rem
+      clamp(
+        26.75rem,
+        calc(100svh - 14rem - env(safe-area-inset-bottom)),
+        29.25rem
+      )
     );
   }
 }
