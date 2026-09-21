@@ -18,14 +18,6 @@ export const getQuestionPokemon = (
     subjects.push(question.visual.evolution.name);
   }
   switch (question.questionType) {
-    default:
-      return [...new Set(subjects)];
-    case 'ability-check':
-    case 'move-check':
-    case 'type-check':
-    case 'type-matchup':
-    case 'evolution-shift':
-      return [...new Set(subjects)];
     case 'champion':
     case 'counter-pick':
     case 'evolution-link':
@@ -50,5 +42,7 @@ export const getQuestionPokemon = (
             : question.answer.correctOptions),
         ]),
       ];
+    default:
+      return [...new Set(subjects)];
   }
 };

@@ -10,9 +10,9 @@ import {
   getTrainingScoreMultipliers,
 } from '../quiz/score-multipliers.ts';
 import { formatVersions, gameVersions } from '../versions.ts';
-import { completionCompatibility } from './compatibility.ts';
 import {
   isDailyDate,
+  isChoice,
   isRecord as isObject,
   isUtcTimestamp,
   isUuid as uuid,
@@ -30,6 +30,7 @@ import {
   getAnswerPoints,
   getResponseTime,
   getSpeedBonusPoints,
+  scoringRules,
 } from '../quiz/scoring.ts';
 import {
   questionCategories,
@@ -55,10 +56,6 @@ export const versions = {
 } as const;
 export const utcDay = (timestamp = new Date().toISOString()) =>
   timestamp.slice(0, 10);
-const member = <T extends string>(
-  value: unknown,
-  options: readonly T[],
-): value is T => typeof value === 'string' && options.includes(value as T);
 const integer = (
   value: unknown,
   max = Number.MAX_SAFE_INTEGER,
@@ -104,30 +101,30 @@ export const trainingConfig = (settings: GameSettings): TrainingConfig => ({
 function validTraining(value: unknown): value is TrainingConfig {
   return (
     isObject(value) &&
-    member(value.trainingMode, trainingModes) &&
+    isChoice(value.trainingMode, trainingModes) &&
     (value.difficulty === undefined || isDifficulty(value.difficulty)) &&
     (value.questionSelection === undefined ||
-      member(value.questionSelection, ['automatic', 'custom'])) &&
+      isChoice(value.questionSelection, ['automatic', 'custom'])) &&
     (value.formGroups === undefined ||
       (Array.isArray(value.formGroups) &&
         value.formGroups.length > 0 &&
-        value.formGroups.every((v) => member(v, formGroups)) &&
+        value.formGroups.every((v) => isChoice(v, formGroups)) &&
         new Set(value.formGroups).size === value.formGroups.length)) &&
     (value.automaticQuestionTypes === undefined ||
       (Array.isArray(value.automaticQuestionTypes) &&
         value.automaticQuestionTypes.length > 0 &&
-        value.automaticQuestionTypes.every((v) => member(v, questionTypes)) &&
+        value.automaticQuestionTypes.every((v) => isChoice(v, questionTypes)) &&
         new Set(value.automaticQuestionTypes).size ===
           value.automaticQuestionTypes.length)) &&
     Array.isArray(value.generations) &&
     value.generations.length > 0 &&
     value.generations.length <= generations.length &&
-    value.generations.every((v) => member(v, generations)) &&
+    value.generations.every((v) => isChoice(v, generations)) &&
     new Set(value.generations).size === value.generations.length &&
     Array.isArray(value.questionTypes) &&
     value.questionTypes.length > 0 &&
     value.questionTypes.length <= questionTypes.length &&
-    value.questionTypes.every((v) => member(v, questionTypes)) &&
+    value.questionTypes.every((v) => isChoice(v, questionTypes)) &&
     new Set(value.questionTypes).size === value.questionTypes.length
   );
 }
@@ -256,20 +253,17 @@ export function validateCompletion(value: unknown): string | null {
     return 'invalid_identity';
   if (value.recordVersion !== formatVersions.completion)
     return 'unsupported_version';
-  const compatibility = completionCompatibility(value);
-  if (!compatibility) return 'unsupported_version';
-  const knownPokemon = (v: unknown): v is string =>
-    typeof v === 'string' && Object.hasOwn(compatibility.pokemonGenerations, v);
-  const knownKeys = (v: unknown): v is string[] =>
-    Array.isArray(v) &&
-    v.length <= Object.keys(compatibility.pokemonGenerations).length &&
-    v.every(knownPokemon) &&
-    new Set(v).size === v.length;
   if (
-    !member(value.mode, ['training', 'daily', 'league']) ||
+    value.contentVersion !== gameVersions.content ||
+    value.scoreVersion !== gameVersions.score ||
+    value.progressVersion !== gameVersions.progress ||
+    !isChoice(value.mode, ['training', 'daily', 'league'])
+  )
+    return 'unsupported_version';
+  if (
     !validTraining(value.training) ||
     !isUtcTimestamp(value.completedAt) ||
-    !knownKeys(value.discoveries)
+    !keys(value.discoveries)
   )
     return 'invalid_completion';
   if (
@@ -278,7 +272,7 @@ export function validateCompletion(value: unknown): string | null {
   )
     return 'invalid_mode';
   const result = value.result;
-  const total = compatibility.questionCount;
+  const total = { training: 10, daily: 5, league: 15 }[value.mode];
   if (
     !isObject(result) ||
     (value.mode === 'daily' &&
@@ -321,10 +315,10 @@ export function validateCompletion(value: unknown): string | null {
       !isAnswerObservation(answer.observation) ||
       observationCorrect(answer.observation) !== answer.correct ||
       !isAnswerSubject(subject) ||
-      (subject.kind === 'pokemon' && !knownPokemon(subject.name)) ||
-      !member(answer.category, questionCategories) ||
-      !member(answer.questionType, [...questionTypes, 'champion']) ||
-      !member(subject.generation, generations) ||
+      (subject.kind === 'pokemon' && !pokemonKey(subject.name)) ||
+      !isChoice(answer.category, questionCategories) ||
+      !isChoice(answer.questionType, [...questionTypes, 'champion']) ||
+      !isChoice(subject.generation, generations) ||
       typeof answer.correct !== 'boolean' ||
       (answer.unassistedSearch !== undefined &&
         typeof answer.unassistedSearch !== 'boolean') ||
@@ -340,7 +334,7 @@ export function validateCompletion(value: unknown): string | null {
       return 'invalid_answer';
     if (
       (subject.kind === 'pokemon' &&
-        compatibility.pokemonGenerations[subject.name!] !==
+        (pokemonGenerations as Record<string, string>)[subject.name!] !==
           subject.generation) ||
       (answer.questionType === 'champion') !==
         (answer.category === 'champion') ||
@@ -351,16 +345,12 @@ export function validateCompletion(value: unknown): string | null {
       { category: answer.category },
       answer.correct,
       answer.cluesUsed,
-      compatibility.scoring,
+      scoringRules,
     );
     if (
       answer.points !== points ||
       answer.speedBonus !==
-        getSpeedBonusPoints(
-          points,
-          answer.responseMilliseconds,
-          compatibility.scoring,
-        )
+        getSpeedBonusPoints(points, answer.responseMilliseconds, scoringRules)
     )
       return 'invalid_score';
     if (
@@ -405,7 +395,7 @@ export function validateCompletion(value: unknown): string | null {
   if (
     result.correctCount !== answers.filter((a) => a.correct).length ||
     result.score !==
-      calculateScore(answers, result.scoreMultipliers, compatibility.scoring) ||
+      calculateScore(answers, result.scoreMultipliers, scoringRules) ||
     result.elapsedMilliseconds !==
       getResponseTime(answers).elapsedMilliseconds ||
     result.elapsedSeconds !== getResponseTime(answers).elapsedSeconds
@@ -417,7 +407,7 @@ export function validateCompletion(value: unknown): string | null {
       ? !isObject(value.victory) ||
         typeof value.victory.trainerName !== 'string' ||
         value.victory.trainerName.length > 20 ||
-        !knownKeys(value.victory.pokemon) ||
+        !keys(value.victory.pokemon) ||
         !value.victory.pokemon.length
       : value.victory !== null
   )
@@ -460,11 +450,11 @@ export function validEdit(value: unknown): value is Edit {
     case 'avatar':
       return value.value === null || isTrainerAvatar(value.value);
     case 'specialty':
-      return value.value === null || member(value.value, specialties);
+      return value.value === null || isChoice(value.value, specialties);
     case 'answerFlow':
-      return member(value.value, answerFlows);
+      return isChoice(value.value, answerFlows);
     case 'timerDisplay':
-      return member(value.value, timerDisplays);
+      return isChoice(value.value, timerDisplays);
     case 'training':
       return validTraining(value.value);
     default:
@@ -510,7 +500,7 @@ export function validActionEnvelope(value: unknown): value is ActionEnvelope {
 export function validAction(value: unknown): value is Action {
   return (
     validActionEnvelope(value) &&
-    member(value.kind, [
+    isChoice(value.kind, [
       'completion.record',
       'discoveries.add',
       'profile.patch',

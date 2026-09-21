@@ -264,7 +264,6 @@ export const QuestionAnswerChoice = ({
   return attackTypes && typeRelations ? (
     <div
       className={`answer-matchup ${visual ? 'answer-matchup--pokemon' : ''}`.trim()}
-      key={option}
     >
       {answerButton}
       {answered ? (

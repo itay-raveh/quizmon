@@ -134,9 +134,7 @@
   .question-visual__subject-name {
     max-width: 100%;
   }
-}
 
-@container (max-width: 16rem) {
   .champion-search__controls {
     grid-template-columns: minmax(0, 1fr);
   }

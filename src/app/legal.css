@@ -41,7 +41,6 @@ html:has(.legal-page),
 
 .legal-content {
   display: block;
-  place-items: normal;
   min-height: auto;
   grid-row: 2;
   align-self: start;

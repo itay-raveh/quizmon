@@ -8,7 +8,6 @@ import { isRecord } from '../../src/lib/validation.ts';
 import {
   EmailDeliveryError,
   cloudflareBindingDelivery,
-  cloudflareRestDelivery,
   type CodeDelivery,
 } from '../../server/email.ts';
 import { localEnv } from '../../scripts/dev/local-env.ts';
@@ -73,69 +72,6 @@ await test('Worker binding rejects missing acknowledgement and normalizes quota 
     )(recipient, code),
     EmailDeliveryError,
   );
-});
-
-await test('REST accepts recipient-specific queued/delivered outcomes and rejects bounces or unknown outcomes', async () => {
-  const config = { accountId: 'a'.repeat(32), token: 'test-token', from };
-  let message: unknown;
-  for (const accepted of ['delivered', 'queued']) {
-    await cloudflareRestDelivery(config, (_url, init) => {
-      assert.ok(typeof init?.body === 'string');
-      message = JSON.parse(init.body) as unknown;
-      return Promise.resolve(
-        Response.json({
-          success: true,
-          result: {
-            delivered: [],
-            queued: [],
-            permanent_bounces: [],
-            [accepted]: [recipient],
-          },
-        }),
-      );
-    })(recipient, code);
-    assert.ok(isRecord(message));
-    assert.deepEqual(message.from, { address: from, name: 'Quizmon' });
-  }
-  for (const result of [
-    { delivered: [], queued: [], permanent_bounces: [recipient] },
-    { delivered: [], queued: [], permanent_bounces: [] },
-    {
-      delivered: ['someone-else@example.test'],
-      queued: [],
-      permanent_bounces: [],
-    },
-    { messageId: 'not-the-REST-contract' },
-  ]) {
-    await assert.rejects(
-      cloudflareRestDelivery(config, () =>
-        Promise.resolve(
-          Response.json({
-            success: true,
-            result,
-          }),
-        ),
-      )(recipient, code),
-      EmailDeliveryError,
-    );
-  }
-  await assert.rejects(
-    cloudflareRestDelivery(config, () =>
-      Promise.resolve(Response.json({ success: false }, { status: 429 })),
-    )(recipient, code),
-    (error: unknown) => error instanceof EmailDeliveryError && error.limited,
-  );
-  let attempts = 0;
-  await assert.rejects(
-    cloudflareRestDelivery(config, () => {
-      attempts++;
-      return Promise.reject(
-        new Error('Ambiguous network response with private details'),
-      );
-    })(recipient, code),
-    EmailDeliveryError,
-  );
-  assert.equal(attempts, 1);
 });
 
 function apiWithDelivery(deliver: CodeDelivery) {

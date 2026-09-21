@@ -1,8 +1,5 @@
 import { StatDirection } from './StatDirection';
 
-const parseNatureEffect = (description: string) =>
-  /^Raises (.+); lowers (.+)$/.exec(description);
-
 export const NatureEffect = ({
   description,
   compact = false,
@@ -10,7 +7,7 @@ export const NatureEffect = ({
   description: string;
   compact?: boolean;
 }) => {
-  const effect = parseNatureEffect(description);
+  const effect = /^Raises (.+); lowers (.+)$/.exec(description);
   if (!effect) return description;
   return (
     <span

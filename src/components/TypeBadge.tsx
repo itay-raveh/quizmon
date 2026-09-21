@@ -39,31 +39,11 @@ const typeBadgeSources: Record<string, string> = {
   water,
 };
 
-interface TypeBadgeProps {
-  type: string;
-}
-
 interface TypeBadgesProps {
   className?: string;
   label?: string;
   types: readonly string[];
 }
-
-const TypeBadge = ({ type }: TypeBadgeProps) => {
-  const src = typeBadgeSources[type];
-  if (!src) return null;
-
-  return (
-    <img
-      className="type-badge"
-      src={src}
-      alt=""
-      aria-hidden="true"
-      width="50"
-      height="20"
-    />
-  );
-};
 
 export const MysteryTypeBadge = () => (
   <img
@@ -87,8 +67,18 @@ export const TypeBadges = ({
     className={`type-badges ${className}`.trim()}
     role={label ? 'img' : undefined}
   >
-    {types.map((type) => (
-      <TypeBadge key={type} type={type} />
-    ))}
+    {types.map((type) =>
+      typeBadgeSources[type] ? (
+        <img
+          key={type}
+          className="type-badge"
+          src={typeBadgeSources[type]}
+          alt=""
+          aria-hidden="true"
+          width="50"
+          height="20"
+        />
+      ) : null,
+    )}
   </span>
 );

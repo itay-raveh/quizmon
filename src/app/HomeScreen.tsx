@@ -42,12 +42,7 @@ export const HomeScreen = ({
   storageAvailable,
 }: HomeScreenProps) => {
   const catalogReady = catalogStatus === 'ready';
-  const dailyDetail = [
-    formatDailyDate(dailyDate),
-    storageAvailable ? null : 'Browser storage required',
-  ]
-    .filter(Boolean)
-    .join(' · ');
+  const dailyDetail = `${formatDailyDate(dailyDate)}${storageAvailable ? '' : ' · Browser storage required'}`;
 
   return (
     <section className="landing" aria-labelledby="landing-title">

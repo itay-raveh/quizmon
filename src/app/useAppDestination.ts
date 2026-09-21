@@ -117,7 +117,6 @@ export function useAppDestination() {
     back,
     destination,
     friendCode: friendCode ?? '',
-    href,
     open,
     play,
     trainer,

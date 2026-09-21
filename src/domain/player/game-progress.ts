@@ -69,11 +69,8 @@ export const applyResult = (
     const completed = Boolean(victory) || isLeagueVictory(result);
     results.league.completed = results.league.completed || completed;
     if (completed) results.league.seed = null;
-    Object.assign(data, {
-      results,
-      ...(completed ? { leagueLineup: null } : {}),
-      ...(completed && victory ? { hallOfFame: [...hallOfFame, victory] } : {}),
-    });
+    if (completed) data.leagueLineup = null;
+    if (completed && victory) data.hallOfFame = [...hallOfFame, victory];
     return {
       best: result,
       isNewBest: completed,

@@ -1,4 +1,3 @@
-import { useReducedMotion } from '@/app/providers/motion-context';
 import { GameButton } from '@/components/GameButton';
 import {
   ArrowLeftIcon,
@@ -17,7 +16,7 @@ import {
   supportsTrainerArtifactSharing,
 } from '@/features/trainer/trainer-artifact-export';
 import { readPlayerData } from '@/lib/storage/player-storage';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LeagueProgress } from './LeagueProgress';
 import { LeagueTrophy } from './LeagueTrophy';
 
@@ -49,7 +48,6 @@ export const LeagueDestination = ({
   const view = completed ? requestedView : 'challenge';
   const heading = useRef<HTMLDivElement>(null);
   const artifact = useRef<HTMLElement>(null);
-  const reducedMotion = useReducedMotion();
   const [records] = useState(() => {
     const saved = readPlayerData().hallOfFame;
     return freshRecord && !saved.some(({ id }) => id === freshRecord.id)
@@ -60,7 +58,6 @@ export const LeagueDestination = ({
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
-  const dismissNotice = useCallback(() => setNotice(''), []);
   const record = records[index];
   const canShare = supportsTrainerArtifactSharing();
 
@@ -92,7 +89,7 @@ export const LeagueDestination = ({
 
   return (
     <section
-      className={`league-hall${celebrate && !reducedMotion ? ' league-hall--induction' : ''}`}
+      className={`league-hall${celebrate ? ' league-hall--induction' : ''}`}
       aria-label="Quizmon League"
     >
       <header className="league-hall__header">
@@ -219,7 +216,7 @@ export const LeagueDestination = ({
           {error}
         </p>
       )}
-      {notice && <Toast message={notice} onDismiss={dismissNotice} />}
+      {notice && <Toast message={notice} onDismiss={() => setNotice('')} />}
     </section>
   );
 };
