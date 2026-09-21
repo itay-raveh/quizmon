@@ -48,8 +48,8 @@ export const TrainerTitles = ({
               : 'Locked';
           const progressLabel =
             title.tier === 3
-              ? `${title.current.toLocaleString()} correct`
-              : `${progress.toLocaleString()} / ${title.goal.toLocaleString()} correct`;
+              ? title.current.toLocaleString()
+              : `${progress.toLocaleString()} / ${title.goal.toLocaleString()}`;
 
           return (
             <SoundButton
