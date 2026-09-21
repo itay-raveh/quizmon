@@ -366,9 +366,9 @@ export function LeaderboardScreen({
                     : 'leaderboard-controls__date--hidden'
                 }
               >
-                Date (UTC)
                 <input
                   type="date"
+                  aria-label="Leaderboard date"
                   value={date}
                   max={today}
                   disabled={mode !== 'daily'}
