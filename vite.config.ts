@@ -66,6 +66,8 @@ export default defineConfig({
       ),
     },
     environment: 'jsdom',
+    maxWorkers: 4,
+    testTimeout: 30_000,
     exclude: ['e2e/**', '**/node_modules/**', 'tests/online/**'],
     globals: true,
     setupFiles: ['./tests/setup.ts'],

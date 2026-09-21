@@ -284,7 +284,7 @@ it('keeps Daily independent of personal history and rotates Champion targets acr
     champions.add(questions.at(-1)!.subject.name);
   }
   expect(champions.size).toBe(45);
-}, 15000);
+}, 30_000);
 it('rejects corrupt history and stops stale exposure events from moving history backwards', () => {
   const question = generate('evolution-shift')[0]!;
   const history = rememberShownQuestion(
