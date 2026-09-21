@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { readMigrationFiles } from 'drizzle-orm/migrator';
 import { Client } from 'pg';
 import {
   ActivationNotStartedError,
@@ -18,6 +19,7 @@ await admin.connect();
 const migrationsFolder = fileURLToPath(
   new URL('../../server/migrations', import.meta.url),
 );
+const migrationCount = readMigrationFiles({ migrationsFolder }).length;
 const operation = () => ({
   version: 1 as const,
   id: crypto.randomUUID(),
@@ -77,14 +79,17 @@ try {
       const first = await coordinateRelease(options);
       assert.equal(first.status, 'activated');
       if (first.status === 'activated')
-        assert.deepEqual(first.migrations, { applied: 1, total: 1 });
+        assert.deepEqual(first.migrations, {
+          applied: migrationCount,
+          total: migrationCount,
+        });
       assert.equal(
         (
           await client.query<{ count: number }>(
             'SELECT count(*)::int AS count FROM drizzle.__drizzle_migrations',
           )
         ).rows[0]!.count,
-        1,
+        migrationCount,
       );
       const duplicate = await coordinateRelease(options);
       assert.equal(duplicate.status, 'verified-existing');
@@ -162,7 +167,10 @@ try {
         operation: operation(),
       });
       if (replacement.status === 'activated')
-        assert.deepEqual(replacement.migrations, { applied: 0, total: 1 });
+        assert.deepEqual(replacement.migrations, {
+          applied: 0,
+          total: migrationCount,
+        });
       else assert.fail('replacement should activate');
     }));
 
@@ -179,7 +187,10 @@ try {
       assert.equal(activations.length, 0);
       const result = await coordinateRelease(options);
       if (result.status === 'activated')
-        assert.deepEqual(result.migrations, { applied: 0, total: 1 });
+        assert.deepEqual(result.migrations, {
+          applied: 0,
+          total: migrationCount,
+        });
       else assert.fail('retry should activate');
     }));
 
