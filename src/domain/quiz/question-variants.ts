@@ -126,7 +126,7 @@ const effectVariants: DifficultyVariants<VariantRules> = {
   5: { effectChoices: 'exact', allowMissingSprites: true },
 };
 
-export const questionVariants: Record<
+const questionVariants: Record<
   QuestionData['questionType'],
   DifficultyVariants<VariantRules> & { rendering?: RenderingOverrides }
 > = {

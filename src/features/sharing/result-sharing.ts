@@ -41,11 +41,10 @@ export const buildShareContent = (
   };
 };
 
-export const buildShareText = (content: ShareContent): string =>
+const buildShareText = (content: ShareContent): string =>
   [content.title, content.text, content.url].join('\n');
 
-export const canShareResult = (): boolean =>
-  typeof navigator.share === 'function';
+const canShareResult = (): boolean => typeof navigator.share === 'function';
 
 export const shareContent = async (
   data: ShareData,

@@ -55,7 +55,7 @@ export const getPokemonRecency = (
   );
 };
 
-export const getQuestionKey = (question: HistoryQuestion): string =>
+const getQuestionKey = (question: HistoryQuestion): string =>
   `${question.questionType}:${question.repetition.identity}`;
 
 export const getQuestionRecency = (

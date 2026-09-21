@@ -50,7 +50,7 @@ export const useUpdateState = <T>(key: string, initial: T) => {
   return state;
 };
 
-export const saveUpdateState = () =>
+const saveUpdateState = () =>
   !getSaveIssue() &&
   writeStoredJson('sessionStorage', UPDATE_STATE_KEY, {
     url: window.location.href,

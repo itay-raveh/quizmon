@@ -68,11 +68,10 @@ export default defineConfig({
         new URL('./tests/cloudflare-workers.ts', import.meta.url),
       ),
     },
-    environment: 'jsdom',
+    environment: 'node',
     maxWorkers: 4,
     testTimeout: 30_000,
     exclude: ['**/node_modules/**', 'tests/online/**'],
     globals: true,
-    setupFiles: ['./tests/setup.ts'],
   },
 });

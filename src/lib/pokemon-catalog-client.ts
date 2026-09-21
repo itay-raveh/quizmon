@@ -13,7 +13,7 @@ export const resetPokemonCatalog = () => {
   catalogPromise = undefined;
 };
 
-export const fetchPokemonCatalog = async (): Promise<PokemonCatalog> => {
+const fetchPokemonCatalog = async (): Promise<PokemonCatalog> => {
   const response = await fetch(catalogUrl);
   if (!response.ok) {
     throw new Error(`The Pokémon catalog request failed (${response.status}).`);

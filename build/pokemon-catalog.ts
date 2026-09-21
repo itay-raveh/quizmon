@@ -12,7 +12,7 @@ const resolvedId = '\0' + moduleId;
 const developmentUrl = '/@quizmon/pokemon-catalog.bin';
 const compress = promisify(gzip);
 
-export const buildPokemonCatalogArchive = async (source = directory) =>
+const buildPokemonCatalogArchive = async (source = directory) =>
   compress(JSON.stringify(await readCatalogFiles(source)));
 
 export const pokemonCatalog = (): Plugin => {

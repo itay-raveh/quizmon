@@ -292,9 +292,6 @@ export const getTrainerBadges = (
     ...getProgress(milestones(stats, catalog)),
   }));
 
-export const getEarnedTrainerBadgeCount = (stats: TrainerStats): number =>
-  getTrainerBadges(stats).filter(({ earned }) => earned).length;
-
 export const isLeagueUnlocked = (stats: TrainerStats): boolean =>
   getTrainerBadges(stats).every(({ earned }) => earned);
 
@@ -324,7 +321,9 @@ export const getTrainerTitles = (
 
 export const getTrainerRank = (stats: TrainerStats): TrainerRank => {
   if (stats.leagueCompleted) return 'Champion';
-  const earnedBadges = getEarnedTrainerBadgeCount(stats);
+  const earnedBadges = getTrainerBadges(stats).filter(
+    ({ earned }) => earned,
+  ).length;
   if (earnedBadges === TRAINER_BADGE_COUNT) return 'League Challenger';
   if (earnedBadges >= 5) return 'Veteran';
   if (earnedBadges >= 2) return 'Ace';

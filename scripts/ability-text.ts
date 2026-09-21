@@ -10,7 +10,7 @@ type TextEntry = {
   generations: Record<number, TextEntry>;
 };
 
-export const parseAbilityText = (text: string) => {
+const parseAbilityText = (text: string) => {
   const file = ts.createSourceFile(
     'abilities.ts',
     text,

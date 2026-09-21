@@ -44,7 +44,7 @@ Run commands from the repository root.
 | --- | --- |
 | Set up a fresh clone | `mise run setup` |
 | Start the app and local services | `npm run dev` |
-| Run one unit test | `npm test -- src/domain/quiz/question-generation.test.ts` |
+| Run one unit test | `npm test -- src/domain/quiz/scoring.test.ts` |
 | Run fast push tests | `npm run test:push` |
 | Lint all source | `npm run lint` |
 | Build production output | `npm run build` |

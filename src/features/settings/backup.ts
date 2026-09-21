@@ -13,7 +13,7 @@ import {
 } from '../../lib/storage/player-storage';
 import { isRecord, isUtcTimestamp, isUuid } from '../../lib/validation';
 
-export const MAX_BACKUP_BYTES = 512 * 1024 * 1024;
+const MAX_BACKUP_BYTES = 512 * 1024 * 1024;
 
 export interface PlayerBackup {
   exportedAt: string;
@@ -29,7 +29,7 @@ export interface PlayerBackup {
   };
 }
 
-export const createBackup = async (): Promise<PlayerBackup> =>
+const createBackup = async (): Promise<PlayerBackup> =>
   getPlayerDatabase().readTransaction(async (transaction) => {
     const state = await readState(transaction);
     delete state.dailyAttempts;

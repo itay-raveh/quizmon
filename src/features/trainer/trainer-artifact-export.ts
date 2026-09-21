@@ -57,7 +57,7 @@ const createCaptureClone = (element: HTMLElement) => {
   return { clone, host };
 };
 
-export const renderTrainerArtifactImage = async (
+const renderTrainerArtifactImage = async (
   element: HTMLElement,
 ): Promise<Blob> => {
   const { clone, host } = createCaptureClone(element);
@@ -105,7 +105,7 @@ export const supportsTrainerArtifactSharing = () => {
   }
 };
 
-export const shareTrainerArtifact = async (
+const shareTrainerArtifact = async (
   blob: Blob,
   view: TrainerArtifactView,
 ): Promise<'cancelled' | 'shared' | 'unsupported'> => {

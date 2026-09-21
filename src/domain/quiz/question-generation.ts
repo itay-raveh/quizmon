@@ -17,7 +17,7 @@ import type { QuestionContext } from './questions/context.ts';
 import { buildQuestionType } from './questions/registry.ts';
 import type { QuestionData } from './types.ts';
 
-export const getQuestionCount = (
+const getQuestionCount = (
   availableCount: number,
   requestedCount: number,
 ): number => {
@@ -87,7 +87,7 @@ export const buildQuestions = (
   return questions;
 };
 
-export const buildQuestionSequence = (
+const buildQuestionSequence = (
   catalog: PokemonCatalog,
   questionSequence: readonly QuestionData['questionType'][],
   settings: GameSettings,

@@ -9,7 +9,6 @@ import {
   isScoreMultipliers,
   getTrainingScoreMultipliers,
 } from '../quiz/score-multipliers.ts';
-import { getUnifiedScoreKey } from '../quiz/scoring.ts';
 import { formatVersions, gameVersions } from '../versions.ts';
 import { completionCompatibility } from './compatibility.ts';
 import {
@@ -102,8 +101,6 @@ export const trainingConfig = (settings: GameSettings): TrainingConfig => ({
         .questionTypes),
   ],
 });
-export const trainingBestKey = (round: RoundCompletion) =>
-  getUnifiedScoreKey(round.result);
 function validTraining(value: unknown): value is TrainingConfig {
   return (
     isObject(value) &&

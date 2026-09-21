@@ -1,6 +1,6 @@
 import type { QuestionData, QuestionType } from './types.ts';
 
-export const standardQuestionTypes: readonly QuestionType[] = [
+const standardQuestionTypes: readonly QuestionType[] = [
   'pokedex-scan',
   'silhouette-match',
   'sprite-match',
