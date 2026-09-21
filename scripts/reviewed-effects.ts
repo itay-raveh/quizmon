@@ -1,5 +1,43 @@
 import type { EffectKnowledge } from '../src/domain/quiz/topic-catalog.ts';
 
+const preventsSleep = {
+  value: 'Prevents the holder from falling asleep.',
+  label: 'Prevents sleep',
+};
+const contactDamage = {
+  value: 'Damages attackers that make contact.',
+  label: 'Damages attackers on contact',
+};
+const attackMoveLock = {
+  value: 'Boosts Attack while restricting the holder to one move.',
+  label: 'Boosts Attack but locks the holder into one move',
+};
+const surviveAtOneHp = {
+  value: 'At full HP, is consumed to survive a lethal move hit with 1 HP.',
+  label: 'Used up to survive a hit at 1 HP, if starting at full HP',
+};
+const poisonHealTradeoff = {
+  value: 'Heals a Poison-type holder each turn but damages other types.',
+  label: 'Each turn: heals Poison types, damages other types',
+};
+const electricAbsorb = {
+  value: 'Electric-type moves heal the holder instead of affecting it.',
+  label: 'Blocks Electric moves and restores HP',
+};
+const contactRetaliation = {
+  value: 'Damages an attacker when its move makes contact with the holder.',
+  label: 'Damages attackers on contact',
+};
+const healingBoost = {
+  value:
+    'Increases healing from draining moves and certain ongoing recovery effects.',
+  label: 'Boosts draining moves and some ongoing healing',
+};
+const grassAttackBoost = {
+  value: 'Grass-type moves raise Attack instead of affecting the holder.',
+  label: 'Blocks Grass moves and raises Attack',
+};
+
 export const reviewedEffects: EffectKnowledge[] = [
   {
     kind: 'ability',
@@ -15,30 +53,18 @@ export const reviewedEffects: EffectKnowledge[] = [
       'An Electric-type move from another Pokémon restores up to 1/4 of maximum HP, including status moves.',
     questions: {
       broad: {
-        correct: {
-          value: 'Electric-type moves heal the holder instead of affecting it.',
-          label: 'Blocks Electric moves and restores HP',
-        },
+        correct: electricAbsorb,
         wrong: [
           {
             value: 'Raises the holder’s physical Attack when it enters battle.',
             label: 'Raises Attack on entering battle',
           },
-          {
-            value: 'Prevents the holder from falling asleep.',
-            label: 'Prevents sleep',
-          },
-          {
-            value: 'Damages attackers that make contact.',
-            label: 'Damages attackers on contact',
-          },
+          preventsSleep,
+          contactDamage,
         ],
       },
       related: {
-        correct: {
-          value: 'Electric-type moves heal the holder instead of affecting it.',
-          label: 'Blocks Electric moves and restores HP',
-        },
+        correct: electricAbsorb,
         wrong: [
           {
             value: 'Water-type moves heal the holder instead of affecting it.',
@@ -101,22 +127,7 @@ export const reviewedEffects: EffectKnowledge[] = [
           value: 'Restores some of the holder’s HP at the end of each turn.',
           label: 'Restores HP each turn',
         },
-        wrong: [
-          {
-            value: 'Boosts Attack while restricting the holder to one move.',
-            label: 'Boosts Attack but locks the holder into one move',
-          },
-          {
-            value:
-              'At full HP, is consumed to survive a lethal move hit with 1 HP.',
-            label: 'Used up to survive a hit at 1 HP, if starting at full HP',
-          },
-          {
-            value:
-              'Damages an attacker when its move makes contact with the holder.',
-            label: 'Damages attackers on contact',
-          },
-        ],
+        wrong: [attackMoveLock, surviveAtOneHp, contactRetaliation],
       },
       related: {
         correct: {
@@ -124,20 +135,12 @@ export const reviewedEffects: EffectKnowledge[] = [
           label: 'Restores HP each turn',
         },
         wrong: [
-          {
-            value:
-              'Heals a Poison-type holder each turn but damages other types.',
-            label: 'Each turn: heals Poison types, damages other types',
-          },
+          poisonHealTradeoff,
           {
             value: 'Restores HP based on damage the holder dealt with a move.',
             label: 'Restores HP based on damage dealt',
           },
-          {
-            value:
-              'Increases healing from draining moves and certain ongoing recovery effects.',
-            label: 'Boosts draining moves and some ongoing healing',
-          },
+          healingBoost,
         ],
       },
       exact: {
@@ -191,18 +194,12 @@ export const reviewedEffects: EffectKnowledge[] = [
           label: 'Blocks Ground moves and restores HP',
         },
         wrong: [
-          {
-            value: 'Prevents the holder from falling asleep.',
-            label: 'Prevents sleep',
-          },
+          preventsSleep,
           {
             value: 'Raises Attack after knocking out another Pokémon.',
             label: 'Raises Attack after a knockout',
           },
-          {
-            value: 'Damages attackers that make contact.',
-            label: 'Damages attackers on contact',
-          },
+          contactDamage,
         ],
       },
       related: {
@@ -211,20 +208,12 @@ export const reviewedEffects: EffectKnowledge[] = [
           label: 'Blocks Ground moves and restores HP',
         },
         wrong: [
-          {
-            value:
-              'Electric-type moves heal the holder instead of affecting it.',
-            label: 'Blocks Electric moves and restores HP',
-          },
+          electricAbsorb,
           {
             value: 'Water-type moves heal the holder instead of affecting it.',
             label: 'Blocks Water moves and restores HP',
           },
-          {
-            value:
-              'Grass-type moves raise Attack instead of affecting the holder.',
-            label: 'Blocks Grass moves and raises Attack',
-          },
+          grassAttackBoost,
         ],
       },
       exact: {
@@ -269,32 +258,18 @@ export const reviewedEffects: EffectKnowledge[] = [
       'A Grass-type move raises Attack by one stage, including status moves.',
     questions: {
       broad: {
-        correct: {
-          value:
-            'Grass-type moves raise Attack instead of affecting the holder.',
-          label: 'Blocks Grass moves and raises Attack',
-        },
+        correct: grassAttackBoost,
         wrong: [
-          {
-            value: 'Prevents the holder from falling asleep.',
-            label: 'Prevents sleep',
-          },
+          preventsSleep,
           {
             value: 'Heals the holder at the end of each turn.',
             label: 'Restores HP each turn',
           },
-          {
-            value: 'Damages attackers that make contact.',
-            label: 'Damages attackers on contact',
-          },
+          contactDamage,
         ],
       },
       related: {
-        correct: {
-          value:
-            'Grass-type moves raise Attack instead of affecting the holder.',
-          label: 'Blocks Grass moves and raises Attack',
-        },
+        correct: grassAttackBoost,
         wrong: [
           {
             value:
@@ -359,18 +334,12 @@ export const reviewedEffects: EffectKnowledge[] = [
           label: 'Water hits deal damage and raise Defense',
         },
         wrong: [
-          {
-            value: 'Prevents the holder from falling asleep.',
-            label: 'Prevents sleep',
-          },
+          preventsSleep,
           {
             value: 'Heals the holder when it switches out.',
             label: 'Restores HP when switching out',
           },
-          {
-            value: 'Damages attackers that make contact.',
-            label: 'Damages attackers on contact',
-          },
+          contactDamage,
         ],
       },
       related: {
@@ -439,34 +408,11 @@ export const reviewedEffects: EffectKnowledge[] = [
       'Each turn, restores up to 1/16 maximum HP to a Poison-type holder; other types lose 1/8 maximum HP.',
     questions: {
       broad: {
-        correct: {
-          value:
-            'Heals a Poison-type holder each turn but damages other types.',
-          label: 'Each turn: heals Poison types, damages other types',
-        },
-        wrong: [
-          {
-            value: 'Boosts Attack while restricting the holder to one move.',
-            label: 'Boosts Attack but locks the holder into one move',
-          },
-          {
-            value:
-              'At full HP, is consumed to survive a lethal move hit with 1 HP.',
-            label: 'Used up to survive a hit at 1 HP, if starting at full HP',
-          },
-          {
-            value:
-              'Damages an attacker when its move makes contact with the holder.',
-            label: 'Damages attackers on contact',
-          },
-        ],
+        correct: poisonHealTradeoff,
+        wrong: [attackMoveLock, surviveAtOneHp, contactRetaliation],
       },
       related: {
-        correct: {
-          value:
-            'Heals a Poison-type holder each turn but damages other types.',
-          label: 'Each turn: heals Poison types, damages other types',
-        },
+        correct: poisonHealTradeoff,
         wrong: [
           {
             value: 'Heals holders of every type at the end of each turn.',
@@ -476,11 +422,7 @@ export const reviewedEffects: EffectKnowledge[] = [
             value: 'Restores HP based on damage the holder dealt with a move.',
             label: 'Restores HP based on damage dealt',
           },
-          {
-            value:
-              'Increases healing from draining moves and certain ongoing recovery effects.',
-            label: 'Boosts draining moves and some ongoing healing',
-          },
+          healingBoost,
         ],
       },
       exact: {
@@ -543,22 +485,7 @@ export const reviewedEffects: EffectKnowledge[] = [
           value: 'Restores HP based on damage dealt by the holder’s move.',
           label: 'Restores HP based on damage dealt',
         },
-        wrong: [
-          {
-            value: 'Boosts Attack while restricting the holder to one move.',
-            label: 'Boosts Attack but locks the holder into one move',
-          },
-          {
-            value:
-              'At full HP, is consumed to survive a lethal move hit with 1 HP.',
-            label: 'Used up to survive a hit at 1 HP, if starting at full HP',
-          },
-          {
-            value:
-              'Damages an attacker when its move makes contact with the holder.',
-            label: 'Damages attackers on contact',
-          },
-        ],
+        wrong: [attackMoveLock, surviveAtOneHp, contactRetaliation],
       },
       related: {
         supportingText: 'User remains in battle',
@@ -572,16 +499,8 @@ export const reviewedEffects: EffectKnowledge[] = [
               'Restores HP at the end of every turn without requiring an attack.',
             label: 'Restores HP each turn, without attacking',
           },
-          {
-            value:
-              'Heals a Poison-type holder each turn but damages other types.',
-            label: 'Each turn: heals Poison types, damages other types',
-          },
-          {
-            value:
-              'Increases healing from draining moves and certain ongoing recovery effects.',
-            label: 'Boosts draining moves and some ongoing healing',
-          },
+          poisonHealTradeoff,
+          healingBoost,
         ],
       },
       exact: {
@@ -641,19 +560,12 @@ export const reviewedEffects: EffectKnowledge[] = [
           label: 'Damages attackers after damaging contact hits',
         },
         wrong: [
-          {
-            value: 'Boosts Attack while restricting the holder to one move.',
-            label: 'Boosts Attack but locks the holder into one move',
-          },
+          attackMoveLock,
           {
             value: 'Restores HP at the end of every turn.',
             label: 'Restores HP each turn',
           },
-          {
-            value:
-              'At full HP, is consumed to survive a lethal move hit with 1 HP.',
-            label: 'Used up to survive a hit at 1 HP, if starting at full HP',
-          },
+          surviveAtOneHp,
         ],
       },
       related: {
@@ -722,6 +634,22 @@ interface AbilityReview {
   wrong: [string, string, string];
   support: string;
 }
+const contactRelated: AbilityReview['related'] = [
+  'Damages attackers after every damaging hit',
+  'Damages attackers only after non-contact hits',
+  'Damages the holder after it attacks',
+];
+const contactWrong: AbilityReview['wrong'] = [
+  '¹⁄₁₆ of the attacker’s maximum HP',
+  '¼ of the attacker’s maximum HP',
+  '⅛ of the holder’s maximum HP',
+];
+const multiplierWrong: AbilityReview['wrong'] = ['×1.5', '×3', '×4'];
+const statusRelated: AbilityReview['related'] = [
+  'Prevents and cures sleep',
+  'Prevents and cures paralysis',
+  'Prevents and cures poison',
+];
 const abilityReviews: AbilityReview[] = [
   {
     name: 'water-absorb',
@@ -819,36 +747,20 @@ const abilityReviews: AbilityReview[] = [
     name: 'rough-skin',
     generation: 'III',
     broad: 'Damages attackers after damaging contact hits',
-    related: [
-      'Damages attackers after every damaging hit',
-      'Damages attackers only after non-contact hits',
-      'Damages the holder after it attacks',
-    ],
+    related: contactRelated,
     prompt: 'How much HP does Rough Skin remove from a contact attacker?',
     correct: '⅛ of the attacker’s maximum HP',
-    wrong: [
-      '¹⁄₁₆ of the attacker’s maximum HP',
-      '¼ of the attacker’s maximum HP',
-      '⅛ of the holder’s maximum HP',
-    ],
+    wrong: contactWrong,
     support: 'Damaging contact hit · Contact effects are not blocked',
   },
   {
     name: 'iron-barbs',
     generation: 'V',
     broad: 'Damages attackers after damaging contact hits',
-    related: [
-      'Damages attackers after every damaging hit',
-      'Damages attackers only after non-contact hits',
-      'Damages the holder after it attacks',
-    ],
+    related: contactRelated,
     prompt: 'How much HP does Iron Barbs remove from a contact attacker?',
     correct: '⅛ of the attacker’s maximum HP',
-    wrong: [
-      '¹⁄₁₆ of the attacker’s maximum HP',
-      '¼ of the attacker’s maximum HP',
-      '⅛ of the holder’s maximum HP',
-    ],
+    wrong: contactWrong,
     support: 'Damaging contact hit · Contact effects are not blocked',
   },
   {
@@ -876,7 +788,7 @@ const abilityReviews: AbilityReview[] = [
     ],
     prompt: 'What Attack multiplier does Huge Power apply?',
     correct: '×2',
-    wrong: ['×1.5', '×3', '×4'],
+    wrong: multiplierWrong,
     support: '',
   },
   {
@@ -890,7 +802,7 @@ const abilityReviews: AbilityReview[] = [
     ],
     prompt: 'What Attack multiplier does Pure Power apply?',
     correct: '×2',
-    wrong: ['×1.5', '×3', '×4'],
+    wrong: multiplierWrong,
     support: '',
   },
   {
@@ -904,7 +816,7 @@ const abilityReviews: AbilityReview[] = [
     ],
     prompt: 'How much does Chlorophyll multiply Speed during harsh sunlight?',
     correct: '×2',
-    wrong: ['×1.5', '×3', '×4'],
+    wrong: multiplierWrong,
     support: 'Weather effects are active',
   },
   {
@@ -918,7 +830,7 @@ const abilityReviews: AbilityReview[] = [
     ],
     prompt: 'How much does Swift Swim multiply Speed during rain?',
     correct: '×2',
-    wrong: ['×1.5', '×3', '×4'],
+    wrong: multiplierWrong,
     support: 'Weather effects are active',
   },
   {
@@ -932,7 +844,7 @@ const abilityReviews: AbilityReview[] = [
     ],
     prompt: 'How much does Sand Rush multiply Speed during a sandstorm?',
     correct: '×2',
-    wrong: ['×1.5', '×3', '×4'],
+    wrong: multiplierWrong,
     support: 'Weather effects are active',
   },
   {
@@ -946,7 +858,7 @@ const abilityReviews: AbilityReview[] = [
     ],
     prompt: 'How much does Slush Rush multiply Speed during snow?',
     correct: '×2',
-    wrong: ['×1.5', '×3', '×4'],
+    wrong: multiplierWrong,
     support: 'Weather effects are active',
   },
   {
@@ -1009,11 +921,7 @@ const abilityReviews: AbilityReview[] = [
     name: 'water-veil',
     generation: 'III',
     broad: 'Prevents and cures burn',
-    related: [
-      'Prevents and cures sleep',
-      'Prevents and cures paralysis',
-      'Prevents and cures poison',
-    ],
+    related: statusRelated,
     prompt:
       'What happens if a Pokémon gains Water Veil while affected by burn?',
     correct: 'The burn condition is cured',
@@ -1028,11 +936,7 @@ const abilityReviews: AbilityReview[] = [
     name: 'magma-armor',
     generation: 'III',
     broad: 'Prevents and cures freeze',
-    related: [
-      'Prevents and cures sleep',
-      'Prevents and cures paralysis',
-      'Prevents and cures poison',
-    ],
+    related: statusRelated,
     prompt:
       'What happens if a Pokémon gains Magma Armor while affected by freeze?',
     correct: 'The freeze condition is cured',

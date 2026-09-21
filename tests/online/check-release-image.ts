@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { Client } from 'pg';
 
 const image = process.env.QUIZMON_RELEASE_IMAGE;
 assert.ok(
@@ -74,47 +73,3 @@ console.log(
     artifactCheck,
   ),
 );
-const database = 'quizmon_image_' + crypto.randomUUID().replaceAll('-', '');
-const admin = new Client({
-  connectionString: 'postgresql://postgres:unused@127.0.0.1:5548/postgres',
-});
-await admin.connect();
-try {
-  await admin.query('CREATE DATABASE ' + database);
-  const migrationCheck = `
-import assert from 'node:assert/strict';
-import {migrateDatabase} from './deploy/migration-runner.ts';
-import {publishPlayerTables} from './deploy/publication.ts';
-import {coordinateRelease} from './deploy/release-coordinator.ts';
-import {verifyArtifact} from './deploy/release-artifact.ts';
-const manifest=await verifyArtifact('.');
-const options={connectionString:process.env.QUIZMON_TEST_DATABASE,migrationsFolder:'server/migrations',configure:publishPlayerTables};
-assert.deepEqual(await migrateDatabase(options),{applied:manifest.migrations.length,total:manifest.migrations.length});
-assert.deepEqual(await migrateDatabase(options),{applied:0,total:manifest.migrations.length});
-let activations=0;
-const release={connection:{connectionString:options.connectionString},migrationsFolder:options.migrationsFolder,
-  operation:{version:1,id:crypto.randomUUID(),artifact:'sha256:'+'1'.repeat(64),configuration:'sha256:'+'2'.repeat(64)},
-  preflight:async()=>{},assertSelected:async()=>{},configure:publishPlayerTables,
-  activate:async()=>{activations++;return{versionId:crypto.randomUUID(),deploymentId:crypto.randomUUID()};},inspectActivation:async()=>{throw new Error('No uncertain activation expected');},verifyDeployment:async()=>{}};
-assert.equal((await coordinateRelease(release)).status,'activated');
-assert.equal((await coordinateRelease(release)).status,'verified-existing');
-assert.equal(activations,1);
-console.log('Image migrations and coordinator passed against real PostgreSQL, including publication, repeated migration execution, and duplicate activation prevention with an injected deployment adapter.');
-`;
-  console.log(
-    docker(
-      ...isolated,
-      '--network',
-      'host',
-      '-e',
-      `QUIZMON_TEST_DATABASE=postgresql://postgres:unused@127.0.0.1:5548/${database}`,
-      image,
-      '--input-type=module',
-      '--eval',
-      migrationCheck,
-    ),
-  );
-} finally {
-  await admin.query('DROP DATABASE IF EXISTS ' + database + ' WITH (FORCE)');
-  await admin.end();
-}

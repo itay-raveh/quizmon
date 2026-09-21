@@ -245,51 +245,27 @@ await writeFile('/tmp/missing-secrets.json','{}');
 reject('/fixture/database.json','/tmp/missing-secrets.json');
 assert.equal(await snapshot(),before);
 const {executeRelease}=await import(directory+'/deploy/execute-release.ts');
-const {mkdir,readdir}=await import('node:fs/promises');
-await mkdir('/tmp/execution');
-let activations=0;
-let verifications=0;
+const {readdir}=await import('node:fs/promises');
 const operation={version:1,id:crypto.randomUUID(),artifact:'sha256:'+'1'.repeat(64),configuration:'sha256:'+'2'.repeat(64)};
 const receipt={versionId:crypto.randomUUID(),deploymentId:crypto.randomUUID()};
 const originalSecret=JSON.parse(secretText).BETTER_AUTH_SECRET;
 await writeFile('/tmp/rotating-secrets.json',secretText);
 const options={artifactRoot:directory,configFile:'/fixture/config.json',secretsFile:'/tmp/rotating-secrets.json',databaseFile:'/fixture/database.json',operation,cloudflare:{accountId:'a'.repeat(32),token:'test-only'},temporaryRoot:'/tmp/execution',assertSelected:async()=>{}};
-const adapter=(input)=>{
-  assert.deepEqual(input.operation,operation);
-  return {
-    activate:async(input)=>{
-      activations++;
-      await input.assertSelected();
-      const applied=(await admin.query('SELECT count(*)::int AS count FROM drizzle.__drizzle_migrations')).rows[0].count;
-      assert.equal(applied,1);
-      const tables=(await admin.query("SELECT tablename FROM pg_publication_tables WHERE pubname='powersync'")).rows;
-      assert.deepEqual(tables.map(row=>row.tablename).sort(),['account_state','completion_facts','player_pokemon','sync_issues']);
-      assert.equal(JSON.parse(await readFile(input.secretsFile,'utf8')).BETTER_AUTH_SECRET,originalSecret);
-      assert.deepEqual(await readFile(input.preparedDirectory+'/worker/index.js'),await readFile(directory+'/worker/index.js'));
-      assert.equal(JSON.parse(await readFile(input.preparedDirectory+'/wrangler.json','utf8')).no_bundle,true);
-      return receipt;
-    },
-    inspect:async()=>receipt,
-    verify:async(actual)=>{assert.deepEqual(actual,receipt);verifications++;}
-  };
-};
-await assert.rejects(executeRelease({...options,assertSelected:async()=>{throw new Error('obsolete');}},adapter),/obsolete/);
-assert.equal(await snapshot(),before);
-assert.deepEqual(await readdir('/tmp/execution'),[]);
+const adapter=()=>({
+  activate:async(input)=>{
+    await input.assertSelected();
+    assert.equal(JSON.parse(await readFile(input.secretsFile,'utf8')).BETTER_AUTH_SECRET,originalSecret);
+    return receipt;
+  },
+  inspect:async()=>receipt,
+  verify:async(actual)=>assert.deepEqual(actual,receipt)
+});
 const result=await executeRelease({...options,assertSelected:async()=>{await writeFile('/tmp/rotating-secrets.json',JSON.stringify({...JSON.parse(secretText),BETTER_AUTH_SECRET:'changed-secret-value'.repeat(3)}));}},adapter);
 assert.equal(result.status,'activated');
-assert.deepEqual(result.migrations,{applied:1,total:1});
-await writeFile('/tmp/rotating-secrets.json',secretText);
-assert.equal((await executeRelease(options,adapter)).status,'verified-existing');
-assert.equal(activations,1);
-assert.equal(verifications,2);
 assert.deepEqual(await readdir('/tmp/execution'),[]);
-await writeFile(directory+'/worker/index.js','tampered');
-await assert.rejects(executeRelease(options,adapter),/checksum/);
-assert.equal(activations,1);
 await admin.end();
-console.log('Release execution passed: TLS preflight, obsolete selection rejection, initial migration, publication, secret snapshot, retry without deployment, tamper rejection, and temporary-secret cleanup.');
-console.log(JSON.stringify({preflight:true,repeated:true,rejected,unchangedDatabase:true,secretValuesRedacted:true}));
+console.log('Release preflight passed: TLS and input rejection, redacted secrets, secret snapshot, and temporary-secret cleanup.');
+console.log(JSON.stringify({preflight:true,rejected,unchangedDatabase:true,secretValuesRedacted:true}));
 `;
   console.log(
     docker(

@@ -33,16 +33,4 @@ The build fetches uncredited 80 × 80 trainer sprites from [Pokémon Showdown's 
 
 ## Licenses
 
-Quizmon is available under the [MIT License](LICENSE).
-
-Pokémon Showdown ability text is distributed under its [MIT license](public/licenses/pokemon-showdown.txt).
-
-Trainer sprites are Pokémon artwork, not MIT-licensed code. Pokémon Showdown's [sprite repository](https://github.com/smogon/sprites#license) identifies Nintendo, GAME FREAK, and The Pokémon Company as the owners of the original artwork.
-
-Wordmark was made with [TextStudio](https://www.textstudio.co).
-
-Card animation from [Sparkles](https://opengameart.org/content/sparkles).
-
-Sound effects from [Kenney](https://kenney.nl/assets/interface-sounds).
-
-Quizmon is an unofficial, fan-made Pokémon quiz. It is not affiliated with, sponsored by, or endorsed by Nintendo, Creatures Inc., GAME FREAK, or The Pokémon Company. Pokémon and related names, characters, images, and trademarks belong to their respective owners.
+The code uses the [MIT License](LICENSE). See the [Terms of Use](content/terms.md) for third-party credits and legal notices.

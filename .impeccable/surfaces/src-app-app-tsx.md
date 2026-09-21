@@ -11,7 +11,7 @@ related_targets:
     'src/features/trainer/TrainerCard.tsx',
     'src/features/trainer/TrainerTitles.tsx',
     'src/features/trainer/TrainerProgressSummary.tsx',
-    'src/components/LeagueGateway.tsx',
+    'src/features/league/LeagueDestination.tsx',
     'src/features/league/LeagueProgress.tsx',
     'src/app/home.css',
     'src/features/quiz/quiz.css',

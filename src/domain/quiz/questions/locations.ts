@@ -1,5 +1,4 @@
 import { formatPokemonName } from '../../pokemon/format.ts';
-import { formatLocationLabel } from '../../pokemon/location-label.ts';
 import { generations } from '../../pokemon/types.ts';
 import { questionTuning } from '../question-variants.ts';
 import { createPokemonSimilarityScorer } from './answers.ts';
@@ -152,7 +151,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
           wrong.some((candidate) => candidate.name === name),
         ),
     );
-    const location = formatLocationLabel(target.label);
+    const location = target.label;
     const prompt = `Which Pokémon can you find at ${location}?`;
     const supportingText = [
       `Pokémon ${game.label}`,

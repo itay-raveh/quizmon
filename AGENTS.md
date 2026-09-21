@@ -1,6 +1,6 @@
 # Quizmon repository guide
 
-Quizmon is a local-first Pokémon knowledge game built with React, TypeScript, and Vite. Player settings, scores, and Trainer progress stay in the browser. A small Cloudflare Worker serves the SPA and handles analytics, sprite proxying, and daily push reminders.
+Quizmon is a local-first Pokémon knowledge game built with React, TypeScript, and Vite. Guest progress stays in the browser; optional accounts sync completed progress and selected preferences across devices. Unfinished rounds stay on the device. A small Cloudflare Worker serves the SPA and handles analytics, sprite proxying, and daily push reminders.
 
 ## Start here
 
