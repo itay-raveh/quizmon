@@ -15,6 +15,7 @@ import {
   type FriendsPage,
   type PlayerLookup,
 } from './friends-client';
+import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 
 const views = ['incoming', 'friends', 'outgoing'] as const;
 type View = (typeof views)[number];
@@ -330,26 +331,23 @@ export function FriendsPanel({
               aria-label="Share your link"
             >
               <h3>Share your link</h3>
-              <p>
-                Send this link to a friend. They can ask to connect, and you
-                choose whether to accept.
-              </p>
               <GameButton
                 disabled={busy}
                 onClick={() =>
                   run(async (signal) => {
-                    try {
-                      await navigator.clipboard.writeText(link);
-                    } catch {
-                      throw new Error(
-                        'Could not copy the link. Open Show link and code to select it.',
+                    const outcome = await shareFriendLink(link);
+                    if (!signal.aborted)
+                      setNotice(
+                        outcome === 'shared'
+                          ? 'Friend link shared.'
+                          : outcome === 'copied'
+                            ? 'Friend link copied.'
+                            : '',
                       );
-                    }
-                    if (!signal.aborted) setNotice('Friend link copied.');
                   })
                 }
               >
-                Copy my link
+                {canShareFriendLink() ? 'Share my link' : 'Copy my link'}
               </GameButton>
               <details className="friends-code">
                 <summary>Show link and code</summary>
