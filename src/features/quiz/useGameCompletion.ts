@@ -27,11 +27,7 @@ interface GameCompletionOptions {
   catalog?: PokemonCatalog;
   dispatch: Dispatch<GameSessionAction>;
   pauseTimer: () => number;
-  recordDailyCompletion: (
-    result: GameResult,
-    isSaved: boolean,
-    date: string,
-  ) => void;
+  recordDailyCompletion: (result: GameResult, date: string) => void;
   refreshTrainerStats: () => void;
   session: GameSession;
   startTimer: () => void;
@@ -89,7 +85,7 @@ export const useGameCompletion = ({
         type: 'completed',
       });
       if (mode.kind === 'daily') {
-        recordDailyCompletion(result, true, mode.date);
+        recordDailyCompletion(result, mode.date);
       }
       pauseTimer();
     },

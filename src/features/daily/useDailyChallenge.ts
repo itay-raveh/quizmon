@@ -172,9 +172,9 @@ export const useDailyChallenge = ({
     return choose();
   };
   const recordCompletion = useCallback(
-    (result: GameResult, saved: boolean, completedDate: string) => {
+    (result: GameResult, completedDate: string) => {
       const currentDate = getUtcDate();
-      setCompletion({ date: completedDate, result, resultSaved: saved });
+      setCompletion({ date: completedDate, result, resultSaved: true });
       setToday(currentDate);
       setSavedState(readDailyState(route.date ?? currentDate));
     },
@@ -185,11 +185,9 @@ export const useDailyChallenge = ({
     savedState.results.daily[requestedKey] ??
     (savedState.attempts[requestedKey] ? undefined : savedState.completed[0]);
   return {
-    savedState,
     autoStart: route.autoStart,
     linkedDate: route.date,
     date,
-    choose,
     result:
       savedResult ?? (completion.date === date ? completion.result : null),
     resultSaved:

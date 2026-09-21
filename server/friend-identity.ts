@@ -1,4 +1,4 @@
-import { and, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { SocialPlayer } from '../src/domain/social/friends.ts';
 import { user } from './auth-schema.ts';
@@ -57,22 +57,16 @@ export async function lookupSocialPlayer(
   if (!identity) throw new FriendshipError('player_not_found', 404);
   const [player] = await publicPlayers(db, [identity.id]);
   if (!player) throw new FriendshipError('player_not_found', 404);
+  const [userLow, userHigh] =
+    actor < player.id ? [actor, player.id] : [player.id, actor];
   const [request] = await db
     .select()
     .from(friendRequests)
     .where(
       and(
         inArray(friendRequests.status, ['pending', 'accepted']),
-        or(
-          and(
-            eq(friendRequests.userLow, actor),
-            eq(friendRequests.userHigh, player.id),
-          ),
-          and(
-            eq(friendRequests.userHigh, actor),
-            eq(friendRequests.userLow, player.id),
-          ),
-        ),
+        eq(friendRequests.userLow, userLow),
+        eq(friendRequests.userHigh, userHigh),
       ),
     );
   return {

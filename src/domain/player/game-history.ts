@@ -1,5 +1,8 @@
 import type { ActiveGameSnapshot } from './active-game.ts';
-import { createLeagueVictoryRecord } from './hall-of-fame.ts';
+import {
+  createLeagueVictoryRecord,
+  type LeagueVictoryRecord,
+} from './hall-of-fame.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
 import { getQuestionPokemon } from '../quiz/question-pokemon.ts';
 import { snapshotRoundRules } from '../quiz/round-rules.ts';
@@ -185,36 +188,41 @@ export function readRecordedGame(value: unknown): RoundCompletion {
 export function applyRecordedGame(
   data: PlayerData,
   { completion: game, eligible }: RecordedGame,
+  victory?: LeagueVictoryRecord,
 ) {
-  if (eligible)
-    applyResult(
-      data,
-      game.mode === 'daily'
-        ? {
-            kind: 'daily',
-            date: game.dailyDate!,
-            ...(game.result.dailyTrack
-              ? { track: game.result.dailyTrack }
-              : {}),
-          }
-        : { kind: game.mode },
-      game.result,
-      {
-        ...defaultGameSettings,
-        ...game.training,
-        formGroups: game.training.formGroups ?? defaultGameSettings.formGroups,
-      },
-      game.victory
-        ? {
-            ...game.victory,
-            id: game.completionId,
-            completedAt: game.completedAt,
-            result: game.result,
-          }
-        : undefined,
-      game.completedAt.slice(0, 10),
-    );
+  const outcome = eligible
+    ? applyResult(
+        data,
+        game.mode === 'daily'
+          ? {
+              kind: 'daily',
+              date: game.dailyDate!,
+              ...(game.result.dailyTrack
+                ? { track: game.result.dailyTrack }
+                : {}),
+            }
+          : { kind: game.mode },
+        game.result,
+        {
+          ...defaultGameSettings,
+          ...game.training,
+          formGroups:
+            game.training.formGroups ?? defaultGameSettings.formGroups,
+        },
+        victory ??
+          (game.victory
+            ? {
+                ...game.victory,
+                id: game.completionId,
+                completedAt: game.completedAt,
+                result: game.result,
+              }
+            : undefined),
+        game.completedAt.slice(0, 10),
+      )
+    : { best: game.result, isNewBest: false };
   data.pokedex = [...new Set([...data.pokedex, ...game.discoveries])];
+  return outcome;
 }
 
 export function projectGameHistory(

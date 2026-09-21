@@ -162,6 +162,7 @@ export const buildTopicCatalog = async (
   for (const area of areas) {
     const location = locationsByName.get(area.location.name);
     if (!location?.region) continue;
+    const areaName = area.names.find(english)?.name;
     const byContext = new Map<
       string,
       {
@@ -210,10 +211,7 @@ export const buildTopicCatalog = async (
           region: location.region.name,
           area: area.name,
           label: formatLocationLabel(
-            label(location) +
-              (area.names.find(english)?.name
-                ? ` (${area.names.find(english)!.name})`
-                : ''),
+            label(location) + (areaName ? ` (${areaName})` : ''),
           ),
           pokemon: [...new Set(context.pokemon)].sort(),
         });

@@ -1,13 +1,12 @@
 import { reportSaveIssue } from './save-health';
 import { parseActiveGameSave } from '../../domain/player/active-game';
-import { applyResult } from '../../domain/player/game-progress';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
 import {
+  applyRecordedGame,
   completeRound,
   roundDiscoveries,
 } from '../../domain/player/game-history';
 import { getDailyResultKey } from '../../domain/quiz/daily-track';
-import { defaultGameSettings } from '../../domain/settings/game-settings';
 import type { RoundCompletion } from '../../domain/sync/progress';
 import type { ActiveGameSnapshot } from './active-game-storage';
 import type { LocalRow, LocalTransaction } from './local-database';
@@ -153,7 +152,7 @@ export const commitRoundCompletion = async (
     if (existing) {
       const receipt = JSON.parse(existing.payload) as {
         hash: string;
-        outcome: ReturnType<typeof applyResult>;
+        outcome: ReturnType<typeof applyRecordedGame>;
       };
       if (receipt.hash !== (await hash(payload)))
         throw new Error('This round ID already has a different saved result.');
@@ -169,37 +168,11 @@ export const commitRoundCompletion = async (
       !Object.keys(state.save.data.results.daily).some(
         (key) => key.split(':')[0] === payload.dailyDate,
       );
-    const outcome = eligible
-      ? applyResult(
-          state.save.data,
-          payload.mode === 'daily'
-            ? {
-                kind: 'daily',
-                date: payload.dailyDate!,
-                ...(payload.result.dailyTrack
-                  ? { track: payload.result.dailyTrack }
-                  : {}),
-              }
-            : { kind: payload.mode },
-          payload.result,
-          {
-            ...defaultGameSettings,
-            ...payload.training,
-            formGroups:
-              payload.training.formGroups ?? defaultGameSettings.formGroups,
-          },
-          victory ??
-            (payload.victory
-              ? {
-                  ...payload.victory,
-                  id: payload.completionId,
-                  completedAt: payload.completedAt,
-                  result: payload.result,
-                }
-              : undefined),
-          payload.completedAt.slice(0, 10),
-        )
-      : { best: payload.result, isNewBest: false };
+    const outcome = applyRecordedGame(
+      state.save.data,
+      { completion: payload, eligible },
+      victory,
+    );
     if (payload.mode === 'daily' && payload.result.dailyTrack)
       delete state.dailyAttempts?.[
         getDailyResultKey(payload.dailyDate!, payload.result.dailyTrack)

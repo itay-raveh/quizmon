@@ -24,7 +24,6 @@ import {
   type AccountIssue,
 } from '../../lib/storage/account-issues';
 import {
-  getPowerSyncDatabase,
   localTables,
   openLocalDatabase,
   type LocalRow,
@@ -174,7 +173,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
   await navigator.locks.request('quizmon-account-handoff', async () => {
     const guest = openLocalDatabase();
     const target = openLocalDatabase(destination.id);
-    const targetSync = getPowerSyncDatabase(target);
     try {
       await guest.init();
       await target.init();
@@ -389,8 +387,8 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
       );
       window.location.reload();
     } finally {
-      await getPowerSyncDatabase(guest).close();
-      await targetSync.close();
+      await guest.close();
+      await target.close();
     }
   });
 }
@@ -560,7 +558,7 @@ export async function startAccountSync() {
   const state = await readState(getPlayerDatabase());
   if (!state.account) return;
   binding = state.account;
-  account = getPowerSyncDatabase(getPlayerDatabase());
+  account = getPlayerDatabase();
   update({ owner: binding.id });
   const changed = () => {
     void refresh();

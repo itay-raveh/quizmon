@@ -200,9 +200,14 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
       });
     }
     await refresh();
-    database.onChange(() => {
-      void refresh().catch(reportSaveError);
-    });
+    database.onChange(
+      {
+        onChange: () => {
+          void refresh().catch(reportSaveError);
+        },
+      },
+      { tables: ['local_state'] },
+    );
   })();
   return initialization;
 };
@@ -321,9 +326,10 @@ export const updatePlayerData = async (
           ...changedFields(requested.profile, observed.profile),
         };
       if (requested.settings && previous.settings) {
+        const changed = changedFields(requested.settings, observed.settings);
         merged.settings = {
           ...previous.settings,
-          ...changedFields(requested.settings, observed.settings),
+          ...changed,
         };
         if (
           [
@@ -334,19 +340,9 @@ export const updatePlayerData = async (
             'formGroups',
             'questionSelection',
             'automaticQuestionTypes',
-          ].some(
-            (key) =>
-              JSON.stringify(
-                requested.settings![key as keyof typeof requested.settings],
-              ) !==
-              JSON.stringify(
-                observed.settings?.[key as keyof typeof observed.settings],
-              ),
-          )
+          ].some((key) => Object.hasOwn(changed, key))
         )
-          Object.assign(merged.settings, {
-            ...trainingConfig(requested.settings),
-          });
+          Object.assign(merged.settings, trainingConfig(requested.settings));
       }
       const next = parsePlayerSave({ ...state.save, data: merged }).data;
       for (const unit of [

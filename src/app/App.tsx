@@ -98,7 +98,6 @@ export const App = () => {
   const training = useTrainingGame({
     catalog,
     settings,
-    session,
     setSettings: (settings) => {
       void setSettings(settings);
     },
@@ -108,7 +107,6 @@ export const App = () => {
   const { retry: retryLeague, start: startLeague } = useLeagueChallenge({
     catalog,
     settings,
-    session,
     startGame,
   });
 
@@ -161,7 +159,6 @@ export const App = () => {
     autoStartDaily: daily.autoStart,
     catalog,
     completeGame,
-    dailyDate: daily.date,
     dispatch: dispatchSession,
     elapsedSeconds,
     getElapsedMilliseconds,

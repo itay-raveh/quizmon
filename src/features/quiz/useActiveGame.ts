@@ -22,7 +22,6 @@ interface ActiveGameOptions {
   autoStartDaily: boolean;
   catalog?: PokemonCatalog;
   completeGame: CompleteGame;
-  dailyDate: string;
   dispatch: Dispatch<GameSessionAction>;
   elapsedSeconds: number;
   getElapsedMilliseconds: () => number;
@@ -62,7 +61,6 @@ export const useActiveGame = ({
   autoStartDaily,
   catalog,
   completeGame,
-  dailyDate,
   dispatch,
   elapsedSeconds,
   getElapsedMilliseconds,
@@ -134,7 +132,6 @@ export const useActiveGame = ({
     autoStartDaily,
     catalog,
     completeGame,
-    dailyDate,
     dispatch,
     linkedDailyDate,
     resetTimer,

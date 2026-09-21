@@ -650,6 +650,10 @@ const statusRelated: AbilityReview['related'] = [
   'Prevents and cures paralysis',
   'Prevents and cures poison',
 ];
+const statusWrongTail = [
+  'It loses ¼ maximum HP',
+  'Its Speed rises by one stage',
+] as const;
 const abilityReviews: AbilityReview[] = [
   {
     name: 'water-absorb',
@@ -872,11 +876,7 @@ const abilityReviews: AbilityReview[] = [
     ],
     prompt: 'What happens if a Pokémon gains Insomnia while affected by sleep?',
     correct: 'The sleep condition is cured',
-    wrong: [
-      'The sleep condition remains',
-      'It loses ¼ maximum HP',
-      'Its Speed rises by one stage',
-    ],
+    wrong: ['The sleep condition remains', ...statusWrongTail],
     support: 'Ability is active',
   },
   {
@@ -891,11 +891,7 @@ const abilityReviews: AbilityReview[] = [
     prompt:
       'What happens if a Pokémon gains Limber while affected by paralysis?',
     correct: 'The paralysis condition is cured',
-    wrong: [
-      'The paralysis condition remains',
-      'It loses ¼ maximum HP',
-      'Its Speed rises by one stage',
-    ],
+    wrong: ['The paralysis condition remains', ...statusWrongTail],
     support: 'Ability is active',
   },
   {
@@ -910,11 +906,7 @@ const abilityReviews: AbilityReview[] = [
     prompt:
       'What happens if a Pokémon gains Immunity while affected by poison?',
     correct: 'The poison condition is cured',
-    wrong: [
-      'The poison condition remains',
-      'It loses ¼ maximum HP',
-      'Its Speed rises by one stage',
-    ],
+    wrong: ['The poison condition remains', ...statusWrongTail],
     support: 'Ability is active',
   },
   {
@@ -925,11 +917,7 @@ const abilityReviews: AbilityReview[] = [
     prompt:
       'What happens if a Pokémon gains Water Veil while affected by burn?',
     correct: 'The burn condition is cured',
-    wrong: [
-      'The burn condition remains',
-      'It loses ¼ maximum HP',
-      'Its Speed rises by one stage',
-    ],
+    wrong: ['The burn condition remains', ...statusWrongTail],
     support: 'Ability is active',
   },
   {
@@ -940,11 +928,7 @@ const abilityReviews: AbilityReview[] = [
     prompt:
       'What happens if a Pokémon gains Magma Armor while affected by freeze?',
     correct: 'The freeze condition is cured',
-    wrong: [
-      'The freeze condition remains',
-      'It loses ¼ maximum HP',
-      'Its Speed rises by one stage',
-    ],
+    wrong: ['The freeze condition remains', ...statusWrongTail],
     support: 'Ability is active',
   },
 ];

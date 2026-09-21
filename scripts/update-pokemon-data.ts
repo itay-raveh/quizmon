@@ -450,10 +450,7 @@ if (import.meta.main) {
     await addItemSpriteIdentities(catalog.topics);
     catalog.contentVersion = gameVersions.content;
   }
-  await writeCatalogFiles(
-    catalog,
-    new URL('../src/domain/pokemon/data/', import.meta.url),
-  );
+  await writeCatalogFiles(catalog, DATA_DIRECTORY);
   for (const [file, field] of [
     ['pokemon-labels.json', 'displayName'],
     ['pokemon-generations.json', 'generation'],

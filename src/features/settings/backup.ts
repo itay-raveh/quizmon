@@ -1,4 +1,5 @@
 import { readRecordedGame } from '../../domain/player/game-history';
+import { downloadJson } from '../../lib/download';
 import { rebuildGuestProgress } from '../../lib/storage/game-history';
 import { getSaveIssue, clearSaveIssue } from '../../lib/storage/save-health';
 import { readAccountIssues } from '../../lib/storage/account-issues';
@@ -211,17 +212,10 @@ export const downloadBackup = async (): Promise<void> => {
   const trainerName = (backup.state.save.data.profile?.name ?? '')
     .replace(/[<>:"/\\|?*\p{Cc}\p{Cf}\s]+/gu, '-')
     .replace(/^-+|-+$/g, '');
-  const blob = new Blob([JSON.stringify(backup)], {
-    type: 'application/json',
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `quizmon-backup-${trainerName ? `${trainerName}-` : ''}${backup.exportedAt.slice(0, 10)}.json`;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  downloadJson(
+    `quizmon-backup-${trainerName ? `${trainerName}-` : ''}${backup.exportedAt.slice(0, 10)}.json`,
+    backup,
+  );
 };
 
 export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {

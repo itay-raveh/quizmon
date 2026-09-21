@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { GameSession, StartGame } from '../../app/game-session';
+import type { StartGame } from '../../app/game-session';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { getLeagueSettings } from '../../domain/quiz/league';
 import { buildLeagueQuestions } from '../../domain/quiz/question-generation';
@@ -10,14 +10,12 @@ import { readPlayerSave } from '../../lib/storage/player-storage';
 interface LeagueChallengeOptions {
   catalog?: PokemonCatalog;
   settings: GameSettings;
-  session: GameSession;
   startGame: StartGame;
 }
 
 export const useLeagueChallenge = ({
   catalog,
   settings,
-  session,
   startGame,
 }: LeagueChallengeOptions) => {
   const start = useCallback(() => {
@@ -37,10 +35,5 @@ export const useLeagueChallenge = ({
     );
   }, [catalog, settings, startGame]);
 
-  const retry = useCallback(() => {
-    if (session.phase !== 'results' || session.mode.kind !== 'league') return;
-    start();
-  }, [session, start]);
-
-  return { retry, start };
+  return { retry: start, start };
 };

@@ -7,7 +7,6 @@ import {
   saveTrainerProfile,
   type TrainerProfile,
 } from '../../lib/storage/trainer-profile-storage';
-import { isRecord } from '../../lib/validation';
 import { parseTrainerRoute, setTrainerRoute } from './trainer-route';
 
 export const useTrainerCard = () => {
@@ -23,31 +22,11 @@ export const useTrainerCard = () => {
     return () => window.removeEventListener('popstate', syncRoute);
   }, []);
 
-  const open = useCallback((nextView: TrainerView) => {
-    const url = new URL(window.location.href);
-    setTrainerRoute(url, nextView);
-    window.history.pushState({ quizmonTrainerCard: true }, '', url);
-    setView(nextView);
-  }, []);
-
   const showView = useCallback((nextView: TrainerView) => {
     const url = new URL(window.location.href);
     setTrainerRoute(url, nextView);
     window.history.replaceState(window.history.state, '', url);
     setView(nextView);
-  }, []);
-
-  const close = useCallback(() => {
-    const historyState: unknown = window.history.state;
-    if (isRecord(historyState) && historyState.quizmonTrainerCard === true) {
-      window.history.back();
-      return;
-    }
-
-    const url = new URL(window.location.href);
-    url.searchParams.delete('trainer');
-    window.history.replaceState(window.history.state, '', url);
-    setView(null);
   }, []);
 
   const updateProfile = useCallback(async (nextProfile: TrainerProfile) => {
@@ -66,9 +45,7 @@ export const useTrainerCard = () => {
   }, []);
 
   return {
-    close,
     isOpen: view !== null,
-    open,
     profile,
     refresh,
     refreshStats,

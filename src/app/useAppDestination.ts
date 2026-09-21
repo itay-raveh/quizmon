@@ -81,10 +81,7 @@ export function useAppDestination() {
 
   const back = (fallback: 'play' | 'trainer' | 'leaderboards' = 'play') => {
     const state: unknown = window.history.state;
-    if (
-      isRecord(state) &&
-      (state.quizmonDestination === true || state.quizmonTrainerCard === true)
-    ) {
+    if (isRecord(state) && state.quizmonDestination === true) {
       window.history.back();
       return;
     }

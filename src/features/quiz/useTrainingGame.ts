@@ -1,4 +1,4 @@
-import type { GameSession, StartGame } from '@/app/game-session';
+import type { StartGame } from '@/app/game-session';
 import {
   generations,
   type Generation,
@@ -22,7 +22,6 @@ import {
 interface TrainingGameOptions {
   catalog?: PokemonCatalog;
   settings: GameSettings;
-  session: GameSession;
   setSettings: (settings: GameSettings) => void;
   startGame: StartGame;
 }
@@ -30,7 +29,6 @@ interface TrainingGameOptions {
 export const useTrainingGame = ({
   catalog,
   settings,
-  session,
   setSettings,
   startGame,
 }: TrainingGameOptions) => {
@@ -109,12 +107,6 @@ export const useTrainingGame = ({
     setGenerationPromptOpen,
   ]);
 
-  const trainAgain = useCallback(() => {
-    if (session.phase !== 'results' || session.mode.kind !== 'training') return;
-
-    startRound(settings);
-  }, [session, settings, startRound]);
-
   return {
     error,
     chooseAllGenerations: () => startWithGenerations([...generations]),
@@ -123,6 +115,6 @@ export const useTrainingGame = ({
     generationPromptOpen,
     markGenerationKnown,
     start,
-    trainAgain,
+    trainAgain: () => startRound(settings),
   };
 };
