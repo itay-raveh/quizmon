@@ -21,6 +21,7 @@ import {
 } from './account';
 import { AccountConflicts } from './AccountConflicts';
 import { downloadAccountExport } from './account-export';
+import { BackupSettings } from '../settings/BackupSettings';
 import './account.css';
 
 const emailSchema = z.object({
@@ -422,12 +423,20 @@ export const AccountSettings = () => {
               )}
             </section>
           )}
-          {new URLSearchParams(window.location.search).has('syncDebug') &&
-            account.diagnostic && (
+          {syncPaused && account.diagnostic && (
+            <details className="account-settings__details">
+              <summary>Technical details</summary>
               <pre className="account-settings__diagnostic">
                 {account.diagnostic}
               </pre>
-            )}
+            </details>
+          )}
+          {(syncPaused || syncOffline) && account.pending > 0 && (
+            <details className="account-settings__details">
+              <summary>Recover device changes</summary>
+              <BackupSettings accountRecovery />
+            </details>
+          )}
           {account.issues.length > 0 && (
             <AccountConflicts
               issues={account.issues}

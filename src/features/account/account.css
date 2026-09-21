@@ -300,3 +300,20 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.account-settings__details > summary {
+  width: max-content;
+  color: var(--navy);
+  cursor: pointer;
+  font-size: var(--text-status);
+  font-weight: 700;
+}
+
+.account-settings__details > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.account-settings__details .backup-settings {
+  margin-top: 0.75rem;
+}

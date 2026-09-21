@@ -5,6 +5,7 @@ import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { formGroups } from '../../domain/pokemon/types';
 import type { GameSettings } from '../../domain/settings/types';
 import { useModalDialog } from '../../hooks/useModalDialog';
+import { selectedAccount } from '../account/account';
 import { useUpdateState } from '../installation/update-session';
 import { BackupSettings } from './BackupSettings';
 import { ExperienceSettings } from './ExperienceSettings';
@@ -151,13 +152,15 @@ export const SettingsDialog = ({
           ) : (
             <>
               <ExperienceSettings draft={draft} onChange={setDraft} />
-              <details
-                className="settings-backup"
-                onToggle={(event) => setBackupOpen(event.currentTarget.open)}
-              >
-                <summary>Backup &amp; restore</summary>
-                {backupOpen && <BackupSettings />}
-              </details>
+              {!selectedAccount() && (
+                <details
+                  className="settings-backup"
+                  onToggle={(event) => setBackupOpen(event.currentTarget.open)}
+                >
+                  <summary>Backup &amp; restore</summary>
+                  {backupOpen && <BackupSettings />}
+                </details>
+              )}
             </>
           )}
         </div>

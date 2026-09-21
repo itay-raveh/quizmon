@@ -28,7 +28,11 @@ const previewRows: {
   },
 ];
 
-export const BackupSettings = () => {
+export const BackupSettings = ({
+  accountRecovery = false,
+}: {
+  accountRecovery?: boolean;
+}) => {
   const input = useRef<HTMLInputElement>(null);
   const previewHeading = useRef<HTMLHeadingElement>(null);
   const chooseButton = useRef<HTMLButtonElement>(null);
@@ -51,7 +55,10 @@ export const BackupSettings = () => {
     setBusy(true);
     try {
       validateBackupSize(file.size);
-      setPreview(parseBackup(await file.text()));
+      const backup = parseBackup(await file.text());
+      if (accountRecovery && !backup.state.account)
+        throw new Error('Choose a backup from this account.');
+      setPreview(backup);
     } catch (error) {
       setError(
         error instanceof Error
@@ -98,8 +105,14 @@ export const BackupSettings = () => {
 
   return (
     <fieldset className="experience-setting backup-settings">
-      <legend>Backup & restore</legend>
-      <p>Your saved progress, Trainer profile, and settings.</p>
+      <legend>
+        {accountRecovery ? 'Device recovery' : 'Backup & restore'}
+      </legend>
+      <p>
+        {accountRecovery
+          ? 'Save a copy of changes waiting on this device, or recover them from a backup for this account.'
+          : 'Your saved progress, Trainer profile, and settings.'}
+      </p>
       <div className="backup-settings__actions">
         <GameButton
           tone="quiet"
@@ -108,7 +121,7 @@ export const BackupSettings = () => {
             void handleDownload();
           }}
         >
-          Download backup
+          {accountRecovery ? 'Download device backup' : 'Download backup'}
         </GameButton>
         <GameButton
           tone="quiet"
@@ -116,7 +129,11 @@ export const BackupSettings = () => {
           ref={chooseButton}
           onClick={() => input.current?.click()}
         >
-          {busy ? 'Reading backup…' : 'Restore backup'}
+          {busy
+            ? 'Reading backup…'
+            : accountRecovery
+              ? 'Recover from backup'
+              : 'Restore backup'}
         </GameButton>
       </div>
       {downloadNotice > 0 && (
@@ -162,24 +179,26 @@ export const BackupSettings = () => {
               timeStyle: 'short',
             }).format(new Date(preview.exportedAt))}
           </p>
-          <table aria-label="Current progress compared with the backup">
-            <thead>
-              <tr>
-                <th scope="col">Saved data</th>
-                <th scope="col">This device</th>
-                <th scope="col">Backup</th>
-              </tr>
-            </thead>
-            <tbody>
-              {previewRows.map(({ label, value }) => (
-                <tr key={label}>
-                  <th scope="row">{label}</th>
-                  <td>{value(current)}</td>
-                  <td>{value(preview.state.save.data)}</td>
+          {!accountBackup && (
+            <table aria-label="Current progress compared with the backup">
+              <thead>
+                <tr>
+                  <th scope="col">Saved data</th>
+                  <th scope="col">This device</th>
+                  <th scope="col">Backup</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {previewRows.map(({ label, value }) => (
+                  <tr key={label}>
+                    <th scope="row">{label}</th>
+                    <td>{value(current)}</td>
+                    <td>{value(preview.state.save.data)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           <p>
             {accountBackup
               ? 'Restores missing pending changes to the same account. Shared progress comes from sync. This does not replace account history or restore unfinished rounds.'
