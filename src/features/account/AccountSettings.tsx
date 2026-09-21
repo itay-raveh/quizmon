@@ -4,7 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
-import { MedalIcon, UserCircleIcon } from '../../components/icons';
+import {
+  ArrowsClockwiseIcon,
+  MedalIcon,
+  UsersIcon,
+} from '../../components/icons';
 import { isRecord } from '../../lib/validation';
 import {
   accountRequest,
@@ -125,17 +129,17 @@ export const AccountSettings = () => {
           {account.owner ? (
             <p>Sign in to the same account to resume syncing.</p>
           ) : !sent ? (
-            <div className="account-settings__pitch">
-              <p>Take your Trainer story with you.</p>
-              <div>
-                <UserCircleIcon aria-hidden="true" /> Keep your completed
-                progress across devices
-              </div>
-              <div>
-                <MedalIcon aria-hidden="true" /> Put your best scores on the
-                rankings
-              </div>
-            </div>
+            <ul className="account-settings__benefits">
+              <li>
+                <ArrowsClockwiseIcon aria-hidden="true" /> Sync between devices
+              </li>
+              <li>
+                <MedalIcon aria-hidden="true" /> Compete with the world
+              </li>
+              <li>
+                <UsersIcon aria-hidden="true" /> Connect with friends
+              </li>
+            </ul>
           ) : null}
           <form
             className={`account-settings__section${sent ? ' account-settings__verification' : ''}`}

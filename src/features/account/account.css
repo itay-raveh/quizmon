@@ -79,25 +79,23 @@
   justify-items: start;
 }
 
-.account-settings__pitch {
+.account-settings__benefits {
   display: grid;
   gap: 0.6rem;
+  margin: 0;
+  padding: 0;
   color: var(--navy);
+  list-style: none;
 }
 
-.account-settings__pitch p {
-  font-size: var(--text-headline);
-  font-weight: 800;
-}
-
-.account-settings__pitch div {
+.account-settings__benefits li {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: var(--text-status);
 }
 
-.account-settings__pitch svg {
+.account-settings__benefits svg {
   flex: none;
   width: 1.35rem;
   height: 1.35rem;
