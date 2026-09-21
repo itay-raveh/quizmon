@@ -26,20 +26,9 @@
     },
     "runtimeConfig": {
       "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "version",
-        "workerName",
-        "origin",
-        "sync",
-        "hyperdriveId",
-        "mailFrom",
-        "analyticsDataset",
-        "authRateLimitNamespace",
-        "apiRateLimitNamespace"
-      ],
       "properties": {
         "version": {
+          "type": "number",
           "const": 1
         },
         "workerName": {
@@ -52,10 +41,9 @@
         },
         "sync": {
           "type": "object",
-          "additionalProperties": false,
-          "required": ["version", "endpoint", "audience"],
           "properties": {
             "version": {
+              "type": "number",
               "const": 1
             },
             "endpoint": {
@@ -66,7 +54,9 @@
               "type": "string",
               "minLength": 1
             }
-          }
+          },
+          "required": ["version", "endpoint", "audience"],
+          "additionalProperties": false
         },
         "hyperdriveId": {
           "type": "string",
@@ -74,7 +64,7 @@
         },
         "mailFrom": {
           "type": "string",
-          "pattern": "^[^ @<>]+@[^ @<>]+[.][^ @<>]+$"
+          "pattern": "^[^\\s<>@]+@[^\\s<>@]+\\.[^\\s<>@]+$"
         },
         "analyticsDataset": {
           "type": "string",
@@ -82,21 +72,33 @@
         },
         "authRateLimitNamespace": {
           "type": "string",
-          "pattern": "^[1-9][0-9]*$"
+          "pattern": "^[1-9]\\d*$"
         },
         "apiRateLimitNamespace": {
           "type": "string",
-          "pattern": "^[1-9][0-9]*$"
+          "pattern": "^[1-9]\\d*$"
         }
-      }
+      },
+      "required": [
+        "version",
+        "workerName",
+        "origin",
+        "sync",
+        "hyperdriveId",
+        "mailFrom",
+        "analyticsDataset",
+        "authRateLimitNamespace",
+        "apiRateLimitNamespace"
+      ],
+      "additionalProperties": false
     },
     "inputs": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["workerSecrets", "migrationConnection"],
+      "required": ["migrationConnection"],
       "properties": {
         "workerSecrets": {
-          "$ref": "#/definitions/secretKey"
+          "$ref": "#/definitions/optionalSecretKey"
         },
         "migrationConnection": {
           "$ref": "#/definitions/secretKey"
@@ -188,12 +190,7 @@
     "release": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "mode",
-        "activeDeadlineSeconds",
-        "backoffLimit",
-        "resources"
-      ],
+      "required": ["activeDeadlineSeconds", "backoffLimit", "resources"],
       "properties": {
         "activeDeadlineSeconds": {
           "type": "integer",
@@ -254,33 +251,6 @@
     }
   },
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "release": {
-            "properties": {
-              "mode": {
-                "const": "deploy"
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "inputs": {
-            "required": ["cloudflare"],
-            "properties": {
-              "cloudflare": {
-                "$ref": "#/properties/inputs/properties/workerSecrets"
-              }
-            }
-          }
-        }
-      }
-    }
-  ],
   "definitions": {
     "secretKey": {
       "type": "object",

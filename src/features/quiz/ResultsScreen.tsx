@@ -10,7 +10,7 @@ import {
 } from '@/domain/pokemon/format';
 import { generations } from '@/domain/pokemon/types';
 import { isLeagueVictory } from '@/domain/quiz/league';
-import { getCategoryLabel } from '@/domain/quiz/question-labels';
+import { getCategoryLabel } from '@/domain/quiz/questions/definitions';
 import { calculateScore, getScoreBreakdown } from '@/domain/quiz/scoring';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
 import type { GameSettings } from '@/domain/settings/types';

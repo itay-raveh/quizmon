@@ -4,7 +4,7 @@ metadata:
   name: {{ include "quizmon.releaseName" . }}
   labels:
     {{- include "quizmon.labels" . | nindent 4 }}
-    app.kubernetes.io/component: release
+    app.kubernetes.io/component: migration
 spec:
   completions: 1
   parallelism: 1
@@ -14,13 +14,10 @@ spec:
     metadata:
       labels:
         {{- include "quizmon.labels" . | nindent 8 }}
-        app.kubernetes.io/component: release
+        app.kubernetes.io/component: migration
     spec:
       restartPolicy: Never
       automountServiceAccountToken: false
-      {{- if eq .Values.release.mode "deploy" }}
-      serviceAccountName: {{ include "quizmon.selectionName" . }}
-      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -29,73 +26,16 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: release
+        - name: migrate
           image: {{ include "quizmon.image" . | quote }}
-          args:
-            - {{ .Values.release.mode }}
-            - /opt/quizmon
-            - /config/release-config.json
-            - /worker-secrets/worker-secrets.json
-            - /migration/migration-connection.json
-          {{- if eq .Values.release.mode "deploy" }}
-            - /config/operation.json
-            - /cloudflare/cloudflare.json
-          env:
-            - name: QUIZMON_SELECTION_CONFIGMAP
-              value: {{ include "quizmon.selectionName" . | quote }}
-            - name: HOME
-              value: /tmp
-          {{- end }}
+          args: [/migration/migration-connection.json]
           securityContext:
             {{- include "quizmon.containerSecurity" . | nindent 12 }}
           resources:
             {{- toYaml .Values.release.resources | nindent 12 }}
           volumeMounts:
-            - { name: temporary, mountPath: /tmp }
-            {{- if eq .Values.release.mode "deploy" }}
-            - { name: cloudflare, mountPath: /cloudflare, readOnly: true }
-            - { name: api-access, mountPath: /var/run/secrets/kubernetes.io/serviceaccount, readOnly: true }
-            {{- end }}
-            - { name: config, mountPath: /config, readOnly: true }
-            - { name: worker-secrets, mountPath: /worker-secrets, readOnly: true }
             - { name: migration, mountPath: /migration, readOnly: true }
       volumes:
-        - name: temporary
-          emptyDir: {}
-        {{- if eq .Values.release.mode "deploy" }}
-        - name: cloudflare
-          secret:
-            secretName: {{ .Values.inputs.cloudflare.name | quote }}
-            defaultMode: 0440
-            items:
-              - key: {{ .Values.inputs.cloudflare.key | quote }}
-                path: cloudflare.json
-        - name: api-access
-          projected:
-            defaultMode: 0440
-            sources:
-              - serviceAccountToken:
-                  path: token
-                  expirationSeconds: 3600
-              - configMap:
-                  name: kube-root-ca.crt
-                  items:
-                    - { key: ca.crt, path: ca.crt }
-              - downwardAPI:
-                  items:
-                    - path: namespace
-                      fieldRef: { fieldPath: metadata.namespace }
-        {{- end }}
-        - name: config
-          configMap:
-            name: {{ include "quizmon.configName" . }}
-        - name: worker-secrets
-          secret:
-            secretName: {{ .Values.inputs.workerSecrets.name | quote }}
-            defaultMode: 0440
-            items:
-              - key: {{ .Values.inputs.workerSecrets.key | quote }}
-                path: worker-secrets.json
         - name: migration
           secret:
             secretName: {{ .Values.inputs.migrationConnection.name | quote }}

@@ -1,185 +1,172 @@
+import { z } from 'zod';
 import { isQuestionRendering } from './question-rendering.ts';
 import { isQuestionSubject } from './subject.ts';
 import { isDifficulty } from './difficulty.ts';
-import {
-  isChoice,
-  isFiniteNonnegative,
-  isRecord,
-  isSafeNonnegativeInteger,
-} from '../../lib/validation.ts';
 import { generations, statNames } from '../pokemon/types.ts';
-import { questionLabels } from './question-labels.ts';
+import { questionDefinitions } from './questions/definitions.ts';
 import { questionCategories, type QuestionData } from './types.ts';
+
 export interface QuestionLineup {
   seed: string;
   contentVersion: number;
   questions: QuestionData[];
 }
-const text = (value: unknown): value is string =>
-  typeof value === 'string' && value.length <= 10000;
-const strings = (value: unknown): value is string[] =>
-  Array.isArray(value) && value.every(text);
-const optional = (value: unknown, check: (value: unknown) => boolean) =>
-  value === undefined || check(value);
-const map = (value: unknown, check: (value: unknown) => boolean) =>
-  isRecord(value) && Object.values(value).every(check);
-const sprite = (value: unknown): boolean =>
-  isRecord(value) &&
-  isSafeNonnegativeInteger(value.dexNumber) &&
-  text(value.src) &&
-  strings(value.types) &&
-  optional(value.silhouette, (v) => typeof v === 'boolean');
-const generationClue = (value: unknown): boolean =>
-  isRecord(value) &&
-  value.kind === 'generation' &&
-  isChoice(value.generation, generations) &&
-  strings(value.types);
-type VariantCheck = (value: Record<string, unknown>) => boolean;
-const mediaChecks = {
-  none: () => true,
-  'pixel-sprite': (value) => text(value.src),
-  sprite: (value) =>
-    text(value.src) &&
-    optional(value.silhouette, (v) => typeof v === 'boolean') &&
-    optional(value.revealAt, isSafeNonnegativeInteger),
-  'pixel-peek': (value) =>
-    text(value.src) &&
-    Number.isFinite(value.focusX) &&
-    Number.isFinite(value.focusY) &&
-    optional(
-      value.zoom,
-      (zoom) => typeof zoom === 'number' && Number.isFinite(zoom) && zoom >= 1,
-    ),
-} satisfies Record<QuestionData['media']['kind'], VariantCheck>;
-const multiplier = (value: Record<string, unknown>) =>
-  isFiniteNonnegative(value.multiplier);
-const visualChecks = {
-  'evolution-endpoints': (value) =>
-    text(value.before) && text(value.after) && map(value.stages, sprite),
-  'type-check': () => true,
-  'type-twins': () => true,
-  'type-roundup': (value) => text(value.type),
-  'generation-roundup': (value) => isChoice(value.generation, generations),
-  'evolution-link': (value) =>
-    text(value.before) && text(value.after) && map(value.stages, sprite),
-  'evolution-shift': (value) =>
-    sprite(value.evolution) &&
-    isRecord(value.evolution) &&
-    text(value.evolution.name) &&
-    text(value.gainedType),
-  'stat-showdown': (value) =>
-    isChoice(value.stat, statNames) &&
-    isChoice(value.direction, ['highest', 'lowest'] as const),
-  'measurement-comparison': (value) =>
-    isChoice(value.measurement, ['height', 'weight'] as const) &&
-    isChoice(value.direction, ['highest', 'lowest'] as const),
-  'type-matchup': multiplier,
-  'counter-pick': multiplier,
-} satisfies Record<NonNullable<QuestionData['visual']>['kind'], VariantCheck>;
-const variant = (
-  value: unknown,
-  checks: Record<string, VariantCheck>,
-): boolean =>
-  isRecord(value) &&
-  typeof value.kind === 'string' &&
-  Object.hasOwn(checks, value.kind) &&
-  checks[value.kind]!(value);
-export const isQuestionData = (value: unknown): value is QuestionData => {
-  if (!isRecord(value) || !isRecord(value.answer) || !isRecord(value.prompt))
-    return false;
-  const { answer, options, prompt } = value;
-  return (
-    isRecord(value.repetition) &&
-    text(value.repetition.identity) &&
-    value.repetition.identity.length > 0 &&
-    strings(value.repetition.subjects) &&
-    strings(value.repetition.primary) &&
-    strings(value.repetition.distractors) &&
-    text(value.id) &&
-    isQuestionSubject(value.subject) &&
-    typeof value.questionType === 'string' &&
-    Object.hasOwn(questionLabels, value.questionType) &&
-    isChoice(value.category, questionCategories) &&
-    strings(options) &&
-    options.length > 0 &&
-    new Set(options).size === options.length &&
-    strings(answer.correctOptions) &&
-    answer.correctOptions.length > 0 &&
-    new Set(answer.correctOptions).size === answer.correctOptions.length &&
-    answer.correctOptions.every((option) => options.includes(option)) &&
-    (answer.interaction === 'single-choice' || answer.interaction === 'search'
-      ? answer.correctOptions.length === 1
-      : answer.interaction === 'multi-select') &&
-    (prompt.kind === 'text'
-      ? text(prompt.text) && optional(prompt.supportingText, text)
-      : prompt.kind === 'pokemon' &&
-        text(prompt.before) &&
-        text(prompt.after) &&
-        text(prompt.name) &&
-        optional(prompt.supportingText, text) &&
-        isSafeNonnegativeInteger(prompt.dexNumber)) &&
-    variant(value.media, mediaChecks) &&
-    optional(value.optionDetails, (v) =>
-      map(
-        v,
-        (rows) =>
-          Array.isArray(rows) &&
-          rows.length > 0 &&
-          rows.every(
-            (row) => isRecord(row) && text(row.value) && text(row.label),
-          ),
+
+const text = z.string().max(10000);
+const strings = z.array(text);
+const nonnegativeInteger = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
+const finiteNonnegative = z.number().finite().min(0);
+const unique = (values: string[]) => new Set(values).size === values.length;
+const sprite = z.object({
+  dexNumber: nonnegativeInteger,
+  src: text,
+  types: strings,
+  silhouette: z.boolean().optional(),
+});
+const generationClue = z.object({
+  kind: z.literal('generation'),
+  generation: z.enum(generations),
+  types: strings,
+});
+const media = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('none') }),
+  z.object({ kind: z.literal('pixel-sprite'), src: text }),
+  z.object({
+    kind: z.literal('sprite'),
+    src: text,
+    silhouette: z.boolean().optional(),
+    revealAt: nonnegativeInteger.optional(),
+  }),
+  z.object({
+    kind: z.literal('pixel-peek'),
+    src: text,
+    focusX: z.number().finite(),
+    focusY: z.number().finite(),
+    zoom: z.number().finite().min(1).optional(),
+  }),
+]);
+const stages = z.record(z.string(), sprite);
+const evolutionEndpoints = { before: text, after: text, stages };
+const multiplier = { multiplier: finiteNonnegative };
+const direction = z.enum(['highest', 'lowest']);
+const visual = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('evolution-endpoints'), ...evolutionEndpoints }),
+  z.object({ kind: z.literal('evolution-link'), ...evolutionEndpoints }),
+  z.object({ kind: z.literal('type-check') }),
+  z.object({ kind: z.literal('type-twins') }),
+  z.object({ kind: z.literal('type-roundup'), type: text }),
+  z.object({
+    kind: z.literal('generation-roundup'),
+    generation: z.enum(generations),
+  }),
+  z.object({
+    kind: z.literal('evolution-shift'),
+    evolution: sprite.extend({ name: text }),
+    gainedType: text,
+  }),
+  z.object({
+    kind: z.literal('stat-showdown'),
+    stat: z.enum(statNames),
+    direction,
+  }),
+  z.object({
+    kind: z.literal('measurement-comparison'),
+    measurement: z.enum(['height', 'weight']),
+    direction,
+  }),
+  z.object({ kind: z.literal('type-matchup'), ...multiplier }),
+  z.object({ kind: z.literal('counter-pick'), ...multiplier }),
+]);
+const prompt = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('text'), text, supportingText: text.optional() }),
+  z.object({
+    kind: z.literal('pokemon'),
+    before: text,
+    after: text,
+    name: text,
+    supportingText: text.optional(),
+    dexNumber: nonnegativeInteger,
+  }),
+]);
+const question = z
+  .object({
+    repetition: z.object({
+      identity: text.min(1),
+      subjects: strings,
+      primary: strings,
+      distractors: strings,
+    }),
+    id: text,
+    subject: z.custom(isQuestionSubject),
+    questionType: z
+      .string()
+      .refine(
+        (type) =>
+          type === 'champion' || Object.hasOwn(questionDefinitions, type),
       ),
-    ) &&
-    optional(value.optionLabels, (v) => map(v, text)) &&
-    optional(value.optionImages, (v) => map(v, text)) &&
-    optional(value.optionReveals, (v) => map(v, text)) &&
-    optional(value.explanation, text) &&
-    optional(value.context, text) &&
-    optional(value.variantLevel, isDifficulty) &&
-    optional(value.rendering, isQuestionRendering) &&
-    optional(value.namesOnly, (v) => typeof v === 'boolean') &&
-    optional(value.showTypes, (v) => typeof v === 'boolean') &&
-    optional(value.assistanceUsed, isSafeNonnegativeInteger) &&
-    optional(value.initialClues, isSafeNonnegativeInteger) &&
-    optional(value.rulesVersion, isSafeNonnegativeInteger) &&
-    optional(value.suppliedClues, strings) &&
-    optional(value.assistanceAllowed, (v) => typeof v === 'boolean') &&
-    optional(value.visual, (v) => variant(v, visualChecks)) &&
-    optional(value.concealOptionLabels, (v) => typeof v === 'boolean') &&
-    optional(
-      value.clues,
-      (v) =>
-        Array.isArray(v) &&
-        v.every((clue) => text(clue) || generationClue(clue)),
-    ) &&
-    optional(value.optionDexNumbers, (v) => map(v, isSafeNonnegativeInteger)) &&
-    optional(value.optionStats, (v) => map(v, isSafeNonnegativeInteger)) &&
-    optional(value.optionVisuals, (v) => map(v, sprite)) &&
-    optional(value.optionGenerations, (v) =>
-      map(v, (g) => isChoice(g, generations)),
-    ) &&
-    optional(value.optionClassifications, (v) =>
-      map(v, (c) => isChoice(c, ['Legendary', 'Mythical', 'Neither'] as const)),
-    ) &&
-    optional(
-      value.searchOptions,
-      (v) =>
-        Array.isArray(v) &&
-        v.every(
-          (o) =>
-            isRecord(o) &&
-            text(o.name) &&
-            isSafeNonnegativeInteger(o.dexNumber) &&
-            optional(o.sprite, (v) => v === null || text(v)),
-        ),
-    )
+    category: z.enum(questionCategories),
+    options: strings.min(1).refine(unique),
+    answer: z.object({
+      correctOptions: strings.min(1).refine(unique),
+      interaction: z.enum(['single-choice', 'search', 'multi-select']),
+    }),
+    prompt,
+    media,
+    optionDetails: z
+      .record(
+        z.string(),
+        z.array(z.object({ value: text, label: text })).min(1),
+      )
+      .optional(),
+    optionLabels: z.record(z.string(), text).optional(),
+    optionImages: z.record(z.string(), text).optional(),
+    optionReveals: z.record(z.string(), text).optional(),
+    explanation: text.optional(),
+    context: text.optional(),
+    variantLevel: z.custom(isDifficulty).optional(),
+    rendering: z.custom(isQuestionRendering).optional(),
+    namesOnly: z.boolean().optional(),
+    showTypes: z.boolean().optional(),
+    assistanceUsed: nonnegativeInteger.optional(),
+    initialClues: nonnegativeInteger.optional(),
+    rulesVersion: nonnegativeInteger.optional(),
+    suppliedClues: strings.optional(),
+    assistanceAllowed: z.boolean().optional(),
+    visual: visual.optional(),
+    concealOptionLabels: z.boolean().optional(),
+    clues: z.array(z.union([text, generationClue])).optional(),
+    optionDexNumbers: z.record(z.string(), nonnegativeInteger).optional(),
+    optionStats: z.record(z.string(), nonnegativeInteger).optional(),
+    optionVisuals: z.record(z.string(), sprite).optional(),
+    optionGenerations: z.record(z.string(), z.enum(generations)).optional(),
+    optionClassifications: z
+      .record(z.string(), z.enum(['Legendary', 'Mythical', 'Neither']))
+      .optional(),
+    searchOptions: z
+      .array(
+        z.object({
+          name: text,
+          dexNumber: nonnegativeInteger,
+          sprite: text.nullable().optional(),
+        }),
+      )
+      .optional(),
+  })
+  .refine(
+    ({ answer, options }) =>
+      answer.correctOptions.every((option) => options.includes(option)) &&
+      (answer.interaction === 'multi-select' ||
+        answer.correctOptions.length === 1),
   );
-};
+
+export const isQuestionData = (value: unknown): value is QuestionData =>
+  question.safeParse(value).success;
+
+const lineup = z.object({
+  seed: text.min(1).max(200),
+  contentVersion: nonnegativeInteger,
+  questions: z.array(question),
+});
+
 export const isQuestionLineup = (value: unknown): value is QuestionLineup =>
-  isRecord(value) &&
-  text(value.seed) &&
-  value.seed.length > 0 &&
-  value.seed.length <= 200 &&
-  isSafeNonnegativeInteger(value.contentVersion) &&
-  Array.isArray(value.questions) &&
-  value.questions.every(isQuestionData);
+  lineup.safeParse(value).success;

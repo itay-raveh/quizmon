@@ -1,21 +1,30 @@
 import { isIP } from 'node:net';
+import { z } from 'zod';
 import { isRecord } from '../src/lib/validation.ts';
 import {
   readSyncConnection,
   type SyncConnection,
 } from '../src/domain/sync/connection.ts';
 
-export interface ReleaseConfig {
-  version: 1;
-  workerName: string;
-  origin: string;
+export const releaseConfigSchema = z.object({
+  version: z.literal(1),
+  workerName: z.string().regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
+  origin: z.string().min(1),
+  sync: z.object({
+    version: z.literal(1),
+    endpoint: z.string().min(1),
+    audience: z.string().min(1),
+  }),
+  hyperdriveId: z.string().regex(/^[a-fA-F0-9]{32}$/),
+  mailFrom: z.string().regex(/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/),
+  analyticsDataset: z.string().regex(/^[a-zA-Z0-9_]{1,64}$/),
+  authRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
+  apiRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
+});
+
+export type ReleaseConfig = z.infer<typeof releaseConfigSchema> & {
   sync: SyncConnection;
-  hyperdriveId: string;
-  mailFrom: string;
-  analyticsDataset: string;
-  authRateLimitNamespace: string;
-  apiRateLimitNamespace: string;
-}
+};
 
 function publicUrl(value: string) {
   const url = new URL(value);
@@ -50,29 +59,36 @@ export function readReleaseConfig(value: unknown): ReleaseConfig {
   ])
     if (typeof value[key] !== 'string' || !value[key])
       throw new Error(`Missing release configuration: ${key}.`);
-  const config = value as unknown as ReleaseConfig;
-  const origin = publicUrl(config.origin);
+  const origin = publicUrl(value.origin as string);
   const sync = readSyncConnection(value.sync);
   publicUrl(sync.endpoint);
   if (origin.pathname !== '/')
     throw new Error('The application origin cannot contain a path.');
-  if (!/^[a-z0-9][a-z0-9-]{0,62}$/.test(config.workerName))
-    throw new Error('Invalid Worker name.');
+  const parsed = releaseConfigSchema.safeParse({
+    ...value,
+    origin: origin.origin,
+    sync,
+  });
+  const invalid = new Set(
+    parsed.success ? [] : parsed.error.issues.map((issue) => issue.path[0]),
+  );
+  if (invalid.has('workerName')) throw new Error('Invalid Worker name.');
   if (
-    !/^[a-f0-9]{32}$/i.test(config.hyperdriveId) ||
-    /^0+$/.test(config.hyperdriveId)
+    invalid.has('hyperdriveId') ||
+    (typeof value.hyperdriveId === 'string' && /^0+$/.test(value.hyperdriveId))
   )
     throw new Error('A provisioned Hyperdrive identifier is required.');
-  if (!/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/.test(config.mailFrom))
-    throw new Error('A sender address is required.');
-  if (!/^[a-zA-Z0-9_]{1,64}$/.test(config.analyticsDataset))
+  if (invalid.has('mailFrom')) throw new Error('A sender address is required.');
+  if (invalid.has('analyticsDataset'))
     throw new Error('Invalid analytics dataset.');
   if (
-    !/^[1-9]\d*$/.test(config.authRateLimitNamespace) ||
-    !/^[1-9]\d*$/.test(config.apiRateLimitNamespace) ||
-    config.authRateLimitNamespace === config.apiRateLimitNamespace
+    invalid.has('authRateLimitNamespace') ||
+    invalid.has('apiRateLimitNamespace') ||
+    value.authRateLimitNamespace === value.apiRateLimitNamespace
   )
     throw new Error('Distinct rate-limit namespace identifiers are required.');
+  if (!parsed.success) throw new Error('Unsupported release configuration.');
+  const config = parsed.data;
   return {
     version: 1,
     workerName: config.workerName,
@@ -124,5 +140,18 @@ export function renderWorkerConfig(template: unknown, config: ReleaseConfig) {
             : config.apiRateLimitNamespace,
       };
     }),
+  };
+}
+
+export function renderSourceWorkerConfig(
+  template: unknown,
+  config: ReleaseConfig,
+) {
+  const rendered = renderWorkerConfig(template, config);
+  return {
+    ...rendered,
+    main: './worker/index.ts',
+    no_bundle: false,
+    assets: { ...rendered.assets, directory: './dist' },
   };
 }

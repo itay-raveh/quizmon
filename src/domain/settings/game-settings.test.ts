@@ -1,5 +1,5 @@
 import { formGroups } from '../pokemon/types';
-import { standardLeagueQuestionTypes } from '../quiz/standard-question-types';
+import { standardLeagueQuestionTypes } from '../quiz/questions/definitions';
 import {
   defaultGameSettings,
   getTrainingSettings,

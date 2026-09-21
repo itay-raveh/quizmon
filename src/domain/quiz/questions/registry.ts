@@ -1,4 +1,4 @@
-import { supportsStandardQuestion } from '../standard-question-types.ts';
+import { supportsStandardQuestion } from './definitions.ts';
 import {
   getPokemonRecency,
   getQuestionRecency,

@@ -17,60 +17,55 @@ jobs:
       MISE_LOCKED: 1
       QUIZMON_RELEASE_IMAGE: quizmon-release:checked
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: ${{ github.repository_owner }}/infra
+          path: .wrangler/infra
+          persist-credentials: false
+      - uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4
         with:
           install_args: node
+          cache: false
       - run: npm ci
-      - name: Validate the application chart
+      - name: Validate chart and migration
         run: |
           mise install helm kubeconform
           node tests/online/check-helm-chart.ts
-      - name: Validate release tooling
-        run: |
-          npx tsc --noEmit
-          npx eslint server deploy tests/online
-          node --test tests/online/publication-plan.test.ts tests/online/release-inputs.test.ts tests/online/release-config.test.ts tests/online/asset-headers.test.ts tests/online/release-selection.test.ts
-      - name: Start disposable database
-        run: docker compose -f compose.yaml up -d --wait db
-      - name: Check migration and release retries
-        run: |
+          docker compose -f compose.yaml up -d --wait db
           node tests/online/check-migrations.ts
-          node --test tests/online/release-coordinator.test.ts
-          node --test tests/online/cloudflare-release.test.ts
-      - name: Package the candidate
+      - name: Build and prepare Worker
         run: |
           npm run build
-          npx wrangler deploy --config deploy/wrangler.jsonc --dry-run --outdir ../.wrangler/release-worker
-          node deploy/package-release.ts .wrangler/release-candidate .wrangler/release-worker
-      - name: Verify publication identity
-        id: publication
-        run: node deploy/plan-publication.ts .wrangler/release-candidate
-      - name: Build the image once
-        env:
-          SOURCE_URL: ${{ steps.publication.outputs.sourceUrl }}
-          SOURCE_REVISION: ${{ steps.publication.outputs.revision }}
+          node deploy/prepare-worker-deploy.ts .wrangler/infra
+          npx wrangler deploy --config .wrangler.production.json --dry-run --outdir .wrangler/release-worker
+      - name: Build checked migration image
         run: |
-          docker build --label "org.opencontainers.image.source=$SOURCE_URL" --label "org.opencontainers.image.revision=$SOURCE_REVISION" --iidfile .wrangler/release-image-id -t "$QUIZMON_RELEASE_IMAGE" .wrangler/release-candidate
-      - name: Test the packaged runtime
-        env:
-          QUIZMON_RELEASE_ARTIFACT: .wrangler/release-candidate
-        run: |
-          node --test tests/online/release-artifact.test.ts
-          node tests/online/check-release-image.ts
-          node tests/online/check-release-preflight.ts
+          mkdir -p .wrangler
+          docker build -f deploy/runtime/Dockerfile \
+            --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --iidfile .wrangler/release-image-id -t "$QUIZMON_RELEASE_IMAGE" .
+          docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/migrations/meta/_journal.json
+          docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/deploy/powersync/sync-config.yaml
       - name: Check real sync isolation
         run: |
           docker compose -f compose.yaml pull powersync
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-runtime-config.ts
-      - name: Publish the checked image
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: 4.127.1
+          command: deploy --config .wrangler.production.json --keep-vars
+      - name: Publish checked migration image
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY_USER: ${{ github.actor }}
-          RELEASE_REFERENCE: ${{ steps.publication.outputs.reference }}
           DOCKER_CONFIG: ${{ runner.temp }}/quizmon-registry-auth
         run: |
           set -euo pipefail
@@ -80,10 +75,13 @@ jobs:
           printf '%s' "$REGISTRY_TOKEN" | docker login ghcr.io -u "$REGISTRY_USER" --password-stdin
           image_id=$(cat .wrangler/release-image-id)
           test "$(docker image inspect "$QUIZMON_RELEASE_IMAGE" --format '{{.Id}}')" = "$image_id"
-          docker tag "$image_id" "$RELEASE_REFERENCE"
-          docker push "$RELEASE_REFERENCE"
-          digest_reference=$(docker image inspect "$RELEASE_REFERENCE" --format '{{index .RepoDigests 0}}')
-          test "${digest_reference%@*}" = "${RELEASE_REFERENCE%:*}"
+          printf -v run_number '%09d' "$GITHUB_RUN_NUMBER"
+          printf -v run_attempt '%03d' "$GITHUB_RUN_ATTEMPT"
+          reference="ghcr.io/${GITHUB_REPOSITORY,,}/release:main-$run_number-$run_attempt-${GITHUB_SHA:0:12}"
+          docker tag "$image_id" "$reference"
+          docker push "$reference"
+          digest_reference=$(docker image inspect "$reference" --format '{{index .RepoDigests 0}}')
+          test "${digest_reference%@*}" = "${reference%:*}"
           mkdir -p "$public_config"
           if ! DOCKER_CONFIG="$public_config" docker pull "$digest_reference"; then
             echo '::error::The release image is not anonymously readable. Make the GHCR package public, then rerun this workflow.'

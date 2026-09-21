@@ -2,7 +2,6 @@ import { getQuestionTypeMultiplier } from '@/domain/quiz/score-multipliers';
 import { CaretDownIcon, QuestionIcon, XIcon } from '@/components/icons';
 import { SelectionTile } from '@/components/SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
-import { questionLabels } from '@/domain/quiz/question-labels';
 import {
   questionDefinitions,
   questionTypeGroups,
@@ -167,7 +166,7 @@ export const QuestionTypeSettings = ({
                   role="group"
                 >
                   {group.types.map((questionType) => {
-                    const label = questionLabels[questionType];
+                    const label = questionDefinitions[questionType].label;
                     const factor = draft.difficulty
                       ? getQuestionTypeMultiplier(
                           questionType,
@@ -237,7 +236,7 @@ export const QuestionTypeSettings = ({
         >
           <XIcon aria-hidden="true" weight="bold" />
         </SoundButton>
-        <strong>{questionLabels[explainedQuestionType]}</strong>
+        <strong>{questionDefinitions[explainedQuestionType].label}</strong>
         <p>{questionDefinitions[explainedQuestionType].description}</p>
       </div>
     </>

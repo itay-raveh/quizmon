@@ -1,0 +1,73 @@
+import { isQuestionData } from '../../quiz/question-lineup';
+import { defaultGameSettings } from '../../settings/game-settings';
+import { emptyPlayerData } from '../player-save';
+import { SaveError } from '../save-schema';
+import { parseRound } from './round';
+import { parsePlayerData } from './player-data';
+
+const question = {
+  id: 'q',
+  questionType: 'type-check',
+  category: 'knowledge',
+  subject: { kind: 'pokemon', name: 'A', generation: 'I', types: [] },
+  repetition: { identity: 'A', subjects: [], primary: [], distractors: [] },
+  options: ['A'],
+  answer: { interaction: 'single-choice', correctOptions: ['A'] },
+  prompt: { kind: 'text', text: 'A?' },
+  media: { kind: 'none' },
+};
+const round = {
+  version: 1,
+  contentVersion: 1,
+  elapsedMilliseconds: 0,
+  questionCount: 1,
+  seed: 's',
+  answers: [],
+  questions: [question],
+  mode: { kind: 'training' },
+  settings: defaultGameSettings,
+};
+
+it('keeps saved question acceptance and required option invariants', () => {
+  expect(isQuestionData({ ...question, futureField: true })).toBe(true);
+  expect(isQuestionData({ ...question, options: ['A', 'A'] })).toBe(false);
+  expect(
+    isQuestionData({
+      ...question,
+      media: { kind: 'pixel-peek', src: '', focusX: Infinity, focusY: 0 },
+    }),
+  ).toBe(false);
+});
+
+it('preserves unfinished-round output and unknown settings', () => {
+  const saved = {
+    ...round,
+    extra: 1,
+    settings: { ...defaultGameSettings, futureField: 1 },
+  };
+  expect(parseRound(saved)).toEqual({
+    ...round,
+    settings: saved.settings,
+    playerRestoreId: null,
+  });
+  expect(parseRound({ ...round, version: 2 })).toBeNull();
+  expect(parseRound({ ...round, questionCount: 2 })).toBeNull();
+});
+
+it('keeps player-data normalization and recovery error category', () => {
+  const base = emptyPlayerData();
+  expect(parsePlayerData({ ...base, pokedex: ['A', 'A'] }).pokedex).toEqual([
+    'A',
+  ]);
+  expect(() => parsePlayerData({ ...base, profile: {} })).toThrow(
+    'This save contains an invalid Trainer profile.',
+  );
+  try {
+    parsePlayerData({ ...base, results: null });
+  } catch (error) {
+    expect(error).toBeInstanceOf(SaveError);
+    expect((error as SaveError).kind).toBe('invalid');
+    return;
+  }
+  throw new Error('Expected invalid save');
+});

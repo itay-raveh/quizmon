@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import { readWorkerTemplate } from '../../deploy/worker-template.ts';
 import {
   readReleaseConfig,
+  renderSourceWorkerConfig,
   renderWorkerConfig,
 } from '../../deploy/release-config.ts';
 
@@ -51,6 +52,21 @@ await test('runtime renderer preserves game bindings and limits without local da
   assert.ok(!JSON.stringify(rendered).includes('test-mailbox'));
 });
 
+await test('source renderer bundles the Worker from the repository with built assets', () => {
+  const template = readWorkerTemplate(
+    new URL('../../deploy/wrangler.jsonc', import.meta.url).pathname,
+  );
+  const rendered = renderSourceWorkerConfig(
+    template,
+    readReleaseConfig(config),
+  );
+  assert.equal(rendered.main, './worker/index.ts');
+  assert.equal(rendered.assets.directory, './dist');
+  assert.equal(rendered.no_bundle, false);
+  assert.equal(rendered.hyperdrive[0]?.id, config.hyperdriveId);
+  assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
+});
+
 await test('unsupported, incomplete, or local production inputs are rejected before preparing output', () => {
   for (const invalid of [
     { ...config, version: 2 },
@@ -70,4 +86,25 @@ await test('unsupported, incomplete, or local production inputs are rejected bef
     { ...config, sync: { ...config.sync, audience: '' } },
   ])
     assert.throws(() => readReleaseConfig(invalid));
+});
+
+await test('release configuration keeps its actionable validation errors', () => {
+  for (const [changed, message] of [
+    [{ version: 2 }, 'Unsupported release configuration.'],
+    [{ workerName: '' }, 'Missing release configuration: workerName.'],
+    [{ workerName: 'Bad Worker' }, 'Invalid Worker name.'],
+    [
+      { hyperdriveId: '0'.repeat(32) },
+      'A provisioned Hyperdrive identifier is required.',
+    ],
+    [{ mailFrom: 'invalid' }, 'A sender address is required.'],
+    [{ analyticsDataset: 'invalid-name' }, 'Invalid analytics dataset.'],
+    [
+      { apiRateLimitNamespace: config.authRateLimitNamespace },
+      'Distinct rate-limit namespace identifiers are required.',
+    ],
+  ] as const)
+    assert.throws(() => readReleaseConfig({ ...config, ...changed }), {
+      message,
+    });
 });

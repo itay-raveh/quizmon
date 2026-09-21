@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { SAVE_SCHEMA_VERSION } from '../player-save.ts';
 import { isAnswerObservation } from '../../quiz/answer-observation.ts';
 import type { ActiveGameSnapshot } from '../active-game.ts';
@@ -7,8 +8,11 @@ import { isQuestionData } from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import {
   questionCategories,
-  type AnswerResult,
+  type AnswerObservation,
+  type AnswerSubject,
   type GameMode,
+  type QuestionData,
+  type ScoreMultipliers,
 } from '../../quiz/types.ts';
 import { isScoreMultipliers } from '../../quiz/score-multipliers.ts';
 import { isDifficulty } from '../../quiz/difficulty.ts';
@@ -20,140 +24,85 @@ import {
   type GameSettings,
 } from '../../settings/types.ts';
 import {
-  isChoice,
   isDailyDate,
   isFiniteNonnegative,
-  isNonemptyChoiceArray,
   isNonnegativeInteger,
-  isRecord,
   isUtcTimestamp,
 } from '../../../lib/validation.ts';
-const parseMode = (value: unknown): GameMode | null => {
-  if (!isRecord(value)) return null;
-  if (value.kind === 'training') return { kind: 'training' };
-  if (value.kind === 'league') return { kind: 'league' };
-  if (value.kind === 'daily' && isDailyDate(value.date)) {
-    if (value.track !== undefined && !isDailyTrack(value.track)) return null;
-    return {
-      kind: 'daily',
-      date: value.date,
-      ...(value.track === undefined ? {} : { track: value.track }),
-    };
-  }
-  return null;
-};
-const parseAnswer = (value: unknown): AnswerResult | null => {
-  if (
-    !isRecord(value) ||
-    (value.observation !== undefined &&
-      !isAnswerObservation(value.observation)) ||
-    !isChoice(value.category, questionCategories) ||
-    !isNonnegativeInteger(value.cluesUsed) ||
-    typeof value.correct !== 'boolean' ||
-    !isAnswerSubject(value.subject) ||
-    !isFiniteNonnegative(value.points) ||
-    (value.questionType !== 'champion' &&
-      !isChoice(value.questionType, questionTypes)) ||
-    (value.responseMilliseconds !== undefined &&
-      !isFiniteNonnegative(value.responseMilliseconds)) ||
-    (value.speedBonus !== undefined && !isFiniteNonnegative(value.speedBonus))
-  ) {
-    return null;
-  }
-  return {
-    ...(isAnswerObservation(value.observation)
-      ? { observation: value.observation }
-      : {}),
-    category: value.category,
-    cluesUsed: value.cluesUsed,
-    ...(typeof value.unassistedSearch === 'boolean'
-      ? { unassistedSearch: value.unassistedSearch }
-      : {}),
-    correct: value.correct,
-    points: value.points,
-    questionType: value.questionType,
-    ...(value.responseMilliseconds === undefined
-      ? {}
-      : { responseMilliseconds: value.responseMilliseconds }),
-    ...(value.speedBonus === undefined ? {} : { speedBonus: value.speedBonus }),
-    subject: value.subject,
-  };
-};
-const parseGameSettings = (value: unknown): GameSettings | null => {
-  if (
-    !isRecord(value) ||
-    !isNonemptyChoiceArray(value.generations, generations) ||
-    !isNonemptyChoiceArray(value.questionTypes, questionTypes) ||
-    !isChoice(value.trainingMode, trainingModes) ||
-    !isNonemptyChoiceArray(value.formGroups, formGroups) ||
-    !isChoice(value.answerFlow, answerFlows) ||
-    !isChoice(value.timerDisplay, timerDisplays) ||
-    typeof value.reduceMotion !== 'boolean' ||
-    !isFiniteNonnegative(value.soundVolume) ||
-    value.soundVolume > 1 ||
-    (value.difficulty !== undefined && !isDifficulty(value.difficulty)) ||
-    (value.questionSelection !== undefined &&
-      value.questionSelection !== 'custom' &&
-      value.questionSelection !== 'automatic') ||
-    (value.automaticQuestionTypes !== undefined &&
-      (!Array.isArray(value.automaticQuestionTypes) ||
-        !value.automaticQuestionTypes.every((type) =>
-          isChoice(type, questionTypes),
-        )))
-  ) {
-    return null;
-  }
-  return value as unknown as GameSettings;
-};
-export const parseRound = (value: unknown): ActiveGameSnapshot | null => {
-  if (
-    !isRecord(value) ||
-    value.version !== SAVE_SCHEMA_VERSION ||
-    (value.completedAt !== undefined && !isUtcTimestamp(value.completedAt)) ||
-    (value.scoreMultipliers !== undefined &&
-      !isScoreMultipliers(value.scoreMultipliers)) ||
-    !isNonnegativeInteger(value.contentVersion) ||
-    !isFiniteNonnegative(value.elapsedMilliseconds) ||
-    !isNonnegativeInteger(value.questionCount) ||
-    value.questionCount < 1 ||
-    typeof value.seed !== 'string' ||
-    value.seed.length === 0 ||
-    value.seed.length > 200 ||
-    !Array.isArray(value.answers) ||
-    value.answers.length > value.questionCount ||
-    !Array.isArray(value.questions) ||
-    value.questions.length !== value.questionCount ||
-    !value.questions.every(isQuestionData) ||
-    (value.roundId !== undefined &&
-      (typeof value.roundId !== 'string' ||
-        value.roundId.length > 200 ||
-        !value.roundId))
-  ) {
-    return null;
-  }
-  const mode = parseMode(value.mode);
-  const settings = parseGameSettings(value.settings);
-  const answers = value.answers.map(parseAnswer);
-  if (!mode || !settings || !answers.every((answer) => answer !== null))
-    return null;
-  return {
-    questions: value.questions,
-    ...(value.completedAt === undefined
-      ? {}
-      : { completedAt: value.completedAt }),
-    ...(value.scoreMultipliers === undefined
-      ? {}
-      : { scoreMultipliers: value.scoreMultipliers }),
-    ...(value.roundId === undefined ? {} : { roundId: value.roundId }),
-    answers,
-    contentVersion: value.contentVersion,
-    elapsedMilliseconds: value.elapsedMilliseconds,
+
+const nonnegativeInteger = z.custom<number>(isNonnegativeInteger);
+const finiteNonnegative = z.custom<number>(isFiniteNonnegative);
+const mode = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('training') }),
+  z.object({ kind: z.literal('league') }),
+  z.object({
+    kind: z.literal('daily'),
+    date: z.custom<string>(isDailyDate),
+    track: z.custom(isDailyTrack).optional(),
+  }),
+]);
+const answer = z
+  .object({
+    observation: z.custom<AnswerObservation>(isAnswerObservation).optional(),
+    category: z.enum(questionCategories),
+    cluesUsed: nonnegativeInteger,
+    unassistedSearch: z.unknown().optional(),
+    correct: z.boolean(),
+    points: finiteNonnegative,
+    questionType: z.enum([...questionTypes, 'champion']),
+    responseMilliseconds: finiteNonnegative.optional(),
+    speedBonus: finiteNonnegative.optional(),
+    subject: z.custom<AnswerSubject>(isAnswerSubject),
+  })
+  .transform(({ unassistedSearch, ...entry }) => ({
+    ...entry,
+    ...(typeof unassistedSearch === 'boolean' ? { unassistedSearch } : {}),
+  }));
+const settings = z.looseObject({
+  generations: z.array(z.enum(generations)).min(1),
+  questionTypes: z.array(z.enum(questionTypes)).min(1),
+  trainingMode: z.enum(trainingModes),
+  formGroups: z.array(z.enum(formGroups)).min(1),
+  answerFlow: z.enum(answerFlows),
+  timerDisplay: z.enum(timerDisplays),
+  reduceMotion: z.boolean(),
+  soundVolume: finiteNonnegative.refine((volume) => volume <= 1),
+  difficulty: z.custom(isDifficulty).optional(),
+  questionSelection: z.enum(['custom', 'automatic']).optional(),
+  automaticQuestionTypes: z.array(z.enum(questionTypes)).optional(),
+});
+const round = z
+  .object({
+    version: z.literal(SAVE_SCHEMA_VERSION),
+    completedAt: z.custom<string>(isUtcTimestamp).optional(),
+    scoreMultipliers: z.custom<ScoreMultipliers>(isScoreMultipliers).optional(),
+    contentVersion: nonnegativeInteger,
+    elapsedMilliseconds: finiteNonnegative,
+    questionCount: nonnegativeInteger.refine((count) => count >= 1),
+    seed: z.string().min(1).max(200),
+    answers: z.array(answer),
+    questions: z.array(z.custom<QuestionData>(isQuestionData)),
+    roundId: z.string().min(1).max(200).optional(),
     mode,
     settings,
-    questionCount: value.questionCount,
+    playerRestoreId: z.unknown().optional(),
+  })
+  .refine(
+    ({ answers, questions, questionCount }) =>
+      answers.length <= questionCount && questions.length === questionCount,
+  );
+
+export const parseRound = (value: unknown): ActiveGameSnapshot | null => {
+  const parsed = round.safeParse(value);
+  if (!parsed.success) return null;
+  const snapshot = parsed.data;
+  return {
+    ...snapshot,
+    mode: snapshot.mode as GameMode,
+    settings: snapshot.settings as GameSettings,
     playerRestoreId:
-      typeof value.playerRestoreId === 'string' ? value.playerRestoreId : null,
-    seed: value.seed,
-    version: value.version,
+      typeof snapshot.playerRestoreId === 'string'
+        ? snapshot.playerRestoreId
+        : null,
   };
 };

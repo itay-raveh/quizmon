@@ -1,7 +1,7 @@
 import {
   supportsStandardQuestion,
   standardLeagueQuestionTypes,
-} from '../quiz/standard-question-types.ts';
+} from '../quiz/questions/definitions.ts';
 import { getQuestionVariant } from '../quiz/question-variants.ts';
 import { isChoice, isObject } from '../../lib/validation.ts';
 import { getFormGroup } from '../pokemon/forms.ts';

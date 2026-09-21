@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { resolve, join } from 'node:path';
 import { createRequire } from 'node:module';
-import { readReleaseConfig } from '../../deploy/release-config.ts';
+import { join, resolve } from 'node:path';
+import { checkReleaseConfigSchema } from '../../scripts/generate-release-config-schema.ts';
+
+checkReleaseConfigSchema();
 
 const tooling = createRequire(resolve('node_modules/wrangler/package.json'));
 const yaml = tooling('yaml') as {
@@ -11,19 +13,14 @@ const yaml = tooling('yaml') as {
 };
 interface Manifest {
   kind: string;
-  metadata: { name: string; annotations?: Record<string, string> };
+  metadata: { name: string };
   data?: Record<string, string>;
-  immutable?: boolean;
-  rules?: unknown;
-  subjects?: unknown;
   spec?: {
     type?: string;
-    ttlSecondsAfterFinished?: number;
     template: {
       spec: {
         automountServiceAccountToken: boolean;
         containers: Array<{
-          name: string;
           image: string;
           args: string[];
           volumeMounts: Array<{ name: string; mountPath: string }>;
@@ -56,11 +53,7 @@ const values = {
     digest: 'sha256:' + '1'.repeat(64),
   },
   runtimeConfig,
-  inputs: {
-    cloudflare: reference('cloudflare-test'),
-    workerSecrets: reference('worker-test'),
-    migrationConnection: reference('migration-test'),
-  },
+  inputs: { migrationConnection: reference('migration-test') },
 };
 const root = resolve('.wrangler/accounts');
 await mkdir(root, { recursive: true });
@@ -76,7 +69,6 @@ const documents = (text: string) =>
     .parseAllDocuments(text)
     .map((doc) => doc.toJSON())
     .filter(Boolean) as Manifest[];
-let cases = 0;
 try {
   const render = async (
     data: unknown,
@@ -96,26 +88,45 @@ try {
       ...extra,
     );
   };
-  const base = await render(values);
   const job = (text: string) =>
     documents(text).find((doc) => doc.kind === 'Job')!;
-  assert.ok(job(base));
+  const base = await render(values);
+  assert.deepEqual(
+    documents(base).map((doc) => doc.kind),
+    ['Job'],
+  );
   assert.deepEqual(job(base).spec?.template.spec.containers[0]?.args, [
-    'deploy',
-    '/opt/quizmon',
-    '/config/release-config.json',
-    '/worker-secrets/worker-secrets.json',
     '/migration/migration-connection.json',
-    '/config/operation.json',
-    '/cloudflare/cloudflare.json',
   ]);
-  assert.equal(job(base).metadata.annotations?.['helm.sh/hook'], undefined);
-  assert.equal(job(base).spec?.ttlSecondsAfterFinished, undefined);
+  assert.deepEqual(job(base).spec?.template.spec.containers[0]?.volumeMounts, [
+    { name: 'migration', mountPath: '/migration', readOnly: true },
+  ]);
   assert.equal(
     job(base).metadata.name,
     job(await render(values, chart, ['--is-upgrade'])).metadata.name,
   );
-  cases++;
+  assert.equal(
+    job(
+      await render({
+        ...values,
+        runtimeConfig: { ...runtimeConfig, origin: 'https://new.example.test' },
+      }),
+    ).metadata.name,
+    job(base).metadata.name,
+  );
+  const legacy = {
+    ...values,
+    inputs: {
+      ...values.inputs,
+      workerSecrets: reference('worker-test'),
+      cloudflare: reference('cloudflare-test'),
+    },
+    release: { mode: 'deploy' },
+  };
+  assert.equal(
+    job(await render(legacy)).metadata.name,
+    job(base).metadata.name,
+  );
   for (const changed of [
     {
       ...values,
@@ -126,13 +137,11 @@ try {
     },
     {
       ...values,
-      runtimeConfig: { ...runtimeConfig, origin: 'https://new.example.test' },
-    },
-    {
-      ...values,
       inputs: {
-        ...values.inputs,
-        workerSecrets: { ...values.inputs.workerSecrets, revision: '2' },
+        migrationConnection: {
+          ...values.inputs.migrationConnection,
+          revision: '2',
+        },
       },
     },
   ]) {
@@ -140,30 +149,27 @@ try {
       job(await render(changed)).metadata.name,
       job(base).metadata.name,
     );
-    cases++;
   }
   const newer = join(directory, 'newer-chart');
   await cp(chart, newer, { recursive: true });
   await writeFile(
     join(newer, 'Chart.yaml'),
     (await readFile(join(newer, 'Chart.yaml'), 'utf8')).replace(
-      'version: 0.2.0',
-      'version: 0.2.1',
+      'version: 0.3.0',
+      'version: 0.3.1',
     ),
   );
   assert.notEqual(
     job(await render(values, newer)).metadata.name,
     job(base).metadata.name,
   );
-  cases++;
   for (const invalid of [
     {},
     { ...values, typo: true },
     {
       ...values,
       inputs: {
-        ...values.inputs,
-        cloudflare: { name: '', key: 'data', revision: '1' },
+        migrationConnection: { ...values.inputs.migrationConnection, name: '' },
       },
     },
     { ...values, releaseImage: { ...values.releaseImage, digest: 'latest' } },
@@ -171,39 +177,10 @@ try {
       ...values,
       runtimeConfig: { ...runtimeConfig, origin: 'http://localhost' },
     },
-    {
-      ...values,
-      inputs: {
-        ...values.inputs,
-        workerSecrets: { ...values.inputs.workerSecrets, revision: '' },
-      },
-    },
     { ...values, powersync: { enabled: true } },
   ]) {
     await assert.rejects(render(invalid));
-    cases++;
   }
-  const readOnly = documents(
-    await render({
-      ...values,
-      release: { mode: 'preflight' },
-      inputs: {
-        ...values.inputs,
-        cloudflare: { name: '', key: 'cloudflare.json', revision: '' },
-      },
-    }),
-  );
-  assert.ok(
-    !readOnly.some((doc) =>
-      ['Role', 'RoleBinding', 'ServiceAccount'].includes(doc.kind),
-    ),
-  );
-  assert.equal(
-    readOnly.find((doc) => doc.kind === 'Job')?.spec?.template.spec
-      .containers[0]?.args[0],
-    'preflight',
-  );
-  cases++;
   const syncValues = {
     ...values,
     powersync: {
@@ -216,56 +193,8 @@ try {
   const rendered = documents(complete);
   assert.deepEqual(
     rendered.map((doc) => doc.kind).sort(),
-    [
-      'ConfigMap',
-      'ConfigMap',
-      'ConfigMap',
-      'Deployment',
-      'Job',
-      'Service',
-      'ServiceAccount',
-      'Role',
-      'RoleBinding',
-    ].sort(),
+    ['ConfigMap', 'Deployment', 'Job', 'Service'].sort(),
   );
-  const config = rendered.find((doc) => doc.data?.['release-config.json']);
-  assert.equal(config?.immutable, true);
-  assert.deepEqual(
-    readReleaseConfig(JSON.parse(config.data!['release-config.json']!)),
-    runtimeConfig,
-  );
-  const selection = rendered.find(
-    (doc) => doc.data?.['operation.json'] && !doc.immutable,
-  )!;
-  assert.equal(
-    selection.data!['operation.json'],
-    config.data!['operation.json'],
-  );
-  const role = rendered.find((doc) => doc.kind === 'Role')!;
-  assert.deepEqual(role.rules, [
-    {
-      apiGroups: [''],
-      resources: ['configmaps'],
-      resourceNames: [selection.metadata.name],
-      verbs: ['get'],
-    },
-  ]);
-  assert.deepEqual(
-    rendered.find((doc) => doc.kind === 'RoleBinding')!.subjects,
-    [
-      {
-        kind: 'ServiceAccount',
-        name: selection.metadata.name,
-        namespace: 'quizmon-test',
-      },
-    ],
-  );
-  const operation = JSON.parse(config.data!['operation.json']!) as {
-    artifact: string;
-    id: string;
-  };
-  assert.equal(operation.artifact, values.releaseImage.digest);
-  assert.match(operation.id, /^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/);
   const syncConfig = rendered.find((doc) => doc.data?.['service.yaml'])!.data![
     'service.yaml'
   ]!;
@@ -305,7 +234,6 @@ try {
     rendered.find((doc) => doc.kind === 'Service')?.spec?.type,
     'ClusterIP',
   );
-  cases++;
   const manifest = join(directory, 'rendered.yaml');
   await writeFile(manifest, complete);
   const validation = spawnSync(
@@ -327,13 +255,13 @@ try {
   console.log(validation.stdout.trim());
   helm('lint', '--strict', chart, '-f', join(directory, 'values.json'));
   const packaged = helm('package', chart, '--destination', directory);
-  assert.match(packaged, /quizmon-0.2.0.tgz/);
+  assert.match(packaged, /quizmon-0.3.0.tgz/);
   assert.equal(
-    await render(syncValues, join(directory, 'quizmon-0.2.0.tgz')),
+    await render(syncValues, join(directory, 'quizmon-0.3.0.tgz')),
     complete,
   );
   console.log(
-    `Helm passed: ${cases} rendering/upgrade/rejection cases, strict Kubernetes validation, lint, and packaged-chart equivalence.`,
+    'Helm passed: migration and PowerSync rendering, input rejection, strict Kubernetes validation, lint, and packaged-chart equivalence.',
   );
 } finally {
   await rm(directory, { recursive: true, force: true });

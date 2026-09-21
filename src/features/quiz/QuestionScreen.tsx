@@ -11,7 +11,7 @@ import {
 } from '@/domain/pokemon/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getLeagueStageLabel } from '@/domain/quiz/league';
-import { getQuestionTitle } from '@/domain/quiz/question-labels';
+import { getQuestionTitle } from '@/domain/quiz/questions/definitions';
 import { getAnswerPoints } from '@/domain/quiz/scoring';
 import type { GameMode, QuestionData } from '@/domain/quiz/types';
 import type { TimerDisplay } from '@/domain/settings/types';

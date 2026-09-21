@@ -1,6 +1,6 @@
 import { getTrainingScoreMultipliers } from '../../src/domain/quiz/score-multipliers.ts';
 import { generations } from '../../src/domain/pokemon/types.ts';
-import { standardLeagueQuestionTypes as coreQuestionTypes } from '../../src/domain/quiz/standard-question-types.ts';
+import { standardLeagueQuestionTypes as coreQuestionTypes } from '../../src/domain/quiz/questions/definitions.ts';
 import {
   calculateScore,
   getAnswerPoints,

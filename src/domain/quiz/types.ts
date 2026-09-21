@@ -2,8 +2,8 @@ import type { QuestionRendering } from './question-rendering.ts';
 import type { FormGroup, Generation, StatName } from '../pokemon/types.ts';
 import type { Difficulty } from './difficulty.ts';
 import type { DailyTrack } from './daily-track.ts';
-import type { questionLabels } from './question-labels.ts';
-export type QuestionType = Exclude<keyof typeof questionLabels, 'champion'>;
+import type { QuestionType } from './questions/definitions.ts';
+export type { QuestionType } from './questions/definitions.ts';
 
 export const questionCategories = [
   'ability',
@@ -166,7 +166,7 @@ export interface QuestionData {
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
   prompt: QuestionPrompt;
-  questionType: keyof typeof questionLabels;
+  questionType: QuestionType | 'champion';
   searchOptions?: PokemonSearchOption[];
   visual?: QuestionVisual;
 }

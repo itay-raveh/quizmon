@@ -6,7 +6,7 @@ import {
 } from '../../domain/player/trainer-progression';
 import { formatPokemonName } from '../../domain/pokemon/format';
 import { trainerAvatarOptions } from '../../domain/player/trainer-avatars';
-import { questionLabels } from '../../domain/quiz/question-labels';
+import { questionDefinitions } from '../../domain/quiz/questions/definitions';
 import type { EditUnit, EditValue } from '../../domain/sync/progress';
 import type { AccountIssue } from '../../lib/storage/account-issues';
 import { isDailyDate, isRecord } from '../../lib/validation';
@@ -53,7 +53,9 @@ function describeValue(unit: EditUnit, value: EditValue) {
         </p>
         <p>
           Question types:{' '}
-          {value.questionTypes.map((type) => questionLabels[type]).join(', ')}
+          {value.questionTypes
+            .map((type) => questionDefinitions[type].label)
+            .join(', ')}
         </p>
       </details>
     </>

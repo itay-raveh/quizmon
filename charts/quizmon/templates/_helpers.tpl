@@ -6,12 +6,8 @@
 {{- printf "%s@%s" .Values.releaseImage.repository .Values.releaseImage.digest -}}
 {{- end -}}
 
-{{- define "quizmon.configName" -}}
-{{- printf "%s-config-%s" (include "quizmon.name" .) ((include "quizmon.operation" .) | sha256sum | trunc 12) -}}
-{{- end -}}
-
 {{- define "quizmon.releaseName" -}}
-{{- printf "%s-release-%s" (include "quizmon.name" .) (dict "values" .Values "chartVersion" .Chart.Version | toJson | sha256sum | trunc 12) -}}
+{{- printf "%s-migration-%s" (include "quizmon.name" .) (dict "image" .Values.releaseImage "migration" .Values.inputs.migrationConnection "deadline" .Values.release.activeDeadlineSeconds "backoff" .Values.release.backoffLimit "resources" .Values.release.resources "chartVersion" .Chart.Version | toJson | sha256sum | trunc 12) -}}
 {{- end -}}
 
 {{- define "quizmon.labels" -}}
@@ -25,14 +21,4 @@ allowPrivilegeEscalation: false
 readOnlyRootFilesystem: true
 capabilities:
   drop: [ALL]
-{{- end -}}
-
-{{- define "quizmon.selectionName" -}}
-{{- printf "%s-selection" (include "quizmon.name" .) -}}
-{{- end -}}
-
-{{- define "quizmon.operation" -}}
-{{- $hash := dict "values" .Values "chartVersion" .Chart.Version "namespace" .Release.Namespace "release" .Release.Name | toJson | sha256sum -}}
-{{- $id := printf "%s-%s-%s-%s-%s" (substr 0 8 $hash) (substr 8 12 $hash) (substr 12 16 $hash) (substr 16 20 $hash) (substr 20 32 $hash) -}}
-{{- dict "version" 1 "id" $id "artifact" .Values.releaseImage.digest "configuration" (printf "sha256:%s" $hash) | toJson -}}
 {{- end -}}

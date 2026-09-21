@@ -1,17 +1,21 @@
+import { z } from 'zod';
 import { isAnswerSubject } from '../../quiz/subject.ts';
 import {
-  isChoice,
   isDailyDate,
   isFiniteNonnegative,
-  isNonemptyChoiceArray,
-  isRecord,
   isSafeNonnegativeInteger,
   isUtcTimestamp,
 } from '../../../lib/validation.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../../quiz/league.ts';
-import { isQuestionHistory } from '../../quiz/question-history.ts';
-import { isQuestionLineup } from '../../quiz/question-lineup.ts';
+import {
+  isQuestionHistory,
+  type QuestionHistory,
+} from '../../quiz/question-history.ts';
+import {
+  isQuestionLineup,
+  type QuestionLineup,
+} from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { isRoundRules } from '../../quiz/round-rules.ts';
 import { isScoreMultipliers } from '../../quiz/score-multipliers.ts';
@@ -39,164 +43,161 @@ import {
   normalizeTrainerProfile,
   TRAINER_NAME_MAX_LENGTH,
 } from '../trainer-profile.ts';
-const isName = (value: unknown): value is string =>
-  typeof value === 'string' && value.length > 0 && value.length <= 200;
-const isCounts = (value: unknown, keys: readonly string[]): boolean =>
-  isRecord(value) &&
-  Object.entries(value).every(
-    ([key, count]) => keys.includes(key) && isSafeNonnegativeInteger(count),
-  );
+
+const name = z.string().min(1).max(200);
+const nonnegativeInteger = z.custom<number>(isSafeNonnegativeInteger);
+const finiteNonnegative = z.custom<number>(isFiniteNonnegative);
+const counts = (keys: readonly string[]) =>
+  z
+    .record(z.string(), nonnegativeInteger)
+    .refine((value) => Object.keys(value).every((key) => keys.includes(key)));
 const savedQuestionTypes = [...questionTypes, 'champion'] as const;
-const isSavedResult = (value: unknown): value is GameResult => {
-  if (
-    !isRecord(value) ||
-    (value.scoreMultipliers !== undefined &&
-      !isScoreMultipliers(value.scoreMultipliers)) ||
-    (value.rules !== undefined && !isRoundRules(value.rules)) ||
-    (value.dailyTrack !== undefined && !isDailyTrack(value.dailyTrack)) ||
-    (value.puzzleId !== undefined &&
-      (typeof value.puzzleId !== 'string' ||
-        !/^[a-f0-9]{64}$/.test(value.puzzleId))) ||
-    !Array.isArray(value.answers) ||
-    !isSafeNonnegativeInteger(value.contentVersion) ||
-    (value.scoreVersion !== undefined &&
-      !isSafeNonnegativeInteger(value.scoreVersion)) ||
-    !isSafeNonnegativeInteger(value.correctCount) ||
-    !isSafeNonnegativeInteger(value.questionCount) ||
-    value.questionCount < 1 ||
-    value.correctCount > value.questionCount ||
-    value.answers.length > value.questionCount ||
-    !isSafeNonnegativeInteger(value.score) ||
-    !isFiniteNonnegative(value.elapsedSeconds) ||
-    (value.elapsedMilliseconds !== undefined &&
-      !isFiniteNonnegative(value.elapsedMilliseconds))
-  )
-    return false;
-  return value.answers.every(
-    (answer: unknown) =>
-      isRecord(answer) &&
-      isChoice(answer.category, questionCategories) &&
-      (answer.cluesUsed === undefined ||
-        isSafeNonnegativeInteger(answer.cluesUsed)) &&
-      (answer.unassistedSearch === undefined ||
-        typeof answer.unassistedSearch === 'boolean') &&
-      typeof answer.correct === 'boolean' &&
-      (answer.subject === undefined || isAnswerSubject(answer.subject)) &&
-      isSafeNonnegativeInteger(answer.points) &&
-      (answer.questionType === undefined ||
-        isChoice(answer.questionType, savedQuestionTypes)) &&
-      (answer.responseMilliseconds === undefined ||
-        isFiniteNonnegative(answer.responseMilliseconds)) &&
-      (answer.speedBonus === undefined ||
-        isSafeNonnegativeInteger(answer.speedBonus)),
+const savedResult = z
+  .object({
+    scoreMultipliers: z.custom(isScoreMultipliers).optional(),
+    rules: z.custom(isRoundRules).optional(),
+    dailyTrack: z.custom(isDailyTrack).optional(),
+    puzzleId: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/)
+      .optional(),
+    answers: z.array(
+      z.object({
+        category: z.enum(questionCategories),
+        cluesUsed: nonnegativeInteger.optional(),
+        unassistedSearch: z.boolean().optional(),
+        correct: z.boolean(),
+        subject: z.custom(isAnswerSubject).optional(),
+        points: nonnegativeInteger,
+        questionType: z.enum(savedQuestionTypes).optional(),
+        responseMilliseconds: finiteNonnegative.optional(),
+        speedBonus: nonnegativeInteger.optional(),
+      }),
+    ),
+    contentVersion: nonnegativeInteger,
+    scoreVersion: nonnegativeInteger.optional(),
+    correctCount: nonnegativeInteger,
+    questionCount: nonnegativeInteger.refine((count) => count >= 1),
+    score: nonnegativeInteger,
+    elapsedSeconds: finiteNonnegative,
+    elapsedMilliseconds: finiteNonnegative.optional(),
+  })
+  .refine(
+    ({ answers, correctCount, questionCount }) =>
+      correctCount <= questionCount && answers.length <= questionCount,
   );
-};
+const isSavedResult = (value: unknown): value is GameResult =>
+  savedResult.safeParse(value).success;
+const victoryRecord = z
+  .object({
+    id: name,
+    completedAt: z.custom<string>(isUtcTimestamp),
+    trainerName: z.string().max(TRAINER_NAME_MAX_LENGTH),
+    pokemon: z
+      .array(name)
+      .min(1)
+      .refine((values) => new Set(values).size === values.length),
+    result: z.custom<GameResult>(isSavedResult),
+  })
+  .refine(
+    ({ result }) =>
+      isLeagueVictory(result) &&
+      result.answers.every((answer) => answer.correct),
+  );
 const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
-  isRecord(value) &&
-  isName(value.id) &&
-  isUtcTimestamp(value.completedAt) &&
-  typeof value.trainerName === 'string' &&
-  value.trainerName.length <= TRAINER_NAME_MAX_LENGTH &&
-  Array.isArray(value.pokemon) &&
-  value.pokemon.length > 0 &&
-  value.pokemon.every(isName) &&
-  new Set(value.pokemon).size === value.pokemon.length &&
-  isSavedResult(value.result) &&
-  isLeagueVictory(value.result) &&
-  value.result.answers.every((answer) => answer.correct);
-const isResults = (value: unknown): value is SavedResults => {
-  if (
-    !isRecord(value) ||
-    !isRecord(value.daily) ||
-    !isRecord(value.training) ||
-    !isRecord(value.progress) ||
-    !isRecord(value.streak) ||
-    !isRecord(value.league)
-  )
-    return false;
-  const { daily, training, progress, streak, league } = value;
-  return (
-    Object.entries(daily).every(([key, result]) => {
-      const parsed = parseDailyResultKey(key);
-      return (
-        parsed !== undefined &&
-        isSavedResult(result) &&
-        getDailyResultKey(parsed.date, result.dailyTrack) === key
-      );
-    }) &&
-    Object.entries(training).every(
-      ([key, result]) =>
-        isSavedResult(result) && getUnifiedScoreKey(result) === key,
-    ) &&
-    typeof league.completed === 'boolean' &&
-    (league.seed === null || isName(league.seed)) &&
-    Array.isArray(streak.creditedDates) &&
-    streak.creditedDates.every(
-      (date: unknown) => isDailyDate(date) && hasDailyResultOnDate(daily, date),
-    ) &&
-    isSafeNonnegativeInteger(progress.championAnswersWithoutClues) &&
-    isCounts(progress.correctCategories, questionCategories) &&
-    isCounts(progress.correctGenerations, generations) &&
-    isCounts(progress.correctQuestionTypes, savedQuestionTypes) &&
-    Array.isArray(progress.correctPokemon) &&
-    progress.correctPokemon.every(isName) &&
-    isSafeNonnegativeInteger(progress.masteryRounds) &&
-    typeof progress.quickAttackCompleted === 'boolean' &&
-    isSafeNonnegativeInteger(progress.quickAttackRounds)
+  victoryRecord.safeParse(value).success;
+const results = z
+  .object({
+    daily: z.record(z.string(), z.custom<GameResult>(isSavedResult)),
+    training: z.record(z.string(), z.custom<GameResult>(isSavedResult)),
+    progress: z.object({
+      championAnswersWithoutClues: nonnegativeInteger,
+      correctCategories: counts(questionCategories),
+      correctGenerations: counts(generations),
+      correctQuestionTypes: counts(savedQuestionTypes),
+      correctPokemon: z.array(name),
+      masteryRounds: nonnegativeInteger,
+      quickAttackCompleted: z.boolean(),
+      quickAttackRounds: nonnegativeInteger,
+    }),
+    streak: z.object({ creditedDates: z.array(z.custom<string>(isDailyDate)) }),
+    league: z.object({ completed: z.boolean(), seed: name.nullable() }),
+  })
+  .refine(
+    ({ daily, training, streak }) =>
+      Object.entries(daily).every(([key, result]) => {
+        const parsed = parseDailyResultKey(key);
+        return (
+          parsed !== undefined &&
+          getDailyResultKey(parsed.date, result.dailyTrack) === key
+        );
+      }) &&
+      Object.entries(training).every(
+        ([key, result]) => getUnifiedScoreKey(result) === key,
+      ) &&
+      streak.creditedDates.every((date) => hasDailyResultOnDate(daily, date)),
   );
-};
+const isResults = (value: unknown): value is SavedResults =>
+  results.safeParse(value).success;
+const settings = z.object({
+  difficulty: z.custom(isDifficulty),
+  questionSelection: z.enum(['automatic', 'custom']),
+  answerFlow: z.enum(answerFlows),
+  timerDisplay: z.enum(timerDisplays),
+  trainingMode: z.enum(trainingModes),
+  reduceMotion: z.boolean(),
+  soundVolume: finiteNonnegative.refine((volume) => volume <= 1),
+  formGroups: z.array(z.enum(formGroups)).min(1),
+  generations: z.array(z.enum(generations)).min(1),
+  questionTypes: z.array(z.enum(questionTypes)).min(1),
+});
 const isSettings = (value: unknown): value is GameSettings =>
-  isRecord(value) &&
-  isDifficulty(value.difficulty) &&
-  (value.questionSelection === 'automatic' ||
-    value.questionSelection === 'custom') &&
-  isChoice(value.answerFlow, answerFlows) &&
-  isChoice(value.timerDisplay, timerDisplays) &&
-  isChoice(value.trainingMode, trainingModes) &&
-  typeof value.reduceMotion === 'boolean' &&
-  isFiniteNonnegative(value.soundVolume) &&
-  value.soundVolume <= 1 &&
-  isNonemptyChoiceArray(value.formGroups, formGroups) &&
-  isNonemptyChoiceArray(value.generations, generations) &&
-  isNonemptyChoiceArray(value.questionTypes, questionTypes);
+  settings.safeParse(value).success;
+const playerData = z.object({
+  generationPromptAnswered: z.boolean(),
+  pokedex: z.array(name),
+  hallOfFame: z
+    .array(z.custom<LeagueVictoryRecord>(isVictoryRecord))
+    .refine(
+      (records) => new Set(records.map(({ id }) => id)).size === records.length,
+    ),
+  questionHistory: z.custom<QuestionHistory>(isQuestionHistory),
+  leagueLineup: z
+    .custom<QuestionLineup>(isQuestionLineup)
+    .nullable()
+    .refine(
+      (lineup) =>
+        lineup === null || lineup.questions.length === LEAGUE_QUESTION_COUNT,
+    ),
+  results: z.custom<SavedResults>(isResults),
+  settings: z.custom<GameSettings>(isSettings).nullable(),
+  profile: z.unknown(),
+});
 
 export const parsePlayerData = (value: unknown): PlayerData => {
-  if (
-    !isRecord(value) ||
-    typeof value.generationPromptAnswered !== 'boolean' ||
-    !Array.isArray(value.pokedex) ||
-    !value.pokedex.every(isName) ||
-    !Array.isArray(value.hallOfFame) ||
-    !value.hallOfFame.every(isVictoryRecord) ||
-    new Set(value.hallOfFame.map((record: LeagueVictoryRecord) => record.id))
-      .size !== value.hallOfFame.length ||
-    !isQuestionHistory(value.questionHistory) ||
-    (value.leagueLineup !== null &&
-      (!isQuestionLineup(value.leagueLineup) ||
-        value.leagueLineup.questions.length !== LEAGUE_QUESTION_COUNT)) ||
-    !isResults(value.results) ||
-    (value.settings !== null && !isSettings(value.settings))
-  )
+  const parsed = playerData.safeParse(value);
+  if (!parsed.success)
     throw new SaveError(
       'invalid',
       'This save contains invalid progress or settings.',
     );
+  const data = parsed.data;
   const profile =
-    value.profile === null ? null : normalizeTrainerProfile(value.profile);
-  if (value.profile !== null && !profile)
+    data.profile === null ? null : normalizeTrainerProfile(data.profile);
+  if (data.profile !== null && !profile)
     throw new SaveError(
       'invalid',
       'This save contains an invalid Trainer profile.',
     );
   return {
-    questionHistory: value.questionHistory,
-    leagueLineup: value.leagueLineup,
-    generationPromptAnswered: value.generationPromptAnswered,
-    hallOfFame: value.hallOfFame,
-    pokedex: [...new Set(value.pokedex)],
+    questionHistory: data.questionHistory,
+    leagueLineup: data.leagueLineup,
+    generationPromptAnswered: data.generationPromptAnswered,
+    hallOfFame: data.hallOfFame,
+    pokedex: [...new Set(data.pokedex)],
     profile,
-    results: normalizeResults(value.results),
+    results: normalizeResults(data.results),
     settings:
-      value.settings === null ? null : normalizeGameSettings(value.settings),
+      data.settings === null ? null : normalizeGameSettings(data.settings),
   };
 };

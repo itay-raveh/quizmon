@@ -3,20 +3,11 @@ releaseImage:
   digest: ''
 runtimeConfig: {}
 inputs:
-  workerSecrets:
-    name: ''
-    key: worker-secrets.json
-    revision: ''
-  cloudflare:
-    name: ''
-    key: cloudflare.json
-    revision: ''
   migrationConnection:
     name: ''
     key: migration-connection.json
     revision: ''
 release:
-  mode: deploy
   activeDeadlineSeconds: 300
   backoffLimit: 0
   resources:

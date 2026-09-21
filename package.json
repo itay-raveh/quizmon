@@ -23,10 +23,11 @@
     "dev:client": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node deploy/migrate.ts",
-    "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts tests/online/publication-plan.test.ts tests/online/release-selection.test.ts",
+    "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts",
     "test:accounts": "node tests/online/check-friends.ts",
     "test:sync": "node tests/online/check-progress-api.ts",
-    "check:chart": "node tests/online/check-helm-chart.ts"
+    "check:chart": "node tests/online/check-helm-chart.ts",
+    "generate:release-schema": "node scripts/generate-release-config-schema.ts"
   },
   "dependencies": {
     "@fontsource-variable/gabarito": "^5.3.0",
@@ -84,7 +85,8 @@
     "workbox-precaching": "7.4.1",
     "workbox-routing": "7.4.1",
     "workbox-strategies": "7.4.1",
-    "wrangler": "4.127.1"
+    "wrangler": "4.127.1",
+    "yaml": "2.9.0"
   },
   "engines": {
     "node": ">=24.15.0"
@@ -119,13 +121,12 @@
       ".": {
         "entry": [
           "server/auth-schema-config.ts",
-          "deploy/release-command.ts"
+          "deploy/migrate-release.ts"
         ]
       }
     },
     "ignoreBinaries": [
-      "mise",
-      "openssl"
+      "mise"
     ]
   },
   "prettier": {
