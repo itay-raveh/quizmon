@@ -1,4 +1,4 @@
-import avatarIds from './data/trainer-avatars.json';
+import avatarIds from './data/trainer-avatars.json' with { type: 'json' };
 
 export const trainerAvatarOptions = avatarIds.map((id) => ({
   id,
