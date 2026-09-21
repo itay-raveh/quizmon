@@ -214,15 +214,17 @@ function Standings({
                           {row.player.name}
                           {row.player.id === owner ? ' (you)' : ''}
                         </span>
-                        <GameButton
-                          aria-label={`View ${row.player.name}'s profile`}
-                          className="friends-icon-button"
-                          onClick={() => onViewPlayer(row.player.id)}
-                          title={`View ${row.player.name}'s profile`}
-                          tone="quiet"
-                        >
-                          <EyeIcon aria-hidden="true" weight="bold" />
-                        </GameButton>
+                        {row.player.id !== owner && (
+                          <GameButton
+                            aria-label={`View ${row.player.name}'s profile`}
+                            className="friends-icon-button"
+                            onClick={() => onViewPlayer(row.player.id)}
+                            title={`View ${row.player.name}'s profile`}
+                            tone="quiet"
+                          >
+                            <EyeIcon aria-hidden="true" weight="bold" />
+                          </GameButton>
+                        )}
                       </span>
                     </th>
                     <td>
