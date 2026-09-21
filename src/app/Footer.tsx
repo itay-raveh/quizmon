@@ -27,18 +27,18 @@ export const Footer = ({ currentPath }: { currentPath?: string }) => (
           {site.authorName}
         </a>
       </span>
+      <a href={site.repositoryUrl} rel="noreferrer" target="_blank">
+        GitHub
+      </a>
       <a href={`mailto:${site.contactEmail}`}>Contact</a>
     </div>
     <div className="site-footer__more">
       <nav className="site-footer__links" aria-label="Help and information">
-        {footerLinks.map(({ href, label, ...link }) => (
+        {footerLinks.map(({ href, label }) => (
           <a
             key={href}
             href={href}
             aria-current={href === currentPath ? 'page' : undefined}
-            {...('external' in link && link.external
-              ? { target: '_blank', rel: 'noreferrer' }
-              : {})}
           >
             {label}
           </a>

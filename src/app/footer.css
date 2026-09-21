@@ -32,7 +32,7 @@
 }
 
 .site-footer__people {
-  margin-top: 0;
+  margin-top: 0.5rem;
   font-weight: 600;
 }
 
@@ -54,7 +54,8 @@
   display: inline-flex;
   min-height: 1.5rem;
   align-items: center;
-  color: inherit;
+  color: var(--navy);
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -65,6 +66,7 @@
 .site-footer a:is(:hover, :focus-visible) {
   text-decoration: underline;
   text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }
 
 .site-footer .site-footer__support {

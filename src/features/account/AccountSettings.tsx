@@ -20,6 +20,7 @@ import {
   verifySignInCode,
 } from './account';
 import { AccountConflicts } from './AccountConflicts';
+import { downloadAccountExport } from './account-export';
 import './account.css';
 
 const emailSchema = z.object({
@@ -369,6 +370,13 @@ export const AccountSettings = () => {
               onClick={() => run(signOutAccount)}
             >
               Sign out
+            </GameButton>
+            <GameButton
+              tone="quiet"
+              disabled={busy}
+              onClick={() => run(downloadAccountExport)}
+            >
+              Download account archive
             </GameButton>
           </div>
           {(syncPaused || syncOffline || syncNeedsReview) && (

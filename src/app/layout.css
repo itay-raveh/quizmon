@@ -53,8 +53,8 @@
   place-items: center;
 }
 
-.app--landing main {
-  min-height: calc(100svh - 9rem);
+.app--with-navigation main {
+  min-height: calc(100svh - 14rem);
 }
 
 .app-navigation svg {
@@ -110,8 +110,8 @@
     white-space: nowrap;
   }
 
-  .app--landing main {
-    min-height: calc(100svh - 13.25rem - env(safe-area-inset-bottom));
+  .app--with-navigation main {
+    min-height: calc(100svh - 18.25rem - env(safe-area-inset-bottom));
   }
 }
 

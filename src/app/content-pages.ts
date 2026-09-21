@@ -1,5 +1,3 @@
-import { site } from './site.ts';
-
 export const contentPages = [
   {
     path: '/about',
@@ -27,10 +25,10 @@ export const contentPages = [
   },
 ];
 
-export const footerLinks = [
-  { href: site.repositoryUrl, label: 'GitHub', external: true },
-  ...contentPages.map(({ path, label }) => ({ href: path, label })),
-];
+export const footerLinks = contentPages.map(({ path, label }) => ({
+  href: path,
+  label,
+}));
 
 export const footerDisclaimer =
   'Quizmon is unofficial and not affiliated with Nintendo. Pokémon and related names, characters, images, and trademarks belong to their respective owners.';
@@ -42,8 +40,18 @@ export const footerCredits = [
     href: 'https://www.fiverr.com/beresteyskaya',
   },
   {
-    label: 'Logo:',
+    label: 'Logo made with',
     name: 'TextStudio',
     href: 'https://www.textstudio.com',
+  },
+  {
+    label: 'Data:',
+    name: 'PokéAPI',
+    href: 'https://pokeapi.co/',
+  },
+  {
+    label: 'Sprites & text:',
+    name: 'Pokémon Showdown',
+    href: 'https://pokemonshowdown.com/',
   },
 ];

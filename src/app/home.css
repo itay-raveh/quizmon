@@ -310,6 +310,12 @@
   }
 }
 
+@media (max-width: 50rem) {
+  .landing {
+    justify-content: flex-end;
+  }
+}
+
 .landing__customize svg {
   width: 1.5rem;
   height: 1.5rem;
