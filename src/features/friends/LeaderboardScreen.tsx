@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../../components/GameButton';
-import { LockSimpleIcon } from '../../components/icons';
+import { EyeIcon, LockSimpleIcon } from '../../components/icons';
 import { isDailyDate } from '../../lib/validation';
 import { getUtcDate } from '../../domain/quiz/daily';
 import { currentDailyTrack } from '../../domain/quiz/daily-track';
@@ -65,12 +65,14 @@ function Standings({
   mode,
   date,
   scope,
+  onViewPlayer,
 }: {
   owner: string;
   catalog?: PokemonCatalog;
   mode: LeaderboardMode;
   date: string;
   scope: LeaderboardScope;
+  onViewPlayer: (id: string) => void;
 }) {
   const cacheKey = `${owner}:${mode}:${date}:${scope}`;
   const [data, setData] = useState<Leaderboard | undefined>(() =>
@@ -207,9 +209,20 @@ function Standings({
                   >
                     <td>{row.rank}</td>
                     <th scope="row">
-                      <span>
-                        {row.player.name}
-                        {row.player.id === owner ? ' (you)' : ''}
+                      <span className="leaderboard-player">
+                        <span>
+                          {row.player.name}
+                          {row.player.id === owner ? ' (you)' : ''}
+                        </span>
+                        <GameButton
+                          aria-label={`View ${row.player.name}'s profile`}
+                          className="friends-icon-button"
+                          onClick={() => onViewPlayer(row.player.id)}
+                          title={`View ${row.player.name}'s profile`}
+                          tone="quiet"
+                        >
+                          <EyeIcon aria-hidden="true" weight="bold" />
+                        </GameButton>
                       </span>
                     </th>
                     <td>
@@ -268,6 +281,7 @@ function Standings({
 export function LeaderboardScreen({
   catalog,
   onFriends,
+  onViewPlayer,
   initialDate,
   initialScope = 'global',
   initialMode = 'daily',
@@ -275,6 +289,7 @@ export function LeaderboardScreen({
 }: {
   catalog?: PokemonCatalog;
   onFriends: () => void;
+  onViewPlayer: (id: string) => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
   initialMode?: LeaderboardMode;
@@ -396,6 +411,7 @@ export function LeaderboardScreen({
               mode={mode}
               date={date}
               scope={scope}
+              onViewPlayer={onViewPlayer}
             />
           </>
         ) : (

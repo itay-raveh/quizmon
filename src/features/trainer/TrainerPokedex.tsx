@@ -9,30 +9,35 @@ import {
   normalizeSearch,
 } from '@/domain/pokemon/search';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { readPlayerData } from '@/lib/storage/player-storage';
 import { useMemo, useState } from 'react';
 
 const pageSize = 12;
 
-export const TrainerPokedex = ({ catalog }: { catalog: PokemonCatalog }) => {
-  const [foundPokemon] = useState(() => new Set(readPlayerData().pokedex));
+export const TrainerPokedex = ({
+  catalog,
+  foundPokemon,
+}: {
+  catalog: PokemonCatalog;
+  foundPokemon: string[];
+}) => {
+  const found = useMemo(() => new Set(foundPokemon), [foundPokemon]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const { entries, count } = useMemo(() => {
     const entries = Object.entries(catalog.pokemon)
       .sort(([, a], [, b]) => a.speciesId - b.speciesId)
       .map(([name, pokemon]) => {
-        const found = foundPokemon.has(name);
+        const isFound = found.has(name);
         return {
-          found,
+          found: isFound,
           pokemon,
-          ...createPokemonSearchEntry({ name: found ? name : '' }),
+          ...createPokemonSearchEntry({ name: isFound ? name : '' }),
           name,
           searchNumber: String(pokemon.speciesId).padStart(4, '0'),
         };
       });
     return { entries, count: entries.filter(({ found }) => found).length };
-  }, [catalog, foundPokemon]);
+  }, [catalog, found]);
   const find = useMemo(
     () => createSearch(entries.filter(({ found }) => found)),
     [entries],

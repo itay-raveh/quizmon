@@ -88,16 +88,35 @@
   height: 4rem;
 }
 
-.friends-options summary {
-  cursor: pointer;
-  padding-block: 0.5rem;
-  color: var(--navy);
-  font-weight: 700;
+.friends-player__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.friends-options summary:focus-visible {
-  outline: 3px solid var(--navy);
-  outline-offset: 2px;
+.friends-icon-button.game-button {
+  display: inline-grid;
+  flex: none;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.55rem;
+  place-items: center;
+}
+
+.friends-icon-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.friends-actions .friends-icon-button {
+  color: var(--error-ink);
+}
+
+.leaderboard-player {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .leaderboard-viewer {

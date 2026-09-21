@@ -7,8 +7,8 @@ import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitleDialogProps {
   onClose: () => void;
-  onEquip: (title: TrainerTitle) => Promise<void>;
-  onUnequip: () => Promise<void>;
+  onEquip?: (title: TrainerTitle) => Promise<void>;
+  onUnequip?: () => Promise<void>;
   title: TrainerTitle;
 }
 
@@ -23,8 +23,8 @@ export const TrainerTitleDialog = ({
   });
 
   const changeTitle = async () => {
-    if (title.equipped) await onUnequip();
-    else await onEquip(title);
+    if (title.equipped) await onUnequip?.();
+    else await onEquip?.(title);
     closeDialog();
   };
 
@@ -47,7 +47,7 @@ export const TrainerTitleDialog = ({
         <div className="trainer-title-dialog__details">
           <p>{title.description}</p>
           <TrainerTierProgress progress={title} />
-          {title.equipped || title.earned ? (
+          {onEquip && onUnequip && (title.equipped || title.earned) ? (
             <GameButton
               sound={title.equipped ? 'toggle-off' : 'toggle-on'}
               tone={title.equipped ? 'quiet' : 'primary'}

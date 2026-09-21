@@ -19,6 +19,7 @@ import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerCardProps {
   cardRef?: Ref<HTMLElement>;
+  emptyPartnerLabel?: string;
   partnerDexNumber: number | null;
   partnerHeight?: number;
   partnerSprite: string | null;
@@ -35,6 +36,7 @@ interface TrainerCardProps {
 
 export const TrainerCard = ({
   cardRef,
+  emptyPartnerLabel = 'Choose partner',
   partnerDexNumber,
   partnerHeight,
   partnerSprite,
@@ -46,7 +48,7 @@ export const TrainerCard = ({
 }: TrainerCardProps) => {
   const finish = getCardFinish(rank);
   const isChampion = rank === 'Champion';
-  const partnerName = profile.partnerPokemon ?? 'Choose partner';
+  const partnerName = profile.partnerPokemon ?? emptyPartnerLabel;
   const avatar = trainerAvatarOptions.find(({ id }) => id === profile.avatar);
   const groundOffset = avatar ? (1 - avatar.bottom) * 100 : 0;
   const height = partnerHeight ?? 8;

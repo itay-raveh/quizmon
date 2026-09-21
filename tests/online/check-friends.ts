@@ -173,6 +173,41 @@ try {
     partnerPokemon: 'bulbasaur',
   });
   assert.equal(lookedUp.request, null);
+  assert.equal((await request(`/api/trainers/${a.id}`)).status, 401);
+  assert.equal((await request('/api/trainers/missing-player', b)).status, 404);
+  const newTrainer = await json(await request(`/api/trainers/${b.id}`, a));
+  assert.ok(isRecord(newTrainer.player));
+  assert.ok(isRecord(newTrainer.record));
+  assert.equal(newTrainer.player.id, b.id);
+  assert.deepEqual(newTrainer.pokedex, []);
+  assert.equal(newTrainer.record.pokedexFound, 0);
+  const trainer = await json(await request(`/api/trainers/${a.id}`, b));
+  assert.deepEqual(Object.keys(trainer).sort(), [
+    'player',
+    'pokedex',
+    'profile',
+    'record',
+    'stats',
+  ]);
+  assert.deepEqual(trainer.player, lookedUp.player);
+  assert.ok(isRecord(trainer.profile));
+  assert.ok(isRecord(trainer.record));
+  assert.equal(trainer.profile.name, 'Test Trainer');
+  assert.equal(trainer.profile.partnerPokemon, 'bulbasaur');
+  assert.equal(trainer.record.pokedexFound, 0);
+  assert.deepEqual(trainer.pokedex, []);
+  assert.ok(!JSON.stringify(trainer).includes('answerFlow'));
+  assert.ok(!JSON.stringify(trainer).includes('email'));
+  await pool.query(
+    'insert into player_pokemon (id, owner_id, generation_id, pokemon, discovered, correct) select $1, id, generation_id, $2, true, true from account_state where id = $3',
+    [crypto.randomUUID(), 'bulbasaur', a.id],
+  );
+  const discovered = await json(await request(`/api/trainers/${a.id}`, b));
+  assert.ok(isRecord(discovered.record));
+  assert.ok(isRecord(discovered.stats));
+  assert.deepEqual(discovered.pokedex, ['bulbasaur']);
+  assert.equal(discovered.record.pokedexFound, 1);
+  assert.deepEqual(discovered.stats.pokedex, ['bulbasaur']);
   assert.equal(
     (await request(`/api/friends/player/${identity.code.slice(0, 4)}`, b))
       .status,

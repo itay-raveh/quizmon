@@ -1,6 +1,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
 import type { TrainerView } from '../domain/player/trainer-progression';
 import type { LeaderboardMode } from '../domain/social/leaderboards';
+import { isRecord } from '../lib/validation';
 import { setTrainerRoute } from '../features/trainer/trainer-route';
 
 type Destination = 'account' | 'friends' | 'leaderboards';
@@ -26,6 +27,7 @@ const clearDestination = (url: URL) => {
     'ranking',
     'trainer',
     'league',
+    'player',
   ])
     url.searchParams.delete(key);
   const fragment = new URLSearchParams(url.hash.slice(1));
@@ -39,6 +41,7 @@ export function useAppDestination() {
   const url = new URL(href);
   const screen = url.searchParams.get('screen');
   const friendCode = new URLSearchParams(url.hash.slice(1)).get('friend');
+  const playerId = url.searchParams.get('player');
   const destination: Destination | null =
     screen === 'account' || screen === 'friends' || screen === 'leaderboards'
       ? screen
@@ -50,6 +53,7 @@ export function useAppDestination() {
     const target = new URL(window.location.href);
     target.searchParams.set('screen', next);
     target.searchParams.delete('returnTo');
+    target.searchParams.delete('player');
     if (date) target.searchParams.set('standings', date);
     target.hash = '';
     navigate(target);
@@ -61,7 +65,29 @@ export function useAppDestination() {
       returnTo ?? `${target.pathname}${target.search}${target.hash}`;
     target.searchParams.set('screen', 'account');
     target.searchParams.set('returnTo', origin);
+    target.searchParams.delete('player');
     navigate(target);
+  };
+
+  const viewPlayer = (id: string) => {
+    const target = new URL(window.location.href);
+    target.searchParams.set('player', id);
+    window.history.pushState({ quizmonProfile: true }, '', target);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  const closePlayer = () => {
+    if (
+      isRecord(window.history.state) &&
+      window.history.state.quizmonProfile === true
+    ) {
+      window.history.back();
+      return;
+    }
+    const target = new URL(window.location.href);
+    target.searchParams.delete('player');
+    window.history.replaceState({ quizmonDestination: true }, '', target);
+    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   const trainer = (view: TrainerView = 'front') => {
@@ -90,6 +116,9 @@ export function useAppDestination() {
     account,
     destination,
     friendCode: friendCode ?? '',
+    playerId: playerId ?? '',
+    viewPlayer,
+    closePlayer,
     open,
     play,
     trainer,

@@ -1,0 +1,52 @@
+.trainer-passport__public-header {
+  justify-content: flex-start;
+}
+
+.trainer-passport__public-heading {
+  min-width: 0;
+}
+
+.trainer-passport__public-heading h1 {
+  overflow-wrap: anywhere;
+}
+
+.trainer-passport__public-heading p {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.public-trainer-loading {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.public-trainer-loading .trainer-passport__view {
+  cursor: default;
+}
+
+.public-trainer-loading .trainer-passport__view .social-skeleton {
+  width: 60%;
+}
+
+.public-trainer-loading .trainer-artifact-frame {
+  align-content: center;
+  justify-items: center;
+  gap: 1.5rem;
+}
+
+.public-trainer-loading .trainer-artifact-frame .social-skeleton:first-child {
+  width: 55%;
+  height: 12%;
+}
+
+.public-trainer-loading .trainer-artifact-frame .social-skeleton:last-child {
+  width: 30%;
+  height: 35%;
+}
+
+@media (max-width: 42rem) {
+  .trainer-passport__public-header {
+    flex-wrap: wrap;
+  }
+}

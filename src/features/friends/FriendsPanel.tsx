@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
+import { EyeIcon, TrashIcon } from '../../components/icons';
+import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   formatFriendCode,
   parseFriendInput,
@@ -36,12 +38,73 @@ const errorMessage = (error: unknown) =>
       ? error.message
       : 'Reconnect and try again.';
 
-function Player({ player }: { player: SocialPlayer }) {
+function Player({
+  player,
+  onView,
+}: {
+  player: SocialPlayer;
+  onView?: (id: string) => void;
+}) {
   return (
     <div className="friends-player">
-      <strong>{player.name}</strong>
+      <div className="friends-player__name">
+        <strong>{player.name}</strong>
+        {onView && (
+          <GameButton
+            aria-label={`View ${player.name}'s profile`}
+            className="friends-icon-button"
+            onClick={() => onView(player.id)}
+            title={`View ${player.name}'s profile`}
+            tone="quiet"
+          >
+            <EyeIcon aria-hidden="true" weight="bold" />
+          </GameButton>
+        )}
+      </div>
       {player.code && <small>{formatFriendCode(player.code)}</small>}
     </div>
+  );
+}
+
+function RemoveFriendDialog({
+  name,
+  onCancel,
+  onConfirm,
+}: {
+  name: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const { dialog, dialogProps, closeDialog } = useModalDialog(onCancel);
+  return (
+    <dialog
+      {...dialogProps}
+      aria-describedby="remove-friend-description"
+      aria-labelledby="remove-friend-title"
+      className="leave-game-dialog"
+    >
+      <div className="leave-game-dialog__body">
+        <h2 id="remove-friend-title">Remove {name}?</h2>
+        <p id="remove-friend-description">
+          You will no longer see each other in Friends standings. You can send a
+          new request later.
+        </p>
+        <div className="leave-game-dialog__actions">
+          <GameButton autoFocus tone="quiet" onClick={closeDialog}>
+            Keep friend
+          </GameButton>
+          <GameButton
+            className="leave-game-dialog__confirm"
+            onClick={() => {
+              dialog.current?.close();
+              onConfirm();
+            }}
+          >
+            Remove friend
+          </GameButton>
+        </div>
+      </div>
+    </dialog>
   );
 }
 
@@ -62,10 +125,12 @@ export function FriendsPanel({
   owner,
   initialInput,
   adding,
+  onViewPlayer,
 }: {
   owner: string;
   initialInput: string;
   adding: boolean;
+  onViewPlayer?: (id: string) => void;
 }) {
   const [me, setMe] = useState<SocialPlayer>();
   const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>({});
@@ -74,9 +139,15 @@ export function FriendsPanel({
   const [busy, setBusy] = useState(true);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
+  const [removing, setRemoving] = useState<{
+    row: FriendRelation;
+    name: string;
+  }>();
   const lifetime = useRef<AbortController | null>(null);
   const sendIds = useRef(new Map<string, string>());
   const foundRegion = useRef<HTMLElement>(null);
+  const addHeading = useRef<HTMLHeadingElement>(null);
+  const friendsHeading = useRef<HTMLHeadingElement>(null);
   const revealFound = useRef(false);
 
   useEffect(() => {
@@ -187,23 +258,27 @@ export function FriendsPanel({
         }[action],
       );
       await refresh(signal);
+      if (action === 'remove' && !signal.aborted)
+        requestAnimationFrame(() =>
+          (adding ? addHeading : friendsHeading).current?.focus(),
+        );
     });
   }
 
-  function actions(row: FriendRelation) {
+  function actions(row: FriendRelation, name: string) {
     return (
       <div className="friends-actions">
         {row.status === 'accepted' ? (
-          <details className="friends-options">
-            <summary>Friend options</summary>
-            <GameButton
-              tone="quiet"
-              disabled={busy}
-              onClick={() => change(row, 'remove')}
-            >
-              Remove friend
-            </GameButton>
-          </details>
+          <GameButton
+            aria-label={`Remove ${name} as a friend`}
+            className="friends-icon-button"
+            disabled={busy}
+            onClick={() => setRemoving({ row, name })}
+            title={`Remove ${name} as a friend`}
+            tone="quiet"
+          >
+            <TrashIcon aria-hidden="true" weight="bold" />
+          </GameButton>
         ) : row.direction === 'incoming' ? (
           <>
             <GameButton disabled={busy} onClick={() => change(row, 'accept')}>
@@ -247,7 +322,7 @@ export function FriendsPanel({
       {notice && <p role="status">{notice}</p>}
       {adding && (
         <section className="friends-add" aria-labelledby="add-friend-title">
-          <h2 id="add-friend-title">
+          <h2 id="add-friend-title" ref={addHeading} tabIndex={-1}>
             {initialInput ? 'Friend link' : 'Add a friend'}
           </h2>
           {initialInput && (
@@ -269,7 +344,7 @@ export function FriendsPanel({
               ref={foundRegion}
               tabIndex={-1}
             >
-              <Player player={found.player} />
+              <Player player={found.player} onView={onViewPlayer} />
               {found.player.id === owner ? (
                 <p>This is you.</p>
               ) : found.request ? (
@@ -281,7 +356,7 @@ export function FriendsPanel({
                         ? 'This player sent you a request.'
                         : 'Your request is waiting for acceptance.'}
                   </p>
-                  {actions(found.request)}
+                  {actions(found.request, found.player.name)}
                 </>
               ) : (
                 <GameButton
@@ -437,7 +512,12 @@ export function FriendsPanel({
               className={`friends-section friends-section--${view}`}
               aria-label={labels[view]}
             >
-              <h2>{labels[view]}</h2>
+              <h2
+                ref={view === 'friends' ? friendsHeading : undefined}
+                tabIndex={view === 'friends' ? -1 : undefined}
+              >
+                {labels[view]}
+              </h2>
               {pages[view] && !pages[view].items.length && (
                 <p className="friends-empty">{empty[view]}</p>
               )}
@@ -448,8 +528,10 @@ export function FriendsPanel({
                   );
                   return (
                     <li key={row.id}>
-                      {player && <Player player={player} />}
-                      {actions(row)}
+                      {player && (
+                        <Player player={player} onView={onViewPlayer} />
+                      )}
+                      {actions(row, player?.name ?? 'Trainer')}
                     </li>
                   );
                 })}
@@ -484,6 +566,16 @@ export function FriendsPanel({
               )}
             </section>
           ))}
+      {removing && (
+        <RemoveFriendDialog
+          name={removing.name}
+          onCancel={() => setRemoving(undefined)}
+          onConfirm={() => {
+            setRemoving(undefined);
+            change(removing.row, 'remove');
+          }}
+        />
+      )}
     </div>
   );
 }

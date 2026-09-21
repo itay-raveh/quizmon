@@ -20,6 +20,7 @@ const proxy = {
   '/api/sync': { target: 'http://127.0.0.1:8790' },
   '/api/dev': { target: 'http://127.0.0.1:8790' },
   '/api/friends': { target: 'http://127.0.0.1:8790' },
+  '/api/trainers': { target: 'http://127.0.0.1:8790' },
   '/api/leaderboards': { target: 'http://127.0.0.1:8790' },
 };
 

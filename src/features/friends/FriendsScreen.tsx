@@ -9,11 +9,13 @@ export function FriendsScreen({
   onRankings,
   onCloseInvitation,
   onSignIn,
+  onViewPlayer,
   initialInput = '',
 }: {
   onRankings: () => void;
   onCloseInvitation: () => void;
   onSignIn: () => void;
+  onViewPlayer: (id: string) => void;
   initialInput?: string;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
@@ -44,6 +46,7 @@ export function FriendsScreen({
           owner={account.owner}
           initialInput={initialInput}
           adding={adding}
+          onViewPlayer={onViewPlayer}
         />
       ) : (
         <div className="social-screen__intro">

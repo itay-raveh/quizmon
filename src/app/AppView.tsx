@@ -28,9 +28,10 @@ import type { useGameNavigation } from './useGameNavigation';
 import { AccountScreen } from '../features/account/AccountScreen';
 import { FriendsScreen } from '../features/friends/FriendsScreen';
 import { LeaderboardScreen } from '../features/friends/LeaderboardScreen';
+import { PublicTrainerScreen } from '../features/friends/PublicTrainerScreen';
 import { AppNavigation } from './AppNavigation';
 import { useAppDestination } from './useAppDestination';
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
 interface QuestionView {
   assistance: (count: number) => void;
@@ -65,19 +66,41 @@ const AppScreen = ({
   trainer,
   training,
   destination,
-}: AppViewProps & { destination: DestinationNavigation }) => {
+  onViewPlayer,
+}: AppViewProps & {
+  destination: DestinationNavigation;
+  onViewPlayer: (id: string) => void;
+}) => {
   if (session.phase !== 'questions' && destination.destination === 'account') {
     return <AccountScreen />;
   }
   if (session.phase !== 'questions' && destination.destination === 'friends') {
     return (
-      <FriendsScreen
-        key={destination.friendCode}
-        onRankings={() => destination.open('leaderboards')}
-        onCloseInvitation={() => destination.open('friends')}
-        onSignIn={() => destination.account()}
-        initialInput={destination.friendCode}
-      />
+      <>
+        <div hidden={Boolean(destination.playerId)}>
+          <FriendsScreen
+            key={destination.friendCode}
+            onRankings={() => destination.open('leaderboards')}
+            onCloseInvitation={() => destination.open('friends')}
+            onSignIn={() => destination.account()}
+            onViewPlayer={onViewPlayer}
+            initialInput={destination.friendCode}
+          />
+        </div>
+        {destination.playerId && (
+          <PublicTrainerScreen
+            key={destination.playerId}
+            playerId={destination.playerId}
+            catalog={
+              catalogState.status === 'ready' ? catalogState.catalog : undefined
+            }
+            catalogError={catalogState.status === 'error'}
+            onBack={destination.closePlayer}
+            onRetryCatalog={catalogState.retry}
+            backLabel="Back to friends"
+          />
+        )}
+      </>
     );
   }
   if (
@@ -85,16 +108,34 @@ const AppScreen = ({
     destination.destination === 'leaderboards'
   ) {
     return (
-      <LeaderboardScreen
-        catalog={
-          catalogState.status === 'ready' ? catalogState.catalog : undefined
-        }
-        onFriends={() => destination.open('friends')}
-        initialDate={destination.standingsDate}
-        initialScope={destination.standingsScope}
-        initialMode={destination.standingsMode}
-        onSelectionChange={destination.selectStandings}
-      />
+      <>
+        <div hidden={Boolean(destination.playerId)}>
+          <LeaderboardScreen
+            catalog={
+              catalogState.status === 'ready' ? catalogState.catalog : undefined
+            }
+            onFriends={() => destination.open('friends')}
+            onViewPlayer={onViewPlayer}
+            initialDate={destination.standingsDate}
+            initialScope={destination.standingsScope}
+            initialMode={destination.standingsMode}
+            onSelectionChange={destination.selectStandings}
+          />
+        </div>
+        {destination.playerId && (
+          <PublicTrainerScreen
+            key={destination.playerId}
+            playerId={destination.playerId}
+            catalog={
+              catalogState.status === 'ready' ? catalogState.catalog : undefined
+            }
+            catalogError={catalogState.status === 'error'}
+            onBack={destination.closePlayer}
+            onRetryCatalog={catalogState.retry}
+            backLabel="Back to rankings"
+          />
+        )}
+      </>
     );
   }
   if (
@@ -287,24 +328,53 @@ const AppOverlays = ({
 export const AppView = (props: AppViewProps) => {
   const destination = useAppDestination();
   const main = useRef<HTMLElement>(null);
+  const profileTrigger = useRef<HTMLElement | null>(null);
+  const sourceScroll = useRef(0);
   const screenKey =
     props.session.phase === 'questions'
       ? 'questions'
-      : (destination.destination ??
-        (props.trainer.isOpen
-          ? `trainer:${props.trainer.view}`
-          : props.session.phase));
+      : destination.playerId
+        ? `player:${destination.playerId}`
+        : (destination.destination ??
+          (props.trainer.isOpen
+            ? `trainer:${props.trainer.view}`
+            : props.session.phase));
   const previousScreen = useRef(screenKey);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (previousScreen.current === screenKey) return;
+    const leavingProfile = previousScreen.current.startsWith('player:');
+    if (screenKey.startsWith('player:') && !leavingProfile)
+      sourceScroll.current = window.scrollY;
     previousScreen.current = screenKey;
-    const heading = main.current?.querySelector<HTMLElement>('h1');
+    if (leavingProfile && !screenKey.startsWith('player:')) {
+      if (profileTrigger.current?.isConnected)
+        profileTrigger.current.focus({ preventScroll: true });
+      else {
+        const heading = [
+          ...(main.current?.querySelectorAll<HTMLElement>('h1') ?? []),
+        ].find((candidate) => !candidate.closest('[hidden]'));
+        if (heading) {
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+        }
+      }
+      window.scrollTo(0, sourceScroll.current);
+      profileTrigger.current = null;
+      return;
+    }
+    const heading = [
+      ...(main.current?.querySelectorAll<HTMLElement>('h1') ?? []),
+    ].find((heading) => !heading.closest('[hidden]'));
     if (heading) {
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
     }
     window.scrollTo(0, 0);
   }, [screenKey]);
+  const onViewPlayer = (id: string) => {
+    profileTrigger.current = document.activeElement as HTMLElement;
+    destination.viewPlayer(id);
+  };
   const showNavigation = props.session.phase !== 'questions';
   const active =
     destination.destination === 'account'
@@ -357,7 +427,11 @@ export const AppView = (props: AppViewProps) => {
                   />
                 ) : null}
                 <main ref={main}>
-                  <AppScreen {...props} destination={destination} />
+                  <AppScreen
+                    {...props}
+                    destination={destination}
+                    onViewPlayer={onViewPlayer}
+                  />
                 </main>
                 {showNavigation ? <Footer /> : null}
               </div>

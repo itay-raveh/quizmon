@@ -17,6 +17,7 @@ import { authPlugins } from './auth-options.ts';
 import { FriendshipError } from './friends.ts';
 import { friendshipApi } from './friends-api.ts';
 import { leaderboardApi } from './leaderboards-api.ts';
+import { trainerApi } from './trainers-api.ts';
 import { reserveEmail } from './email-budget.ts';
 import {
   EmailDeliveryError,
@@ -205,6 +206,7 @@ export function createAccountApi(services: AccountServices) {
   );
   signedIn.route('/friends', friendshipApi);
   signedIn.route('/leaderboards', leaderboardApi);
+  signedIn.route('/trainers', trainerApi);
   signedIn.get('/account', async (context) => {
     const state = await bootstrap(context.get('db'), context.get('accountId'));
     return context.json({

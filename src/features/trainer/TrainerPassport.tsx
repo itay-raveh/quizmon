@@ -97,6 +97,7 @@ export const TrainerPassport = ({
     const pokemon = Object.keys(catalog.pokemon);
     return {
       dayCombo: getDailyStreak(data.results.streak.creditedDates, getUtcDate()),
+      pokedex: data.pokedex,
       pokedexFound: pokemon.filter((name) => found.has(name)).length,
       pokedexTotal: pokemon.length,
     };
@@ -349,7 +350,7 @@ export const TrainerPassport = ({
         className={`trainer-passport__artifact ${view === 'front' && revealing ? 'trainer-passport__artifact--reveal' : ''}`.trim()}
       >
         {view === 'pokedex' ? (
-          <TrainerPokedex catalog={catalog} />
+          <TrainerPokedex catalog={catalog} foundPokemon={record.pokedex} />
         ) : view === 'badges' ? (
           <TrainerBadgeCase
             badges={badges}
