@@ -78,6 +78,7 @@ export const TrainerCard = ({
     avatar && avatarBottom?.id === avatar.id
       ? (1 - avatarBottom.fraction) * 100
       : 0;
+  const partnerPositionReady = !avatar || avatarBottom?.id === avatar.id;
   const height = partnerHeight ?? 8;
   const visibleHeight = Math.min(29, Math.max(5, (height * 29) / 16));
   const spriteSize = Math.min(
@@ -131,6 +132,7 @@ export const TrainerCard = ({
                     fraction: getAvatarBottom(event.currentTarget),
                   })
                 }
+                onError={() => setAvatarBottom({ id: avatar.id, fraction: 1 })}
               />
             ) : (
               <span
@@ -142,7 +144,7 @@ export const TrainerCard = ({
             )}
             {partnerSprite && (
               <img
-                className={`trainer-card__partner-sprite${height > 16 ? ' trainer-card__partner-sprite--behind' : ''}`}
+                className={`trainer-card__partner-sprite${height > 16 ? ' trainer-card__partner-sprite--behind' : ''}${partnerPositionReady ? '' : ' trainer-card__partner-sprite--pending'}`}
                 src={partnerSprite}
                 alt=""
                 width="96"

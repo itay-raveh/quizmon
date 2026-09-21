@@ -61,6 +61,7 @@ const createCaptureClone = (element: HTMLElement) => {
 const renderTrainerArtifactImage = async (
   element: HTMLElement,
 ): Promise<Blob> => {
+  await waitForRenderedAssets(element);
   const { clone, host } = createCaptureClone(element);
 
   try {
