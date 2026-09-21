@@ -20,7 +20,7 @@
 }
 
 .account-screen--sign-in {
-  width: min(28rem, calc(100vw - 2rem));
+  width: min(32rem, calc(100vw - 2rem));
 }
 
 .account-screen__header h1 {
@@ -55,139 +55,56 @@
 }
 
 .account-settings__sync {
-  gap: 1rem;
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--error-surface);
+  border-left: 3px solid var(--error-ink);
+  border-radius: var(--button-radius);
+  font-size: var(--text-status);
 }
 
-.account-settings__sync-heading {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8rem;
-}
-
-.account-settings__sync-heading h2 {
+.account-settings__sync strong {
   color: var(--navy);
 }
 
-.account-settings__sync-heading p {
-  margin-top: 0.2rem;
+.account-settings__sync p,
+.account-settings__primary-action p {
   color: var(--muted);
   font-size: var(--text-status);
 }
 
-.account-settings__sync-icon {
+.account-settings__primary-action {
   display: grid;
-  place-items: center;
-  flex: 0 0 2.5rem;
-  height: 2.5rem;
+  gap: 0.55rem;
+  justify-items: start;
+}
+
+.account-settings__pitch {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.9rem;
   color: var(--navy);
-  background: var(--yellow);
-  border: 2px solid var(--navy);
-  border-radius: var(--button-radius);
-}
-
-.account-settings__sync-icon svg {
-  width: 1.45rem;
-  height: 1.45rem;
-}
-
-.account-settings__sync--paused .account-settings__sync-icon {
-  color: var(--error-ink);
-  background: var(--error-surface);
-  border-color: var(--error-ink);
-}
-
-.account-settings__sync-icon--working svg {
-  animation: account-sync-turn 1.2s linear infinite;
-}
-
-@keyframes account-sync-turn {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.account-settings__sync-track {
-  height: 0.4rem;
-  overflow: hidden;
   background: var(--sky);
   border-radius: var(--button-radius);
 }
 
-.account-settings__sync-track::after {
-  content: '';
-  display: block;
-  width: 35%;
-  height: 100%;
-  background: var(--blue);
-  animation: account-sync-slide 1.4s ease-in-out infinite alternate;
+.account-settings__pitch p {
+  font-weight: 800;
 }
 
-@keyframes account-sync-slide {
-  to {
-    transform: translateX(185%);
-  }
-}
-
-.account-settings__pending {
-  width: fit-content;
-  padding: 0.3rem 0.65rem;
-  color: var(--navy);
-  background: var(--cream);
-  border-radius: var(--button-radius);
-  font-size: var(--text-status);
-}
-
-.account-settings__pending strong {
-  font-family: var(--font-data);
-}
-
-.account-settings__sync-recovery {
-  display: grid;
-  justify-items: start;
-  gap: 0.45rem;
-}
-
-.account-settings__options {
-  color: var(--muted);
-  font-size: var(--text-status);
-}
-
-.account-settings__options summary {
-  width: fit-content;
-  min-height: 2.75rem;
-  align-content: center;
-  color: var(--navy);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.account-settings__options {
-  padding-top: 0.4rem;
-  border-top: 1px solid var(--sky);
-}
-
-.account-settings__option-actions {
+.account-settings__pitch div {
   display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  padding-top: 0.6rem;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-status);
 }
 
-.account-settings__option-actions p {
-  flex-basis: 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .account-settings__sync-icon--working svg,
-  .account-settings__sync-track::after {
-    animation: none;
-  }
-}
-
-html[data-reduce-motion] .account-settings__sync-icon--working svg,
-html[data-reduce-motion] .account-settings__sync-track::after {
-  animation: none;
+.account-settings__pitch svg {
+  flex: none;
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .account-settings__testing {

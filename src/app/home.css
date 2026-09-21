@@ -32,6 +32,8 @@
 
 .landing__control-stack {
   width: min(90vw, 24rem);
+  min-height: calc(3.25rem + 0.8rem + 6.4rem);
+  align-content: start;
   justify-items: center;
 }
 

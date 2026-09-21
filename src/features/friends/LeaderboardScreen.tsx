@@ -20,6 +20,8 @@ import {
 } from './leaderboards-client';
 import './friends.css';
 
+const standingsCache = new Map<string, Leaderboard>();
+
 function Standings({
   owner,
   catalog,
@@ -35,14 +37,18 @@ function Standings({
   scope: LeaderboardScope;
   onManageFriends: () => void;
 }) {
-  const [data, setData] = useState<Leaderboard>();
+  const cacheKey = `${owner}:${mode}:${date}:${scope}`;
+  const [data, setData] = useState<Leaderboard | undefined>(() =>
+    standingsCache.get(`${cacheKey}:`),
+  );
   const [error, setError] = useState('');
-  const [busy, setBusy] = useState(true);
+  const [busy, setBusy] = useState(!data);
   const [request, setRequest] = useState({
     after: null as string | null,
     revision: 0,
   });
   useEffect(() => {
+    const key = `${cacheKey}:${request.after ?? ''}`;
     const controller = new AbortController();
     const read = async () => {
       if (mode === 'daily') {
@@ -73,6 +79,10 @@ function Standings({
     void read()
       .then((next) => {
         if (!controller.signal.aborted) {
+          standingsCache.delete(key);
+          standingsCache.set(key, next);
+          if (standingsCache.size > 24)
+            standingsCache.delete(standingsCache.keys().next().value!);
           setData(next);
           setError('');
         }
@@ -91,7 +101,7 @@ function Standings({
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [owner, catalog, mode, date, scope, request]);
+  }, [owner, catalog, mode, date, scope, request, cacheKey]);
   useEffect(() => {
     const refresh = () => {
       if (document.visibilityState === 'visible' && navigator.onLine)
@@ -110,7 +120,9 @@ function Standings({
     };
   }, []);
   const load = (after: string | null) => {
-    setBusy(true);
+    const cached = standingsCache.get(`${cacheKey}:${after ?? ''}`);
+    setData(cached);
+    setBusy(!cached);
     setRequest((current) => ({ after, revision: current.revision + 1 }));
   };
   return (
@@ -347,17 +359,22 @@ export function LeaderboardScreen({
                   Friends
                 </button>
               </div>
-              {mode === 'daily' && (
-                <label>
-                  Daily date (UTC)
-                  <input
-                    type="date"
-                    value={date}
-                    max={today}
-                    onChange={(event) => chooseDate(event.target.value)}
-                  />
-                </label>
-              )}
+              <label
+                className={
+                  mode === 'daily'
+                    ? undefined
+                    : 'leaderboard-controls__date--hidden'
+                }
+              >
+                Daily date (UTC)
+                <input
+                  type="date"
+                  value={date}
+                  max={today}
+                  disabled={mode !== 'daily'}
+                  onChange={(event) => chooseDate(event.target.value)}
+                />
+              </label>
             </div>
             <Standings
               key={`${account.owner}:${mode}:${date}:${scope}`}

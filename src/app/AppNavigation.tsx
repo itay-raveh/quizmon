@@ -50,17 +50,21 @@ export function AppNavigation({
           </GameButton>
         ))}
         <GameButton
-          title={account.owner ? account.status : undefined}
+          aria-label={
+            account.owner && (account.error || account.issues.length)
+              ? 'Account, sync needs attention'
+              : undefined
+          }
           aria-current={accountOpen ? 'page' : undefined}
+          className="app-navigation__account"
           tone={accountOpen ? 'primary' : 'quiet'}
           onClick={onAccount}
         >
           <UserCircleIcon aria-hidden="true" weight="bold" />
-          {account.owner
-            ? account.error || account.issues.length
-              ? 'Review account'
-              : 'Account'
-            : 'Sign in'}
+          {account.owner ? 'Account' : 'Sign in'}
+          {account.owner && (account.error || account.issues.length) ? (
+            <span className="app-navigation__alert" aria-hidden="true" />
+          ) : null}
         </GameButton>
       </nav>
     </header>

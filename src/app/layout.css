@@ -32,6 +32,25 @@
   padding: 0.65rem 0.85rem;
 }
 
+.app-navigation__account {
+  position: relative;
+}
+
+.app-navigation__alert {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.3rem;
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  background: var(--error-ink);
+}
+
+.app--landing main {
+  min-height: calc(100svh - 10.3rem);
+}
+
 .app-navigation svg {
   width: 1.2rem;
   height: 1.2rem;
@@ -81,30 +100,22 @@
     font-size: var(--text-small);
     white-space: nowrap;
   }
+
+  .app--landing main {
+    min-height: calc(100svh - 16.55rem - env(safe-area-inset-bottom));
+  }
 }
 
 @container app-shell (max-width: 22.5rem) {
-  .app--with-navigation {
-    padding-bottom: calc(8.5rem + env(safe-area-inset-bottom));
-  }
-
-  .app--with-navigation .app__screen {
-    min-height: calc(100svh - 8.5rem - env(safe-area-inset-bottom));
-  }
-
   .app-navigation {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.3rem;
-  }
-
-  .app-navigation svg {
-    display: none;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.25rem;
   }
 
   .app-navigation .game-button {
-    padding: 0.2rem 0.3rem;
-    font-size: var(--text-label);
-    line-height: 1.1;
+    padding: 0.3rem 0.1rem;
+    font-size: var(--text-mini);
+    line-height: 1.15;
   }
 }
 

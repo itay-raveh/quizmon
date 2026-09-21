@@ -20,16 +20,16 @@ export const Footer = ({ currentPath }: { currentPath?: string }) => (
         Buy me a coffee
       </a>
     </div>
-    <div className="site-footer__details">
-      <div className="site-footer__people">
-        <span>
-          © {new Date().getFullYear()}{' '}
-          <a href={site.authorUrl} rel="noreferrer" target="_blank">
-            {site.authorName}
-          </a>
-        </span>
-        <a href={`mailto:${site.contactEmail}`}>Contact</a>
-      </div>
+    <div className="site-footer__people">
+      <span>
+        © {new Date().getFullYear()}{' '}
+        <a href={site.authorUrl} rel="noreferrer" target="_blank">
+          {site.authorName}
+        </a>
+      </span>
+      <a href={`mailto:${site.contactEmail}`}>Contact</a>
+    </div>
+    <div className="site-footer__more">
       <nav className="site-footer__links" aria-label="Help and information">
         {footerLinks.map(({ href, label, ...link }) => (
           <a
@@ -54,7 +54,7 @@ export const Footer = ({ currentPath }: { currentPath?: string }) => (
           </span>
         ))}
       </div>
+      <p className="site-footer__disclaimer">{footerDisclaimer}</p>
     </div>
-    <p className="site-footer__disclaimer">{footerDisclaimer}</p>
   </footer>
 );

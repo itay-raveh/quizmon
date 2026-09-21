@@ -1,8 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { GameButton } from '../../components/GameButton';
 import { Toast } from '../../components/Toast';
 import type { PlayerData } from '../../domain/player/player-save';
 import { readPlayerData } from '../../lib/storage/player-storage';
+import { accountSnapshot, subscribeAccount } from '../account/account';
+import { downloadAccountExport } from '../account/account-export';
 import {
   downloadBackup,
   parseBackup,
@@ -29,6 +37,7 @@ const previewRows: {
 ];
 
 export const BackupSettings = () => {
+  const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const input = useRef<HTMLInputElement>(null);
   const previewHeading = useRef<HTMLHeadingElement>(null);
   const chooseButton = useRef<HTMLButtonElement>(null);
@@ -119,6 +128,33 @@ export const BackupSettings = () => {
           {busy ? 'Reading backup…' : 'Restore backup'}
         </GameButton>
       </div>
+      {account.owner && (
+        <div className="backup-settings__archive">
+          <p>
+            Account archive includes your synced history. It cannot be restored
+            as a backup.
+          </p>
+          <GameButton
+            tone="quiet"
+            disabled={busy}
+            onClick={() => {
+              setError('');
+              setBusy(true);
+              void downloadAccountExport()
+                .catch((cause: unknown) =>
+                  setError(
+                    cause instanceof Error
+                      ? cause.message
+                      : 'Account archive could not be downloaded.',
+                  ),
+                )
+                .finally(() => setBusy(false));
+            }}
+          >
+            Download account archive
+          </GameButton>
+        </div>
+      )}
       {downloadNotice > 0 && (
         <Toast
           key={downloadNotice}

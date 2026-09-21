@@ -4,9 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
-import { ArrowsClockwiseIcon, CheckIcon, XIcon } from '../../components/icons';
+import { MedalIcon, UserCircleIcon } from '../../components/icons';
 import { isRecord } from '../../lib/validation';
-import { downloadAccountExport } from './account-export';
 import {
   accountRequest,
   loadAccountConfig,
@@ -89,9 +88,6 @@ export const AccountSettings = () => {
   const syncPaused = !!account.error;
   const syncOffline = account.status.includes('Will sync when connected');
   const syncNeedsReview = account.issues.length > 0;
-  const syncComplete = account.status === 'Synced' && !syncPaused;
-  const syncWorking =
-    !syncPaused && !syncOffline && !syncNeedsReview && !syncComplete;
 
   return (
     <div className="account-settings">
@@ -127,7 +123,17 @@ export const AccountSettings = () => {
           {account.owner ? (
             <p>Sign in to the same account to resume syncing.</p>
           ) : !sent ? (
-            <p>Sync your progress and join the rankings.</p>
+            <div className="account-settings__pitch">
+              <p>Your Trainer story goes wherever you play.</p>
+              <div>
+                <UserCircleIcon aria-hidden="true" /> Keep your completed
+                progress across devices
+              </div>
+              <div>
+                <MedalIcon aria-hidden="true" /> Put your best scores on the
+                rankings
+              </div>
+            </div>
           ) : null}
           <form
             className={`account-settings__section${sent ? ' account-settings__verification' : ''}`}
@@ -356,64 +362,43 @@ export const AccountSettings = () => {
         </>
       ) : (
         <>
-          <section
-            className={`account-settings__section account-settings__sync${syncPaused ? ' account-settings__sync--paused' : ''}`}
-            aria-labelledby="account-sync-title"
-          >
-            <div className="account-settings__sync-heading" role="status">
-              <span
-                className={`account-settings__sync-icon${syncWorking ? ' account-settings__sync-icon--working' : ''}`}
-                aria-hidden="true"
-              >
-                {syncComplete ? (
-                  <CheckIcon weight="bold" />
-                ) : syncPaused ? (
-                  <XIcon weight="bold" />
-                ) : (
-                  <ArrowsClockwiseIcon weight="bold" />
-                )}
-              </span>
-              <div>
-                <h2 id="account-sync-title">
-                  {syncPaused
-                    ? 'Sync paused'
+          <div className="account-settings__primary-action">
+            <GameButton
+              tone="quiet"
+              disabled={busy}
+              onClick={() => run(signOutAccount)}
+            >
+              Sign out
+            </GameButton>
+            <p>Signing out returns to your separate guest save.</p>
+          </div>
+          {(syncPaused || syncOffline || syncNeedsReview) && (
+            <section
+              className="account-settings__sync"
+              aria-label="Sync status"
+              role="status"
+            >
+              <strong>
+                {syncPaused
+                  ? 'Sync needs attention'
+                  : syncNeedsReview
+                    ? 'Changes need review'
+                    : 'Waiting for connection'}
+              </strong>
+              <p>
+                {syncNeedsReview
+                  ? 'Choose how to resolve the changes below.'
+                  : syncNeedsSignIn
+                    ? 'Sign in again to continue.'
                     : syncOffline
-                      ? 'Waiting for connection'
-                      : syncNeedsReview
-                        ? 'Review changes'
-                        : syncComplete
-                          ? 'Progress synced'
-                          : 'Syncing progress'}
-                </h2>
-                {(syncPaused || syncOffline || syncNeedsReview) && (
-                  <p>
-                    {syncPaused
-                      ? syncNeedsSignIn
-                        ? 'Sign in again to continue.'
-                        : 'Saved on this device. Try reconnecting.'
-                      : syncNeedsReview
-                        ? 'Choose how to resolve the changes below.'
-                        : 'Saved on this device. Sync will resume online.'}
-                  </p>
-                )}
-              </div>
-            </div>
-            {syncWorking && (
-              <div
-                className="account-settings__sync-track"
-                role="progressbar"
-                aria-label="Syncing progress"
-              />
-            )}
-            {account.pending > 0 && (
-              <p className="account-settings__pending">
-                <strong>{account.pending}</strong>{' '}
-                {account.pending === 1 ? 'change' : 'changes'} waiting
+                      ? 'Changes will sync when you reconnect.'
+                      : 'Your changes are saved on this device.'}
+                {account.pending > 0 && ` ${account.pending} waiting.`}
               </p>
-            )}
-            {syncPaused && (
-              <div className="account-settings__sync-recovery">
-                <GameButton
+              {syncPaused && (
+                <button
+                  className="account-settings__text-action"
+                  type="button"
                   disabled={busy}
                   onClick={() =>
                     syncNeedsSignIn
@@ -425,11 +410,11 @@ export const AccountSettings = () => {
                     ? 'Sign in again'
                     : busy
                       ? 'Reconnecting…'
-                      : 'Retry sync'}
-                </GameButton>
-              </div>
-            )}
-          </section>
+                      : 'Try again'}
+                </button>
+              )}
+            </section>
+          )}
           {account.issues.length > 0 && (
             <AccountConflicts
               issues={account.issues}
@@ -437,31 +422,6 @@ export const AccountSettings = () => {
               disabled={busy}
             />
           )}
-          <details className="account-settings__options">
-            <summary>Account options</summary>
-            <div className="account-settings__option-actions">
-              <GameButton
-                tone="quiet"
-                disabled={busy}
-                onClick={() =>
-                  run(async () => {
-                    await downloadAccountExport();
-                    setMessage('Account data downloaded.');
-                  })
-                }
-              >
-                Download account data
-              </GameButton>
-              <GameButton
-                tone="quiet"
-                disabled={busy}
-                onClick={() => run(signOutAccount)}
-              >
-                Sign out
-              </GameButton>
-              <p>Signing out returns to your separate guest save.</p>
-            </div>
-          </details>
         </>
       )}
       {busy && !showSignIn && (
