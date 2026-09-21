@@ -292,14 +292,13 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
               [row.id, JSON.stringify(action)],
             );
           }
-          for (const table of ['local_completions'] as const)
-            for (const row of await guest.getAll<LocalRow>(
-              `SELECT id,payload FROM ${table}`,
-            ))
-              await tx.execute(
-                `INSERT OR IGNORE INTO ${table}(id,payload) VALUES (?,?)`,
-                [row.id, row.payload],
-              );
+          for (const row of await guest.getAll<LocalRow>(
+            'SELECT id,payload FROM local_completions',
+          ))
+            await tx.execute(
+              'INSERT OR IGNORE INTO local_completions(id,payload) VALUES (?,?)',
+              [row.id, row.payload],
+            );
           for (const row of guestRounds) {
             const round = parseActiveGameSave(JSON.parse(row.payload));
             if (round.completedAt) {

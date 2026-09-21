@@ -43,10 +43,6 @@
   margin: 0;
 }
 
-.social-screen__intro > .game-button {
-  justify-self: start;
-}
-
 .social-screen__note {
   color: var(--muted);
   font-size: var(--text-small);
@@ -99,9 +95,6 @@
 
 .friends-panel {
   align-content: start;
-}
-
-.friends-panel {
   display: grid;
   gap: 1rem;
   padding-bottom: 1rem;

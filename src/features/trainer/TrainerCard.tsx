@@ -14,7 +14,6 @@ import {
 import { CatchCombo } from '@/features/quiz/CatchCombo';
 import type { TrainerProfile } from '@/lib/storage/trainer-profile-storage';
 import { useState, type Ref } from 'react';
-import { TrainerArtifactFrame } from './TrainerArtifactFrame';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
@@ -87,9 +86,9 @@ export const TrainerCard = ({
   );
 
   return (
-    <TrainerArtifactFrame
+    <article
       ref={cardRef}
-      className={`trainer-card trainer-card--${finish.toLowerCase()}${isChampion ? ' trainer-card--champion' : ''}`}
+      className={`trainer-artifact-frame trainer-card trainer-card--${finish.toLowerCase()}${isChampion ? ' trainer-card--champion' : ''}`}
       aria-label={trainerViewLabels.front}
     >
       <TrainerCardFinishEffects finish={finish} polished={isChampion} />
@@ -176,6 +175,6 @@ export const TrainerCard = ({
         </dl>
         <CatchCombo className="trainer-card__combo" count={record.dayCombo} />
       </div>
-    </TrainerArtifactFrame>
+    </article>
   );
 };

@@ -32,18 +32,6 @@
   margin-bottom: 1.25rem;
 }
 
-.training-mode-control {
-  display: grid;
-  padding: 0.25rem;
-  margin-top: 0.7rem;
-  background: var(--cream);
-  border: 2px solid var(--navy);
-  border-radius: var(--button-radius);
-  box-shadow: 0 0.16rem 0 var(--navy-shadow);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.25rem;
-}
-
 .settings-section__heading {
   display: flex;
   margin-bottom: 0.75rem;

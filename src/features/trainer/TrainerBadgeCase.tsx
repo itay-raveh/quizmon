@@ -6,7 +6,6 @@ import {
 } from '@/domain/player/trainer-progression';
 import type { Ref } from 'react';
 import { CollectionCorners } from './CollectionCorners';
-import { TrainerArtifactFrame } from './TrainerArtifactFrame';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 
 interface TrainerBadgeCaseProps {
@@ -23,10 +22,10 @@ export const TrainerBadgeCase = ({
   const earnedCount = badges.filter(({ earned }) => earned).length;
 
   return (
-    <TrainerArtifactFrame
+    <article
       ref={caseRef}
       aria-label={trainerViewLabels.badges}
-      className="trainer-badge-case"
+      className="trainer-artifact-frame trainer-badge-case"
     >
       <section
         aria-label={`${earnedCount} of ${badges.length} League Badges earned`}
@@ -47,6 +46,6 @@ export const TrainerBadgeCase = ({
           </SoundButton>
         ))}
       </section>
-    </TrainerArtifactFrame>
+    </article>
   );
 };

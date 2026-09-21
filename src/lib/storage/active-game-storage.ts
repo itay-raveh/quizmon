@@ -9,7 +9,6 @@ import type { PokemonCatalog } from '../../domain/pokemon/types';
 import type { QuestionData } from '../../domain/quiz/types';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
 import { getDailyResultKey } from '../../domain/quiz/daily-track';
-import { isRecord } from '../validation';
 import {
   readLocalDailyAttempts,
   readPlayerSave,
@@ -80,7 +79,7 @@ export const readActiveGame = (
     return null;
   }
   try {
-    if ((snapshot?.playerRestoreId ?? null) !== readPlayerSave().restoreId) {
+    if ((snapshot.playerRestoreId ?? null) !== readPlayerSave().restoreId) {
       void clearActiveGame().catch(reportSaveError);
       return null;
     }
@@ -88,7 +87,6 @@ export const readActiveGame = (
     return null;
   }
   if (
-    !snapshot ||
     !snapshot.questions.every((question) =>
       normalizeQuestionPokemon(question, catalog),
     ) ||
@@ -138,7 +136,6 @@ export const readDailyAttempts = (
   restoreId: string | null,
 ): Record<string, ActiveGameSnapshot> => {
   const stored = readLocalDailyAttempts();
-  if (!isRecord(stored)) return {};
   const attempts: Record<string, ActiveGameSnapshot> = {};
   for (const [key, value] of Object.entries(stored)) {
     if (!key.startsWith(`${date}:`)) continue;

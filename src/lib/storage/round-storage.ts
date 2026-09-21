@@ -1,5 +1,6 @@
 import { reportSaveIssue } from './save-health';
 import { parseActiveGameSave } from '../../domain/player/active-game';
+import { applyResult } from '../../domain/player/game-progress';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
 import {
   completeRound,
@@ -17,7 +18,6 @@ import {
   transactPlayer,
   type LocalPlayerState,
 } from './player-storage';
-import { applyResult } from './results-storage';
 
 let tabId: string;
 let active: ActiveGameSnapshot | null = null;

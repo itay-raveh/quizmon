@@ -198,6 +198,8 @@ html[data-reduce-motion] .account-settings__sync-track::after {
 }
 
 .account-settings__testing {
+  display: grid;
+  gap: 0.65rem;
   color: var(--muted);
   font-size: var(--text-body);
 }
@@ -225,11 +227,6 @@ html[data-reduce-motion] .account-settings__sync-track::after {
   background: var(--yellow);
   border: 2px solid var(--navy);
   border-radius: 50%;
-}
-
-.account-settings__testing {
-  display: grid;
-  gap: 0.65rem;
 }
 
 .account-settings__actions {

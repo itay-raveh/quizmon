@@ -1,4 +1,3 @@
-export { applyResult } from '../../domain/player/game-progress';
 import type { GameResult } from '../../domain/quiz/types';
 import type { TrainerStats } from '../../domain/player/progress';
 import { getTrainerStats } from '../../domain/player/progress';

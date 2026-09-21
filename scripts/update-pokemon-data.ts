@@ -38,6 +38,7 @@ import {
 import { measureCatalogSprites } from './sprite-measurements.ts';
 import { buildTopicCatalog } from './catalog-topics.ts';
 import { extractPokemonKnowledge } from './catalog-knowledge.ts';
+import { gameVersions } from '../src/domain/versions.ts';
 
 const DATA_DIRECTORY = new URL('../src/domain/pokemon/data/', import.meta.url);
 const CONCURRENCY = 4;
@@ -375,7 +376,7 @@ export const buildPokemonCatalog = async (
 
   return addSpriteMeasurements(
     {
-      contentVersion: 1,
+      contentVersion: gameVersions.content,
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },
@@ -459,7 +460,7 @@ if (import.meta.main) {
   ) {
     catalog.topics = await buildTopicCatalog(client, catalog);
     await addItemSpriteIdentities(catalog.topics);
-    catalog.contentVersion = 1;
+    catalog.contentVersion = gameVersions.content;
   }
   await writeCatalogFiles(
     catalog,
