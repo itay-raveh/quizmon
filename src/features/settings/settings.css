@@ -306,13 +306,22 @@
 }
 
 .settings-form .experience-setting {
-  padding-bottom: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.settings-form .experience-setting:first-child {
+  padding-bottom: 1rem;
   border-bottom: 2px solid color-mix(in srgb, var(--navy) 18%, transparent);
 }
 
-.settings-form .experience-setting:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
+.settings-form .experience-setting--install {
+  padding-top: 1rem;
+  border-top: 2px solid color-mix(in srgb, var(--navy) 18%, transparent);
+}
+
+.settings-form .experience-setting:first-child + .experience-setting--install {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .experience-options {
@@ -347,6 +356,11 @@
 
 .experience-options--timer .selection-tile__surface {
   min-height: 3rem;
+  padding-inline: 0.2rem;
+}
+
+.experience-options--timer .selection-tile__label {
+  font-size: var(--text-small);
 }
 
 .volume-control {

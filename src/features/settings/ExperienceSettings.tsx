@@ -10,6 +10,7 @@ import {
 } from '@/domain/settings/types';
 import { InstallSetting } from '@/features/installation/InstallSetting';
 import { DailyReminderSetting } from '@/features/reminders/DailyReminderSetting';
+import { useDailyReminder } from '@/features/reminders/daily-reminder-context';
 import type { Dispatch, SetStateAction } from 'react';
 
 interface ExperienceSettingsProps {
@@ -34,6 +35,7 @@ export const ExperienceSettings = ({
   onChange,
 }: ExperienceSettingsProps) => {
   const volumePercent = Math.round(draft.soundVolume * 100);
+  const installForReminders = useDailyReminder().status === 'install-required';
 
   return (
     <div className="experience-settings">
@@ -41,6 +43,7 @@ export const ExperienceSettings = ({
         <legend>Daily Challenge reminder</legend>
         <DailyReminderSetting />
       </fieldset>
+      {installForReminders && <InstallSetting />}
       <fieldset className="experience-setting">
         <legend>Answer flow</legend>
         <div className="experience-options experience-options--flow">
@@ -59,26 +62,6 @@ export const ExperienceSettings = ({
               onChange={(event) => {
                 if (!event.target.checked) return;
                 onChange((current) => ({ ...current, answerFlow: value }));
-              }}
-              variant="experience"
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset className="experience-setting">
-        <legend>Timer</legend>
-        <div className="experience-options experience-options--timer">
-          {timerDisplays.map((value) => (
-            <SelectionTile
-              checked={draft.timerDisplay === value}
-              inputType="radio"
-              key={value}
-              label={timerDisplayLabels[value]}
-              name="timer-display"
-              onChange={(event) => {
-                if (!event.target.checked) return;
-                onChange((current) => ({ ...current, timerDisplay: value }));
               }}
               variant="experience"
             />
@@ -121,7 +104,26 @@ export const ExperienceSettings = ({
           }
         />
       </fieldset>
-      <InstallSetting />
+      <fieldset className="experience-setting">
+        <legend>Timer</legend>
+        <div className="experience-options experience-options--timer">
+          {timerDisplays.map((value) => (
+            <SelectionTile
+              checked={draft.timerDisplay === value}
+              inputType="radio"
+              key={value}
+              label={timerDisplayLabels[value]}
+              name="timer-display"
+              onChange={(event) => {
+                if (!event.target.checked) return;
+                onChange((current) => ({ ...current, timerDisplay: value }));
+              }}
+              variant="experience"
+            />
+          ))}
+        </div>
+      </fieldset>
+      {!installForReminders && <InstallSetting />}
     </div>
   );
 };

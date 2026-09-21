@@ -12,14 +12,13 @@
   margin-inline: auto;
   padding: 0.6rem clamp(0.85rem, 2.5vw, 1.75rem);
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 1.25rem;
 }
 
 .app-navigation {
   display: grid;
   width: min(100%, 42rem);
-  margin-left: auto;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.55rem;
 }
@@ -84,7 +83,7 @@
   }
 }
 
-@container app-shell (max-width: 19rem) {
+@container app-shell (max-width: 22.5rem) {
   .app--with-navigation {
     padding-bottom: calc(8.5rem + env(safe-area-inset-bottom));
   }

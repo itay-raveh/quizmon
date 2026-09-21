@@ -20,38 +20,40 @@ export const Footer = ({ currentPath }: { currentPath?: string }) => (
         Buy me a coffee
       </a>
     </div>
-    <div className="site-footer__people">
-      <span>
-        © {new Date().getFullYear()}{' '}
-        <a href={site.authorUrl} rel="noreferrer" target="_blank">
-          {site.authorName}
-        </a>
-      </span>
-      <a href={`mailto:${site.contactEmail}`}>Contact</a>
-    </div>
-    <nav className="site-footer__links" aria-label="Help and information">
-      {footerLinks.map(({ href, label, ...link }) => (
-        <a
-          key={href}
-          href={href}
-          aria-current={href === currentPath ? 'page' : undefined}
-          {...('external' in link && link.external
-            ? { target: '_blank', rel: 'noreferrer' }
-            : {})}
-        >
-          {label}
-        </a>
-      ))}
-    </nav>
-    <div className="site-footer__credits">
-      {footerCredits.map(({ label, name, href }) => (
-        <span key={href}>
-          {label}{' '}
-          <a href={href} rel="noreferrer" target="_blank">
-            {name}
+    <div className="site-footer__details">
+      <div className="site-footer__people">
+        <span>
+          © {new Date().getFullYear()}{' '}
+          <a href={site.authorUrl} rel="noreferrer" target="_blank">
+            {site.authorName}
           </a>
         </span>
-      ))}
+        <a href={`mailto:${site.contactEmail}`}>Contact</a>
+      </div>
+      <nav className="site-footer__links" aria-label="Help and information">
+        {footerLinks.map(({ href, label, ...link }) => (
+          <a
+            key={href}
+            href={href}
+            aria-current={href === currentPath ? 'page' : undefined}
+            {...('external' in link && link.external
+              ? { target: '_blank', rel: 'noreferrer' }
+              : {})}
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+      <div className="site-footer__credits">
+        {footerCredits.map(({ label, name, href }) => (
+          <span key={href}>
+            {label}{' '}
+            <a href={href} rel="noreferrer" target="_blank">
+              {name}
+            </a>
+          </span>
+        ))}
+      </div>
     </div>
     <p className="site-footer__disclaimer">{footerDisclaimer}</p>
   </footer>
