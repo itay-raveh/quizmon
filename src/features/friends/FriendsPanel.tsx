@@ -274,7 +274,7 @@ export function FriendsPanel({
                 <p>This is you.</p>
               ) : found.request ? (
                 <>
-                  <p>
+                  <p role="status">
                     {found.request.status === 'accepted'
                       ? 'You are friends.'
                       : found.request.direction === 'incoming'
@@ -311,11 +311,6 @@ export function FriendsPanel({
                         );
                       }
                       setFound({ ...found, request });
-                      setNotice(
-                        request.status === 'accepted'
-                          ? 'You are already friends.'
-                          : 'Request is pending. The recipient must accept it.',
-                      );
                       await refresh(signal);
                     })
                   }
