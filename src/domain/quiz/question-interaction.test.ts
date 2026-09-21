@@ -2,7 +2,7 @@ import type { QuestionData } from './types';
 import { showsSearchResponse, usesSearchAnswer } from './question-interaction';
 
 const question: QuestionData = {
-  answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
+  answer: { correctOptions: ['pikachu'], interaction: 'search' },
   category: 'champion',
   id: 'champion:pikachu',
   media: { kind: 'none' },
@@ -24,7 +24,7 @@ const question: QuestionData = {
   },
 };
 
-it('keeps legacy Champion search and keyboard behavior in sync with the visible response', () => {
+it('keeps Champion search and keyboard behavior in sync with the visible response', () => {
   expect(usesSearchAnswer(question)).toBe(true);
   expect(showsSearchResponse(question, 0)).toBe(true);
   expect(showsSearchResponse(question, 1)).toBe(false);

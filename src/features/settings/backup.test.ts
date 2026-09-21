@@ -1,5 +1,5 @@
 import { completion } from '../../../tests/online/progress-fixtures';
-import baselineSave from '../../../tests/fixtures/player-save.v7.json';
+import baselineSave from '../../../tests/fixtures/player-save.v1.json';
 import { commitRoundCompletion } from '../../lib/storage/round-storage';
 import { catalog } from '../../../tests/fixtures/catalog';
 import {
@@ -38,11 +38,11 @@ import {
 
 beforeEach(resetLocalSave);
 
-it('keeps the post-reset version 3 backup readable', () => {
+it('keeps the baseline backup readable', () => {
   const backup = {
     exportedAt: '2026-09-20T00:00:00.000Z',
     format: 'quizmon-backup',
-    version: 3,
+    version: 1,
     state: {
       version: 1,
       datasetId: '15ee44ef-96c6-4438-9441-5b1908502c4c',
@@ -59,7 +59,7 @@ it('keeps the post-reset version 3 backup readable', () => {
     },
   };
   const restored = parseBackup(JSON.stringify(backup));
-  expect(restored.state.save.version).toBeGreaterThanOrEqual(7);
+  expect(restored.state.save.version).toBe(1);
   expect(restored.state.save.data.pokedex).toContain('pikachu');
 });
 
@@ -86,7 +86,7 @@ const result: GameResult = {
   elapsedSeconds: 1,
   questionCount: 1,
   score: 5000,
-  scoreVersion: 3,
+  scoreVersion: 1,
 };
 
 const populate = async () => {
@@ -297,13 +297,16 @@ it('round-trips every portable field and replaces rather than merges progress', 
   const backup = parseBackup(JSON.stringify(await createBackup()));
   expect(backup.state.save.data.profile?.name).toBe('Leaf');
   await saveResult({ kind: 'daily', date: '2026-09-06' }, result);
-  localStorage.setItem('quizmon.daily-reminder-subscription.v1', 'device-only');
   localStorage.setItem(
-    'quizmon.daily-reminder-prompt.v1',
+    'quizmon.baseline.daily-reminder-subscription',
+    'device-only',
+  );
+  localStorage.setItem(
+    'quizmon.baseline.daily-reminder-prompt',
     '{"version":1,"completedDailyCount":2}',
   );
   localStorage.setItem(
-    'quizmon.daily-reminder-last-completed.v1',
+    'quizmon.baseline.daily-reminder-last-completed',
     '2026-09-06',
   );
   localStorage.setItem('unrelated', 'keep');
@@ -314,34 +317,34 @@ it('round-trips every portable field and replaces rather than merges progress', 
   expect(readPlayerSave().restoreId).not.toBeNull();
   expect(readDailyResult('2026-09-06')).toBeNull();
   expect(readActiveGame(catalog)).toBeNull();
-  expect(localStorage.getItem('quizmon.daily-reminder-subscription.v1')).toBe(
-    'device-only',
-  );
-  expect(localStorage.getItem('quizmon.daily-reminder-prompt.v1')).toContain(
-    '"completedDailyCount":2',
-  );
-  expect(localStorage.getItem('quizmon.daily-reminder-last-completed.v1')).toBe(
-    '2026-09-06',
-  );
+  expect(
+    localStorage.getItem('quizmon.baseline.daily-reminder-subscription'),
+  ).toBe('device-only');
+  expect(
+    localStorage.getItem('quizmon.baseline.daily-reminder-prompt'),
+  ).toContain('"completedDailyCount":2');
+  expect(
+    localStorage.getItem('quizmon.baseline.daily-reminder-last-completed'),
+  ).toBe('2026-09-06');
   expect(localStorage.getItem('unrelated')).toBe('keep');
   expect(JSON.stringify(backup)).not.toContain('device-only');
 });
 
 it.for<(backup: PlayerBackup) => void>([
   (backup) => Object.assign(backup, { format: 'other-app' }),
+  (backup) => Object.assign(backup, { version: 3 }),
   (backup) => Object.assign(backup, { version: 99 }),
   (backup) => {
-    if (backup.version === 3) backup.state.datasetId = 'broken';
+    backup.state.datasetId = 'broken';
   },
   (backup) => {
-    if (backup.version === 3) backup.state.predecessors.name = 'broken';
+    backup.state.predecessors.name = 'broken';
   },
   (backup) => {
-    if (backup.version === 3)
-      backup.records.local_completions.push({
-        id: crypto.randomUUID(),
-        payload: JSON.stringify({ hash: 'broken', outcome: {} }),
-      });
+    backup.records.local_completions.push({
+      id: crypto.randomUUID(),
+      payload: JSON.stringify({ hash: 'broken', outcome: {} }),
+    });
   },
   (backup) => Object.assign(backup, { exportedAt: '2026-02-30T12:00:00.000Z' }),
   (backup) => Object.assign(backup.state.save, { version: 99 }),
@@ -378,6 +381,19 @@ it.for<(backup: PlayerBackup) => void>([
   damage(backup);
   expect(() => parseBackup(JSON.stringify(backup))).toThrow();
   expect(readPlayerSave()).toEqual(before);
+});
+
+it('rejects a pre-reset backup that also used version 1', () => {
+  expect(() =>
+    parseBackup(
+      JSON.stringify({
+        format: 'quizmon-backup',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        save: { version: 1, restoreId: null, data: {} },
+      }),
+    ),
+  ).toThrow();
 });
 it.for([[], ['unknown'], null, 'I'])(
   'rejects invalid backup selections without changing storage: %j',

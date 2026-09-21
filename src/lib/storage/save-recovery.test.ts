@@ -41,7 +41,7 @@ const corruptPlayer = async (raw: string) => {
     reportSaveIssue(error);
   }
 };
-it.each([1, 2, 3, 8])(
+it.each([2, 3, 8])(
   'preserves rejected version %i byte for byte and blocks writes',
   async (version) => {
     const backup = await createBackup();
@@ -51,7 +51,7 @@ it.each([1, 2, 3, 8])(
       3,
     );
     await corruptPlayer(raw);
-    expect(getSaveIssue()?.kind).toBe(version > 7 ? 'newer' : 'unsupported');
+    expect(getSaveIssue()?.kind).toBe('newer');
     expect(await updatePlayerData({ generationPromptAnswered: true })).toBe(
       false,
     );
@@ -86,12 +86,12 @@ it('exports invalid database JSON and retired browser keys without needing a val
   expect(JSON.stringify(exported)).not.toContain('private');
 });
 it('detects an invalid round and retains its raw database record', async () => {
-  await seedActiveFixture({ version: 7 });
+  await seedActiveFixture({ version: 1 });
   inspectSavedData();
   expect(getSaveIssue()?.kind).toBe('invalid');
   expect((await createRecoveryExport()).database.local_rounds).toContainEqual({
-    id: sessionStorage.getItem('quizmon.tab.v1'),
-    payload: '{"version":7}',
+    id: sessionStorage.getItem('quizmon.baseline.tab'),
+    payload: '{"version":1}',
   });
 });
 it('only clears saved gameplay data after a successful reset transaction', async () => {
@@ -99,7 +99,7 @@ it('only clears saved gameplay data after a successful reset transaction', async
   localStorage.setItem(PLAYER_STORAGE_KEY, '{');
   localStorage.setItem('quizmon.results.v2', '{}');
   sessionStorage.setItem(ACTIVE_GAME_KEY, '{');
-  localStorage.setItem('quizmon.daily-reminder-subscription.v1', 'keep');
+  localStorage.setItem('quizmon.baseline.daily-reminder-subscription', 'keep');
   const db = getPlayerDatabase();
   const run = db.writeTransaction.bind(db);
   const write = vi
@@ -119,13 +119,13 @@ it('only clears saved gameplay data after a successful reset transaction', async
   expect(sessionStorage.getItem(ACTIVE_GAME_KEY)).toBe('{');
   write.mockRestore();
   await resetSavedData();
-  expect(readPlayerSave().version).toBe(7);
+  expect(readPlayerSave().version).toBe(1);
   expect(readPlayerSave().restoreId).not.toBeNull();
   expect(localStorage.getItem('quizmon.results.v2')).toBeNull();
   expect(sessionStorage.getItem(ACTIVE_GAME_KEY)).toBeNull();
-  expect(localStorage.getItem('quizmon.daily-reminder-subscription.v1')).toBe(
-    'keep',
-  );
+  expect(
+    localStorage.getItem('quizmon.baseline.daily-reminder-subscription'),
+  ).toBe('keep');
   expect(getSaveIssue()).toBeNull();
 });
 it('can replace a damaged guest save with a validated current backup', async () => {

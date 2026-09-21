@@ -36,6 +36,7 @@ interface AlarmInvocationInfo {
 }
 
 interface DailyReminderRegistration {
+  version: 1;
   completedDate?: string;
   subscription: WebPushSubscription;
   timeZone: string;
@@ -107,6 +108,7 @@ const parseRegistration = async (
 
   const candidate = value as Partial<DailyReminderRegistration>;
   if (
+    candidate.version !== 1 ||
     !isValidTimeZone(candidate.timeZone) ||
     !isValidSubscription(candidate.subscription) ||
     (candidate.completedDate !== undefined &&
@@ -133,7 +135,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       }
       const current =
         await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
-      if (current) {
+      if (current?.version === 1) {
         await this.ctx.storage.put(STORAGE_KEY, {
           ...current,
           completedDate,
@@ -154,7 +156,9 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
     await this.ctx.storage.put(STORAGE_KEY, {
       ...registration,
-      completedDate: registration.completedDate ?? current?.completedDate,
+      completedDate:
+        registration.completedDate ??
+        (current?.version === 1 ? current.completedDate : undefined),
     });
     await this.ctx.storage.setAlarm(getNextReminderAt(registration.timeZone));
     return noStoreResponse(null, 204);
@@ -164,6 +168,11 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
     const registration =
       await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
     if (!registration) return;
+    if (registration.version !== 1) {
+      await this.ctx.storage.deleteAlarm();
+      await this.ctx.storage.deleteAll();
+      return;
+    }
 
     const dailyDate = getUtcDate();
     if (registration.completedDate !== dailyDate) {

@@ -150,8 +150,8 @@ for (const tag of ['', '@cross-browser'])
       }),
     ).toBeVisible();
     const backup = await exportBackup(page);
-    expect(backup.version).toBe(3);
-    if (backup.version !== 3)
+    expect(backup.version).toBe(1);
+    if (backup.version !== 1)
       throw new Error('Expected the new local backup format.');
     const key = getDailyResultKey('2026-09-12', {
       difficulty: 3,
@@ -204,10 +204,10 @@ for (const tag of ['', '@cross-browser'])
         },
       },
     });
-    await page.addInitScript(
-      (legacy) => localStorage.setItem('quizmon.player', legacy),
-      legacy,
-    );
+    await page.addInitScript((legacy) => {
+      localStorage.setItem('quizmon.player', legacy);
+      localStorage.setItem('quizmon.baseline.fixture-save', legacy);
+    }, legacy);
     await installDatabaseFixture(page, origin.url);
     await page.goto(origin.url);
     await openBackup(page);
@@ -245,8 +245,8 @@ for (const tag of ['', '@cross-browser'])
     ).toBeVisible();
     await page.reload();
     const backup = await exportBackup(page);
-    expect(backup.version).toBe(3);
-    if (backup.version !== 3)
+    expect(backup.version).toBe(1);
+    if (backup.version !== 1)
       throw new Error('Expected the new local backup format.');
     const trainingBests = Object.values(
       backup.state.save.data.results.training,
@@ -289,8 +289,8 @@ for (const tag of ['', '@cross-browser'])
         second.getByRole('dialog', { name: 'Settings' }),
       ).toHaveCount(0);
       const restored = await exportBackup(second);
-      expect(restored.version).toBe(3);
-      if (restored.version !== 3)
+      expect(restored.version).toBe(1);
+      if (restored.version !== 1)
         throw new Error('Expected the new local backup format.');
       expect(restored.state.datasetId).toBe(backup.state.datasetId);
       expect({

@@ -38,7 +38,7 @@ import {
 import { isRecord } from '../../lib/validation';
 import { readSyncConnection } from '../../domain/sync/connection';
 
-const selectionKey = 'quizmon.account.v1';
+const selectionKey = 'quizmon.baseline.account';
 const auth = createAuthClient({ plugins: [emailOTPClient(), jwtClient()] });
 type Binding = { id: string; generationId: string; serverEpoch: string };
 let account: PowerSyncDatabase | undefined;
@@ -107,13 +107,13 @@ const parseBinding = (value: unknown): Binding => {
   };
 };
 async function revokePendingSession() {
-  if (!localStorage.getItem('quizmon.revocation-pending')) return;
+  if (!localStorage.getItem('quizmon.baseline.revocation-pending')) return;
   const { error } = await auth.signOut();
   if (error)
     throw new Error(
       'Reconnect to finish signing out before starting another session.',
     );
-  localStorage.removeItem('quizmon.revocation-pending');
+  localStorage.removeItem('quizmon.baseline.revocation-pending');
 }
 export async function sendSignInCode(email: string) {
   await revokePendingSession();
@@ -608,7 +608,7 @@ export async function signOutAccount() {
     const { error } = await auth.signOut();
     if (error) throw new Error(error.message);
   } catch {
-    localStorage.setItem('quizmon.revocation-pending', 'true');
+    localStorage.setItem('quizmon.baseline.revocation-pending', 'true');
   }
   localStorage.removeItem(selectionKey);
   window.location.assign('/');

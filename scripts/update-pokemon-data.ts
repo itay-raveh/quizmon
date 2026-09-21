@@ -375,7 +375,7 @@ export const buildPokemonCatalog = async (
 
   return addSpriteMeasurements(
     {
-      contentVersion: 18,
+      contentVersion: 1,
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },
@@ -459,7 +459,7 @@ if (import.meta.main) {
   ) {
     catalog.topics = await buildTopicCatalog(client, catalog);
     await addItemSpriteIdentities(catalog.topics);
-    catalog.contentVersion = 18;
+    catalog.contentVersion = 1;
   }
   await writeCatalogFiles(
     catalog,

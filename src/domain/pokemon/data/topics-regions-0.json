@@ -1,5 +1,5 @@
 {
-  "contentVersion": 18,
+  "contentVersion": 1,
   "key": "regions",
   "values": [
     { "id": 1, "name": "kanto", "label": "Kanto", "generations": ["I"] },

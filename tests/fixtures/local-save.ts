@@ -43,7 +43,7 @@ export const seedActiveFixture = async (value: unknown) => {
   await initializeLocalRound();
   await getPlayerDatabase().execute(
     'INSERT OR REPLACE INTO local_rounds(id,payload) VALUES (?,?)',
-    [sessionStorage.getItem('quizmon.tab.v1'), JSON.stringify(value)],
+    [sessionStorage.getItem('quizmon.baseline.tab'), JSON.stringify(value)],
   );
   await initializeLocalRound();
 };
@@ -52,8 +52,8 @@ const readFixtureSave = () => {
   const raw = localStorage.getItem(PLAYER_STORAGE_KEY);
   if (raw === null)
     throw new SaveError(
-      'unsupported',
-      'This save uses a retired Quizmon format.',
+      'invalid',
+      'This test fixture is missing its saved data.',
     );
   return parsePlayerSave(JSON.parse(raw));
 };

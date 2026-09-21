@@ -1,6 +1,6 @@
 import { isRecord } from '../../lib/validation.ts';
 
-export type SaveErrorKind = 'unsupported' | 'newer' | 'invalid' | 'unavailable';
+export type SaveErrorKind = 'newer' | 'invalid' | 'unavailable';
 
 export class SaveError extends Error {
   readonly kind: SaveErrorKind;
@@ -13,7 +13,6 @@ export class SaveError extends Error {
 
 interface SaveSchema<T> {
   currentVersion: number;
-  migrations?: Partial<Record<number, (data: unknown) => unknown>>;
   parseCurrent: (data: unknown) => T;
 }
 
@@ -33,18 +32,13 @@ export const parseVersionedSave = <T>(
       'newer',
       'This save was created by a newer version of Quizmon.',
     );
+  if (version !== schema.currentVersion)
+    throw new SaveError('invalid', 'This save uses an unsupported version.');
   try {
-    let data: unknown = structuredClone(value.data);
-    for (let from = version; from < schema.currentVersion; from++) {
-      const migrate = schema.migrations?.[from];
-      if (!migrate)
-        throw new SaveError(
-          'unsupported',
-          'This save uses a retired Quizmon format.',
-        );
-      data = migrate(data);
-    }
-    return { data: schema.parseCurrent(data), version: schema.currentVersion };
+    return {
+      data: schema.parseCurrent(structuredClone(value.data)),
+      version: schema.currentVersion,
+    };
   } catch (error) {
     if (error instanceof SaveError) throw error;
     throw new SaveError(

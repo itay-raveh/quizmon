@@ -60,7 +60,7 @@ export const seedPlayer = (page: Page, patch: PlayerFixture) =>
   page.addInitScript(
     ({ patch, initial, marker }) => {
       if (sessionStorage.getItem(marker)) return;
-      const raw = localStorage.getItem('quizmon.player');
+      const raw = localStorage.getItem('quizmon.baseline.fixture-save');
       const save = raw ? (JSON.parse(raw) as typeof initial) : initial;
       const results = patch.results;
       save.data = {
@@ -73,7 +73,10 @@ export const seedPlayer = (page: Page, patch: PlayerFixture) =>
           progress: { ...save.data.results.progress, ...results?.progress },
         },
       };
-      localStorage.setItem('quizmon.player', JSON.stringify(save));
+      localStorage.setItem(
+        'quizmon.baseline.fixture-save',
+        JSON.stringify(save),
+      );
       sessionStorage.setItem(marker, '1');
     },
     {
@@ -83,7 +86,7 @@ export const seedPlayer = (page: Page, patch: PlayerFixture) =>
         restoreId: null,
         data: { ...emptyPlayerData(), settings: trainingFixture },
       },
-      marker: 'quizmon.test-seed.' + fixtureNumber++,
+      marker: 'quizmon.baseline.test-seed.' + fixtureNumber++,
     },
   );
 export const seedQuestionTraining = (
@@ -158,10 +161,13 @@ export const test = base.extend({
       (initial) => {
         if (
           location.search.includes('fresh=1') ||
-          localStorage.getItem('quizmon.player')
+          localStorage.getItem('quizmon.baseline.fixture-save')
         )
           return;
-        localStorage.setItem('quizmon.player', JSON.stringify(initial));
+        localStorage.setItem(
+          'quizmon.baseline.fixture-save',
+          JSON.stringify(initial),
+        );
       },
       {
         version: SAVE_SCHEMA_VERSION,

@@ -91,7 +91,7 @@ it('round-trips non-Pokémon results and namespaced history through a backup', a
   game.result = {
     ...game.result,
     ...result,
-    scoreVersion: 3,
+    scoreVersion: 1,
     elapsedMilliseconds: 30000,
     answers: questions.map((question, index) => ({
       ...answers[index]!,
@@ -113,7 +113,7 @@ it('round-trips non-Pokémon results and namespaced history through a backup', a
   );
   await restoreBackup(parseBackup(JSON.stringify(backup)));
   const restored = readPlayerSave().data;
-  expect(restored.results.training['score:3']).toEqual(game.result);
+  expect(restored.results.training['score:1']).toEqual(game.result);
   expect(restored.questionHistory).toEqual(
     backup.state.save.data.questionHistory,
   );

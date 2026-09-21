@@ -141,9 +141,9 @@ async function accountExport(
   expected: PlayerBackup,
   played: PlayerBackup,
 ) {
-  assert.ok(played.version === 3);
-  assert.equal(expected.version, 3);
-  assert.ok(expected.version === 3 && expected.state.account);
+  assert.ok(played.version === 1);
+  assert.equal(expected.version, 1);
+  assert.ok(expected.version === 1 && expected.state.account);
   const owner = expected.state.account;
   await account(p);
   await p.getByText('Account options', { exact: true }).click();

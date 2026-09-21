@@ -265,7 +265,7 @@ it('round-trips history and frozen lineups through saves and backup restore', as
     questionHistory: questions.reduce(rememberQuestion, emptyQuestionHistory()),
   });
   expect(readActiveGame(catalog)?.questions).toEqual(questions);
-  expect(readActiveGame(catalog)?.version).toBe(7);
+  expect(readActiveGame(catalog)?.version).toBe(1);
 });
 
 it('keeps Daily independent of personal history and rotates Champion targets across dates', async () => {

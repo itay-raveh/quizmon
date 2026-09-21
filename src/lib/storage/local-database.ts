@@ -46,8 +46,8 @@ export const openLocalDatabase = (accountId?: string): LocalDatabase => {
     }),
     database: {
       dbFilename: accountId
-        ? `quizmon-account-${encodeURIComponent(accountId)}-v2.sqlite`
-        : 'quizmon-guest-v2.sqlite',
+        ? `quizmon-account-${encodeURIComponent(accountId)}-baseline.sqlite`
+        : 'quizmon-guest-baseline.sqlite',
     },
   });
   const database: LocalDatabase = {

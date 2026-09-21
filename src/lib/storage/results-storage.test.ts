@@ -22,7 +22,7 @@ describe('saved results', () => {
     const mode = { kind: 'training' } as const;
     const weighted: GameResult = {
       ...result,
-      scoreVersion: 3,
+      scoreVersion: 1,
       score: 500,
       scoreMultipliers: {
         difficulty: 1,
@@ -62,14 +62,14 @@ describe('saved results', () => {
       best: record,
       isNewBest: true,
     });
-    expect(readPlayerData().results.training['score:3']).toEqual(record);
+    expect(readPlayerData().results.training['score:1']).toEqual(record);
     expect(Object.keys(readPlayerData().results.training)).toHaveLength(1);
     expect(
       parseBackup(JSON.stringify(await createBackup())).state.save.data.results,
     ).toEqual(readPlayerData().results);
     const malformed = await createBackup();
     malformed.state.save.data.results.training[
-      'score:3'
+      'score:1'
     ]!.scoreMultipliers!.generations = 10;
     expect(() => parseBackup(JSON.stringify(malformed))).toThrow();
   });

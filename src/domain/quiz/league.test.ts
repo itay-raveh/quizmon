@@ -75,7 +75,7 @@ describe('Quizmon League', () => {
       elapsedSeconds: 30,
       questionCount: LEAGUE_QUESTION_COUNT,
       score: 60000,
-      scoreVersion: 3,
+      scoreVersion: 1,
     };
     expect(isLeagueVictory(result)).toBe(true);
     expect(isLeagueVictory({ ...result, answers: answers.slice(0, -1) })).toBe(

@@ -78,11 +78,12 @@ export function completion(
     },
     contentVersion: versions.content,
     progressVersion: versions.progress,
-    scoreVersion: 3,
+    scoreVersion: 1,
     generatorVersion: 0,
     completedAt: options.completedAt ?? '2026-09-11T10:00:00.000Z',
     discoveries: options.discoveries ?? ['bulbasaur'],
     result: {
+      ...(mode === 'daily' ? { puzzleId: 'a'.repeat(64) } : {}),
       rules: {
         version: versions.content,
         difficulty: 3,
@@ -92,7 +93,7 @@ export function completion(
       },
       answers,
       contentVersion: versions.content,
-      scoreVersion: 3,
+      scoreVersion: 1,
       questionCount: count,
       correctCount: answers.filter((a) => a.correct).length,
       ...getResponseTime(answers),

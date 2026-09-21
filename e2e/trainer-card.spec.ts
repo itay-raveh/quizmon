@@ -242,8 +242,12 @@ test('shows saved Trainer records on a narrow screen', async ({ page }) => {
   }
   data.results.streak.creditedDates = dates;
   await page.addInitScript(
-    (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
-    { version: 7, restoreId: null, data },
+    (save) =>
+      localStorage.setItem(
+        'quizmon.baseline.fixture-save',
+        JSON.stringify(save),
+      ),
+    { version: 1, restoreId: null, data },
   );
   await page.goto('/?trainer=card');
   const card = page.getByRole('article', { name: 'Trainer Card' });
@@ -301,8 +305,12 @@ test('stops the Champion finish animation when reduced motion is enabled', async
   };
   data.results.league.completed = true;
   await page.addInitScript(
-    (save) => localStorage.setItem('quizmon.player', JSON.stringify(save)),
-    { version: 7, restoreId: null, data },
+    (save) =>
+      localStorage.setItem(
+        'quizmon.baseline.fixture-save',
+        JSON.stringify(save),
+      ),
+    { version: 1, restoreId: null, data },
   );
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?trainer=card');

@@ -26,7 +26,7 @@ const unlockLeague = (
     elapsedSeconds: 0,
     questionCount: 1,
     score: 0,
-    scoreVersion: 3,
+    scoreVersion: 1,
   };
   const dates = Array.from(
     { length: 7 },
@@ -217,7 +217,7 @@ test('a perfect clear opens the induction before its detailed results', async ({
   });
   const questions = buildLeagueQuestions(catalog, leagueSeed, settings);
   const snapshot = {
-    version: 7,
+    version: 1,
     questions,
     contentVersion: catalog.contentVersion,
     elapsedMilliseconds: 15000,
@@ -246,7 +246,10 @@ test('a perfect clear opens the induction before its detailed results', async ({
   await unlockLeague(page, false);
   await page.addInitScript(
     (value) =>
-      sessionStorage.setItem('quizmon.active-game.v1', JSON.stringify(value)),
+      sessionStorage.setItem(
+        'quizmon.baseline.fixture-round',
+        JSON.stringify(value),
+      ),
     snapshot,
   );
   const { promise: spritesReady, resolve: releaseSprites } =

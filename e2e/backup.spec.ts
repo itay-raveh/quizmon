@@ -9,7 +9,7 @@ import { readRound, readSave } from './database-fixture';
 import { expect, test } from './fixtures';
 
 const save: PlayerBackup['state']['save'] = {
-  version: 7,
+  version: 1,
   restoreId: null,
   data: {
     ...emptyPlayerData(),
@@ -37,7 +37,7 @@ const save: PlayerBackup['state']['save'] = {
 
 const backup: PlayerBackup = {
   format: 'quizmon-backup',
-  version: 3,
+  version: 1,
   exportedAt: '2026-09-07T09:00:00.000Z',
   state: {
     version: 1,
@@ -53,6 +53,35 @@ const backupFile = {
   mimeType: 'application/json',
   buffer: Buffer.from(JSON.stringify(backup)),
 };
+
+test('removes pre-reset browser data on startup', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(async () => {
+    localStorage.setItem('quizmon.account.v1', 'old-account');
+    localStorage.setItem('quizmon.baseline.marker', 'keep');
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open('quizmon-guest-v2.sqlite', 1);
+      request.onsuccess = () => {
+        request.result.close();
+        resolve();
+      };
+      request.onerror = () =>
+        reject(request.error ?? new Error('Could not seed old database.'));
+    });
+  });
+  await page.reload();
+  await expect
+    .poll(() =>
+      page.evaluate(async () => ({
+        oldAccount: localStorage.getItem('quizmon.account.v1'),
+        marker: localStorage.getItem('quizmon.baseline.marker'),
+        oldDatabase: (await indexedDB.databases()).some(
+          ({ name }) => name === 'quizmon-guest-v2.sqlite',
+        ),
+      })),
+    )
+    .toEqual({ oldAccount: null, marker: 'keep', oldDatabase: false });
+});
 
 for (const width of [320, 390, 1280]) {
   test(`exports and restores a validated backup after preview at ${width}px`, async ({
@@ -223,10 +252,10 @@ for (const browser of ['', '@cross-browser']) {
     });
     await page.goto('/');
     const daily = page.getByRole('button', { name: /^Play Daily Challenge/ });
-    await expect(daily).toBeEnabled();
+    await expect(daily).toBeEnabled({ timeout: 15_000 });
     await expect(page.getByText('Browser storage required')).toHaveCount(0);
     await page.reload();
-    await expect(daily).toBeEnabled();
+    await expect(daily).toBeEnabled({ timeout: 15_000 });
     expect(
       await readSave(page).then((saved) => {
         const save = JSON.parse(

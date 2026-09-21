@@ -37,7 +37,7 @@ test('retains older Daily completion metadata in personal history', () => {
 });
 
 test.each([
-  { contentVersion: 17 },
+  { contentVersion: 2 },
   { scoreVersion: 2 },
   { progressVersion: 2 },
   { mode: 'unknown' },

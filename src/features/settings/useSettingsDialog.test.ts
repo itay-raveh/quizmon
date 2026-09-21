@@ -21,7 +21,9 @@ it('opens the requested section and includes it in the update snapshot', () => {
   expect(saveUpdateState()).toBe(true);
   expect(
     parseUpdateSave(
-      JSON.parse(sessionStorage.getItem('quizmon.update-state.v1') ?? '{}'),
+      JSON.parse(
+        sessionStorage.getItem('quizmon.baseline.update-state') ?? '{}',
+      ),
     ).values,
   ).toMatchObject({
     'settings-open': true,

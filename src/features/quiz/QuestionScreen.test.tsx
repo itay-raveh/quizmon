@@ -12,7 +12,7 @@ const championQuestion: QuestionData = {
     primary: ['pikachu'],
     distractors: ['eevee', 'ditto', 'mew'],
   },
-  answer: { correctOptions: ['pikachu'], interaction: 'single-choice' },
+  answer: { correctOptions: ['pikachu'], interaction: 'search' },
   category: 'champion',
   clues: ['An electric mouse.', 'Known for its red cheeks.'],
   id: 'champion:pikachu:4',
@@ -1129,9 +1129,13 @@ describe('question transitions', () => {
       expect.objectContaining({ correct: true, points: 750 }),
     );
   });
-  it('uses choices and number shortcuts when a legacy Champion search has no options', () => {
+  it('uses choices and number shortcuts when a Champion question has no search options', () => {
     renderQuestion({
-      question: { ...championQuestion, searchOptions: undefined },
+      question: {
+        ...championQuestion,
+        answer: { ...championQuestion.answer, interaction: 'single-choice' },
+        searchOptions: undefined,
+      },
     });
     expect(screen.queryByRole('combobox')).toBeNull();
     const firstChoice = screen.getByRole('button', { name: 'Pikachu' });

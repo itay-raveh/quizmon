@@ -34,7 +34,7 @@ const state = (): LocalPlayerState => ({
   predecessors: {},
   dailyAttempts: {},
   save: {
-    version: 7,
+    version: 1,
     restoreId: null,
     data: {
       ...emptyPlayerData(),

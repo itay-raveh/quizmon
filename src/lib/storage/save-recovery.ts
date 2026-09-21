@@ -27,14 +27,16 @@ const recoveryKeys = {
     ...Object.values(retiredPlayerKeys),
     DAILY_ATTEMPTS_KEY,
   ],
-  sessionStorage: [ACTIVE_GAME_KEY, 'quizmon.update-state.v1'],
+  sessionStorage: [ACTIVE_GAME_KEY, 'quizmon.baseline.update-state'],
 } as const;
 
 export const inspectSavedData = (): void => {
   try {
     readPlayerSave();
     inspectRoundStorage();
-    const update = window.sessionStorage.getItem('quizmon.update-state.v1');
+    const update = window.sessionStorage.getItem(
+      'quizmon.baseline.update-state',
+    );
     if (update !== null) parseUpdateSave(JSON.parse(update));
   } catch (error) {
     reportSaveIssue(error);

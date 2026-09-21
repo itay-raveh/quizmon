@@ -46,7 +46,7 @@ const result: GameResult = {
   elapsedSeconds: 2,
   questionCount: 1,
   score: 4000,
-  scoreVersion: 3,
+  scoreVersion: 1,
 };
 const roundDefaults = {
   contentVersion: 14,

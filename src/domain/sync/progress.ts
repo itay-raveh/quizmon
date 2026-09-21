@@ -283,10 +283,10 @@ export function validateCompletion(value: unknown): string | null {
   const total = compatibility.questionCount;
   if (
     !isObject(result) ||
-    (result.puzzleId !== undefined &&
-      (value.mode !== 'daily' ||
-        typeof result.puzzleId !== 'string' ||
+    (value.mode === 'daily' &&
+      (typeof result.puzzleId !== 'string' ||
         !/^[a-f0-9]{64}$/.test(result.puzzleId))) ||
+    (value.mode !== 'daily' && result.puzzleId !== undefined) ||
     result.questionCount !== total ||
     result.contentVersion !== value.contentVersion ||
     result.scoreVersion !== value.scoreVersion ||

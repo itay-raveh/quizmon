@@ -467,7 +467,7 @@ try {
       questionTypes: ['type-check'],
     };
     round.result.scoreMultipliers = getTrainingScoreMultipliers(round.training);
-    round.scoreVersion = round.result.scoreVersion = 3;
+    round.scoreVersion = round.result.scoreVersion = gameVersions.score;
     round.result.score = calculateScore(
       round.result.answers,
       round.result.scoreMultipliers,
