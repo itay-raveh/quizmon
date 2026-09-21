@@ -73,7 +73,7 @@ const AppScreen = ({
     return (
       <FriendsScreen
         key={destination.friendCode}
-        onBack={() => destination.back('leaderboards')}
+        onRankings={() => destination.open('leaderboards')}
         onCloseInvitation={() => destination.open('friends')}
         onSignIn={() => destination.account()}
         initialInput={destination.friendCode}
@@ -89,7 +89,7 @@ const AppScreen = ({
         catalog={
           catalogState.status === 'ready' ? catalogState.catalog : undefined
         }
-        onManageFriends={() => destination.open('friends')}
+        onFriends={() => destination.open('friends')}
         initialDate={destination.standingsDate}
         initialScope={destination.standingsScope}
         initialMode={destination.standingsMode}
@@ -311,7 +311,7 @@ export const AppView = (props: AppViewProps) => {
       ? null
       : destination.destination === 'leaderboards' ||
           destination.destination === 'friends'
-        ? 'leaderboards'
+        ? 'social'
         : props.trainer.isOpen
           ? 'trainer'
           : 'play';
@@ -340,7 +340,7 @@ export const AppView = (props: AppViewProps) => {
                     trainerAvailable={props.catalogState.status === 'ready'}
                     onNavigate={(next) => {
                       if (next === 'trainer') destination.trainer();
-                      else if (next === 'leaderboards')
+                      else if (next === 'social')
                         destination.open(
                           'leaderboards',
                           props.session.phase === 'results' &&

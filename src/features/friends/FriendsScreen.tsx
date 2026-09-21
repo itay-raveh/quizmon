@@ -1,17 +1,17 @@
 import { useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../../components/GameButton';
-import { ArrowLeftIcon } from '../../components/icons';
 import { accountSnapshot, subscribeAccount } from '../account/account';
 import { FriendsPanel } from './FriendsPanel';
+import { SocialSections } from './SocialSections';
 import './friends.css';
 
 export function FriendsScreen({
-  onBack,
+  onRankings,
   onCloseInvitation,
   onSignIn,
   initialInput = '',
 }: {
-  onBack: () => void;
+  onRankings: () => void;
   onCloseInvitation: () => void;
   onSignIn: () => void;
   initialInput?: string;
@@ -19,18 +19,13 @@ export function FriendsScreen({
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const [adding, setAdding] = useState(Boolean(initialInput));
   return (
-    <section className="social-screen" aria-labelledby="friends-title">
+    <section className="social-screen" aria-labelledby="social-title">
       <header className="social-screen__header">
-        <GameButton
-          className="social-screen__back"
-          tone="quiet"
-          aria-label="Back to rankings"
-          onClick={onBack}
-        >
-          <ArrowLeftIcon aria-hidden="true" weight="bold" />
-        </GameButton>
-        <h1 id="friends-title">Friends</h1>
-        {account.owner && !account.mergeRequired && (
+        <h1 id="social-title">Social</h1>
+      </header>
+      <SocialSections active="friends" onRankings={onRankings} />
+      {account.owner && !account.mergeRequired && (
+        <div className="social-screen__actions">
           <GameButton
             className="social-screen__header-action"
             tone={adding ? 'quiet' : 'primary'}
@@ -41,8 +36,8 @@ export function FriendsScreen({
           >
             {adding ? 'Your friends' : 'Add friend'}
           </GameButton>
-        )}
-      </header>
+        </div>
+      )}
       {account.owner && !account.mergeRequired ? (
         <FriendsPanel
           key={`${account.owner}:${initialInput}`}

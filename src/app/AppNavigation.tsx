@@ -2,19 +2,19 @@ import { useSyncExternalStore } from 'react';
 import { GameButton } from '../components/GameButton';
 import {
   CardholderIcon,
-  ChartBarIcon,
   PuzzlePieceIcon,
   UserCircleIcon,
+  UsersIcon,
 } from '../components/icons';
 import { accountSnapshot, subscribeAccount } from '../features/account/account';
 import { SettingsButton } from '../features/settings/SettingsButton';
 
-export type MainDestination = 'play' | 'trainer' | 'leaderboards';
+export type MainDestination = 'play' | 'trainer' | 'social';
 
 const destinations = [
   ['play', 'Play', PuzzlePieceIcon],
   ['trainer', 'Trainer', CardholderIcon],
-  ['leaderboards', 'Rankings', ChartBarIcon],
+  ['social', 'Social', UsersIcon],
 ] as const;
 
 export function AppNavigation({

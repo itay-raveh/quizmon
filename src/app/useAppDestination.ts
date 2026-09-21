@@ -2,7 +2,6 @@ import { useCallback, useSyncExternalStore } from 'react';
 import type { TrainerView } from '../domain/player/trainer-progression';
 import type { LeaderboardMode } from '../domain/social/leaderboards';
 import { setTrainerRoute } from '../features/trainer/trainer-route';
-import { isRecord } from '../lib/validation';
 
 type Destination = 'account' | 'friends' | 'leaderboards';
 const locationSnapshot = () => window.location.href;
@@ -14,12 +13,8 @@ const subscribeLocation = (listener: () => void) => {
     window.removeEventListener('hashchange', listener);
   };
 };
-const navigate = (url: URL, replace = false) => {
-  window.history[replace ? 'replaceState' : 'pushState'](
-    { quizmonDestination: true },
-    '',
-    url,
-  );
+const navigate = (url: URL) => {
+  window.history.pushState({ quizmonDestination: true }, '', url);
   window.dispatchEvent(new PopStateEvent('popstate'));
 };
 const clearDestination = (url: URL) => {
@@ -79,21 +74,6 @@ export function useAppDestination() {
     navigate(clearDestination(new URL(window.location.href)));
   };
 
-  const back = (fallback: 'play' | 'trainer' | 'leaderboards' = 'play') => {
-    const state: unknown = window.history.state;
-    if (isRecord(state) && state.quizmonDestination === true) {
-      window.history.back();
-      return;
-    }
-    const target = clearDestination(new URL(window.location.href));
-    if (fallback === 'trainer') setTrainerRoute(target, 'front');
-    if (fallback === 'leaderboards') {
-      target.searchParams.set('screen', 'leaderboards');
-      target.searchParams.set('players', 'friends');
-    }
-    navigate(target, true);
-  };
-
   const selectStandings = useCallback(
     (date: string, scope: 'global' | 'friends', mode: LeaderboardMode) => {
       const target = new URL(window.location.href);
@@ -108,7 +88,6 @@ export function useAppDestination() {
 
   return {
     account,
-    back,
     destination,
     friendCode: friendCode ?? '',
     open,

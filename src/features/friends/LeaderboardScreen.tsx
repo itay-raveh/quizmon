@@ -17,6 +17,7 @@ import {
   readDailyLeaderboard,
   readTrainingLeaderboard,
 } from './leaderboards-client';
+import { SocialSections } from './SocialSections';
 import './friends.css';
 
 const standingsCache = new Map<string, Leaderboard>();
@@ -266,14 +267,14 @@ function Standings({
 
 export function LeaderboardScreen({
   catalog,
-  onManageFriends,
+  onFriends,
   initialDate,
   initialScope = 'global',
   initialMode = 'daily',
   onSelectionChange,
 }: {
   catalog?: PokemonCatalog;
-  onManageFriends: () => void;
+  onFriends: () => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
   initialMode?: LeaderboardMode;
@@ -320,17 +321,11 @@ export function LeaderboardScreen({
     }
   };
   return (
-    <section className="social-screen" aria-labelledby="leaderboard-title">
+    <section className="social-screen" aria-labelledby="social-title">
       <header className="social-screen__header">
-        <h1 id="leaderboard-title">Rankings</h1>
-        <GameButton
-          className="social-screen__header-action"
-          tone="quiet"
-          onClick={onManageFriends}
-        >
-          Friends
-        </GameButton>
+        <h1 id="social-title">Social</h1>
       </header>
+      <SocialSections active="rankings" onFriends={onFriends} />
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
           <>
