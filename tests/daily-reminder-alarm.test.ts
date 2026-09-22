@@ -4,7 +4,10 @@ import {
   VAPID_PUBLIC_KEY,
 } from '@/features/reminders/reminder-config';
 import webpush, { WebPushError } from 'web-push';
+import * as Sentry from '@sentry/cloudflare';
 import { DailyReminder } from '../worker/daily-reminder';
+
+vi.mock('@sentry/cloudflare', () => ({ captureException: vi.fn() }));
 
 const subscription = {
   endpoint: 'https://example.com/push',
@@ -184,6 +187,9 @@ it.each(deliveryErrors)(
 
     await reminder.alarm({ retryCount: 5 });
 
+    expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+      tags: { 'error.kind': 'reminder.delivery' },
+    });
     expect(storage.deleteAll).not.toHaveBeenCalled();
     expect(storage.setAlarm).toHaveBeenCalledExactlyOnceWith(nextMorning);
   },

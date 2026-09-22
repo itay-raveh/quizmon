@@ -1,6 +1,21 @@
 import { cloudflareBindingDelivery } from './email.ts';
 
 import { createAccountApi } from './api.ts';
+import * as Sentry from '@sentry/cloudflare';
+
+const reportFailure = (error: unknown) => {
+  try {
+    Sentry.captureException(error, {
+      tags: { 'error.kind': 'account.worker' },
+    });
+    Sentry.logger.error('quizmon.failure', { 'error.kind': 'account.worker' });
+    Sentry.metrics.count('quizmon.failure', 1, {
+      attributes: { 'error.kind': 'account.worker' },
+    });
+  } catch {
+    // Monitoring must not change account responses.
+  }
+};
 
 export default {
   async fetch(request: Request, env: Partial<AccountEnv>) {
@@ -31,7 +46,8 @@ export default {
           status: 429,
           headers: { 'Retry-After': '60', 'Cache-Control': 'no-store' },
         });
-    } catch {
+    } catch (error) {
+      reportFailure(error);
       return new Response('Service temporarily unavailable.', { status: 503 });
     }
     try {
@@ -59,7 +75,8 @@ export default {
               }
             : { mode: 'test-mailbox' },
       }).fetch(request);
-    } catch {
+    } catch (error) {
+      reportFailure(error);
       return new Response('Account service temporarily unavailable.', {
         status: 503,
         headers: { 'Cache-Control': 'no-store' },

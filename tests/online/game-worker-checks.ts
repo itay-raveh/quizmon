@@ -19,12 +19,6 @@ export async function checkGameRoutes(base: string) {
   const sprite = await fetch(base + '/sprites/invalid.txt');
   assert.equal(sprite.status, 404);
   assert.equal(await sprite.text(), 'Sprite unavailable');
-  const event = await fetch(base + '/api/events', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'page_view' }),
-  });
-  assert.equal(event.status, 204);
   const reminder = await fetch(
     base + '/api/daily-reminders/' + crypto.randomUUID(),
     { method: 'DELETE', headers: { Origin: base } },

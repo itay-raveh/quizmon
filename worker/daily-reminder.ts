@@ -1,4 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
+import * as Sentry from '@sentry/cloudflare';
 import webpush, {
   WebPushError,
   type PushSubscription as WebPushSubscription,
@@ -199,6 +200,13 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
           return;
         }
         if ((alarmInfo?.retryCount ?? 0) < 5) throw error;
+        try {
+          Sentry.captureException(error, {
+            tags: { 'error.kind': 'reminder.delivery' },
+          });
+        } catch {
+          // A failed report cannot change reminder scheduling.
+        }
       }
     }
 

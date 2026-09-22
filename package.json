@@ -35,6 +35,8 @@
     "@hookform/resolvers": "^5.9.1",
     "@phosphor-icons/react": "^2.1.10",
     "@powersync/web": "2.3.1",
+    "@sentry/cloudflare": "^10.75.1",
+    "@sentry/react": "^10.75.1",
     "@zumer/snapdom": "^2.24.15",
     "better-auth": "1.7.4",
     "drizzle-orm": "0.45.2",
@@ -57,6 +59,8 @@
     "@commitlint/config-conventional": "21.2.2",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.62.1",
+    "@sentry/cli": "2.58.6",
+    "@sentry/vite-plugin": "^5.4.0",
     "@types/howler": "2.2.13",
     "@types/node": "24.13.3",
     "@types/pg": "8.20.0",
@@ -94,7 +98,8 @@
   },
   "allowScripts": {
     "esbuild": true,
-    "workerd": true
+    "workerd": true,
+    "@sentry/cli": true
   },
   "commitlint": {
     "extends": [

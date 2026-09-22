@@ -1,4 +1,5 @@
 import { SaveError, type SaveErrorKind } from '../../domain/player/save-schema';
+import { trackFailure } from '../analytics';
 
 export interface SaveIssue {
   kind: SaveErrorKind;
@@ -29,6 +30,7 @@ export const reportSaveIssue = (error: unknown): SaveError => {
           );
   if (!issue) {
     issue = { kind: failure.kind, message: failure.message };
+    trackFailure(`save.${failure.kind}`);
     notify();
   }
   return failure;

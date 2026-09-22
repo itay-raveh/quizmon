@@ -64,12 +64,6 @@
       },
     ],
   },
-  "analytics_engine_datasets": [
-    {
-      "binding": "ANALYTICS",
-      "dataset": "quizmon_events",
-    },
-  ],
   "assets": {
     "directory": "../dist",
     "binding": "ASSETS",

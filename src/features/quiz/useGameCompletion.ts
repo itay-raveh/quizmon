@@ -74,7 +74,7 @@ export const useGameCompletion = ({
       );
       progressStart.current = null;
       refreshTrainerStats();
-      trackGameCompleted(mode, result);
+      if (best.recorded) trackGameCompleted(mode, result);
       dispatch({
         bestResult: best.best,
         isNewBest: best.isNewBest,

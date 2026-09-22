@@ -49,6 +49,11 @@ if (!isRecord(publicConfig) || !isRecord(privateConfig))
 const config = readReleaseConfig({ ...publicConfig, ...privateConfig });
 const template = readWorkerTemplate('deploy/wrangler.jsonc');
 const rendered = renderSourceWorkerConfig(template, config);
+if (process.env.SENTRY_WORKER_DSN)
+  Object.assign(rendered.vars, {
+    SENTRY_DSN: process.env.SENTRY_WORKER_DSN,
+    SENTRY_RELEASE: process.env.GITHUB_SHA ?? '',
+  });
 delete (rendered as typeof rendered & { $schema?: string }).$schema;
 await writeFile(
   '.wrangler.production.json',
@@ -56,5 +61,9 @@ await writeFile(
 );
 await writeFile(
   'dist/_headers',
-  accountAssetHeaders(await readFile('dist/_headers', 'utf8'), config.sync),
+  accountAssetHeaders(
+    await readFile('dist/_headers', 'utf8'),
+    config.sync,
+    process.env.VITE_SENTRY_DSN,
+  ),
 );

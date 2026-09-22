@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { getUtcDate } from '../domain/quiz/daily';
 import { AppNavigation } from './AppNavigation';
 import { Footer } from './Footer';
+import { Sentry, captureUnexpectedError } from '../lib/sentry';
 import { HomeScreen } from './HomeScreen';
 
 export const mountGame = (root: HTMLElement) => {
@@ -55,11 +56,21 @@ export const mountGame = (root: HTMLElement) => {
       app.render(
         <StrictMode>
           <SaveRecoveryBoundary>
-            {getSaveIssue() ? null : <LocalGame />}
+            <Sentry.ErrorBoundary
+              fallback={
+                <p role="alert">
+                  Quizmon could not display this screen.{' '}
+                  <a href="/">Reload Quizmon</a>.
+                </p>
+              }
+            >
+              {getSaveIssue() ? null : <LocalGame />}
+            </Sentry.ErrorBoundary>
           </SaveRecoveryBoundary>
         </StrictMode>,
       );
-    } catch {
+    } catch (error) {
+      captureUnexpectedError('app.mount', error);
       app.render(
         <p role="alert">
           Quizmon could not be loaded. Please reload to try again.
