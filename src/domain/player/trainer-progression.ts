@@ -37,11 +37,11 @@ const getProgress = (milestones: readonly TrainerMilestone[]) => {
 
 export const trainerSpecialtyDetails = {
   ability: {
-    label: 'Ability Specialist',
+    label: 'Ability Decoder',
     description: 'Know Pokémon abilities, Hidden Abilities, and their effects.',
   },
   berry: {
-    label: 'Berry Specialist',
+    label: 'Berry Connoisseur',
     description: 'Know berry flavors and the types they give Natural Gift.',
   },
   description: {
@@ -49,16 +49,16 @@ export const trainerSpecialtyDetails = {
     description: 'Know Pokédex entries, Pokémon sizes, regions, and habitats.',
   },
   evolution: {
-    label: 'Evolution Specialist',
+    label: 'Evolution Detective',
     description: 'Know evolution chains, items, conditions, and type changes.',
   },
   identity: {
-    label: 'Pokédex Specialist',
+    label: 'Pokédex Archivist',
     description:
       'Recognize Pokémon, their generations, and Legendary or Mythical status.',
   },
   item: {
-    label: 'Item Specialist',
+    label: 'Item Scholar',
     description: 'Know items, medicine, and held effects.',
   },
   matchup: {
@@ -66,15 +66,15 @@ export const trainerSpecialtyDetails = {
     description: 'Solve super-effective type and Pokémon matchups.',
   },
   move: {
-    label: 'Move Specialist',
+    label: 'Move Maestro',
     description: 'Know move types, damage classes, and level-up learnsets.',
   },
   stat: {
-    label: 'Stat Specialist',
+    label: 'Stat Analyst',
     description: 'Compare Pokémon stats and understand natures and EV yields.',
   },
   type: {
-    label: 'Type Specialist',
+    label: 'Type Sleuth',
     description: 'Recognize Pokémon types and hidden type patterns.',
   },
 } as const;

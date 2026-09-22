@@ -587,9 +587,7 @@ try {
     [collector.id],
   );
   assert.equal(equipped.rows[0]!.edits.specialty, 'item');
-  passed.push(
-    'Item Specialist requires earned format progress before equipping',
-  );
+  passed.push('Item Scholar requires earned format progress before equipping');
   console.log(JSON.stringify({ api: base, passed }, null, 2));
 } finally {
   await worker?.close();
