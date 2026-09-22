@@ -1,4 +1,5 @@
 import { reportSaveIssue } from './save-health';
+import { trackGameCompleted } from '../analytics';
 import { parseActiveGameSave } from '../../domain/player/active-game';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
 import {
@@ -202,6 +203,7 @@ export const commitRoundCompletion = async (
       ]);
     return { ...outcome, recorded: true };
   });
+  if (outcome.recorded) trackGameCompleted(completion.mode, completion.result);
   if (!keepRound) active = null;
   return outcome;
 };

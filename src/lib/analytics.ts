@@ -24,11 +24,14 @@ export const trackGameStarted = (mode: GameMode, questionCount: number) =>
     );
   });
 
-export const trackGameCompleted = (mode: GameMode, result: GameResult) =>
+export const trackGameCompleted = (
+  mode: GameMode['kind'],
+  result: GameResult,
+) =>
   record(() => {
     const options = {
       attributes: {
-        'game.mode': mode.kind,
+        'game.mode': mode,
         'game.content_version': result.contentVersion,
         'game.score_version': result.scoreVersion,
       },
