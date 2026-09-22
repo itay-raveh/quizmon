@@ -25,7 +25,6 @@ export default Sentry.withSentry<GameAccountEnv>(
           dsn: env.SENTRY_DSN,
           release: env.SENTRY_RELEASE,
           tracesSampleRate: 0.1,
-          enableLogs: true,
           sendDefaultPii: false,
           beforeSend(event) {
             delete event.request;
@@ -35,9 +34,6 @@ export default Sentry.withSentry<GameAccountEnv>(
             for (const exception of event.exception?.values ?? [])
               exception.value = exception.type ?? 'Unexpected error';
             return event;
-          },
-          beforeSendLog(log) {
-            return log.message === 'quizmon.failure' ? log : null;
           },
         }
       : undefined,

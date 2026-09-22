@@ -8,7 +8,6 @@ const reportFailure = (error: unknown) => {
     Sentry.captureException(error, {
       tags: { 'error.kind': 'account.worker' },
     });
-    Sentry.logger.error('quizmon.failure', { 'error.kind': 'account.worker' });
     Sentry.metrics.count('quizmon.failure', 1, {
       attributes: { 'error.kind': 'account.worker' },
     });
