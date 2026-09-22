@@ -271,6 +271,7 @@ const AppScreen = ({
       onRetryLeague={league.retry}
       onTrainAgain={training.trainAgain}
       onStartTraining={training.start}
+      onCustomizeTraining={settingsDialog.openTraining}
       result={session.result}
       resultSaved={session.resultSaved}
       progressChanges={session.progressChanges}

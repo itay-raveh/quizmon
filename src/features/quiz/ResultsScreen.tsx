@@ -19,10 +19,47 @@ import { DailyReminderPrompt } from '@/features/reminders/DailyReminderPrompt';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummary';
 import { useGameSounds } from '@/lib/audio/sound-context';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from './CatchCombo';
+import {
+  markLevelAdvancementOffered,
+  suggestedLevel,
+  wasLevelAdvancementOffered,
+} from './level-advancement';
 import { MultipliedScore } from './MultipliedScore';
+import type { Difficulty } from '@/domain/quiz/difficulty';
+
+const LevelAdvancementOffer = ({
+  currentLevel,
+  nextLevel,
+  onCustomize,
+}: {
+  currentLevel: Difficulty;
+  nextLevel: Difficulty;
+  onCustomize: () => void;
+}) => {
+  const [visible, setVisible] = useState(
+    () => !wasLevelAdvancementOffered(currentLevel),
+  );
+
+  useEffect(() => {
+    if (visible) markLevelAdvancementOffered(currentLevel);
+  }, [currentLevel, visible]);
+
+  if (!visible) return null;
+  return (
+    <aside className="level-advancement-offer" aria-label="Training suggestion">
+      <strong>Perfect round. Ready to try Level {nextLevel}?</strong>
+      <div className="level-advancement-offer__actions">
+        <GameButton onClick={onCustomize}>Customize training</GameButton>
+        <GameButton tone="quiet" onClick={() => setVisible(false)}>
+          Not now
+        </GameButton>
+      </div>
+    </aside>
+  );
+};
 
 interface ResultStat {
   label: string;
@@ -39,6 +76,7 @@ interface ResultsScreenProps {
   onNewGame: () => void;
   onTrainAgain: () => void;
   onStartTraining: () => void;
+  onCustomizeTraining: () => void;
   onRetryLeague: () => void;
   result: GameResult;
   resultSaved: boolean;
@@ -54,6 +92,7 @@ export const ResultsScreen = ({
   onNewGame,
   onTrainAgain,
   onStartTraining,
+  onCustomizeTraining,
   onRetryLeague,
   result,
   resultSaved,
@@ -65,6 +104,9 @@ export const ResultsScreen = ({
   const isDaily = mode.kind === 'daily';
   const isLeague = mode.kind === 'league';
   const isTraining = mode.kind === 'training';
+  const nextLevel = isTraining
+    ? suggestedLevel(result, settings.difficulty, resultSaved)
+    : null;
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
   const resultStats: ResultStat[] = [
@@ -296,6 +338,13 @@ export const ResultsScreen = ({
           </GameButton>
         </div>
       )}
+      {nextLevel && result.rules ? (
+        <LevelAdvancementOffer
+          currentLevel={result.rules.difficulty}
+          nextLevel={nextLevel}
+          onCustomize={onCustomizeTraining}
+        />
+      ) : null}
       {isDaily && resultSaved ? (
         <DailyReminderPrompt dailyDate={mode.date} />
       ) : null}
