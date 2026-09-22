@@ -59,6 +59,7 @@ export function completion(
     mode === 'training'
       ? getTrainingScoreMultipliers({
           difficulty: 3,
+          formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
           generations: [...generations],
           questionTypes: [...coreQuestionTypes],
         })

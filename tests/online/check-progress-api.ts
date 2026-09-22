@@ -532,6 +532,24 @@ try {
   passed.push(
     'weighted Training shares one best across difficulties and preserves custom qualification',
   );
+  const legacy = await signIn();
+  const legacyRound = completion(legacy.datasetId);
+  delete legacyRound.result.scoreMultipliers?.formGroupCount;
+  legacyRound.result.score = calculateScore(
+    legacyRound.result.answers,
+    legacyRound.result.scoreMultipliers,
+  );
+  const legacyAction = action(
+    legacy.datasetId,
+    legacy.generationId,
+    'completion.record',
+    legacyRound,
+  );
+  assert.equal(
+    (await outcomes(await upload(legacy, [legacyAction])))[0]!.status,
+    'accepted',
+  );
+  passed.push('saved Training scores without a form multiplier still sync');
   const collector = await signIn();
   const collectorAction = (kind: Action['kind'], payload: unknown) =>
     action(collector.datasetId, collector.generationId, kind, payload);

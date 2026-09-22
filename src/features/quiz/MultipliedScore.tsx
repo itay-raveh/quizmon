@@ -19,7 +19,7 @@ export const MultipliedScore = ({
   const reducedMotion = useReducedMotion();
   const { playScoreCount } = useGameSounds();
   const [elapsed, setElapsed] = useState(0);
-  const duration = 2400;
+  const duration = multipliers.formGroupCount === undefined ? 2400 : 2900;
 
   useEffect(() => {
     if (reducedMotion || score === 0) return;
@@ -50,26 +50,45 @@ export const MultipliedScore = ({
       playback?.stop();
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [playScoreCount, reducedMotion, score]);
+  }, [duration, playScoreCount, reducedMotion, score]);
 
   const time = reducedMotion || score === 0 ? duration : elapsed;
   const stages = [
     { label: 'Difficulty', factor: multipliers.difficulty, start: 900 },
     { label: 'Generations', factor: multipliers.generations, start: 1400 },
+    ...(multipliers.formGroupCount === undefined
+      ? []
+      : [
+          {
+            label: 'Forms',
+            factor: 1.25 ** multipliers.formGroupCount,
+            start: 1900,
+          },
+        ]),
     {
       label: 'Question types',
       factor: getQuestionTypesMultiplier(multipliers.questionTypes),
-      start: 1900,
+      start: duration - 500,
     },
   ];
   const targets = [
     baseScore,
     baseScore * multipliers.difficulty,
     baseScore * multipliers.difficulty * multipliers.generations,
+    ...(multipliers.formGroupCount === undefined
+      ? []
+      : [
+          baseScore *
+            multipliers.difficulty *
+            multipliers.generations *
+            1.25 ** multipliers.formGroupCount,
+        ]),
     score,
   ];
   const index =
-    time < 900 ? 0 : Math.min(3, 1 + Math.floor((time - 900) / 500));
+    time < 900
+      ? 0
+      : Math.min(stages.length, 1 + Math.floor((time - 900) / 500));
   const start = index === 0 ? 0 : 900 + (index - 1) * 500;
   const progress = Math.min(1, (time - start) / (index === 0 ? 900 : 500));
   const from = index === 0 ? 0 : targets[index - 1]!;
@@ -85,12 +104,7 @@ export const MultipliedScore = ({
         aria-label={`Score ${formatScore(score)}`}
         style={
           {
-            '--score-digits': formatScore(
-              Math.max(
-                score,
-                baseScore * multipliers.difficulty * multipliers.generations,
-              ),
-            ).length,
+            '--score-digits': formatScore(Math.max(score, ...targets)).length,
           } as CSSProperties
         }
       >

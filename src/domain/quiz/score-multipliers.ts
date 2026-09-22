@@ -4,11 +4,19 @@ import { getQuestionVariant } from './question-variants.ts';
 import type { QuestionType } from './types.ts';
 import { isRecord } from '../../lib/validation.ts';
 import { generations } from '../pokemon/types.ts';
+import { formGroups } from '../pokemon/types.ts';
+import { getFormGroup } from '../pokemon/forms.ts';
+import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { isDifficulty } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { type ScoreMultipliers } from './types.ts';
 
 const savedQuestionTypes: readonly string[] = [...questionTypes];
+const formGroupGenerations = new Map(
+  formGroups.map((group) => [group, new Set<string>()]),
+);
+for (const [name, generation] of Object.entries(pokemonGenerations))
+  formGroupGenerations.get(getFormGroup(name))?.add(generation);
 
 export const isScoreMultipliers = (value: unknown): value is ScoreMultipliers =>
   isRecord(value) &&
@@ -17,6 +25,11 @@ export const isScoreMultipliers = (value: unknown): value is ScoreMultipliers =>
   Number.isInteger(value.generations) &&
   value.generations >= 1 &&
   value.generations <= generations.length &&
+  (value.formGroupCount === undefined ||
+    (typeof value.formGroupCount === 'number' &&
+      Number.isInteger(value.formGroupCount) &&
+      value.formGroupCount >= 0 &&
+      value.formGroupCount <= formGroups.length)) &&
   Array.isArray(value.questionTypes) &&
   value.questionTypes.length > 0 &&
   value.questionTypes.every(
@@ -38,6 +51,7 @@ export const getQuestionTypesMultiplier = (
 export const getScoreMultiplier = (multipliers: ScoreMultipliers): number =>
   multipliers.difficulty *
   multipliers.generations *
+  1.25 ** (multipliers.formGroupCount ?? 0) *
   getQuestionTypesMultiplier(multipliers.questionTypes);
 
 export const getQuestionTypeMultiplier = (
@@ -64,7 +78,8 @@ export const getQuestionTypeMultiplier = (
 };
 
 export const getTrainingScoreMultipliers = (
-  settings: Pick<GameSettings, 'difficulty' | 'generations' | 'questionTypes'>,
+  settings: Pick<GameSettings, 'difficulty' | 'generations' | 'questionTypes'> &
+    Partial<Pick<GameSettings, 'formGroups'>>,
 ): ScoreMultipliers | undefined => {
   if (!settings.difficulty || !settings.generations.length) return undefined;
   const difficulty = settings.difficulty;
@@ -74,10 +89,19 @@ export const getTrainingScoreMultipliers = (
       return multiplier === undefined ? [] : [{ questionType, multiplier }];
     },
   );
+  const selectedGenerations = new Set<string>(settings.generations);
+  const formGroupCount = formGroups.filter(
+    (group) =>
+      (settings.formGroups ?? formGroups).includes(group) &&
+      [...formGroupGenerations.get(group)!].some((generation) =>
+        selectedGenerations.has(generation),
+      ),
+  ).length;
   return factors.length
     ? {
         difficulty,
-        generations: new Set(settings.generations).size,
+        generations: selectedGenerations.size,
+        formGroupCount,
         questionTypes: factors,
       }
     : undefined;

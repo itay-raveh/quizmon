@@ -361,18 +361,22 @@ export function validateCompletion(value: unknown): string | null {
     )
       return 'invalid_configuration';
   }
-  if (
-    value.mode === 'training' &&
-    getTrainingScoreMultipliers(value.training) &&
-    !result.scoreMultipliers
-  )
+  const expectedScoreMultipliers =
+    value.mode === 'training'
+      ? getTrainingScoreMultipliers(value.training)
+      : undefined;
+  if (expectedScoreMultipliers && !result.scoreMultipliers)
     return 'invalid_score';
   if (
     result.scoreMultipliers !== undefined &&
     (value.mode !== 'training' ||
       !isScoreMultipliers(result.scoreMultipliers) ||
       JSON.stringify(result.scoreMultipliers) !==
-        JSON.stringify(getTrainingScoreMultipliers(value.training)))
+        JSON.stringify(
+          result.scoreMultipliers.formGroupCount === undefined
+            ? { ...expectedScoreMultipliers, formGroupCount: undefined }
+            : expectedScoreMultipliers,
+        ))
   )
     return 'invalid_score';
   const answers = result.answers as AnswerResult[];

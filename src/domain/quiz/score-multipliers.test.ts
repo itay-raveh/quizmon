@@ -14,6 +14,9 @@ const multipliers: ScoreMultipliers = {
 
 it('adds hard types and penalizes easy types in the combined multiplier', () => {
   expect(getScoreMultiplier(multipliers)).toBe(56.25);
+  expect(getScoreMultiplier({ ...multipliers, formGroupCount: 4 })).toBe(
+    137.3291015625,
+  );
   expect(
     getScoreMultiplier({
       ...multipliers,
@@ -36,6 +39,7 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
 
 it('accepts saved factors without depending on current variant rules', () => {
   expect(isScoreMultipliers(multipliers)).toBe(true);
+  expect(isScoreMultipliers({ ...multipliers, formGroupCount: 4 })).toBe(true);
   expect(
     isScoreMultipliers({
       ...multipliers,
@@ -49,6 +53,9 @@ it.each([
   { generations: 0 },
   { generations: 10 },
   { generations: 1.5 },
+  { formGroupCount: -1 },
+  { formGroupCount: 5 },
+  { formGroupCount: 1.5 },
   { questionTypes: [] },
   {
     questionTypes: [...multipliers.questionTypes, ...multipliers.questionTypes],
@@ -76,18 +83,36 @@ it.each([
     expect(getQuestionTypeMultiplier(type, level)).toBe(factor);
   },
 );
-it('counts unique generations and eligible selected types once, without a form bonus', () => {
+it('counts unique generations, eligible form groups, and selected types once', () => {
   expect(
     getTrainingScoreMultipliers({
       difficulty: 3,
+      formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
       generations: ['I', 'II', 'II'],
       questionTypes: ['sprite-match', 'sprite-match', 'hidden-abilities'],
     }),
   ).toEqual({
     difficulty: 3,
     generations: 2,
+    formGroupCount: 1,
     questionTypes: [{ questionType: 'sprite-match', multiplier: 1 }],
   });
+  expect(
+    getTrainingScoreMultipliers({
+      difficulty: 3,
+      formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
+      generations: ['I', 'VII'],
+      questionTypes: ['sprite-match'],
+    })?.formGroupCount,
+  ).toBe(2);
+  expect(
+    getTrainingScoreMultipliers({
+      difficulty: 3,
+      formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
+      generations: ['I', 'VI', 'VII', 'VIII'],
+      questionTypes: ['sprite-match'],
+    })?.formGroupCount,
+  ).toBe(4);
   expect(
     getTrainingScoreMultipliers({
       difficulty: 3,

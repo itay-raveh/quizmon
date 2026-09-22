@@ -228,6 +228,7 @@ export interface GameResult {
 export interface ScoreMultipliers {
   difficulty: Difficulty;
   generations: number;
+  formGroupCount?: number;
   questionTypes: {
     questionType: QuestionType;
     multiplier: 0.75 | 1 | 1.25;
