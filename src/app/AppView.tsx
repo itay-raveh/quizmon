@@ -21,6 +21,7 @@ import type { useTrainerCard } from '../features/trainer/useTrainerCard';
 import type { usePokemonCatalog } from '../hooks/usePokemonCatalog';
 import { SoundProvider } from '../lib/audio/SoundProvider';
 import { Footer } from './Footer';
+import { BugReportButton } from './BugReportButton';
 import type { GameSession } from './game-session';
 import { HomeScreen } from './HomeScreen';
 import { MotionProvider } from './providers/MotionProvider';
@@ -400,6 +401,7 @@ export const AppView = (props: AppViewProps) => {
               className={`app app--${props.trainer.isOpen && showNavigation ? 'trainer' : props.session.phase}${showNavigation ? ' app--with-navigation' : ''}${destination.destination && showNavigation ? ' app--destination' : ''}`}
             >
               <div className="background" aria-hidden="true" />
+              <BugReportButton />
               <div className="app__screen">
                 {showNavigation ? (
                   <AppNavigation
