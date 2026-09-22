@@ -214,6 +214,13 @@ export const TrainingSettings = ({
             }))
           }
         />
+        {customized ? (
+          <p className="settings-note" role="status">
+            Custom questions count toward Quick Attack and Perfect Form badges
+            only when they match the automatic question types for this level and
+            generations.
+          </p>
+        ) : null}
       </section>
 
       {!customized ? null : (

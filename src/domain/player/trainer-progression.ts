@@ -203,7 +203,7 @@ const trainerBadgeDefinitions = [
         stats.quickAttackRounds,
         [1, 10, 50],
         (goal) =>
-          `Finish ${goal} ten-question Training round${goal === 1 ? '' : 's'} in under 60 seconds each with at least 8 correct answers, using automatic questions or an equivalent custom selection`,
+          `Finish ${goal} ten-question Training round${goal === 1 ? '' : 's'} in under 60 seconds each with at least 8 correct answers`,
       ),
   },
   {
@@ -213,8 +213,7 @@ const trainerBadgeDefinitions = [
       countMilestones(
         stats.masteryRounds,
         [3, 25, 100],
-        (goal) =>
-          `Finish ${goal} perfect ten-question Training rounds using automatic questions or an equivalent custom selection`,
+        (goal) => `Finish ${goal} perfect ten-question Training rounds`,
       ),
   },
   {

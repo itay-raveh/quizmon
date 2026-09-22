@@ -32,6 +32,10 @@
   margin-bottom: 1.25rem;
 }
 
+.settings-section > .settings-note {
+  margin-top: 0.75rem;
+}
+
 .settings-section__heading {
   display: flex;
   margin-bottom: 0.75rem;
