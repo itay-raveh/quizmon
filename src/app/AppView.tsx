@@ -22,6 +22,7 @@ import type { usePokemonCatalog } from '../hooks/usePokemonCatalog';
 import { SoundProvider } from '../lib/audio/SoundProvider';
 import { Footer } from './Footer';
 import { BugReportButton } from './BugReportButton';
+import { sentryEnabled } from '../lib/sentry';
 import type { GameSession } from './game-session';
 import { HomeScreen } from './HomeScreen';
 import { MotionProvider } from './providers/MotionProvider';
@@ -402,7 +403,7 @@ export const AppView = (props: AppViewProps) => {
               className={`app app--${props.trainer.isOpen && showNavigation ? 'trainer' : props.session.phase}${showNavigation ? ' app--with-navigation' : ''}${destination.destination && showNavigation ? ' app--destination' : ''}`}
             >
               <div className="background" aria-hidden="true" />
-              <BugReportButton />
+              {showNavigation ? <BugReportButton /> : null}
               <div className="app__screen">
                 {showNavigation ? (
                   <AppNavigation
@@ -430,6 +431,11 @@ export const AppView = (props: AppViewProps) => {
                   />
                 ) : null}
                 <main ref={main}>
+                  {!showNavigation && sentryEnabled ? (
+                    <div className="bug-report-row">
+                      <BugReportButton />
+                    </div>
+                  ) : null}
                   <AppScreen
                     {...props}
                     destination={destination}

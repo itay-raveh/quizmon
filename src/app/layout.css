@@ -18,6 +18,23 @@
   place-items: center;
 }
 
+.app--questions main:has(.bug-report-row) {
+  padding-top: calc(0.65rem + env(safe-area-inset-top));
+  grid-template-rows: auto 1fr;
+  row-gap: 0.45rem;
+}
+
+.bug-report-row {
+  display: flex;
+  width: 100%;
+  max-width: 42rem;
+  justify-content: flex-end;
+}
+
+.bug-report-row .bug-report-button {
+  position: static;
+}
+
 .app-header {
   display: flex;
   width: min(100%, 74rem);
