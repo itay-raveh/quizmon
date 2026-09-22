@@ -1,5 +1,6 @@
 import { CoffeeIcon } from '@phosphor-icons/react/ssr';
 import { useEffect, useRef } from 'react';
+import { attachBugReport, sentryEnabled } from '../lib/sentry.ts';
 import {
   footerCredits,
   footerDisclaimer,
@@ -10,34 +11,20 @@ import { site } from './site.ts';
 export const Footer = ({ currentPath }: { currentPath?: string }) => {
   const reportButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    let detach: (() => void) | undefined;
-    let mounted = true;
-    if (reportButton.current)
-      void import('../lib/sentry.ts')
-        .then(({ attachBugReport }) => {
-          if (mounted && reportButton.current)
-            detach = attachBugReport(reportButton.current);
-        })
-        .catch(() => {});
-    return () => {
-      mounted = false;
-      detach?.();
-    };
+    if (reportButton.current) return attachBugReport(reportButton.current);
   }, []);
   return (
     <footer className="site-footer">
       <div className="site-footer__support-row">
-        {typeof window !== 'undefined' &&
-          import.meta.env?.PROD &&
-          import.meta.env?.VITE_SENTRY_DSN && (
-            <button
-              ref={reportButton}
-              className="game-button game-button--quiet site-footer__support"
-              type="button"
-            >
-              Report a bug
-            </button>
-          )}
+        {sentryEnabled && (
+          <button
+            ref={reportButton}
+            className="game-button game-button--quiet site-footer__support"
+            type="button"
+          >
+            Report a bug
+          </button>
+        )}
         <a
           className="game-button game-button--quiet site-footer__support"
           href={site.supportUrl}

@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 
-const env = import.meta.env as {
+const env = (import.meta.env ?? { PROD: false }) as {
   PROD: boolean;
   VITE_SENTRY_DSN?: string;
   VITE_SENTRY_RELEASE?: string;
