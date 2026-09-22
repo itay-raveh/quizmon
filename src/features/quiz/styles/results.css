@@ -166,9 +166,8 @@
 
 .score-factors {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem 1.25rem;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
   margin: 0.75rem 0;
   padding: 0;
   list-style: none;
@@ -177,15 +176,18 @@
 
 .score-factors li {
   display: grid;
+  flex: 1;
+  min-width: 0;
   gap: 0.125rem;
-  padding: 0.2rem;
+  padding: 0.2rem 0;
   transition:
     color 150ms,
     transform 150ms;
 }
 
 .score-factors span {
-  font-size: var(--text-label);
+  font-size: clamp(0.65rem, 3cqw, var(--text-label));
+  overflow-wrap: anywhere;
 }
 
 .score-factors strong {
