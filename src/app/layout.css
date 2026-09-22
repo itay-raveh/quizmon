@@ -8,6 +8,7 @@
 
 .app-header .bug-report-button {
   grid-column: 3;
+  justify-self: end;
   display: grid;
   width: 2.8rem;
   height: 2.8rem;
