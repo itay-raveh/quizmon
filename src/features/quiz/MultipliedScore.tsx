@@ -67,7 +67,10 @@ export const MultipliedScore = ({
         ]),
     {
       label: 'Question types',
-      factor: getQuestionTypesMultiplier(multipliers.questionTypes),
+      factor: getQuestionTypesMultiplier(
+        multipliers.questionTypes,
+        multipliers.questionMix,
+      ),
       start: duration - 500,
     },
   ];

@@ -363,7 +363,13 @@ export function validateCompletion(value: unknown): string | null {
   }
   const expectedScoreMultipliers =
     value.mode === 'training'
-      ? getTrainingScoreMultipliers(value.training)
+      ? getTrainingScoreMultipliers(
+          value.training,
+          isObject(result.scoreMultipliers) &&
+            result.scoreMultipliers.questionMix !== undefined
+            ? (result.answers as AnswerResult[])
+            : undefined,
+        )
       : undefined;
   if (expectedScoreMultipliers && !result.scoreMultipliers)
     return 'invalid_score';

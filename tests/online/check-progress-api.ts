@@ -495,7 +495,10 @@ try {
       generations: [...round.training.generations],
       questionTypes: ['type-check'],
     };
-    round.result.scoreMultipliers = getTrainingScoreMultipliers(round.training);
+    round.result.scoreMultipliers = getTrainingScoreMultipliers(
+      round.training,
+      round.result.answers,
+    );
     round.scoreVersion = round.result.scoreVersion = gameVersions.score;
     round.result.score = calculateScore(
       round.result.answers,
@@ -535,6 +538,7 @@ try {
   const legacy = await signIn();
   const legacyRound = completion(legacy.datasetId);
   delete legacyRound.result.scoreMultipliers?.formGroupCount;
+  delete legacyRound.result.scoreMultipliers?.questionMix;
   legacyRound.result.score = calculateScore(
     legacyRound.result.answers,
     legacyRound.result.scoreMultipliers,
@@ -549,7 +553,28 @@ try {
     (await outcomes(await upload(legacy, [legacyAction])))[0]!.status,
     'accepted',
   );
-  passed.push('saved Training scores without a form multiplier still sync');
+  const inflatedMix = completion(legacy.datasetId);
+  inflatedMix.result.scoreMultipliers!.questionMix = 1.25;
+  inflatedMix.result.score = calculateScore(
+    inflatedMix.result.answers,
+    inflatedMix.result.scoreMultipliers,
+  );
+  assert.equal(
+    (
+      await outcomes(
+        await upload(legacy, [
+          action(
+            legacy.datasetId,
+            legacy.generationId,
+            'completion.record',
+            inflatedMix,
+          ),
+        ]),
+      )
+    )[0]!.code,
+    'invalid_score',
+  );
+  passed.push('legacy Training scores sync and drawn question mix is verified');
   const collector = await signIn();
   const collectorAction = (kind: Action['kind'], payload: unknown) =>
     action(collector.datasetId, collector.generationId, kind, payload);
@@ -583,6 +608,7 @@ try {
   }));
   items.result.scoreMultipliers = getTrainingScoreMultipliers(
     items.result.rules!,
+    items.result.answers,
   );
   items.result.score = calculateScore(
     items.result.answers,

@@ -65,7 +65,12 @@ export const App = () => {
           roundId,
           seed,
           ...(nextMode.kind === 'training'
-            ? { scoreMultipliers: getTrainingScoreMultipliers(nextSettings) }
+            ? {
+                scoreMultipliers: getTrainingScoreMultipliers(
+                  nextSettings,
+                  nextQuestions,
+                ),
+              }
             : {}),
           elapsedMilliseconds: 0,
         });
@@ -79,7 +84,12 @@ export const App = () => {
           seed,
           type: 'started',
           ...(nextMode.kind === 'training'
-            ? { scoreMultipliers: getTrainingScoreMultipliers(nextSettings) }
+            ? {
+                scoreMultipliers: getTrainingScoreMultipliers(
+                  nextSettings,
+                  nextQuestions,
+                ),
+              }
             : {}),
         });
         reset();

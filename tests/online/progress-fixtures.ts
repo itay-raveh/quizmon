@@ -57,12 +57,15 @@ export function completion(
   );
   const scoreMultipliers =
     mode === 'training'
-      ? getTrainingScoreMultipliers({
-          difficulty: 3,
-          formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
-          generations: [...generations],
-          questionTypes: [...coreQuestionTypes],
-        })
+      ? getTrainingScoreMultipliers(
+          {
+            difficulty: 3,
+            formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
+            generations: [...generations],
+            questionTypes: [...coreQuestionTypes],
+          },
+          answers,
+        )
       : undefined;
   return {
     recordVersion: 1,

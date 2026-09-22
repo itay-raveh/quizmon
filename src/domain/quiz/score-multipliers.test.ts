@@ -37,9 +37,42 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
   ).toBe(70.3125);
 });
 
+it('scores the drawn question mix without rewarding unused selected types', () => {
+  const settings = {
+    difficulty: 5 as const,
+    generations: ['I' as const],
+    formGroups: ['standard' as const],
+    questionTypes: ['type-check', 'stat-showdown', 'legend-hunt'] as (
+      'type-check' | 'stat-showdown' | 'legend-hunt'
+    )[],
+  };
+  const drawn = [
+    ...Array.from({ length: 9 }, () => ({
+      questionType: 'type-check' as const,
+    })),
+    { questionType: 'stat-showdown' as const },
+  ];
+  const actual = getTrainingScoreMultipliers(settings, drawn);
+  expect(actual?.questionMix).toBe(1.025);
+  expect(actual && getScoreMultiplier(actual)).toBeCloseTo(6.40625);
+  expect(
+    getTrainingScoreMultipliers(settings, [
+      ...drawn.slice(0, 9),
+      { questionType: 'legend-hunt' },
+    ])?.questionMix,
+  ).toBe(0.975);
+  expect(
+    getTrainingScoreMultipliers(
+      { ...settings, questionTypes: ['type-check', 'stat-showdown'] },
+      drawn,
+    )?.questionMix,
+  ).toBe(actual?.questionMix);
+});
+
 it('accepts saved factors without depending on current variant rules', () => {
   expect(isScoreMultipliers(multipliers)).toBe(true);
   expect(isScoreMultipliers({ ...multipliers, formGroupCount: 4 })).toBe(true);
+  expect(isScoreMultipliers({ ...multipliers, questionMix: 1.025 })).toBe(true);
   expect(
     isScoreMultipliers({
       ...multipliers,
@@ -56,6 +89,8 @@ it.each([
   { formGroupCount: -1 },
   { formGroupCount: 5 },
   { formGroupCount: 1.5 },
+  { questionMix: 1.5 },
+  { questionMix: Number.NaN },
   { questionTypes: [] },
   {
     questionTypes: [...multipliers.questionTypes, ...multipliers.questionTypes],

@@ -53,9 +53,11 @@ export const TrainingSettings = ({
     <>
       {scoreMultipliers ? (
         <p className="training-multiplier" role="status">
-          <span>Training multiplier</span>
+          <span>Base multiplier</span>
           <strong>
-            {formatScoreMultiplier(getScoreMultiplier(scoreMultipliers))}
+            {formatScoreMultiplier(
+              getScoreMultiplier({ ...scoreMultipliers, questionMix: 1 }),
+            )}
           </strong>
         </p>
       ) : null}
