@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { getUtcDate } from '../domain/quiz/daily';
 import { AppNavigation } from './AppNavigation';
+import { BugReportButton } from './BugReportButton';
 import { Footer } from './Footer';
 import { Sentry, captureUnexpectedError } from '../lib/sentry';
 import { HomeScreen } from './HomeScreen';
@@ -12,6 +13,7 @@ export const mountGame = (root: HTMLElement) => {
     <StrictMode>
       <div className="app app--landing app--with-navigation" aria-busy="true">
         <div className="background" aria-hidden="true" />
+        <BugReportButton />
         <div className="app__screen">
           <div inert>
             <AppNavigation

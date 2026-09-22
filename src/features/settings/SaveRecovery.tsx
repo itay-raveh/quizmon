@@ -1,5 +1,6 @@
 import { canRecoverGuestSave } from '@/lib/storage/player-storage';
 import { Footer } from '@/app/Footer';
+import { BugReportButton } from '@/app/BugReportButton';
 import { Logo } from '@/app/Logo';
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
@@ -251,6 +252,7 @@ export const SaveRecoveryBoundary = ({ children }: { children: ReactNode }) => {
     <div className="app app--landing">
       {issue.kind === 'newer' && <AutomaticUpdate allowed />}
       <div className="background" aria-hidden="true" />
+      <BugReportButton />
       <div className="app__screen">
         <main>
           <Logo />

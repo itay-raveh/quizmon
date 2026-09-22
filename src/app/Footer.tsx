@@ -1,6 +1,4 @@
 import { CoffeeIcon } from '@phosphor-icons/react/ssr';
-import { useEffect, useRef } from 'react';
-import { attachBugReport, sentryEnabled } from '../lib/sentry.ts';
 import {
   footerCredits,
   footerDisclaimer,
@@ -9,22 +7,9 @@ import {
 import { site } from './site.ts';
 
 export const Footer = ({ currentPath }: { currentPath?: string }) => {
-  const reportButton = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (reportButton.current) return attachBugReport(reportButton.current);
-  }, []);
   return (
     <footer className="site-footer">
       <div className="site-footer__support-row">
-        {sentryEnabled && (
-          <button
-            ref={reportButton}
-            className="game-button game-button--quiet site-footer__support"
-            type="button"
-          >
-            Report a bug
-          </button>
-        )}
         <a
           className="game-button game-button--quiet site-footer__support"
           href={site.supportUrl}
