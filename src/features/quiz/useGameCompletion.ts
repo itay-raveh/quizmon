@@ -11,7 +11,6 @@ import { getTrainerProgressChanges } from '../../domain/player/trainer-progressi
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { getResponseTime } from '../../domain/quiz/scoring';
 import type { AnswerResult, GameResult } from '../../domain/quiz/types';
-import { trackGameCompleted } from '../../lib/analytics';
 import { writeActiveGame } from '../../lib/storage/active-game-storage';
 import {
   readPlayerData,
@@ -74,7 +73,6 @@ export const useGameCompletion = ({
       );
       progressStart.current = null;
       refreshTrainerStats();
-      if (best.recorded) trackGameCompleted(mode, result);
       dispatch({
         bestResult: best.best,
         isNewBest: best.isNewBest,

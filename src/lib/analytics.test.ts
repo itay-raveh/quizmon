@@ -16,7 +16,7 @@ import {
 it('emits bounded game metrics without answers or player identity', () => {
   trackPageViewed();
   trackGameStarted({ kind: 'training' }, 10);
-  trackGameCompleted({ kind: 'training' }, {
+  trackGameCompleted('training', {
     score: 1200,
     correctCount: 8,
     questionCount: 10,
