@@ -6,11 +6,8 @@
   container: app-shell / inline-size;
 }
 
-.bug-report-button {
-  position: fixed;
-  z-index: 2;
-  top: calc(0.65rem + env(safe-area-inset-top));
-  right: calc(0.85rem + env(safe-area-inset-right));
+.app-header .bug-report-button {
+  grid-column: 3;
   display: grid;
   width: 2.8rem;
   height: 2.8rem;
@@ -18,35 +15,31 @@
   place-items: center;
 }
 
-.app--questions main:has(.bug-report-row) {
-  padding-top: calc(0.65rem + env(safe-area-inset-top));
+.app--questions .app__screen {
   grid-template-rows: auto 1fr;
-  row-gap: 0.45rem;
 }
 
-.bug-report-row {
-  display: flex;
-  width: 100%;
-  max-width: 42rem;
-  justify-content: flex-end;
-}
-
-.bug-report-row .bug-report-button {
-  position: static;
+.app--questions main {
+  padding-top: 0.45rem;
 }
 
 .app-header {
-  display: flex;
+  display: grid;
   width: min(100%, 74rem);
   margin-inline: auto;
-  padding: 0.6rem clamp(0.85rem, 2.5vw, 1.75rem);
-  padding-right: calc(4rem + env(safe-area-inset-right));
+  padding: calc(0.6rem + env(safe-area-inset-top))
+    calc(clamp(0.85rem, 2.5vw, 1.75rem) + env(safe-area-inset-right)) 0.6rem
+    calc(clamp(0.85rem, 2.5vw, 1.75rem) + env(safe-area-inset-left));
   align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.app-header > .settings-link {
+  grid-column: 1;
 }
 
 .app-navigation {
+  grid-column: 2;
   display: grid;
   width: min(100%, 42rem);
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -111,9 +104,6 @@
   align-items: start;
 }
 @media (max-width: 50rem) {
-  .app-header {
-    justify-content: flex-start;
-  }
   .app--with-navigation {
     padding-bottom: calc(6.25rem + env(safe-area-inset-bottom));
   }

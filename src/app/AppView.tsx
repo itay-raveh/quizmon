@@ -21,8 +21,6 @@ import type { useTrainerCard } from '../features/trainer/useTrainerCard';
 import type { usePokemonCatalog } from '../hooks/usePokemonCatalog';
 import { SoundProvider } from '../lib/audio/SoundProvider';
 import { Footer } from './Footer';
-import { BugReportButton } from './BugReportButton';
-import { sentryEnabled } from '../lib/sentry';
 import type { GameSession } from './game-session';
 import { HomeScreen } from './HomeScreen';
 import { MotionProvider } from './providers/MotionProvider';
@@ -403,39 +401,32 @@ export const AppView = (props: AppViewProps) => {
               className={`app app--${props.trainer.isOpen && showNavigation ? 'trainer' : props.session.phase}${showNavigation ? ' app--with-navigation' : ''}${destination.destination && showNavigation ? ' app--destination' : ''}`}
             >
               <div className="background" aria-hidden="true" />
-              {showNavigation ? <BugReportButton /> : null}
               <div className="app__screen">
-                {showNavigation ? (
-                  <AppNavigation
-                    active={active}
-                    accountOpen={destination.destination === 'account'}
-                    onAccount={onAccount}
-                    onSettings={props.settingsDialog.open}
-                    trainerAvailable={props.catalogState.status === 'ready'}
-                    onNavigate={(next) => {
-                      if (next === 'trainer') destination.trainer();
-                      else if (next === 'social')
-                        destination.open(
-                          'leaderboards',
-                          props.session.phase === 'results' &&
-                            props.session.mode.kind === 'daily'
-                            ? props.session.mode.date
-                            : undefined,
-                        );
-                      else {
-                        destination.play();
-                        props.league.close();
-                        void props.navigation.returnToLanding();
-                      }
-                    }}
-                  />
-                ) : null}
+                <AppNavigation
+                  active={active}
+                  accountOpen={destination.destination === 'account'}
+                  onAccount={onAccount}
+                  onSettings={props.settingsDialog.open}
+                  showNavigation={showNavigation}
+                  trainerAvailable={props.catalogState.status === 'ready'}
+                  onNavigate={(next) => {
+                    if (next === 'trainer') destination.trainer();
+                    else if (next === 'social')
+                      destination.open(
+                        'leaderboards',
+                        props.session.phase === 'results' &&
+                          props.session.mode.kind === 'daily'
+                          ? props.session.mode.date
+                          : undefined,
+                      );
+                    else {
+                      destination.play();
+                      props.league.close();
+                      void props.navigation.returnToLanding();
+                    }
+                  }}
+                />
                 <main ref={main}>
-                  {!showNavigation && sentryEnabled ? (
-                    <div className="bug-report-row">
-                      <BugReportButton />
-                    </div>
-                  ) : null}
                   <AppScreen
                     {...props}
                     destination={destination}
