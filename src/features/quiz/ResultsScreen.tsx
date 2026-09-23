@@ -317,6 +317,13 @@ export const ResultsScreen = ({
           </ol>
         ) : null}
       </div>
+      {nextLevel && result.rules ? (
+        <LevelAdvancementOffer
+          currentLevel={result.rules.difficulty}
+          nextLevel={nextLevel}
+          onCustomize={onCustomizeTraining}
+        />
+      ) : null}
       {!isLeague ? (
         <div className="results__actions results__actions--paired">
           <GameButton onClick={isTraining ? onTrainAgain : onStartTraining}>
@@ -338,13 +345,6 @@ export const ResultsScreen = ({
           </GameButton>
         </div>
       )}
-      {nextLevel && result.rules ? (
-        <LevelAdvancementOffer
-          currentLevel={result.rules.difficulty}
-          nextLevel={nextLevel}
-          onCustomize={onCustomizeTraining}
-        />
-      ) : null}
       {isDaily && resultSaved ? (
         <DailyReminderPrompt dailyDate={mode.date} />
       ) : null}
