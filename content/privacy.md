@@ -1,6 +1,6 @@
 # Privacy and Cookies
 
-_Last updated: September 22, 2026_
+_Last updated: September 23, 2026_
 
 Quizmon is an open-source Pokémon knowledge game. This policy covers what we collect, how we use it, and your rights.
 
@@ -10,13 +10,13 @@ Itay Raveh operates Quizmon and is responsible for the information described in 
 
 ## On Your Device
 
-Guest progress stays in your browser, alongside files cached for offline play. If you sign in, completed progress and selected profile and game preferences also sync to your account. Unfinished rounds stay on the device. Clearing site data removes local saves; it does not remove account data. Sign-in uses a session cookie.
+Guest progress stays in your browser, alongside files cached for offline play and anonymous markers used to count the first visit, one visit per UTC day, and one visit per browser-tab session. If you sign in, completed progress and selected profile and game preferences also sync to your account. Unfinished rounds stay on the device. Clearing site data removes local saves and the anonymous analytics markers; it does not remove account data. Sign-in uses a session cookie.
 
 ## What We Collect
 
 Guests have no Quizmon account identifier in game analytics or error reports. If you sign in, error reports, feedback, and diagnostic traces may be associated with your verified account ID and email address.
 
-- **Game analytics** - Sentry records counts of page views, game starts, and saved completions, plus game mode and distributions of question counts, correct answers, score, duration, and content and scoring versions. We use these measurements to understand how the game is used. Individual answers, names, email addresses, and account IDs are not metric attributes.
+- **Game analytics** - Sentry records counts of page views, new browsers, daily active browsers, browser-tab sessions, game starts, and saved completions, plus game mode and distributions of question counts, correct answers, score, duration, and content and scoring versions. We use these measurements to understand how the game is used. The browser and session counters contain no visitor identifier. Individual answers, names, email addresses, and account IDs are not metric attributes.
 - **Error reports and performance** - Sentry receives unexpected browser and Worker errors, limited diagnostic categories, sampled loading and service traces, and masked replay when a browser error occurs. Replay can show clicks, navigation, and screen layout; text, inputs, and media are masked. We do not intentionally send saves, sign-in codes, session tokens, or sync request bodies.
 - **Bug reports (optional)** - If you choose Report a bug, your description and any name, email address, or screenshot you add are sent to Sentry. A screenshot may show information visible on your screen, so review it before sending. If you are signed in, the report can also carry your account ID and email address.
 - **Website analytics** - Cloudflare Web Analytics uses no cookies or persistent visitor identifiers. It measures visits, referring pages, and loading and interaction performance to help us improve the site. Cloudflare discards IP addresses at its nearest data center. See its [analytics privacy information](https://developers.cloudflare.com/speed/observatory/rum-beacon/#privacy-information).

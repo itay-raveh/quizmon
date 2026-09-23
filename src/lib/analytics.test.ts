@@ -4,8 +4,17 @@ const metrics = vi.hoisted(() => ({
   count: vi.fn(),
   distribution: vi.fn(),
 }));
+const storage = vi.hoisted(() => new Map<string, string>());
 
 vi.mock('./sentry', () => ({ Sentry: { metrics }, sentryEnabled: true }));
+vi.mock('./storage/browser-storage', () => ({
+  readStoredValue: (type: string, key: string) =>
+    storage.get(`${type}:${key}`) ?? null,
+  writeStoredValue: (type: string, key: string, value: string) => {
+    storage.set(`${type}:${key}`, value);
+    return true;
+  },
+}));
 
 import {
   trackGameCompleted,
@@ -13,8 +22,14 @@ import {
   trackPageViewed,
 } from './analytics';
 
+beforeEach(() => {
+  metrics.count.mockReset();
+  metrics.distribution.mockReset();
+  storage.clear();
+});
+
 it('emits bounded game metrics without answers or player identity', () => {
-  trackPageViewed();
+  trackPageViewed(new Date('2026-09-23T12:00:00Z'));
   trackGameStarted({ kind: 'training' }, 10);
   trackGameCompleted('training', {
     score: 1200,
@@ -44,6 +59,22 @@ it('emits bounded game metrics without answers or player identity', () => {
     1200,
     expect.any(Object),
   );
+});
+
+it('counts anonymous visitors once per install, UTC day, and tab session', () => {
+  trackPageViewed(new Date('2026-09-23T23:59:00Z'));
+  trackPageViewed(new Date('2026-09-23T23:59:30Z'));
+  trackPageViewed(new Date('2026-09-24T00:00:00Z'));
+
+  expect(metrics.count.mock.calls).toEqual([
+    ['quizmon.page_view'],
+    ['quizmon.visitor_first_seen'],
+    ['quizmon.visitor_daily_active'],
+    ['quizmon.session_started'],
+    ['quizmon.page_view'],
+    ['quizmon.page_view'],
+    ['quizmon.visitor_daily_active'],
+  ]);
 });
 
 it('keeps game actions available when telemetry throws', () => {
