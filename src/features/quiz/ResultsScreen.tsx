@@ -240,9 +240,6 @@ export const ResultsScreen = ({
         {perfectTraining ? (
           <div className="result-score__perfect">
             <strong>Perfect round</strong>
-            <span>
-              {result.correctCount} / {result.questionCount}
-            </span>
           </div>
         ) : null}
         {result.scoreMultipliers ? (
