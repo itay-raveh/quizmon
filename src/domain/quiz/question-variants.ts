@@ -142,8 +142,7 @@ const questionVariants: Record<
   'weight-comparison': measurementVariants,
   'height-comparison': measurementVariants,
   'move-types': {
-    1: { reviewedDescription: true },
-    2: {},
+    2: { reviewedDescription: true },
     3: { fullList: 'types' },
   },
   'name-that-region': { 2: {}, 3: { fullList: 'regions' } },
@@ -255,8 +254,7 @@ const questionVariants: Record<
     4: { search: true },
   },
   'type-check': {
-    1: { singleType: true },
-    2: {},
+    2: { singleType: true },
     3: { typeGrid: true },
     4: { typeGrid: true },
   },
