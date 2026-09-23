@@ -1,12 +1,39 @@
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { GameButton } from '../../components/GameButton';
+import {
+  readStoredValue,
+  removeStoredValue,
+} from '../../lib/storage/browser-storage';
 import { AccountSettings } from './AccountSettings';
-import { accountSnapshot, subscribeAccount } from './account';
+import { accountReturnPath } from './account-navigation';
+import {
+  accountSnapshot,
+  accountWelcomeKey,
+  subscribeAccount,
+} from './account';
 
-export function AccountScreen() {
+export function AccountScreen({
+  hasTrainerName,
+  onEditCard,
+}: {
+  hasTrainerName: boolean;
+  onEditCard: () => void;
+}) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const signingIn = !account.owner && !account.mergeRequired;
   const heading = useRef<HTMLHeadingElement>(null);
+  const [welcomeFor] = useState(() =>
+    readStoredValue('sessionStorage', accountWelcomeKey),
+  );
   useEffect(() => heading.current?.focus(), []);
+  useEffect(() => {
+    if (!account.owner || welcomeFor !== account.owner) return;
+    removeStoredValue('sessionStorage', accountWelcomeKey);
+    if (hasTrainerName) {
+      window.location.replace(accountReturnPath(window.location.href));
+    }
+  }, [account.owner, hasTrainerName, welcomeFor]);
+  const showWelcome = welcomeFor === account.owner && !hasTrainerName;
 
   return (
     <section
@@ -18,6 +45,23 @@ export function AccountScreen() {
           {signingIn ? 'Sign in' : 'Account'}
         </h1>
       </header>
+      {showWelcome && (
+        <section className="account-screen__welcome" aria-label="Welcome">
+          <h2>Welcome, Trainer!</h2>
+          <p>Other players can see your Trainer Card. Give it a name.</p>
+          <div className="account-settings__actions">
+            <GameButton onClick={onEditCard}>Edit card</GameButton>
+            <GameButton
+              tone="quiet"
+              onClick={() =>
+                window.location.replace(accountReturnPath(window.location.href))
+              }
+            >
+              Continue
+            </GameButton>
+          </div>
+        </section>
+      )}
       <AccountSettings />
     </section>
   );

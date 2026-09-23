@@ -105,7 +105,16 @@ export const TrainerPassport = ({
   const [revealing, setRevealing] = useState(
     !profile.hasBeenRevealed && view === 'front',
   );
-  const [editing, setEditing] = useUpdateState('trainer-editing', false);
+  const [editing, setEditing] = useUpdateState(
+    'trainer-editing',
+    new URLSearchParams(window.location.search).get('edit') === '1',
+  );
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('edit') !== '1') return;
+    url.searchParams.delete('edit');
+    window.history.replaceState(window.history.state, '', url);
+  }, []);
   const [name, setName] = useUpdateState('trainer-name', profile.name);
   const [avatar, setAvatar] = useUpdateState('trainer-avatar', profile.avatar);
   const [avatarQuery, setAvatarQuery] = useState('');
@@ -250,13 +259,17 @@ export const TrainerPassport = ({
         {view === 'front' ? (
           <GameButton
             className="trainer-passport__edit"
-            tone="quiet"
+            tone={!profile.name && !editing ? 'primary' : 'quiet'}
             onClick={toggleEditor}
           >
             {editing ? null : (
               <PencilSimpleIcon aria-hidden="true" weight="bold" />
             )}
-            {editing ? 'Cancel' : 'Edit card'}
+            {editing
+              ? 'Cancel'
+              : profile.name
+                ? 'Edit card'
+                : 'Add trainer name'}
           </GameButton>
         ) : null}
       </header>

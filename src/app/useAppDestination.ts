@@ -26,6 +26,7 @@ const clearDestination = (url: URL) => {
     'players',
     'ranking',
     'trainer',
+    'edit',
     'league',
     'player',
   ])
@@ -90,9 +91,10 @@ export function useAppDestination() {
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
-  const trainer = (view: TrainerView = 'front') => {
+  const trainer = (view: TrainerView = 'front', edit = false) => {
     const target = clearDestination(new URL(window.location.href));
     setTrainerRoute(target, view);
+    if (edit) target.searchParams.set('edit', '1');
     navigate(target);
   };
 

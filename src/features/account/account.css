@@ -28,6 +28,20 @@
   color: var(--navy);
 }
 
+.account-screen__welcome {
+  display: grid;
+  gap: 0.7rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  color: var(--navy);
+  border-bottom: 1px solid var(--navy);
+}
+
+.account-screen__welcome h2,
+.account-screen__welcome p {
+  margin: 0;
+}
+
 .account-settings,
 .account-settings__section {
   display: grid;

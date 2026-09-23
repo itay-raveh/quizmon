@@ -37,8 +37,10 @@ import {
 import { isRecord } from '../../lib/validation';
 import { readSyncConnection } from '../../domain/sync/connection';
 import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
+import { writeStoredValue } from '../../lib/storage/browser-storage';
 
 const selectionKey = 'quizmon.baseline.account';
+export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
 const auth = createAuthClient({ plugins: [emailOTPClient(), jwtClient()] });
 type Binding = { id: string; generationId: string; serverEpoch: string };
 let account: PowerSyncDatabase | undefined;
@@ -155,11 +157,12 @@ export async function verifySignInCode(email: string, otp: string) {
 export async function continueSignIn() {
   candidate = parseBinding(await accountRequest('/api/account'));
   if (selectedAccount() === candidate.id) {
-    window.history.replaceState(
-      null,
-      '',
-      accountReturnPath(window.location.href),
-    );
+    if (!writeStoredValue('sessionStorage', accountWelcomeKey, candidate.id))
+      window.history.replaceState(
+        null,
+        '',
+        accountReturnPath(window.location.href),
+      );
     window.location.reload();
     return;
   }
@@ -404,11 +407,17 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
             ],
           );
         });
-      window.history.replaceState(
-        null,
-        '',
-        accountReturnPath(window.location.href),
+      const welcomePending = writeStoredValue(
+        'sessionStorage',
+        accountWelcomeKey,
+        destination.id,
       );
+      if (!welcomePending)
+        window.history.replaceState(
+          null,
+          '',
+          accountReturnPath(window.location.href),
+        );
       window.location.reload();
     } finally {
       await guest.close();

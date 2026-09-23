@@ -72,7 +72,12 @@ const AppScreen = ({
   onViewPlayer: (id: string) => void;
 }) => {
   if (session.phase !== 'questions' && destination.destination === 'account') {
-    return <AccountScreen />;
+    return (
+      <AccountScreen
+        hasTrainerName={Boolean(trainer.profile.name.trim())}
+        onEditCard={() => destination.trainer('front', true)}
+      />
+    );
   }
   if (session.phase !== 'questions' && destination.destination === 'friends') {
     return (
