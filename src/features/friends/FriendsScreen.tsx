@@ -6,13 +6,11 @@ import { SocialSections } from './SocialSections';
 import './friends.css';
 
 export function FriendsScreen({
-  onRankings,
   onCloseInvitation,
   onSignIn,
   onViewPlayer,
   initialInput = '',
 }: {
-  onRankings: () => void;
   onCloseInvitation: () => void;
   onSignIn: () => void;
   onViewPlayer: (id: string) => void;
@@ -25,7 +23,7 @@ export function FriendsScreen({
       <header className="social-screen__header">
         <h1 id="social-title">Social</h1>
       </header>
-      <SocialSections active="friends" onRankings={onRankings} />
+      <SocialSections active="friends" />
       {account.owner && !account.mergeRequired && (
         <div className="social-screen__actions">
           <GameButton

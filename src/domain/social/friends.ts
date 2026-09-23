@@ -31,10 +31,9 @@ export function parseFriendInput(value: string, origin: string) {
   if (code) return code;
   try {
     const url = new URL(value);
-    if (url.origin !== origin || url.pathname !== '/') return null;
-    return normalizeFriendCode(
-      new URLSearchParams(url.hash.slice(1)).get('friend') ?? '',
-    );
+    if (url.origin !== origin || url.pathname !== '/social/friends')
+      return null;
+    return normalizeFriendCode(url.searchParams.get('code') ?? '');
   } catch {
     return null;
   }

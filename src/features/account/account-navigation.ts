@@ -1,3 +1,5 @@
+import { isGamePath } from '../../app/game-path';
+
 export function accountReturnPath(href: string): string {
   const current = new URL(href);
   const returnTo = current.searchParams.get('returnTo');
@@ -6,8 +8,8 @@ export function accountReturnPath(href: string): string {
       const target = new URL(returnTo, current);
       if (
         target.origin === current.origin &&
-        target.pathname === '/' &&
-        target.searchParams.get('screen') !== 'account'
+        target.pathname !== '/account' &&
+        isGamePath(target.pathname)
       ) {
         target.searchParams.delete('returnTo');
         return `${target.pathname}${target.search}${target.hash}`;
@@ -16,6 +18,5 @@ export function accountReturnPath(href: string): string {
       // Invalid return links must not prevent sign-in.
     }
   }
-  const code = new URLSearchParams(current.hash.slice(1)).get('friend');
-  return code ? `/#${new URLSearchParams({ friend: code })}` : '/';
+  return '/';
 }

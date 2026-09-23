@@ -1,136 +1,84 @@
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback } from 'react';
+import { matchPath, useLocation, useNavigate } from 'react-router';
 import type { TrainerView } from '../domain/player/trainer-progression';
 import type { LeaderboardMode } from '../domain/social/leaderboards';
-import { isRecord } from '../lib/validation';
-import { setTrainerRoute } from '../features/trainer/trainer-route';
+import { trainerPath } from '../features/trainer/trainer-route';
+import { isGamePath } from './game-path';
 
 type Destination = 'account' | 'friends' | 'leaderboards';
-const locationSnapshot = () => window.location.href;
-const subscribeLocation = (listener: () => void) => {
-  window.addEventListener('popstate', listener);
-  window.addEventListener('hashchange', listener);
-  return () => {
-    window.removeEventListener('popstate', listener);
-    window.removeEventListener('hashchange', listener);
-  };
-};
-const navigate = (url: URL) => {
-  window.history.pushState({ quizmonDestination: true }, '', url);
-  window.dispatchEvent(new PopStateEvent('popstate'));
-};
-const clearDestination = (url: URL) => {
-  for (const key of [
-    'screen',
-    'returnTo',
-    'standings',
-    'players',
-    'ranking',
-    'trainer',
-    'edit',
-    'league',
-    'player',
-  ])
-    url.searchParams.delete(key);
-  const fragment = new URLSearchParams(url.hash.slice(1));
-  fragment.delete('friend');
-  url.hash = fragment.toString();
-  return url;
-};
+type ProfileState = { from?: 'friends' | 'leaderboards' };
 
 export function useAppDestination() {
-  const href = useSyncExternalStore(subscribeLocation, locationSnapshot);
-  const url = new URL(href);
-  const screen = url.searchParams.get('screen');
-  const friendCode = new URLSearchParams(url.hash.slice(1)).get('friend');
-  const playerId = url.searchParams.get('player');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const playerId =
+    matchPath('/social/players/:id', location.pathname)?.params.id ?? '';
+  const profileFrom = (location.state as ProfileState | null)?.from;
   const destination: Destination | null =
-    screen === 'account' || screen === 'friends' || screen === 'leaderboards'
-      ? screen
-      : friendCode !== null
+    location.pathname === '/account'
+      ? 'account'
+      : location.pathname === '/social/friends' ||
+          (playerId && profileFrom === 'friends')
         ? 'friends'
-        : null;
+        : location.pathname === '/social/rankings' || playerId
+          ? 'leaderboards'
+          : null;
 
-  const open = (next: Destination, date?: string) => {
-    const target = new URL(window.location.href);
-    target.searchParams.set('screen', next);
-    target.searchParams.delete('returnTo');
-    target.searchParams.delete('player');
-    if (date) target.searchParams.set('standings', date);
-    target.hash = '';
-    navigate(target);
+  const open = (next: 'friends' | 'leaderboards') => {
+    void navigate(next === 'friends' ? '/social/friends' : '/social/rankings');
   };
 
   const account = (returnTo?: string) => {
-    const target = new URL(window.location.href);
     const origin =
-      returnTo ?? `${target.pathname}${target.search}${target.hash}`;
-    target.searchParams.set('screen', 'account');
-    target.searchParams.set('returnTo', origin);
-    target.searchParams.delete('player');
-    navigate(target);
+      returnTo ?? `${location.pathname}${location.search}${location.hash}`;
+    void navigate(`/account?returnTo=${encodeURIComponent(origin)}`);
   };
 
   const viewPlayer = (id: string) => {
-    const target = new URL(window.location.href);
-    target.searchParams.set('player', id);
-    window.history.pushState({ quizmonProfile: true }, '', target);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    void navigate(`/social/players/${encodeURIComponent(id)}`, {
+      state: { from: destination === 'friends' ? 'friends' : 'leaderboards' },
+    });
   };
 
   const closePlayer = () => {
-    if (
-      isRecord(window.history.state) &&
-      window.history.state.quizmonProfile === true
-    ) {
-      window.history.back();
-      return;
-    }
-    const target = new URL(window.location.href);
-    target.searchParams.delete('player');
-    window.history.replaceState({ quizmonDestination: true }, '', target);
-    window.dispatchEvent(new PopStateEvent('popstate'));
+    if (profileFrom) void navigate(-1);
+    else void navigate('/social/rankings', { replace: true });
   };
 
   const trainer = (view: TrainerView = 'front', edit = false) => {
-    const target = clearDestination(new URL(window.location.href));
-    setTrainerRoute(target, view);
-    if (edit) target.searchParams.set('edit', '1');
-    navigate(target);
-  };
-
-  const play = () => {
-    navigate(clearDestination(new URL(window.location.href)));
+    void navigate(edit ? '/trainer/edit' : trainerPath(view));
   };
 
   const selectStandings = useCallback(
     (date: string, scope: 'global' | 'friends', mode: LeaderboardMode) => {
-      const target = new URL(window.location.href);
-      target.searchParams.set('standings', date);
-      target.searchParams.set('players', scope);
-      target.searchParams.set('ranking', mode);
-      window.history.replaceState(window.history.state, '', target);
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      void navigate(
+        `/social/rankings?${new URLSearchParams({ date, scope, mode })}`,
+        { replace: true, preventScrollReset: true },
+      );
     },
-    [],
+    [navigate],
   );
 
   return {
     account,
+    isKnownPath: isGamePath(location.pathname),
+    pathname: location.pathname,
     destination,
-    friendCode: friendCode ?? '',
-    playerId: playerId ?? '',
+    friendCode:
+      location.pathname === '/social/friends' ? (params.get('code') ?? '') : '',
+    playerId,
     viewPlayer,
     closePlayer,
     open,
-    play,
     trainer,
-    standingsDate: url.searchParams.get('standings') ?? undefined,
+    standingsDate: params.get('date') ?? undefined,
     standingsScope:
-      url.searchParams.get('players') === 'friends'
+      params.get('scope') === 'friends'
         ? ('friends' as const)
         : ('global' as const),
     standingsMode:
-      url.searchParams.get('ranking') === 'training'
+      params.get('mode') === 'training'
         ? ('training' as const)
         : ('daily' as const),
     selectStandings,

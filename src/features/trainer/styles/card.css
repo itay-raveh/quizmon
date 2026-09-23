@@ -84,6 +84,7 @@
   line-height: 1.1;
   overflow-wrap: anywhere;
   text-align: center;
+  text-decoration: none;
   cursor: pointer;
   gap: 0.35rem;
 }
@@ -94,7 +95,7 @@
   flex: none;
 }
 
-.trainer-passport__view[aria-pressed='true'] {
+.trainer-passport__view[aria-current='page'] {
   color: var(--paper);
   background: var(--blue);
 }
@@ -110,7 +111,7 @@
   outline-offset: -3px;
 }
 
-.trainer-passport__view[aria-pressed='true']:focus-visible {
+.trainer-passport__view[aria-current='page']:focus-visible {
   outline-color: var(--paper);
 }
 

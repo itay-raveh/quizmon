@@ -282,7 +282,6 @@ function Standings({
 
 export function LeaderboardScreen({
   catalog,
-  onFriends,
   onViewPlayer,
   initialDate,
   initialScope = 'global',
@@ -290,7 +289,6 @@ export function LeaderboardScreen({
   onSelectionChange,
 }: {
   catalog?: PokemonCatalog;
-  onFriends: () => void;
   onViewPlayer: (id: string) => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
@@ -342,7 +340,7 @@ export function LeaderboardScreen({
       <header className="social-screen__header">
         <h1 id="social-title">Social</h1>
       </header>
-      <SocialSections active="rankings" onFriends={onFriends} />
+      <SocialSections active="rankings" />
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
           <>

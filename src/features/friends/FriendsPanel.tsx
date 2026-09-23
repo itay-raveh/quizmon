@@ -307,7 +307,9 @@ export function FriendsPanel({
     );
   }
 
-  const link = me?.code ? `${location.origin}/#friend=${me.code}` : '';
+  const link = me?.code
+    ? `${location.origin}/social/friends?code=${me.code}`
+    : '';
   const initialLoading = busy && !me && !pages.friends && !error;
   return (
     <div className="friends-panel">

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import {
   readStoredValue,
@@ -20,6 +21,7 @@ export function AccountScreen({
   onEditCard: () => void;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
+  const navigate = useNavigate();
   const signingIn = !account.owner && !account.mergeRequired;
   const heading = useRef<HTMLHeadingElement>(null);
   const [welcomeFor] = useState(() =>
@@ -30,9 +32,9 @@ export function AccountScreen({
     if (!account.owner || welcomeFor !== account.owner) return;
     removeStoredValue('sessionStorage', accountWelcomeKey);
     if (hasTrainerName) {
-      window.location.replace(accountReturnPath(window.location.href));
+      void navigate(accountReturnPath(window.location.href), { replace: true });
     }
-  }, [account.owner, hasTrainerName, welcomeFor]);
+  }, [account.owner, hasTrainerName, navigate, welcomeFor]);
   const showWelcome = welcomeFor === account.owner && !hasTrainerName;
 
   return (
@@ -53,9 +55,11 @@ export function AccountScreen({
             <GameButton onClick={onEditCard}>Edit card</GameButton>
             <GameButton
               tone="quiet"
-              onClick={() =>
-                window.location.replace(accountReturnPath(window.location.href))
-              }
+              onClick={() => {
+                void navigate(accountReturnPath(window.location.href), {
+                  replace: true,
+                });
+              }}
             >
               Continue
             </GameButton>

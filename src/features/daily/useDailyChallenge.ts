@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router';
 import type { StartGame } from '../../app/game-session';
 import { getDailyStreak } from '../../domain/player/progress';
 import {
@@ -26,7 +27,6 @@ import type { GameSettings } from '../../domain/settings/types';
 import { type ActiveGameSnapshot } from '../../lib/storage/active-game-storage';
 import { subscribeToPlayerChanges } from '../../lib/storage/player-storage';
 import { canPersistResults } from '../../lib/storage/results-storage';
-import { parseTrainerRoute } from '../trainer/trainer-route';
 import { readDailyState } from './daily-state';
 
 interface DailyChallengeOptions {
@@ -44,22 +44,19 @@ export const useDailyChallenge = ({
   startGame,
   resume,
 }: DailyChallengeOptions) => {
-  const [route] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
+  const location = useLocation();
+  const route = useMemo(() => {
+    const params = new URLSearchParams(location.search);
     const candidate = {
       difficulty: Number(params.get('level')),
       scope: params.get('scope'),
     };
     return {
-      autoStart:
-        !params.has('screen') &&
-        !new URLSearchParams(window.location.hash.slice(1)).has('friend') &&
-        !parseTrainerRoute(window.location.search) &&
-        shouldAutoStartDaily(window.location.search),
-      date: parseDailyDate(window.location.search),
+      autoStart: shouldAutoStartDaily(location.pathname, location.search),
+      date: parseDailyDate(location.pathname),
       track: isDailyTrack(candidate) ? candidate : undefined,
     };
-  });
+  }, [location.pathname, location.search]);
   const [today, setToday] = useState(getUtcDate);
   const date = route.date ?? today;
   const [error, setError] = useState('');
@@ -68,14 +65,21 @@ export const useDailyChallenge = ({
     result: GameResult | null;
     resultSaved: boolean;
   }>({ date, result: null, resultSaved: false });
-  const [savedState, setSavedState] = useState(() => readDailyState(date));
+  const [snapshot, setSnapshot] = useState(() => ({
+    date,
+    data: readDailyState(date),
+  }));
+  const savedState = useMemo(
+    () => (snapshot.date === date ? snapshot.data : readDailyState(date)),
+    [date, snapshot],
+  );
   const streak = getDailyStreak(savedState.results.streak.creditedDates, today);
   const [storageAvailable, setStorageAvailable] = useState(canPersistResults);
   const refresh = useCallback(() => {
     const currentDate = getUtcDate();
     const nextDate = route.date ?? currentDate;
     const next = readDailyState(nextDate);
-    setSavedState(next);
+    setSnapshot({ date: nextDate, data: next });
     setCompletion((current) => {
       if (nextDate !== current.date)
         return { date: nextDate, result: null, resultSaved: false };
@@ -111,7 +115,7 @@ export const useDailyChallenge = ({
     const selectedDate = route.date ?? currentDate;
     setToday(currentDate);
     const saved = readDailyState(selectedDate);
-    setSavedState(saved);
+    setSnapshot({ date: selectedDate, data: saved });
     if (saved.readError) return;
     const key = getDailyResultKey(selectedDate, track);
     const exactResult = saved.results.daily[key];
@@ -176,7 +180,8 @@ export const useDailyChallenge = ({
       const currentDate = getUtcDate();
       setCompletion({ date: completedDate, result, resultSaved: true });
       setToday(currentDate);
-      setSavedState(readDailyState(route.date ?? currentDate));
+      const date = route.date ?? currentDate;
+      setSnapshot({ date, data: readDailyState(date) });
     },
     [route.date],
   );

@@ -1,34 +1,28 @@
 import type { LeagueView } from '@/domain/quiz/league';
 import { useUpdateState } from '@/features/installation/update-session';
-import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 
-const readView = (): LeagueView | null => {
-  const value = new URLSearchParams(window.location.search).get('league');
-  return value === 'hall' || value === 'challenge' ? value : null;
-};
+const readView = (pathname: string): LeagueView | null =>
+  pathname === '/league/hall-of-fame'
+    ? 'hall'
+    : pathname === '/league/challenge'
+      ? 'challenge'
+      : null;
 
 export const useLeagueDestination = () => {
-  const [view, setView] = useState(readView);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const view = readView(location.pathname);
   const [showResults, setShowResults] = useUpdateState('league-results', false);
 
-  useEffect(() => {
-    const syncRoute = () => setView(readView());
-    window.addEventListener('popstate', syncRoute);
-    return () => window.removeEventListener('popstate', syncRoute);
-  }, []);
-
   const open = (next: LeagueView) => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('league', next);
-    window.history.pushState(null, '', url);
-    setView(next);
+    void navigate(
+      next === 'hall' ? '/league/hall-of-fame' : '/league/challenge',
+    );
   };
 
   const close = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('league');
-    window.history.replaceState(window.history.state, '', url);
-    setView(null);
+    void navigate('/', { replace: true });
     setShowResults(false);
   };
 

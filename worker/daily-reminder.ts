@@ -180,7 +180,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
           registration.subscription,
           JSON.stringify({
             ...DAILY_REMINDER_MESSAGE,
-            url: `/?daily=${dailyDate}&play=1`,
+            url: `/daily/${dailyDate}?play=1`,
           }),
           {
             TTL: 43_200,

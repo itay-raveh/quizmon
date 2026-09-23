@@ -1,7 +1,7 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 
-const url = 'https://quizmon.test/#friend=AABBCCDDEEFF0011';
+const url = 'https://quizmon.test/social/friends?code=AABBCCDDEEFF0011';
 
 afterEach(() => vi.unstubAllGlobals());
 

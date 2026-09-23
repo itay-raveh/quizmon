@@ -32,6 +32,8 @@ import { PublicTrainerScreen } from '../features/friends/PublicTrainerScreen';
 import { AppNavigation } from './AppNavigation';
 import { useAppDestination } from './useAppDestination';
 import { useLayoutEffect, useRef } from 'react';
+import { NavigationType, useNavigationType } from 'react-router';
+import { site } from './site';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
 interface QuestionView {
   assistance: (count: number) => void;
@@ -71,6 +73,14 @@ const AppScreen = ({
   destination: DestinationNavigation;
   onViewPlayer: (id: string) => void;
 }) => {
+  if (session.phase !== 'questions' && !destination.isKnownPath) {
+    return (
+      <section>
+        <h1>Page not found</h1>
+        <p>This Quizmon page does not exist.</p>
+      </section>
+    );
+  }
   if (session.phase !== 'questions' && destination.destination === 'account') {
     return (
       <AccountScreen
@@ -85,7 +95,6 @@ const AppScreen = ({
         <div hidden={Boolean(destination.playerId)}>
           <FriendsScreen
             key={destination.friendCode}
-            onRankings={() => destination.open('leaderboards')}
             onCloseInvitation={() => destination.open('friends')}
             onSignIn={() => destination.account()}
             onViewPlayer={onViewPlayer}
@@ -119,7 +128,6 @@ const AppScreen = ({
             catalog={
               catalogState.status === 'ready' ? catalogState.catalog : undefined
             }
-            onFriends={() => destination.open('friends')}
             onViewPlayer={onViewPlayer}
             initialDate={destination.standingsDate}
             initialScope={destination.standingsScope}
@@ -151,7 +159,6 @@ const AppScreen = ({
     return (
       <TrainerPassport
         catalog={catalogState.catalog}
-        onViewChange={trainer.showView}
         onProfileChange={trainer.updateProfile}
         profile={trainer.profile}
         requestedView={trainer.view}
@@ -333,21 +340,46 @@ const AppOverlays = ({
 );
 export const AppView = (props: AppViewProps) => {
   const destination = useAppDestination();
+  const navigationType = useNavigationType();
   const main = useRef<HTMLElement>(null);
   const profileTrigger = useRef<HTMLElement | null>(null);
   const sourceScroll = useRef(0);
-  const screenKey =
-    props.session.phase === 'questions'
-      ? 'questions'
-      : destination.playerId
-        ? `player:${destination.playerId}`
-        : (destination.destination ??
-          (props.trainer.isOpen
-            ? `trainer:${props.trainer.view}`
-            : props.session.phase));
+  let screenKey: string = props.session.phase;
+  if (props.session.phase === 'questions') screenKey = 'questions';
+  else if (!destination.isKnownPath) screenKey = destination.pathname;
+  else if (destination.playerId) screenKey = `player:${destination.playerId}`;
+  else if (destination.pathname === '/trainer/edit') screenKey = 'trainer:edit';
+  else if (destination.destination) screenKey = destination.destination;
+  else if (props.trainer.isOpen) screenKey = `trainer:${props.trainer.view}`;
+  else if (props.league.isOpen) screenKey = `league:${props.league.view}`;
   const previousScreen = useRef(screenKey);
   useLayoutEffect(() => {
-    if (previousScreen.current === screenKey) return;
+    const heading = [
+      ...(main.current?.querySelectorAll<HTMLElement>('h1') ?? []),
+    ].find((candidate) => !candidate.closest('[hidden]'));
+    const title =
+      screenKey.startsWith('trainer:') || screenKey.startsWith('player:')
+        ? 'Trainer Card'
+        : screenKey.startsWith('league:')
+          ? 'Quizmon League'
+          : ((
+              {
+                account: 'Account',
+                friends: 'Friends',
+                leaderboards: 'Rankings',
+                questions: 'Question',
+                results: 'Results',
+                landing: '',
+              } as Record<string, string>
+            )[screenKey] ?? 'Page not found');
+    document.title = title ? `${title} | Quizmon` : site.title;
+    if (previousScreen.current === screenKey) {
+      if (heading && document.activeElement === document.body) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+      return;
+    }
     const leavingProfile = previousScreen.current.startsWith('player:');
     if (screenKey.startsWith('player:') && !leavingProfile)
       sourceScroll.current = window.scrollY;
@@ -368,15 +400,12 @@ export const AppView = (props: AppViewProps) => {
       profileTrigger.current = null;
       return;
     }
-    const heading = [
-      ...(main.current?.querySelectorAll<HTMLElement>('h1') ?? []),
-    ].find((heading) => !heading.closest('[hidden]'));
     if (heading) {
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
     }
-    window.scrollTo(0, 0);
-  }, [screenKey]);
+    if (navigationType !== NavigationType.Pop) window.scrollTo(0, 0);
+  }, [navigationType, props.catalogState.status, screenKey]);
   const onViewPlayer = (id: string) => {
     profileTrigger.current = document.activeElement as HTMLElement;
     destination.viewPlayer(id);
@@ -391,9 +420,6 @@ export const AppView = (props: AppViewProps) => {
         : props.trainer.isOpen
           ? 'trainer'
           : 'play';
-  const onAccount = () => {
-    if (destination.destination !== 'account') destination.account();
-  };
   return (
     <MotionProvider>
       <SoundProvider
@@ -410,23 +436,18 @@ export const AppView = (props: AppViewProps) => {
                 <AppNavigation
                   active={active}
                   accountOpen={destination.destination === 'account'}
-                  onAccount={onAccount}
                   onSettings={props.settingsDialog.open}
+                  socialPath={
+                    props.session.phase === 'results' &&
+                    props.session.mode.kind === 'daily'
+                      ? `/social/rankings?date=${props.session.mode.date}`
+                      : undefined
+                  }
                   showNavigation={showNavigation}
                   trainerAvailable={props.catalogState.status === 'ready'}
                   onNavigate={(next) => {
-                    if (next === 'trainer') destination.trainer();
-                    else if (next === 'social')
-                      destination.open(
-                        'leaderboards',
-                        props.session.phase === 'results' &&
-                          props.session.mode.kind === 'daily'
-                          ? props.session.mode.date
-                          : undefined,
-                      );
-                    else {
-                      destination.play();
-                      props.league.close();
+                    if (next === 'play') {
+                      props.league.setShowResults(false);
                       void props.navigation.returnToLanding();
                     }
                   }}

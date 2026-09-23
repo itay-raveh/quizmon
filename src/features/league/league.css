@@ -39,11 +39,16 @@
 }
 
 .league-hall__navigation .game-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.5rem 0.35rem;
   font-size: var(--text-small);
+  text-align: center;
+  text-decoration: none;
 }
 
-.league-hall__navigation [aria-pressed='true'] {
+.league-hall__navigation [aria-current='page'] {
   color: var(--navy);
   background: var(--hall-gold);
 }

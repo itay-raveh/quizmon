@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type SubmitEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
-import { SoundButton } from '../../components/SoundButton';
+import { useInteractionSound } from '../../lib/audio/sound-context';
 import {
   BookOpenIcon,
   CardholderIcon,
@@ -42,6 +43,7 @@ import { TrainerCard } from './TrainerCard';
 import { TrainerPokedex } from './TrainerPokedex';
 import { TrainerTitleDialog } from './TrainerTitleDialog';
 import { TrainerTitles } from './TrainerTitles';
+import { trainerPath } from './trainer-route';
 import {
   exportTrainerArtifact as exportArtifactImage,
   supportsTrainerArtifactSharing,
@@ -50,7 +52,6 @@ import {
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
   onProfileChange: (profile: TrainerProfile) => Promise<void>;
-  onViewChange: (view: TrainerView) => void;
   profile: TrainerProfile;
   requestedView: TrainerView;
   stats: TrainerStats;
@@ -86,7 +87,6 @@ const searchAvatars = createSearch(
 export const TrainerPassport = ({
   catalog,
   onProfileChange,
-  onViewChange,
   profile,
   requestedView: view,
   stats,
@@ -105,16 +105,10 @@ export const TrainerPassport = ({
   const [revealing, setRevealing] = useState(
     !profile.hasBeenRevealed && view === 'front',
   );
-  const [editing, setEditing] = useUpdateState(
-    'trainer-editing',
-    new URLSearchParams(window.location.search).get('edit') === '1',
-  );
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (url.searchParams.get('edit') !== '1') return;
-    url.searchParams.delete('edit');
-    window.history.replaceState(window.history.state, '', url);
-  }, []);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const playSound = useInteractionSound();
+  const editing = location.pathname === '/trainer/edit';
   const [name, setName] = useUpdateState('trainer-name', profile.name);
   const [avatar, setAvatar] = useUpdateState('trainer-avatar', profile.avatar);
   const [avatarQuery, setAvatarQuery] = useState('');
@@ -170,13 +164,6 @@ export const TrainerPassport = ({
     return () => window.clearTimeout(timeoutId);
   }, [revealing]);
 
-  const selectView = (nextView: TrainerView) => {
-    setSelectedBadgeId(null);
-    setSelectedTitle(null);
-    setEditing(false);
-    onViewChange(nextView);
-  };
-
   const save = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     await onProfileChange({
@@ -185,20 +172,20 @@ export const TrainerPassport = ({
       name,
       partnerPokemon: partner,
     });
-    setEditing(false);
+    void navigate('/trainer', { replace: true });
     void requestPersistentStorage().catch(() => false);
   };
 
   const toggleEditor = () => {
     if (editing) {
-      setEditing(false);
+      void navigate('/trainer', { replace: true });
       return;
     }
 
     setName(profile.name);
     setAvatar(profile.avatar);
     setPartner(profile.partnerPokemon);
-    setEditing(true);
+    void navigate('/trainer/edit', { replace: true });
   };
 
   const setTitle = async (specialty: TrainerSpecialty | null) => {
@@ -277,15 +264,23 @@ export const TrainerPassport = ({
       {!editing ? (
         <nav aria-label="Trainer profile" className="trainer-passport__views">
           {trainerViews.map(([nextView, label, ViewIcon]) => (
-            <SoundButton
-              aria-pressed={view === nextView}
+            <Link
+              aria-current={view === nextView ? 'page' : undefined}
               className="trainer-passport__view"
               key={nextView}
-              onClick={() => selectView(nextView)}
+              to={trainerPath(nextView)}
+              onClick={(event) => {
+                if (view === nextView) event.preventDefault();
+                else {
+                  playSound('tap');
+                  setSelectedBadgeId(null);
+                  setSelectedTitle(null);
+                }
+              }}
             >
               <ViewIcon aria-hidden="true" weight="bold" />
               {label}
-            </SoundButton>
+            </Link>
           ))}
         </nav>
       ) : null}

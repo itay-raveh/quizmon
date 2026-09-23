@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react';
+import { Link, useLocation } from 'react-router';
 import { GameButton } from '../components/GameButton';
+import { useInteractionSound } from '../lib/audio/sound-context';
 import {
   CardholderIcon,
   PuzzlePieceIcon,
@@ -23,8 +25,8 @@ export function AppNavigation({
   accountOpen,
   loading = false,
   onNavigate,
-  onAccount,
   onSettings,
+  socialPath = '/social/rankings',
   showNavigation = true,
   trainerAvailable,
 }: {
@@ -32,39 +34,73 @@ export function AppNavigation({
   accountOpen: boolean;
   loading?: boolean;
   onNavigate: (destination: MainDestination) => void;
-  onAccount: () => void;
   onSettings: () => void;
+  socialPath?: string;
   showNavigation?: boolean;
   trainerAvailable: boolean;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
+  const location = useLocation();
+  const playSound = useInteractionSound();
+  const paths = { play: '/', trainer: '/trainer', social: socialPath };
+  const accountPath = accountOpen
+    ? `${location.pathname}${location.search}${location.hash}`
+    : `/account?returnTo=${encodeURIComponent(`${location.pathname}${location.search}${location.hash}`)}`;
   return (
     <header className="app-header">
       <SettingsButton disabled={!trainerAvailable} onClick={onSettings} />
       {showNavigation ? (
         <nav className="app-navigation" aria-label="Main" inert={loading}>
-          {destinations.map(([destination, label, Icon]) => (
-            <GameButton
-              key={destination}
-              aria-current={active === destination ? 'page' : undefined}
-              disabled={destination === 'trainer' && !trainerAvailable}
-              tone={active === destination ? 'primary' : 'quiet'}
-              onClick={() => onNavigate(destination)}
-            >
-              <Icon aria-hidden="true" weight="bold" />
-              {label}
-            </GameButton>
-          ))}
-          <GameButton
+          {destinations.map(([destination, label, Icon]) =>
+            destination === 'trainer' && !trainerAvailable ? (
+              <GameButton key={destination} disabled tone="quiet">
+                <Icon aria-hidden="true" weight="bold" />
+                {label}
+              </GameButton>
+            ) : (
+              <Link
+                key={destination}
+                to={paths[destination]}
+                aria-current={active === destination ? 'page' : undefined}
+                className={`game-button game-button--${active === destination ? 'primary' : 'quiet'}`}
+                onClick={(event) => {
+                  if (
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  )
+                    return;
+                  if (
+                    paths[destination] ===
+                    `${location.pathname}${location.search}`
+                  ) {
+                    event.preventDefault();
+                    if (destination === 'play') onNavigate(destination);
+                    return;
+                  }
+                  playSound('tap');
+                  onNavigate(destination);
+                }}
+              >
+                <Icon aria-hidden="true" weight="bold" />
+                {label}
+              </Link>
+            ),
+          )}
+          <Link
+            to={accountPath}
             aria-label={
               account.owner && (account.error || account.issues.length)
                 ? 'Account, sync needs attention'
                 : undefined
             }
             aria-current={accountOpen ? 'page' : undefined}
-            className="app-navigation__account"
-            tone={accountOpen ? 'primary' : 'quiet'}
-            onClick={onAccount}
+            className={`game-button game-button--${accountOpen ? 'primary' : 'quiet'} app-navigation__account`}
+            onClick={(event) => {
+              if (accountOpen) event.preventDefault();
+              else playSound('tap');
+            }}
           >
             <UserCircleIcon aria-hidden="true" weight="bold" />
             {account.owner ? 'Account' : 'Sign in'}
@@ -73,7 +109,7 @@ export function AppNavigation({
                 !
               </span>
             ) : null}
-          </GameButton>
+          </Link>
         </nav>
       ) : null}
       <BugReportButton />

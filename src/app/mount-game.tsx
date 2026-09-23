@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router';
 import { getUtcDate } from '../domain/quiz/daily';
 import { AppNavigation } from './AppNavigation';
 import { Footer } from './Footer';
@@ -10,37 +11,38 @@ export const mountGame = (root: HTMLElement) => {
   const app = createRoot(root);
   app.render(
     <StrictMode>
-      <div className="app app--landing app--with-navigation" aria-busy="true">
-        <div className="background" aria-hidden="true" />
-        <div className="app__screen">
-          <AppNavigation
-            active="play"
-            accountOpen={false}
-            loading
-            onAccount={() => {}}
-            onSettings={() => {}}
-            trainerAvailable={false}
-            onNavigate={() => {}}
-          />
-          <main>
-            <HomeScreen
-              catalogStatus="loading"
-              dailyDate={getUtcDate()}
-              dailyResult={null}
-              dailyResultSaved={true}
-              dailyStreak={0}
-              leagueUnlocked={false}
-              onCustomizeTraining={() => {}}
-              onRetryCatalog={() => {}}
-              onStart={() => {}}
-              onStartDaily={() => {}}
-              onStartLeague={() => {}}
-              storageAvailable={true}
+      <BrowserRouter>
+        <div className="app app--landing app--with-navigation" aria-busy="true">
+          <div className="background" aria-hidden="true" />
+          <div className="app__screen">
+            <AppNavigation
+              active="play"
+              accountOpen={false}
+              loading
+              onSettings={() => {}}
+              trainerAvailable={false}
+              onNavigate={() => {}}
             />
-          </main>
-          <Footer />
+            <main>
+              <HomeScreen
+                catalogStatus="loading"
+                dailyDate={getUtcDate()}
+                dailyResult={null}
+                dailyResultSaved={true}
+                dailyStreak={0}
+                leagueUnlocked={false}
+                onCustomizeTraining={() => {}}
+                onRetryCatalog={() => {}}
+                onStart={() => {}}
+                onStartDaily={() => {}}
+                onStartLeague={() => {}}
+                storageAvailable={true}
+              />
+            </main>
+            <Footer />
+          </div>
         </div>
-      </div>
+      </BrowserRouter>
     </StrictMode>,
   );
   const game = Promise.all([
@@ -54,18 +56,20 @@ export const mountGame = (root: HTMLElement) => {
         await game;
       app.render(
         <StrictMode>
-          <SaveRecoveryBoundary>
-            <Sentry.ErrorBoundary
-              fallback={
-                <p role="alert">
-                  Quizmon could not display this screen.{' '}
-                  <a href="/">Reload Quizmon</a>.
-                </p>
-              }
-            >
-              {getSaveIssue() ? null : <LocalGame />}
-            </Sentry.ErrorBoundary>
-          </SaveRecoveryBoundary>
+          <BrowserRouter>
+            <SaveRecoveryBoundary>
+              <Sentry.ErrorBoundary
+                fallback={
+                  <p role="alert">
+                    Quizmon could not display this screen.{' '}
+                    <a href="/">Reload Quizmon</a>.
+                  </p>
+                }
+              >
+                {getSaveIssue() ? null : <LocalGame />}
+              </Sentry.ErrorBoundary>
+            </SaveRecoveryBoundary>
+          </BrowserRouter>
         </StrictMode>,
       );
     } catch (error) {

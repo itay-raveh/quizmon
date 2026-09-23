@@ -107,7 +107,7 @@ it.each([
         vi.mocked(webpush.sendNotification).mock.calls[0]![1] as string,
       ),
     ).toMatchObject({
-      url: `/?daily=${utcDate}&play=1`,
+      url: `/daily/${utcDate}?play=1`,
     });
     expect(otherDate.storage.setAlarm).toHaveBeenCalledExactlyOnceWith(
       Date.parse(nextAlarm),
@@ -126,7 +126,7 @@ it.each([undefined, '2026-09-07'])(
       subscription,
       JSON.stringify({
         ...DAILY_REMINDER_MESSAGE,
-        url: '/?daily=2026-09-08&play=1',
+        url: '/daily/2026-09-08?play=1',
       }),
       {
         TTL: 43_200,

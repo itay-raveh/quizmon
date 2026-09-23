@@ -1,13 +1,18 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
 import { SocialSections } from './SocialSections';
+import { MemoryRouter } from 'react-router';
 
 test('Rankings and Friends are peer sections with one current page', () => {
   const rankings = renderToStaticMarkup(
-    <SocialSections active="rankings" onFriends={() => {}} />,
+    <MemoryRouter>
+      <SocialSections active="rankings" />
+    </MemoryRouter>,
   );
   const friends = renderToStaticMarkup(
-    <SocialSections active="friends" onRankings={() => {}} />,
+    <MemoryRouter>
+      <SocialSections active="friends" />
+    </MemoryRouter>,
   );
 
   for (const markup of [rankings, friends]) {
