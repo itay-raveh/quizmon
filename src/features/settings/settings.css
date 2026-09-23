@@ -631,6 +631,7 @@
 .backup-settings p[role='alert'] {
   color: var(--error-ink);
 }
+
 .install-action {
   display: grid;
   min-width: 0;
@@ -766,18 +767,22 @@
   padding: 0;
   margin: 0 0 1.5rem;
 }
+
 .difficulty-settings legend {
   font-weight: 700;
   margin-bottom: 0.75rem;
 }
+
 .difficulty-control {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.5rem;
 }
+
 .difficulty-control .selection-tile {
   min-width: 0;
 }
+
 .training-multiplier {
   display: flex;
   align-items: baseline;
@@ -804,37 +809,46 @@
   border: 3px solid var(--navy);
   border-radius: 0.5rem;
 }
+
 .save-recovery::backdrop {
   background: var(--modal-scrim);
 }
+
 .save-recovery h1 {
   margin: 0 0 1rem;
   font-size: var(--text-headline);
   outline: none;
 }
+
 .save-recovery h2 {
   font-size: var(--text-body);
 }
+
 .save-recovery p {
   font-size: var(--text-body);
   line-height: 1.5;
 }
+
 .save-recovery a {
   color: var(--navy);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
 .save-recovery__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
+
 .save-recovery__confirmation {
   margin-top: 1.5rem;
 }
+
 .save-recovery details {
   margin-top: 1.5rem;
 }
+
 .save-recovery summary {
   cursor: pointer;
 }

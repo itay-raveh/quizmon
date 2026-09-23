@@ -6,20 +6,31 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
   "preview_urls": false,
-  "limits": { "cpu_ms": 100, "subrequests": 50 },
+  "limits": {
+    "cpu_ms": 100,
+    "subrequests": 50,
+  },
   "ratelimits": [
     {
       "name": "AUTH_RATE_LIMIT",
       "namespace_id": "1011",
-      "simple": { "limit": 10, "period": 60 },
+      "simple": {
+        "limit": 10,
+        "period": 60,
+      },
     },
     {
       "name": "API_RATE_LIMIT",
       "namespace_id": "1012",
-      "simple": { "limit": 120, "period": 60 },
+      "simple": {
+        "limit": 120,
+        "period": 60,
+      },
     },
   ],
-  "secrets": { "required": ["BETTER_AUTH_SECRET"] },
+  "secrets": {
+    "required": ["BETTER_AUTH_SECRET"],
+  },
   "vars": {
     "POWERSYNC_URL": "http://127.0.0.1:8089",
     "POWERSYNC_AUDIENCE": "quizmon-pilot",
@@ -27,7 +38,11 @@
     "MAIL_DELIVERY": "test-mailbox",
     "MAIL_FROM": "",
   },
-  "send_email": [{ "name": "EMAIL" }],
+  "send_email": [
+    {
+      "name": "EMAIL",
+    },
+  ],
   "hyperdrive": [
     {
       "binding": "ACCOUNT_DB",
@@ -41,15 +56,23 @@
         {
           "name": "AUTH_RATE_LIMIT",
           "namespace_id": "1011",
-          "simple": { "limit": 10, "period": 60 },
+          "simple": {
+            "limit": 10,
+            "period": 60,
+          },
         },
         {
           "name": "API_RATE_LIMIT",
           "namespace_id": "1012",
-          "simple": { "limit": 120, "period": 60 },
+          "simple": {
+            "limit": 120,
+            "period": 60,
+          },
         },
       ],
-      "secrets": { "required": ["BETTER_AUTH_SECRET"] },
+      "secrets": {
+        "required": ["BETTER_AUTH_SECRET"],
+      },
       "vars": {
         "POWERSYNC_URL": "http://127.0.0.1:8089",
         "POWERSYNC_AUDIENCE": "quizmon-pilot",
@@ -57,7 +80,12 @@
         "MAIL_DELIVERY": "cloudflare",
         "MAIL_FROM": "",
       },
-      "send_email": [{ "name": "EMAIL", "remote": true }],
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "remote": true,
+        },
+      ],
       "hyperdrive": [
         {
           "binding": "ACCOUNT_DB",

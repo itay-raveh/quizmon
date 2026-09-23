@@ -300,6 +300,7 @@
   color: var(--navy);
   text-align: center;
 }
+
 .account-settings__diagnostic {
   max-height: 18rem;
   overflow: auto;

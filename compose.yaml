@@ -7,7 +7,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: quizmon_pilot
     ports:
-      - 127.0.0.1:5548:5432
+      - '127.0.0.1:5548:5432'
     volumes:
       - pilot-db:/var/lib/postgresql
       - ./deploy/init.sql:/docker-entrypoint-initdb.d/01-pilot.sql:ro
@@ -23,7 +23,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - 127.0.0.1:8089:8080
+      - '127.0.0.1:8089:8080'
     extra_hosts:
       - host.docker.internal:host-gateway
     environment:

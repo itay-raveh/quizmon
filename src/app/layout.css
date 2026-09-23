@@ -105,14 +105,17 @@
 .app--destination main {
   align-items: start;
 }
+
 @media (max-width: 50rem) {
   .app--with-navigation {
     --app-safe-bottom: 0px;
     padding-bottom: calc(6.25rem + var(--app-safe-bottom));
   }
+
   .app--with-navigation .app__screen {
     min-height: calc(100svh - 6.25rem - var(--app-safe-bottom));
   }
+
   .app-navigation {
     position: fixed;
     z-index: 5;
@@ -125,6 +128,7 @@
     background: var(--paper);
     border-top: 2px solid var(--navy);
   }
+
   .app-navigation .game-button {
     flex-direction: column;
     gap: 0.2rem;

@@ -305,13 +305,16 @@
     width: 10rem;
     height: 10rem;
   }
+
   .hall-record__portrait .league-trophy__image {
     width: 65%;
     height: auto;
   }
+
   .hall-record__honors h2 {
     margin-bottom: 0.5rem;
   }
+
   .hall-record__signature {
     justify-content: center;
   }
