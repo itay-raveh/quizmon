@@ -2,23 +2,22 @@ import type { LeagueView } from '@/domain/quiz/league';
 import { useUpdateState } from '@/features/installation/update-session';
 import { useNavigate, useLocation } from 'react-router';
 
-const readView = (pathname: string): LeagueView | null =>
-  pathname === '/league/hall-of-fame'
-    ? 'hall'
-    : pathname === '/league/challenge'
-      ? 'challenge'
-      : null;
-
 export const useLeagueDestination = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const view = readView(location.pathname);
+  const isOpen = location.pathname === '/league';
+  const requestedView = (location.state as { view?: unknown } | null)?.view;
+  const view: LeagueView | null =
+    isOpen && (requestedView === 'hall' || requestedView === 'challenge')
+      ? requestedView
+      : null;
   const [showResults, setShowResults] = useUpdateState('league-results', false);
 
   const open = (next: LeagueView) => {
-    void navigate(
-      next === 'hall' ? '/league/hall-of-fame' : '/league/challenge',
-    );
+    void navigate('/league', {
+      state: { view: next },
+      replace: isOpen,
+    });
   };
 
   const close = () => {
@@ -27,7 +26,7 @@ export const useLeagueDestination = () => {
   };
 
   return {
-    isOpen: view !== null,
+    isOpen,
     view,
     open,
     close,

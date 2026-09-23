@@ -5,8 +5,8 @@ import type { LeaderboardMode } from '../domain/social/leaderboards';
 import { trainerPath } from '../features/trainer/trainer-route';
 import { isGamePath } from './game-path';
 
-type Destination = 'account' | 'friends' | 'leaderboards';
-type ProfileState = { from?: 'friends' | 'leaderboards' };
+type Destination = 'account' | 'friends' | 'rankings';
+type ProfileState = { from?: 'friends' | 'rankings' };
 
 export function useAppDestination() {
   const location = useLocation();
@@ -22,10 +22,10 @@ export function useAppDestination() {
           (playerId && profileFrom === 'friends')
         ? 'friends'
         : location.pathname === '/social/rankings' || playerId
-          ? 'leaderboards'
+          ? 'rankings'
           : null;
 
-  const open = (next: 'friends' | 'leaderboards') => {
+  const open = (next: 'friends' | 'rankings') => {
     void navigate(next === 'friends' ? '/social/friends' : '/social/rankings');
   };
 
@@ -37,7 +37,7 @@ export function useAppDestination() {
 
   const viewPlayer = (id: string) => {
     void navigate(`/social/players/${encodeURIComponent(id)}`, {
-      state: { from: destination === 'friends' ? 'friends' : 'leaderboards' },
+      state: { from: destination === 'friends' ? 'friends' : 'rankings' },
     });
   };
 

@@ -8,8 +8,7 @@ test('shared game links load the app and retain their destination after sign-in'
   const paths = [
     '/',
     '/trainer/edit',
-    '/league/challenge',
-    '/league/hall-of-fame',
+    '/league',
     '/social/friends',
     '/social/players/123',
     '/daily/2026-09-23',
@@ -23,6 +22,7 @@ test('shared game links load the app and retain their destination after sign-in'
     ).toBe(path);
   }
   expect(isGamePath('/daily/2026-02-30')).toBe(false);
+  expect(isGamePath('/league/hall-of-fame')).toBe(false);
   expect(isGamePath('/missing')).toBe(false);
   expect(
     accountReturnPath('https://quizmon.test/account?returnTo=/api/account'),

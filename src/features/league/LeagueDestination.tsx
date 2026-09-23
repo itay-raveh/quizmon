@@ -17,8 +17,6 @@ import {
 } from '@/features/trainer/trainer-artifact-export';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
-import { useInteractionSound } from '@/lib/audio/sound-context';
 import { LeagueProgress } from './LeagueProgress';
 import { LeagueTrophy } from './LeagueTrophy';
 
@@ -62,7 +60,6 @@ export const LeagueDestination = ({
   const [error, setError] = useState('');
   const record = records[index];
   const canShare = supportsTrainerArtifactSharing();
-  const playSound = useInteractionSound();
 
   useEffect(() => {
     heading.current
@@ -101,28 +98,20 @@ export const LeagueDestination = ({
         </GameButton>
         {completed && (
           <nav className="league-hall__navigation" aria-label="League views">
-            <Link
-              to="/league/challenge"
-              className="game-button game-button--quiet"
-              aria-current={view === 'challenge' ? 'page' : undefined}
-              onClick={(event) => {
-                if (view === 'challenge') event.preventDefault();
-                else playSound('tap');
-              }}
+            <GameButton
+              tone="quiet"
+              aria-pressed={view === 'challenge'}
+              onClick={() => onViewChange('challenge')}
             >
               Challenge
-            </Link>
-            <Link
-              to="/league/hall-of-fame"
-              className="game-button game-button--quiet"
-              aria-current={view === 'hall' ? 'page' : undefined}
-              onClick={(event) => {
-                if (view === 'hall') event.preventDefault();
-                else playSound('tap');
-              }}
+            </GameButton>
+            <GameButton
+              tone="quiet"
+              aria-pressed={view === 'hall'}
+              onClick={() => onViewChange('hall')}
             >
               Hall of Fame
-            </Link>
+            </GameButton>
           </nav>
         )}
       </header>

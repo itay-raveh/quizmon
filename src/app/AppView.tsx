@@ -32,7 +32,7 @@ import { PublicTrainerScreen } from '../features/friends/PublicTrainerScreen';
 import { AppNavigation } from './AppNavigation';
 import { useAppDestination } from './useAppDestination';
 import { useLayoutEffect, useRef } from 'react';
-import { NavigationType, useNavigationType } from 'react-router';
+import { Navigate, NavigationType, useNavigationType } from 'react-router';
 import { site } from './site';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
 interface QuestionView {
@@ -117,10 +117,7 @@ const AppScreen = ({
       </>
     );
   }
-  if (
-    session.phase !== 'questions' &&
-    destination.destination === 'leaderboards'
-  ) {
+  if (session.phase !== 'questions' && destination.destination === 'rankings') {
     return (
       <>
         <div hidden={Boolean(destination.playerId)}>
@@ -172,6 +169,8 @@ const AppScreen = ({
     session.phase === 'results' &&
     session.mode.kind === 'league' &&
     isLeagueVictory(session.result);
+  if (session.phase === 'landing' && league.isOpen && !leagueUnlocked)
+    return <Navigate to="/" replace />;
   if (
     catalogState.status === 'ready' &&
     ((league.isOpen && leagueUnlocked) ||
@@ -190,7 +189,11 @@ const AppScreen = ({
         onViewResults={
           leagueVictory ? () => league.setShowResults(true) : undefined
         }
-        view={league.view ?? (leagueVictory ? 'hall' : 'challenge')}
+        view={
+          trainer.stats.leagueCompleted || leagueVictory
+            ? (league.view ?? 'hall')
+            : 'challenge'
+        }
         onViewChange={league.open}
         freshRecord={
           session.phase === 'results' ? session.leagueRecord : undefined
@@ -414,7 +417,7 @@ export const AppView = (props: AppViewProps) => {
   const active =
     destination.destination === 'account'
       ? null
-      : destination.destination === 'leaderboards' ||
+      : destination.destination === 'rankings' ||
           destination.destination === 'friends'
         ? 'social'
         : props.trainer.isOpen
