@@ -1,5 +1,10 @@
 import type { GameMode, GameResult } from '../domain/quiz/types';
 import { Sentry, sentryEnabled } from './sentry';
+import { readStoredValue, writeStoredValue } from './storage/browser-storage';
+
+const FIRST_VISIT_KEY = 'quizmon.analytics.first-visit.v1';
+const DAILY_VISIT_KEY = 'quizmon.analytics.daily-visit.v1';
+const SESSION_KEY = 'quizmon.analytics.session.v1';
 
 const record = (send: () => void) => {
   if (!sentryEnabled) return;
@@ -10,8 +15,29 @@ const record = (send: () => void) => {
   }
 };
 
-export const trackPageViewed = () =>
+const trackOnce = (
+  storage: 'localStorage' | 'sessionStorage',
+  key: string,
+  value: string,
+  metric: string,
+) => {
+  if (readStoredValue(storage, key) === value) return;
+  if (!writeStoredValue(storage, key, value)) return;
+  record(() => Sentry.metrics.count(metric));
+};
+
+export const trackPageViewed = (now = new Date()) => {
+  if (!sentryEnabled) return;
   record(() => Sentry.metrics.count('quizmon.page_view'));
+  trackOnce('localStorage', FIRST_VISIT_KEY, '1', 'quizmon.visitor_first_seen');
+  trackOnce(
+    'localStorage',
+    DAILY_VISIT_KEY,
+    now.toISOString().slice(0, 10),
+    'quizmon.visitor_daily_active',
+  );
+  trackOnce('sessionStorage', SESSION_KEY, '1', 'quizmon.session_started');
+};
 
 export const trackGameStarted = (mode: GameMode, questionCount: number) =>
   record(() => {
