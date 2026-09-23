@@ -47,7 +47,7 @@
     {
       "binding": "ACCOUNT_DB",
       "id": "00000000000000000000000000000000",
-      "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon_pilot",
+      "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon_new",
     },
   ],
   "env": {
@@ -90,7 +90,7 @@
         {
           "binding": "ACCOUNT_DB",
           "id": "00000000000000000000000000000000",
-          "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon_pilot",
+          "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon_new",
         },
       ],
     },

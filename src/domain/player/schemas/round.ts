@@ -75,6 +75,7 @@ const round = z
   .object({
     version: z.literal(SAVE_SCHEMA_VERSION),
     completedAt: z.custom<string>(isUtcTimestamp).optional(),
+    startedOn: z.custom<string>(isDailyDate).optional(),
     scoreMultipliers: z.custom<ScoreMultipliers>(isScoreMultipliers).optional(),
     contentVersion: nonnegativeInteger,
     elapsedMilliseconds: finiteNonnegative,

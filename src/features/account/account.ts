@@ -10,13 +10,7 @@ import { createAuthClient } from 'better-auth/react';
 import { emptyPlayerData } from '../../domain/player/player-save';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { accountReturnPath } from './account-navigation';
-import {
-  hash,
-  validAction,
-  validActionEnvelope,
-  validEdit,
-  type Action,
-} from '../../domain/sync/progress';
+import { hash } from '../../domain/sync/progress';
 import { projectAccount } from '../../lib/storage/account-projection';
 import {
   queueIssueResolution,
@@ -33,16 +27,18 @@ import {
   parseLocalPlayerState,
   readState,
   transactPlayer,
+  type LocalAction,
 } from '../../lib/storage/player-storage';
 import { isRecord } from '../../lib/validation';
 import { readSyncConnection } from '../../domain/sync/connection';
 import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 import { writeStoredValue } from '../../lib/storage/browser-storage';
+import { convertLegacyDatabase } from '../../lib/storage/legacy-conversion';
 
 const selectionKey = 'quizmon.baseline.account';
 export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
 const auth = createAuthClient({ plugins: [emailOTPClient(), jwtClient()] });
-type Binding = { id: string; generationId: string; serverEpoch: string };
+type Binding = { id: string; serverEpoch: string };
 let account: PowerSyncDatabase | undefined;
 let binding: Binding | undefined;
 let candidate: Binding | undefined;
@@ -119,13 +115,11 @@ const parseBinding = (value: unknown): Binding => {
   if (
     !isRecord(value) ||
     typeof value.id !== 'string' ||
-    typeof value.generationId !== 'string' ||
     typeof value.serverEpoch !== 'string'
   )
     throw new Error('The account service returned an invalid save identity.');
   return {
     id: value.id,
-    generationId: value.generationId,
     serverEpoch: value.serverEpoch,
   };
 };
@@ -157,6 +151,18 @@ export async function verifySignInCode(email: string, otp: string) {
 export async function continueSignIn() {
   candidate = parseBinding(await accountRequest('/api/account'));
   if (selectedAccount() === candidate.id) {
+    const saved = await readState(getPlayerDatabase());
+    if (saved.account?.serverEpoch !== candidate.serverEpoch) {
+      const [cutover] = await getPlayerDatabase().getAll<LocalRow>(
+        "SELECT id,payload FROM local_state WHERE id = 'cutover-rebind'",
+      );
+      if (saved.account && !cutover)
+        throw new Error(
+          'This database instance changed. Your pending changes remain on this device. Download a backup before reconnecting.',
+        );
+      await finishSignIn(false, true);
+      return;
+    }
     if (!writeStoredValue('sessionStorage', accountWelcomeKey, candidate.id))
       window.history.replaceState(
         null,
@@ -168,30 +174,6 @@ export async function continueSignIn() {
   }
   await finishSignIn(false);
 }
-function orderGuestActions(rows: LocalRow[]) {
-  const remaining = rows.map((row) => ({
-    row,
-    action: JSON.parse(row.payload) as Action,
-  }));
-  const ordered: LocalRow[] = [];
-  const ids = new Set(rows.map((row) => row.id));
-  const seen = new Set<string>();
-  while (remaining.length) {
-    const index = remaining.findIndex(
-      ({ action }) =>
-        !validEdit(action.payload) ||
-        !action.payload.predecessorId ||
-        !ids.has(action.payload.predecessorId) ||
-        seen.has(action.payload.predecessorId),
-    );
-    if (index < 0)
-      throw new Error('The browser save contains an invalid edit history.');
-    const { row } = remaining.splice(index, 1)[0]!;
-    ordered.push(row);
-    seen.add(row.id);
-  }
-  return ordered;
-}
 export async function finishSignIn(merge: boolean, useAccountOnly = false) {
   if (!candidate)
     candidate = parseBinding(await accountRequest('/api/account'));
@@ -202,6 +184,8 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
     try {
       await guest.init();
       await target.init();
+      await convertLegacyDatabase(guest);
+      await convertLegacyDatabase(target, destination.id);
       let source = await readState(guest);
       const [handoff] = await guest.getAll<LocalRow>(
         "SELECT id,payload FROM local_state WHERE id = 'handoff'",
@@ -253,25 +237,33 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         );
         return row ? parseLocalPlayerState(JSON.parse(row.payload)) : null;
       });
-      if (
-        targetState?.account &&
-        JSON.stringify(targetState.account) !== JSON.stringify(destination)
-      )
+      if (targetState?.account && targetState.account.id !== destination.id)
         throw new Error(
           'This account history has changed. Your existing local save has been preserved.',
         );
+      if (
+        targetState?.account &&
+        targetState.account.serverEpoch !== destination.serverEpoch
+      ) {
+        const [cutover] = await target.getAll<LocalRow>(
+          "SELECT id,payload FROM local_state WHERE id = 'cutover-rebind'",
+        );
+        if (!cutover)
+          throw new Error(
+            'This database instance changed. Your pending changes remain on this device. Download a backup before reconnecting.',
+          );
+      }
       targetState ??= {
-        version: 1,
+        version: 2,
         datasetId: crypto.randomUUID(),
-        predecessors: {},
         account: destination,
-        editRevisions: {},
         save: {
           version: SAVE_SCHEMA_VERSION,
           restoreId: crypto.randomUUID(),
           data: { ...emptyPlayerData(), profile: createTrainerProfile() },
         },
       };
+      targetState.account = destination;
       await accountRequest('/api/account/link', {
         expectedAccountId: destination.id,
         ...destination,
@@ -282,20 +274,17 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
       const finalState = targetState;
       await target.writeTransaction(async (tx) => {
         if (hasGuest && !useAccountOnly) {
-          for (const row of orderGuestActions(
-            await guest.getAll<LocalRow>(
-              'SELECT id,payload FROM local_actions',
-            ),
+          for (const row of await guest.getAll<LocalRow>(
+            'SELECT id,payload FROM local_actions ORDER BY rowid',
           )) {
-            const original: unknown = JSON.parse(row.payload);
-            if (!validAction(original))
+            const action = JSON.parse(row.payload) as LocalAction;
+            if (
+              action.id !== row.id ||
+              !['round', 'edit'].includes(action.kind)
+            )
               throw new Error(
                 'A browser change could not be read. Download a backup before retrying.',
               );
-            const action: Action = {
-              ...original,
-              generationId: destination.generationId,
-            };
             const [existing] = await tx.getAll<LocalRow>(
               'SELECT id,payload FROM local_actions WHERE id = ?',
               [row.id],
@@ -381,6 +370,7 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
           "INSERT OR REPLACE INTO local_state(id,payload) VALUES ('player',?)",
           [JSON.stringify(finalState)],
         );
+        await tx.execute("DELETE FROM local_state WHERE id = 'cutover-rebind'");
       });
       clearSentryUser();
       localStorage.setItem(selectionKey, destination.id);
@@ -392,9 +382,8 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
             "INSERT INTO local_state(id,payload) VALUES ('player',?)",
             [
               JSON.stringify({
-                version: 1,
+                version: 2,
                 datasetId: crypto.randomUUID(),
-                predecessors: {},
                 save: {
                   version: SAVE_SCHEMA_VERSION,
                   restoreId: crypto.randomUUID(),
@@ -452,21 +441,44 @@ function connector(expected: Binding): PowerSyncBackendConnector {
     uploadData: async (db) => {
       const transaction = await db.getNextCrudTransaction();
       if (!transaction) return;
-      const actions = transaction.crud.map((entry) => {
-        if (
-          entry.table !== 'pending_actions' ||
-          entry.op !== UpdateType.PUT ||
-          typeof entry.opData?.payload !== 'string'
-        )
-          throw new Error('An unexpected change is waiting to sync.');
-        const action: unknown = JSON.parse(entry.opData.payload);
-        if (!validActionEnvelope(action) || action.operationId !== entry.id)
-          throw new Error('A saved change could not be verified.');
-        return action;
-      });
+      const actions = await Promise.all(
+        transaction.crud
+          .filter((entry) => {
+            if (entry.table !== 'pending_actions')
+              throw new Error('An unexpected change is waiting to sync.');
+            return entry.op !== UpdateType.DELETE;
+          })
+          .map(async (entry) => {
+            if (
+              entry.op !== UpdateType.PUT ||
+              typeof entry.opData?.payload !== 'string'
+            )
+              throw new Error('An unexpected change is waiting to sync.');
+            const action: unknown = JSON.parse(entry.opData.payload);
+            if (
+              !isRecord(action) ||
+              action.id !== entry.id ||
+              typeof action.datasetId !== 'string' ||
+              !['round', 'edit'].includes(String(action.kind)) ||
+              !isRecord(action.payload) ||
+              action.payload.id !== action.id
+            )
+              throw new Error('A saved change could not be verified.');
+            const converted = action as LocalAction;
+            return converted.kind === 'edit' && converted.legacyAction
+              ? {
+                  ...converted,
+                  payload: {
+                    ...(converted.payload as object),
+                    legacy_hash: await hash(converted.legacyAction),
+                  },
+                }
+              : converted;
+          }),
+      );
       for (let offset = 0; offset < actions.length; offset += 50) {
         const batch = actions.slice(offset, offset + 50);
-        const result = await accountRequest('/api/sync/operations', {
+        const result = await accountRequest('/api/sync/changes', {
           expectedAccountId: expected.id,
           serverEpoch: expected.serverEpoch,
           actions: batch,
@@ -483,29 +495,38 @@ function connector(expected: Binding): PowerSyncBackendConnector {
         for (const value of result.outcomes as unknown[]) {
           if (
             !isRecord(value) ||
-            typeof value.operationId !== 'string' ||
-            seen.has(value.operationId)
+            typeof value.id !== 'string' ||
+            seen.has(value.id)
           )
             throw new Error('Invalid sync receipt.');
-          const action = batch.find((a) => a.operationId === value.operationId);
+          const action = batch.find((a) => a.id === value.id);
           if (
             !action ||
-            value.requestHash !== (await hash(action)) ||
-            !['accepted', 'rejected', 'conflict'].includes(
-              String(value.status),
-            ) ||
-            !Number.isSafeInteger(value.revision)
+            !['accepted', 'rejected'].includes(String(value.status)) ||
+            (action.kind === 'round' &&
+              value.status === 'accepted' &&
+              typeof value.credited !== 'boolean')
           )
             throw new Error('Invalid sync receipt.');
-          seen.add(value.operationId);
+          seen.add(value.id);
+          if (action.kind === 'round' && value.status === 'accepted') {
+            await db.execute(
+              "UPDATE local_completions SET payload = json_set(payload,'$.credited',?) WHERE id = ?",
+              [value.credited ? 1 : 0, action.id],
+            );
+          }
           if (value.status !== 'accepted')
             await db.execute(
               'INSERT OR REPLACE INTO local_state(id,payload) VALUES (?,?)',
-              [`failure:${action.operationId}`, JSON.stringify(value)],
+              [`failure:${action.id}`, JSON.stringify(value)],
             );
         }
       }
       await transaction.complete();
+      for (const action of actions)
+        await db.execute('DELETE FROM pending_actions WHERE id = ?', [
+          action.id,
+        ]);
       void refresh();
     },
   };
@@ -609,11 +630,11 @@ export async function startAccountSync() {
     { onChange: changed },
     {
       tables: [
-        'account_state',
-        'player_pokemon',
+        'player',
         'pending_actions',
-        'sync_issues',
-        'completion_facts',
+        'round',
+        'local_completions',
+        'local_state',
       ],
     },
   );

@@ -5,38 +5,14 @@ const accountExportBatchSize = 100;
 const accountExportTimeoutMs = 60_000;
 
 const sections = {
-  completionFacts:
-    'SELECT id, owner_id, generation_id, completion_id, dataset_id, hash, completion, completed_at, record_version, progress_version, mode, daily_date, score_version, content_version, generator_version, contribution, eligible, revision, accepted_at FROM completion_facts WHERE owner_id = $1 ORDER BY id',
-  discoveries:
-    'SELECT id, owner_id, generation_id, pokemon, discovered, correct FROM player_pokemon WHERE owner_id = $1 ORDER BY id',
-  dailyResults:
-    'SELECT id, owner_id, generation_id, date, completion_id, result, streak_credit FROM daily_results WHERE owner_id = $1 ORDER BY id',
-  trainingBests: `SELECT DISTINCT ON (generation_id, score_version)
-      id, owner_id, generation_id, 'score:' || score_version AS mode, score_version,
-      completion_id, completion->'result' AS result
-      FROM completion_facts WHERE owner_id = $1 AND eligible AND mode = 'training'
-      ORDER BY generation_id, score_version, (completion->'result'->>'score')::numeric DESC,
-        (completion->'result'->>'elapsedMilliseconds')::numeric, revision`,
-  hallOfFame: `SELECT id, owner_id, generation_id, completion_id, completed_at,
-      completion->'victory'->>'trainerName' AS trainer_name,
-      completion->'victory'->'pokemon' AS pokemon, completion->'result' AS result
-      FROM completion_facts WHERE owner_id = $1 AND eligible AND completion->'victory' <> 'null'::jsonb ORDER BY id`,
-  linkedDatasets:
-    'SELECT id, owner_id, generation_id, link_id FROM linked_datasets WHERE owner_id = $1 ORDER BY id',
-  operationOutcomes:
-    'SELECT id, owner_id, generation_id, operation_id, hash, outcome, effect FROM operation_outcomes WHERE owner_id = $1 ORDER BY id',
-  unresolvedIssues:
-    'SELECT id, owner_id, generation_id, operation_id, reason, payload FROM sync_issues WHERE owner_id = $1 AND NOT dismissed ORDER BY id',
-  friends: `SELECT r.id, r.status, r.created_at, r.updated_at,
-    CASE WHEN r.sender_id = $1 THEN 'outgoing' ELSE 'incoming' END AS direction,
-    jsonb_build_object('id', u.id, 'code', s.code,
-      'name', COALESCE(NULLIF(BTRIM(a.edits->>'name'), ''), 'Trainer'),
-      'partnerPokemon', a.edits->>'partnerPokemon') AS player
-    FROM friend_requests r
-    JOIN "user" u ON u.id = CASE WHEN r.user_low = $1 THEN r.user_high ELSE r.user_low END
-    LEFT JOIN social_players s ON s.id = u.id
-    LEFT JOIN account_state a ON a.id = u.id
-    WHERE r.user_low = $1 OR r.user_high = $1 ORDER BY r.id`,
+  rounds:
+    'SELECT id, player_id, mode, day, puzzle_id, started_on, completed_at, credited, data FROM round WHERE player_id = $1 ORDER BY completed_at, id',
+  datasets:
+    'SELECT id, player_id FROM dataset WHERE player_id = $1 ORDER BY id',
+  operations:
+    'SELECT id, player_id, hash, status, reason FROM op WHERE player_id = $1 ORDER BY id',
+  friends:
+    'SELECT id, from_id, to_id, status, created_at, updated_at FROM friend WHERE from_id = $1 OR to_id = $1 ORDER BY id',
 } as const;
 
 export async function exportAccount(
@@ -75,38 +51,33 @@ export async function exportAccount(
       'SELECT pg_current_snapshot()::text AS snapshot, transaction_timestamp() AS exported_at',
     );
     const identity = await client.query<Record<string, unknown>>(
-      `SELECT u.id, u.email, u.created_at, s.code AS friend_code
-       FROM "user" u LEFT JOIN social_players s ON s.id = u.id WHERE u.id = $1`,
+      `SELECT id, email, created_at FROM "user" WHERE id = $1`,
       [accountId],
     );
     if (!identity.rows[0]) throw new Error('Account no longer available.');
-    const state = await client.query<{
-      generation_id: string;
-      revision: number;
-      profile_created_at: string;
-      progress: unknown;
-      edits: unknown;
-      edit_revisions: unknown;
-    }>(
-      'SELECT generation_id, revision, profile_created_at, progress, edits, edit_revisions FROM account_state WHERE id = $1',
+    const profile = await client.query<Record<string, unknown>>(
+      'SELECT * FROM player WHERE id = $1',
+      [accountId],
+    );
+    const providers = await client.query<Record<string, unknown>>(
+      'SELECT id, account_id, provider_id, created_at FROM account WHERE user_id = $1 ORDER BY id',
       [accountId],
     );
     const service = await client.query<{ epoch: string }>(
-      "SELECT epoch FROM service_state WHERE id = 'main'",
+      'SELECT epoch FROM instance WHERE id = 1',
     );
     const header = {
       format: 'quizmon-account-export',
       version: formatVersions.accountExport,
       accountId,
-      generationId: state.rows[0]?.generation_id ?? null,
       serverEpoch: service.rows[0]?.epoch ?? null,
-      revision: state.rows[0]?.revision ?? null,
       snapshot: snapshot.rows[0]!.snapshot,
       exportedAt: snapshot.rows[0]!.exported_at.toISOString(),
       scope:
         'Retained server data. Unsynced changes remain on their originating devices and are included in browser backups.',
       account: identity.rows[0],
-      state: state.rows[0] ?? null,
+      providers: providers.rows,
+      player: profile.rows[0] ?? null,
     };
     async function* records() {
       try {

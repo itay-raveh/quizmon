@@ -54,6 +54,7 @@ export const App = () => {
       if (!catalog || startingGame.current) return false;
       startingGame.current = true;
       const roundId = crypto.randomUUID();
+      const startedOn = new Date().toISOString().slice(0, 10);
       try {
         await writeActiveGame({
           answers: [],
@@ -63,6 +64,7 @@ export const App = () => {
           questions: nextQuestions,
           questionCount: nextQuestions.length,
           roundId,
+          startedOn,
           seed,
           ...(nextMode.kind === 'training'
             ? {
@@ -81,6 +83,7 @@ export const App = () => {
           settings: nextSettings,
           questions: nextQuestions,
           roundId,
+          startedOn,
           seed,
           type: 'started',
           ...(nextMode.kind === 'training'

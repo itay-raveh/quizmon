@@ -65,7 +65,12 @@ export const useGameCompletion = ({
         previousData.profile?.name ?? '',
       );
       const { result } = completion;
-      const best = await commitRoundCompletion(completion, leagueRecord);
+      const best = await commitRoundCompletion(
+        completion,
+        leagueRecord,
+        false,
+        round.startedOn,
+      );
       const progressChanges = getTrainerProgressChanges(
         previousTrainerStats,
         readTrainerStats(),

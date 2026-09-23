@@ -2,25 +2,30 @@ import { reportSaveIssue } from './save-health';
 import { trackGameCompleted } from '../analytics';
 import { parseActiveGameSave } from '../../domain/player/active-game';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
-import {
-  applyRecordedGame,
-  completeRound,
-  roundDiscoveries,
-} from '../../domain/player/game-history';
+import { completeRound } from '../../domain/player/game-history';
+import { applyResult } from '../../domain/player/game-progress';
 import { getDailyResultKey } from '../../domain/quiz/daily-track';
+import { defaultGameSettings } from '../../domain/settings/game-settings';
 import type { RoundCompletion } from '../../domain/sync/progress';
+import {
+  archiveCompletion,
+  scoreRound,
+  validateRoundFact,
+  type RoundFact,
+} from '../../domain/sync/round-facts';
 import type { ActiveGameSnapshot } from './active-game-storage';
-import type { LocalRow, LocalTransaction } from './local-database';
+import type { LocalRow } from './local-database';
+import { rebuildGuestProgress } from './game-history';
 import {
   appendLocalAction,
   getPlayerDatabase,
   readPlayerData,
   transactPlayer,
-  type LocalPlayerState,
 } from './player-storage';
 
 let tabId: string;
 let active: ActiveGameSnapshot | null = null;
+
 export const initializeLocalRound = async () => {
   tabId = sessionStorage.getItem('quizmon.baseline.tab') ?? crypto.randomUUID();
   sessionStorage.setItem('quizmon.baseline.tab', tabId);
@@ -37,49 +42,38 @@ export const initializeLocalRound = async () => {
   }
   await finalizeLocalRound();
 };
+
 const finalizeLocalRound = async () => {
-  if (active?.completedAt) {
-    const { completion, victory } = await completeRound(
-      active,
-      active.completedAt,
-      readPlayerData().profile?.name ?? '',
-    );
-    await commitRoundCompletion(completion, victory, true);
-  }
+  if (!active?.completedAt) return;
+  const { completion, victory } = await completeRound(
+    active,
+    active.completedAt,
+    readPlayerData().profile?.name ?? '',
+  );
+  await commitRoundCompletion(completion, victory, true, active.startedOn);
 };
+
 export const readLocalRound = () => structuredClone(active);
-const addDiscoveries = async (
-  state: LocalPlayerState,
-  transaction: LocalTransaction,
-  pokemon: string[],
-) => {
-  const known = new Set(state.save.data.pokedex);
-  const added = pokemon.filter((name) => !known.has(name));
-  if (!added.length) return;
-  state.save.data.pokedex = [...new Set([...known, ...added])];
-  await appendLocalAction(state, transaction, 'discoveries.add', {
-    pokemon: added,
-  });
-};
+
 export const persistLocalRound = async (round: ActiveGameSnapshot) => {
-  await transactPlayer(async (state, transaction) => {
+  await transactPlayer(async (state, tx) => {
     if (round.playerRestoreId !== state.save.restoreId)
       throw new Error('This round belongs to a replaced save. Reload Quizmon.');
-    const [completed] = await transaction.getAll<LocalRow>(
+    const [completed] = await tx.getAll<LocalRow>(
       'SELECT id,payload FROM local_completions WHERE id = ?',
       [round.roundId],
     );
-    const [closed] = await transaction.getAll<LocalRow>(
+    const [closed] = await tx.getAll<LocalRow>(
       'SELECT id,payload FROM local_closed_rounds WHERE id = ?',
       [round.roundId],
     );
     if (completed || closed) return;
-    const [stored] = await transaction.getAll<LocalRow>(
+    const [stored] = await tx.getAll<LocalRow>(
       'SELECT id,payload FROM local_rounds WHERE id = ?',
       [tabId],
     );
     const previous = stored
-      ? (JSON.parse(stored.payload) as ActiveGameSnapshot)
+      ? parseActiveGameSave(JSON.parse(stored.payload))
       : null;
     if (
       previous &&
@@ -94,14 +88,13 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     )
       round.completedAt =
         previous?.completedAt ?? round.completedAt ?? new Date().toISOString();
-    await addDiscoveries(state, transaction, roundDiscoveries(round));
     if (round.mode.kind === 'daily' && round.mode.track) {
       state.dailyAttempts ??= {};
       state.dailyAttempts[
         getDailyResultKey(round.mode.date, round.mode.track)
       ] = round;
     }
-    await transaction.execute(
+    await tx.execute(
       'INSERT OR REPLACE INTO local_rounds(id,payload) VALUES (?,?)',
       [tabId, JSON.stringify(round)],
     );
@@ -113,94 +106,105 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
   active = row ? parseActiveGameSave(JSON.parse(row.payload)) : null;
   await finalizeLocalRound();
 };
+
 export const removeLocalRound = async () => {
-  await transactPlayer(async (_state, transaction) => {
-    const [row] = await transaction.getAll<LocalRow>(
+  await transactPlayer(async (_state, tx) => {
+    const [row] = await tx.getAll<LocalRow>(
       'SELECT id,payload FROM local_rounds WHERE id = ?',
       [tabId],
     );
     const round = row ? parseActiveGameSave(JSON.parse(row.payload)) : null;
     if (round?.roundId)
-      await transaction.execute(
+      await tx.execute(
         'INSERT OR REPLACE INTO local_closed_rounds(id,payload) VALUES (?,?)',
         [round.roundId, JSON.stringify({ reason: 'left' })],
       );
-    await transaction.execute('DELETE FROM local_rounds WHERE id = ?', [tabId]);
+    await tx.execute('DELETE FROM local_rounds WHERE id = ?', [tabId]);
   });
   active = null;
 };
+
 export const commitRoundCompletion = async (
   completion: Omit<RoundCompletion, 'datasetId'>,
   victory?: LeagueVictoryRecord,
   keepRound = false,
+  startedOn?: string,
 ) => {
-  const { hash, validateCompletion } =
-    await import('../../domain/sync/progress');
-  const outcome = await transactPlayer(async (state, transaction) => {
-    const payload: RoundCompletion = {
-      ...completion,
-      datasetId: state.datasetId,
-    };
-    const invalid = validateCompletion(payload);
-    if (invalid && invalid !== 'unsupported_version')
+  const outcome = await transactPlayer(async (state, tx) => {
+    const old = { ...completion, datasetId: state.datasetId };
+    const round = archiveCompletion(
+      old,
+      true,
+      completion.mode === 'daily'
+        ? (startedOn ?? completion.dailyDate!)
+        : completion.completedAt.slice(0, 10),
+    );
+    if (!validateRoundFact(round))
       throw new Error(
-        `This round could not be saved (${invalid}). Your unfinished round is still on this device.`,
+        'This round could not be saved. Your unfinished round is still on this device.',
       );
-    const [existing] = await transaction.getAll<LocalRow>(
+    const [existing] = await tx.getAll<LocalRow>(
       'SELECT id,payload FROM local_completions WHERE id = ?',
-      [payload.completionId],
+      [round.id],
     );
     if (existing) {
-      const receipt = JSON.parse(existing.payload) as {
-        hash: string;
-        outcome: ReturnType<typeof applyRecordedGame>;
-      };
-      if (receipt.hash !== (await hash(payload)))
+      const saved = JSON.parse(existing.payload) as RoundFact;
+      if (
+        JSON.stringify({ ...saved, credited: true }) !== JSON.stringify(round)
+      )
         throw new Error('This round ID already has a different saved result.');
       if (!keepRound)
-        await transaction.execute('DELETE FROM local_rounds WHERE id = ?', [
-          tabId,
-        ]);
-      return { ...receipt.outcome, recorded: false };
+        await tx.execute('DELETE FROM local_rounds WHERE id = ?', [tabId]);
+      return { best: completion.result, isNewBest: false, recorded: false };
     }
-    await addDiscoveries(state, transaction, payload.discoveries);
     const eligible =
-      payload.mode !== 'daily' ||
-      !Object.keys(state.save.data.results.daily).some(
-        (key) => key.split(':')[0] === payload.dailyDate,
-      );
-    const outcome = applyRecordedGame(
-      state.save.data,
-      { completion: payload, eligible },
+      round.mode !== 'daily' ||
+      !(
+        await tx.getAll<LocalRow>(
+          "SELECT id,payload FROM local_completions WHERE json_extract(payload,'$.mode') = 'daily' AND json_extract(payload,'$.day') = ? AND json_extract(payload,'$.credited') = 1 LIMIT 1",
+          [round.day],
+        )
+      ).length;
+    round.credited = eligible;
+    const result = scoreRound(round);
+    const outcome = applyResult(
+      structuredClone(state.save.data),
+      round.mode === 'daily'
+        ? {
+            kind: 'daily',
+            date: round.day!,
+            ...(result.dailyTrack ? { track: result.dailyTrack } : {}),
+          }
+        : { kind: round.mode },
+      result,
+      {
+        ...defaultGameSettings,
+        trainingMode: completion.training.trainingMode,
+        difficulty: completion.training.difficulty,
+        questionSelection: completion.training.questionSelection,
+        generations: completion.training.generations,
+        formGroups:
+          completion.training.formGroups ?? defaultGameSettings.formGroups,
+        questionTypes: completion.training.questionTypes,
+        automaticQuestionTypes: completion.training.automaticQuestionTypes,
+      },
       victory,
+      round.started_on ?? round.completed_at.slice(0, 10),
     );
-    if (payload.mode === 'daily' && payload.result.dailyTrack)
+    await tx.execute('INSERT INTO local_completions(id,payload) VALUES (?,?)', [
+      round.id,
+      JSON.stringify(round),
+    ]);
+    const { credited: _credited, ...upload } = round;
+    void _credited;
+    await appendLocalAction(state, tx, 'round', upload, round.id);
+    if (round.mode === 'daily' && completion.result.dailyTrack)
       delete state.dailyAttempts?.[
-        getDailyResultKey(payload.dailyDate!, payload.result.dailyTrack)
+        getDailyResultKey(round.day!, completion.result.dailyTrack)
       ];
-    await appendLocalAction(
-      state,
-      transaction,
-      'completion.record',
-      payload,
-      payload.completionId,
-    );
-    await transaction.execute(
-      'INSERT INTO local_completions(id,payload) VALUES (?,?)',
-      [
-        payload.completionId,
-        JSON.stringify({
-          hash: await hash(payload),
-          outcome,
-          completion: payload,
-          eligible,
-        }),
-      ],
-    );
+    if (!state.account) await rebuildGuestProgress(state, tx);
     if (!keepRound)
-      await transaction.execute('DELETE FROM local_rounds WHERE id = ?', [
-        tabId,
-      ]);
+      await tx.execute('DELETE FROM local_rounds WHERE id = ?', [tabId]);
     return { ...outcome, recorded: true };
   });
   if (outcome.recorded) trackGameCompleted(completion.mode, completion.result);

@@ -1,9 +1,9 @@
 import { Client, type ClientConfig } from 'pg';
 
-export const releaseLockSql =
+const releaseLockSql =
   "SELECT pg_try_advisory_lock(hashtext('quizmon'), hashtext('release')) AS acquired";
 
-export class MigrationBusyError extends Error {
+class MigrationBusyError extends Error {
   constructor() {
     super(
       'Another Quizmon release holds the database lock. Retry this release later.',

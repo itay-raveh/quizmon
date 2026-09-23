@@ -1,5 +1,6 @@
 import { column, PowerSyncDatabase, Schema, Table } from '@powersync/web';
 import { accountTables } from './account-tables';
+import { accountTables as legacyAccountTables } from './legacy-account-tables';
 export type LocalTransaction = Pick<PowerSyncDatabase, 'getAll' | 'execute'>;
 
 export const localTables = [
@@ -13,10 +14,10 @@ export interface LocalRow {
   id: string;
   payload: string;
 }
-export const openLocalDatabase = (accountId?: string): PowerSyncDatabase =>
+const openDatabase = (accountId?: string, legacy = false): PowerSyncDatabase =>
   new PowerSyncDatabase({
     schema: new Schema({
-      ...(accountId ? accountTables : {}),
+      ...(accountId ? (legacy ? legacyAccountTables : accountTables) : {}),
       ...Object.fromEntries(
         localTables.map((name) => [
           name,
@@ -26,7 +27,12 @@ export const openLocalDatabase = (accountId?: string): PowerSyncDatabase =>
     }),
     database: {
       dbFilename: accountId
-        ? `quizmon-account-${encodeURIComponent(accountId)}-baseline.sqlite`
-        : 'quizmon-guest-baseline.sqlite',
+        ? `quizmon-account-${encodeURIComponent(accountId)}-${legacy ? 'baseline' : 'v2'}.sqlite`
+        : `quizmon-guest-${legacy ? 'baseline' : 'v2'}.sqlite`,
     },
   });
+
+export const openLocalDatabase = (accountId?: string) =>
+  openDatabase(accountId);
+export const openLegacyLocalDatabase = (accountId?: string) =>
+  openDatabase(accountId, true);

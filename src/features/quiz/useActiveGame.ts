@@ -110,6 +110,9 @@ export const useActiveGame = ({
         questions,
         seed: snapshot.seed,
         roundId: snapshot.roundId ?? snapshot.seed,
+        startedOn:
+          snapshot.startedOn ??
+          (snapshot.mode.kind === 'daily' ? snapshot.mode.date : undefined),
       };
       dispatch({ ...round, type: 'restored' });
       resetTimer(snapshot.elapsedMilliseconds);
@@ -176,6 +179,7 @@ export const useActiveGame = ({
       questionCount: session.questions.length,
       questions: session.questions,
       roundId: session.roundId ?? session.seed,
+      startedOn: session.startedOn,
       playerRestoreId,
       seed: session.seed,
     }).catch(reportSaveError);
