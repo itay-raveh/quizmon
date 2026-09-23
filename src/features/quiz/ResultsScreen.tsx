@@ -50,7 +50,7 @@ const LevelAdvancementOffer = ({
   if (!visible) return null;
   return (
     <aside className="level-advancement-offer" aria-label="Training suggestion">
-      <strong>Perfect round. Ready to try Level {nextLevel}?</strong>
+      <strong>Ready to try Level {nextLevel}?</strong>
       <div className="level-advancement-offer__actions">
         <GameButton onClick={onCustomize}>Customize training</GameButton>
         <GameButton tone="quiet" onClick={() => setVisible(false)}>
@@ -104,6 +104,8 @@ export const ResultsScreen = ({
   const isDaily = mode.kind === 'daily';
   const isLeague = mode.kind === 'league';
   const isTraining = mode.kind === 'training';
+  const perfectTraining =
+    isTraining && result.correctCount === result.questionCount;
   const nextLevel = isTraining
     ? suggestedLevel(result, settings.difficulty, resultSaved)
     : null;
@@ -235,6 +237,14 @@ export const ResultsScreen = ({
       </div>
 
       <div className="result-score">
+        {perfectTraining ? (
+          <div className="result-score__perfect">
+            <strong>Perfect round</strong>
+            <span>
+              {result.correctCount} / {result.questionCount}
+            </span>
+          </div>
+        ) : null}
         {result.scoreMultipliers ? (
           <MultipliedScore
             baseScore={calculateScore(result.answers)}
