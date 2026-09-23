@@ -42,6 +42,56 @@ describe('scoring', () => {
     expect(getAnswerPoints(question, false)).toBe(0);
   });
 
+  it('weights earned points and mastery by each drawn question type', () => {
+    const answers = [
+      {
+        category: 'identity' as const,
+        questionType: 'sprite-match' as const,
+        correct: true,
+        points: 1_000,
+        speedBonus: 2_000,
+      },
+      {
+        category: 'identity' as const,
+        questionType: 'ev-yields' as const,
+        correct: true,
+        points: 1_000,
+        speedBonus: 0,
+      },
+    ];
+    const multipliers: ScoreMultipliers = {
+      difficulty: 2,
+      generations: 1,
+      perQuestion: true,
+      questionTypes: [
+        { questionType: 'sprite-match', multiplier: 0.75 },
+        { questionType: 'ev-yields', multiplier: 1.25 },
+      ],
+    };
+    expect(getScoreBreakdown(answers)).toEqual({
+      knowledge: 2_000,
+      speed: 2_000,
+      mastery: 2_000,
+    });
+    expect(calculateScore(answers, multipliers)).toBe(11_000);
+    expect(
+      calculateScore(answers, { ...multipliers, perQuestion: undefined }),
+    ).toBe(11_250);
+    expect(
+      calculateScore(answers, {
+        ...multipliers,
+        perQuestion: undefined,
+        questionMix: 1,
+      }),
+    ).toBe(12_000);
+    expect(
+      calculateScore(
+        [answers[0]!, { ...answers[1]!, correct: false, points: 0 }],
+        multipliers,
+      ),
+    ).toBe(5_250);
+  });
+
   it.each([
     [0, 1_000],
     [1, 750],

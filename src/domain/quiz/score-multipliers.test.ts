@@ -53,26 +53,30 @@ it('scores the drawn question mix without rewarding unused selected types', () =
     { questionType: 'stat-showdown' as const },
   ];
   const actual = getTrainingScoreMultipliers(settings, drawn);
-  expect(actual?.questionMix).toBe(1.025);
-  expect(actual && getScoreMultiplier(actual)).toBeCloseTo(6.40625);
+  expect(actual?.perQuestion).toBe(true);
+  expect(actual && getScoreMultiplier(actual)).toBe(6.25);
   expect(
     getTrainingScoreMultipliers(settings, [
       ...drawn.slice(0, 9),
       { questionType: 'legend-hunt' },
-    ])?.questionMix,
-  ).toBe(0.975);
+    ])?.perQuestion,
+  ).toBe(true);
   expect(
     getTrainingScoreMultipliers(
       { ...settings, questionTypes: ['type-check', 'stat-showdown'] },
       drawn,
-    )?.questionMix,
-  ).toBe(actual?.questionMix);
+    )?.perQuestion,
+  ).toBe(true);
+  expect(getTrainingScoreMultipliers(settings, drawn, true)?.questionMix).toBe(
+    1.025,
+  );
 });
 
 it('accepts saved factors without depending on current variant rules', () => {
   expect(isScoreMultipliers(multipliers)).toBe(true);
   expect(isScoreMultipliers({ ...multipliers, formGroupCount: 4 })).toBe(true);
   expect(isScoreMultipliers({ ...multipliers, questionMix: 1.025 })).toBe(true);
+  expect(isScoreMultipliers({ ...multipliers, perQuestion: true })).toBe(true);
   expect(
     isScoreMultipliers({
       ...multipliers,
@@ -90,6 +94,8 @@ it.each([
   { formGroupCount: 5 },
   { formGroupCount: 1.5 },
   { questionMix: 1.5 },
+  { perQuestion: false },
+  { perQuestion: true, questionMix: 1 },
   { questionMix: Number.NaN },
   { questionTypes: [] },
   {

@@ -80,6 +80,27 @@ export const calculateScore = (
   rules: ScoringRules = scoringRules,
 ): number => {
   const { knowledge, speed, mastery } = getScoreBreakdown(answers, rules);
+  if (multipliers?.perQuestion) {
+    const factors = new Map<string, number>(
+      multipliers.questionTypes.map(({ questionType, multiplier }) => [
+        questionType,
+        multiplier,
+      ]),
+    );
+    const weighted = answers.reduce((total, answer) => {
+      const factor = factors.get(answer.questionType ?? '');
+      if (factor === undefined)
+        throw new Error('Missing question score factor');
+      return (
+        total +
+        (answer.points +
+          (answer.speedBonus ?? 0) +
+          (knowledge ? (mastery * answer.points) / knowledge : 0)) *
+          factor
+      );
+    }, 0);
+    return Math.round(weighted * getScoreMultiplier(multipliers));
+  }
   return Math.round(
     (knowledge + speed + mastery) *
       (multipliers ? getScoreMultiplier(multipliers) : 1),

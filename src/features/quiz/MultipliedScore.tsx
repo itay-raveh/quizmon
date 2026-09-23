@@ -1,6 +1,9 @@
 import { useReducedMotion } from '@/app/providers/motion-context';
 import { formatScore, formatScoreMultiplier } from '@/domain/pokemon/format';
-import { getQuestionTypesMultiplier } from '@/domain/quiz/score-multipliers';
+import {
+  getQuestionTypesMultiplier,
+  getScoreMultiplier,
+} from '@/domain/quiz/score-multipliers';
 import type { ScoreMultipliers } from '@/domain/quiz/types';
 import { useGameSounds } from '@/lib/audio/sound-context';
 import { useEffect, useState, type CSSProperties } from 'react';
@@ -67,10 +70,14 @@ export const MultipliedScore = ({
         ]),
     {
       label: 'Question types',
-      factor: getQuestionTypesMultiplier(
-        multipliers.questionTypes,
-        multipliers.questionMix,
-      ),
+      factor: multipliers.perQuestion
+        ? baseScore
+          ? score / (baseScore * getScoreMultiplier(multipliers))
+          : 1
+        : getQuestionTypesMultiplier(
+            multipliers.questionTypes,
+            multipliers.questionMix,
+          ),
       start: duration - 500,
     },
   ];

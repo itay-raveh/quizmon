@@ -35,6 +35,8 @@ export const isScoreMultipliers = (value: unknown): value is ScoreMultipliers =>
       Number.isFinite(value.questionMix) &&
       value.questionMix >= 0.75 &&
       value.questionMix <= 1.25)) &&
+  (value.perQuestion === undefined || value.perQuestion === true) &&
+  !(value.perQuestion && value.questionMix !== undefined) &&
   Array.isArray(value.questionTypes) &&
   value.questionTypes.length > 0 &&
   value.questionTypes.every(
@@ -61,7 +63,7 @@ export const getScoreMultiplier = (multipliers: ScoreMultipliers): number =>
   1.25 ** (multipliers.formGroupCount ?? 0) *
   getQuestionTypesMultiplier(
     multipliers.questionTypes,
-    multipliers.questionMix,
+    multipliers.perQuestion ? 1 : multipliers.questionMix,
   );
 
 export const getQuestionTypeMultiplier = (
@@ -91,6 +93,7 @@ export const getTrainingScoreMultipliers = (
   settings: Pick<GameSettings, 'difficulty' | 'generations' | 'questionTypes'> &
     Partial<Pick<GameSettings, 'formGroups'>>,
   questions?: readonly Pick<QuestionData, 'questionType'>[],
+  legacyAverage = false,
 ): ScoreMultipliers | undefined => {
   if (!settings.difficulty || !settings.generations.length) return undefined;
   const difficulty = settings.difficulty;
@@ -124,13 +127,15 @@ export const getTrainingScoreMultipliers = (
         generations: selectedGenerations.size,
         formGroupCount,
         ...(actualFactors
-          ? {
-              questionMix:
-                actualFactors.reduce<number>(
-                  (sum, factor) => sum + factor!,
-                  0,
-                ) / actualFactors.length,
-            }
+          ? legacyAverage
+            ? {
+                questionMix:
+                  actualFactors.reduce<number>(
+                    (sum, factor) => sum + factor!,
+                    0,
+                  ) / actualFactors.length,
+              }
+            : { perQuestion: true as const }
           : {}),
         questionTypes: factors,
       }

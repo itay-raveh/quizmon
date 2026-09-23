@@ -538,7 +538,7 @@ try {
   const legacy = await signIn();
   const legacyRound = completion(legacy.datasetId);
   delete legacyRound.result.scoreMultipliers?.formGroupCount;
-  delete legacyRound.result.scoreMultipliers?.questionMix;
+  delete legacyRound.result.scoreMultipliers?.perQuestion;
   legacyRound.result.score = calculateScore(
     legacyRound.result.answers,
     legacyRound.result.scoreMultipliers,

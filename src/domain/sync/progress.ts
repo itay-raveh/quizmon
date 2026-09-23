@@ -366,9 +366,12 @@ export function validateCompletion(value: unknown): string | null {
       ? getTrainingScoreMultipliers(
           value.training,
           isObject(result.scoreMultipliers) &&
-            result.scoreMultipliers.questionMix !== undefined
+            (result.scoreMultipliers.questionMix !== undefined ||
+              result.scoreMultipliers.perQuestion === true)
             ? (result.answers as AnswerResult[])
             : undefined,
+          isObject(result.scoreMultipliers) &&
+            result.scoreMultipliers.questionMix !== undefined,
         )
       : undefined;
   if (expectedScoreMultipliers && !result.scoreMultipliers)
