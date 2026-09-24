@@ -188,7 +188,45 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
       await target.init();
       await convertSavedDatabaseV1(guest);
       await convertSavedDatabaseV1(target, destination.id);
-      let source = await readState(guest);
+      const [guestState] = await guest.getAll<LocalRow>(
+        "SELECT id,payload FROM local_state WHERE id = 'player'",
+      );
+      const actions = await guest.getAll<LocalRow>(
+        'SELECT id,payload FROM local_actions',
+      );
+      const guestRounds = await guest.getAll<LocalRow>(
+        'SELECT id,payload FROM local_rounds',
+      );
+      if (!guestState) {
+        const [completions, closedRounds] = await Promise.all([
+          guest.getAll('SELECT id FROM local_completions LIMIT 1'),
+          guest.getAll('SELECT id FROM local_closed_rounds LIMIT 1'),
+        ]);
+        if (
+          actions.length ||
+          guestRounds.length ||
+          completions.length ||
+          closedRounds.length
+        )
+          throw new Error(
+            'The browser save is incomplete. Download a backup before retrying.',
+          );
+      }
+      let source = guestState
+        ? parseLocalPlayerState(JSON.parse(guestState.payload))
+        : {
+            version: 2 as const,
+            datasetId: crypto.randomUUID(),
+            dailyAttempts: {},
+            save: {
+              version: SAVE_SCHEMA_VERSION,
+              restoreId: null,
+              data: {
+                ...emptyPlayerData(),
+                profile: createTrainerProfile(),
+              },
+            },
+          };
       const [handoff] = await guest.getAll<LocalRow>(
         "SELECT id,payload FROM local_state WHERE id = 'handoff'",
       );
@@ -202,12 +240,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
             'This browser save is already transferring to another account. Choose Use account progress to keep it separate.',
           );
       }
-      const actions = await guest.getAll<LocalRow>(
-        'SELECT id,payload FROM local_actions',
-      );
-      const guestRounds = await guest.getAll<LocalRow>(
-        'SELECT id,payload FROM local_rounds',
-      );
       const hasGuest =
         actions.length > 0 ||
         guestRounds.length > 0 ||
