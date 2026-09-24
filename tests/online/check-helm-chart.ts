@@ -60,7 +60,7 @@ const chartVersion = (
   }
 ).version;
 const helm = (...args: string[]) =>
-  execFileSync('mise', ['exec', 'helm@4.3.0', '--', 'helm', ...args], {
+  execFileSync('mise', ['exec', '--', 'helm', ...args], {
     encoding: 'utf8',
     stdio: 'pipe',
   });
@@ -239,7 +239,6 @@ try {
     'mise',
     [
       'exec',
-      'kubeconform@0.8.0',
       '--',
       'kubeconform',
       '-strict',
