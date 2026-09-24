@@ -11,13 +11,14 @@ import {
   type CodeDelivery,
 } from '../../server/email.ts';
 import { localEnv } from '../../scripts/dev/local-env.ts';
+import { testDatabase } from './account-fixture.ts';
 
 const from = 'quizmon@example.test';
 const recipient = 'player@example.test';
 const code = '123456';
 const origin = 'http://localhost:4188';
-const connectionString =
-  'postgresql://postgres:unused@127.0.0.1:5548/quizmon_pilot';
+const database = await testDatabase();
+const connectionString = database.connectionString;
 
 await test('Worker binding rejects missing acknowledgement and normalizes quota errors', async () => {
   let message: unknown;
@@ -81,7 +82,6 @@ function apiWithDelivery(deliver: CodeDelivery) {
     origin,
     secret: localEnv.BETTER_AUTH_SECRET!,
     mail: { mode: 'cloudflare', deliver },
-    emailBudgetId: `test-${randomUUID()}`,
   });
 }
 
@@ -162,9 +162,12 @@ await test('real-mail mode has no test mailbox, stores hashed OTPs, and preserve
     404,
   );
   assert.equal(
-    (await db.query('SELECT 1 FROM test_mailbox WHERE email = $1', [email]))
-      .rowCount,
-    0,
+    (
+      await db.query<{ name: string | null }>(
+        "SELECT to_regclass('public.test_mailbox')::text AS name",
+      )
+    ).rows[0]?.name,
+    null,
   );
   const stored = await db.query<{ value: string }>(
     'SELECT value FROM verification WHERE identifier = $1',
@@ -229,3 +232,5 @@ await test('an ambiguous delivery failure returns a recoverable 503 without prov
     message: new EmailDeliveryError().message,
   });
 });
+
+await database.close();

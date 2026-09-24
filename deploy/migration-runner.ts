@@ -60,6 +60,13 @@ export async function migrateLockedDatabase(
   assertConnected();
   const applied = await history(client);
   verifyHistory(applied, migrations, false);
+  if (applied.length === 0) {
+    const old = await client.query<{ old_schema: string | null }>(
+      "SELECT to_regclass('public.account_state')::text AS old_schema",
+    );
+    if (old.rows[0]?.old_schema)
+      throw new Error('Old Quizmon database detected. Use a fresh database.');
+  }
   await migrate(drizzle(client), {
     migrationsFolder,
   });

@@ -53,6 +53,7 @@ jobs:
           node tests/online/check-helm-chart.ts
           docker compose -f compose.yaml up -d --wait db
           node tests/online/check-migrations.ts
+          npm run test:sync
       - name: Build and prepare Worker
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

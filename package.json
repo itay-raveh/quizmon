@@ -24,8 +24,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node deploy/migrate.ts",
     "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts",
-    "test:accounts": "node tests/online/check-friends.ts",
-    "test:sync": "node tests/online/check-progress-api.ts",
+    "test:accounts": "node tests/online/check-new-db.ts",
+    "test:sync": "node tests/online/check-new-db.ts && node tests/online/check-restore.ts",
     "check:chart": "node tests/online/check-helm-chart.ts",
     "generate:release-schema": "node scripts/generate-release-config-schema.ts"
   },
@@ -128,12 +128,16 @@
       ".": {
         "entry": [
           "server/auth-schema-config.ts",
-          "deploy/migrate-release.ts"
+          "deploy/migrate-release.ts",
+          "scripts/import-new-db.ts",
+          "scripts/benchmark-new-db.ts"
         ]
       }
     },
     "ignoreBinaries": [
-      "mise"
+      "mise",
+      "pg_dump",
+      "pg_restore"
     ]
   },
   "prettier": {

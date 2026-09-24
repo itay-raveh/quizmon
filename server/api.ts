@@ -3,7 +3,6 @@ import { exportAccount } from './account-export.ts';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
-import { eq } from 'drizzle-orm';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Hono, type Context } from 'hono';
 import * as Sentry from '@sentry/cloudflare';
@@ -13,7 +12,7 @@ import { Client } from 'pg';
 import { isDailyDate } from '../src/lib/validation.ts';
 import type { SyncConnection } from '../src/domain/sync/connection.ts';
 import { isRecord } from '../src/lib/validation.ts';
-import { uuid, validActionEnvelope } from '../src/domain/sync/progress.ts';
+import { uuid } from '../src/domain/sync/progress.ts';
 import { authPlugins } from './auth-options.ts';
 import { FriendshipError } from './friends.ts';
 import { friendshipApi } from './friends-api.ts';
@@ -26,12 +25,15 @@ import {
   type AccountMail,
 } from './email.ts';
 import {
-  ProgressError,
-  applyAction,
-  bootstrap,
-  linkDataset,
-} from './progress-api.ts';
-import * as schema from './schema.ts';
+  TargetProgressError,
+  targetApplyEdit,
+  targetBootstrap,
+  targetLinkDataset,
+  targetSubmitRound,
+} from './target-progress-api.ts';
+import * as schema from './target-schema.ts';
+
+const testMailbox = new Map<string, { code: string; createdAt: number }>();
 
 export interface AccountServices {
   sync: SyncConnection;
@@ -39,7 +41,6 @@ export interface AccountServices {
   secret: string;
   origin: string;
   mail: AccountMail;
-  emailBudgetId?: string;
 }
 
 const createAuth = (db: NodePgDatabase, services: AccountServices) => {
@@ -87,16 +88,10 @@ const createAuth = (db: NodePgDatabase, services: AccountServices) => {
     plugins: authPlugins(async (email, code) => {
       try {
         if (services.mail.mode === 'cloudflare') {
-          await reserveEmail(db, services.emailBudgetId);
+          await reserveEmail(db);
           await services.mail.deliver(email, code);
         } else {
-          await db
-            .insert(schema.testMailbox)
-            .values({ email, code })
-            .onConflictDoUpdate({
-              target: schema.testMailbox.email,
-              set: { code, createdAt: new Date() },
-            });
+          testMailbox.set(email.toLowerCase(), { code, createdAt: Date.now() });
         }
       } catch (error) {
         deliveryError =
@@ -114,7 +109,7 @@ export interface AccountEnv {
     auth: ReturnType<typeof createAuth>;
     accountId: string;
     origin: string;
-    state: Awaited<ReturnType<typeof bootstrap>>;
+    state: Awaited<ReturnType<typeof targetBootstrap>>;
     body: Record<string, unknown>;
   };
 }
@@ -139,7 +134,10 @@ export function createAccountApi(services: AccountServices) {
     await next();
   });
   app.onError((error, context) => {
-    if (error instanceof ProgressError || error instanceof FriendshipError)
+    if (
+      error instanceof TargetProgressError ||
+      error instanceof FriendshipError
+    )
       return context.json({ error: error.code }, error.status);
     console.error(error);
     return context.text('Internal Server Error', 500);
@@ -170,17 +168,12 @@ export function createAccountApi(services: AccountServices) {
     context.get('auth').handler(context.req.raw),
   );
   if (services.mail.mode === 'test-mailbox')
-    app.get('/api/dev/mailbox', async (context) => {
+    app.get('/api/dev/mailbox', (context) => {
       const email = (context.req.query('email') ?? '').toLowerCase();
-      const [mail] = await context
-        .get('db')
-        .select()
-        .from(schema.testMailbox)
-        .where(eq(schema.testMailbox.email, email));
+      const mail = testMailbox.get(email);
       return context.json({
         code:
-          mail &&
-          Date.now() - mail.createdAt.getTime() < codeLifetimeSeconds * 1000
+          mail && Date.now() - mail.createdAt < codeLifetimeSeconds * 1000
             ? mail.code
             : null,
       });
@@ -214,18 +207,19 @@ export function createAccountApi(services: AccountServices) {
   signedIn.route('/leaderboards', leaderboardApi);
   signedIn.route('/trainers', trainerApi);
   signedIn.get('/account', async (context) => {
-    const state = await bootstrap(context.get('db'), context.get('accountId'));
+    const state = await targetBootstrap(
+      context.get('db'),
+      context.get('accountId'),
+    );
     return context.json({
       id: context.get('accountId'),
-      generationId: state.account.generationId,
-      serverEpoch: state.serverEpoch,
-      versions: state.versions,
+      serverEpoch: state.epoch,
       sync,
     });
   });
-  for (const path of ['/account/link', '/sync/operations'])
+  for (const path of ['/account/link', '/sync/changes'])
     signedIn.post(path, async (context, next) => {
-      const state = await bootstrap(
+      const state = await targetBootstrap(
         context.get('db'),
         context.get('accountId'),
       );
@@ -242,7 +236,7 @@ export function createAccountApi(services: AccountServices) {
         body.expectedAccountId !== context.get('accountId')
       )
         return context.json({ error: 'account_changed' }, 403);
-      if (body.serverEpoch !== state.serverEpoch)
+      if (body.serverEpoch !== state.epoch)
         return context.json({ error: 'server_epoch_changed' }, 409);
       context.set('state', state);
       context.set('body', body);
@@ -250,45 +244,74 @@ export function createAccountApi(services: AccountServices) {
     });
   signedIn.post('/account/link', async (context) => {
     const body = context.get('body');
-    if (
-      !uuid(body.datasetId) ||
-      !uuid(body.linkId) ||
-      !uuid(body.generationId) ||
-      typeof body.merge !== 'boolean'
-    )
+    if (!uuid(body.datasetId) || typeof body.merge !== 'boolean')
       return context.json({ error: 'invalid_link' }, 400);
     return context.json(
-      await linkDataset(
+      await targetLinkDataset(
         context.get('db'),
         context.get('accountId'),
         body.datasetId,
-        body.linkId,
-        body.generationId,
+        context.get('state').epoch,
         body.merge,
-        context.get('state').serverEpoch,
         isDailyDate(body.profileCreatedAt) ? body.profileCreatedAt : undefined,
       ),
     );
   });
-  signedIn.post('/sync/operations', async (context) => {
+  signedIn.post('/sync/operations', (context) =>
+    context.json({ error: 'upgrade_required' }, 426),
+  );
+  signedIn.post('/sync/changes', async (context) => {
     const body = context.get('body');
     if (
       !Array.isArray(body.actions) ||
       !body.actions.length ||
       body.actions.length > 100 ||
-      !body.actions.every(validActionEnvelope)
+      !body.actions.every(
+        (action: unknown) =>
+          isRecord(action) &&
+          uuid(action.id) &&
+          uuid(action.datasetId) &&
+          (action.kind === 'round' || action.kind === 'edit') &&
+          isRecord(action.payload) &&
+          action.payload.id === action.id,
+      )
     )
       return context.json({ error: 'invalid_actions' }, 400);
     const outcomes = [];
-    for (const action of body.actions)
-      outcomes.push(
-        await applyAction(
-          context.get('db'),
-          context.get('accountId'),
-          context.get('state').serverEpoch,
-          action,
-        ),
-      );
+    for (const item of body.actions as unknown[]) {
+      if (!isRecord(item)) throw new Error('Validated action is missing.');
+      const datasetId = item.datasetId;
+      if (typeof datasetId !== 'string' || !uuid(datasetId))
+        throw new Error('Validated dataset is missing.');
+      const action = item;
+      try {
+        outcomes.push(
+          action.kind === 'round'
+            ? await targetSubmitRound(
+                context.get('db'),
+                context.get('accountId'),
+                datasetId,
+                context.get('state').epoch,
+                action.payload,
+              )
+            : await targetApplyEdit(
+                context.get('db'),
+                context.get('accountId'),
+                datasetId,
+                context.get('state').epoch,
+                action.payload,
+              ),
+        );
+      } catch (error) {
+        if (error instanceof TargetProgressError && error.status === 400)
+          outcomes.push({
+            id: action.id,
+            status: 'rejected',
+            reason: error.code,
+          });
+        else throw error;
+      }
+    }
     return context.json({ outcomes });
   });
   app.route('/api', signedIn);

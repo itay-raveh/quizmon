@@ -3,11 +3,11 @@ telemetry:
 replication:
   connections:
     - type: postgresql
-      uri: postgresql://postgres:unused@db:5432/quizmon_pilot
+      uri: postgresql://postgres:unused@db:5432/quizmon_new
       sslmode: disable
 storage:
   type: postgresql
-  uri: postgresql://postgres:unused@db:5432/powersync_pilot
+  uri: postgresql://postgres:unused@db:5432/powersync_new
   sslmode: disable
 port: 8080
 sync_config:

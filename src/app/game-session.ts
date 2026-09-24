@@ -28,6 +28,7 @@ export type GameSession =
       phase: 'questions';
       questionIndex: number;
       roundId?: string;
+      startedOn?: string;
       questions: QuestionData[];
       seed: string;
     }
@@ -94,6 +95,7 @@ export const gameSessionReducer = (
         scoreMultipliers: action.scoreMultipliers,
         phase: 'questions',
         roundId: action.roundId ?? action.seed,
+        startedOn: action.startedOn,
         questionIndex:
           action.type === 'restored'
             ? Math.min(action.answers.length, action.questions.length - 1)

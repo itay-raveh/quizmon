@@ -15,7 +15,7 @@ export interface ScoringRules {
   speedBonusRounding: number;
 }
 
-export const scoringRules: ScoringRules = {
+const scoringRules: ScoringRules = {
   baseQuestionPoints: 1000,
   championPoints: [1000, 750, 500, 250],
   speedBonusRate: 3,

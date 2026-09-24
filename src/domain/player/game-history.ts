@@ -1,8 +1,5 @@
 import type { ActiveGameSnapshot } from './active-game.ts';
-import {
-  createLeagueVictoryRecord,
-  type LeagueVictoryRecord,
-} from './hall-of-fame.ts';
+import { createLeagueVictoryRecord } from './hall-of-fame.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
 import { getQuestionPokemon } from '../quiz/question-pokemon.ts';
 import { snapshotRoundRules } from '../quiz/round-rules.ts';
@@ -26,8 +23,9 @@ import { defaultGameSettings } from '../settings/game-settings.ts';
 import type { RoundCompletion } from '../sync/progress.ts';
 import { emptyPlayerData, type PlayerData } from './player-save.ts';
 import { applyResult } from './game-progress.ts';
+import { scoreRound, type RoundFact } from '../sync/round-facts.ts';
 
-export function roundDiscoveries(
+function roundDiscoveries(
   round: Pick<ActiveGameSnapshot, 'answers' | 'questions'>,
 ) {
   return [
@@ -105,15 +103,7 @@ export async function completeRound(
   return { completion, victory };
 }
 
-export const progressProjectionVersion = 1;
-export interface RecordedGame {
-  completion: RoundCompletion;
-  eligible: boolean;
-}
-export type GameProgress = Pick<
-  PlayerData,
-  'results' | 'hallOfFame' | 'pokedex'
->;
+type GameProgress = Pick<PlayerData, 'results' | 'hallOfFame' | 'pokedex'>;
 
 // Archive reads must not depend on the current catalog or question generator.
 export function readRecordedGame(value: unknown): RoundCompletion {
@@ -185,55 +175,49 @@ export function readRecordedGame(value: unknown): RoundCompletion {
   return value as unknown as RoundCompletion;
 }
 
-export function applyRecordedGame(
-  data: PlayerData,
-  { completion: game, eligible }: RecordedGame,
-  victory?: LeagueVictoryRecord,
-) {
-  const outcome = eligible
-    ? applyResult(
-        data,
-        game.mode === 'daily'
-          ? {
-              kind: 'daily',
-              date: game.dailyDate!,
-              ...(game.result.dailyTrack
-                ? { track: game.result.dailyTrack }
-                : {}),
-            }
-          : { kind: game.mode },
-        game.result,
-        {
-          ...defaultGameSettings,
-          ...game.training,
-          formGroups:
-            game.training.formGroups ?? defaultGameSettings.formGroups,
-        },
-        victory ??
-          (game.victory
-            ? {
-                ...game.victory,
-                id: game.completionId,
-                completedAt: game.completedAt,
-                result: game.result,
-              }
-            : undefined),
-        game.completedAt.slice(0, 10),
-      )
-    : { best: game.result, isNewBest: false };
-  data.pokedex = [...new Set([...data.pokedex, ...game.discoveries])];
-  return outcome;
-}
-
-export function projectGameHistory(
-  games: Iterable<RecordedGame>,
-): GameProgress {
+export function projectRoundHistory(rounds: Iterable<RoundFact>): GameProgress {
   const data = emptyPlayerData();
   const seen = new Set<string>();
-  for (const game of games) {
-    if (seen.has(game.completion.completionId)) continue;
-    seen.add(game.completion.completionId);
-    applyRecordedGame(data, game);
+  for (const round of rounds) {
+    if (seen.has(round.id)) continue;
+    seen.add(round.id);
+    data.pokedex = [...new Set([...data.pokedex, ...round.data.found])];
+    if (!round.credited) continue;
+    const result = scoreRound(round);
+    const config = round.data.config;
+    const settings = {
+      ...defaultGameSettings,
+      trainingMode: config.training_mode,
+      difficulty: config.difficulty,
+      questionSelection: config.question_selection,
+      generations: config.generations,
+      formGroups: config.form_groups,
+      questionTypes: config.question_types,
+      automaticQuestionTypes: config.auto_types,
+    };
+    const victory = round.data.victory
+      ? {
+          id: round.id,
+          trainerName: round.data.victory.trainer_name,
+          pokemon: round.data.victory.pokemon,
+          completedAt: round.completed_at,
+          result,
+        }
+      : undefined;
+    applyResult(
+      data,
+      round.mode === 'daily'
+        ? {
+            kind: 'daily',
+            date: round.day!,
+            ...(result.dailyTrack ? { track: result.dailyTrack } : {}),
+          }
+        : { kind: round.mode },
+      result,
+      settings,
+      victory,
+      round.started_on ?? round.completed_at.slice(0, 10),
+    );
   }
   return {
     results: data.results,

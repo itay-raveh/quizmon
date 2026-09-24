@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { readMigrationConnection } from './release-inputs.ts';
 import { migrateLockedDatabase } from './migration-runner.ts';
 import { publishPlayerTables } from './publication.ts';
+import { rebuildRoundScores } from './rebuild-round-score.ts';
 import { withReleaseLock } from './release-lock.ts';
 
 const file = process.argv[2];
@@ -18,6 +19,7 @@ try {
       '/opt/quizmon/server/migrations',
     );
     await publishPlayerTables(session.client);
+    await rebuildRoundScores(session.client);
     return migrated;
   });
   console.log(JSON.stringify(result));

@@ -13,6 +13,7 @@ export interface ActiveGameSnapshot extends QuestionLineup {
   scoreMultipliers?: ScoreMultipliers;
   roundId?: string;
   completedAt?: string;
+  startedOn?: string;
   answers: AnswerResult[];
   elapsedMilliseconds: number;
   mode: GameMode;

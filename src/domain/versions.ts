@@ -8,5 +8,5 @@ export const formatVersions = {
   action: 1,
   hash: 1,
   completion: 1,
-  accountExport: 1,
+  accountExport: 2,
 } as const;

@@ -1,160 +1,123 @@
-import {
-  applyRecordedGame,
-  projectGameHistory,
-  progressProjectionVersion,
-  readRecordedGame,
-  type GameProgress,
-} from '../../domain/player/game-history';
-import { parsePlayerSave } from '../../domain/player/player-save';
+import { projectRoundHistory } from '../../domain/player/game-history';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
-import {
-  type Action,
-  type EditUnit,
-  type RoundCompletion,
-  validAction,
-  validDiscoveries,
-  validEdit,
-} from '../../domain/sync/progress';
-import type { LocalTransaction } from './local-database';
-import type { LocalPlayerState } from './player-storage';
+import { validateRoundFact } from '../../domain/sync/round-facts';
+import { isRecord } from '../validation';
+import { readLocalRounds } from './game-history';
+import type { LocalRow, LocalTransaction } from './local-database';
+import type { LocalAction, LocalPlayerState } from './player-storage';
+
+function array(value: unknown): string[] {
+  if (Array.isArray(value) && value.every((item) => typeof item === 'string'))
+    return value;
+  if (typeof value === 'string') {
+    try {
+      return array(JSON.parse(value));
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
 
 export async function projectAccount(
   state: LocalPlayerState,
   tx: LocalTransaction,
 ) {
   if (!state.account) return;
-  const [base] = await tx.getAll<{
-    generation_id: string;
-    edits: string;
-    edit_revisions: string;
-    profile_created_at: string;
-  }>(
-    'SELECT generation_id,edits,edit_revisions,profile_created_at FROM account_state WHERE id = ?',
+  const [player] = await tx.getAll<Record<string, unknown>>(
+    'SELECT * FROM player WHERE id = ?',
     [state.account.id],
   );
-  if (!base) return;
-  if (base.generation_id !== state.account.generationId)
-    throw new Error(
-      'This account was reset. Your pending progress is still saved here.',
-    );
-  const data = structuredClone(state.save.data);
-  const [clock] = await tx.getAll<{ revision: number; count: number }>(
-    'SELECT COALESCE(MAX(revision),0) AS revision,COUNT(*) AS count FROM completion_facts WHERE generation_id = ?',
-    [state.account.generationId],
+  if (!player) return;
+  const local = await readLocalRounds(tx);
+  const rows = await tx.getAll<Record<string, unknown>>(
+    'SELECT * FROM round WHERE player_id = ?',
+    [state.account.id],
   );
-  const signature = `${progressProjectionVersion}:${state.account.generationId}:${clock!.revision}:${clock!.count}`;
-  const [cached] = await tx.getAll<{ payload: string }>(
-    "SELECT payload FROM local_state WHERE id = 'history-projection'",
-  );
-  const cache = cached
-    ? (JSON.parse(cached.payload) as {
-        signature: string;
-        progress: GameProgress;
-      })
-    : undefined;
-  let progress: GameProgress;
-  if (cache?.signature === signature) progress = cache.progress;
-  else {
-    const games = await tx.getAll<{ completion: string; eligible: number }>(
-      'SELECT completion,eligible FROM completion_facts WHERE generation_id = ? ORDER BY revision',
-      [state.account.generationId],
-    );
-    progress = projectGameHistory(
-      games.map((row) => ({
-        completion: readRecordedGame(JSON.parse(row.completion)),
-        eligible: Boolean(row.eligible),
-      })),
-    );
-    await tx.execute(
-      "INSERT OR REPLACE INTO local_state(id,payload) VALUES ('history-projection',?)",
-      [JSON.stringify({ signature, progress })],
-    );
-  }
-  Object.assign(data, structuredClone(progress));
-  const pokemon = await tx.getAll<{ pokemon: string; discovered: number }>(
-    'SELECT pokemon,discovered FROM player_pokemon WHERE generation_id = ?',
-    [state.account.generationId],
-  );
-  data.pokedex = [
-    ...new Set([
-      ...data.pokedex,
-      ...pokemon.filter((p) => p.discovered).map((p) => p.pokemon),
-    ]),
-  ];
-  data.profile = {
-    ...(data.profile ?? createTrainerProfile()),
-    avatar: null,
-    createdAt: base.profile_created_at,
-    name: '',
-    partnerPokemon: null,
-    specialty: null,
-  };
-  const edits = JSON.parse(base.edits) as Record<string, unknown>;
-  state.editRevisions = JSON.parse(base.edit_revisions) as Partial<
-    Record<EditUnit, number>
-  >;
-  const predecessors: LocalPlayerState['predecessors'] = {};
-  const rows = await tx.getAll<{ id: string; payload: string }>(
-    "SELECT id,payload FROM pending_actions WHERE id NOT IN (SELECT substr(id,9) FROM local_state WHERE id LIKE 'failure:%') AND id NOT IN (SELECT operation_id FROM sync_issues WHERE owner_id = ? AND generation_id = ?) ORDER BY sequence",
-    [state.account.id, state.account.generationId],
-  );
+  const rounds = new Map(local.map((round) => [round.id, round]));
   for (const row of rows) {
-    const action: unknown = JSON.parse(row.payload);
-    if (
-      !validAction(action) ||
-      action.generationId !== state.account.generationId
-    )
-      throw new Error('A pending change belongs to another save.');
-    const recorded =
-      action.kind === 'completion.record'
-        ? await tx.getAll<{ id: string }>(
-            'SELECT id FROM completion_facts WHERE generation_id = ? AND completion_id = ?',
-            [
-              state.account.generationId,
-              (action.payload as RoundCompletion).completionId,
-            ],
-          )
-        : [];
-    if (!recorded.length) applyPending(data, edits, action);
-    if (validEdit(action.payload))
-      predecessors[action.payload.unit] = action.operationId;
+    const archive: unknown =
+      typeof row.data === 'string'
+        ? (JSON.parse(row.data) as unknown)
+        : row.data;
+    const round: unknown = {
+      id: row.id,
+      mode: row.mode,
+      day: row.day,
+      puzzle_id: row.puzzle_id,
+      started_on: row.started_on,
+      completed_at:
+        typeof row.completed_at === 'string'
+          ? new Date(row.completed_at).toISOString()
+          : row.completed_at,
+      credited: row.credited === true || row.credited === 1,
+      data: archive,
+    };
+    if (!validateRoundFact(round))
+      throw new Error('A downloaded round is invalid.');
+    rounds.set(round.id, round);
   }
-  for (const unit of ['avatar', 'name', 'partnerPokemon', 'specialty'] as const)
-    if (Object.hasOwn(edits, unit))
-      Object.assign(data.profile, { [unit]: edits[unit] });
-  data.settings = {
+  const ordered = [...rounds.values()].sort(
+    (a, b) =>
+      a.completed_at.localeCompare(b.completed_at) || a.id.localeCompare(b.id),
+  );
+  const data = structuredClone(state.save.data);
+  Object.assign(data, projectRoundHistory(ordered));
+  const profile = (data.profile = {
+    ...(data.profile ?? createTrainerProfile()),
+    createdAt: String(player.joined_on),
+    name: typeof player.name === 'string' ? player.name : '',
+    avatar: typeof player.avatar === 'string' ? player.avatar : null,
+    partnerPokemon: typeof player.partner === 'string' ? player.partner : null,
+    specialty: typeof player.specialty === 'string' ? player.specialty : null,
+  } as NonNullable<typeof data.profile>);
+  const settings = (data.settings = {
     ...defaultGameSettings,
-    soundVolume: data.settings?.soundVolume ?? defaultGameSettings.soundVolume,
-    reduceMotion:
-      data.settings?.reduceMotion ?? defaultGameSettings.reduceMotion,
-  };
-  for (const unit of ['answerFlow', 'timerDisplay'] as const)
-    if (Object.hasOwn(edits, unit))
-      Object.assign(data.settings, { [unit]: edits[unit] });
-  if (edits.training) Object.assign(data.settings, edits.training);
-  state.predecessors = predecessors;
-  state.save = parsePlayerSave({ ...state.save, data });
-}
-
-function applyPending(
-  data: LocalPlayerState['save']['data'],
-  edits: Record<string, unknown>,
-  action: Action,
-) {
-  if (action.kind === 'completion.record') {
-    const round = action.payload as RoundCompletion;
-    const eligible =
-      round.mode !== 'daily' ||
-      !Object.keys(data.results.daily).some(
-        (key) => key.split(':')[0] === round.dailyDate,
-      );
-    applyRecordedGame(data, { completion: round, eligible });
-  } else if (
-    action.kind === 'discoveries.add' &&
-    validDiscoveries(action.payload)
-  ) {
-    data.pokedex = [...new Set([...data.pokedex, ...action.payload.pokemon])];
-  } else if (validEdit(action.payload))
-    edits[action.payload.unit] = action.payload.value;
+    ...data.settings,
+    answerFlow: player.answer_flow,
+    timerDisplay: player.timer_display,
+    trainingMode: player.training_mode,
+    difficulty: Number(player.difficulty),
+    questionSelection: player.question_selection,
+    generations: array(player.generations),
+    formGroups: array(player.form_groups),
+    questionTypes: array(player.question_types),
+    automaticQuestionTypes:
+      player.auto_types == null ? undefined : array(player.auto_types),
+  } as NonNullable<typeof data.settings>);
+  const pending = await tx.getAll<LocalRow>(
+    "SELECT id,payload FROM pending_actions WHERE id NOT IN (SELECT substr(id,9) FROM local_state WHERE id LIKE 'failure:%') ORDER BY sequence",
+  );
+  for (const row of pending) {
+    const action = JSON.parse(row.payload) as LocalAction;
+    if (
+      action.kind !== 'edit' ||
+      action.id !== row.id ||
+      !isRecord(action.payload)
+    )
+      continue;
+    const { unit, value } = action.payload;
+    if (unit === 'name') profile.name = value as string;
+    if (unit === 'avatar') profile.avatar = value as typeof profile.avatar;
+    if (unit === 'partner')
+      profile.partnerPokemon = value as typeof profile.partnerPokemon;
+    if (unit === 'specialty')
+      profile.specialty = value as typeof profile.specialty;
+    if (unit === 'answer_flow')
+      settings.answerFlow = value as typeof settings.answerFlow;
+    if (unit === 'timer_display')
+      settings.timerDisplay = value as typeof settings.timerDisplay;
+    if (unit === 'training' && isRecord(value))
+      Object.assign(settings, {
+        trainingMode: value.training_mode,
+        difficulty: value.difficulty,
+        questionSelection: value.question_selection,
+        generations: value.generations,
+        formGroups: value.form_groups,
+        questionTypes: value.question_types,
+        automaticQuestionTypes: value.auto_types ?? undefined,
+      });
+  }
+  state.save.data = data;
 }
