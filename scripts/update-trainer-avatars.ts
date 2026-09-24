@@ -1,31 +1,63 @@
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  rename,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const source = 'https://play.pokemonshowdown.com/sprites/trainers/';
-const response = await fetch(source);
-if (!response.ok) throw new Error(`Trainer index: HTTP ${response.status}`);
-const index = await response.text();
-const ids = Array.from(
-  index.matchAll(
-    /<figcaption><a href="([a-z0-9-]+)\.png">[^<]+<\/a>(?:<br \/>by ([^<]+))?<\/figcaption>/g,
-  ),
-  ([, id, artist]) => ({ id, artist }),
-)
-  .filter(({ artist }) => !artist)
-  .map(({ id }) => id);
-if (ids.length < 100) throw new Error('Trainer index format changed');
-
+const manifest = new URL(
+  '../src/domain/player/data/trainer-avatars.json',
+  import.meta.url,
+);
 const destination = new URL('../public/trainer-avatars/', import.meta.url);
-await rm(destination, { recursive: true, force: true });
-await mkdir(destination, { recursive: true });
-const selected: { id: string; bottom: number }[] = [];
-await Promise.all(
-  Array.from({ length: 16 }, async () => {
+const updating = process.argv[2] === '--update' && process.argv.length === 3;
+if (process.argv.length > 2 && !updating)
+  throw new Error('Use --update to refresh the trainer avatar manifest.');
+
+type Avatar = { bottom: number; sha256: string };
+const pinned = JSON.parse(await readFile(manifest, 'utf8')) as Record<
+  string,
+  Avatar
+>;
+let ids = Object.keys(pinned);
+if (updating) {
+  const response = await fetch(source);
+  if (!response.ok) throw new Error(`Trainer index: HTTP ${response.status}`);
+  const index = await response.text();
+  ids = Array.from(
+    index.matchAll(
+      /<figcaption><a href="([a-z0-9-]+)\.png">[^<]+<\/a>(?:<br \/>by ([^<]+))?<\/figcaption>/g,
+    ),
+    ([, id, artist]) => ({ id: id!, artist }),
+  )
+    .filter(({ artist }) => !artist)
+    .map(({ id }) => id);
+  if (ids.length < 100) throw new Error('Trainer index format changed');
+}
+
+const workRoot = fileURLToPath(new URL('../.wrangler/', import.meta.url));
+await mkdir(workRoot, { recursive: true });
+const work = await mkdtemp(join(workRoot, 'trainer-avatars-'));
+const staged = join(work, 'assets');
+const backup = join(work, 'previous');
+await mkdir(staged);
+const selected: Record<string, Avatar> = {};
+
+try {
+  const workers = Array.from({ length: 16 }, async () => {
     while (ids.length) {
       const id = ids.shift()!;
-      const image = await fetch(`${source}${id}.png`);
-      if (!image.ok) throw new Error(`${id}: HTTP ${image.status}`);
-      const bytes = new Uint8Array(await image.arrayBuffer());
+      if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`Invalid avatar ID: ${id}`);
+      const response = await fetch(`${source}${id}.png`);
+      if (!response.ok) throw new Error(`${id}: HTTP ${response.status}`);
+      const bytes = Buffer.from(await response.arrayBuffer());
       const metadata = await sharp(bytes)
         .metadata()
         .catch(() => null);
@@ -33,8 +65,10 @@ await Promise.all(
         metadata?.format !== 'png' ||
         metadata.width !== 80 ||
         metadata.height !== 80
-      )
-        continue;
+      ) {
+        if (updating) continue;
+        throw new Error(`${id}: invalid trainer sprite`);
+      }
       const { data, info } = await sharp(bytes)
         .ensureAlpha()
         .raw()
@@ -46,23 +80,53 @@ await Promise.all(
           break;
         }
       }
-      await writeFile(new URL(`${id}.png`, destination), bytes);
-      selected.push({ id, bottom });
+      const avatar = {
+        bottom,
+        sha256: createHash('sha256').update(bytes).digest('hex'),
+      };
+      if (
+        !updating &&
+        (avatar.bottom !== pinned[id]?.bottom ||
+          avatar.sha256 !== pinned[id]?.sha256)
+      )
+        throw new Error(`${id}: trainer sprite changed; update the manifest`);
+      await writeFile(join(staged, `${id}.png`), bytes);
+      selected[id] = avatar;
     }
-  }),
-);
-if (selected.length < 100)
-  throw new Error('Too few uncredited 80 x 80 trainer sprites');
-selected.sort((a, b) => a.id.localeCompare(b.id));
-await mkdir(new URL('../src/domain/player/data/', import.meta.url), {
-  recursive: true,
-});
-await writeFile(
-  new URL('../src/domain/player/data/trainer-avatars.json', import.meta.url),
-  JSON.stringify(
-    Object.fromEntries(selected.map(({ id, bottom }) => [id, bottom])),
-    null,
-    2,
-  ) + '\n',
-);
-console.log(`Updated ${selected.length} trainer avatars.`);
+  });
+  const results = await Promise.allSettled(workers);
+  const failed = results.find((result) => result.status === 'rejected');
+  if (failed?.status === 'rejected') throw failed.reason;
+  if (Object.keys(selected).length < 100)
+    throw new Error('Too few uncredited 80 x 80 trainer sprites');
+
+  const pendingManifest = join(work, 'trainer-avatars.json');
+  if (updating) {
+    const sorted = Object.fromEntries(
+      Object.entries(selected).sort(([a], [b]) => a.localeCompare(b)),
+    );
+    await writeFile(pendingManifest, JSON.stringify(sorted, null, 2) + '\n');
+  }
+  let hadPrevious = false;
+  try {
+    await rename(destination, backup);
+    hadPrevious = true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
+  let installed = false;
+  try {
+    await rename(staged, destination);
+    installed = true;
+    if (updating) await rename(pendingManifest, manifest);
+  } catch (error) {
+    if (installed) await rm(destination, { recursive: true, force: true });
+    if (hadPrevious) await rename(backup, destination);
+    throw error;
+  }
+  console.log(
+    `${updating ? 'Updated' : 'Prepared'} ${Object.keys(selected).length} trainer avatars.`,
+  );
+} finally {
+  await rm(work, { recursive: true, force: true });
+}

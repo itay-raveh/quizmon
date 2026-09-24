@@ -37,7 +37,7 @@ Quizmon builds an offline dataset of Pokémon species and selected forms from [P
 npm run data:update
 ```
 
-The build fetches uncredited 80 × 80 trainer sprites from [Pokémon Showdown's trainer sprite index](https://play.pokemonshowdown.com/sprites/trainers/) and generates the avatar catalog. Sprite PNGs are ignored in Git and copied into `dist/` by Vite. Run `npm run avatars:update` to refresh the catalog for local development.
+The build fetches the trainer sprites listed in `src/domain/player/data/trainer-avatars.json` from [Pokémon Showdown](https://play.pokemonshowdown.com/sprites/trainers/) and verifies their checksums before Vite copies them into `dist/`. The PNGs stay ignored in Git. Run `npm run avatars:prepare` for local development, or `npm run avatars:update` to refresh the tracked manifest from the current uncredited 80 × 80 sprite index.
 
 ## Licenses
 

@@ -1,652 +1,2602 @@
 {
-  "aaron": 0.9875,
-  "acetrainer": 1,
-  "acetrainer-gen1": 0.85,
-  "acetrainer-gen1rb": 0.85,
-  "acetrainer-gen2": 0.85,
-  "acetrainer-gen3": 0.8875,
-  "acetrainer-gen3jp": 0.8875,
-  "acetrainer-gen3rs": 0.8875,
-  "acetrainer-gen4": 0.975,
-  "acetrainer-gen4dp": 0.9875,
-  "acetrainercouple": 0.9875,
-  "acetrainercouple-gen3": 0.9,
-  "acetrainerf": 1,
-  "acetrainerf-gen1": 0.85,
-  "acetrainerf-gen1rb": 0.85,
-  "acetrainerf-gen2": 0.85,
-  "acetrainerf-gen3": 0.8875,
-  "acetrainerf-gen3rs": 0.8875,
-  "acetrainerf-gen4": 0.975,
-  "acetrainerf-gen4dp": 0.9875,
-  "acetrainersnow": 0.9875,
-  "acetrainersnowf": 0.9875,
-  "agatha-gen1": 0.85,
-  "agatha-gen1rb": 0.85,
-  "agatha-gen3": 0.8625,
-  "alder": 1,
-  "anabel-gen3": 0.8875,
-  "archer": 1,
-  "archie-gen3": 0.9,
-  "argenta": 1,
-  "ariana": 1,
-  "aromalady": 0.9875,
-  "aromalady-gen3": 0.875,
-  "aromalady-gen3rs": 0.8875,
-  "artist": 1,
-  "artist-gen4": 0.975,
-  "ash": 0.9625,
-  "ash-alola": 0.9875,
-  "ash-capbackward": 0.9625,
-  "ash-hoenn": 0.9375,
-  "ash-johto": 0.9625,
-  "ash-kalos": 0.975,
-  "ash-sinnoh": 0.925,
-  "ash-unova": 0.975,
-  "backers": 0.9875,
-  "backersf": 1,
-  "backpacker": 1,
-  "backpackerf": 1,
-  "baker": 1,
-  "barry": 0.9875,
-  "battlegirl": 0.9875,
-  "battlegirl-gen3": 0.9,
-  "battlegirl-gen4": 0.9875,
-  "beauty": 0.975,
-  "beauty-gen1": 0.85,
-  "beauty-gen1rb": 0.85,
-  "beauty-gen2": 0.8375,
-  "beauty-gen2jp": 0.8375,
-  "beauty-gen3": 0.8875,
-  "beauty-gen3rs": 0.875,
-  "beauty-gen4dp": 0.9875,
-  "beauty-gen5bw2": 0.9875,
-  "bellelba": 1,
-  "bellepa": 0.9875,
-  "benga": 1,
-  "bertha": 0.975,
-  "bianca": 0.9875,
-  "bianca-pwt": 0.9625,
-  "biker": 0.9875,
-  "biker-gen1": 0.85,
-  "biker-gen1rb": 0.85,
-  "biker-gen2": 0.85,
-  "biker-gen3": 0.9125,
-  "biker-gen4": 0.9875,
-  "bill-gen3": 0.8875,
-  "birch-gen3": 0.9,
-  "birdkeeper": 0.9625,
-  "birdkeeper-gen1": 0.85,
-  "birdkeeper-gen1rb": 0.85,
-  "birdkeeper-gen2": 0.85,
-  "birdkeeper-gen3": 0.8625,
-  "birdkeeper-gen3rs": 0.85,
-  "birdkeeper-gen4dp": 0.9875,
-  "blackbelt": 0.9875,
-  "blackbelt-gen1": 0.85,
-  "blackbelt-gen1rb": 0.85,
-  "blackbelt-gen2": 0.85,
-  "blackbelt-gen3": 0.875,
-  "blackbelt-gen3rs": 0.875,
-  "blackbelt-gen4": 0.9875,
-  "blackbelt-gen4dp": 0.9875,
-  "blaine": 1,
-  "blaine-gen1": 0.85,
-  "blaine-gen1rb": 0.85,
-  "blaine-gen2": 0.85,
-  "blaine-gen3": 0.8625,
-  "blue": 0.9875,
-  "blue-gen1": 0.85,
-  "blue-gen1champion": 0.85,
-  "blue-gen1rb": 0.85,
-  "blue-gen1rbchampion": 0.85,
-  "blue-gen1rbtwo": 0.85,
-  "blue-gen1two": 0.85,
-  "blue-gen2": 0.85,
-  "blue-gen3": 0.8875,
-  "blue-gen3champion": 0.8625,
-  "blue-gen3two": 0.8875,
-  "boarder": 0.8625,
-  "boarder-gen2": 0.8375,
-  "brandon-gen3": 0.8875,
-  "brawly": 0.9875,
-  "brawly-gen3": 0.875,
-  "brendan-gen3": 0.85,
-  "brendan-gen3rs": 0.8375,
-  "brock": 0.8125,
-  "brock-gen1": 0.85,
-  "brock-gen1rb": 0.85,
-  "brock-gen2": 0.8375,
-  "brock-gen3": 0.8875,
-  "bruno": 0.9375,
-  "bruno-gen1": 0.85,
-  "bruno-gen1rb": 0.85,
-  "bruno-gen2": 0.85,
-  "bruno-gen3": 0.85,
-  "brycen": 0.9875,
-  "brycenman": 0.9875,
-  "buck": 0.975,
-  "bugcatcher": 0.9375,
-  "bugcatcher-gen1": 0.8,
-  "bugcatcher-gen1rb": 0.85,
-  "bugcatcher-gen2": 0.8375,
-  "bugcatcher-gen3": 0.8125,
-  "bugcatcher-gen3rs": 0.8375,
-  "bugcatcher-gen4dp": 0.975,
-  "bugmaniac-gen3": 0.8625,
-  "bugsy": 0.975,
-  "bugsy-gen2": 0.8375,
-  "burgh": 1,
-  "burglar": 0.9875,
-  "burglar-gen1": 0.7875,
-  "burglar-gen1rb": 0.8375,
-  "burglar-gen2": 0.8375,
-  "burglar-gen3": 0.85,
-  "byron": 1,
-  "caitlin": 0.9875,
-  "caitlin-gen4": 0.975,
-  "cameraman": 0.975,
-  "camper": 0.9875,
-  "camper-gen2": 0.85,
-  "camper-gen3": 0.825,
-  "camper-gen3rs": 0.775,
-  "candice": 0.9875,
-  "channeler-gen1": 0.85,
-  "channeler-gen1rb": 0.85,
-  "channeler-gen3": 0.875,
-  "cheren": 0.9875,
-  "cheren-gen5bw2": 0.975,
-  "cheryl": 1,
-  "chili": 0.9875,
-  "chuck": 0.9875,
-  "chuck-gen2": 0.8375,
-  "cilan": 0.9875,
-  "clair": 0.9875,
-  "clair-gen2": 0.85,
-  "clay": 0.9875,
-  "clemont": 1,
-  "clerk": 0.9875,
-  "clerk-boss": 0.9875,
-  "clerkf": 1,
-  "clown": 0.9875,
-  "collector": 1,
-  "collector-gen3": 0.8875,
-  "colress": 1,
-  "courtney-gen3": 0.9,
-  "cowgirl": 0.9875,
-  "crasherwake": 1,
-  "cress": 0.9875,
-  "crushgirl-gen3": 0.85,
-  "crushkin-gen3": 0.8875,
-  "cueball-gen1": 0.8375,
-  "cueball-gen1rb": 0.8375,
-  "cueball-gen3": 0.8875,
-  "cyclist": 0.9875,
-  "cyclist-gen4": 0.9875,
-  "cyclistf": 0.9875,
-  "cyclistf-gen4": 0.9875,
-  "cynthia": 1,
-  "cynthia-gen4": 1,
-  "cyrus": 1,
-  "dahlia": 1,
-  "daisy-gen3": 0.9,
-  "dancer": 1,
-  "darach": 1,
-  "darach-caitlin": 1,
-  "dawn": 0.9875,
-  "dawn-gen4pt": 0.9625,
-  "depotagent": 1,
-  "doctor": 0.9875,
-  "doubleteam": 0.9875,
-  "dragontamer": 0.9875,
-  "dragontamer-gen3": 0.875,
-  "drake-gen3": 0.8875,
-  "drayden": 1,
-  "elesa": 0.975,
-  "elesa-gen5bw2": 0.9875,
-  "emmet": 1,
-  "engineer-gen1": 0.85,
-  "engineer-gen1rb": 0.85,
-  "engineer-gen3": 0.8875,
-  "erika": 0.9875,
-  "erika-gen1": 0.8375,
-  "erika-gen1rb": 0.8375,
-  "erika-gen2": 0.8375,
-  "erika-gen3": 0.8625,
-  "ethan": 0.9625,
-  "ethan-gen2": 0.85,
-  "ethan-gen2c": 0.85,
-  "ethan-pokeathlon": 0.8625,
-  "eusine": 0.9875,
-  "eusine-gen2": 0.85,
-  "expert-gen3": 0.8875,
-  "expertf-gen3": 0.75,
-  "falkner": 0.875,
-  "falkner-gen2": 0.8375,
-  "fantina": 1,
-  "firebreather": 0.9875,
-  "firebreather-gen2": 0.85,
-  "fisherman": 0.9875,
-  "fisherman-gen1": 0.85,
-  "fisherman-gen1rb": 0.85,
-  "fisherman-gen2jp": 0.85,
-  "fisherman-gen3": 0.8875,
-  "fisherman-gen3rs": 0.875,
-  "fisherman-gen4": 0.9875,
-  "flannery": 1,
-  "flannery-gen3": 0.8875,
-  "flint": 0.9875,
-  "galacticgrunt": 0.9875,
-  "galacticgruntf": 0.9875,
-  "gambler": 0.9875,
-  "gambler-gen1": 0.8,
-  "gambler-gen1rb": 0.85,
-  "gamer-gen3": 0.775,
-  "gardenia": 0.9875,
-  "gentleman": 1,
-  "gentleman-gen1": 0.85,
-  "gentleman-gen1rb": 0.85,
-  "gentleman-gen2": 0.8375,
-  "gentleman-gen3": 0.875,
-  "gentleman-gen3rs": 0.8625,
-  "gentleman-gen4": 0.9875,
-  "gentleman-gen4dp": 0.9875,
-  "ghetsis": 1,
-  "ghetsis-gen5bw": 1,
-  "giovanni": 1,
-  "giovanni-gen1": 0.85,
-  "giovanni-gen1rb": 0.85,
-  "giovanni-gen3": 0.8875,
-  "glacia-gen3": 0.875,
-  "greta-gen3": 0.85,
-  "grimsley": 1,
-  "guitarist": 0.95,
-  "guitarist-gen2": 0.8375,
-  "guitarist-gen3": 0.9,
-  "guitarist-gen4": 0.9875,
-  "harlequin": 0.9875,
-  "hexmaniac-gen3": 0.8875,
-  "hexmaniac-gen3jp": 0.8875,
-  "hiker": 0.9875,
-  "hiker-gen1": 0.8375,
-  "hiker-gen1rb": 0.8375,
-  "hiker-gen2": 0.825,
-  "hiker-gen3": 0.8875,
-  "hiker-gen3rs": 0.8875,
-  "hiker-gen4": 1,
-  "hilbert": 0.9875,
-  "hilbert-wonderlauncher": 0.9875,
-  "hilda": 0.9875,
-  "hilda-wonderlauncher": 0.9875,
-  "hooligans": 1,
-  "hoopster": 0.9875,
-  "hugh": 0.925,
-  "idol": 0.9875,
-  "infielder": 0.9875,
-  "ingo": 1,
-  "interviewers": 0.9875,
-  "interviewers-gen3": 0.8625,
-  "iris": 0.9875,
-  "iris-gen5bw2": 0.9625,
-  "janine": 0.925,
-  "janine-gen2": 0.825,
-  "janitor": 0.9875,
-  "jasmine": 0.9875,
-  "jasmine-gen2": 0.85,
-  "jessiejames-gen1": 0.85,
-  "jogger": 0.9875,
-  "jrtrainer-gen1": 0.8375,
-  "jrtrainer-gen1rb": 0.8375,
-  "jrtrainerf-gen1": 0.85,
-  "jrtrainerf-gen1rb": 0.85,
-  "juan": 0.975,
-  "juan-gen3": 0.925,
-  "juggler": 0.9875,
-  "juggler-gen1": 0.85,
-  "juggler-gen1rb": 0.85,
-  "juggler-gen2": 0.85,
-  "juggler-gen3": 0.925,
-  "juniper": 1,
-  "jupiter": 0.9875,
-  "karen": 1,
-  "karen-gen2": 0.8375,
-  "kimonogirl": 0.9875,
-  "kimonogirl-gen2": 0.85,
-  "kindler-gen3": 0.85,
-  "koga": 0.9,
-  "koga-gen1": 0.85,
-  "koga-gen1rb": 0.85,
-  "koga-gen2": 0.7875,
-  "koga-gen3": 0.8375,
-  "kris-gen2": 0.85,
-  "lady": 0.9875,
-  "lady-gen3": 0.9,
-  "lady-gen3rs": 0.8875,
-  "lady-gen4": 0.9875,
-  "lance": 0.975,
-  "lance-gen1": 0.85,
-  "lance-gen1rb": 0.85,
-  "lance-gen2": 0.85,
-  "lance-gen3": 0.8625,
-  "lass": 0.9875,
-  "lass-gen1": 0.8375,
-  "lass-gen1rb": 0.85,
-  "lass-gen2": 0.85,
-  "lass-gen3": 0.875,
-  "lass-gen3rs": 0.8875,
-  "lass-gen4": 0.925,
-  "lass-gen4dp": 0.9875,
-  "leaf-gen3": 0.85,
-  "lenora": 0.9875,
-  "li": 0.9875,
-  "linebacker": 0.9875,
-  "liza": 0.9375,
-  "lorelei-gen1": 0.825,
-  "lorelei-gen1rb": 0.825,
-  "lorelei-gen3": 0.8875,
-  "ltsurge": 1,
-  "ltsurge-gen1": 0.85,
-  "ltsurge-gen1rb": 0.85,
-  "ltsurge-gen2": 0.8375,
-  "ltsurge-gen3": 0.875,
-  "lucas": 0.9875,
-  "lucas-gen4pt": 0.975,
-  "lucian": 0.9875,
-  "lucy-gen3": 0.8875,
-  "lyra": 0.9375,
-  "lyra-pokeathlon": 0.8875,
-  "madame": 1,
-  "madame-gen4": 0.975,
-  "madame-gen4dp": 0.9875,
-  "maid": 1,
-  "maid-gen4": 0.9125,
-  "marley": 0.975,
-  "marlon": 0.9,
-  "mars": 0.9875,
-  "marshal": 1,
-  "matt-gen3": 0.875,
-  "maxie-gen3": 0.9,
-  "may-gen3": 0.85,
-  "may-gen3rs": 0.85,
-  "maylene": 0.9875,
-  "medium": 0.9375,
-  "medium-gen2jp": 0.85,
-  "mira": 0.975,
-  "misty": 0.9625,
-  "misty-gen1": 0.85,
-  "misty-gen1rb": 0.85,
-  "misty-gen2": 0.8375,
-  "misty-gen3": 0.875,
-  "morty": 1,
-  "morty-gen2": 0.85,
-  "mrfuji-gen3": 0.8875,
-  "musician": 0.9875,
-  "n": 0.975,
-  "nate": 0.95,
-  "nate-wonderlauncher": 0.9375,
-  "ninjaboy": 0.9875,
-  "ninjaboy-gen3": 0.8,
-  "noland-gen3": 0.8875,
-  "norman": 0.975,
-  "norman-gen3": 0.9,
-  "nurse": 0.9875,
-  "nurseryaide": 0.9875,
-  "oak-gen1": 0.85,
-  "oak-gen1rb": 0.85,
-  "oak-gen2": 0.8375,
-  "oak-gen3": 0.8875,
-  "officer-gen2": 0.8375,
-  "oldcouple-gen3": 0.8875,
-  "painter-gen3": 0.85,
-  "palmer": 1,
-  "parasollady": 1,
-  "parasollady-gen3": 0.8875,
-  "parasollady-gen4": 0.9875,
-  "petrel": 0.975,
-  "phoebe-gen3": 0.875,
-  "picnicker": 0.9875,
-  "picnicker-gen2": 0.85,
-  "picnicker-gen3": 0.8375,
-  "picnicker-gen3rs": 0.825,
-  "pilot": 1,
-  "plasmagrunt": 0.9625,
-  "plasmagrunt-gen5bw": 0.9875,
-  "plasmagruntf": 0.8375,
-  "plasmagruntf-gen5bw": 0.9875,
-  "pokefan": 1,
-  "pokefan-gen2": 0.85,
-  "pokefan-gen3": 0.85,
-  "pokefan-gen4": 0.9875,
-  "pokefanf": 1,
-  "pokefanf-gen2": 0.85,
-  "pokefanf-gen3": 0.8625,
-  "pokefanf-gen4": 0.9875,
-  "pokekid": 0.9875,
-  "pokemaniac": 0.975,
-  "pokemaniac-gen1": 0.85,
-  "pokemaniac-gen1rb": 0.85,
-  "pokemaniac-gen2": 0.85,
-  "pokemaniac-gen3": 0.875,
-  "pokemaniac-gen3rs": 0.825,
-  "pokemonbreeder": 0.9875,
-  "pokemonbreeder-gen3": 0.8875,
-  "pokemonbreeder-gen4": 0.9875,
-  "pokemonbreederf": 1,
-  "pokemonbreederf-gen3": 0.8625,
-  "pokemonbreederf-gen3frlg": 0.7875,
-  "pokemonbreederf-gen4": 0.9875,
-  "pokemonranger": 0.9875,
-  "pokemonranger-gen3": 0.875,
-  "pokemonranger-gen3rs": 0.85,
-  "pokemonranger-gen4": 0.9875,
-  "pokemonrangerf": 0.9875,
-  "pokemonrangerf-gen3": 0.875,
-  "pokemonrangerf-gen3rs": 0.8875,
-  "pokemonrangerf-gen4": 0.9875,
-  "policeman": 1,
-  "policeman-gen4": 0.9875,
-  "preschooler": 1,
-  "preschoolerf": 1,
-  "proton": 0.9875,
-  "pryce": 0.9875,
-  "pryce-gen2": 0.825,
-  "psychic": 0.9875,
-  "psychic-gen1": 0.85,
-  "psychic-gen1rb": 0.85,
-  "psychic-gen2": 0.825,
-  "psychic-gen3": 0.875,
-  "psychic-gen3rs": 0.85,
-  "psychic-gen4": 0.9875,
-  "psychicf": 0.9875,
-  "psychicf-gen3": 0.875,
-  "psychicf-gen3rs": 0.8875,
-  "psychicf-gen4": 0.9875,
-  "psychicfjp-gen3": 0.8875,
-  "rancher": 0.9875,
-  "red": 0.9625,
-  "red-gen1": 0.8375,
-  "red-gen1main": 0.8375,
-  "red-gen1rb": 0.8375,
-  "red-gen1title": 0.8375,
-  "red-gen2": 0.8375,
-  "red-gen3": 0.8625,
-  "reporter": 0.9875,
-  "richboy": 0.9875,
-  "richboy-gen3": 0.8375,
-  "richboy-gen4": 0.9875,
-  "riley": 1,
-  "roark": 0.9875,
-  "rocker-gen1": 0.85,
-  "rocker-gen1rb": 0.85,
-  "rocker-gen3": 0.8875,
-  "rocket-gen1": 0.85,
-  "rocket-gen1rb": 0.85,
-  "rocketexecutive-gen2": 0.85,
-  "rocketexecutivef-gen2": 0.8375,
-  "rocketgrunt": 0.925,
-  "rocketgrunt-gen2": 0.8375,
-  "rocketgruntf": 0.95,
-  "rocketgruntf-gen2": 0.8375,
-  "rood": 0.9875,
-  "rosa": 0.9625,
-  "rosa-wonderlauncher": 0.9375,
-  "roughneck": 0.9875,
-  "roughneck-gen4": 0.9875,
-  "roxanne": 0.9625,
-  "roxanne-gen3": 0.85,
-  "roxie": 0.8875,
-  "ruinmaniac": 0.975,
-  "ruinmaniac-gen3": 0.825,
-  "ruinmaniac-gen3rs": 0.8375,
-  "sabrina": 0.9875,
-  "sabrina-gen1": 0.85,
-  "sabrina-gen1rb": 0.85,
-  "sabrina-gen2": 0.85,
-  "sabrina-gen3": 0.8375,
-  "sage": 1,
-  "sage-gen2": 0.8375,
-  "sage-gen2jp": 0.8375,
-  "sailor": 0.9875,
-  "sailor-gen1": 0.85,
-  "sailor-gen1rb": 0.85,
-  "sailor-gen2": 0.85,
-  "sailor-gen3": 0.9,
-  "sailor-gen3jp": 0.8875,
-  "sailor-gen3rs": 0.875,
-  "saturn": 0.9875,
-  "schoolboy-gen2": 0.8375,
-  "schoolkid": 0.9875,
-  "schoolkid-gen3": 0.8125,
-  "schoolkid-gen4": 0.875,
-  "schoolkid-gen4dp": 0.9875,
-  "schoolkidf": 0.9875,
-  "schoolkidf-gen3": 0.8125,
-  "schoolkidf-gen4": 0.9875,
-  "scientist": 1,
-  "scientist-gen1": 0.85,
-  "scientist-gen1rb": 0.85,
-  "scientist-gen2": 0.8375,
-  "scientist-gen3": 0.875,
-  "scientist-gen4": 0.9875,
-  "scientist-gen4dp": 0.9875,
-  "scientistf": 1,
-  "shadowtriad": 0.975,
-  "shauntal": 0.9875,
-  "shelly-gen3": 0.9,
-  "sidney-gen3": 0.8875,
-  "silver": 0.975,
-  "silver-gen2": 0.85,
-  "silver-gen2kanto": 0.85,
-  "sisandbro": 0.9875,
-  "sisandbro-gen3": 0.9,
-  "sisandbro-gen3rs": 0.9,
-  "skier": 0.9875,
-  "skier-gen2": 0.85,
-  "skierf": 0.975,
-  "skierf-gen4dp": 0.9875,
-  "skyla": 1,
-  "smasher": 0.9875,
-  "spenser-gen3": 0.8875,
-  "srandjr-gen3": 0.85,
-  "steven": 0.9625,
-  "steven-gen3": 0.9,
-  "striker": 0.9875,
-  "supernerd": 0.9125,
-  "supernerd-gen1": 0.85,
-  "supernerd-gen1rb": 0.85,
-  "supernerd-gen2": 0.8375,
-  "supernerd-gen3": 0.8875,
-  "swimmer": 0.975,
-  "swimmer-gen1": 0.8375,
-  "swimmer-gen1rb": 0.8375,
-  "swimmer-gen4": 0.8875,
-  "swimmer-gen4dp": 0.9875,
-  "swimmer-gen4jp": 0.95,
-  "swimmerf": 0.9875,
-  "swimmerf-gen2": 0.8375,
-  "swimmerf-gen3": 0.85,
-  "swimmerf-gen3rs": 0.85,
-  "swimmerf-gen4": 0.975,
-  "swimmerf-gen4dp": 0.9875,
-  "swimmerfjp-gen2": 0.8375,
-  "swimmerm-gen2": 0.8375,
-  "swimmerm-gen3": 0.775,
-  "swimmerm-gen3rs": 0.8875,
-  "tabitha-gen3": 0.875,
-  "tamer-gen1": 0.85,
-  "tamer-gen1rb": 0.85,
-  "tamer-gen3": 0.8875,
-  "tate": 0.925,
-  "tateandliza-gen3": 0.85,
-  "teacher": 0.9375,
-  "teacher-gen2": 0.8375,
-  "teamaquabeta-gen3": 0.8875,
-  "teamaquagruntf-gen3": 0.8875,
-  "teamaquagruntm-gen3": 0.8625,
-  "teammagmagruntf-gen3": 0.8875,
-  "teammagmagruntm-gen3": 0.8375,
-  "teamrocket": 1,
-  "teamrocketgruntf-gen3": 0.8625,
-  "teamrocketgruntm-gen3": 0.875,
-  "thorton": 0.975,
-  "triathletebikerf-gen3": 0.875,
-  "triathletebikerm-gen3": 0.8875,
-  "triathleterunnerf-gen3": 0.8625,
-  "triathleterunnerm-gen3": 0.8875,
-  "triathleteswimmerf-gen3": 0.8625,
-  "triathleteswimmerm-gen3": 0.875,
-  "tuber": 0.9875,
-  "tuber-gen3": 0.8875,
-  "tuberf": 0.9875,
-  "tuberf-gen3": 0.775,
-  "tuberf-gen3rs": 0.9,
-  "tucker-gen3": 0.9,
-  "twins": 0.9875,
-  "twins-gen2": 0.8375,
-  "twins-gen3": 0.8,
-  "twins-gen3rs": 0.8875,
-  "twins-gen4": 0.8625,
-  "twins-gen4dp": 0.9875,
-  "unknown": 0.975,
-  "unknown-flipped": 0.975,
-  "unknownf": 0.975,
-  "unknownf-flipped": 0.975,
-  "veteran": 1,
-  "veteran-gen4": 0.9875,
-  "veteranf": 1,
-  "volkner": 0.9875,
-  "waiter": 0.9875,
-  "waiter-gen4": 0.9875,
-  "waiter-gen4dp": 0.9875,
-  "waitress": 1,
-  "waitress-gen4": 0.9875,
-  "wallace": 0.9875,
-  "wallace-gen3": 0.8875,
-  "wallace-gen3rs": 0.8375,
-  "wally-gen3": 0.9,
-  "wattson": 0.9625,
-  "wattson-gen3": 0.875,
-  "whitney": 0.925,
-  "whitney-gen2": 0.8375,
-  "will": 0.975,
-  "will-gen2": 0.85,
-  "winona": 0.975,
-  "winona-gen3": 0.875,
-  "worker": 0.9875,
-  "worker-gen4": 0.9875,
-  "workerice": 0.9875,
-  "yellow": 0.9125,
-  "youngcouple": 0.975,
-  "youngcouple-gen3": 0.85,
-  "youngcouple-gen3rs": 0.85,
-  "youngcouple-gen4dp": 0.9875,
-  "youngster": 0.9875,
-  "youngster-gen1": 0.8,
-  "youngster-gen1rb": 0.8375,
-  "youngster-gen2": 0.8125,
-  "youngster-gen3": 0.8,
-  "youngster-gen3rs": 0.8,
-  "youngster-gen4": 0.8625,
-  "youngster-gen4dp": 1,
-  "zinzolin": 0.9875
+  "aaron": {
+    "bottom": 0.9875,
+    "sha256": "a8d5683aca3bc1a647e79a85e223b2889cd78d0501ce8ef717650eba5d66c77d"
+  },
+  "acetrainer": {
+    "bottom": 1,
+    "sha256": "918f551f12e3d8791064524df1051c2ee0b21085c240ca430cec5992e16b373f"
+  },
+  "acetrainer-gen1": {
+    "bottom": 0.85,
+    "sha256": "e977b6197fcda12e53ab7d7ba085a8501848c6f2bb5eb9d19492e3d269605f5d"
+  },
+  "acetrainer-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "e79695365fb68e0cbba731d5232079d5cae48103c57fa6385e7673a672250523"
+  },
+  "acetrainer-gen2": {
+    "bottom": 0.85,
+    "sha256": "315caec97c5dbf4dff490d902e06a50d6e7756af4859c34397f1f0a29bd64bd2"
+  },
+  "acetrainer-gen3": {
+    "bottom": 0.8875,
+    "sha256": "d877b8266095873030e718bc9e0a55bf26f5f356b60fa51553e5e313c459c985"
+  },
+  "acetrainer-gen3jp": {
+    "bottom": 0.8875,
+    "sha256": "49c0900ce2f72a72ab91c68be0dedf14dc05ff42f8b7a57ebf1253430564d612"
+  },
+  "acetrainer-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "db11509998861c9d92f3079a2d20bac9d0c3bc29f17aa4ed0e1b5ab3f94b5bb9"
+  },
+  "acetrainer-gen4": {
+    "bottom": 0.975,
+    "sha256": "f52a8cda9a6ba0e5702e85f5bde26f8d60ff0443b8868b3a86702e72a94c95d4"
+  },
+  "acetrainer-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "1367c2d669dc51cdcf73ae59ef7f6a4f01aef465c12f202e2aa84b095bbb0e80"
+  },
+  "acetrainercouple": {
+    "bottom": 0.9875,
+    "sha256": "e2ed6c73f7fe0efe4ce48b7e10228719f598b948a9f04c0ebd810af05dc3a9a5"
+  },
+  "acetrainercouple-gen3": {
+    "bottom": 0.9,
+    "sha256": "815deab9eeb15ccbed70182b55a2a49350420def517f7c577258a275720c663c"
+  },
+  "acetrainerf": {
+    "bottom": 1,
+    "sha256": "37c20636f55a8d55e5bece8340014804a7929de09ed623f1fd0e2dfe5df453f5"
+  },
+  "acetrainerf-gen1": {
+    "bottom": 0.85,
+    "sha256": "2fa2662e32b9c393da4afa0b8e4f132cf5036a2e0702459320b5120cca1af764"
+  },
+  "acetrainerf-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "5189fbd00f903cfbcf31f53a4089d3176964cf314affc8ab9accf58b6a7736a9"
+  },
+  "acetrainerf-gen2": {
+    "bottom": 0.85,
+    "sha256": "be586d092691035b5fbea5bb05031d754538947de6c0af62f38b1e0e70094bed"
+  },
+  "acetrainerf-gen3": {
+    "bottom": 0.8875,
+    "sha256": "8b071b6801afcddc5cf6d2700cdf6c67461a70ff06ac726cb887930b39943650"
+  },
+  "acetrainerf-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "78b2111824638d0ace49cd60cf5810514c7239fba5087c955150bc447ef5c183"
+  },
+  "acetrainerf-gen4": {
+    "bottom": 0.975,
+    "sha256": "812378bafe02ba0d3f155fff948ee5ecb717deadbcca4fb24f38d8ac02245265"
+  },
+  "acetrainerf-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "52eae637d762df407c6934e3554ea2de6c58bc9210c7b7de0490cb8f1113f3df"
+  },
+  "acetrainersnow": {
+    "bottom": 0.9875,
+    "sha256": "a2173145b47fa4eddcdce85ea4ae0b22f9d2c8073d6e3704eb7d0156e3bab68c"
+  },
+  "acetrainersnowf": {
+    "bottom": 0.9875,
+    "sha256": "6ced38acaed7f12dab36f111cce00f8f11c4c102e13eb5c91d378bbb75ca3454"
+  },
+  "agatha-gen1": {
+    "bottom": 0.85,
+    "sha256": "1ddb6c3fd351bde081338ba305dcf12a5ca7451ce538ec921dc01caa5e1c054a"
+  },
+  "agatha-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "5b08e31fb2b7debb5ae2ed92a78ad1a70ac3173cb56925e3cd15265cdcb51c60"
+  },
+  "agatha-gen3": {
+    "bottom": 0.8625,
+    "sha256": "02d71ad52d126cd452a51c4a10720c3b6293327fa96fb4816bea0237f13039a4"
+  },
+  "alder": {
+    "bottom": 1,
+    "sha256": "ac324eb79781f26171bdebbd435b8c907cfc8aef8b5fbf4d25f6be397efccd06"
+  },
+  "anabel-gen3": {
+    "bottom": 0.8875,
+    "sha256": "158c4f608f38c46ef20b383c7c6b2d02f236425306ab01ede62e0464eb1953f4"
+  },
+  "archer": {
+    "bottom": 1,
+    "sha256": "993c8e9a4810bcedf2e826411d350764684f1bbc883bcf2dc43cb123463c1dda"
+  },
+  "archie-gen3": {
+    "bottom": 0.9,
+    "sha256": "7c3965c32d3937d1119a6198e71b306c68d85089ed4ed6f37c462a71b943c72b"
+  },
+  "argenta": {
+    "bottom": 1,
+    "sha256": "5d5d539a19f874f596cccda9273068854e6a1f52866564fe7c19c7852143a89f"
+  },
+  "ariana": {
+    "bottom": 1,
+    "sha256": "fddc983a0f9c0fea81bffb3fc62590e6b8f85cd9700ea04fb0c2eae846c33bad"
+  },
+  "aromalady": {
+    "bottom": 0.9875,
+    "sha256": "e5c3568a36f70bc1ab13b5df849e58370f700b51efb618a6b56273e8377b354e"
+  },
+  "aromalady-gen3": {
+    "bottom": 0.875,
+    "sha256": "426a5fc34a74e897c0efdb7147a111ad8dd6fec02951b5092b6ff6e36d4f18a2"
+  },
+  "aromalady-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "dbc11d7b63c9cfdabd10b60d380dd8a6390e4a0a78cf6378b355dadc4bbc3767"
+  },
+  "artist": {
+    "bottom": 1,
+    "sha256": "d6c5bb1a80bd3572d0219313f20830b0164d8abb12ac4159c58d55c1fec705fa"
+  },
+  "artist-gen4": {
+    "bottom": 0.975,
+    "sha256": "ee0a54f323ee789b9aea2bab785ffb84c332022e83de3a47166ccb24e14ba527"
+  },
+  "ash": {
+    "bottom": 0.9625,
+    "sha256": "530f2f63ae174bcd20695ad6b0f9e4ea5f13950b4aa1334d8947aa732c998dc0"
+  },
+  "ash-alola": {
+    "bottom": 0.9875,
+    "sha256": "7fccd6027f0796b7e3452737bec4b3200f2e5572ff84cc3129ec8f3c9d6a1c12"
+  },
+  "ash-capbackward": {
+    "bottom": 0.9625,
+    "sha256": "87b02b2158c9413540219dce5d8872f0073ff3c0c74882ac6b5f21a8f53e7382"
+  },
+  "ash-hoenn": {
+    "bottom": 0.9375,
+    "sha256": "67f434dbcad26ca3516d223b595f9aabe842b233864b47466104bdd274e89454"
+  },
+  "ash-johto": {
+    "bottom": 0.9625,
+    "sha256": "9b2f48b1bf754635eb876604e8531e826c19f77b66b1b095e760bcfec7c65f60"
+  },
+  "ash-kalos": {
+    "bottom": 0.975,
+    "sha256": "5b19ff7aad8dc02e1bc4ce25ff0a4f2cfedfb28fc259443dd7b77b1c32a67333"
+  },
+  "ash-sinnoh": {
+    "bottom": 0.925,
+    "sha256": "a587bc899dcf4fab18c27fce417c38e72966bd49884a7861597954384ab0b038"
+  },
+  "ash-unova": {
+    "bottom": 0.975,
+    "sha256": "6ab08e367d95053e2cb3523fd5b51a15a700505d5c4fd976d1061e8f2597a533"
+  },
+  "backers": {
+    "bottom": 0.9875,
+    "sha256": "d30d4317f8e127887fe75af4ba8b17c68e96a6417e510298dedddc80de0756f3"
+  },
+  "backersf": {
+    "bottom": 1,
+    "sha256": "a157c2cf36a392912ecc674678cb74dea7f54aa08f6942018139fba681ce816d"
+  },
+  "backpacker": {
+    "bottom": 1,
+    "sha256": "0a5119b65205f9f693c11767825f6eb97a72f9b49ab8b9180321e9f2f90f1ad7"
+  },
+  "backpackerf": {
+    "bottom": 1,
+    "sha256": "db89db26a56268725e21eb1802dc69547794378b12558778e634c93b1857c23c"
+  },
+  "baker": {
+    "bottom": 1,
+    "sha256": "58feec05f7ea3e68fcd9418923868c292f6f8cc36320536e5b3855ffa46e9eae"
+  },
+  "barry": {
+    "bottom": 0.9875,
+    "sha256": "9e577d33822b71654f9d566cc2850c506ff1745da064bd277fc1e70522e5ffbc"
+  },
+  "battlegirl": {
+    "bottom": 0.9875,
+    "sha256": "5613a01d8bd8355c7834212c64821f72e945644307eea2839584c3e25d7fa04c"
+  },
+  "battlegirl-gen3": {
+    "bottom": 0.9,
+    "sha256": "f156410911ba7f63b7f2809aac0268213d5049fdc461741dafc40ba60bebb2cf"
+  },
+  "battlegirl-gen4": {
+    "bottom": 0.9875,
+    "sha256": "6b8cc940bcecd98ce568355de5ce62a471a56733cfbc3778041851106e199a13"
+  },
+  "beauty": {
+    "bottom": 0.975,
+    "sha256": "5bf9ed6f963537abef5a6f64db0a9350ec5d82eeba4e2d6e1980983041d05175"
+  },
+  "beauty-gen1": {
+    "bottom": 0.85,
+    "sha256": "00651d4d70ab5f49bc844bd50c079077056843b76e299e89917b35262f915bcd"
+  },
+  "beauty-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "78c9bc6301885fdda0f335332bf171ac24e37f190d82237a3d5f07e9f16a8845"
+  },
+  "beauty-gen2": {
+    "bottom": 0.8375,
+    "sha256": "10563bbe12da729c9d6ddfaf0d8d4428e6f2ee323fa0a6c430f595aee4309e8f"
+  },
+  "beauty-gen2jp": {
+    "bottom": 0.8375,
+    "sha256": "2257759ed681fb9c762665310304ce6381569b54d7663cf658300764c5eab4a4"
+  },
+  "beauty-gen3": {
+    "bottom": 0.8875,
+    "sha256": "a609e61cdd03c6d7f39a60577ab74c8176a0c78e18d148dccdea4c2c9f629226"
+  },
+  "beauty-gen3rs": {
+    "bottom": 0.875,
+    "sha256": "dc83bf5437bce19494d2e44851c53086a392eb66995a9c5667f8aba2a6945535"
+  },
+  "beauty-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "f222f2087b971add850adef637d543865c472870dd459d07355c4863ba271c6e"
+  },
+  "beauty-gen5bw2": {
+    "bottom": 0.9875,
+    "sha256": "ea706ead8bb7c16fb68a4c6764a1bbc58211ac8f11aa76c29083ce2e1beca75c"
+  },
+  "bellelba": {
+    "bottom": 1,
+    "sha256": "76492c49a5b6fd3f7a3c9ae1fc4a1031315c9bd2fca3ed91f452807cd388e380"
+  },
+  "bellepa": {
+    "bottom": 0.9875,
+    "sha256": "e3729d3101b42ea2983442bd87a526cd24cd87f8a0cb20f523623175ee3dcb0b"
+  },
+  "benga": {
+    "bottom": 1,
+    "sha256": "b0d159f26c0a6d3d4c86657ee1e1875de1d607438558a3a6e7bf2937848647e8"
+  },
+  "bertha": {
+    "bottom": 0.975,
+    "sha256": "156bc683faa0a56d091909e723c2b4afbcf40cd2ffe1d1af4380c4674b5845f4"
+  },
+  "bianca": {
+    "bottom": 0.9875,
+    "sha256": "0787ee2c041570c717bf6c5452fa2fb5ff5246572cd1446691175abde9462d45"
+  },
+  "bianca-pwt": {
+    "bottom": 0.9625,
+    "sha256": "95d4b3f87c5540a47a8b0935a297cff172eea260fbe7cabae5b816f96ea80062"
+  },
+  "biker": {
+    "bottom": 0.9875,
+    "sha256": "1c16207bc76b265fbbe3d1871f4815b67e26e38bc859f109245cdd513f5e89ac"
+  },
+  "biker-gen1": {
+    "bottom": 0.85,
+    "sha256": "3a95b9127e2f9db232e7097c681563a15af1e87a498519528749cd93d511e864"
+  },
+  "biker-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "eac8a1f11122df23a66c304e03b7bb066b6bb51740673a62209e9e7f1c2635c8"
+  },
+  "biker-gen2": {
+    "bottom": 0.85,
+    "sha256": "a4fe1ee48e69d9f19946f0a00fa5eca6fdc02e432ae58fd19a47db8ed1f3e6aa"
+  },
+  "biker-gen3": {
+    "bottom": 0.9125,
+    "sha256": "906d6f2ee3dd642e543933097376942bc33062a59b6f24548fd37c2633627b26"
+  },
+  "biker-gen4": {
+    "bottom": 0.9875,
+    "sha256": "11d27ce54c2c6c4ac2f5cc52a8e69da9471de14d4b59500f947da76fc6193659"
+  },
+  "bill-gen3": {
+    "bottom": 0.8875,
+    "sha256": "97e6072d9062121a8235d42733dadb6ca504440b076a10b881d21930a7d9ae77"
+  },
+  "birch-gen3": {
+    "bottom": 0.9,
+    "sha256": "e7e02475e7d73396fa21a76efcd1404509911a2ea00f94a79abfd5c723618059"
+  },
+  "birdkeeper": {
+    "bottom": 0.9625,
+    "sha256": "315368dda3a05334cffc3beb5447f0e1b9946d4548bd12043898f332992d1686"
+  },
+  "birdkeeper-gen1": {
+    "bottom": 0.85,
+    "sha256": "06778ae393e87e59c8d882e85a6a4d6412b30db17593c1cc6da5bc728532e8c5"
+  },
+  "birdkeeper-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "85cd2f03e2a5192d99fbba0f494412e2e3a0a74cfb7d89e82dff6dec0b6b0258"
+  },
+  "birdkeeper-gen2": {
+    "bottom": 0.85,
+    "sha256": "baed564c4706aada212a2e0ffa099c20a6a70f3b26ff9d0d968c2b2c216099bf"
+  },
+  "birdkeeper-gen3": {
+    "bottom": 0.8625,
+    "sha256": "31a68f8fc1f076f5f99506174393e74cb07f903a94a84eec1ab93fba8928dc71"
+  },
+  "birdkeeper-gen3rs": {
+    "bottom": 0.85,
+    "sha256": "da6bbbfc95724f1e200483b6c2a03b39594543585e1da0d133af718fe29b18a2"
+  },
+  "birdkeeper-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "f1a0956ef3c52c9b51e0d9c75e6b9e117db84049fd2958ea786f0998abccd3fc"
+  },
+  "blackbelt": {
+    "bottom": 0.9875,
+    "sha256": "774c25b47e8d923b62b90fc5d67fb31e6535cdbdb173356e194e4d8ccbdda9ac"
+  },
+  "blackbelt-gen1": {
+    "bottom": 0.85,
+    "sha256": "4864a16f336aed471b1a02f1c02da8873d2c9d684caf5a4d30c0382e7b91dedf"
+  },
+  "blackbelt-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "ad29fa1c4800b1f7dd2c8a29688ecbc30ac4717c3120a6b5eb0b56f1c3f682f2"
+  },
+  "blackbelt-gen2": {
+    "bottom": 0.85,
+    "sha256": "9a1082c426666440ab03a73f6b8e1f1a1d4d07b0072d930651f4ebea9af665b8"
+  },
+  "blackbelt-gen3": {
+    "bottom": 0.875,
+    "sha256": "8fa0849ab2cbd149de750f5e121cdd3fd1d2dca323b985fa09b182c78302033c"
+  },
+  "blackbelt-gen3rs": {
+    "bottom": 0.875,
+    "sha256": "8166be3c3c533978a1f17cf354bdc79447b9856c56a543a62e822a4ed0888e19"
+  },
+  "blackbelt-gen4": {
+    "bottom": 0.9875,
+    "sha256": "5af41d44ced104979edacd334831d87b91a913e5d5b53e33ac0fd37605b01dfb"
+  },
+  "blackbelt-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "dac6b7df38e3fae705c0b7f2cc1ce56b472ee1923ea782be706b2a46bd2caa63"
+  },
+  "blaine": {
+    "bottom": 1,
+    "sha256": "9b5a5a39abbb5768333d505bd4850da75ec0607f77a586529d201adf09ed9471"
+  },
+  "blaine-gen1": {
+    "bottom": 0.85,
+    "sha256": "a502844fc476f97299a0ebeb0a99cfa4751c6d2f10e7653f6595d54ff4bfac7f"
+  },
+  "blaine-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "7768f3289f07eb60ad7a6066220f0c5cd6d8875a920da8a121f0db343bb10387"
+  },
+  "blaine-gen2": {
+    "bottom": 0.85,
+    "sha256": "7d87e2a98a7227c132c6330ed39ed8f142576de3ba138ba20532075de58406a0"
+  },
+  "blaine-gen3": {
+    "bottom": 0.8625,
+    "sha256": "846d60ebccccbab65cb067d1b2b2c811e961912582163ff218e51091bdfd8f81"
+  },
+  "blue": {
+    "bottom": 0.9875,
+    "sha256": "96bc04edd003af3e1235360db3ca6ef2ee27794891f48712d0035c7508c5b5af"
+  },
+  "blue-gen1": {
+    "bottom": 0.85,
+    "sha256": "4f744ca17985a38cc6a5721902a46d41815065b4bac21caf3dd2fb9339985ec5"
+  },
+  "blue-gen1champion": {
+    "bottom": 0.85,
+    "sha256": "370ed0d3692570750af87b04cd3ed0e4a45ceab8c23c6d99f470f23050ba92e3"
+  },
+  "blue-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "930bd1dec5699114b78d67421fc19da46e3290688e3c60c53f31503145df19a4"
+  },
+  "blue-gen1rbchampion": {
+    "bottom": 0.85,
+    "sha256": "6b446e3cd00ded6e7b2f8c65b32aa3cae025ad71cd694591affeed7320de50d2"
+  },
+  "blue-gen1rbtwo": {
+    "bottom": 0.85,
+    "sha256": "98ec73203a5de41f1d97dcb22c177fa65edd3977f7ea5a71d94cad6a6f02104e"
+  },
+  "blue-gen1two": {
+    "bottom": 0.85,
+    "sha256": "03019ec9e48fdb895d3b08626f030de890125479cf784a58a6389b2f7cbf209c"
+  },
+  "blue-gen2": {
+    "bottom": 0.85,
+    "sha256": "793ee993d7e7454130fa9364873498e26a5a72eb3d8e10384e117b3d703a2c4e"
+  },
+  "blue-gen3": {
+    "bottom": 0.8875,
+    "sha256": "87c389a4d88aef0fc6f29232d7f9f48b4c842a48abab4b48313156204c32b9d1"
+  },
+  "blue-gen3champion": {
+    "bottom": 0.8625,
+    "sha256": "fd14ac76fc26c6b84f012061acc2a8ef6297e4d4a117843dfaf64938612d176f"
+  },
+  "blue-gen3two": {
+    "bottom": 0.8875,
+    "sha256": "636e4785fb56ed688c83c9638b5e3b2afc6cf86c9d44aec34431b0d2d14ab034"
+  },
+  "boarder": {
+    "bottom": 0.8625,
+    "sha256": "2fcec068ec12917e32eec0042d94d9c7b0cb4541001e1637f7379cd213338390"
+  },
+  "boarder-gen2": {
+    "bottom": 0.8375,
+    "sha256": "296ad8fc3c8c7bfde6108b3efe2679a7c63918958b93874c30f13be9eec63daa"
+  },
+  "brandon-gen3": {
+    "bottom": 0.8875,
+    "sha256": "b04aecd998afb3e41d1cbf97a471f4f47ee601fbd26286152d6f1c58f23e580b"
+  },
+  "brawly": {
+    "bottom": 0.9875,
+    "sha256": "88f578f24d5ed95537289ae09b7b91d825791b8fbbf0aad4e9bc1008e5934a33"
+  },
+  "brawly-gen3": {
+    "bottom": 0.875,
+    "sha256": "eed82bafb564f4aabe067f2f411f195da227ce57f61fb4817280af7d8b4364d9"
+  },
+  "brendan-gen3": {
+    "bottom": 0.85,
+    "sha256": "7290e5deccf4d08673150cc12f0528fbe1366a584d970acb5d726fa5340d244e"
+  },
+  "brendan-gen3rs": {
+    "bottom": 0.8375,
+    "sha256": "a130af712bf682c33e673e1aba808393aece011817b5498bc8dcb25dbbe1aced"
+  },
+  "brock": {
+    "bottom": 0.8125,
+    "sha256": "ca422c284f250814332bcc61df1aaf174dd450477676028dec400750638a319d"
+  },
+  "brock-gen1": {
+    "bottom": 0.85,
+    "sha256": "2a50ae5ef44ad22b3eef01d1df5df5ae56b503479864f1406b946b2a06556853"
+  },
+  "brock-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "f9d85e07d67ddf227a025cc7b34b6cfd7418902a6fd3b4a49601f96fa2748eff"
+  },
+  "brock-gen2": {
+    "bottom": 0.8375,
+    "sha256": "75b47a015fa7c9599cc82e61e9c676e40d94b6c52186d392bc297622eb8964c6"
+  },
+  "brock-gen3": {
+    "bottom": 0.8875,
+    "sha256": "904cd7eb65bd7aa6553849d3597d44449ca98753de21404288b9db406c79a992"
+  },
+  "bruno": {
+    "bottom": 0.9375,
+    "sha256": "684f59891985fab14f17e4573bef974c66a09587b6bfdab37bd98302241dba55"
+  },
+  "bruno-gen1": {
+    "bottom": 0.85,
+    "sha256": "07918eea0255c0cebd498f5e3429c70aa5d421503fedf93ea77b9d10157d44f1"
+  },
+  "bruno-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "d486e2f25f7f026c2681de883a6bfd8ff9e5b2965208b038c66919928f5433ac"
+  },
+  "bruno-gen2": {
+    "bottom": 0.85,
+    "sha256": "3260c2473bcea331a5b20d1b81c4b2620a271069a38c609fb0be6a4c773c4598"
+  },
+  "bruno-gen3": {
+    "bottom": 0.85,
+    "sha256": "da2eca434968f1deb42d02ce953c5dedf93252ca64bda5cb2f59fd58f8043e97"
+  },
+  "brycen": {
+    "bottom": 0.9875,
+    "sha256": "f6d67e86136f6f58357f5b2a9477fd303419992c4123f5b00c271c99258043d6"
+  },
+  "brycenman": {
+    "bottom": 0.9875,
+    "sha256": "1d301df38499834ec605d1f16107e85cbbec32365d13ff6da87949337e05d90b"
+  },
+  "buck": {
+    "bottom": 0.975,
+    "sha256": "4991598623e4ef6ae332070d4b6803afb8247b1942453f70997d6ac39b58b6db"
+  },
+  "bugcatcher": {
+    "bottom": 0.9375,
+    "sha256": "87a8f6be79f14010dbe3add103527c5ab19628ecfbb50f8fd37de0ea98379c24"
+  },
+  "bugcatcher-gen1": {
+    "bottom": 0.8,
+    "sha256": "2bc8dac5e0be01a23582a9324a12d6e5c6b0cafd158bb34448ade0615f81a752"
+  },
+  "bugcatcher-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "0ad40e6036e969113474aec9fe5402e3d89e8034fe3266ee8b4769f0c89a7532"
+  },
+  "bugcatcher-gen2": {
+    "bottom": 0.8375,
+    "sha256": "393b3758eb8cc16a3059c84ec339db8b96fba731338fc07806d3e8a5293df5a5"
+  },
+  "bugcatcher-gen3": {
+    "bottom": 0.8125,
+    "sha256": "320ba4572a1d6e2dd313f086b873a774a6bcba7757b44e7745d3a48b343acf9e"
+  },
+  "bugcatcher-gen3rs": {
+    "bottom": 0.8375,
+    "sha256": "8f3955c27c4f644a4a15fc34d0fa7231512e21758abe7dabc3f08ad2488986b7"
+  },
+  "bugcatcher-gen4dp": {
+    "bottom": 0.975,
+    "sha256": "33a7e50a5f3bdac11639e0950eff08415e42dd739a821a600eafcc18006552c8"
+  },
+  "bugmaniac-gen3": {
+    "bottom": 0.8625,
+    "sha256": "3dc87d3a905aca2a1ed1a7169f67de0d766d61b6d55ffe40cc65c1c0c371d94f"
+  },
+  "bugsy": {
+    "bottom": 0.975,
+    "sha256": "8476fc569a4a6a3ea9058abe8533b757111a6cb0121b08c548b4d6339ebf247f"
+  },
+  "bugsy-gen2": {
+    "bottom": 0.8375,
+    "sha256": "cd44cea9d8765c8c74d6596323cdf979e392d9b9defd71b93a0018aa7d3d71b2"
+  },
+  "burgh": {
+    "bottom": 1,
+    "sha256": "4b0da1095285e95e499377935d608f34d304d4e27c0832549665e220b7ed06e8"
+  },
+  "burglar": {
+    "bottom": 0.9875,
+    "sha256": "61158ad2b9792f579a96697c1085dac63d345ea27b6448a0213927c213ac9374"
+  },
+  "burglar-gen1": {
+    "bottom": 0.7875,
+    "sha256": "c60a0141f436b34ea2fe89021fa9cf696de708bdc3539686bdfed708eadf86ec"
+  },
+  "burglar-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "9466be8033565b9095d309d6a85382db98bccff21ee14c18623393e0e7c9bb1a"
+  },
+  "burglar-gen2": {
+    "bottom": 0.8375,
+    "sha256": "55cc7638c65e928fd81371d9d4adcb715979b4a1bf7136fbb759d496bf13ceae"
+  },
+  "burglar-gen3": {
+    "bottom": 0.85,
+    "sha256": "ca6e837c973c6802c3c2c328f9b15ac30c42b768e6c10fdbf0f24c11af60c0ad"
+  },
+  "byron": {
+    "bottom": 1,
+    "sha256": "68a0172e40132e26bf8a7472d81704b78b3000a24fad40a2efb48e5c7a501ee2"
+  },
+  "caitlin": {
+    "bottom": 0.9875,
+    "sha256": "4f8d29405ad162630cde1674b7a304acc7bab2e8bc89140d2a61d03d1292761d"
+  },
+  "caitlin-gen4": {
+    "bottom": 0.975,
+    "sha256": "60c3e0a69e5330f84bfdc7d5b6b09f69b02b0793c3db9f54bec53d4e077d6a7b"
+  },
+  "cameraman": {
+    "bottom": 0.975,
+    "sha256": "8df0dcdc58c59bd4b9b35f1b04ee6554b398a60552bcd78d3f7a67d933e16c44"
+  },
+  "camper": {
+    "bottom": 0.9875,
+    "sha256": "5ab34e4db03d30da68f42a39c36462ab25f3fe9df8763e02a880cb42c0689088"
+  },
+  "camper-gen2": {
+    "bottom": 0.85,
+    "sha256": "f9f4b619e6488b54a6e82a92e4e38ff9afd39989e34acad576384392e23494e8"
+  },
+  "camper-gen3": {
+    "bottom": 0.825,
+    "sha256": "532ec9c2d42284ff805708c0922e18ad2007ec717b529bda6a5b82d2c0268130"
+  },
+  "camper-gen3rs": {
+    "bottom": 0.775,
+    "sha256": "9f643c3726051f4661120e95d98c6b00c06ee548a6c8d7081cb900510dd27c5b"
+  },
+  "candice": {
+    "bottom": 0.9875,
+    "sha256": "a6a6e52d19d866ced61e3915d3229cf546fa80b33f786b6a0a69987022b23aee"
+  },
+  "channeler-gen1": {
+    "bottom": 0.85,
+    "sha256": "b821ef6de98ea93d28dd11c9b56d8835404e4fb6f5a2eb31270efe2d424851b0"
+  },
+  "channeler-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "d63559c0fd1249342059407df87ee5a287a9dd2f08312eef6b011e6efc5ac519"
+  },
+  "channeler-gen3": {
+    "bottom": 0.875,
+    "sha256": "b60fcf2f26bef99c9c334c6508520af929d785cc28ae5e2208a5767e02014360"
+  },
+  "cheren": {
+    "bottom": 0.9875,
+    "sha256": "be067c89c6fdcc4d26c783b1e3e74d063edfa4e965c70e2eb21849ae2787c370"
+  },
+  "cheren-gen5bw2": {
+    "bottom": 0.975,
+    "sha256": "0309afe61bc49fc84eddb000b2d1ba298c70e9c84dcc16436b67664d3e80baea"
+  },
+  "cheryl": {
+    "bottom": 1,
+    "sha256": "9ddc337fdf327bd3a080be2bec6ca887d037798f122cbe92137b0a7046a907fc"
+  },
+  "chili": {
+    "bottom": 0.9875,
+    "sha256": "8144055dfb74888ec6568746aa00bd1b2dcbb7272d8d41180e8a9746e923d21d"
+  },
+  "chuck": {
+    "bottom": 0.9875,
+    "sha256": "72419084e22a245316a4a9940547668059c8d62ec9e2f38cb006699ef94c69f1"
+  },
+  "chuck-gen2": {
+    "bottom": 0.8375,
+    "sha256": "aab95462967502c868d38d586bd1479c4942dcd2339276207048e142e4ddeb29"
+  },
+  "cilan": {
+    "bottom": 0.9875,
+    "sha256": "2cde32c01adb472a5a9d87aa97661c44019344b3119e525f8f4073ad7c81d9af"
+  },
+  "clair": {
+    "bottom": 0.9875,
+    "sha256": "d1505fd9dd10b55f3cf5bb3411f53a1d52c926ec6694943ee0565561f779b04d"
+  },
+  "clair-gen2": {
+    "bottom": 0.85,
+    "sha256": "c34fcff881dd3b4e794b4ce3fc4d35317c3947515ba6312fae185fc08edd23ea"
+  },
+  "clay": {
+    "bottom": 0.9875,
+    "sha256": "e7257daa40d4491cad581dc784bc4895b5b0174e2de659183325fbf34b6a95d3"
+  },
+  "clemont": {
+    "bottom": 1,
+    "sha256": "be0b869273b0f361a1dacbe7d9a739a9ea2d77d050ef64e8f113ab505f4310e2"
+  },
+  "clerk": {
+    "bottom": 0.9875,
+    "sha256": "46decb22823f68cbbe63b4f75464d0cee246bb354f254c859411229f22b1b27a"
+  },
+  "clerk-boss": {
+    "bottom": 0.9875,
+    "sha256": "bfb0836dee4dbd3406af56e307e5dc428776e2daaec083cab5e4912e180899fa"
+  },
+  "clerkf": {
+    "bottom": 1,
+    "sha256": "a717e93998921b73ee0f077b480e4b4f92eafbf780540dc290c41a079a33fa09"
+  },
+  "clown": {
+    "bottom": 0.9875,
+    "sha256": "7245183f0e799ed28391f2b1d4d1e12cbbdeeefed6d24cdfb76ef5e7a2e05bdc"
+  },
+  "collector": {
+    "bottom": 1,
+    "sha256": "46489113f0669d6fe966fdf54dce22db2b89cde0695104573455753d08efaa0b"
+  },
+  "collector-gen3": {
+    "bottom": 0.8875,
+    "sha256": "f3c3d4892b89c81dbc9de8b92c6c48a54452f2686481226e3b95538eb21a49af"
+  },
+  "colress": {
+    "bottom": 1,
+    "sha256": "755658d81b3c7657f26646c8b045590ee210cc9e14a8254844c78347488a44ed"
+  },
+  "courtney-gen3": {
+    "bottom": 0.9,
+    "sha256": "90305bda9c6c8b74e9e6d415ca07545345c892ad466df98c60bc04e467dc5039"
+  },
+  "cowgirl": {
+    "bottom": 0.9875,
+    "sha256": "d39921e8fbfbf704128e4b2acf341d71a97db56a5af9e7cfb21897417d7e9f8e"
+  },
+  "crasherwake": {
+    "bottom": 1,
+    "sha256": "4f1c9107e4aba1d26e63fbc47330367621a92f22a9ff10df3f91ad12558b7342"
+  },
+  "cress": {
+    "bottom": 0.9875,
+    "sha256": "985a86daf1786a6c14a00b64baeed3ed349a8b761de23d5fb2bd0946256db1ec"
+  },
+  "crushgirl-gen3": {
+    "bottom": 0.85,
+    "sha256": "3a887c284c0846262ae6eae96b7fbdfde8ec44c3d21dd68654b500bafbb22279"
+  },
+  "crushkin-gen3": {
+    "bottom": 0.8875,
+    "sha256": "8b0f43cec58a9a9431ec9cb69f8156b7137a5efa6bbd4e71cc1d284b43b23b4b"
+  },
+  "cueball-gen1": {
+    "bottom": 0.8375,
+    "sha256": "7a648c58655d040d7ac6113c5d0830f163766bdb34539e0a134aa10ec122a187"
+  },
+  "cueball-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "829ecf19292095563bfc650a8bed60b6b50a5d32dc013198bc9cca9404dc7282"
+  },
+  "cueball-gen3": {
+    "bottom": 0.8875,
+    "sha256": "3cce1f35341fe3789a517e7538314ac638c312cd350bfb2e36526180b01882c6"
+  },
+  "cyclist": {
+    "bottom": 0.9875,
+    "sha256": "e98108ee34c2e86e92c54da04b937f8476a201eac61ab40c3c6e11b293f719ef"
+  },
+  "cyclist-gen4": {
+    "bottom": 0.9875,
+    "sha256": "4803e3a22625fcdcf8c6455ffb595018214c08c6ff464ad6d6cb527745d393cd"
+  },
+  "cyclistf": {
+    "bottom": 0.9875,
+    "sha256": "bb46bd3203c005bd34d0ec1574d96eb69a9866f2b00976c839e5ff5395efc0bf"
+  },
+  "cyclistf-gen4": {
+    "bottom": 0.9875,
+    "sha256": "b3eb425e7a879354c519b2bafe279dc3a9210a055ae5adea7b71c0356f9b1d1d"
+  },
+  "cynthia": {
+    "bottom": 1,
+    "sha256": "717578631bc6307769e551d3c88986eabf67991b771e4ccb4c2496d44ac620b8"
+  },
+  "cynthia-gen4": {
+    "bottom": 1,
+    "sha256": "8cf857e464dbf4e2e2669bf51339722c2eacc6c15813c349f5b688c92c0769e2"
+  },
+  "cyrus": {
+    "bottom": 1,
+    "sha256": "b2469b09d08e7ca33bf0b5d5c0ccb1e7d596ba6aaa7c54fa6e77614caf7dc46a"
+  },
+  "dahlia": {
+    "bottom": 1,
+    "sha256": "1f0452aea80b50f6c4fda589b72f681275a920992bb2b68bb19f1cf4945f507f"
+  },
+  "daisy-gen3": {
+    "bottom": 0.9,
+    "sha256": "a90becc8f44780dcb6202ffac942be3b58425df1c4a4aad67dd3b448021310a9"
+  },
+  "dancer": {
+    "bottom": 1,
+    "sha256": "c51dca48ecbc84cfbea5b7a61dde0d9d1a92f4d8e3ef4c99e19f2c64c3f9281e"
+  },
+  "darach": {
+    "bottom": 1,
+    "sha256": "da2f4050243f8b0567a46b2201010f13a979636b730978b4385f3842fe0a53e7"
+  },
+  "darach-caitlin": {
+    "bottom": 1,
+    "sha256": "f89374dbc4c8034245dad7307f22991dd3c823ee084ef283d1f01ba74a15db7a"
+  },
+  "dawn": {
+    "bottom": 0.9875,
+    "sha256": "bc851f2cf838fec7d2658d582e02ca040a068156921d8eefd47cd0dbc49bf23e"
+  },
+  "dawn-gen4pt": {
+    "bottom": 0.9625,
+    "sha256": "24414567ede83e98065d21fffa5a99409fe433514fa18477e9dad0e8c056db8f"
+  },
+  "depotagent": {
+    "bottom": 1,
+    "sha256": "22678e2bb5689d3f479abcae8e94894097383d25c032c05511d0387e8dbfe1d8"
+  },
+  "doctor": {
+    "bottom": 0.9875,
+    "sha256": "88b1c06144b3da3f5b136f4776f566ec40f3a9faefd40ee8a389a1b150795385"
+  },
+  "doubleteam": {
+    "bottom": 0.9875,
+    "sha256": "48783ae44e724fd8b9cf5cdc5520eb7e4250d741e984519487e33ea457c3a0db"
+  },
+  "dragontamer": {
+    "bottom": 0.9875,
+    "sha256": "1d5bc433db0ddbbb01d31e462119ecbf3a8585464af471caeb68558b163bedea"
+  },
+  "dragontamer-gen3": {
+    "bottom": 0.875,
+    "sha256": "40878fa4cabc4d519dcfa73532e16b5928017c818c56ea7e8001f1c35540a4c5"
+  },
+  "drake-gen3": {
+    "bottom": 0.8875,
+    "sha256": "552a81dc10e83ebb1bd78f0daffe92758c51d38fde78ace11f18d982c6bf0ee7"
+  },
+  "drayden": {
+    "bottom": 1,
+    "sha256": "f1064049b8e9dac3b855e512be7afc51822ff31a5480f6ab1d6bd71986f33f5f"
+  },
+  "elesa": {
+    "bottom": 0.975,
+    "sha256": "757a3833707dc54361b50f0924a163fce5441710f95900a2857dc3359c3ac414"
+  },
+  "elesa-gen5bw2": {
+    "bottom": 0.9875,
+    "sha256": "cf42871f0563baf6c9ad6b92a0a45bfced82e4ee42cb947ff48c633fa10d9821"
+  },
+  "emmet": {
+    "bottom": 1,
+    "sha256": "a918e0e2c9da1da43e99f9f11e8c410a027b07bc3b1c9d57b18472aa32450cc4"
+  },
+  "engineer-gen1": {
+    "bottom": 0.85,
+    "sha256": "4af87cce2fdc9bf006d4039b7008353bded714eb48dec74a4a8ba19f9f4087fc"
+  },
+  "engineer-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "9d94d26bb91c8d1ecd580e287a719bbb0bb1138578b64549c97cf19c0cebd1dd"
+  },
+  "engineer-gen3": {
+    "bottom": 0.8875,
+    "sha256": "b819d3a4c80d2ebb193985431ca9d97baf67aa3dbf62e2ce032b7f7bfda9b08a"
+  },
+  "erika": {
+    "bottom": 0.9875,
+    "sha256": "caedbaf5ee37143a3a223bd9d4c36b1aceafc5555e7a8c3a42b2804683750490"
+  },
+  "erika-gen1": {
+    "bottom": 0.8375,
+    "sha256": "d79e4f0afcf065c49820340c13cd1be625ad97d31e4b4058fc3454936e23acd9"
+  },
+  "erika-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "20d031218cfe0d4ca3c049ca1dbb2c5da57fdaed904ebc1837095b84b7ce17db"
+  },
+  "erika-gen2": {
+    "bottom": 0.8375,
+    "sha256": "5ca3a4d7ce537052acf17c7829da349233bf257f6f79fd7169ca907e8e7fbc0e"
+  },
+  "erika-gen3": {
+    "bottom": 0.8625,
+    "sha256": "e3ef0cf8db7c5e95bab5719c0f0e1ece83a55be9303216396d21100479098788"
+  },
+  "ethan": {
+    "bottom": 0.9625,
+    "sha256": "e77fec47f68ef5f6328ebb58f5673ad31a7a89f18bc1e36138911c3fa76155ab"
+  },
+  "ethan-gen2": {
+    "bottom": 0.85,
+    "sha256": "bb6c5c2e9dbfeaa1a6b03505190c8f40d423416caf293efde6174c4367606139"
+  },
+  "ethan-gen2c": {
+    "bottom": 0.85,
+    "sha256": "f0a63a7b21050458d82bbd71cd30021c16166b8f256d642fbad94d90c272ae96"
+  },
+  "ethan-pokeathlon": {
+    "bottom": 0.8625,
+    "sha256": "9f0b4b85bcbc43e7d375fde2de6a48c09311ea460faa7b7e222eb4c1c9858504"
+  },
+  "eusine": {
+    "bottom": 0.9875,
+    "sha256": "5a5bba826b6fa20ffa64e8710df90e608b274502b4592caa1f4ce663c6bf3f2d"
+  },
+  "eusine-gen2": {
+    "bottom": 0.85,
+    "sha256": "2fd78fdda9071f8c80184fdd06d64ad3071b787157a5b60d6aa905226ce875f2"
+  },
+  "expert-gen3": {
+    "bottom": 0.8875,
+    "sha256": "fa15f7f4e1b0126255cde6139234df6224d9bdeae8d9724c46439463c7150c03"
+  },
+  "expertf-gen3": {
+    "bottom": 0.75,
+    "sha256": "ead2e4a2ce62a7539a70be4ef378522bdd8f898237583bbd3652d8b6b03fae9f"
+  },
+  "falkner": {
+    "bottom": 0.875,
+    "sha256": "3a40952db23a1b64b2c18ff2e9a2413c55754f7592d5f1b9d1b462c89b01a4ef"
+  },
+  "falkner-gen2": {
+    "bottom": 0.8375,
+    "sha256": "9a822225d5af24afa6971a625eca06b21d5f88e7dd4133607a663efbcbb690fb"
+  },
+  "fantina": {
+    "bottom": 1,
+    "sha256": "d71e9c85c91987a1f6887698b485895c57a2b7d2be9a91ff6dd27c9bc3987876"
+  },
+  "firebreather": {
+    "bottom": 0.9875,
+    "sha256": "a03bb48177676c57fd28e73012f49e8d54fea475f6a17125f7a1e7e8efe3123d"
+  },
+  "firebreather-gen2": {
+    "bottom": 0.85,
+    "sha256": "c0225ad34ebe2f728e26264631ede727d176418609a143cf35805599b63c777b"
+  },
+  "fisherman": {
+    "bottom": 0.9875,
+    "sha256": "50a5ae4effed835ccc76571649299fd7d5960ac880d23da9f564405a2b2409fe"
+  },
+  "fisherman-gen1": {
+    "bottom": 0.85,
+    "sha256": "cfae8f125f378c5e0045fe5cbcd0d4680efa7159502d27a2d345c7ea3e5c9163"
+  },
+  "fisherman-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "e7de94631b5e703aaeb6f4a1d2619654c2b4c10f6a8a98a7f1317bfc75e09913"
+  },
+  "fisherman-gen2jp": {
+    "bottom": 0.85,
+    "sha256": "e4456b86b333e795fdae7acf5acf658ac2517679c5dd2ea8334855aa78bd1d92"
+  },
+  "fisherman-gen3": {
+    "bottom": 0.8875,
+    "sha256": "c96f27d8f844a2d1bac793aaacf7fd93875ad91e08e9331a1aef00042f39f242"
+  },
+  "fisherman-gen3rs": {
+    "bottom": 0.875,
+    "sha256": "eb64d20fde2c2779f9d97a3e2eb7e7eb1c05fa6a5d230f0272a86105ec495657"
+  },
+  "fisherman-gen4": {
+    "bottom": 0.9875,
+    "sha256": "a85621f6ea811da2018344ecbb479be917e85220819b41eccb143cae6d89416b"
+  },
+  "flannery": {
+    "bottom": 1,
+    "sha256": "ba97770d5155614dc6cf1e131363412bdbb230de25a2fcca4535b6263e628043"
+  },
+  "flannery-gen3": {
+    "bottom": 0.8875,
+    "sha256": "4740caaea8c7f0c9dc64e50da0e280a2cd9726d93addcc25aa6693621b91609a"
+  },
+  "flint": {
+    "bottom": 0.9875,
+    "sha256": "3b7d00527c0735bc05f6b98ae09375a3ce6e36a40a0839cf1b2014a6403bee78"
+  },
+  "galacticgrunt": {
+    "bottom": 0.9875,
+    "sha256": "d9b594ce8c6cf311329696690a3373112c1eff21dd630ad9810e1a295022a616"
+  },
+  "galacticgruntf": {
+    "bottom": 0.9875,
+    "sha256": "f27fbbaccb19d95d251eb135fa09250e284087a50d5a36d1de1caf0e0edfaa54"
+  },
+  "gambler": {
+    "bottom": 0.9875,
+    "sha256": "d6237cb742e5958eac42ff2ad445a1817a75ae2e0a82d7a8d9e005c4e5eccf7f"
+  },
+  "gambler-gen1": {
+    "bottom": 0.8,
+    "sha256": "37f9bd49b9ff938408a3b74f16a75aaed680238ed42627a911b699df327f031c"
+  },
+  "gambler-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "9152c42f70e0423d5ecf87ed12cf2f0011ade793331bdf2af8031d5a93f7ad59"
+  },
+  "gamer-gen3": {
+    "bottom": 0.775,
+    "sha256": "b5ae2791984d472266f48974e8130261922b95296caf3c46e5c2ae32a979d205"
+  },
+  "gardenia": {
+    "bottom": 0.9875,
+    "sha256": "76ed61ab1e9f8bb921d2ff80a0610f473a3675b3d50eda4a4352c82977f379c0"
+  },
+  "gentleman": {
+    "bottom": 1,
+    "sha256": "75511bb652f36c68f1f7c8eaeb168070204571f25bc299a4e34d3310a9a8d8f8"
+  },
+  "gentleman-gen1": {
+    "bottom": 0.85,
+    "sha256": "7849750b588852f875b169f42a507d6c1d31ef7e91a2518186a17888de5e0f1e"
+  },
+  "gentleman-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "d926f312d5af837d54a304620e051d77f4241bf4473a1c4c5a06367aa41c025d"
+  },
+  "gentleman-gen2": {
+    "bottom": 0.8375,
+    "sha256": "630a4fbe239af313eb9f5b8df305579cb397616151cf4ed7ce0065aed4e76b4e"
+  },
+  "gentleman-gen3": {
+    "bottom": 0.875,
+    "sha256": "6024e586df530d0b662bbed6165f7cc2593e031c0f362227ea2e373df5cf1c11"
+  },
+  "gentleman-gen3rs": {
+    "bottom": 0.8625,
+    "sha256": "3bea4cf76775a35ea5e4d63bdd91d24cf5009b6645412cfddcc2e5987b65cee9"
+  },
+  "gentleman-gen4": {
+    "bottom": 0.9875,
+    "sha256": "1f0b0ab6008dc100b9835ae104fd0d973872958711a083a8a11a17718f02afa3"
+  },
+  "gentleman-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "a90a7543447a0149e494fcaf4bed1f78d547ce6ce43cf9f86673052ff02a66ec"
+  },
+  "ghetsis": {
+    "bottom": 1,
+    "sha256": "0ab1abf4fdb161b3c19edc60d69b463365ee3f976c3b5fd63afe94bb2c6ef700"
+  },
+  "ghetsis-gen5bw": {
+    "bottom": 1,
+    "sha256": "154eda9b48ef503171a2f51d0ff4e3cd23e85bcb25ab4a39b1ee2c85c617790e"
+  },
+  "giovanni": {
+    "bottom": 1,
+    "sha256": "44a80c7f8d4d9de86f66d45623890d3965bc67e2691e4d6caea9f6f5122c6c13"
+  },
+  "giovanni-gen1": {
+    "bottom": 0.85,
+    "sha256": "c9abd4430f3a0da334aea86b68665990685fd2c3f25aae8bfded8f5772e46d4a"
+  },
+  "giovanni-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "02d651821bc70437c7c822c23a7326f52f355557dea103e665178231a08b8976"
+  },
+  "giovanni-gen3": {
+    "bottom": 0.8875,
+    "sha256": "d2532883cd337032ec42ab0e8945472bc7e5e2b8f25b95291e403ccef2fbb3fd"
+  },
+  "glacia-gen3": {
+    "bottom": 0.875,
+    "sha256": "5ffaf387580d91397901881f1e8e6a777b72566e10839a5792974890c9891119"
+  },
+  "greta-gen3": {
+    "bottom": 0.85,
+    "sha256": "b7768fad7fefab53468cd4200b31b20ed788a1d2d40fbc4842d72cf5c35b3042"
+  },
+  "grimsley": {
+    "bottom": 1,
+    "sha256": "28e9c7fc647eee46e93f25fbb0e202bc3345e2b993b8573868dc99db22358c0f"
+  },
+  "guitarist": {
+    "bottom": 0.95,
+    "sha256": "88da9e12feb9fccc3b594677b37b99dca912c117bb0f7a981f873db42805862c"
+  },
+  "guitarist-gen2": {
+    "bottom": 0.8375,
+    "sha256": "d05c1130d28200e2015e631f50c184c04e84658f25a666a493536e8c68a2e5bd"
+  },
+  "guitarist-gen3": {
+    "bottom": 0.9,
+    "sha256": "b0bf3fcd5bbb1e0e738a3487798d17803ed55b759eba7e207ddda0eb2bcb2ead"
+  },
+  "guitarist-gen4": {
+    "bottom": 0.9875,
+    "sha256": "223eb6fb6a5d3168a209ddff88b409f57c824520da47c006664aa9a4d0a48a1e"
+  },
+  "harlequin": {
+    "bottom": 0.9875,
+    "sha256": "868bbc534d2ccdff1479feb4f59451623436ab1f6261f64b18de4248c218785a"
+  },
+  "hexmaniac-gen3": {
+    "bottom": 0.8875,
+    "sha256": "62c03fbc9e8ba92c7c73f8010f66306e3d5a2bef4544e367aad3944d1217094b"
+  },
+  "hexmaniac-gen3jp": {
+    "bottom": 0.8875,
+    "sha256": "9e4acc05d4f21daf12d386fda04cddbdefc2d1bb3b01426efe2dbbdd2f4ab46b"
+  },
+  "hiker": {
+    "bottom": 0.9875,
+    "sha256": "81c95e53f09c2bcb47170cf793befaf070dcb904750c457fab1654d8be0d7fcf"
+  },
+  "hiker-gen1": {
+    "bottom": 0.8375,
+    "sha256": "30689389b5522f6f37f078e216c38c111708cc7ab9d124ae3502f92f7ba79427"
+  },
+  "hiker-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "2ee1bda8f989dac472617b2f250485e215d85267e397a8dd82c44f398cecb5b3"
+  },
+  "hiker-gen2": {
+    "bottom": 0.825,
+    "sha256": "c6ed9c442e8e4589d4a534efa3dc00c428989e47e25a8c784579bbc834a4478a"
+  },
+  "hiker-gen3": {
+    "bottom": 0.8875,
+    "sha256": "211b3ce4dedac41fcc0f22f89586b71509813f00938922cb8a5820d4f219110d"
+  },
+  "hiker-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "8a0be3e1c73a07e8afd2a6a65be76b44ee5420b75b2961cac9108b3badece757"
+  },
+  "hiker-gen4": {
+    "bottom": 1,
+    "sha256": "1f1178e233d3347feebf7fa846872529a1939c171c4c32496e8fe3e932117d37"
+  },
+  "hilbert": {
+    "bottom": 0.9875,
+    "sha256": "4d291834301fd9a3f5d24f814e761e72b654a78bb5b1f6a7fbf4dfc1d2b050c5"
+  },
+  "hilbert-wonderlauncher": {
+    "bottom": 0.9875,
+    "sha256": "439f867cab6683cd862c35179c703832149c7b67fe74f00a184fca8c8f728703"
+  },
+  "hilda": {
+    "bottom": 0.9875,
+    "sha256": "192a708db82b6f40880a9346cc4f27e72e1461f2a2bab0d901821d98cd474bd1"
+  },
+  "hilda-wonderlauncher": {
+    "bottom": 0.9875,
+    "sha256": "907ae80bf52688ff22fc0f5b3b1675421977559442aebd763086fbd939720ee8"
+  },
+  "hooligans": {
+    "bottom": 1,
+    "sha256": "d3e29b26a1b2e2a3feb03d6dce801c19c1e9111c22bf5533d138660a74ac2dab"
+  },
+  "hoopster": {
+    "bottom": 0.9875,
+    "sha256": "0d699f1a796b4117d4b8c133742366a810d0aba4846da8ffd3a4db7b057008b4"
+  },
+  "hugh": {
+    "bottom": 0.925,
+    "sha256": "e17e70eb2347ca8fb50715eb192e2586ff286815d18b944651af4b80f124fea9"
+  },
+  "idol": {
+    "bottom": 0.9875,
+    "sha256": "a45f504144bdabe19f8661f1b133119a0ddf2942b1b6e8c062703dd098c1a8da"
+  },
+  "infielder": {
+    "bottom": 0.9875,
+    "sha256": "adb2fa5c796defaab1b13cbad86ab94d73b62e9d35a32d4fa7bd1adbb4506e43"
+  },
+  "ingo": {
+    "bottom": 1,
+    "sha256": "466685e3e07dd635095726796f77de2adfeca53678795e7dea1d6133083e750b"
+  },
+  "interviewers": {
+    "bottom": 0.9875,
+    "sha256": "000a326a304f76269a93e117a63b299a450884fa90977aae867c3caf2755e4a4"
+  },
+  "interviewers-gen3": {
+    "bottom": 0.8625,
+    "sha256": "d6f11ea9c39c7a553d3a8b5e44915110717831b4ef85f47a0e40740dec34ed9c"
+  },
+  "iris": {
+    "bottom": 0.9875,
+    "sha256": "4bb2cbb554cd5cdd784169c8aff66daf1ab157342cbc416c4f70b96894f98416"
+  },
+  "iris-gen5bw2": {
+    "bottom": 0.9625,
+    "sha256": "1a48283a24d34435c3321e432f853b00b4e6d994454919d2c3aea31c74054927"
+  },
+  "janine": {
+    "bottom": 0.925,
+    "sha256": "13eff66f06713f34fa1ac003d942c8e144f03142a83574794f2a4d2670c50a39"
+  },
+  "janine-gen2": {
+    "bottom": 0.825,
+    "sha256": "1b62dfdc7e85e287e671f6af1adc964bee591493e1c4dc43b6df85190fe2389d"
+  },
+  "janitor": {
+    "bottom": 0.9875,
+    "sha256": "f6f0c05bf816aca1e99f80a00abb1795b09d15ff8325bbb75ac51ee127e8f3ba"
+  },
+  "jasmine": {
+    "bottom": 0.9875,
+    "sha256": "3afa3e8dc58ff4a439a33e3bf6ec31ff93c087d651b4bdb2cfad6810faa8a116"
+  },
+  "jasmine-gen2": {
+    "bottom": 0.85,
+    "sha256": "7402fb611d5f067077d1f99db50cafb2a9648cabeb417396e53f5eb55b76afe6"
+  },
+  "jessiejames-gen1": {
+    "bottom": 0.85,
+    "sha256": "04ab70d23c6183b57b4158217903e98893cbeccc26b1f7d6732924aa03d25eae"
+  },
+  "jogger": {
+    "bottom": 0.9875,
+    "sha256": "e47b5b284add159b9c510bc05b5715f8f08e99f6dcfc6018486869af277af836"
+  },
+  "jrtrainer-gen1": {
+    "bottom": 0.8375,
+    "sha256": "ff14b069fcf6227d2d4f55761d29b91ce0ee51560a751aa8f0bc0c0425cf8973"
+  },
+  "jrtrainer-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "0161cc32bf4d8b84f7af5adfaf36be161b407e48820cc108a6d9cfdefac9b1f4"
+  },
+  "jrtrainerf-gen1": {
+    "bottom": 0.85,
+    "sha256": "0ca457a8377fbdbfd76ea52108b1266734b639572cdf60eeb4c1a63150854b7f"
+  },
+  "jrtrainerf-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "3c945758952c47d3c1ec4ce104702b860e2bbdd1cbc4d93f596837b6b1aca089"
+  },
+  "juan": {
+    "bottom": 0.975,
+    "sha256": "884b44d41fb8e62bf3dfc7ceff4574118ca7b2bbcd5d24f004615629b634601f"
+  },
+  "juan-gen3": {
+    "bottom": 0.925,
+    "sha256": "09174971024ed6f12306ec90705e32db3fb571a33ef9db8af01e274a56b23e65"
+  },
+  "juggler": {
+    "bottom": 0.9875,
+    "sha256": "9ff542c68b392d6da9b2c22a11811aa532388f29376b7366b4fe15d733907199"
+  },
+  "juggler-gen1": {
+    "bottom": 0.85,
+    "sha256": "63618d1a53b8516a9b1ade63ee9de6402549f82891d6a7f7ce6c74651c8efc63"
+  },
+  "juggler-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "44030dee0b812bc554a8c1278b10ff06feeb29a1064be3c68e3d297e06b38ed5"
+  },
+  "juggler-gen2": {
+    "bottom": 0.85,
+    "sha256": "a9149d37038190339c01fb0f3d823569fbf3d8c174c4eec73c5191f83e512337"
+  },
+  "juggler-gen3": {
+    "bottom": 0.925,
+    "sha256": "933f7e799625b84d94df67b0eba7fc9f704df356729162836d873df47d43bce8"
+  },
+  "juniper": {
+    "bottom": 1,
+    "sha256": "7ada5c1a984d15d54ab97869588c8df7de32f07540e2e9dfee6cfd32fd3596da"
+  },
+  "jupiter": {
+    "bottom": 0.9875,
+    "sha256": "819cca37ec5880c5bf5de6bc59daa579768e028c665cab296500388b2658a47c"
+  },
+  "karen": {
+    "bottom": 1,
+    "sha256": "5487b9a1ac44fbc1497a549949bbf40a3fdd024a76b2838235f98d7b25440aff"
+  },
+  "karen-gen2": {
+    "bottom": 0.8375,
+    "sha256": "371b36399be5ae2ba42db1b874522f2a999a4a95bd8664ebbd93577d546007b5"
+  },
+  "kimonogirl": {
+    "bottom": 0.9875,
+    "sha256": "7e13b33a182960cb2395533df4246894af1d3ce82a2cca23b0446ea2df37d87c"
+  },
+  "kimonogirl-gen2": {
+    "bottom": 0.85,
+    "sha256": "72888f14eaa2c18293fcfedb5948006ef7b58ab31b21a3b00aa2fc4a37373e33"
+  },
+  "kindler-gen3": {
+    "bottom": 0.85,
+    "sha256": "8f0e091f6abe473bc2850a50cd60aa2fb48b540da5637e35238f7987a8025ca1"
+  },
+  "koga": {
+    "bottom": 0.9,
+    "sha256": "77f405e55dbea9dbdb2abca76011b6ec37419ce4e4e00938091f77bd883f1f6a"
+  },
+  "koga-gen1": {
+    "bottom": 0.85,
+    "sha256": "3d430c687b09e0c7b4c9fa3a20f7e9bd9a1317c777b7ab533754d1874e5a2b8c"
+  },
+  "koga-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "80066992b172951841a55f86e4f6378104eee712954a4607e6965fa9fc5d7e03"
+  },
+  "koga-gen2": {
+    "bottom": 0.7875,
+    "sha256": "edff93b930fac68a62d23e3cef4ba24c2891b8faf60e3c7260588acdf81eae15"
+  },
+  "koga-gen3": {
+    "bottom": 0.8375,
+    "sha256": "669e732ebbc4658f8d29465e89ab551589eb5a0884d3e8d9d71768e58aedcc49"
+  },
+  "kris-gen2": {
+    "bottom": 0.85,
+    "sha256": "55f274c45c9b6a4f3a3f786ce662044b1d831175731da2bd70d992d8ffa7b5f5"
+  },
+  "lady": {
+    "bottom": 0.9875,
+    "sha256": "6b6174f46f30526d2d79d75d6bffd319ad7e817c44db4f48e0348ba66815b098"
+  },
+  "lady-gen3": {
+    "bottom": 0.9,
+    "sha256": "174f719261bad165c65d59d837113212da932fadd861b0292f586df9050aee9c"
+  },
+  "lady-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "330475df448647c1e6f049db227c2abcf26a5a57f0bf75315e06214e1a658570"
+  },
+  "lady-gen4": {
+    "bottom": 0.9875,
+    "sha256": "ef20783d8a77650b5f992f46753d792d7eaa0c04d4faffc23a6d6fc0ba332fba"
+  },
+  "lance": {
+    "bottom": 0.975,
+    "sha256": "af8511d1620255a915fc83152db79472a55451790478596fad08b881316cd13f"
+  },
+  "lance-gen1": {
+    "bottom": 0.85,
+    "sha256": "8c1ebe44143d9581400b940774cb0323b995afc881263a298422e80906086b36"
+  },
+  "lance-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "e91f039422ef6370a0ac3168cf3365667cf4a8a94a83e4020e8cea754bd029fe"
+  },
+  "lance-gen2": {
+    "bottom": 0.85,
+    "sha256": "de995af1c203e2deb4770ab37f3a4f963fe94c377f0a01604263d163cafd2654"
+  },
+  "lance-gen3": {
+    "bottom": 0.8625,
+    "sha256": "d89c3b61eb44951dedad97a2351a407316cac3f4e8e423ee7bc61f33ac919e5c"
+  },
+  "lass": {
+    "bottom": 0.9875,
+    "sha256": "9df61959812b15d8ad3cb43efd8659778b62d63d86fa7ecb70dc684c1455e17f"
+  },
+  "lass-gen1": {
+    "bottom": 0.8375,
+    "sha256": "a7bc4e507660f14c54ba5d00dab2f77972e3e5cfbd9deb68b5ad00f84ccf3fd0"
+  },
+  "lass-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "3791bbc8865d68fab47010d079aea56b45ff62b071461704c05c96076a901ea0"
+  },
+  "lass-gen2": {
+    "bottom": 0.85,
+    "sha256": "e87d1738d91fcb428bbf3a4d530ce2e99620e4026c2719fffe22971507cf5d53"
+  },
+  "lass-gen3": {
+    "bottom": 0.875,
+    "sha256": "0cfe9c12e4a7473f5c2436d4d1e36927252a831b50eef3839143c18d93456202"
+  },
+  "lass-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "7cadf636b5c0b30e1d68386e7496908bad08ec553918501259520b4b5f81f069"
+  },
+  "lass-gen4": {
+    "bottom": 0.925,
+    "sha256": "793458c2abfcdc67ac775153e9f70d7b7f3e22c724c1af99914bafaad76fbdda"
+  },
+  "lass-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "af4ec3dfad462034a444c8aff041a3e7293d63fec33d3102023ba4a66ca6b084"
+  },
+  "leaf-gen3": {
+    "bottom": 0.85,
+    "sha256": "3ee3731ac1e3791429a9c2898c8d88d876aa258bac20778dc8900c6a35d9bb09"
+  },
+  "lenora": {
+    "bottom": 0.9875,
+    "sha256": "089571e2eb227a835d308a8d994ec1f4351d09bac1d78382b8e23464a94d5d53"
+  },
+  "li": {
+    "bottom": 0.9875,
+    "sha256": "c2f559d350342687e345f872556a93bb0e765ddf8e0606bb53b41b70bbfad102"
+  },
+  "linebacker": {
+    "bottom": 0.9875,
+    "sha256": "6e4cb748d5d3120fa5c3616c4d36b571897b6c51c1475703b151fec7d20090fe"
+  },
+  "liza": {
+    "bottom": 0.9375,
+    "sha256": "7277fdf1d6f33ab172e7e360afd5792fccefb07cd9dcddd3b77260c7c89c6493"
+  },
+  "lorelei-gen1": {
+    "bottom": 0.825,
+    "sha256": "02e7a31ffdac9d6a5a0fcd4f6785ca504154aa470a611a9b5abd3a744534bba1"
+  },
+  "lorelei-gen1rb": {
+    "bottom": 0.825,
+    "sha256": "52f6701cc1268b220be3b028658da28a13be2928e22900584a866f26f7a6fba9"
+  },
+  "lorelei-gen3": {
+    "bottom": 0.8875,
+    "sha256": "dda64e001305bc2f6b544dc5322ec973115fe836abcde01719ac93f381719f2c"
+  },
+  "ltsurge": {
+    "bottom": 1,
+    "sha256": "adab47aa1fbd814484ee9697f4d2b1153169c9e0412696139de0f1372f6e03ce"
+  },
+  "ltsurge-gen1": {
+    "bottom": 0.85,
+    "sha256": "62385582be4f4e55138d7b33f10b732213f191b6e16b4f14df286ae872d339bf"
+  },
+  "ltsurge-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "267c85cc909dcff08d11b50ff295afba948088e373b43dd9503bb1be6968a10a"
+  },
+  "ltsurge-gen2": {
+    "bottom": 0.8375,
+    "sha256": "bad771be84156732660f4fa001fd83dfb959db7d6ebbffe6693fc14743d471ae"
+  },
+  "ltsurge-gen3": {
+    "bottom": 0.875,
+    "sha256": "cc9b2e726e3b9dbe1615e516d3cf1fb20cf016deeb969275f112616e44f6402f"
+  },
+  "lucas": {
+    "bottom": 0.9875,
+    "sha256": "934866c6227d1c9afd253b1093987ec1b4192a8ee6e122d78b185809eb239c88"
+  },
+  "lucas-gen4pt": {
+    "bottom": 0.975,
+    "sha256": "584a33d6a9b7934a34caa405f051c4515e2341b27e0f363d43f1186b6d7acbad"
+  },
+  "lucian": {
+    "bottom": 0.9875,
+    "sha256": "654644c185aae476d105ccd3759c0f1db308528c727023f4a1e71d99a201cc3f"
+  },
+  "lucy-gen3": {
+    "bottom": 0.8875,
+    "sha256": "5087f96641fe8fb963d37dca77327707fb7172faed7d3bae3ec9209576c6af3c"
+  },
+  "lyra": {
+    "bottom": 0.9375,
+    "sha256": "4ad96571f44cbf5c6a7da854c1eede14d60ed82fc6ea1ce6ea5b91d3d0a6e7f0"
+  },
+  "lyra-pokeathlon": {
+    "bottom": 0.8875,
+    "sha256": "f5ca298ee48459c4c511d4f9b0fbc946ef025cb9ec4ca2b02061b4adf7525f3e"
+  },
+  "madame": {
+    "bottom": 1,
+    "sha256": "b71c861a46f48f19fe206e3e0c955f71620f5bdc2c114cc65f64b6b5285f5abe"
+  },
+  "madame-gen4": {
+    "bottom": 0.975,
+    "sha256": "822e620b9622e229de15cc80185295931f38b514e3a74b75b0f0126634116656"
+  },
+  "madame-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "89cd6e2a9cb98e46e94b2f430ee7eb5ca9c9fe19418758f361d5fcbc2379583b"
+  },
+  "maid": {
+    "bottom": 1,
+    "sha256": "ad76a2888054c3015aceacc7e8a2ef444c34ab828fbf7a48590041e461807a76"
+  },
+  "maid-gen4": {
+    "bottom": 0.9125,
+    "sha256": "f61c369ab2097a475c0ed1106dc81981fa978aa1ca984343ffaa230a3a17a0ec"
+  },
+  "marley": {
+    "bottom": 0.975,
+    "sha256": "51d6bbb0d9d47fc3a67603de3854ad88fa8262189d6d17ec3e3350686f5ac502"
+  },
+  "marlon": {
+    "bottom": 0.9,
+    "sha256": "ee895acf574d1f8d891bcc73e7fd2e18e7a9f0f2666c25ce475987e94ad93d91"
+  },
+  "mars": {
+    "bottom": 0.9875,
+    "sha256": "70ff0890f495bdb10cb98f286abbefd992720ce1507d1ba3409db90669c75a8c"
+  },
+  "marshal": {
+    "bottom": 1,
+    "sha256": "3ec0666dae079a4b804b45eb59be413f3a118b9795e35d6e3fe6983da12fcc97"
+  },
+  "matt-gen3": {
+    "bottom": 0.875,
+    "sha256": "0a306c449c15262f2a748f8a909f180ea1ed468e714ec2e0b0fb332a05a111e4"
+  },
+  "maxie-gen3": {
+    "bottom": 0.9,
+    "sha256": "c71ab939e68f8eae12a1bbaa741bb95b943ba3111444294eea77979bf99cc78c"
+  },
+  "may-gen3": {
+    "bottom": 0.85,
+    "sha256": "6a4b022cb2183cf79a90866740c4043e9c014105c3e25a3738f3494d3594a99b"
+  },
+  "may-gen3rs": {
+    "bottom": 0.85,
+    "sha256": "9432adb51d9b89ee5b524bef695af27bf05f28d82bc1ae76e0edd11afa53c2c4"
+  },
+  "maylene": {
+    "bottom": 0.9875,
+    "sha256": "afa3d39540cbe4a9ecaba2b1bcd20ede341aefa24790030fb340eca006c910cd"
+  },
+  "medium": {
+    "bottom": 0.9375,
+    "sha256": "9faf1f1b82d13cedb51947e68edfef6aca539d607953aafae099fc0ce8576906"
+  },
+  "medium-gen2jp": {
+    "bottom": 0.85,
+    "sha256": "7c18907addac4256c879aa580b8265fb8380d342f4bc475196bfa45a84f1715d"
+  },
+  "mira": {
+    "bottom": 0.975,
+    "sha256": "2751565770182618809fd82383ec3f64775d1b036752342f7a86d395ae185f9c"
+  },
+  "misty": {
+    "bottom": 0.9625,
+    "sha256": "5efe2a5176796ebe3e18168b6a87b80b72d89393f4dc25d35dd0ebe2b0b2f5cc"
+  },
+  "misty-gen1": {
+    "bottom": 0.85,
+    "sha256": "1ddde23fd8eeb9c4f01af57e27eb7d2281f2e1f39a08f4ea306bd7f0ec9a6e54"
+  },
+  "misty-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "ff957e4234ee20a118b75002463b96ba9b95512e8a97383500270fbc270d18a1"
+  },
+  "misty-gen2": {
+    "bottom": 0.8375,
+    "sha256": "1ac2f2177d29d6e22fe02996269eaa424961c214317a0860156a7301927f5a57"
+  },
+  "misty-gen3": {
+    "bottom": 0.875,
+    "sha256": "73266fda8e1f1a49a0040db83c3e089f6ae0d3ecc45ca9df7b5bef0ea38552d0"
+  },
+  "morty": {
+    "bottom": 1,
+    "sha256": "cb493a51ffc25e7f01514f79be883a3c89617c948ec814067ab86c0a4846276f"
+  },
+  "morty-gen2": {
+    "bottom": 0.85,
+    "sha256": "09717b0bb113817439c1e1606f365e7f301560dfb25b24083b3e1ea0d64464df"
+  },
+  "mrfuji-gen3": {
+    "bottom": 0.8875,
+    "sha256": "ed222dc0a70135bf751730853298989be2e0fcefc184d524a1d9c0b5200a3aad"
+  },
+  "musician": {
+    "bottom": 0.9875,
+    "sha256": "1132966c8fbc07192f54d13b779f5e47fd59e7eedbec891d53ae3d306bdc25bc"
+  },
+  "n": {
+    "bottom": 0.975,
+    "sha256": "ff80c0e3086614328c983629e3f39766dee225405c245ba0f1900bbbcfe9a57a"
+  },
+  "nate": {
+    "bottom": 0.95,
+    "sha256": "9c79a05f08e7fe9df6f2b720a8984079b795141c657cdd97ab18c9747eb52033"
+  },
+  "nate-wonderlauncher": {
+    "bottom": 0.9375,
+    "sha256": "8af1efff71fe38f11ab28dbc57c88c56c04ab75a46b15b3baf32454035fc019d"
+  },
+  "ninjaboy": {
+    "bottom": 0.9875,
+    "sha256": "6b291ee07b62c8bd7b26ad3530552e5a0dc343cff2648f34e46c1b813cb40b56"
+  },
+  "ninjaboy-gen3": {
+    "bottom": 0.8,
+    "sha256": "a6d12e1e33d49fe5ff764f96434e531dd2044daef006431a853f8d4498ab33ff"
+  },
+  "noland-gen3": {
+    "bottom": 0.8875,
+    "sha256": "3ddef16c0d74bb8d117e202b45e4d0e8d0ec3451530a74910c13a28283105e22"
+  },
+  "norman": {
+    "bottom": 0.975,
+    "sha256": "e6b0e32fa92f715431e0b4767a09fa5844fd9f904d2e4fcebcb8bb94282432b0"
+  },
+  "norman-gen3": {
+    "bottom": 0.9,
+    "sha256": "cd72d55deadb4a2a13c1fafc11a774db991d5d066296c7cfa9020c5c2e030db5"
+  },
+  "nurse": {
+    "bottom": 0.9875,
+    "sha256": "9333a7c91adc0fdd5b32ad98f0cbd124e0ff49d34c09a2e56ae10ff6fc325ea1"
+  },
+  "nurseryaide": {
+    "bottom": 0.9875,
+    "sha256": "e324fcf2a0bd2b0a65113075c3303b98e80aed585755b864f0ad903680ab9e73"
+  },
+  "oak-gen1": {
+    "bottom": 0.85,
+    "sha256": "284c5b9bcbfbf02ce515e912bda22ba2a16045911d087027ba392b1d6754e7c9"
+  },
+  "oak-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "68944102947e6551b42e7a64cfea84996e2dac096bafdaa06d2f2cbf16363ce5"
+  },
+  "oak-gen2": {
+    "bottom": 0.8375,
+    "sha256": "2cdd65221e676f9ac55bdd886f8840252431a8af1d7ea1a8f2a1f091813d8016"
+  },
+  "oak-gen3": {
+    "bottom": 0.8875,
+    "sha256": "03d1c87a1b394c55cb85beaf89dd70512f601f57198c2129556bc7b6f3a1d57f"
+  },
+  "officer-gen2": {
+    "bottom": 0.8375,
+    "sha256": "bb684cf52fc97a4819aa9254247cd2f49f6a08e596db978f6a5616e41dc6cbcf"
+  },
+  "oldcouple-gen3": {
+    "bottom": 0.8875,
+    "sha256": "56c997a39c800dffecd70ed46e5742faff5587de9cb094549dca8a3a42b54668"
+  },
+  "painter-gen3": {
+    "bottom": 0.85,
+    "sha256": "4ade09eb053edc54003471c5d2a71f39038c8fb4335bdc73171504d23daf095a"
+  },
+  "palmer": {
+    "bottom": 1,
+    "sha256": "f0e3c405139d721e34f024a668a9c72544d3152400403a24b9f8bf22fe315784"
+  },
+  "parasollady": {
+    "bottom": 1,
+    "sha256": "18f32e571faca45eba823e330cf23a49d740bbf675f97d56acf4c73ce41b6c00"
+  },
+  "parasollady-gen3": {
+    "bottom": 0.8875,
+    "sha256": "5557a1fe9a3b5c77ad57211e38154bf41f3642ea2fc5df9042a1153b3474a1dd"
+  },
+  "parasollady-gen4": {
+    "bottom": 0.9875,
+    "sha256": "0beae23fa38106b6e2ebb1a126942f31121cbf599d7c77c69f345b8947e4d868"
+  },
+  "petrel": {
+    "bottom": 0.975,
+    "sha256": "a72c9d1942de5e2ca1ddd5796bc9350006dd37955ef86ed2baacad3e51ef8b08"
+  },
+  "phoebe-gen3": {
+    "bottom": 0.875,
+    "sha256": "def3095e6103e5a7be22aa6695d6e12b4e03a6b90f0dbc99db55988d3cf367ec"
+  },
+  "picnicker": {
+    "bottom": 0.9875,
+    "sha256": "72eee3ffb156a03f6451d7996d370434361c4fe0b8241956befb248af1a82954"
+  },
+  "picnicker-gen2": {
+    "bottom": 0.85,
+    "sha256": "b36416edc30569cb28fc505d71aa276b118b2d8316a5cda022beb43adca984a0"
+  },
+  "picnicker-gen3": {
+    "bottom": 0.8375,
+    "sha256": "f87153aaa164fa9dd7b0ebbf03e22f68f3d290a1259bdd2f8e7ffb2f897ed642"
+  },
+  "picnicker-gen3rs": {
+    "bottom": 0.825,
+    "sha256": "f8e234b746616bb03461aefd4591601ab4125d2c13802364de03b9cb95b3e62c"
+  },
+  "pilot": {
+    "bottom": 1,
+    "sha256": "612480d004090327332e3a83be33a2ca2f939b502b06386bed015fc3680e1f96"
+  },
+  "plasmagrunt": {
+    "bottom": 0.9625,
+    "sha256": "9d1ba7e50e487ab792ed4f8d2fdad06e75318b37d76a199f98b34f3273d28f8d"
+  },
+  "plasmagrunt-gen5bw": {
+    "bottom": 0.9875,
+    "sha256": "9ec4347c71b6e40615e2727901d5526f5b61108964042d5e36d087d75d213956"
+  },
+  "plasmagruntf": {
+    "bottom": 0.8375,
+    "sha256": "93a3fb736cf4c409d99edddebb7f0c498959c67845fe071659da1fea172d52b3"
+  },
+  "plasmagruntf-gen5bw": {
+    "bottom": 0.9875,
+    "sha256": "5282b600da1a5c1ba88a77abb2c8f56f54b1ac015455b7216f553ef6cafd26b9"
+  },
+  "pokefan": {
+    "bottom": 1,
+    "sha256": "aa181ed9526022bc01859f3b02000cf30f86bdbfdedd01a8b0cc8a5e85eee514"
+  },
+  "pokefan-gen2": {
+    "bottom": 0.85,
+    "sha256": "301b64dd7f520ff16019d08f24abeb0ff83ab8d0912d7b79fcd22789cfb5ee00"
+  },
+  "pokefan-gen3": {
+    "bottom": 0.85,
+    "sha256": "3bf30fc932e06a8ee8d485dc74389abaeab398fa1e2bc63a8cbde4f6c62ac869"
+  },
+  "pokefan-gen4": {
+    "bottom": 0.9875,
+    "sha256": "5bb8fb942bb1eb23b630b370b4a5c507e30572ee0a8102a29ac2e1114a025ec0"
+  },
+  "pokefanf": {
+    "bottom": 1,
+    "sha256": "b9023cd5849d482896468eba6149f94fa4b2ed2be5e8d72c3420a9930971f1b4"
+  },
+  "pokefanf-gen2": {
+    "bottom": 0.85,
+    "sha256": "5ea246e62a6400da23e02cc32ba451a15fa3baf9c7f6ac1e21682defd5dff4ca"
+  },
+  "pokefanf-gen3": {
+    "bottom": 0.8625,
+    "sha256": "2326378a7c7e19bc80aee6a5092dcac61475859923dd850fefd3460094e89345"
+  },
+  "pokefanf-gen4": {
+    "bottom": 0.9875,
+    "sha256": "d7d0b5332deed9ba1ac779b67f9c5340666d4c4380fac008ce1b7d5e73c89cc2"
+  },
+  "pokekid": {
+    "bottom": 0.9875,
+    "sha256": "2d57969c73dcaf741793f60cfd574de2ea8f2561856ccbab7e45325ba2d30de0"
+  },
+  "pokemaniac": {
+    "bottom": 0.975,
+    "sha256": "4b976b4cadd92021845c5de44eb30dbdb45097b826ee9d835ec0ac431149fca5"
+  },
+  "pokemaniac-gen1": {
+    "bottom": 0.85,
+    "sha256": "b4181e39239a9c262128a85f8e72970c717768e0147d55f814e5522b6e60edba"
+  },
+  "pokemaniac-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "96889e9b703ef4eef6d594e6de74c440ae68c5ebd6432af0ddb08db4f4778d7e"
+  },
+  "pokemaniac-gen2": {
+    "bottom": 0.85,
+    "sha256": "c9eb54436a7bd5600b2871736912f2ae0af34e69554ea767bdfcded03cb50b62"
+  },
+  "pokemaniac-gen3": {
+    "bottom": 0.875,
+    "sha256": "a08246b1bd31132dca43379f68aa75a66be657652588e33bc59e7841c0c667e8"
+  },
+  "pokemaniac-gen3rs": {
+    "bottom": 0.825,
+    "sha256": "f1746f910ab37fe179e56f3fc1f42dfd865c6f55f6f575fb935b21843666aeec"
+  },
+  "pokemonbreeder": {
+    "bottom": 0.9875,
+    "sha256": "174907e1b23690a94e8a3fffd7b8100d290db450e94b0edd3305f36f952e8115"
+  },
+  "pokemonbreeder-gen3": {
+    "bottom": 0.8875,
+    "sha256": "99c2779494fe22c0d968206cc3d937e947065a3856922b836c10108bbbf7b047"
+  },
+  "pokemonbreeder-gen4": {
+    "bottom": 0.9875,
+    "sha256": "34f06b486d267a8d7c5e680d341283835355c0ef00e4c43e5d05178409ec575c"
+  },
+  "pokemonbreederf": {
+    "bottom": 1,
+    "sha256": "bd6a1512f6572b954fc1c308fd48a3ff241d5188fe91564da7663516686e4957"
+  },
+  "pokemonbreederf-gen3": {
+    "bottom": 0.8625,
+    "sha256": "f7cc5fdbcd5bd5ad36c8f963b62f8c1f37d856c732a17482d77abefd43ed17b5"
+  },
+  "pokemonbreederf-gen3frlg": {
+    "bottom": 0.7875,
+    "sha256": "cf37151e2d27e121bff43b35d54227c3569968ca0253ccdaf1a9007e298cf91a"
+  },
+  "pokemonbreederf-gen4": {
+    "bottom": 0.9875,
+    "sha256": "7dc70a222f4759ab3462fcba1cd87ac7cfec44cddd73f4b323a5078ce72f640a"
+  },
+  "pokemonranger": {
+    "bottom": 0.9875,
+    "sha256": "247f8429ebe730945e58d37efed28e8d92e859565ee377c510b4bd08fd2b395c"
+  },
+  "pokemonranger-gen3": {
+    "bottom": 0.875,
+    "sha256": "1f4c49d136c3f38b2ee081d05e7ac432777691a4816815c0c99a7ab339eaeae7"
+  },
+  "pokemonranger-gen3rs": {
+    "bottom": 0.85,
+    "sha256": "703edbc4be3b3d45ab31fd7405b055031c4e028d47092f73df2064336257ce02"
+  },
+  "pokemonranger-gen4": {
+    "bottom": 0.9875,
+    "sha256": "9d44ca2c64273e14d79bb3b1c63f13efdec10e56006571ba51495b72b9dda2b6"
+  },
+  "pokemonrangerf": {
+    "bottom": 0.9875,
+    "sha256": "69f3b78bd2d75c2f2f525e4b573241ce149449c760d02a852845f8d973c18558"
+  },
+  "pokemonrangerf-gen3": {
+    "bottom": 0.875,
+    "sha256": "06782ede87d6af204ccefc0a760aed5151b36628b274a28e8d651abd52652121"
+  },
+  "pokemonrangerf-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "157979e4290d8530579e7d155d7166c573648319af5f63c310b41e3cda17f548"
+  },
+  "pokemonrangerf-gen4": {
+    "bottom": 0.9875,
+    "sha256": "4628382ae6185f58ce243eee57232711714d45cb8812054e1944cf0c64bee0ae"
+  },
+  "policeman": {
+    "bottom": 1,
+    "sha256": "14707ff25b817bce599cd02adc9f322fe935433cdc3f48fcf4ceeec2d8ba235c"
+  },
+  "policeman-gen4": {
+    "bottom": 0.9875,
+    "sha256": "f47a8e68f1f304696cffe106239d78e102534fd28e733459a1b969f8866f551e"
+  },
+  "preschooler": {
+    "bottom": 1,
+    "sha256": "ae4319106be0b9512860bb6f636a68bfe8ca9a5cb953f41e207b30db2a5d4420"
+  },
+  "preschoolerf": {
+    "bottom": 1,
+    "sha256": "6edadd068583a2c45155f54b2c735550d71c9d3cfe238ff3befbafdc752580f5"
+  },
+  "proton": {
+    "bottom": 0.9875,
+    "sha256": "5247f0448a8c8efe00c916f4ccc4ee53cff1d350e1df8386180702d04d8c7df8"
+  },
+  "pryce": {
+    "bottom": 0.9875,
+    "sha256": "83c8cda85a3c8c2886f137b5474ecfc37b6a4ae4a593f572c457bd1a57ba6851"
+  },
+  "pryce-gen2": {
+    "bottom": 0.825,
+    "sha256": "9fb822c03bcdb50c9e38a58e743f9127e4e65f150d2beb4089529d488f763e25"
+  },
+  "psychic": {
+    "bottom": 0.9875,
+    "sha256": "dd818784e0384be794a5815ad4a4ad67c15bd809c5ac0433d0aa655eaa28b40f"
+  },
+  "psychic-gen1": {
+    "bottom": 0.85,
+    "sha256": "81ef0b43bcaf974aa3e912028d48c2a43fee2eb970e8b4a041bf040bace26e52"
+  },
+  "psychic-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "847a4a55cea9401cb39d2e84ec2576bd35e7a4db687d6e7b89efa28f7db4a427"
+  },
+  "psychic-gen2": {
+    "bottom": 0.825,
+    "sha256": "c6f18e169993a66d188f3b83c57c3d01e0fd455e385729491ceae33ca0b75b2a"
+  },
+  "psychic-gen3": {
+    "bottom": 0.875,
+    "sha256": "553206de67b056a4ab80e65702a96ac818042915c41d72403d2a43667ced4795"
+  },
+  "psychic-gen3rs": {
+    "bottom": 0.85,
+    "sha256": "f1654509d86063cb7f2ace7653b79d82df2e6fd6510bd886f8c1a656e77663fc"
+  },
+  "psychic-gen4": {
+    "bottom": 0.9875,
+    "sha256": "8137a2a0881ae0a59f12255c501774371d51e966e343094ea874514c405f892b"
+  },
+  "psychicf": {
+    "bottom": 0.9875,
+    "sha256": "b0305c0a5a99ab904f6cf38109543546c92a05a723c34fb55594122e9fc7adf7"
+  },
+  "psychicf-gen3": {
+    "bottom": 0.875,
+    "sha256": "7899061e67f66fc12c9d3863d38720b3aeff94d4d267e2c8d17144458c3220b2"
+  },
+  "psychicf-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "2d185c43d2abd1c7a873a2ed15ce3eba8cb1ccf48027017d6e680e446c2c3ec6"
+  },
+  "psychicf-gen4": {
+    "bottom": 0.9875,
+    "sha256": "288284dffcdbadb8db0e7e3a5c3876fb7948e34c0953ac15ef047cb83a446716"
+  },
+  "psychicfjp-gen3": {
+    "bottom": 0.8875,
+    "sha256": "8eb9da2cbd15209402bdb3b8f49963e4dbaa19ca8c0a7df6ec249e36a072f5f6"
+  },
+  "rancher": {
+    "bottom": 0.9875,
+    "sha256": "9118c6d109800e5e96aa6116ad560365e899ff1c669d001dabe866e32169208b"
+  },
+  "red": {
+    "bottom": 0.9625,
+    "sha256": "8360016360591b27eeea371300f104d33d2629af6eaf7a8cc0d2e219c54cbba3"
+  },
+  "red-gen1": {
+    "bottom": 0.8375,
+    "sha256": "694b05f76280e984a3540e2d1c3087c2ab37c29cad6ab949c6a38c230f12c9da"
+  },
+  "red-gen1main": {
+    "bottom": 0.8375,
+    "sha256": "57a1f363bd430bf1d6e2de6c8cd15b3156e070d2e36d25c7aadc59ab51f169dc"
+  },
+  "red-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "34b27358042fa3b2542aa3cca169aa8b3a917e74714e3db826333843827551b7"
+  },
+  "red-gen1title": {
+    "bottom": 0.8375,
+    "sha256": "b128334d7d5e7a7083cfcab3acc4f615dfb09fd479e7fb7ec58b041147841734"
+  },
+  "red-gen2": {
+    "bottom": 0.8375,
+    "sha256": "bd874ca936417aa13d9aed776d457783fe9caf31553ce6bd9f05ed4c44f76178"
+  },
+  "red-gen3": {
+    "bottom": 0.8625,
+    "sha256": "40ef1f8fe1f729419b9ec3360c22b9ee563abcbaa2623bebe973986f3fde5bbb"
+  },
+  "reporter": {
+    "bottom": 0.9875,
+    "sha256": "66fea3b431ec0a6a92b165ac81c82ea1892ab5d7e749381c7a184f40970a2240"
+  },
+  "richboy": {
+    "bottom": 0.9875,
+    "sha256": "69f48838882373bd469639e848b814a27f1297508c3441ff7586f7267e34567e"
+  },
+  "richboy-gen3": {
+    "bottom": 0.8375,
+    "sha256": "8155591b57bef8cca35179ab818fced125065d669c919830556ba225ed945ac8"
+  },
+  "richboy-gen4": {
+    "bottom": 0.9875,
+    "sha256": "eadb3b4527f2d0c2bebe6ab9e9bb11632f7f12198ecf16cbe9246742ebd24165"
+  },
+  "riley": {
+    "bottom": 1,
+    "sha256": "d85dd4eed9444201460bbffcda0065a5c6081dfc45c18dda106d1f947a1fd1da"
+  },
+  "roark": {
+    "bottom": 0.9875,
+    "sha256": "e55baafe5960cc72f7ef1ee37b8c1ae6ef2338c7914a7640582fe62a36ff7902"
+  },
+  "rocker-gen1": {
+    "bottom": 0.85,
+    "sha256": "3bdf108194feb9aa5fd7fafbb57637b3352963678d4a43883e0adc3f70ada95b"
+  },
+  "rocker-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "c26f4a81856a37f60c65da2889538fdddf60c07cbf499ff563490411df45cab8"
+  },
+  "rocker-gen3": {
+    "bottom": 0.8875,
+    "sha256": "2ad66fd675b833c078a598f30266ba41ca51bb70f85563454d8ecb20c8363453"
+  },
+  "rocket-gen1": {
+    "bottom": 0.85,
+    "sha256": "41aa2de0c99fd687b166df5f85366ae9291230da20758821ab1eaf4fba15183d"
+  },
+  "rocket-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "c55dbca4a172d0ed2638b2529eb13ac913fbf6058d55571b4ed268da03d71ddd"
+  },
+  "rocketexecutive-gen2": {
+    "bottom": 0.85,
+    "sha256": "53035c2c67e0c68ffec9e2ceb52ed336f8017dfdde8a5249b982885033124e5c"
+  },
+  "rocketexecutivef-gen2": {
+    "bottom": 0.8375,
+    "sha256": "e19c52006e4c42b2c3c40c77a08bbaaa9ff683a18dc3b13035071e2b64d1f598"
+  },
+  "rocketgrunt": {
+    "bottom": 0.925,
+    "sha256": "d9a2f9a5dba8cdafd25192951c1c5f1ebad1f2d2b6d4cbd2cc2dffbb81e81c9e"
+  },
+  "rocketgrunt-gen2": {
+    "bottom": 0.8375,
+    "sha256": "1ba9f1029939c88a69ac86dea17abc7933905c817d0f7bacec765e2893912cf4"
+  },
+  "rocketgruntf": {
+    "bottom": 0.95,
+    "sha256": "c8f42e7e79d6270fd245a5b86fe56a699ce1ec39dbe508862bc7e2115631beea"
+  },
+  "rocketgruntf-gen2": {
+    "bottom": 0.8375,
+    "sha256": "260e4e701c327723502c23e896bfb4e3b5b5c94b26348dcf0e8f877d2111f798"
+  },
+  "rood": {
+    "bottom": 0.9875,
+    "sha256": "fb001e531867e817db96f8995a3fbfdc28109b4f989ec4eaeea3ac775c0717a6"
+  },
+  "rosa": {
+    "bottom": 0.9625,
+    "sha256": "95a754179451eacec58d198cdd4a1a67f419e36a3761a492f7904bee3819a8cb"
+  },
+  "rosa-wonderlauncher": {
+    "bottom": 0.9375,
+    "sha256": "ef770dbeeec863a4c3a38da82329a1e490a00fef11c4411c1b0750cb044f2935"
+  },
+  "roughneck": {
+    "bottom": 0.9875,
+    "sha256": "e169aa1dd6a086c602a2eb109abfd9e32ab92a5928254079ae0c11f550f042eb"
+  },
+  "roughneck-gen4": {
+    "bottom": 0.9875,
+    "sha256": "4402de7844952ae9a8b94221b1c42ec6d395178deb1acaf80241566f9d50500a"
+  },
+  "roxanne": {
+    "bottom": 0.9625,
+    "sha256": "05048799d17e358acb00221add5e0aaab609e049588a08b399c30f8f622aa6ec"
+  },
+  "roxanne-gen3": {
+    "bottom": 0.85,
+    "sha256": "fbd3726363c3eb554cff481b1411198094a21a833d75bc5ddf50af145b669b16"
+  },
+  "roxie": {
+    "bottom": 0.8875,
+    "sha256": "a7a80ec0a71bbc5b7c4c3fcb549385e742331d0aec881169a324e337a41b8da7"
+  },
+  "ruinmaniac": {
+    "bottom": 0.975,
+    "sha256": "777dd15226c88aeff1c7ba565188c9b90bc46d3785777f0b2f423a0347ebcb1c"
+  },
+  "ruinmaniac-gen3": {
+    "bottom": 0.825,
+    "sha256": "3177df85e66211fb1f7ec86b6fef42578b474009a732d6445d25c8df0136d627"
+  },
+  "ruinmaniac-gen3rs": {
+    "bottom": 0.8375,
+    "sha256": "1290991b16ac298dcd4fb66878ddaec968cba82a4127efffa4b265f41c42677e"
+  },
+  "sabrina": {
+    "bottom": 0.9875,
+    "sha256": "f202e06591e814f4a2cc6190b832dee826612522b3094d6894dbea697e086117"
+  },
+  "sabrina-gen1": {
+    "bottom": 0.85,
+    "sha256": "b8857d8b6bd3e6de1d66de8cc5bdc3aab6eaee4e1581fa9aba6da71832923d62"
+  },
+  "sabrina-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "46d2f0c96e4dc381ce7b195e42ac9ae18b373b87123b031cf79ed773cbbbdd15"
+  },
+  "sabrina-gen2": {
+    "bottom": 0.85,
+    "sha256": "d92dc485fd376f744c4f72c7378ceff0af78cbadbfae948030fda67d27747c06"
+  },
+  "sabrina-gen3": {
+    "bottom": 0.8375,
+    "sha256": "403908df15a14b790033a23d5e553ac2000f069756799ec16681d4df4e9460ce"
+  },
+  "sage": {
+    "bottom": 1,
+    "sha256": "5ec36e0624edb9ed0658968624de11a403ebd99e1a964034cd811b88b069d69a"
+  },
+  "sage-gen2": {
+    "bottom": 0.8375,
+    "sha256": "a3f80f9d4b52362e5866c88f0055a10335860eb8aae11ffa31c80692fcff0522"
+  },
+  "sage-gen2jp": {
+    "bottom": 0.8375,
+    "sha256": "56f3cdfca671c6290ce1f62f66cd92adf971c033cce3e91d568f2ac979c5264c"
+  },
+  "sailor": {
+    "bottom": 0.9875,
+    "sha256": "00d05418f10eff9eae63fe6ecbc4e2f283ff7ee5a1b63aba6fe42fe6e52f9e25"
+  },
+  "sailor-gen1": {
+    "bottom": 0.85,
+    "sha256": "93b1fb8d93c1c841713b1f9f4bf98be299a9b4337596f8fdf59b47baed2950e5"
+  },
+  "sailor-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "562519a8079fb7764729db5c3e68539f32fa30b3bf3ce03fbd737d76d7dbaff6"
+  },
+  "sailor-gen2": {
+    "bottom": 0.85,
+    "sha256": "4201942fbed09189605f192aa5ef1624de6b2d6ce7651c841f54b62a27686d7a"
+  },
+  "sailor-gen3": {
+    "bottom": 0.9,
+    "sha256": "9da013efc7859318de96a67e602a5d8292f32f545fc029eca8d6b461851c437d"
+  },
+  "sailor-gen3jp": {
+    "bottom": 0.8875,
+    "sha256": "4a062dde4b92958b56a3c5e85cfd8ec2d8c0df0f8c66cf44e6008977e7eb824b"
+  },
+  "sailor-gen3rs": {
+    "bottom": 0.875,
+    "sha256": "aeaefd7f4e574c3528f064ab5c2ae78066bfb145fcebd23126c450b28c357775"
+  },
+  "saturn": {
+    "bottom": 0.9875,
+    "sha256": "6156d48fa2181144a401fb9426299b2e40fb1914b1a2fa1966a24df199b13bec"
+  },
+  "schoolboy-gen2": {
+    "bottom": 0.8375,
+    "sha256": "b1af9b11d90d2c3e85cd96798b28e279a8a337b35ae860f7857bff5ae7a78aa8"
+  },
+  "schoolkid": {
+    "bottom": 0.9875,
+    "sha256": "659301ab9aa55b49318874d103b970270c63d247f32916a1fb7ec294f196e3ec"
+  },
+  "schoolkid-gen3": {
+    "bottom": 0.8125,
+    "sha256": "c9cb2fd580c6422109334a8c563c7f5d56f95f9006d5db453b2b34cf929a9112"
+  },
+  "schoolkid-gen4": {
+    "bottom": 0.875,
+    "sha256": "ac0f2b529aaee4aab0735a078cca2926979e2c2df00c8eede2867334e1881a82"
+  },
+  "schoolkid-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "3239ad3264b48453ad3d2d5c37060df227eac0311ef791f62b57fce29b8d2a56"
+  },
+  "schoolkidf": {
+    "bottom": 0.9875,
+    "sha256": "ca733b24cab4ed40fe52be46d45d6e16d0ecec7d62185bc71ff518e4dcf45e22"
+  },
+  "schoolkidf-gen3": {
+    "bottom": 0.8125,
+    "sha256": "2b99f9e77412cd7441e7be7b33308bcb44d2f0540b0f3fae3698e974cd6688d7"
+  },
+  "schoolkidf-gen4": {
+    "bottom": 0.9875,
+    "sha256": "591d6c5772c44f98a593b62f928efc40839bbf0afa8a0a5e10f6476c80e062c0"
+  },
+  "scientist": {
+    "bottom": 1,
+    "sha256": "53eac4ec8ce58211fa9d84c3b3739090aa0f47e8f1bbdf89a248c73dfa695c6e"
+  },
+  "scientist-gen1": {
+    "bottom": 0.85,
+    "sha256": "a8c3da40fc54897bde00513501d819f7db4fbc0ad318a3b4b3bfe809b181107f"
+  },
+  "scientist-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "824bfb4b7562a1da8e76958c738d641580681b60dbf5414c155b64627243b7f6"
+  },
+  "scientist-gen2": {
+    "bottom": 0.8375,
+    "sha256": "8a1c300a029c15a22e34d2840ce8b16b7e50e5e6346685a56f1f5a8071556739"
+  },
+  "scientist-gen3": {
+    "bottom": 0.875,
+    "sha256": "e8aca945e3d61ac8c586647fafc31c08830971401bab673ffe127dfe58910fc7"
+  },
+  "scientist-gen4": {
+    "bottom": 0.9875,
+    "sha256": "3cf61883d687a520a7bfe16d684b063519dddf24c7f84bd14699d966034bc18b"
+  },
+  "scientist-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "bcb5019fdf6c5f9e50bece9707a8d85770e235c6f16e9ee874f39358338abad2"
+  },
+  "scientistf": {
+    "bottom": 1,
+    "sha256": "2cef010f9057d05b5d74386d0448ee81bfa8900903ab47a85be15af252a99e1d"
+  },
+  "shadowtriad": {
+    "bottom": 0.975,
+    "sha256": "78fa1b10efdd7c1b31d5067de5cdddba76d274a08c33dfba559814456d5c1aaa"
+  },
+  "shauntal": {
+    "bottom": 0.9875,
+    "sha256": "8e235057aa95c9a82e630e9a23f32c95a743635fbc64cca9635acbc7aae0d4ff"
+  },
+  "shelly-gen3": {
+    "bottom": 0.9,
+    "sha256": "cc2668491981426d12f69a8bf2557b1bc7aad968cc196ff2af58fbd00e9a8f2e"
+  },
+  "sidney-gen3": {
+    "bottom": 0.8875,
+    "sha256": "f8c9d2491b8907296498172b6ff2f2bbe1b9c4a8d1e00e4b06860ca238d7dd8b"
+  },
+  "silver": {
+    "bottom": 0.975,
+    "sha256": "589c4827de02307cb9ecbd1ee421f5562471cd8d8d8fce0312643412548cfa68"
+  },
+  "silver-gen2": {
+    "bottom": 0.85,
+    "sha256": "6f41a8dab91504e573fb575a3868108faee952060e2eb7ba5d7675a2cfd870ef"
+  },
+  "silver-gen2kanto": {
+    "bottom": 0.85,
+    "sha256": "1b1e01e7d17490326b647a3970f25449b93ed300145af549a7b13450199da4d9"
+  },
+  "sisandbro": {
+    "bottom": 0.9875,
+    "sha256": "6c98ea496897f67c66afaeca090c39ef115e6dc86e57c67cec4af045c5f723ea"
+  },
+  "sisandbro-gen3": {
+    "bottom": 0.9,
+    "sha256": "55159307427898c25e330dccc6e05689e65677054d2732df01acf6d4f25220bd"
+  },
+  "sisandbro-gen3rs": {
+    "bottom": 0.9,
+    "sha256": "60636f509bd77f38718898ce3d0462f7271df655398d547ae745dea3f338bb20"
+  },
+  "skier": {
+    "bottom": 0.9875,
+    "sha256": "cc8145975c4579a700bf161b0968e3f0fd1e7c1caedd88b0fd9bedfc1f76c228"
+  },
+  "skier-gen2": {
+    "bottom": 0.85,
+    "sha256": "2d474f72464f67bfa35aafdd16df79278fa2be5f378bfbac3b7728ac4cae75e8"
+  },
+  "skierf": {
+    "bottom": 0.975,
+    "sha256": "078fd75e76316a90ef0b84114a99ab718056bd560313ddb532893489f9fdb410"
+  },
+  "skierf-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "8b2717d65b50567ff371b4aa935789359bf719e106fb0010f978019d8fbcedc8"
+  },
+  "skyla": {
+    "bottom": 1,
+    "sha256": "8d35897c31ab7ee9b8a6a18388652aa90b47d9663ca072c9bb83550e5227f5bb"
+  },
+  "smasher": {
+    "bottom": 0.9875,
+    "sha256": "27633096f5527e26fc781abbd0713923028dec823f0d153697dc47f6c183bb18"
+  },
+  "spenser-gen3": {
+    "bottom": 0.8875,
+    "sha256": "80e39061da409788d8dabfa282867c89408bfcf01c97a6ca999a6b964e547c91"
+  },
+  "srandjr-gen3": {
+    "bottom": 0.85,
+    "sha256": "7061451ac860ba367edc7628935e67278d296aade96c0d272d088eef69151bc3"
+  },
+  "steven": {
+    "bottom": 0.9625,
+    "sha256": "ac71965ed7dd755b436a00c39392754ad1a527a3edb808695842ecfbf1c74b31"
+  },
+  "steven-gen3": {
+    "bottom": 0.9,
+    "sha256": "f1117ac4cf265a93f16af97fc3d40c47cff9acf456342baeeea6546464ff64a6"
+  },
+  "striker": {
+    "bottom": 0.9875,
+    "sha256": "f62245afc7e84bc8c5a165aa39e25773de8e105c2fb2ab34aa7d7bf11d434171"
+  },
+  "supernerd": {
+    "bottom": 0.9125,
+    "sha256": "00545b0ba2f3cd86b3c878c566b1375441e889edf7280319c97a95c472242b8e"
+  },
+  "supernerd-gen1": {
+    "bottom": 0.85,
+    "sha256": "a486c2025f42606cc455440b00ed010e003a45b6e3081d267ac3a04e40a7e82f"
+  },
+  "supernerd-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "5ae37fcb34122cc6d937a1a85c3b65d411451e9bd87b270a949da59edcc80360"
+  },
+  "supernerd-gen2": {
+    "bottom": 0.8375,
+    "sha256": "2d46195da856a792c561ab119847167ed1932b133eeda37f1c99fd4df652f5b7"
+  },
+  "supernerd-gen3": {
+    "bottom": 0.8875,
+    "sha256": "e0253cf1031fa5ed70d7b81daa743dcdbe20079802e8082bbabcf96474ae4285"
+  },
+  "swimmer": {
+    "bottom": 0.975,
+    "sha256": "5fd13a07ce9f66d00175a68a0cc74f3b3ed7a252a8053e9726e9d53d8f5a3981"
+  },
+  "swimmer-gen1": {
+    "bottom": 0.8375,
+    "sha256": "23b2ba7ea60e0035427537f92eed1384204027a1015c7e2ff9d676df88795b7c"
+  },
+  "swimmer-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "e5627bc4ef60409d567bbe832b42651a1f0c0597b05d6666eedebe59b1ceefbe"
+  },
+  "swimmer-gen4": {
+    "bottom": 0.8875,
+    "sha256": "f85f218e54a9e4555241bc7b372812a6c9da9858c5e305eb5fd3c4edd68cf6d8"
+  },
+  "swimmer-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "0dcde4c143afd1fa5717acb09f1fb899b93f0241231a4cc1200068092c758589"
+  },
+  "swimmer-gen4jp": {
+    "bottom": 0.95,
+    "sha256": "d09e39e73fd3a795394c661f88bf0021db1b81133fc1b6f46e48825eac76a473"
+  },
+  "swimmerf": {
+    "bottom": 0.9875,
+    "sha256": "8c8d78c139ba6352916e92f8a991c7d922d33446569eeb9da9d523d92d1fce93"
+  },
+  "swimmerf-gen2": {
+    "bottom": 0.8375,
+    "sha256": "7e4e8aff1a55c821a961ed06caa5c8fef7b21c609f72d569a743697ab82c8083"
+  },
+  "swimmerf-gen3": {
+    "bottom": 0.85,
+    "sha256": "23dc9914285d649d265d8bf1d882eac0cff838aaf3d5de2039480fd363fe9730"
+  },
+  "swimmerf-gen3rs": {
+    "bottom": 0.85,
+    "sha256": "1fa505dd3c461ef2ae4c8735e68c9f8661f61a274bc26fbe9f084522d20403ed"
+  },
+  "swimmerf-gen4": {
+    "bottom": 0.975,
+    "sha256": "9ab6f7cff512c4fc30719a794b1cd0857fff21afa806f919b59a4c9d976da7db"
+  },
+  "swimmerf-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "17a0e0693f35626a992d9956b304dace8ec0c2a44f69b798288372d5986f1690"
+  },
+  "swimmerfjp-gen2": {
+    "bottom": 0.8375,
+    "sha256": "7270cc4b88890b8db1b95eeecab41d2af7a54a523d5dd085fd4bdf6e33028dcd"
+  },
+  "swimmerm-gen2": {
+    "bottom": 0.8375,
+    "sha256": "dd5d5078dd2f8bf927cd4eb7474102b77c7e0dc58d15eacb485b994df9f38c0c"
+  },
+  "swimmerm-gen3": {
+    "bottom": 0.775,
+    "sha256": "163f9cb89a22701196d60e6d13edd66d3e98d5deb909800bb5e97d5f1662f777"
+  },
+  "swimmerm-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "efc4defb4626e4756f5f93f1bccfcb7cf229575bcb7a73254785f938a83a5a8d"
+  },
+  "tabitha-gen3": {
+    "bottom": 0.875,
+    "sha256": "5b5b9a0c73412fbedc08c88135024d483ff7ad3925034dd9e643c6d66366a6af"
+  },
+  "tamer-gen1": {
+    "bottom": 0.85,
+    "sha256": "5b3ff7d6a861c241de45dea6d42cb073c5303f75ce9cfd0576c094f260a33d4c"
+  },
+  "tamer-gen1rb": {
+    "bottom": 0.85,
+    "sha256": "7e660b2bb71637c9a45c7945a59c2747db52b343fc0ad1d99ac0c0824db6c26a"
+  },
+  "tamer-gen3": {
+    "bottom": 0.8875,
+    "sha256": "47d481b0404b8ed9bea704fb588d4fcbc00694f927c9632cdf6140d0a5ca39d6"
+  },
+  "tate": {
+    "bottom": 0.925,
+    "sha256": "18a10304286e7197a9504027e464cb1a515473761f5f22ea93a424162d0ccc00"
+  },
+  "tateandliza-gen3": {
+    "bottom": 0.85,
+    "sha256": "eaa04eca764d63396e3a679046511360986c02f1ca5e664fa9bba3440e03b60f"
+  },
+  "teacher": {
+    "bottom": 0.9375,
+    "sha256": "8061a78e20945d752eef367f5cc4db08e3ba09ce028e2cf6b4997f53c905a53a"
+  },
+  "teacher-gen2": {
+    "bottom": 0.8375,
+    "sha256": "2c917742167302d89a9521ea6645c423919b083e64ba076222ad8ad327e6a69a"
+  },
+  "teamaquabeta-gen3": {
+    "bottom": 0.8875,
+    "sha256": "0fced7411c541896b8b9605e8ea5f7bc8c826a1a1cbef887eeaf12937e17e10a"
+  },
+  "teamaquagruntf-gen3": {
+    "bottom": 0.8875,
+    "sha256": "534ddbd1e3f7133a2c198a2bcbacb959122d8bfafac77c351461e99db93261f0"
+  },
+  "teamaquagruntm-gen3": {
+    "bottom": 0.8625,
+    "sha256": "f923acd3d727d32c9afc09ecdd0cefab84424985ebb33f3ac127b0d6a54945d3"
+  },
+  "teammagmagruntf-gen3": {
+    "bottom": 0.8875,
+    "sha256": "bc11fddee18561c7410e217e8d122c6714737950e6d9ea82df4a6aa60aab8781"
+  },
+  "teammagmagruntm-gen3": {
+    "bottom": 0.8375,
+    "sha256": "850c9d2d8d334464b2a5b0d6b0d8795d7b0f978cf0822c6e84a77ffdf616b8cd"
+  },
+  "teamrocket": {
+    "bottom": 1,
+    "sha256": "78488c3e37f5c7421b18c4d4b1b0157b37580a35933fb1d006288a7ad6f91ae1"
+  },
+  "teamrocketgruntf-gen3": {
+    "bottom": 0.8625,
+    "sha256": "2675ae6a7810c9d4701a0efde149b7febe7bee898145a5228e133a90c9b2db9f"
+  },
+  "teamrocketgruntm-gen3": {
+    "bottom": 0.875,
+    "sha256": "7e7a1347f8de23c14152aa94b469b8a61b82301df827acc8baa6244fbac460cf"
+  },
+  "thorton": {
+    "bottom": 0.975,
+    "sha256": "c87cb0c9c5dda0b5b70a2a7fe1e2b3a71d35505dcaa6de508b8b7fcf82ea6780"
+  },
+  "triathletebikerf-gen3": {
+    "bottom": 0.875,
+    "sha256": "b43c8b83c099e359662c64dd5edf5d7c2b8dc5cec777e02c0b5efab9f5f31fda"
+  },
+  "triathletebikerm-gen3": {
+    "bottom": 0.8875,
+    "sha256": "c3e97bb988e5f9f57b4202828039c8a9dcbee02c4e045f8d94d709ede0528400"
+  },
+  "triathleterunnerf-gen3": {
+    "bottom": 0.8625,
+    "sha256": "fc5a6e357393259f44842e6780000968cc39956e6da40cc7e14c43edd2a56c0b"
+  },
+  "triathleterunnerm-gen3": {
+    "bottom": 0.8875,
+    "sha256": "412eec2bc09cf3a1dd38aca24b151c1d8d5418c6a94d6edeb54e870042513baf"
+  },
+  "triathleteswimmerf-gen3": {
+    "bottom": 0.8625,
+    "sha256": "d9cb1566f5089d7e9140b08e99a57f538b97d876069c91c7721bd45c93300429"
+  },
+  "triathleteswimmerm-gen3": {
+    "bottom": 0.875,
+    "sha256": "c996cee51a5cc9ab7fdb4592670be9dab998d2fd0ea04d3dcdc998837707079b"
+  },
+  "tuber": {
+    "bottom": 0.9875,
+    "sha256": "2f150f73d14a37f76ca76489f7d688bb831229aa4aa81c7f4eae67aa0ea4ad04"
+  },
+  "tuber-gen3": {
+    "bottom": 0.8875,
+    "sha256": "2becc050808eb40fcf28e9119f9e77826c96f0ac578b50538a21cbf17a5b360f"
+  },
+  "tuberf": {
+    "bottom": 0.9875,
+    "sha256": "328d20c0d3833b12e0a8f2dff9eccc6f0896e056afa8ba216b8ec3b9ef62bc53"
+  },
+  "tuberf-gen3": {
+    "bottom": 0.775,
+    "sha256": "0611f3968efb3ef9c48aca2b1e6562338ffe694cb4004982750020de919d28cb"
+  },
+  "tuberf-gen3rs": {
+    "bottom": 0.9,
+    "sha256": "d33e06bad15f757992f79c9afaaf3f16ae35fdbb516fda6fda0be486fd0051d9"
+  },
+  "tucker-gen3": {
+    "bottom": 0.9,
+    "sha256": "4d6df3801ef3e363483cf61fc4c28411f32d5debeb893c3bfd5bbb1a085c0566"
+  },
+  "twins": {
+    "bottom": 0.9875,
+    "sha256": "f0bf3eabcdfe20813330d780f6de269e847aa257023d988d39c8e14ebb0ab291"
+  },
+  "twins-gen2": {
+    "bottom": 0.8375,
+    "sha256": "bcbeb352adce87761d98dd93f48ad754e33ef668ea1756da3c1ef6e0cf6e5be3"
+  },
+  "twins-gen3": {
+    "bottom": 0.8,
+    "sha256": "698c9f867144a45cd66f84366df11e0b83ded577b010c4727fb23bf3bffb79b6"
+  },
+  "twins-gen3rs": {
+    "bottom": 0.8875,
+    "sha256": "0bb558c105507a27b0720dd071e54c1a596d89d07bfc694c8a3475ab00f39df8"
+  },
+  "twins-gen4": {
+    "bottom": 0.8625,
+    "sha256": "116fecc268508c7694a2d4ae2412f055caef3e1707b926fa36b6dc9c48643e79"
+  },
+  "twins-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "603541bfb8c5b6e6966482a4184ce757095f283f7633815ea749bdc266034574"
+  },
+  "unknown": {
+    "bottom": 0.975,
+    "sha256": "f0566e75b7423bc65c6dfa7130faba89aee11e77ccbe2bfa4af3822570f342eb"
+  },
+  "unknown-flipped": {
+    "bottom": 0.975,
+    "sha256": "980de29f7d3a4fb0824f3baa33309159c74c5eac148a7b671493408b41a86c07"
+  },
+  "unknownf": {
+    "bottom": 0.975,
+    "sha256": "48b06b8bc1e8d4aa746184896370eadf8b5c04014f8ec67c1a212d634186d4e6"
+  },
+  "unknownf-flipped": {
+    "bottom": 0.975,
+    "sha256": "8ef7db11006fe4152af8201d7bdcafc61f4d02e1e85399b8ff9629be5a7f697f"
+  },
+  "veteran": {
+    "bottom": 1,
+    "sha256": "a4a5ab7ccd57c26f1e5b65d49405c35693c2e188c040119fe6b2b16c225bd1d8"
+  },
+  "veteran-gen4": {
+    "bottom": 0.9875,
+    "sha256": "b6bd6f281ad06a0d2abbac40d859590e254f3674b6f80427739dadf04ebe9e79"
+  },
+  "veteranf": {
+    "bottom": 1,
+    "sha256": "dbb8dd4be91d2b06a220525e5bffa327252d9b6b850d60df3494b29eb1f4aef4"
+  },
+  "volkner": {
+    "bottom": 0.9875,
+    "sha256": "1b3baa7fca51b8becbf78d71afca2237f50988ad2f59b344845637991cc716bd"
+  },
+  "waiter": {
+    "bottom": 0.9875,
+    "sha256": "f32894ef12b64e41774a5c2ef79c49bcf116243c17726013e19164ba2c699f76"
+  },
+  "waiter-gen4": {
+    "bottom": 0.9875,
+    "sha256": "63233bad2d26c5c47682badf99da260fcbbd3e0ba8b8f629d921a1512598cd2e"
+  },
+  "waiter-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "a4b88bd26fc7d271b224df405faff66f67d213da8cee69f6b97b32a3c8e93681"
+  },
+  "waitress": {
+    "bottom": 1,
+    "sha256": "e3b700deec618d18395e9c2a0bc1020a02b52220b2c414ef3920ef20885337db"
+  },
+  "waitress-gen4": {
+    "bottom": 0.9875,
+    "sha256": "8dca49b24bd01539fa667c8da679f76412f2c1de1079940af152c64667824213"
+  },
+  "wallace": {
+    "bottom": 0.9875,
+    "sha256": "ff7e920a0d28fe3f074d2b31ae2e4e1f1b86e0c782c88bdd04f87f7052f4fa9b"
+  },
+  "wallace-gen3": {
+    "bottom": 0.8875,
+    "sha256": "c32ab6b759cf75646412f3bf75c4d90f1753aec96c3cf721d2518d35fba6c1f3"
+  },
+  "wallace-gen3rs": {
+    "bottom": 0.8375,
+    "sha256": "488ede4fe476e21c0e7a332085095a97142fee7126537a1ce9ed9eaa9269dfa8"
+  },
+  "wally-gen3": {
+    "bottom": 0.9,
+    "sha256": "1a66a03961664c0ba08dcdcd3cb827333f8f73a9d44509133e2feede52274a2c"
+  },
+  "wattson": {
+    "bottom": 0.9625,
+    "sha256": "0345b277a1d70276a302e3411a5fbabf8547a4ba854cdb5a395076a0da631f67"
+  },
+  "wattson-gen3": {
+    "bottom": 0.875,
+    "sha256": "69e9bb1f81c70c0f13a1105a3c1f600bffe186b8c29c51431d1dc28d78e9ca8e"
+  },
+  "whitney": {
+    "bottom": 0.925,
+    "sha256": "3d4ae3d7ac88b1293b3ea57ea52f3983497f9ef1c28dd1080923d66a32001a37"
+  },
+  "whitney-gen2": {
+    "bottom": 0.8375,
+    "sha256": "c1628720c79b8d7ac026a7d025fec439053aef28932994f56c93c1f36086758d"
+  },
+  "will": {
+    "bottom": 0.975,
+    "sha256": "d7791a910287f15bdaee48617bca62919d49e61edeaa11304f3ea2876e552ed8"
+  },
+  "will-gen2": {
+    "bottom": 0.85,
+    "sha256": "0c48d3d5b73ba62ca6e647cdc4b69a87dad81f9caf6378677b195dabf366a649"
+  },
+  "winona": {
+    "bottom": 0.975,
+    "sha256": "980efaea9083b4a96d37be5635650d53a0a591df4340247d3c936eae31d7a263"
+  },
+  "winona-gen3": {
+    "bottom": 0.875,
+    "sha256": "0546f00a0ae859560fbd6ebe950c5563085a0fc10982d9ef56fc751ec8369a6b"
+  },
+  "worker": {
+    "bottom": 0.9875,
+    "sha256": "5b88d9646cf2241fb20d94f3e63a00ece04341f4873cf291dcc52bffd8527759"
+  },
+  "worker-gen4": {
+    "bottom": 0.9875,
+    "sha256": "27590bd40d262ecfb23ab1b0723d255514921dc166e3482d9a0c97ec3368c081"
+  },
+  "workerice": {
+    "bottom": 0.9875,
+    "sha256": "3e7c49894105111177d932a11537d4f9453079fe3c4ede5aaecc90b9e5a88bf8"
+  },
+  "yellow": {
+    "bottom": 0.9125,
+    "sha256": "7dee059c7be007a124bb261f8d456fa49dfd2fcbff1430603904af12c37de324"
+  },
+  "youngcouple": {
+    "bottom": 0.975,
+    "sha256": "528f72fff266a9b9ff8446a87fbae7bd6f9e1b0cbbb0852a0a39fe8f11ac7674"
+  },
+  "youngcouple-gen3": {
+    "bottom": 0.85,
+    "sha256": "0847a90e24551fd2fbfd89d112288381d71b923bbfa349db28822f1a4df19c13"
+  },
+  "youngcouple-gen3rs": {
+    "bottom": 0.85,
+    "sha256": "8becaea411887895f524019987c5e4f22379a8abe0c45f54c751aee03c0dbebb"
+  },
+  "youngcouple-gen4dp": {
+    "bottom": 0.9875,
+    "sha256": "2ad4c1e45dc41b9452ea229d251f86edc545713b3a3ad84b8bb5a0342628eb35"
+  },
+  "youngster": {
+    "bottom": 0.9875,
+    "sha256": "4cd5365f7bfcefdaad4f5dd384674f489a42b70a0443397be8e1faac39942fab"
+  },
+  "youngster-gen1": {
+    "bottom": 0.8,
+    "sha256": "72d194286a481f3c785ddc6db4c93a3ada9ba5fbf0c34b060456b40ed040abf7"
+  },
+  "youngster-gen1rb": {
+    "bottom": 0.8375,
+    "sha256": "ac0da6df3373068b82b36706133a0d1c8dba6c41e8e69b281ad3074cb3fda16e"
+  },
+  "youngster-gen2": {
+    "bottom": 0.8125,
+    "sha256": "c52712a11bac821744333eb0b0a6494ade6b64a6e7370872c31a22a6f378f141"
+  },
+  "youngster-gen3": {
+    "bottom": 0.8,
+    "sha256": "ad0c2e1ef5bc91ef62c49338d9a1f45b205fc560edc77ae6dec8e1935db97242"
+  },
+  "youngster-gen3rs": {
+    "bottom": 0.8,
+    "sha256": "17e4dafbc92fbf4fcfdce3dc71b4fa438032be178c80fd2d60546c6b805d980c"
+  },
+  "youngster-gen4": {
+    "bottom": 0.8625,
+    "sha256": "8f64b7e6e1becf6e5d796e4849690a3cfce3ffc8dd8f77c3e0ce29e24a7ad5b7"
+  },
+  "youngster-gen4dp": {
+    "bottom": 1,
+    "sha256": "0cd2957e132246c1d35ccb7606954ad27ff7e9bb08af51cdc3c796289c372da7"
+  },
+  "zinzolin": {
+    "bottom": 0.9875,
+    "sha256": "8c44a1ca2520d7621fff158c0f941d5716419afbe832c3d1d635d9064dc91261"
+  }
 }

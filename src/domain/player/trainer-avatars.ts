@@ -98,7 +98,7 @@ const avatarName = (id: string): string => {
 };
 
 export const trainerAvatarOptions = Object.entries(avatars).map(
-  ([id, bottom]) => ({
+  ([id, { bottom }]) => ({
     id,
     bottom,
     name: avatarName(id),
