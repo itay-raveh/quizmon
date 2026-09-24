@@ -45,6 +45,10 @@ try {
       },
     );
   assert.equal((await link(first.cookie, first.id, datasetId)).status, 200);
+  assert.equal(
+    (await request('/api/account/export', { cookie: first.cookie })).status,
+    200,
+  );
   assert.equal((await link(second.cookie, second.id, datasetId)).status, 409);
   const send = (actions: unknown[], serverEpoch = epoch) =>
     request(

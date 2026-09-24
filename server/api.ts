@@ -119,15 +119,7 @@ export function createAccountApi(services: AccountServices) {
   const runtime = accountRuntime(services);
   const { sync } = runtime;
   const app = new Hono<AccountEnv>();
-  app.use('*', bodyLimit({ maxSize: 12 * 1024 * 1024 }));
-  for (const path of [
-    '/api/auth/*',
-    '/api/sync/*',
-    '/api/account/link',
-    '/api/dev/*',
-    '/api/friends/*',
-  ])
-    app.use(path, bodyLimit({ maxSize: 1024 * 1024 }));
+  app.use('/api/*', bodyLimit({ maxSize: 1024 * 1024 }));
   app.use('*', async (context, next) => {
     if (!runtime.accepts(context.req.url))
       return context.text('Account service unavailable on this origin.', 403);

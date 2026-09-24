@@ -67,7 +67,7 @@ await test('public accounts reject inaccessible routes and oversized writes', as
     'https://other.example.test/api/account',
   );
   assert.equal(wrongOrigin.status, 403);
-  const oversized = await api.request(valid.origin + '/api/account/link', {
+  const oversized = await api.request(valid.origin + '/api/sync/changes', {
     method: 'POST',
     body: 'x'.repeat(1024 * 1024 + 1),
   });
