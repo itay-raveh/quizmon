@@ -17,7 +17,6 @@ import {
   continueSignIn,
   finishSignIn,
   reconnectAccount,
-  reconnectMessage,
   retryAccountSync,
   resolveAccountIssue,
   sendSignInCode,
@@ -92,10 +91,10 @@ export const AccountSettings = () => {
   };
   const showSignIn = !account.owner || reauthenticating;
   const codeError = codeForm.formState.errors.code?.message || (sent && error);
-  const syncNeedsSignIn = /^(Sign in|Account changed)/.test(account.error);
-  const syncNeedsReconnect = account.error === reconnectMessage;
+  const syncNeedsSignIn = account.recoveryReason === 'sign-in';
+  const syncNeedsReconnect = account.recoveryReason === 'reconnect';
   const syncPaused = !!account.error;
-  const syncOffline = account.status.includes('Will sync when connected');
+  const syncOffline = account.offline;
   const syncNeedsReview = account.issues.length > 0;
 
   return (

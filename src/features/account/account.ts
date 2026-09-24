@@ -54,8 +54,19 @@ const syncResponseSchema = z.object({
   ),
 });
 export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
-export const reconnectMessage =
+const reconnectMessage =
   'Account data changed. Reconnect this device to resume syncing.';
+type RecoveryReason = 'sign-in' | 'reconnect' | 'retry' | null;
+const syncError = (reason: 'sign-in' | 'reconnect', message: string) =>
+  Object.assign(new Error(message), {
+    name: reason === 'sign-in' ? 'AccountSignIn' : 'AccountReconnect',
+  });
+const recoveryReason = (error: Error): RecoveryReason =>
+  error.name === 'AccountSignIn'
+    ? 'sign-in'
+    : error.name === 'AccountReconnect'
+      ? 'reconnect'
+      : 'retry';
 const auth = createAuthClient({ plugins: [emailOTPClient(), jwtClient()] });
 type Binding = { id: string; serverEpoch: string };
 let account: PowerSyncDatabase | undefined;
@@ -65,6 +76,8 @@ let snapshot = {
   owner: '',
   status: 'Saved on this device',
   error: '',
+  recoveryReason: null as RecoveryReason,
+  offline: false,
   diagnostic: '',
   pending: 0,
   mergeRequired: false,
@@ -121,13 +134,13 @@ export async function accountRequest(path: string, body?: unknown) {
   });
   if (response.status === 401) clearSentryUser();
   if (!response.ok)
-    throw new Error(
-      response.status === 401
-        ? 'Sign in to the same account to resume syncing.'
-        : isRecord(value) && typeof value.error === 'string'
-          ? value.error
-          : `Sync is unavailable (${response.status}).`,
-    );
+    throw response.status === 401
+      ? syncError('sign-in', 'Sign in to the same account to resume syncing.')
+      : new Error(
+          isRecord(value) && typeof value.error === 'string'
+            ? value.error
+            : `Sync is unavailable (${response.status}).`,
+        );
   return value;
 }
 const parseBinding = (value: unknown): Binding => {
@@ -470,21 +483,23 @@ export function connector(expected: Binding): PowerSyncBackendConnector {
       const bootstrap = await accountRequest('/api/account');
       const current = parseBinding(bootstrap);
       if (current.id !== expected.id)
-        throw new Error(
+        throw syncError(
+          'sign-in',
           'Sign in to the original account. Pending progress remains separate.',
         );
       if (current.serverEpoch !== expected.serverEpoch)
-        throw new Error(reconnectMessage);
+        throw syncError('reconnect', reconnectMessage);
       const sync = readSyncConnection(
         isRecord(bootstrap) ? bootstrap.sync : undefined,
       );
       const { data, error } = await auth.token();
-      if (error || !data) throw new Error('Sign in to resume syncing.');
+      if (error || !data)
+        throw syncError('sign-in', 'Sign in to resume syncing.');
       const claims: unknown = JSON.parse(
         atob(data.token.split('.')[1]!.replace(/-/g, '+').replace(/_/g, '/')),
       );
       if (!isRecord(claims) || claims.sub !== expected.id)
-        throw new Error('Account changed. Sync is paused.');
+        throw syncError('sign-in', 'Account changed. Sync is paused.');
       if (claims.aud !== sync.audience)
         throw new Error('Sync configuration changed. Reconnect to try again.');
       return { endpoint: sync.endpoint, token: data.token };
@@ -576,6 +591,7 @@ async function refreshAccount() {
   const uploadError = navigator.onLine ? status.uploadError : undefined;
   const downloadError = navigator.onLine ? status.downloadError : undefined;
   const syncError = uploadError?.message ?? downloadError?.message ?? '';
+  const failure = uploadError ?? downloadError;
   update({
     pending: count?.count ?? 0,
     issues,
@@ -591,6 +607,8 @@ async function refreshAccount() {
               ? 'Synced'
               : 'Saved on this device. Connecting…',
     error: syncError,
+    recoveryReason: failure ? recoveryReason(failure) : null,
+    offline: !navigator.onLine,
     diagnostic: uploadError
       ? syncDiagnostic('Upload', uploadError)
       : downloadError
@@ -602,6 +620,7 @@ const refresh = () => {
   refreshing = refreshing.then(refreshAccount).catch((error: Error) =>
     update({
       error: error.message,
+      recoveryReason: recoveryReason(error),
       diagnostic: syncDiagnostic('Local refresh', error),
       status: 'Saved on this device. Sync is paused.',
     }),
@@ -631,6 +650,7 @@ export async function startAccountSync() {
     update({
       error:
         'Signed out on this device. Server sign-out is pending until you reconnect.',
+      recoveryReason: 'retry',
     }),
   );
   window.addEventListener('online', () => {
@@ -674,6 +694,7 @@ export async function startAccountSync() {
   void account.connect(connector(binding)).catch((error: Error) =>
     update({
       error: error.message,
+      recoveryReason: recoveryReason(error),
       diagnostic: syncDiagnostic('Connect', error),
       status: 'Sync paused',
     }),
@@ -682,13 +703,19 @@ export async function startAccountSync() {
 
 export async function retryAccountSync() {
   if (!account || !binding) return;
-  update({ error: '', diagnostic: '', status: 'Reconnecting…' });
+  update({
+    error: '',
+    recoveryReason: null,
+    diagnostic: '',
+    status: 'Reconnecting…',
+  });
   try {
     await account.connect(connector(binding));
     await refresh();
   } catch (error) {
     update({
       error: error instanceof Error ? error.message : 'Sync could not connect.',
+      recoveryReason: error instanceof Error ? recoveryReason(error) : 'retry',
       diagnostic:
         error instanceof Error
           ? syncDiagnostic('Reconnect', error)
