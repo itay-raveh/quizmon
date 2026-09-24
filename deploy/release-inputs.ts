@@ -1,45 +1,31 @@
 import { isIP } from 'node:net';
 import type { ClientConfig } from 'pg';
-import { isRecord } from '../src/lib/validation.ts';
+import { z } from 'zod';
+
+const connectionSchema = z.strictObject({
+  version: z.literal(1),
+  host: z
+    .hostname()
+    .max(253)
+    .refine(
+      (host) =>
+        !isIP(host) &&
+        host.includes('.') &&
+        !host.endsWith('.') &&
+        !/\.(localhost|local|invalid)$/i.test(host),
+    ),
+  port: z.int().min(1).max(65535),
+  database: z.string().min(1),
+  user: z.string().min(1),
+  password: z.string().min(1),
+});
 
 export function readMigrationConnection(value: unknown): ClientConfig {
-  if (
-    !isRecord(value) ||
-    value.version !== 1 ||
-    Object.keys(value).some(
-      (key) =>
-        !['version', 'host', 'port', 'database', 'user', 'password'].includes(
-          key,
-        ),
-    )
-  )
-    throw new Error('Unsupported migration connection configuration.');
-  for (const key of ['host', 'database', 'user', 'password'])
-    if (typeof value[key] !== 'string' || !value[key])
-      throw new Error(`Missing migration connection field: ${key}.`);
-  const { host, database, user, password } = value as Record<string, string>;
-  if (
-    !host ||
-    isIP(host) ||
-    !host.includes('.') ||
-    host.length > 253 ||
-    host
-      .split('.')
-      .some(
-        (label) => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label),
-      ) ||
-    /\.(localhost|local|invalid)$/i.test(host)
-  )
-    throw new Error('The migration host must be a certificate DNS name.');
-  if (
-    !Number.isInteger(value.port) ||
-    (value.port as number) < 1 ||
-    (value.port as number) > 65535
-  )
-    throw new Error('The migration database port is invalid.');
+  const { host, port, database, user, password } =
+    connectionSchema.parse(value);
   return {
     host,
-    port: value.port as number,
+    port,
     database,
     user,
     password,
