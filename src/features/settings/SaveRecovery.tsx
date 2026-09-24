@@ -79,7 +79,12 @@ const SaveRecoveryDialog = ({
     setConfirmReset(false);
     try {
       validateBackupSize(file.size);
-      setPreview(parseBackup(await file.text()));
+      const backup = parseBackup(await file.text());
+      if (backup.state.account)
+        throw new Error(
+          'Choose a guest backup. Account backups require signing in to the same account.',
+        );
+      setPreview(backup);
     } catch (failure) {
       setError(
         failure instanceof Error

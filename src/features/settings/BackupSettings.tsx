@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
 import { Toast } from '../../components/Toast';
 import type { PlayerData } from '../../domain/player/player-save';
+import { selectedAccount } from '../account/account';
 import { readPlayerData } from '../../lib/storage/player-storage';
 import {
   downloadBackup,
@@ -58,7 +59,14 @@ export const BackupSettings = ({
     try {
       validateBackupSize(file.size);
       const backup = parseBackup(await file.text());
-      if (accountRecovery && !backup.state.account)
+      if (!accountRecovery && backup.state.account)
+        throw new Error(
+          'This is an account backup. Sign in to that account and use Device recovery.',
+        );
+      if (
+        accountRecovery &&
+        (!backup.state.account || backup.state.account.id !== selectedAccount())
+      )
         throw new Error('Choose a backup from this account.');
       setPreview(backup);
     } catch (error) {
