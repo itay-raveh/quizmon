@@ -6,7 +6,7 @@ import type { SettingsSection } from './SettingsDialog';
 
 interface SettingsDialogOptions {
   dispatch: Dispatch<GameSessionAction>;
-  markGenerationKnown: () => void;
+  markGenerationKnown: () => Promise<boolean>;
   pauseTimer: () => number;
   session: GameSession;
   setSettings: (settings: GameSettings) => Promise<boolean>;
@@ -48,7 +48,7 @@ export const useSettingsDialog = ({
 
   const save = async (nextSettings: GameSettings) => {
     if (!(await setSettings(nextSettings))) return;
-    markGenerationKnown();
+    if (!(await markGenerationKnown())) return;
     if (phase === 'questions' || phase === 'results') {
       dispatch({ settings: nextSettings, type: 'settings-updated' });
     }

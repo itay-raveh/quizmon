@@ -22,7 +22,7 @@ import {
 interface TrainingGameOptions {
   catalog?: PokemonCatalog;
   settings: GameSettings;
-  setSettings: (settings: GameSettings) => void;
+  setSettings: (settings: GameSettings) => Promise<boolean>;
   startGame: StartGame;
 }
 
@@ -38,16 +38,18 @@ export const useTrainingGame = ({
     false,
   );
   const generationPromptPending = useRef<boolean | null>(null);
+  const generationChoicePending = useRef(false);
 
   const isGenerationPromptPending = useCallback(() => {
     generationPromptPending.current ??= shouldShowGenerationPrompt();
     return generationPromptPending.current;
   }, []);
 
-  const markGenerationKnown = useCallback(() => {
-    if (!isGenerationPromptPending()) return;
-    markGenerationPromptAnswered();
+  const markGenerationKnown = useCallback(async () => {
+    if (!isGenerationPromptPending()) return true;
+    if (!(await markGenerationPromptAnswered())) return false;
     generationPromptPending.current = false;
+    return true;
   }, [isGenerationPromptPending]);
 
   const startRound = useCallback(
@@ -75,20 +77,31 @@ export const useTrainingGame = ({
   );
 
   const startWithGenerations = useCallback(
-    (selectedGenerations: Generation[]) => {
-      if (!catalog) return;
+    async (selectedGenerations: Generation[]) => {
+      if (!catalog || generationChoicePending.current) return;
+      generationChoicePending.current = true;
 
-      const nextSettings = {
-        ...settings,
-        generations: selectedGenerations,
-      };
-      setSettings(nextSettings);
-      markGenerationPromptAnswered();
-      generationPromptPending.current = false;
-      setGenerationPromptOpen(false);
-      startRound(nextSettings);
+      try {
+        const nextSettings = {
+          ...settings,
+          generations: selectedGenerations,
+        };
+        if (!(await setSettings(nextSettings))) return;
+        if (!(await markGenerationKnown())) return;
+        setGenerationPromptOpen(false);
+        startRound(nextSettings);
+      } finally {
+        generationChoicePending.current = false;
+      }
     },
-    [catalog, settings, setSettings, startRound, setGenerationPromptOpen],
+    [
+      catalog,
+      settings,
+      setSettings,
+      markGenerationKnown,
+      startRound,
+      setGenerationPromptOpen,
+    ],
   );
 
   const start = useCallback(() => {
@@ -111,7 +124,9 @@ export const useTrainingGame = ({
     error,
     chooseAllGenerations: () => startWithGenerations([...generations]),
     chooseGenOne: () => startWithGenerations(['I']),
-    closeGenerationPrompt: () => setGenerationPromptOpen(false),
+    closeGenerationPrompt: () => {
+      if (!generationChoicePending.current) setGenerationPromptOpen(false);
+    },
     generationPromptOpen,
     markGenerationKnown,
     start,

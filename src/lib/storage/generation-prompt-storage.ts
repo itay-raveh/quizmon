@@ -5,6 +5,5 @@ export const shouldShowGenerationPrompt = (): boolean => {
   return !data.settings && !data.generationPromptAnswered;
 };
 
-export const markGenerationPromptAnswered = () => {
-  void updatePlayerData({ generationPromptAnswered: true });
-};
+export const markGenerationPromptAnswered = () =>
+  updatePlayerData({ generationPromptAnswered: true });

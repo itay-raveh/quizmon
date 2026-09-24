@@ -112,9 +112,7 @@ export const App = () => {
   const training = useTrainingGame({
     catalog,
     settings,
-    setSettings: (settings) => {
-      void setSettings(settings);
-    },
+    setSettings,
     startGame,
   });
 
