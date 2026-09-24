@@ -67,9 +67,6 @@ it('scores the drawn question mix without rewarding unused selected types', () =
       drawn,
     )?.perQuestion,
   ).toBe(true);
-  expect(getTrainingScoreMultipliers(settings, drawn, true)?.questionMix).toBe(
-    1.025,
-  );
 });
 
 it('accepts saved factors without depending on current variant rules', () => {
