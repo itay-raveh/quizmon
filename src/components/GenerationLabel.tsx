@@ -14,6 +14,9 @@ export const GenerationLabel = ({
   suffix,
 }: GenerationLabelProps) => (
   <span className={`generation-label generation-label--${variant}`}>
+    {variant === 'numeral' && (
+      <span className="visually-hidden">Generation </span>
+    )}
     {variant !== 'numeral' && (
       <>
         <span>
