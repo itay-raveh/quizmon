@@ -1,16 +1,12 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
+import { parseAllDocuments } from 'yaml';
 import { checkReleaseConfigSchema } from '../../scripts/generate-release-config-schema.ts';
 
 checkReleaseConfigSchema();
 
-const tooling = createRequire(resolve('node_modules/wrangler/package.json'));
-const yaml = tooling('yaml') as {
-  parseAllDocuments: (text: string) => Array<{ toJSON: () => unknown }>;
-};
 interface Manifest {
   kind: string;
   metadata: { name: string };
@@ -64,9 +60,8 @@ const helm = (...args: string[]) =>
     stdio: 'pipe',
   });
 const documents = (text: string) =>
-  yaml
-    .parseAllDocuments(text)
-    .map((doc) => doc.toJSON())
+  parseAllDocuments(text)
+    .map((doc): unknown => doc.toJSON() as unknown)
     .filter(Boolean) as Manifest[];
 try {
   const render = async (
