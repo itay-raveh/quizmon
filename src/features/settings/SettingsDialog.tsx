@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { DialogCloseButton } from '../../components/DialogCloseButton';
 import { GameButton } from '../../components/GameButton';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
-import { formGroups } from '../../domain/pokemon/types';
+import { savedSettingsSchema } from '../../domain/player/schemas/player-data';
 import type { GameSettings } from '../../domain/settings/types';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import { selectedAccount } from '../account/account';
@@ -34,13 +34,8 @@ export const SettingsDialog = ({
   const [saving, setSaving] = useState(false);
   const [backupOpen, setBackupOpen] = useState(false);
   const [storedDraft, setDraft] = useUpdateState('settings-draft', settings);
-  const draft = useMemo(
-    () => ({
-      ...storedDraft,
-      formGroups: storedDraft.formGroups ?? [...formGroups],
-    }),
-    [storedDraft],
-  );
+  const parsedDraft = savedSettingsSchema.safeParse(storedDraft);
+  const draft = parsedDraft.success ? parsedDraft.data : settings;
   const [submitted, setSubmitted] = useUpdateState('settings-submitted', false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
   const { dialogProps, closeDialog } = useModalDialog(onClose, {

@@ -15,13 +15,12 @@ import {
   type ScoreMultipliers,
 } from '../../quiz/types.ts';
 import { isScoreMultipliers } from '../../quiz/score-multipliers.ts';
-import { isDifficulty } from '../../quiz/difficulty.ts';
+import { difficultySchema } from '../../quiz/difficulty.ts';
 import { isDailyTrack } from '../../quiz/daily-track.ts';
 import {
   answerFlows,
   timerDisplays,
   trainingModes,
-  type GameSettings,
 } from '../../settings/types.ts';
 import { isDailyDate, isUtcTimestamp } from '../../../lib/validation.ts';
 
@@ -62,7 +61,7 @@ const settings = z.looseObject({
   timerDisplay: z.enum(timerDisplays),
   reduceMotion: z.boolean(),
   soundVolume: finiteNonnegative.max(1),
-  difficulty: z.custom(isDifficulty).optional(),
+  difficulty: difficultySchema.optional(),
   questionSelection: z.enum(['custom', 'automatic']).optional(),
   automaticQuestionTypes: z.array(z.enum(questionTypes)).optional(),
 });
@@ -95,7 +94,7 @@ export const parseRound = (value: unknown): ActiveGameSnapshot | null => {
   return {
     ...snapshot,
     mode: snapshot.mode as GameMode,
-    settings: snapshot.settings as GameSettings,
+    settings: snapshot.settings,
     playerRestoreId:
       typeof snapshot.playerRestoreId === 'string'
         ? snapshot.playerRestoreId

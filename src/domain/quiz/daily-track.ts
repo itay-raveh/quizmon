@@ -1,7 +1,7 @@
 import { isDailyDate, isRecord } from '../../lib/validation.ts';
 import {
   difficultyLevels,
-  isDifficulty,
+  difficultySchema,
   type Difficulty,
 } from './difficulty.ts';
 
@@ -24,7 +24,7 @@ export const dailyTracks: readonly DailyTrack[] = difficultyLevels.flatMap(
 
 export const isDailyTrack = (value: unknown): value is DailyTrack =>
   isRecord(value) &&
-  isDifficulty(value.difficulty) &&
+  difficultySchema.safeParse(value.difficulty).success &&
   (value.scope === 'gen-i' || value.scope === 'all');
 
 export const getDailyResultKey = (date: string, track?: DailyTrack): string =>
@@ -35,16 +35,16 @@ export const parseDailyResultKey = (
 ): { date: string; track?: DailyTrack } | undefined => {
   if (key.length === 10 && isDailyDate(key)) return { date: key };
   const [date, level, scope, extra] = key.split(':');
-  const difficulty = Number(level);
+  const difficulty = difficultySchema.safeParse(Number(level));
   if (
     !isDailyDate(date) ||
-    !isDifficulty(difficulty) ||
-    String(difficulty) !== level ||
+    !difficulty.success ||
+    String(difficulty.data) !== level ||
     (scope !== 'gen-i' && scope !== 'all') ||
     extra !== undefined
   )
     return undefined;
-  return { date, track: { difficulty, scope } };
+  return { date, track: { difficulty: difficulty.data, scope } };
 };
 
 export const hasDailyResultOnDate = (

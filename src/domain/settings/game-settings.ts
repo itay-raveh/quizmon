@@ -3,7 +3,6 @@ import {
   standardLeagueQuestionTypes,
 } from '../quiz/questions/definitions.ts';
 import { getQuestionVariant } from '../quiz/question-variants.ts';
-import { isChoice, isObject } from '../../lib/validation.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
 import {
   formGroups,
@@ -11,15 +10,8 @@ import {
   type PokemonCatalog,
 } from '../pokemon/types.ts';
 import type { Candidate } from '../quiz/questions/context.ts';
-import { isDifficulty } from '../quiz/difficulty.ts';
 import { questionTypes } from '../quiz/questions/definitions.ts';
-import {
-  answerFlows,
-  timerDisplays,
-  trainingModes,
-  type ExperienceSettings,
-  type GameSettings,
-} from './types.ts';
+import { type ExperienceSettings, type GameSettings } from './types.ts';
 
 export const defaultGameSettings: GameSettings = {
   difficulty: 1,
@@ -74,63 +66,6 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
       ? [...standardLeagueQuestionTypes]
       : settings.questionTypes.filter((type) => supportsStandardQuestion(type)),
 });
-
-export const normalizeGameSettings = (candidate: unknown): GameSettings => {
-  if (!isObject(candidate)) return defaultGameSettings;
-  const savedFormGroups = candidate.formGroups;
-  const savedGenerations = candidate.generations;
-  const savedQuestionTypes = candidate.questionTypes;
-  const selectedFormGroups = Array.isArray(savedFormGroups)
-    ? formGroups.filter((group) => savedFormGroups.includes(group))
-    : [];
-  const selectedGenerations = Array.isArray(savedGenerations)
-    ? generations.filter((generation) => savedGenerations.includes(generation))
-    : [];
-  const selectedQuestionTypes = Array.isArray(savedQuestionTypes)
-    ? questionTypes.filter((questionType) =>
-        savedQuestionTypes.includes(questionType),
-      )
-    : [];
-  return {
-    ...(Array.isArray(candidate.automaticQuestionTypes)
-      ? {
-          automaticQuestionTypes: questionTypes.filter((type) =>
-            (candidate.automaticQuestionTypes as unknown[]).includes(type),
-          ),
-        }
-      : {}),
-    difficulty: isDifficulty(candidate.difficulty)
-      ? candidate.difficulty
-      : defaultGameSettings.difficulty,
-    questionSelection:
-      candidate.questionSelection === 'custom' ? 'custom' : 'automatic',
-    answerFlow: isChoice(candidate.answerFlow, answerFlows)
-      ? candidate.answerFlow
-      : defaultGameSettings.answerFlow,
-    formGroups:
-      selectedFormGroups.length > 0 ? selectedFormGroups : [...formGroups],
-    generations:
-      selectedGenerations.length > 0
-        ? selectedGenerations
-        : defaultGameSettings.generations,
-    questionTypes:
-      selectedQuestionTypes.length > 0
-        ? selectedQuestionTypes
-        : defaultGameSettings.questionTypes,
-    reduceMotion: candidate.reduceMotion === true,
-    soundVolume:
-      typeof candidate.soundVolume === 'number' &&
-      Number.isFinite(candidate.soundVolume)
-        ? Math.min(1, Math.max(0, candidate.soundVolume))
-        : defaultGameSettings.soundVolume,
-    timerDisplay: isChoice(candidate.timerDisplay, timerDisplays)
-      ? candidate.timerDisplay
-      : defaultGameSettings.timerDisplay,
-    trainingMode: isChoice(candidate.trainingMode, trainingModes)
-      ? candidate.trainingMode
-      : defaultGameSettings.trainingMode,
-  };
-};
 
 export const filterPokemon = (
   catalog: PokemonCatalog,
