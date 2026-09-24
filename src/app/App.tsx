@@ -57,6 +57,15 @@ export const App = () => {
       const roundId = crypto.randomUUID();
       const startedOn = new Date().toISOString().slice(0, 10);
       try {
+        const scoring =
+          nextMode.kind === 'training'
+            ? {
+                scoreMultipliers: getTrainingScoreMultipliers(
+                  nextSettings,
+                  nextQuestions,
+                ),
+              }
+            : {};
         await writeActiveGame({
           answers: [],
           contentVersion: catalog.contentVersion,
@@ -67,14 +76,7 @@ export const App = () => {
           roundId,
           startedOn,
           seed,
-          ...(nextMode.kind === 'training'
-            ? {
-                scoreMultipliers: getTrainingScoreMultipliers(
-                  nextSettings,
-                  nextQuestions,
-                ),
-              }
-            : {}),
+          ...scoring,
           elapsedMilliseconds: 0,
         });
         trackGameStarted(nextMode, nextQuestions.length);
@@ -87,14 +89,7 @@ export const App = () => {
           startedOn,
           seed,
           type: 'started',
-          ...(nextMode.kind === 'training'
-            ? {
-                scoreMultipliers: getTrainingScoreMultipliers(
-                  nextSettings,
-                  nextQuestions,
-                ),
-              }
-            : {}),
+          ...scoring,
         });
         reset();
         start();
