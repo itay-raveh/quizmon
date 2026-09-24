@@ -428,24 +428,29 @@ const addPokemonKnowledge = async (
 };
 
 if (import.meta.main) {
-  const client = createCatalogClient();
-  const catalog = process.argv.includes('--topics-only')
-    ? await readCatalogFiles(DATA_DIRECTORY)
-    : process.argv.includes('--sprites-only')
-      ? await addSpriteMeasurements(
-          await readCatalogFiles(DATA_DIRECTORY),
-          (paths) => client.measureSprites(paths),
-        )
-      : process.argv.includes('--knowledge-only')
-        ? await addPokemonKnowledge(
-            await readCatalogFiles(DATA_DIRECTORY),
-            client,
-          )
-        : await buildPokemonCatalog(client);
+  const [mode, ...extra] = process.argv.slice(2);
   if (
-    process.argv.includes('--topics-only') ||
-    !process.argv.some((argument) => argument.endsWith('-only'))
-  ) {
+    extra.length ||
+    (mode !== undefined &&
+      !['--topics-only', '--sprites-only', '--knowledge-only'].includes(mode))
+  )
+    throw new Error('Use one catalog update mode at a time.');
+  const client = createCatalogClient();
+  const catalog =
+    mode === '--topics-only'
+      ? await readCatalogFiles(DATA_DIRECTORY)
+      : mode === '--sprites-only'
+        ? await addSpriteMeasurements(
+            await readCatalogFiles(DATA_DIRECTORY),
+            (paths) => client.measureSprites(paths),
+          )
+        : mode === '--knowledge-only'
+          ? await addPokemonKnowledge(
+              await readCatalogFiles(DATA_DIRECTORY),
+              client,
+            )
+          : await buildPokemonCatalog(client);
+  if (mode === '--topics-only' || mode === undefined) {
     catalog.topics = await buildTopicCatalog(client, catalog);
     await addItemSpriteIdentities(catalog.topics);
     catalog.contentVersion = gameVersions.content;
