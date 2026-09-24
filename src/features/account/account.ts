@@ -567,11 +567,11 @@ export function connector(expected: Binding): PowerSyncBackendConnector {
             );
         }
       }
-      await transaction.complete();
       for (const action of actions)
         await db.execute('DELETE FROM pending_actions WHERE id = ?', [
           action.id,
         ]);
+      await transaction.complete();
       void refresh();
     },
   };

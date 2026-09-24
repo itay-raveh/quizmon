@@ -66,6 +66,58 @@ it('leaves malformed sync actions and receipts pending', async () => {
   expect(complete).not.toHaveBeenCalled();
 });
 
+it('clears acknowledged pending actions before completing the upload queue', async () => {
+  const id = crypto.randomUUID();
+  const action = {
+    id,
+    datasetId: crypto.randomUUID(),
+    kind: 'edit',
+    payload: { id },
+  };
+  let pending = true;
+  const complete = vi.fn(() => {
+    expect(pending).toBe(false);
+    throw new Error('tab stopped after upload completion');
+  });
+  const db = {
+    getNextCrudTransaction: () =>
+      Promise.resolve({
+        crud: [
+          {
+            table: 'pending_actions',
+            op: UpdateType.PUT,
+            id,
+            opData: { payload: JSON.stringify(action) },
+          },
+        ],
+        complete,
+      }),
+    execute: vi.fn(() => {
+      pending = false;
+      return Promise.resolve();
+    }),
+  };
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValue(
+        Response.json({ outcomes: [{ id, status: 'accepted' }] }),
+      ),
+  );
+
+  await expect(
+    connector({
+      id: crypto.randomUUID(),
+      serverEpoch: crypto.randomUUID(),
+    }).uploadData(db as never),
+  ).rejects.toThrow('tab stopped after upload completion');
+  expect(db.execute).toHaveBeenCalledWith(
+    'DELETE FROM pending_actions WHERE id = ?',
+    [id],
+  );
+});
+
 it('does not turn a sign-in configuration failure into a sync failure', async () => {
   vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
 
