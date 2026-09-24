@@ -16,13 +16,7 @@ const spriteProxy = {
 };
 const proxy = {
   ...spriteProxy,
-  '/api/auth': { target: 'http://127.0.0.1:8790' },
-  '/api/account': { target: 'http://127.0.0.1:8790' },
-  '/api/sync': { target: 'http://127.0.0.1:8790' },
-  '/api/dev': { target: 'http://127.0.0.1:8790' },
-  '/api/friends': { target: 'http://127.0.0.1:8790' },
-  '/api/trainers': { target: 'http://127.0.0.1:8790' },
-  '/api/leaderboards': { target: 'http://127.0.0.1:8790' },
+  '/api': { target: 'http://127.0.0.1:8790' },
 };
 const uploadSentryMaps = Boolean(
   process.env.SENTRY_AUTH_TOKEN &&
