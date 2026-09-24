@@ -260,9 +260,6 @@ export function createAccountApi(services: AccountServices) {
       ),
     );
   });
-  signedIn.post('/sync/operations', (context) =>
-    context.json({ error: 'upgrade_required' }, 426),
-  );
   signedIn.post('/sync/changes', async (context) => {
     const body = context.get('body');
     if (
