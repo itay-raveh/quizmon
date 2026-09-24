@@ -107,6 +107,46 @@ describe('Daily reminders', () => {
     },
   );
 
+  it('bounds reminder bodies by bytes before parsing', async () => {
+    const storage = {
+      get: vi.fn().mockResolvedValue({ version: 1 }),
+      put: vi.fn(),
+    };
+    const reminder = new DailyReminder({ storage }, makeEnv().env);
+    const url =
+      'https://example.com/api/daily-reminders/3c29978c-0c0a-4c95-a19d-9d2cf5e36493';
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(8_193));
+      },
+    });
+    const request = (body: BodyInit) =>
+      new Request(url, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        duplex: 'half',
+      } as RequestInit & { duplex: 'half' });
+    const status = async (body: BodyInit) =>
+      (await reminder.fetch(request(body))).status;
+
+    const oversized = request(stream);
+    expect(oversized.headers.has('Content-Length')).toBe(false);
+    expect((await reminder.fetch(oversized)).status).toBe(400);
+    expect(
+      await status(
+        JSON.stringify({
+          completedDate: '2026-09-24',
+          note: 'é'.repeat(4_100),
+        }),
+      ),
+    ).toBe(400);
+    expect(storage.put).not.toHaveBeenCalled();
+    expect(await status(JSON.stringify({ completedDate: '2026-09-24' }))).toBe(
+      204,
+    );
+  });
+
   it.each(['GET', 'HEAD', 'POST', 'OPTIONS'])(
     'returns the same 405 contract for %s at both reminder boundaries',
     async (method) => {

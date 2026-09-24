@@ -91,11 +91,27 @@ const readJson = async (request: Request): Promise<unknown> => {
 
   const contentLength = Number(request.headers.get('Content-Length') ?? 0);
   if (contentLength > MAX_BODY_LENGTH) return null;
-  const text = await request.text();
-  if (text.length > MAX_BODY_LENGTH) return null;
+  const reader = request.body?.getReader();
+  if (!reader) return null;
+  const bytes = new Uint8Array(MAX_BODY_LENGTH);
+  let length = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (length + value.byteLength > MAX_BODY_LENGTH) {
+      await reader.cancel();
+      return null;
+    }
+    bytes.set(value, length);
+    length += value.byteLength;
+  }
 
   try {
-    return JSON.parse(text);
+    return JSON.parse(
+      new TextDecoder('utf-8', { fatal: true }).decode(
+        bytes.subarray(0, length),
+      ),
+    );
   } catch {
     return null;
   }
