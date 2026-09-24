@@ -1,4 +1,3 @@
-import { PixelSprite } from '@/components/PixelSprite';
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import {
   isVisible,
@@ -13,17 +12,28 @@ export const QuestionSprite = ({
   rule,
   state,
   ...props
-}: ComponentProps<typeof PixelSprite> & {
+}: Pick<
+  ComponentProps<'img'>,
+  'alt' | 'className' | 'fetchPriority' | 'style'
+> & {
+  src: string;
   rule: SpriteVisibility;
   state: RevealState;
 }) => {
   if (rule === 'never') return null;
   const { visible, silhouette } = spriteState(rule, state);
+  const className =
+    `${props.className ?? ''} ${silhouette ? 'answer__sprite--silhouette' : ''}`.trim();
   return (
-    <PixelSprite
-      {...props}
-      className={`${props.className ?? ''} ${silhouette ? 'answer__sprite--silhouette' : ''}`.trim()}
+    <img
+      src={props.src}
+      alt={props.alt ?? ''}
+      className={`pixel-sprite ${className}`.trim()}
       style={{ ...props.style, visibility: visible ? undefined : 'hidden' }}
+      decoding="async"
+      fetchPriority={props.fetchPriority ?? 'auto'}
+      width="96"
+      height="96"
     />
   );
 };
