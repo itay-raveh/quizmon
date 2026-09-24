@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { normalizePath, type HtmlTagDescriptor, type Plugin } from 'vite';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
 import { contentPageEntries, renderContentPage } from './content-pages.ts';
-import { generatedAssets, markdownUrl, structuredData } from './site-assets.ts';
+import { generatedAssets, structuredData } from './site-assets.ts';
 
 const meta = (
   attribute: 'name' | 'property',
@@ -117,26 +117,7 @@ export const siteMetadata = (): Plugin => {
                   { tag: 'title', children: title, injectTo: 'head' },
                   meta('name', 'robots', 'noindex'),
                 ]
-              : [
-                  ...pageTags(
-                    title,
-                    page.description,
-                    absoluteSiteUrl(page.path),
-                  ),
-                  ...(page.path === '/about'
-                    ? [
-                        {
-                          tag: 'link',
-                          attrs: {
-                            rel: 'alternate',
-                            type: 'text/markdown',
-                            href: markdownUrl,
-                          },
-                          injectTo: 'head' as const,
-                        },
-                      ]
-                    : []),
-                ],
+              : pageTags(title, page.description, absoluteSiteUrl(page.path)),
           };
         }
         return {

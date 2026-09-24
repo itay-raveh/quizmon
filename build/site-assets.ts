@@ -1,8 +1,6 @@
-import { readFileSync } from 'node:fs';
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
 import { contentPages } from '../src/app/content-pages.ts';
 
-export const markdownUrl = absoluteSiteUrl('/index.md');
 const sitemapUrl = absoluteSiteUrl('/sitemap.xml');
 
 const manifest = `${JSON.stringify(
@@ -61,14 +59,6 @@ ${[site.url, ...contentPages.map(({ path }) => absoluteSiteUrl(path))]
 </urlset>
 `;
 
-const pageMarkdown = readFileSync(
-  new URL('../content/about.md', import.meta.url),
-  'utf8',
-)
-  .replaceAll('(privacy.md)', `(${absoluteSiteUrl('/privacy')})`)
-  .replaceAll('(terms.md)', `(${absoluteSiteUrl('/terms')})`)
-  .replaceAll('](/)', `](${site.url})`);
-
 export const structuredData = JSON.stringify({
   '@context': 'https://schema.org',
   '@graph': [
@@ -116,10 +106,5 @@ export const generatedAssets = [
     fileName: 'sitemap.xml',
     contentType: 'application/xml; charset=utf-8',
     source: sitemap,
-  },
-  {
-    fileName: 'index.md',
-    contentType: 'text/markdown; charset=utf-8',
-    source: pageMarkdown,
   },
 ] as const;
