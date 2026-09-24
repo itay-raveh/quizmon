@@ -71,21 +71,20 @@ export async function completeRound(
     score: calculateScore(answers, scoreMultipliers),
     scoreVersion: SCORE_VERSION,
   };
+  const completionId = round.roundId ?? round.seed;
   const victory =
     mode.kind === 'league' && isLeagueVictory(result)
-      ? {
-          ...createLeagueVictoryRecord(
-            result,
-            questions,
-            round.seed,
-            trainerName,
-          ),
+      ? createLeagueVictoryRecord(
+          result,
+          questions,
+          completionId,
           completedAt,
-        }
+          trainerName,
+        )
       : undefined;
   const completion: Omit<RoundCompletion, 'datasetId'> = {
     recordVersion: versions.record,
-    completionId: round.roundId ?? round.seed,
+    completionId,
     completedAt,
     contentVersion: round.contentVersion,
     scoreVersion: result.scoreVersion,

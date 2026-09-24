@@ -12,11 +12,12 @@ export interface LeagueVictoryRecord {
 export const createLeagueVictoryRecord = (
   result: GameResult,
   questions: readonly QuestionData[],
-  seed: string,
+  id: string,
+  completedAt: string,
   trainerName: string,
 ): LeagueVictoryRecord => ({
-  id: `${result.contentVersion}:${seed}`,
-  completedAt: new Date().toISOString(),
+  id,
+  completedAt,
   trainerName,
   pokemon: [
     ...new Set(
