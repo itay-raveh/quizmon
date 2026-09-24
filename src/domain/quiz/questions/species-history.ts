@@ -6,8 +6,39 @@ import type { QuestionContext } from './context.ts';
 export const speciesName = (catalog: PokemonCatalog, name: string): string =>
   catalog.pokemon[name]?.speciesName ?? name;
 
-const speciesIdentity = (catalog: PokemonCatalog, identity: string): string =>
-  identity
+const speciesIdentity = (catalog: PokemonCatalog, identity: string): string => {
+  if (identity.startsWith('[')) {
+    try {
+      const parts: unknown = JSON.parse(identity);
+      if (
+        Array.isArray(parts) &&
+        parts.length === 5 &&
+        typeof parts[1] === 'string' &&
+        (typeof parts[3] === 'string' ||
+          (Array.isArray(parts[3]) &&
+            parts[3].every((name) => typeof name === 'string'))) &&
+        Array.isArray(parts[4]) &&
+        parts[4].every((name) => typeof name === 'string')
+      ) {
+        const names = (values: string[]) =>
+          values.map((name) => speciesName(catalog, name)).sort();
+        return JSON.stringify([
+          parts[0],
+          speciesName(catalog, parts[1]),
+          parts[2],
+          typeof parts[3] === 'string'
+            ? speciesName(catalog, parts[3])
+            : names(parts[3]),
+          names(parts[4]),
+        ]);
+      }
+      return identity;
+    } catch {
+      return identity;
+    }
+  }
+  if (catalog.pokemon[identity]) return speciesName(catalog, identity);
+  return identity
     .split(':')
     .map((part) =>
       part
@@ -17,6 +48,14 @@ const speciesIdentity = (catalog: PokemonCatalog, identity: string): string =>
         .join(','),
     )
     .join(':');
+};
+
+const historyKey = (key: string, normalize: (name: string) => string) => {
+  const separator = key.indexOf(':');
+  return separator < 0
+    ? key
+    : `${key.slice(0, separator + 1)}${normalize(key.slice(separator + 1))}`;
+};
 
 const cache = new WeakMap<
   QuestionHistory,
@@ -44,9 +83,11 @@ export const getSpeciesHistory = ({
   // Read existing form-keyed saves as species history without rewriting saved lineups.
   const normalized = {
     ...history,
-    subjects: merge(history.subjects, (name) => speciesIdentity(catalog, name)),
-    questions: merge(history.questions, (name) =>
-      speciesIdentity(catalog, name),
+    subjects: merge(history.subjects, (key) =>
+      historyKey(key, (name) => speciesName(catalog, name)),
+    ),
+    questions: merge(history.questions, (key) =>
+      historyKey(key, (identity) => speciesIdentity(catalog, identity)),
     ),
     pokemon: merge(history.pokemon, (name) => speciesName(catalog, name)),
     distractors: merge(history.distractors, (name) =>
