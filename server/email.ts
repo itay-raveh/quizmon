@@ -23,9 +23,6 @@ export class EmailDeliveryError extends Error {
 }
 
 function codeMessage(from: string, email: string, code: string) {
-  if (!from || /[\r\n<>]/.test(from) || !from.includes('@'))
-    throw new Error('Configure MAIL_FROM with a verified sender address.');
-  if (!/^\d{6}$/.test(code)) throw new EmailDeliveryError();
   const expiry = `${codeLifetimeSeconds / 60} minutes`;
   const unsolicited =
     'If you did not request this code, you can ignore this email.';
