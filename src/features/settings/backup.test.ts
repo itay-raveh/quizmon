@@ -4,7 +4,63 @@ import {
 } from '../../domain/player/player-save';
 import { archiveCompletion } from '../../domain/sync/round-facts';
 import { completion } from '../../../tests/online/progress-fixtures';
-import { parseBackup } from './backup';
+import {
+  parseBackup,
+  verifyAccountBackupRecovery,
+  type PlayerBackup,
+} from './backup';
+
+const recoveryAccess = vi.hoisted(() => ({
+  accountRequest: vi.fn(),
+  selectedAccount: vi.fn(),
+  canRecoverAccountSave: vi.fn(),
+}));
+vi.mock('../account/account', () => ({
+  accountRequest: recoveryAccess.accountRequest,
+  selectedAccount: recoveryAccess.selectedAccount,
+}));
+vi.mock('../../lib/storage/player-storage', async (importOriginal) => ({
+  ...(await importOriginal()),
+  canRecoverAccountSave: recoveryAccess.canRecoverAccountSave,
+}));
+
+it('verifies the live owner before account backup recovery', async () => {
+  const owner = { id: 'trainer', serverEpoch: crypto.randomUUID() };
+  const backup = { state: { account: owner } } as PlayerBackup;
+  recoveryAccess.canRecoverAccountSave.mockReturnValue(true);
+  recoveryAccess.selectedAccount.mockReturnValue(owner.id);
+  recoveryAccess.accountRequest.mockResolvedValue(owner);
+  await expect(verifyAccountBackupRecovery(backup)).resolves.toBeUndefined();
+
+  recoveryAccess.selectedAccount.mockReturnValue('other');
+  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
+    'backup account',
+  );
+  recoveryAccess.selectedAccount.mockReturnValue(owner.id);
+  recoveryAccess.accountRequest.mockResolvedValue({ ...owner, id: 'other' });
+  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
+    'does not own',
+  );
+  recoveryAccess.accountRequest.mockResolvedValue({
+    ...owner,
+    serverEpoch: crypto.randomUUID(),
+  });
+  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
+    'older account instance',
+  );
+  recoveryAccess.accountRequest.mockRejectedValue(
+    Object.assign(new Error('Sign in again.'), { name: 'AccountSignIn' }),
+  );
+  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
+    'Sign in again.',
+  );
+  recoveryAccess.accountRequest.mockRejectedValue(
+    new TypeError('Failed to fetch'),
+  );
+  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
+    'Connect to the account service',
+  );
+});
 
 it('converts old rounds and keeps pending edits for review', () => {
   const datasetId = crypto.randomUUID();

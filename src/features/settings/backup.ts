@@ -1,4 +1,5 @@
 import { readRecordedGame } from '../../domain/player/game-history';
+import { accountRequest, selectedAccount } from '../account/account';
 import { canonical, validAction } from '../../domain/sync/progress';
 import { editUploadSchema } from '../../domain/sync/edit-upload';
 import {
@@ -12,13 +13,18 @@ import { getSaveIssue, clearSaveIssue } from '../../lib/storage/save-health';
 import { readAccountIssues } from '../../lib/storage/account-issues';
 import { convertSavedActionV1 } from '../../lib/storage/save-compatibility';
 import { parseSavedPlayerStateV1 } from '../../lib/storage/saved-state-v1';
-import { localTables, type LocalRow } from '../../lib/storage/local-database';
+import {
+  localTables,
+  type LocalRow,
+  type LocalTransaction,
+} from '../../lib/storage/local-database';
 import {
   getPlayerDatabase,
   parseLocalPlayerState,
   readState,
   transactPlayer,
   recoverPlayer,
+  canRecoverAccountSave,
   type LocalAction,
   type LocalPlayerState,
 } from '../../lib/storage/player-storage';
@@ -327,24 +333,53 @@ export const downloadBackup = async (): Promise<void> => {
   );
 };
 
+export const verifyAccountBackupRecovery = async (
+  backup: PlayerBackup,
+): Promise<void> => {
+  const owner = backup.state.account;
+  if (!owner || !canRecoverAccountSave() || selectedAccount() !== owner.id)
+    throw new Error('Sign in to the backup account before restoring it.');
+  let live: unknown;
+  try {
+    live = await accountRequest('/api/account');
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AccountSignIn') throw error;
+    throw new Error(
+      'Connect to the account service before restoring this backup.',
+      { cause: error },
+    );
+  }
+  if (!isRecord(live) || live.id !== owner.id)
+    throw new Error('The signed-in account does not own this backup.');
+  if (live.serverEpoch !== owner.serverEpoch)
+    throw new Error(
+      'This backup belongs to an older account instance. Contact support before restoring it.',
+    );
+};
+
 export const restoreBackup = async (validated: PlayerBackup): Promise<void> => {
   const recovery = Boolean(getSaveIssue());
-  await (recovery ? recoverPlayer : transactPlayer)(async (state, tx) => {
+  if (recovery && validated.state.account)
+    await verifyAccountBackupRecovery(validated);
+  const restore = async (state: LocalPlayerState, tx: LocalTransaction) => {
     if (validated.state.account) {
       if (state.account?.id !== validated.state.account.id)
         throw new Error('Sign in to the same account to recover this backup.');
-      const rounds = new Map(
-        [
-          ...validated.records.local_completions,
-          ...(validated.records.server_rounds ?? []),
-        ].map((row) => [row.id, row]),
-      );
       const rejected = new Set(
         (validated.reviewIssues ?? []).map((issue) => issue.operationId),
       );
       const synced = new Set(
         (validated.records.server_rounds ?? []).map((row) => row.id),
       );
+      const rounds = new Map(
+        validated.records.local_completions.map((row) => [row.id, row]),
+      );
+      if (recovery) {
+        for (const id of synced) rounds.delete(id);
+      } else {
+        for (const row of validated.records.server_rounds ?? [])
+          rounds.set(row.id, row);
+      }
       for (const row of validated.records.pending_actions ?? []) {
         const action = JSON.parse(row.payload) as LocalAction;
         if (
@@ -449,6 +484,12 @@ export const restoreBackup = async (validated: PlayerBackup): Promise<void> => {
     state.save = { ...validated.state.save, restoreId: crypto.randomUUID() };
     state.dailyAttempts = {};
     await rebuildGuestProgress(state, tx);
-  });
+  };
+  if (recovery)
+    await recoverPlayer(
+      restore,
+      validated.state.account ? validated.state : undefined,
+    );
+  else await transactPlayer(restore);
   clearSaveIssue();
 };

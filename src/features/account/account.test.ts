@@ -1,9 +1,11 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { UpdateType } from '@powersync/web';
 import * as storage from '../../lib/storage/player-storage';
+import * as saveHealth from '../../lib/storage/save-health';
 import {
   accountSnapshot,
   connector,
+  continueSignIn,
   loadAccountConfig,
   reconnectAccount,
 } from './account';
@@ -11,6 +13,27 @@ import {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+it('reauthenticates for save recovery without reading the damaged account state', async () => {
+  const owner = crypto.randomUUID();
+  vi.spyOn(saveHealth, 'getSaveIssue').mockReturnValue({
+    kind: 'invalid',
+    message: 'Damaged account save.',
+  });
+  const readState = vi.spyOn(storage, 'readState');
+  vi.stubGlobal('localStorage', { getItem: () => owner });
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(() =>
+      Promise.resolve(
+        Response.json({ id: owner, serverEpoch: crypto.randomUUID() }),
+      ),
+    ),
+  );
+
+  await continueSignIn();
+  expect(readState).not.toHaveBeenCalled();
 });
 
 it('leaves malformed sync actions and receipts pending', async () => {

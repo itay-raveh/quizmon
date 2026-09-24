@@ -35,6 +35,7 @@ import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 import { writeStoredValue } from '../../lib/storage/browser-storage';
 import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
 import { applyRoundReceipt } from '../../lib/storage/game-history';
+import { getSaveIssue } from '../../lib/storage/save-health';
 
 const selectionKey = 'quizmon.baseline.account';
 const pruneAcknowledgedActions =
@@ -184,6 +185,11 @@ export async function verifySignInCode(email: string, otp: string) {
 }
 export async function continueSignIn() {
   candidate = parseBinding(await accountRequest('/api/account'));
+  if (getSaveIssue()) {
+    if (selectedAccount() !== candidate.id)
+      throw new Error('Sign in to the original account to recover this save.');
+    return;
+  }
   if (selectedAccount() === candidate.id) {
     const saved = await readState(getPlayerDatabase());
     if (saved.account?.serverEpoch !== candidate.serverEpoch) {

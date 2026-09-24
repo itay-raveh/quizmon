@@ -2,10 +2,52 @@ import {
   emptyPlayerData,
   SAVE_SCHEMA_VERSION,
 } from '../../domain/player/player-save';
+import type { LocalPlayerState } from './player-storage';
 
 const openLocalDatabase = vi.hoisted(() => vi.fn());
 vi.mock('./local-database', () => ({ openLocalDatabase }));
 vi.mock('./save-compatibility', () => ({ convertSavedDatabaseV1: vi.fn() }));
+
+it('recovers a malformed account state using its matching backup', async () => {
+  vi.resetModules();
+  const { initializePlayerStorage, recoverPlayer, readPlayerSave } =
+    await import('./player-storage');
+  const owner = 'trainer';
+  let payload = '{broken';
+  const db = {
+    init: vi.fn(),
+    getAll: vi.fn((query: string) =>
+      Promise.resolve(
+        query.includes("id = 'player'") ? [{ id: 'player', payload }] : [],
+      ),
+    ),
+    execute: vi.fn((_query: string, values: string[]) => {
+      payload = values[0]!;
+      return Promise.resolve();
+    }),
+    writeTransaction: vi.fn((run: (tx: unknown) => Promise<void>) => run(db)),
+  };
+  openLocalDatabase.mockReturnValue(db);
+  await expect(initializePlayerStorage(owner)).rejects.toThrow();
+  const backup: LocalPlayerState = {
+    version: 2 as const,
+    datasetId: crypto.randomUUID(),
+    account: { id: owner, serverEpoch: crypto.randomUUID() },
+    save: {
+      version: SAVE_SCHEMA_VERSION,
+      restoreId: null,
+      data: emptyPlayerData(),
+    },
+  };
+  await recoverPlayer((state) => {
+    expect(state.account).toEqual(backup.account);
+    return Promise.resolve();
+  }, backup);
+  expect(readPlayerSave().restoreId).toEqual(expect.any(String));
+  expect((JSON.parse(payload) as LocalPlayerState).account).toEqual(
+    backup.account,
+  );
+});
 
 it.each([17, [], { broken: {} }])(
   'leaves malformed Daily attempts unchanged at startup',

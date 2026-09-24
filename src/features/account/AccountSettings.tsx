@@ -43,7 +43,11 @@ const codeSchema = z.object({
     .regex(new RegExp(REGEXP_ONLY_DIGITS), 'Use digits only.'),
 });
 
-export const AccountSettings = () => {
+export const AccountSettings = ({
+  recoverySignIn = false,
+}: {
+  recoverySignIn?: boolean;
+}) => {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   useEffect(() => {
     if (!account.owner) void loadAccountConfig();
@@ -89,7 +93,7 @@ export const AccountSettings = () => {
     setMessage(resend ? 'New code sent. Check your inbox.' : '');
     if (resend) focusCode('code');
   };
-  const showSignIn = !account.owner || reauthenticating;
+  const showSignIn = recoverySignIn || !account.owner || reauthenticating;
   const codeError = codeForm.formState.errors.code?.message || (sent && error);
   const syncNeedsSignIn = account.recoveryReason === 'sign-in';
   const syncNeedsReconnect = account.recoveryReason === 'reconnect';
@@ -128,7 +132,7 @@ export const AccountSettings = () => {
         </section>
       ) : showSignIn ? (
         <>
-          {account.owner ? (
+          {recoverySignIn || account.owner ? (
             <p>Sign in to the same account to resume syncing.</p>
           ) : !sent ? (
             <ul className="account-settings__benefits">
@@ -151,14 +155,16 @@ export const AccountSettings = () => {
               void (
                 sent
                   ? codeForm.handleSubmit(({ code }) =>
-                      run(
-                        () =>
-                          verifySignInCode(
-                            emailForm.getValues('email').trim(),
-                            code,
-                          ),
-                        true,
-                      ),
+                      run(async () => {
+                        await verifySignInCode(
+                          emailForm.getValues('email').trim(),
+                          code,
+                        );
+                        if (recoverySignIn)
+                          setMessage(
+                            'Signed in. Choose the account backup again.',
+                          );
+                      }, true),
                     )
                   : emailForm.handleSubmit(({ email }) =>
                       run(() => send(email)),
