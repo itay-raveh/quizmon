@@ -14,8 +14,7 @@ export interface QuestionLineup {
 
 const text = z.string().max(10000);
 const strings = z.array(text);
-const nonnegativeInteger = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
-const finiteNonnegative = z.number().finite().min(0);
+const nonnegativeInteger = z.int().min(0);
 const unique = (values: string[]) => new Set(values).size === values.length;
 const sprite = z.object({
   dexNumber: nonnegativeInteger,
@@ -40,14 +39,14 @@ const media = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('pixel-peek'),
     src: text,
-    focusX: z.number().finite(),
-    focusY: z.number().finite(),
-    zoom: z.number().finite().min(1).optional(),
+    focusX: z.number(),
+    focusY: z.number(),
+    zoom: z.number().min(1).optional(),
   }),
 ]);
 const stages = z.record(z.string(), sprite);
 const evolutionEndpoints = { before: text, after: text, stages };
-const multiplier = { multiplier: finiteNonnegative };
+const multiplier = { multiplier: z.number().min(0) };
 const direction = z.enum(['highest', 'lowest']);
 const visual = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('evolution-endpoints'), ...evolutionEndpoints }),
