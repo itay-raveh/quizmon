@@ -2,9 +2,9 @@ import type { PokemonKnowledge } from '../../pokemon/types.ts';
 import { pokemonOptions } from './answers.ts';
 import { makeQuestion } from './assembly.ts';
 import { type QuestionBuilder } from './context.ts';
-import { redactName, textPrompt } from './prompts.ts';
+import { redactName, textPrompt, unambiguousDescriptions } from './prompts.ts';
 import { targetRepetition } from './repetition.ts';
-import { pickTarget } from './selection.ts';
+import { pickFreshTarget } from './selection.ts';
 
 const canIdentify = ({
   description,
@@ -22,7 +22,10 @@ const canIdentify = ({
   );
 
 export const buildChampionQuestion: QuestionBuilder = (context) => {
-  const target = pickTarget(context, canIdentify);
+  const eligible = unambiguousDescriptions(
+    context.pool.filter(({ pokemon }) => canIdentify(pokemon)),
+  );
+  const target = pickFreshTarget(context, eligible);
   if (!target?.pokemon.sprite) return undefined;
   const openingClue = redactName(
     target.pokemon.description,
@@ -36,7 +39,10 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
       category: 'champion',
       target,
       correct: target.name,
-      options: pokemonOptions(context, { correct: target }),
+      options: pokemonOptions(context, {
+        correct: target,
+        candidates: eligible,
+      }),
       prompt: textPrompt(`“${openingClue}”`),
       media: {
         kind: 'sprite',
@@ -53,12 +59,11 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
       },
       `National Pokédex number #${target.pokemon.speciesId}.`,
     ],
-    searchOptions: context.pool
+    searchOptions: eligible
       .filter(
         ({ name, pokemon }) =>
-          canIdentify(pokemon) &&
-          (name === target.name ||
-            pokemon.speciesName !== target.pokemon.speciesName),
+          name === target.name ||
+          pokemon.speciesName !== target.pokemon.speciesName,
       )
       .map(({ name, pokemon }) => ({
         sprite: pokemon.sprite,

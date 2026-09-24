@@ -62,3 +62,21 @@ export const redactName = (
     },
   );
 };
+
+export const unambiguousDescriptions = (candidates: readonly Candidate[]) => {
+  const clue = ({ name, pokemon }: Candidate) =>
+    redactName(pokemon.description, name, pokemon.speciesName);
+  const speciesByClue = new Map<string, Set<string>>();
+  for (const candidate of candidates) {
+    if (!candidate.pokemon.description) continue;
+    const text = clue(candidate);
+    const species = speciesByClue.get(text) ?? new Set<string>();
+    species.add(candidate.pokemon.speciesName);
+    speciesByClue.set(text, species);
+  }
+  return candidates.filter(
+    (candidate) =>
+      candidate.pokemon.description &&
+      speciesByClue.get(clue(candidate))?.size === 1,
+  );
+};

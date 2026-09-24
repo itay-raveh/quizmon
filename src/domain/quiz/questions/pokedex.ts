@@ -1,9 +1,9 @@
 import { createPokemonSimilarityScorer, pokemonOptions } from './answers.ts';
 import { makeQuestion } from './assembly.ts';
 import type { QuestionBuilder } from './context.ts';
-import { redactName, textPrompt } from './prompts.ts';
+import { redactName, textPrompt, unambiguousDescriptions } from './prompts.ts';
 import { targetRepetition } from './repetition.ts';
-import { pickTarget } from './selection.ts';
+import { pickFreshTarget } from './selection.ts';
 import {
   distinctPokemon,
   makeTopicQuestion,
@@ -57,12 +57,13 @@ export const buildCategory: QuestionBuilder = (context) => {
   }
 };
 export const buildDescriptionQuestion: QuestionBuilder = (context) => {
-  const target = pickTarget(
-    context,
-    ({ description, hasDistinctDescription }) =>
-      Boolean(description) &&
-      (!context.variant?.search || hasDistinctDescription),
+  const eligible = unambiguousDescriptions(
+    context.pool.filter(
+      ({ pokemon }) =>
+        !context.variant?.search || pokemon.hasDistinctDescription,
+    ),
   );
+  const target = pickFreshTarget(context, eligible);
   if (!target) return undefined;
   return makeQuestion(context, {
     repeat: targetRepetition({ pokemonOptions: true }),
@@ -71,9 +72,7 @@ export const buildDescriptionQuestion: QuestionBuilder = (context) => {
     correct: target.name,
     options: pokemonOptions(context, {
       correct: target,
-      candidates: context.pool.filter(({ pokemon }) =>
-        Boolean(pokemon.description),
-      ),
+      candidates: eligible,
     }),
     prompt: textPrompt(
       `“${redactName(target.pokemon.description, target.name, target.pokemon.speciesName)}”`,

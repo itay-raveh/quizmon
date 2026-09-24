@@ -3,6 +3,7 @@ import { attackMultiplier } from '../../pokemon/type-effectiveness.ts';
 import { type VariantRules } from '../question-variants.ts';
 import type { Difficulty } from '../difficulty.ts';
 import type { QuestionContext, QuestionDraft } from './context.ts';
+import { unambiguousDescriptions } from './prompts.ts';
 export const applyQuestionVariant = (
   draft: QuestionDraft,
   context: QuestionContext,
@@ -26,7 +27,11 @@ export const applyQuestionVariant = (
     question.answer = { ...question.answer, interaction: 'search' };
     question.optionVisuals = undefined;
     question.optionDexNumbers = undefined;
-    question.searchOptions = context.pool
+    question.searchOptions = (
+      context.questionType === 'field-notes'
+        ? unambiguousDescriptions(context.pool)
+        : context.pool
+    )
       .filter(
         ({ pokemon, name }) =>
           context.questionType !== 'field-notes' ||
