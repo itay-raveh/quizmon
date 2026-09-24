@@ -164,12 +164,24 @@ export function FriendsPanel({
   const refresh = useCallback(
     async (signal: AbortSignal) => {
       const data = await loadFriends(owner, signal);
+      await Promise.all(
+        views.map(async (view) => {
+          const page = data.pages[view];
+          const loaded = pages[view]?.items.length ?? 0;
+          while (page.nextCursor && page.items.length < loaded) {
+            const next = await friendPage(owner, view, page.nextCursor, signal);
+            page.items.push(...next.items);
+            page.players.push(...next.players);
+            page.nextCursor = next.nextCursor;
+          }
+        }),
+      );
       if (signal.aborted) return;
       setMe(data.me);
       setPages(data.pages);
       setError('');
     },
-    [owner],
+    [owner, pages],
   );
 
   useEffect(() => {
