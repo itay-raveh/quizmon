@@ -1,4 +1,10 @@
-import { afterEach, expect, it, vi } from 'vitest';
+const count = vi.hoisted(() => vi.fn());
+vi.mock('../sentry', () => ({
+  Sentry: { metrics: { count } },
+  sentryEnabled: true,
+}));
+
+import { trackPageViewed } from '../analytics';
 import { discardOldBrowserData } from './reset-browser';
 
 afterEach(() => vi.unstubAllGlobals());
@@ -29,4 +35,31 @@ it('keeps the active account database across page loads', async () => {
   expect(deleteDatabase).not.toHaveBeenCalled();
   expect(keys.get('quizmon.baseline.account')).toBe('account-1');
   expect(keys.has('quizmon.account.v1')).toBe(false);
+});
+
+it('keeps analytics deduplication across startup cleanup and reload', async () => {
+  count.mockClear();
+  const storage = () => {
+    const values = new Map<string, string>();
+    return {
+      get length() {
+        return values.size;
+      },
+      key: (index: number) => [...values.keys()][index] ?? null,
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+      removeItem: (key: string) => values.delete(key),
+    };
+  };
+  const localStorage = storage();
+  const sessionStorage = storage();
+  vi.stubGlobal('localStorage', localStorage);
+  vi.stubGlobal('sessionStorage', sessionStorage);
+  vi.stubGlobal('window', { localStorage, sessionStorage });
+  trackPageViewed(new Date('2026-09-24T12:00:00Z'));
+  await discardOldBrowserData();
+  trackPageViewed(new Date('2026-09-24T12:00:00Z'));
+  expect(
+    count.mock.calls.filter(([name]) => name === 'quizmon.visitor_first_seen'),
+  ).toHaveLength(1);
 });

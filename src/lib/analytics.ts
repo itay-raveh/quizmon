@@ -2,9 +2,9 @@ import type { GameMode, GameResult } from '../domain/quiz/types';
 import { Sentry, sentryEnabled } from './sentry';
 import { readStoredValue, writeStoredValue } from './storage/browser-storage';
 
-const FIRST_VISIT_KEY = 'quizmon.analytics.first-visit.v1';
-const DAILY_VISIT_KEY = 'quizmon.analytics.daily-visit.v1';
-const SESSION_KEY = 'quizmon.analytics.session.v1';
+const FIRST_VISIT_KEY = 'quizmon.baseline.analytics.first-visit.v1';
+const DAILY_VISIT_KEY = 'quizmon.baseline.analytics.daily-visit.v1';
+const SESSION_KEY = 'quizmon.baseline.analytics.session.v1';
 
 const record = (send: () => void) => {
   if (!sentryEnabled) return;
