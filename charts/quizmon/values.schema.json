@@ -89,14 +89,8 @@
       "additionalProperties": false,
       "required": ["migrationConnection"],
       "properties": {
-        "workerSecrets": {
-          "$ref": "#/definitions/optionalSecretKey"
-        },
         "migrationConnection": {
           "$ref": "#/definitions/secretKey"
-        },
-        "cloudflare": {
-          "$ref": "#/definitions/optionalSecretKey"
         }
       }
     },
@@ -235,9 +229,6 @@
               }
             }
           }
-        },
-        "mode": {
-          "enum": ["preflight", "deploy"]
         }
       }
     }
