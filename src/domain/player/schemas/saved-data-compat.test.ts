@@ -79,6 +79,7 @@ it('deduplicates saved selections before they become game settings', () => {
       ...defaultGameSettings,
       generations: ['IX', 'I', 'IX'],
       questionTypes: ['stat-showdown', 'type-check', 'stat-showdown'],
+      automaticQuestionTypes: ['type-check'],
     },
   });
   expect(parsed.settings?.generations).toEqual(['I', 'IX']);
@@ -86,6 +87,7 @@ it('deduplicates saved selections before they become game settings', () => {
     'type-check',
     'stat-showdown',
   ]);
+  expect(parsed.settings?.automaticQuestionTypes).toEqual(['type-check']);
 });
 
 it('accepts sparse saved counts and rejects unknown count keys', () => {

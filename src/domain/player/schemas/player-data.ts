@@ -157,6 +157,7 @@ const settings = z.object({
     .transform((selected) =>
       questionTypes.filter((value) => selected.includes(value)),
     ),
+  automaticQuestionTypes: z.array(z.enum(questionTypes)).optional(),
 });
 const playerData = z.object({
   generationPromptAnswered: z.boolean(),
