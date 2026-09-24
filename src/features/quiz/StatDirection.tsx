@@ -1,4 +1,4 @@
-import { RelationArrow } from '@/components/RelationArrow';
+import { RelationArrow } from './RelationArrow';
 
 export const StatDirection = ({
   label,

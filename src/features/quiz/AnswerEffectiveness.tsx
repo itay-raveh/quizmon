@@ -1,5 +1,5 @@
 import { QuestionIcon, XIcon } from '@/components/icons';
-import { TypeEffectArrow } from '@/components/RelationArrow';
+import { TypeEffectArrow } from './RelationArrow';
 import { SoundButton } from '@/components/SoundButton';
 import { TypeBadges } from '@/components/TypeBadge';
 import {

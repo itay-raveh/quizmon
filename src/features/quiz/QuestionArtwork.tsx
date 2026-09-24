@@ -15,8 +15,8 @@ import {
 } from './QuestionSubject';
 import { evolutionAnswerSummary } from '@/domain/quiz/questions/evolution-presentation';
 import { GenerationLabel } from '@/components/GenerationLabel';
-import { RelationArrow, TypeEffectArrow } from '@/components/RelationArrow';
-import { Sprite } from '@/components/Sprite';
+import { RelationArrow, TypeEffectArrow } from './RelationArrow';
+import { Sprite } from './Sprite';
 import { MysteryTypeBadge, TypeBadges } from '@/components/TypeBadge';
 import {
   formatPokemonName,
