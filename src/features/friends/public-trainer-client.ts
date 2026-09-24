@@ -45,7 +45,6 @@ function parsePublicTrainer(value: unknown): PublicTrainer {
     !nonnegative(stats.masteryRounds) ||
     !nonnegative(stats.quickAttackRounds) ||
     !nonnegative(stats.bestDailyStreak) ||
-    typeof stats.quickAttackCompleted !== 'boolean' ||
     typeof stats.leagueCompleted !== 'boolean' ||
     !names(value.pokedex) ||
     !isRecord(record) ||

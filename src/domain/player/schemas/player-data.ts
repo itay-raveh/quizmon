@@ -108,7 +108,6 @@ const results = z
       correctQuestionTypes: counts(savedQuestionTypes),
       correctPokemon: z.array(name).transform((names) => [...new Set(names)]),
       masteryRounds: nonnegativeInteger,
-      quickAttackCompleted: z.boolean(),
       quickAttackRounds: nonnegativeInteger,
     }),
     streak: z.object({

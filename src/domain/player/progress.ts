@@ -76,7 +76,6 @@ export const addResultToProgress = (
     correctQuestionTypes,
     masteryRounds: progress.masteryRounds + Number(isLeagueRound && isPerfect),
     quickAttackRounds: progress.quickAttackRounds + Number(earnedQuickAttack),
-    quickAttackCompleted: progress.quickAttackCompleted || earnedQuickAttack,
   };
 };
 const previousDailyDate = (date: string): string => {

@@ -10,7 +10,6 @@ interface TrainerProgress {
     Record<NonNullable<SavedAnswerResult['questionType']>, number>
   >;
   masteryRounds: number;
-  quickAttackCompleted: boolean;
   quickAttackRounds: number;
 }
 
@@ -41,7 +40,6 @@ export const emptyResults = (): SavedResults => ({
     correctPokemon: [],
     correctQuestionTypes: {},
     masteryRounds: 0,
-    quickAttackCompleted: false,
     quickAttackRounds: 0,
   },
   streak: { creditedDates: [] },
