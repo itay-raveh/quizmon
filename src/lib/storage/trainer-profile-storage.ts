@@ -12,9 +12,7 @@ export const readTrainerProfile = (): TrainerProfile => {
 
 export const saveTrainerProfile = async (
   profile: TrainerProfile,
-): Promise<TrainerProfile> => {
-  const normalized = normalizeTrainerProfile(profile) ?? readTrainerProfile();
-  if (!(await updatePlayerData({ profile: normalized })))
-    return readTrainerProfile();
-  return normalized;
+): Promise<boolean> => {
+  const normalized = normalizeTrainerProfile(profile);
+  return normalized ? updatePlayerData({ profile: normalized }) : false;
 };

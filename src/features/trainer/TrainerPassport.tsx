@@ -51,7 +51,7 @@ import {
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
-  onProfileChange: (profile: TrainerProfile) => Promise<void>;
+  onProfileChange: (profile: TrainerProfile) => Promise<boolean>;
   profile: TrainerProfile;
   requestedView: TrainerView;
   stats: TrainerStats;
@@ -166,12 +166,15 @@ export const TrainerPassport = ({
 
   const save = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await onProfileChange({
-      ...profile,
-      avatar,
-      name,
-      partnerPokemon: partner,
-    });
+    if (
+      !(await onProfileChange({
+        ...profile,
+        avatar,
+        name,
+        partnerPokemon: partner,
+      }))
+    )
+      return;
     void navigate('/trainer', { replace: true });
     void requestPersistentStorage().catch(() => false);
   };
@@ -189,7 +192,7 @@ export const TrainerPassport = ({
   };
 
   const setTitle = async (specialty: TrainerSpecialty | null) => {
-    await onProfileChange({ ...profile, specialty });
+    if (!(await onProfileChange({ ...profile, specialty }))) return false;
     setShareNotice({
       message: specialty
         ? `${trainerSpecialtyDetails[specialty].label} equipped.`
@@ -197,6 +200,7 @@ export const TrainerPassport = ({
       visible: true,
     });
     void requestPersistentStorage().catch(() => false);
+    return true;
   };
 
   const exportArtifact = async () => {

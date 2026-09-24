@@ -7,8 +7,8 @@ import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitleDialogProps {
   onClose: () => void;
-  onEquip?: (title: TrainerTitle) => Promise<void>;
-  onUnequip?: () => Promise<void>;
+  onEquip?: (title: TrainerTitle) => Promise<boolean>;
+  onUnequip?: () => Promise<boolean>;
   title: TrainerTitle;
 }
 
@@ -23,9 +23,8 @@ export const TrainerTitleDialog = ({
   });
 
   const changeTitle = async () => {
-    if (title.equipped) await onUnequip?.();
-    else await onEquip?.(title);
-    closeDialog();
+    const saved = title.equipped ? await onUnequip?.() : await onEquip?.(title);
+    if (saved) closeDialog();
   };
 
   return (

@@ -16,7 +16,9 @@ export const useTrainerCard = () => {
   const [stats, setStats] = useState(readTrainerStats);
 
   const updateProfile = useCallback(async (nextProfile: TrainerProfile) => {
-    setProfile(await saveTrainerProfile(nextProfile));
+    const saved = await saveTrainerProfile(nextProfile);
+    if (saved) setProfile(readTrainerProfile());
+    return saved;
   }, []);
 
   const refresh = useCallback(() => {
