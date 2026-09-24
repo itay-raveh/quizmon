@@ -1,4 +1,4 @@
-import { isRecord } from '../../lib/validation.ts';
+import { isChoice, isRecord } from '../../lib/validation.ts';
 import type { AnswerObservation, QuestionData } from './types.ts';
 
 export function observeAnswer(
@@ -72,9 +72,7 @@ export function isAnswerObservation(
       (Number.isInteger(value.difficulty) &&
         Number(value.difficulty) >= 1 &&
         Number(value.difficulty) <= 5)) &&
-    ['single-choice', 'multi-select', 'search'].includes(
-      String(value.interaction),
-    ) &&
+    isChoice(value.interaction, ['single-choice', 'multi-select', 'search']) &&
     strings(value.options) &&
     strings(value.expected) &&
     value.expected.length > 0 &&

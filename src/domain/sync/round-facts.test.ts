@@ -8,6 +8,12 @@ import {
 } from './round-facts.ts';
 
 describe('completed round facts', () => {
+  it('rejects array-shaped enum fields in uploaded rounds', () => {
+    const round = archiveCompletion(completion(crypto.randomUUID()));
+    Reflect.set(round.data.answers[0]!, 'category', ['knowledge']);
+    expect(validateRoundFact(round)).toBe(false);
+  });
+
   it('rederives score from answers instead of saved totals', () => {
     const old = completion(crypto.randomUUID());
     const expected = old.result.score;

@@ -26,6 +26,7 @@ import type {
 import type { TrainingConfig, RoundCompletion } from './progress.ts';
 import {
   isDailyDate,
+  isChoice,
   isRecord,
   isUtcTimestamp,
   isUuid,
@@ -275,7 +276,7 @@ export function validateRoundFact(value: unknown): value is RoundFact {
   if (
     !isRecord(value) ||
     !isUuid(value.id) ||
-    !['training', 'daily', 'league'].includes(String(value.mode)) ||
+    !isChoice(value.mode, ['training', 'daily', 'league']) ||
     !isUtcTimestamp(value.completed_at) ||
     typeof value.credited !== 'boolean' ||
     !isRecord(value.data) ||
@@ -317,7 +318,7 @@ export function validateRoundFact(value: unknown): value is RoundFact {
     ) &&
     new Set(items).size === items.length;
   if (
-    !['league', 'custom'].includes(String(config.training_mode)) ||
+    !isChoice(config.training_mode, ['league', 'custom']) ||
     (config.difficulty !== undefined &&
       (!Number.isInteger(config.difficulty) ||
         Number(config.difficulty) < 1 ||
@@ -377,13 +378,9 @@ export function validateRoundFact(value: unknown): value is RoundFact {
     return (
       isAnswerObservation(liveQuestion(q as unknown as ArchivedQuestion)) &&
       isAnswerSubject(entry.subject) &&
-      (questionCategories as readonly string[]).includes(
-        String(entry.category),
-      ) &&
+      isChoice(entry.category, questionCategories) &&
       (entry.question_type === 'champion' ||
-        (questionTypes as readonly string[]).includes(
-          String(entry.question_type),
-        )) &&
+        isChoice(entry.question_type, questionTypes)) &&
       Number.isSafeInteger(entry.clues_used) &&
       Number(entry.clues_used) >= 0 &&
       Number(entry.clues_used) <= 4 &&
