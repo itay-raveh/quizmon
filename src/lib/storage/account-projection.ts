@@ -29,13 +29,20 @@ export async function projectAccount(
     'SELECT * FROM player WHERE id = ?',
     [state.account.id],
   );
-  if (!player) return;
   const local = await readLocalRounds(tx);
+  const failures = await tx.getAll<{ id: string }>(
+    "SELECT id FROM local_state WHERE id LIKE 'failure:%'",
+  );
+  const rejected = new Set(failures.map(({ id }) => id.slice(8)));
   const rows = await tx.getAll<Record<string, unknown>>(
     'SELECT * FROM round WHERE player_id = ?',
     [state.account.id],
   );
-  const rounds = new Map(local.map((round) => [round.id, round]));
+  const rounds = new Map(
+    local
+      .filter((round) => !rejected.has(round.id))
+      .map((round) => [round.id, round]),
+  );
   for (const row of rows) {
     const archive: unknown =
       typeof row.data === 'string'
@@ -64,6 +71,10 @@ export async function projectAccount(
   );
   const data = structuredClone(state.save.data);
   Object.assign(data, projectRoundHistory(ordered));
+  if (!player) {
+    state.save.data = data;
+    return;
+  }
   const profile = (data.profile = {
     ...(data.profile ?? createTrainerProfile()),
     createdAt: String(player.joined_on),
