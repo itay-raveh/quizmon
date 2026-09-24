@@ -45,6 +45,7 @@ import { TrainerTitles } from './TrainerTitles';
 import { trainerPath } from './trainer-route';
 import {
   exportTrainerArtifact as exportArtifactImage,
+  renderTrainerArtifactImage,
   supportsTrainerArtifactSharing,
 } from './trainer-artifact-export';
 
@@ -120,6 +121,10 @@ export const TrainerPassport = ({
   const equippedTitle = titles.find((title) => title.equipped && title.earned);
   const savedSpecialty = equippedTitle?.specialty ?? null;
   const [preparingArtifact, setPreparingArtifact] = useState(false);
+  const [preparedArtifact, setPreparedArtifact] = useState<{
+    image: Blob;
+    key: string;
+  } | null>(null);
   const [shareNotice, setShareNotice] = useState<ShareNotice | null>(null);
   const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
     null,
@@ -145,6 +150,7 @@ export const TrainerPassport = ({
     ? searchAvatars(avatarQuery)
     : trainerAvatarOptions;
   const visibleProfile = { ...profile, specialty: savedSpecialty };
+  const artifactKey = JSON.stringify([view, visibleProfile, stats, record]);
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
   const canShareArtifact = supportsTrainerArtifactSharing();
@@ -209,10 +215,24 @@ export const TrainerPassport = ({
     setPreparingArtifact(true);
     setShareNotice(null);
     try {
+      if (canShareArtifact && preparedArtifact?.key !== artifactKey) {
+        const image = await renderTrainerArtifactImage(artifact);
+        setPreparedArtifact({ image, key: artifactKey });
+        setShareNotice({
+          message: 'PNG ready. Select Share again to open your share sheet.',
+          visible: true,
+        });
+        return;
+      }
       const outcome = await exportArtifactImage(artifact, view, {
         attemptShare: canShareArtifact,
         onShareError: 'download',
+        preparedImage:
+          preparedArtifact?.key === artifactKey
+            ? preparedArtifact.image
+            : undefined,
       });
+      if (outcome !== 'cancelled') setPreparedArtifact(null);
       if (outcome === 'unsupported-downloaded') {
         setShareNotice({
           message: 'PNG downloaded. Share it from your photos.',
@@ -411,9 +431,11 @@ export const TrainerPassport = ({
             )}
             {preparingArtifact
               ? 'Preparing PNG…'
-              : canShareArtifact
+              : canShareArtifact && preparedArtifact?.key === artifactKey
                 ? `Share ${shareLabels[view]}`
-                : 'Download PNG'}
+                : canShareArtifact
+                  ? `Prepare ${shareLabels[view]} PNG`
+                  : 'Download PNG'}
           </GameButton>
         </div>
       )}

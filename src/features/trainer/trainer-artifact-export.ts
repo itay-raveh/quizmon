@@ -58,7 +58,7 @@ const createCaptureClone = (element: HTMLElement) => {
   return { clone, host };
 };
 
-const renderTrainerArtifactImage = async (
+export const renderTrainerArtifactImage = async (
   element: HTMLElement,
 ): Promise<Blob> => {
   const { clone, host } = createCaptureClone(element);
@@ -130,12 +130,14 @@ export const exportTrainerArtifact = async (
   {
     attemptShare,
     onShareError,
+    preparedImage,
   }: {
     attemptShare: boolean;
     onShareError: 'download' | 'throw';
+    preparedImage?: Blob;
   },
 ): Promise<TrainerArtifactExportOutcome> => {
-  const image = await renderTrainerArtifactImage(element);
+  const image = preparedImage ?? (await renderTrainerArtifactImage(element));
   if (!attemptShare) {
     downloadTrainerArtifact(image, view);
     return 'downloaded';
