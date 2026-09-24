@@ -38,7 +38,8 @@ const getSubscriptionId = (): string => {
   if (stored) return stored;
 
   const id = crypto.randomUUID();
-  writeStoredValue('localStorage', SUBSCRIPTION_ID_KEY, id);
+  if (!writeStoredValue('localStorage', SUBSCRIPTION_ID_KEY, id))
+    throw new Error('The reminder ID could not be saved.');
   return id;
 };
 
