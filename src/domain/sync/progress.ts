@@ -1,11 +1,7 @@
 import { trainerSpecialtyDetails } from '../player/trainer-progression.ts';
 import { isTrainerAvatar } from '../player/trainer-avatars.ts';
 import { formatVersions, gameVersions } from '../versions.ts';
-import {
-  isChoice,
-  isRecord as isObject,
-  isUuid as uuid,
-} from '../../lib/validation.ts';
+import { isChoice, isRecord, isUuid as uuid } from '../../lib/validation.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { formGroups, generations } from '../pokemon/types.ts';
 import { difficultySchema } from '../quiz/difficulty.ts';
@@ -63,7 +59,7 @@ export const trainingConfig = (settings: GameSettings): TrainingConfig => ({
 });
 function validTraining(value: unknown): value is TrainingConfig {
   return (
-    isObject(value) &&
+    isRecord(value) &&
     isChoice(value.trainingMode, trainingModes) &&
     (value.difficulty === undefined ||
       difficultySchema.safeParse(value.difficulty).success) &&
@@ -129,7 +125,7 @@ export interface Edit {
 const specialties = Object.keys(trainerSpecialtyDetails);
 export function validEdit(value: unknown): value is Edit {
   if (
-    !isObject(value) ||
+    !isRecord(value) ||
     !integer(value.expectedRevision) ||
     (value.predecessorId !== undefined && !uuid(value.predecessorId))
   )
@@ -173,7 +169,7 @@ export interface Action {
 type ActionEnvelope = Omit<Action, 'kind'> & { kind: string };
 function validActionEnvelope(value: unknown): value is ActionEnvelope {
   return (
-    isObject(value) &&
+    isRecord(value) &&
     uuid(value.operationId) &&
     uuid(value.datasetId) &&
     uuid(value.generationId) &&
@@ -198,7 +194,7 @@ export function validAction(value: unknown): value is Action {
 }
 export function canonical(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
-  if (isObject(value))
+  if (isRecord(value))
     return `{${Object.keys(value)
       .sort()
       .map((key) => `${JSON.stringify(key)}:${canonical(value[key])}`)
@@ -223,11 +219,11 @@ function sortFields(value: Record<string, unknown>, fields: string[]) {
   );
 }
 function hashPayload(value: unknown): unknown {
-  if (!isObject(value)) return value;
+  if (!isRecord(value)) return value;
   if (Object.hasOwn(value, 'completionId'))
     return {
       ...sortFields(value, ['discoveries']),
-      ...(isObject(value.training)
+      ...(isRecord(value.training)
         ? {
             training: sortFields(value.training, [
               'generations',
@@ -236,7 +232,7 @@ function hashPayload(value: unknown): unknown {
           }
         : {}),
     };
-  if (value.unit === 'training' && isObject(value.value))
+  if (value.unit === 'training' && isRecord(value.value))
     return {
       ...value,
       value: sortFields(value.value, ['generations', 'questionTypes']),

@@ -1,8 +1,5 @@
-export const isObject = (value: unknown): value is Record<string, unknown> =>
-  Boolean(value) && typeof value === 'object';
-
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
-  isObject(value) && !Array.isArray(value);
+  value !== null && typeof value === 'object' && !Array.isArray(value);
 
 export const isSafeNonnegativeInteger = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;

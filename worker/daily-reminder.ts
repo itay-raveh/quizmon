@@ -10,7 +10,7 @@ import {
   DAILY_REMINDER_MESSAGE,
   VAPID_PUBLIC_KEY,
 } from '../src/features/reminders/reminder-config';
-import { isDailyDate, isObject } from '../src/lib/validation';
+import { isDailyDate, isRecord } from '../src/lib/validation';
 import { getNextReminderAt } from './reminder-time';
 import { noStoreResponse } from './responses';
 
@@ -56,7 +56,7 @@ const isValidTimeZone = (value: unknown): value is string => {
 const isValidSubscription = (
   candidate: unknown,
 ): candidate is WebPushSubscription => {
-  if (!isObject(candidate)) return false;
+  if (!isRecord(candidate)) return false;
   if (
     typeof candidate.endpoint !== 'string' ||
     candidate.endpoint.length > 2_048
@@ -121,7 +121,7 @@ const parseRegistration = async (
   request: Request,
 ): Promise<DailyReminderRegistration | null> => {
   const value = await readJson(request);
-  if (!isObject(value)) return null;
+  if (!isRecord(value)) return null;
 
   const candidate = value as Partial<DailyReminderRegistration>;
   if (
@@ -145,7 +145,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
 
     if (request.method === 'PATCH') {
       const body = await readJson(request);
-      const completedDate = isObject(body) ? body.completedDate : null;
+      const completedDate = isRecord(body) ? body.completedDate : null;
       if (!isDailyDate(completedDate)) {
         return noStoreResponse('Invalid completion date', 400);
       }

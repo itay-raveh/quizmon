@@ -3,7 +3,7 @@
 import { DAILY_REMINDER_MESSAGE } from '@/features/reminders/reminder-config';
 import { spriteCachePlugin } from '@/lib/sprite-cache';
 import { isItemSpritePath } from '@/domain/pokemon/sprite-source';
-import { isObject } from '@/lib/validation';
+import { isRecord } from '@/lib/validation';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
 import {
@@ -30,7 +30,7 @@ interface DailyPushPayload {
 const readPushPayload = (event: PushEvent): DailyPushPayload => {
   try {
     const candidate: unknown = event.data?.json();
-    if (!isObject(candidate)) return {};
+    if (!isRecord(candidate)) return {};
     return {
       body: typeof candidate.body === 'string' ? candidate.body : undefined,
       tag: typeof candidate.tag === 'string' ? candidate.tag : undefined,
@@ -100,7 +100,7 @@ registerRoute(
 
 self.addEventListener('message', (event) => {
   const value: unknown = event.data;
-  if (isObject(value) && value.type === 'SKIP_WAITING') {
+  if (isRecord(value) && value.type === 'SKIP_WAITING') {
     void self.skipWaiting();
   }
 });
