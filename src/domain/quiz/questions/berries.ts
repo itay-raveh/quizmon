@@ -28,13 +28,7 @@ export const buildBerry: QuestionBuilder = (context) => {
     );
     if (gift && !availableGiftGen) continue;
     const positive = positiveFlavors(target.flavors);
-    if (gift) {
-      if (
-        !target.giftType ||
-        !(target.giftType in context.catalog.typeRelations)
-      )
-        continue;
-    } else if (!positive.length) continue;
+    if (gift ? !target.giftType : !positive.length) continue;
     const max = Math.max(...Object.values(target.flavors));
     const strongest = positive.filter(
       (flavor) => target.flavors[flavor] === max,
