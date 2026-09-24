@@ -88,13 +88,6 @@ jobs:
           docker compose -f compose.yaml pull powersync
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-runtime-config.ts
-      - name: Deploy Worker
-        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: 4.127.1
-          command: deploy .wrangler/release-worker/index.js --config .wrangler.production.json --no-bundle --keep-vars
       - name: Publish checked migration image
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -121,6 +114,13 @@ jobs:
             exit 1
           fi
           printf '%s\n' "$digest_reference" >> "$GITHUB_STEP_SUMMARY"
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: 4.127.1
+          command: deploy .wrangler/release-worker/index.js --config .wrangler.production.json --no-bundle --keep-vars
       - name: Remove disposable database
         if: always()
         run: docker compose -f compose.yaml down --volumes
