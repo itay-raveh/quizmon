@@ -21,7 +21,7 @@ import { TrainerProgressSummary } from '@/features/trainer/TrainerProgressSummar
 import { useGameSounds } from '@/lib/audio/sound-context';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatedScore } from './AnimatedScore';
-import { CatchCombo } from './CatchCombo';
+import { CatchCombo } from '@/features/daily/CatchCombo';
 import {
   markLevelAdvancementOffered,
   suggestedLevel,

@@ -4,7 +4,7 @@ import { ArrowRightIcon, SlidersHorizontalIcon } from '@/components/icons';
 import { formatDailyDate } from '@/domain/quiz/format';
 import type { GameResult } from '@/domain/quiz/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
-import { CatchCombo } from '@/features/quiz/CatchCombo';
+import { CatchCombo } from '@/features/daily/CatchCombo';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { Logo } from './Logo';
 

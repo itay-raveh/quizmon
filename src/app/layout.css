@@ -178,42 +178,6 @@
   }
 }
 
-@keyframes combo-lock {
-  from {
-    filter: brightness(1.18);
-    transform: scale(0.78) rotate(-10deg);
-  }
-
-  72% {
-    transform: scale(1.08) rotate(2deg);
-  }
-
-  to {
-    filter: brightness(1);
-    transform: scale(1) rotate(0);
-  }
-}
-
-@keyframes combo-ring {
-  from {
-    opacity: 0.9;
-    transform: scale(0.68);
-  }
-
-  to {
-    opacity: 0;
-    transform: scale(1.24);
-  }
-}
-
-.catch-combo--celebrate .catch-combo__ball {
-  animation: combo-lock 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.catch-combo--celebrate .catch-combo__ring {
-  animation: combo-ring 520ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
 @media (max-width: 36rem) {
   main {
     padding: 0.6rem;
@@ -365,9 +329,7 @@
   .trainer-passport__artifact--reveal,
   .trainer-badge-dialog[open],
   .trainer-title-dialog[open],
-  .trainer-card__polish::before,
-  .catch-combo--celebrate .catch-combo__ball,
-  .catch-combo--celebrate .catch-combo__ring {
+  .trainer-card__polish::before {
     animation: none !important;
   }
 }

@@ -11,7 +11,7 @@ import {
   type TrainerRank,
   type TrainerTier,
 } from '@/domain/player/trainer-progression';
-import { CatchCombo } from '@/features/quiz/CatchCombo';
+import { CatchCombo } from '@/features/daily/CatchCombo';
 import type { TrainerProfile } from '@/lib/storage/trainer-profile-storage';
 import type { Ref } from 'react';
 import { TrainerCardFinishEffects } from './TrainerCardFinishEffects';
