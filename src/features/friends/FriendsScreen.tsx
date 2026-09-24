@@ -39,19 +39,27 @@ export function FriendsScreen({
       ) : (
         <div className="social-screen__intro">
           <h2>
-            {initialInput
-              ? 'Someone shared a friend link'
-              : 'Play with friends'}
+            {account.mergeRequired
+              ? 'Choose your progress'
+              : initialInput
+                ? 'Someone shared a friend link'
+                : 'Play with friends'}
           </h2>
           <p>
-            {initialInput
-              ? 'Sign in to see their Trainer name. Opening the link does not send a request. You decide whether to ask to connect.'
-              : 'Sign in to add friends and compare Daily scores. Requests only become friendships when accepted.'}
+            {account.mergeRequired
+              ? 'Add this browser’s progress or use your account progress before using Friends.'
+              : initialInput
+                ? 'Sign in to see their Trainer name. Opening the link does not send a request. You decide whether to ask to connect.'
+                : 'Sign in to add friends and compare Daily scores. Requests only become friendships when accepted.'}
           </p>
-          <GameButton onClick={onSignIn}>Sign in to continue</GameButton>
-          <p className="social-screen__note">
-            You can keep playing without an account.
-          </p>
+          <GameButton onClick={onSignIn}>
+            {account.mergeRequired ? 'Choose progress' : 'Sign in to continue'}
+          </GameButton>
+          {!account.mergeRequired && (
+            <p className="social-screen__note">
+              You can keep playing without an account.
+            </p>
+          )}
         </div>
       )}
     </section>

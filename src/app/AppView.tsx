@@ -127,6 +127,7 @@ const AppScreen = ({
             catalog={
               catalogState.status === 'ready' ? catalogState.catalog : undefined
             }
+            onAccount={() => destination.account()}
             onViewPlayer={onViewPlayer}
             initialDate={destination.standingsDate}
             initialScope={destination.standingsScope}

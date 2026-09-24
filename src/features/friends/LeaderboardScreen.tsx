@@ -290,6 +290,7 @@ function Standings({
 
 export function LeaderboardScreen({
   catalog,
+  onAccount,
   onViewPlayer,
   initialDate,
   initialScope = 'global',
@@ -297,6 +298,7 @@ export function LeaderboardScreen({
   onSelectionChange,
 }: {
   catalog?: PokemonCatalog;
+  onAccount: () => void;
   onViewPlayer: (id: string) => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
@@ -421,7 +423,14 @@ export function LeaderboardScreen({
         ) : (
           <div className="leaderboard-locked">
             <LockSimpleIcon aria-hidden="true" weight="duotone" />
-            <p>Sign in to view rankings.</p>
+            <p>
+              {account.mergeRequired
+                ? 'Choose your progress to view rankings.'
+                : 'Sign in to view rankings.'}
+            </p>
+            {account.mergeRequired && (
+              <GameButton onClick={onAccount}>Choose progress</GameButton>
+            )}
           </div>
         )}
       </div>
