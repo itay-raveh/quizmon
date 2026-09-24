@@ -200,13 +200,11 @@ export const App = () => {
         settings={settings}
         league={{
           ...leagueDestination,
-          retry: () => {
-            leagueDestination.close();
-            retryLeague();
+          retry: async () => {
+            if (await retryLeague()) leagueDestination.close();
           },
-          start: () => {
-            leagueDestination.close();
-            startLeague();
+          start: async () => {
+            if (await startLeague()) leagueDestination.close();
           },
         }}
         navigation={navigation}

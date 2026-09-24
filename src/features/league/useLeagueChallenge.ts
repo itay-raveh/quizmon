@@ -4,7 +4,10 @@ import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { getLeagueSettings } from '../../domain/quiz/league';
 import { buildLeagueQuestions } from '../../domain/quiz/question-generation';
 import type { GameSettings } from '../../domain/settings/types';
-import { readPlayerSave } from '../../lib/storage/player-storage';
+import {
+  readPlayerSave,
+  reportSaveError,
+} from '../../lib/storage/player-storage';
 
 interface LeagueChallengeOptions {
   catalog?: PokemonCatalog;
@@ -17,21 +20,26 @@ export const useLeagueChallenge = ({
   settings,
   startGame,
 }: LeagueChallengeOptions) => {
-  const start = useCallback(() => {
-    if (!catalog) return;
-    const seed = crypto.randomUUID();
-    const leagueSettings = getLeagueSettings(settings);
-    void startGame(
-      buildLeagueQuestions(
-        catalog,
-        seed,
+  const start = useCallback(async () => {
+    if (!catalog) return false;
+    try {
+      const seed = crypto.randomUUID();
+      const leagueSettings = getLeagueSettings(settings);
+      return await startGame(
+        buildLeagueQuestions(
+          catalog,
+          seed,
+          leagueSettings,
+          readPlayerSave().data.questionHistory,
+        ),
         leagueSettings,
-        readPlayerSave().data.questionHistory,
-      ),
-      leagueSettings,
-      { kind: 'league' },
-      seed,
-    );
+        { kind: 'league' },
+        seed,
+      );
+    } catch (error) {
+      reportSaveError(error);
+      return false;
+    }
   }, [catalog, settings, startGame]);
 
   return { retry: start, start };
