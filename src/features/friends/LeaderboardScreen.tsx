@@ -162,6 +162,7 @@ function Standings({
     const cached = standingsCache.get(`${cacheKey}:${after ?? ''}`);
     setData(cached);
     setBusy(!cached);
+    setError('');
     setRequest((current) => ({ after, revision: current.revision + 1 }));
   };
   return (
@@ -176,6 +177,11 @@ function Standings({
           {error}
           {data ? ' Showing the last loaded standings.' : ''}
         </p>
+      )}
+      {error && !data && !busy && (
+        <GameButton tone="quiet" onClick={() => load(null)}>
+          Retry
+        </GameButton>
       )}
       {data && (
         <>

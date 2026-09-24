@@ -321,6 +321,11 @@ export function FriendsPanel({
           {error}
         </p>
       )}
+      {error && !me && !busy && (
+        <GameButton tone="quiet" onClick={() => run(refresh)}>
+          Retry
+        </GameButton>
+      )}
       {busy && (
         <p className="visually-hidden" role="status">
           Loading friends
