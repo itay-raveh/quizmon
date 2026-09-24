@@ -1,4 +1,5 @@
-import { isDailyDate, isRecord } from '../../lib/validation.ts';
+import { z } from 'zod';
+import { dailyDateSchema } from '../../lib/validation.ts';
 import { getUtcDate } from '../quiz/daily.ts';
 import { isTrainerAvatar } from './trainer-avatars.ts';
 import {
@@ -8,14 +9,28 @@ import {
 
 export const TRAINER_NAME_MAX_LENGTH = 20;
 
-export interface TrainerProfile {
-  avatar: string | null;
-  createdAt: string;
-  hasBeenRevealed: boolean;
-  name: string;
-  partnerPokemon: string | null;
-  specialty: TrainerSpecialty | null;
-}
+export const trainerProfileSchema = z.object({
+  avatar: z
+    .custom<string>(isTrainerAvatar)
+    .nullish()
+    .transform((avatar) => avatar ?? null),
+  createdAt: dailyDateSchema,
+  hasBeenRevealed: z.boolean(),
+  name: z
+    .string()
+    .transform((name) => name.trim().slice(0, TRAINER_NAME_MAX_LENGTH)),
+  partnerPokemon: z.string().nullable(),
+  specialty: z
+    .enum(
+      Object.keys(trainerSpecialtyDetails) as [
+        TrainerSpecialty,
+        ...TrainerSpecialty[],
+      ],
+    )
+    .nullable(),
+});
+
+export type TrainerProfile = z.infer<typeof trainerProfileSchema>;
 
 export const createTrainerProfile = (): TrainerProfile => ({
   avatar: null,
@@ -25,33 +40,3 @@ export const createTrainerProfile = (): TrainerProfile => ({
   partnerPokemon: null,
   specialty: null,
 });
-
-export const normalizeTrainerProfile = (
-  value: unknown,
-): TrainerProfile | null => {
-  if (!isRecord(value)) return null;
-  const profile = value as Partial<TrainerProfile>;
-  if (
-    !isDailyDate(profile.createdAt) ||
-    (profile.avatar !== undefined &&
-      profile.avatar !== null &&
-      !isTrainerAvatar(profile.avatar)) ||
-    typeof profile.hasBeenRevealed !== 'boolean' ||
-    typeof profile.name !== 'string' ||
-    (profile.partnerPokemon !== null &&
-      typeof profile.partnerPokemon !== 'string') ||
-    (profile.specialty !== null &&
-      !Object.hasOwn(trainerSpecialtyDetails, profile.specialty ?? ''))
-  ) {
-    return null;
-  }
-
-  return {
-    avatar: profile.avatar ?? null,
-    createdAt: profile.createdAt,
-    hasBeenRevealed: profile.hasBeenRevealed,
-    name: profile.name.trim().slice(0, TRAINER_NAME_MAX_LENGTH),
-    partnerPokemon: profile.partnerPokemon,
-    specialty: profile.specialty as TrainerSpecialty | null,
-  };
-};

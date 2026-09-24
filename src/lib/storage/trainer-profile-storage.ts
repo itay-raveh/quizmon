@@ -1,7 +1,7 @@
 export type { TrainerProfile } from '../../domain/player/trainer-profile';
 import {
   createTrainerProfile,
-  normalizeTrainerProfile,
+  trainerProfileSchema,
   type TrainerProfile,
 } from '../../domain/player/trainer-profile';
 import { readPlayerData, updatePlayerData } from './player-storage';
@@ -13,6 +13,6 @@ export const readTrainerProfile = (): TrainerProfile => {
 export const saveTrainerProfile = async (
   profile: TrainerProfile,
 ): Promise<boolean> => {
-  const normalized = normalizeTrainerProfile(profile);
-  return normalized ? updatePlayerData({ profile: normalized }) : false;
+  const parsed = trainerProfileSchema.safeParse(profile);
+  return parsed.success ? updatePlayerData({ profile: parsed.data }) : false;
 };

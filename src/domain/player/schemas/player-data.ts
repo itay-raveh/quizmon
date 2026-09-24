@@ -40,8 +40,8 @@ import {
   trainingModes,
 } from '../../settings/types.ts';
 import {
-  normalizeTrainerProfile,
   TRAINER_NAME_MAX_LENGTH,
+  trainerProfileSchema,
 } from '../trainer-profile.ts';
 
 const name = z.string().min(1).max(200);
@@ -185,7 +185,7 @@ const playerData = z.object({
     ),
   results,
   settings: savedSettingsSchema.nullable(),
-  profile: z.unknown(),
+  profile: trainerProfileSchema.nullable(),
 });
 
 export const parsePlayerData = (value: unknown): PlayerData => {
@@ -193,22 +193,17 @@ export const parsePlayerData = (value: unknown): PlayerData => {
   if (!parsed.success)
     throw new SaveError(
       'invalid',
-      'This save contains invalid progress or settings.',
+      parsed.error.issues.some(({ path }) => path[0] === 'profile')
+        ? 'This save contains an invalid Trainer profile.'
+        : 'This save contains invalid progress or settings.',
     );
   const data = parsed.data;
-  const profile =
-    data.profile === null ? null : normalizeTrainerProfile(data.profile);
-  if (data.profile !== null && !profile)
-    throw new SaveError(
-      'invalid',
-      'This save contains an invalid Trainer profile.',
-    );
   return {
     questionHistory: data.questionHistory,
     leagueLineup: data.leagueLineup,
     hallOfFame: data.hallOfFame,
     pokedex: [...new Set(data.pokedex)],
-    profile,
+    profile: data.profile,
     results: data.results,
     settings: data.settings,
   };

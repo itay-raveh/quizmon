@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { TrainerStats } from '../../domain/player/progress';
 import { progressSchema } from '../../domain/player/schemas/player-data';
 import {
-  normalizeTrainerProfile,
+  trainerProfileSchema,
   type TrainerProfile,
 } from '../../domain/player/trainer-profile';
 import type { SocialPlayer } from '../../domain/social/friends';
@@ -24,7 +24,7 @@ const publicTrainerSchema = z.object({
     code: z.string().nullable(),
     partnerPokemon: z.string().nullable(),
   }),
-  profile: z.unknown(),
+  profile: trainerProfileSchema,
   stats: progressSchema.extend({
     bestDailyStreak: count,
     leagueCompleted: z.boolean(),
@@ -40,12 +40,9 @@ const publicTrainerSchema = z.object({
 
 function parsePublicTrainer(value: unknown): PublicTrainer {
   const parsed = publicTrainerSchema.safeParse(value);
-  const profile = parsed.success
-    ? normalizeTrainerProfile(parsed.data.profile)
-    : null;
-  if (!parsed.success || !profile)
+  if (!parsed.success)
     throw new Error('This Trainer card could not be loaded. Try again.');
-  return { ...parsed.data, profile };
+  return parsed.data;
 }
 
 export async function fetchPublicTrainer(
