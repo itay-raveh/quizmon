@@ -7,7 +7,7 @@ import {
 } from '../src/domain/sync/connection.ts';
 
 export const releaseConfigSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(1).optional(),
   workerName: z.string().regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
   origin: z.string().min(1),
   sync: z.object({

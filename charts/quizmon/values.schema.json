@@ -73,7 +73,6 @@
         }
       },
       "required": [
-        "version",
         "workerName",
         "origin",
         "sync",
