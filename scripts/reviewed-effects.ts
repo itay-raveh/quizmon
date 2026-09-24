@@ -47,7 +47,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     context:
       'Generation IX battles; the ability is active and no effect bypasses it',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L5340',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/abilities.ts#L5340-L5349',
     ],
     explanation:
       'An Electric-type move from another Pokémon restores up to 1/4 of maximum HP, including status moves.',
@@ -117,7 +117,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     battleGeneration: 'IX',
     context: 'Generation IX battles; held-item effects and healing are active',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L3334',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/items.ts#L3338-L3350',
     ],
     explanation:
       'At the end of each turn, restores up to 1/16 of the holder’s maximum HP, regardless of its type.',
@@ -183,7 +183,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     context:
       'Generation IX battles; the ability is active and no effect bypasses it',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L1133',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/abilities.ts#L1133-L1142',
     ],
     explanation:
       'A Ground-type move from another Pokémon restores up to 1/4 of maximum HP, including status moves.',
@@ -252,7 +252,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     context:
       'Generation IX battles; another Pokémon targets the holder, with its ability active and no bypass',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L4023',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/abilities.ts#L4023-L4038',
     ],
     explanation:
       'A Grass-type move raises Attack by one stage, including status moves.',
@@ -321,7 +321,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     context:
       'Generation IX battles; the holder survives the hit and its ability is active',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts#L5418',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/abilities.ts#L5418-L5426',
     ],
     explanation:
       'A damaging Water-type hit raises Defense by two stages, whether physical or special.',
@@ -402,7 +402,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     context:
       'Generation IX battles; held-item effects, healing and item damage are active',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L538',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/items.ts#L538-L555',
     ],
     explanation:
       'Each turn, restores up to 1/16 maximum HP to a Poison-type holder; other types lose 1/8 maximum HP.',
@@ -474,7 +474,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     context:
       'Generation IX battles; the holder stays in battle after its attack and healing is active',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L5646',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/items.ts#L5650-L5663',
     ],
     explanation:
       'After a damaging move, restores up to 1/8 of the damage dealt, with a minimum of 1 HP when healing succeeds.',
@@ -548,7 +548,7 @@ export const reviewedEffects: EffectKnowledge[] = [
     context:
       'Generation IX battles; contact-triggered item effects and damage are active',
     sources: [
-      'https://github.com/smogon/pokemon-showdown/blob/master/data/items.ts#L5291',
+      'https://github.com/smogon/pokemon-showdown/blob/a5df8274e85b0889bf2a9b3422a08b39732374fc/data/items.ts#L5295-L5307',
     ],
     explanation:
       'After a damaging contact hit, the attacker loses 1/6 of its maximum HP.',
