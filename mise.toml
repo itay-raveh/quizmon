@@ -32,6 +32,7 @@ run = [
   "npm run check:dead-code",
   "npm test",
   "npm run test:online",
+  "npm run check:chart",
   "npm run build",
   "prek validate-config prek.toml",
   "npm run deploy:dry-run",
