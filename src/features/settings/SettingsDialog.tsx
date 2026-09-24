@@ -43,7 +43,7 @@ export const SettingsDialog = ({
   );
   const [submitted, setSubmitted] = useUpdateState('settings-submitted', false);
   const dialogTitle = useRef<HTMLHeadingElement>(null);
-  const { dialog, dialogProps, closeDialog } = useModalDialog(onClose, {
+  const { dialogProps, closeDialog } = useModalDialog(onClose, {
     initialFocus: dialogTitle,
     dismissOnBackdrop: true,
   });
@@ -102,7 +102,6 @@ export const SettingsDialog = ({
     setSaving(true);
     try {
       await onSave(draft);
-      dialog.current?.close();
     } finally {
       setSaving(false);
     }
