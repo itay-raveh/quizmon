@@ -1,4 +1,4 @@
-import type { Pokemon, PokemonSpecies } from 'pokenode-ts';
+import type { Pokemon } from 'pokenode-ts';
 import {
   statNames,
   type PokemonKnowledge,
@@ -7,17 +7,7 @@ import {
 
 export const extractPokemonKnowledge = (
   pokemon: Pokemon,
-  species: PokemonSpecies,
-): Pick<
-  PokemonKnowledge,
-  | 'height'
-  | 'weight'
-  | 'isBaby'
-  | 'isUnevolved'
-  | 'eggGroups'
-  | 'abilitySlots'
-  | 'evYield'
-> => {
+): Pick<PokemonKnowledge, 'height' | 'weight' | 'abilitySlots' | 'evYield'> => {
   const measurement = (value: number) =>
     Number.isSafeInteger(value) && value > 0 ? value : undefined;
   const stats = pokemon.stats ?? [];
@@ -32,16 +22,6 @@ export const extractPokemonKnowledge = (
   return {
     height: measurement(pokemon.height),
     weight: measurement(pokemon.weight),
-    isBaby: typeof species.is_baby === 'boolean' ? species.is_baby : undefined,
-    isUnevolved:
-      species.evolves_from_species === null
-        ? true
-        : species.evolves_from_species?.name
-          ? false
-          : undefined,
-    eggGroups: species.egg_groups?.length
-      ? [...new Set(species.egg_groups.map(({ name }) => name))].sort()
-      : undefined,
     abilitySlots:
       pokemon.abilities?.length &&
       pokemon.abilities.every(

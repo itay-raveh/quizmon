@@ -56,9 +56,6 @@ export type PackedSpriteMeasurements = [
 export interface PokemonKnowledge {
   height?: number;
   weight?: number;
-  isBaby?: boolean;
-  isUnevolved?: boolean;
-  eggGroups?: string[];
   abilitySlots?: { name: string; hidden: boolean; slot: number }[];
   evYield?: Record<StatName, number>;
   abilities: string[];
@@ -70,7 +67,6 @@ export interface PokemonKnowledge {
   evolvesFrom: string | null;
   evolvesTo: string[];
   generation: Generation;
-  speciesGeneration: Generation;
   speciesId: number;
   speciesName: string;
   pokemonId: number;

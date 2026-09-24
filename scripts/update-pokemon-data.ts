@@ -156,31 +156,23 @@ const sortRecord = <T>(record: Record<string, T>): Record<string, T> =>
 export const buildPokemonCatalog = async (
   client: MainClient,
 ): Promise<PokemonCatalog> => {
-  const speciesByName = new Map<
-    string,
-    { species: PokemonSpecies; generation: Generation }
-  >();
+  const speciesByName = new Map<string, PokemonSpecies>();
 
-  for (const [index, generationName] of generations.entries()) {
+  for (const [index] of generations.entries()) {
     const generation = await client.game.getGenerationById(index + 1);
     const species = await client.resolveAll(generation.pokemon_species, {
       concurrency: CONCURRENCY,
     });
     for (const entry of species) {
-      speciesByName.set(entry.name, {
-        species: entry,
-        generation: generationName,
-      });
+      speciesByName.set(entry.name, entry);
     }
   }
 
-  const varietyLinks = Array.from(speciesByName.values()).flatMap(
-    ({ species }) => {
-      if (!species.varieties.some(({ is_default }) => is_default))
-        throw new Error(`${species.name} has no default Pokémon variety`);
-      return species.varieties.map(({ pokemon }) => pokemon);
-    },
-  );
+  const varietyLinks = Array.from(speciesByName.values()).flatMap((species) => {
+    if (!species.varieties.some(({ is_default }) => is_default))
+      throw new Error(`${species.name} has no default Pokémon variety`);
+    return species.varieties.map(({ pokemon }) => pokemon);
+  });
   const pokemon = await client.resolveAll(varietyLinks, {
     concurrency: CONCURRENCY,
   });
@@ -217,7 +209,7 @@ export const buildPokemonCatalog = async (
 
   const chainLinks = [
     ...new Map(
-      Array.from(speciesByName.values(), ({ species }) => [
+      Array.from(speciesByName.values(), (species) => [
         species.evolution_chain.url,
         species.evolution_chain,
       ]),
@@ -259,9 +251,7 @@ export const buildPokemonCatalog = async (
   const entries: Record<string, PokemonKnowledge> = {};
   for (const form of forms) {
     const entry = pokemonByName.get(form.pokemon.name)!;
-    const { species, generation: speciesGeneration } = speciesByName.get(
-      entry.species.name,
-    )!;
+    const species = speciesByName.get(entry.species.name)!;
     const versionGroup = versionsByName.get(form.version_group.name);
     const generation = generations.find(
       (value) =>
@@ -299,7 +289,7 @@ export const buildPokemonCatalog = async (
     if (family === undefined)
       throw new Error(`Missing evolution family for ${form.name}`);
     entries[key] = {
-      ...extractPokemonKnowledge(entry, species),
+      ...extractPokemonKnowledge(entry),
       abilities: entry.abilities
         .toSorted((left, right) => left.slot - right.slot)
         .map(({ ability }) => ability.name),
@@ -325,7 +315,6 @@ export const buildPokemonCatalog = async (
       evolvesFrom: evolvesFrom.get(key) ?? null,
       evolvesTo: [...(evolvesTo.get(key) ?? [])].sort(),
       generation,
-      speciesGeneration,
       speciesId: species.id,
       speciesName: species.name,
       pokemonId: entry.id,
