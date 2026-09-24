@@ -5,7 +5,7 @@ import {
 import type { QuestionLineup } from '../quiz/question-lineup.ts';
 import type { GameSettings } from '../settings/types.ts';
 import type { LeagueVictoryRecord } from './hall-of-fame.ts';
-import { normalizeResults, type SavedResults } from './results.ts';
+import { emptyResults, type SavedResults } from './results.ts';
 import type { TrainerProfile } from './trainer-profile.ts';
 import { isRecord } from '../../lib/validation.ts';
 import { parseVersionedSave, SaveError } from './save-schema.ts';
@@ -34,7 +34,7 @@ export const emptyPlayerData = (): PlayerData => ({
   hallOfFame: [],
   pokedex: [],
   profile: null,
-  results: normalizeResults(null),
+  results: emptyResults(),
   settings: null,
 });
 export const parsePlayerSave = (value: unknown): PlayerSave => {

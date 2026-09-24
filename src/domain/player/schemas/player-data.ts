@@ -31,7 +31,6 @@ import {
   trainingModes,
 } from '../../settings/types.ts';
 import type { LeagueVictoryRecord } from '../hall-of-fame.ts';
-import { normalizeResults, type SavedResults } from '../results.ts';
 import {
   normalizeTrainerProfile,
   TRAINER_NAME_MAX_LENGTH,
@@ -106,12 +105,16 @@ const results = z
       correctCategories: counts(questionCategories),
       correctGenerations: counts(generations),
       correctQuestionTypes: counts(savedQuestionTypes),
-      correctPokemon: z.array(name),
+      correctPokemon: z.array(name).transform((names) => [...new Set(names)]),
       masteryRounds: nonnegativeInteger,
       quickAttackCompleted: z.boolean(),
       quickAttackRounds: nonnegativeInteger,
     }),
-    streak: z.object({ creditedDates: z.array(z.custom<string>(isDailyDate)) }),
+    streak: z.object({
+      creditedDates: z
+        .array(z.custom<string>(isDailyDate))
+        .transform((dates) => [...new Set(dates)].sort()),
+    }),
     league: z.object({ completed: z.boolean(), seed: name.nullable() }),
   })
   .refine(
@@ -128,8 +131,6 @@ const results = z
       ) &&
       streak.creditedDates.every((date) => hasDailyResultOnDate(daily, date)),
   );
-const isResults = (value: unknown): value is SavedResults =>
-  results.safeParse(value).success;
 export const savedSettingsSchema = z.object({
   difficulty: difficultySchema,
   questionSelection: z.enum(['automatic', 'custom']),
@@ -179,7 +180,7 @@ const playerData = z.object({
       (lineup) =>
         lineup === null || lineup.questions.length === LEAGUE_QUESTION_COUNT,
     ),
-  results: z.custom<SavedResults>(isResults),
+  results,
   settings: savedSettingsSchema.nullable(),
   profile: z.unknown(),
 });
@@ -206,7 +207,7 @@ export const parsePlayerData = (value: unknown): PlayerData => {
     hallOfFame: data.hallOfFame,
     pokedex: [...new Set(data.pokedex)],
     profile,
-    results: normalizeResults(data.results),
+    results: data.results,
     settings: data.settings,
   };
 };
