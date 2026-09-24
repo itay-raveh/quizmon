@@ -1,0 +1,29 @@
+releaseImage:
+  repository: ghcr.io/example/quizmon/release
+  digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+runtimeConfig:
+  version: 1
+  workerName: quizmon-test
+  origin: https://game.example.test
+  sync:
+    endpoint: https://sync.example.test
+    audience: quizmon-test
+  hyperdriveId: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  mailFrom: signin@example.test
+  authRateLimitNamespace: '2001'
+  apiRateLimitNamespace: '2002'
+inputs:
+  migrationConnection:
+    name: migration-test
+    key: data
+    revision: '1'
+powersync:
+  enabled: true
+  sourceSecret:
+    name: source-test
+    key: data
+    revision: '1'
+  storageSecret:
+    name: storage-test
+    key: data
+    revision: '1'
