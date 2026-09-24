@@ -61,7 +61,12 @@ export async function readTrainer(db: NodePgDatabase, id: string) {
   const projection = projectRoundHistory(rounds);
   const pokedex = projection.pokedex;
   const stats = getTrainerStats(projection.results, pokedex);
-  const publicPlayer = (await publicPlayers(db, [id]))[0]!;
+  const publicPlayer = {
+    id: player.id,
+    code: player.code,
+    name: player.name.trim() || 'Trainer',
+    partnerPokemon: player.partner,
+  };
   const profile = {
     ...createTrainerProfile(),
     createdAt: player.joinedOn,
