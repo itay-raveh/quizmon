@@ -2,12 +2,14 @@ import { GameButton } from '@/components/GameButton';
 import { useModalDialog } from '@/hooks/useModalDialog';
 
 interface LeaveGameDialogProps {
+  confirmLabel?: string;
   resumable?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
 export const LeaveGameDialog = ({
+  confirmLabel = 'Leave game',
   resumable = false,
   onCancel,
   onConfirm,
@@ -38,7 +40,7 @@ export const LeaveGameDialog = ({
             Keep playing
           </GameButton>
           <GameButton className="confirm-dialog__confirm" onClick={confirm}>
-            Leave game
+            {confirmLabel}
           </GameButton>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { getTrainingScoreMultipliers } from '@/domain/quiz/score-multipliers';
 import { useDailyChallenge } from '@/features/daily/useDailyChallenge';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
-import { useCallback, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import {
   readUpdateState,
   useUpdateSnapshot,
@@ -135,6 +135,7 @@ export const App = () => {
     pauseTimer: pause,
     resetTimer: reset,
     session,
+    startDailyGame: daily.start,
     startTimer: start,
     timerRunning: running,
   });
@@ -169,7 +170,6 @@ export const App = () => {
     dispatch: dispatchSession,
     elapsedSeconds,
     getElapsedMilliseconds,
-    linkedDailyDate: daily.linkedDate,
     resetTimer: reset,
     session,
     startDailyGame: () => {
@@ -177,6 +177,20 @@ export const App = () => {
     },
     startTimer: start,
   });
+  const promptedDailyLink = useRef<string | null>(null);
+  useEffect(() => {
+    if (!daily.linkedDate) {
+      promptedDailyLink.current = null;
+      return;
+    }
+    if (restoringGame || session.phase !== 'questions') return;
+    if (session.mode.kind === 'daily' && session.mode.date === daily.linkedDate)
+      return;
+    const key = `${daily.linkedDate}:${session.roundId ?? session.seed}`;
+    if (promptedDailyLink.current === key) return;
+    promptedDailyLink.current = key;
+    navigation.requestLeave(true);
+  }, [daily.linkedDate, navigation, restoringGame, session]);
 
   return (
     <>

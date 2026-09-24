@@ -25,7 +25,6 @@ interface ActiveGameOptions {
   dispatch: Dispatch<GameSessionAction>;
   elapsedSeconds: number;
   getElapsedMilliseconds: () => number;
-  linkedDailyDate: string | null;
   resetTimer: (elapsedMilliseconds?: number) => void;
   session: GameSession;
   startDailyGame: () => void;
@@ -38,19 +37,15 @@ type Restoration =
 
 const resolveRestoration = (
   snapshot: ActiveGameSnapshot | null,
-  linkedDailyDate: string | null,
 ): Restoration => {
   if (!snapshot) return { kind: 'discard', shouldClear: false };
 
-  const conflictsWithDailyLink =
-    linkedDailyDate !== null &&
-    (snapshot.mode.kind !== 'daily' || snapshot.mode.date !== linkedDailyDate);
   const completedDaily =
     snapshot.mode.kind === 'daily' &&
     Boolean(readDailyResult(snapshot.mode.date, snapshot.mode.track));
 
   const finished = snapshot.answers.length === snapshot.questionCount;
-  if (conflictsWithDailyLink || (completedDaily && !finished)) {
+  if (completedDaily && !finished) {
     return { kind: 'discard', shouldClear: true };
   }
 
@@ -64,7 +59,6 @@ export const useActiveGame = ({
   dispatch,
   elapsedSeconds,
   getElapsedMilliseconds,
-  linkedDailyDate,
   resetTimer,
   session,
   startDailyGame,
@@ -88,10 +82,7 @@ export const useActiveGame = ({
       setRestoring(false);
       if (session.phase === 'results') return;
 
-      const restoration = resolveRestoration(
-        readActiveGame(catalog),
-        linkedDailyDate,
-      );
+      const restoration = resolveRestoration(readActiveGame(catalog));
       if (restoration.kind === 'discard') {
         if (restoration.shouldClear)
           void clearActiveGame().catch(reportSaveError);
@@ -136,7 +127,6 @@ export const useActiveGame = ({
     catalog,
     completeGame,
     dispatch,
-    linkedDailyDate,
     resetTimer,
     session.phase,
     startDailyGame,

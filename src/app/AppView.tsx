@@ -347,15 +347,16 @@ const AppOverlays = ({
     ) : null}
     {navigation.leaveConfirmationOpen ? (
       <LeaveGameDialog
+        confirmLabel={
+          navigation.dailyLinkConfirmation ? 'Play Daily' : undefined
+        }
         resumable={
           session.phase === 'questions' &&
           session.mode.kind === 'daily' &&
           Boolean(session.mode.track)
         }
         onCancel={navigation.cancelLeave}
-        onConfirm={() => {
-          void navigation.returnToLanding();
-        }}
+        onConfirm={() => void navigation.confirmLeave()}
       />
     ) : null}
   </>
