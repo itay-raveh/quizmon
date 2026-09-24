@@ -12,6 +12,8 @@ import {
 } from '../../domain/player/player-save';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { trainingConfig } from '../../domain/sync/progress';
+import { parseActiveGameSave } from '../../domain/player/active-game';
+import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { isRecord, isUuid } from '../validation';
 import { convertSavedDatabaseV1 } from './save-compatibility';
@@ -104,11 +106,23 @@ export const parseLocalPlayerState = (value: unknown): LocalPlayerState => {
         : 'invalid',
       'This local save is damaged or uses an unsupported version. It has been left unchanged.',
     );
+  if (value.dailyAttempts !== undefined && !isRecord(value.dailyAttempts))
+    throw new SaveError('invalid', 'The saved Daily attempts are damaged.');
+  const dailyAttempts = value.dailyAttempts ?? {};
+  for (const [key, attempt] of Object.entries(dailyAttempts)) {
+    const round = parseActiveGameSave(attempt);
+    if (
+      round.mode.kind !== 'daily' ||
+      !round.mode.track ||
+      getDailyResultKey(round.mode.date, round.mode.track) !== key
+    )
+      throw new SaveError('invalid', 'The saved Daily attempts are damaged.');
+  }
   return {
     version: 2,
     datasetId: value.datasetId,
     save: parsePlayerSave(value.save),
-    dailyAttempts: isRecord(value.dailyAttempts) ? value.dailyAttempts : {},
+    dailyAttempts,
     ...(isRecord(value.account) &&
     typeof value.account.id === 'string' &&
     isUuid(value.account.serverEpoch)
