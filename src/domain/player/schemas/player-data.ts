@@ -1,11 +1,6 @@
 import { z } from 'zod';
 import { isAnswerSubject } from '../../quiz/subject.ts';
-import {
-  isDailyDate,
-  isFiniteNonnegative,
-  isSafeNonnegativeInteger,
-  isUtcTimestamp,
-} from '../../../lib/validation.ts';
+import { isDailyDate, isUtcTimestamp } from '../../../lib/validation.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../../quiz/league.ts';
 import {
@@ -43,8 +38,8 @@ import {
 } from '../trainer-profile.ts';
 
 const name = z.string().min(1).max(200);
-const nonnegativeInteger = z.custom<number>(isSafeNonnegativeInteger);
-const finiteNonnegative = z.custom<number>(isFiniteNonnegative);
+const nonnegativeInteger = z.int().min(0);
+const finiteNonnegative = z.number().nonnegative();
 const counts = (keys: readonly string[]) =>
   z.partialRecord(z.enum(keys), nonnegativeInteger);
 const savedQuestionTypes = [...questionTypes, 'champion'] as const;
@@ -73,7 +68,7 @@ const savedResult = z
     contentVersion: nonnegativeInteger,
     scoreVersion: nonnegativeInteger.optional(),
     correctCount: nonnegativeInteger,
-    questionCount: nonnegativeInteger.refine((count) => count >= 1),
+    questionCount: nonnegativeInteger.min(1),
     score: nonnegativeInteger,
     elapsedSeconds: finiteNonnegative,
     elapsedMilliseconds: finiteNonnegative.optional(),
@@ -142,7 +137,7 @@ const settings = z.object({
   timerDisplay: z.enum(timerDisplays),
   trainingMode: z.enum(trainingModes),
   reduceMotion: z.boolean(),
-  soundVolume: finiteNonnegative.refine((volume) => volume <= 1),
+  soundVolume: finiteNonnegative.max(1),
   formGroups: z
     .array(z.enum(formGroups))
     .min(1)

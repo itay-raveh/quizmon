@@ -23,15 +23,10 @@ import {
   trainingModes,
   type GameSettings,
 } from '../../settings/types.ts';
-import {
-  isDailyDate,
-  isFiniteNonnegative,
-  isNonnegativeInteger,
-  isUtcTimestamp,
-} from '../../../lib/validation.ts';
+import { isDailyDate, isUtcTimestamp } from '../../../lib/validation.ts';
 
-const nonnegativeInteger = z.custom<number>(isNonnegativeInteger);
-const finiteNonnegative = z.custom<number>(isFiniteNonnegative);
+const nonnegativeInteger = z.int().min(0);
+const finiteNonnegative = z.number().nonnegative();
 const mode = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('training') }),
   z.object({ kind: z.literal('league') }),
@@ -66,7 +61,7 @@ const settings = z.looseObject({
   answerFlow: z.enum(answerFlows),
   timerDisplay: z.enum(timerDisplays),
   reduceMotion: z.boolean(),
-  soundVolume: finiteNonnegative.refine((volume) => volume <= 1),
+  soundVolume: finiteNonnegative.max(1),
   difficulty: z.custom(isDifficulty).optional(),
   questionSelection: z.enum(['custom', 'automatic']).optional(),
   automaticQuestionTypes: z.array(z.enum(questionTypes)).optional(),
@@ -79,7 +74,7 @@ const round = z
     scoreMultipliers: z.custom<ScoreMultipliers>(isScoreMultipliers).optional(),
     contentVersion: nonnegativeInteger,
     elapsedMilliseconds: finiteNonnegative,
-    questionCount: nonnegativeInteger.refine((count) => count >= 1),
+    questionCount: nonnegativeInteger.min(1),
     seed: z.string().min(1).max(200),
     answers: z.array(answer),
     questions: z.array(z.custom<QuestionData>(isQuestionData)),

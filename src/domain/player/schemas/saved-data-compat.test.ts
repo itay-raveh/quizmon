@@ -54,6 +54,13 @@ it('preserves unfinished-round output and unknown settings', () => {
   expect(parseRound({ ...round, questionCount: 2 })).toBeNull();
 });
 
+it('rejects unsafe saved round counts', () => {
+  expect(parseRound(round)).not.toBeNull();
+  expect(
+    parseRound({ ...round, questionCount: Number.MAX_SAFE_INTEGER + 1 }),
+  ).toBeNull();
+});
+
 it('keeps player-data normalization and recovery error category', () => {
   const base = emptyPlayerData();
   expect(parsePlayerData({ ...base, pokedex: ['A', 'A'] }).pokedex).toEqual([
