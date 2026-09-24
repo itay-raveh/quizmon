@@ -128,7 +128,8 @@
       ".": {
         "entry": [
           "server/auth-schema-config.ts",
-          "deploy/migrate-release.ts"
+          "deploy/migrate-release.ts",
+          "worker/index.ts"
         ]
       }
     },

@@ -3,6 +3,7 @@ filter = '''
 finding["rule_id"] == "generic-credential-uri" &&
 filter.matchesAny(attributes["path"], [
   `^deploy/wrangler\.json$`,
+  `^deploy/wrangler\.jsonc$`,
   `^deploy/wrangler\.dev\.jsonc$`,
   `^deploy/powersync/service\.yaml$`,
   `^tests/online/[^/]+\.ts$`
