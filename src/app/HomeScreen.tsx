@@ -98,9 +98,9 @@ export const HomeScreen = ({
                   <span className="landing__spinner" aria-hidden="true" />
                   Preparing Daily Challenge…
                 </span>
-              ) : dailyDetail ? (
+              ) : (
                 <span className="daily-action__detail">{dailyDetail}</span>
-              ) : null}
+              )}
             </span>
             <CatchCombo count={dailyStreak} />
           </GameButton>

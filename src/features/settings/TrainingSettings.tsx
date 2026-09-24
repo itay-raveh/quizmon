@@ -188,7 +188,7 @@ export const TrainingSettings = ({
                   onChange((current) => ({
                     ...current,
                     formGroups: toggleValue(
-                      current.formGroups ?? formGroups,
+                      current.formGroups,
                       group,
                       event.target.checked,
                     ),
