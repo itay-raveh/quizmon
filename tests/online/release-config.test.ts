@@ -43,26 +43,13 @@ await test('runtime renderer preserves game bindings and limits without local da
     { binding: 'ACCOUNT_DB', id: config.hyperdriveId },
   ]);
   assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
+  assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
   assert.equal(rendered.vars.POWERSYNC_AUDIENCE, input.sync.audience);
+  assert.equal(rendered.main, './worker/index.ts');
   assert.equal(rendered.assets.directory, './dist');
   assert.equal(rendered.no_bundle, false);
   assert.ok(!JSON.stringify(rendered).includes('127.0.0.1'));
   assert.ok(!JSON.stringify(rendered).includes('test-mailbox'));
-});
-
-await test('source renderer bundles the Worker from the repository with built assets', () => {
-  const template = readWorkerTemplate(
-    new URL('../../deploy/wrangler.jsonc', import.meta.url).pathname,
-  );
-  const rendered = renderSourceWorkerConfig(
-    template,
-    readReleaseConfig(config),
-  );
-  assert.equal(rendered.main, './worker/index.ts');
-  assert.equal(rendered.assets.directory, './dist');
-  assert.equal(rendered.no_bundle, false);
-  assert.equal(rendered.hyperdrive[0]?.id, config.hyperdriveId);
-  assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
 });
 
 await test('unsupported, incomplete, or local production inputs are rejected before preparing output', () => {
