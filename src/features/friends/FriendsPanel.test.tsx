@@ -21,7 +21,7 @@ test('initial loading shows friend-list rows instead of a text placeholder', () 
   }
 });
 
-test('opening a friend link does not offer an automatic request', () => {
+test('initial friend-link view shows the manual-request disclaimer', () => {
   vi.stubGlobal('location', new URL('https://quizmon.test'));
   try {
     const markup = renderToStaticMarkup(

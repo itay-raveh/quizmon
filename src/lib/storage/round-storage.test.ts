@@ -10,7 +10,7 @@ vi.mock('../analytics', () => ({ trackGameCompleted }));
 
 import { commitRoundCompletion } from './round-storage';
 
-it('counts a saved round once even when completion is retried', async () => {
+it('tracks completion only when the storage result says it was recorded', async () => {
   const completion = {
     mode: 'training',
     result: { score: 1200 },
