@@ -260,6 +260,7 @@ export const parseBackup = (text: string): PlayerBackup => {
     )
       throw new Error('The backup contains an invalid action.');
   }
+  const actionPayloads = new Map(actions.map((row) => [row.id, row.payload]));
   const completions = readRows(records, 'local_completions');
   const serverRounds = state.account
     ? readRows(records, 'server_rounds', true)
@@ -280,12 +281,7 @@ export const parseBackup = (text: string): PlayerBackup => {
     : undefined;
   if (
     pending &&
-    pending.some(
-      (row) =>
-        !actions.some(
-          (action) => action.id === row.id && action.payload === row.payload,
-        ),
-    )
+    pending.some((row) => actionPayloads.get(row.id) !== row.payload)
   )
     throw new Error('The backup contains an unrecognized pending change.');
   const reviewIssues = value.reviewIssues;
@@ -299,10 +295,10 @@ export const parseBackup = (text: string): PlayerBackup => {
           typeof issue.reason !== 'string'
         )
           return false;
-        const row = actions.find((action) => action.id === issue.operationId);
+        const payload = actionPayloads.get(issue.operationId);
         return (
-          row !== undefined &&
-          canonical((JSON.parse(row.payload) as LocalAction).payload) ===
+          payload !== undefined &&
+          canonical((JSON.parse(payload) as LocalAction).payload) ===
             canonical(issue.payload)
         );
       }))

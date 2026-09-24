@@ -118,6 +118,25 @@ it('rejects malformed pending payloads before restore and retains valid offline 
   expect(parseBackup(JSON.stringify(backup)).records.pending_actions).toEqual([
     row,
   ]);
+  expect(() =>
+    parseBackup(
+      JSON.stringify({
+        ...backup,
+        records: {
+          ...backup.records,
+          pending_actions: [
+            {
+              id,
+              payload: JSON.stringify({
+                ...action,
+                payload: { id, unit: 'name', value: 'Different' },
+              }),
+            },
+          ],
+        },
+      }),
+    ),
+  ).toThrow('The backup contains an unrecognized pending change.');
 
   const malformed = {
     ...backup,
