@@ -327,8 +327,7 @@ export const downloadBackup = async (): Promise<void> => {
   );
 };
 
-export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {
-  const validated = parseBackup(JSON.stringify(backup));
+export const restoreBackup = async (validated: PlayerBackup): Promise<void> => {
   const recovery = Boolean(getSaveIssue());
   await (recovery ? recoverPlayer : transactPlayer)(async (state, tx) => {
     if (validated.state.account) {

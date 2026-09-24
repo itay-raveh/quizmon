@@ -4,7 +4,7 @@ import {
 } from '../../domain/player/player-save';
 import { archiveCompletion } from '../../domain/sync/round-facts';
 import { completion } from '../../../tests/online/progress-fixtures';
-import { parseBackup, restoreBackup, type PlayerBackup } from './backup';
+import { parseBackup } from './backup';
 
 it('converts old rounds and keeps pending edits for review', () => {
   const datasetId = crypto.randomUUID();
@@ -84,7 +84,7 @@ it('converts old rounds and keeps pending edits for review', () => {
   });
 });
 
-it('rejects malformed pending payloads before restore and retains valid offline edits', async () => {
+it('rejects malformed pending payloads and retains valid offline edits', () => {
   const datasetId = crypto.randomUUID();
   const id = crypto.randomUUID();
   const action = {
@@ -154,7 +154,7 @@ it('rejects malformed pending payloads before restore and retains valid offline 
       pending_actions: [],
     },
   };
-  await expect(restoreBackup(malformed as PlayerBackup)).rejects.toThrow(
+  expect(() => parseBackup(JSON.stringify(malformed))).toThrow(
     'The backup contains an invalid action.',
   );
 
