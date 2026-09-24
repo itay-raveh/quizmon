@@ -54,7 +54,7 @@
 
 @media (max-width: 50rem) {
   .app--with-navigation .toast[popover] {
-    bottom: calc(6.25rem + env(safe-area-inset-bottom));
+    bottom: var(--app-navigation-clearance);
   }
 }
 

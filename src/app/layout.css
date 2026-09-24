@@ -108,22 +108,27 @@
 
 @media (max-width: 50rem) {
   .app--with-navigation {
-    --app-safe-bottom: 0px;
-    padding-bottom: calc(6.25rem + var(--app-safe-bottom));
+    --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --app-safe-bottom-max: env(
+      safe-area-max-inset-bottom,
+      var(--app-safe-bottom)
+    );
+    --app-navigation-clearance: calc(6.25rem + var(--app-safe-bottom));
+    padding-bottom: calc(6.25rem + var(--app-safe-bottom-max));
   }
 
   .app--with-navigation .app__screen {
-    min-height: calc(100svh - 6.25rem - var(--app-safe-bottom));
+    min-height: calc(100svh - 6.25rem - var(--app-safe-bottom-max));
   }
 
   .app-navigation {
     position: fixed;
     z-index: 5;
     right: 0;
-    bottom: 0;
+    bottom: calc(var(--app-safe-bottom) - var(--app-safe-bottom-max));
     left: 0;
     width: 100%;
-    padding: 0.6rem 0.65rem calc(0.8rem + var(--app-safe-bottom));
+    padding: 0.6rem 0.65rem calc(0.8rem + var(--app-safe-bottom-max));
     grid-template-columns: repeat(4, minmax(0, 1fr));
     background: var(--paper);
     border-top: 2px solid var(--navy);
@@ -139,17 +144,13 @@
 
   .app--with-navigation main {
     min-height: max(
-      calc(100svh - 18.25rem - var(--app-safe-bottom)),
-      clamp(26.75rem, calc(100svh - 14rem - var(--app-safe-bottom)), 29.25rem)
+      calc(100svh - 18.25rem - var(--app-safe-bottom-max)),
+      clamp(
+        26.75rem,
+        calc(100svh - 14rem - var(--app-safe-bottom-max)),
+        29.25rem
+      )
     );
-  }
-}
-
-@supports (-webkit-touch-callout: none) {
-  @media (max-width: 50rem) {
-    .app--with-navigation {
-      --app-safe-bottom: env(safe-area-inset-bottom);
-    }
   }
 }
 
