@@ -1,9 +1,13 @@
-export interface SocialPlayer {
-  id: string;
-  code: string | null;
-  name: string;
-  partnerPokemon: string | null;
-}
+import { z } from 'zod';
+
+export const socialPlayerSchema = z.object({
+  id: z.string(),
+  code: z.string().nullable(),
+  name: z.string(),
+  partnerPokemon: z.string().nullable(),
+});
+
+export type SocialPlayer = z.infer<typeof socialPlayerSchema>;
 
 export interface FriendRelation {
   id: string;

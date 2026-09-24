@@ -1,27 +1,31 @@
+import { z } from 'zod';
 import type {
   DailyLeaderboard,
   Leaderboard,
-  LeaderboardEntry,
   LeaderboardScope,
 } from '../../domain/social/leaderboards';
-import { isRecord, isSafeNonnegativeInteger } from '../../lib/validation';
+import { socialPlayerSchema } from '../../domain/social/friends';
 import { accountSnapshot } from '../account/account';
 
-function entry(value: unknown): value is LeaderboardEntry {
-  if (!isRecord(value) || !isRecord(value.player)) return false;
-  const player = value.player;
-  return (
-    typeof player.id === 'string' &&
-    typeof player.name === 'string' &&
-    (player.code === null || typeof player.code === 'string') &&
-    (player.partnerPokemon === null ||
-      typeof player.partnerPokemon === 'string') &&
-    isSafeNonnegativeInteger(value.rank) &&
-    value.rank > 0 &&
-    isSafeNonnegativeInteger(value.score) &&
-    isSafeNonnegativeInteger(value.elapsedMilliseconds)
-  );
-}
+const entry = z.object({
+  player: socialPlayerSchema,
+  rank: z.int().min(1),
+  score: z.int().min(0),
+  elapsedMilliseconds: z.int().min(0),
+});
+const leaderboardResponse = z.object({
+  accountId: z.string(),
+  date: z.string().optional(),
+  scope: z.enum(['global', 'friends']),
+  checkedAt: z.string().refine((value) => Number.isFinite(Date.parse(value))),
+  total: z.int().min(0),
+  items: z.array(entry),
+  viewer: entry.nullable(),
+  nextCursor: z
+    .string()
+    .regex(/^\d{1,9}$/)
+    .nullable(),
+});
 
 export async function readDailyLeaderboard(
   owner: string,
@@ -82,36 +86,22 @@ async function readLeaderboard(
   if (response.status === 429)
     throw new Error('Too many requests. Wait a minute, then try again.');
   if (!response.ok) throw new Error('Leaderboards are unavailable. Try again.');
-  const value: unknown = await response.json().catch(() => null);
+  const parsed = leaderboardResponse.safeParse(
+    await response.json().catch(() => null),
+  );
   if (accountSnapshot().owner !== owner) throw new Error(changed);
+  if (!parsed.success)
+    throw new Error(
+      'The leaderboard returned an unreadable response. Try again.',
+    );
+  const value = parsed.data;
   if (
-    !isRecord(value) ||
     value.accountId !== owner ||
-    (mode === 'daily' ? value.date !== date : 'date' in value) ||
-    value.scope !== scope ||
-    typeof value.checkedAt !== 'string' ||
-    !Number.isFinite(Date.parse(value.checkedAt)) ||
-    !isSafeNonnegativeInteger(value.total) ||
-    !Array.isArray(value.items) ||
-    !value.items.every(entry) ||
-    !(value.viewer === null || entry(value.viewer)) ||
-    !(
-      value.nextCursor === null ||
-      (typeof value.nextCursor === 'string' &&
-        /^\d{1,9}$/.test(value.nextCursor))
-    )
+    (mode === 'daily' ? value.date !== date : value.date !== undefined) ||
+    value.scope !== scope
   )
     throw new Error(
       'The leaderboard returned an unreadable response. Try again.',
     );
-  return {
-    accountId: owner,
-    ...(date ? { date } : {}),
-    scope,
-    checkedAt: value.checkedAt,
-    total: value.total,
-    items: value.items,
-    viewer: value.viewer,
-    nextCursor: value.nextCursor,
-  };
+  return value;
 }

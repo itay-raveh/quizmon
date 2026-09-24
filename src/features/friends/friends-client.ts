@@ -1,5 +1,9 @@
 import { isRecord } from '../../lib/validation';
-import type { FriendRelation, SocialPlayer } from '../../domain/social/friends';
+import {
+  socialPlayerSchema,
+  type FriendRelation,
+  type SocialPlayer,
+} from '../../domain/social/friends';
 import { accountSnapshot } from '../account/account';
 
 export interface FriendsPage {
@@ -62,20 +66,9 @@ async function request(
 }
 
 function player(value: unknown): SocialPlayer {
-  if (
-    !isRecord(value) ||
-    typeof value.id !== 'string' ||
-    typeof value.name !== 'string' ||
-    !(value.code === null || typeof value.code === 'string') ||
-    !(value.partnerPokemon === null || typeof value.partnerPokemon === 'string')
-  )
-    throw new Error('Friends returned an invalid player.');
-  return {
-    id: value.id,
-    name: value.name,
-    code: value.code,
-    partnerPokemon: value.partnerPokemon,
-  };
+  const parsed = socialPlayerSchema.safeParse(value);
+  if (!parsed.success) throw new Error('Friends returned an invalid player.');
+  return parsed.data;
 }
 
 function relation(value: unknown): FriendRelation {

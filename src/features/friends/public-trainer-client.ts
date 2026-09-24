@@ -5,7 +5,10 @@ import {
   trainerProfileSchema,
   type TrainerProfile,
 } from '../../domain/player/trainer-profile';
-import type { SocialPlayer } from '../../domain/social/friends';
+import {
+  socialPlayerSchema,
+  type SocialPlayer,
+} from '../../domain/social/friends';
 import { accountSnapshot } from '../account/account';
 
 export interface PublicTrainer {
@@ -18,12 +21,7 @@ export interface PublicTrainer {
 
 const count = z.int().min(0);
 const publicTrainerSchema = z.object({
-  player: z.object({
-    id: z.string(),
-    name: z.string(),
-    code: z.string().nullable(),
-    partnerPokemon: z.string().nullable(),
-  }),
+  player: socialPlayerSchema,
   profile: trainerProfileSchema,
   stats: progressSchema.extend({
     bestDailyStreak: count,
