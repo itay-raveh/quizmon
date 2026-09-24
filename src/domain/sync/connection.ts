@@ -1,7 +1,6 @@
 import { isRecord } from '../../lib/validation.ts';
 
 export interface SyncConnection {
-  version: 1;
   endpoint: string;
   audience: string;
 }
@@ -9,7 +8,6 @@ export interface SyncConnection {
 export function readSyncConnection(value: unknown): SyncConnection {
   if (
     !isRecord(value) ||
-    value.version !== 1 ||
     typeof value.endpoint !== 'string' ||
     typeof value.audience !== 'string' ||
     !value.audience.trim() ||
@@ -30,7 +28,6 @@ export function readSyncConnection(value: unknown): SyncConnection {
   )
     throw new Error('The account service returned an unsafe sync endpoint.');
   return {
-    version: 1,
     endpoint: endpoint.href.replace(/\/+$/, ''),
     audience: value.audience,
   };

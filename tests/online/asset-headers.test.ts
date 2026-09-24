@@ -5,7 +5,6 @@ import { accountAssetHeaders } from '../../deploy/asset-headers.ts';
 const template =
   "/*\n  Content-Security-Policy: default-src 'self'; connect-src 'self'; script-src 'self'; upgrade-insecure-requests\n  X-Frame-Options: DENY\n";
 const sync = {
-  version: 1,
   endpoint: 'https://sync.example.test/path/',
   audience: 'quizmon',
 };

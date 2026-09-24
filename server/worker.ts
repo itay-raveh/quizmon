@@ -56,7 +56,6 @@ export default {
         throw new Error('Email binding is missing.');
       return createAccountApi({
         sync: {
-          version: 1,
           endpoint: env.POWERSYNC_URL,
           audience: env.POWERSYNC_AUDIENCE,
         },

@@ -7,7 +7,6 @@ const valid = {
   origin: 'https://game.example.test',
   secret: 'x'.repeat(32),
   sync: {
-    version: 1 as const,
     endpoint: 'https://sync.example.test',
     audience: 'quizmon',
   },

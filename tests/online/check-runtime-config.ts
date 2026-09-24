@@ -182,7 +182,7 @@ try {
     const worker = await startAccountWorker({
       connectionString: dbUrl(`source_${name}`),
       prebuiltWorkerDir,
-      sync: { version: 1, endpoint, audience: `quizmon-${name}` },
+      sync: { endpoint, audience: `quizmon-${name}` },
     });
     workers.push(worker);
     const base = worker.base;

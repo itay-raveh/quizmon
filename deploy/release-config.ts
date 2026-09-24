@@ -11,7 +11,6 @@ export const releaseConfigSchema = z.object({
   workerName: z.string().regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
   origin: z.string().min(1),
   sync: z.object({
-    version: z.literal(1),
     endpoint: z.string().min(1),
     audience: z.string().min(1),
   }),

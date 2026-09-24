@@ -32,7 +32,6 @@ const runtimeConfig = {
   workerName: 'quizmon-test',
   origin: 'https://game.example.test',
   sync: {
-    version: 1,
     endpoint: 'https://sync.example.test',
     audience: 'quizmon-test',
   },
