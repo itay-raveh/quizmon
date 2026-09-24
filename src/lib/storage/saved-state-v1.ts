@@ -4,7 +4,7 @@ import {
 } from '../../domain/player/player-save.ts';
 import { isRecord, isUuid } from '../validation.ts';
 
-export interface LegacyLocalPlayerState {
+export interface SavedPlayerStateV1 {
   version: 1;
   datasetId: string;
   save: PlayerSave;
@@ -12,9 +12,7 @@ export interface LegacyLocalPlayerState {
   account?: { id: string; generationId: string; serverEpoch: string };
 }
 
-export function parseLegacyLocalPlayerState(
-  value: unknown,
-): LegacyLocalPlayerState {
+export function parseSavedPlayerStateV1(value: unknown): SavedPlayerStateV1 {
   if (
     !isRecord(value) ||
     value.version !== 1 ||

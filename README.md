@@ -21,9 +21,7 @@ npm run dev
 
 Optional accounts sync completed progress and add friends and Daily leaderboards. Local development requires Docker. The [Helm chart](charts/quizmon/) packages the online services; `deploy/` contains their release tooling.
 
-The local account service uses `quizmon_new` and a separate `powersync_new` bucket database. `npm run dev` creates them if needed and leaves the older `quizmon_pilot` databases intact. Completed rounds are archived once, and account progress and Pokédex entries are derived from those rounds. Unfinished rounds stay in the browser.
-
-To rehearse the old database import, create an empty database with the migration in `server/migrations`, then run `node scripts/import-new-db.ts --source OLD_URL --target EMPTY_NEW_URL --report REPORT.json`. If the source has multiple email budget rows, specify the shared sending budget with `--budget-id ID`. The source connection is read-only. The report uses pseudonymous user IDs and lists score changes, inferred Daily starts, discarded standalone discoveries, and reconciliation results. `node scripts/benchmark-new-db.ts LOCAL_DISPOSABLE_DATABASE_URL REPORT.json` measures the imported sample at 1×, 10×, and 100×. Both scripts require a disposable target. Production cutover requires a separately approved freeze, backup, final import, reconciliation, and release.
+The local account service uses `quizmon` and a separate `powersync` bucket database. `npm run dev` creates them if needed. Completed rounds are archived once, and account progress and Pokédex entries are derived from those rounds. Unfinished rounds stay in the browser.
 
 ## Sentry
 

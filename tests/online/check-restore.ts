@@ -120,7 +120,7 @@ try {
     );
     assert.notEqual(after.serverEpoch, before.serverEpoch);
     process.stdout.write(
-      'new database restore, export comparison, and stale epoch rejection passed\n',
+      'database restore, export comparison, and stale epoch rejection passed\n',
     );
   } finally {
     await restored.end();

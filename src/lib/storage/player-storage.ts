@@ -14,7 +14,7 @@ import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { trainingConfig } from '../../domain/sync/progress';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { isRecord, isUuid } from '../validation';
-import { convertLegacyDatabase } from './legacy-conversion';
+import { convertSavedDatabaseV1 } from './save-compatibility';
 import {
   openLocalDatabase,
   type LocalRow,
@@ -151,7 +151,7 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
     accountDatabase = Boolean(accountId);
     database = openLocalDatabase(accountId);
     await database.init();
-    await convertLegacyDatabase(database, accountId);
+    await convertSavedDatabaseV1(database, accountId);
     const [stored] = await database.getAll<LocalRow>(
       "SELECT id,payload FROM local_state WHERE id = 'player'",
     );

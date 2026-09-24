@@ -119,7 +119,7 @@ export const getTrainingScoreMultipliers = (
   settings: Pick<GameSettings, 'difficulty' | 'generations' | 'questionTypes'> &
     Partial<Pick<GameSettings, 'formGroups'>>,
   questions?: readonly Pick<QuestionData, 'questionType'>[],
-  legacyAverage = false,
+  previousAverage = false,
 ): ScoreMultipliers | undefined => {
   if (!settings.difficulty || !settings.generations.length) return undefined;
   const difficulty = settings.difficulty;
@@ -153,7 +153,7 @@ export const getTrainingScoreMultipliers = (
         generations: selectedGenerations.size,
         formGroupCount,
         ...(actualFactors
-          ? legacyAverage
+          ? previousAverage
             ? {
                 questionMix:
                   actualFactors.reduce<number>(

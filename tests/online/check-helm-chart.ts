@@ -113,7 +113,7 @@ try {
     ).metadata.name,
     job(base).metadata.name,
   );
-  const legacy = {
+  const previous = {
     ...values,
     inputs: {
       ...values.inputs,
@@ -123,7 +123,7 @@ try {
     release: { mode: 'deploy' },
   };
   assert.equal(
-    job(await render(legacy)).metadata.name,
+    job(await render(previous)).metadata.name,
     job(base).metadata.name,
   );
   for (const changed of [

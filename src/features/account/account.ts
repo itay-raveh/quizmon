@@ -33,7 +33,7 @@ import { isRecord } from '../../lib/validation';
 import { readSyncConnection } from '../../domain/sync/connection';
 import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 import { writeStoredValue } from '../../lib/storage/browser-storage';
-import { convertLegacyDatabase } from '../../lib/storage/legacy-conversion';
+import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
 
 const selectionKey = 'quizmon.baseline.account';
 export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
@@ -184,8 +184,8 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
     try {
       await guest.init();
       await target.init();
-      await convertLegacyDatabase(guest);
-      await convertLegacyDatabase(target, destination.id);
+      await convertSavedDatabaseV1(guest);
+      await convertSavedDatabaseV1(target, destination.id);
       let source = await readState(guest);
       const [handoff] = await guest.getAll<LocalRow>(
         "SELECT id,payload FROM local_state WHERE id = 'handoff'",

@@ -1,18 +1,17 @@
-name: quizmon-accounts-sync-pilot
+name: quizmon
 services:
   db:
     image: postgres:18@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280
     command: [postgres, -c, wal_level=logical]
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
-      POSTGRES_DB: quizmon_pilot
+      POSTGRES_DB: quizmon
     ports:
       - '127.0.0.1:5548:5432'
     volumes:
-      - pilot-db:/var/lib/postgresql
-      - ./deploy/init.sql:/docker-entrypoint-initdb.d/01-pilot.sql:ro
+      - database:/var/lib/postgresql
     healthcheck:
-      test: [CMD-SHELL, pg_isready -U postgres -d quizmon_pilot]
+      test: [CMD-SHELL, pg_isready -U postgres -d quizmon]
       interval: 2s
       timeout: 2s
       retries: 20
@@ -32,4 +31,4 @@ services:
     volumes:
       - ./deploy/powersync:/config:ro
 volumes:
-  pilot-db:
+  database:

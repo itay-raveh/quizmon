@@ -17,21 +17,7 @@ const reportFailure = (error: unknown) => {
 };
 
 export default {
-  async fetch(
-    request: Request,
-    env: Partial<AccountEnv> & { ACCOUNT_READ_ONLY?: string },
-  ) {
-    if (
-      env.ACCOUNT_READ_ONLY === '1' &&
-      !['GET', 'HEAD'].includes(request.method)
-    )
-      return Response.json(
-        { error: 'Account sync is temporarily paused.' },
-        {
-          status: 503,
-          headers: { 'Cache-Control': 'no-store', 'Retry-After': '60' },
-        },
-      );
+  async fetch(request: Request, env: Partial<AccountEnv>) {
     if (
       !env.ACCOUNT_DB ||
       !env.AUTH_RATE_LIMIT ||
