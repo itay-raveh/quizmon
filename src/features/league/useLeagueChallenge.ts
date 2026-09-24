@@ -4,7 +4,6 @@ import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { getLeagueSettings } from '../../domain/quiz/league';
 import { buildLeagueQuestions } from '../../domain/quiz/question-generation';
 import type { GameSettings } from '../../domain/settings/types';
-import { createRoundSeed } from '../../lib/random';
 import { readPlayerSave } from '../../lib/storage/player-storage';
 
 interface LeagueChallengeOptions {
@@ -20,7 +19,7 @@ export const useLeagueChallenge = ({
 }: LeagueChallengeOptions) => {
   const start = useCallback(() => {
     if (!catalog) return;
-    const seed = createRoundSeed();
+    const seed = crypto.randomUUID();
     const leagueSettings = getLeagueSettings(settings);
     void startGame(
       buildLeagueQuestions(

@@ -25,6 +25,3 @@ export const createSeededRandom = (seed: RandomSeed): (() => number) =>
   seedrandom(typeof seed === 'string' ? seed : JSON.stringify(seed), {
     global: false,
   });
-
-export const createRoundSeed = (): string =>
-  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;

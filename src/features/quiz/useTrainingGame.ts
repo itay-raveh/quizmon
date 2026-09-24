@@ -11,7 +11,7 @@ import {
 import { TRAINING_QUESTION_COUNT } from '@/domain/settings/game-settings';
 import { type GameSettings } from '@/domain/settings/types';
 import { useUpdateState } from '@/features/installation/update-session';
-import { createRoundSeed, createSeededRandom } from '@/lib/random';
+import { createSeededRandom } from '@/lib/random';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { useCallback, useRef, useState } from 'react';
 import {
@@ -53,7 +53,7 @@ export const useTrainingGame = ({
   const startRound = useCallback(
     (nextSettings: GameSettings) => {
       if (!catalog) return;
-      const seed = createRoundSeed();
+      const seed = crypto.randomUUID();
       const gameSettings = resolveTrainingSettings(catalog, nextSettings);
       const questions = buildQuestions(
         catalog,
