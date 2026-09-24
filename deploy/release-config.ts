@@ -8,32 +8,17 @@ import {
 
 export const releaseConfigSchema = z.object({
   version: z.literal(1),
-  workerName: z
-    .string()
-    .min(1)
-    .regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
+  workerName: z.string().regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
   origin: z.string().min(1),
   sync: z.object({
     version: z.literal(1),
     endpoint: z.string().min(1),
     audience: z.string().min(1),
   }),
-  hyperdriveId: z
-    .string()
-    .min(1)
-    .regex(/^[a-fA-F0-9]{32}$/),
-  mailFrom: z
-    .string()
-    .min(1)
-    .regex(/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/),
-  authRateLimitNamespace: z
-    .string()
-    .min(1)
-    .regex(/^[1-9]\d*$/),
-  apiRateLimitNamespace: z
-    .string()
-    .min(1)
-    .regex(/^[1-9]\d*$/),
+  hyperdriveId: z.string().regex(/^[a-fA-F0-9]{32}$/),
+  mailFrom: z.string().regex(/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/),
+  authRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
+  apiRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
 });
 
 export type ReleaseConfig = z.infer<typeof releaseConfigSchema> & {
@@ -60,51 +45,16 @@ function publicUrl(value: string) {
 }
 
 export function readReleaseConfig(value: unknown): ReleaseConfig {
-  if (!isRecord(value) || value.version !== 1)
-    throw new Error('Unsupported release configuration.');
-  const parsed = releaseConfigSchema.safeParse(value);
-  const missing = parsed.success
-    ? undefined
-    : parsed.error.issues.find(
-        (issue) =>
-          issue.path.length === 1 &&
-          [
-            'workerName',
-            'origin',
-            'hyperdriveId',
-            'mailFrom',
-            'authRateLimitNamespace',
-            'apiRateLimitNamespace',
-          ].includes(String(issue.path[0])) &&
-          (issue.code === 'invalid_type' || issue.code === 'too_small'),
-      );
-  if (missing)
-    throw new Error(
-      `Missing release configuration: ${String(missing.path[0])}.`,
-    );
-  const origin = publicUrl(value.origin as string);
-  const sync = readSyncConnection(value.sync);
+  const config = releaseConfigSchema.parse(value);
+  const origin = publicUrl(config.origin);
+  const sync = readSyncConnection(config.sync);
   publicUrl(sync.endpoint);
   if (origin.pathname !== '/')
     throw new Error('The application origin cannot contain a path.');
-  const invalid = new Set(
-    parsed.success ? [] : parsed.error.issues.map((issue) => issue.path[0]),
-  );
-  if (invalid.has('workerName')) throw new Error('Invalid Worker name.');
-  if (
-    invalid.has('hyperdriveId') ||
-    (typeof value.hyperdriveId === 'string' && /^0+$/.test(value.hyperdriveId))
-  )
+  if (/^0+$/.test(config.hyperdriveId))
     throw new Error('A provisioned Hyperdrive identifier is required.');
-  if (invalid.has('mailFrom')) throw new Error('A sender address is required.');
-  if (
-    invalid.has('authRateLimitNamespace') ||
-    invalid.has('apiRateLimitNamespace') ||
-    value.authRateLimitNamespace === value.apiRateLimitNamespace
-  )
+  if (config.authRateLimitNamespace === config.apiRateLimitNamespace)
     throw new Error('Distinct rate-limit namespace identifiers are required.');
-  if (!parsed.success) throw new Error('Unsupported release configuration.');
-  const config = parsed.data;
   return {
     version: 1,
     workerName: config.workerName,

@@ -270,12 +270,6 @@ export const parseBackup = (text: string): PlayerBackup => {
     if (!validateRoundFact(round) || round.id !== row.id)
       throw new Error('The backup contains an invalid completed round.');
   }
-  const localRounds = new Map(completions.map((row) => [row.id, row.payload]));
-  for (const row of serverRounds) {
-    const local = localRounds.get(row.id);
-    if (local && !sameRoundIgnoringCredit(local, row.payload))
-      throw new Error('The backup contains conflicting completed rounds.');
-  }
   const pending = state.account
     ? readRows(records, 'pending_actions')
     : undefined;
