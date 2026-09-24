@@ -50,7 +50,7 @@ jobs:
       - name: Validate chart and migration
         run: |
           mise install helm kubeconform
-          node tests/online/check-helm-chart.ts
+          mise run check:chart
           docker compose -f compose.yaml up -d --wait db
           node tests/online/check-migrations.ts
       - name: Build and prepare Worker
