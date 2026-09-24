@@ -1,7 +1,7 @@
 import { and, asc, eq, gt, inArray, ne, or } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { user } from './auth-schema.ts';
-import { friend } from './target-schema.ts';
+import { friend } from './schema.ts';
 
 export type FriendRequest = typeof friend.$inferSelect;
 export type FriendAction = 'accept' | 'decline' | 'cancel' | 'remove';

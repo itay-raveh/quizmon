@@ -16,11 +16,11 @@ import {
 import pokemonGenerations from '../src/domain/pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { formGroups, generations } from '../src/domain/pokemon/types.ts';
 import { questionTypes } from '../src/domain/quiz/questions/definitions.ts';
-import * as schema from './target-schema.ts';
+import * as schema from './schema.ts';
 
 type Tx = Parameters<Parameters<NodePgDatabase['transaction']>[0]>[0];
 
-export class TargetProgressError extends Error {
+export class ProgressError extends Error {
   readonly code: string;
   readonly status: 400 | 409 | 503;
   constructor(code: string, status: 400 | 409 | 503 = 409) {
@@ -37,7 +37,7 @@ function friendCode() {
     .toUpperCase();
 }
 
-export async function targetBootstrap(db: NodePgDatabase, playerId: string) {
+export async function bootstrapPlayer(db: NodePgDatabase, playerId: string) {
   await db
     .insert(schema.instance)
     .values({ id: 1, epoch: crypto.randomUUID() })
@@ -46,7 +46,7 @@ export async function targetBootstrap(db: NodePgDatabase, playerId: string) {
     .select()
     .from(schema.instance)
     .where(eq(schema.instance.id, 1));
-  if (!instance) throw new TargetProgressError('instance_missing', 503);
+  if (!instance) throw new ProgressError('instance_missing', 503);
   for (let attempt = 0; attempt < 4; attempt++) {
     const [existing] = await db
       .select()
@@ -58,7 +58,7 @@ export async function targetBootstrap(db: NodePgDatabase, playerId: string) {
       .values({ id: playerId, code: friendCode() })
       .onConflictDoNothing();
   }
-  throw new TargetProgressError('player_initialization_failed', 503);
+  throw new ProgressError('player_initialization_failed', 503);
 }
 
 async function checkEpoch(tx: Tx, epoch: string) {
@@ -68,7 +68,7 @@ async function checkEpoch(tx: Tx, epoch: string) {
     .where(eq(schema.instance.id, 1))
     .for('share');
   if (!instance || instance.epoch !== epoch)
-    throw new TargetProgressError('instance_changed');
+    throw new ProgressError('instance_changed');
 }
 
 async function checkDataset(tx: Tx, playerId: string, datasetId: string) {
@@ -77,10 +77,10 @@ async function checkDataset(tx: Tx, playerId: string, datasetId: string) {
     .from(schema.dataset)
     .where(eq(schema.dataset.id, datasetId));
   if (!claim || claim.playerId !== playerId)
-    throw new TargetProgressError('dataset_not_linked');
+    throw new ProgressError('dataset_not_linked');
 }
 
-export async function targetLinkDataset(
+export async function linkDataset(
   db: NodePgDatabase,
   playerId: string,
   datasetId: string,
@@ -89,7 +89,7 @@ export async function targetLinkDataset(
   joinedOn?: string,
 ) {
   if (!isUuid(datasetId) || (joinedOn !== undefined && !isDailyDate(joinedOn)))
-    throw new TargetProgressError('invalid_link', 400);
+    throw new ProgressError('invalid_link', 400);
   return db.transaction(async (tx) => {
     await checkEpoch(tx, epoch);
     const [player] = await tx
@@ -97,14 +97,14 @@ export async function targetLinkDataset(
       .from(schema.player)
       .where(eq(schema.player.id, playerId))
       .for('update');
-    if (!player) throw new TargetProgressError('player_missing');
+    if (!player) throw new ProgressError('player_missing');
     const [existing] = await tx
       .select()
       .from(schema.dataset)
       .where(eq(schema.dataset.id, datasetId));
     if (existing) {
       if (existing.playerId !== playerId)
-        throw new TargetProgressError('dataset_already_claimed');
+        throw new ProgressError('dataset_already_claimed');
       return { linked: true };
     }
     if (!merge) {
@@ -133,8 +133,7 @@ export async function targetLinkDataset(
       .values({ id: datasetId, playerId })
       .onConflictDoNothing()
       .returning();
-    if (!inserted.length)
-      throw new TargetProgressError('dataset_already_claimed');
+    if (!inserted.length) throw new ProgressError('dataset_already_claimed');
     if (joinedOn && joinedOn < player.joinedOn)
       await tx
         .update(schema.player)
@@ -154,16 +153,16 @@ function validateRoundUpload(value: unknown): value is RoundUpload {
   );
 }
 
-export async function targetSubmitRound(
+export async function submitRound(
   db: NodePgDatabase,
   playerId: string,
   datasetId: string,
   epoch: string,
   value: unknown,
 ) {
-  if (!isUuid(datasetId)) throw new TargetProgressError('invalid_dataset', 400);
+  if (!isUuid(datasetId)) throw new ProgressError('invalid_dataset', 400);
   if (!validateRoundUpload(value))
-    throw new TargetProgressError('invalid_round', 400);
+    throw new ProgressError('invalid_round', 400);
   const incoming = value;
   return db.transaction(async (tx) => {
     await checkEpoch(tx, epoch);
@@ -172,7 +171,7 @@ export async function targetSubmitRound(
       .from(schema.player)
       .where(eq(schema.player.id, playerId))
       .for('update');
-    if (!player) throw new TargetProgressError('player_missing');
+    if (!player) throw new ProgressError('player_missing');
     await checkDataset(tx, playerId, datasetId);
     const [existing] = await tx
       .select()
@@ -190,7 +189,7 @@ export async function targetSubmitRound(
           completed_at: new Date(existing.completedAt).toISOString(),
           data: existing.data,
         }) === canonical(incoming);
-      if (!same) throw new TargetProgressError('round_id_conflict');
+      if (!same) throw new ProgressError('round_id_conflict');
       return {
         id: incoming.id,
         status: 'accepted' as const,
@@ -228,7 +227,7 @@ export async function targetSubmitRound(
       })
       .onConflictDoNothing()
       .returning({ id: schema.round.id });
-    if (!inserted.length) throw new TargetProgressError('round_id_conflict');
+    if (!inserted.length) throw new ProgressError('round_id_conflict');
     const result = scoreRound({
       mode: incoming.mode,
       data: incoming.data,
@@ -311,16 +310,16 @@ function validateEditUpload(value: unknown): value is EditUpload {
   return false;
 }
 
-export async function targetApplyEdit(
+export async function applyEdit(
   db: NodePgDatabase,
   playerId: string,
   datasetId: string,
   epoch: string,
   value: unknown,
 ) {
-  if (!isUuid(datasetId)) throw new TargetProgressError('invalid_dataset', 400);
+  if (!isUuid(datasetId)) throw new ProgressError('invalid_dataset', 400);
   if (!isRecord(value) || !isUuid(value.id))
-    throw new TargetProgressError('invalid_edit', 400);
+    throw new ProgressError('invalid_edit', 400);
   const id = value.id;
   const requestHash = await hash({ dataset_id: datasetId, edit: value });
   return db.transaction(async (tx) => {
@@ -330,18 +329,15 @@ export async function targetApplyEdit(
       .from(schema.player)
       .where(eq(schema.player.id, playerId))
       .for('update');
-    if (!player) throw new TargetProgressError('player_missing');
+    if (!player) throw new ProgressError('player_missing');
     await checkDataset(tx, playerId, datasetId);
     const [previous] = await tx
       .select()
       .from(schema.op)
       .where(eq(schema.op.id, id));
     if (previous) {
-      if (
-        previous.playerId !== playerId ||
-        (previous.hash !== requestHash && previous.hash !== value.legacy_hash)
-      )
-        throw new TargetProgressError('operation_id_conflict');
+      if (previous.playerId !== playerId || previous.hash !== requestHash)
+        throw new ProgressError('operation_id_conflict');
       return { id, status: previous.status, reason: previous.reason };
     }
     let reason: string | null = null;

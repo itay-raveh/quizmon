@@ -3,10 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { exportAccount } from '../../server/account-export.ts';
-import {
-  targetSubmitRound,
-  TargetProgressError,
-} from '../../server/target-progress-api.ts';
+import { submitRound, ProgressError } from '../../server/progress-api.ts';
 import { archiveCompletion } from '../../src/domain/sync/round-facts.ts';
 import { completion } from './progress-fixtures.ts';
 import { testDatabase } from './account-fixture.ts';
@@ -43,13 +40,7 @@ try {
   const fact = archiveCompletion(completion(dataset));
   const { credited: _serverOnly, ...upload } = fact;
   void _serverOnly;
-  await targetSubmitRound(
-    drizzle(database.pool),
-    owner,
-    dataset,
-    epoch,
-    upload,
-  );
+  await submitRound(drizzle(database.pool), owner, dataset, epoch, upload);
   const before = (await (
     await exportAccount(
       database.connectionString,
@@ -93,18 +84,11 @@ try {
     const { credited: _newServerOnly, ...newUpload } = newRound;
     void _newServerOnly;
     await assert.rejects(
-      targetSubmitRound(drizzle(restored), owner, dataset, epoch, newUpload),
+      submitRound(drizzle(restored), owner, dataset, epoch, newUpload),
       (error: unknown) =>
-        error instanceof TargetProgressError &&
-        error.code === 'instance_changed',
+        error instanceof ProgressError && error.code === 'instance_changed',
     );
-    await targetSubmitRound(
-      drizzle(restored),
-      owner,
-      dataset,
-      nextEpoch,
-      newUpload,
-    );
+    await submitRound(drizzle(restored), owner, dataset, nextEpoch, newUpload);
     const after = (await (
       await exportAccount(
         restoredUrl.toString(),

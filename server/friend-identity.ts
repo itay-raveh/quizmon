@@ -1,14 +1,14 @@
 import { and, eq, inArray, or } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { friend, player } from './target-schema.ts';
-import { targetBootstrap } from './target-progress-api.ts';
-import { publicPlayers } from './target-read.ts';
+import { friend, player } from './schema.ts';
+import { bootstrapPlayer } from './progress-api.ts';
+import { publicPlayers } from './read.ts';
 import { friendRequestView, FriendshipError } from './friends.ts';
 
-export { publicPlayers } from './target-read.ts';
+export { publicPlayers } from './read.ts';
 
 export async function ownSocialPlayer(db: NodePgDatabase, actor: string) {
-  await targetBootstrap(db, actor);
+  await bootstrapPlayer(db, actor);
   return (await publicPlayers(db, [actor]))[0]!;
 }
 

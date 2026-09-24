@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
 import { exportAccount } from '../../server/account-export.ts';
-import { readBoard } from '../../server/target-read.ts';
+import { readBoard } from '../../server/read.ts';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { archiveCompletion } from '../../src/domain/sync/round-facts.ts';
-import { hash } from '../../src/domain/sync/progress.ts';
 import { completion } from './progress-fixtures.ts';
 import {
   accountRequest,
@@ -156,32 +155,11 @@ try {
     [first.id],
   );
   assert.equal(player.rows[0]?.name, 'Later');
-  const previousId = crypto.randomUUID();
-  const previousAction = {
-    operationId: previousId,
-    datasetId,
-    generationId: crypto.randomUUID(),
-    payloadVersion: 1,
-    kind: 'profile.patch',
-    payload: { unit: 'name', value: 'Earlier', expectedRevision: 0 },
+  const conflictingRetry = {
+    ...earlier,
+    payload: { ...earlier.payload, value: 'Different' },
   };
-  const previousHash = await hash(previousAction);
-  await database.pool.query(
-    "INSERT INTO op(id,player_id,hash,status) VALUES ($1,$2,$3,'accepted')",
-    [previousId, first.id, previousHash],
-  );
-  const savedRetry = {
-    id: previousId,
-    datasetId,
-    kind: 'edit',
-    payload: {
-      id: previousId,
-      unit: 'name',
-      value: 'Earlier',
-      legacy_hash: previousHash,
-    },
-  };
-  assert.equal((await send([savedRetry])).status, 200);
+  assert.equal((await send([conflictingRetry])).status, 409);
   assert.equal(
     (
       await database.pool.query<{ name: string }>(
@@ -199,7 +177,7 @@ try {
   const data = (await exported.json()) as Record<string, unknown>;
   assert.equal(data.version, 2);
   assert.equal((data.rounds as unknown[]).length, 4);
-  assert.equal((data.operations as unknown[]).length, 3);
+  assert.equal((data.operations as unknown[]).length, 2);
   await database.pool.query('UPDATE instance SET epoch=$1 WHERE id=1', [
     crypto.randomUUID(),
   ]);

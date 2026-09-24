@@ -13,6 +13,7 @@ export interface AccountIssue {
   reason: string;
   payload: unknown;
   resolving: boolean;
+  reapplicable?: boolean;
   edit?: {
     unit: EditUnit;
     requested: EditValue;
@@ -38,17 +39,19 @@ export async function readAccountIssues(
     const receipt: unknown = JSON.parse(row.receipt);
     if (!isRecord(receipt) || action.id !== row.id)
       throw new Error('A saved sync failure is damaged.');
+    const reason =
+      typeof receipt.reason === 'string'
+        ? receipt.reason
+        : typeof receipt.code === 'string'
+          ? receipt.code
+          : 'rejected';
     return {
       ownerId: state.account!.id,
       operationId: row.id,
-      reason:
-        typeof receipt.reason === 'string'
-          ? receipt.reason
-          : typeof receipt.code === 'string'
-            ? receipt.code
-            : 'rejected',
+      reason,
       payload: action.payload,
       resolving: false,
+      reapplicable: action.kind === 'edit' && reason === 'needs_review',
     };
   });
 }

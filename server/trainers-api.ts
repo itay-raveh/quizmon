@@ -1,7 +1,7 @@
 import type { AccountEnv } from './api.ts';
 import { Hono } from 'hono';
 import { isAccountId } from './friends.ts';
-import { readTrainer } from './target-read.ts';
+import { readTrainer } from './read.ts';
 
 export const trainerApi = new Hono<AccountEnv>();
 trainerApi.get('/:id', async (context) => {

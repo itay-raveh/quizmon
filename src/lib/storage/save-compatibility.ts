@@ -60,7 +60,6 @@ export function convertSavedActionV1(action: Action) {
       id: action.operationId,
       datasetId: action.datasetId,
       kind: 'edit',
-      legacyAction: action,
       payload: {
         id: action.operationId,
         unit: editUnit[edit.unit],
@@ -108,16 +107,12 @@ export async function convertSavedDatabaseV1(
         ),
       ]);
     const convertedActions = new Map<string, string>();
-    let discardedDiscoveries = 0;
-    let discardedDismissals = 0;
     for (const row of actions) {
       const action: unknown = JSON.parse(row.payload);
       if (!validAction(action) || action.operationId !== row.id)
         throw new Error('An old browser change cannot be converted.');
       const converted = convertSavedActionV1(action);
       if (converted) convertedActions.set(row.id, JSON.stringify(converted));
-      else if (action.kind === 'discoveries.add') discardedDiscoveries++;
-      else if (action.kind === 'issue.dismiss') discardedDismissals++;
     }
     const convertedRounds = completions.map((row) => {
       const receipt = JSON.parse(row.payload) as {
@@ -137,11 +132,9 @@ export async function convertSavedDatabaseV1(
         ),
       };
     });
-    let inferredUnfinishedStarts = 0;
     const convertUnfinished = (value: unknown) => {
       const round = parseActiveGameSave(value);
       if (round.mode.kind !== 'daily' || round.startedOn) return round;
-      inferredUnfinishedStarts++;
       return { ...round, startedOn: round.mode.date };
     };
     const convertedActive = rounds.map((row) => ({
@@ -167,7 +160,13 @@ export async function convertSavedDatabaseV1(
         ]);
       for (const row of pending) {
         const payload = convertedActions.get(row.id);
-        if (payload)
+        if (!payload) continue;
+        if ((JSON.parse(payload) as { kind: string }).kind === 'edit')
+          await tx.execute('INSERT INTO local_state(id,payload) VALUES (?,?)', [
+            `failure:${row.id}`,
+            JSON.stringify({ reason: 'needs_review' }),
+          ]);
+        else
           await tx.execute(
             'INSERT INTO pending_actions(id,payload,sequence) VALUES (?,?,(SELECT COALESCE(MAX(sequence),0)+1 FROM pending_actions))',
             [row.id, payload],
@@ -183,10 +182,10 @@ export async function convertSavedDatabaseV1(
             row.payload,
           ]);
       for (const row of failures)
-        await tx.execute('INSERT INTO local_state(id,payload) VALUES (?,?)', [
-          row.id,
-          row.payload,
-        ]);
+        await tx.execute(
+          'INSERT OR REPLACE INTO local_state(id,payload) VALUES (?,?)',
+          [row.id, row.payload],
+        );
       const next = {
         version: 2,
         datasetId: state.datasetId,
@@ -205,25 +204,9 @@ export async function convertSavedDatabaseV1(
         "INSERT INTO local_state(id,payload) VALUES ('player',?)",
         [JSON.stringify(next)],
       );
-      await tx.execute(
-        "INSERT INTO local_state(id,payload) VALUES ('conversion-report',?)",
-        [
-          JSON.stringify({
-            rounds: convertedRounds.length,
-            inferredStarts: convertedRounds.filter(
-              (row) =>
-                (JSON.parse(row.payload) as { mode: string }).mode === 'daily',
-            ).length,
-            inferredUnfinishedStarts,
-            discardedDiscoveries,
-            discardedDismissals,
-            oldFailures: failures.length,
-          }),
-        ],
-      );
       if (accountId)
         await tx.execute(
-          "INSERT INTO local_state(id,payload) VALUES ('cutover-rebind','true')",
+          "INSERT INTO local_state(id,payload) VALUES ('account-rebind','true')",
         );
     });
     return true;

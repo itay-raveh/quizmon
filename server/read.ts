@@ -13,7 +13,7 @@ import { createTrainerProfile } from '../src/domain/player/trainer-profile.ts';
 import { getUtcDate } from '../src/domain/quiz/daily.ts';
 import type { RoundFact } from '../src/domain/sync/round-facts.ts';
 import pokemonGenerations from '../src/domain/pokemon/data/pokemon-generations.json' with { type: 'json' };
-import * as schema from './target-schema.ts';
+import * as schema from './schema.ts';
 
 type StoredRound = typeof schema.round.$inferSelect;
 

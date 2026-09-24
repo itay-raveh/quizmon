@@ -147,9 +147,11 @@ export function AccountConflicts({
                   ? 'Your account already has a result for this Daily. The first accepted result counts toward progress. Discoveries from both rounds are kept.'
                   : issue.reason === 'edit_conflict'
                     ? 'This edit conflicted with another change. Sync to download the account value before reviewing it.'
-                    : issue.reason === 'specialty_not_earned'
-                      ? 'This Trainer title has not been earned on your account. Your accepted title is kept.'
-                      : 'This change could not be accepted. Your backup includes the affected change.'}
+                    : issue.reason === 'needs_review'
+                      ? 'This saved edit needs review. You can apply it again to your account.'
+                      : issue.reason === 'specialty_not_earned'
+                        ? 'This Trainer title has not been earned on your account. Your accepted title is kept.'
+                        : 'This change could not be accepted. Your backup includes the affected change.'}
               </p>
             )}
             {issue.resolving ? (
@@ -163,13 +165,13 @@ export function AccountConflicts({
                 >
                   {issue.edit ? 'Keep account value' : 'Dismiss'}
                 </GameButton>
-                {issue.edit && (
+                {issue.reapplicable && (
                   <GameButton
                     tone="quiet"
                     disabled={disabled || busy}
                     onClick={() => void choose(issue, true)}
                   >
-                    Use this edit
+                    Apply this edit
                   </GameButton>
                 )}
               </div>

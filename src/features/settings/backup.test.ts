@@ -2,7 +2,7 @@ import { emptyPlayerData } from '../../domain/player/player-save';
 import { completion } from '../../../tests/online/progress-fixtures';
 import { parseBackup } from './backup';
 
-it('converts version-one account backups without losing downloaded rounds', () => {
+it('converts old rounds and keeps pending edits for review', () => {
   const datasetId = crypto.randomUUID();
   const old = completion(datasetId, 'daily');
   const action = {
@@ -12,6 +12,12 @@ it('converts version-one account backups without losing downloaded rounds', () =
     payloadVersion: 1,
     kind: 'completion.record',
     payload: old,
+  };
+  const edit = {
+    ...action,
+    operationId: crypto.randomUUID(),
+    kind: 'profile.patch',
+    payload: { unit: 'name', value: 'Trainer', expectedRevision: 0 },
   };
   const row = {
     id: old.completionId,
@@ -36,6 +42,7 @@ it('converts version-one account backups without losing downloaded rounds', () =
       records: {
         local_actions: [
           { id: action.operationId, payload: JSON.stringify(action) },
+          { id: edit.operationId, payload: JSON.stringify(edit) },
         ],
         local_completions: [
           {
@@ -45,6 +52,7 @@ it('converts version-one account backups without losing downloaded rounds', () =
         ],
         pending_actions: [
           { id: action.operationId, payload: JSON.stringify(action) },
+          { id: edit.operationId, payload: JSON.stringify(edit) },
         ],
         completion_facts: [row],
       },
@@ -54,6 +62,13 @@ it('converts version-one account backups without losing downloaded rounds', () =
   expect(backup.records.local_completions).toHaveLength(1);
   expect(backup.records.server_rounds).toHaveLength(1);
   expect(backup.records.pending_actions).toHaveLength(1);
+  expect(backup.reviewIssues).toEqual([
+    {
+      operationId: edit.operationId,
+      reason: 'needs_review',
+      payload: { id: edit.operationId, unit: 'name', value: 'Trainer' },
+    },
+  ]);
   expect(JSON.parse(backup.records.server_rounds![0]!.payload)).toMatchObject({
     id: old.completionId,
     mode: 'daily',

@@ -10,7 +10,6 @@ import { createAuthClient } from 'better-auth/react';
 import { emptyPlayerData } from '../../domain/player/player-save';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { accountReturnPath } from './account-navigation';
-import { hash } from '../../domain/sync/progress';
 import { projectAccount } from '../../lib/storage/account-projection';
 import {
   queueIssueResolution,
@@ -156,10 +155,10 @@ export async function continueSignIn() {
   if (selectedAccount() === candidate.id) {
     const saved = await readState(getPlayerDatabase());
     if (saved.account?.serverEpoch !== candidate.serverEpoch) {
-      const [cutover] = await getPlayerDatabase().getAll<LocalRow>(
-        "SELECT id,payload FROM local_state WHERE id = 'cutover-rebind'",
+      const [rebind] = await getPlayerDatabase().getAll<LocalRow>(
+        "SELECT id,payload FROM local_state WHERE id = 'account-rebind'",
       );
-      if (saved.account && !cutover) {
+      if (saved.account && !rebind) {
         window.location.reload();
         return;
       }
@@ -280,10 +279,10 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         targetState?.account &&
         targetState.account.serverEpoch !== destination.serverEpoch
       ) {
-        const [cutover] = await target.getAll<LocalRow>(
-          "SELECT id,payload FROM local_state WHERE id = 'cutover-rebind'",
+        const [rebind] = await target.getAll<LocalRow>(
+          "SELECT id,payload FROM local_state WHERE id = 'account-rebind'",
         );
-        if (!cutover)
+        if (!rebind)
           throw new Error(
             'This database instance changed. Your pending changes remain on this device. Download a backup before reconnecting.',
           );
@@ -405,7 +404,7 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
           "INSERT OR REPLACE INTO local_state(id,payload) VALUES ('player',?)",
           [JSON.stringify(finalState)],
         );
-        await tx.execute("DELETE FROM local_state WHERE id = 'cutover-rebind'");
+        await tx.execute("DELETE FROM local_state WHERE id = 'account-rebind'");
       });
       clearSentryUser();
       localStorage.setItem(selectionKey, destination.id);
@@ -478,41 +477,30 @@ function connector(expected: Binding): PowerSyncBackendConnector {
     uploadData: async (db) => {
       const transaction = await db.getNextCrudTransaction();
       if (!transaction) return;
-      const actions = await Promise.all(
-        transaction.crud
-          .filter((entry) => {
-            if (entry.table !== 'pending_actions')
-              throw new Error('An unexpected change is waiting to sync.');
-            return entry.op !== UpdateType.DELETE;
-          })
-          .map(async (entry) => {
-            if (
-              entry.op !== UpdateType.PUT ||
-              typeof entry.opData?.payload !== 'string'
-            )
-              throw new Error('An unexpected change is waiting to sync.');
-            const action: unknown = JSON.parse(entry.opData.payload);
-            if (
-              !isRecord(action) ||
-              action.id !== entry.id ||
-              typeof action.datasetId !== 'string' ||
-              !['round', 'edit'].includes(String(action.kind)) ||
-              !isRecord(action.payload) ||
-              action.payload.id !== action.id
-            )
-              throw new Error('A saved change could not be verified.');
-            const converted = action as LocalAction;
-            return converted.kind === 'edit' && converted.legacyAction
-              ? {
-                  ...converted,
-                  payload: {
-                    ...(converted.payload as object),
-                    legacy_hash: await hash(converted.legacyAction),
-                  },
-                }
-              : converted;
-          }),
-      );
+      const actions = transaction.crud
+        .filter((entry) => {
+          if (entry.table !== 'pending_actions')
+            throw new Error('An unexpected change is waiting to sync.');
+          return entry.op !== UpdateType.DELETE;
+        })
+        .map((entry) => {
+          if (
+            entry.op !== UpdateType.PUT ||
+            typeof entry.opData?.payload !== 'string'
+          )
+            throw new Error('An unexpected change is waiting to sync.');
+          const action: unknown = JSON.parse(entry.opData.payload);
+          if (
+            !isRecord(action) ||
+            action.id !== entry.id ||
+            typeof action.datasetId !== 'string' ||
+            !['round', 'edit'].includes(String(action.kind)) ||
+            !isRecord(action.payload) ||
+            action.payload.id !== action.id
+          )
+            throw new Error('A saved change could not be verified.');
+          return action as LocalAction;
+        });
       for (let offset = 0; offset < actions.length; offset += 50) {
         const batch = actions.slice(offset, offset + 50);
         const result = await accountRequest('/api/sync/changes', {
@@ -728,7 +716,7 @@ export async function reconnectAccount() {
       await tx.execute("UPDATE local_state SET payload=? WHERE id='player'", [
         JSON.stringify(state),
       ]);
-      await tx.execute("DELETE FROM local_state WHERE id = 'cutover-rebind'");
+      await tx.execute("DELETE FROM local_state WHERE id = 'account-rebind'");
     });
   });
   window.location.reload();

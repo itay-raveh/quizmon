@@ -150,12 +150,22 @@ function convertBackupV1(value: Record<string, unknown>): PlayerBackup {
       payload: JSON.stringify(archiveCompletion(completion, receipt.eligible)),
     };
   });
-  const pending = old.account
+  const pendingActions = old.account
     ? readRows(records, 'pending_actions').flatMap((row) => {
         const payload = converted.get(row.id);
         return payload ? [{ id: row.id, payload }] : [];
       })
     : undefined;
+  const pending = pendingActions?.filter(
+    (row) => (JSON.parse(row.payload) as LocalAction).kind === 'round',
+  );
+  const reviewIssues = pendingActions
+    ?.filter((row) => (JSON.parse(row.payload) as LocalAction).kind === 'edit')
+    .map((row) => ({
+      operationId: row.id,
+      reason: 'needs_review',
+      payload: (JSON.parse(row.payload) as LocalAction).payload,
+    }));
   const serverRounds = old.account
     ? readRows(records, 'completion_facts').map((row) => {
         const receipt: unknown = JSON.parse(row.payload);
@@ -201,6 +211,7 @@ function convertBackupV1(value: Record<string, unknown>): PlayerBackup {
         ? { pending_actions: pending, server_rounds: serverRounds }
         : {}),
     },
+    ...(reviewIssues?.length ? { reviewIssues } : {}),
   };
 }
 
@@ -261,6 +272,26 @@ export const parseBackup = (text: string): PlayerBackup => {
     )
   )
     throw new Error('The backup contains an unrecognized pending change.');
+  const reviewIssues = value.reviewIssues;
+  if (
+    reviewIssues !== undefined &&
+    (!Array.isArray(reviewIssues) ||
+      !reviewIssues.every((issue) => {
+        if (
+          !isRecord(issue) ||
+          !isUuid(issue.operationId) ||
+          typeof issue.reason !== 'string'
+        )
+          return false;
+        const row = actions.find((action) => action.id === issue.operationId);
+        return (
+          row !== undefined &&
+          canonical((JSON.parse(row.payload) as LocalAction).payload) ===
+            canonical(issue.payload)
+        );
+      }))
+  )
+    throw new Error('The backup contains an invalid review issue.');
   return {
     exportedAt: value.exportedAt as string,
     format: 'quizmon-backup',
@@ -273,8 +304,8 @@ export const parseBackup = (text: string): PlayerBackup => {
         ? { pending_actions: pending, server_rounds: serverRounds }
         : {}),
     },
-    ...(Array.isArray(value.reviewIssues)
-      ? { reviewIssues: value.reviewIssues as PlayerBackup['reviewIssues'] }
+    ...(reviewIssues
+      ? { reviewIssues: reviewIssues as PlayerBackup['reviewIssues'] }
       : {}),
   };
 };
@@ -363,6 +394,26 @@ export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {
         await tx.execute(
           'INSERT OR IGNORE INTO pending_actions(id,payload,sequence) VALUES (?,?,(SELECT COALESCE(MAX(sequence),0)+1 FROM pending_actions))',
           [row.id, row.payload],
+        );
+      }
+      for (const issue of validated.reviewIssues ?? []) {
+        const row = validated.records.local_actions.find(
+          (action) => action.id === issue.operationId,
+        )!;
+        const [existing] = await tx.getAll<LocalRow>(
+          'SELECT id,payload FROM local_actions WHERE id = ?',
+          [row.id],
+        );
+        if (existing && existing.payload !== row.payload)
+          throw new Error('A change with this ID contains different data.');
+        if (!existing)
+          await tx.execute(
+            'INSERT INTO local_actions(id,payload) VALUES (?,?)',
+            [row.id, row.payload],
+          );
+        await tx.execute(
+          'INSERT OR REPLACE INTO local_state(id,payload) VALUES (?,?)',
+          [`failure:${row.id}`, JSON.stringify({ reason: issue.reason })],
         );
       }
       return;

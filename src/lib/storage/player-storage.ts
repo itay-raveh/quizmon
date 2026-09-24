@@ -33,7 +33,6 @@ export type LocalAction = {
   datasetId: string;
   kind: 'round' | 'edit';
   payload: unknown;
-  legacyAction?: unknown;
 };
 let accountDatabase = false;
 let database: ReturnType<typeof openLocalDatabase> | undefined;

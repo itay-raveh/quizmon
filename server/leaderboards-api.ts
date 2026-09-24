@@ -1,7 +1,7 @@
 import type { AccountEnv } from './api.ts';
 import { Hono } from 'hono';
 import { isDailyDate } from '../src/lib/validation.ts';
-import { readBoard } from './target-read.ts';
+import { readBoard } from './read.ts';
 
 export const leaderboardApi = new Hono<AccountEnv>();
 

@@ -25,13 +25,13 @@ import {
   type AccountMail,
 } from './email.ts';
 import {
-  TargetProgressError,
-  targetApplyEdit,
-  targetBootstrap,
-  targetLinkDataset,
-  targetSubmitRound,
-} from './target-progress-api.ts';
-import * as schema from './target-schema.ts';
+  ProgressError,
+  applyEdit,
+  bootstrapPlayer,
+  linkDataset,
+  submitRound,
+} from './progress-api.ts';
+import * as schema from './schema.ts';
 
 const testMailbox = new Map<string, { code: string; createdAt: number }>();
 
@@ -109,7 +109,7 @@ export interface AccountEnv {
     auth: ReturnType<typeof createAuth>;
     accountId: string;
     origin: string;
-    state: Awaited<ReturnType<typeof targetBootstrap>>;
+    state: Awaited<ReturnType<typeof bootstrapPlayer>>;
     body: Record<string, unknown>;
   };
 }
@@ -134,10 +134,7 @@ export function createAccountApi(services: AccountServices) {
     await next();
   });
   app.onError((error, context) => {
-    if (
-      error instanceof TargetProgressError ||
-      error instanceof FriendshipError
-    )
+    if (error instanceof ProgressError || error instanceof FriendshipError)
       return context.json({ error: error.code }, error.status);
     console.error(error);
     return context.text('Internal Server Error', 500);
@@ -207,7 +204,7 @@ export function createAccountApi(services: AccountServices) {
   signedIn.route('/leaderboards', leaderboardApi);
   signedIn.route('/trainers', trainerApi);
   signedIn.get('/account', async (context) => {
-    const state = await targetBootstrap(
+    const state = await bootstrapPlayer(
       context.get('db'),
       context.get('accountId'),
     );
@@ -219,7 +216,7 @@ export function createAccountApi(services: AccountServices) {
   });
   for (const path of ['/account/link', '/sync/changes'])
     signedIn.post(path, async (context, next) => {
-      const state = await targetBootstrap(
+      const state = await bootstrapPlayer(
         context.get('db'),
         context.get('accountId'),
       );
@@ -247,7 +244,7 @@ export function createAccountApi(services: AccountServices) {
     if (!uuid(body.datasetId) || typeof body.merge !== 'boolean')
       return context.json({ error: 'invalid_link' }, 400);
     return context.json(
-      await targetLinkDataset(
+      await linkDataset(
         context.get('db'),
         context.get('accountId'),
         body.datasetId,
@@ -287,14 +284,14 @@ export function createAccountApi(services: AccountServices) {
       try {
         outcomes.push(
           action.kind === 'round'
-            ? await targetSubmitRound(
+            ? await submitRound(
                 context.get('db'),
                 context.get('accountId'),
                 datasetId,
                 context.get('state').epoch,
                 action.payload,
               )
-            : await targetApplyEdit(
+            : await applyEdit(
                 context.get('db'),
                 context.get('accountId'),
                 datasetId,
@@ -303,7 +300,7 @@ export function createAccountApi(services: AccountServices) {
               ),
         );
       } catch (error) {
-        if (error instanceof TargetProgressError && error.status === 400)
+        if (error instanceof ProgressError && error.status === 400)
           outcomes.push({
             id: action.id,
             status: 'rejected',
