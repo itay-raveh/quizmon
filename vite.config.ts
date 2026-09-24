@@ -50,6 +50,7 @@ export default defineConfig({
           'assets/images/logo.png',
           '*.{ico,png}',
           'trainer-avatars/*.png',
+          'item-sprites/*.png',
         ],
       },
       manifest: false,

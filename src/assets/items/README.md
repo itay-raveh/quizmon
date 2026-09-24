@@ -1,6 +1,6 @@
 # Evolution item sprites
 
-These images supplement items missing from PokéAPI’s sprite repository. They are sourced from [Serebii’s ItemDex](https://www.serebii.net/itemdex/). Pokémon images belong to their respective owners.
+These images supplement items missing from PokéAPI’s sprite repository. `npm run items:prepare` downloads the named sprites from [Serebii’s ItemDex](https://www.serebii.net/itemdex/) and checks their PNG format and pinned hashes in `manifest.json`. Pokémon images belong to their respective owners.
 
 - [sweet-apple](https://www.serebii.net/itemdex/sweetapple.shtml)
 - [tart-apple](https://www.serebii.net/itemdex/tartapple.shtml)

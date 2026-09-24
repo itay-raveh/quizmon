@@ -5,6 +5,7 @@
 /coverage/
 /dist/
 /public/trainer-avatars/
+/public/item-sprites/
 /node_modules/
 /.playwright-cli/
 /playwright-report/
