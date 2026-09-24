@@ -2,7 +2,6 @@ import type { ChoiceDetail } from './types.ts';
 import type { Generation, StatName } from '../pokemon/types.ts';
 
 export interface TopicEntity {
-  id: number;
   name: string;
   label: string;
   generations: Generation[];
@@ -12,7 +11,6 @@ interface ItemKnowledge extends TopicEntity {
   spriteIdentity?: string;
   category: string;
   pocket: string;
-  effect: string;
 }
 interface MoveKnowledge extends TopicEntity {
   reviewedDescription?: string;
@@ -79,7 +77,6 @@ export interface TopicCatalog {
   items: ItemKnowledge[];
   moves: MoveKnowledge[];
   abilities: (TopicEntity & {
-    effect: string;
     descriptionSource?: string;
     descriptions?: {
       generation: Generation;

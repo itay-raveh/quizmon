@@ -78,13 +78,11 @@ export const buildTopicCatalog = async (
   );
   const entity = (
     value: {
-      id: number;
       name: string;
       names?: { name: string; language: { name: string } }[];
     },
     gens: (Generation | undefined)[],
   ): TopicEntity => ({
-    id: value.id,
     name: value.name,
     label: label(value),
     generations: [...new Set(gens.filter((gen): gen is Generation => !!gen))],
@@ -289,7 +287,6 @@ export const buildTopicCatalog = async (
         sprite: sprite && isItemSpritePath(sprite) ? sprite : null,
         category: item.category.name,
         pocket: categories.get(item.category.name)?.pocket.name ?? '',
-        effect: clean(item.effect_entries.find(english)?.effect ?? ''),
       };
     }),
     moves: moves.map((move) => {
@@ -338,7 +335,6 @@ export const buildTopicCatalog = async (
       if (!effect) gaps.abilityEffect!.push(ability.name);
       return {
         ...entity(ability, [generation(ability.generation.name)]),
-        effect,
       };
     }),
     natures: natures.flatMap((nature) =>

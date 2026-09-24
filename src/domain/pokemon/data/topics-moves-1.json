@@ -3,173 +3,6 @@
   "key": "moves",
   "values": [
     {
-      "id": 320,
-      "name": "grass-whistle",
-      "label": "Grass Whistle",
-      "generations": ["III"],
-      "contexts": [
-        {
-          "game": "ruby",
-          "generation": "III",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "sapphire",
-          "generation": "III",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "emerald",
-          "generation": "III",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "firered",
-          "generation": "III",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "leafgreen",
-          "generation": "III",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "diamond",
-          "generation": "IV",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "pearl",
-          "generation": "IV",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "platinum",
-          "generation": "IV",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "heartgold",
-          "generation": "IV",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "soulsilver",
-          "generation": "IV",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "black",
-          "generation": "V",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "white",
-          "generation": "V",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "black-2",
-          "generation": "V",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "white-2",
-          "generation": "V",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "x",
-          "generation": "VI",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "y",
-          "generation": "VI",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "omega-ruby",
-          "generation": "VI",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "alpha-sapphire",
-          "generation": "VI",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "ultra-sun",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "ultra-moon",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "lets-go-pikachu",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "lets-go-eevee",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "sword",
-          "generation": "VIII",
-          "type": "grass",
-          "damageClass": "status"
-        },
-        {
-          "game": "shield",
-          "generation": "VIII",
-          "type": "grass",
-          "damageClass": "status"
-        }
-      ],
-      "type": "grass",
-      "damageClass": "status"
-    },
-    {
-      "id": 321,
       "name": "tickle",
       "label": "Tickle",
       "generations": ["III"],
@@ -353,7 +186,6 @@
       "damageClass": "status"
     },
     {
-      "id": 322,
       "name": "cosmic-power",
       "label": "Cosmic Power",
       "generations": ["III"],
@@ -537,7 +369,6 @@
       "damageClass": "status"
     },
     {
-      "id": 323,
       "name": "water-spout",
       "label": "Water Spout",
       "generations": ["III"],
@@ -721,7 +552,6 @@
       "damageClass": "special"
     },
     {
-      "id": 324,
       "name": "signal-beam",
       "label": "Signal Beam",
       "generations": ["III"],
@@ -887,7 +717,6 @@
       "damageClass": "special"
     },
     {
-      "id": 325,
       "name": "shadow-punch",
       "label": "Shadow Punch",
       "generations": ["III"],
@@ -1071,7 +900,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 326,
       "name": "extrasensory",
       "label": "Extrasensory",
       "generations": ["III"],
@@ -1255,7 +1083,6 @@
       "damageClass": "special"
     },
     {
-      "id": 327,
       "name": "sky-uppercut",
       "label": "Sky Uppercut",
       "generations": ["III"],
@@ -1421,7 +1248,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 328,
       "name": "sand-tomb",
       "label": "Sand Tomb",
       "generations": ["III"],
@@ -1605,7 +1431,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 329,
       "name": "sheer-cold",
       "label": "Sheer Cold",
       "generations": ["III"],
@@ -1783,7 +1608,6 @@
       "damageClass": "special"
     },
     {
-      "id": 330,
       "name": "muddy-water",
       "label": "Muddy Water",
       "generations": ["III"],
@@ -1967,7 +1791,6 @@
       "damageClass": "special"
     },
     {
-      "id": 331,
       "name": "bullet-seed",
       "label": "Bullet Seed",
       "generations": ["III"],
@@ -2151,7 +1974,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 332,
       "name": "aerial-ace",
       "label": "Aerial Ace",
       "generations": ["III"],
@@ -2336,7 +2158,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 333,
       "name": "icicle-spear",
       "label": "Icicle Spear",
       "generations": ["III"],
@@ -2520,7 +2341,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 334,
       "name": "iron-defense",
       "label": "Iron Defense",
       "generations": ["III"],
@@ -2704,7 +2524,6 @@
       "damageClass": "status"
     },
     {
-      "id": 335,
       "name": "block",
       "label": "Block",
       "generations": ["III"],
@@ -2888,7 +2707,6 @@
       "damageClass": "status"
     },
     {
-      "id": 336,
       "name": "howl",
       "label": "Howl",
       "generations": ["III"],
@@ -3072,7 +2890,6 @@
       "damageClass": "status"
     },
     {
-      "id": 337,
       "name": "dragon-claw",
       "label": "Dragon Claw",
       "generations": ["III"],
@@ -3256,7 +3073,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 338,
       "name": "frenzy-plant",
       "label": "Frenzy Plant",
       "generations": ["III"],
@@ -3440,7 +3256,6 @@
       "damageClass": "special"
     },
     {
-      "id": 339,
       "name": "bulk-up",
       "label": "Bulk Up",
       "generations": ["III"],
@@ -3624,7 +3439,6 @@
       "damageClass": "status"
     },
     {
-      "id": 340,
       "name": "bounce",
       "label": "Bounce",
       "generations": ["III"],
@@ -3808,7 +3622,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 341,
       "name": "mud-shot",
       "label": "Mud Shot",
       "generations": ["III"],
@@ -3992,7 +3805,6 @@
       "damageClass": "special"
     },
     {
-      "id": 342,
       "name": "poison-tail",
       "label": "Poison Tail",
       "generations": ["III"],
@@ -4176,7 +3988,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 343,
       "name": "covet",
       "label": "Covet",
       "generations": ["III"],
@@ -4360,7 +4171,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 344,
       "name": "volt-tackle",
       "label": "Volt Tackle",
       "generations": ["III"],
@@ -4526,7 +4336,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 345,
       "name": "magical-leaf",
       "label": "Magical Leaf",
       "generations": ["III"],
@@ -4710,7 +4519,6 @@
       "damageClass": "special"
     },
     {
-      "id": 346,
       "name": "water-sport",
       "label": "Water Sport",
       "generations": ["III"],
@@ -4876,7 +4684,6 @@
       "damageClass": "status"
     },
     {
-      "id": 347,
       "name": "calm-mind",
       "label": "Calm Mind",
       "generations": ["III"],
@@ -5060,7 +4867,6 @@
       "damageClass": "status"
     },
     {
-      "id": 348,
       "name": "leaf-blade",
       "label": "Leaf Blade",
       "generations": ["III"],
@@ -5244,7 +5050,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 349,
       "name": "dragon-dance",
       "label": "Dragon Dance",
       "generations": ["III"],
@@ -5428,7 +5233,6 @@
       "damageClass": "status"
     },
     {
-      "id": 350,
       "name": "rock-blast",
       "label": "Rock Blast",
       "generations": ["III"],
@@ -5612,7 +5416,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 351,
       "name": "shock-wave",
       "label": "Shock Wave",
       "generations": ["III"],
@@ -5796,7 +5599,6 @@
       "damageClass": "special"
     },
     {
-      "id": 352,
       "name": "water-pulse",
       "label": "Water Pulse",
       "generations": ["III"],
@@ -5980,7 +5782,6 @@
       "damageClass": "special"
     },
     {
-      "id": 353,
       "name": "doom-desire",
       "label": "Doom Desire",
       "generations": ["III"],
@@ -6176,7 +5977,6 @@
       "damageClass": "special"
     },
     {
-      "id": 354,
       "name": "psycho-boost",
       "label": "Psycho Boost",
       "generations": ["III"],
@@ -6372,7 +6172,6 @@
       "damageClass": "special"
     },
     {
-      "id": 355,
       "name": "roost",
       "label": "Roost",
       "generations": ["IV"],
@@ -6526,7 +6325,6 @@
       "damageClass": "status"
     },
     {
-      "id": 356,
       "name": "gravity",
       "label": "Gravity",
       "generations": ["IV"],
@@ -6680,7 +6478,6 @@
       "damageClass": "status"
     },
     {
-      "id": 357,
       "name": "miracle-eye",
       "label": "Miracle Eye",
       "generations": ["IV"],
@@ -6816,7 +6613,6 @@
       "damageClass": "status"
     },
     {
-      "id": 358,
       "name": "wake-up-slap",
       "label": "Wake-Up Slap",
       "generations": ["IV"],
@@ -6952,7 +6748,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 359,
       "name": "hammer-arm",
       "label": "Hammer Arm",
       "generations": ["IV"],
@@ -7106,7 +6901,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 360,
       "name": "gyro-ball",
       "label": "Gyro Ball",
       "generations": ["IV"],
@@ -7260,7 +7054,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 361,
       "name": "healing-wish",
       "label": "Healing Wish",
       "generations": ["IV"],
@@ -7414,7 +7207,6 @@
       "damageClass": "status"
     },
     {
-      "id": 362,
       "name": "brine",
       "label": "Brine",
       "generations": ["IV"],
@@ -7568,7 +7360,6 @@
       "damageClass": "special"
     },
     {
-      "id": 363,
       "name": "natural-gift",
       "label": "Natural Gift",
       "generations": ["IV"],
@@ -7704,7 +7495,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 364,
       "name": "feint",
       "label": "Feint",
       "generations": ["IV"],
@@ -7858,7 +7648,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 365,
       "name": "pluck",
       "label": "Pluck",
       "generations": ["IV"],
@@ -8012,7 +7801,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 366,
       "name": "tailwind",
       "label": "Tailwind",
       "generations": ["IV"],
@@ -8166,7 +7954,6 @@
       "damageClass": "status"
     },
     {
-      "id": 367,
       "name": "acupressure",
       "label": "Acupressure",
       "generations": ["IV"],
@@ -8320,7 +8107,6 @@
       "damageClass": "status"
     },
     {
-      "id": 368,
       "name": "metal-burst",
       "label": "Metal Burst",
       "generations": ["IV"],
@@ -8474,7 +8260,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 369,
       "name": "u-turn",
       "label": "U-turn",
       "generations": ["IV"],
@@ -8628,7 +8413,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 370,
       "name": "close-combat",
       "label": "Close Combat",
       "generations": ["IV"],
@@ -8782,7 +8566,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 371,
       "name": "payback",
       "label": "Payback",
       "generations": ["IV"],
@@ -8936,7 +8719,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 372,
       "name": "assurance",
       "label": "Assurance",
       "generations": ["IV"],
@@ -9090,7 +8872,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 373,
       "name": "embargo",
       "label": "Embargo",
       "generations": ["IV"],
@@ -9226,7 +9007,6 @@
       "damageClass": "status"
     },
     {
-      "id": 374,
       "name": "fling",
       "label": "Fling",
       "generations": ["IV"],
@@ -9380,7 +9160,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 375,
       "name": "psycho-shift",
       "label": "Psycho Shift",
       "generations": ["IV"],
@@ -9516,7 +9295,6 @@
       "damageClass": "status"
     },
     {
-      "id": 376,
       "name": "trump-card",
       "label": "Trump Card",
       "generations": ["IV"],
@@ -9652,7 +9430,6 @@
       "damageClass": "special"
     },
     {
-      "id": 377,
       "name": "heal-block",
       "label": "Heal Block",
       "generations": ["IV"],
@@ -9788,7 +9565,6 @@
       "damageClass": "status"
     },
     {
-      "id": 378,
       "name": "wring-out",
       "label": "Wring Out",
       "generations": ["IV"],
@@ -9924,7 +9700,6 @@
       "damageClass": "special"
     },
     {
-      "id": 379,
       "name": "power-trick",
       "label": "Power Trick",
       "generations": ["IV"],
@@ -10078,7 +9853,6 @@
       "damageClass": "status"
     },
     {
-      "id": 380,
       "name": "gastro-acid",
       "label": "Gastro Acid",
       "generations": ["IV"],
@@ -10232,7 +10006,6 @@
       "damageClass": "status"
     },
     {
-      "id": 381,
       "name": "lucky-chant",
       "label": "Lucky Chant",
       "generations": ["IV"],
@@ -10368,7 +10141,6 @@
       "damageClass": "status"
     },
     {
-      "id": 382,
       "name": "me-first",
       "label": "Me First",
       "generations": ["IV"],
@@ -10504,7 +10276,6 @@
       "damageClass": "status"
     },
     {
-      "id": 383,
       "name": "copycat",
       "label": "Copycat",
       "generations": ["IV"],
@@ -10658,7 +10429,6 @@
       "damageClass": "status"
     },
     {
-      "id": 384,
       "name": "power-swap",
       "label": "Power Swap",
       "generations": ["IV"],
@@ -10812,7 +10582,6 @@
       "damageClass": "status"
     },
     {
-      "id": 385,
       "name": "guard-swap",
       "label": "Guard Swap",
       "generations": ["IV"],
@@ -10966,7 +10735,6 @@
       "damageClass": "status"
     },
     {
-      "id": 386,
       "name": "punishment",
       "label": "Punishment",
       "generations": ["IV"],
@@ -11102,7 +10870,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 387,
       "name": "last-resort",
       "label": "Last Resort",
       "generations": ["IV"],
@@ -11256,7 +11023,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 388,
       "name": "worry-seed",
       "label": "Worry Seed",
       "generations": ["IV"],
@@ -11410,7 +11176,6 @@
       "damageClass": "status"
     },
     {
-      "id": 389,
       "name": "sucker-punch",
       "label": "Sucker Punch",
       "generations": ["IV"],
@@ -11564,7 +11329,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 390,
       "name": "toxic-spikes",
       "label": "Toxic Spikes",
       "generations": ["IV"],
@@ -11718,7 +11482,6 @@
       "damageClass": "status"
     },
     {
-      "id": 391,
       "name": "heart-swap",
       "label": "Heart Swap",
       "generations": ["IV"],
@@ -11884,7 +11647,6 @@
       "damageClass": "status"
     },
     {
-      "id": 392,
       "name": "aqua-ring",
       "label": "Aqua Ring",
       "generations": ["IV"],
@@ -12038,7 +11800,6 @@
       "damageClass": "status"
     },
     {
-      "id": 393,
       "name": "magnet-rise",
       "label": "Magnet Rise",
       "generations": ["IV"],
@@ -12192,7 +11953,6 @@
       "damageClass": "status"
     },
     {
-      "id": 394,
       "name": "flare-blitz",
       "label": "Flare Blitz",
       "generations": ["IV"],
@@ -12346,7 +12106,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 395,
       "name": "force-palm",
       "label": "Force Palm",
       "generations": ["IV"],
@@ -12500,7 +12259,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 396,
       "name": "aura-sphere",
       "label": "Aura Sphere",
       "generations": ["IV"],
@@ -12654,7 +12412,6 @@
       "damageClass": "special"
     },
     {
-      "id": 397,
       "name": "rock-polish",
       "label": "Rock Polish",
       "generations": ["IV"],
@@ -12808,7 +12565,6 @@
       "damageClass": "status"
     },
     {
-      "id": 398,
       "name": "poison-jab",
       "label": "Poison Jab",
       "generations": ["IV"],
@@ -12962,7 +12718,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 399,
       "name": "dark-pulse",
       "label": "Dark Pulse",
       "generations": ["IV"],
@@ -13116,7 +12871,6 @@
       "damageClass": "special"
     },
     {
-      "id": 400,
       "name": "night-slash",
       "label": "Night Slash",
       "generations": ["IV"],
@@ -13270,7 +13024,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 401,
       "name": "aqua-tail",
       "label": "Aqua Tail",
       "generations": ["IV"],
@@ -13424,7 +13177,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 402,
       "name": "seed-bomb",
       "label": "Seed Bomb",
       "generations": ["IV"],
@@ -13578,7 +13330,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 403,
       "name": "air-slash",
       "label": "Air Slash",
       "generations": ["IV"],
@@ -13732,7 +13483,6 @@
       "damageClass": "special"
     },
     {
-      "id": 404,
       "name": "x-scissor",
       "label": "X-Scissor",
       "generations": ["IV"],
@@ -13886,7 +13636,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 405,
       "name": "bug-buzz",
       "label": "Bug Buzz",
       "generations": ["IV"],
@@ -14040,7 +13789,6 @@
       "damageClass": "special"
     },
     {
-      "id": 406,
       "name": "dragon-pulse",
       "label": "Dragon Pulse",
       "generations": ["IV"],
@@ -14194,7 +13942,6 @@
       "damageClass": "special"
     },
     {
-      "id": 407,
       "name": "dragon-rush",
       "label": "Dragon Rush",
       "generations": ["IV"],
@@ -14348,7 +14095,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 408,
       "name": "power-gem",
       "label": "Power Gem",
       "generations": ["IV"],
@@ -14502,7 +14248,6 @@
       "damageClass": "special"
     },
     {
-      "id": 409,
       "name": "drain-punch",
       "label": "Drain Punch",
       "generations": ["IV"],
@@ -14656,7 +14401,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 410,
       "name": "vacuum-wave",
       "label": "Vacuum Wave",
       "generations": ["IV"],
@@ -14810,7 +14554,6 @@
       "damageClass": "special"
     },
     {
-      "id": 411,
       "name": "focus-blast",
       "label": "Focus Blast",
       "generations": ["IV"],
@@ -14964,7 +14707,6 @@
       "damageClass": "special"
     },
     {
-      "id": 412,
       "name": "energy-ball",
       "label": "Energy Ball",
       "generations": ["IV"],
@@ -15118,7 +14860,6 @@
       "damageClass": "special"
     },
     {
-      "id": 413,
       "name": "brave-bird",
       "label": "Brave Bird",
       "generations": ["IV"],
@@ -15272,7 +15013,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 414,
       "name": "earth-power",
       "label": "Earth Power",
       "generations": ["IV"],
@@ -15426,7 +15166,6 @@
       "damageClass": "special"
     },
     {
-      "id": 415,
       "name": "switcheroo",
       "label": "Switcheroo",
       "generations": ["IV"],
@@ -15580,7 +15319,6 @@
       "damageClass": "status"
     },
     {
-      "id": 416,
       "name": "giga-impact",
       "label": "Giga Impact",
       "generations": ["IV"],
@@ -15734,7 +15472,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 417,
       "name": "nasty-plot",
       "label": "Nasty Plot",
       "generations": ["IV"],
@@ -15888,7 +15625,6 @@
       "damageClass": "status"
     },
     {
-      "id": 418,
       "name": "bullet-punch",
       "label": "Bullet Punch",
       "generations": ["IV"],
@@ -16043,7 +15779,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 419,
       "name": "avalanche",
       "label": "Avalanche",
       "generations": ["IV"],
@@ -16197,7 +15932,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 420,
       "name": "ice-shard",
       "label": "Ice Shard",
       "generations": ["IV"],
@@ -16351,7 +16085,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 421,
       "name": "shadow-claw",
       "label": "Shadow Claw",
       "generations": ["IV"],
@@ -16505,7 +16238,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 422,
       "name": "thunder-fang",
       "label": "Thunder Fang",
       "generations": ["IV"],
@@ -16659,7 +16391,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 423,
       "name": "ice-fang",
       "label": "Ice Fang",
       "generations": ["IV"],
@@ -16813,7 +16544,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 424,
       "name": "fire-fang",
       "label": "Fire Fang",
       "generations": ["IV"],
@@ -16967,7 +16697,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 425,
       "name": "shadow-sneak",
       "label": "Shadow Sneak",
       "generations": ["IV"],
@@ -17121,7 +16850,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 426,
       "name": "mud-bomb",
       "label": "Mud Bomb",
       "generations": ["IV"],
@@ -17257,7 +16985,6 @@
       "damageClass": "special"
     },
     {
-      "id": 427,
       "name": "psycho-cut",
       "label": "Psycho Cut",
       "generations": ["IV"],
@@ -17411,7 +17138,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 428,
       "name": "zen-headbutt",
       "label": "Zen Headbutt",
       "generations": ["IV"],
@@ -17565,7 +17291,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 429,
       "name": "mirror-shot",
       "label": "Mirror Shot",
       "generations": ["IV"],
@@ -17701,7 +17426,6 @@
       "damageClass": "special"
     },
     {
-      "id": 430,
       "name": "flash-cannon",
       "label": "Flash Cannon",
       "generations": ["IV"],
@@ -17855,7 +17579,6 @@
       "damageClass": "special"
     },
     {
-      "id": 431,
       "name": "rock-climb",
       "label": "Rock Climb",
       "generations": ["IV"],
@@ -17991,7 +17714,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 432,
       "name": "defog",
       "label": "Defog",
       "generations": ["IV"],
@@ -18145,7 +17867,6 @@
       "damageClass": "status"
     },
     {
-      "id": 433,
       "name": "trick-room",
       "label": "Trick Room",
       "generations": ["IV"],
@@ -18299,7 +18020,6 @@
       "damageClass": "status"
     },
     {
-      "id": 434,
       "name": "draco-meteor",
       "label": "Draco Meteor",
       "generations": ["IV"],
@@ -18453,7 +18173,6 @@
       "damageClass": "special"
     },
     {
-      "id": 435,
       "name": "discharge",
       "label": "Discharge",
       "generations": ["IV"],
@@ -18607,7 +18326,6 @@
       "damageClass": "special"
     },
     {
-      "id": 436,
       "name": "lava-plume",
       "label": "Lava Plume",
       "generations": ["IV"],
@@ -18761,7 +18479,6 @@
       "damageClass": "special"
     },
     {
-      "id": 437,
       "name": "leaf-storm",
       "label": "Leaf Storm",
       "generations": ["IV"],
@@ -18915,7 +18632,6 @@
       "damageClass": "special"
     },
     {
-      "id": 438,
       "name": "power-whip",
       "label": "Power Whip",
       "generations": ["IV"],
@@ -19069,7 +18785,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 439,
       "name": "rock-wrecker",
       "label": "Rock Wrecker",
       "generations": ["IV"],
@@ -19223,7 +18938,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 440,
       "name": "cross-poison",
       "label": "Cross Poison",
       "generations": ["IV"],
@@ -19377,7 +19091,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 441,
       "name": "gunk-shot",
       "label": "Gunk Shot",
       "generations": ["IV"],
@@ -19531,7 +19244,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 442,
       "name": "iron-head",
       "label": "Iron Head",
       "generations": ["IV"],
@@ -19685,7 +19397,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 443,
       "name": "magnet-bomb",
       "label": "Magnet Bomb",
       "generations": ["IV"],
@@ -19821,7 +19532,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 444,
       "name": "stone-edge",
       "label": "Stone Edge",
       "generations": ["IV"],
@@ -19975,7 +19685,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 445,
       "name": "captivate",
       "label": "Captivate",
       "generations": ["IV"],
@@ -20111,7 +19820,6 @@
       "damageClass": "status"
     },
     {
-      "id": 446,
       "name": "stealth-rock",
       "label": "Stealth Rock",
       "generations": ["IV"],
@@ -20265,7 +19973,6 @@
       "damageClass": "status"
     },
     {
-      "id": 447,
       "name": "grass-knot",
       "label": "Grass Knot",
       "generations": ["IV"],
@@ -20419,7 +20126,6 @@
       "damageClass": "special"
     },
     {
-      "id": 448,
       "name": "chatter",
       "label": "Chatter",
       "generations": ["IV"],
@@ -20555,7 +20261,6 @@
       "damageClass": "special"
     },
     {
-      "id": 449,
       "name": "judgment",
       "label": "Judgment",
       "generations": ["IV"],
@@ -20709,7 +20414,6 @@
       "damageClass": "special"
     },
     {
-      "id": 450,
       "name": "bug-bite",
       "label": "Bug Bite",
       "generations": ["IV"],
@@ -20863,7 +20567,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 451,
       "name": "charge-beam",
       "label": "Charge Beam",
       "generations": ["IV"],
@@ -21017,7 +20720,6 @@
       "damageClass": "special"
     },
     {
-      "id": 452,
       "name": "wood-hammer",
       "label": "Wood Hammer",
       "generations": ["IV"],
@@ -21171,7 +20873,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 453,
       "name": "aqua-jet",
       "label": "Aqua Jet",
       "generations": ["IV"],
@@ -21325,7 +21026,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 454,
       "name": "attack-order",
       "label": "Attack Order",
       "generations": ["IV"],
@@ -21479,7 +21179,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 455,
       "name": "defend-order",
       "label": "Defend Order",
       "generations": ["IV"],
@@ -21633,7 +21332,6 @@
       "damageClass": "status"
     },
     {
-      "id": 456,
       "name": "heal-order",
       "label": "Heal Order",
       "generations": ["IV"],
@@ -21769,7 +21467,6 @@
       "damageClass": "status"
     },
     {
-      "id": 457,
       "name": "head-smash",
       "label": "Head Smash",
       "generations": ["IV"],
@@ -21923,7 +21620,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 458,
       "name": "double-hit",
       "label": "Double Hit",
       "generations": ["IV"],
@@ -22077,7 +21773,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 459,
       "name": "roar-of-time",
       "label": "Roar of Time",
       "generations": ["IV"],
@@ -22231,7 +21926,6 @@
       "damageClass": "special"
     },
     {
-      "id": 460,
       "name": "spacial-rend",
       "label": "Spacial Rend",
       "generations": ["IV"],
@@ -22385,7 +22079,6 @@
       "damageClass": "special"
     },
     {
-      "id": 461,
       "name": "lunar-dance",
       "label": "Lunar Dance",
       "generations": ["IV"],
@@ -22539,7 +22232,6 @@
       "damageClass": "status"
     },
     {
-      "id": 462,
       "name": "crush-grip",
       "label": "Crush Grip",
       "generations": ["IV"],
@@ -22693,7 +22385,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 463,
       "name": "magma-storm",
       "label": "Magma Storm",
       "generations": ["IV"],
@@ -22847,7 +22538,6 @@
       "damageClass": "special"
     },
     {
-      "id": 464,
       "name": "dark-void",
       "label": "Dark Void",
       "generations": ["IV"],
@@ -23001,7 +22691,6 @@
       "damageClass": "status"
     },
     {
-      "id": 465,
       "name": "seed-flare",
       "label": "Seed Flare",
       "generations": ["IV"],
@@ -23155,7 +22844,6 @@
       "damageClass": "special"
     },
     {
-      "id": 466,
       "name": "ominous-wind",
       "label": "Ominous Wind",
       "generations": ["IV"],
@@ -23291,7 +22979,6 @@
       "damageClass": "special"
     },
     {
-      "id": 467,
       "name": "shadow-force",
       "label": "Shadow Force",
       "generations": ["IV"],
@@ -23445,7 +23132,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 468,
       "name": "hone-claws",
       "label": "Hone Claws",
       "generations": ["V"],
@@ -23569,7 +23255,6 @@
       "damageClass": "status"
     },
     {
-      "id": 469,
       "name": "wide-guard",
       "label": "Wide Guard",
       "generations": ["V"],
@@ -23693,7 +23378,6 @@
       "damageClass": "status"
     },
     {
-      "id": 470,
       "name": "guard-split",
       "label": "Guard Split",
       "generations": ["V"],
@@ -23817,7 +23501,6 @@
       "damageClass": "status"
     },
     {
-      "id": 471,
       "name": "power-split",
       "label": "Power Split",
       "generations": ["V"],
@@ -23941,7 +23624,6 @@
       "damageClass": "status"
     },
     {
-      "id": 472,
       "name": "wonder-room",
       "label": "Wonder Room",
       "generations": ["V"],
@@ -24065,7 +23747,6 @@
       "damageClass": "status"
     },
     {
-      "id": 473,
       "name": "psyshock",
       "label": "Psyshock",
       "generations": ["V"],
@@ -24189,7 +23870,6 @@
       "damageClass": "special"
     },
     {
-      "id": 474,
       "name": "venoshock",
       "label": "Venoshock",
       "generations": ["V"],
@@ -24313,7 +23993,6 @@
       "damageClass": "special"
     },
     {
-      "id": 475,
       "name": "autotomize",
       "label": "Autotomize",
       "generations": ["V"],
@@ -24419,7 +24098,6 @@
       "damageClass": "status"
     },
     {
-      "id": 476,
       "name": "rage-powder",
       "label": "Rage Powder",
       "generations": ["V"],
@@ -24543,7 +24221,6 @@
       "damageClass": "status"
     },
     {
-      "id": 477,
       "name": "telekinesis",
       "label": "Telekinesis",
       "generations": ["V"],
@@ -24649,7 +24326,6 @@
       "damageClass": "status"
     },
     {
-      "id": 478,
       "name": "magic-room",
       "label": "Magic Room",
       "generations": ["V"],
@@ -24773,7 +24449,6 @@
       "damageClass": "status"
     },
     {
-      "id": 479,
       "name": "smack-down",
       "label": "Smack Down",
       "generations": ["V"],
@@ -24897,7 +24572,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 480,
       "name": "storm-throw",
       "label": "Storm Throw",
       "generations": ["V"],
@@ -25003,7 +24677,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 481,
       "name": "flame-burst",
       "label": "Flame Burst",
       "generations": ["V"],
@@ -25109,7 +24782,6 @@
       "damageClass": "special"
     },
     {
-      "id": 482,
       "name": "sludge-wave",
       "label": "Sludge Wave",
       "generations": ["V"],
@@ -25233,7 +24905,6 @@
       "damageClass": "special"
     },
     {
-      "id": 483,
       "name": "quiver-dance",
       "label": "Quiver Dance",
       "generations": ["V"],
@@ -25357,7 +25028,6 @@
       "damageClass": "status"
     },
     {
-      "id": 484,
       "name": "heavy-slam",
       "label": "Heavy Slam",
       "generations": ["V"],
@@ -25481,7 +25151,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 485,
       "name": "synchronoise",
       "label": "Synchronoise",
       "generations": ["V"],
@@ -25587,7 +25256,6 @@
       "damageClass": "special"
     },
     {
-      "id": 486,
       "name": "electro-ball",
       "label": "Electro Ball",
       "generations": ["V"],
@@ -25711,7 +25379,6 @@
       "damageClass": "special"
     },
     {
-      "id": 487,
       "name": "soak",
       "label": "Soak",
       "generations": ["V"],
@@ -25835,7 +25502,6 @@
       "damageClass": "status"
     },
     {
-      "id": 488,
       "name": "flame-charge",
       "label": "Flame Charge",
       "generations": ["V"],
@@ -25959,7 +25625,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 489,
       "name": "coil",
       "label": "Coil",
       "generations": ["V"],
@@ -26083,7 +25748,6 @@
       "damageClass": "status"
     },
     {
-      "id": 490,
       "name": "low-sweep",
       "label": "Low Sweep",
       "generations": ["V"],
@@ -26207,7 +25871,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 491,
       "name": "acid-spray",
       "label": "Acid Spray",
       "generations": ["V"],
@@ -26331,7 +25994,6 @@
       "damageClass": "special"
     },
     {
-      "id": 492,
       "name": "foul-play",
       "label": "Foul Play",
       "generations": ["V"],
@@ -26455,7 +26117,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 493,
       "name": "simple-beam",
       "label": "Simple Beam",
       "generations": ["V"],
@@ -26579,7 +26240,6 @@
       "damageClass": "status"
     },
     {
-      "id": 494,
       "name": "entrainment",
       "label": "Entrainment",
       "generations": ["V"],
@@ -26703,7 +26363,6 @@
       "damageClass": "status"
     },
     {
-      "id": 495,
       "name": "after-you",
       "label": "After You",
       "generations": ["V"],
@@ -26827,7 +26486,6 @@
       "damageClass": "status"
     },
     {
-      "id": 496,
       "name": "round",
       "label": "Round",
       "generations": ["V"],
@@ -26951,7 +26609,6 @@
       "damageClass": "special"
     },
     {
-      "id": 497,
       "name": "echoed-voice",
       "label": "Echoed Voice",
       "generations": ["V"],
@@ -27075,7 +26732,6 @@
       "damageClass": "special"
     },
     {
-      "id": 498,
       "name": "chip-away",
       "label": "Chip Away",
       "generations": ["V"],
@@ -27181,7 +26837,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 499,
       "name": "clear-smog",
       "label": "Clear Smog",
       "generations": ["V"],
@@ -27305,7 +26960,6 @@
       "damageClass": "special"
     },
     {
-      "id": 500,
       "name": "stored-power",
       "label": "Stored Power",
       "generations": ["V"],
@@ -27429,7 +27083,6 @@
       "damageClass": "special"
     },
     {
-      "id": 501,
       "name": "quick-guard",
       "label": "Quick Guard",
       "generations": ["V"],
@@ -27553,7 +27206,6 @@
       "damageClass": "status"
     },
     {
-      "id": 502,
       "name": "ally-switch",
       "label": "Ally Switch",
       "generations": ["V"],
@@ -27677,7 +27329,6 @@
       "damageClass": "status"
     },
     {
-      "id": 503,
       "name": "scald",
       "label": "Scald",
       "generations": ["V"],
@@ -27802,7 +27453,6 @@
       "damageClass": "special"
     },
     {
-      "id": 504,
       "name": "shell-smash",
       "label": "Shell Smash",
       "generations": ["V"],
@@ -27926,7 +27576,6 @@
       "damageClass": "status"
     },
     {
-      "id": 505,
       "name": "heal-pulse",
       "label": "Heal Pulse",
       "generations": ["V"],
@@ -28050,7 +27699,6 @@
       "damageClass": "status"
     },
     {
-      "id": 506,
       "name": "hex",
       "label": "Hex",
       "generations": ["V"],
@@ -28174,7 +27822,6 @@
       "damageClass": "special"
     },
     {
-      "id": 507,
       "name": "sky-drop",
       "label": "Sky Drop",
       "generations": ["V"],
@@ -28280,7 +27927,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 508,
       "name": "shift-gear",
       "label": "Shift Gear",
       "generations": ["V"],
@@ -28404,7 +28050,6 @@
       "damageClass": "status"
     },
     {
-      "id": 509,
       "name": "circle-throw",
       "label": "Circle Throw",
       "generations": ["V"],
@@ -28528,7 +28173,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 510,
       "name": "incinerate",
       "label": "Incinerate",
       "generations": ["V"],
@@ -28652,7 +28296,6 @@
       "damageClass": "special"
     },
     {
-      "id": 511,
       "name": "quash",
       "label": "Quash",
       "generations": ["V"],
@@ -28776,7 +28419,6 @@
       "damageClass": "status"
     },
     {
-      "id": 512,
       "name": "acrobatics",
       "label": "Acrobatics",
       "generations": ["V"],
@@ -28900,7 +28542,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 513,
       "name": "reflect-type",
       "label": "Reflect Type",
       "generations": ["V"],
@@ -29024,7 +28665,6 @@
       "damageClass": "status"
     },
     {
-      "id": 514,
       "name": "retaliate",
       "label": "Retaliate",
       "generations": ["V"],
@@ -29148,7 +28788,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 515,
       "name": "final-gambit",
       "label": "Final Gambit",
       "generations": ["V"],
@@ -29272,7 +28911,6 @@
       "damageClass": "special"
     },
     {
-      "id": 516,
       "name": "bestow",
       "label": "Bestow",
       "generations": ["V"],
@@ -29378,7 +29016,6 @@
       "damageClass": "status"
     },
     {
-      "id": 517,
       "name": "inferno",
       "label": "Inferno",
       "generations": ["V"],
@@ -29502,7 +29139,6 @@
       "damageClass": "special"
     },
     {
-      "id": 518,
       "name": "water-pledge",
       "label": "Water Pledge",
       "generations": ["V"],
@@ -29626,7 +29262,6 @@
       "damageClass": "special"
     },
     {
-      "id": 519,
       "name": "fire-pledge",
       "label": "Fire Pledge",
       "generations": ["V"],
@@ -29750,7 +29385,6 @@
       "damageClass": "special"
     },
     {
-      "id": 520,
       "name": "grass-pledge",
       "label": "Grass Pledge",
       "generations": ["V"],
@@ -29874,7 +29508,6 @@
       "damageClass": "special"
     },
     {
-      "id": 521,
       "name": "volt-switch",
       "label": "Volt Switch",
       "generations": ["V"],
@@ -29998,7 +29631,6 @@
       "damageClass": "special"
     },
     {
-      "id": 522,
       "name": "struggle-bug",
       "label": "Struggle Bug",
       "generations": ["V"],
@@ -30122,7 +29754,6 @@
       "damageClass": "special"
     },
     {
-      "id": 523,
       "name": "bulldoze",
       "label": "Bulldoze",
       "generations": ["V"],
@@ -30246,7 +29877,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 524,
       "name": "frost-breath",
       "label": "Frost Breath",
       "generations": ["V"],
@@ -30370,7 +30000,6 @@
       "damageClass": "special"
     },
     {
-      "id": 525,
       "name": "dragon-tail",
       "label": "Dragon Tail",
       "generations": ["V"],
@@ -30494,7 +30123,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 526,
       "name": "work-up",
       "label": "Work Up",
       "generations": ["V"],
@@ -30618,7 +30246,6 @@
       "damageClass": "status"
     },
     {
-      "id": 527,
       "name": "electroweb",
       "label": "Electroweb",
       "generations": ["V"],
@@ -30742,7 +30369,6 @@
       "damageClass": "special"
     },
     {
-      "id": 528,
       "name": "wild-charge",
       "label": "Wild Charge",
       "generations": ["V"],
@@ -30866,7 +30492,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 529,
       "name": "drill-run",
       "label": "Drill Run",
       "generations": ["V"],
@@ -30990,7 +30615,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 530,
       "name": "dual-chop",
       "label": "Dual Chop",
       "generations": ["V"],
@@ -31096,7 +30720,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 531,
       "name": "heart-stamp",
       "label": "Heart Stamp",
       "generations": ["V"],
@@ -31202,7 +30825,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 532,
       "name": "horn-leech",
       "label": "Horn Leech",
       "generations": ["V"],
@@ -31326,7 +30948,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 533,
       "name": "sacred-sword",
       "label": "Sacred Sword",
       "generations": ["V"],
@@ -31450,7 +31071,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 534,
       "name": "razor-shell",
       "label": "Razor Shell",
       "generations": ["V"],
@@ -31574,7 +31194,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 535,
       "name": "heat-crash",
       "label": "Heat Crash",
       "generations": ["V"],
@@ -31698,7 +31317,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 536,
       "name": "leaf-tornado",
       "label": "Leaf Tornado",
       "generations": ["V"],
@@ -31804,7 +31422,6 @@
       "damageClass": "special"
     },
     {
-      "id": 537,
       "name": "steamroller",
       "label": "Steamroller",
       "generations": ["V"],
@@ -31910,7 +31527,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 538,
       "name": "cotton-guard",
       "label": "Cotton Guard",
       "generations": ["V"],
@@ -32034,7 +31650,6 @@
       "damageClass": "status"
     },
     {
-      "id": 539,
       "name": "night-daze",
       "label": "Night Daze",
       "generations": ["V"],
@@ -32158,7 +31773,6 @@
       "damageClass": "special"
     },
     {
-      "id": 540,
       "name": "psystrike",
       "label": "Psystrike",
       "generations": ["V"],
@@ -32282,7 +31896,6 @@
       "damageClass": "special"
     },
     {
-      "id": 541,
       "name": "tail-slap",
       "label": "Tail Slap",
       "generations": ["V"],
@@ -32406,7 +32019,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 542,
       "name": "hurricane",
       "label": "Hurricane",
       "generations": ["V"],
@@ -32530,7 +32142,6 @@
       "damageClass": "special"
     },
     {
-      "id": 543,
       "name": "head-charge",
       "label": "Head Charge",
       "generations": ["V"],
@@ -32636,7 +32247,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 544,
       "name": "gear-grind",
       "label": "Gear Grind",
       "generations": ["V"],
@@ -32742,7 +32352,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 545,
       "name": "searing-shot",
       "label": "Searing Shot",
       "generations": ["V"],
@@ -32848,7 +32457,6 @@
       "damageClass": "special"
     },
     {
-      "id": 546,
       "name": "techno-blast",
       "label": "Techno Blast",
       "generations": ["V"],
@@ -32954,7 +32562,6 @@
       "damageClass": "special"
     },
     {
-      "id": 547,
       "name": "relic-song",
       "label": "Relic Song",
       "generations": ["V"],
@@ -33078,7 +32685,6 @@
       "damageClass": "special"
     },
     {
-      "id": 548,
       "name": "secret-sword",
       "label": "Secret Sword",
       "generations": ["V"],
@@ -33202,7 +32808,6 @@
       "damageClass": "special"
     },
     {
-      "id": 549,
       "name": "glaciate",
       "label": "Glaciate",
       "generations": ["V"],
@@ -33326,7 +32931,6 @@
       "damageClass": "special"
     },
     {
-      "id": 550,
       "name": "bolt-strike",
       "label": "Bolt Strike",
       "generations": ["V"],
@@ -33450,7 +33054,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 551,
       "name": "blue-flare",
       "label": "Blue Flare",
       "generations": ["V"],
@@ -33574,7 +33177,6 @@
       "damageClass": "special"
     },
     {
-      "id": 552,
       "name": "fiery-dance",
       "label": "Fiery Dance",
       "generations": ["V"],
@@ -33698,7 +33300,6 @@
       "damageClass": "special"
     },
     {
-      "id": 553,
       "name": "freeze-shock",
       "label": "Freeze Shock",
       "generations": ["V"],
@@ -33822,7 +33423,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 554,
       "name": "ice-burn",
       "label": "Ice Burn",
       "generations": ["V"],
@@ -33946,7 +33546,6 @@
       "damageClass": "special"
     },
     {
-      "id": 555,
       "name": "snarl",
       "label": "Snarl",
       "generations": ["V"],
@@ -34070,7 +33669,6 @@
       "damageClass": "special"
     },
     {
-      "id": 556,
       "name": "icicle-crash",
       "label": "Icicle Crash",
       "generations": ["V"],
@@ -34194,7 +33792,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 557,
       "name": "v-create",
       "label": "V-create",
       "generations": ["V"],
@@ -34300,7 +33897,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 558,
       "name": "fusion-flare",
       "label": "Fusion Flare",
       "generations": ["V"],
@@ -34424,7 +34020,6 @@
       "damageClass": "special"
     },
     {
-      "id": 559,
       "name": "fusion-bolt",
       "label": "Fusion Bolt",
       "generations": ["V"],
@@ -34548,7 +34143,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 560,
       "name": "flying-press",
       "label": "Flying Press",
       "generations": ["VI"],
@@ -34648,7 +34242,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 561,
       "name": "mat-block",
       "label": "Mat Block",
       "generations": ["VI"],
@@ -34730,7 +34323,6 @@
       "damageClass": "status"
     },
     {
-      "id": 562,
       "name": "belch",
       "label": "Belch",
       "generations": ["VI"],
@@ -34830,7 +34422,6 @@
       "damageClass": "special"
     },
     {
-      "id": 563,
       "name": "rototiller",
       "label": "Rototiller",
       "generations": ["VI"],
@@ -34912,7 +34503,6 @@
       "damageClass": "status"
     },
     {
-      "id": 564,
       "name": "sticky-web",
       "label": "Sticky Web",
       "generations": ["VI"],
@@ -35012,7 +34602,6 @@
       "damageClass": "status"
     },
     {
-      "id": 565,
       "name": "fell-stinger",
       "label": "Fell Stinger",
       "generations": ["VI"],
@@ -35112,7 +34701,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 566,
       "name": "phantom-force",
       "label": "Phantom Force",
       "generations": ["VI"],
@@ -35212,7 +34800,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 567,
       "name": "trick-or-treat",
       "label": "Trick-or-Treat",
       "generations": ["VI"],
@@ -35294,7 +34881,6 @@
       "damageClass": "status"
     },
     {
-      "id": 568,
       "name": "noble-roar",
       "label": "Noble Roar",
       "generations": ["VI"],
@@ -35394,7 +34980,6 @@
       "damageClass": "status"
     },
     {
-      "id": 569,
       "name": "ion-deluge",
       "label": "Ion Deluge",
       "generations": ["VI"],
@@ -35476,7 +35061,6 @@
       "damageClass": "status"
     },
     {
-      "id": 570,
       "name": "parabolic-charge",
       "label": "Parabolic Charge",
       "generations": ["VI"],
@@ -35576,7 +35160,6 @@
       "damageClass": "special"
     },
     {
-      "id": 571,
       "name": "forests-curse",
       "label": "Forest’s Curse",
       "generations": ["VI"],
@@ -35676,7 +35259,6 @@
       "damageClass": "status"
     },
     {
-      "id": 572,
       "name": "petal-blizzard",
       "label": "Petal Blizzard",
       "generations": ["VI"],
@@ -35776,7 +35358,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 573,
       "name": "freeze-dry",
       "label": "Freeze-Dry",
       "generations": ["VI"],
@@ -35876,7 +35457,6 @@
       "damageClass": "special"
     },
     {
-      "id": 574,
       "name": "disarming-voice",
       "label": "Disarming Voice",
       "generations": ["VI"],
@@ -35976,7 +35556,6 @@
       "damageClass": "special"
     },
     {
-      "id": 575,
       "name": "parting-shot",
       "label": "Parting Shot",
       "generations": ["VI"],
@@ -36076,7 +35655,6 @@
       "damageClass": "status"
     },
     {
-      "id": 576,
       "name": "topsy-turvy",
       "label": "Topsy-Turvy",
       "generations": ["VI"],
@@ -36176,7 +35754,6 @@
       "damageClass": "status"
     },
     {
-      "id": 577,
       "name": "draining-kiss",
       "label": "Draining Kiss",
       "generations": ["VI"],
@@ -36276,7 +35853,6 @@
       "damageClass": "special"
     },
     {
-      "id": 578,
       "name": "crafty-shield",
       "label": "Crafty Shield",
       "generations": ["VI"],
@@ -36358,7 +35934,6 @@
       "damageClass": "status"
     },
     {
-      "id": 579,
       "name": "flower-shield",
       "label": "Flower Shield",
       "generations": ["VI"],
@@ -36440,7 +36015,6 @@
       "damageClass": "status"
     },
     {
-      "id": 580,
       "name": "grassy-terrain",
       "label": "Grassy Terrain",
       "generations": ["VI"],
@@ -36540,7 +36114,6 @@
       "damageClass": "status"
     },
     {
-      "id": 581,
       "name": "misty-terrain",
       "label": "Misty Terrain",
       "generations": ["VI"],
@@ -36640,7 +36213,6 @@
       "damageClass": "status"
     },
     {
-      "id": 582,
       "name": "electrify",
       "label": "Electrify",
       "generations": ["VI"],
@@ -36722,7 +36294,6 @@
       "damageClass": "status"
     },
     {
-      "id": 583,
       "name": "play-rough",
       "label": "Play Rough",
       "generations": ["VI"],
@@ -36822,7 +36393,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 584,
       "name": "fairy-wind",
       "label": "Fairy Wind",
       "generations": ["VI"],
@@ -36922,7 +36492,6 @@
       "damageClass": "special"
     },
     {
-      "id": 585,
       "name": "moonblast",
       "label": "Moonblast",
       "generations": ["VI"],
@@ -37023,7 +36592,6 @@
       "damageClass": "special"
     },
     {
-      "id": 586,
       "name": "boomburst",
       "label": "Boomburst",
       "generations": ["VI"],
@@ -37123,7 +36691,6 @@
       "damageClass": "special"
     },
     {
-      "id": 587,
       "name": "fairy-lock",
       "label": "Fairy Lock",
       "generations": ["VI"],
@@ -37223,7 +36790,6 @@
       "damageClass": "status"
     },
     {
-      "id": 588,
       "name": "kings-shield",
       "label": "King’s Shield",
       "generations": ["VI"],
@@ -37305,7 +36871,6 @@
       "damageClass": "status"
     },
     {
-      "id": 589,
       "name": "play-nice",
       "label": "Play Nice",
       "generations": ["VI"],
@@ -37405,7 +36970,6 @@
       "damageClass": "status"
     },
     {
-      "id": 590,
       "name": "confide",
       "label": "Confide",
       "generations": ["VI"],
@@ -37505,7 +37069,6 @@
       "damageClass": "status"
     },
     {
-      "id": 591,
       "name": "diamond-storm",
       "label": "Diamond Storm",
       "generations": ["VI"],
@@ -37605,7 +37168,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 592,
       "name": "steam-eruption",
       "label": "Steam Eruption",
       "generations": ["VI"],
@@ -37705,7 +37267,6 @@
       "damageClass": "special"
     },
     {
-      "id": 593,
       "name": "hyperspace-hole",
       "label": "Hyperspace Hole",
       "generations": ["VI"],
@@ -37805,7 +37366,6 @@
       "damageClass": "special"
     },
     {
-      "id": 594,
       "name": "water-shuriken",
       "label": "Water Shuriken",
       "generations": ["VI"],
@@ -37905,7 +37465,6 @@
       "damageClass": "special"
     },
     {
-      "id": 595,
       "name": "mystical-fire",
       "label": "Mystical Fire",
       "generations": ["VI"],
@@ -38005,7 +37564,6 @@
       "damageClass": "special"
     },
     {
-      "id": 596,
       "name": "spiky-shield",
       "label": "Spiky Shield",
       "generations": ["VI"],
@@ -38105,7 +37663,6 @@
       "damageClass": "status"
     },
     {
-      "id": 597,
       "name": "aromatic-mist",
       "label": "Aromatic Mist",
       "generations": ["VI"],
@@ -38205,7 +37762,6 @@
       "damageClass": "status"
     },
     {
-      "id": 598,
       "name": "eerie-impulse",
       "label": "Eerie Impulse",
       "generations": ["VI"],
@@ -38305,7 +37861,6 @@
       "damageClass": "status"
     },
     {
-      "id": 599,
       "name": "venom-drench",
       "label": "Venom Drench",
       "generations": ["VI"],
@@ -38387,7 +37942,6 @@
       "damageClass": "status"
     },
     {
-      "id": 600,
       "name": "powder",
       "label": "Powder",
       "generations": ["VI"],
@@ -38469,7 +38023,6 @@
       "damageClass": "status"
     },
     {
-      "id": 601,
       "name": "geomancy",
       "label": "Geomancy",
       "generations": ["VI"],
@@ -38551,7 +38104,6 @@
       "damageClass": "status"
     },
     {
-      "id": 602,
       "name": "magnetic-flux",
       "label": "Magnetic Flux",
       "generations": ["VI"],
@@ -38651,7 +38203,6 @@
       "damageClass": "status"
     },
     {
-      "id": 603,
       "name": "happy-hour",
       "label": "Happy Hour",
       "generations": ["VI"],
@@ -38733,7 +38284,6 @@
       "damageClass": "status"
     },
     {
-      "id": 604,
       "name": "electric-terrain",
       "label": "Electric Terrain",
       "generations": ["VI"],
@@ -38833,7 +38383,6 @@
       "damageClass": "status"
     },
     {
-      "id": 605,
       "name": "dazzling-gleam",
       "label": "Dazzling Gleam",
       "generations": ["VI"],
@@ -38933,7 +38482,6 @@
       "damageClass": "special"
     },
     {
-      "id": 606,
       "name": "celebrate",
       "label": "Celebrate",
       "generations": ["VI"],
@@ -39015,7 +38563,6 @@
       "damageClass": "status"
     },
     {
-      "id": 607,
       "name": "hold-hands",
       "label": "Hold Hands",
       "generations": ["VI"],
@@ -39097,7 +38644,6 @@
       "damageClass": "status"
     },
     {
-      "id": 608,
       "name": "baby-doll-eyes",
       "label": "Baby-Doll Eyes",
       "generations": ["VI"],
@@ -39197,7 +38743,6 @@
       "damageClass": "status"
     },
     {
-      "id": 609,
       "name": "nuzzle",
       "label": "Nuzzle",
       "generations": ["VI"],
@@ -39297,7 +38842,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 610,
       "name": "hold-back",
       "label": "Hold Back",
       "generations": ["VI"],
@@ -39379,7 +38923,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 611,
       "name": "infestation",
       "label": "Infestation",
       "generations": ["VI"],
@@ -39479,7 +39022,6 @@
       "damageClass": "special"
     },
     {
-      "id": 612,
       "name": "power-up-punch",
       "label": "Power-Up Punch",
       "generations": ["VI"],
@@ -39561,7 +39103,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 613,
       "name": "oblivion-wing",
       "label": "Oblivion Wing",
       "generations": ["VI"],
@@ -39643,7 +39184,6 @@
       "damageClass": "special"
     },
     {
-      "id": 614,
       "name": "thousand-arrows",
       "label": "Thousand Arrows",
       "generations": ["VI"],
@@ -39725,7 +39265,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 615,
       "name": "thousand-waves",
       "label": "Thousand Waves",
       "generations": ["VI"],
@@ -39807,7 +39346,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 616,
       "name": "lands-wrath",
       "label": "Land’s Wrath",
       "generations": ["VI"],
@@ -39889,7 +39427,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 617,
       "name": "light-of-ruin",
       "label": "Light of Ruin",
       "generations": ["VI"],
@@ -39971,7 +39508,6 @@
       "damageClass": "special"
     },
     {
-      "id": 618,
       "name": "origin-pulse",
       "label": "Origin Pulse",
       "generations": ["VI"],
@@ -40059,7 +39595,6 @@
       "damageClass": "special"
     },
     {
-      "id": 619,
       "name": "precipice-blades",
       "label": "Precipice Blades",
       "generations": ["VI"],
@@ -40147,7 +39682,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 620,
       "name": "dragon-ascent",
       "label": "Dragon Ascent",
       "generations": ["VI"],
@@ -40235,7 +39769,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 621,
       "name": "hyperspace-fury",
       "label": "Hyperspace Fury",
       "generations": ["VI"],
@@ -40323,7 +39856,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 622,
       "name": "breakneck-blitz--physical",
       "label": "Breakneck Blitz",
       "generations": ["VII"],
@@ -40381,7 +39913,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 623,
       "name": "breakneck-blitz--special",
       "label": "Breakneck Blitz",
       "generations": ["VII"],
@@ -40439,7 +39970,6 @@
       "damageClass": "special"
     },
     {
-      "id": 624,
       "name": "all-out-pummeling--physical",
       "label": "All-Out Pummeling",
       "generations": ["VII"],
@@ -40497,7 +40027,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 625,
       "name": "all-out-pummeling--special",
       "label": "All-Out Pummeling",
       "generations": ["VII"],
@@ -40555,7 +40084,6 @@
       "damageClass": "special"
     },
     {
-      "id": 626,
       "name": "supersonic-skystrike--physical",
       "label": "Supersonic Skystrike",
       "generations": ["VII"],
@@ -40613,7 +40141,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 627,
       "name": "supersonic-skystrike--special",
       "label": "Supersonic Skystrike",
       "generations": ["VII"],
@@ -40671,7 +40198,6 @@
       "damageClass": "special"
     },
     {
-      "id": 628,
       "name": "acid-downpour--physical",
       "label": "Acid Downpour",
       "generations": ["VII"],
@@ -40729,7 +40255,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 629,
       "name": "acid-downpour--special",
       "label": "Acid Downpour",
       "generations": ["VII"],
@@ -40787,7 +40312,6 @@
       "damageClass": "special"
     },
     {
-      "id": 630,
       "name": "tectonic-rage--physical",
       "label": "Tectonic Rage",
       "generations": ["VII"],
@@ -40845,7 +40369,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 631,
       "name": "tectonic-rage--special",
       "label": "Tectonic Rage",
       "generations": ["VII"],
@@ -40903,7 +40426,6 @@
       "damageClass": "special"
     },
     {
-      "id": 632,
       "name": "continental-crush--physical",
       "label": "Continental Crush",
       "generations": ["VII"],
@@ -40961,7 +40483,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 633,
       "name": "continental-crush--special",
       "label": "Continental Crush",
       "generations": ["VII"],
@@ -41019,7 +40540,6 @@
       "damageClass": "special"
     },
     {
-      "id": 634,
       "name": "savage-spin-out--physical",
       "label": "Savage Spin-Out",
       "generations": ["VII"],
@@ -41077,7 +40597,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 635,
       "name": "savage-spin-out--special",
       "label": "Savage Spin-Out",
       "generations": ["VII"],
@@ -41135,7 +40654,6 @@
       "damageClass": "special"
     },
     {
-      "id": 636,
       "name": "never-ending-nightmare--physical",
       "label": "Never-Ending Nightmare",
       "generations": ["VII"],
@@ -41193,7 +40711,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 637,
       "name": "never-ending-nightmare--special",
       "label": "Never-Ending Nightmare",
       "generations": ["VII"],
@@ -41251,7 +40768,6 @@
       "damageClass": "special"
     },
     {
-      "id": 638,
       "name": "corkscrew-crash--physical",
       "label": "Corkscrew Crash",
       "generations": ["VII"],
@@ -41309,7 +40825,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 639,
       "name": "corkscrew-crash--special",
       "label": "Corkscrew Crash",
       "generations": ["VII"],
@@ -41367,7 +40882,6 @@
       "damageClass": "special"
     },
     {
-      "id": 640,
       "name": "inferno-overdrive--physical",
       "label": "Inferno Overdrive",
       "generations": ["VII"],
@@ -41425,7 +40939,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 641,
       "name": "inferno-overdrive--special",
       "label": "Inferno Overdrive",
       "generations": ["VII"],
@@ -41483,7 +40996,6 @@
       "damageClass": "special"
     },
     {
-      "id": 642,
       "name": "hydro-vortex--physical",
       "label": "Hydro Vortex",
       "generations": ["VII"],
@@ -41541,7 +41053,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 643,
       "name": "hydro-vortex--special",
       "label": "Hydro Vortex",
       "generations": ["VII"],
@@ -41599,7 +41110,6 @@
       "damageClass": "special"
     },
     {
-      "id": 644,
       "name": "bloom-doom--physical",
       "label": "Bloom Doom",
       "generations": ["VII"],
@@ -41657,7 +41167,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 645,
       "name": "bloom-doom--special",
       "label": "Bloom Doom",
       "generations": ["VII"],
@@ -41715,7 +41224,6 @@
       "damageClass": "special"
     },
     {
-      "id": 646,
       "name": "gigavolt-havoc--physical",
       "label": "Gigavolt Havoc",
       "generations": ["VII"],
@@ -41773,7 +41281,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 647,
       "name": "gigavolt-havoc--special",
       "label": "Gigavolt Havoc",
       "generations": ["VII"],
@@ -41831,7 +41338,6 @@
       "damageClass": "special"
     },
     {
-      "id": 648,
       "name": "shattered-psyche--physical",
       "label": "Shattered Psyche",
       "generations": ["VII"],
@@ -41889,7 +41395,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 649,
       "name": "shattered-psyche--special",
       "label": "Shattered Psyche",
       "generations": ["VII"],
@@ -41947,7 +41452,6 @@
       "damageClass": "special"
     },
     {
-      "id": 650,
       "name": "subzero-slammer--physical",
       "label": "Subzero Slammer",
       "generations": ["VII"],
@@ -42005,7 +41509,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 651,
       "name": "subzero-slammer--special",
       "label": "Subzero Slammer",
       "generations": ["VII"],
@@ -42063,7 +41566,6 @@
       "damageClass": "special"
     },
     {
-      "id": 652,
       "name": "devastating-drake--physical",
       "label": "Devastating Drake",
       "generations": ["VII"],
@@ -42121,7 +41623,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 653,
       "name": "devastating-drake--special",
       "label": "Devastating Drake",
       "generations": ["VII"],
@@ -42179,7 +41680,6 @@
       "damageClass": "special"
     },
     {
-      "id": 654,
       "name": "black-hole-eclipse--physical",
       "label": "Black Hole Eclipse",
       "generations": ["VII"],
@@ -42237,7 +41737,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 655,
       "name": "black-hole-eclipse--special",
       "label": "Black Hole Eclipse",
       "generations": ["VII"],
@@ -42295,7 +41794,6 @@
       "damageClass": "special"
     },
     {
-      "id": 656,
       "name": "twinkle-tackle--physical",
       "label": "Twinkle Tackle",
       "generations": ["VII"],
@@ -42353,7 +41851,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 657,
       "name": "twinkle-tackle--special",
       "label": "Twinkle Tackle",
       "generations": ["VII"],
@@ -42411,7 +41908,6 @@
       "damageClass": "special"
     },
     {
-      "id": 658,
       "name": "catastropika",
       "label": "Catastropika",
       "generations": ["VII"],
@@ -42469,7 +41965,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 659,
       "name": "shore-up",
       "label": "Shore Up",
       "generations": ["VII"],
@@ -42545,7 +42040,6 @@
       "damageClass": "status"
     },
     {
-      "id": 660,
       "name": "first-impression",
       "label": "First Impression",
       "generations": ["VII"],
@@ -42621,7 +42115,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 661,
       "name": "baneful-bunker",
       "label": "Baneful Bunker",
       "generations": ["VII"],
@@ -42697,7 +42190,6 @@
       "damageClass": "status"
     },
     {
-      "id": 662,
       "name": "spirit-shackle",
       "label": "Spirit Shackle",
       "generations": ["VII"],
@@ -42773,7 +42265,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 663,
       "name": "darkest-lariat",
       "label": "Darkest Lariat",
       "generations": ["VII"],
@@ -42849,7 +42340,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 664,
       "name": "sparkling-aria",
       "label": "Sparkling Aria",
       "generations": ["VII"],
@@ -42926,7 +42416,6 @@
       "damageClass": "special"
     },
     {
-      "id": 665,
       "name": "ice-hammer",
       "label": "Ice Hammer",
       "generations": ["VII"],
@@ -43002,7 +42491,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 666,
       "name": "floral-healing",
       "label": "Floral Healing",
       "generations": ["VII"],
@@ -43078,7 +42566,6 @@
       "damageClass": "status"
     },
     {
-      "id": 667,
       "name": "high-horsepower",
       "label": "High Horsepower",
       "generations": ["VII"],
@@ -43154,7 +42641,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 668,
       "name": "strength-sap",
       "label": "Strength Sap",
       "generations": ["VII"],
@@ -43230,7 +42716,6 @@
       "damageClass": "status"
     },
     {
-      "id": 669,
       "name": "solar-blade",
       "label": "Solar Blade",
       "generations": ["VII"],
@@ -43306,7 +42791,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 670,
       "name": "leafage",
       "label": "Leafage",
       "generations": ["VII"],
@@ -43382,7 +42866,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 671,
       "name": "spotlight",
       "label": "Spotlight",
       "generations": ["VII"],
@@ -43440,7 +42923,6 @@
       "damageClass": "status"
     },
     {
-      "id": 672,
       "name": "toxic-thread",
       "label": "Toxic Thread",
       "generations": ["VII"],
@@ -43516,7 +42998,6 @@
       "damageClass": "status"
     },
     {
-      "id": 673,
       "name": "laser-focus",
       "label": "Laser Focus",
       "generations": ["VII"],
@@ -43574,7 +43055,6 @@
       "damageClass": "status"
     },
     {
-      "id": 674,
       "name": "gear-up",
       "label": "Gear Up",
       "generations": ["VII"],
@@ -43632,7 +43112,6 @@
       "damageClass": "status"
     },
     {
-      "id": 675,
       "name": "throat-chop",
       "label": "Throat Chop",
       "generations": ["VII"],
@@ -43708,7 +43187,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 676,
       "name": "pollen-puff",
       "label": "Pollen Puff",
       "generations": ["VII"],
@@ -43784,7 +43262,6 @@
       "damageClass": "special"
     },
     {
-      "id": 677,
       "name": "anchor-shot",
       "label": "Anchor Shot",
       "generations": ["VII"],
@@ -43842,7 +43319,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 678,
       "name": "psychic-terrain",
       "label": "Psychic Terrain",
       "generations": ["VII"],
@@ -43918,7 +43394,6 @@
       "damageClass": "status"
     },
     {
-      "id": 679,
       "name": "lunge",
       "label": "Lunge",
       "generations": ["VII"],
@@ -43994,7 +43469,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 680,
       "name": "fire-lash",
       "label": "Fire Lash",
       "generations": ["VII"],
@@ -44070,7 +43544,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 681,
       "name": "power-trip",
       "label": "Power Trip",
       "generations": ["VII"],
@@ -44146,7 +43619,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 682,
       "name": "burn-up",
       "label": "Burn Up",
       "generations": ["VII"],
@@ -44204,7 +43676,6 @@
       "damageClass": "special"
     },
     {
-      "id": 683,
       "name": "speed-swap",
       "label": "Speed Swap",
       "generations": ["VII"],
@@ -44280,7 +43751,6 @@
       "damageClass": "status"
     },
     {
-      "id": 684,
       "name": "smart-strike",
       "label": "Smart Strike",
       "generations": ["VII"],
@@ -44356,7 +43826,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 685,
       "name": "purify",
       "label": "Purify",
       "generations": ["VII"],
@@ -44414,7 +43883,6 @@
       "damageClass": "status"
     },
     {
-      "id": 686,
       "name": "revelation-dance",
       "label": "Revelation Dance",
       "generations": ["VII"],
@@ -44490,7 +43958,6 @@
       "damageClass": "special"
     },
     {
-      "id": 687,
       "name": "core-enforcer",
       "label": "Core Enforcer",
       "generations": ["VII"],
@@ -44548,7 +44015,6 @@
       "damageClass": "special"
     },
     {
-      "id": 688,
       "name": "trop-kick",
       "label": "Trop Kick",
       "generations": ["VII"],
@@ -44624,7 +44090,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 689,
       "name": "instruct",
       "label": "Instruct",
       "generations": ["VII"],
@@ -44700,7 +44165,6 @@
       "damageClass": "status"
     },
     {
-      "id": 690,
       "name": "beak-blast",
       "label": "Beak Blast",
       "generations": ["VII"],
@@ -44776,7 +44240,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 691,
       "name": "clanging-scales",
       "label": "Clanging Scales",
       "generations": ["VII"],
@@ -44852,7 +44315,6 @@
       "damageClass": "special"
     },
     {
-      "id": 692,
       "name": "dragon-hammer",
       "label": "Dragon Hammer",
       "generations": ["VII"],
@@ -44928,7 +44390,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 693,
       "name": "brutal-swing",
       "label": "Brutal Swing",
       "generations": ["VII"],
@@ -45004,7 +44465,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 694,
       "name": "aurora-veil",
       "label": "Aurora Veil",
       "generations": ["VII"],
@@ -45080,7 +44540,6 @@
       "damageClass": "status"
     },
     {
-      "id": 695,
       "name": "sinister-arrow-raid",
       "label": "Sinister Arrow Raid",
       "generations": ["VII"],
@@ -45138,7 +44597,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 696,
       "name": "malicious-moonsault",
       "label": "Malicious Moonsault",
       "generations": ["VII"],
@@ -45196,7 +44654,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 697,
       "name": "oceanic-operetta",
       "label": "Oceanic Operetta",
       "generations": ["VII"],
@@ -45254,7 +44711,6 @@
       "damageClass": "special"
     },
     {
-      "id": 698,
       "name": "guardian-of-alola",
       "label": "Guardian of Alola",
       "generations": ["VII"],
@@ -45312,7 +44768,6 @@
       "damageClass": "special"
     },
     {
-      "id": 699,
       "name": "soul-stealing-7-star-strike",
       "label": "Soul-Stealing 7-Star Strike",
       "generations": ["VII"],
@@ -45370,7 +44825,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 700,
       "name": "stoked-sparksurfer",
       "label": "Stoked Sparksurfer",
       "generations": ["VII"],
@@ -45428,7 +44882,6 @@
       "damageClass": "special"
     },
     {
-      "id": 701,
       "name": "pulverizing-pancake",
       "label": "Pulverizing Pancake",
       "generations": ["VII"],
@@ -45486,7 +44939,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 702,
       "name": "extreme-evoboost",
       "label": "Extreme Evoboost",
       "generations": ["VII"],
@@ -45544,7 +44996,6 @@
       "damageClass": "status"
     },
     {
-      "id": 703,
       "name": "genesis-supernova",
       "label": "Genesis Supernova",
       "generations": ["VII"],
@@ -45602,7 +45053,6 @@
       "damageClass": "special"
     },
     {
-      "id": 704,
       "name": "shell-trap",
       "label": "Shell Trap",
       "generations": ["VII"],
@@ -45660,7 +45110,6 @@
       "damageClass": "special"
     },
     {
-      "id": 705,
       "name": "fleur-cannon",
       "label": "Fleur Cannon",
       "generations": ["VII"],
@@ -45736,7 +45185,6 @@
       "damageClass": "special"
     },
     {
-      "id": 706,
       "name": "psychic-fangs",
       "label": "Psychic Fangs",
       "generations": ["VII"],
@@ -45812,7 +45260,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 707,
       "name": "stomping-tantrum",
       "label": "Stomping Tantrum",
       "generations": ["VII"],
@@ -45888,7 +45335,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 708,
       "name": "shadow-bone",
       "label": "Shadow Bone",
       "generations": ["VII"],
@@ -45946,7 +45392,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 709,
       "name": "accelerock",
       "label": "Accelerock",
       "generations": ["VII"],
@@ -46022,7 +45467,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 710,
       "name": "liquidation",
       "label": "Liquidation",
       "generations": ["VII"],
@@ -46098,7 +45542,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 711,
       "name": "prismatic-laser",
       "label": "Prismatic Laser",
       "generations": ["VII"],
@@ -46174,7 +45617,6 @@
       "damageClass": "special"
     },
     {
-      "id": 712,
       "name": "spectral-thief",
       "label": "Spectral Thief",
       "generations": ["VII"],
@@ -46232,7 +45674,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 713,
       "name": "sunsteel-strike",
       "label": "Sunsteel Strike",
       "generations": ["VII"],
@@ -46308,7 +45749,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 714,
       "name": "moongeist-beam",
       "label": "Moongeist Beam",
       "generations": ["VII"],
@@ -46384,7 +45824,6 @@
       "damageClass": "special"
     },
     {
-      "id": 715,
       "name": "tearful-look",
       "label": "Tearful Look",
       "generations": ["VII"],
@@ -46460,7 +45899,6 @@
       "damageClass": "status"
     },
     {
-      "id": 716,
       "name": "zing-zap",
       "label": "Zing Zap",
       "generations": ["VII"],
@@ -46536,7 +45974,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 717,
       "name": "natures-madness",
       "label": "Nature’s Madness",
       "generations": ["VII"],
@@ -46594,7 +46031,6 @@
       "damageClass": "special"
     },
     {
-      "id": 718,
       "name": "multi-attack",
       "label": "Multi-Attack",
       "generations": ["VII"],
@@ -46652,7 +46088,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 719,
       "name": "10-000-000-volt-thunderbolt",
       "label": "10,000,000 Volt Thunderbolt",
       "generations": ["VII"],
@@ -46710,7 +46145,6 @@
       "damageClass": "special"
     },
     {
-      "id": 720,
       "name": "mind-blown",
       "label": "Mind Blown",
       "generations": ["VII"],
@@ -46756,7 +46190,6 @@
       "damageClass": "special"
     },
     {
-      "id": 721,
       "name": "plasma-fists",
       "label": "Plasma Fists",
       "generations": ["VII"],
@@ -46802,7 +46235,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 722,
       "name": "photon-geyser",
       "label": "Photon Geyser",
       "generations": ["VII"],
@@ -46866,7 +46298,6 @@
       "damageClass": "special"
     },
     {
-      "id": 723,
       "name": "light-that-burns-the-sky",
       "label": "Light That Burns the Sky",
       "generations": ["VII"],
@@ -46912,7 +46343,6 @@
       "damageClass": "special"
     },
     {
-      "id": 724,
       "name": "searing-sunraze-smash",
       "label": "Searing Sunraze Smash",
       "generations": ["VII"],
@@ -46958,7 +46388,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 725,
       "name": "menacing-moonraze-maelstrom",
       "label": "Menacing Moonraze Maelstrom",
       "generations": ["VII"],
@@ -47004,7 +46433,6 @@
       "damageClass": "special"
     },
     {
-      "id": 726,
       "name": "lets-snuggle-forever",
       "label": "Let’s Snuggle Forever",
       "generations": ["VII"],
@@ -47050,7 +46478,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 727,
       "name": "splintered-stormshards",
       "label": "Splintered Stormshards",
       "generations": ["VII"],
@@ -47096,7 +46523,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 728,
       "name": "clangorous-soulblaze",
       "label": "Clangorous Soulblaze",
       "generations": ["VII"],
@@ -47142,7 +46568,6 @@
       "damageClass": "special"
     },
     {
-      "id": 729,
       "name": "zippy-zap",
       "label": "Zippy Zap",
       "generations": ["VII"],
@@ -47176,7 +46601,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 730,
       "name": "splishy-splash",
       "label": "Splishy Splash",
       "generations": ["VII"],
@@ -47210,7 +46634,6 @@
       "damageClass": "special"
     },
     {
-      "id": 731,
       "name": "floaty-fall",
       "label": "Floaty Fall",
       "generations": ["VII"],
@@ -47244,7 +46667,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 732,
       "name": "pika-papow",
       "label": "Pika Papow",
       "generations": ["VII"],
@@ -47278,7 +46700,6 @@
       "damageClass": "special"
     },
     {
-      "id": 733,
       "name": "bouncy-bubble",
       "label": "Bouncy Bubble",
       "generations": ["VII"],
@@ -47312,7 +46733,6 @@
       "damageClass": "special"
     },
     {
-      "id": 734,
       "name": "buzzy-buzz",
       "label": "Buzzy Buzz",
       "generations": ["VII"],
@@ -47346,7 +46766,6 @@
       "damageClass": "special"
     },
     {
-      "id": 735,
       "name": "sizzly-slide",
       "label": "Sizzly Slide",
       "generations": ["VII"],
@@ -47380,7 +46799,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 736,
       "name": "glitzy-glow",
       "label": "Glitzy Glow",
       "generations": ["VII"],
@@ -47414,7 +46832,6 @@
       "damageClass": "special"
     },
     {
-      "id": 737,
       "name": "baddy-bad",
       "label": "Baddy Bad",
       "generations": ["VII"],
@@ -47448,7 +46865,6 @@
       "damageClass": "special"
     },
     {
-      "id": 738,
       "name": "sappy-seed",
       "label": "Sappy Seed",
       "generations": ["VII"],
@@ -47482,7 +46898,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 739,
       "name": "freezy-frost",
       "label": "Freezy Frost",
       "generations": ["VII"],
@@ -47516,7 +46931,6 @@
       "damageClass": "special"
     },
     {
-      "id": 740,
       "name": "sparkly-swirl",
       "label": "Sparkly Swirl",
       "generations": ["VII"],
@@ -47550,7 +46964,6 @@
       "damageClass": "special"
     },
     {
-      "id": 741,
       "name": "veevee-volley",
       "label": "Veevee Volley",
       "generations": ["VII"],
@@ -47584,7 +46997,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 742,
       "name": "double-iron-bash",
       "label": "Double Iron Bash",
       "generations": ["VII"],
@@ -47618,7 +47030,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 743,
       "name": "max-guard",
       "label": "Max Guard",
       "generations": ["VIII"],
@@ -47640,7 +47051,6 @@
       "damageClass": "status"
     },
     {
-      "id": 744,
       "name": "dynamax-cannon",
       "label": "Dynamax Cannon",
       "generations": ["VIII"],
@@ -47680,7 +47090,6 @@
       "damageClass": "special"
     },
     {
-      "id": 745,
       "name": "snipe-shot",
       "label": "Snipe Shot",
       "generations": ["VIII"],
@@ -47721,7 +47130,6 @@
       "damageClass": "special"
     },
     {
-      "id": 746,
       "name": "jaw-lock",
       "label": "Jaw Lock",
       "generations": ["VIII"],
@@ -47761,7 +47169,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 747,
       "name": "stuff-cheeks",
       "label": "Stuff Cheeks",
       "generations": ["VIII"],
@@ -47801,7 +47208,6 @@
       "damageClass": "status"
     },
     {
-      "id": 748,
       "name": "no-retreat",
       "label": "No Retreat",
       "generations": ["VIII"],
@@ -47841,7 +47247,6 @@
       "damageClass": "status"
     },
     {
-      "id": 749,
       "name": "tar-shot",
       "label": "Tar Shot",
       "generations": ["VIII"],
@@ -47881,7 +47286,6 @@
       "damageClass": "status"
     },
     {
-      "id": 750,
       "name": "magic-powder",
       "label": "Magic Powder",
       "generations": ["VIII"],
@@ -47921,7 +47325,6 @@
       "damageClass": "status"
     },
     {
-      "id": 751,
       "name": "dragon-darts",
       "label": "Dragon Darts",
       "generations": ["VIII"],
@@ -47961,7 +47364,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 752,
       "name": "teatime",
       "label": "Teatime",
       "generations": ["VIII"],
@@ -48001,7 +47403,6 @@
       "damageClass": "status"
     },
     {
-      "id": 753,
       "name": "octolock",
       "label": "Octolock",
       "generations": ["VIII"],
@@ -48023,7 +47424,6 @@
       "damageClass": "status"
     },
     {
-      "id": 754,
       "name": "bolt-beak",
       "label": "Bolt Beak",
       "generations": ["VIII"],
@@ -48045,7 +47445,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 755,
       "name": "fishious-rend",
       "label": "Fishious Rend",
       "generations": ["VIII"],
@@ -48067,7 +47466,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 756,
       "name": "court-change",
       "label": "Court Change",
       "generations": ["VIII"],
@@ -48107,7 +47505,6 @@
       "damageClass": "status"
     },
     {
-      "id": 757,
       "name": "max-flare",
       "label": "Max Flare",
       "generations": ["VIII"],
@@ -48129,7 +47526,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 758,
       "name": "max-flutterby",
       "label": "Max Flutterby",
       "generations": ["VIII"],
@@ -48151,7 +47547,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 759,
       "name": "max-lightning",
       "label": "Max Lightning",
       "generations": ["VIII"],
@@ -48173,7 +47568,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 760,
       "name": "max-strike",
       "label": "Max Strike",
       "generations": ["VIII"],
@@ -48195,7 +47589,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 761,
       "name": "max-knuckle",
       "label": "Max Knuckle",
       "generations": ["VIII"],
@@ -48217,7 +47610,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 762,
       "name": "max-phantasm",
       "label": "Max Phantasm",
       "generations": ["VIII"],
@@ -48239,7 +47631,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 763,
       "name": "max-hailstorm",
       "label": "Max Hailstorm",
       "generations": ["VIII"],
@@ -48261,7 +47652,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 764,
       "name": "max-ooze",
       "label": "Max Ooze",
       "generations": ["VIII"],
@@ -48283,7 +47673,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 765,
       "name": "max-geyser",
       "label": "Max Geyser",
       "generations": ["VIII"],
@@ -48305,7 +47694,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 766,
       "name": "max-airstream",
       "label": "Max Airstream",
       "generations": ["VIII"],
@@ -48327,7 +47715,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 767,
       "name": "max-starfall",
       "label": "Max Starfall",
       "generations": ["VIII"],
@@ -48349,7 +47736,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 768,
       "name": "max-wyrmwind",
       "label": "Max Wyrmwind",
       "generations": ["VIII"],
@@ -48371,7 +47757,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 769,
       "name": "max-mindstorm",
       "label": "Max Mindstorm",
       "generations": ["VIII"],
@@ -48393,7 +47778,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 770,
       "name": "max-rockfall",
       "label": "Max Rockfall",
       "generations": ["VIII"],
@@ -48415,7 +47799,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 771,
       "name": "max-quake",
       "label": "Max Quake",
       "generations": ["VIII"],
@@ -48437,7 +47820,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 772,
       "name": "max-darkness",
       "label": "Max Darkness",
       "generations": ["VIII"],
@@ -48459,7 +47841,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 773,
       "name": "max-overgrowth",
       "label": "Max Overgrowth",
       "generations": ["VIII"],
@@ -48481,7 +47862,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 774,
       "name": "max-steelspike",
       "label": "Max Steelspike",
       "generations": ["VIII"],
@@ -48503,7 +47883,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 775,
       "name": "clangorous-soul",
       "label": "Clangorous Soul",
       "generations": ["VIII"],
@@ -48543,7 +47922,6 @@
       "damageClass": "status"
     },
     {
-      "id": 776,
       "name": "body-press",
       "label": "Body Press",
       "generations": ["VIII"],
@@ -48583,7 +47961,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 777,
       "name": "decorate",
       "label": "Decorate",
       "generations": ["VIII"],
@@ -48623,7 +48000,6 @@
       "damageClass": "status"
     },
     {
-      "id": 778,
       "name": "drum-beating",
       "label": "Drum Beating",
       "generations": ["VIII"],
@@ -48663,7 +48039,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 779,
       "name": "snap-trap",
       "label": "Snap Trap",
       "generations": ["VIII"],
@@ -48685,7 +48060,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 780,
       "name": "pyro-ball",
       "label": "Pyro Ball",
       "generations": ["VIII"],
@@ -48725,7 +48099,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 781,
       "name": "behemoth-blade",
       "label": "Behemoth Blade",
       "generations": ["VIII"],
@@ -48747,7 +48120,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 782,
       "name": "behemoth-bash",
       "label": "Behemoth Bash",
       "generations": ["VIII"],
@@ -48769,7 +48141,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 783,
       "name": "aura-wheel",
       "label": "Aura Wheel",
       "generations": ["VIII"],
@@ -48809,7 +48180,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 784,
       "name": "breaking-swipe",
       "label": "Breaking Swipe",
       "generations": ["VIII"],
@@ -48849,7 +48219,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 785,
       "name": "branch-poke",
       "label": "Branch Poke",
       "generations": ["VIII"],
@@ -48889,7 +48258,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 786,
       "name": "overdrive",
       "label": "Overdrive",
       "generations": ["VIII"],
@@ -48929,7 +48297,6 @@
       "damageClass": "special"
     },
     {
-      "id": 787,
       "name": "apple-acid",
       "label": "Apple Acid",
       "generations": ["VIII"],
@@ -48969,7 +48336,6 @@
       "damageClass": "special"
     },
     {
-      "id": 788,
       "name": "grav-apple",
       "label": "Grav Apple",
       "generations": ["VIII"],
@@ -49009,7 +48375,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 789,
       "name": "spirit-break",
       "label": "Spirit Break",
       "generations": ["VIII"],
@@ -49049,7 +48414,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 790,
       "name": "strange-steam",
       "label": "Strange Steam",
       "generations": ["VIII"],
@@ -49089,7 +48453,6 @@
       "damageClass": "special"
     },
     {
-      "id": 791,
       "name": "life-dew",
       "label": "Life Dew",
       "generations": ["VIII"],
@@ -49129,7 +48492,6 @@
       "damageClass": "status"
     },
     {
-      "id": 792,
       "name": "obstruct",
       "label": "Obstruct",
       "generations": ["VIII"],
@@ -49151,7 +48513,6 @@
       "damageClass": "status"
     },
     {
-      "id": 793,
       "name": "false-surrender",
       "label": "False Surrender",
       "generations": ["VIII"],
@@ -49191,7 +48552,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 794,
       "name": "meteor-assault",
       "label": "Meteor Assault",
       "generations": ["VIII"],
@@ -49213,7 +48573,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 795,
       "name": "eternabeam",
       "label": "Eternabeam",
       "generations": ["VIII"],
@@ -49235,7 +48594,6 @@
       "damageClass": "special"
     },
     {
-      "id": 796,
       "name": "steel-beam",
       "label": "Steel Beam",
       "generations": ["VIII"],
@@ -49275,7 +48633,6 @@
       "damageClass": "special"
     },
     {
-      "id": 797,
       "name": "expanding-force",
       "label": "Expanding Force",
       "generations": ["VIII"],
@@ -49315,7 +48672,6 @@
       "damageClass": "special"
     },
     {
-      "id": 798,
       "name": "steel-roller",
       "label": "Steel Roller",
       "generations": ["VIII"],
@@ -49355,7 +48711,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 799,
       "name": "scale-shot",
       "label": "Scale Shot",
       "generations": ["VIII"],
@@ -49395,7 +48750,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 800,
       "name": "meteor-beam",
       "label": "Meteor Beam",
       "generations": ["VIII"],
@@ -49435,7 +48789,6 @@
       "damageClass": "special"
     },
     {
-      "id": 801,
       "name": "shell-side-arm",
       "label": "Shell Side Arm",
       "generations": ["VIII"],
@@ -49475,7 +48828,6 @@
       "damageClass": "special"
     },
     {
-      "id": 802,
       "name": "misty-explosion",
       "label": "Misty Explosion",
       "generations": ["VIII"],
@@ -49515,7 +48867,6 @@
       "damageClass": "special"
     },
     {
-      "id": 803,
       "name": "grassy-glide",
       "label": "Grassy Glide",
       "generations": ["VIII"],
@@ -49555,7 +48906,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 804,
       "name": "rising-voltage",
       "label": "Rising Voltage",
       "generations": ["VIII"],
@@ -49595,7 +48945,6 @@
       "damageClass": "special"
     },
     {
-      "id": 805,
       "name": "terrain-pulse",
       "label": "Terrain Pulse",
       "generations": ["VIII"],
@@ -49635,7 +48984,6 @@
       "damageClass": "special"
     },
     {
-      "id": 806,
       "name": "skitter-smack",
       "label": "Skitter Smack",
       "generations": ["VIII"],
@@ -49675,7 +49023,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 807,
       "name": "burning-jealousy",
       "label": "Burning Jealousy",
       "generations": ["VIII"],
@@ -49715,7 +49062,6 @@
       "damageClass": "special"
     },
     {
-      "id": 808,
       "name": "lash-out",
       "label": "Lash Out",
       "generations": ["VIII"],
@@ -49755,7 +49101,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 809,
       "name": "poltergeist",
       "label": "Poltergeist",
       "generations": ["VIII"],
@@ -49795,7 +49140,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 810,
       "name": "corrosive-gas",
       "label": "Corrosive Gas",
       "generations": ["VIII"],
@@ -49817,7 +49161,6 @@
       "damageClass": "status"
     },
     {
-      "id": 811,
       "name": "coaching",
       "label": "Coaching",
       "generations": ["VIII"],
@@ -49857,7 +49200,6 @@
       "damageClass": "status"
     },
     {
-      "id": 812,
       "name": "flip-turn",
       "label": "Flip Turn",
       "generations": ["VIII"],
@@ -49897,7 +49239,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 813,
       "name": "triple-axel",
       "label": "Triple Axel",
       "generations": ["VIII"],
@@ -49937,7 +49278,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 814,
       "name": "dual-wingbeat",
       "label": "Dual Wingbeat",
       "generations": ["VIII"],
@@ -49977,7 +49317,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 815,
       "name": "scorching-sands",
       "label": "Scorching Sands",
       "generations": ["VIII"],
@@ -50017,7 +49356,6 @@
       "damageClass": "special"
     },
     {
-      "id": 816,
       "name": "jungle-healing",
       "label": "Jungle Healing",
       "generations": ["VIII"],
@@ -50057,7 +49395,6 @@
       "damageClass": "status"
     },
     {
-      "id": 817,
       "name": "wicked-blow",
       "label": "Wicked Blow",
       "generations": ["VIII"],
@@ -50097,7 +49434,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 818,
       "name": "surging-strikes",
       "label": "Surging Strikes",
       "generations": ["VIII"],
@@ -50137,7 +49473,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 819,
       "name": "thunder-cage",
       "label": "Thunder Cage",
       "generations": ["VIII"],
@@ -50177,7 +49512,6 @@
       "damageClass": "special"
     },
     {
-      "id": 820,
       "name": "dragon-energy",
       "label": "Dragon Energy",
       "generations": ["VIII"],
@@ -50217,7 +49551,6 @@
       "damageClass": "special"
     },
     {
-      "id": 821,
       "name": "freezing-glare",
       "label": "Freezing Glare",
       "generations": ["VIII"],
@@ -50257,7 +49590,6 @@
       "damageClass": "special"
     },
     {
-      "id": 822,
       "name": "fiery-wrath",
       "label": "Fiery Wrath",
       "generations": ["VIII"],
@@ -50297,7 +49629,6 @@
       "damageClass": "special"
     },
     {
-      "id": 823,
       "name": "thunderous-kick",
       "label": "Thunderous Kick",
       "generations": ["VIII"],
@@ -50337,7 +49668,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 824,
       "name": "glacial-lance",
       "label": "Glacial Lance",
       "generations": ["VIII"],
@@ -50377,7 +49707,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 825,
       "name": "astral-barrage",
       "label": "Astral Barrage",
       "generations": ["VIII"],
@@ -50417,7 +49746,6 @@
       "damageClass": "special"
     },
     {
-      "id": 826,
       "name": "eerie-spell",
       "label": "Eerie Spell",
       "generations": ["VIII"],
@@ -50457,7 +49785,6 @@
       "damageClass": "special"
     },
     {
-      "id": 827,
       "name": "dire-claw",
       "label": "Dire Claw",
       "generations": ["VIII"],
@@ -50485,7 +49812,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 828,
       "name": "psyshield-bash",
       "label": "Psyshield Bash",
       "generations": ["VIII"],
@@ -50513,7 +49839,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 829,
       "name": "power-shift",
       "label": "Power Shift",
       "generations": ["VIII"],
@@ -50541,7 +49866,6 @@
       "damageClass": "status"
     },
     {
-      "id": 830,
       "name": "stone-axe",
       "label": "Stone Axe",
       "generations": ["VIII"],
@@ -50569,7 +49893,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 831,
       "name": "springtide-storm",
       "label": "Springtide Storm",
       "generations": ["VIII"],
@@ -50597,7 +49920,6 @@
       "damageClass": "special"
     },
     {
-      "id": 832,
       "name": "mystical-power",
       "label": "Mystical Power",
       "generations": ["VIII"],
@@ -50625,7 +49947,6 @@
       "damageClass": "special"
     },
     {
-      "id": 833,
       "name": "raging-fury",
       "label": "Raging Fury",
       "generations": ["VIII"],
@@ -50653,7 +49974,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 834,
       "name": "wave-crash",
       "label": "Wave Crash",
       "generations": ["VIII"],
@@ -50681,7 +50001,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 835,
       "name": "chloroblast",
       "label": "Chloroblast",
       "generations": ["VIII"],
@@ -50709,7 +50028,6 @@
       "damageClass": "special"
     },
     {
-      "id": 836,
       "name": "mountain-gale",
       "label": "Mountain Gale",
       "generations": ["VIII"],
@@ -50737,7 +50055,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 837,
       "name": "victory-dance",
       "label": "Victory Dance",
       "generations": ["VIII"],
@@ -50765,7 +50082,6 @@
       "damageClass": "status"
     },
     {
-      "id": 838,
       "name": "headlong-rush",
       "label": "Headlong Rush",
       "generations": ["VIII"],
@@ -50793,7 +50109,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 839,
       "name": "barb-barrage",
       "label": "Barb Barrage",
       "generations": ["VIII"],
@@ -50821,7 +50136,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 840,
       "name": "esper-wing",
       "label": "Esper Wing",
       "generations": ["VIII"],
@@ -50849,7 +50163,6 @@
       "damageClass": "special"
     },
     {
-      "id": 841,
       "name": "bitter-malice",
       "label": "Bitter Malice",
       "generations": ["VIII"],
@@ -50877,7 +50190,6 @@
       "damageClass": "special"
     },
     {
-      "id": 842,
       "name": "shelter",
       "label": "Shelter",
       "generations": ["VIII"],
@@ -50905,7 +50217,6 @@
       "damageClass": "status"
     },
     {
-      "id": 843,
       "name": "triple-arrows",
       "label": "Triple Arrows",
       "generations": ["VIII"],
@@ -50933,7 +50244,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 844,
       "name": "infernal-parade",
       "label": "Infernal Parade",
       "generations": ["VIII"],
@@ -50961,7 +50271,6 @@
       "damageClass": "special"
     },
     {
-      "id": 845,
       "name": "ceaseless-edge",
       "label": "Ceaseless Edge",
       "generations": ["VIII"],
@@ -50989,7 +50298,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 846,
       "name": "bleakwind-storm",
       "label": "Bleakwind Storm",
       "generations": ["VIII"],
@@ -51017,7 +50325,6 @@
       "damageClass": "special"
     },
     {
-      "id": 847,
       "name": "wildbolt-storm",
       "label": "Wildbolt Storm",
       "generations": ["VIII"],
@@ -51045,7 +50352,6 @@
       "damageClass": "special"
     },
     {
-      "id": 848,
       "name": "sandsear-storm",
       "label": "Sandsear Storm",
       "generations": ["VIII"],
@@ -51073,7 +50379,6 @@
       "damageClass": "special"
     },
     {
-      "id": 849,
       "name": "lunar-blessing",
       "label": "Lunar Blessing",
       "generations": ["VIII"],
@@ -51101,7 +50406,6 @@
       "damageClass": "status"
     },
     {
-      "id": 850,
       "name": "take-heart",
       "label": "Take Heart",
       "generations": ["VIII"],
@@ -51129,7 +50433,6 @@
       "damageClass": "status"
     },
     {
-      "id": 851,
       "name": "tera-blast",
       "label": "Tera Blast",
       "generations": ["IX"],
@@ -51151,7 +50454,6 @@
       "damageClass": "special"
     },
     {
-      "id": 852,
       "name": "silk-trap",
       "label": "Silk Trap",
       "generations": ["IX"],
@@ -51173,7 +50475,6 @@
       "damageClass": "status"
     },
     {
-      "id": 853,
       "name": "axe-kick",
       "label": "Axe Kick",
       "generations": ["IX"],
@@ -51195,7 +50496,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 854,
       "name": "last-respects",
       "label": "Last Respects",
       "generations": ["IX"],
@@ -51217,7 +50517,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 855,
       "name": "lumina-crash",
       "label": "Lumina Crash",
       "generations": ["IX"],
@@ -51239,7 +50538,6 @@
       "damageClass": "special"
     },
     {
-      "id": 856,
       "name": "order-up",
       "label": "Order Up",
       "generations": ["IX"],
@@ -51261,7 +50559,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 857,
       "name": "jet-punch",
       "label": "Jet Punch",
       "generations": ["IX"],
@@ -51283,7 +50580,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 858,
       "name": "spicy-extract",
       "label": "Spicy Extract",
       "generations": ["IX"],
@@ -51305,7 +50601,6 @@
       "damageClass": "status"
     },
     {
-      "id": 859,
       "name": "spin-out",
       "label": "Spin Out",
       "generations": ["IX"],
@@ -51327,7 +50622,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 860,
       "name": "population-bomb",
       "label": "Population Bomb",
       "generations": ["IX"],
@@ -51349,7 +50643,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 861,
       "name": "ice-spinner",
       "label": "Ice Spinner",
       "generations": ["IX"],
@@ -51371,7 +50664,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 862,
       "name": "glaive-rush",
       "label": "Glaive Rush",
       "generations": ["IX"],
@@ -51393,7 +50685,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 863,
       "name": "revival-blessing",
       "label": "Revival Blessing",
       "generations": ["IX"],
@@ -51415,7 +50706,6 @@
       "damageClass": "status"
     },
     {
-      "id": 864,
       "name": "salt-cure",
       "label": "Salt Cure",
       "generations": ["IX"],
@@ -51437,7 +50727,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 865,
       "name": "triple-dive",
       "label": "Triple Dive",
       "generations": ["IX"],
@@ -51459,7 +50748,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 866,
       "name": "mortal-spin",
       "label": "Mortal Spin",
       "generations": ["IX"],
@@ -51481,7 +50769,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 867,
       "name": "doodle",
       "label": "Doodle",
       "generations": ["IX"],
@@ -51503,7 +50790,6 @@
       "damageClass": "status"
     },
     {
-      "id": 868,
       "name": "fillet-away",
       "label": "Fillet Away",
       "generations": ["IX"],
@@ -51525,7 +50811,6 @@
       "damageClass": "status"
     },
     {
-      "id": 869,
       "name": "kowtow-cleave",
       "label": "Kowtow Cleave",
       "generations": ["IX"],
@@ -51547,7 +50832,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 870,
       "name": "flower-trick",
       "label": "Flower Trick",
       "generations": ["IX"],
@@ -51569,7 +50853,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 871,
       "name": "torch-song",
       "label": "Torch Song",
       "generations": ["IX"],
@@ -51592,7 +50875,6 @@
       "damageClass": "special"
     },
     {
-      "id": 872,
       "name": "aqua-step",
       "label": "Aqua Step",
       "generations": ["IX"],
@@ -51614,7 +50896,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 873,
       "name": "raging-bull",
       "label": "Raging Bull",
       "generations": ["IX"],
@@ -51636,7 +50917,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 874,
       "name": "make-it-rain",
       "label": "Make It Rain",
       "generations": ["IX"],
@@ -51658,7 +50938,6 @@
       "damageClass": "special"
     },
     {
-      "id": 875,
       "name": "psyblade",
       "label": "Psyblade",
       "generations": ["IX"],
@@ -51680,7 +50959,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 876,
       "name": "hydro-steam",
       "label": "Hydro Steam",
       "generations": ["IX"],
@@ -51702,7 +50980,6 @@
       "damageClass": "special"
     },
     {
-      "id": 877,
       "name": "ruination",
       "label": "Ruination",
       "generations": ["IX"],
@@ -51724,7 +51001,6 @@
       "damageClass": "special"
     },
     {
-      "id": 878,
       "name": "collision-course",
       "label": "Collision Course",
       "generations": ["IX"],
@@ -51746,7 +51022,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 879,
       "name": "electro-drift",
       "label": "Electro Drift",
       "generations": ["IX"],
@@ -51768,7 +51043,6 @@
       "damageClass": "special"
     },
     {
-      "id": 880,
       "name": "shed-tail",
       "label": "Shed Tail",
       "generations": ["IX"],
@@ -51790,7 +51064,6 @@
       "damageClass": "status"
     },
     {
-      "id": 881,
       "name": "chilly-reception",
       "label": "Chilly Reception",
       "generations": ["IX"],
@@ -51812,7 +51085,6 @@
       "damageClass": "status"
     },
     {
-      "id": 882,
       "name": "tidy-up",
       "label": "Tidy Up",
       "generations": ["IX"],
@@ -51834,7 +51106,6 @@
       "damageClass": "status"
     },
     {
-      "id": 883,
       "name": "snowscape",
       "label": "Snowscape",
       "generations": ["IX"],
@@ -51856,7 +51127,6 @@
       "damageClass": "status"
     },
     {
-      "id": 884,
       "name": "pounce",
       "label": "Pounce",
       "generations": ["IX"],
@@ -51878,7 +51148,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 885,
       "name": "trailblaze",
       "label": "Trailblaze",
       "generations": ["IX"],
@@ -51900,7 +51169,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 886,
       "name": "chilling-water",
       "label": "Chilling Water",
       "generations": ["IX"],
@@ -51922,7 +51190,6 @@
       "damageClass": "special"
     },
     {
-      "id": 887,
       "name": "hyper-drill",
       "label": "Hyper Drill",
       "generations": ["IX"],
@@ -51944,7 +51211,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 888,
       "name": "twin-beam",
       "label": "Twin Beam",
       "generations": ["IX"],
@@ -51966,7 +51232,6 @@
       "damageClass": "special"
     },
     {
-      "id": 889,
       "name": "rage-fist",
       "label": "Rage Fist",
       "generations": ["IX"],
@@ -51988,7 +51253,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 890,
       "name": "armor-cannon",
       "label": "Armor Cannon",
       "generations": ["IX"],
@@ -52010,7 +51274,6 @@
       "damageClass": "special"
     },
     {
-      "id": 891,
       "name": "bitter-blade",
       "label": "Bitter Blade",
       "generations": ["IX"],
@@ -52032,7 +51295,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 892,
       "name": "double-shock",
       "label": "Double Shock",
       "generations": ["IX"],
@@ -52054,7 +51316,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 893,
       "name": "gigaton-hammer",
       "label": "Gigaton Hammer",
       "generations": ["IX"],
@@ -52076,7 +51337,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 894,
       "name": "comeuppance",
       "label": "Comeuppance",
       "generations": ["IX"],
@@ -52098,7 +51358,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 895,
       "name": "aqua-cutter",
       "label": "Aqua Cutter",
       "generations": ["IX"],
@@ -52120,7 +51379,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 896,
       "name": "blazing-torque",
       "label": "Blazing Torque",
       "generations": ["IX"],
@@ -52129,7 +51387,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 897,
       "name": "wicked-torque",
       "label": "Wicked Torque",
       "generations": ["IX"],
@@ -52138,7 +51395,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 898,
       "name": "noxious-torque",
       "label": "Noxious Torque",
       "generations": ["IX"],
@@ -52147,7 +51403,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 899,
       "name": "combat-torque",
       "label": "Combat Torque",
       "generations": ["IX"],
@@ -52156,7 +51411,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 900,
       "name": "magical-torque",
       "label": "Magical Torque",
       "generations": ["IX"],
@@ -52165,7 +51419,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 901,
       "name": "blood-moon",
       "label": "Blood Moon",
       "generations": ["IX"],
@@ -52187,7 +51440,6 @@
       "damageClass": "special"
     },
     {
-      "id": 902,
       "name": "matcha-gotcha",
       "label": "Matcha Gotcha",
       "generations": ["IX"],
@@ -52209,7 +51461,6 @@
       "damageClass": "special"
     },
     {
-      "id": 903,
       "name": "syrup-bomb",
       "label": "Syrup Bomb",
       "generations": ["IX"],
@@ -52231,7 +51482,6 @@
       "damageClass": "special"
     },
     {
-      "id": 904,
       "name": "ivy-cudgel",
       "label": "Ivy Cudgel",
       "generations": ["IX"],
@@ -52253,7 +51503,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 905,
       "name": "electro-shot",
       "label": "Electro Shot",
       "generations": ["IX"],
@@ -52275,7 +51524,6 @@
       "damageClass": "special"
     },
     {
-      "id": 906,
       "name": "tera-starstorm",
       "label": "Tera Starstorm",
       "generations": ["IX"],
@@ -52297,7 +51545,6 @@
       "damageClass": "special"
     },
     {
-      "id": 907,
       "name": "fickle-beam",
       "label": "Fickle Beam",
       "generations": ["IX"],
@@ -52319,7 +51566,6 @@
       "damageClass": "special"
     },
     {
-      "id": 908,
       "name": "burning-bulwark",
       "label": "Burning Bulwark",
       "generations": ["IX"],
@@ -52341,7 +51587,6 @@
       "damageClass": "status"
     },
     {
-      "id": 909,
       "name": "thunderclap",
       "label": "Thunderclap",
       "generations": ["IX"],
@@ -52363,7 +51608,6 @@
       "damageClass": "special"
     },
     {
-      "id": 910,
       "name": "mighty-cleave",
       "label": "Mighty Cleave",
       "generations": ["IX"],
@@ -52385,7 +51629,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 911,
       "name": "tachyon-cutter",
       "label": "Tachyon Cutter",
       "generations": ["IX"],
@@ -52407,7 +51650,6 @@
       "damageClass": "special"
     },
     {
-      "id": 912,
       "name": "hard-press",
       "label": "Hard Press",
       "generations": ["IX"],
@@ -52429,7 +51671,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 913,
       "name": "dragon-cheer",
       "label": "Dragon Cheer",
       "generations": ["IX"],
@@ -52451,7 +51692,6 @@
       "damageClass": "status"
     },
     {
-      "id": 914,
       "name": "alluring-voice",
       "label": "Alluring Voice",
       "generations": ["IX"],
@@ -52473,7 +51713,6 @@
       "damageClass": "special"
     },
     {
-      "id": 915,
       "name": "temper-flare",
       "label": "Temper Flare",
       "generations": ["IX"],
@@ -52495,7 +51734,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 916,
       "name": "supercell-slam",
       "label": "Supercell Slam",
       "generations": ["IX"],
@@ -52517,7 +51755,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 917,
       "name": "psychic-noise",
       "label": "Psychic Noise",
       "generations": ["IX"],
@@ -52539,7 +51776,6 @@
       "damageClass": "special"
     },
     {
-      "id": 918,
       "name": "upper-hand",
       "label": "Upper Hand",
       "generations": ["IX"],
@@ -52561,7 +51797,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 919,
       "name": "malignant-chain",
       "label": "Malignant Chain",
       "generations": ["IX"],
@@ -52583,7 +51818,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10001,
       "name": "shadow-rush",
       "label": "Shadow Rush",
       "generations": ["III"],
@@ -52592,7 +51826,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 10002,
       "name": "shadow-blast",
       "label": "Shadow Blast",
       "generations": ["III"],
@@ -52601,7 +51834,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 10003,
       "name": "shadow-blitz",
       "label": "Shadow Blitz",
       "generations": ["III"],
@@ -52610,7 +51842,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 10004,
       "name": "shadow-bolt",
       "label": "Shadow Bolt",
       "generations": ["III"],
@@ -52619,7 +51850,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10005,
       "name": "shadow-break",
       "label": "Shadow Break",
       "generations": ["III"],
@@ -52628,7 +51858,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 10006,
       "name": "shadow-chill",
       "label": "Shadow Chill",
       "generations": ["III"],
@@ -52637,7 +51866,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10007,
       "name": "shadow-end",
       "label": "Shadow End",
       "generations": ["III"],
@@ -52646,7 +51874,6 @@
       "damageClass": "physical"
     },
     {
-      "id": 10008,
       "name": "shadow-fire",
       "label": "Shadow Fire",
       "generations": ["III"],
@@ -52655,7 +51882,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10009,
       "name": "shadow-rave",
       "label": "Shadow Rave",
       "generations": ["III"],
@@ -52664,7 +51890,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10010,
       "name": "shadow-storm",
       "label": "Shadow Storm",
       "generations": ["III"],
@@ -52673,7 +51898,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10011,
       "name": "shadow-wave",
       "label": "Shadow Wave",
       "generations": ["III"],
@@ -52682,7 +51906,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10012,
       "name": "shadow-down",
       "label": "Shadow Down",
       "generations": ["III"],
@@ -52691,7 +51914,6 @@
       "damageClass": "status"
     },
     {
-      "id": 10013,
       "name": "shadow-half",
       "label": "Shadow Half",
       "generations": ["III"],
@@ -52700,7 +51922,6 @@
       "damageClass": "special"
     },
     {
-      "id": 10014,
       "name": "shadow-hold",
       "label": "Shadow Hold",
       "generations": ["III"],
@@ -52709,7 +51930,6 @@
       "damageClass": "status"
     },
     {
-      "id": 10015,
       "name": "shadow-mist",
       "label": "Shadow Mist",
       "generations": ["III"],
@@ -52718,7 +51938,6 @@
       "damageClass": "status"
     },
     {
-      "id": 10016,
       "name": "shadow-panic",
       "label": "Shadow Panic",
       "generations": ["III"],
@@ -52727,7 +51946,6 @@
       "damageClass": "status"
     },
     {
-      "id": 10017,
       "name": "shadow-shed",
       "label": "Shadow Shed",
       "generations": ["III"],
@@ -52736,7 +51954,6 @@
       "damageClass": "status"
     },
     {
-      "id": 10018,
       "name": "shadow-sky",
       "label": "Shadow Sky",
       "generations": ["III"],

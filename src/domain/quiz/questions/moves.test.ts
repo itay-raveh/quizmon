@@ -4,7 +4,6 @@ import type { QuestionContext } from './context.ts';
 import { buildQuestionType } from './registry.ts';
 
 const move = (name: string, label: string, type: string) => ({
-  id: 1,
   name,
   label,
   generations: ['II'],

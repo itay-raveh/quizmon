@@ -3,6286 +3,5388 @@
   "key": "locations",
   "values": [
     {
-      "id": 1,
       "name": "canalave-city",
       "label": "Canalave City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 2,
       "name": "eterna-city",
       "label": "Eterna City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 3,
       "name": "pastoria-city",
       "label": "Pastoria City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 4,
       "name": "sunyshore-city",
       "label": "Sunyshore City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 5,
       "name": "sinnoh-pokemon-league",
       "label": "Pokémon League",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 6,
       "name": "oreburgh-mine",
       "label": "Oreburgh Mine",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 7,
       "name": "valley-windworks",
       "label": "Valley Windworks",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 8,
       "name": "eterna-forest",
       "label": "Eterna Forest",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 9,
       "name": "fuego-ironworks",
       "label": "Fuego Ironworks",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 10,
       "name": "mt-coronet",
       "label": "Mt. Coronet",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 11,
       "name": "great-marsh",
       "label": "Great Marsh",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 12,
       "name": "solaceon-ruins",
       "label": "Solaceon Ruins",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 13,
       "name": "sinnoh-victory-road",
       "label": "Victory Road",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 14,
       "name": "ravaged-path",
       "label": "Ravaged Path",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 15,
       "name": "oreburgh-gate",
       "label": "Oreburgh Gate",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 16,
       "name": "stark-mountain",
       "label": "Stark Mountain",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 17,
       "name": "spring-path",
       "label": "Spring Path",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 18,
       "name": "turnback-cave",
       "label": "Turnback Cave",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 19,
       "name": "snowpoint-temple",
       "label": "Snowpoint Temple",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 20,
       "name": "wayward-cave",
       "label": "Wayward Cave",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 22,
       "name": "ruin-maniac-cave",
       "label": "Ruin Maniac Cave",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 23,
       "name": "trophy-garden",
       "label": "Trophy Garden",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 24,
       "name": "iron-island",
       "label": "Iron Island",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 25,
       "name": "old-chateau",
       "label": "Old Chateau",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 26,
       "name": "lake-verity",
       "label": "Lake Verity",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 27,
       "name": "lake-valor",
       "label": "Lake Valor",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 28,
       "name": "lake-acuity",
       "label": "Lake Acuity",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 29,
       "name": "valor-lakefront",
       "label": "Valor Lakefront",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 30,
       "name": "acuity-lakefront",
       "label": "Acuity Lakefront",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 31,
       "name": "sinnoh-route-201",
       "label": "Route 201",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 32,
       "name": "sinnoh-route-202",
       "label": "Route 202",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 33,
       "name": "sinnoh-route-203",
       "label": "Route 203",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 34,
       "name": "sinnoh-route-204",
       "label": "Route 204",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 35,
       "name": "sinnoh-route-205",
       "label": "Route 205",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 36,
       "name": "sinnoh-route-206",
       "label": "Route 206",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 37,
       "name": "sinnoh-route-207",
       "label": "Route 207",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 38,
       "name": "sinnoh-route-208",
       "label": "Route 208",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 39,
       "name": "sinnoh-route-209",
       "label": "Route 209",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 40,
       "name": "lost-tower",
       "label": "Lost Tower",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 41,
       "name": "sinnoh-route-210",
       "label": "Route 210",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 42,
       "name": "sinnoh-route-211",
       "label": "Route 211",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 43,
       "name": "sinnoh-route-212",
       "label": "Route 212",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 44,
       "name": "sinnoh-route-213",
       "label": "Route 213",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 45,
       "name": "sinnoh-route-214",
       "label": "Route 214",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 46,
       "name": "sinnoh-route-215",
       "label": "Route 215",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 47,
       "name": "sinnoh-route-216",
       "label": "Route 216",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 48,
       "name": "sinnoh-route-217",
       "label": "Route 217",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 49,
       "name": "sinnoh-route-218",
       "label": "Route 218",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 50,
       "name": "sinnoh-route-219",
       "label": "Route 219",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 51,
       "name": "sinnoh-route-221",
       "label": "Route 221",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 52,
       "name": "sinnoh-route-222",
       "label": "Route 222",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 53,
       "name": "sinnoh-route-224",
       "label": "Route 224",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 54,
       "name": "sinnoh-route-225",
       "label": "Route 225",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 55,
       "name": "sinnoh-route-227",
       "label": "Route 227",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 56,
       "name": "sinnoh-route-228",
       "label": "Route 228",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 57,
       "name": "sinnoh-route-229",
       "label": "Route 229",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 58,
       "name": "twinleaf-town",
       "label": "Twinleaf Town",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 59,
       "name": "celestic-town",
       "label": "Celestic Town",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 60,
       "name": "resort-area",
       "label": "Resort Area",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 61,
       "name": "sinnoh-sea-route-220",
       "label": "Sea Route 220",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 62,
       "name": "sinnoh-sea-route-223",
       "label": "Sea Route 223",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 63,
       "name": "sinnoh-sea-route-226",
       "label": "Sea Route 226",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 64,
       "name": "sinnoh-sea-route-230",
       "label": "Sea Route 230",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 65,
       "name": "blackthorn-city",
       "label": "Blackthorn City",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 66,
       "name": "burned-tower",
       "label": "Burned Tower",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 67,
       "name": "celadon-city",
       "label": "Celadon City",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 68,
       "name": "cerulean-city",
       "label": "Cerulean City",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 69,
       "name": "cherrygrove-city",
       "label": "Cherrygrove City",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 70,
       "name": "cianwood-city",
       "label": "Cianwood City",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 71,
       "name": "cinnabar-island",
       "label": "Cinnabar Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 72,
       "name": "dark-cave",
       "label": "Dark Cave",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 73,
       "name": "digletts-cave",
       "label": "Diglett's Cave",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 74,
       "name": "dragons-den",
       "label": "Dragon's Den",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 75,
       "name": "ecruteak-city",
       "label": "Ecruteak City",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 76,
       "name": "fuchsia-city",
       "label": "Fuchsia City",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 77,
       "name": "ice-path",
       "label": "Ice Path",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 78,
       "name": "ilex-forest",
       "label": "Ilex Forest",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 79,
       "name": "lake-of-rage",
       "label": "Lake of Rage",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 80,
       "name": "mt-moon",
       "label": "Mt. Moon",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 81,
       "name": "mt-mortar",
       "label": "Mt. Mortar",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 82,
       "name": "mt-silver",
       "label": "Mt. Silver",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 83,
       "name": "national-park",
       "label": "National Park",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 84,
       "name": "new-bark-town",
       "label": "New Bark Town",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 85,
       "name": "olivine-city",
       "label": "Olivine City",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 86,
       "name": "pallet-town",
       "label": "Pallet Town",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 87,
       "name": "rock-tunnel",
       "label": "Rock Tunnel",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 88,
       "name": "kanto-route-1",
       "label": "Route 1",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 89,
       "name": "kanto-route-10",
       "label": "Route 10",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 90,
       "name": "kanto-route-11",
       "label": "Route 11",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 91,
       "name": "kanto-route-12",
       "label": "Route 12",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 92,
       "name": "kanto-route-13",
       "label": "Route 13",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 93,
       "name": "kanto-route-14",
       "label": "Route 14",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 94,
       "name": "kanto-route-15",
       "label": "Route 15",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 95,
       "name": "kanto-route-16",
       "label": "Route 16",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 96,
       "name": "kanto-route-17",
       "label": "Route 17",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 97,
       "name": "kanto-route-18",
       "label": "Route 18",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 98,
       "name": "kanto-sea-route-19",
       "label": "Sea Route 19",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 99,
       "name": "kanto-route-2",
       "label": "Route 2",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 100,
       "name": "kanto-sea-route-20",
       "label": "Sea Route 20",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 101,
       "name": "kanto-sea-route-21",
       "label": "Sea Route 21",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 102,
       "name": "kanto-route-22",
       "label": "Route 22",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 103,
       "name": "kanto-route-24",
       "label": "Route 24",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 104,
       "name": "kanto-route-25",
       "label": "Route 25",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 105,
       "name": "kanto-route-26",
       "label": "Route 26",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 106,
       "name": "kanto-route-27",
       "label": "Route 27",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 107,
       "name": "kanto-route-28",
       "label": "Route 28",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 108,
       "name": "johto-route-29",
       "label": "Route 29",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 109,
       "name": "kanto-route-3",
       "label": "Route 3",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 110,
       "name": "johto-route-30",
       "label": "Route 30",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 111,
       "name": "johto-route-31",
       "label": "Route 31",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 112,
       "name": "johto-route-32",
       "label": "Route 32",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 113,
       "name": "johto-route-33",
       "label": "Route 33",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 114,
       "name": "johto-route-34",
       "label": "Route 34",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 115,
       "name": "johto-route-35",
       "label": "Route 35",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 116,
       "name": "johto-route-36",
       "label": "Route 36",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 117,
       "name": "johto-route-37",
       "label": "Route 37",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 118,
       "name": "johto-route-38",
       "label": "Route 38",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 119,
       "name": "johto-route-39",
       "label": "Route 39",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 120,
       "name": "kanto-route-4",
       "label": "Route 4",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 121,
       "name": "johto-sea-route-40",
       "label": "Sea Route 40",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 122,
       "name": "johto-sea-route-41",
       "label": "Sea Route 41",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 123,
       "name": "johto-route-42",
       "label": "Route 42",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 124,
       "name": "johto-route-43",
       "label": "Route 43",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 125,
       "name": "johto-route-44",
       "label": "Route 44",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 126,
       "name": "johto-route-45",
       "label": "Route 45",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 127,
       "name": "johto-route-46",
       "label": "Route 46",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 128,
       "name": "johto-route-47",
       "label": "Route 47",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 129,
       "name": "johto-route-48",
       "label": "Route 48",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 130,
       "name": "kanto-route-5",
       "label": "Route 5",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 131,
       "name": "kanto-route-6",
       "label": "Route 6",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 132,
       "name": "kanto-route-7",
       "label": "Route 7",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 133,
       "name": "kanto-route-8",
       "label": "Route 8",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 134,
       "name": "kanto-route-9",
       "label": "Route 9",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 135,
       "name": "ruins-of-alph",
       "label": "Ruins of Alph",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 136,
       "name": "seafoam-islands",
       "label": "Seafoam Islands",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 137,
       "name": "slowpoke-well",
       "label": "Slowpoke Well",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 138,
       "name": "sprout-tower",
       "label": "Sprout Tower",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 139,
       "name": "bell-tower",
       "label": "Bell Tower",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 140,
       "name": "tohjo-falls",
       "label": "Tohjo Falls",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 141,
       "name": "union-cave",
       "label": "Union Cave",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 147,
       "name": "cerulean-cave",
       "label": "Cerulean Cave",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 148,
       "name": "unknown-all-poliwag",
       "label": "Unknown; all Poliwag",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 149,
       "name": "unknown-all-rattata",
       "label": "Unknown; all Rattata",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 150,
       "name": "unknown-all-bugs",
       "label": "Unknown; all bugs",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 151,
       "name": "vermilion-city",
       "label": "Vermilion City",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 152,
       "name": "kanto-victory-road-1",
       "label": "Victory Road",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 153,
       "name": "violet-city",
       "label": "Violet City",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 154,
       "name": "viridian-city",
       "label": "Viridian City",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 155,
       "name": "viridian-forest",
       "label": "Viridian Forest",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 156,
       "name": "whirl-islands",
       "label": "Whirl Islands",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 157,
       "name": "kanto-route-23",
       "label": "Route 23",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 158,
       "name": "kanto-power-plant",
       "label": "Kanto Power Plant",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 159,
       "name": "kanto-victory-road-2",
       "label": "Victory Road",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 160,
       "name": "pokemon-tower",
       "label": "Pokémon Tower",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 161,
       "name": "pokemon-mansion",
       "label": "Pokémon Mansion",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 162,
       "name": "kanto-safari-zone",
       "label": "Safari Zone",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 163,
       "name": "sandgem-town",
       "label": "Sandgem Town",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 164,
       "name": "floaroma-town",
       "label": "Floaroma Town",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 165,
       "name": "solaceon-town",
       "label": "Solaceon Town",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 167,
       "name": "jubilife-city",
       "label": "Jubilife City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 168,
       "name": "oreburgh-city",
       "label": "Oreburgh City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 169,
       "name": "hearthome-city",
       "label": "Hearthome City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 170,
       "name": "veilstone-city",
       "label": "Veilstone City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 171,
       "name": "snowpoint-city",
       "label": "Snowpoint City",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 172,
       "name": "spear-pillar",
       "label": "Spear Pillar",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 173,
       "name": "pal-park",
       "label": "Pal Park",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 174,
       "name": "amity-square",
       "label": "Amity Square",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 175,
       "name": "floaroma-meadow",
       "label": "Floaroma Meadow",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 177,
       "name": "fullmoon-island",
       "label": "Fullmoon Island",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 178,
       "name": "sendoff-spring",
       "label": "Sendoff Spring",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 179,
       "name": "flower-paradise",
       "label": "Flower Paradise",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 180,
       "name": "maniac-tunnel",
       "label": "Maniac Tunnel",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 181,
       "name": "galactic-hq",
       "label": "Galactic HQ",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 182,
       "name": "verity-lakefront",
       "label": "Verity Lakefront",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 183,
       "name": "newmoon-island",
       "label": "Newmoon Island",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 184,
       "name": "sinnoh-battle-tower",
       "label": "Battle Tower",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 185,
       "name": "fight-area",
       "label": "Fight Area",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 186,
       "name": "survival-area",
       "label": "Survival Area",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 187,
       "name": "seabreak-path",
       "label": "Seabreak Path",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 188,
       "name": "sinnoh-hall-of-origin-1",
       "label": "Hall of Origin",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 189,
       "name": "sinnoh-hall-of-origin-2",
       "label": "Hall of Origin",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 190,
       "name": "verity-cavern",
       "label": "Verity Cavern",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 191,
       "name": "valor-cavern",
       "label": "Valor Cavern",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 192,
       "name": "acuity-cavern",
       "label": "Acuity Cavern",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 193,
       "name": "jubilife-tv",
       "label": "Jubilife TV",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 194,
       "name": "poketch-co",
       "label": "Pokétch Co.",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 195,
       "name": "gts",
       "label": "GTS",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 196,
       "name": "trainers-school",
       "label": "Trainers’ School",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 197,
       "name": "mining-museum",
       "label": "Mining Museum",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 198,
       "name": "sinnoh-flower-shop",
       "label": "Flower Shop",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 199,
       "name": "sinnoh-cycle-shop",
       "label": "Cycle Shop",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 200,
       "name": "contest-hall",
       "label": "Contest Hall",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 201,
       "name": "poffin-house",
       "label": "Poffin House",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 202,
       "name": "sinnoh-foreign-building",
       "label": "Foreign Building",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 203,
       "name": "pokemon-day-care",
       "label": "Pokémon Day Care",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 204,
       "name": "veilstone-store",
       "label": "Veilstone Store",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 205,
       "name": "sinnoh-game-corner",
       "label": "Game Corner",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 206,
       "name": "canalave-library",
       "label": "Canalave Library",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 207,
       "name": "vista-lighthouse",
       "label": "Vista Lighthouse",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 208,
       "name": "sunyshore-market",
       "label": "Sunyshore Market",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 209,
       "name": "footstep-house",
       "label": "Footstep House",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 210,
       "name": "sinnoh-cafe",
       "label": "Café",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 211,
       "name": "grand-lake",
       "label": "Grand Lake",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 212,
       "name": "sinnoh-restaurant",
       "label": "Restaurant",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 213,
       "name": "battle-park",
       "label": "Battle Park",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 214,
       "name": "battle-frontier",
       "label": "Battle Frontier",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 215,
       "name": "battle-factory",
       "label": "Battle Factory",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 216,
       "name": "battle-castle",
       "label": "Battle Castle",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 217,
       "name": "battle-arcade",
       "label": "Battle Arcade",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 218,
       "name": "battle-hall",
       "label": "Battle Hall",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 219,
       "name": "distortion-world",
       "label": "Distortion World",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 220,
       "name": "sinnoh-global-terminal",
       "label": "Global Terminal",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 221,
       "name": "sinnoh-villa",
       "label": "Villa",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 222,
       "name": "battleground",
       "label": "Battleground",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 223,
       "name": "rotoms-room",
       "label": "ROTOM's Room",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 224,
       "name": "tg-eterna-bldg",
       "label": "T.G. Eterna Bldg",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 225,
       "name": "iron-ruins",
       "label": "Iron Ruins",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 226,
       "name": "iceberg-ruins",
       "label": "Iceberg Ruins",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 227,
       "name": "rock-peak-ruins",
       "label": "Rock Peak Ruins",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 228,
       "name": "azalea-town",
       "label": "Azalea Town",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 229,
       "name": "goldenrod-city",
       "label": "Goldenrod City",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 230,
       "name": "mahogany-town",
       "label": "Mahogany Town",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 231,
       "name": "pewter-city",
       "label": "Pewter City",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 232,
       "name": "lavender-town",
       "label": "Lavender Town",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 233,
       "name": "indigo-plateau",
       "label": "Indigo Plateau",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 234,
       "name": "saffron-city",
       "label": "Saffron City",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 236,
       "name": "johto-lighthouse",
       "label": "Lighthouse",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 237,
       "name": "team-rocket-hq",
       "label": "Team Rocket HQ",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 238,
       "name": "goldenrod-tunnel",
       "label": "Goldenrod Tunnel",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 239,
       "name": "mt-silver-cave",
       "label": "Mt. Silver Cave",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 241,
       "name": "pokeathlon-dome",
       "label": "Pokéathlon Dome",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 242,
       "name": "ss-aqua",
       "label": "S.S. Aqua",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 243,
       "name": "safari-zone-gate",
       "label": "Safari Zone Gate",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 244,
       "name": "cliff-cave",
       "label": "Cliff Cave",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 245,
       "name": "frontier-access",
       "label": "Frontier Access",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 246,
       "name": "bellchime-trail",
       "label": "Bellchime Trail",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 247,
       "name": "sinjoh-ruins",
       "label": "Sinjoh Ruins",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 248,
       "name": "embedded-tower",
       "label": "Embedded Tower",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 249,
       "name": "pokewalker",
       "label": "Pokéwalker",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 250,
       "name": "cliff-edge-gate",
       "label": "Cliff Edge Gate",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 252,
       "name": "radio-tower",
       "label": "Radio Tower",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 344,
       "name": "unova-mystery-zone",
       "label": "Mystery Zone",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 345,
       "name": "unova-faraway-place",
       "label": "Faraway place",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 346,
       "name": "nuvema-town",
       "label": "Nuvema Town",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 347,
       "name": "accumula-town",
       "label": "Accumula Town",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 348,
       "name": "striaton-city",
       "label": "Striaton City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 349,
       "name": "nacrene-city",
       "label": "Nacrene City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 350,
       "name": "castelia-city",
       "label": "Castelia City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 351,
       "name": "nimbasa-city",
       "label": "Nimbasa City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 352,
       "name": "driftveil-city",
       "label": "Driftveil City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 353,
       "name": "mistralton-city",
       "label": "Mistralton City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 354,
       "name": "icirrus-city",
       "label": "Icirrus City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 355,
       "name": "opelucid-city",
       "label": "Opelucid City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 356,
       "name": "unova-route-1",
       "label": "Route 1",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 357,
       "name": "unova-route-2",
       "label": "Route 2",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 358,
       "name": "unova-route-3",
       "label": "Route 3",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 359,
       "name": "unova-route-4",
       "label": "Route 4",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 360,
       "name": "unova-route-5",
       "label": "Route 5",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 361,
       "name": "unova-route-6",
       "label": "Route 6",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 362,
       "name": "unova-route-7",
       "label": "Route 7",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 363,
       "name": "unova-route-8",
       "label": "Route 8",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 364,
       "name": "unova-route-9",
       "label": "Route 9",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 365,
       "name": "unova-route-10",
       "label": "Route 10",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 366,
       "name": "unova-route-11",
       "label": "Route 11",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 367,
       "name": "unova-route-12",
       "label": "Route 12",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 368,
       "name": "unova-route-13",
       "label": "Route 13",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 369,
       "name": "unova-route-14",
       "label": "Route 14",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 370,
       "name": "unova-route-15",
       "label": "Route 15",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 371,
       "name": "unova-route-16",
       "label": "Route 16",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 372,
       "name": "unova-route-17",
       "label": "Route 17",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 373,
       "name": "unova-route-18",
       "label": "Route 18",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 374,
       "name": "dreamyard",
       "label": "Dreamyard",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 375,
       "name": "pinwheel-forest",
       "label": "Pinwheel Forest",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 376,
       "name": "desert-resort",
       "label": "Desert Resort",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 377,
       "name": "relic-castle",
       "label": "Relic Castle",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 378,
       "name": "cold-storage",
       "label": "Cold Storage",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 379,
       "name": "chargestone-cave",
       "label": "Chargestone Cave",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 380,
       "name": "twist-mountain",
       "label": "Twist Mountain",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 381,
       "name": "dragonspiral-tower",
       "label": "Dragonspiral Tower",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 382,
       "name": "unova-victory-road",
       "label": "Victory Road",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 383,
       "name": "lacunosa-town",
       "label": "Lacunosa Town",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 384,
       "name": "undella-town",
       "label": "Undella Town",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 385,
       "name": "anville-town",
       "label": "Anville Town",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 386,
       "name": "unova-pokemon-league",
       "label": "Pokémon League",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 387,
       "name": "ns-castle",
       "label": "N's Castle",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 388,
       "name": "royal-unova",
       "label": "Royal Unova",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 389,
       "name": "gear-station",
       "label": "Gear Station",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 390,
       "name": "battle-subway",
       "label": "Battle Subway",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 391,
       "name": "musical-theater",
       "label": "Musical Theater",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 392,
       "name": "black-city",
       "label": "Black City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 393,
       "name": "white-forest",
       "label": "White Forest",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 394,
       "name": "unity-tower",
       "label": "Unity Tower",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 395,
       "name": "wellspring-cave",
       "label": "Wellspring Cave",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 396,
       "name": "mistralton-cave",
       "label": "Mistralton Cave",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 397,
       "name": "rumination-field",
       "label": "Rumination Field",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 398,
       "name": "celestial-tower",
       "label": "Celestial Tower",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 399,
       "name": "moor-of-icirrus",
       "label": "Moor of Icirrus",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 400,
       "name": "unova-shopping-mall",
       "label": "Shopping Mall",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 401,
       "name": "challengers-cave",
       "label": "Challenger's Cave",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 402,
       "name": "poke-transfer-lab",
       "label": "Poké Transfer Lab",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 403,
       "name": "giant-chasm",
       "label": "Giant Chasm",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 404,
       "name": "liberty-garden",
       "label": "Liberty Garden",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 405,
       "name": "p2-laboratory",
       "label": "P2 Laboratory",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 406,
       "name": "skyarrow-bridge",
       "label": "Skyarrow Bridge",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 407,
       "name": "driftveil-drawbridge",
       "label": "Driftveil Drawbridge",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 408,
       "name": "tubeline-bridge",
       "label": "Tubeline Bridge",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 409,
       "name": "village-bridge",
       "label": "Village Bridge",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 410,
       "name": "marvelous-bridge",
       "label": "Marvelous Bridge",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 411,
       "name": "entralink",
       "label": "Entralink",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 412,
       "name": "abundant-shrine",
       "label": "Abundant Shrine",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 413,
       "name": "undella-bay",
       "label": "Undella Bay",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 414,
       "name": "lostlorn-forest",
       "label": "Lostlorn Forest",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 415,
       "name": "trial-chamber",
       "label": "Trial Chamber",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 416,
       "name": "guidance-chamber",
       "label": "Guidance Chamber",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 417,
       "name": "entree-forest",
       "label": "Entree Forest",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 418,
       "name": "accumula-gate",
       "label": "Accumula Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 419,
       "name": "undella-gate",
       "label": "Undella Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 420,
       "name": "nacrene-gate",
       "label": "Nacrene Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 421,
       "name": "castelia-gate",
       "label": "Castelia Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 422,
       "name": "nimbasa-gate",
       "label": "Nimbasa Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 423,
       "name": "opelucid-gate",
       "label": "Opelucid Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 424,
       "name": "black-gate",
       "label": "Black Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 425,
       "name": "white-gate",
       "label": "White Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 426,
       "name": "bridge-gate",
       "label": "Bridge Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 427,
       "name": "route-gate",
       "label": "Route Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 428,
       "name": "abyssal-ruins",
       "label": "Abyssal Ruins",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 429,
       "name": "petalburg-city",
       "label": "Petalburg City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 430,
       "name": "slateport-city",
       "label": "Slateport City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 431,
       "name": "lilycove-city",
       "label": "Lilycove City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 432,
       "name": "mossdeep-city",
       "label": "Mossdeep City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 433,
       "name": "sootopolis-city",
       "label": "Sootopolis City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 434,
       "name": "ever-grande-city",
       "label": "Ever Grande City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 435,
       "name": "meteor-falls",
       "label": "Meteor Falls",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 436,
       "name": "rusturf-tunnel",
       "label": "Rusturf Tunnel",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 437,
       "name": "granite-cave",
       "label": "Granite Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 438,
       "name": "petalburg-woods",
       "label": "Petalburg Woods",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 439,
       "name": "jagged-pass",
       "label": "Jagged Pass",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 440,
       "name": "fiery-path",
       "label": "Fiery Path",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 441,
       "name": "mt-pyre",
       "label": "Mt. Pyre",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 442,
       "name": "seafloor-cavern",
       "label": "Seafloor Cavern",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 443,
       "name": "cave-of-origin",
       "label": "Cave of Origin",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 444,
       "name": "hoenn-victory-road",
       "label": "Victory Road",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 445,
       "name": "shoal-cave",
       "label": "Shoal Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 446,
       "name": "new-mauville",
       "label": "New Mauville",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 447,
       "name": "abandoned-ship",
       "label": "Abandoned Ship",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 448,
       "name": "sky-pillar",
       "label": "Sky Pillar",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 449,
       "name": "hoenn-route-101",
       "label": "Route 101",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 450,
       "name": "hoenn-route-102",
       "label": "Route 102",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 451,
       "name": "hoenn-route-103",
       "label": "Route 103",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 452,
       "name": "hoenn-route-104",
       "label": "Route 104",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 453,
       "name": "hoenn-route-105",
       "label": "Route 105",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 454,
       "name": "hoenn-route-106",
       "label": "Route 106",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 455,
       "name": "hoenn-route-107",
       "label": "Route 107",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 456,
       "name": "hoenn-route-108",
       "label": "Route 108",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 457,
       "name": "hoenn-route-109",
       "label": "Route 109",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 458,
       "name": "hoenn-route-110",
       "label": "Route 110",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 459,
       "name": "hoenn-route-111",
       "label": "Route 111",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 460,
       "name": "hoenn-route-112",
       "label": "Route 112",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 461,
       "name": "hoenn-route-113",
       "label": "Route 113",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 462,
       "name": "hoenn-route-114",
       "label": "Route 114",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 463,
       "name": "hoenn-route-115",
       "label": "Route 115",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 464,
       "name": "hoenn-route-116",
       "label": "Route 116",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 465,
       "name": "hoenn-route-117",
       "label": "Route 117",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 466,
       "name": "hoenn-route-118",
       "label": "Route 118",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 467,
       "name": "hoenn-route-119",
       "label": "Route 119",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 468,
       "name": "hoenn-route-120",
       "label": "Route 120",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 469,
       "name": "hoenn-route-121",
       "label": "Route 121",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 470,
       "name": "hoenn-route-122",
       "label": "Route 122",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 471,
       "name": "hoenn-route-123",
       "label": "Route 123",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 472,
       "name": "hoenn-route-124",
       "label": "Route 124",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 473,
       "name": "hoenn-route-125",
       "label": "Route 125",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 474,
       "name": "hoenn-route-126",
       "label": "Route 126",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 475,
       "name": "hoenn-route-127",
       "label": "Route 127",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 476,
       "name": "hoenn-route-128",
       "label": "Route 128",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 477,
       "name": "hoenn-route-129",
       "label": "Route 129",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 478,
       "name": "hoenn-route-130",
       "label": "Route 130",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 479,
       "name": "hoenn-route-131",
       "label": "Route 131",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 480,
       "name": "hoenn-route-132",
       "label": "Route 132",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 481,
       "name": "hoenn-route-133",
       "label": "Route 133",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 482,
       "name": "hoenn-route-134",
       "label": "Route 134",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 483,
       "name": "hoenn-safari-zone",
       "label": "Safari Zone",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 484,
       "name": "dewford-town",
       "label": "Dewford Town",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 485,
       "name": "pacifidlog-town",
       "label": "Pacifidlog Town",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 486,
       "name": "magma-hideout",
       "label": "Magma Hideout",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 487,
       "name": "mirage-tower",
       "label": "Mirage Tower",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 488,
       "name": "desert-underpass",
       "label": "Desert Underpass",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 489,
       "name": "artisan-cave",
       "label": "Artisan Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 490,
       "name": "hoenn-altering-cave",
       "label": "Altering Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 491,
       "name": "monean-chamber",
       "label": "Monean Chamber",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 492,
       "name": "liptoo-chamber",
       "label": "Liptoo Chamber",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 493,
       "name": "weepth-chamber",
       "label": "Weepth Chamber",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 494,
       "name": "dilford-chamber",
       "label": "Dilford Chamber",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 495,
       "name": "scufib-chamber",
       "label": "Scufib Chamber",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 496,
       "name": "rixy-chamber",
       "label": "Rixy Chamber",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 497,
       "name": "viapos-chamber",
       "label": "Viapos Chamber",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 498,
       "name": "ss-anne",
       "label": "S.S. Anne",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 500,
       "name": "mt-ember",
       "label": "Mt. Ember",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 501,
       "name": "berry-forest",
       "label": "Berry Forest",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 502,
       "name": "icefall-cave",
       "label": "Icefall Cave",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 503,
       "name": "pattern-bush",
       "label": "Pattern Bush",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 504,
       "name": "lost-cave",
       "label": "Lost Cave",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 505,
       "name": "kindle-road",
       "label": "Kindle Road",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 506,
       "name": "treasure-beach",
       "label": "Treasure Beach",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 507,
       "name": "cape-brink",
       "label": "Cape Brink",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 508,
       "name": "bond-bridge",
       "label": "Bond Bridge",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 509,
       "name": "three-isle-port",
       "label": "Three Isle Port",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 510,
       "name": "resort-gorgeous",
       "label": "Resort Gorgeous",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 511,
       "name": "water-labyrinth",
       "label": "Water Labyrinth",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 512,
       "name": "five-isle-meadow",
       "label": "Five Isle Meadow",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 513,
       "name": "memorial-pillar",
       "label": "Memorial Pillar",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 514,
       "name": "outcast-island",
       "label": "Outcast Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 515,
       "name": "green-path",
       "label": "Green Path",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 516,
       "name": "water-path",
       "label": "Water Path",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 517,
       "name": "ruin-valley",
       "label": "Ruin Valley",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 518,
       "name": "trainer-tower",
       "label": "Trainer Tower",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 519,
       "name": "canyon-entrance",
       "label": "Canyon Entrance",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 520,
       "name": "sevault-canyon",
       "label": "Sevault Canyon",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 521,
       "name": "tanoby-ruins",
       "label": "Tanoby Ruins",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 526,
       "name": "one-island",
       "label": "One Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 527,
       "name": "four-island",
       "label": "Four Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 528,
       "name": "five-island",
       "label": "Five Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 529,
       "name": "kanto-altering-cave",
       "label": "Altering Cave",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 531,
       "name": "aspertia-city",
       "label": "Aspertia City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 532,
       "name": "virbank-city",
       "label": "Virbank City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 533,
       "name": "humilau-city",
       "label": "Humilau City",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 534,
       "name": "pokestar-studios",
       "label": "PokéStar Studios",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 535,
       "name": "join-avenue",
       "label": "Join Avenue",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 536,
       "name": "floccesy-town",
       "label": "Floccesy Town",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 537,
       "name": "lentimas-town",
       "label": "Lentimas Town",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 538,
       "name": "unova-route-19",
       "label": "Route 19",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 539,
       "name": "unova-route-20",
       "label": "Route 20",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 540,
       "name": "unova-route-21",
       "label": "Route 21",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 541,
       "name": "unova-route-22",
       "label": "Route 22",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 542,
       "name": "unova-route-23",
       "label": "Route 23",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 543,
       "name": "castelia-sewers",
       "label": "Castelia Sewers",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 544,
       "name": "floccesy-ranch",
       "label": "Floccesy Ranch",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 545,
       "name": "virbank-complex",
       "label": "Virbank Complex",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 546,
       "name": "reversal-mountain",
       "label": "Reversal Mountain",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 547,
       "name": "strange-house",
       "label": "Strange House",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 548,
       "name": "unova-victory-road-2",
       "label": "Victory Road",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 549,
       "name": "plasma-frigate",
       "label": "Plasma Frigate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 550,
       "name": "relic-passage",
       "label": "Relic Passage",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 551,
       "name": "clay-tunnel",
       "label": "Clay Tunnel",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 552,
       "name": "white-treehollow",
       "label": "White Treehollow",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 553,
       "name": "black-tower",
       "label": "Black Tower",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 554,
       "name": "seaside-cave",
       "label": "Seaside Cave",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 555,
       "name": "cave-of-being",
       "label": "Cave of Being",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 556,
       "name": "hidden-grotto",
       "label": "Hidden Grotto",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 557,
       "name": "marine-tube",
       "label": "Marine Tube",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 558,
       "name": "virbank-gate",
       "label": "Virbank Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 559,
       "name": "aspertia-gate",
       "label": "Aspertia Gate",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 560,
       "name": "nature-sanctuary",
       "label": "Nature Sanctuary",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 561,
       "name": "medal-secretariat",
       "label": "Medal Secretariat",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 562,
       "name": "underground-ruins",
       "label": "Underground Ruins",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 563,
       "name": "rocky-mountain-room",
       "label": "Rocky Mountain Room",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 564,
       "name": "glacier-room",
       "label": "Glacier Room",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 565,
       "name": "iron-room",
       "label": "Iron Room",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 566,
       "name": "pledge-grove",
       "label": "Pledge Grove",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 567,
       "name": "littleroot-town",
       "label": "Littleroot Town",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 568,
       "name": "oldale-town",
       "label": "Oldale Town",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 569,
       "name": "lavaridge-town",
       "label": "Lavaridge Town",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 570,
       "name": "fallarbor-town",
       "label": "Fallarbor Town",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 571,
       "name": "verdanturf-town",
       "label": "Verdanturf Town",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 572,
       "name": "mauville-city",
       "label": "Mauville City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 573,
       "name": "rustboro-city",
       "label": "Rustboro City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 574,
       "name": "fortree-city",
       "label": "Fortree City",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 575,
       "name": "underwater",
       "label": "Underwater",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 576,
       "name": "mt-chimney",
       "label": "Mt. Chimney",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 577,
       "name": "mirage-spot-island",
       "label": "Mirage Island",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 578,
       "name": "southern-island",
       "label": "Southern Island",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 579,
       "name": "sealed-chamber",
       "label": "Sealed Chamber",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 580,
       "name": "scorched-slab",
       "label": "Scorched Slab",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 581,
       "name": "island-cave",
       "label": "Island Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 582,
       "name": "desert-ruins",
       "label": "Desert Ruins",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 583,
       "name": "ancient-tomb",
       "label": "Ancient Tomb",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 584,
       "name": "inside-of-truck",
       "label": "???",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 585,
       "name": "secret-base",
       "label": "Secret Base",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 586,
       "name": "hoenn-battle-tower",
       "label": "Battle Tower",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 587,
       "name": "vaniville-town",
       "label": "Vaniville Town",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 588,
       "name": "kalos-route-1",
       "label": "Route 1",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 589,
       "name": "vaniville-pathway",
       "label": "Vaniville Pathway",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 590,
       "name": "aquacorde-town",
       "label": "Aquacorde Town",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 591,
       "name": "kalos-route-2",
       "label": "Route 2",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 592,
       "name": "avance-trail",
       "label": "Avance Trail",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 593,
       "name": "santalune-forest",
       "label": "Santalune Forest",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 594,
       "name": "kalos-route-3",
       "label": "Route 3",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 595,
       "name": "ouvert-way",
       "label": "Ouvert Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 596,
       "name": "santalune-city",
       "label": "Santalune City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 597,
       "name": "kalos-route-4",
       "label": "Route 4",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 598,
       "name": "parterre-way",
       "label": "Parterre Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 599,
       "name": "lumiose-city",
       "label": "Lumiose City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 600,
       "name": "prism-tower",
       "label": "Prism Tower",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 601,
       "name": "lysandre-labs",
       "label": "Lysandre Labs",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 602,
       "name": "kalos-route-5",
       "label": "Route 5",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 603,
       "name": "versant-road",
       "label": "Versant Road",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 604,
       "name": "camphrier-town",
       "label": "Camphrier Town",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 605,
       "name": "shabboneau-castle",
       "label": "Shabboneau Castle",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 606,
       "name": "kalos-route-6",
       "label": "Route 6",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 607,
       "name": "palais-lane",
       "label": "Palais Lane",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 608,
       "name": "parfum-palace",
       "label": "Parfum Palace",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 609,
       "name": "kalos-route-7",
       "label": "Route 7",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 610,
       "name": "riviere-walk",
       "label": "Rivière Walk",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 611,
       "name": "cyllage-city",
       "label": "Cyllage City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 612,
       "name": "kalos-route-8",
       "label": "Route 8",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 613,
       "name": "muraille-coast",
       "label": "Muraille Coast",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 614,
       "name": "ambrette-town",
       "label": "Ambrette Town",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 615,
       "name": "kalos-route-9",
       "label": "Route 9",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 616,
       "name": "spikes-passage",
       "label": "Spikes Passage",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 617,
       "name": "battle-chateau",
       "label": "Battle Chateau",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 618,
       "name": "kalos-route-10",
       "label": "Route 10",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 619,
       "name": "menhir-trail",
       "label": "Menhir Trail",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 620,
       "name": "geosenge-town",
       "label": "Geosenge Town",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 621,
       "name": "kalos-route-11",
       "label": "Route 11",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 622,
       "name": "miroir-way",
       "label": "Miroir Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 623,
       "name": "reflection-cave",
       "label": "Reflection Cave",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 624,
       "name": "shalour-city",
       "label": "Shalour City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 625,
       "name": "tower-of-mastery",
       "label": "Tower of Mastery",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 626,
       "name": "kalos-route-12",
       "label": "Route 12",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 627,
       "name": "fourrage-road",
       "label": "Fourrage Road",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 628,
       "name": "coumarine-city",
       "label": "Coumarine City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 629,
       "name": "kalos-route-13",
       "label": "Route 13",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 630,
       "name": "lumiose-badlands",
       "label": "Lumiose Badlands",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 631,
       "name": "kalos-route-14",
       "label": "Route 14",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 632,
       "name": "laverre-nature-trail",
       "label": "Laverre Nature Trail",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 633,
       "name": "laverre-city",
       "label": "Laverre City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 634,
       "name": "poke-ball-factory",
       "label": "Poké Ball Factory",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 635,
       "name": "kalos-route-15",
       "label": "Route 15",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 636,
       "name": "brun-way",
       "label": "Brun Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 637,
       "name": "dendemille-town",
       "label": "Dendemille Town",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 638,
       "name": "kalos-route-16",
       "label": "Route 16",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 639,
       "name": "melancolie-path",
       "label": "Mélancolie Path",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 640,
       "name": "frost-cavern",
       "label": "Frost Cavern",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 641,
       "name": "kalos-route-17",
       "label": "Route 17",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 642,
       "name": "mamoswine-road",
       "label": "Mamoswine Road",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 643,
       "name": "anistar-city",
       "label": "Anistar City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 644,
       "name": "kalos-route-18",
       "label": "Route 18",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 645,
       "name": "vallee-etroite-way",
       "label": "Vallée Étroite Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 646,
       "name": "couriway-town",
       "label": "Couriway Town",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 647,
       "name": "kalos-route-19",
       "label": "Route 19",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 648,
       "name": "grande-vallee-way",
       "label": "Grande Vallée Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 649,
       "name": "snowbelle-city",
       "label": "Snowbelle City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 650,
       "name": "kalos-route-20",
       "label": "Route 20",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 651,
       "name": "winding-woods",
       "label": "Winding Woods",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 652,
       "name": "pokemon-village",
       "label": "Pokémon Village",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 653,
       "name": "kalos-route-21",
       "label": "Route 21",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 654,
       "name": "derniere-way",
       "label": "Dernière Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 655,
       "name": "kalos-route-22",
       "label": "Route 22",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 656,
       "name": "detourner-way",
       "label": "Détourner Way",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 657,
       "name": "kalos-victory-road",
       "label": "Victory Road",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 658,
       "name": "kalos-pokemon-league",
       "label": "Pokémon League",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 659,
       "name": "kiloude-city",
       "label": "Kiloude City",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 660,
       "name": "battle-maison",
       "label": "Battle Maison",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 661,
       "name": "azure-bay",
       "label": "Azure Bay",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 662,
       "name": "dendemille-gate",
       "label": "Dendemille Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 663,
       "name": "couriway-gate",
       "label": "Couriway Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 664,
       "name": "ambrette-gate",
       "label": "Ambrette Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 665,
       "name": "lumiose-gate",
       "label": "Lumiose Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 666,
       "name": "shalour-gate",
       "label": "Shalour Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 667,
       "name": "coumarine-gate",
       "label": "Coumarine Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 668,
       "name": "laverre-gate",
       "label": "Laverre Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 669,
       "name": "anistar-gate",
       "label": "Anistar Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 670,
       "name": "snowbelle-gate",
       "label": "Snowbelle Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 671,
       "name": "glittering-cave",
       "label": "Glittering Cave",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 672,
       "name": "connecting-cave",
       "label": "Connecting Cave",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 673,
       "name": "zubat-roost",
       "label": "Zubat Roost",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 674,
       "name": "kalos-power-plant",
       "label": "Kalos Power Plant",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 675,
       "name": "team-flare-secret-hq",
       "label": "Team Flare Secret HQ",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 676,
       "name": "terminus-cave",
       "label": "Terminus Cave",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 677,
       "name": "lost-hotel",
       "label": "Lost Hotel",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 678,
       "name": "chamber-of-emptiness",
       "label": "Chamber of Emptiness",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 679,
       "name": "sea-spirits-den",
       "label": "Sea Spirit’s Den",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 680,
       "name": "friend-safari",
       "label": "Friend Safari",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 681,
       "name": "blazing-chamber",
       "label": "Blazing Chamber",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 682,
       "name": "flood-chamber",
       "label": "Flood Chamber",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 683,
       "name": "ironworks-chamber",
       "label": "Ironworks Chamber",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 684,
       "name": "dragonmark-chamber",
       "label": "Dragonmark Chamber",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 685,
       "name": "radiant-chamber",
       "label": "Radiant Chamber",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 686,
       "name": "pokemon-league-gate",
       "label": "Pokémon League Gate",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 687,
       "name": "lumiose-station",
       "label": "Lumiose Station",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 688,
       "name": "kiloude-station",
       "label": "Kiloude Station",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 689,
       "name": "ambrette-aquarium",
       "label": "Ambrette Aquarium",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 690,
       "name": "unknown-dungeon",
       "label": "Unknown Dungeon",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 691,
       "name": "hoenn-pokemon-league",
       "label": "Pokémon League",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 692,
       "name": "team-aqua-hideout",
       "label": "Team Aqua Hideout",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 693,
       "name": "sea-mauville",
       "label": "Sea Mauville",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 694,
       "name": "team-magma-hideout",
       "label": "Team Magma Hideout",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 695,
       "name": "battle-resort",
       "label": "Battle Resort",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 696,
       "name": "ss-tidal",
       "label": "S.S. Tidal",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 697,
       "name": "mirage-spot-forest",
       "label": "Mirage Forest",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 698,
       "name": "mirage-spot-cave",
       "label": "Mirage Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 699,
       "name": "mirage-spot-mountain",
       "label": "Mirage Mountain",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 700,
       "name": "trackless-forest",
       "label": "Trackless Forest",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 701,
       "name": "pathless-plain",
       "label": "Pathless Plain",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 702,
       "name": "nameless-cavern",
       "label": "Nameless Cavern",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 703,
       "name": "fabled-cave",
       "label": "Fabled Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 704,
       "name": "gnarled-den",
       "label": "Gnarled Den",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 705,
       "name": "crescent-isle",
       "label": "Crescent Isle",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 706,
       "name": "secret-islet",
       "label": "Secret Islet",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 707,
       "name": "soaring-in-the-sky",
       "label": "Soaring in the sky",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 708,
       "name": "secret-shore",
       "label": "Secret Shore",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 709,
       "name": "secret-meadow",
       "label": "Secret Meadow",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 710,
       "name": "alola-route-1--hauoli-outskirts",
       "label": "Route 1",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 711,
       "name": "alola-route-1",
       "label": "Route 1",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 712,
       "name": "alola-route-3",
       "label": "Route 3",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 713,
       "name": "alola-route-2",
       "label": "Route 2",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 714,
       "name": "kalae-bay",
       "label": "Kala’e Bay",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 715,
       "name": "melemele-sea",
       "label": "Melemele Sea",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 716,
       "name": "hauoli-city--beachfront",
       "label": "Hau’oli City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 717,
       "name": "hauoli-city--shopping-district",
       "label": "Hau’oli City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 718,
       "name": "hauoli-city--marina",
       "label": "Hau’oli City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 719,
       "name": "iki-town",
       "label": "Iki Town",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 720,
       "name": "mahalo-trail",
       "label": "Mahalo Trail",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 721,
       "name": "mahalo-trail--plank-bridge",
       "label": "Mahalo Trail",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 722,
       "name": "ruins-of-conflict",
       "label": "Ruins of Conflict",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 723,
       "name": "ten-carat-hill",
       "label": "Ten Carat Hill",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 724,
       "name": "ten-carat-hill--farthest-hollow",
       "label": "Ten Carat Hill",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 725,
       "name": "hauoli-cemetery",
       "label": "Hau’oli Cemetery",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 726,
       "name": "melemele-meadow",
       "label": "Melemele Meadow",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 727,
       "name": "seaward-cave",
       "label": "Seaward Cave",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 728,
       "name": "alola-berry-fields",
       "label": "Alola Berry Fields",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 729,
       "name": "verdant-cavern--trial-site",
       "label": "Verdant Cavern",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 730,
       "name": "verdant-cavern--totems-den",
       "label": "Verdant Cavern",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 731,
       "name": "alola-route-4",
       "label": "Route 4",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 732,
       "name": "alola-route-5",
       "label": "Route 5",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 733,
       "name": "alola-route-6",
       "label": "Route 6",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 734,
       "name": "alola-route-7",
       "label": "Route 7",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 735,
       "name": "alola-route-8",
       "label": "Route 8",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 736,
       "name": "alola-route-9",
       "label": "Route 9",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 737,
       "name": "hano-grand-resort",
       "label": "Hano Grand Resort",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 738,
       "name": "hano-beach",
       "label": "Hano Beach",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 739,
       "name": "akala-meadow",
       "label": "Akala Meadow",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 740,
       "name": "paniola-town",
       "label": "Paniola Town",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 741,
       "name": "heahea-city",
       "label": "Heahea City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 742,
       "name": "konikoni-city",
       "label": "Konikoni City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 743,
       "name": "royal-avenue",
       "label": "Royal Avenue",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 744,
       "name": "memorial-hill",
       "label": "Memorial Hill",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 745,
       "name": "paniola-ranch",
       "label": "Paniola Ranch",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 746,
       "name": "wela-volcano-park",
       "label": "Wela Volcano Park",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 747,
       "name": "wela-volcano-park--totems-den",
       "label": "Wela Volcano Park",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 748,
       "name": "brooklet-hill",
       "label": "Brooklet Hill",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 749,
       "name": "brooklet-hill--totems-den",
       "label": "Brooklet Hill",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 750,
       "name": "lush-jungle",
       "label": "Lush Jungle",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 751,
       "name": "ruins-of-life",
       "label": "Ruins of Life",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 752,
       "name": "akala-outskirts",
       "label": "Akala Outskirts",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 753,
       "name": "digletts-tunnel",
       "label": "Diglett’s Tunnel",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 754,
       "name": "battle-royal-dome",
       "label": "Battle Royal Dome",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 755,
       "name": "alola-route-10",
       "label": "Route 10",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 756,
       "name": "alola-route-11",
       "label": "Route 11",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 757,
       "name": "secluded-shore",
       "label": "Secluded Shore",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 758,
       "name": "alola-route-13",
       "label": "Route 13",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 759,
       "name": "tapu-village",
       "label": "Tapu Village",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 760,
       "name": "alola-route-15",
       "label": "Route 15",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 761,
       "name": "alola-route-16",
       "label": "Route 16",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 762,
       "name": "alola-route-17",
       "label": "Route 17",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 763,
       "name": "alola-route-12",
       "label": "Route 12",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 764,
       "name": "haina-desert",
       "label": "Haina Desert",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 765,
       "name": "alola-route-14",
       "label": "Route 14",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 766,
       "name": "ulaula-meadow",
       "label": "Ula’ula Meadow",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 767,
       "name": "po-town",
       "label": "Po Town",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 768,
       "name": "malie-city-proper",
       "label": "Malie City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 769,
       "name": "malie-garden",
       "label": "Malie Garden",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 770,
       "name": "mount-hokulani",
       "label": "Mount Hokulani",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 771,
       "name": "blush-mountain",
       "label": "Blush Mountain",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 772,
       "name": "ruins-of-abundance",
       "label": "Ruins of Abundance",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 773,
       "name": "lake-of-the-sunne",
       "label": "Lake of the Sunne",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 774,
       "name": "lake-of-the-moone",
       "label": "Lake of the Moone",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 775,
       "name": "mount-lanakila",
       "label": "Mount Lanakila",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 776,
       "name": "shady-house",
       "label": "Shady House",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 777,
       "name": "thrifty-megamart--abandoned-site",
       "label": "Thrifty Megamart",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 778,
       "name": "hokulani-observatory",
       "label": "Hokulani Observatory",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 779,
       "name": "alola-pokemon-league",
       "label": "Pokémon League",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 780,
       "name": "poni-meadow",
       "label": "Poni Meadow",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 781,
       "name": "poni-wilds",
       "label": "Poni Wilds",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 782,
       "name": "ancient-poni-path",
       "label": "Ancient Poni Path",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 783,
       "name": "poni-breaker-coast",
       "label": "Poni Breaker Coast",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 784,
       "name": "poni-grove",
       "label": "Poni Grove",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 785,
       "name": "poni-plains",
       "label": "Poni Plains",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 786,
       "name": "poni-coast",
       "label": "Poni Coast",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 787,
       "name": "poni-gauntlet",
       "label": "Poni Gauntlet",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 788,
       "name": "seafolk-village",
       "label": "Seafolk Village",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 789,
       "name": "vast-poni-canyon",
       "label": "Vast Poni Canyon",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 790,
       "name": "altar-of-the-sunne",
       "label": "Altar of the Sunne",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 791,
       "name": "altar-of-the-moone",
       "label": "Altar of the Moone",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 792,
       "name": "ruins-of-hope",
       "label": "Ruins of Hope",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 793,
       "name": "resolution-cave",
       "label": "Resolution Cave",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 794,
       "name": "exeggutor-island",
       "label": "Exeggutor Island",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 795,
       "name": "battle-tree",
       "label": "Battle Tree",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 796,
       "name": "aether-paradise",
       "label": "Aether Paradise",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 797,
       "name": "ultra-space",
       "label": "Ultra Space",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 798,
       "name": "malie-city--outer-cape",
       "label": "Malie City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 799,
       "name": "roaming-kanto",
       "label": "Roaming Kanto",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 800,
       "name": "roaming-johto",
       "label": "Roaming Johto",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 801,
       "name": "roaming-hoenn",
       "label": "Roaming Hoenn",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 802,
       "name": "roaming-sinnoh",
       "label": "Roaming Sinnoh",
       "generations": ["IV"],
       "region": "sinnoh"
     },
     {
-      "id": 803,
       "name": "terra-cave",
       "label": "Terra Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 804,
       "name": "marine-cave",
       "label": "Marine Cave",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 805,
       "name": "two-island",
       "label": "Two Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 806,
       "name": "three-island",
       "label": "Three Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 807,
       "name": "three-isle-path",
       "label": "Three Isle Path",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 808,
       "name": "six-island",
       "label": "Six Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 809,
       "name": "seven-island",
       "label": "Seven Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 810,
       "name": "birth-island",
       "label": "Birth Island",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 811,
       "name": "navel-rock",
       "label": "Navel Rock",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 812,
       "name": "faraway-island",
       "label": "Faraway Island",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 813,
       "name": "hoenn-battle-frontier",
       "label": "Hoenn Battle Frontier",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 814,
       "name": "johto-safari-zone",
       "label": "Johto Safari Zone",
       "generations": ["II"],
       "region": "johto"
     },
     {
-      "id": 815,
       "name": "cabo-poco",
       "label": "Cabo Poco",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 816,
       "name": "los-platos",
       "label": "Los Platos",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 817,
       "name": "mesagoza",
       "label": "Mesagoza",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 818,
       "name": "cortondo",
       "label": "Cortondo",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 819,
       "name": "alfornada",
       "label": "Alfornada",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 820,
       "name": "pokemon-league",
       "label": "Pokémon League",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 821,
       "name": "artazon",
       "label": "Artazon",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 822,
       "name": "levincia",
       "label": "Levincia",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 823,
       "name": "zapapico",
       "label": "Zapapico",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 824,
       "name": "cascarrafa",
       "label": "Cascarrafa",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 825,
       "name": "porto-marinada",
       "label": "Porto Marinada",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 826,
       "name": "medali",
       "label": "Medali",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 827,
       "name": "montenevera",
       "label": "Montenevera",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 828,
       "name": "paldea-south-province-area-one",
       "label": "South Province (Area One)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 829,
       "name": "paldea-south-province-area-two",
       "label": "South Province (Area Two)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 830,
       "name": "paldea-south-province-area-three",
       "label": "South Province (Area Three)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 831,
       "name": "paldea-south-province-area-four",
       "label": "South Province (Area Four)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 832,
       "name": "paldea-south-province-area-five",
       "label": "South Province (Area Five)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 833,
       "name": "paldea-south-province-area-six",
       "label": "South Province (Area Six)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 834,
       "name": "south-paldean-sea",
       "label": "South Paldean Sea",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 835,
       "name": "poco-path",
       "label": "Poco Path",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 836,
       "name": "inlet-grotto",
       "label": "Inlet Grotto",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 837,
       "name": "naranja-academy",
       "label": "Naranja Academy",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 838,
       "name": "alfornada-cavern",
       "label": "Alfornada Cavern",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 839,
       "name": "grasswither-shrine",
       "label": "Grasswither Shrine",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 840,
       "name": "paldea-east-province-area-one",
       "label": "East Province (Area One)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 841,
       "name": "paldea-east-province-area-two",
       "label": "East Province (Area Two)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 842,
       "name": "paldea-east-province-area-three",
       "label": "East Province (Area Three)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 843,
       "name": "east-paldean-sea",
       "label": "East Paldean Sea",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 844,
       "name": "tagtree-thicket",
       "label": "Tagtree Thicket",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 845,
       "name": "schedar-squads-base",
       "label": "Schedar Squad's Base",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 846,
       "name": "navi-squads-base",
       "label": "Navi Squad's Base",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 847,
       "name": "paldea-west-province-area-one",
       "label": "West Province (Area One)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 848,
       "name": "paldea-west-province-area-two",
       "label": "West Province (Area Two)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 849,
       "name": "paldea-west-province-area-three",
       "label": "West Province (Area Three)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 850,
       "name": "asado-desert",
       "label": "Asado Desert",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 851,
       "name": "west-paldean-sea",
       "label": "West Paldean Sea",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 852,
       "name": "segin-squads-base",
       "label": "Segin Squad's Base",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 853,
       "name": "icerend-shrine",
       "label": "Icerend Shrine",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 854,
       "name": "paldea-north-province-area-one",
       "label": "North Province (Area One)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 855,
       "name": "paldea-north-province-area-two",
       "label": "North Province (Area Two)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 856,
       "name": "paldea-north-province-area-three",
       "label": "North Province (Area Three)",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 857,
       "name": "casseroya-lake",
       "label": "Casseroya Lake",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 858,
       "name": "dalizapa-passage",
       "label": "Dalizapa Passage",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 859,
       "name": "glaseado-mountain",
       "label": "Glaseado Mountain",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 860,
       "name": "socarrat-trail",
       "label": "Socarrat Trail",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 861,
       "name": "groundblight-shrine",
       "label": "Groundblight Shrine",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 862,
       "name": "firescourge-shrine",
       "label": "Firescourge Shrine",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 863,
       "name": "north-paldean-sea",
       "label": "North Paldean Sea",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 864,
       "name": "ruchbah-squads-base",
       "label": "Ruchbah Squad's Base",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 865,
       "name": "caph-squads-base",
       "label": "Caph Squad's Base",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 866,
       "name": "area-zero",
       "label": "Area Zero",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 867,
       "name": "zero-lab",
       "label": "Zero Lab",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 868,
       "name": "galar-route-1",
       "label": "Route 1",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 869,
       "name": "galar-route-2",
       "label": "Route 2",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 870,
       "name": "galar-route-3",
       "label": "Route 3",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 871,
       "name": "galar-route-4",
       "label": "Route 4",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 872,
       "name": "galar-route-5",
       "label": "Route 5",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 873,
       "name": "galar-route-6",
       "label": "Route 6",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 874,
       "name": "galar-route-7",
       "label": "Route 7",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 875,
       "name": "galar-route-8",
       "label": "Route 8",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 876,
       "name": "galar-route-9",
       "label": "Route 9",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 877,
       "name": "galar-route-10",
       "label": "Route 10",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 878,
       "name": "axews-eye",
       "label": "Axew's Eye",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 879,
       "name": "ballimere-lake",
       "label": "Ballimere Lake",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 880,
       "name": "ballonlea",
       "label": "Ballonlea",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 881,
       "name": "galar-battle-tower",
       "label": "Battle Tower",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 882,
       "name": "brawlers-cave",
       "label": "Brawlers' Cave",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 883,
       "name": "bridge-field",
       "label": "Bridge Field",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 884,
       "name": "challenge-beach",
       "label": "Challenge Beach",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 885,
       "name": "challenge-road",
       "label": "Challenge Road",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 886,
       "name": "circhester",
       "label": "Circhester",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 887,
       "name": "courageous-cavern",
       "label": "Courageous Cavern",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 888,
       "name": "crown-shrine",
       "label": "Crown Shrine",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 889,
       "name": "dappled-grove",
       "label": "Dappled Grove",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 890,
       "name": "dusty-bowl",
       "label": "Dusty Bowl",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 891,
       "name": "dyna-tree-hill",
       "label": "Dyna Tree Hill",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 892,
       "name": "east-lake-axewell",
       "label": "East Lake Axewell",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 893,
       "name": "fields-of-honor",
       "label": "Fields of Honor",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 894,
       "name": "forest-of-focus",
       "label": "Forest of Focus",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 895,
       "name": "freezington",
       "label": "Freezington",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 896,
       "name": "frigid-sea",
       "label": "Frigid Sea",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 897,
       "name": "frostpoint-field",
       "label": "Frostpoint Field",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 898,
       "name": "galar-mine",
       "label": "Galar Mine",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 899,
       "name": "galar-mine-no-2",
       "label": "Galar Mine No. 2",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 900,
       "name": "giants-bed",
       "label": "Giant's Bed",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 901,
       "name": "giants-foot",
       "label": "Giant's Foot",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 902,
       "name": "giants-mirror",
       "label": "Giant's Mirror",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 903,
       "name": "giants-seat",
       "label": "Giant's Seat",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 904,
       "name": "glimwood-tangle",
       "label": "Glimwood Tangle",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 905,
       "name": "hammerlocke",
       "label": "Hammerlocke",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 906,
       "name": "hammerlocke-hills",
       "label": "Hammerlocke Hills",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 907,
       "name": "honeycalm-island",
       "label": "Honeycalm Island",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 908,
       "name": "honeycalm-sea",
       "label": "Honeycalm Sea",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 909,
       "name": "hulbury",
       "label": "Hulbury",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 910,
       "name": "galar-iceberg-ruins",
       "label": "Iceberg Ruins",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 911,
       "name": "insular-sea",
       "label": "Insular Sea",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 912,
       "name": "galar-iron-ruins",
       "label": "Iron Ruins",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 913,
       "name": "lake-of-outrage",
       "label": "Lake of Outrage",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 914,
       "name": "lakeside-cave",
       "label": "Lakeside Cave",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 915,
       "name": "loop-lagoon",
       "label": "Loop Lagoon",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 916,
       "name": "master-dojo",
       "label": "Master Dojo",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 917,
       "name": "max-lair",
       "label": "Max Lair",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 918,
       "name": "motostoke",
       "label": "Motostoke",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 919,
       "name": "motostoke-outskirts",
       "label": "Motostoke Outskirts",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 920,
       "name": "motostoke-riverbank",
       "label": "Motostoke Riverbank",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 921,
       "name": "north-lake-miloch",
       "label": "North Lake Miloch",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 922,
       "name": "old-cemetery",
       "label": "Old Cemetery",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 923,
       "name": "path-to-the-peak",
       "label": "Path to the Peak",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 924,
       "name": "postwick",
       "label": "Postwick",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 925,
       "name": "potbottom-desert",
       "label": "Potbottom Desert",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 926,
       "name": "roaring-sea-caves",
       "label": "Roaring-Sea Caves",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 927,
       "name": "galar-rock-peak-ruins",
       "label": "Rock Peak Ruins",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 928,
       "name": "rolling-fields",
       "label": "Rolling Fields",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 929,
       "name": "slippery-slope",
       "label": "Slippery Slope",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 930,
       "name": "slumbering-weald",
       "label": "Slumbering Weald",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 931,
       "name": "snowslide-slope",
       "label": "Snowslide Slope",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 932,
       "name": "soothing-wetlands",
       "label": "Soothing Wetlands",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 933,
       "name": "south-lake-miloch",
       "label": "South Lake Miloch",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 934,
       "name": "spikemuth",
       "label": "Spikemuth",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 935,
       "name": "split-decision-ruins",
       "label": "Split-Decision Ruins",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 936,
       "name": "steamdrift-way",
       "label": "Route 8",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 937,
       "name": "stepping-stone-sea",
       "label": "Stepping-Stone Sea",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 938,
       "name": "stony-wilderness",
       "label": "Stony Wilderness",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 939,
       "name": "stow-on-side",
       "label": "Stow-on-Side",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 940,
       "name": "three-point-pass",
       "label": "Three-Point Pass",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 941,
       "name": "tower-of-darkness",
       "label": "Tower of Darkness",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 942,
       "name": "tower-of-waters",
       "label": "Tower of Waters",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 943,
       "name": "training-lowlands",
       "label": "Training Lowlands",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 944,
       "name": "tunnel-to-the-top",
       "label": "Tunnel to the Top",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 945,
       "name": "turffield",
       "label": "Turffield",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 946,
       "name": "warm-up-tunnel",
       "label": "Warm-Up Tunnel",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 947,
       "name": "watchtower-ruins",
       "label": "Watchtower Ruins",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 948,
       "name": "wedgehurst",
       "label": "Wedgehurst",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 949,
       "name": "west-lake-axewell",
       "label": "West Lake Axewell",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 950,
       "name": "workout-sea",
       "label": "Workout Sea",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 951,
       "name": "wyndon",
       "label": "Wyndon",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1041,
       "name": "giants-cap",
       "label": "Giant's Cap",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1042,
       "name": "hauoli-city",
       "label": "Hau'oli City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1043,
       "name": "verdant-cavern",
       "label": "Verdant Cavern",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1044,
       "name": "thrifty-megamart",
       "label": "Royal Avenue",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1045,
       "name": "malie-city",
       "label": "Malie City",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1046,
       "name": "dividing-peak-tunnel",
       "label": "Dividing Peak Tunnel",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1047,
       "name": "heahea-beach",
       "label": "Heahea Beach",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1048,
       "name": "sandy-cave",
       "label": "Sandy Cave",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1049,
       "name": "ulaula-beach",
       "label": "Ula'ula Beach",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1050,
       "name": "ultra-megalopolis",
       "label": "Ultra Megalopolis",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1051,
       "name": "ultra-space-wilds",
       "label": "Ultra Space Wilds",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1052,
       "name": "poke-pelago",
       "label": "Poké Pelago",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1053,
       "name": "team-rockets-castle",
       "label": "Team Rocket's Castle",
       "generations": ["VII"],
       "region": "alola"
     },
     {
-      "id": 1054,
       "name": "roaming-unova",
       "label": "Unova (Roaming)",
       "generations": ["V"],
       "region": "unova"
     },
     {
-      "id": 1055,
       "name": "mossdeep-space-center",
       "label": "Mossdeep Space Center",
       "generations": ["III"],
       "region": "hoenn"
     },
     {
-      "id": 1056,
       "name": "roaming-kalos",
       "label": "Kalos (Roaming)",
       "generations": ["VI"],
       "region": "kalos"
     },
     {
-      "id": 1057,
       "name": "uva-academy",
       "label": "Uva Academy",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1058,
       "name": "apple-hills",
       "label": "Apple Hills",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1059,
       "name": "chilling-waterhead",
       "label": "Chilling Waterhead",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1060,
       "name": "crystal-pool",
       "label": "Crystal Pool",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1061,
       "name": "dreaded-den",
       "label": "Dreaded Den",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1062,
       "name": "fellhorn-gorge",
       "label": "Fellhorn Gorge",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1063,
       "name": "infernal-pass",
       "label": "Infernal Pass",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1064,
       "name": "kitakami-hall",
       "label": "Kitakami Hall",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1065,
       "name": "kitakami-road",
       "label": "Kitakami Road",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1066,
       "name": "kitakami-wilds",
       "label": "Kitakami Wilds",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1067,
       "name": "loyalty-plaza",
       "label": "Loyalty Plaza",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1068,
       "name": "mossfell-confluence",
       "label": "Mossfell Confluence",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1069,
       "name": "mossui-town",
       "label": "Mossui Town",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1070,
       "name": "oni-mountain",
       "label": "Oni Mountain",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1071,
       "name": "onis-maw",
       "label": "Oni's Maw",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1072,
       "name": "paradise-barrens",
       "label": "Paradise Barrens",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1073,
       "name": "revelers-road",
       "label": "Reveler's Road",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1074,
       "name": "timeless-woods",
       "label": "Timeless Woods",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1075,
       "name": "wistful-fields",
       "label": "Wistful Fields",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1076,
       "name": "canyon-biome",
       "label": "Canyon Biome",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1077,
       "name": "canyon-plaza",
       "label": "Canyon Plaza",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1078,
       "name": "central-plaza",
       "label": "Central Plaza",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1079,
       "name": "chargestone-cavern",
       "label": "Chargestone Cavern",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1080,
       "name": "coastal-biome",
       "label": "Coastal Biome",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1081,
       "name": "coastal-plaza",
       "label": "Coastal Plaza",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1082,
       "name": "league-club-room",
       "label": "League Club Room",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1083,
       "name": "polar-biome",
       "label": "Polar Biome",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1084,
       "name": "polar-plaza",
       "label": "Polar Plaza",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1085,
       "name": "savanna-biome",
       "label": "Savanna Biome",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1086,
       "name": "savanna-plaza",
       "label": "Savanna Plaza",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1087,
       "name": "torchlit-labyrinth",
       "label": "Torchlit Labyrinth",
       "generations": ["IX"],
       "region": "paldea"
     },
     {
-      "id": 1113,
       "name": "kanto-underground-path",
       "label": "Kanto Underground Path",
       "generations": ["I"],
       "region": "kanto"
     },
     {
-      "id": 1114,
       "name": "energy-plant",
       "label": "Energy Plant",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1115,
       "name": "meetup-spot",
       "label": "Meetup Spot",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1116,
       "name": "isle-of-armor-caves",
       "label": "Random caves across the Isle of Armor",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1117,
       "name": "roaming-galar-wild-area",
       "label": "Roaming Galar Wild Areas",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1118,
       "name": "roaming-isle-of-armor",
       "label": "Roaming the Isle of Armor",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1119,
       "name": "roaming-crown-tundra",
       "label": "Roaming the Crown Tundra",
       "generations": ["VIII"],
       "region": "galar"
     },
     {
-      "id": 1120,
       "name": "galar-wild-area-max-dens",
       "label": "Max Dens in the Galar Wild Area",
       "generations": ["VIII"],

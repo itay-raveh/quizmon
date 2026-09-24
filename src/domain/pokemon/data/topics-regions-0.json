@@ -2,14 +2,14 @@
   "contentVersion": 1,
   "key": "regions",
   "values": [
-    { "id": 1, "name": "kanto", "label": "Kanto", "generations": ["I"] },
-    { "id": 2, "name": "johto", "label": "Johto", "generations": ["II"] },
-    { "id": 3, "name": "hoenn", "label": "Hoenn", "generations": ["III"] },
-    { "id": 4, "name": "sinnoh", "label": "Sinnoh", "generations": ["IV"] },
-    { "id": 5, "name": "unova", "label": "Unova", "generations": ["V"] },
-    { "id": 6, "name": "kalos", "label": "Kalos", "generations": ["VI"] },
-    { "id": 7, "name": "alola", "label": "Alola", "generations": ["VII"] },
-    { "id": 8, "name": "galar", "label": "Galar", "generations": ["VIII"] },
-    { "id": 10, "name": "paldea", "label": "Paldea", "generations": ["IX"] }
+    { "name": "kanto", "label": "Kanto", "generations": ["I"] },
+    { "name": "johto", "label": "Johto", "generations": ["II"] },
+    { "name": "hoenn", "label": "Hoenn", "generations": ["III"] },
+    { "name": "sinnoh", "label": "Sinnoh", "generations": ["IV"] },
+    { "name": "unova", "label": "Unova", "generations": ["V"] },
+    { "name": "kalos", "label": "Kalos", "generations": ["VI"] },
+    { "name": "alola", "label": "Alola", "generations": ["VII"] },
+    { "name": "galar", "label": "Galar", "generations": ["VIII"] },
+    { "name": "paldea", "label": "Paldea", "generations": ["IX"] }
   ]
 }

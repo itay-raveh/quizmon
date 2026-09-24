@@ -3,7 +3,6 @@
   "key": "berries",
   "values": [
     {
-      "id": 1,
       "name": "cheri",
       "label": "Cheri",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -12,7 +11,6 @@
       "giftType": "fire"
     },
     {
-      "id": 2,
       "name": "chesto",
       "label": "Chesto",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -21,7 +19,6 @@
       "giftType": "water"
     },
     {
-      "id": 3,
       "name": "pecha",
       "label": "Pecha",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -30,7 +27,6 @@
       "giftType": "electric"
     },
     {
-      "id": 4,
       "name": "rawst",
       "label": "Rawst",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -39,7 +35,6 @@
       "giftType": "grass"
     },
     {
-      "id": 5,
       "name": "aspear",
       "label": "Aspear",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -48,7 +43,6 @@
       "giftType": "ice"
     },
     {
-      "id": 6,
       "name": "leppa",
       "label": "Leppa",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -63,7 +57,6 @@
       "giftType": "fighting"
     },
     {
-      "id": 7,
       "name": "oran",
       "label": "Oran",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -78,7 +71,6 @@
       "giftType": "poison"
     },
     {
-      "id": 8,
       "name": "persim",
       "label": "Persim",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -93,7 +85,6 @@
       "giftType": "ground"
     },
     {
-      "id": 9,
       "name": "lum",
       "label": "Lum",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -108,7 +99,6 @@
       "giftType": "flying"
     },
     {
-      "id": 10,
       "name": "sitrus",
       "label": "Sitrus",
       "generations": ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -123,7 +113,6 @@
       "giftType": "psychic"
     },
     {
-      "id": 11,
       "name": "figy",
       "label": "Figy",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -132,7 +121,6 @@
       "giftType": "bug"
     },
     {
-      "id": 12,
       "name": "wiki",
       "label": "Wiki",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -141,7 +129,6 @@
       "giftType": "rock"
     },
     {
-      "id": 13,
       "name": "mago",
       "label": "Mago",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -150,7 +137,6 @@
       "giftType": "ghost"
     },
     {
-      "id": 14,
       "name": "aguav",
       "label": "Aguav",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -159,7 +145,6 @@
       "giftType": "dragon"
     },
     {
-      "id": 15,
       "name": "iapapa",
       "label": "Iapapa",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -168,7 +153,6 @@
       "giftType": "dark"
     },
     {
-      "id": 16,
       "name": "razz",
       "label": "Razz",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -177,7 +161,6 @@
       "giftType": "steel"
     },
     {
-      "id": 17,
       "name": "bluk",
       "label": "Bluk",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -186,7 +169,6 @@
       "giftType": "fire"
     },
     {
-      "id": 18,
       "name": "nanab",
       "label": "Nanab",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -195,7 +177,6 @@
       "giftType": "water"
     },
     {
-      "id": 19,
       "name": "wepear",
       "label": "Wepear",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -204,7 +185,6 @@
       "giftType": "electric"
     },
     {
-      "id": 20,
       "name": "pinap",
       "label": "Pinap",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -213,7 +193,6 @@
       "giftType": "grass"
     },
     {
-      "id": 21,
       "name": "pomeg",
       "label": "Pomeg",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -228,7 +207,6 @@
       "giftType": "ice"
     },
     {
-      "id": 22,
       "name": "kelpsy",
       "label": "Kelpsy",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -243,7 +221,6 @@
       "giftType": "fighting"
     },
     {
-      "id": 23,
       "name": "qualot",
       "label": "Qualot",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -258,7 +235,6 @@
       "giftType": "poison"
     },
     {
-      "id": 24,
       "name": "hondew",
       "label": "Hondew",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -273,7 +249,6 @@
       "giftType": "ground"
     },
     {
-      "id": 25,
       "name": "grepa",
       "label": "Grepa",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -288,7 +263,6 @@
       "giftType": "flying"
     },
     {
-      "id": 26,
       "name": "tamato",
       "label": "Tamato",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -297,7 +271,6 @@
       "giftType": "psychic"
     },
     {
-      "id": 27,
       "name": "cornn",
       "label": "Cornn",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -306,7 +279,6 @@
       "giftType": "bug"
     },
     {
-      "id": 28,
       "name": "magost",
       "label": "Magost",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -315,7 +287,6 @@
       "giftType": "rock"
     },
     {
-      "id": 29,
       "name": "rabuta",
       "label": "Rabuta",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -324,7 +295,6 @@
       "giftType": "ghost"
     },
     {
-      "id": 30,
       "name": "nomel",
       "label": "Nomel",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -333,7 +303,6 @@
       "giftType": "dragon"
     },
     {
-      "id": 31,
       "name": "spelon",
       "label": "Spelon",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -342,7 +311,6 @@
       "giftType": "dark"
     },
     {
-      "id": 32,
       "name": "pamtre",
       "label": "Pamtre",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -351,7 +319,6 @@
       "giftType": "steel"
     },
     {
-      "id": 33,
       "name": "watmel",
       "label": "Watmel",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -360,7 +327,6 @@
       "giftType": "fire"
     },
     {
-      "id": 34,
       "name": "durin",
       "label": "Durin",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -369,7 +335,6 @@
       "giftType": "water"
     },
     {
-      "id": 35,
       "name": "belue",
       "label": "Belue",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -378,7 +343,6 @@
       "giftType": "electric"
     },
     {
-      "id": 36,
       "name": "occa",
       "label": "Occa",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -387,7 +351,6 @@
       "giftType": "fire"
     },
     {
-      "id": 37,
       "name": "passho",
       "label": "Passho",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -396,7 +359,6 @@
       "giftType": "water"
     },
     {
-      "id": 38,
       "name": "wacan",
       "label": "Wacan",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -405,7 +367,6 @@
       "giftType": "electric"
     },
     {
-      "id": 39,
       "name": "rindo",
       "label": "Rindo",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -414,7 +375,6 @@
       "giftType": "grass"
     },
     {
-      "id": 40,
       "name": "yache",
       "label": "Yache",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -423,7 +383,6 @@
       "giftType": "ice"
     },
     {
-      "id": 41,
       "name": "chople",
       "label": "Chople",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -432,7 +391,6 @@
       "giftType": "fighting"
     },
     {
-      "id": 42,
       "name": "kebia",
       "label": "Kebia",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -441,7 +399,6 @@
       "giftType": "poison"
     },
     {
-      "id": 43,
       "name": "shuca",
       "label": "Shuca",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -450,7 +407,6 @@
       "giftType": "ground"
     },
     {
-      "id": 44,
       "name": "coba",
       "label": "Coba",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -459,7 +415,6 @@
       "giftType": "flying"
     },
     {
-      "id": 45,
       "name": "payapa",
       "label": "Payapa",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -468,7 +423,6 @@
       "giftType": "psychic"
     },
     {
-      "id": 46,
       "name": "tanga",
       "label": "Tanga",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -477,7 +431,6 @@
       "giftType": "bug"
     },
     {
-      "id": 47,
       "name": "charti",
       "label": "Charti",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -486,7 +439,6 @@
       "giftType": "rock"
     },
     {
-      "id": 48,
       "name": "kasib",
       "label": "Kasib",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -495,7 +447,6 @@
       "giftType": "ghost"
     },
     {
-      "id": 49,
       "name": "haban",
       "label": "Haban",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -504,7 +455,6 @@
       "giftType": "dragon"
     },
     {
-      "id": 50,
       "name": "colbur",
       "label": "Colbur",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -513,7 +463,6 @@
       "giftType": "dark"
     },
     {
-      "id": 51,
       "name": "babiri",
       "label": "Babiri",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -522,7 +471,6 @@
       "giftType": "steel"
     },
     {
-      "id": 52,
       "name": "chilan",
       "label": "Chilan",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -531,7 +479,6 @@
       "giftType": "normal"
     },
     {
-      "id": 53,
       "name": "liechi",
       "label": "Liechi",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -546,7 +493,6 @@
       "giftType": "grass"
     },
     {
-      "id": 54,
       "name": "ganlon",
       "label": "Ganlon",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -561,7 +507,6 @@
       "giftType": "ice"
     },
     {
-      "id": 55,
       "name": "salac",
       "label": "Salac",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -576,7 +521,6 @@
       "giftType": "fighting"
     },
     {
-      "id": 56,
       "name": "petaya",
       "label": "Petaya",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -591,7 +535,6 @@
       "giftType": "poison"
     },
     {
-      "id": 57,
       "name": "apicot",
       "label": "Apicot",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -606,7 +549,6 @@
       "giftType": "ground"
     },
     {
-      "id": 58,
       "name": "lansat",
       "label": "Lansat",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -621,7 +563,6 @@
       "giftType": "flying"
     },
     {
-      "id": 59,
       "name": "starf",
       "label": "Starf",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -636,7 +577,6 @@
       "giftType": "psychic"
     },
     {
-      "id": 60,
       "name": "enigma",
       "label": "Enigma",
       "generations": ["III", "IV", "V", "VI", "VII", "VIII", "IX"],
@@ -645,7 +585,6 @@
       "giftType": "bug"
     },
     {
-      "id": 61,
       "name": "micle",
       "label": "Micle",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -654,7 +593,6 @@
       "giftType": "rock"
     },
     {
-      "id": 62,
       "name": "custap",
       "label": "Custap",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -663,7 +601,6 @@
       "giftType": "ghost"
     },
     {
-      "id": 63,
       "name": "jaboca",
       "label": "Jaboca",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -672,7 +609,6 @@
       "giftType": "dragon"
     },
     {
-      "id": 64,
       "name": "rowap",
       "label": "Rowap",
       "generations": ["IV", "V", "VI", "VII", "VIII", "IX"],
@@ -681,7 +617,6 @@
       "giftType": "dark"
     },
     {
-      "id": 65,
       "name": "kee",
       "label": "Kee",
       "generations": ["VI", "VII", "VIII", "IX"],
@@ -690,7 +625,6 @@
       "giftType": "fairy"
     },
     {
-      "id": 66,
       "name": "maranga",
       "label": "Maranga",
       "generations": ["VI", "VII", "VIII", "IX"],
@@ -699,7 +633,6 @@
       "giftType": "dark"
     },
     {
-      "id": 67,
       "name": "hopo",
       "label": "Hopo",
       "generations": [],
@@ -708,7 +641,6 @@
       "giftType": ""
     },
     {
-      "id": 68,
       "name": "roseli",
       "label": "Roseli",
       "generations": ["VI", "VII", "VIII", "IX"],
