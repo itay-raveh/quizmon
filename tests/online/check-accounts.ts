@@ -33,7 +33,12 @@ try {
   const epoch = binding.serverEpoch as string;
   assert.equal(binding.id, first.id);
   const datasetId = crypto.randomUUID();
-  const link = (cookie: string, owner: string, dataset: string) =>
+  const link = (
+    cookie: string,
+    owner: string,
+    dataset: string,
+    profileCreatedAt?: unknown,
+  ) =>
     request(
       '/api/account/link',
       { cookie },
@@ -42,9 +47,21 @@ try {
         serverEpoch: epoch,
         datasetId: dataset,
         merge: true,
+        ...(profileCreatedAt === undefined ? {} : { profileCreatedAt }),
       },
     );
   assert.equal((await link(first.cookie, first.id, datasetId)).status, 200);
+  assert.equal(
+    (await link(first.cookie, first.id, crypto.randomUUID(), '2026-09-01'))
+      .status,
+    200,
+  );
+  assert.deepEqual(
+    await json(
+      await link(first.cookie, first.id, crypto.randomUUID(), 'bad-date'),
+    ),
+    { error: 'invalid_link' },
+  );
   assert.equal(
     (await request('/api/account/export', { cookie: first.cookie })).status,
     200,

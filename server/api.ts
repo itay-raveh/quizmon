@@ -242,7 +242,12 @@ export function createAccountApi(services: AccountServices) {
     });
   signedIn.post('/account/link', async (context) => {
     const body = context.get('body');
-    if (!uuid(body.datasetId) || typeof body.merge !== 'boolean')
+    if (
+      !uuid(body.datasetId) ||
+      typeof body.merge !== 'boolean' ||
+      (body.profileCreatedAt !== undefined &&
+        !isDailyDate(body.profileCreatedAt))
+    )
       return context.json({ error: 'invalid_link' }, 400);
     return context.json(
       await linkDataset(
@@ -251,7 +256,7 @@ export function createAccountApi(services: AccountServices) {
         body.datasetId,
         context.get('state').epoch,
         body.merge,
-        isDailyDate(body.profileCreatedAt) ? body.profileCreatedAt : undefined,
+        body.profileCreatedAt,
       ),
     );
   });
