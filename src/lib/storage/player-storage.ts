@@ -182,6 +182,23 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
             await writeState(transaction, current);
           return;
         }
+        for (const table of [
+          'local_state',
+          'local_actions',
+          'local_completions',
+          'local_rounds',
+          'local_closed_rounds',
+          ...(accountId ? ['pending_actions', 'player', 'round'] : []),
+        ]) {
+          const [row] = await transaction.getAll<{ id: string }>(
+            `SELECT id FROM ${table} LIMIT 1`,
+          );
+          if (row)
+            throw new SaveError(
+              'invalid',
+              'The browser save is incomplete. Download a recovery copy before continuing.',
+            );
+        }
         await writeState(transaction, {
           version: 2,
           datasetId: crypto.randomUUID(),

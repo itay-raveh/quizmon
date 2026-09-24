@@ -38,3 +38,54 @@ it.each([17, [], { broken: {} }])(
     expect(row.payload).toBe(originalPayload);
   },
 );
+
+it.each([
+  { table: null, accountId: undefined },
+  { table: 'local_completions', accountId: undefined },
+  { table: 'round', accountId: 'account-1' },
+])(
+  'initializes only without surviving $table rows',
+  async ({ table, accountId }) => {
+    vi.resetModules();
+    const { initializePlayerStorage, readPlayerSave } =
+      await import('./player-storage');
+    const rows = new Map<string, { id: string; payload: string }[]>([
+      ['local_state', []],
+    ]);
+    if (table) rows.set(table, [{ id: 'survivor', payload: 'untouched' }]);
+    const db = {
+      init: vi.fn(),
+      getAll: vi.fn((query: string) => {
+        const name = /FROM (\w+)/.exec(query)?.[1] ?? '';
+        const found = rows.get(name) ?? [];
+        return Promise.resolve(
+          query.includes("WHERE id = 'player'")
+            ? found.filter((row) => row.id === 'player')
+            : found,
+        );
+      }),
+      execute: vi.fn((_query: string, values: string[]) => {
+        rows.set('local_state', [{ id: 'player', payload: values[0]! }]);
+        return Promise.resolve();
+      }),
+      writeTransaction: vi.fn(async (run: (tx: unknown) => Promise<void>) =>
+        run(db),
+      ),
+      onChange: vi.fn(),
+    };
+    openLocalDatabase.mockReturnValue(db);
+
+    if (table) {
+      await expect(initializePlayerStorage(accountId)).rejects.toThrow(
+        'The browser save is incomplete.',
+      );
+      expect(db.execute).not.toHaveBeenCalled();
+      expect(rows.get(table)).toEqual([
+        { id: 'survivor', payload: 'untouched' },
+      ]);
+    } else {
+      await initializePlayerStorage(accountId);
+      expect(readPlayerSave().data).toEqual(expect.any(Object));
+    }
+  },
+);
