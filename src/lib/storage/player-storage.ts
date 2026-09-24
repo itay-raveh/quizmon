@@ -392,7 +392,6 @@ export const updatePlayerData = async (
   }
 };
 
-export { PLAYER_STORAGE_KEY, retiredPlayerKeys } from './storage-keys';
 export const createPlayerSave = (): PlayerSave => ({
   data: emptyPlayerData(),
   restoreId: null,

@@ -20,8 +20,6 @@ import {
   removeLocalRound,
 } from './round-storage';
 import { reportSaveIssue } from './save-health';
-export const ACTIVE_GAME_KEY = 'quizmon.active-game.v1';
-export const DAILY_ATTEMPTS_KEY = 'quizmon.daily-attempts.v1';
 export const inspectRoundStorage = () => {
   const active = readLocalRound();
   if (active) parseActiveGameSave(active);

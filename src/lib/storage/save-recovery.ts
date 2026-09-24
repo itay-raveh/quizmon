@@ -5,16 +5,10 @@ import {
 } from '../../domain/player/player-save';
 import { removeStoredValue } from './browser-storage';
 import { parseUpdateSave } from '../../domain/player/update-save';
+import { inspectRoundStorage } from './active-game-storage';
 import {
-  ACTIVE_GAME_KEY,
-  DAILY_ATTEMPTS_KEY,
-  inspectRoundStorage,
-} from './active-game-storage';
-import {
-  PLAYER_STORAGE_KEY,
   createPlayerSave,
   readPlayerSave,
-  retiredPlayerKeys,
   recoveryDatabase,
   recoverPlayer,
   canRecoverGuestSave,
@@ -22,12 +16,7 @@ import {
 import { clearSaveIssue, reportSaveIssue } from './save-health';
 
 const recoveryKeys = {
-  localStorage: [
-    PLAYER_STORAGE_KEY,
-    ...Object.values(retiredPlayerKeys),
-    DAILY_ATTEMPTS_KEY,
-  ],
-  sessionStorage: [ACTIVE_GAME_KEY, 'quizmon.baseline.update-state'],
+  sessionStorage: ['quizmon.baseline.update-state'],
 } as const;
 
 export const inspectSavedData = (): void => {
@@ -73,11 +62,10 @@ export const createRecoveryExport = async () => ({
   ),
 });
 
-const clearRetiredAndRoundData = (): void => {
+const clearUpdateState = (): void => {
   for (const [storage, keys] of Object.entries(recoveryKeys))
     for (const key of keys)
-      if (key !== PLAYER_STORAGE_KEY)
-        removeStoredValue(storage as keyof typeof recoveryKeys, key);
+      removeStoredValue(storage as keyof typeof recoveryKeys, key);
 };
 
 export const resetSavedData = async (): Promise<void> => {
@@ -90,7 +78,6 @@ export const resetSavedData = async (): Promise<void> => {
       await transaction.execute(`DELETE FROM ${table}`);
     state.save = save;
   });
-  clearRetiredAndRoundData();
-  removeStoredValue('localStorage', PLAYER_STORAGE_KEY);
+  clearUpdateState();
   clearSaveIssue();
 };
