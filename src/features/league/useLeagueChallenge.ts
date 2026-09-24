@@ -42,5 +42,5 @@ export const useLeagueChallenge = ({
     }
   }, [catalog, settings, startGame]);
 
-  return { retry: start, start };
+  return { start };
 };

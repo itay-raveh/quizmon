@@ -116,7 +116,7 @@ export const App = () => {
     startGame,
   });
 
-  const { retry: retryLeague, start: startLeague } = useLeagueChallenge({
+  const { start: startLeague } = useLeagueChallenge({
     catalog,
     settings,
     startGame,
@@ -200,9 +200,6 @@ export const App = () => {
         settings={settings}
         league={{
           ...leagueDestination,
-          retry: async () => {
-            if (await retryLeague()) leagueDestination.close();
-          },
           start: async () => {
             if (await startLeague()) leagueDestination.close();
           },

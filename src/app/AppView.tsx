@@ -188,7 +188,9 @@ const AppScreen = ({
           league.close();
           void navigation.returnToLanding();
         }}
-        onStart={league.start}
+        onStart={() => {
+          void league.start();
+        }}
         onViewResults={
           leagueVictory ? () => league.setShowResults(true) : undefined
         }
@@ -285,7 +287,9 @@ const AppScreen = ({
       onNewGame={() => {
         void navigation.returnToLanding();
       }}
-      onRetryLeague={league.retry}
+      onRetryLeague={() => {
+        void league.start();
+      }}
       onTrainAgain={training.trainAgain}
       onStartTraining={training.start}
       onCustomizeTraining={settingsDialog.openTraining}
@@ -325,8 +329,12 @@ const AppOverlays = ({
     {training.generationPromptOpen ? (
       <GenerationPromptDialog
         onCancel={training.closeGenerationPrompt}
-        onChooseAll={training.chooseAllGenerations}
-        onChooseGenOne={training.chooseGenOne}
+        onChooseAll={() => {
+          void training.chooseAllGenerations();
+        }}
+        onChooseGenOne={() => {
+          void training.chooseGenOne();
+        }}
       />
     ) : null}
     {navigation.leaveConfirmationOpen ? (
