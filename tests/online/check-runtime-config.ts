@@ -94,6 +94,8 @@ async function stream(endpoint: string, token: string) {
 async function ownRows(
   value: Awaited<ReturnType<typeof actor>>,
   excluded: string,
+  ownRound: string,
+  excludedRound: string,
 ) {
   let response = await stream(value.sync.endpoint, value.token);
   for (let attempt = 0; response.status === 500 && attempt < 40; attempt++) {
@@ -132,6 +134,11 @@ async function ownRows(
   assert.ok(
     !text.includes(excluded),
     'The checkpoint must not contain another account.',
+  );
+  assert.ok(text.includes(ownRound), 'The checkpoint must contain its round.');
+  assert.ok(
+    !text.includes(excludedRound),
+    'The checkpoint must not contain another account round.',
   );
 }
 try {
@@ -191,6 +198,18 @@ try {
     assert.equal(owner.sync.endpoint, endpoint);
     actors.push(owner);
     const peer = await actor(base);
+    const rounds = [crypto.randomUUID(), crypto.randomUUID()];
+    const source = new Client({ connectionString: dbUrl(`source_${name}`) });
+    await source.connect();
+    try {
+      for (const [index, player] of [owner, peer].entries())
+        await source.query(
+          'INSERT INTO round (id, player_id, mode, completed_at, credited, data) VALUES ($1, $2, $3, now(), true, $4)',
+          [rounds[index], player.id, 'training', {}],
+        );
+    } finally {
+      await source.end();
+    }
     const config = {
       telemetry: { disable_telemetry_sharing: true },
       replication: {
@@ -277,9 +296,10 @@ try {
     });
     await readiness.arrayBuffer();
     assert.equal(readiness.status, 200);
-    await ownRows(owner, peer.id);
+    await ownRows(owner, peer.id, rounds[0]!, rounds[1]!);
+    await ownRows(peer, owner.id, rounds[1]!, rounds[0]!);
     console.log(
-      `Runtime environment ${name}: configured endpoint, five-minute token, and isolated replicated account rows passed.`,
+      `Runtime environment ${name}: configured endpoint, five-minute token, and isolated replicated player and round rows passed.`,
     );
   }
   for (const [source, destination] of [
