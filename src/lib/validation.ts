@@ -4,14 +4,8 @@ export const isObject = (value: unknown): value is Record<string, unknown> =>
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
   isObject(value) && !Array.isArray(value);
 
-const isFiniteNonnegative = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isFinite(value) && value >= 0;
-
-export const isNonnegativeInteger = (value: unknown): value is number =>
-  isFiniteNonnegative(value) && Number.isInteger(value);
-
 export const isSafeNonnegativeInteger = (value: unknown): value is number =>
-  isFiniteNonnegative(value) && Number.isSafeInteger(value);
+  typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 
 export const isChoice = <T extends string>(
   value: unknown,

@@ -1,16 +1,15 @@
 import { readStoredJson, writeStoredJson } from '@/lib/storage/browser-storage';
-import { isNonnegativeInteger, isObject } from '@/lib/validation';
+import { z } from 'zod';
 
 const PROMPT_KEY = 'quizmon.baseline.daily-reminder-prompt';
 const PROMPT_AGAIN_AFTER_DAILIES = 3;
+const promptHistorySchema = z.object({ completedDailyCount: z.int().min(0) });
 
 const readPromptHistory = (): number | null => {
-  const candidate = readStoredJson('localStorage', PROMPT_KEY);
-  if (!isObject(candidate)) return null;
-
-  return isNonnegativeInteger(candidate.completedDailyCount)
-    ? candidate.completedDailyCount
-    : null;
+  const parsed = promptHistorySchema.safeParse(
+    readStoredJson('localStorage', PROMPT_KEY),
+  );
+  return parsed.success ? parsed.data.completedDailyCount : null;
 };
 
 export const shouldOfferDailyReminder = (
