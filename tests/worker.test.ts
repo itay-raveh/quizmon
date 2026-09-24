@@ -9,6 +9,7 @@ const makeEnv = () => {
   return {
     env: {
       ASSETS: { fetch: vi.fn() },
+      API_RATE_LIMIT: { limit: vi.fn().mockResolvedValue({ success: true }) },
       DAILY_REMINDERS: {
         getByName: vi.fn(() => ({ fetch: reminderFetch })),
       },
@@ -196,6 +197,40 @@ describe('Daily reminders', () => {
     expect(sameOrigin.status).toBe(204);
     expect(crossOrigin.status).toBe(403);
     expect(reminderFetch).toHaveBeenCalledOnce();
+  });
+
+  it('stops repeated registrations before routing and fails closed when the limiter fails', async () => {
+    const { env, reminderFetch } = makeEnv();
+    const url =
+      'https://quizmon.raveh.dev/api/daily-reminders/3c29978c-0c0a-4c95-a19d-9d2cf5e36493';
+    const request = (method: 'PUT' | 'DELETE') =>
+      new Request(url, {
+        method,
+        headers: {
+          Origin: 'https://quizmon.raveh.dev',
+          'CF-Connecting-IP': '192.0.2.1',
+          'Content-Type': 'application/json',
+        },
+        ...(method === 'PUT'
+          ? { body: JSON.stringify({ version: 1, timeZone: 'UTC' }) }
+          : {}),
+      });
+    env.API_RATE_LIMIT.limit
+      .mockResolvedValueOnce({ success: true })
+      .mockResolvedValueOnce({ success: false })
+      .mockResolvedValueOnce({ success: true })
+      .mockRejectedValueOnce(new Error('limiter unavailable'));
+
+    expect((await worker.fetch(request('PUT'), env)).status).toBe(204);
+    const limited = await worker.fetch(request('PUT'), env);
+    expect(limited.status).toBe(429);
+    expect(limited.headers.get('Retry-After')).toBe('60');
+    expect((await worker.fetch(request('DELETE'), env)).status).toBe(204);
+    const unavailable = await worker.fetch(request('PUT'), env);
+    expect(unavailable.status).toBe(503);
+    expect(unavailable.headers.get('Cache-Control')).toBe('no-store');
+    expect(reminderFetch).toHaveBeenCalledTimes(2);
+    expect(env.DAILY_REMINDERS.getByName).toHaveBeenCalledTimes(2);
   });
 });
 

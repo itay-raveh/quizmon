@@ -234,7 +234,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
 
 export const handleDailyReminderRequest = async (
   request: Request,
-  env: DailyReminderEnv,
+  env: DailyReminderEnv & { API_RATE_LIMIT: RateLimit },
   url: URL,
 ): Promise<Response | null> => {
   const match = REMINDER_PATH.exec(url.pathname);
@@ -251,6 +251,18 @@ export const handleDailyReminderRequest = async (
 
   if (request.method === 'PUT' && !env.VAPID_PRIVATE_KEY) {
     return noStoreResponse('Reminders unavailable', 503);
+  }
+
+  try {
+    const result = await env.API_RATE_LIMIT.limit({
+      key: request.headers.get('CF-Connecting-IP') ?? 'local',
+    });
+    if (!result.success)
+      return noStoreResponse('Too many requests. Try again shortly.', 429, {
+        'Retry-After': '60',
+      });
+  } catch {
+    return noStoreResponse('Service temporarily unavailable.', 503);
   }
 
   return env.DAILY_REMINDERS.getByName(id).fetch(request);
