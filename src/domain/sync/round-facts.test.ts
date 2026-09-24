@@ -7,6 +7,7 @@ import {
   archiveCompletion,
   scoreRound,
   validateRoundFact,
+  validateRoundUpload,
 } from './round-facts.ts';
 
 describe('completed round facts', () => {
@@ -79,6 +80,27 @@ describe('completed round facts', () => {
     const round = archiveCompletion(completion(crypto.randomUUID()));
     Reflect.set(round.data.answers[0]!, 'category', ['knowledge']);
     expect(validateRoundFact(round)).toBe(false);
+  });
+
+  it('rejects malformed nested uploads without accepting credited from clients', () => {
+    const round = archiveCompletion(completion(crypto.randomUUID(), 'daily'));
+    const upload = structuredClone(round);
+    Reflect.deleteProperty(upload, 'credited');
+    expect(validateRoundUpload(upload)).toBe(true);
+    expect(validateRoundUpload(round)).toBe(false);
+
+    const malformed = structuredClone(upload);
+    Reflect.set(malformed.data.answers[0]!.question, 'prompt', {
+      kind: 'pokemon',
+      name: 'bulbasaur',
+      before: '',
+      after: '',
+      dex_number: 'invalid',
+    });
+    expect(validateRoundUpload(malformed)).toBe(false);
+    malformed.data.answers[0]!.question = upload.data.answers[0]!.question;
+    malformed.data.found = ['not-a-pokemon'];
+    expect(validateRoundUpload(malformed)).toBe(false);
   });
 
   it('rederives score from answers instead of saved totals', () => {
