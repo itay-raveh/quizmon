@@ -12,9 +12,9 @@ import {
   timerDisplays,
   trainingModes,
 } from '../settings/types.ts';
-import { isUuid } from '../../lib/validation.ts';
+import { uuidSchema } from '../../lib/validation.ts';
 
-const id = z.custom<string>(isUuid);
+const id = uuidSchema;
 const choiceArray = <T extends readonly string[]>(choices: T) =>
   z
     .array(z.enum(choices))

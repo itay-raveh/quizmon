@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { isAnswerSubject } from '../../quiz/subject.ts';
-import { isDailyDate, isUtcTimestamp } from '../../../lib/validation.ts';
+import {
+  dailyDateSchema,
+  utcTimestampSchema,
+} from '../../../lib/validation.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../../quiz/league.ts';
 import {
@@ -84,7 +87,7 @@ const savedResult = z
 const victoryRecord = z
   .object({
     id: name,
-    completedAt: z.custom<string>(isUtcTimestamp),
+    completedAt: utcTimestampSchema,
     trainerName: z.string().max(TRAINER_NAME_MAX_LENGTH),
     pokemon: z
       .array(name)
@@ -112,7 +115,7 @@ const results = z
     }),
     streak: z.object({
       creditedDates: z
-        .array(z.custom<string>(isDailyDate))
+        .array(dailyDateSchema)
         .transform((dates) => [...new Set(dates)].sort()),
     }),
     league: z.object({ completed: z.boolean(), seed: name.nullable() }),

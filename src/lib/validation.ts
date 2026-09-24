@@ -17,21 +17,16 @@ export const isNonemptyChoiceArray = (
   value.length > 0 &&
   value.every((entry) => isChoice(entry, choices));
 
-export const isUtcTimestamp = (value: unknown): value is string => {
-  if (
-    typeof value !== 'string' ||
-    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)
-  )
-    return false;
-  const parsed = new Date(value);
-  return Number.isFinite(parsed.valueOf()) && parsed.toISOString() === value;
-};
+export const utcTimestampSchema = z.iso.datetime({ precision: 3 });
+export const dailyDateSchema = z.iso.date();
+export const uuidSchema = z.uuidv4();
+
+export const isUtcTimestamp = (value: unknown): value is string =>
+  utcTimestampSchema.safeParse(value).success;
 
 export const isDailyDate = (value: unknown): value is string =>
-  typeof value === 'string' && isUtcTimestamp(`${value}T00:00:00.000Z`);
+  dailyDateSchema.safeParse(value).success;
 
 export const isUuid = (value: unknown): value is string =>
-  typeof value === 'string' &&
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value,
-  );
+  uuidSchema.safeParse(value).success;
+import { z } from 'zod';

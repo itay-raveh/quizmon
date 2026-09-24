@@ -22,7 +22,10 @@ import {
   timerDisplays,
   trainingModes,
 } from '../../settings/types.ts';
-import { isDailyDate, isUtcTimestamp } from '../../../lib/validation.ts';
+import {
+  dailyDateSchema,
+  utcTimestampSchema,
+} from '../../../lib/validation.ts';
 
 const nonnegativeInteger = z.int().min(0);
 const finiteNonnegative = z.number().nonnegative();
@@ -31,7 +34,7 @@ const mode = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('league') }),
   z.object({
     kind: z.literal('daily'),
-    date: z.custom<string>(isDailyDate),
+    date: dailyDateSchema,
     track: z.custom(isDailyTrack).optional(),
   }),
 ]);
@@ -63,8 +66,8 @@ const settings = z.looseObject({
 const round = z
   .object({
     version: z.literal(SAVE_SCHEMA_VERSION),
-    completedAt: z.custom<string>(isUtcTimestamp).optional(),
-    startedOn: z.custom<string>(isDailyDate).optional(),
+    completedAt: utcTimestampSchema.optional(),
+    startedOn: dailyDateSchema.optional(),
     scoreMultipliers: z.custom<ScoreMultipliers>(isScoreMultipliers).optional(),
     contentVersion: nonnegativeInteger,
     elapsedMilliseconds: finiteNonnegative,
