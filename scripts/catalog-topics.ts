@@ -14,7 +14,6 @@ import {
   type Location,
   type LocationArea,
   type NamedAPIResourceList,
-  type Nature,
   type Move,
   type MainClient,
   type Region,
@@ -25,7 +24,6 @@ import {
   generations,
   type Generation,
   type PokemonCatalog,
-  type StatName,
 } from '../src/domain/pokemon/types.ts';
 import type {
   TopicCatalog,
@@ -92,7 +90,6 @@ export const buildTopicCatalog = async (
   );
   const moves = await all<Move>('move');
   const abilities = await all<Ability>('ability');
-  const natures = await all<Nature>('nature');
   const berries = await all<Berry>('berry');
   const regions = await all<Region>('region');
   const locations = await all<Location>('location');
@@ -277,51 +274,24 @@ export const buildTopicCatalog = async (
           const group = groupsByName.get(entry.version_group.name);
           const gen = group && generation(group.generation.name);
           if (!group || !gen) return [];
-          const historical = move.past_values
-            .filter(
-              (value) =>
-                value.type &&
-                (groupsByName.get(value.version_group.name)?.order ?? -1) >=
-                  group.order,
-            )
-            .sort(
-              (a, b) =>
-                groupsByName.get(a.version_group.name)!.order -
-                groupsByName.get(b.version_group.name)!.order,
-            )[0];
-          const type = historical?.type?.name ?? move.type.name;
-          const damageClass =
-            move.name === 'water-shuriken' && gen === 'VI'
-              ? 'physical'
-              : (move.damage_class?.name ?? '');
           return group.versions.map((version) => ({
             game: version.name,
             generation: gen,
-            type,
-            damageClass,
+            type: '',
+            damageClass: '',
           }));
         });
       return {
         ...entity(move, [generation(move.generation.name)]),
         contexts,
-        type: move.type.name,
-        damageClass: move.damage_class?.name ?? '',
+        type: '',
+        damageClass: '',
       };
     }),
     abilities: abilities.map((ability) =>
       entity(ability, [generation(ability.generation.name)]),
     ),
-    natures: natures.flatMap((nature) =>
-      nature.increased_stat && nature.decreased_stat
-        ? [
-            {
-              ...entity(nature, ['III']),
-              raised: nature.increased_stat.name as StatName,
-              lowered: nature.decreased_stat.name as StatName,
-            },
-          ]
-        : [],
-    ),
+    natures: [],
     berries: berries.map((berry) => ({
       ...entity(
         berry,

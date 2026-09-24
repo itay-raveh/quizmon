@@ -34,6 +34,7 @@ export const buildMove: QuestionBuilder = (context) => {
     const contexts = target.contexts.filter(
       (entry) =>
         (context.generations ?? generations).includes(entry.generation) &&
+        Boolean(entry.type && entry.damageClass) &&
         (!purpose || generations.indexOf(entry.generation) >= 3),
     );
     for (const rules of ordered(context, contexts)) {
@@ -63,6 +64,8 @@ export const buildMove: QuestionBuilder = (context) => {
               move.contexts.some(
                 (entry) =>
                   entry.game === rules.game &&
+                  entry.type &&
+                  entry.damageClass &&
                   entry.damageClass !== rules.damageClass &&
                   (!context.variant?.sameMoveType || entry.type === rules.type),
               ),

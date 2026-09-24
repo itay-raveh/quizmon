@@ -1,5 +1,5 @@
 {
-  "contentVersion": 2,
+  "contentVersion": 3,
   "key": "moves",
   "values": [
     {
@@ -201,18 +201,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "karate-chop",
@@ -222,13 +211,13 @@
         {
           "game": "gold",
           "generation": "II",
-          "type": "normal",
+          "type": "fighting",
           "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
-          "type": "normal",
+          "type": "fighting",
           "damageClass": "physical"
         },
         {
@@ -989,18 +978,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "pay-day",
@@ -1223,49 +1201,49 @@
           "game": "gold",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -1435,49 +1413,49 @@
           "game": "gold",
           "generation": "II",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -1647,49 +1625,49 @@
           "game": "gold",
           "generation": "II",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -2049,18 +2027,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "vice-grip",
@@ -2261,18 +2228,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "guillotine",
@@ -2495,49 +2451,49 @@
           "game": "gold",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -3071,17 +3027,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "gust",
@@ -3091,50 +3037,50 @@
         {
           "game": "gold",
           "generation": "II",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "flying",
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "flying",
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -3493,18 +3439,7 @@
         }
       ],
       "type": "flying",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "whirlwind",
@@ -4340,18 +4275,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "vine-whip",
@@ -4362,49 +4286,49 @@
           "game": "gold",
           "generation": "II",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -4552,18 +4476,7 @@
         }
       ],
       "type": "grass",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "stomp",
@@ -5188,18 +5101,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "jump-kick",
@@ -5593,13 +5495,13 @@
         {
           "game": "gold",
           "generation": "II",
-          "type": "normal",
+          "type": "ground",
           "damageClass": "status"
         },
         {
           "game": "silver",
           "generation": "II",
-          "type": "normal",
+          "type": "ground",
           "damageClass": "status"
         },
         {
@@ -6208,18 +6110,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "fury-attack",
@@ -6844,18 +6735,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "body-slam",
@@ -8945,50 +8825,50 @@
         {
           "game": "gold",
           "generation": "II",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "dark",
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "dark",
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -10005,49 +9885,49 @@
           "game": "gold",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -10409,49 +10289,49 @@
           "game": "gold",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -11447,18 +11327,7 @@
         }
       ],
       "type": "water",
-      "damageClass": "special",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "special"
     },
     {
       "name": "hydro-pump",
@@ -11659,18 +11528,7 @@
         }
       ],
       "type": "water",
-      "damageClass": "special",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "special"
     },
     {
       "name": "surf",
@@ -12951,49 +12809,49 @@
           "game": "gold",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -13353,18 +13211,7 @@
         }
       ],
       "type": "flying",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "drill-peck",
@@ -13565,18 +13412,7 @@
         }
       ],
       "type": "flying",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "submission",
@@ -14604,18 +14440,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "absorb",
@@ -15474,49 +15299,49 @@
           "game": "gold",
           "generation": "II",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -18400,18 +18225,7 @@
         }
       ],
       "type": "rock",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "earthquake",
@@ -20921,49 +20735,49 @@
           "game": "gold",
           "generation": "II",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -25272,16 +25086,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": {
-        "I": "No additional effect.",
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "lick",
@@ -25504,49 +25309,49 @@
           "game": "gold",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -25705,49 +25510,49 @@
           "game": "gold",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -26310,49 +26115,49 @@
           "game": "gold",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -26519,49 +26324,49 @@
           "game": "gold",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -26711,49 +26516,49 @@
           "game": "gold",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -31378,49 +31183,49 @@
           "game": "gold",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -33226,49 +33031,49 @@
           "game": "gold",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -34688,49 +34493,49 @@
           "game": "gold",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -35473,49 +35278,49 @@
           "game": "gold",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -35684,49 +35489,49 @@
           "game": "gold",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -35891,94 +35696,74 @@
       "label": "Curse",
       "generations": ["II"],
       "contexts": [
-        {
-          "game": "gold",
-          "generation": "II",
-          "type": "unknown",
-          "damageClass": "status"
-        },
-        {
-          "game": "silver",
-          "generation": "II",
-          "type": "unknown",
-          "damageClass": "status"
-        },
+        { "game": "gold", "generation": "II", "type": "", "damageClass": "" },
+        { "game": "silver", "generation": "II", "type": "", "damageClass": "" },
         {
           "game": "crystal",
           "generation": "II",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
-        {
-          "game": "ruby",
-          "generation": "III",
-          "type": "unknown",
-          "damageClass": "status"
-        },
+        { "game": "ruby", "generation": "III", "type": "", "damageClass": "" },
         {
           "game": "sapphire",
           "generation": "III",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "emerald",
           "generation": "III",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "firered",
           "generation": "III",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "leafgreen",
           "generation": "III",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "diamond",
           "generation": "IV",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
-        {
-          "game": "pearl",
-          "generation": "IV",
-          "type": "unknown",
-          "damageClass": "status"
-        },
+        { "game": "pearl", "generation": "IV", "type": "", "damageClass": "" },
         {
           "game": "platinum",
           "generation": "IV",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "heartgold",
           "generation": "IV",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "soulsilver",
           "generation": "IV",
-          "type": "unknown",
-          "damageClass": "status"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "black",
           "generation": "V",
-          "type": "unknown",
+          "type": "ghost",
           "damageClass": "status"
         },
         {
           "game": "white",
           "generation": "V",
-          "type": "unknown",
+          "type": "ghost",
           "damageClass": "status"
         },
         {
@@ -36518,49 +36303,49 @@
           "game": "gold",
           "generation": "II",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -38206,49 +37991,49 @@
           "game": "gold",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -38498,13 +38283,13 @@
         {
           "game": "x",
           "generation": "VI",
-          "type": "normal",
+          "type": "fairy",
           "damageClass": "status"
         },
         {
           "game": "y",
           "generation": "VI",
-          "type": "normal",
+          "type": "fairy",
           "damageClass": "status"
         },
         {
@@ -38819,49 +38604,49 @@
           "game": "gold",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "poison",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -39020,49 +38805,49 @@
           "game": "gold",
           "generation": "II",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -41294,49 +41079,49 @@
           "game": "gold",
           "generation": "II",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -42233,13 +42018,13 @@
         {
           "game": "x",
           "generation": "VI",
-          "type": "normal",
+          "type": "fairy",
           "damageClass": "status"
         },
         {
           "game": "y",
           "generation": "VI",
-          "type": "normal",
+          "type": "fairy",
           "damageClass": "status"
         },
         {
@@ -43187,49 +42972,49 @@
           "game": "gold",
           "generation": "II",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -45679,49 +45464,49 @@
           "game": "gold",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -46482,17 +46267,7 @@
         }
       ],
       "type": "bug",
-      "damageClass": "physical",
-      "descriptions": {
-        "II": "No additional effect.",
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "dragon-breath",
@@ -47136,49 +46911,49 @@
           "game": "gold",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -48886,13 +48661,13 @@
         {
           "game": "x",
           "generation": "VI",
-          "type": "normal",
+          "type": "fairy",
           "damageClass": "status"
         },
         {
           "game": "y",
           "generation": "VI",
-          "type": "normal",
+          "type": "fairy",
           "damageClass": "status"
         },
         {
@@ -48996,49 +48771,49 @@
           "game": "gold",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -50011,49 +49786,49 @@
           "game": "gold",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -50855,49 +50630,49 @@
           "game": "gold",
           "generation": "II",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -51066,49 +50841,49 @@
           "game": "gold",
           "generation": "II",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "ghost",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -51910,49 +51685,49 @@
           "game": "gold",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "silver",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "crystal",
           "generation": "II",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "ruby",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -52313,31 +52088,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -52697,31 +52472,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -56814,6 +56589,371 @@
         "VII": "Lowers the user's Attack and Defense by 1.",
         "VIII": "Lowers the user's Attack and Defense by 1.",
         "IX": "Lowers the user's Attack and Defense by 1."
+      }
+    },
+    {
+      "name": "magic-coat",
+      "label": "Magic Coat",
+      "generations": ["III"],
+      "contexts": [
+        {
+          "game": "ruby",
+          "generation": "III",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "sapphire",
+          "generation": "III",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "emerald",
+          "generation": "III",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "firered",
+          "generation": "III",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "leafgreen",
+          "generation": "III",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "diamond",
+          "generation": "IV",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "pearl",
+          "generation": "IV",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "platinum",
+          "generation": "IV",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "heartgold",
+          "generation": "IV",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "soulsilver",
+          "generation": "IV",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "black",
+          "generation": "V",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "white",
+          "generation": "V",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "black-2",
+          "generation": "V",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "white-2",
+          "generation": "V",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "x",
+          "generation": "VI",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "y",
+          "generation": "VI",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "omega-ruby",
+          "generation": "VI",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "alpha-sapphire",
+          "generation": "VI",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "sun",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "moon",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "ultra-sun",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "ultra-moon",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "status"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "status",
+      "descriptions": {
+        "III": "Bounces back certain non-damaging moves.",
+        "IV": "Bounces back certain non-damaging moves.",
+        "V": "Bounces back certain non-damaging moves.",
+        "VI": "Bounces back certain non-damaging moves.",
+        "VII": "Bounces back certain non-damaging moves.",
+        "VIII": "Bounces back certain non-damaging moves."
+      }
+    },
+    {
+      "name": "recycle",
+      "label": "Recycle",
+      "generations": ["III"],
+      "contexts": [
+        {
+          "game": "ruby",
+          "generation": "III",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "sapphire",
+          "generation": "III",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "emerald",
+          "generation": "III",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "firered",
+          "generation": "III",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "leafgreen",
+          "generation": "III",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "diamond",
+          "generation": "IV",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "pearl",
+          "generation": "IV",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "platinum",
+          "generation": "IV",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "heartgold",
+          "generation": "IV",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "soulsilver",
+          "generation": "IV",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "black",
+          "generation": "V",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "white",
+          "generation": "V",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "black-2",
+          "generation": "V",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "white-2",
+          "generation": "V",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "x",
+          "generation": "VI",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "y",
+          "generation": "VI",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "omega-ruby",
+          "generation": "VI",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "alpha-sapphire",
+          "generation": "VI",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "sun",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "moon",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "ultra-sun",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "ultra-moon",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "III": "Restores the item the user last used.",
+        "IV": "Restores the item the user last used.",
+        "V": "Restores the item the user last used.",
+        "VI": "Restores the item the user last used.",
+        "VII": "Restores the item the user last used.",
+        "VIII": "Restores the item the user last used.",
+        "IX": "Restores the item the user last used."
       }
     }
   ]

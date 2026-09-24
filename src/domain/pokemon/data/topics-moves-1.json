@@ -1,372 +1,7 @@
 {
-  "contentVersion": 2,
+  "contentVersion": 3,
   "key": "moves",
   "values": [
-    {
-      "name": "magic-coat",
-      "label": "Magic Coat",
-      "generations": ["III"],
-      "contexts": [
-        {
-          "game": "ruby",
-          "generation": "III",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "sapphire",
-          "generation": "III",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "emerald",
-          "generation": "III",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "firered",
-          "generation": "III",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "leafgreen",
-          "generation": "III",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "diamond",
-          "generation": "IV",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "pearl",
-          "generation": "IV",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "platinum",
-          "generation": "IV",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "heartgold",
-          "generation": "IV",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "soulsilver",
-          "generation": "IV",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "black",
-          "generation": "V",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "white",
-          "generation": "V",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "black-2",
-          "generation": "V",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "white-2",
-          "generation": "V",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "x",
-          "generation": "VI",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "y",
-          "generation": "VI",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "omega-ruby",
-          "generation": "VI",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "alpha-sapphire",
-          "generation": "VI",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "ultra-sun",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "ultra-moon",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "lets-go-pikachu",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "lets-go-eevee",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "sword",
-          "generation": "VIII",
-          "type": "psychic",
-          "damageClass": "status"
-        },
-        {
-          "game": "shield",
-          "generation": "VIII",
-          "type": "psychic",
-          "damageClass": "status"
-        }
-      ],
-      "type": "psychic",
-      "damageClass": "status",
-      "descriptions": {
-        "III": "Bounces back certain non-damaging moves.",
-        "IV": "Bounces back certain non-damaging moves.",
-        "V": "Bounces back certain non-damaging moves.",
-        "VI": "Bounces back certain non-damaging moves.",
-        "VII": "Bounces back certain non-damaging moves.",
-        "VIII": "Bounces back certain non-damaging moves."
-      }
-    },
-    {
-      "name": "recycle",
-      "label": "Recycle",
-      "generations": ["III"],
-      "contexts": [
-        {
-          "game": "ruby",
-          "generation": "III",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "sapphire",
-          "generation": "III",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "emerald",
-          "generation": "III",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "firered",
-          "generation": "III",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "leafgreen",
-          "generation": "III",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "diamond",
-          "generation": "IV",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "pearl",
-          "generation": "IV",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "platinum",
-          "generation": "IV",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "heartgold",
-          "generation": "IV",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "soulsilver",
-          "generation": "IV",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "black",
-          "generation": "V",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "white",
-          "generation": "V",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "black-2",
-          "generation": "V",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "white-2",
-          "generation": "V",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "x",
-          "generation": "VI",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "y",
-          "generation": "VI",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "omega-ruby",
-          "generation": "VI",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "alpha-sapphire",
-          "generation": "VI",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "ultra-sun",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "ultra-moon",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "lets-go-pikachu",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "lets-go-eevee",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "sword",
-          "generation": "VIII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "shield",
-          "generation": "VIII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "legends-arceus",
-          "generation": "VIII",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "scarlet",
-          "generation": "IX",
-          "type": "normal",
-          "damageClass": "status"
-        },
-        {
-          "game": "violet",
-          "generation": "IX",
-          "type": "normal",
-          "damageClass": "status"
-        }
-      ],
-      "type": "normal",
-      "damageClass": "status",
-      "descriptions": {
-        "III": "Restores the item the user last used.",
-        "IV": "Restores the item the user last used.",
-        "V": "Restores the item the user last used.",
-        "VI": "Restores the item the user last used.",
-        "VII": "Restores the item the user last used.",
-        "VIII": "Restores the item the user last used.",
-        "IX": "Restores the item the user last used."
-      }
-    },
     {
       "name": "revenge",
       "label": "Revenge",
@@ -933,31 +568,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -2575,31 +2210,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -4095,31 +3730,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -4452,31 +4087,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -4624,31 +4259,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -4988,31 +4623,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -5160,16 +4795,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "special",
-      "descriptions": {
-        "III": "No additional effect. Hits adjacent foes.",
-        "IV": "No additional effect. Hits adjacent foes.",
-        "V": "No additional effect. Hits adjacent foes.",
-        "VI": "No additional effect. Hits adjacent foes.",
-        "VII": "No additional effect. Hits adjacent foes.",
-        "VIII": "No additional effect. Hits adjacent foes.",
-        "IX": "No additional effect. Hits adjacent foes."
-      }
+      "damageClass": "special"
     },
     {
       "name": "poison-fang",
@@ -6311,31 +5937,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -6886,31 +6512,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "flying",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -7627,31 +7253,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -8739,31 +8365,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "bug",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -10034,31 +9660,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -10418,31 +10044,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -11186,31 +10812,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -11358,16 +10984,7 @@
         }
       ],
       "type": "dragon",
-      "damageClass": "physical",
-      "descriptions": {
-        "III": "No additional effect.",
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "frenzy-plant",
@@ -11954,31 +11571,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -12521,31 +12138,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -13244,31 +12861,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "special"
         },
         {
           "game": "diamond",
@@ -14204,31 +13821,31 @@
           "game": "ruby",
           "generation": "III",
           "type": "steel",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "sapphire",
           "generation": "III",
           "type": "steel",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "emerald",
           "generation": "III",
           "type": "steel",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "firered",
           "generation": "III",
           "type": "steel",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "leafgreen",
           "generation": "III",
           "type": "steel",
-          "damageClass": "special"
+          "damageClass": "physical"
         },
         {
           "game": "diamond",
@@ -21913,15 +21530,7 @@
         }
       ],
       "type": "water",
-      "damageClass": "physical",
-      "descriptions": {
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "seed-bomb",
@@ -22074,15 +21683,7 @@
         }
       ],
       "type": "grass",
-      "damageClass": "physical",
-      "descriptions": {
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "air-slash",
@@ -22396,15 +21997,7 @@
         }
       ],
       "type": "bug",
-      "damageClass": "physical",
-      "descriptions": {
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "bug-buzz",
@@ -22718,15 +22311,7 @@
         }
       ],
       "type": "dragon",
-      "damageClass": "special",
-      "descriptions": {
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "special"
     },
     {
       "name": "dragon-rush",
@@ -23040,15 +22625,7 @@
         }
       ],
       "type": "rock",
-      "damageClass": "special",
-      "descriptions": {
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "special"
     },
     {
       "name": "drain-punch",
@@ -27810,15 +27387,7 @@
         }
       ],
       "type": "grass",
-      "damageClass": "physical",
-      "descriptions": {
-        "IV": "No additional effect.",
-        "V": "No additional effect.",
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "rock-wrecker",
@@ -45202,13 +44771,7 @@
         }
       ],
       "type": "grass",
-      "damageClass": "physical",
-      "descriptions": {
-        "VI": "No additional effect. Hits adjacent Pokemon.",
-        "VII": "No additional effect. Hits adjacent Pokemon.",
-        "VIII": "No additional effect. Hits adjacent Pokemon.",
-        "IX": "No additional effect. Hits adjacent Pokemon."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "freeze-dry",
@@ -46377,13 +45940,7 @@
         }
       ],
       "type": "fairy",
-      "damageClass": "special",
-      "descriptions": {
-        "VI": "No additional effect.",
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "special"
     },
     {
       "name": "moonblast",
@@ -46587,13 +46144,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "special",
-      "descriptions": {
-        "VI": "No additional effect. Hits adjacent Pokemon.",
-        "VII": "No additional effect. Hits adjacent Pokemon.",
-        "VIII": "No additional effect. Hits adjacent Pokemon.",
-        "IX": "No additional effect. Hits adjacent Pokemon."
-      }
+      "damageClass": "special"
     },
     {
       "name": "fairy-lock",
@@ -48470,13 +48021,7 @@
         }
       ],
       "type": "fairy",
-      "damageClass": "special",
-      "descriptions": {
-        "VI": "No additional effect. Hits adjacent foes.",
-        "VII": "No additional effect. Hits adjacent foes.",
-        "VIII": "No additional effect. Hits adjacent foes.",
-        "IX": "No additional effect. Hits adjacent foes."
-      }
+      "damageClass": "special"
     },
     {
       "name": "celebrate",
@@ -49458,12 +49003,7 @@
         }
       ],
       "type": "ground",
-      "damageClass": "physical",
-      "descriptions": {
-        "VI": "No additional effect. Hits adjacent foes.",
-        "VII": "No additional effect. Hits adjacent foes.",
-        "VIII": "No additional effect. Hits adjacent foes."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "light-of-ruin",
@@ -49631,13 +49171,7 @@
         }
       ],
       "type": "water",
-      "damageClass": "special",
-      "descriptions": {
-        "VI": "No additional effect. Hits adjacent foes.",
-        "VII": "No additional effect. Hits adjacent foes.",
-        "VIII": "No additional effect. Hits adjacent foes.",
-        "IX": "No additional effect. Hits adjacent foes."
-      }
+      "damageClass": "special"
     },
     {
       "name": "precipice-blades",
@@ -49724,13 +49258,7 @@
         }
       ],
       "type": "ground",
-      "damageClass": "physical",
-      "descriptions": {
-        "VI": "No additional effect. Hits adjacent foes.",
-        "VII": "No additional effect. Hits adjacent foes.",
-        "VIII": "No additional effect. Hits adjacent foes.",
-        "IX": "No additional effect. Hits adjacent foes."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "dragon-ascent",
@@ -49922,2052 +49450,1692 @@
       "label": "Breakneck Blitz",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "normal",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "normal",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "breakneck-blitz--special",
       "label": "Breakneck Blitz",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "normal",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "normal",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "normal",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "all-out-pummeling--physical",
       "label": "All-Out Pummeling",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "fighting",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "fighting",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "fighting",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "fighting",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "fighting",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "all-out-pummeling--special",
       "label": "All-Out Pummeling",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "fighting",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "fighting",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "fighting",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "fighting",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "fighting",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "fighting",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "supersonic-skystrike--physical",
       "label": "Supersonic Skystrike",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "flying",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "flying",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "flying",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "flying",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "flying",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "supersonic-skystrike--special",
       "label": "Supersonic Skystrike",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "flying",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "flying",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "flying",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "flying",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "flying",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "flying",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "acid-downpour--physical",
       "label": "Acid Downpour",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "poison",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "poison",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "poison",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "poison",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "poison",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "acid-downpour--special",
       "label": "Acid Downpour",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "poison",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "poison",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "poison",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "poison",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "poison",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "poison",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "tectonic-rage--physical",
       "label": "Tectonic Rage",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "ground",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "ground",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "ground",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "ground",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "ground",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "tectonic-rage--special",
       "label": "Tectonic Rage",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "ground",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "ground",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "ground",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "ground",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "ground",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "ground",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "continental-crush--physical",
       "label": "Continental Crush",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "rock",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "rock",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "rock",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "rock",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "rock",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "continental-crush--special",
       "label": "Continental Crush",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "rock",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "rock",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "rock",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "rock",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "rock",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "rock",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "savage-spin-out--physical",
       "label": "Savage Spin-Out",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "bug",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "bug",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "bug",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "bug",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "bug",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "savage-spin-out--special",
       "label": "Savage Spin-Out",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "bug",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "bug",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "bug",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "bug",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "bug",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "bug",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "never-ending-nightmare--physical",
       "label": "Never-Ending Nightmare",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "ghost",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "ghost",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "ghost",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "ghost",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "ghost",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "never-ending-nightmare--special",
       "label": "Never-Ending Nightmare",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "ghost",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "ghost",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "ghost",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "ghost",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "ghost",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "ghost",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "corkscrew-crash--physical",
       "label": "Corkscrew Crash",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "steel",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "steel",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "steel",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "steel",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "steel",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "corkscrew-crash--special",
       "label": "Corkscrew Crash",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "steel",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "steel",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "steel",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "steel",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "steel",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "steel",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "inferno-overdrive--physical",
       "label": "Inferno Overdrive",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "fire",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "fire",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "fire",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "fire",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "fire",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "inferno-overdrive--special",
       "label": "Inferno Overdrive",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "fire",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "fire",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "fire",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "fire",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "fire",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "fire",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "hydro-vortex--physical",
       "label": "Hydro Vortex",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "water",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "water",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "water",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "water",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "water",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "hydro-vortex--special",
       "label": "Hydro Vortex",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "water",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "water",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "water",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "water",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "water",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "water",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "bloom-doom--physical",
       "label": "Bloom Doom",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "grass",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "grass",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "grass",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "bloom-doom--special",
       "label": "Bloom Doom",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "grass",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "grass",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "grass",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "grass",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "grass",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "gigavolt-havoc--physical",
       "label": "Gigavolt Havoc",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "electric",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "electric",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "electric",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "electric",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "electric",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "gigavolt-havoc--special",
       "label": "Gigavolt Havoc",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "electric",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "electric",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "electric",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "electric",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "electric",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "electric",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "shattered-psyche--physical",
       "label": "Shattered Psyche",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "psychic",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "psychic",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "psychic",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "shattered-psyche--special",
       "label": "Shattered Psyche",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "psychic",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "psychic",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "psychic",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "psychic",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "psychic",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "subzero-slammer--physical",
       "label": "Subzero Slammer",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "ice",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "ice",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "ice",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "ice",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "ice",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "subzero-slammer--special",
       "label": "Subzero Slammer",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "ice",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "ice",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "ice",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "ice",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "ice",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "ice",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "devastating-drake--physical",
       "label": "Devastating Drake",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "dragon",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "dragon",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "dragon",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "dragon",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "dragon",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "devastating-drake--special",
       "label": "Devastating Drake",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "dragon",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "dragon",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "dragon",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "dragon",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "dragon",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "dragon",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "black-hole-eclipse--physical",
       "label": "Black Hole Eclipse",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "dark",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "dark",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "dark",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "dark",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "dark",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "black-hole-eclipse--special",
       "label": "Black Hole Eclipse",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "dark",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "dark",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "dark",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "dark",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "dark",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "dark",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "twinkle-tackle--physical",
       "label": "Twinkle Tackle",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "fairy",
-          "damageClass": "physical"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "fairy",
-          "damageClass": "physical"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "fairy",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "fairy",
-          "damageClass": "physical"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "fairy",
-      "damageClass": "physical"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "twinkle-tackle--special",
       "label": "Twinkle Tackle",
       "generations": ["VII"],
       "contexts": [
-        {
-          "game": "sun",
-          "generation": "VII",
-          "type": "fairy",
-          "damageClass": "special"
-        },
-        {
-          "game": "moon",
-          "generation": "VII",
-          "type": "fairy",
-          "damageClass": "special"
-        },
+        { "game": "sun", "generation": "VII", "type": "", "damageClass": "" },
+        { "game": "moon", "generation": "VII", "type": "", "damageClass": "" },
         {
           "game": "ultra-sun",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "ultra-moon",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-pikachu",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "lets-go-eevee",
           "generation": "VII",
-          "type": "fairy",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "sword",
           "generation": "VIII",
-          "type": "fairy",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         },
         {
           "game": "shield",
           "generation": "VIII",
-          "type": "fairy",
-          "damageClass": "special"
+          "type": "",
+          "damageClass": ""
         }
       ],
-      "type": "fairy",
-      "damageClass": "special"
+      "type": "",
+      "damageClass": ""
     },
     {
       "name": "catastropika",
@@ -52024,8 +51192,7 @@
         }
       ],
       "type": "electric",
-      "damageClass": "physical",
-      "descriptions": { "VII": "No additional effect." }
+      "damageClass": "physical"
     },
     {
       "name": "shore-up",
@@ -52734,12 +51901,7 @@
         }
       ],
       "type": "ground",
-      "damageClass": "physical",
-      "descriptions": {
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "strength-sap",
@@ -52974,12 +52136,7 @@
         }
       ],
       "type": "grass",
-      "damageClass": "physical",
-      "descriptions": {
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "spotlight",
@@ -54588,12 +53745,7 @@
         }
       ],
       "type": "dragon",
-      "damageClass": "physical",
-      "descriptions": {
-        "VII": "No additional effect.",
-        "VIII": "No additional effect.",
-        "IX": "No additional effect."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "brutal-swing",
@@ -54668,12 +53820,7 @@
         }
       ],
       "type": "dark",
-      "damageClass": "physical",
-      "descriptions": {
-        "VII": "No additional effect. Hits adjacent Pokemon.",
-        "VIII": "No additional effect. Hits adjacent Pokemon.",
-        "IX": "No additional effect. Hits adjacent Pokemon."
-      }
+      "damageClass": "physical"
     },
     {
       "name": "aurora-veil",
@@ -54810,8 +53957,7 @@
         }
       ],
       "type": "ghost",
-      "damageClass": "physical",
-      "descriptions": { "VII": "No additional effect." }
+      "damageClass": "physical"
     },
     {
       "name": "malicious-moonsault",
@@ -54926,8 +54072,7 @@
         }
       ],
       "type": "water",
-      "damageClass": "special",
-      "descriptions": { "VII": "No additional effect." }
+      "damageClass": "special"
     },
     {
       "name": "guardian-of-alola",
@@ -55042,8 +54187,7 @@
         }
       ],
       "type": "ghost",
-      "damageClass": "physical",
-      "descriptions": { "VII": "No additional effect." }
+      "damageClass": "physical"
     },
     {
       "name": "stoked-sparksurfer",
@@ -55158,8 +54302,7 @@
         }
       ],
       "type": "normal",
-      "damageClass": "physical",
-      "descriptions": { "VII": "No additional effect." }
+      "damageClass": "physical"
     },
     {
       "name": "extreme-evoboost",
@@ -56786,8 +55929,7 @@
         }
       ],
       "type": "fairy",
-      "damageClass": "physical",
-      "descriptions": { "VII": "No additional effect." }
+      "damageClass": "physical"
     },
     {
       "name": "splintered-stormshards",
@@ -57080,6 +56222,941 @@
       ],
       "type": "electric",
       "damageClass": "special"
+    },
+    {
+      "name": "sizzly-slide",
+      "label": "Sizzly Slide",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "physical"
+    },
+    {
+      "name": "glitzy-glow",
+      "label": "Glitzy Glow",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special"
+    },
+    {
+      "name": "baddy-bad",
+      "label": "Baddy Bad",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "special"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "special"
+    },
+    {
+      "name": "sappy-seed",
+      "label": "Sappy Seed",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical"
+    },
+    {
+      "name": "freezy-frost",
+      "label": "Freezy Frost",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "ice",
+          "damageClass": "special"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "ice",
+          "damageClass": "special"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "special"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "special"
+    },
+    {
+      "name": "sparkly-swirl",
+      "label": "Sparkly Swirl",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "special"
+    },
+    {
+      "name": "veevee-volley",
+      "label": "Veevee Volley",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "physical"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "normal",
+          "damageClass": "physical"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "physical"
+    },
+    {
+      "name": "double-iron-bash",
+      "label": "Double Iron Bash",
+      "generations": ["VII"],
+      "contexts": [
+        {
+          "game": "lets-go-pikachu",
+          "generation": "VII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "lets-go-eevee",
+          "generation": "VII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Hits twice. 30% chance to make the target flinch."
+      }
+    },
+    {
+      "name": "max-guard",
+      "label": "Max Guard",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Protects user from moves & Max Moves this turn."
+      }
+    },
+    {
+      "name": "dynamax-cannon",
+      "label": "Dynamax Cannon",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "special"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "special",
+      "descriptions": { "VIII": "Damage doubles if the target is Dynamaxed." }
+    },
+    {
+      "name": "snipe-shot",
+      "label": "Snipe Shot",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "special"
+        }
+      ],
+      "type": "water",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "High critical hit ratio. Cannot be redirected.",
+        "IX": "High critical hit ratio. Cannot be redirected."
+      }
+    },
+    {
+      "name": "jaw-lock",
+      "label": "Jaw Lock",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Prevents both user and target from switching out.",
+        "IX": "Prevents both user and target from switching out."
+      }
+    },
+    {
+      "name": "stuff-cheeks",
+      "label": "Stuff Cheeks",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Must hold Berry to use. User eats Berry, Def +2.",
+        "IX": "Must hold Berry to use. User eats Berry, Def +2."
+      }
+    },
+    {
+      "name": "no-retreat",
+      "label": "No Retreat",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "status"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Raises all stats by 1 (not acc/eva). Traps user.",
+        "IX": "Raises all stats by 1 (not acc/eva). Traps user."
+      }
+    },
+    {
+      "name": "tar-shot",
+      "label": "Tar Shot",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "status"
+        }
+      ],
+      "type": "rock",
+      "damageClass": "status"
+    },
+    {
+      "name": "magic-powder",
+      "label": "Magic Powder",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "status"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "status"
+    },
+    {
+      "name": "dragon-darts",
+      "label": "Dragon Darts",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Hits twice. Doubles: Tries to hit each foe once.",
+        "IX": "Hits twice. Doubles: Tries to hit each foe once."
+      }
+    },
+    {
+      "name": "teatime",
+      "label": "Teatime",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "All active Pokemon consume held Berries.",
+        "IX": "All active Pokemon consume held Berries."
+      }
+    },
+    {
+      "name": "octolock",
+      "label": "Octolock",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Traps target, lowers Def and SpD by 1 each turn."
+      }
+    },
+    {
+      "name": "bolt-beak",
+      "label": "Bolt Beak",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Power doubles if user moves before the target."
+      }
+    },
+    {
+      "name": "fishious-rend",
+      "label": "Fishious Rend",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Power doubles if user moves before the target."
+      }
+    },
+    {
+      "name": "court-change",
+      "label": "Court Change",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Swaps user's field effects with the opposing side.",
+        "IX": "Swaps user's field effects with the opposing side."
+      }
+    },
+    {
+      "name": "max-flare",
+      "label": "Max Flare",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Starts Sunny Day." }
+    },
+    {
+      "name": "max-flutterby",
+      "label": "Max Flutterby",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "bug",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "bug",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "bug",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Foes: -1 Sp. Atk." }
+    },
+    {
+      "name": "max-lightning",
+      "label": "Max Lightning",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "physical"
+    },
+    {
+      "name": "max-strike",
+      "label": "Max Strike",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Foes: -1 Speed." }
+    },
+    {
+      "name": "max-knuckle",
+      "label": "Max Knuckle",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Allies: +1 Attack." }
+    },
+    {
+      "name": "max-phantasm",
+      "label": "Max Phantasm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ghost",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Foes: -1 Defense." }
+    },
+    {
+      "name": "max-hailstorm",
+      "label": "Max Hailstorm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Starts Hail." }
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "contentVersion": 2,
+  "contentVersion": 3,
   "key": "abilities",
   "values": [
     {
@@ -9129,50 +9129,43 @@
       "name": "piercing-drill",
       "label": "Piercing Drill",
       "generations": ["IX"],
-      "descriptions": [],
-      "descriptionSource": "https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts"
+      "descriptions": []
     },
     {
       "name": "dragonize",
       "label": "Dragonize",
       "generations": ["IX"],
-      "descriptions": [],
-      "descriptionSource": "https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts"
+      "descriptions": []
     },
     {
       "name": "mega-sol",
       "label": "Mega Sol",
       "generations": ["IX"],
-      "descriptions": [],
-      "descriptionSource": "https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts"
+      "descriptions": []
     },
     {
       "name": "spicy-spray",
       "label": "Spicy Spray",
       "generations": ["IX"],
-      "descriptions": [],
-      "descriptionSource": "https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts"
+      "descriptions": []
     },
     {
       "name": "eelevate",
       "label": "Eelevate",
       "generations": ["IX"],
-      "descriptions": [],
-      "descriptionSource": "https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts"
+      "descriptions": []
     },
     {
       "name": "fire-mane",
       "label": "Fire Mane",
       "generations": ["IX"],
-      "descriptions": [],
-      "descriptionSource": "https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts"
+      "descriptions": []
     },
     {
       "name": "aura-guard",
       "label": "Aura Guard",
       "generations": ["IX"],
-      "descriptions": [],
-      "descriptionSource": "https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts"
+      "descriptions": []
     },
     {
       "name": "mountaineer",

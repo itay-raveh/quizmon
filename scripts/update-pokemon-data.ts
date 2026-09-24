@@ -37,6 +37,7 @@ import { measureCatalogSprites } from './sprite-measurements.ts';
 import { buildTopicCatalog } from './catalog-topics.ts';
 import { extractPokemonKnowledge } from './catalog-knowledge.ts';
 import { addPkmnDescriptions } from './pkmn-descriptions.ts';
+import { addShowdownBattleData } from './showdown-battle.ts';
 import { gameVersions } from '../src/domain/versions.ts';
 
 const DATA_DIRECTORY = new URL('../src/domain/pokemon/data/', import.meta.url);
@@ -136,19 +137,6 @@ const formLabel = (form: CatalogForm, species: PokemonSpecies) => {
   return formName ? `${speciesLabel} (${formName})` : speciesLabel;
 };
 
-const getLevelMoves = (pokemon: Pokemon): string[] =>
-  [
-    ...new Set(
-      pokemon.moves
-        .filter(({ version_group_details }) =>
-          version_group_details.some(
-            ({ move_learn_method }) => move_learn_method.name === 'level-up',
-          ),
-        )
-        .map(({ move }) => move.name),
-    ),
-  ].sort();
-
 const sortRecord = <T>(record: Record<string, T>): Record<string, T> =>
   Object.fromEntries(
     Object.entries(record).sort(([left], [right]) => left.localeCompare(right)),
@@ -226,29 +214,6 @@ export const buildPokemonCatalog = async (
     selection,
   );
 
-  const typeLinks = [
-    ...new Map(
-      forms.flatMap(({ types }) =>
-        types.map(({ type }) => [type.name, type] as const),
-      ),
-    ).values(),
-  ];
-  const types = await client.resolveAll(typeLinks, {
-    concurrency: CONCURRENCY,
-  });
-  const typeRelations = Object.fromEntries(
-    types
-      .filter(({ name }) => name !== 'unknown' && name !== 'shadow')
-      .map(({ damage_relations, name }) => [
-        name,
-        {
-          doubleTo: damage_relations.double_damage_to.map(({ name }) => name),
-          halfTo: damage_relations.half_damage_to.map(({ name }) => name),
-          noneTo: damage_relations.no_damage_to.map(({ name }) => name),
-        },
-      ]),
-  );
-
   const entries: Record<string, PokemonKnowledge> = {};
   for (const form of forms) {
     const entry = pokemonByName.get(form.pokemon.name)!;
@@ -324,7 +289,7 @@ export const buildPokemonCatalog = async (
       identitySprites: getIdentitySprites(entry, form, generation),
       isLegendary: species.is_legendary,
       isMythical: species.is_mythical,
-      levelMoves: getLevelMoves(entry),
+      levelMoves: [],
       shape: species.shape?.name ?? '',
       shinySprite: normalizeSpriteUrl(form.sprites.front_shiny),
       sprite: normalizeSpriteUrl(form.sprites.front_default),
@@ -334,11 +299,6 @@ export const buildPokemonCatalog = async (
         .map(({ type }) => type.name),
       spriteMeasurements: null,
     };
-    if (
-      !entries[key].types.length ||
-      entries[key].types.some((type) => !Object.hasOwn(typeRelations, type))
-    )
-      throw new Error(`No question types for ${form.name}`);
   }
   const labelCounts = new Map<string, number>();
   for (const entry of Object.values(entries))
@@ -355,7 +315,7 @@ export const buildPokemonCatalog = async (
     {
       contentVersion: gameVersions.content,
       pokemon: sortRecord(entries),
-      typeRelations: sortRecord(typeRelations),
+      typeRelations: {},
     },
     measureSprites,
   );
@@ -388,7 +348,7 @@ if (import.meta.main) {
   if (
     extra.length ||
     (mode !== undefined &&
-      !['--topics-only', '--sprites-only', '--pkmn-only'].includes(mode))
+      !['--topics-only', '--sprites-only', '--showdown-only'].includes(mode))
   )
     throw new Error('Use one catalog update mode at a time.');
   const client = new MainClient({
@@ -396,7 +356,7 @@ if (import.meta.main) {
     revalidate: true,
   });
   const catalog =
-    mode === '--topics-only' || mode === '--pkmn-only'
+    mode === '--topics-only' || mode === '--showdown-only'
       ? await readCatalogFiles(DATA_DIRECTORY)
       : mode === '--sprites-only'
         ? await addSpriteMeasurements(
@@ -404,7 +364,7 @@ if (import.meta.main) {
             measureSprites,
           )
         : await buildPokemonCatalog(client);
-  if (mode === '--pkmn-only') {
+  if (mode === '--showdown-only') {
     if (!catalog.topics) throw new Error('Missing topic catalog');
     addPkmnDescriptions(catalog.topics);
     catalog.contentVersion = gameVersions.content;
@@ -412,6 +372,15 @@ if (import.meta.main) {
     catalog.topics = await buildTopicCatalog(client, catalog);
     await addItemSpriteIdentities(catalog.topics);
     catalog.contentVersion = gameVersions.content;
+  }
+  if (mode !== '--sprites-only') {
+    await addShowdownBattleData(catalog);
+    for (const [name, pokemon] of Object.entries(catalog.pokemon))
+      if (
+        !pokemon.types.length ||
+        pokemon.types.some((type) => !catalog.typeRelations[type])
+      )
+        throw new Error(`Missing Showdown battle types for ${name}`);
   }
   await writeCatalogFiles(catalog, DATA_DIRECTORY);
   for (const [file, field] of [
@@ -435,8 +404,8 @@ if (import.meta.main) {
   const pokemonCount = Object.keys(catalog.pokemon).length;
   const typeCount = Object.keys(catalog.typeRelations).length;
   console.log(
-    mode === '--pkmn-only'
-      ? 'Updated packaged Pokémon Showdown descriptions.'
-      : `Updated ${pokemonCount} Pokémon and ${typeCount} type matchups from PokéAPI.`,
+    mode === '--showdown-only'
+      ? 'Updated packaged Pokémon Showdown battle data.'
+      : `Updated ${pokemonCount} Pokémon and ${typeCount} Showdown type matchups.`,
   );
 }
