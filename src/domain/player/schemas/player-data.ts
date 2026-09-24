@@ -6,10 +6,7 @@ import {
 } from '../../../lib/validation.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../../quiz/league.ts';
-import {
-  isQuestionHistory,
-  type QuestionHistory,
-} from '../../quiz/question-history.ts';
+import { questionHistorySchema } from '../../quiz/question-history.ts';
 import {
   isQuestionLineup,
   type QuestionLineup,
@@ -170,7 +167,7 @@ const playerData = z.object({
     .refine(
       (records) => new Set(records.map(({ id }) => id)).size === records.length,
     ),
-  questionHistory: z.custom<QuestionHistory>(isQuestionHistory),
+  questionHistory: questionHistorySchema,
   leagueLineup: z
     .custom<QuestionLineup>(isQuestionLineup)
     .nullable()

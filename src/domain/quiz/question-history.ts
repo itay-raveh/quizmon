@@ -1,4 +1,4 @@
-import { isRecord, isSafeNonnegativeInteger } from '../../lib/validation.ts';
+import { z } from 'zod';
 import type { QuestionRepetition } from './types.ts';
 
 interface HistoryQuestion {
@@ -13,14 +13,29 @@ export const questionRepeatPolicy = {
   primaryWeight: 4,
 } as const;
 
-export interface QuestionHistory {
-  sequence: number;
-  subjects: Record<string, number>;
-  questions: Record<string, number>;
-  pokemon: Record<string, number>;
-  distractors: Record<string, number>;
-  rounds: Record<string, { index: number; sequence: number }>;
-}
+const sequence = z.int().min(0);
+const recency = z.record(z.string().min(1).max(1000), sequence);
+export const questionHistorySchema = z
+  .object({
+    sequence,
+    subjects: recency,
+    questions: recency,
+    pokemon: recency,
+    distractors: recency,
+    rounds: z.record(
+      z.string().min(1).max(200),
+      z.object({ index: sequence, sequence: z.int().min(1) }),
+    ),
+  })
+  .refine(
+    ({ sequence, rounds, subjects, questions, pokemon, distractors }) =>
+      Object.values(rounds).every((round) => round.sequence <= sequence) &&
+      [subjects, questions, pokemon, distractors].every((entries) =>
+        Object.values(entries).every((seen) => seen <= sequence),
+      ),
+  );
+
+export type QuestionHistory = z.infer<typeof questionHistorySchema>;
 
 export const emptyQuestionHistory = (): QuestionHistory => ({
   sequence: 0,
@@ -122,37 +137,4 @@ export const rememberShownQuestion = (
         .slice(0, questionRepeatPolicy.rememberedRounds),
     ),
   };
-};
-
-export const isQuestionHistory = (value: unknown): value is QuestionHistory => {
-  if (!isRecord(value) || !isSafeNonnegativeInteger(value.sequence))
-    return false;
-  const { sequence } = value;
-  if (
-    !isRecord(value.rounds) ||
-    !Object.entries(value.rounds).every(
-      ([key, round]) =>
-        key.length > 0 &&
-        key.length <= 200 &&
-        isRecord(round) &&
-        isSafeNonnegativeInteger(round.index) &&
-        isSafeNonnegativeInteger(round.sequence) &&
-        round.sequence > 0 &&
-        round.sequence <= sequence,
-    )
-  )
-    return false;
-  return ['subjects', 'questions', 'pokemon', 'distractors'].every((field) => {
-    const entries = value[field];
-    return (
-      isRecord(entries) &&
-      Object.entries(entries).every(
-        ([key, seen]) =>
-          key.length > 0 &&
-          key.length <= 1000 &&
-          isSafeNonnegativeInteger(seen) &&
-          seen <= sequence,
-      )
-    );
-  });
 };
