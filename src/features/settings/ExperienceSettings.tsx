@@ -1,4 +1,4 @@
-import { SelectionTile } from '@/components/SelectionTile';
+import { SelectionTile } from './SelectionTile';
 import {
   answerFlowDelays,
   answerFlows,

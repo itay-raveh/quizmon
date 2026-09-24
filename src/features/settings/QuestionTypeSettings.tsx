@@ -1,6 +1,6 @@
 import { getQuestionTypeMultiplier } from '@/domain/quiz/score-multipliers';
 import { CaretDownIcon, QuestionIcon, XIcon } from '@/components/icons';
-import { SelectionTile } from '@/components/SelectionTile';
+import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
 import {
   questionDefinitions,

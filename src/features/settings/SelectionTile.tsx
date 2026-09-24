@@ -1,6 +1,6 @@
 import { useToggleSound } from '@/lib/audio/sound-context';
 import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
-import { CheckIcon } from './icons';
+import { CheckIcon } from '@/components/icons';
 
 interface SelectionTileProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,

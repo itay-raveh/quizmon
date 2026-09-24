@@ -1,5 +1,5 @@
 import { GenerationLabel } from '@/components/GenerationLabel';
-import { SelectionTile } from '@/components/SelectionTile';
+import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
 import { formGroups, generations } from '@/domain/pokemon/types';
 import { difficultyLevels } from '@/domain/quiz/difficulty';
