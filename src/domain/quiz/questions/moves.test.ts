@@ -11,14 +11,12 @@ const move = (name: string, label: string, type: string) => ({
   reviewedDescription: 'A move description.',
   type,
   damageClass: 'physical',
-  descriptions: {},
   contexts: [
     {
       game: 'silver',
       generation: 'II',
       type,
       damageClass: 'physical',
-      description: 'A move description.',
     },
   ],
 });

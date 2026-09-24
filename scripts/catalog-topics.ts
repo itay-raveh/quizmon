@@ -104,12 +104,6 @@ export const buildTopicCatalog = async (
   const locations = await all<Location>('location');
   const areas = await all<LocationArea>('location-area');
   const chains = await all<EvolutionChain>('evolution-chain');
-  const descriptions = (entries: Item['flavor_text_entries']) =>
-    Object.fromEntries(
-      entries
-        .filter(english)
-        .map((entry) => [entry.version_group.name, clean(entry.text)]),
-    );
   const regionGeneration = (region: Region) =>
     region.main_generation
       ? generation(region.main_generation.name)
@@ -296,16 +290,11 @@ export const buildTopicCatalog = async (
         category: item.category.name,
         pocket: categories.get(item.category.name)?.pocket.name ?? '',
         effect: clean(item.effect_entries.find(english)?.effect ?? ''),
-        descriptions: descriptions(item.flavor_text_entries),
       };
     }),
     moves: moves.map((move) => {
-      const texts = Object.fromEntries(
-        move.flavor_text_entries
-          .filter(english)
-          .map((entry) => [entry.version_group.name, clean(entry.flavor_text)]),
-      );
-      if (!Object.keys(texts).length) gaps.moveDescription!.push(move.name);
+      if (!move.flavor_text_entries.some(english))
+        gaps.moveDescription!.push(move.name);
       const contexts = move.flavor_text_entries
         .filter(english)
         .flatMap((entry) => {
@@ -334,7 +323,6 @@ export const buildTopicCatalog = async (
             generation: gen,
             type,
             damageClass,
-            description: clean(entry.flavor_text),
           }));
         });
       return {
@@ -343,7 +331,6 @@ export const buildTopicCatalog = async (
         reviewedDescription: reviewedMoveDescriptions[move.name],
         type: move.type.name,
         damageClass: move.damage_class?.name ?? '',
-        descriptions: texts,
       };
     }),
     abilities: abilities.map((ability) => {

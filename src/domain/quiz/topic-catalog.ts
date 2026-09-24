@@ -13,7 +13,6 @@ interface ItemKnowledge extends TopicEntity {
   category: string;
   pocket: string;
   effect: string;
-  descriptions: Record<string, string>;
 }
 interface MoveKnowledge extends TopicEntity {
   reviewedDescription?: string;
@@ -22,11 +21,9 @@ interface MoveKnowledge extends TopicEntity {
     generation: Generation;
     type: string;
     damageClass: string;
-    description: string;
   }[];
   type: string;
   damageClass: string;
-  descriptions: Record<string, string>;
 }
 export interface EvolutionKnowledge {
   before: string;
