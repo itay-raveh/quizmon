@@ -28,7 +28,7 @@ import {
   transactPlayer,
   type LocalAction,
 } from '../../lib/storage/player-storage';
-import { isRecord } from '../../lib/validation';
+import { isChoice, isRecord } from '../../lib/validation';
 import { readSyncConnection } from '../../domain/sync/connection';
 import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 import { writeStoredValue } from '../../lib/storage/browser-storage';
@@ -449,7 +449,7 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
   });
 }
 
-function connector(expected: Binding): PowerSyncBackendConnector {
+export function connector(expected: Binding): PowerSyncBackendConnector {
   return {
     fetchCredentials: async () => {
       const bootstrap = await accountRequest('/api/account');
@@ -494,7 +494,7 @@ function connector(expected: Binding): PowerSyncBackendConnector {
             !isRecord(action) ||
             action.id !== entry.id ||
             typeof action.datasetId !== 'string' ||
-            !['round', 'edit'].includes(String(action.kind)) ||
+            !isChoice(action.kind, ['round', 'edit']) ||
             !isRecord(action.payload) ||
             action.payload.id !== action.id
           )
@@ -527,7 +527,7 @@ function connector(expected: Binding): PowerSyncBackendConnector {
           const action = batch.find((a) => a.id === value.id);
           if (
             !action ||
-            !['accepted', 'rejected'].includes(String(value.status)) ||
+            !isChoice(value.status, ['accepted', 'rejected']) ||
             (action.kind === 'round' &&
               value.status === 'accepted' &&
               typeof value.credited !== 'boolean')

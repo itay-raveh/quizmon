@@ -1,7 +1,9 @@
 import { afterEach, expect, it, vi } from 'vitest';
+import { UpdateType } from '@powersync/web';
 import * as storage from '../../lib/storage/player-storage';
 import {
   accountSnapshot,
+  connector,
   loadAccountConfig,
   reconnectAccount,
 } from './account';
@@ -9,6 +11,52 @@ import {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+it('leaves malformed sync actions and receipts pending', async () => {
+  const id = crypto.randomUUID();
+  const action = {
+    id,
+    datasetId: crypto.randomUUID(),
+    kind: 'edit',
+    payload: { id },
+  };
+  let payload = JSON.stringify({ ...action, kind: ['edit'] });
+  const complete = vi.fn();
+  const db = {
+    getNextCrudTransaction: () =>
+      Promise.resolve({
+        crud: [
+          {
+            table: 'pending_actions',
+            op: UpdateType.PUT,
+            id,
+            opData: { payload },
+          },
+        ],
+        complete,
+      }),
+    execute: vi.fn(),
+  };
+  const fetch = vi.fn();
+  vi.stubGlobal('fetch', fetch);
+  const upload = connector({
+    id: crypto.randomUUID(),
+    serverEpoch: crypto.randomUUID(),
+  }).uploadData;
+
+  await expect(upload(db as never)).rejects.toThrow(
+    'saved change could not be verified',
+  );
+  expect(fetch).not.toHaveBeenCalled();
+
+  payload = JSON.stringify(action);
+  fetch.mockResolvedValue(
+    Response.json({ outcomes: [{ id, status: ['accepted'] }] }),
+  );
+  await expect(upload(db as never)).rejects.toThrow('Invalid sync receipt');
+  expect(complete).not.toHaveBeenCalled();
+  expect(db.execute).not.toHaveBeenCalled();
 });
 
 it('does not turn a sign-in configuration failure into a sync failure', async () => {
