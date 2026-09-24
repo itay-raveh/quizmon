@@ -360,7 +360,7 @@
   .question--enter,
   .results,
   .settings-dialog[open],
-  .leave-game-dialog[open],
+  .confirm-dialog[open],
   .share-dialog[open],
   .trainer-passport__artifact--reveal,
   .trainer-badge-dialog[open],

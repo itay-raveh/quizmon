@@ -24,20 +24,20 @@ export const LeaveGameDialog = ({
       {...dialogProps}
       aria-describedby="leave-game-description"
       aria-labelledby="leave-game-title"
-      className="leave-game-dialog"
+      className="confirm-dialog"
     >
-      <div className="leave-game-dialog__body">
+      <div className="confirm-dialog__body">
         <h2 id="leave-game-title">Leave this game?</h2>
         <p id="leave-game-description">
           {resumable
             ? 'Your Daily progress is saved. Choose this challenge to resume it.'
             : 'Your answers from this game will be lost.'}
         </p>
-        <div className="leave-game-dialog__actions">
+        <div className="confirm-dialog__actions">
           <GameButton autoFocus tone="quiet" onClick={cancel}>
             Keep playing
           </GameButton>
-          <GameButton className="leave-game-dialog__confirm" onClick={confirm}>
+          <GameButton className="confirm-dialog__confirm" onClick={confirm}>
             Leave game
           </GameButton>
         </div>

@@ -83,20 +83,20 @@ function RemoveFriendDialog({
       {...dialogProps}
       aria-describedby="remove-friend-description"
       aria-labelledby="remove-friend-title"
-      className="leave-game-dialog"
+      className="confirm-dialog"
     >
-      <div className="leave-game-dialog__body">
+      <div className="confirm-dialog__body">
         <h2 id="remove-friend-title">Remove {name}?</h2>
         <p id="remove-friend-description">
           You will no longer see each other in Friends standings. You can send a
           new request later.
         </p>
-        <div className="leave-game-dialog__actions">
+        <div className="confirm-dialog__actions">
           <GameButton autoFocus tone="quiet" onClick={closeDialog}>
             Keep friend
           </GameButton>
           <GameButton
-            className="leave-game-dialog__confirm"
+            className="confirm-dialog__confirm"
             onClick={() => {
               dialog.current?.close();
               onConfirm();
