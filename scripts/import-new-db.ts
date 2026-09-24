@@ -21,13 +21,33 @@ const sourceUrl = flag('--source');
 const targetUrl = flag('--target');
 const reportPath = flag('--report');
 const budgetId = flag('--budget-id');
+const tunnelPort = flag('--tunnel-port');
 if (!sourceUrl || !targetUrl || !reportPath || sourceUrl === targetUrl)
   throw new Error(
-    'Usage: node scripts/import-new-db.ts --source OLD_URL --target EMPTY_NEW_URL --report REPORT.json [--budget-id OLD_BUDGET_ID]',
+    'Usage: node scripts/import-new-db.ts --source OLD_URL --target EMPTY_NEW_URL --report REPORT.json [--budget-id OLD_BUDGET_ID] [--tunnel-port PORT]',
   );
+if (
+  tunnelPort &&
+  (!Number.isInteger(Number(tunnelPort)) ||
+    Number(tunnelPort) < 1 ||
+    Number(tunnelPort) > 65535)
+)
+  throw new Error('Invalid tunnel port.');
 
-const source = new Client({ connectionString: sourceUrl });
-const target = new Client({ connectionString: targetUrl });
+const client = (connectionString: string) => {
+  if (!tunnelPort) return new Client({ connectionString });
+  const url = new URL(connectionString);
+  return new Client({
+    host: '127.0.0.1',
+    port: Number(tunnelPort),
+    database: decodeURIComponent(url.pathname.slice(1)),
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    ssl: { rejectUnauthorized: true, servername: url.hostname },
+  });
+};
+const source = client(sourceUrl);
+const target = client(targetUrl);
 const all = async <T extends Record<string, unknown>>(
   query: string,
   values: unknown[] = [],
