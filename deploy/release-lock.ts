@@ -14,7 +14,6 @@ class MigrationBusyError extends Error {
 export interface ReleaseSession {
   client: Client;
   assertConnected: () => void;
-  signal: AbortSignal;
 }
 
 export async function withReleaseLock<T>(
@@ -23,10 +22,8 @@ export async function withReleaseLock<T>(
 ): Promise<T> {
   const client = new Client(connection);
   let connectionError: Error | undefined;
-  const controller = new AbortController();
   client.on('error', (error: Error) => {
     connectionError = error;
-    controller.abort();
   });
   const assertConnected = () => {
     if (connectionError) throw connectionError;
@@ -38,7 +35,6 @@ export async function withReleaseLock<T>(
     const result = await run({
       client,
       assertConnected,
-      signal: controller.signal,
     });
     assertConnected();
     return result;
