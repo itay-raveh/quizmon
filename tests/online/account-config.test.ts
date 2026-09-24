@@ -46,7 +46,7 @@ await test('explicit local fixtures remain local with the test mailbox', () => {
   assert.equal(runtime.accepts(valid.origin + '/api/account'), false);
 });
 
-await test('public accounts never expose the prototype completion upload or test mailbox', async () => {
+await test('public accounts reject inaccessible routes and oversized writes', async () => {
   const api = createAccountApi({
     ...valid,
     connectionString: 'postgresql://unavailable.invalid/test',
@@ -67,4 +67,10 @@ await test('public accounts never expose the prototype completion upload or test
     'https://other.example.test/api/account',
   );
   assert.equal(wrongOrigin.status, 403);
+  const oversized = await api.request(valid.origin + '/api/account/link', {
+    method: 'POST',
+    body: 'x'.repeat(1024 * 1024 + 1),
+  });
+  assert.equal(oversized.status, 413);
+  assert.equal(oversized.headers.get('Cache-Control'), 'no-store');
 });

@@ -7,6 +7,7 @@ import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Hono, type Context } from 'hono';
 import * as Sentry from '@sentry/cloudflare';
 import { bodyLimit } from 'hono/body-limit';
+import { HTTPException } from 'hono/http-exception';
 import { matchedRoutes } from 'hono/route';
 import { Client } from 'pg';
 import { isDailyDate } from '../src/lib/validation.ts';
@@ -136,6 +137,14 @@ export function createAccountApi(services: AccountServices) {
   app.onError((error, context) => {
     if (error instanceof ProgressError || error instanceof FriendshipError)
       return context.json({ error: error.code }, error.status);
+    if (error instanceof HTTPException) {
+      context.header('Cache-Control', 'no-store');
+      const response = error.getResponse();
+      return context.newResponse(response.body, {
+        status: error.status,
+        headers: response.headers,
+      });
+    }
     console.error(error);
     return context.text('Internal Server Error', 500);
   });
