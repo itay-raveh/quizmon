@@ -4,21 +4,12 @@ import { isNonnegativeInteger, isObject } from '@/lib/validation';
 const PROMPT_KEY = 'quizmon.baseline.daily-reminder-prompt';
 const PROMPT_AGAIN_AFTER_DAILIES = 3;
 
-interface PromptHistory {
-  completedDailyCount: number;
-  version: 1;
-}
-
-const readPromptHistory = (): PromptHistory | null => {
+const readPromptHistory = (): number | null => {
   const candidate = readStoredJson('localStorage', PROMPT_KEY);
   if (!isObject(candidate)) return null;
 
-  return candidate.version === 1 &&
-    isNonnegativeInteger(candidate.completedDailyCount)
-    ? {
-        completedDailyCount: candidate.completedDailyCount,
-        version: 1,
-      }
+  return isNonnegativeInteger(candidate.completedDailyCount)
+    ? candidate.completedDailyCount
     : null;
 };
 
@@ -30,13 +21,11 @@ export const shouldOfferDailyReminder = (
   const history = readPromptHistory();
   return (
     history === null ||
-    completedDailyCount >=
-      history.completedDailyCount + PROMPT_AGAIN_AFTER_DAILIES
+    completedDailyCount >= history + PROMPT_AGAIN_AFTER_DAILIES
   );
 };
 
 export const markDailyReminderOffered = (completedDailyCount: number) =>
   writeStoredJson('localStorage', PROMPT_KEY, {
     completedDailyCount,
-    version: 1,
-  } satisfies PromptHistory);
+  });
