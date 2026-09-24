@@ -4,7 +4,6 @@ export const gameVersions = {
 } as const;
 
 export const formatVersions = {
-  action: 1,
   hash: 1,
   completion: 1,
   accountExport: 2,

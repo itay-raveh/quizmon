@@ -22,7 +22,6 @@ export { isUuid as uuid } from '../../lib/validation.ts';
 
 export const versions = {
   ...gameVersions,
-  payload: formatVersions.action,
   record: formatVersions.completion,
 } as const;
 const integer = (
