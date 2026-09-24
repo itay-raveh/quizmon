@@ -73,10 +73,6 @@ export async function queueIssueResolution(
     await tx.execute('DELETE FROM local_completions WHERE id = ?', [
       issue.operationId,
     ]);
-    await tx.execute(
-      'INSERT OR REPLACE INTO local_state(id,payload) SELECT ?,payload FROM local_state WHERE id = ?',
-      [`resolved:${issue.operationId}`, `failure:${issue.operationId}`],
-    );
   }
   await tx.execute('DELETE FROM pending_actions WHERE id = ?', [
     issue.operationId,

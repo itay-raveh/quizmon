@@ -78,9 +78,6 @@ it('removes rejected round progress while retaining its review evidence', async 
     expect(await tx.getAll('SELECT id FROM local_actions')).toEqual([
       { id: round.id },
     ]);
-    expect(
-      await tx.getAll("SELECT id FROM local_state WHERE id LIKE 'resolved:%'"),
-    ).toEqual([{ id: `resolved:${round.id}` }]);
   } finally {
     db.close();
   }
