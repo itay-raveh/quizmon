@@ -46,6 +46,9 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         globPatterns: [
           '**/*.{js,css,html,woff2,json,webmanifest,wasm,bin}',
+          'assets/build/*.{avif,ico,mp3,png,webp}',
+          'assets/images/logo.png',
+          '*.{ico,png}',
           'trainer-avatars/*.png',
         ],
       },
