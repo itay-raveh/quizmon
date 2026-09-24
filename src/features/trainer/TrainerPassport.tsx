@@ -274,6 +274,13 @@ export const TrainerPassport = ({
               key={nextView}
               to={trainerPath(nextView)}
               onClick={(event) => {
+                if (
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                )
+                  return;
                 if (view === nextView) event.preventDefault();
                 else {
                   playSound('tap');

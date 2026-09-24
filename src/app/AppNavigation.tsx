@@ -98,6 +98,13 @@ export function AppNavigation({
             aria-current={accountOpen ? 'page' : undefined}
             className={`game-button game-button--${accountOpen ? 'primary' : 'quiet'} app-navigation__account`}
             onClick={(event) => {
+              if (
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              )
+                return;
               if (accountOpen) event.preventDefault();
               else playSound('tap');
             }}
