@@ -125,6 +125,10 @@ function readRows(
   return rows;
 }
 
+const sameRoundIgnoringCredit = (left: string, right: string): boolean =>
+  canonical({ ...(JSON.parse(left) as object), credited: true }) ===
+  canonical({ ...(JSON.parse(right) as object), credited: true });
+
 function convertBackupV1(value: Record<string, unknown>): PlayerBackup {
   const old = parseSavedPlayerStateV1(value.state);
   if (!isRecord(value.records))
@@ -265,6 +269,12 @@ export const parseBackup = (text: string): PlayerBackup => {
     if (!validateRoundFact(round) || round.id !== row.id)
       throw new Error('The backup contains an invalid completed round.');
   }
+  const localRounds = new Map(completions.map((row) => [row.id, row.payload]));
+  for (const row of serverRounds) {
+    const local = localRounds.get(row.id);
+    if (local && !sameRoundIgnoringCredit(local, row.payload))
+      throw new Error('The backup contains conflicting completed rounds.');
+  }
   const pending = state.account
     ? readRows(records, 'pending_actions')
     : undefined;
@@ -346,13 +356,7 @@ export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {
           [row.id],
         );
         const archived = JSON.parse(row.payload) as { credited: boolean };
-        if (
-          existing &&
-          canonical({
-            ...(JSON.parse(existing.payload) as object),
-            credited: true,
-          }) !== canonical({ ...archived, credited: true })
-        )
+        if (existing && !sameRoundIgnoringCredit(existing.payload, row.payload))
           throw new Error(
             'A completed round with this ID has different saved data.',
           );
