@@ -75,9 +75,7 @@ export function AccountConflicts({
                     ? 'This saved edit needs review. You can apply it again to your account.'
                     : issue.reason === 'specialty_not_earned'
                       ? 'This Trainer title has not been earned on your account. Your accepted title is kept.'
-                      : issue.reason === 'too_large'
-                        ? 'This saved change is too large to sync. Download a backup before dismissing it.'
-                        : 'This change could not be accepted. Your backup includes the affected change.'}
+                      : 'This change could not be accepted. Your backup includes the affected change.'}
             </p>
             <div className="backup-settings__actions">
               <GameButton

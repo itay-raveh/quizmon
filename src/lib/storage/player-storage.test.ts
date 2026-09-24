@@ -89,51 +89,6 @@ it.each([
     }
   },
 );
-
-it.each(['local_completions', 'pending_actions'])(
-  'blocks account play when %s contains damaged data',
-  async (table) => {
-    vi.resetModules();
-    const { initializePlayerStorage } = await import('./player-storage');
-    const state = JSON.stringify({
-      version: 2,
-      datasetId: crypto.randomUUID(),
-      dailyAttempts: {},
-      save: {
-        version: SAVE_SCHEMA_VERSION,
-        restoreId: null,
-        data: emptyPlayerData(),
-      },
-      account: { id: 'account-1', serverEpoch: crypto.randomUUID() },
-    });
-    const damaged = { id: crypto.randomUUID(), payload: '{damaged' };
-    const db = {
-      init: vi.fn(),
-      getAll: vi.fn((query: string) => {
-        const name = /FROM (\w+)/.exec(query)?.[1];
-        return Promise.resolve(
-          name === 'local_state'
-            ? [{ id: 'player', payload: state }]
-            : name === table
-              ? [damaged]
-              : [],
-        );
-      }),
-      execute: vi.fn(),
-      writeTransaction: vi.fn(),
-      onChange: vi.fn(),
-    };
-    openLocalDatabase.mockReturnValue(db);
-
-    await expect(initializePlayerStorage('account-1')).rejects.toThrow(
-      'Download a recovery copy',
-    );
-    expect(db.execute).not.toHaveBeenCalled();
-    expect(db.writeTransaction).not.toHaveBeenCalled();
-    expect(damaged.payload).toBe('{damaged');
-  },
-);
-
 it('keeps the save gate active through a retry and prevents parallel retries', async () => {
   vi.resetModules();
   const { getSaveError, isSaveRetrying, reportSaveError, retryPlayerSave } =

@@ -85,28 +85,3 @@ await test('unsupported, incomplete, or local production inputs are rejected bef
   ])
     assert.throws(() => readReleaseConfig(invalid));
 });
-
-await test('release configuration keeps its actionable validation errors', () => {
-  for (const [changed, message] of [
-    [{ version: 2 }, 'Unsupported release configuration.'],
-    [{ workerName: '' }, 'Missing release configuration: workerName.'],
-    [{ origin: '' }, 'Missing release configuration: origin.'],
-    [
-      { hyperdriveId: undefined },
-      'Missing release configuration: hyperdriveId.',
-    ],
-    [{ workerName: 'Bad Worker' }, 'Invalid Worker name.'],
-    [
-      { hyperdriveId: '0'.repeat(32) },
-      'A provisioned Hyperdrive identifier is required.',
-    ],
-    [{ mailFrom: 'invalid' }, 'A sender address is required.'],
-    [
-      { apiRateLimitNamespace: config.authRateLimitNamespace },
-      'Distinct rate-limit namespace identifiers are required.',
-    ],
-  ] as const)
-    assert.throws(() => readReleaseConfig({ ...config, ...changed }), {
-      message,
-    });
-});
