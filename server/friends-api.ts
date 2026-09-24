@@ -1,11 +1,8 @@
 import type { AccountEnv } from './api.ts';
 import { Hono, type Context } from 'hono';
 import { normalizeFriendCode } from '../src/domain/social/friends.ts';
-import {
-  lookupSocialPlayer,
-  ownSocialPlayer,
-  publicPlayers,
-} from './friend-identity.ts';
+import { lookupSocialPlayer, ownSocialPlayer } from './friend-identity.ts';
+import { publicPlayers } from './read.ts';
 import { isRecord } from '../src/lib/validation.ts';
 import { uuid } from '../src/domain/sync/progress.ts';
 import {

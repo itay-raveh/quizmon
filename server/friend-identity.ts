@@ -5,8 +5,6 @@ import { bootstrapPlayer } from './progress-api.ts';
 import { publicPlayers } from './read.ts';
 import { friendRequestView, FriendshipError } from './friends.ts';
 
-export { publicPlayers } from './read.ts';
-
 export async function ownSocialPlayer(db: NodePgDatabase, actor: string) {
   await bootstrapPlayer(db, actor);
   return (await publicPlayers(db, [actor]))[0]!;
