@@ -3,7 +3,7 @@ import { isQuestionRendering } from './question-rendering.ts';
 import { isQuestionSubject } from './subject.ts';
 import { isDifficulty } from './difficulty.ts';
 import { generations, statNames } from '../pokemon/types.ts';
-import { questionDefinitions } from './questions/definitions.ts';
+import { questionTypes } from './questions/definitions.ts';
 import { questionCategories, type QuestionData } from './types.ts';
 
 export interface QuestionLineup {
@@ -98,12 +98,7 @@ const question = z
     }),
     id: text,
     subject: z.custom(isQuestionSubject),
-    questionType: z
-      .string()
-      .refine(
-        (type) =>
-          type === 'champion' || Object.hasOwn(questionDefinitions, type),
-      ),
+    questionType: z.enum([...questionTypes, 'champion']),
     category: z.enum(questionCategories),
     options: strings.min(1).refine(unique),
     answer: z.object({
