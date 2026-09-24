@@ -369,7 +369,7 @@ export const AppView = (props: AppViewProps) => {
               {
                 account: 'Account',
                 friends: 'Friends',
-                leaderboards: 'Rankings',
+                rankings: 'Rankings',
                 questions: 'Question',
                 results: 'Results',
                 landing: '',
