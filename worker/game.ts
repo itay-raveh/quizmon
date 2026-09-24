@@ -40,7 +40,7 @@ const fetchSprite = async (request: Request, url: URL): Promise<Response> => {
   }
 
   const headers = {
-    'Cache-Control': `public, max-age=${SPRITE_CACHE_SECONDS}, immutable`,
+    'Cache-Control': `public, max-age=${SPRITE_CACHE_SECONDS}`,
     'Content-Type': url.pathname.endsWith('.gif')
       ? 'image/gif'
       : url.pathname.endsWith('.svg')
