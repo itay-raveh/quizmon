@@ -10,7 +10,6 @@ import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { LEAGUE_QUESTION_COUNT, type LeagueView } from '@/domain/quiz/league';
 import '@/features/league/league.css';
-import { HallOfFameRecord } from '@/features/trainer/HallOfFameRecord';
 import {
   exportTrainerArtifact,
   supportsTrainerArtifactSharing,
@@ -19,6 +18,7 @@ import { readPlayerData } from '@/lib/storage/player-storage';
 import { useEffect, useRef, useState } from 'react';
 import { LeagueProgress } from './LeagueProgress';
 import { LeagueTrophy } from './LeagueTrophy';
+import { HallOfFameRecord } from './HallOfFameRecord';
 
 interface LeagueDestinationProps {
   catalog: PokemonCatalog;

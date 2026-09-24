@@ -9,7 +9,7 @@ import {
   arrangeGroup,
   fallbackSpriteMeasurements,
   unpackSpriteMeasurements,
-} from './hall-portrait';
+} from '@/features/trainer/hall-portrait';
 
 export const HallOfFameRecord = ({
   catalog,
