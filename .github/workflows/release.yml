@@ -119,7 +119,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: 4.127.1
           command: deploy .wrangler/release-worker/index.js --config .wrangler.production.json --no-bundle --keep-vars
       - name: Remove disposable database
         if: always()
