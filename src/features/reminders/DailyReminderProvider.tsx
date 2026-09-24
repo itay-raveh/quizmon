@@ -20,8 +20,6 @@ import {
 import { VAPID_PUBLIC_KEY } from './reminder-config';
 
 const SUBSCRIPTION_ID_KEY = 'quizmon.baseline.daily-reminder-subscription';
-const LAST_COMPLETED_DAILY_KEY =
-  'quizmon.baseline.daily-reminder-last-completed';
 
 const supportsPush = () =>
   'Notification' in window &&
@@ -53,10 +51,7 @@ const registerSubscription = async (
     body: JSON.stringify({
       version: 1,
       completedDate:
-        readDailyState(today).completed.length > 0
-          ? today
-          : (readStoredValue('localStorage', LAST_COMPLETED_DAILY_KEY) ??
-            undefined),
+        readDailyState(today).completed.length > 0 ? today : undefined,
       subscription: subscription.toJSON(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     }),
@@ -165,7 +160,6 @@ export const DailyReminderProvider = ({
   }, []);
 
   const recordDailyCompletion = useCallback((date: string) => {
-    writeStoredValue('localStorage', LAST_COMPLETED_DAILY_KEY, date);
     const id = readStoredValue('localStorage', SUBSCRIPTION_ID_KEY);
     if (!id) return;
 
