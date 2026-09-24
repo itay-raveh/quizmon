@@ -74,7 +74,9 @@ function Standings({
   scope: LeaderboardScope;
   onViewPlayer: (id: string) => void;
 }) {
-  const cacheKey = `${owner}:${mode}:${date}:${scope}`;
+  const dailyDate = mode === 'daily' ? date : '';
+  const dailyCatalog = mode === 'daily' ? catalog : undefined;
+  const cacheKey = `${owner}:${mode}:${dailyDate}:${scope}`;
   const [data, setData] = useState<Leaderboard | undefined>(() =>
     standingsCache.get(`${cacheKey}:`),
   );
@@ -91,17 +93,17 @@ function Standings({
       if (mode === 'daily') {
         let savedId: string | undefined;
         try {
-          savedId = readDailyResult(date, currentDailyTrack)?.puzzleId;
+          savedId = readDailyResult(dailyDate, currentDailyTrack)?.puzzleId;
         } catch {
           // The leaderboard can load before the local save opens.
         }
-        if (!savedId && !catalog)
+        if (!savedId && !dailyCatalog)
           throw new Error('Daily catalog is unavailable.');
         return readDailyLeaderboard(
           owner,
-          date,
+          dailyDate,
           scope,
-          savedId ?? (await getDailyPuzzleId(catalog!, date)),
+          savedId ?? (await getDailyPuzzleId(dailyCatalog!, dailyDate)),
           request.after,
           controller.signal,
         );
@@ -138,7 +140,7 @@ function Standings({
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [owner, catalog, mode, date, scope, request, cacheKey]);
+  }, [owner, dailyCatalog, mode, dailyDate, scope, request, cacheKey]);
   useEffect(() => {
     const refresh = () => {
       if (document.visibilityState === 'visible' && navigator.onLine)
@@ -401,7 +403,7 @@ export function LeaderboardScreen({
               )}
             </div>
             <Standings
-              key={`${account.owner}:${mode}:${date}:${scope}`}
+              key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}`}
               owner={account.owner}
               catalog={catalog}
               mode={mode}
