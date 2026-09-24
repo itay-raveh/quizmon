@@ -48,9 +48,7 @@ const name = z.string().min(1).max(200);
 const nonnegativeInteger = z.custom<number>(isSafeNonnegativeInteger);
 const finiteNonnegative = z.custom<number>(isFiniteNonnegative);
 const counts = (keys: readonly string[]) =>
-  z
-    .record(z.string(), nonnegativeInteger)
-    .refine((value) => Object.keys(value).every((key) => keys.includes(key)));
+  z.partialRecord(z.enum(keys), nonnegativeInteger);
 const savedQuestionTypes = [...questionTypes, 'champion'] as const;
 const savedResult = z
   .object({

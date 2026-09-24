@@ -71,3 +71,26 @@ it('keeps player-data normalization and recovery error category', () => {
   }
   throw new Error('Expected invalid save');
 });
+
+it('accepts sparse saved counts and rejects unknown count keys', () => {
+  const base = emptyPlayerData();
+  const progress = {
+    ...base.results.progress,
+    correctCategories: { ability: 1 },
+    correctGenerations: { I: 2 },
+    correctQuestionTypes: {},
+  };
+  const results = { ...base.results, progress };
+  expect(parsePlayerData({ ...base, results }).results.progress).toMatchObject(
+    progress,
+  );
+  expect(() =>
+    parsePlayerData({
+      ...base,
+      results: {
+        ...results,
+        progress: { ...progress, correctCategories: { unknown: 1 } },
+      },
+    }),
+  ).toThrow(SaveError);
+});
