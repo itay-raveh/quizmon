@@ -1,4 +1,5 @@
 import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
+import { z } from 'zod';
 import { parseActiveGameSave } from '../../domain/player/active-game';
 import {
   UpdateType,
@@ -36,6 +37,22 @@ import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
 import { applyRoundReceipt } from '../../lib/storage/game-history';
 
 const selectionKey = 'quizmon.baseline.account';
+const syncResponseSchema = z.object({
+  outcomes: z.array(
+    z.discriminatedUnion('status', [
+      z.object({
+        id: z.string(),
+        status: z.literal('accepted'),
+        credited: z.boolean().optional(),
+      }),
+      z.object({
+        id: z.string(),
+        status: z.literal('rejected'),
+        reason: z.string().nullable().optional(),
+      }),
+    ]),
+  ),
+});
 export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
 export const reconnectMessage =
   'Account data changed. Reconnect this device to resume syncing.';
@@ -501,39 +518,32 @@ export function connector(expected: Binding): PowerSyncBackendConnector {
         });
       for (let offset = 0; offset < actions.length; offset += 50) {
         const batch = actions.slice(offset, offset + 50);
-        const result = await accountRequest('/api/sync/changes', {
-          expectedAccountId: expected.id,
-          serverEpoch: expected.serverEpoch,
-          actions: batch,
-        });
+        const result = syncResponseSchema.safeParse(
+          await accountRequest('/api/sync/changes', {
+            expectedAccountId: expected.id,
+            serverEpoch: expected.serverEpoch,
+            actions: batch,
+          }),
+        );
         if (
-          !isRecord(result) ||
-          !Array.isArray(result.outcomes) ||
-          result.outcomes.length !== batch.length
+          (!result.success &&
+            result.error.issues.some(({ path }) => path.length <= 1)) ||
+          (result.success && result.data.outcomes.length !== batch.length)
         )
           throw new Error(
             'The sync response was incomplete. Your progress is still saved here.',
           );
+        if (!result.success) throw new Error('Invalid sync receipt.');
         const seen = new Set<string>();
-        for (const value of result.outcomes as unknown[]) {
-          if (
-            !isRecord(value) ||
-            typeof value.id !== 'string' ||
-            seen.has(value.id)
-          )
-            throw new Error('Invalid sync receipt.');
+        for (const value of result.data.outcomes) {
+          if (seen.has(value.id)) throw new Error('Invalid sync receipt.');
           const action = batch.find((a) => a.id === value.id);
-          if (
-            !action ||
-            !isChoice(value.status, ['accepted', 'rejected']) ||
-            (action.kind === 'round' &&
-              value.status === 'accepted' &&
-              typeof value.credited !== 'boolean')
-          )
-            throw new Error('Invalid sync receipt.');
+          if (!action) throw new Error('Invalid sync receipt.');
           seen.add(value.id);
           if (action.kind === 'round' && value.status === 'accepted') {
-            await applyRoundReceipt(db, action.id, value.credited as boolean);
+            if (typeof value.credited !== 'boolean')
+              throw new Error('Invalid sync receipt.');
+            await applyRoundReceipt(db, action.id, value.credited);
           }
           if (value.status !== 'accepted')
             await db.execute(

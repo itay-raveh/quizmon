@@ -57,6 +57,13 @@ it('leaves malformed sync actions and receipts pending', async () => {
   await expect(upload(db as never)).rejects.toThrow('Invalid sync receipt');
   expect(complete).not.toHaveBeenCalled();
   expect(db.execute).not.toHaveBeenCalled();
+
+  payload = JSON.stringify({ ...action, kind: 'round' });
+  fetch.mockResolvedValue(
+    Response.json({ outcomes: [{ id, status: 'accepted' }] }),
+  );
+  await expect(upload(db as never)).rejects.toThrow('Invalid sync receipt');
+  expect(complete).not.toHaveBeenCalled();
 });
 
 it('does not turn a sign-in configuration failure into a sync failure', async () => {
