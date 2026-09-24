@@ -79,12 +79,20 @@ export const createCatalogClient = (
 const cleanText = (value: string): string =>
   clean(value.replaceAll('\u00ad', '').replace(/pokémon/giu, 'Pokémon'));
 
-const getStats = (pokemon: Pokemon): Record<StatName, number> => {
-  const values = new Map(
-    pokemon.stats.map(({ base_stat, stat }) => [stat.name, base_stat]),
-  );
+export const getStats = (pokemon: Pokemon): Record<StatName, number> => {
   return Object.fromEntries(
-    statNames.map((name) => [name, values.get(name) ?? 0]),
+    statNames.map((name) => {
+      const matches = pokemon.stats.filter(({ stat }) => stat.name === name);
+      const [entry] = matches;
+      if (
+        matches.length !== 1 ||
+        !entry ||
+        !Number.isFinite(entry.base_stat) ||
+        entry.base_stat <= 0
+      )
+        throw new Error(`Invalid ${name} stat for ${pokemon.name}`);
+      return [name, entry.base_stat];
+    }),
   ) as Record<StatName, number>;
 };
 
