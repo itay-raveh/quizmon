@@ -249,7 +249,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
           expectedAccountId: destination.id,
           ...destination,
           datasetId: source.datasetId,
-          linkId: source.datasetId,
           profileCreatedAt: source.save.data.profile?.createdAt,
           merge,
         });
@@ -302,7 +301,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         expectedAccountId: destination.id,
         ...destination,
         datasetId: targetState.datasetId,
-        linkId: targetState.datasetId,
         merge: true,
       });
       const finalState = targetState;
@@ -702,7 +700,6 @@ export async function reconnectAccount() {
       expectedAccountId: current.id,
       ...current,
       datasetId: saved.datasetId,
-      linkId: saved.datasetId,
       merge: true,
     });
     if (!isRecord(linked) || linked.linked !== true)
