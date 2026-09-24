@@ -61,20 +61,14 @@ export interface RoundCompletion {
   discoveries: string[];
   victory: { trainerName: string; pokemon: string[] } | null;
 }
-export interface Action {
+type ActionEnvelope = {
   operationId: string;
   datasetId: string;
   generationId: string;
   payloadVersion: number;
-  kind:
-    | 'completion.record'
-    | 'discoveries.add'
-    | 'profile.patch'
-    | 'preferences.patch'
-    | 'issue.dismiss';
+  kind: string;
   payload: unknown;
-}
-type ActionEnvelope = Omit<Action, 'kind'> & { kind: string };
+};
 function validActionEnvelope(value: unknown): value is ActionEnvelope {
   return (
     isRecord(value) &&
