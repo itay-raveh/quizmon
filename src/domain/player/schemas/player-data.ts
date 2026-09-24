@@ -21,8 +21,14 @@ import {
   hasDailyResultOnDate,
   isDailyTrack,
   parseDailyResultKey,
+  type DailyTrack,
 } from '../../quiz/daily-track.ts';
-import { questionCategories, type GameResult } from '../../quiz/types.ts';
+import {
+  questionCategories,
+  type AnswerSubject,
+  type RoundRules,
+  type ScoreMultipliers,
+} from '../../quiz/types.ts';
 import { SaveError } from '../save-schema.ts';
 import type { PlayerData } from '../player-save.ts';
 import {
@@ -30,7 +36,6 @@ import {
   timerDisplays,
   trainingModes,
 } from '../../settings/types.ts';
-import type { LeagueVictoryRecord } from '../hall-of-fame.ts';
 import {
   normalizeTrainerProfile,
   TRAINER_NAME_MAX_LENGTH,
@@ -44,9 +49,9 @@ const counts = (keys: readonly string[]) =>
 const savedQuestionTypes = [...questionTypes, 'champion'] as const;
 const savedResult = z
   .object({
-    scoreMultipliers: z.custom(isScoreMultipliers).optional(),
-    rules: z.custom(isRoundRules).optional(),
-    dailyTrack: z.custom(isDailyTrack).optional(),
+    scoreMultipliers: z.custom<ScoreMultipliers>(isScoreMultipliers).optional(),
+    rules: z.custom<RoundRules>(isRoundRules).optional(),
+    dailyTrack: z.custom<DailyTrack>(isDailyTrack).optional(),
     puzzleId: z
       .string()
       .regex(/^[a-f0-9]{64}$/)
@@ -57,7 +62,7 @@ const savedResult = z
         cluesUsed: nonnegativeInteger.optional(),
         unassistedSearch: z.boolean().optional(),
         correct: z.boolean(),
-        subject: z.custom(isAnswerSubject).optional(),
+        subject: z.custom<AnswerSubject>(isAnswerSubject).optional(),
         points: nonnegativeInteger,
         questionType: z.enum(savedQuestionTypes).optional(),
         responseMilliseconds: finiteNonnegative.optional(),
@@ -76,8 +81,6 @@ const savedResult = z
     ({ answers, correctCount, questionCount }) =>
       correctCount <= questionCount && answers.length <= questionCount,
   );
-const isSavedResult = (value: unknown): value is GameResult =>
-  savedResult.safeParse(value).success;
 const victoryRecord = z
   .object({
     id: name,
@@ -87,19 +90,17 @@ const victoryRecord = z
       .array(name)
       .min(1)
       .refine((values) => new Set(values).size === values.length),
-    result: z.custom<GameResult>(isSavedResult),
+    result: savedResult,
   })
   .refine(
     ({ result }) =>
       isLeagueVictory(result) &&
       result.answers.every((answer) => answer.correct),
   );
-const isVictoryRecord = (value: unknown): value is LeagueVictoryRecord =>
-  victoryRecord.safeParse(value).success;
 const results = z
   .object({
-    daily: z.record(z.string(), z.custom<GameResult>(isSavedResult)),
-    training: z.record(z.string(), z.custom<GameResult>(isSavedResult)),
+    daily: z.record(z.string(), savedResult),
+    training: z.record(z.string(), savedResult),
     progress: z.object({
       championAnswersWithoutClues: nonnegativeInteger,
       correctCategories: counts(questionCategories),
@@ -168,7 +169,7 @@ const playerData = z.object({
   generationPromptAnswered: z.boolean(),
   pokedex: z.array(name),
   hallOfFame: z
-    .array(z.custom<LeagueVictoryRecord>(isVictoryRecord))
+    .array(victoryRecord)
     .refine(
       (records) => new Set(records.map(({ id }) => id)).size === records.length,
     ),
