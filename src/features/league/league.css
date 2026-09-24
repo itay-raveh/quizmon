@@ -48,7 +48,7 @@
   text-decoration: none;
 }
 
-.league-hall__navigation [aria-current='page'] {
+.league-hall__navigation [aria-pressed='true'] {
   color: var(--navy);
   background: var(--hall-gold);
 }
