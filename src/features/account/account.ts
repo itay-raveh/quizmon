@@ -37,6 +37,8 @@ import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
 import { applyRoundReceipt } from '../../lib/storage/game-history';
 
 const selectionKey = 'quizmon.baseline.account';
+const pruneAcknowledgedActions =
+  "DELETE FROM local_actions WHERE id NOT IN (SELECT id FROM pending_actions) AND id NOT IN (SELECT substr(id,9) FROM local_state WHERE id LIKE 'failure:%')";
 const syncResponseSchema = z.object({
   outcomes: z.array(
     z.discriminatedUnion('status', [
@@ -572,6 +574,7 @@ export function connector(expected: Binding): PowerSyncBackendConnector {
           action.id,
         ]);
       await transaction.complete();
+      await db.execute(pruneAcknowledgedActions);
       void refresh();
     },
   };
@@ -671,6 +674,7 @@ export async function startAccountSync() {
   if (!state.account) return;
   binding = state.account;
   account = getPlayerDatabase();
+  await account.execute(pruneAcknowledgedActions);
   update({ owner: binding.id });
   const changed = () => {
     void refresh();

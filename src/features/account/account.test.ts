@@ -75,9 +75,13 @@ it('clears acknowledged pending actions before completing the upload queue', asy
     payload: { id },
   };
   let pending = true;
+  let localAction = true;
+  let attempts = 0;
   const complete = vi.fn(() => {
     expect(pending).toBe(false);
-    throw new Error('tab stopped after upload completion');
+    if (++attempts === 1)
+      throw new Error('tab stopped after upload completion');
+    return Promise.resolve();
   });
   const db = {
     getNextCrudTransaction: () =>
@@ -92,30 +96,35 @@ it('clears acknowledged pending actions before completing the upload queue', asy
         ],
         complete,
       }),
-    execute: vi.fn(() => {
-      pending = false;
+    execute: vi.fn((query: string) => {
+      if (query.startsWith('DELETE FROM pending_actions')) pending = false;
+      if (query.startsWith('DELETE FROM local_actions')) localAction = false;
       return Promise.resolve();
     }),
   };
   vi.stubGlobal(
     'fetch',
-    vi
-      .fn()
-      .mockResolvedValue(
+    vi.fn(() =>
+      Promise.resolve(
         Response.json({ outcomes: [{ id, status: 'accepted' }] }),
       ),
+    ),
   );
 
-  await expect(
-    connector({
-      id: crypto.randomUUID(),
-      serverEpoch: crypto.randomUUID(),
-    }).uploadData(db as never),
-  ).rejects.toThrow('tab stopped after upload completion');
+  const upload = connector({
+    id: crypto.randomUUID(),
+    serverEpoch: crypto.randomUUID(),
+  }).uploadData;
+  await expect(upload(db as never)).rejects.toThrow(
+    'tab stopped after upload completion',
+  );
+  expect(localAction).toBe(true);
   expect(db.execute).toHaveBeenCalledWith(
     'DELETE FROM pending_actions WHERE id = ?',
     [id],
   );
+  await upload(db as never);
+  expect(localAction).toBe(false);
 });
 
 it('does not turn a sign-in configuration failure into a sync failure', async () => {
