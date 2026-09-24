@@ -564,7 +564,6 @@ async function refreshAccount() {
   const [count] = await account.getAll<{ count: number }>(
     'SELECT COUNT(*) AS count FROM pending_actions',
   );
-  const unresolved = issues.filter((issue) => !issue.resolving);
   const status = account.currentStatus;
   const uploadError = navigator.onLine ? status.uploadError : undefined;
   const downloadError = navigator.onLine ? status.downloadError : undefined;
@@ -572,7 +571,7 @@ async function refreshAccount() {
   update({
     pending: count?.count ?? 0,
     issues,
-    status: unresolved.length
+    status: issues.length
       ? 'Some changes need your review.'
       : !navigator.onLine
         ? 'Saved on this device. Will sync when connected.'

@@ -1,5 +1,4 @@
 import { isRecord } from '../validation';
-import type { EditUnit, EditValue } from '../../domain/sync/progress';
 import type { LocalRow, LocalTransaction } from './local-database';
 import {
   appendLocalAction,
@@ -12,14 +11,7 @@ export interface AccountIssue {
   operationId: string;
   reason: string;
   payload: unknown;
-  resolving: boolean;
   reapplicable?: boolean;
-  edit?: {
-    unit: EditUnit;
-    requested: EditValue;
-    accepted: EditValue;
-    revision: number;
-  };
 }
 
 export async function readAccountIssues(
@@ -50,7 +42,6 @@ export async function readAccountIssues(
       operationId: row.id,
       reason,
       payload: action.payload,
-      resolving: false,
       reapplicable: action.kind === 'edit' && reason === 'needs_review',
     };
   });

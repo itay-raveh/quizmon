@@ -731,20 +731,6 @@
   }
 }
 
-.account-conflicts__values {
-  display: grid;
-  gap: 0.35rem;
-  overflow-wrap: anywhere;
-}
-
-.account-conflicts__values dt {
-  font-weight: 700;
-}
-
-.account-conflicts__values dd {
-  margin: 0 0 0.7rem;
-}
-
 .selection-grid--forms {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
