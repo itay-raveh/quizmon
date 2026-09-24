@@ -6,7 +6,6 @@ import {
   getModeLabel,
 } from '@/domain/pokemon/format';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
-import { getDailyUrl } from '../daily/daily-url';
 
 interface ShareContent {
   text: string;
@@ -37,7 +36,10 @@ export const buildShareContent = (
     title: `${site.name} · ${
       mode.kind === 'daily' ? formatDailyDate(mode.date) : getModeLabel(mode)
     }`,
-    url: mode.kind === 'daily' ? getDailyUrl(mode.date) : site.url,
+    url:
+      mode.kind === 'daily'
+        ? new URL(`/daily/${mode.date}`, site.url).toString()
+        : site.url,
   };
 };
 
