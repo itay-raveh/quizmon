@@ -1,4 +1,4 @@
-import { localTables, type LocalRow } from './local-database';
+import { localTables } from './local-database';
 import {
   SAVE_SCHEMA_VERSION,
   parsePlayerSave,
@@ -41,14 +41,14 @@ export const createRecoveryExport = async () => ({
       await Promise.all(
         [
           ...localTables,
-          ...(!canRecoverGuestSave() ? ['pending_actions'] : []),
+          ...(!canRecoverGuestSave()
+            ? ['pending_actions', 'player', 'round']
+            : []),
         ].map(
           async (table) =>
             [
               table,
-              await transaction.getAll<LocalRow>(
-                `SELECT id,payload FROM ${table}`,
-              ),
+              await transaction.getAll(`SELECT * FROM ${table}`),
             ] as const,
         ),
       ),
