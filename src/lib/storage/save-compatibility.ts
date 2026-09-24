@@ -9,8 +9,8 @@ import {
 } from '../../domain/sync/progress.ts';
 import { archiveCompletion } from '../../domain/sync/round-facts.ts';
 import { parseActiveGameSave } from '../../domain/player/active-game.ts';
-import { openLegacyLocalDatabase, type LocalRow } from './local-database.ts';
-import { parseLegacyLocalPlayerState } from './legacy-local-state.ts';
+import { openLocalDatabaseV1, type LocalRow } from './local-database.ts';
+import { parseSavedPlayerStateV1 } from './saved-state-v1.ts';
 
 const editUnit = {
   name: 'name',
@@ -35,7 +35,7 @@ function convertTraining(value: TrainingConfig) {
   };
 }
 
-export function convertLegacyAction(action: Action) {
+export function convertSavedActionV1(action: Action) {
   if (action.kind === 'completion.record') {
     const completion = readRecordedGame(action.payload);
     if (
@@ -74,7 +74,7 @@ export function convertLegacyAction(action: Action) {
   return null;
 }
 
-export async function convertLegacyDatabase(
+export async function convertSavedDatabaseV1(
   target: PowerSyncDatabase,
   accountId?: string,
 ) {
@@ -82,14 +82,14 @@ export async function convertLegacyDatabase(
     "SELECT id,payload FROM local_state WHERE id = 'player'",
   );
   if (already) return false;
-  const old = openLegacyLocalDatabase(accountId);
+  const old = openLocalDatabaseV1(accountId);
   try {
     await old.init();
     const [saved] = await old.getAll<LocalRow>(
       "SELECT id,payload FROM local_state WHERE id = 'player'",
     );
     if (!saved) return false;
-    const state = parseLegacyLocalPlayerState(JSON.parse(saved.payload));
+    const state = parseSavedPlayerStateV1(JSON.parse(saved.payload));
     if (accountId && state.account?.id !== accountId)
       throw new Error('The old account save belongs to another account.');
     const [completions, actions, pending, rounds, closed, failures] =
@@ -114,7 +114,7 @@ export async function convertLegacyDatabase(
       const action: unknown = JSON.parse(row.payload);
       if (!validAction(action) || action.operationId !== row.id)
         throw new Error('An old browser change cannot be converted.');
-      const converted = convertLegacyAction(action);
+      const converted = convertSavedActionV1(action);
       if (converted) convertedActions.set(row.id, JSON.stringify(converted));
       else if (action.kind === 'discoveries.add') discardedDiscoveries++;
       else if (action.kind === 'issue.dismiss') discardedDismissals++;

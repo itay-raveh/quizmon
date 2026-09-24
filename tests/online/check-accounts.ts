@@ -156,32 +156,32 @@ try {
     [first.id],
   );
   assert.equal(player.rows[0]?.name, 'Later');
-  const legacyId = crypto.randomUUID();
-  const legacy = {
-    operationId: legacyId,
+  const previousId = crypto.randomUUID();
+  const previousAction = {
+    operationId: previousId,
     datasetId,
     generationId: crypto.randomUUID(),
     payloadVersion: 1,
     kind: 'profile.patch',
     payload: { unit: 'name', value: 'Earlier', expectedRevision: 0 },
   };
-  const legacyHash = await hash(legacy);
+  const previousHash = await hash(previousAction);
   await database.pool.query(
     "INSERT INTO op(id,player_id,hash,status) VALUES ($1,$2,$3,'accepted')",
-    [legacyId, first.id, legacyHash],
+    [previousId, first.id, previousHash],
   );
-  const migratedRetry = {
-    id: legacyId,
+  const savedRetry = {
+    id: previousId,
     datasetId,
     kind: 'edit',
     payload: {
-      id: legacyId,
+      id: previousId,
       unit: 'name',
       value: 'Earlier',
-      legacy_hash: legacyHash,
+      legacy_hash: previousHash,
     },
   };
-  assert.equal((await send([migratedRetry])).status, 200);
+  assert.equal((await send([savedRetry])).status, 200);
   assert.equal(
     (
       await database.pool.query<{ name: string }>(
@@ -216,7 +216,7 @@ try {
   );
   assert.equal(deleted.rows[0]?.count, '0');
   process.stdout.write(
-    'new database API, Daily admission, historical replay, friend pair, retries, export, epoch fence, and cascade passed\n',
+    'account API, Daily admission, historical replay, friend pair, retries, export, epoch fence, and cascade passed\n',
   );
 } finally {
   await worker?.close();

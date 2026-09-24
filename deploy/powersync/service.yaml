@@ -3,15 +3,15 @@ telemetry:
 replication:
   connections:
     - type: postgresql
-      uri: postgresql://postgres:unused@db:5432/quizmon_new
+      uri: postgresql://postgres:unused@db:5432/quizmon
       sslmode: disable
 storage:
   type: postgresql
-  uri: postgresql://postgres:unused@db:5432/powersync_new
+  uri: postgresql://postgres:unused@db:5432/powersync
   sslmode: disable
 port: 8080
 sync_config:
   path: /config/sync-config.yaml
 client_auth:
   jwks_uri: http://host.docker.internal:8790/api/auth/jwks
-  audience: [quizmon-pilot]
+  audience: [quizmon]

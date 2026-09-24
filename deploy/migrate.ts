@@ -9,7 +9,7 @@ const admin = new Client({
 });
 await admin.connect();
 try {
-  for (const name of ['quizmon_new', 'powersync_new']) {
+  for (const name of ['quizmon', 'powersync']) {
     const exists = await admin.query(
       'SELECT 1 FROM pg_database WHERE datname=$1',
       [name],
@@ -21,7 +21,7 @@ try {
 }
 
 await migrateDatabase({
-  connectionString: 'postgresql://postgres@127.0.0.1:5548/quizmon_new',
+  connectionString: 'postgresql://postgres@127.0.0.1:5548/quizmon',
   migrationsFolder: fileURLToPath(
     new URL('../server/migrations', import.meta.url),
   ),

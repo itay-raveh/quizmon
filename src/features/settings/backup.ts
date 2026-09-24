@@ -8,8 +8,8 @@ import { downloadJson } from '../../lib/download';
 import { rebuildGuestProgress } from '../../lib/storage/game-history';
 import { getSaveIssue, clearSaveIssue } from '../../lib/storage/save-health';
 import { readAccountIssues } from '../../lib/storage/account-issues';
-import { convertLegacyAction } from '../../lib/storage/legacy-conversion';
-import { parseLegacyLocalPlayerState } from '../../lib/storage/legacy-local-state';
+import { convertSavedActionV1 } from '../../lib/storage/save-compatibility';
+import { parseSavedPlayerStateV1 } from '../../lib/storage/saved-state-v1';
 import { localTables, type LocalRow } from '../../lib/storage/local-database';
 import {
   getPlayerDatabase,
@@ -123,8 +123,8 @@ function readRows(
   return rows;
 }
 
-function legacyBackup(value: Record<string, unknown>): PlayerBackup {
-  const old = parseLegacyLocalPlayerState(value.state);
+function convertBackupV1(value: Record<string, unknown>): PlayerBackup {
+  const old = parseSavedPlayerStateV1(value.state);
   if (!isRecord(value.records))
     throw new Error('The backup contains invalid local records.');
   const records = value.records;
@@ -132,7 +132,7 @@ function legacyBackup(value: Record<string, unknown>): PlayerBackup {
     const action: unknown = JSON.parse(row.payload);
     if (!validAction(action) || action.operationId !== row.id)
       throw new Error('The backup contains an invalid old action.');
-    const converted = convertLegacyAction(action);
+    const converted = convertSavedActionV1(action);
     return converted
       ? [{ id: row.id, payload: JSON.stringify(converted) }]
       : [];
@@ -222,7 +222,7 @@ export const parseBackup = (text: string): PlayerBackup => {
     throw new Error(
       'This backup uses an unsupported version. Update Quizmon or choose another backup.',
     );
-  const value = raw.version === 1 ? legacyBackup(raw) : raw;
+  const value = raw.version === 1 ? convertBackupV1(raw) : raw;
   const state = parseLocalPlayerState(value.state);
   if (!isRecord(value.records))
     throw new Error('The backup contains invalid local records.');

@@ -41,7 +41,7 @@ describe('normalizeGameSettings', () => {
     ).toBe('custom');
   });
 
-  it('preserves legacy League and Custom generation rules', () => {
+  it('preserves saved League and Custom generation rules', () => {
     expect(
       getTrainingSettings({
         ...defaultGameSettings,

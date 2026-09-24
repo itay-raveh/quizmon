@@ -33,7 +33,7 @@
   },
   "vars": {
     "POWERSYNC_URL": "http://127.0.0.1:8089",
-    "POWERSYNC_AUDIENCE": "quizmon-pilot",
+    "POWERSYNC_AUDIENCE": "quizmon",
     "AUTH_ORIGIN": "http://localhost:4188",
     "MAIL_DELIVERY": "test-mailbox",
     "MAIL_FROM": "",
@@ -47,7 +47,7 @@
     {
       "binding": "ACCOUNT_DB",
       "id": "00000000000000000000000000000000",
-      "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon_new",
+      "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon",
     },
   ],
   "exports": {
