@@ -81,6 +81,14 @@ try {
   const { credited: _credited, ...upload } = round;
   void _credited;
   const action = { id: round.id, datasetId, kind: 'round', payload: upload };
+  assert.deepEqual(
+    await json(
+      await send([{ ...action, payload: { id: crypto.randomUUID() } }]),
+    ),
+    {
+      error: 'invalid_actions',
+    },
+  );
   const accepted = await json(await send([action]));
   assert.deepEqual((accepted.outcomes as unknown[])[0], {
     id: round.id,

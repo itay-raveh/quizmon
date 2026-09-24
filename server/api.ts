@@ -10,9 +10,9 @@ import { bodyLimit } from 'hono/body-limit';
 import { HTTPException } from 'hono/http-exception';
 import { matchedRoutes } from 'hono/route';
 import { Client } from 'pg';
-import { isDailyDate } from '../src/lib/validation.ts';
+import { z } from 'zod';
+import { isDailyDate, isRecord, uuidSchema } from '../src/lib/validation.ts';
 import type { SyncConnection } from '../src/domain/sync/connection.ts';
-import { isRecord } from '../src/lib/validation.ts';
 import { uuid } from '../src/domain/sync/progress.ts';
 import { authPlugins } from './auth-options.ts';
 import { FriendshipError } from './friends.ts';
@@ -35,6 +35,21 @@ import {
 import * as schema from './schema.ts';
 
 const testMailbox = new Map<string, { code: string; createdAt: number }>();
+const syncChangesSchema = z.object({
+  actions: z
+    .array(
+      z
+        .object({
+          id: uuidSchema,
+          datasetId: uuidSchema,
+          kind: z.enum(['round', 'edit']),
+          payload: z.record(z.string(), z.unknown()),
+        })
+        .refine(({ id, payload }) => payload.id === id),
+    )
+    .min(1)
+    .max(100),
+});
 
 export interface AccountServices {
   sync: SyncConnection;
@@ -261,43 +276,24 @@ export function createAccountApi(services: AccountServices) {
     );
   });
   signedIn.post('/sync/changes', async (context) => {
-    const body = context.get('body');
-    if (
-      !Array.isArray(body.actions) ||
-      !body.actions.length ||
-      body.actions.length > 100 ||
-      !body.actions.every(
-        (action: unknown) =>
-          isRecord(action) &&
-          uuid(action.id) &&
-          uuid(action.datasetId) &&
-          (action.kind === 'round' || action.kind === 'edit') &&
-          isRecord(action.payload) &&
-          action.payload.id === action.id,
-      )
-    )
-      return context.json({ error: 'invalid_actions' }, 400);
+    const parsed = syncChangesSchema.safeParse(context.get('body'));
+    if (!parsed.success) return context.json({ error: 'invalid_actions' }, 400);
     const outcomes = [];
-    for (const item of body.actions as unknown[]) {
-      if (!isRecord(item)) throw new Error('Validated action is missing.');
-      const datasetId = item.datasetId;
-      if (typeof datasetId !== 'string' || !uuid(datasetId))
-        throw new Error('Validated dataset is missing.');
-      const action = item;
+    for (const action of parsed.data.actions) {
       try {
         outcomes.push(
           action.kind === 'round'
             ? await submitRound(
                 context.get('db'),
                 context.get('accountId'),
-                datasetId,
+                action.datasetId,
                 context.get('state').epoch,
                 action.payload,
               )
             : await applyEdit(
                 context.get('db'),
                 context.get('accountId'),
-                datasetId,
+                action.datasetId,
                 context.get('state').epoch,
                 action.payload,
               ),
