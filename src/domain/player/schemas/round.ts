@@ -11,9 +11,8 @@ import {
   type AnswerSubject,
   type GameMode,
   type QuestionData,
-  type ScoreMultipliers,
 } from '../../quiz/types.ts';
-import { isScoreMultipliers } from '../../quiz/score-multipliers.ts';
+import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
 import { isDailyTrack } from '../../quiz/daily-track.ts';
 import {
@@ -67,7 +66,7 @@ const round = z
     version: z.literal(SAVE_SCHEMA_VERSION),
     completedAt: utcTimestampSchema.optional(),
     startedOn: dailyDateSchema.optional(),
-    scoreMultipliers: z.custom<ScoreMultipliers>(isScoreMultipliers).optional(),
+    scoreMultipliers: scoreMultipliersSchema.optional(),
     contentVersion: nonnegativeInteger,
     elapsedMilliseconds: finiteNonnegative,
     questionCount: nonnegativeInteger.min(1),

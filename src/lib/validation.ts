@@ -9,14 +9,6 @@ export const isChoice = <T extends string>(
   choices: readonly T[],
 ): value is T => typeof value === 'string' && choices.includes(value as T);
 
-export const isNonemptyChoiceArray = (
-  value: unknown,
-  choices: readonly string[],
-): boolean =>
-  Array.isArray(value) &&
-  value.length > 0 &&
-  value.every((entry) => isChoice(entry, choices));
-
 export const utcTimestampSchema = z.iso.datetime({ precision: 3 });
 export const dailyDateSchema = z.iso.date();
 export const uuidSchema = z.uuidv4();

@@ -1,52 +1,45 @@
+import { z } from 'zod';
 import type { GameSettings } from '../settings/types.ts';
 import { type Difficulty } from './difficulty.ts';
 import type { QuestionData, QuestionType } from './types.ts';
-import { isRecord } from '../../lib/validation.ts';
 import { generations } from '../pokemon/types.ts';
 import { formGroups } from '../pokemon/types.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { difficultySchema } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
-import { type ScoreMultipliers } from './types.ts';
 
-const savedQuestionTypes: readonly string[] = [...questionTypes];
+export const scoreMultipliersSchema = z
+  .object({
+    difficulty: difficultySchema,
+    generations: z.int().min(1).max(generations.length),
+    formGroupCount: z.int().min(0).max(formGroups.length).optional(),
+    questionMix: z.number().min(0.75).max(1.25).optional(),
+    perQuestion: z.literal(true).optional(),
+    questionTypes: z
+      .array(
+        z.object({
+          questionType: z.enum(questionTypes),
+          multiplier: z.literal([0.75, 1, 1.25]),
+        }),
+      )
+      .min(1)
+      .refine(
+        (factors) =>
+          new Set(factors.map(({ questionType }) => questionType)).size ===
+          factors.length,
+      ),
+  })
+  .refine(
+    ({ perQuestion, questionMix }) => !perQuestion || questionMix === undefined,
+  );
+
+export type ScoreMultipliers = z.infer<typeof scoreMultipliersSchema>;
 const formGroupGenerations = new Map(
   formGroups.map((group) => [group, new Set<string>()]),
 );
 for (const [name, generation] of Object.entries(pokemonGenerations))
   formGroupGenerations.get(getFormGroup(name))?.add(generation);
-
-export const isScoreMultipliers = (value: unknown): value is ScoreMultipliers =>
-  isRecord(value) &&
-  difficultySchema.safeParse(value.difficulty).success &&
-  typeof value.generations === 'number' &&
-  Number.isInteger(value.generations) &&
-  value.generations >= 1 &&
-  value.generations <= generations.length &&
-  (value.formGroupCount === undefined ||
-    (typeof value.formGroupCount === 'number' &&
-      Number.isInteger(value.formGroupCount) &&
-      value.formGroupCount >= 0 &&
-      value.formGroupCount <= formGroups.length)) &&
-  (value.questionMix === undefined ||
-    (typeof value.questionMix === 'number' &&
-      Number.isFinite(value.questionMix) &&
-      value.questionMix >= 0.75 &&
-      value.questionMix <= 1.25)) &&
-  (value.perQuestion === undefined || value.perQuestion === true) &&
-  !(value.perQuestion && value.questionMix !== undefined) &&
-  Array.isArray(value.questionTypes) &&
-  value.questionTypes.length > 0 &&
-  value.questionTypes.every(
-    (entry: unknown): entry is ScoreMultipliers['questionTypes'][number] =>
-      isRecord(entry) &&
-      typeof entry.questionType === 'string' &&
-      savedQuestionTypes.includes(entry.questionType) &&
-      [0.75, 1, 1.25].includes(entry.multiplier as number),
-  ) &&
-  new Set(value.questionTypes.map((entry) => entry.questionType)).size ===
-    value.questionTypes.length;
 
 export const getQuestionTypesMultiplier = (
   factors: ScoreMultipliers['questionTypes'],

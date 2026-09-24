@@ -1,24 +1,21 @@
+import { z } from 'zod';
 import type { GameSettings } from '../settings/types.ts';
 import type { QuestionData } from './types.ts';
-import {
-  isNonemptyChoiceArray,
-  isRecord,
-  isSafeNonnegativeInteger,
-} from '../../lib/validation.ts';
 import { formGroups, generations } from '../pokemon/types.ts';
 import { difficultySchema } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
-import { type GameResult, type RoundRules } from './types.ts';
+import { type GameResult } from './types.ts';
 
-export const isRoundRules = (value: unknown): value is RoundRules =>
-  isRecord(value) &&
-  isSafeNonnegativeInteger(value.version) &&
-  difficultySchema.safeParse(value.difficulty).success &&
-  (value.automaticQuestionTypes === undefined ||
-    isNonemptyChoiceArray(value.automaticQuestionTypes, questionTypes)) &&
-  isNonemptyChoiceArray(value.generations, generations) &&
-  isNonemptyChoiceArray(value.formGroups, formGroups) &&
-  isNonemptyChoiceArray(value.questionTypes, questionTypes);
+export const roundRulesSchema = z.object({
+  automaticQuestionTypes: z.array(z.enum(questionTypes)).min(1).optional(),
+  version: z.int().min(0),
+  difficulty: difficultySchema,
+  generations: z.array(z.enum(generations)).min(1),
+  formGroups: z.array(z.enum(formGroups)).min(1),
+  questionTypes: z.array(z.enum(questionTypes)).min(1),
+});
+
+export type RoundRules = z.infer<typeof roundRulesSchema>;
 
 export const getRulesScoreKey = (
   result: Pick<GameResult, 'contentVersion' | 'scoreVersion' | 'rules'>,

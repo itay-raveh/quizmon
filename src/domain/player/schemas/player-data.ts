@@ -15,8 +15,8 @@ import {
   type QuestionLineup,
 } from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
-import { isRoundRules } from '../../quiz/round-rules.ts';
-import { isScoreMultipliers } from '../../quiz/score-multipliers.ts';
+import { roundRulesSchema } from '../../quiz/round-rules.ts';
+import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { getUnifiedScoreKey } from '../../quiz/scoring.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
 import {
@@ -26,12 +26,7 @@ import {
   parseDailyResultKey,
   type DailyTrack,
 } from '../../quiz/daily-track.ts';
-import {
-  questionCategories,
-  type AnswerSubject,
-  type RoundRules,
-  type ScoreMultipliers,
-} from '../../quiz/types.ts';
+import { questionCategories, type AnswerSubject } from '../../quiz/types.ts';
 import { SaveError } from '../save-schema.ts';
 import type { PlayerData } from '../player-save.ts';
 import {
@@ -52,8 +47,8 @@ const counts = (keys: readonly string[]) =>
 const savedQuestionTypes = [...questionTypes, 'champion'] as const;
 const savedResult = z
   .object({
-    scoreMultipliers: z.custom<ScoreMultipliers>(isScoreMultipliers).optional(),
-    rules: z.custom<RoundRules>(isRoundRules).optional(),
+    scoreMultipliers: scoreMultipliersSchema.optional(),
+    rules: roundRulesSchema.optional(),
     dailyTrack: z.custom<DailyTrack>(isDailyTrack).optional(),
     puzzleId: z
       .string()

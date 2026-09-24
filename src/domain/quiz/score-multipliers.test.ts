@@ -2,7 +2,7 @@ import {
   getQuestionTypeMultiplier,
   getTrainingScoreMultipliers,
   getScoreMultiplier,
-  isScoreMultipliers,
+  scoreMultipliersSchema,
 } from './score-multipliers';
 import type { ScoreMultipliers } from './types';
 
@@ -11,6 +11,8 @@ const multipliers: ScoreMultipliers = {
   generations: 9,
   questionTypes: [{ questionType: 'ev-yields', multiplier: 1.25 }],
 };
+const isScoreMultipliers = (value: unknown) =>
+  scoreMultipliersSchema.safeParse(value).success;
 
 it('adds hard types and penalizes easy types in the combined multiplier', () => {
   expect(getScoreMultiplier(multipliers)).toBe(56.25);

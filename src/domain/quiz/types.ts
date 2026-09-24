@@ -1,5 +1,5 @@
 import type { QuestionRendering } from './question-rendering.ts';
-import type { FormGroup, Generation, StatName } from '../pokemon/types.ts';
+import type { Generation, StatName } from '../pokemon/types.ts';
 import type { Difficulty } from './difficulty.ts';
 import type { DailyTrack } from './daily-track.ts';
 import type { QuestionType } from './questions/definitions.ts';
@@ -219,23 +219,6 @@ export interface GameResult {
   scoreVersion?: number;
 }
 
-export interface ScoreMultipliers {
-  difficulty: Difficulty;
-  generations: number;
-  formGroupCount?: number;
-  questionMix?: number;
-  perQuestion?: true;
-  questionTypes: {
-    questionType: QuestionType;
-    multiplier: 0.75 | 1 | 1.25;
-  }[];
-}
-
-export interface RoundRules {
-  automaticQuestionTypes?: QuestionType[];
-  version: number;
-  difficulty: Difficulty;
-  generations: Generation[];
-  formGroups: FormGroup[];
-  questionTypes: QuestionType[];
-}
+export type { ScoreMultipliers } from './score-multipliers.ts';
+import type { ScoreMultipliers } from './score-multipliers.ts';
+import type { RoundRules } from './round-rules.ts';
