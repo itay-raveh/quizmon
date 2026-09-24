@@ -37,6 +37,7 @@ export type LocalAction = {
   payload: unknown;
 };
 let accountDatabase = false;
+let openedAccountId: string | undefined;
 let database: ReturnType<typeof openLocalDatabase> | undefined;
 let snapshot: LocalPlayerState | undefined;
 let initialization: Promise<void> | undefined;
@@ -169,6 +170,7 @@ const refresh = async () => {
 export const initializePlayerStorage = (accountId?: string): Promise<void> => {
   initialization ??= (async () => {
     accountDatabase = Boolean(accountId);
+    openedAccountId = accountId;
     database = openLocalDatabase(accountId);
     await database.init();
     await convertSavedDatabaseV1(database, accountId);
@@ -176,7 +178,11 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
       "SELECT id,payload FROM local_state WHERE id = 'player'",
     );
     const parsed = stored && parseLocalPlayerState(JSON.parse(stored.payload));
-    if (!parsed || JSON.stringify(parsed) !== stored.payload) {
+    if (
+      !parsed ||
+      !parsed.account ||
+      JSON.stringify(parsed) !== stored.payload
+    ) {
       await database.writeTransaction(async (transaction) => {
         const rows = await transaction.getAll<LocalRow>(
           "SELECT id,payload FROM local_state WHERE id = 'player'",
@@ -437,6 +443,7 @@ export const createPlayerSave = (): PlayerSave => ({
 });
 
 export const canRecoverGuestSave = () => !accountDatabase && !snapshot?.account;
+export const canRecoverAccountSave = () => Boolean(openedAccountId);
 export const recoveryDatabase = () => {
   if (!database) throw new Error('Saved data is unavailable.');
   return database;
@@ -446,8 +453,12 @@ export const recoverPlayer = async <T>(
     state: LocalPlayerState,
     transaction: LocalTransaction,
   ) => Promise<T>,
+  accountBackup?: LocalPlayerState,
 ): Promise<T> => {
-  if (!canRecoverGuestSave())
+  if (accountBackup) {
+    if (!openedAccountId || accountBackup.account?.id !== openedAccountId)
+      throw new Error('This backup belongs to a different account.');
+  } else if (!canRecoverGuestSave())
     throw new Error('Account progress cannot be reset or replaced.');
   const write = () =>
     recoveryDatabase().writeTransaction(async (transaction) => {
@@ -456,12 +467,21 @@ export const recoverPlayer = async <T>(
       );
       if (handoff)
         throw new Error('Finish signing in before restoring this save.');
-      const state: LocalPlayerState = {
-        version: 2,
-        datasetId: crypto.randomUUID(),
-        dailyAttempts: {},
-        save: createPlayerSave(),
-      };
+      const state: LocalPlayerState = accountBackup
+        ? {
+            ...structuredClone(accountBackup),
+            dailyAttempts: {},
+            save: {
+              ...accountBackup.save,
+              restoreId: crypto.randomUUID(),
+            },
+          }
+        : {
+            version: 2,
+            datasetId: crypto.randomUUID(),
+            dailyAttempts: {},
+            save: createPlayerSave(),
+          };
       const result = await callback(state, transaction);
       state.save = parsePlayerSave(state.save);
       await writeState(transaction, state);

@@ -1,9 +1,13 @@
-import { canRecoverGuestSave } from '@/lib/storage/player-storage';
+import {
+  canRecoverAccountSave,
+  canRecoverGuestSave,
+} from '@/lib/storage/player-storage';
 import { Footer } from '@/app/Footer';
 import { BugReportButton } from '@/app/BugReportButton';
 import { Logo } from '@/app/Logo';
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
+import { AccountSettings } from '@/features/account/AccountSettings';
 import { SAVE_SCHEMA_VERSION } from '@/domain/player/player-save';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
 import { useModalDialog } from '@/hooks/useModalDialog';
@@ -22,6 +26,7 @@ import {
   parseBackup,
   restoreBackup,
   validateBackupSize,
+  verifyAccountBackupRecovery,
   type PlayerBackup,
 } from './backup';
 
@@ -57,6 +62,7 @@ const SaveRecoveryDialog = ({
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [needsSignIn, setNeedsSignIn] = useState(false);
   const { dialogProps } = useModalDialog(() => {}, { initialFocus: heading });
   const copy = messages[issue.kind];
   const act = async (action: () => void | Promise<void>) => {
@@ -64,9 +70,11 @@ const SaveRecoveryDialog = ({
     try {
       setBusy(true);
       await action();
-    } catch {
+    } catch (failure) {
       setError(
-        'Your browser could not complete that action. Your existing data has not been cleared.',
+        failure instanceof Error
+          ? failure.message
+          : 'Your browser could not complete that action. Your existing data has not been cleared.',
       );
     } finally {
       setBusy(false);
@@ -77,15 +85,23 @@ const SaveRecoveryDialog = ({
     setPreview(null);
     setError('');
     setConfirmReset(false);
+    let accountBackup = false;
     try {
       validateBackupSize(file.size);
       const backup = parseBackup(await file.text());
-      if (backup.state.account)
+      accountBackup = Boolean(backup.state.account);
+      if (backup.state.account && canRecoverAccountSave())
+        await verifyAccountBackupRecovery(backup);
+      else if (backup.state.account || !canRecoverGuestSave())
         throw new Error(
-          'Choose a guest backup. Account backups require signing in to the same account.',
+          canRecoverGuestSave()
+            ? 'Choose a guest backup for this save.'
+            : 'Choose a backup from this account.',
         );
+      setNeedsSignIn(false);
       setPreview(backup);
     } catch (failure) {
+      if (accountBackup && canRecoverAccountSave()) setNeedsSignIn(true);
       setError(
         failure instanceof Error
           ? failure.message
@@ -139,15 +155,16 @@ const SaveRecoveryDialog = ({
         <GameButton tone="quiet" disabled={busy} onClick={onRetry}>
           Try again
         </GameButton>
-        {issue.kind !== 'unavailable' && canRecoverGuestSave() && (
-          <GameButton
-            tone="quiet"
-            disabled={busy}
-            onClick={() => input.current?.click()}
-          >
-            {busy ? 'Reading backup…' : 'Restore backup'}
-          </GameButton>
-        )}
+        {issue.kind !== 'unavailable' &&
+          (canRecoverGuestSave() || canRecoverAccountSave()) && (
+            <GameButton
+              tone="quiet"
+              disabled={busy}
+              onClick={() => input.current?.click()}
+            >
+              {busy ? 'Reading backup…' : 'Restore backup'}
+            </GameButton>
+          )}
       </div>
       <input
         ref={input}
@@ -167,6 +184,7 @@ const SaveRecoveryDialog = ({
           {error}
         </p>
       )}
+      {needsSignIn && <AccountSettings recoverySignIn />}
       {preview && (
         <section
           className="save-recovery__confirmation"
@@ -176,8 +194,10 @@ const SaveRecoveryDialog = ({
           <p>
             {preview.state.save.data.pokedex.length} Pokédex entries and{' '}
             {Object.keys(preview.state.save.data.results.daily).length} Daily
-            results. This replaces saved progress, profile, settings, and
-            unfinished rounds on this device.
+            results.{' '}
+            {preview.state.account
+              ? 'This restores local account data. Synced account history remains authoritative.'
+              : 'This replaces saved progress, profile, settings, and unfinished rounds on this device.'}
           </p>
           <div className="save-recovery__actions">
             <GameButton

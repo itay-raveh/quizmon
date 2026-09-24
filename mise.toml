@@ -32,7 +32,7 @@ run = [
   "npm run check:dead-code",
   "npm test",
   "npm run test:online",
-  "npm run check:chart",
+  "mise run check:chart",
   "npm run build",
   "prek validate-config prek.toml",
   "npm run deploy:dry-run",
@@ -40,6 +40,16 @@ run = [
   "zizmor --offline .github/workflows",
   "lychee --offline --include-fragments --root-dir \"$PWD/dist\" dist/index.html",
   "lychee --offline --include-fragments README.md",
+]
+
+[tasks."check:chart"]
+description = "Validate the Helm chart and its migration and PowerSync wiring"
+run = [
+  "helm lint --strict charts/quizmon -f tests/online/chart-values.yaml",
+  "mkdir -p .wrangler",
+  "helm template rehearsal charts/quizmon --namespace quizmon-test -f tests/online/chart-values.yaml > .wrangler/chart-rendered.yaml",
+  "kubeconform -strict -summary -kubernetes-version 1.34.0 .wrangler/chart-rendered.yaml",
+  "node tests/online/check-helm-chart.ts < .wrangler/chart-rendered.yaml",
 ]
 
 [tasks."badges:export"]

@@ -129,9 +129,12 @@ try {
   );
   assert.equal(credited.rows[0]?.count, '1');
   const replay = archiveCompletion(
-    completion(datasetId, 'daily', { dailyDate: '2026-09-12' }),
+    completion(datasetId, 'daily', {
+      dailyDate: '2026-09-12',
+      completedAt: '2026-09-13T00:01:00.000Z',
+    }),
     true,
-    '2026-09-13',
+    '2026-09-12',
   );
   assert.equal((await send([daily(replay)])).status, 200);
   assert.equal(

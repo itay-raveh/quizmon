@@ -1,9 +1,11 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { UpdateType } from '@powersync/web';
 import * as storage from '../../lib/storage/player-storage';
+import * as saveHealth from '../../lib/storage/save-health';
 import {
   accountSnapshot,
   connector,
+  continueSignIn,
   loadAccountConfig,
   reconnectAccount,
 } from './account';
@@ -11,6 +13,27 @@ import {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+it('reauthenticates for save recovery without reading the damaged account state', async () => {
+  const owner = crypto.randomUUID();
+  vi.spyOn(saveHealth, 'getSaveIssue').mockReturnValue({
+    kind: 'invalid',
+    message: 'Damaged account save.',
+  });
+  const readState = vi.spyOn(storage, 'readState');
+  vi.stubGlobal('localStorage', { getItem: () => owner });
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(() =>
+      Promise.resolve(
+        Response.json({ id: owner, serverEpoch: crypto.randomUUID() }),
+      ),
+    ),
+  );
+
+  await continueSignIn();
+  expect(readState).not.toHaveBeenCalled();
 });
 
 it('leaves malformed sync actions and receipts pending', async () => {
@@ -64,6 +87,67 @@ it('leaves malformed sync actions and receipts pending', async () => {
   );
   await expect(upload(db as never)).rejects.toThrow('Invalid sync receipt');
   expect(complete).not.toHaveBeenCalled();
+});
+
+it('clears acknowledged pending actions before completing the upload queue', async () => {
+  const id = crypto.randomUUID();
+  const action = {
+    id,
+    datasetId: crypto.randomUUID(),
+    kind: 'edit',
+    payload: { id },
+  };
+  let pending = true;
+  let localAction = true;
+  let attempts = 0;
+  const complete = vi.fn(() => {
+    expect(pending).toBe(false);
+    if (++attempts === 1)
+      throw new Error('tab stopped after upload completion');
+    return Promise.resolve();
+  });
+  const db = {
+    getNextCrudTransaction: () =>
+      Promise.resolve({
+        crud: [
+          {
+            table: 'pending_actions',
+            op: UpdateType.PUT,
+            id,
+            opData: { payload: JSON.stringify(action) },
+          },
+        ],
+        complete,
+      }),
+    execute: vi.fn((query: string) => {
+      if (query.startsWith('DELETE FROM pending_actions')) pending = false;
+      if (query.startsWith('DELETE FROM local_actions')) localAction = false;
+      return Promise.resolve();
+    }),
+  };
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(() =>
+      Promise.resolve(
+        Response.json({ outcomes: [{ id, status: 'accepted' }] }),
+      ),
+    ),
+  );
+
+  const upload = connector({
+    id: crypto.randomUUID(),
+    serverEpoch: crypto.randomUUID(),
+  }).uploadData;
+  await expect(upload(db as never)).rejects.toThrow(
+    'tab stopped after upload completion',
+  );
+  expect(localAction).toBe(true);
+  expect(db.execute).toHaveBeenCalledWith(
+    'DELETE FROM pending_actions WHERE id = ?',
+    [id],
+  );
+  await upload(db as never);
+  expect(localAction).toBe(false);
 });
 
 it('does not turn a sign-in configuration failure into a sync failure', async () => {

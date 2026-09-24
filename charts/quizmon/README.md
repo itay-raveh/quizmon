@@ -29,7 +29,7 @@ Each Secret reference has `name`, `key`, and `revision` fields. Supply reference
 With dependencies installed and Helm 4.3.0 and kubeconform 0.8.0 available through mise, run from the repository root:
 
 ```sh
-npm run check:chart
+mise run check:chart
 ```
 
 Checks rendering, invalid inputs, upgrade behavior, Helm lint, and Kubernetes schemas without a cluster. Success ends with `Helm passed`.

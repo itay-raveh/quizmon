@@ -1,4 +1,4 @@
-import { and, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, eq, gte, inArray, lt, or, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type {
   Leaderboard,
@@ -130,7 +130,17 @@ export async function readBoard(
         eq(schema.round.credited, true),
         mode === 'daily' ? eq(schema.round.day, day!) : undefined,
         mode === 'daily' ? eq(schema.round.puzzleId, puzzleId!) : undefined,
-        mode === 'daily' ? eq(schema.round.startedOn, day!) : undefined,
+        mode === 'daily'
+          ? gte(schema.round.completedAt, `${day}T00:00:00.000Z`)
+          : undefined,
+        mode === 'daily'
+          ? lt(
+              schema.round.completedAt,
+              new Date(
+                Date.parse(`${day}T00:00:00.000Z`) + 86_400_000,
+              ).toISOString(),
+            )
+          : undefined,
         visible ? inArray(schema.round.playerId, [...visible]) : undefined,
       );
       const candidates = sql`SELECT ${schema.round.playerId} AS player_id,

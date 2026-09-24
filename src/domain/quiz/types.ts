@@ -121,7 +121,7 @@ export const subjectKinds = [
   'berry',
 ] as const;
 
-export interface AnswerSubject {
+interface AnswerSubject {
   kind: (typeof subjectKinds)[number];
   name?: string;
   generation?: Generation;

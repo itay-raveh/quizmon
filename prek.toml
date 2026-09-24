@@ -59,7 +59,7 @@ stages = ["pre-push"]
 [[repos.hooks]]
 id = "helm-chart"
 name = "validate Helm chart"
-entry = "npm run check:chart"
+entry = "mise run check:chart"
 language = "system"
 pass_filenames = false
 files = "^charts/quizmon/"

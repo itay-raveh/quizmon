@@ -1,11 +1,14 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { format } from 'prettier';
 import type { PokemonCatalog } from '../src/domain/pokemon/types.ts';
+import { catalogSchema } from './catalog-schema.ts';
+import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 export const writeCatalogFiles = async (
   catalog: PokemonCatalog,
   directory: URL,
 ): Promise<void> => {
+  catalogSchema.parse(catalog);
   await mkdir(directory, { recursive: true });
   const root = new URL('pokemon.json', directory);
   let previous: string[];
@@ -18,8 +21,14 @@ export const writeCatalogFiles = async (
   }
   const { topics, ...pokemon } = catalog;
   const topicFiles: string[] = [];
+  if (topics && 'gaps' in topics)
+    await writeFile(
+      new URL('catalog-gaps.json', directory),
+      await format(JSON.stringify(topics.gaps), { parser: 'json' }),
+    );
   if (topics)
     for (const [key, values] of Object.entries(topics)) {
+      if (key === 'gaps') continue;
       const batches: unknown[] = [];
       if (Array.isArray(values)) {
         let batch: unknown[] = [],
@@ -91,5 +100,17 @@ export const readCatalogFiles = async (
   return {
     ...catalog,
     topics: topics as unknown as NonNullable<PokemonCatalog['topics']>,
+  };
+};
+
+export const readEditorialCatalogFiles = async (directory: URL) => {
+  const catalog = await readCatalogFiles(directory);
+  if (!catalog.topics) throw new Error('Missing topic catalog');
+  const gaps = JSON.parse(
+    await readFile(new URL('catalog-gaps.json', directory), 'utf8'),
+  ) as EditorialTopicCatalog['gaps'];
+  return {
+    ...catalog,
+    topics: { ...catalog.topics, gaps } as EditorialTopicCatalog,
   };
 };

@@ -35,8 +35,11 @@ import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 import { writeStoredValue } from '../../lib/storage/browser-storage';
 import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
 import { applyRoundReceipt } from '../../lib/storage/game-history';
+import { getSaveIssue } from '../../lib/storage/save-health';
 
 const selectionKey = 'quizmon.baseline.account';
+const pruneAcknowledgedActions =
+  "DELETE FROM local_actions WHERE id NOT IN (SELECT id FROM pending_actions) AND id NOT IN (SELECT substr(id,9) FROM local_state WHERE id LIKE 'failure:%')";
 const syncResponseSchema = z.object({
   outcomes: z.array(
     z.discriminatedUnion('status', [
@@ -182,6 +185,11 @@ export async function verifySignInCode(email: string, otp: string) {
 }
 export async function continueSignIn() {
   candidate = parseBinding(await accountRequest('/api/account'));
+  if (getSaveIssue()) {
+    if (selectedAccount() !== candidate.id)
+      throw new Error('Sign in to the original account to recover this save.');
+    return;
+  }
   if (selectedAccount() === candidate.id) {
     const saved = await readState(getPlayerDatabase());
     if (saved.account?.serverEpoch !== candidate.serverEpoch) {
@@ -567,11 +575,12 @@ export function connector(expected: Binding): PowerSyncBackendConnector {
             );
         }
       }
-      await transaction.complete();
       for (const action of actions)
         await db.execute('DELETE FROM pending_actions WHERE id = ?', [
           action.id,
         ]);
+      await transaction.complete();
+      await db.execute(pruneAcknowledgedActions);
       void refresh();
     },
   };
@@ -671,6 +680,7 @@ export async function startAccountSync() {
   if (!state.account) return;
   binding = state.account;
   account = getPlayerDatabase();
+  await account.execute(pruneAcknowledgedActions);
   update({ owner: binding.id });
   const changed = () => {
     void refresh();

@@ -3,6 +3,7 @@ import { gzip } from 'node:zlib';
 import { promisify } from 'node:util';
 import type { Plugin } from 'vite';
 import { readCatalogFiles } from '../scripts/catalog-output.ts';
+import { catalogSchema } from '../scripts/catalog-schema.ts';
 
 const directory = new URL('../src/domain/pokemon/data/', import.meta.url);
 const moduleId = 'virtual:pokemon-catalog-url';
@@ -12,8 +13,12 @@ const resolvedId = '\0' + moduleId;
 const developmentUrl = '/@quizmon/pokemon-catalog.bin';
 const compress = promisify(gzip);
 
-const buildPokemonCatalogArchive = async (source = directory) =>
-  compress(JSON.stringify(await readCatalogFiles(source)));
+const buildPokemonCatalogArchive = async (source = directory) => {
+  const catalog = catalogSchema.parse(await readCatalogFiles(source));
+  if (!catalog.topics || !Object.keys(catalog.pokemon).length)
+    throw new Error('The playable Pokémon catalog is incomplete.');
+  return compress(JSON.stringify(catalog));
+};
 
 export const pokemonCatalog = (): Plugin => {
   let building = false;

@@ -9,8 +9,9 @@ import { queueIssueResolution, readAccountIssues } from './account-issues';
 import { projectAccount } from './account-projection';
 import type { LocalTransaction } from './local-database';
 import type { LocalPlayerState } from './player-storage';
+import { clearSaveIssue, getSaveIssue } from './save-health';
 
-it('removes rejected round progress while retaining its review evidence', async () => {
+it('retains review evidence and prunes only matching downloaded rounds after acknowledgement', async () => {
   const db = new DatabaseSync(':memory:');
   db.exec(`
     CREATE TABLE local_state (id TEXT PRIMARY KEY, payload TEXT);
@@ -18,7 +19,7 @@ it('removes rejected round progress while retaining its review evidence', async 
     CREATE TABLE local_completions (id TEXT PRIMARY KEY, payload TEXT);
     CREATE TABLE pending_actions (id TEXT PRIMARY KEY, payload TEXT, sequence INTEGER);
     CREATE TABLE player (id TEXT PRIMARY KEY, joined_on TEXT);
-    CREATE TABLE round (id TEXT PRIMARY KEY, player_id TEXT);
+    CREATE TABLE round (id TEXT PRIMARY KEY, player_id TEXT, mode TEXT, day TEXT, puzzle_id TEXT, started_on TEXT, completed_at TEXT, credited INTEGER, data TEXT);
   `);
   const tx = {
     getAll: (sql: string, params: unknown[] = []) =>
@@ -78,7 +79,54 @@ it('removes rejected round progress while retaining its review evidence', async 
     expect(await tx.getAll('SELECT id FROM local_actions')).toEqual([
       { id: round.id },
     ]);
+
+    await tx.execute(
+      'INSERT INTO round(id,player_id,mode,day,puzzle_id,started_on,completed_at,credited,data) VALUES (?,?,?,?,?,?,?,?,?)',
+      [
+        round.id,
+        'trainer',
+        round.mode,
+        round.day,
+        round.puzzle_id,
+        round.started_on,
+        round.completed_at,
+        1,
+        JSON.stringify(round.data),
+      ],
+    );
+    await tx.execute('INSERT INTO local_completions(id,payload) VALUES (?,?)', [
+      round.id,
+      JSON.stringify(round),
+    ]);
+    await tx.execute(
+      'INSERT INTO pending_actions(id,payload,sequence) VALUES (?,?,?)',
+      [round.id, JSON.stringify(action), 1],
+    );
+    await projectAccount(fresh(), tx);
+    expect(await tx.getAll('SELECT id FROM local_completions')).toEqual([
+      { id: round.id },
+    ]);
+
+    await tx.execute('DELETE FROM pending_actions WHERE id = ?', [round.id]);
+    const accepted = fresh();
+    await projectAccount(accepted, tx);
+    expect(await tx.getAll('SELECT id FROM local_completions')).toEqual([]);
+    expect(accepted.save.data.pokedex).toContain('bulbasaur');
+
+    const changed = { ...round, completed_at: '2026-09-12T00:00:00.000Z' };
+    await tx.execute('INSERT INTO local_completions(id,payload) VALUES (?,?)', [
+      round.id,
+      JSON.stringify(changed),
+    ]);
+    await expect(projectAccount(fresh(), tx)).rejects.toThrow(
+      'differs from its saved copy',
+    );
+    expect(getSaveIssue()?.kind).toBe('invalid');
+    expect(await tx.getAll('SELECT payload FROM local_completions')).toEqual([
+      { payload: JSON.stringify(changed) },
+    ]);
   } finally {
+    clearSaveIssue();
     db.close();
   }
 });

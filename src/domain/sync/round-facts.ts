@@ -5,6 +5,7 @@ import {
 import { getTrainingScoreMultipliers } from '../quiz/score-multipliers.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
 import { answerSubjectSchema } from '../quiz/subject.ts';
+import { difficultySchema } from '../quiz/difficulty.ts';
 import { isDailyTrack, type DailyTrack } from '../quiz/daily-track.ts';
 import { questionTypes } from '../quiz/questions/definitions.ts';
 import { questionCategories } from '../quiz/types.ts';
@@ -19,75 +20,142 @@ import {
 import type {
   AnswerObservation,
   AnswerResult,
-  AnswerSubject,
   GameResult,
-  QuestionCategory,
-  QuestionType,
 } from '../quiz/types.ts';
-import type { TrainingConfig, RoundCompletion } from './progress.ts';
+import type { RoundCompletion } from './progress.ts';
 import {
-  isDailyDate,
-  isChoice,
+  dailyDateSchema,
   isRecord,
-  isUtcTimestamp,
-  isUuid,
+  utcTimestampSchema,
+  uuidSchema,
 } from '../../lib/validation.ts';
 import { defaultGameSettings } from '../settings/game-settings.ts';
 import { gameVersions } from '../versions.ts';
 
-type RoundMode = 'training' | 'daily' | 'league';
-
-interface ArchivedQuestion {
-  id: string;
-  prompt: Record<string, unknown>;
-  interaction: AnswerObservation['interaction'];
-  options: string[];
-  expected: string[];
-  selected: string[];
-  labels?: Record<string, string>;
-  clues?: AnswerObservation['clues'];
-  supplied_clues?: string[];
-  context?: string;
-  difficulty?: number;
-}
-
-interface RoundAnswer {
-  question: ArchivedQuestion;
-  subject: AnswerSubject;
-  category: QuestionCategory;
-  question_type: QuestionType | 'champion';
-  clues_used: number;
-  response_ms: number;
-  unassisted_search: boolean;
-}
-
-export interface RoundData {
-  score_version?: number;
-  config: {
-    training_mode: TrainingConfig['trainingMode'];
-    difficulty?: TrainingConfig['difficulty'];
-    question_selection?: TrainingConfig['questionSelection'];
-    generations: TrainingConfig['generations'];
-    form_groups: NonNullable<TrainingConfig['formGroups']>;
-    question_types: TrainingConfig['questionTypes'];
-    auto_types: NonNullable<TrainingConfig['automaticQuestionTypes']>;
-    daily_track?: DailyTrack;
-  };
-  answers: RoundAnswer[];
-  found: string[];
-  victory: { trainer_name: string; pokemon: string[] } | null;
-}
-
-export interface RoundFact {
-  id: string;
-  mode: RoundMode;
-  day: string | null;
-  puzzle_id: string | null;
-  started_on: string | null;
-  completed_at: string;
-  credited: boolean;
-  data: RoundData;
-}
+const strings = (max = 100) =>
+  z
+    .array(z.string().min(1).max(200))
+    .max(max)
+    .refine((values) => new Set(values).size === values.length);
+const archivedQuestionSchema = z.object({
+  id: z.string().min(1).max(2000),
+  prompt: z.discriminatedUnion('kind', [
+    z.object({
+      kind: z.literal('text'),
+      text: z.string().max(4000),
+      supporting_text: z.string().max(4000).optional(),
+    }),
+    z.object({
+      kind: z.literal('pokemon'),
+      name: z.string().max(4000),
+      before: z.string().max(4000),
+      after: z.string().max(4000),
+      dex_number: z.int(),
+      supporting_text: z.string().max(4000).optional(),
+    }),
+  ]),
+  interaction: z.enum(['single-choice', 'multi-select', 'search']),
+  options: answerObservationSchema.shape.options,
+  expected: answerObservationSchema.shape.expected,
+  selected: answerObservationSchema.shape.selected,
+  labels: answerObservationSchema.shape.labels,
+  clues: answerObservationSchema.shape.clues,
+  supplied_clues: answerObservationSchema.shape.suppliedClues,
+  context: answerObservationSchema.shape.context,
+  difficulty: answerObservationSchema.shape.difficulty,
+});
+type ArchivedQuestion = z.infer<typeof archivedQuestionSchema>;
+const roundAnswerSchema = z.object({
+  question: archivedQuestionSchema.refine(
+    (question) =>
+      answerObservationSchema.safeParse(liveQuestion(question)).success,
+  ),
+  subject: answerSubjectSchema,
+  category: z.enum(questionCategories),
+  question_type: z.enum([...questionTypes, 'champion']),
+  clues_used: z.int().min(0).max(4),
+  response_ms: z.int().min(0).max(86_400_000),
+  unassisted_search: z.boolean(),
+});
+const configSchema = z.object({
+  training_mode: z.enum(['league', 'custom']),
+  difficulty: difficultySchema.optional(),
+  question_selection: z.enum(['automatic', 'custom']).optional(),
+  generations: z
+    .array(z.enum(generations))
+    .min(1)
+    .max(20)
+    .refine((values) => new Set(values).size === values.length),
+  form_groups: z
+    .array(z.enum(formGroups))
+    .min(1)
+    .max(20)
+    .refine((values) => new Set(values).size === values.length),
+  question_types: z
+    .array(z.enum(questionTypes))
+    .min(1)
+    .max(100)
+    .refine((values) => new Set(values).size === values.length),
+  auto_types: z
+    .array(z.enum(questionTypes))
+    .max(100)
+    .refine((values) => new Set(values).size === values.length),
+  daily_track: z.custom<DailyTrack>(isDailyTrack).optional(),
+});
+const roundDataSchema = z.object({
+  score_version: z
+    .int()
+    .refine((value): boolean => value === 1 || value === 2)
+    .optional(),
+  config: configSchema,
+  answers: z.array(roundAnswerSchema),
+  found: strings(2000).refine((names) =>
+    names.every((name) => Object.hasOwn(pokemonGenerations, name)),
+  ),
+  victory: z
+    .object({
+      trainer_name: z.string().max(20),
+      pokemon: strings(20).min(1),
+    })
+    .nullable(),
+});
+export type RoundData = z.infer<typeof roundDataSchema>;
+const baseRoundSchema = z.object({
+  id: uuidSchema,
+  mode: z.enum(['training', 'daily', 'league']),
+  day: dailyDateSchema.nullable(),
+  puzzle_id: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable(),
+  started_on: dailyDateSchema.nullable(),
+  completed_at: utcTimestampSchema,
+  credited: z.boolean(),
+  data: roundDataSchema,
+});
+export type RoundFact = z.infer<typeof baseRoundSchema>;
+const roundFactSchema = z.discriminatedUnion('mode', [
+  baseRoundSchema.extend({
+    mode: z.literal('training'),
+    day: z.null(),
+    puzzle_id: z.null(),
+    started_on: z.null(),
+    credited: z.literal(true),
+  }),
+  baseRoundSchema.extend({
+    mode: z.literal('league'),
+    day: z.null(),
+    puzzle_id: z.null(),
+    started_on: z.null(),
+    credited: z.literal(true),
+  }),
+  baseRoundSchema.extend({
+    mode: z.literal('daily'),
+    day: dailyDateSchema,
+    puzzle_id: z.string().regex(/^[a-f0-9]{64}$/),
+    started_on: dailyDateSchema,
+  }),
+]);
 
 const archiveQuestion = (observation: AnswerObservation): ArchivedQuestion => ({
   id: observation.questionId,
@@ -124,16 +192,28 @@ const archiveQuestion = (observation: AnswerObservation): ArchivedQuestion => ({
 });
 
 const liveQuestion = (question: ArchivedQuestion): AnswerObservation => {
-  const { supporting_text, dex_number, ...prompt } = question.prompt;
+  const prompt =
+    question.prompt.kind === 'text'
+      ? {
+          kind: 'text' as const,
+          text: question.prompt.text,
+          ...(question.prompt.supporting_text === undefined
+            ? {}
+            : { supportingText: question.prompt.supporting_text }),
+        }
+      : {
+          kind: 'pokemon' as const,
+          name: question.prompt.name,
+          before: question.prompt.before,
+          after: question.prompt.after,
+          dexNumber: question.prompt.dex_number,
+          ...(question.prompt.supporting_text === undefined
+            ? {}
+            : { supportingText: question.prompt.supporting_text }),
+        };
   return {
     questionId: question.id,
-    prompt: {
-      ...prompt,
-      ...(supporting_text === undefined
-        ? {}
-        : { supportingText: supporting_text }),
-      ...(dex_number === undefined ? {} : { dexNumber: dex_number }),
-    } as AnswerObservation['prompt'],
+    prompt,
     interaction: question.interaction,
     options: question.options,
     expected: question.expected,
@@ -144,9 +224,7 @@ const liveQuestion = (question: ArchivedQuestion): AnswerObservation => {
       ? { suppliedClues: question.supplied_clues }
       : {}),
     ...(question.context ? { context: question.context } : {}),
-    ...(question.difficulty
-      ? { difficulty: question.difficulty as AnswerObservation['difficulty'] }
-      : {}),
+    ...(question.difficulty ? { difficulty: question.difficulty } : {}),
   };
 };
 
@@ -281,133 +359,21 @@ export function scoreRound(
 }
 
 export function validateRoundFact(value: unknown): value is RoundFact {
-  if (
-    !isRecord(value) ||
-    !isUuid(value.id) ||
-    !isChoice(value.mode, ['training', 'daily', 'league']) ||
-    !isUtcTimestamp(value.completed_at) ||
-    typeof value.credited !== 'boolean' ||
-    !isRecord(value.data) ||
-    (value.data.score_version !== undefined &&
-      value.data.score_version !== 1 &&
-      value.data.score_version !== 2) ||
-    !isRecord(value.data.config) ||
-    !Array.isArray(value.data.answers) ||
-    !Array.isArray(value.data.found)
-  )
-    return false;
-  if (value.mode === 'daily') {
-    if (
-      !isDailyDate(value.day) ||
-      !isDailyDate(value.started_on) ||
-      typeof value.puzzle_id !== 'string' ||
-      !/^[a-f0-9]{64}$/.test(value.puzzle_id)
-    )
-      return false;
-  } else if (
-    value.day !== null ||
-    value.puzzle_id !== null ||
-    value.started_on !== null ||
-    !value.credited
-  )
-    return false;
+  const parsed = roundFactSchema.safeParse(value);
+  if (!parsed.success) return false;
+  const round = parsed.data;
   const count =
-    value.mode === 'training' ? 10 : value.mode === 'daily' ? 5 : 15;
+    round.mode === 'training' ? 10 : round.mode === 'daily' ? 5 : 15;
   if (
-    !value.data.answers.length ||
-    value.data.answers.length > count ||
-    (value.mode !== 'league' && value.data.answers.length !== count)
+    !round.data.answers.length ||
+    round.data.answers.length > count ||
+    (round.mode !== 'league' && round.data.answers.length !== count) ||
+    (round.mode !== 'daily' && round.data.config.daily_track !== undefined)
   )
     return false;
-  const config = value.data.config;
-  const strings = (items: unknown, max = 100): items is string[] =>
-    Array.isArray(items) &&
-    items.length <= max &&
-    items.every(
-      (item) =>
-        typeof item === 'string' && item.length > 0 && item.length <= 200,
-    ) &&
-    new Set(items).size === items.length;
-  if (
-    !isChoice(config.training_mode, ['league', 'custom']) ||
-    (config.difficulty !== undefined &&
-      (!Number.isInteger(config.difficulty) ||
-        Number(config.difficulty) < 1 ||
-        Number(config.difficulty) > 5)) ||
-    (config.question_selection !== undefined &&
-      config.question_selection !== 'automatic' &&
-      config.question_selection !== 'custom') ||
-    !strings(config.generations, 20) ||
-    !config.generations.length ||
-    !config.generations.every((name: string) =>
-      (generations as readonly string[]).includes(name),
-    ) ||
-    !strings(config.form_groups, 20) ||
-    !config.form_groups.length ||
-    !config.form_groups.every((name: string) =>
-      (formGroups as readonly string[]).includes(name),
-    ) ||
-    !strings(config.question_types) ||
-    !config.question_types.length ||
-    !config.question_types.every((name: string) =>
-      (questionTypes as readonly string[]).includes(name),
-    ) ||
-    !strings(config.auto_types) ||
-    !config.auto_types.every((name: string) =>
-      (questionTypes as readonly string[]).includes(name),
-    ) ||
-    (config.daily_track !== undefined && !isDailyTrack(config.daily_track)) ||
-    (value.mode !== 'daily' && config.daily_track !== undefined) ||
-    !strings(value.data.found, 2000) ||
-    !value.data.found.every((name: string) =>
-      Object.hasOwn(pokemonGenerations, name),
-    )
-  )
-    return false;
-  const victory = value.data.victory;
-  if (
-    victory !== null &&
-    (!isRecord(victory) ||
-      typeof victory.trainer_name !== 'string' ||
-      victory.trainer_name.length > 20 ||
-      !strings(victory.pokemon, 20) ||
-      !victory.pokemon.length)
-  )
-    return false;
-  if (value.mode !== 'league' && victory !== null) return false;
-  const validAnswers = value.data.answers.every((entry: unknown) => {
-    if (!isRecord(entry) || !isRecord(entry.question)) return false;
-    const q = entry.question;
-    if (
-      typeof q.id !== 'string' ||
-      !isRecord(q.prompt) ||
-      !strings(q.options) ||
-      !strings(q.expected) ||
-      !strings(q.selected)
-    )
-      return false;
-    return (
-      answerObservationSchema.safeParse(
-        liveQuestion(q as unknown as ArchivedQuestion),
-      ).success &&
-      answerSubjectSchema.safeParse(entry.subject).success &&
-      isChoice(entry.category, questionCategories) &&
-      (entry.question_type === 'champion' ||
-        isChoice(entry.question_type, questionTypes)) &&
-      Number.isSafeInteger(entry.clues_used) &&
-      Number(entry.clues_used) >= 0 &&
-      Number(entry.clues_used) <= 4 &&
-      Number.isSafeInteger(entry.response_ms) &&
-      Number(entry.response_ms) >= 0 &&
-      Number(entry.response_ms) <= 86_400_000 &&
-      typeof entry.unassisted_search === 'boolean'
-    );
-  });
   return (
-    validAnswers &&
-    (value.mode !== 'league' ||
-      Boolean(victory) ===
-        isLeagueVictory(scoreRound(value as unknown as RoundFact)))
+    round.mode !== 'league' ||
+    Boolean(round.data.victory) === isLeagueVictory(scoreRound(round))
   );
 }
 
@@ -420,3 +386,4 @@ export function validateRoundUpload(value: unknown): value is RoundUpload {
     validateRoundFact({ ...value, credited: true })
   );
 }
+import { z } from 'zod';

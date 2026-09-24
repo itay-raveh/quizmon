@@ -1,6 +1,6 @@
 import { Dex } from '@pkmn/dex';
 import { generations } from '../src/domain/pokemon/types.ts';
-import type { TopicCatalog } from '../src/domain/quiz/topic-catalog.ts';
+import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 const source = 'https://www.npmjs.com/package/@pkmn/dex';
 const usable = (text: string) =>
@@ -9,7 +9,9 @@ const usable = (text: string) =>
     text,
   );
 
-const addAbilityDescriptions = (abilities: TopicCatalog['abilities']): void => {
+const addAbilityDescriptions = (
+  abilities: EditorialTopicCatalog['abilities'],
+): void => {
   for (const ability of abilities) {
     delete ability.descriptionSource;
     const introduced = generations.indexOf(ability.generations[0]!);
@@ -34,7 +36,7 @@ const addAbilityDescriptions = (abilities: TopicCatalog['abilities']): void => {
   }
 };
 
-const addItemDescriptions = (items: TopicCatalog['items']): void => {
+const addItemDescriptions = (items: EditorialTopicCatalog['items']): void => {
   for (const item of items) {
     delete item.descriptions;
     delete item.descriptionSource;
@@ -75,7 +77,7 @@ export const moveDescriptions = (name: string) =>
     }),
   );
 
-export const addPkmnDescriptions = (topics: TopicCatalog): void => {
+export const addPkmnDescriptions = (topics: EditorialTopicCatalog): void => {
   addAbilityDescriptions(topics.abilities);
   addItemDescriptions(topics.items);
   for (const move of topics.moves) {
@@ -85,7 +87,6 @@ export const addPkmnDescriptions = (topics: TopicCatalog): void => {
     const descriptions = moveDescriptions(move.name);
     if (Object.keys(descriptions).length) move.descriptions = descriptions;
   }
-  delete (topics as TopicCatalog & { effects?: unknown }).effects;
   delete topics.gaps.heldItemEffectReview;
   delete topics.gaps.moveDescriptionReview;
   delete topics.gaps.moveDescription;

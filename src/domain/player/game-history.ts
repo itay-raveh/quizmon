@@ -210,7 +210,7 @@ export function projectRoundHistory(rounds: Iterable<RoundFact>): GameProgress {
       result,
       settings,
       victory,
-      round.started_on ?? round.completed_at.slice(0, 10),
+      round.completed_at.slice(0, 10),
     );
   }
   return {

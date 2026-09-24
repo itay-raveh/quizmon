@@ -56,7 +56,6 @@ export interface TopicCatalog {
     name: string;
     cures: string[];
     hp: number | 'full';
-    source: string;
   }[];
   items: ItemKnowledge[];
   moves: MoveKnowledge[];
@@ -75,5 +74,4 @@ export interface TopicCatalog {
   games: Record<string, { label: string; generation: Generation }>;
   evolutions: EvolutionKnowledge[];
   encounters: EncounterKnowledge[];
-  gaps: Record<string, string[]>;
 }

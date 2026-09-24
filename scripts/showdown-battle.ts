@@ -6,6 +6,7 @@ import {
   type PokemonKnowledge,
   type StatName,
 } from '../src/domain/pokemon/types.ts';
+import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 const statNames = {
   hp: 'hp',
@@ -64,7 +65,7 @@ const moveFacts = (name: string, generation: Generation) => {
 export const addShowdownBattleData = async (
   catalog: PokemonCatalog,
 ): Promise<void> => {
-  const topics = catalog.topics;
+  const topics = catalog.topics as EditorialTopicCatalog | undefined;
   if (!topics) throw new Error('Missing topic catalog');
   const previousConflicts = topics.gaps.showdownAbilityConflicts;
   const conflicts: string[] = [];

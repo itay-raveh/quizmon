@@ -1,8 +1,11 @@
 import { projectRoundHistory } from '../../domain/player/game-history';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
+import { SaveError } from '../../domain/player/save-schema';
+import { canonical } from '../../domain/sync/progress';
 import { validateRoundFact } from '../../domain/sync/round-facts';
 import { isRecord } from '../validation';
+import { reportSaveIssue } from './save-health';
 import { readLocalRounds } from './game-history';
 import type { LocalRow, LocalTransaction } from './local-database';
 import type { LocalAction, LocalPlayerState } from './player-storage';
@@ -34,6 +37,11 @@ export async function projectAccount(
     "SELECT id FROM local_state WHERE id LIKE 'failure:%'",
   );
   const rejected = new Set(failures.map(({ id }) => id.slice(8)));
+  const pending = await tx.getAll<LocalRow>(
+    "SELECT id,payload FROM pending_actions WHERE id NOT IN (SELECT substr(id,9) FROM local_state WHERE id LIKE 'failure:%') ORDER BY sequence",
+  );
+  const waiting = new Set(pending.map(({ id }) => id));
+  const localById = new Map(local.map((round) => [round.id, round]));
   const rows = await tx.getAll<Record<string, unknown>>(
     'SELECT * FROM round WHERE player_id = ?',
     [state.account.id],
@@ -63,6 +71,19 @@ export async function projectAccount(
     };
     if (!validateRoundFact(round))
       throw new Error('A downloaded round is invalid.');
+    const saved = localById.get(round.id);
+    if (saved && !waiting.has(round.id) && !rejected.has(round.id)) {
+      if (canonical(saved) !== canonical(round))
+        throw reportSaveIssue(
+          new SaveError(
+            'invalid',
+            'A downloaded round differs from its saved copy. Download a recovery copy before continuing.',
+          ),
+        );
+      await tx.execute('DELETE FROM local_completions WHERE id = ?', [
+        round.id,
+      ]);
+    }
     rounds.set(round.id, round);
   }
   const ordered = [...rounds.values()].sort(
@@ -97,9 +118,6 @@ export async function projectAccount(
     automaticQuestionTypes:
       player.auto_types == null ? undefined : array(player.auto_types),
   } as NonNullable<typeof data.settings>);
-  const pending = await tx.getAll<LocalRow>(
-    "SELECT id,payload FROM pending_actions WHERE id NOT IN (SELECT substr(id,9) FROM local_state WHERE id LIKE 'failure:%') ORDER BY sequence",
-  );
   for (const row of pending) {
     const action = JSON.parse(row.payload) as LocalAction;
     if (
