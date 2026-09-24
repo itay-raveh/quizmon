@@ -37,6 +37,12 @@ export const buildMove: QuestionBuilder = (context) => {
         (!purpose || generations.indexOf(entry.generation) >= 3),
     );
     for (const rules of ordered(context, contexts)) {
+      if (
+        !purpose &&
+        (context.difficulty ?? 0) >= 3 &&
+        target.label.toLowerCase().includes(rules.type)
+      )
+        continue;
       if (context.variant?.reviewedDescription && !target.reviewedDescription)
         continue;
       const game = topics.games[rules.game];
