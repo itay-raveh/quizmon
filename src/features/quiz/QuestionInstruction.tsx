@@ -11,12 +11,9 @@ export const QuestionInstruction = ({
   const supportingText = question.prompt.supportingText;
   const subjectInstruction =
     question.questionType === 'ev-yields'
-      ? (question.prompt.kind === 'pokemon'
-          ? question.prompt.before
-          : question.prompt.text
-        ).startsWith('Which stat')
-        ? 'Which stat gains EVs from defeating this Pokémon?'
-        : 'What EVs does defeating this Pokémon give?'
+      ? question.prompt.kind === 'pokemon'
+        ? `${question.prompt.before}this Pokémon${question.prompt.after}`
+        : question.prompt.text
       : question.questionType === 'hidden-abilities'
         ? 'What is this Pokémon’s Hidden Ability?'
         : kind === 'evolution-endpoints'
