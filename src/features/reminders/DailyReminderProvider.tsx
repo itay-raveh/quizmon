@@ -50,7 +50,6 @@ const registerSubscription = async (
   const today = getUtcDate();
   const response = await fetch(`/api/daily-reminders/${id}`, {
     body: JSON.stringify({
-      version: 1,
       completedDate:
         readDailyState(today).completed.length > 0 ? today : undefined,
       subscription: subscription.toJSON(),

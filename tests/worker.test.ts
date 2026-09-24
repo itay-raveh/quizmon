@@ -65,7 +65,6 @@ describe('Daily reminders', () => {
     'validates completion date %j before storing reminders',
     async (completedDate, status) => {
       const registration = {
-        version: 1,
         subscription: {
           endpoint: 'https://example.com/push',
           keys: { auth: 'test-auth', p256dh: 'test-key' },
@@ -111,6 +110,7 @@ describe('Daily reminders', () => {
   it('bounds reminder bodies by bytes before parsing', async () => {
     const storage = {
       get: vi.fn().mockResolvedValue({ version: 1 }),
+      deleteAll: vi.fn(),
       put: vi.fn(),
     };
     const reminder = new DailyReminder({ storage }, makeEnv().env);
@@ -146,6 +146,68 @@ describe('Daily reminders', () => {
     expect(await status(JSON.stringify({ completedDate: '2026-09-24' }))).toBe(
       204,
     );
+  });
+
+  it('discards malformed stored subscriptions before merging or sending', async () => {
+    const storage = {
+      get: vi.fn().mockResolvedValue({
+        subscription: { endpoint: 'http://example.com/push', keys: {} },
+        timeZone: 'UTC',
+      }),
+      deleteAll: vi.fn(),
+      put: vi.fn(),
+      setAlarm: vi.fn(),
+    };
+    const reminder = new DailyReminder({ storage }, makeEnv().env);
+    const response = await reminder.fetch(
+      new Request('https://example.com/', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completedDate: '2026-09-24' }),
+      }),
+    );
+    expect(response.status).toBe(204);
+    expect(storage.deleteAll).toHaveBeenCalledOnce();
+    expect(storage.put).not.toHaveBeenCalled();
+    await reminder.alarm();
+    expect(storage.setAlarm).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      subscription: {
+        endpoint: 'http://example.com/push',
+        keys: { auth: 'a', p256dh: 'b' },
+      },
+      timeZone: 'UTC',
+    },
+    {
+      subscription: {
+        endpoint: 'https://example.com/push',
+        keys: { auth: 'bad=', p256dh: 'b' },
+      },
+      timeZone: 'UTC',
+    },
+    {
+      subscription: {
+        endpoint: 'https://example.com/push',
+        keys: { auth: 'a', p256dh: 'b' },
+      },
+      timeZone: 'Not/A_Zone',
+    },
+  ])('rejects unsafe reminder registration fields', async (body) => {
+    const storage = { get: vi.fn(), put: vi.fn(), setAlarm: vi.fn() };
+    const reminder = new DailyReminder({ storage }, makeEnv().env);
+    const response = await reminder.fetch(
+      new Request('https://example.com/', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }),
+    );
+    expect(response.status).toBe(400);
+    expect(storage.put).not.toHaveBeenCalled();
+    expect(storage.setAlarm).not.toHaveBeenCalled();
   });
 
   it.each(['GET', 'HEAD', 'POST', 'OPTIONS'])(

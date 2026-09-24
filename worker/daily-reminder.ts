@@ -1,16 +1,14 @@
 import { DurableObject } from 'cloudflare:workers';
 import * as Sentry from '@sentry/cloudflare';
-import webpush, {
-  WebPushError,
-  type PushSubscription as WebPushSubscription,
-} from 'web-push';
+import webpush, { WebPushError } from 'web-push';
+import { z } from 'zod';
 import { site } from '../src/app/site';
 import { getUtcDate } from '../src/domain/quiz/daily';
 import {
   DAILY_REMINDER_MESSAGE,
   VAPID_PUBLIC_KEY,
 } from '../src/features/reminders/reminder-config';
-import { isDailyDate, isRecord } from '../src/lib/validation';
+import { dailyDateSchema, isDailyDate, isRecord } from '../src/lib/validation';
 import { getNextReminderAt } from './reminder-time';
 import { noStoreResponse } from './responses';
 
@@ -36,51 +34,35 @@ interface AlarmInvocationInfo {
   retryCount: number;
 }
 
-interface DailyReminderRegistration {
-  version: 1;
-  completedDate?: string;
-  subscription: WebPushSubscription;
-  timeZone: string;
-}
-
-const isValidTimeZone = (value: unknown): value is string => {
-  if (typeof value !== 'string' || value.length > 100) return false;
-  try {
-    new Intl.DateTimeFormat('en-US', { timeZone: value });
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-const isValidSubscription = (
-  candidate: unknown,
-): candidate is WebPushSubscription => {
-  if (!isRecord(candidate)) return false;
-  if (
-    typeof candidate.endpoint !== 'string' ||
-    candidate.endpoint.length > 2_048
-  ) {
-    return false;
-  }
-  try {
-    if (new URL(candidate.endpoint).protocol !== 'https:') return false;
-  } catch {
-    return false;
-  }
-
-  const keys = candidate.keys as Record<string, unknown> | undefined;
-  const base64Url = /^[A-Za-z0-9_-]+$/;
-  return (
-    Boolean(keys) &&
-    typeof keys?.auth === 'string' &&
-    typeof keys.p256dh === 'string' &&
-    keys.auth.length <= 64 &&
-    keys.p256dh.length <= 256 &&
-    base64Url.test(keys.auth) &&
-    base64Url.test(keys.p256dh)
-  );
-};
+const key = (max: number) =>
+  z
+    .string()
+    .min(1)
+    .max(max)
+    .regex(/^[A-Za-z0-9_-]+$/);
+const registrationSchema = z.object({
+  completedDate: dailyDateSchema.optional(),
+  subscription: z.object({
+    endpoint: z
+      .url()
+      .max(2_048)
+      .refine((value) => new URL(value).protocol === 'https:'),
+    expirationTime: z.number().nullable().optional(),
+    keys: z.object({ auth: key(64), p256dh: key(256) }),
+  }),
+  timeZone: z
+    .string()
+    .max(100)
+    .refine((value) => {
+      try {
+        new Intl.DateTimeFormat('en-US', { timeZone: value });
+        return true;
+      } catch {
+        return false;
+      }
+    }),
+});
+type DailyReminderRegistration = z.infer<typeof registrationSchema>;
 
 const readJson = async (request: Request): Promise<unknown> => {
   if (
@@ -120,23 +102,20 @@ const readJson = async (request: Request): Promise<unknown> => {
 const parseRegistration = async (
   request: Request,
 ): Promise<DailyReminderRegistration | null> => {
-  const value = await readJson(request);
-  if (!isRecord(value)) return null;
-
-  const candidate = value as Partial<DailyReminderRegistration>;
-  if (
-    candidate.version !== 1 ||
-    !isValidTimeZone(candidate.timeZone) ||
-    !isValidSubscription(candidate.subscription) ||
-    (candidate.completedDate !== undefined &&
-      !isDailyDate(candidate.completedDate))
-  ) {
-    return null;
-  }
-  return candidate as DailyReminderRegistration;
+  const parsed = registrationSchema.safeParse(await readJson(request));
+  return parsed.success ? parsed.data : null;
 };
 
 export class DailyReminder extends DurableObject<DailyReminderEnv> {
+  private async loadRegistration(): Promise<DailyReminderRegistration | null> {
+    const stored = await this.ctx.storage.get(STORAGE_KEY);
+    if (stored === undefined) return null;
+    const parsed = registrationSchema.safeParse(stored);
+    if (parsed.success) return parsed.data;
+    await this.ctx.storage.deleteAll();
+    return null;
+  }
+
   async fetch(request: Request): Promise<Response> {
     if (request.method === 'DELETE') {
       await this.ctx.storage.deleteAll();
@@ -149,9 +128,8 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       if (!isDailyDate(completedDate)) {
         return noStoreResponse('Invalid completion date', 400);
       }
-      const current =
-        await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
-      if (current?.version === 1) {
+      const current = await this.loadRegistration();
+      if (current) {
         await this.ctx.storage.put(STORAGE_KEY, {
           ...current,
           completedDate,
@@ -168,26 +146,18 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
     if (!registration) {
       return noStoreResponse('Invalid reminder', 400);
     }
-    const current =
-      await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
+    const current = await this.loadRegistration();
     await this.ctx.storage.put(STORAGE_KEY, {
       ...registration,
-      completedDate:
-        registration.completedDate ??
-        (current?.version === 1 ? current.completedDate : undefined),
+      completedDate: registration.completedDate ?? current?.completedDate,
     });
     await this.ctx.storage.setAlarm(getNextReminderAt(registration.timeZone));
     return noStoreResponse(null, 204);
   }
 
   async alarm(alarmInfo?: AlarmInvocationInfo): Promise<void> {
-    const registration =
-      await this.ctx.storage.get<DailyReminderRegistration>(STORAGE_KEY);
+    const registration = await this.loadRegistration();
     if (!registration) return;
-    if (registration.version !== 1) {
-      await this.ctx.storage.deleteAll();
-      return;
-    }
 
     const dailyDate = getUtcDate();
     if (registration.completedDate !== dailyDate) {
