@@ -13,6 +13,19 @@ export async function checkGameRoutes(base: string) {
   assert.equal(bundle.status, 200);
   assert.match(bundle.headers.get('Content-Type') ?? '', /javascript/);
   await bundle.arrayBuffer();
+  for (const path of ['/trainer', '/daily/2026-09-24?play=1']) {
+    const response = await fetch(base + path, navigation);
+    assert.equal(response.status, 200, path);
+    assert.match(
+      response.headers.get('Content-Type') ?? '',
+      /text\/html/,
+      path,
+    );
+    assert.match(await response.text(), /Quizmon/, path);
+  }
+  const unknown = await fetch(base + '/not-a-game-route', navigation);
+  assert.equal(unknown.status, 404);
+  await unknown.arrayBuffer();
   const missing = await fetch(base + '/missing-game-asset.txt');
   assert.equal(missing.status, 404);
   await missing.arrayBuffer();

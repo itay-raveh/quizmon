@@ -68,6 +68,15 @@
     "directory": "../dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*", "/sprites/*"],
+    "run_worker_first": [
+      "/api/*",
+      "/sprites/*",
+      "/trainer",
+      "/trainer/*",
+      "/league",
+      "/account",
+      "/social/*",
+      "/daily/*",
+    ],
   },
 }
