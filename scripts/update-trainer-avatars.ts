@@ -69,7 +69,8 @@ try {
         if (updating) continue;
         throw new Error(`${id}: invalid trainer sprite`);
       }
-      const { data, info } = await sharp(bytes)
+      const normalized = await sharp(bytes).png().toBuffer();
+      const { data, info } = await sharp(normalized)
         .ensureAlpha()
         .raw()
         .toBuffer({ resolveWithObject: true });
@@ -82,7 +83,7 @@ try {
       }
       const avatar = {
         bottom,
-        sha256: createHash('sha256').update(bytes).digest('hex'),
+        sha256: createHash('sha256').update(normalized).digest('hex'),
       };
       if (
         !updating &&
@@ -90,7 +91,7 @@ try {
           avatar.sha256 !== pinned[id]?.sha256)
       )
         throw new Error(`${id}: trainer sprite changed; update the manifest`);
-      await writeFile(join(staged, `${id}.png`), bytes);
+      await writeFile(join(staged, `${id}.png`), normalized);
       selected[id] = avatar;
     }
   });
