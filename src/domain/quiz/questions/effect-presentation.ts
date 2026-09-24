@@ -1,5 +1,3 @@
-import { formatPokemonName } from '../../pokemon/format.ts';
-import type { QuestionData } from '../types.ts';
 import type { EffectKnowledge, EffectQuestion } from '../topic-catalog.ts';
 
 export const getEffectPresentation = (
@@ -29,36 +27,3 @@ export const getEffectPresentation = (
     ]),
   ),
 });
-
-export const presentEffectQuestion = (
-  question: QuestionData,
-  effects?: readonly EffectKnowledge[],
-): QuestionData => {
-  const kind =
-    question.questionType === 'ability-effects'
-      ? 'ability'
-      : question.questionType === 'held-item-effects'
-        ? 'item'
-        : undefined;
-  if (!kind) return question;
-  const fact = effects?.find(
-    (entry) => entry.kind === kind && entry.name === question.subject.name,
-  );
-  if (!fact) return question;
-  const variant = Object.values(fact.questions).find(
-    (entry) =>
-      entry.correct.value === question.answer.correctOptions[0] &&
-      question.options.length === 4 &&
-      question.options.every((value) =>
-        [entry.correct, ...entry.wrong].some(
-          (option) => option.value === value,
-        ),
-      ),
-  );
-  return variant
-    ? {
-        ...question,
-        ...getEffectPresentation(fact, formatPokemonName(fact.name), variant),
-      }
-    : question;
-};

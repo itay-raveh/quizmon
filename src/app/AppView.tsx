@@ -271,16 +271,6 @@ const AppScreen = ({
     const currentQuestion = session.questions[session.questionIndex];
     return currentQuestion ? (
       <QuestionScreen
-        effects={
-          catalogState.status === 'ready'
-            ? catalogState.catalog.topics?.effects
-            : undefined
-        }
-        evolutions={
-          catalogState.status === 'ready'
-            ? catalogState.catalog.topics?.evolutions
-            : undefined
-        }
         typeRelations={catalogState.catalog?.typeRelations}
         answerFlow={session.settings.answerFlow}
         key={currentQuestion.id}

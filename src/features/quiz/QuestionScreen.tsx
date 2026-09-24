@@ -1,6 +1,5 @@
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import { showsSearchResponse } from '@/domain/quiz/question-interaction';
-import { presentQuestion } from '@/domain/quiz/questions/presentation';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
 import { formatPokemonName } from '@/domain/pokemon/format';
@@ -17,7 +16,7 @@ import type { GameMode, QuestionData } from '@/domain/quiz/types';
 import type { TimerDisplay } from '@/domain/settings/types';
 import { TrainerTitleMark } from '@/features/trainer/TrainerTitleMark';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { ChampionSearch } from './ChampionSearch';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionPresentation } from './QuestionPresentation';
@@ -28,8 +27,6 @@ import {
 } from './useQuestionAnswer';
 interface QuestionScreenProps extends UseQuestionAnswerOptions {
   typeRelations?: PokemonCatalog['typeRelations'];
-  evolutions?: NonNullable<PokemonCatalog['topics']>['evolutions'];
-  effects?: NonNullable<PokemonCatalog['topics']>['effects'];
   elapsedSeconds: number;
   mode: GameMode;
   number: number;
@@ -47,8 +44,6 @@ const formatCorrectAnswer = (question: QuestionData): string => {
 export const QuestionScreen = ({
   answerFlow,
   typeRelations,
-  evolutions,
-  effects,
   elapsedMilliseconds,
   questionStartedMilliseconds,
   elapsedSeconds,
@@ -61,14 +56,10 @@ export const QuestionScreen = ({
   onAnswer,
   onFeedbackStart,
   onNewGame,
-  question: storedQuestion,
+  question,
   timerDisplay,
   total,
 }: QuestionScreenProps) => {
-  const question = useMemo(
-    () => presentQuestion(storedQuestion, { effects, evolutions }),
-    [storedQuestion, evolutions, effects],
-  );
   const heading = useRef<HTMLHeadingElement>(null);
   const advanceButton = useRef<HTMLButtonElement>(null);
   const {
