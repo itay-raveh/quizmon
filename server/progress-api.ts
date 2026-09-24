@@ -6,7 +6,7 @@ import {
   scoreRound,
   validateRoundUpload,
 } from '../src/domain/sync/round-facts.ts';
-import { isDailyDate, isRecord, isUuid } from '../src/lib/validation.ts';
+import { isRecord, isUuid } from '../src/lib/validation.ts';
 import { getTrainerSpecialtyCount } from '../src/domain/player/trainer-progression.ts';
 import * as schema from './schema.ts';
 
@@ -80,8 +80,6 @@ export async function linkDataset(
   merge: boolean,
   joinedOn?: string,
 ) {
-  if (!isUuid(datasetId) || (joinedOn !== undefined && !isDailyDate(joinedOn)))
-    throw new ProgressError('invalid_link', 400);
   return db.transaction(async (tx) => {
     await checkEpoch(tx, epoch);
     const [player] = await tx
