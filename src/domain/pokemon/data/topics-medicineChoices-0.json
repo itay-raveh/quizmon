@@ -1,6 +1,6 @@
 {
   "contentVersion": 1,
-  "key": "medicines",
+  "key": "medicineChoices",
   "values": [
     {
       "name": "antidote",

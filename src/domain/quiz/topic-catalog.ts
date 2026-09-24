@@ -72,7 +72,7 @@ export interface EffectKnowledge {
 }
 
 export interface TopicCatalog {
-  medicines: {
+  medicineChoices: {
     name: string;
     cures: string[];
     hp: number | 'full';

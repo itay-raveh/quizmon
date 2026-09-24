@@ -3,7 +3,7 @@ import { clean, english, titleCase } from './catalog-text.ts';
 import { reviewedEffects } from './reviewed-effects.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
 import {
-  reviewedMedicines,
+  medicineChoices,
   reviewedMoveDescriptions,
 } from './reviewed-topic-facts.ts';
 import {
@@ -280,7 +280,7 @@ export const buildTopicCatalog = async (
     encounters,
     evolutions,
     gaps,
-    medicines: reviewedMedicines,
+    medicineChoices,
     effects: reviewedEffects,
     items: items.map((item) => {
       const gens = item.game_indices.map((index) =>

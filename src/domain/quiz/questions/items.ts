@@ -67,7 +67,7 @@ export const buildItemIdentification: QuestionBuilder = (context) => {
 export const buildMedicine: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
-  const pool = topics.medicines.flatMap((fact) => {
+  const pool = topics.medicineChoices.flatMap((fact) => {
     if (
       context.variant?.excludeUniversalCures &&
       (fact.name === 'full-heal' || fact.name === 'full-restore')
