@@ -16,6 +16,8 @@ import {
   accountSnapshot,
   continueSignIn,
   finishSignIn,
+  reconnectAccount,
+  reconnectMessage,
   retryAccountSync,
   resolveAccountIssue,
   sendSignInCode,
@@ -91,6 +93,7 @@ export const AccountSettings = () => {
   const showSignIn = !account.owner || reauthenticating;
   const codeError = codeForm.formState.errors.code?.message || (sent && error);
   const syncNeedsSignIn = /^(Sign in|Account changed)/.test(account.error);
+  const syncNeedsReconnect = account.error === reconnectMessage;
   const syncPaused = !!account.error;
   const syncOffline = account.status.includes('Will sync when connected');
   const syncNeedsReview = account.issues.length > 0;
@@ -398,13 +401,15 @@ export const AccountSettings = () => {
                     : 'Waiting for connection'}
               </strong>
               <p>
-                {syncNeedsReview
-                  ? 'Choose how to resolve the changes below.'
-                  : syncNeedsSignIn
-                    ? 'Sign in again to continue.'
-                    : syncOffline
-                      ? 'Changes will sync when you reconnect.'
-                      : 'Your changes are saved on this device.'}
+                {syncNeedsReconnect
+                  ? 'Your changes are saved on this device. Download a backup, then reconnect this device.'
+                  : syncNeedsReview
+                    ? 'Choose how to resolve the changes below.'
+                    : syncNeedsSignIn
+                      ? 'Sign in again to continue.'
+                      : syncOffline
+                        ? 'Changes will sync when you reconnect.'
+                        : 'Your changes are saved on this device.'}
                 {account.pending > 0 && ` ${account.pending} waiting.`}
               </p>
               {syncPaused && (
@@ -413,16 +418,22 @@ export const AccountSettings = () => {
                   type="button"
                   disabled={busy}
                   onClick={() =>
-                    syncNeedsSignIn
-                      ? setReauthenticating(true)
-                      : run(retryAccountSync)
+                    syncNeedsReconnect
+                      ? run(reconnectAccount)
+                      : syncNeedsSignIn
+                        ? setReauthenticating(true)
+                        : run(retryAccountSync)
                   }
                 >
-                  {syncNeedsSignIn
-                    ? 'Sign in again'
-                    : busy
+                  {syncNeedsReconnect
+                    ? busy
                       ? 'Reconnecting…'
-                      : 'Try again'}
+                      : 'Reconnect this device'
+                    : syncNeedsSignIn
+                      ? 'Sign in again'
+                      : busy
+                        ? 'Reconnecting…'
+                        : 'Try again'}
                 </button>
               )}
             </section>
@@ -435,12 +446,13 @@ export const AccountSettings = () => {
               </pre>
             </details>
           )}
-          {(syncPaused || syncOffline) && account.pending > 0 && (
-            <details className="account-settings__details">
-              <summary>Recover device changes</summary>
-              <BackupSettings accountRecovery />
-            </details>
-          )}
+          {(syncPaused || syncOffline) &&
+            (account.pending > 0 || syncNeedsReconnect) && (
+              <details className="account-settings__details">
+                <summary>Recover device changes</summary>
+                <BackupSettings accountRecovery />
+              </details>
+            )}
           {account.issues.length > 0 && (
             <AccountConflicts
               issues={account.issues}

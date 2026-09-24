@@ -37,6 +37,8 @@ import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
 
 const selectionKey = 'quizmon.baseline.account';
 export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
+export const reconnectMessage =
+  'Account data changed. Reconnect this device to resume syncing.';
 const auth = createAuthClient({ plugins: [emailOTPClient(), jwtClient()] });
 type Binding = { id: string; serverEpoch: string };
 let account: PowerSyncDatabase | undefined;
@@ -156,10 +158,10 @@ export async function continueSignIn() {
       const [cutover] = await getPlayerDatabase().getAll<LocalRow>(
         "SELECT id,payload FROM local_state WHERE id = 'cutover-rebind'",
       );
-      if (saved.account && !cutover)
-        throw new Error(
-          'This database instance changed. Your pending changes remain on this device. Download a backup before reconnecting.',
-        );
+      if (saved.account && !cutover) {
+        window.location.reload();
+        return;
+      }
       await finishSignIn(false, true);
       return;
     }
@@ -420,10 +422,12 @@ function connector(expected: Binding): PowerSyncBackendConnector {
     fetchCredentials: async () => {
       const bootstrap = await accountRequest('/api/account');
       const current = parseBinding(bootstrap);
-      if (JSON.stringify(current) !== JSON.stringify(expected))
+      if (current.id !== expected.id)
         throw new Error(
           'Sign in to the original account. Pending progress remains separate.',
         );
+      if (current.serverEpoch !== expected.serverEpoch)
+        throw new Error(reconnectMessage);
       const sync = readSyncConnection(
         isRecord(bootstrap) ? bootstrap.sync : undefined,
       );
@@ -667,6 +671,37 @@ export async function retryAccountSync() {
       status: 'Sync paused',
     });
   }
+}
+export async function reconnectAccount() {
+  const current = parseBinding(await accountRequest('/api/account'));
+  const database = getPlayerDatabase();
+  await navigator.locks.request('quizmon-account-handoff', async () => {
+    const saved = await readState(database);
+    if (selectedAccount() !== current.id || saved.account?.id !== current.id)
+      throw new Error('Sign in to the original account before reconnecting.');
+    if (saved.account.serverEpoch === current.serverEpoch) return;
+    await account?.disconnect();
+    const linked = await accountRequest('/api/account/link', {
+      expectedAccountId: current.id,
+      ...current,
+      datasetId: saved.datasetId,
+      linkId: saved.datasetId,
+      merge: true,
+    });
+    if (!isRecord(linked) || linked.linked !== true)
+      throw new Error('This device save could not be linked to the account.');
+    await database.writeTransaction(async (tx) => {
+      const state = await readState(tx);
+      if (state.account?.id !== current.id)
+        throw new Error('The selected account changed during reconnection.');
+      state.account = current;
+      await tx.execute("UPDATE local_state SET payload=? WHERE id='player'", [
+        JSON.stringify(state),
+      ]);
+      await tx.execute("DELETE FROM local_state WHERE id = 'cutover-rebind'");
+    });
+  });
+  window.location.reload();
 }
 export async function signOutAccount() {
   clearSentryUser();
