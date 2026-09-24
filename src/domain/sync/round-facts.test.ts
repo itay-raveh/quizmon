@@ -8,6 +8,25 @@ import {
 } from './round-facts.ts';
 
 describe('completed round facts', () => {
+  it('accepts a League victory only for a perfect full round', () => {
+    const perfect = archiveCompletion(
+      completion(crypto.randomUUID(), 'league'),
+    );
+    expect(validateRoundFact(perfect)).toBe(true);
+
+    const short = structuredClone(perfect);
+    short.data.answers.pop();
+    expect(validateRoundFact(short)).toBe(false);
+
+    const incorrect = structuredClone(perfect);
+    incorrect.data.answers[0]!.question.selected = ['ivysaur'];
+    expect(validateRoundFact(incorrect)).toBe(false);
+
+    const missingVictory = structuredClone(perfect);
+    missingVictory.data.victory = null;
+    expect(validateRoundFact(missingVictory)).toBe(false);
+  });
+
   it('rejects array-shaped enum fields in uploaded rounds', () => {
     const round = archiveCompletion(completion(crypto.randomUUID()));
     Reflect.set(round.data.answers[0]!, 'category', ['knowledge']);

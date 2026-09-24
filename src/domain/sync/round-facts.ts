@@ -3,6 +3,7 @@ import {
   observationCorrect,
 } from '../quiz/answer-observation.ts';
 import { getTrainingScoreMultipliers } from '../quiz/score-multipliers.ts';
+import { isLeagueVictory } from '../quiz/league.ts';
 import { isAnswerSubject } from '../quiz/subject.ts';
 import { isDailyTrack, type DailyTrack } from '../quiz/daily-track.ts';
 import { questionTypes } from '../quiz/questions/definitions.ts';
@@ -364,7 +365,7 @@ export function validateRoundFact(value: unknown): value is RoundFact {
   )
     return false;
   if (value.mode !== 'league' && victory !== null) return false;
-  return value.data.answers.every((entry: unknown) => {
+  const validAnswers = value.data.answers.every((entry: unknown) => {
     if (!isRecord(entry) || !isRecord(entry.question)) return false;
     const q = entry.question;
     if (
@@ -390,4 +391,10 @@ export function validateRoundFact(value: unknown): value is RoundFact {
       typeof entry.unassisted_search === 'boolean'
     );
   });
+  return (
+    validAnswers &&
+    (value.mode !== 'league' ||
+      Boolean(victory) ===
+        isLeagueVictory(scoreRound(value as unknown as RoundFact)))
+  );
 }
