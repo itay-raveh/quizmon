@@ -59,6 +59,66 @@ it('leaves malformed sync actions and receipts pending', async () => {
   expect(db.execute).not.toHaveBeenCalled();
 });
 
+it('splits uploads by UTF-8 body size and reviews an action too large to send', async () => {
+  const datasetId = crypto.randomUUID();
+  const actions = [300_000, 300_000, 400_000].map((length) => {
+    const id = crypto.randomUUID();
+    return {
+      id,
+      datasetId,
+      kind: 'edit',
+      payload: { id, unit: 'name', value: '界'.repeat(length) },
+    };
+  });
+  const complete = vi.fn();
+  const db = {
+    getNextCrudTransaction: () =>
+      Promise.resolve({
+        crud: actions.map((action) => ({
+          table: 'pending_actions',
+          op: UpdateType.PUT,
+          id: action.id,
+          opData: { payload: JSON.stringify(action) },
+        })),
+        complete,
+      }),
+    execute: vi.fn(),
+  };
+  const fetch = vi.fn((_path: string, init: RequestInit) => {
+    const body = JSON.parse(init.body as string) as { actions: typeof actions };
+    return Promise.resolve(
+      Response.json({
+        outcomes: body.actions.map(({ id }) => ({ id, status: 'accepted' })),
+      }),
+    );
+  });
+  vi.stubGlobal('fetch', fetch);
+  const upload = connector({
+    id: crypto.randomUUID(),
+    serverEpoch: crypto.randomUUID(),
+  }).uploadData;
+
+  await upload(db as never);
+
+  expect(fetch).toHaveBeenCalledTimes(2);
+  for (const [, init] of fetch.mock.calls)
+    expect(new Blob([init.body as string]).size).toBeLessThanOrEqual(
+      1024 * 1024,
+    );
+  expect(complete).toHaveBeenCalledOnce();
+  expect(db.execute).toHaveBeenCalledWith(
+    'INSERT OR REPLACE INTO local_state(id,payload) VALUES (?,?)',
+    [
+      `failure:${actions[2]!.id}`,
+      JSON.stringify({
+        id: actions[2]!.id,
+        status: 'rejected',
+        reason: 'too_large',
+      }),
+    ],
+  );
+});
+
 it('does not turn a sign-in configuration failure into a sync failure', async () => {
   vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
 

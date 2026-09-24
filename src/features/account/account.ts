@@ -501,8 +501,34 @@ export function connector(expected: Binding): PowerSyncBackendConnector {
             throw new Error('A saved change could not be verified.');
           return action as LocalAction;
         });
-      for (let offset = 0; offset < actions.length; offset += 50) {
-        const batch = actions.slice(offset, offset + 50);
+      for (let offset = 0; offset < actions.length;) {
+        const batch: LocalAction[] = [];
+        for (const action of actions.slice(offset, offset + 50)) {
+          const body = {
+            expectedAccountId: expected.id,
+            serverEpoch: expected.serverEpoch,
+            actions: [...batch, action],
+          };
+          if (new Blob([JSON.stringify(body)]).size > 1024 * 1024) break;
+          batch.push(action);
+        }
+        if (!batch.length) {
+          const action = actions[offset]!;
+          await db.execute(
+            'INSERT OR REPLACE INTO local_state(id,payload) VALUES (?,?)',
+            [
+              `failure:${action.id}`,
+              JSON.stringify({
+                id: action.id,
+                status: 'rejected',
+                reason: 'too_large',
+              }),
+            ],
+          );
+          offset++;
+          continue;
+        }
+        offset += batch.length;
         const result = await accountRequest('/api/sync/changes', {
           expectedAccountId: expected.id,
           serverEpoch: expected.serverEpoch,
