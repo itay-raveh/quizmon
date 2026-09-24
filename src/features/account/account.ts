@@ -33,7 +33,6 @@ import { isChoice, isRecord } from '../../lib/validation';
 import { readSyncConnection } from '../../domain/sync/connection';
 import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 import { writeStoredValue } from '../../lib/storage/browser-storage';
-import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
 import { applyRoundReceipt } from '../../lib/storage/game-history';
 import { getSaveIssue } from '../../lib/storage/save-health';
 
@@ -224,8 +223,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
     try {
       await guest.init();
       await target.init();
-      await convertSavedDatabaseV1(guest);
-      await convertSavedDatabaseV1(target, destination.id);
       const [guestState] = await guest.getAll<LocalRow>(
         "SELECT id,payload FROM local_state WHERE id = 'player'",
       );

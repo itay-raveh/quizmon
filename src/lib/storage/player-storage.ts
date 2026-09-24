@@ -16,7 +16,6 @@ import { parseActiveGameSave } from '../../domain/player/active-game';
 import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { isRecord, isUuid } from '../validation';
-import { convertSavedDatabaseV1 } from './save-compatibility';
 import {
   openLocalDatabase,
   type LocalRow,
@@ -175,7 +174,6 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
     openedAccountId = accountId;
     database = openLocalDatabase(accountId);
     await database.init();
-    await convertSavedDatabaseV1(database, accountId);
     const [stored] = await database.getAll<LocalRow>(
       "SELECT id,payload FROM local_state WHERE id = 'player'",
     );

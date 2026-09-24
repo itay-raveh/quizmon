@@ -6,7 +6,6 @@ import type { LocalPlayerState } from './player-storage';
 
 const openLocalDatabase = vi.hoisted(() => vi.fn());
 vi.mock('./local-database', () => ({ openLocalDatabase }));
-vi.mock('./save-compatibility', () => ({ convertSavedDatabaseV1: vi.fn() }));
 
 it('recovers a malformed account state using its matching backup', async () => {
   vi.resetModules();
