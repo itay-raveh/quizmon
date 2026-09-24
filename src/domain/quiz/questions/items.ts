@@ -69,8 +69,7 @@ export const buildMedicine: QuestionBuilder = (context) => {
   if (!topics) return;
   const pool = topics.medicines.flatMap((fact) => {
     if (
-      context.difficulty &&
-      context.difficulty > 1 &&
+      context.variant?.excludeUniversalCures &&
       (fact.name === 'full-heal' || fact.name === 'full-restore')
     )
       return [];

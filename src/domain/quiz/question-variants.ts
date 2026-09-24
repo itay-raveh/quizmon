@@ -60,6 +60,8 @@ export interface VariantRules {
     | 'direct-use';
   measurement?: MeasurementRules;
   reviewedDescription?: boolean;
+  excludeTypeHintNames?: boolean;
+  excludeUniversalCures?: boolean;
   fullList?: 'types' | 'regions' | 'flavors';
   damageClass?: 'status' | 'any';
   sameMoveType?: boolean;
@@ -130,8 +132,12 @@ const questionVariants: Record<
   },
   'medicine-cabinet': {
     1: { itemChoices: 'different-categories' },
-    2: { itemChoices: 'medicines' },
-    3: { itemChoices: 'medicines', allowMissingSprites: true },
+    2: { itemChoices: 'medicines', excludeUniversalCures: true },
+    3: {
+      itemChoices: 'medicines',
+      excludeUniversalCures: true,
+      allowMissingSprites: true,
+    },
   },
   'evolution-items': {
     1: { itemChoices: 'different-categories' },
@@ -143,7 +149,7 @@ const questionVariants: Record<
   'height-comparison': measurementVariants,
   'move-types': {
     2: { reviewedDescription: true },
-    3: { fullList: 'types' },
+    3: { fullList: 'types', excludeTypeHintNames: true },
   },
   'name-that-region': { 2: {}, 3: { fullList: 'regions' } },
   'move-purpose': {

@@ -39,7 +39,7 @@ export const buildMove: QuestionBuilder = (context) => {
     for (const rules of ordered(context, contexts)) {
       if (
         !purpose &&
-        (context.difficulty ?? 0) >= 3 &&
+        context.variant?.excludeTypeHintNames &&
         target.label.toLowerCase().includes(rules.type)
       )
         continue;
