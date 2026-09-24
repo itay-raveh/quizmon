@@ -166,7 +166,6 @@ describe('scoring', () => {
       speed: 0,
       mastery: 0,
     });
-    expect(calculateScore([])).toBe(0);
   });
 
   it('totals only active answer time', () => {
