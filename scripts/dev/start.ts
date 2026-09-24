@@ -1,4 +1,4 @@
-import { spawn, type ChildProcess } from 'node:child_process';
+import { execFile, spawn, type ChildProcess } from 'node:child_process';
 import { setTimeout } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { emailMode, envFile, requiredMailSetting } from './local-env.ts';
@@ -7,6 +7,18 @@ const preview = process.argv.includes('--preview');
 const origin = `http://127.0.0.1:${preview ? 4173 : 5173}`;
 const children: ChildProcess[] = [];
 let stopping = false;
+let runningBefore: Set<string> | undefined;
+const runningServices = () =>
+  new Promise<Set<string>>((resolve, reject) => {
+    execFile(
+      'docker',
+      ['compose', 'ps', '--services', '--status', 'running'],
+      (error, stdout) =>
+        error
+          ? reject(new Error(error.message))
+          : resolve(new Set(stdout.split('\n').filter(Boolean))),
+    );
+  });
 const run = (command: string, args: string[]) =>
   new Promise<void>((resolve, reject) => {
     const child = spawn(command, args, { stdio: 'inherit' });
@@ -22,7 +34,11 @@ const launch = (command: string, args: string[]) => {
   children.push(child);
   return child;
 };
-async function stop() {
+const start = async (command: string, args: string[]) => {
+  await run(command, args);
+  if (stopping) throw new Error('Development interrupted.');
+};
+function interrupt() {
   if (stopping) return;
   stopping = true;
   for (const child of children) {
@@ -33,16 +49,25 @@ async function stop() {
       /* The process already exited. */
     }
   }
-  await run('docker', ['compose', 'stop']);
+}
+async function stop() {
+  interrupt();
+  const before = runningBefore;
+  if (!before) return;
+  const running = await runningServices();
+  const started = ['powersync', 'db'].filter(
+    (service) => running.has(service) && !before.has(service),
+  );
+  if (started.length) await run('docker', ['compose', 'stop', ...started]);
 }
 for (const signal of ['SIGINT', 'SIGTERM'] as const)
-  process.on(signal, () => {
-    void stop().catch(console.error);
-  });
+  process.on(signal, interrupt);
 try {
-  await run('docker', ['compose', 'up', '-d', '--wait', 'db']);
-  await run('npm', ['run', 'db:migrate']);
-  if (preview) await run('npm', ['run', 'build']);
+  runningBefore = await runningServices();
+  if (stopping) throw new Error('Development interrupted.');
+  await start('docker', ['compose', 'up', '-d', '--wait', 'db']);
+  await start('npm', ['run', 'db:migrate']);
+  if (preview) await start('npm', ['run', 'build']);
   const api = launch('node_modules/.bin/wrangler', [
     'dev',
     '--config',
@@ -81,7 +106,7 @@ try {
   }
   if (!ready || stopping)
     throw new Error('The account API did not become ready.');
-  await run('docker', ['compose', 'up', '-d', 'powersync']);
+  await start('docker', ['compose', 'up', '-d', 'powersync']);
   const browser = launch(
     'npm',
     preview
@@ -98,7 +123,7 @@ try {
       : ['run', 'dev:client'],
   );
   console.log(
-    `Open ${origin}. Ctrl+C stops local services and preserves their data.`,
+    `Open ${origin}. Ctrl+C stops services started here and preserves their data.`,
   );
   await new Promise<void>((resolve, reject) => {
     for (const child of [api, browser]) {
