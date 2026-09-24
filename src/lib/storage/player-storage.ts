@@ -1,4 +1,6 @@
-import { rebuildGuestProgress } from './game-history';
+import { readLocalRounds, rebuildGuestProgress } from './game-history';
+import { editUploadSchema } from '../../domain/sync/edit-upload';
+import { validateRoundUpload } from '../../domain/sync/round-facts';
 import { SaveError } from '../../domain/player/save-schema';
 import { trackFailure } from '../analytics';
 import { captureUnexpectedError } from '../sentry';
@@ -169,6 +171,34 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
       "SELECT id,payload FROM local_state WHERE id = 'player'",
     );
     const parsed = stored && parseLocalPlayerState(JSON.parse(stored.payload));
+    if (accountId) {
+      try {
+        await readLocalRounds(database, false);
+        const pending = await database.getAll<LocalRow>(
+          'SELECT id,payload FROM pending_actions',
+        );
+        for (const row of pending) {
+          const action: unknown = JSON.parse(row.payload);
+          if (
+            !isRecord(action) ||
+            action.id !== row.id ||
+            !isUuid(action.datasetId) ||
+            (action.kind !== 'round' && action.kind !== 'edit') ||
+            !isRecord(action.payload) ||
+            action.payload.id !== row.id ||
+            (action.kind === 'round'
+              ? !validateRoundUpload(action.payload)
+              : !editUploadSchema.safeParse(action.payload).success)
+          )
+            throw new Error('Invalid pending action');
+        }
+      } catch {
+        throw new SaveError(
+          'invalid',
+          'Saved account progress is damaged. Download a recovery copy before continuing.',
+        );
+      }
+    }
     if (!parsed || JSON.stringify(parsed) !== stored.payload) {
       await database.writeTransaction(async (transaction) => {
         const rows = await transaction.getAll<LocalRow>(

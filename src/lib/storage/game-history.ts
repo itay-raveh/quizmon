@@ -20,6 +20,7 @@ export async function applyRoundReceipt(
 
 export async function readLocalRounds(
   tx: LocalTransaction,
+  repair = true,
 ): Promise<RoundFact[]> {
   const rows = await tx.getAll<LocalRow>(
     'SELECT id,payload FROM local_completions',
@@ -32,7 +33,7 @@ export async function readLocalRounds(
     if (needsRepair) round.credited = round.credited === 1;
     if (!validateRoundFact(round) || round.id !== row.id)
       throw new Error('A saved completed round is damaged.');
-    if (needsRepair)
+    if (needsRepair && repair)
       await tx.execute(
         'UPDATE local_completions SET payload = ? WHERE id = ?',
         [JSON.stringify(round), row.id],
