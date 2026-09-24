@@ -22,6 +22,11 @@ export async function testDatabase() {
     'unix:///var/run/docker.sock',
   );
   const container = `quizmon-test-${crypto.randomUUID()}`;
+  const image = (
+    JSON.parse(
+      docker('compose', '-f', 'compose.yaml', 'config', '--format', 'json'),
+    ) as { services: { db: { image: string } } }
+  ).services.db.image;
   docker(
     'run',
     '--detach',
@@ -36,7 +41,7 @@ export async function testDatabase() {
     '127.0.0.1::5432',
     '--env',
     'POSTGRES_HOST_AUTH_METHOD=trust',
-    'postgres:18',
+    image,
     '-c',
     'wal_level=logical',
   );
