@@ -18,7 +18,7 @@ import {
   isUtcTimestamp,
   isSafeNonnegativeInteger,
 } from '../../lib/validation.ts';
-import { isAnswerObservation } from '../quiz/answer-observation.ts';
+import { answerObservationSchema } from '../quiz/answer-observation.ts';
 import { defaultGameSettings } from '../settings/game-settings.ts';
 import type { RoundCompletion } from '../sync/progress.ts';
 import { emptyPlayerData, type PlayerData } from './player-save.ts';
@@ -148,7 +148,7 @@ export function readRecordedGame(value: unknown): RoundCompletion {
     !result.answers.every(
       (answer) =>
         isRecord(answer) &&
-        isAnswerObservation(answer.observation) &&
+        answerObservationSchema.safeParse(answer.observation).success &&
         typeof answer.correct === 'boolean' &&
         typeof answer.category === 'string' &&
         typeof answer.questionType === 'string' &&

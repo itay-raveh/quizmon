@@ -1,5 +1,5 @@
 import {
-  isAnswerObservation,
+  answerObservationSchema,
   observationCorrect,
 } from '../quiz/answer-observation.ts';
 import { getTrainingScoreMultipliers } from '../quiz/score-multipliers.ts';
@@ -377,7 +377,9 @@ export function validateRoundFact(value: unknown): value is RoundFact {
     )
       return false;
     return (
-      isAnswerObservation(liveQuestion(q as unknown as ArchivedQuestion)) &&
+      answerObservationSchema.safeParse(
+        liveQuestion(q as unknown as ArchivedQuestion),
+      ).success &&
       isAnswerSubject(entry.subject) &&
       isChoice(entry.category, questionCategories) &&
       (entry.question_type === 'champion' ||

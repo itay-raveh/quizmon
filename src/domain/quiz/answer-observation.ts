@@ -1,5 +1,64 @@
-import { isChoice, isRecord } from '../../lib/validation.ts';
-import type { AnswerObservation, QuestionData } from './types.ts';
+import { z } from 'zod';
+import { generations } from '../pokemon/types.ts';
+import { difficultySchema } from './difficulty.ts';
+import type { QuestionData } from './types.ts';
+
+const text = z.string().max(4000);
+const choices = z
+  .array(z.string().max(2000))
+  .max(100)
+  .refine((values) => new Set(values).size === values.length);
+const prompt = z.discriminatedUnion('kind', [
+  z.object({
+    kind: z.literal('text'),
+    text,
+    description: text.optional(),
+    supportingText: text.optional(),
+  }),
+  z.object({
+    kind: z.literal('pokemon'),
+    name: text,
+    before: text,
+    after: text,
+    dexNumber: z.int(),
+    supportingText: text.optional(),
+  }),
+]);
+export const answerObservationSchema = z
+  .object({
+    questionId: z.string().min(1).max(2000),
+    prompt,
+    labels: z
+      .record(text, text)
+      .refine((labels) => Object.keys(labels).length <= 100)
+      .optional(),
+    clues: z
+      .array(
+        z.union([
+          text,
+          z.object({
+            kind: z.literal('generation'),
+            generation: z.enum(generations),
+            types: choices,
+          }),
+        ]),
+      )
+      .max(100)
+      .optional(),
+    suppliedClues: choices.optional(),
+    context: text.optional(),
+    difficulty: difficultySchema.optional(),
+    interaction: z.enum(['single-choice', 'multi-select', 'search']),
+    options: choices,
+    expected: choices.refine((values) => values.length > 0),
+    selected: choices,
+  })
+  .refine(
+    ({ interaction, selected }) =>
+      interaction === 'multi-select' || selected.length <= 1,
+  );
+
+export type AnswerObservation = z.infer<typeof answerObservationSchema>;
 
 export function observeAnswer(
   question: QuestionData,
@@ -20,65 +79,6 @@ export function observeAnswer(
     expected: [...question.answer.correctOptions],
     selected: [...selected],
   };
-}
-
-export function isAnswerObservation(
-  value: unknown,
-): value is AnswerObservation {
-  if (!isRecord(value) || !isRecord(value.prompt)) return false;
-  const strings = (v: unknown): v is string[] =>
-    Array.isArray(v) &&
-    v.length <= 100 &&
-    v.every((item) => typeof item === 'string' && item.length <= 2000) &&
-    new Set(v).size === v.length;
-  const text = (v: unknown) => typeof v === 'string' && v.length <= 4000;
-  const prompt = value.prompt;
-  if (
-    (prompt.supportingText !== undefined && !text(prompt.supportingText)) ||
-    (value.labels !== undefined &&
-      (!isRecord(value.labels) ||
-        Object.keys(value.labels).length > 100 ||
-        !Object.entries(value.labels).every(
-          ([key, label]) => text(key) && text(label),
-        ))) ||
-    (value.suppliedClues !== undefined && !strings(value.suppliedClues)) ||
-    (value.clues !== undefined &&
-      (!Array.isArray(value.clues) ||
-        value.clues.length > 100 ||
-        !value.clues.every(
-          (clue) =>
-            text(clue) ||
-            (isRecord(clue) &&
-              clue.kind === 'generation' &&
-              text(clue.generation) &&
-              strings(clue.types)),
-        )))
-  )
-    return false;
-  return (
-    typeof value.questionId === 'string' &&
-    value.questionId.length > 0 &&
-    value.questionId.length <= 2000 &&
-    (prompt.kind === 'text'
-      ? typeof prompt.text === 'string' && prompt.text.length <= 4000
-      : prompt.kind === 'pokemon' &&
-        text(prompt.name) &&
-        text(prompt.before) &&
-        text(prompt.after) &&
-        Number.isSafeInteger(prompt.dexNumber)) &&
-    (value.context === undefined ||
-      (typeof value.context === 'string' && value.context.length <= 4000)) &&
-    (value.difficulty === undefined ||
-      (Number.isInteger(value.difficulty) &&
-        Number(value.difficulty) >= 1 &&
-        Number(value.difficulty) <= 5)) &&
-    isChoice(value.interaction, ['single-choice', 'multi-select', 'search']) &&
-    strings(value.options) &&
-    strings(value.expected) &&
-    value.expected.length > 0 &&
-    strings(value.selected) &&
-    (value.interaction === 'multi-select' || value.selected.length <= 1)
-  );
 }
 
 export function observationCorrect(value: AnswerObservation) {

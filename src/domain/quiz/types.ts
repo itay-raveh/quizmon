@@ -181,19 +181,8 @@ export type GameMode =
   | { kind: 'daily'; date: string; track?: DailyTrack }
   | { kind: 'league' };
 
-export interface AnswerObservation {
-  labels?: Record<string, string>;
-  clues?: QuestionData['clues'];
-  suppliedClues?: string[];
-  questionId: string;
-  prompt: QuestionPrompt;
-  context?: string;
-  difficulty?: Difficulty;
-  interaction: QuestionInteraction;
-  options: string[];
-  expected: string[];
-  selected: string[];
-}
+export type { AnswerObservation } from './answer-observation.ts';
+import type { AnswerObservation } from './answer-observation.ts';
 
 export interface SavedAnswerResult {
   observation?: AnswerObservation;

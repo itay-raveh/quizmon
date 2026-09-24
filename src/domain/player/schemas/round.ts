@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SAVE_SCHEMA_VERSION } from '../player-save.ts';
-import { isAnswerObservation } from '../../quiz/answer-observation.ts';
+import { answerObservationSchema } from '../../quiz/answer-observation.ts';
 import type { ActiveGameSnapshot } from '../active-game.ts';
 import { isAnswerSubject } from '../../quiz/subject.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
@@ -8,7 +8,6 @@ import { isQuestionData } from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import {
   questionCategories,
-  type AnswerObservation,
   type AnswerSubject,
   type GameMode,
   type QuestionData,
@@ -39,7 +38,7 @@ const mode = z.discriminatedUnion('kind', [
   }),
 ]);
 const answer = z.object({
-  observation: z.custom<AnswerObservation>(isAnswerObservation).optional(),
+  observation: answerObservationSchema.optional(),
   category: z.enum(questionCategories),
   cluesUsed: nonnegativeInteger,
   unassistedSearch: z.boolean().optional(),
