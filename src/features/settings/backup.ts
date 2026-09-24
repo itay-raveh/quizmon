@@ -349,6 +349,32 @@ export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {
       const rejected = new Set(
         (validated.reviewIssues ?? []).map((issue) => issue.operationId),
       );
+      const synced = new Set(
+        (validated.records.server_rounds ?? []).map((row) => row.id),
+      );
+      for (const row of validated.records.pending_actions ?? []) {
+        const action = JSON.parse(row.payload) as LocalAction;
+        if (
+          rejected.has(row.id) ||
+          (action.kind === 'round' && synced.has(row.id))
+        )
+          continue;
+        const [existing] = await tx.getAll<LocalRow>(
+          'SELECT id,payload FROM local_actions WHERE id = ?',
+          [row.id],
+        );
+        if (existing && existing.payload !== row.payload)
+          throw new Error('A change with this ID contains different data.');
+        if (!existing)
+          await tx.execute(
+            'INSERT INTO local_actions(id,payload) VALUES (?,?)',
+            [row.id, row.payload],
+          );
+        await tx.execute(
+          'INSERT OR IGNORE INTO pending_actions(id,payload,sequence) VALUES (?,?,(SELECT COALESCE(MAX(sequence),0)+1 FROM pending_actions))',
+          [row.id, row.payload],
+        );
+      }
       for (const row of rounds.values()) {
         const [existing] = await tx.getAll<LocalRow>(
           'SELECT id,payload FROM local_completions WHERE id = ?',
@@ -367,45 +393,32 @@ export const restoreBackup = async (backup: PlayerBackup): Promise<void> => {
           'SELECT id,payload FROM local_actions WHERE id = ?',
           [row.id],
         );
-        let actionText = oldAction?.payload;
+        let actionText =
+          oldAction?.payload ??
+          validated.records.local_actions.find((action) => action.id === row.id)
+            ?.payload;
         if (!oldAction) {
-          const { credited: _credited, ...payload } = archived;
-          void _credited;
-          const action: LocalAction = {
-            id: row.id,
-            datasetId: state.datasetId,
-            kind: 'round',
-            payload,
-          };
-          actionText = JSON.stringify(action);
+          if (!actionText) {
+            const { credited: _credited, ...payload } = archived;
+            void _credited;
+            const action: LocalAction = {
+              id: row.id,
+              datasetId: state.datasetId,
+              kind: 'round',
+              payload,
+            };
+            actionText = JSON.stringify(action);
+          }
           await tx.execute(
             'INSERT INTO local_actions(id,payload) VALUES (?,?)',
             [row.id, actionText],
           );
         }
-        if (!rejected.has(row.id))
+        if (!rejected.has(row.id) && !synced.has(row.id))
           await tx.execute(
             'INSERT OR IGNORE INTO pending_actions(id,payload,sequence) VALUES (?,?,(SELECT COALESCE(MAX(sequence),0)+1 FROM pending_actions))',
             [row.id, actionText],
           );
-      }
-      for (const row of validated.records.pending_actions ?? []) {
-        if (rejected.has(row.id)) continue;
-        const [existing] = await tx.getAll<LocalRow>(
-          'SELECT id,payload FROM local_actions WHERE id = ?',
-          [row.id],
-        );
-        if (existing && existing.payload !== row.payload)
-          throw new Error('A change with this ID contains different data.');
-        if (!existing)
-          await tx.execute(
-            'INSERT INTO local_actions(id,payload) VALUES (?,?)',
-            [row.id, row.payload],
-          );
-        await tx.execute(
-          'INSERT OR IGNORE INTO pending_actions(id,payload,sequence) VALUES (?,?,(SELECT COALESCE(MAX(sequence),0)+1 FROM pending_actions))',
-          [row.id, row.payload],
-        );
       }
       for (const issue of validated.reviewIssues ?? []) {
         const row = validated.records.local_actions.find(
