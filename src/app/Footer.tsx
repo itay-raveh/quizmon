@@ -1,10 +1,37 @@
 import { CoffeeIcon } from '@phosphor-icons/react/ssr';
-import {
-  footerCredits,
-  footerDisclaimer,
-  footerLinks,
-} from './content-pages.ts';
+import { contentPages } from './content-pages.ts';
 import { site } from './site.ts';
+
+const footerLinks = contentPages.map(({ path, label }) => ({
+  href: path,
+  label,
+}));
+
+const footerDisclaimer =
+  'Quizmon is unofficial and not affiliated with Nintendo. Pokémon and related names, characters, images, and trademarks belong to their respective owners.';
+
+const footerCredits = [
+  {
+    label: 'Badges:',
+    name: '@beresteyskaya',
+    href: 'https://www.fiverr.com/beresteyskaya',
+  },
+  {
+    label: 'Logo made with',
+    name: 'TextStudio',
+    href: 'https://www.textstudio.com',
+  },
+  {
+    label: 'Data:',
+    name: 'PokéAPI',
+    href: 'https://pokeapi.co/',
+  },
+  {
+    label: 'Sprites & text:',
+    name: 'Pokémon Showdown',
+    href: 'https://pokemonshowdown.com/',
+  },
+];
 
 export const Footer = ({ currentPath }: { currentPath?: string }) => {
   return (

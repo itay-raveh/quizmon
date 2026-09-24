@@ -24,34 +24,3 @@ export const contentPages = [
     source: 'terms.md',
   },
 ];
-
-export const footerLinks = contentPages.map(({ path, label }) => ({
-  href: path,
-  label,
-}));
-
-export const footerDisclaimer =
-  'Quizmon is unofficial and not affiliated with Nintendo. Pokémon and related names, characters, images, and trademarks belong to their respective owners.';
-
-export const footerCredits = [
-  {
-    label: 'Badges:',
-    name: '@beresteyskaya',
-    href: 'https://www.fiverr.com/beresteyskaya',
-  },
-  {
-    label: 'Logo made with',
-    name: 'TextStudio',
-    href: 'https://www.textstudio.com',
-  },
-  {
-    label: 'Data:',
-    name: 'PokéAPI',
-    href: 'https://pokeapi.co/',
-  },
-  {
-    label: 'Sprites & text:',
-    name: 'Pokémon Showdown',
-    href: 'https://pokemonshowdown.com/',
-  },
-];
