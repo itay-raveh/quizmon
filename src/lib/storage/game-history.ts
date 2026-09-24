@@ -7,6 +7,17 @@ import { isRecord } from '../validation';
 import type { LocalRow, LocalTransaction } from './local-database';
 import type { LocalPlayerState } from './player-storage';
 
+export async function applyRoundReceipt(
+  tx: LocalTransaction,
+  id: string,
+  credited: boolean,
+) {
+  await tx.execute(
+    "UPDATE local_completions SET payload = json_set(payload,'$.credited',json(?)) WHERE id = ?",
+    [credited ? 'true' : 'false', id],
+  );
+}
+
 export async function readLocalRounds(
   tx: LocalTransaction,
 ): Promise<RoundFact[]> {

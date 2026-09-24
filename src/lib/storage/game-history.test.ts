@@ -2,7 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { expect, it } from 'vitest';
 import { completion } from '../../../tests/online/progress-fixtures';
 import { archiveCompletion } from '../../domain/sync/round-facts';
-import { readLocalRounds } from './game-history';
+import { applyRoundReceipt, readLocalRounds } from './game-history';
 import type { LocalRow, LocalTransaction } from './local-database';
 
 it('repairs old numeric receipts and keeps new receipts as JSON booleans', async () => {
@@ -39,10 +39,10 @@ it('repairs old numeric receipts and keeps new receipts as JSON booleans', async
       JSON.parse((await tx.getAll<LocalRow>(''))[0]!.payload) as unknown,
     ).toMatchObject({ credited: false });
 
-    await tx.execute(
-      "UPDATE local_completions SET payload = json_set(payload,'$.credited',json(?)) WHERE id = ?",
-      ['true', round.id],
-    );
+    await applyRoundReceipt(tx, round.id, true);
+    expect(
+      JSON.parse((await tx.getAll<LocalRow>(''))[0]!.payload) as unknown,
+    ).toMatchObject({ credited: true });
     expect((await readLocalRounds(tx))[0]!.credited).toBe(true);
   } finally {
     database.close();

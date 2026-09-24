@@ -34,6 +34,7 @@ import { readSyncConnection } from '../../domain/sync/connection';
 import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
 import { writeStoredValue } from '../../lib/storage/browser-storage';
 import { convertSavedDatabaseV1 } from '../../lib/storage/save-compatibility';
+import { applyRoundReceipt } from '../../lib/storage/game-history';
 
 const selectionKey = 'quizmon.baseline.account';
 export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
@@ -546,10 +547,7 @@ function connector(expected: Binding): PowerSyncBackendConnector {
             throw new Error('Invalid sync receipt.');
           seen.add(value.id);
           if (action.kind === 'round' && value.status === 'accepted') {
-            await db.execute(
-              "UPDATE local_completions SET payload = json_set(payload,'$.credited',json(?)) WHERE id = ?",
-              [value.credited ? 'true' : 'false', action.id],
-            );
+            await applyRoundReceipt(db, action.id, value.credited as boolean);
           }
           if (value.status !== 'accepted')
             await db.execute(
