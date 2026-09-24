@@ -14,7 +14,7 @@ import {
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
 import { contentPages } from './app/content-pages';
-import { isGamePath } from './app/game-path';
+import { isAppPath } from './app/app-path';
 
 declare const self: ServiceWorkerGlobalScope & {
   __WB_MANIFEST: string[];
@@ -50,12 +50,11 @@ registerRoute(
     const contentPage = contentPages.find(({ path }) =>
       [path, `${path}/`, `${path}.html`].includes(options.url.pathname),
     );
-    const isGame =
-      options.url.pathname === '/index.html' ||
-      isGamePath(options.url.pathname);
+    const isApp =
+      options.url.pathname === '/index.html' || isAppPath(options.url.pathname);
     const page = contentPage
       ? `${contentPage.path}.html`
-      : isGame
+      : isApp
         ? '/index.html'
         : '/404.html';
     const response = await createHandlerBoundToURL(page)(options);

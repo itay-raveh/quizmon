@@ -1,10 +1,10 @@
 import { expect, test } from 'vitest';
-import { isGamePath } from './game-path';
+import { isAppPath } from './app-path';
 import { accountReturnPath } from '../features/account/account-navigation';
 import { parseFriendInput } from '../domain/social/friends';
 import { parseDailyDate, shouldAutoStartDaily } from '../domain/quiz/daily';
 
-test('shared game links load the app and retain their destination after sign-in', () => {
+test('shared app links load the app and retain their destination after sign-in', () => {
   const paths = [
     '/',
     '/trainer/edit',
@@ -14,16 +14,16 @@ test('shared game links load the app and retain their destination after sign-in'
     '/daily/2026-09-23',
   ];
   for (const path of paths) {
-    expect(isGamePath(path)).toBe(true);
+    expect(isAppPath(path)).toBe(true);
     expect(
       accountReturnPath(
         `https://quizmon.test/account?returnTo=${encodeURIComponent(path)}`,
       ),
     ).toBe(path);
   }
-  expect(isGamePath('/daily/2026-02-30')).toBe(false);
-  expect(isGamePath('/league/hall-of-fame')).toBe(false);
-  expect(isGamePath('/missing')).toBe(false);
+  expect(isAppPath('/daily/2026-02-30')).toBe(false);
+  expect(isAppPath('/league/hall-of-fame')).toBe(false);
+  expect(isAppPath('/missing')).toBe(false);
   expect(
     accountReturnPath('https://quizmon.test/account?returnTo=/api/account'),
   ).toBe('/');

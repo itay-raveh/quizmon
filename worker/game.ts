@@ -8,7 +8,7 @@ import {
   type DailyReminderEnv,
 } from './daily-reminder';
 import { noStoreResponse } from './responses';
-import { isGamePath } from '../src/app/game-path';
+import { isAppPath } from '../src/app/app-path';
 
 const SPRITE_CACHE_SECONDS = 60 * 60 * 24 * 30;
 interface Env extends DailyReminderEnv {
@@ -79,7 +79,7 @@ export default {
     if (
       (request.method === 'GET' || request.method === 'HEAD') &&
       url.pathname !== '/' &&
-      isGamePath(url.pathname)
+      isAppPath(url.pathname)
     )
       return env.ASSETS.fetch(
         new Request(new URL('/index.html', url), request),

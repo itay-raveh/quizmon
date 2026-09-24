@@ -3,7 +3,7 @@ import { matchPath, useLocation, useNavigate } from 'react-router';
 import type { TrainerView } from '../domain/player/trainer-progression';
 import type { LeaderboardMode } from '../domain/social/leaderboards';
 import { trainerPath } from '../features/trainer/trainer-route';
-import { isGamePath } from './game-path';
+import { isAppPath } from './app-path';
 
 type Destination = 'account' | 'friends' | 'rankings';
 type ProfileState = { from?: 'friends' | 'rankings' };
@@ -62,7 +62,7 @@ export function useAppDestination() {
 
   return {
     account,
-    isKnownPath: isGamePath(location.pathname),
+    isKnownPath: isAppPath(location.pathname),
     pathname: location.pathname,
     destination,
     friendCode:

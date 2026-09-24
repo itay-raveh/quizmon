@@ -1,4 +1,4 @@
-import { isGamePath } from '../../app/game-path';
+import { isAppPath } from '../../app/app-path';
 
 export function accountReturnPath(href: string): string {
   const current = new URL(href);
@@ -9,7 +9,7 @@ export function accountReturnPath(href: string): string {
       if (
         target.origin === current.origin &&
         target.pathname !== '/account' &&
-        isGamePath(target.pathname)
+        isAppPath(target.pathname)
       ) {
         target.searchParams.delete('returnTo');
         return `${target.pathname}${target.search}${target.hash}`;
