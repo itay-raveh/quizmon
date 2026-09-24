@@ -6,14 +6,14 @@ import {
   isSafeNonnegativeInteger,
 } from '../../lib/validation.ts';
 import { formGroups, generations } from '../pokemon/types.ts';
-import { isDifficulty } from './difficulty.ts';
+import { difficultySchema } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { type GameResult, type RoundRules } from './types.ts';
 
 export const isRoundRules = (value: unknown): value is RoundRules =>
   isRecord(value) &&
   isSafeNonnegativeInteger(value.version) &&
-  isDifficulty(value.difficulty) &&
+  difficultySchema.safeParse(value.difficulty).success &&
   (value.automaticQuestionTypes === undefined ||
     isNonemptyChoiceArray(value.automaticQuestionTypes, questionTypes)) &&
   isNonemptyChoiceArray(value.generations, generations) &&

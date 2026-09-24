@@ -6,7 +6,7 @@ import { generations } from '../pokemon/types.ts';
 import { formGroups } from '../pokemon/types.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
-import { isDifficulty } from './difficulty.ts';
+import { difficultySchema } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { type ScoreMultipliers } from './types.ts';
 
@@ -19,7 +19,7 @@ for (const [name, generation] of Object.entries(pokemonGenerations))
 
 export const isScoreMultipliers = (value: unknown): value is ScoreMultipliers =>
   isRecord(value) &&
-  isDifficulty(value.difficulty) &&
+  difficultySchema.safeParse(value.difficulty).success &&
   typeof value.generations === 'number' &&
   Number.isInteger(value.generations) &&
   value.generations >= 1 &&

@@ -8,7 +8,7 @@ import {
 } from '../../lib/validation.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { formGroups, generations } from '../pokemon/types.ts';
-import { isDifficulty } from '../quiz/difficulty.ts';
+import { difficultySchema } from '../quiz/difficulty.ts';
 import { questionTypes } from '../quiz/questions/definitions.ts';
 import type { AnswerResult, GameResult } from '../quiz/types.ts';
 import { getTrainingSettings } from '../settings/game-settings.ts';
@@ -65,7 +65,8 @@ function validTraining(value: unknown): value is TrainingConfig {
   return (
     isObject(value) &&
     isChoice(value.trainingMode, trainingModes) &&
-    (value.difficulty === undefined || isDifficulty(value.difficulty)) &&
+    (value.difficulty === undefined ||
+      difficultySchema.safeParse(value.difficulty).success) &&
     (value.questionSelection === undefined ||
       isChoice(value.questionSelection, ['automatic', 'custom'])) &&
     (value.formGroups === undefined ||

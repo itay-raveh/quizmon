@@ -15,7 +15,7 @@ import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { isRoundRules } from '../../quiz/round-rules.ts';
 import { isScoreMultipliers } from '../../quiz/score-multipliers.ts';
 import { getUnifiedScoreKey } from '../../quiz/scoring.ts';
-import { isDifficulty, type Difficulty } from '../../quiz/difficulty.ts';
+import { difficultySchema } from '../../quiz/difficulty.ts';
 import {
   getDailyResultKey,
   hasDailyResultOnDate,
@@ -130,8 +130,8 @@ const results = z
   );
 const isResults = (value: unknown): value is SavedResults =>
   results.safeParse(value).success;
-const settings = z.object({
-  difficulty: z.custom<Difficulty>(isDifficulty),
+export const savedSettingsSchema = z.object({
+  difficulty: difficultySchema,
   questionSelection: z.enum(['automatic', 'custom']),
   answerFlow: z.enum(answerFlows),
   timerDisplay: z.enum(timerDisplays),
@@ -180,7 +180,7 @@ const playerData = z.object({
         lineup === null || lineup.questions.length === LEAGUE_QUESTION_COUNT,
     ),
   results: z.custom<SavedResults>(isResults),
-  settings: settings.nullable(),
+  settings: savedSettingsSchema.nullable(),
   profile: z.unknown(),
 });
 

@@ -1,10 +1,9 @@
+import { z } from 'zod';
+
 export const difficultyLevels = [1, 2, 3, 4, 5] as const;
 
-export type Difficulty = (typeof difficultyLevels)[number];
-
-export const isDifficulty = (value: unknown): value is Difficulty =>
-  typeof value === 'number' &&
-  difficultyLevels.some((level) => level === value);
+export const difficultySchema = z.literal(difficultyLevels);
+export type Difficulty = z.infer<typeof difficultySchema>;
 
 export type DifficultyVariants<Variant> = Readonly<
   Partial<Record<Difficulty, Variant>>

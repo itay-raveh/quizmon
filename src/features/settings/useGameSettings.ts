@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  defaultGameSettings,
-  normalizeGameSettings,
-} from '../../domain/settings/game-settings';
+import { defaultGameSettings } from '../../domain/settings/game-settings';
 import type { GameSettings } from '../../domain/settings/types';
 import {
   readPlayerData,
@@ -12,16 +9,13 @@ import {
 
 export const useGameSettings = () => {
   const [settings, setSettingsState] = useState(
-    () =>
-      readPlayerData().settings ?? normalizeGameSettings(defaultGameSettings),
+    () => readPlayerData().settings ?? defaultGameSettings,
   );
 
   useEffect(
     () =>
       subscribeToPlayerChanges(() => {
-        const next =
-          readPlayerData().settings ??
-          normalizeGameSettings(defaultGameSettings);
+        const next = readPlayerData().settings ?? defaultGameSettings;
         setSettingsState((current) =>
           JSON.stringify(current) === JSON.stringify(next) ? current : next,
         );
@@ -30,9 +24,9 @@ export const useGameSettings = () => {
   );
 
   const setSettings = useCallback(async (nextSettings: GameSettings) => {
-    const normalized = normalizeGameSettings(nextSettings);
-    const saved = await updatePlayerData({ settings: normalized });
-    if (saved) setSettingsState(normalized);
+    const saved = await updatePlayerData({ settings: nextSettings });
+    if (saved)
+      setSettingsState(readPlayerData().settings ?? defaultGameSettings);
     return saved;
   }, []);
 
