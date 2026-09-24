@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import { generations } from '../src/domain/pokemon/types.ts';
-import type { TopicCatalog } from '../src/domain/quiz/topic-catalog.ts';
+import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 const source =
   'https://raw.githubusercontent.com/smogon/pokemon-showdown/aa6d5f0856d24679be8f5df167d1b528c2dcbd71/data/text/abilities.ts';
@@ -62,7 +62,7 @@ const parseAbilityText = (text: string) => {
 };
 
 export const addAbilityDescriptions = async (
-  abilities: TopicCatalog['abilities'],
+  abilities: EditorialTopicCatalog['abilities'],
   text?: string,
 ): Promise<void> => {
   if (text === undefined) {

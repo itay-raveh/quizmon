@@ -13,7 +13,13 @@ const developmentUrl = '/@quizmon/pokemon-catalog.bin';
 const compress = promisify(gzip);
 
 const buildPokemonCatalogArchive = async (source = directory) =>
-  compress(JSON.stringify(await readCatalogFiles(source)));
+  compress(
+    JSON.stringify(await readCatalogFiles(source), (key, value: unknown) =>
+      key === 'source' || key === 'sources' || key === 'descriptionSource'
+        ? undefined
+        : value,
+    ),
+  );
 
 export const pokemonCatalog = (): Plugin => {
   let building = false;

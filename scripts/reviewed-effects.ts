@@ -38,7 +38,7 @@ const grassAttackBoost = {
   label: 'Blocks Grass moves and raises Attack',
 };
 
-export const reviewedEffects: EffectKnowledge[] = [
+export const reviewedEffects: (EffectKnowledge & { sources: string[] })[] = [
   {
     kind: 'ability',
     name: 'volt-absorb',

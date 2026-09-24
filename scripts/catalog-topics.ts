@@ -35,6 +35,7 @@ import type {
   TopicCatalog,
   TopicEntity,
 } from '../src/domain/quiz/topic-catalog.ts';
+import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 import {
   isItemSpritePath,
   normalizeSpriteUrl,
@@ -50,7 +51,7 @@ const label = (entity: {
 export const buildTopicCatalog = async (
   client: MainClient,
   catalog: PokemonCatalog,
-): Promise<TopicCatalog> => {
+): Promise<EditorialTopicCatalog> => {
   const all = async <T>(endpoint: string): Promise<T[]> => {
     const [list] = await client.resolveAll<NamedAPIResourceList<T>>(
       [`https://pokeapi.co/api/v2/${endpoint}/?limit=10000`],
@@ -122,7 +123,7 @@ export const buildTopicCatalog = async (
       .map(([name, pokemon]) => [pokemon.speciesName, name]),
   );
   const encounters: TopicCatalog['encounters'] = [];
-  const gaps: TopicCatalog['gaps'] = {
+  const gaps: EditorialTopicCatalog['gaps'] = {
     itemGeneration: [],
     itemSprite: [],
     moveDescription: [],
@@ -267,7 +268,7 @@ export const buildTopicCatalog = async (
       }
     }
   }
-  const topics: TopicCatalog = {
+  const topics: EditorialTopicCatalog = {
     games,
     encounters,
     evolutions,

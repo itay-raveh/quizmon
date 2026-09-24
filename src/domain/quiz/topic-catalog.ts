@@ -61,7 +61,6 @@ export interface EffectKnowledge {
   generation: Generation;
   battleGeneration: Generation;
   context: string;
-  sources: string[];
   explanation: string;
   questions: Record<EffectMode, EffectQuestion>;
 }
@@ -71,13 +70,11 @@ export interface TopicCatalog {
     name: string;
     cures: string[];
     hp: number | 'full';
-    source: string;
   }[];
   effects: EffectKnowledge[];
   items: ItemKnowledge[];
   moves: MoveKnowledge[];
   abilities: (TopicEntity & {
-    descriptionSource?: string;
     descriptions?: {
       generation: Generation;
       text: string;
@@ -95,5 +92,4 @@ export interface TopicCatalog {
   games: Record<string, { label: string; generation: Generation }>;
   evolutions: EvolutionKnowledge[];
   encounters: EncounterKnowledge[];
-  gaps: Record<string, string[]>;
 }

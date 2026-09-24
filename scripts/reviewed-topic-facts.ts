@@ -1,9 +1,9 @@
-import type { TopicCatalog } from '../src/domain/quiz/topic-catalog.ts';
+import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 const allStatuses = ['poison', 'burn', 'freeze', 'sleep', 'paralysis'];
 const medicineSource =
   'https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv';
-export const medicineChoices: TopicCatalog['medicineChoices'] = [
+export const medicineChoices: EditorialTopicCatalog['medicineChoices'] = [
   ...[
     ['antidote', 'poison'],
     ['burn-heal', 'burn'],

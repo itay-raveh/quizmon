@@ -403,8 +403,9 @@ if (import.meta.main) {
           )
         : await buildPokemonCatalog(client);
   if (mode === '--topics-only' || mode === undefined) {
-    catalog.topics = await buildTopicCatalog(client, catalog);
-    await addItemSpriteIdentities(catalog.topics);
+    const topics = await buildTopicCatalog(client, catalog);
+    await addItemSpriteIdentities(topics);
+    catalog.topics = topics;
     catalog.contentVersion = gameVersions.content;
   }
   await writeCatalogFiles(catalog, DATA_DIRECTORY);

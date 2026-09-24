@@ -18,8 +18,14 @@ export const writeCatalogFiles = async (
   }
   const { topics, ...pokemon } = catalog;
   const topicFiles: string[] = [];
+  if (topics && 'gaps' in topics)
+    await writeFile(
+      new URL('catalog-gaps.json', directory),
+      await format(JSON.stringify(topics.gaps), { parser: 'json' }),
+    );
   if (topics)
     for (const [key, values] of Object.entries(topics)) {
+      if (key === 'gaps') continue;
       const batches: unknown[] = [];
       if (Array.isArray(values)) {
         let batch: unknown[] = [],

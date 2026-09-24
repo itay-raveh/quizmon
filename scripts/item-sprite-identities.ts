@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { chromium } from '@playwright/test';
 import { fetchSpriteSource } from '../src/domain/pokemon/sprite-source.ts';
-import type { TopicCatalog } from '../src/domain/quiz/topic-catalog.ts';
+import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 export const addItemSpriteIdentities = async (
-  topics: TopicCatalog,
+  topics: EditorialTopicCatalog,
   load: (path: string) => Promise<Response> = fetchSpriteSource,
 ): Promise<void> => {
   const browser = await chromium.launch();
