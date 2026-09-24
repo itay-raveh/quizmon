@@ -402,45 +402,11 @@ const addSpriteMeasurements = async (
   return catalog;
 };
 
-const addPokemonKnowledge = async (
-  catalog: PokemonCatalog,
-  client: CatalogClient,
-): Promise<PokemonCatalog> => {
-  const retained = Object.values(catalog.pokemon);
-  const pokemon = await client.resolveAll<Pokemon>(
-    [...new Set(retained.map(({ pokemonId }) => pokemonId))].map(
-      (id) => `https://pokeapi.co/api/v2/pokemon/${id}/`,
-    ),
-  );
-  const species = await client.resolveAll<PokemonSpecies>(
-    [...new Set(retained.map(({ speciesId }) => speciesId))].map(
-      (id) => `https://pokeapi.co/api/v2/pokemon-species/${id}/`,
-    ),
-  );
-  const pokemonById = new Map(pokemon.map((entry) => [entry.id, entry]));
-  const speciesById = new Map(species.map((entry) => [entry.id, entry]));
-  for (const entry of retained) {
-    const variety = pokemonById.get(entry.pokemonId);
-    const classification = speciesById.get(entry.speciesId);
-    if (
-      !variety ||
-      !classification ||
-      variety.species.name !== entry.speciesName
-    )
-      throw new Error(
-        `Missing or mismatched knowledge for form ${entry.formId}`,
-      );
-    Object.assign(entry, extractPokemonKnowledge(variety, classification));
-  }
-  return catalog;
-};
-
 if (import.meta.main) {
   const [mode, ...extra] = process.argv.slice(2);
   if (
     extra.length ||
-    (mode !== undefined &&
-      !['--topics-only', '--sprites-only', '--knowledge-only'].includes(mode))
+    (mode !== undefined && !['--topics-only', '--sprites-only'].includes(mode))
   )
     throw new Error('Use one catalog update mode at a time.');
   const client = createCatalogClient();
@@ -452,12 +418,7 @@ if (import.meta.main) {
             await readCatalogFiles(DATA_DIRECTORY),
             (paths) => client.measureSprites(paths),
           )
-        : mode === '--knowledge-only'
-          ? await addPokemonKnowledge(
-              await readCatalogFiles(DATA_DIRECTORY),
-              client,
-            )
-          : await buildPokemonCatalog(client);
+        : await buildPokemonCatalog(client);
   if (mode === '--topics-only' || mode === undefined) {
     catalog.topics = await buildTopicCatalog(client, catalog);
     await addItemSpriteIdentities(catalog.topics);
