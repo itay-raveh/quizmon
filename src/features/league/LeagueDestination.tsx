@@ -14,7 +14,10 @@ import {
   exportTrainerArtifact,
   supportsTrainerArtifactSharing,
 } from '@/features/trainer/trainer-artifact-export';
-import { readPlayerData } from '@/lib/storage/player-storage';
+import {
+  readPlayerData,
+  subscribeToPlayerChanges,
+} from '@/lib/storage/player-storage';
 import { useEffect, useRef, useState } from 'react';
 import { LeagueProgress } from './LeagueProgress';
 import { LeagueTrophy } from './LeagueTrophy';
@@ -48,18 +51,26 @@ export const LeagueDestination = ({
   const view = completed ? requestedView : 'challenge';
   const heading = useRef<HTMLDivElement>(null);
   const artifact = useRef<HTMLElement>(null);
-  const [records] = useState(() => {
-    const saved = readPlayerData().hallOfFame;
-    return freshRecord && !saved.some(({ id }) => id === freshRecord.id)
-      ? [...saved, freshRecord]
-      : saved;
-  });
-  const [index, setIndex] = useState(records.length - 1);
+  const [savedRecords, setSavedRecords] = useState(
+    () => readPlayerData().hallOfFame,
+  );
+  const records =
+    freshRecord && !savedRecords.some(({ id }) => id === freshRecord.id)
+      ? [...savedRecords, freshRecord]
+      : savedRecords;
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedIndex = records.findIndex(({ id }) => id === selectedId);
+  const index = selectedIndex < 0 ? records.length - 1 : selectedIndex;
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const record = records[index];
   const canShare = supportsTrainerArtifactSharing();
+
+  useEffect(() => {
+    const refresh = () => setSavedRecords(readPlayerData().hallOfFame);
+    return subscribeToPlayerChanges(refresh);
+  }, []);
 
   useEffect(() => {
     heading.current
@@ -137,7 +148,7 @@ export const LeagueDestination = ({
                   tone="quiet"
                   aria-label="Older victory"
                   disabled={index === 0 || busy}
-                  onClick={() => setIndex(index - 1)}
+                  onClick={() => setSelectedId(records[index - 1]!.id)}
                 >
                   <ArrowLeftIcon aria-hidden="true" />
                 </GameButton>
@@ -148,7 +159,7 @@ export const LeagueDestination = ({
                   tone="quiet"
                   aria-label="Newer victory"
                   disabled={index === records.length - 1 || busy}
-                  onClick={() => setIndex(index + 1)}
+                  onClick={() => setSelectedId(records[index + 1]!.id)}
                 >
                   <ArrowRightIcon aria-hidden="true" />
                 </GameButton>
