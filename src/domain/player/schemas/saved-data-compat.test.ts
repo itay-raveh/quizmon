@@ -80,6 +80,10 @@ it('upgrades an unfinished round with a seed ID before strict validation', () =>
   const upgraded = parseActiveGameSave({ ...round, roundId: round.seed });
   expect(isUuid(upgraded.roundId)).toBe(true);
   expect(parseRound(upgraded)?.roundId).toBe(upgraded.roundId);
+  expect(
+    parseActiveGameSave({ ...round, seed: round.roundId, roundId: undefined })
+      .roundId,
+  ).toBe(round.roundId);
 });
 
 it('keeps player-data normalization and recovery error category', () => {

@@ -5,7 +5,7 @@ import type {
   ScoreMultipliers,
 } from '../quiz/types.ts';
 import type { GameSettings } from '../settings/types.ts';
-import { isRecord } from '../../lib/validation.ts';
+import { isRecord, isUuid } from '../../lib/validation.ts';
 import { SAVE_SCHEMA_VERSION } from './player-save.ts';
 import { parseVersionedSave, SaveError } from './save-schema.ts';
 import { parseRound } from './schemas/round.ts';
@@ -35,7 +35,10 @@ export const parseActiveGameSave = (value: unknown): ActiveGameSnapshot => {
     isRecord(value) &&
     version === SAVE_SCHEMA_VERSION &&
     (value.roundId === undefined || value.roundId === value.seed)
-      ? { ...value, roundId: crypto.randomUUID() }
+      ? {
+          ...value,
+          roundId: isUuid(value.seed) ? value.seed : crypto.randomUUID(),
+        }
       : value;
   return parseVersionedSave(
     { version, data },
