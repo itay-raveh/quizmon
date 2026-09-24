@@ -23,8 +23,7 @@ export const buildMeasurement =
         context,
         context.pool.filter(
           ({ pokemon }) =>
-            Number.isSafeInteger(pokemon[measurement]) &&
-            pokemon[measurement]! > 0,
+            pokemon[measurement] !== undefined && pokemon[measurement] > 0,
         ),
       ),
     );

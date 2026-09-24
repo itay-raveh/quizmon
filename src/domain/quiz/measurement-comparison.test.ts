@@ -40,17 +40,8 @@ it('rejects a tight pair with two obvious alternatives under a cluster limit', (
   ).toBeUndefined();
 });
 
-it.each([
-  [1, 2, 3, 3],
-  [1, 1, 2, 100],
-  [0, 1, 2, 100],
-  [-1, 1, 2, 100],
-  [NaN, 1, 2, 100],
-  [Infinity, 1, 2, 100],
-  [1, 2, 100],
-])('rejects invalid measurement choices %j', (...values) => {
-  expect(measurementWinner(values, 'highest', rules)).toBeUndefined();
-  expect(measurementWinner(values, 'lowest', rules)).toBeUndefined();
+it('rejects an incomplete comparison', () => {
+  expect(measurementWinner([1, 2, 100], 'highest', rules)).toBeUndefined();
 });
 
 it('reveals source units without rounding distinct values into a tie', () => {

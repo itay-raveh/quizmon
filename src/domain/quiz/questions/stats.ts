@@ -30,11 +30,6 @@ export const buildEvYield: QuestionBuilder = (context) => {
     context.pool.filter(
       ({ pokemon }) =>
         pokemon.evYield &&
-        statNames.every(
-          (stat) =>
-            Number.isSafeInteger(pokemon.evYield![stat]) &&
-            pokemon.evYield![stat] >= 0,
-        ) &&
         Object.values(pokemon.evYield).some((value) => value > 0),
     ),
   );

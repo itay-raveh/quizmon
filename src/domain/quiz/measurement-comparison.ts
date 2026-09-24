@@ -34,12 +34,7 @@ export const measurementWinner = (
   direction: 'highest' | 'lowest',
   rules: MeasurementRules,
 ): number | undefined => {
-  if (
-    values.length !== 4 ||
-    values.some((value) => !Number.isFinite(value) || value <= 0) ||
-    new Set(values).size !== 4
-  )
-    return undefined;
+  if (values.length !== 4) return undefined;
   const sorted = values.toSorted((a, b) => a - b);
   const winner = direction === 'highest' ? sorted[3]! : sorted[0]!;
   const competitor = direction === 'highest' ? sorted[2]! : sorted[1]!;
