@@ -13,14 +13,11 @@ import {
 import { type GameSettings } from '../settings/types.ts';
 import { type SavedResults } from './results.ts';
 
-export interface TrainerStats extends Omit<
-  SavedResults['progress'],
-  'version'
-> {
+export type TrainerStats = SavedResults['progress'] & {
   bestDailyStreak: number;
   pokedex?: string[];
   leagueCompleted: boolean;
-}
+};
 export const addResultToProgress = (
   progress: SavedResults['progress'],
   result: GameResult,
