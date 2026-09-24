@@ -15,7 +15,8 @@ test('separates a move description from its question', () => {
     options: ['normal', 'ghost', 'water', 'psychic'],
     prompt: {
       kind: 'text',
-      text: 'What is the default type of Pound? The user strikes the target with its forelegs or tail.',
+      text: 'What is the default type of Pound?',
+      description: 'The user strikes the target with its forelegs or tail.',
       supportingText: 'Pokémon Pearl',
     },
     questionType: 'move-types',

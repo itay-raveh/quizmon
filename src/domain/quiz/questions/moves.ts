@@ -101,6 +101,7 @@ export const buildMove: QuestionBuilder = (context) => {
         );
         if (question) return question;
       } else {
+        const prompt = `What is the default type of ${target.label}?`;
         const types = Object.keys(context.catalog.typeRelations);
         const options = context.variant?.fullList
           ? types
@@ -117,13 +118,16 @@ export const buildMove: QuestionBuilder = (context) => {
             ...topicSubject(context, 'move', target),
             generation: rules.generation,
           },
-          `What is the default type of ${target.label}?${context.variant?.reviewedDescription ? ` ${target.reviewedDescription}` : ''}`,
+          prompt,
           rules.type,
           options,
           {
             prompt: {
               kind: 'text',
-              text: `What is the default type of ${target.label}?${context.variant?.reviewedDescription ? ` ${target.reviewedDescription}` : ''}`,
+              text: prompt,
+              description: context.variant?.reviewedDescription
+                ? target.reviewedDescription
+                : undefined,
               supportingText: `Pokémon ${game.label}`,
             },
             context: rules.game,

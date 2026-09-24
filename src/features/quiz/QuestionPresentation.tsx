@@ -31,7 +31,6 @@ const QuestionPrompt = ({
   prompt,
   itemSprite,
   itemName,
-  isMoveType,
   policy,
   state,
 }: {
@@ -39,12 +38,9 @@ const QuestionPrompt = ({
   prompt: QuestionPromptData;
   itemSprite?: string;
   itemName?: string;
-  isMoveType?: boolean;
   policy: EntityRendering;
   state: RevealState;
 }) => {
-  const descriptionStart =
-    isMoveType && prompt.kind === 'text' ? prompt.text.indexOf('? ') : -1;
   return (
     <p className={className} id="question-prompt">
       {prompt.kind === 'text' ? (
@@ -64,14 +60,10 @@ const QuestionPrompt = ({
               ) : null}
             </span>
           ) : null}
-          {descriptionStart < 0
-            ? itemName
-              ? prompt.text.replace(itemName, 'it')
-              : prompt.text
-            : prompt.text.slice(0, descriptionStart + 1)}
-          {descriptionStart >= 0 ? (
+          {itemName ? prompt.text.replace(itemName, 'it') : prompt.text}
+          {prompt.description ? (
             <span className="question__move-description">
-              {prompt.text.slice(descriptionStart + 2)}
+              {prompt.description}
             </span>
           ) : null}
           {prompt.supportingText || itemSprite ? (
@@ -144,7 +136,6 @@ export const QuestionPresentation = ({
           state={revealState}
           className="visually-hidden"
           prompt={question.prompt}
-          isMoveType={question.questionType === 'move-types'}
         />
       ) : null}
       <div className="question__context">
@@ -160,7 +151,6 @@ export const QuestionPresentation = ({
               state={revealState}
               className="question__prompt"
               prompt={question.prompt}
-              isMoveType={question.questionType === 'move-types'}
               itemSprite={inlineItem}
               itemName={
                 question.questionType === 'held-item-effects'

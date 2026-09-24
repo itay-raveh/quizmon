@@ -77,7 +77,12 @@ const visual = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('counter-pick'), ...multiplier }),
 ]);
 const prompt = z.discriminatedUnion('kind', [
-  z.object({ kind: z.literal('text'), text, supportingText: text.optional() }),
+  z.object({
+    kind: z.literal('text'),
+    text,
+    description: text.optional(),
+    supportingText: text.optional(),
+  }),
   z.object({
     kind: z.literal('pokemon'),
     before: text,

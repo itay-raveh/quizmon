@@ -87,7 +87,12 @@ interface QuestionAnswer {
 }
 
 export type QuestionPrompt =
-  | { kind: 'text'; text: string; supportingText?: string }
+  | {
+      kind: 'text';
+      text: string;
+      description?: string;
+      supportingText?: string;
+    }
   | {
       after: string;
       before: string;
