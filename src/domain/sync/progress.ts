@@ -111,7 +111,7 @@ export interface RoundCompletion {
   discoveries: string[];
   victory: { trainerName: string; pokemon: string[] } | null;
 }
-export type EditUnit =
+type EditUnit =
   | 'avatar'
   | 'name'
   | 'partnerPokemon'
@@ -119,7 +119,7 @@ export type EditUnit =
   | 'answerFlow'
   | 'timerDisplay'
   | 'training';
-export type EditValue = string | null | TrainingConfig;
+type EditValue = string | null | TrainingConfig;
 export interface Edit {
   unit: EditUnit;
   value: EditValue;
