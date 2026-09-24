@@ -1,19 +1,8 @@
-import { trainerSpecialtyDetails } from '../player/trainer-progression.ts';
-import { isTrainerAvatar } from '../player/trainer-avatars.ts';
 import { formatVersions, gameVersions } from '../versions.ts';
-import { isChoice, isRecord, isUuid as uuid } from '../../lib/validation.ts';
-import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
-import { formGroups, generations } from '../pokemon/types.ts';
-import { difficultySchema } from '../quiz/difficulty.ts';
-import { questionTypes } from '../quiz/questions/definitions.ts';
+import { isRecord, isUuid as uuid } from '../../lib/validation.ts';
 import type { AnswerResult, GameResult } from '../quiz/types.ts';
 import { getTrainingSettings } from '../settings/game-settings.ts';
 import type { GameSettings } from '../settings/types.ts';
-import {
-  answerFlows,
-  timerDisplays,
-  trainingModes,
-} from '../settings/types.ts';
 export { isUuid as uuid } from '../../lib/validation.ts';
 
 export const versions = {
@@ -28,9 +17,6 @@ const integer = (
   Number.isSafeInteger(value) &&
   value >= 0 &&
   value <= max;
-const pokemonKey = (value: unknown): value is keyof typeof pokemonGenerations =>
-  typeof value === 'string' && Object.hasOwn(pokemonGenerations, value);
-
 export type TrainingConfig = Pick<
   GameSettings,
   | 'trainingMode'
@@ -57,38 +43,6 @@ export const trainingConfig = (settings: GameSettings): TrainingConfig => ({
         .questionTypes),
   ],
 });
-function validTraining(value: unknown): value is TrainingConfig {
-  return (
-    isRecord(value) &&
-    isChoice(value.trainingMode, trainingModes) &&
-    (value.difficulty === undefined ||
-      difficultySchema.safeParse(value.difficulty).success) &&
-    (value.questionSelection === undefined ||
-      isChoice(value.questionSelection, ['automatic', 'custom'])) &&
-    (value.formGroups === undefined ||
-      (Array.isArray(value.formGroups) &&
-        value.formGroups.length > 0 &&
-        value.formGroups.every((v) => isChoice(v, formGroups)) &&
-        new Set(value.formGroups).size === value.formGroups.length)) &&
-    (value.automaticQuestionTypes === undefined ||
-      (Array.isArray(value.automaticQuestionTypes) &&
-        value.automaticQuestionTypes.length > 0 &&
-        value.automaticQuestionTypes.every((v) => isChoice(v, questionTypes)) &&
-        new Set(value.automaticQuestionTypes).size ===
-          value.automaticQuestionTypes.length)) &&
-    Array.isArray(value.generations) &&
-    value.generations.length > 0 &&
-    value.generations.length <= generations.length &&
-    value.generations.every((v) => isChoice(v, generations)) &&
-    new Set(value.generations).size === value.generations.length &&
-    Array.isArray(value.questionTypes) &&
-    value.questionTypes.length > 0 &&
-    value.questionTypes.length <= questionTypes.length &&
-    value.questionTypes.every((v) => isChoice(v, questionTypes)) &&
-    new Set(value.questionTypes).size === value.questionTypes.length
-  );
-}
-
 export interface RoundCompletion {
   recordVersion: 1;
   completionId: string;
@@ -106,52 +60,6 @@ export interface RoundCompletion {
   };
   discoveries: string[];
   victory: { trainerName: string; pokemon: string[] } | null;
-}
-type EditUnit =
-  | 'avatar'
-  | 'name'
-  | 'partnerPokemon'
-  | 'specialty'
-  | 'answerFlow'
-  | 'timerDisplay'
-  | 'training';
-type EditValue = string | null | TrainingConfig;
-export interface Edit {
-  unit: EditUnit;
-  value: EditValue;
-  expectedRevision: number;
-  predecessorId?: string;
-}
-const specialties = Object.keys(trainerSpecialtyDetails);
-export function validEdit(value: unknown): value is Edit {
-  if (
-    !isRecord(value) ||
-    !integer(value.expectedRevision) ||
-    (value.predecessorId !== undefined && !uuid(value.predecessorId))
-  )
-    return false;
-  switch (value.unit) {
-    case 'name':
-      return (
-        typeof value.value === 'string' &&
-        value.value.length <= 20 &&
-        value.value === value.value.trim()
-      );
-    case 'partnerPokemon':
-      return value.value === null || pokemonKey(value.value);
-    case 'avatar':
-      return value.value === null || isTrainerAvatar(value.value);
-    case 'specialty':
-      return value.value === null || isChoice(value.value, specialties);
-    case 'answerFlow':
-      return isChoice(value.value, answerFlows);
-    case 'timerDisplay':
-      return isChoice(value.value, timerDisplays);
-    case 'training':
-      return validTraining(value.value);
-    default:
-      return false;
-  }
 }
 export interface Action {
   operationId: string;
@@ -178,18 +86,6 @@ function validActionEnvelope(value: unknown): value is ActionEnvelope {
     value.kind.length > 0 &&
     value.kind.length <= 100 &&
     Object.hasOwn(value, 'payload')
-  );
-}
-export function validAction(value: unknown): value is Action {
-  return (
-    validActionEnvelope(value) &&
-    isChoice(value.kind, [
-      'completion.record',
-      'discoveries.add',
-      'profile.patch',
-      'preferences.patch',
-      'issue.dismiss',
-    ])
   );
 }
 export function canonical(value: unknown): string {

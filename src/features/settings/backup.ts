@@ -1,9 +1,7 @@
-import { readRecordedGame } from '../../domain/player/game-history';
 import { accountRequest, selectedAccount } from '../account/account';
-import { canonical, validAction } from '../../domain/sync/progress';
+import { canonical } from '../../domain/sync/progress';
 import { editUploadSchema } from '../../domain/sync/edit-upload';
 import {
-  archiveCompletion,
   validateRoundFact,
   validateRoundUpload,
 } from '../../domain/sync/round-facts';
@@ -11,8 +9,6 @@ import { downloadJson } from '../../lib/download';
 import { rebuildGuestProgress } from '../../lib/storage/game-history';
 import { getSaveIssue, clearSaveIssue } from '../../lib/storage/save-health';
 import { readAccountIssues } from '../../lib/storage/account-issues';
-import { convertSavedActionV1 } from '../../lib/storage/save-compatibility';
-import { parseSavedPlayerStateV1 } from '../../lib/storage/saved-state-v1';
 import {
   localTables,
   type LocalRow,
@@ -135,98 +131,6 @@ const sameRoundIgnoringCredit = (left: string, right: string): boolean =>
   canonical({ ...(JSON.parse(left) as object), credited: true }) ===
   canonical({ ...(JSON.parse(right) as object), credited: true });
 
-function convertBackupV1(value: Record<string, unknown>): PlayerBackup {
-  const old = parseSavedPlayerStateV1(value.state);
-  if (!isRecord(value.records))
-    throw new Error('The backup contains invalid local records.');
-  const records = value.records;
-  const actions = readRows(records, 'local_actions').flatMap((row) => {
-    const action: unknown = JSON.parse(row.payload);
-    if (!validAction(action) || action.operationId !== row.id)
-      throw new Error('The backup contains an invalid old action.');
-    const converted = convertSavedActionV1(action);
-    return converted
-      ? [{ id: row.id, payload: JSON.stringify(converted) }]
-      : [];
-  });
-  const converted = new Map(actions.map((row) => [row.id, row.payload]));
-  const completions = readRows(records, 'local_completions').map((row) => {
-    const receipt: unknown = JSON.parse(row.payload);
-    if (!isRecord(receipt) || typeof receipt.eligible !== 'boolean')
-      throw new Error('The backup contains an invalid old completion.');
-    const completion = readRecordedGame(receipt.completion);
-    if (completion.completionId !== row.id)
-      throw new Error('The backup contains a mismatched old completion.');
-    return {
-      id: row.id,
-      payload: JSON.stringify(archiveCompletion(completion, receipt.eligible)),
-    };
-  });
-  const pendingActions = old.account
-    ? readRows(records, 'pending_actions').flatMap((row) => {
-        const payload = converted.get(row.id);
-        return payload ? [{ id: row.id, payload }] : [];
-      })
-    : undefined;
-  const pending = pendingActions?.filter(
-    (row) => (JSON.parse(row.payload) as LocalAction).kind === 'round',
-  );
-  const reviewIssues = pendingActions
-    ?.filter((row) => (JSON.parse(row.payload) as LocalAction).kind === 'edit')
-    .map((row) => ({
-      operationId: row.id,
-      reason: 'needs_review',
-      payload: (JSON.parse(row.payload) as LocalAction).payload,
-    }));
-  const serverRounds = old.account
-    ? readRows(records, 'completion_facts').map((row) => {
-        const receipt: unknown = JSON.parse(row.payload);
-        if (
-          !isRecord(receipt) ||
-          ![true, false, 0, 1].includes(receipt.eligible as boolean)
-        )
-          throw new Error('The backup contains an invalid old account round.');
-        const completion = readRecordedGame(receipt.completion);
-        if (completion.completionId !== row.id)
-          throw new Error(
-            'The backup contains a mismatched old account round.',
-          );
-        return {
-          id: row.id,
-          payload: JSON.stringify(
-            archiveCompletion(completion, Boolean(receipt.eligible)),
-          ),
-        };
-      })
-    : undefined;
-  return {
-    exportedAt: value.exportedAt as string,
-    format: 'quizmon-backup',
-    version: 2,
-    state: {
-      version: 2,
-      datasetId: old.datasetId,
-      save: old.save,
-      ...(old.account
-        ? {
-            account: {
-              id: old.account.id,
-              serverEpoch: old.account.serverEpoch,
-            },
-          }
-        : {}),
-    },
-    records: {
-      local_actions: actions,
-      local_completions: completions,
-      ...(pending
-        ? { pending_actions: pending, server_rounds: serverRounds }
-        : {}),
-    },
-    ...(reviewIssues?.length ? { reviewIssues } : {}),
-  };
-}
-
 export const parseBackup = (text: string): PlayerBackup => {
   validateBackupSize(new Blob([text]).size);
   let raw: unknown;
@@ -241,11 +145,11 @@ export const parseBackup = (text: string): PlayerBackup => {
     );
   if (!isUtcTimestamp(raw.exportedAt))
     throw new Error('This backup has an invalid date. Choose another backup.');
-  if (raw.version !== 1 && raw.version !== 2)
+  if (raw.version !== 2)
     throw new Error(
       'This backup uses an unsupported version. Update Quizmon or choose another backup.',
     );
-  const value = raw.version === 1 ? convertBackupV1(raw) : raw;
+  const value = raw;
   const state = parseLocalPlayerState(value.state);
   if (!isRecord(value.records))
     throw new Error('The backup contains invalid local records.');
