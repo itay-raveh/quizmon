@@ -42,9 +42,12 @@ run = [
 ]
 
 [tasks."badges:export"]
-description = "Export trainer badge PNGs from the Aseprite master"
+description = "Export badge and trophy PNGs from Aseprite masters"
 usage = '''
 flag "--source <path>" help="Aseprite source file" default="art/badges.aseprite"
 flag "--output <pattern>" help="PNG output pattern" default="src/assets/images/badges/{slice}.png"
 '''
-run = 'aseprite --batch "{{usage.source}}" --save-as "{{usage.output}}"'
+run = [
+  'aseprite --batch "{{usage.source}}" --save-as "{{usage.output}}"',
+  'aseprite --batch art/trophy.aseprite --save-as src/assets/images/trophy.png',
+]
