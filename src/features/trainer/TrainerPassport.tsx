@@ -27,7 +27,6 @@ import {
   trainerViewLabels,
   type TrainerBadgeId,
   type TrainerSpecialty,
-  type TrainerTitle,
   type TrainerView,
 } from '../../domain/player/trainer-progression';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
@@ -114,20 +113,22 @@ export const TrainerPassport = ({
     'trainer-partner',
     profile.partnerPokemon,
   );
-  const equippedTitle = useMemo(
-    () =>
-      getTrainerTitles(stats, profile.specialty).find(
-        (title) => title.equipped && title.earned,
-      ),
+  const titles = useMemo(
+    () => getTrainerTitles(stats, profile.specialty),
     [stats, profile.specialty],
   );
+  const equippedTitle = titles.find((title) => title.equipped && title.earned);
   const savedSpecialty = equippedTitle?.specialty ?? null;
   const [preparingArtifact, setPreparingArtifact] = useState(false);
   const [shareNotice, setShareNotice] = useState<ShareNotice | null>(null);
   const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
     null,
   );
-  const [selectedTitle, setSelectedTitle] = useState<TrainerTitle | null>(null);
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState<TrainerSpecialty | null>(null);
+  const selectedTitle = titles.find(
+    (title) => title.specialty === selectedSpecialty,
+  );
   const artifactRef = useRef<HTMLElement>(null);
   const pokemonOptions = useMemo(
     () =>
@@ -283,7 +284,7 @@ export const TrainerPassport = ({
                 else {
                   playSound('tap');
                   setSelectedBadgeId(null);
-                  setSelectedTitle(null);
+                  setSelectedSpecialty(null);
                 }
               }}
             >
@@ -378,7 +379,7 @@ export const TrainerPassport = ({
           <TrainerTitles
             collectionRef={artifactRef}
             equipped={savedSpecialty}
-            onSelect={setSelectedTitle}
+            onSelect={(title) => setSelectedSpecialty(title.specialty)}
             stats={stats}
           />
         ) : (
@@ -424,7 +425,7 @@ export const TrainerPassport = ({
       ) : null}
       {selectedTitle ? (
         <TrainerTitleDialog
-          onClose={() => setSelectedTitle(null)}
+          onClose={() => setSelectedSpecialty(null)}
           onEquip={(title) => setTitle(title.specialty)}
           onUnequip={() => setTitle(null)}
           title={selectedTitle}

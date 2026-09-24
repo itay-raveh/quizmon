@@ -14,7 +14,7 @@ import {
   getTrainerRank,
   getTrainerTitles,
   type TrainerBadgeId,
-  type TrainerTitle,
+  type TrainerSpecialty,
   type TrainerView,
 } from '../../domain/player/trainer-progression';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
@@ -48,15 +48,18 @@ export function PublicTrainerPassport({
   const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
     null,
   );
-  const [selectedTitle, setSelectedTitle] = useState<TrainerTitle | null>(null);
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState<TrainerSpecialty | null>(null);
   const { profile, stats, record } = trainer;
   const name = profile.name || trainer.player.name || 'Trainer';
   const rank = getTrainerRank(stats);
   const partner = profile.partnerPokemon
     ? catalog.pokemon[profile.partnerPokemon]
     : null;
-  const equippedTitle = getTrainerTitles(stats, profile.specialty).find(
-    (title) => title.equipped && title.earned,
+  const titles = getTrainerTitles(stats, profile.specialty);
+  const equippedTitle = titles.find((title) => title.equipped && title.earned);
+  const selectedTitle = titles.find(
+    (title) => title.specialty === selectedSpecialty,
   );
   const badges = getTrainerBadges(stats, catalog);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId);
@@ -95,7 +98,7 @@ export function PublicTrainerPassport({
             key={nextView}
             onClick={() => {
               setSelectedBadgeId(null);
-              setSelectedTitle(null);
+              setSelectedSpecialty(null);
               setView(nextView);
             }}
           >
@@ -116,7 +119,7 @@ export function PublicTrainerPassport({
         ) : view === 'titles' ? (
           <TrainerTitles
             equipped={equippedTitle?.specialty ?? null}
-            onSelect={setSelectedTitle}
+            onSelect={(title) => setSelectedSpecialty(title.specialty)}
             stats={stats}
           />
         ) : (
@@ -147,7 +150,7 @@ export function PublicTrainerPassport({
       {selectedTitle ? (
         <TrainerTitleDialog
           title={selectedTitle}
-          onClose={() => setSelectedTitle(null)}
+          onClose={() => setSelectedSpecialty(null)}
         />
       ) : null}
     </section>
