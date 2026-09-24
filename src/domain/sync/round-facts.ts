@@ -4,7 +4,7 @@ import {
 } from '../quiz/answer-observation.ts';
 import { getTrainingScoreMultipliers } from '../quiz/score-multipliers.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
-import { isAnswerSubject } from '../quiz/subject.ts';
+import { answerSubjectSchema } from '../quiz/subject.ts';
 import { isDailyTrack, type DailyTrack } from '../quiz/daily-track.ts';
 import { questionTypes } from '../quiz/questions/definitions.ts';
 import { questionCategories } from '../quiz/types.ts';
@@ -380,7 +380,7 @@ export function validateRoundFact(value: unknown): value is RoundFact {
       answerObservationSchema.safeParse(
         liveQuestion(q as unknown as ArchivedQuestion),
       ).success &&
-      isAnswerSubject(entry.subject) &&
+      answerSubjectSchema.safeParse(entry.subject).success &&
       isChoice(entry.category, questionCategories) &&
       (entry.question_type === 'champion' ||
         isChoice(entry.question_type, questionTypes)) &&

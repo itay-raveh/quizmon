@@ -52,6 +52,17 @@ it('preserves unfinished-round output and unknown settings', () => {
   });
   expect(parseRound({ ...round, version: 2 })).toBeNull();
   expect(parseRound({ ...round, questionCount: 2 })).toBeNull();
+  expect(
+    parseRound({
+      ...round,
+      questions: [
+        {
+          ...question,
+          subject: { ...question.subject, types: 'fire' },
+        },
+      ],
+    }),
+  ).toBeNull();
 });
 
 it('rejects unsafe saved round counts', () => {

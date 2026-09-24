@@ -2,13 +2,12 @@ import { z } from 'zod';
 import { SAVE_SCHEMA_VERSION } from '../player-save.ts';
 import { answerObservationSchema } from '../../quiz/answer-observation.ts';
 import type { ActiveGameSnapshot } from '../active-game.ts';
-import { isAnswerSubject } from '../../quiz/subject.ts';
+import { answerSubjectSchema } from '../../quiz/subject.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { isQuestionData } from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import {
   questionCategories,
-  type AnswerSubject,
   type GameMode,
   type QuestionData,
 } from '../../quiz/types.ts';
@@ -46,7 +45,7 @@ const answer = z.object({
   questionType: z.enum([...questionTypes, 'champion']),
   responseMilliseconds: finiteNonnegative.optional(),
   speedBonus: finiteNonnegative.optional(),
-  subject: z.custom<AnswerSubject>(isAnswerSubject),
+  subject: answerSubjectSchema,
 });
 const settings = z.looseObject({
   generations: z.array(z.enum(generations)).min(1),

@@ -1,26 +1,24 @@
-import { isChoice, isRecord } from '../../lib/validation.ts';
+import { z } from 'zod';
 import { generations } from '../pokemon/types.ts';
-import {
-  subjectKinds,
-  type AnswerSubject,
-  type QuestionSubject,
-} from './types.ts';
+import { subjectKinds } from './types.ts';
 
-export const isAnswerSubject = (value: unknown): value is AnswerSubject =>
-  isRecord(value) &&
-  isChoice(value.kind, subjectKinds) &&
-  (value.name === undefined ||
-    (typeof value.name === 'string' &&
-      value.name.length > 0 &&
-      value.name.length <= 200)) &&
-  (value.generation === undefined || isChoice(value.generation, generations));
+export const answerSubjectSchema = z.object({
+  kind: z.enum(subjectKinds),
+  name: z.string().min(1).max(200).optional(),
+  generation: z.enum(generations).optional(),
+});
 
-export const isQuestionSubject = (value: unknown): value is QuestionSubject =>
-  isAnswerSubject(value) &&
-  typeof value.name === 'string' &&
-  value.generation !== undefined &&
-  isRecord(value) &&
-  (value.kind === 'pokemon'
-    ? Array.isArray(value.types) &&
-      value.types.every((type) => typeof type === 'string')
-    : value.types === undefined);
+export const questionSubjectSchema = z.discriminatedUnion('kind', [
+  answerSubjectSchema.extend({
+    kind: z.literal('pokemon'),
+    name: z.string().min(1).max(200),
+    generation: z.enum(generations),
+    types: z.array(z.string()),
+  }),
+  answerSubjectSchema.extend({
+    kind: z.enum(subjectKinds.filter((kind) => kind !== 'pokemon')),
+    name: z.string().min(1).max(200),
+    generation: z.enum(generations),
+    types: z.never().optional(),
+  }),
+]);

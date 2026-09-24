@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { isQuestionRendering } from './question-rendering.ts';
-import { isQuestionSubject } from './subject.ts';
+import { questionRenderingSchema } from './question-rendering.ts';
+import { questionSubjectSchema } from './subject.ts';
 import { difficultySchema } from './difficulty.ts';
 import { generations, statNames } from '../pokemon/types.ts';
 import { questionTypes } from './questions/definitions.ts';
@@ -101,7 +101,7 @@ const question = z
       distractors: strings,
     }),
     id: text,
-    subject: z.custom(isQuestionSubject),
+    subject: questionSubjectSchema,
     questionType: z.enum([...questionTypes, 'champion']),
     category: z.enum(questionCategories),
     options: strings.min(1).refine(unique),
@@ -123,7 +123,7 @@ const question = z
     explanation: text.optional(),
     context: text.optional(),
     variantLevel: difficultySchema.optional(),
-    rendering: z.custom(isQuestionRendering).optional(),
+    rendering: questionRenderingSchema.optional(),
     namesOnly: z.boolean().optional(),
     showTypes: z.boolean().optional(),
     assistanceUsed: nonnegativeInteger.optional(),

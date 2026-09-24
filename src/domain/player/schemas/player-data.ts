@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { isAnswerSubject } from '../../quiz/subject.ts';
+import { answerSubjectSchema } from '../../quiz/subject.ts';
 import {
   dailyDateSchema,
   utcTimestampSchema,
@@ -23,7 +23,7 @@ import {
   parseDailyResultKey,
   type DailyTrack,
 } from '../../quiz/daily-track.ts';
-import { questionCategories, type AnswerSubject } from '../../quiz/types.ts';
+import { questionCategories } from '../../quiz/types.ts';
 import { SaveError } from '../save-schema.ts';
 import type { PlayerData } from '../player-save.ts';
 import {
@@ -57,7 +57,7 @@ const savedResult = z
         cluesUsed: nonnegativeInteger.optional(),
         unassistedSearch: z.boolean().optional(),
         correct: z.boolean(),
-        subject: z.custom<AnswerSubject>(isAnswerSubject).optional(),
+        subject: answerSubjectSchema.optional(),
         points: nonnegativeInteger,
         questionType: z.enum(savedQuestionTypes).optional(),
         responseMilliseconds: finiteNonnegative.optional(),

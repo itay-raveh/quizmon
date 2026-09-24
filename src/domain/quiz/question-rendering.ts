@@ -1,4 +1,4 @@
-import { isRecord } from '../../lib/validation.ts';
+import { z } from 'zod';
 
 export type Visibility = 'always' | 'after-answer' | 'never';
 export type SpriteVisibility =
@@ -11,8 +11,7 @@ export interface EntityRendering {
   types?: Visibility;
 }
 
-const renderingRoles = ['subject', 'choices', 'related', 'search'] as const;
-type RenderingRole = (typeof renderingRoles)[number];
+type RenderingRole = 'subject' | 'choices' | 'related' | 'search';
 export type QuestionRendering = Record<RenderingRole, EntityRendering>;
 export type RenderingOverrides = {
   [Role in RenderingRole]?: Partial<EntityRendering>;
@@ -60,33 +59,25 @@ export const mergeRendering = (
   search: mergeEntityRendering(defaults.search, overrides?.search),
 });
 
-const visibilityValues: readonly Visibility[] = [
-  'always',
-  'after-answer',
-  'never',
-];
-const isVisibility = (value: unknown): value is Visibility =>
-  visibilityValues.some((visibility) => value === visibility);
-const isSpriteVisibility = (value: unknown): value is SpriteVisibility =>
-  isVisibility(value) ||
-  value === 'silhouette' ||
-  (isRecord(value) &&
-    Number.isSafeInteger(value.afterClues) &&
-    typeof value.afterClues === 'number' &&
-    value.afterClues >= 0 &&
-    (value.silhouette === undefined || typeof value.silhouette === 'boolean'));
+const visibilitySchema = z.enum(['always', 'after-answer', 'never']);
+const spriteVisibilitySchema = z.union([
+  visibilitySchema,
+  z.literal('silhouette'),
+  z.object({
+    afterClues: z.int().min(0),
+    silhouette: z.boolean().optional(),
+  }),
+]);
+const entityRenderingSchema = z.object({
+  sprite: spriteVisibilitySchema,
+  name: visibilitySchema,
+  number: visibilitySchema,
+  types: visibilitySchema.optional(),
+});
 
-export const isQuestionRendering = (
-  value: unknown,
-): value is QuestionRendering =>
-  isRecord(value) &&
-  renderingRoles.every((role) => {
-    const entity = value[role];
-    return (
-      isRecord(entity) &&
-      isSpriteVisibility(entity.sprite) &&
-      isVisibility(entity.name) &&
-      isVisibility(entity.number) &&
-      (entity.types === undefined || isVisibility(entity.types))
-    );
-  });
+export const questionRenderingSchema = z.object({
+  subject: entityRenderingSchema,
+  choices: entityRenderingSchema,
+  related: entityRenderingSchema,
+  search: entityRenderingSchema,
+});
