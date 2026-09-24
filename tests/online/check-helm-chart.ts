@@ -14,6 +14,7 @@ interface Manifest {
   spec?: {
     type?: string;
     template: {
+      metadata?: { annotations?: Record<string, string> };
       spec: {
         automountServiceAccountToken: boolean;
         containers: Array<{
@@ -202,6 +203,70 @@ try {
       syncConfig.includes('uri: !env PS_STORAGE_URI'),
   );
   const deployment = rendered.find((doc) => doc.kind === 'Deployment')!;
+  const configName = rendered.find((doc) => doc.kind === 'ConfigMap')!.metadata
+    .name;
+  const workerChange = documents(
+    await render({
+      ...syncValues,
+      runtimeConfig: { ...runtimeConfig, workerName: 'quizmon-other' },
+    }),
+  );
+  assert.equal(
+    workerChange.find((doc) => doc.kind === 'ConfigMap')!.metadata.name,
+    configName,
+  );
+  assert.deepEqual(
+    workerChange.find((doc) => doc.kind === 'Deployment')!.spec?.template,
+    deployment.spec?.template,
+  );
+  for (const runtimeChange of [
+    { ...runtimeConfig, origin: 'https://other.example.test' },
+    { ...runtimeConfig, sync: { ...runtimeConfig.sync, audience: 'other' } },
+  ]) {
+    const changed = documents(
+      await render({ ...syncValues, runtimeConfig: runtimeChange }),
+    );
+    assert.notEqual(
+      changed.find((doc) => doc.kind === 'ConfigMap')!.metadata.name,
+      configName,
+    );
+  }
+  const secretChange = documents(
+    await render({
+      ...syncValues,
+      powersync: {
+        ...syncValues.powersync,
+        sourceSecret: { ...syncValues.powersync.sourceSecret, revision: '2' },
+      },
+    }),
+  );
+  assert.equal(
+    secretChange.find((doc) => doc.kind === 'ConfigMap')!.metadata.name,
+    configName,
+  );
+  assert.notDeepEqual(
+    secretChange.find((doc) => doc.kind === 'Deployment')!.spec?.template
+      .metadata?.annotations,
+    deployment.spec?.template.metadata?.annotations,
+  );
+  const imageChange = documents(
+    await render({
+      ...syncValues,
+      releaseImage: {
+        ...values.releaseImage,
+        digest: 'sha256:' + '2'.repeat(64),
+      },
+    }),
+  );
+  assert.equal(
+    imageChange.find((doc) => doc.kind === 'ConfigMap')!.metadata.name,
+    configName,
+  );
+  assert.notEqual(
+    imageChange.find((doc) => doc.kind === 'Deployment')!.spec?.template.spec
+      .initContainers?.[0]?.image,
+    deployment.spec?.template.spec.initContainers?.[0]?.image,
+  );
   const compose = await readFile('compose.yaml', 'utf8');
   assert.equal(
     deployment.spec?.template.spec.containers[0]?.image,
