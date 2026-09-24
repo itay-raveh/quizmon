@@ -1,20 +1,13 @@
 import { and, eq } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { canonical, hash } from '../src/domain/sync/progress.ts';
+import { editUploadSchema } from '../src/domain/sync/edit-upload.ts';
 import {
   scoreRound,
   validateRoundUpload,
 } from '../src/domain/sync/round-facts.ts';
 import { isDailyDate, isRecord, isUuid } from '../src/lib/validation.ts';
-import { isTrainerAvatar } from '../src/domain/player/trainer-avatars.ts';
-import {
-  getTrainerSpecialtyCount,
-  trainerSpecialtyDetails,
-  type TrainerSpecialty,
-} from '../src/domain/player/trainer-progression.ts';
-import pokemonGenerations from '../src/domain/pokemon/data/pokemon-generations.json' with { type: 'json' };
-import { formGroups, generations } from '../src/domain/pokemon/types.ts';
-import { questionTypes } from '../src/domain/quiz/questions/definitions.ts';
+import { getTrainerSpecialtyCount } from '../src/domain/player/trainer-progression.ts';
 import * as schema from './schema.ts';
 
 type Tx = Parameters<Parameters<NodePgDatabase['transaction']>[0]>[0];
@@ -231,74 +224,6 @@ export async function submitRound(
   });
 }
 
-type EditUnit =
-  | 'name'
-  | 'avatar'
-  | 'partner'
-  | 'specialty'
-  | 'answer_flow'
-  | 'timer_display'
-  | 'training';
-export interface EditUpload {
-  id: string;
-  unit: EditUnit;
-  value: unknown;
-}
-
-function validateEditUpload(value: unknown): value is EditUpload {
-  if (!isRecord(value) || !isUuid(value.id)) return false;
-  if (value.unit === 'name')
-    return (
-      typeof value.value === 'string' &&
-      value.value.length <= 20 &&
-      value.value.trim() === value.value
-    );
-  if (value.unit === 'avatar')
-    return value.value === null || isTrainerAvatar(value.value);
-  if (value.unit === 'partner')
-    return (
-      value.value === null ||
-      (typeof value.value === 'string' &&
-        Object.hasOwn(pokemonGenerations, value.value))
-    );
-  if (value.unit === 'specialty')
-    return (
-      value.value === null ||
-      (typeof value.value === 'string' &&
-        Object.hasOwn(trainerSpecialtyDetails, value.value))
-    );
-  if (value.unit === 'answer_flow')
-    return ['manual', 'auto', 'instant'].includes(String(value.value));
-  if (value.unit === 'timer_display')
-    return ['hidden', 'seconds', 'milliseconds'].includes(String(value.value));
-  if (value.unit === 'training') {
-    const training = value.value;
-    const selections = (items: unknown, allowed: readonly string[]) =>
-      Array.isArray(items) &&
-      items.length > 0 &&
-      items.length <= allowed.length &&
-      items.every(
-        (item) => typeof item === 'string' && allowed.includes(item),
-      ) &&
-      new Set(items).size === items.length;
-    return (
-      isRecord(training) &&
-      Number.isInteger(training.difficulty) &&
-      Number(training.difficulty) >= 1 &&
-      Number(training.difficulty) <= 5 &&
-      ['league', 'custom'].includes(String(training.training_mode)) &&
-      ['automatic', 'custom'].includes(String(training.question_selection)) &&
-      selections(training.generations, generations) &&
-      selections(training.form_groups, formGroups) &&
-      selections(training.question_types, questionTypes) &&
-      (training.auto_types === null ||
-        training.auto_types === undefined ||
-        selections(training.auto_types, questionTypes))
-    );
-  }
-  return false;
-}
-
 export async function applyEdit(
   db: NodePgDatabase,
   playerId: string,
@@ -329,9 +254,10 @@ export async function applyEdit(
         throw new ProgressError('operation_id_conflict');
       return { id, status: previous.status, reason: previous.reason };
     }
-    let reason: string | null = null;
-    if (!validateEditUpload(value)) reason = 'invalid_edit';
-    if (!reason && value.unit === 'specialty' && value.value !== null) {
+    const parsed = editUploadSchema.safeParse(value);
+    const edit = parsed.success ? parsed.data : null;
+    let reason: string | null = edit ? null : 'invalid_edit';
+    if (edit?.unit === 'specialty' && edit.value !== null) {
       // Specialty eligibility is derived from credited rounds at application time.
       const rows = await tx
         .select({ data: schema.round.data, mode: schema.round.mode })
@@ -353,31 +279,20 @@ export async function applyEdit(
           continue;
         counts[answer.question_type] = (counts[answer.question_type] ?? 0) + 1;
       }
-      if (
-        getTrainerSpecialtyCount(counts, value.value as TrainerSpecialty) < 10
-      )
+      if (getTrainerSpecialtyCount(counts, edit.value) < 10)
         reason = 'specialty_not_earned';
     }
-    if (!reason) {
-      const edit = value as unknown as EditUpload;
+    if (!reason && edit) {
       const patch =
         edit.unit === 'training'
           ? {
-              trainingMode: (edit.value as Record<string, unknown>)
-                .training_mode as string,
-              difficulty: (edit.value as Record<string, unknown>)
-                .difficulty as number,
-              questionSelection: (edit.value as Record<string, unknown>)
-                .question_selection as string,
-              generations: (edit.value as Record<string, unknown>)
-                .generations as string[],
-              formGroups: (edit.value as Record<string, unknown>)
-                .form_groups as string[],
-              questionTypes: (edit.value as Record<string, unknown>)
-                .question_types as string[],
-              autoTypes:
-                ((edit.value as Record<string, unknown>).auto_types as
-                  string[] | null) ?? null,
+              trainingMode: edit.value.training_mode,
+              difficulty: edit.value.difficulty,
+              questionSelection: edit.value.question_selection,
+              generations: edit.value.generations,
+              formGroups: edit.value.form_groups,
+              questionTypes: edit.value.question_types,
+              autoTypes: edit.value.auto_types ?? null,
             }
           : {
               [(

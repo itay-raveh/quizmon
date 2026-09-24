@@ -2,7 +2,10 @@ import { z } from 'zod';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { formGroups, generations } from '../pokemon/types.ts';
 import { isTrainerAvatar } from '../player/trainer-avatars.ts';
-import { trainerSpecialtyDetails } from '../player/trainer-progression.ts';
+import {
+  trainerSpecialtyDetails,
+  type TrainerSpecialty,
+} from '../player/trainer-progression.ts';
 import { questionTypes } from '../quiz/questions/definitions.ts';
 import {
   answerFlows,
@@ -46,7 +49,12 @@ export const editUploadSchema = z.discriminatedUnion('unit', [
     ...base,
     unit: z.literal('specialty'),
     value: z
-      .enum(Object.keys(trainerSpecialtyDetails) as [string, ...string[]])
+      .enum(
+        Object.keys(trainerSpecialtyDetails) as [
+          TrainerSpecialty,
+          ...TrainerSpecialty[],
+        ],
+      )
       .nullable(),
   }),
   z.object({
