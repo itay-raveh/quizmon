@@ -20,6 +20,7 @@ import {
   type NamedAPIResourceList,
   type Nature,
   type Move,
+  type MainClient,
   type Region,
   type Version,
   type VersionGroup,
@@ -34,7 +35,6 @@ import type {
   TopicCatalog,
   TopicEntity,
 } from '../src/domain/quiz/topic-catalog.ts';
-import type { CatalogClient } from './update-pokemon-data.ts';
 import {
   isItemSpritePath,
   normalizeSpriteUrl,
@@ -48,15 +48,16 @@ const label = (entity: {
 }) => entity.names?.find(english)?.name ?? titleCase(entity.name);
 
 export const buildTopicCatalog = async (
-  client: CatalogClient,
+  client: MainClient,
   catalog: PokemonCatalog,
 ): Promise<TopicCatalog> => {
   const all = async <T>(endpoint: string): Promise<T[]> => {
-    const [list] = await client.resolveAll<NamedAPIResourceList<T>>([
-      `https://pokeapi.co/api/v2/${endpoint}/?limit=10000`,
-    ]);
+    const [list] = await client.resolveAll<NamedAPIResourceList<T>>(
+      [`https://pokeapi.co/api/v2/${endpoint}/?limit=10000`],
+      { concurrency: 4 },
+    );
     if (!list || list.next) throw new Error(`Incomplete ${endpoint} listing`);
-    return client.resolveAll(list.results);
+    return client.resolveAll(list.results, { concurrency: 4 });
   };
   const groups = await all<VersionGroup>('version-group');
   const versions = await all<Version>('version');

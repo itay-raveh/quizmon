@@ -4,11 +4,9 @@ import { addItemSpriteIdentities } from './item-sprite-identities.ts';
 import { writeFile } from 'node:fs/promises';
 import {
   MainClient,
-  type Generation as ApiGeneration,
   type Pokemon,
   type PokemonForm,
   type PokemonSpecies,
-  type ResourceLink,
 } from 'pokenode-ts';
 import { format } from 'prettier';
 import {
@@ -18,7 +16,6 @@ import {
   type PokemonCatalog,
   type PokemonIdentitySprites,
   type PokemonKnowledge,
-  type SpriteMeasurements,
   type StatName,
 } from '../src/domain/pokemon/types.ts';
 import {
@@ -48,33 +45,15 @@ export type CatalogForm = PokemonForm & {
   flavor_text_entries?: PokemonSpecies['flavor_text_entries'];
 };
 
-export interface CatalogClient {
-  measureSprites(
-    paths: readonly string[],
-  ): Promise<Map<string, SpriteMeasurements>>;
-  getGenerationById(id: number): Promise<ApiGeneration>;
-  resolveAll<T>(resources: readonly ResourceLink<T>[]): Promise<T[]>;
-}
-
-export const createCatalogClient = (
-  api: MainClient = new MainClient({
-    retry: { attempts: 3 },
-    revalidate: true,
-  }),
-): CatalogClient => ({
-  measureSprites: (paths) =>
-    measureCatalogSprites(paths, async (path) => {
-      const response = await fetchSpriteSource(path, {
-        signal: AbortSignal.timeout(30_000),
-      });
-      if (!response.ok)
-        throw new Error(`Sprite ${path}: HTTP ${response.status}`);
-      return Buffer.from(await response.arrayBuffer()).toString('base64');
-    }),
-  getGenerationById: (id) => api.game.getGenerationById(id),
-  resolveAll: (resources) =>
-    api.resolveAll(resources, { concurrency: CONCURRENCY }),
-});
+const measureSprites = (paths: readonly string[]) =>
+  measureCatalogSprites(paths, async (path) => {
+    const response = await fetchSpriteSource(path, {
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (!response.ok)
+      throw new Error(`Sprite ${path}: HTTP ${response.status}`);
+    return Buffer.from(await response.arrayBuffer()).toString('base64');
+  });
 
 const cleanText = (value: string): string =>
   clean(value.replaceAll('\u00ad', '').replace(/pokémon/giu, 'Pokémon'));
@@ -175,7 +154,7 @@ const sortRecord = <T>(record: Record<string, T>): Record<string, T> =>
   );
 
 export const buildPokemonCatalog = async (
-  client: CatalogClient,
+  client: MainClient,
 ): Promise<PokemonCatalog> => {
   const speciesByName = new Map<
     string,
@@ -183,8 +162,10 @@ export const buildPokemonCatalog = async (
   >();
 
   for (const [index, generationName] of generations.entries()) {
-    const generation = await client.getGenerationById(index + 1);
-    const species = await client.resolveAll(generation.pokemon_species);
+    const generation = await client.game.getGenerationById(index + 1);
+    const species = await client.resolveAll(generation.pokemon_species, {
+      concurrency: CONCURRENCY,
+    });
     for (const entry of species) {
       speciesByName.set(entry.name, {
         species: entry,
@@ -200,10 +181,13 @@ export const buildPokemonCatalog = async (
       return species.varieties.map(({ pokemon }) => pokemon);
     },
   );
-  const pokemon = await client.resolveAll(varietyLinks);
+  const pokemon = await client.resolveAll(varietyLinks, {
+    concurrency: CONCURRENCY,
+  });
   const pokemonByName = new Map(pokemon.map((entry) => [entry.name, entry]));
   const allForms = await client.resolveAll<CatalogForm>(
     pokemon.flatMap((entry) => entry.forms),
+    { concurrency: CONCURRENCY },
   );
   for (const form of allForms) {
     const entry = pokemonByName.get(form.pokemon.name);
@@ -212,11 +196,14 @@ export const buildPokemonCatalog = async (
   }
   const selection = selectCatalogForms(pokemon, allForms);
   const { forms, genericNames } = selection;
-  const versionGroups = await client.resolveAll([
-    ...new Map(
-      forms.map((form) => [form.version_group.name, form.version_group]),
-    ).values(),
-  ]);
+  const versionGroups = await client.resolveAll(
+    [
+      ...new Map(
+        forms.map((form) => [form.version_group.name, form.version_group]),
+      ).values(),
+    ],
+    { concurrency: CONCURRENCY },
+  );
   const versionsByName = new Map(
     versionGroups.map((group) => [group.name, group]),
   );
@@ -236,7 +223,9 @@ export const buildPokemonCatalog = async (
       ]),
     ).values(),
   ];
-  const chains = await client.resolveAll(chainLinks);
+  const chains = await client.resolveAll(chainLinks, {
+    concurrency: CONCURRENCY,
+  });
   const { evolvesTo, evolvesFrom } = formEvolutionLinks(
     chains,
     pokemon,
@@ -251,7 +240,9 @@ export const buildPokemonCatalog = async (
       ),
     ).values(),
   ];
-  const types = await client.resolveAll(typeLinks);
+  const types = await client.resolveAll(typeLinks, {
+    concurrency: CONCURRENCY,
+  });
   const typeRelations = Object.fromEntries(
     types
       .filter(({ name }) => name !== 'unknown' && name !== 'shadow')
@@ -376,13 +367,13 @@ export const buildPokemonCatalog = async (
       pokemon: sortRecord(entries),
       typeRelations: sortRecord(typeRelations),
     },
-    (paths) => client.measureSprites(paths),
+    measureSprites,
   );
 };
 
 const addSpriteMeasurements = async (
   catalog: PokemonCatalog,
-  measure: CatalogClient['measureSprites'],
+  measure: typeof measureSprites,
 ): Promise<PokemonCatalog> => {
   const measurements = await measure(
     Object.values(catalog.pokemon).flatMap(({ sprite }) =>
@@ -409,14 +400,17 @@ if (import.meta.main) {
     (mode !== undefined && !['--topics-only', '--sprites-only'].includes(mode))
   )
     throw new Error('Use one catalog update mode at a time.');
-  const client = createCatalogClient();
+  const client = new MainClient({
+    retry: { attempts: 3 },
+    revalidate: true,
+  });
   const catalog =
     mode === '--topics-only'
       ? await readCatalogFiles(DATA_DIRECTORY)
       : mode === '--sprites-only'
         ? await addSpriteMeasurements(
             await readCatalogFiles(DATA_DIRECTORY),
-            (paths) => client.measureSprites(paths),
+            measureSprites,
           )
         : await buildPokemonCatalog(client);
   if (mode === '--topics-only' || mode === undefined) {
