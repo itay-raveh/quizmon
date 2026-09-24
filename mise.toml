@@ -49,7 +49,7 @@ run = [
   "mkdir -p .wrangler",
   "helm template rehearsal charts/quizmon --namespace quizmon-test -f tests/online/chart-values.yaml > .wrangler/chart-rendered.yaml",
   "kubeconform -strict -summary -kubernetes-version 1.34.0 .wrangler/chart-rendered.yaml",
-  "node tests/online/check-helm-chart.ts < .wrangler/chart-rendered.yaml",
+  "npm run check:chart-wiring < .wrangler/chart-rendered.yaml",
 ]
 
 [tasks."badges:export"]
