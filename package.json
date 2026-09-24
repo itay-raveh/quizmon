@@ -132,10 +132,7 @@
           "worker/index.ts"
         ]
       }
-    },
-    "ignoreBinaries": [
-      "mise"
-    ]
+    }
   },
   "prettier": {
     "singleQuote": true,
