@@ -104,7 +104,6 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     [tabId],
   );
   active = row ? parseActiveGameSave(JSON.parse(row.payload)) : null;
-  await finalizeLocalRound();
 };
 
 export const removeLocalRound = async () => {
@@ -147,15 +146,47 @@ export const commitRoundCompletion = async (
       'SELECT id,payload FROM local_completions WHERE id = ?',
       [round.id],
     );
+    const result = scoreRound(round);
+    const evaluate = (data: typeof state.save.data) =>
+      applyResult(
+        data,
+        round.mode === 'daily'
+          ? {
+              kind: 'daily',
+              date: round.day!,
+              ...(result.dailyTrack ? { track: result.dailyTrack } : {}),
+            }
+          : { kind: round.mode },
+        result,
+        {
+          ...defaultGameSettings,
+          trainingMode: completion.training.trainingMode,
+          difficulty: completion.training.difficulty,
+          questionSelection: completion.training.questionSelection,
+          generations: completion.training.generations,
+          formGroups:
+            completion.training.formGroups ?? defaultGameSettings.formGroups,
+          questionTypes: completion.training.questionTypes,
+          automaticQuestionTypes: completion.training.automaticQuestionTypes,
+        },
+        victory,
+        round.started_on ?? round.completed_at.slice(0, 10),
+      );
     if (existing) {
       const saved = JSON.parse(existing.payload) as RoundFact;
       if (
         JSON.stringify({ ...saved, credited: true }) !== JSON.stringify(round)
       )
         throw new Error('This round ID already has a different saved result.');
+      const data = structuredClone(state.save.data);
+      if (saved.credited && round.mode === 'daily')
+        delete data.results.daily[
+          getDailyResultKey(round.day!, result.dailyTrack)
+        ];
+      const outcome = evaluate(data);
       if (!keepRound)
         await tx.execute('DELETE FROM local_rounds WHERE id = ?', [tabId]);
-      return { best: completion.result, isNewBest: false, recorded: false };
+      return { ...outcome, recorded: false };
     }
     const eligible =
       round.mode !== 'daily' ||
@@ -166,31 +197,7 @@ export const commitRoundCompletion = async (
         )
       ).length;
     round.credited = eligible;
-    const result = scoreRound(round);
-    const outcome = applyResult(
-      structuredClone(state.save.data),
-      round.mode === 'daily'
-        ? {
-            kind: 'daily',
-            date: round.day!,
-            ...(result.dailyTrack ? { track: result.dailyTrack } : {}),
-          }
-        : { kind: round.mode },
-      result,
-      {
-        ...defaultGameSettings,
-        trainingMode: completion.training.trainingMode,
-        difficulty: completion.training.difficulty,
-        questionSelection: completion.training.questionSelection,
-        generations: completion.training.generations,
-        formGroups:
-          completion.training.formGroups ?? defaultGameSettings.formGroups,
-        questionTypes: completion.training.questionTypes,
-        automaticQuestionTypes: completion.training.automaticQuestionTypes,
-      },
-      victory,
-      round.started_on ?? round.completed_at.slice(0, 10),
-    );
+    const outcome = evaluate(structuredClone(state.save.data));
     await tx.execute('INSERT INTO local_completions(id,payload) VALUES (?,?)', [
       round.id,
       JSON.stringify(round),
