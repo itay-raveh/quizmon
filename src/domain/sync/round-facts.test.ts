@@ -120,9 +120,12 @@ describe('completed round facts', () => {
     expect(round.started_on).toBe('2026-09-11');
     expect(round.completed_at).toBe('2026-09-12T00:01:00.000Z');
     expect(validateRoundFact(round)).toBe(true);
-    expect(projectRoundHistory([round]).results.streak.creditedDates).toEqual([
-      '2026-09-11',
-    ]);
+    expect(projectRoundHistory([round]).results.streak.creditedDates).toEqual(
+      [],
+    );
+    expect(
+      Object.keys(projectRoundHistory([round]).results.daily),
+    ).toHaveLength(1);
     const duplicate = archiveCompletion(
       completion(crypto.randomUUID(), 'daily', {
         dailyDate: '2026-09-11',

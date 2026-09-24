@@ -170,7 +170,7 @@ export const commitRoundCompletion = async (
           automaticQuestionTypes: completion.training.automaticQuestionTypes,
         },
         victory,
-        round.started_on ?? round.completed_at.slice(0, 10),
+        round.completed_at.slice(0, 10),
       );
     if (existing) {
       const saved = JSON.parse(existing.payload) as RoundFact;

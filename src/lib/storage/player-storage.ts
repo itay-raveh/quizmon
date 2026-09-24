@@ -176,7 +176,11 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
       "SELECT id,payload FROM local_state WHERE id = 'player'",
     );
     const parsed = stored && parseLocalPlayerState(JSON.parse(stored.payload));
-    if (!parsed || JSON.stringify(parsed) !== stored.payload) {
+    if (
+      !parsed ||
+      !parsed.account ||
+      JSON.stringify(parsed) !== stored.payload
+    ) {
       await database.writeTransaction(async (transaction) => {
         const rows = await transaction.getAll<LocalRow>(
           "SELECT id,payload FROM local_state WHERE id = 'player'",
