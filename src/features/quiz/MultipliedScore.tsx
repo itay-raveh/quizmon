@@ -1,5 +1,5 @@
 import { useReducedMotion } from '@/app/providers/motion-context';
-import { formatScore, formatScoreMultiplier } from '@/domain/pokemon/format';
+import { formatScore, formatScoreMultiplier } from '@/domain/quiz/format';
 import {
   getQuestionTypesMultiplier,
   getScoreMultiplier,

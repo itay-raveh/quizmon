@@ -9,7 +9,7 @@ import {
   type QuestionTypeGroup,
 } from '@/domain/quiz/questions/definitions';
 import type { QuestionType } from '@/domain/quiz/types';
-import { formatScoreMultiplier } from '@/domain/pokemon/format';
+import { formatScoreMultiplier } from '@/domain/quiz/format';
 import type { GameSettings } from '@/domain/settings/types';
 import {
   useState,

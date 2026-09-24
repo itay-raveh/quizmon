@@ -3,12 +3,12 @@ import { showsSearchResponse } from '@/domain/quiz/question-interaction';
 import { presentQuestion } from '@/domain/quiz/questions/presentation';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
+import { formatPokemonName } from '@/domain/pokemon/format';
 import {
   formatDuration,
   formatDurationMilliseconds,
-  formatPokemonName,
   getModeLabel,
-} from '@/domain/pokemon/format';
+} from '@/domain/quiz/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getLeagueStageLabel } from '@/domain/quiz/league';
 import { getQuestionTitle } from '@/domain/quiz/questions/definitions';

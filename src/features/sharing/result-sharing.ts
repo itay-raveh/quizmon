@@ -4,7 +4,7 @@ import {
   formatDailyDate,
   formatScore,
   getModeLabel,
-} from '@/domain/pokemon/format';
+} from '@/domain/quiz/format';
 import type { GameMode, GameResult } from '@/domain/quiz/types';
 
 interface ShareContent {

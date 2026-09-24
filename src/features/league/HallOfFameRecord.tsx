@@ -1,7 +1,8 @@
 import { PokemonIdentity } from '@/components/PokemonIdentity';
 import { site } from '@/app/site';
 import type { LeagueVictoryRecord } from '@/domain/player/hall-of-fame';
-import { formatPokemonName, formatScore } from '@/domain/pokemon/format';
+import { formatPokemonName } from '@/domain/pokemon/format';
+import { formatScore } from '@/domain/quiz/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
 import type { Ref } from 'react';

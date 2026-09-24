@@ -3,7 +3,7 @@ import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
 import { formGroups, generations } from '@/domain/pokemon/types';
 import { difficultyLevels } from '@/domain/quiz/difficulty';
-import { formatScoreMultiplier } from '@/domain/pokemon/format';
+import { formatScoreMultiplier } from '@/domain/quiz/format';
 import { getScoreMultiplier } from '@/domain/quiz/score-multipliers';
 import { type GameSettings } from '@/domain/settings/types';
 import type { Dispatch, RefObject, SetStateAction } from 'react';

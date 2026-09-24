@@ -7,7 +7,7 @@ import {
   formatDuration,
   formatDurationMilliseconds,
   formatScore,
-} from '@/domain/pokemon/format';
+} from '@/domain/quiz/format';
 import { generations } from '@/domain/pokemon/types';
 import { isLeagueVictory } from '@/domain/quiz/league';
 import { getCategoryLabel } from '@/domain/quiz/questions/definitions';
