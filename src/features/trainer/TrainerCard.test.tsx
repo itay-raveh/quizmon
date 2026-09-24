@@ -30,3 +30,27 @@ test('positions the partner at the trainer ground line on first render', () => {
   expect(render(profile.avatar)).not.toContain('partner-sprite--pending');
   expect(render(null)).toContain('bottom:calc(0% - ');
 });
+
+test.each([
+  ['rotom-heat', '10.875'],
+  ['rotom-wash', '16.3125'],
+  ['rotom-frost', '29'],
+  ['rotom-fan', '10.875'],
+  ['rotom-mow', '16.3125'],
+] as const)(
+  'sizes %s like its appliance on the card',
+  (partnerPokemon, width) => {
+    const markup = renderToStaticMarkup(
+      <TrainerCard
+        profile={{ ...createTrainerProfile(), partnerPokemon }}
+        partnerDexNumber={479}
+        partnerHeight={3}
+        partnerSprite="/sprites/pokemon/rotom.png"
+        rank="Youngster"
+        record={{ dayCombo: 0, pokedexFound: 0, pokedexTotal: 1 }}
+      />,
+    );
+
+    expect(markup).toContain(`width:${width}cqw`);
+  },
+);

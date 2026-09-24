@@ -95,7 +95,8 @@
   flex: none;
 }
 
-.trainer-passport__view[aria-current='page'] {
+.trainer-passport__view[aria-current='page'],
+.trainer-passport__view[aria-pressed='true'] {
   color: var(--paper);
   background: var(--blue);
 }
@@ -111,7 +112,8 @@
   outline-offset: -3px;
 }
 
-.trainer-passport__view[aria-current='page']:focus-visible {
+.trainer-passport__view[aria-current='page']:focus-visible,
+.trainer-passport__view[aria-pressed='true']:focus-visible {
   outline-color: var(--paper);
 }
 

@@ -34,6 +34,14 @@ interface TrainerCardProps {
   };
 }
 
+const rotomDisplayHeights: Record<string, number> = {
+  'rotom-fan': 6,
+  'rotom-frost': 18,
+  'rotom-heat': 6,
+  'rotom-mow': 9,
+  'rotom-wash': 9,
+};
+
 export const TrainerCard = ({
   cardRef,
   emptyPartnerLabel = 'Choose partner',
@@ -51,7 +59,8 @@ export const TrainerCard = ({
   const partnerName = profile.partnerPokemon ?? emptyPartnerLabel;
   const avatar = trainerAvatarOptions.find(({ id }) => id === profile.avatar);
   const groundOffset = avatar ? (1 - avatar.bottom) * 100 : 0;
-  const height = partnerHeight ?? 8;
+  const height =
+    rotomDisplayHeights[profile.partnerPokemon ?? ''] ?? partnerHeight ?? 8;
   const visibleHeight = Math.min(29, Math.max(5, (height * 29) / 16));
   const spriteSize = Math.min(
     48,
