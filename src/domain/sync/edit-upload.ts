@@ -81,5 +81,3 @@ export const editUploadSchema = z.discriminatedUnion('unit', [
     }),
   }),
 ]);
-
-export type EditUpload = z.infer<typeof editUploadSchema>;
