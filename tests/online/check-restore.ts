@@ -57,16 +57,30 @@ try {
       new AbortController().signal,
     )
   ).json()) as Record<string, unknown>;
-  const dump = execFileSync('pg_dump', [
+  const dump = execFileSync('docker', [
+    'exec',
+    database.container,
+    'pg_dump',
+    '--username=postgres',
     '--format=custom',
     '--no-owner',
     '--no-privileges',
-    database.connectionString,
+    'postgres',
   ]);
   await database.pool.query(`CREATE DATABASE ${restoredName}`);
   execFileSync(
-    'pg_restore',
-    ['--no-owner', '--no-privileges', '--dbname', restoredUrl.toString()],
+    'docker',
+    [
+      'exec',
+      '--interactive',
+      database.container,
+      'pg_restore',
+      '--username=postgres',
+      '--no-owner',
+      '--no-privileges',
+      '--dbname',
+      restoredName,
+    ],
     { input: dump },
   );
   const restored = new Pool({ connectionString: restoredUrl.toString() });
