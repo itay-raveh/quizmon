@@ -1,4 +1,7 @@
-import { isLeagueUnlocked } from '../domain/player/trainer-progression';
+import {
+  isLeagueUnlocked,
+  trainerViewLabels,
+} from '../domain/player/trainer-progression';
 import { getUtcDate } from '../domain/quiz/daily';
 import { isLeagueVictory } from '../domain/quiz/league';
 import type { AnswerResult } from '../domain/quiz/types';
@@ -360,9 +363,10 @@ export const AppView = (props: AppViewProps) => {
     const heading = [
       ...(main.current?.querySelectorAll<HTMLElement>('h1') ?? []),
     ].find((candidate) => !candidate.closest('[hidden]'));
-    const title =
-      screenKey.startsWith('trainer:') || screenKey.startsWith('player:')
-        ? 'Trainer Card'
+    const title = screenKey.startsWith('trainer:')
+      ? trainerViewLabels[props.trainer.view]
+      : screenKey.startsWith('player:')
+        ? 'Trainer profile'
         : screenKey.startsWith('league:')
           ? 'Quizmon League'
           : ((
