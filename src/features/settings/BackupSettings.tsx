@@ -37,6 +37,7 @@ export const BackupSettings = ({
   const previewHeading = useRef<HTMLHeadingElement>(null);
   const chooseButton = useRef<HTMLButtonElement>(null);
   const [preview, setPreview] = useState<PlayerBackup | null>(null);
+  const [restored, setRestored] = useState<'guest' | 'account' | null>(null);
   const [error, setError] = useState('');
   const [downloadNotice, setDownloadNotice] = useState(0);
   const dismissDownloadNotice = useCallback(() => setDownloadNotice(0), []);
@@ -50,6 +51,7 @@ export const BackupSettings = ({
 
   const readFile = async (file: File) => {
     setPreview(null);
+    setRestored(null);
     setError('');
     dismissDownloadNotice();
     setBusy(true);
@@ -92,6 +94,8 @@ export const BackupSettings = ({
     setBusy(true);
     try {
       await restoreBackup(preview);
+      setPreview(null);
+      setRestored(preview.state.account ? 'account' : 'guest');
     } catch (error) {
       setError(
         error instanceof Error
@@ -160,6 +164,15 @@ export const BackupSettings = ({
           {error}
         </p>
       )}
+      <div role="status">
+        {restored && (
+          <p>
+            {restored === 'account'
+              ? 'Pending account changes recovered on this device.'
+              : 'Backup restored. Your saved progress is ready.'}
+          </p>
+        )}
+      </div>
       {preview && (
         <div
           className="backup-settings__preview"
