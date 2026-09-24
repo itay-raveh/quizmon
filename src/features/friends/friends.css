@@ -344,87 +344,99 @@
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 0.75rem;
+  gap: 0.75rem 1rem;
 }
 
 .leaderboard-modes {
-  display: inline-flex;
-  width: max-content;
-  max-width: 100%;
-  overflow: hidden;
-  gap: 2px;
-  background: var(--navy);
-  border: 2px solid var(--navy);
-  border-radius: var(--button-radius);
-  box-shadow: 0 0.18rem 0 var(--yellow);
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid var(--navy);
 }
 
-.leaderboard-modes button,
-.leaderboard-scope {
+.leaderboard-modes button {
+  flex: 1;
   min-height: 2.75rem;
-  padding: 0.45rem 0.8rem;
-  border: 0;
+  padding: 0.4rem 0.75rem;
   color: var(--muted);
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
-.leaderboard-modes button {
-  min-width: 7rem;
-  background: var(--paper);
-}
-
 .leaderboard-modes button[aria-pressed='true'] {
-  background: var(--blue);
-  color: var(--primary-text);
-}
-
-.leaderboard-scope {
-  padding-inline: 0.25rem;
-  background: none;
-}
-
-.leaderboard-scope[aria-pressed='true'] {
   color: var(--blue);
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.35rem;
+  border-bottom-color: var(--blue);
+  font-weight: 800;
+}
+
+.leaderboard-filter {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: var(--text-label);
+  font-weight: 700;
+}
+
+.leaderboard-scopes {
+  display: flex;
+  width: max-content;
+  gap: 1px;
+  padding: 1px;
+  background: var(--navy);
+  border-radius: var(--icon-control-radius);
+}
+
+.leaderboard-scopes button {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.7rem;
+  color: var(--navy);
+  background: var(--paper);
+  border: 0;
+  border-radius: 0.2rem;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.leaderboard-scopes button[aria-pressed='true'] {
+  background: var(--sky);
+  font-weight: 800;
 }
 
 .leaderboard-modes button:hover:not([aria-pressed='true']),
-.leaderboard-scope:hover {
-  color: var(--navy);
+.leaderboard-scopes button:hover:not([aria-pressed='true']) {
+  color: var(--blue);
 }
 
 .leaderboard-modes button:focus-visible,
-.leaderboard-scope:focus-visible {
+.leaderboard-scopes button:focus-visible,
+.leaderboard-date input:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
+}
+
+.leaderboard-date {
+  margin-left: auto;
+}
+
+.leaderboard-date input {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--navy);
+  border-radius: var(--icon-control-radius);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
 }
 
 .leaderboard-controls label,
 .leaderboard-table th[scope='row'] {
   overflow-wrap: anywhere;
-}
-
-.leaderboard-controls label {
-  display: grid;
-  gap: 0.25rem;
-}
-
-.leaderboard-controls__date--hidden {
-  visibility: hidden;
-}
-
-.leaderboard-controls input {
-  min-height: 2.75rem;
-  padding: 0.4rem 0.6rem;
-  border: 2px solid var(--navy);
-  border-radius: 0.25rem;
-  background: var(--paper);
-  color: var(--ink);
-  font: inherit;
 }
 
 .leaderboard-controls .game-button,
@@ -521,8 +533,8 @@
 }
 
 .leaderboard-table thead {
-  color: var(--paper);
-  background: var(--blue);
+  color: var(--navy);
+  background: var(--sky);
 }
 
 .leaderboard-table th:first-child,

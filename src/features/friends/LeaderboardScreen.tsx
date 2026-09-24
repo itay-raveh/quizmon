@@ -365,44 +365,40 @@ export function LeaderboardScreen({
               </button>
             </div>
             <div className="leaderboard-controls">
-              <div
-                className="friends-actions"
-                role="group"
-                aria-label="Leaderboard players"
-              >
-                <button
-                  className="leaderboard-scope"
-                  type="button"
-                  aria-pressed={scope === 'global'}
-                  onClick={() => chooseScope('global')}
+              <div className="leaderboard-filter">
+                <span>Players</span>
+                <div
+                  className="leaderboard-scopes"
+                  role="group"
+                  aria-label="Leaderboard players"
                 >
-                  Global
-                </button>
-                <button
-                  className="leaderboard-scope"
-                  type="button"
-                  aria-pressed={scope === 'friends'}
-                  onClick={() => chooseScope('friends')}
-                >
-                  Friends
-                </button>
+                  <button
+                    type="button"
+                    aria-pressed={scope === 'global'}
+                    onClick={() => chooseScope('global')}
+                  >
+                    Global
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={scope === 'friends'}
+                    onClick={() => chooseScope('friends')}
+                  >
+                    Friends
+                  </button>
+                </div>
               </div>
-              <label
-                className={
-                  mode === 'daily'
-                    ? undefined
-                    : 'leaderboard-controls__date--hidden'
-                }
-              >
-                <input
-                  type="date"
-                  aria-label="Leaderboard date"
-                  value={date}
-                  max={today}
-                  disabled={mode !== 'daily'}
-                  onChange={(event) => chooseDate(event.target.value)}
-                />
-              </label>
+              {mode === 'daily' && (
+                <label className="leaderboard-filter leaderboard-date">
+                  Date
+                  <input
+                    type="date"
+                    value={date}
+                    max={today}
+                    onChange={(event) => chooseDate(event.target.value)}
+                  />
+                </label>
+              )}
             </div>
             <Standings
               key={`${account.owner}:${mode}:${date}:${scope}`}
