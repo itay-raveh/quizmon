@@ -1,7 +1,6 @@
 /// <reference lib="webworker" />
 
 import { DAILY_REMINDER_MESSAGE } from '@/features/reminders/reminder-config';
-import { spriteCachePlugin } from '@/lib/sprite-cache';
 import { isItemSpritePath } from '@/domain/pokemon/sprite-source';
 import { isRecord } from '@/lib/validation';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
@@ -88,7 +87,6 @@ registerRoute(
   new CacheFirst({
     cacheName: 'quizmon-pokemon-sprites-v2',
     plugins: [
-      spriteCachePlugin,
       new ExpirationPlugin({
         maxAgeSeconds: 60 * 60 * 24 * 90,
         maxEntries: 400,
