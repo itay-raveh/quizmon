@@ -219,17 +219,101 @@
   top: 50%;
   left: 50%;
   width: 100%;
-  height: auto;
   aspect-ratio: 100 / 128;
   transform: translate(-50%, -50%) rotate(90deg);
   opacity: 0;
+  background: url('../../../assets/images/trainer-card/sheen-atlas.png') 0 0 /
+    1000% 100% no-repeat;
   image-rendering: pixelated;
   mix-blend-mode: screen;
-  transition: opacity 45ms steps(1, end);
 }
 
-.trainer-card__sheen.is-active {
+.trainer-card__finish-effects.is-static .trainer-card__sheen {
+  background-position-x: 55.5556%;
   opacity: var(--trainer-sheen-opacity);
+}
+
+.trainer-card--bronze {
+  --trainer-sheen-frames: trainer-sheen-bronze;
+  --trainer-sheen-visibility: trainer-sheen-visible-bronze;
+  --trainer-sheen-loop: 3300ms;
+  --trainer-sheen-delay: 150ms;
+}
+
+.trainer-card--silver {
+  --trainer-sheen-frames: trainer-sheen-silver;
+  --trainer-sheen-visibility: trainer-sheen-visible-silver;
+  --trainer-sheen-loop: 3220ms;
+  --trainer-sheen-delay: 430ms;
+}
+
+.trainer-card--gold {
+  --trainer-sheen-frames: trainer-sheen-gold;
+  --trainer-sheen-visibility: trainer-sheen-visible-gold;
+  --trainer-sheen-loop: 3160ms;
+  --trainer-sheen-delay: 710ms;
+}
+
+.trainer-card__finish-effects.is-motion-active .trainer-card__sheen {
+  animation-name: var(--trainer-sheen-frames), var(--trainer-sheen-visibility);
+  animation-duration: var(--trainer-sheen-loop);
+  animation-timing-function: steps(10, end), linear;
+  animation-delay: var(--trainer-sheen-delay);
+  animation-iteration-count: infinite;
+}
+
+@keyframes trainer-sheen-bronze {
+  27.2727%,
+  100% {
+    background-position-x: 111.1111%;
+  }
+}
+
+@keyframes trainer-sheen-visible-bronze {
+  0%,
+  27.26% {
+    opacity: var(--trainer-sheen-opacity);
+  }
+  27.2727%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes trainer-sheen-silver {
+  25.4658%,
+  100% {
+    background-position-x: 111.1111%;
+  }
+}
+
+@keyframes trainer-sheen-visible-silver {
+  0%,
+  25.45% {
+    opacity: var(--trainer-sheen-opacity);
+  }
+  25.4658%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes trainer-sheen-gold {
+  24.0506%,
+  100% {
+    background-position-x: 111.1111%;
+  }
+}
+
+@keyframes trainer-sheen-visible-gold {
+  0%,
+  24.04% {
+    opacity: var(--trainer-sheen-opacity);
+  }
+  24.0506%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .trainer-card--champion {

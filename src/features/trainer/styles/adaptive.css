@@ -29,12 +29,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .trainer-card__sheen {
-    transition: none;
-  }
-}
-
 @media (max-width: 42rem) {
   .trainer-passport {
     width: calc(100vw - 1.2rem);

@@ -39,13 +39,6 @@ const createCaptureClone = (element: HTMLElement) => {
   clone.querySelectorAll('.trainer-card__finish-effects').forEach((effects) => {
     effects.classList.remove('is-motion-active');
     effects.classList.add('is-static');
-    const sheen = effects.querySelector<HTMLImageElement>(
-      '.trainer-card__sheen',
-    );
-    if (sheen?.dataset.staticSrc) {
-      sheen.src = sheen.dataset.staticSrc;
-      sheen.classList.add('is-active');
-    }
   });
 
   host.className = 'trainer-share-capture';
