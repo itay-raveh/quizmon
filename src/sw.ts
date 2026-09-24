@@ -43,6 +43,23 @@ const readPushPayload = (event: PushEvent): DailyPushPayload => {
 
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(
+          names
+            .filter(
+              (name) =>
+                name.startsWith('quizmon-static-media-') ||
+                name.startsWith('quizmon-pokemon-sprites-'),
+            )
+            .map((name) => caches.delete(name)),
+        ),
+      ),
+  );
+});
 
 registerRoute(
   new NavigationRoute(async (options) => {
@@ -68,7 +85,7 @@ registerRoute(
     sameOrigin &&
     /\/assets\/build\/.*\.(?:avif|ico|mp3|png|webp)$/.test(url.pathname),
   new CacheFirst({
-    cacheName: 'quizmon-static-media-v1',
+    cacheName: 'quizmon-static-media',
     plugins: [
       new CacheableResponsePlugin({ statuses: [200] }),
       new ExpirationPlugin({
@@ -85,7 +102,7 @@ registerRoute(
     (url.pathname.startsWith('/sprites/pokemon/') ||
       isItemSpritePath(url.pathname)),
   new CacheFirst({
-    cacheName: 'quizmon-pokemon-sprites-v2',
+    cacheName: 'quizmon-pokemon-sprites',
     plugins: [
       new ExpirationPlugin({
         maxAgeSeconds: 60 * 60 * 24 * 90,
