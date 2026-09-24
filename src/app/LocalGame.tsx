@@ -3,6 +3,7 @@ import { GameButton } from '../components/GameButton';
 import { downloadBackup } from '../features/settings/backup';
 import {
   getSaveError,
+  isSaveRetrying,
   retryPlayerSave,
   subscribeToPlayerChanges,
 } from '../lib/storage/player-storage';
@@ -10,6 +11,10 @@ import { App } from './App';
 
 export const LocalGame = () => {
   const error = useSyncExternalStore(subscribeToPlayerChanges, getSaveError);
+  const retrying = useSyncExternalStore(
+    subscribeToPlayerChanges,
+    isSaveRetrying,
+  );
   const [exportError, setExportError] = useState('');
   return (
     <>
@@ -21,8 +26,11 @@ export const LocalGame = () => {
             Keep this tab open while you free some storage or allow site
             storage.
           </p>
-          <GameButton onClick={() => void retryPlayerSave()}>
-            Try saving again
+          <GameButton
+            disabled={retrying}
+            onClick={() => void retryPlayerSave()}
+          >
+            {retrying ? 'Saving…' : 'Try saving again'}
           </GameButton>
           <GameButton
             tone="quiet"

@@ -44,6 +44,7 @@ let snapshot: LocalPlayerState | undefined;
 let initialization: Promise<void> | undefined;
 let saveError = '';
 let retryWrite: (() => Promise<unknown>) | undefined;
+let retrying = false;
 const listeners = new Set<() => void>();
 const restoreListeners = new Set<() => void>();
 const emit = () => listeners.forEach((listener) => listener());
@@ -60,6 +61,7 @@ export const subscribeToPlayerRestore = (listener: () => void) => {
   };
 };
 export const getSaveError = () => saveError;
+export const isSaveRetrying = () => retrying;
 export const reportSaveError = (
   error: unknown,
   retry?: () => Promise<unknown>,
@@ -75,18 +77,23 @@ export const reportSaveError = (
   emit();
 };
 export const retryPlayerSave = async () => {
+  if (retrying) return;
   if (!retryWrite) {
     window.location.reload();
     return;
   }
   const retry = retryWrite;
-  saveError = '';
-  retryWrite = undefined;
+  retrying = true;
   emit();
   try {
     await retry();
+    saveError = '';
+    retryWrite = undefined;
   } catch (error) {
     reportSaveError(error, retry);
+  } finally {
+    retrying = false;
+    emit();
   }
 };
 export const parseLocalPlayerState = (value: unknown): LocalPlayerState => {

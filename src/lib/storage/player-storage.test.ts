@@ -133,3 +133,31 @@ it.each(['local_completions', 'pending_actions'])(
     expect(damaged.payload).toBe('{damaged');
   },
 );
+
+it('keeps the save gate active through a retry and prevents parallel retries', async () => {
+  vi.resetModules();
+  const { getSaveError, isSaveRetrying, reportSaveError, retryPlayerSave } =
+    await import('./player-storage');
+  let fail!: (error: Error) => void;
+  const retry = vi
+    .fn()
+    .mockImplementationOnce(
+      () => new Promise<void>((_resolve, reject) => (fail = reject)),
+    )
+    .mockResolvedValueOnce(undefined);
+  reportSaveError(new Error('Save failed'), retry);
+
+  const pending = retryPlayerSave();
+  await retryPlayerSave();
+  expect(retry).toHaveBeenCalledOnce();
+  expect(isSaveRetrying()).toBe(true);
+  expect(getSaveError()).toBe('Save failed');
+
+  fail(new Error('Still failed'));
+  await pending;
+  expect(isSaveRetrying()).toBe(false);
+  expect(getSaveError()).toBe('Still failed');
+
+  await retryPlayerSave();
+  expect(getSaveError()).toBe('');
+});
