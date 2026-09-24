@@ -1,10 +1,11 @@
+import { z } from 'zod';
 import type { TrainerStats } from '../../domain/player/progress';
+import { progressSchema } from '../../domain/player/schemas/player-data';
 import {
   normalizeTrainerProfile,
   type TrainerProfile,
 } from '../../domain/player/trainer-profile';
 import type { SocialPlayer } from '../../domain/social/friends';
-import { isRecord } from '../../lib/validation';
 import { accountSnapshot } from '../account/account';
 
 export interface PublicTrainer {
@@ -15,55 +16,36 @@ export interface PublicTrainer {
   record: { dayCombo: number; pokedexFound: number; pokedexTotal: number };
 }
 
-const nonnegative = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
-const names = (value: unknown): value is string[] =>
-  Array.isArray(value) && value.every((name) => typeof name === 'string');
-const counts = (value: unknown) =>
-  isRecord(value) && Object.values(value).every(nonnegative);
+const count = z.int().min(0);
+const publicTrainerSchema = z.object({
+  player: z.object({
+    id: z.string(),
+    name: z.string(),
+    code: z.string().nullable(),
+    partnerPokemon: z.string().nullable(),
+  }),
+  profile: z.unknown(),
+  stats: progressSchema.extend({
+    bestDailyStreak: count,
+    leagueCompleted: z.boolean(),
+    pokedex: z.array(z.string()).optional(),
+  }),
+  pokedex: z.array(z.string()),
+  record: z.object({
+    dayCombo: count,
+    pokedexFound: count,
+    pokedexTotal: count,
+  }),
+});
 
 function parsePublicTrainer(value: unknown): PublicTrainer {
-  if (!isRecord(value) || !isRecord(value.player))
+  const parsed = publicTrainerSchema.safeParse(value);
+  const profile = parsed.success
+    ? normalizeTrainerProfile(parsed.data.profile)
+    : null;
+  if (!parsed.success || !profile)
     throw new Error('This Trainer card could not be loaded. Try again.');
-  const { player, stats, record } = value;
-  const profile = normalizeTrainerProfile(value.profile);
-  if (
-    typeof player.id !== 'string' ||
-    typeof player.name !== 'string' ||
-    !(player.code === null || typeof player.code === 'string') ||
-    !(
-      player.partnerPokemon === null ||
-      typeof player.partnerPokemon === 'string'
-    ) ||
-    !profile ||
-    !isRecord(stats) ||
-    !names(stats.correctPokemon) ||
-    !counts(stats.correctCategories) ||
-    !counts(stats.correctGenerations) ||
-    !counts(stats.correctQuestionTypes) ||
-    !nonnegative(stats.championAnswersWithoutClues) ||
-    !nonnegative(stats.masteryRounds) ||
-    !nonnegative(stats.quickAttackRounds) ||
-    !nonnegative(stats.bestDailyStreak) ||
-    typeof stats.leagueCompleted !== 'boolean' ||
-    !names(value.pokedex) ||
-    !isRecord(record) ||
-    !nonnegative(record.dayCombo) ||
-    !nonnegative(record.pokedexFound) ||
-    !nonnegative(record.pokedexTotal)
-  )
-    throw new Error('This Trainer card could not be loaded. Try again.');
-  return {
-    player: player as unknown as SocialPlayer,
-    profile,
-    stats: stats as unknown as TrainerStats,
-    pokedex: value.pokedex,
-    record: {
-      dayCombo: record.dayCombo,
-      pokedexFound: record.pokedexFound,
-      pokedexTotal: record.pokedexTotal,
-    },
-  };
+  return { ...parsed.data, profile };
 }
 
 export async function fetchPublicTrainer(

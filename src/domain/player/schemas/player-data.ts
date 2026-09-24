@@ -100,19 +100,20 @@ const victoryRecord = z
       isLeagueVictory(result) &&
       result.answers.every((answer) => answer.correct),
   );
+export const progressSchema = z.object({
+  championAnswersWithoutClues: nonnegativeInteger,
+  correctCategories: counts(questionCategories),
+  correctGenerations: counts(generations),
+  correctQuestionTypes: counts(savedQuestionTypes),
+  correctPokemon: z.array(name).transform((names) => [...new Set(names)]),
+  masteryRounds: nonnegativeInteger,
+  quickAttackRounds: nonnegativeInteger,
+});
 const results = z
   .object({
     daily: z.record(z.string(), savedResult),
     training: z.record(z.string(), savedResult),
-    progress: z.object({
-      championAnswersWithoutClues: nonnegativeInteger,
-      correctCategories: counts(questionCategories),
-      correctGenerations: counts(generations),
-      correctQuestionTypes: counts(savedQuestionTypes),
-      correctPokemon: z.array(name).transform((names) => [...new Set(names)]),
-      masteryRounds: nonnegativeInteger,
-      quickAttackRounds: nonnegativeInteger,
-    }),
+    progress: progressSchema,
     streak: z.object({
       creditedDates: z
         .array(dailyDateSchema)
