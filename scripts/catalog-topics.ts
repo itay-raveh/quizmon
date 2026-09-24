@@ -1,11 +1,7 @@
-import { addAbilityDescriptions } from './ability-text.ts';
+import { addPkmnDescriptions } from './pkmn-descriptions.ts';
 import { clean, english, titleCase } from './catalog-text.ts';
-import { reviewedEffects } from './reviewed-effects.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
-import {
-  medicineChoices,
-  reviewedMoveDescriptions,
-} from './reviewed-topic-facts.ts';
+import { buildMedicineChoices } from './medicine-choices.ts';
 import {
   flattenChain,
   formatRequirements,
@@ -125,22 +121,8 @@ export const buildTopicCatalog = async (
   const gaps: TopicCatalog['gaps'] = {
     itemGeneration: [],
     itemSprite: [],
-    moveDescription: [],
-    abilityEffect: [],
     encounterGames: [],
     evolutionMethods: [],
-    moveDescriptionReview: moves
-      .filter((move) => !reviewedMoveDescriptions[move.name])
-      .map((move) => move.name),
-    heldItemEffectReview: items
-      .filter(
-        (item) =>
-          categories.get(item.category.name)?.pocket.name === 'misc' &&
-          !reviewedEffects.some(
-            (fact) => fact.kind === 'item' && fact.name === item.name,
-          ),
-      )
-      .map((item) => item.name),
     dynamicMoveClass: [
       'photon-geyser',
       'light-that-burns-the-sky',
@@ -272,8 +254,7 @@ export const buildTopicCatalog = async (
     encounters,
     evolutions,
     gaps,
-    medicineChoices,
-    effects: reviewedEffects,
+    medicineChoices: buildMedicineChoices(items),
     items: items.map((item) => {
       const gens = item.game_indices.map((index) =>
         generation(index.generation.name),
@@ -290,8 +271,6 @@ export const buildTopicCatalog = async (
       };
     }),
     moves: moves.map((move) => {
-      if (!move.flavor_text_entries.some(english))
-        gaps.moveDescription!.push(move.name);
       const contexts = move.flavor_text_entries
         .filter(english)
         .flatMap((entry) => {
@@ -325,18 +304,13 @@ export const buildTopicCatalog = async (
       return {
         ...entity(move, [generation(move.generation.name)]),
         contexts,
-        reviewedDescription: reviewedMoveDescriptions[move.name],
         type: move.type.name,
         damageClass: move.damage_class?.name ?? '',
       };
     }),
-    abilities: abilities.map((ability) => {
-      const effect = clean(ability.effect_entries.find(english)?.effect ?? '');
-      if (!effect) gaps.abilityEffect!.push(ability.name);
-      return {
-        ...entity(ability, [generation(ability.generation.name)]),
-      };
-    }),
+    abilities: abilities.map((ability) =>
+      entity(ability, [generation(ability.generation.name)]),
+    ),
     natures: natures.flatMap((nature) =>
       nature.increased_stat && nature.decreased_stat
         ? [
@@ -374,9 +348,6 @@ export const buildTopicCatalog = async (
         : [];
     }),
   };
-  await addAbilityDescriptions(topics.abilities);
-  topics.gaps.abilityDescription = topics.abilities
-    .filter((ability) => !ability.descriptions?.length)
-    .map((ability) => ability.name);
+  addPkmnDescriptions(topics);
   return topics;
 };

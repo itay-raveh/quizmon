@@ -31,11 +31,13 @@ Set the GitHub Actions secrets `SENTRY_BROWSER_DSN`, `SENTRY_WORKER_DSN`, `SENTR
 
 ## Data
 
-Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). Ability effect choices use short descriptions from [Pokémon Showdown](https://github.com/smogon/pokemon-showdown), with generation-specific mechanics and fuller explanations available after answering. The importer pins its source revision in `scripts/ability-text.ts`. Live games do not request either source.
+Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). The importer uses [@pkmn/dex](https://github.com/pkmn/ps/tree/main/dex) for generation-specific ability and held-item effects and move descriptions. It derives medicine choices from PokéAPI item effects. The lockfile pins the packaged Showdown data. Live games do not request either source.
 
 ```sh
 npm run data:update
 ```
+
+Run `npm run data:update -- --pkmn-only` to refresh packaged Showdown descriptions without fetching PokéAPI again.
 
 The build fetches the trainer sprites listed in `src/domain/player/data/trainer-avatars.json` from [Pokémon Showdown](https://play.pokemonshowdown.com/sprites/trainers/) and verifies their checksums before Vite copies them into `dist/`. The PNGs stay ignored in Git. Run `npm run avatars:prepare` for local development, or `npm run avatars:update` to refresh the tracked manifest from the current uncredited 80 × 80 sprite index.
 

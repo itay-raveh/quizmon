@@ -59,7 +59,7 @@ export interface VariantRules {
     | 'stones'
     | 'direct-use';
   measurement?: MeasurementRules;
-  reviewedDescription?: boolean;
+  showMoveDescription?: boolean;
   excludeTypeHintNames?: boolean;
   excludeUniversalCures?: boolean;
   fullList?: 'types' | 'regions' | 'flavors';
@@ -148,7 +148,7 @@ const questionVariants: Record<
   'weight-comparison': measurementVariants,
   'height-comparison': measurementVariants,
   'move-types': {
-    2: { reviewedDescription: true },
+    2: { showMoveDescription: true },
     3: { fullList: 'types', excludeTypeHintNames: true },
   },
   'name-that-region': { 2: {}, 3: { fullList: 'regions' } },

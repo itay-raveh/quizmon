@@ -43,10 +43,13 @@ export const buildMove: QuestionBuilder = (context) => {
         target.label.toLowerCase().includes(rules.type)
       )
         continue;
-      if (context.variant?.reviewedDescription && !target.reviewedDescription)
-        continue;
       const game = topics.games[rules.game];
       if (!game) continue;
+      if (
+        context.variant?.showMoveDescription &&
+        !target.descriptions?.[rules.generation]
+      )
+        continue;
       if (purpose) {
         if (
           context.variant?.damageClass === 'status' &&
@@ -125,8 +128,8 @@ export const buildMove: QuestionBuilder = (context) => {
             prompt: {
               kind: 'text',
               text: prompt,
-              description: context.variant?.reviewedDescription
-                ? target.reviewedDescription
+              description: context.variant?.showMoveDescription
+                ? target.descriptions?.[rules.generation]
                 : undefined,
               supportingText: `Pokémon ${game.label}`,
             },

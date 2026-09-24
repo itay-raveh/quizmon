@@ -36,6 +36,7 @@ import {
 import { measureCatalogSprites } from './sprite-measurements.ts';
 import { buildTopicCatalog } from './catalog-topics.ts';
 import { extractPokemonKnowledge } from './catalog-knowledge.ts';
+import { addPkmnDescriptions } from './pkmn-descriptions.ts';
 import { gameVersions } from '../src/domain/versions.ts';
 
 const DATA_DIRECTORY = new URL('../src/domain/pokemon/data/', import.meta.url);
@@ -386,7 +387,8 @@ if (import.meta.main) {
   const [mode, ...extra] = process.argv.slice(2);
   if (
     extra.length ||
-    (mode !== undefined && !['--topics-only', '--sprites-only'].includes(mode))
+    (mode !== undefined &&
+      !['--topics-only', '--sprites-only', '--pkmn-only'].includes(mode))
   )
     throw new Error('Use one catalog update mode at a time.');
   const client = new MainClient({
@@ -394,7 +396,7 @@ if (import.meta.main) {
     revalidate: true,
   });
   const catalog =
-    mode === '--topics-only'
+    mode === '--topics-only' || mode === '--pkmn-only'
       ? await readCatalogFiles(DATA_DIRECTORY)
       : mode === '--sprites-only'
         ? await addSpriteMeasurements(
@@ -402,7 +404,11 @@ if (import.meta.main) {
             measureSprites,
           )
         : await buildPokemonCatalog(client);
-  if (mode === '--topics-only' || mode === undefined) {
+  if (mode === '--pkmn-only') {
+    if (!catalog.topics) throw new Error('Missing topic catalog');
+    addPkmnDescriptions(catalog.topics);
+    catalog.contentVersion = gameVersions.content;
+  } else if (mode === '--topics-only' || mode === undefined) {
     catalog.topics = await buildTopicCatalog(client, catalog);
     await addItemSpriteIdentities(catalog.topics);
     catalog.contentVersion = gameVersions.content;
@@ -429,6 +435,8 @@ if (import.meta.main) {
   const pokemonCount = Object.keys(catalog.pokemon).length;
   const typeCount = Object.keys(catalog.typeRelations).length;
   console.log(
-    `Updated ${pokemonCount} Pokémon and ${typeCount} type matchups from PokéAPI.`,
+    mode === '--pkmn-only'
+      ? 'Updated packaged Pokémon Showdown descriptions.'
+      : `Updated ${pokemonCount} Pokémon and ${typeCount} type matchups from PokéAPI.`,
   );
 }

@@ -1,5 +1,5 @@
 {
-  "contentVersion": 1,
+  "contentVersion": 2,
   "pokemon": {
     "abomasnow": {
       "abilities": ["snow-warning", "soundproof"],
@@ -128146,10 +128146,10 @@
     "topics-encounters-8.json",
     "topics-evolutions-0.json",
     "topics-gaps-0.json",
-    "topics-effects-0.json",
     "topics-items-0.json",
     "topics-moves-0.json",
     "topics-moves-1.json",
+    "topics-moves-2.json",
     "topics-abilities-0.json",
     "topics-natures-0.json",
     "topics-berries-0.json",

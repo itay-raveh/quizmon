@@ -7,7 +7,7 @@ const move = (name: string, label: string, type: string) => ({
   name,
   label,
   generations: ['II'],
-  reviewedDescription: 'A move description.',
+  descriptions: { II: 'A move description.' },
   type,
   damageClass: 'physical',
   contexts: [

@@ -1,132 +1,360 @@
 {
-  "contentVersion": 1,
+  "contentVersion": 2,
   "key": "medicineChoices",
   "values": [
     {
-      "name": "antidote",
-      "cures": ["poison"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "burn-heal",
-      "cures": ["burn"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "ice-heal",
-      "cures": ["freeze"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "awakening",
-      "cures": ["sleep"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "paralyze-heal",
-      "cures": ["paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "pecha-berry",
-      "cures": ["poison"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "rawst-berry",
-      "cures": ["burn"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "aspear-berry",
-      "cures": ["freeze"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "chesto-berry",
-      "cures": ["sleep"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "cheri-berry",
-      "cures": ["paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "full-heal",
-      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "lum-berry",
-      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "lava-cookie",
-      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "old-gateau",
-      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "casteliacone",
-      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "heal-powder",
-      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
-      "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "full-restore",
-      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
-      "hp": "full",
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
-    },
-    {
-      "name": "max-potion",
+      "name": "master-ball",
       "cures": [],
-      "hp": "full",
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
     },
     {
-      "name": "potion",
+      "name": "ultra-ball",
       "cures": [],
-      "hp": 20,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "great-ball",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
     },
     {
       "name": "poke-ball",
       "cures": [],
       "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "safari-ball",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "potion",
+      "cures": [],
+      "hp": 20,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "antidote",
+      "cures": ["poison"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "burn-heal",
+      "cures": ["burn"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "ice-heal",
+      "cures": ["freeze"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "awakening",
+      "cures": ["sleep"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "paralyze-heal",
+      "cures": ["paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "full-restore",
+      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
+      "hp": "full",
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "max-potion",
+      "cures": [],
+      "hp": "full",
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "hyper-potion",
+      "cures": [],
+      "hp": 200,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "super-potion",
+      "cures": [],
+      "hp": 50,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "full-heal",
+      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "fresh-water",
+      "cures": [],
+      "hp": 50,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "soda-pop",
+      "cures": [],
+      "hp": 60,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "lemonade",
+      "cures": [],
+      "hp": 80,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "moomoo-milk",
+      "cures": [],
+      "hp": 100,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "energy-powder",
+      "cures": [],
+      "hp": 50,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "energy-root",
+      "cures": [],
+      "hp": 200,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "heal-powder",
+      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "lava-cookie",
+      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "berry-juice",
+      "cures": [],
+      "hp": 20,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "old-gateau",
+      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "blue-flute",
+      "cures": ["sleep"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "sun-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
     },
     {
       "name": "moon-stone",
       "cures": [],
       "hp": 0,
-      "source": "https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_prose.csv"
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "fire-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "thunder-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "water-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "leaf-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "shiny-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "dusk-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "dawn-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "oval-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "cheri-berry",
+      "cures": ["paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "chesto-berry",
+      "cures": ["sleep"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "pecha-berry",
+      "cures": ["poison"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "rawst-berry",
+      "cures": ["burn"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "aspear-berry",
+      "cures": ["freeze"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "lum-berry",
+      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "dragon-scale",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "up-grade",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "protector",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "electirizer",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "magmarizer",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "dubious-disc",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "reaper-cloth",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "park-ball",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "sport-ball",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "sweet-heart",
+      "cures": [],
+      "hp": 20,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "prism-scale",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "casteliacone",
+      "cures": ["poison", "burn", "freeze", "sleep", "paralysis"],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "whipped-dream",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "sachet",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "ice-stone",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
+    },
+    {
+      "name": "linking-cord",
+      "cures": [],
+      "hp": 0,
+      "source": "https://pokeapi.co/docs/v2#item"
     }
   ]
 }
