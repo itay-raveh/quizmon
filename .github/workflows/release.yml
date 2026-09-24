@@ -53,7 +53,6 @@ jobs:
           node tests/online/check-helm-chart.ts
           docker compose -f compose.yaml up -d --wait db
           node tests/online/check-migrations.ts
-          npm run test:sync
       - name: Build and prepare Worker
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -68,6 +67,7 @@ jobs:
             test -n "${!name}" || { echo "::error::Missing $name"; exit 1; }
           done
           npm run build
+          npm run test:sync
           test -z "$(find dist -name '*.map' -print -quit)"
           node deploy/prepare-worker-deploy.ts .wrangler/infra
           npx wrangler deploy --config .wrangler.production.json --dry-run --upload-source-maps --outdir .wrangler/release-worker
