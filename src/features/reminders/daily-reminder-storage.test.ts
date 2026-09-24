@@ -3,7 +3,7 @@ import {
   shouldOfferDailyReminder,
 } from './daily-reminder-storage';
 
-it('keeps the prompt cadence for legacy and new history', () => {
+it('offers the reminder again after three more Dailies', () => {
   const values = new Map<string, string>();
   vi.stubGlobal('window', {
     localStorage: {
@@ -12,7 +12,7 @@ it('keeps the prompt cadence for legacy and new history', () => {
     },
   });
   const key = 'quizmon.baseline.daily-reminder-prompt';
-  values.set(key, JSON.stringify({ version: 1, completedDailyCount: 2 }));
+  values.set(key, JSON.stringify({ completedDailyCount: 2 }));
   expect(shouldOfferDailyReminder(4)).toBe(false);
   expect(shouldOfferDailyReminder(5)).toBe(true);
   markDailyReminderOffered(5);
