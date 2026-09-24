@@ -333,3 +333,14 @@
     animation: none !important;
   }
 }
+.catalog-route-state {
+  display: grid;
+  width: min(42rem, 100%);
+  margin: 2rem auto;
+  padding: 1.5rem;
+  justify-items: start;
+  gap: 1rem;
+  color: var(--navy);
+  background: var(--cream);
+  border-radius: 0.75rem;
+}

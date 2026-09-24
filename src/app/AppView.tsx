@@ -36,7 +36,29 @@ import { useAppDestination } from './useAppDestination';
 import { useLayoutEffect, useRef } from 'react';
 import { Navigate, NavigationType, useNavigationType } from 'react-router';
 import { site } from './site';
+import { GameButton } from '../components/GameButton';
 type CatalogState = ReturnType<typeof usePokemonCatalog>;
+const CatalogRouteState = ({
+  title,
+  status,
+  onRetry,
+}: {
+  title: string;
+  status: 'loading' | 'error';
+  onRetry: () => void;
+}) => (
+  <section className="catalog-route-state">
+    <h1>{title}</h1>
+    {status === 'loading' ? (
+      <p role="status">Loading Pokémon data…</p>
+    ) : (
+      <>
+        <p role="alert">Pokémon data could not be loaded.</p>
+        <GameButton onClick={onRetry}>Try again</GameButton>
+      </>
+    )}
+  </section>
+);
 interface QuestionView {
   assistance: (count: number) => void;
   answer: (answer: AnswerResult) => void | Promise<void>;
@@ -151,11 +173,15 @@ const AppScreen = ({
       </>
     );
   }
-  if (
-    session.phase !== 'questions' &&
-    trainer.isOpen &&
-    catalogState.status === 'ready'
-  ) {
+  if (session.phase !== 'questions' && trainer.isOpen) {
+    if (catalogState.status !== 'ready')
+      return (
+        <CatalogRouteState
+          title="Trainer"
+          status={catalogState.status}
+          onRetry={catalogState.retry}
+        />
+      );
     return (
       <TrainerPassport
         catalog={catalogState.catalog}
@@ -175,10 +201,17 @@ const AppScreen = ({
   if (session.phase === 'landing' && league.isOpen && !leagueUnlocked)
     return <Navigate to="/" replace />;
   if (
-    catalogState.status === 'ready' &&
-    ((league.isOpen && leagueUnlocked) ||
-      (leagueVictory && !league.showResults))
+    (league.isOpen && leagueUnlocked) ||
+    (leagueVictory && !league.showResults)
   ) {
+    if (catalogState.status !== 'ready')
+      return (
+        <CatalogRouteState
+          title="Quizmon League"
+          status={catalogState.status}
+          onRetry={catalogState.retry}
+        />
+      );
     return (
       <LeagueDestination
         catalog={catalogState.catalog}
