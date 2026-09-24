@@ -78,17 +78,17 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
 export const normalizeGameSettings = (candidate: unknown): GameSettings => {
   if (!isObject(candidate)) return defaultGameSettings;
   const savedFormGroups = candidate.formGroups;
+  const savedGenerations = candidate.generations;
+  const savedQuestionTypes = candidate.questionTypes;
   const selectedFormGroups = Array.isArray(savedFormGroups)
     ? formGroups.filter((group) => savedFormGroups.includes(group))
     : [];
-  const selectedGenerations = Array.isArray(candidate.generations)
-    ? candidate.generations.filter((generation) =>
-        isChoice(generation, generations),
-      )
+  const selectedGenerations = Array.isArray(savedGenerations)
+    ? generations.filter((generation) => savedGenerations.includes(generation))
     : [];
-  const selectedQuestionTypes = Array.isArray(candidate.questionTypes)
-    ? candidate.questionTypes.filter((questionType) =>
-        isChoice(questionType, questionTypes),
+  const selectedQuestionTypes = Array.isArray(savedQuestionTypes)
+    ? questionTypes.filter((questionType) =>
+        savedQuestionTypes.includes(questionType),
       )
     : [];
   return {

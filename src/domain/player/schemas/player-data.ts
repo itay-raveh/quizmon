@@ -35,7 +35,6 @@ import {
   answerFlows,
   timerDisplays,
   trainingModes,
-  type GameSettings,
 } from '../../settings/types.ts';
 import type { LeagueVictoryRecord } from '../hall-of-fame.ts';
 import { normalizeResults, type SavedResults } from '../results.ts';
@@ -146,11 +145,19 @@ const settings = z.object({
   reduceMotion: z.boolean(),
   soundVolume: finiteNonnegative.refine((volume) => volume <= 1),
   formGroups: z.array(z.enum(formGroups)).min(1),
-  generations: z.array(z.enum(generations)).min(1),
-  questionTypes: z.array(z.enum(questionTypes)).min(1),
+  generations: z
+    .array(z.enum(generations))
+    .min(1)
+    .transform((selected) =>
+      generations.filter((value) => selected.includes(value)),
+    ),
+  questionTypes: z
+    .array(z.enum(questionTypes))
+    .min(1)
+    .transform((selected) =>
+      questionTypes.filter((value) => selected.includes(value)),
+    ),
 });
-const isSettings = (value: unknown): value is GameSettings =>
-  settings.safeParse(value).success;
 const playerData = z.object({
   generationPromptAnswered: z.boolean(),
   pokedex: z.array(name),
@@ -168,7 +175,7 @@ const playerData = z.object({
         lineup === null || lineup.questions.length === LEAGUE_QUESTION_COUNT,
     ),
   results: z.custom<SavedResults>(isResults),
-  settings: z.custom<GameSettings>(isSettings).nullable(),
+  settings: settings.nullable(),
   profile: z.unknown(),
 });
 

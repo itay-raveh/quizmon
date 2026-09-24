@@ -72,6 +72,22 @@ it('keeps player-data normalization and recovery error category', () => {
   throw new Error('Expected invalid save');
 });
 
+it('deduplicates saved selections before they become game settings', () => {
+  const parsed = parsePlayerData({
+    ...emptyPlayerData(),
+    settings: {
+      ...defaultGameSettings,
+      generations: ['IX', 'I', 'IX'],
+      questionTypes: ['stat-showdown', 'type-check', 'stat-showdown'],
+    },
+  });
+  expect(parsed.settings?.generations).toEqual(['I', 'IX']);
+  expect(parsed.settings?.questionTypes).toEqual([
+    'type-check',
+    'stat-showdown',
+  ]);
+});
+
 it('accepts sparse saved counts and rejects unknown count keys', () => {
   const base = emptyPlayerData();
   const progress = {
