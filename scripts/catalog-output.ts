@@ -1,11 +1,13 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { format } from 'prettier';
 import type { PokemonCatalog } from '../src/domain/pokemon/types.ts';
+import { catalogSchema } from './catalog-schema.ts';
 
 export const writeCatalogFiles = async (
   catalog: PokemonCatalog,
   directory: URL,
 ): Promise<void> => {
+  catalogSchema.parse(catalog);
   await mkdir(directory, { recursive: true });
   const root = new URL('pokemon.json', directory);
   let previous: string[];
