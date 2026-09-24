@@ -3,7 +3,7 @@ import {
   trainerTierLabels,
   type TrainerProgressChange,
 } from '@/domain/player/trainer-progression';
-import { useRewardSequence } from '@/features/quiz/useRewardSequence';
+import { useRewardSequence } from './useRewardSequence';
 import type { CSSProperties } from 'react';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 import { TrainerTitleMark } from './TrainerTitleMark';
