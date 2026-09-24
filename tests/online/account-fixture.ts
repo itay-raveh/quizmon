@@ -99,7 +99,7 @@ export async function startAccountWorker({
   const worker = createTestHarness({
     workers: [
       {
-        configPath: new URL('../../deploy/wrangler.jsonc', import.meta.url),
+        configPath: new URL('../../deploy/wrangler.json', import.meta.url),
         ...(prebuiltWorkerDir ? { prebuiltWorkerDir } : {}),
         vars: {
           AUTH_ORIGIN: origin,

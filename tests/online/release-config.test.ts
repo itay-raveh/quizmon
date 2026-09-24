@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { readWorkerTemplate } from '../../deploy/worker-template.ts';
+import { readFile } from 'node:fs/promises';
 import {
   readReleaseConfig,
   renderSourceWorkerConfig,
@@ -21,10 +21,13 @@ const config = {
   apiRateLimitNamespace: '2012',
 };
 
-await test('runtime renderer preserves game bindings and limits without local database or mailbox defaults', () => {
-  const rawConfig = readWorkerTemplate(
-    new URL('../../deploy/wrangler.jsonc', import.meta.url).pathname,
-  );
+await test('runtime renderer preserves game bindings and limits without local database or mailbox defaults', async () => {
+  const rawConfig = JSON.parse(
+    await readFile(
+      new URL('../../deploy/wrangler.json', import.meta.url),
+      'utf8',
+    ),
+  ) as Record<string, unknown>;
   const input = readReleaseConfig(config);
   const rendered = renderSourceWorkerConfig(rawConfig, input);
   assert.equal(input.sync.endpoint, 'https://sync.example.test');

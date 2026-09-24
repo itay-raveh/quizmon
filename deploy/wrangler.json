@@ -8,7 +8,7 @@
   "preview_urls": false,
   "limits": {
     "cpu_ms": 100,
-    "subrequests": 50,
+    "subrequests": 50
   },
   "ratelimits": [
     {
@@ -16,53 +16,53 @@
       "namespace_id": "1011",
       "simple": {
         "limit": 10,
-        "period": 60,
-      },
+        "period": 60
+      }
     },
     {
       "name": "API_RATE_LIMIT",
       "namespace_id": "1012",
       "simple": {
         "limit": 120,
-        "period": 60,
-      },
-    },
+        "period": 60
+      }
+    }
   ],
   "secrets": {
-    "required": ["BETTER_AUTH_SECRET", "VAPID_PRIVATE_KEY"],
+    "required": ["BETTER_AUTH_SECRET", "VAPID_PRIVATE_KEY"]
   },
   "vars": {
     "POWERSYNC_URL": "http://127.0.0.1:8089",
     "POWERSYNC_AUDIENCE": "quizmon",
     "AUTH_ORIGIN": "http://localhost:4188",
     "MAIL_DELIVERY": "test-mailbox",
-    "MAIL_FROM": "",
+    "MAIL_FROM": ""
   },
   "send_email": [
     {
-      "name": "EMAIL",
-    },
+      "name": "EMAIL"
+    }
   ],
   "hyperdrive": [
     {
       "binding": "ACCOUNT_DB",
       "id": "00000000000000000000000000000000",
-      "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon",
-    },
+      "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon"
+    }
   ],
   "exports": {
     "DailyReminder": {
       "type": "durable-object",
-      "storage": "sqlite",
-    },
+      "storage": "sqlite"
+    }
   },
   "durable_objects": {
     "bindings": [
       {
         "name": "DAILY_REMINDERS",
-        "class_name": "DailyReminder",
-      },
-    ],
+        "class_name": "DailyReminder"
+      }
+    ]
   },
   "assets": {
     "directory": "../dist",
@@ -76,7 +76,7 @@
       "/league",
       "/account",
       "/social/*",
-      "/daily/*",
-    ],
-  },
+      "/daily/*"
+    ]
+  }
 }

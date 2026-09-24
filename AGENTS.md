@@ -7,7 +7,7 @@ Quizmon is a local-first Pokémon knowledge game built with React, TypeScript, a
 - `README.md` covers setup, data updates, attribution, and public project facts.
 - `.agents/context/PRODUCT.md` is the product and behavior source of truth.
 - `.agents/context/DESIGN.md` defines the visual system. Read it before UI work.
-- `deploy/wrangler.jsonc` and `.github/workflows/ci.yml` define production deployment.
+- `deploy/wrangler.json` and `.github/workflows/ci.yml` define production deployment.
 
 ## Documentation
 

@@ -7,7 +7,6 @@ import {
   readReleaseConfig,
   renderSourceWorkerConfig,
 } from './release-config.ts';
-import { readWorkerTemplate } from './worker-template.ts';
 
 const infra = process.argv[2];
 if (!infra) throw new Error('Usage: prepare-worker-deploy.ts <infra-checkout>');
@@ -50,7 +49,9 @@ if (!isRecord(publicConfig) || !isRecord(privateConfig))
   throw new Error('Production runtime configuration is missing.');
 
 const config = readReleaseConfig({ ...publicConfig, ...privateConfig });
-const template = readWorkerTemplate('deploy/wrangler.jsonc');
+const template: unknown = JSON.parse(
+  await readFile('deploy/wrangler.json', 'utf8'),
+);
 const rendered = renderSourceWorkerConfig(template, config);
 if (process.env.SENTRY_WORKER_DSN)
   Object.assign(rendered.vars, {
