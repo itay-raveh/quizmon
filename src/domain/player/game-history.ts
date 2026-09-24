@@ -89,8 +89,6 @@ export async function completeRound(
     completedAt,
     contentVersion: round.contentVersion,
     scoreVersion: result.scoreVersion,
-    progressVersion: versions.progress,
-    generatorVersion: 0,
     mode: mode.kind,
     dailyDate: mode.kind === 'daily' ? mode.date : null,
     training: trainingConfig(settings),
@@ -122,12 +120,9 @@ export function readRecordedGame(value: unknown): RoundCompletion {
     (value.mode === 'daily'
       ? !isDailyDate(value.dailyDate)
       : value.dailyDate !== null) ||
-    ![
-      'contentVersion',
-      'scoreVersion',
-      'generatorVersion',
-      'progressVersion',
-    ].every((key) => isSafeNonnegativeInteger(value[key])) ||
+    !['contentVersion', 'scoreVersion'].every((key) =>
+      isSafeNonnegativeInteger(value[key]),
+    ) ||
     !isRecord(value.training) ||
     !strings(value.training.questionTypes) ||
     !strings(value.training.generations) ||

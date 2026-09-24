@@ -1,7 +1,6 @@
 export const gameVersions = {
   content: 1,
   score: 1,
-  progress: 1,
 } as const;
 
 export const formatVersions = {

@@ -4,7 +4,11 @@ import { parseBackup } from './backup';
 
 it('converts old rounds and keeps pending edits for review', () => {
   const datasetId = crypto.randomUUID();
-  const old = completion(datasetId, 'daily');
+  const old = {
+    ...completion(datasetId, 'daily'),
+    progressVersion: 1,
+    generatorVersion: 0,
+  };
   const action = {
     operationId: old.completionId,
     datasetId,

@@ -80,9 +80,7 @@ export function completion(
       questionTypes: [...coreQuestionTypes],
     },
     contentVersion: versions.content,
-    progressVersion: versions.progress,
     scoreVersion: 1,
-    generatorVersion: 0,
     completedAt: options.completedAt ?? '2026-09-11T10:00:00.000Z',
     discoveries: options.discoveries ?? ['bulbasaur'],
     result: {

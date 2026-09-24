@@ -99,8 +99,6 @@ export interface RoundCompletion {
   datasetId: string;
   contentVersion: number;
   scoreVersion: number;
-  progressVersion: number;
-  generatorVersion: number;
   mode: 'training' | 'daily' | 'league';
   dailyDate: string | null;
   training: TrainingConfig;
