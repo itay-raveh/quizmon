@@ -1,10 +1,4 @@
-import { isChoice } from '../../lib/validation.ts';
-import { questionTypes } from '../quiz/questions/definitions.ts';
-import {
-  questionCategories,
-  type GameMode,
-  type GameResult,
-} from '../quiz/types.ts';
+import { type GameMode, type GameResult } from '../quiz/types.ts';
 import {
   getTrainingSettings,
   isLeagueTraining,
@@ -31,10 +25,8 @@ export const addResultToProgress = (
   let championAnswersWithoutClues = progress.championAnswersWithoutClues;
   for (const answer of result.answers) {
     if (!answer.correct) continue;
-    if (isChoice(answer.category, questionCategories)) {
-      const category = answer.category;
-      correctCategories[category] = (correctCategories[category] ?? 0) + 1;
-    }
+    correctCategories[answer.category] =
+      (correctCategories[answer.category] ?? 0) + 1;
     if (answer.subject?.kind === 'pokemon' && answer.subject.name)
       correctPokemon.add(answer.subject.name);
     if (answer.subject?.kind === 'pokemon' && answer.subject.generation) {
@@ -45,7 +37,7 @@ export const addResultToProgress = (
       championAnswersWithoutClues += Number(
         answer.unassistedSearch ?? answer.cluesUsed === 0,
       );
-    } else if (isChoice(answer.questionType, questionTypes)) {
+    } else if (answer.questionType !== undefined) {
       const questionType = answer.questionType;
       correctQuestionTypes[questionType] =
         (correctQuestionTypes[questionType] ?? 0) + 1;

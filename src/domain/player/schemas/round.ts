@@ -35,23 +35,18 @@ const mode = z.discriminatedUnion('kind', [
     track: z.custom(isDailyTrack).optional(),
   }),
 ]);
-const answer = z
-  .object({
-    observation: z.custom<AnswerObservation>(isAnswerObservation).optional(),
-    category: z.enum(questionCategories),
-    cluesUsed: nonnegativeInteger,
-    unassistedSearch: z.unknown().optional(),
-    correct: z.boolean(),
-    points: finiteNonnegative,
-    questionType: z.enum([...questionTypes, 'champion']),
-    responseMilliseconds: finiteNonnegative.optional(),
-    speedBonus: finiteNonnegative.optional(),
-    subject: z.custom<AnswerSubject>(isAnswerSubject),
-  })
-  .transform(({ unassistedSearch, ...entry }) => ({
-    ...entry,
-    ...(typeof unassistedSearch === 'boolean' ? { unassistedSearch } : {}),
-  }));
+const answer = z.object({
+  observation: z.custom<AnswerObservation>(isAnswerObservation).optional(),
+  category: z.enum(questionCategories),
+  cluesUsed: nonnegativeInteger,
+  unassistedSearch: z.boolean().optional(),
+  correct: z.boolean(),
+  points: finiteNonnegative,
+  questionType: z.enum([...questionTypes, 'champion']),
+  responseMilliseconds: finiteNonnegative.optional(),
+  speedBonus: finiteNonnegative.optional(),
+  subject: z.custom<AnswerSubject>(isAnswerSubject),
+});
 const settings = z.looseObject({
   generations: z.array(z.enum(generations)).min(1),
   questionTypes: z.array(z.enum(questionTypes)).min(1),
