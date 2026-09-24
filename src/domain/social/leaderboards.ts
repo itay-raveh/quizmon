@@ -2,7 +2,7 @@ import type { SocialPlayer } from './friends.ts';
 
 export type LeaderboardScope = 'global' | 'friends';
 export type LeaderboardMode = 'daily' | 'training';
-export interface LeaderboardEntry {
+interface LeaderboardEntry {
   player: SocialPlayer;
   rank: number;
   score: number;
