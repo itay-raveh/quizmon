@@ -50,6 +50,7 @@ jobs:
           cache: false
       - run: npm ci
       - run: docker compose -f compose.yaml pull db
+      - run: npm run build
       - run: npm run test:sync
 
   publish:
