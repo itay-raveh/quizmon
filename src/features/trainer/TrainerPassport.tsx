@@ -91,17 +91,15 @@ export const TrainerPassport = ({
   requestedView: view,
   stats,
 }: TrainerPassportProps) => {
-  const [record] = useState(() => {
-    const data = readPlayerData();
-    const found = new Set(data.pokedex);
-    const pokemon = Object.keys(catalog.pokemon);
-    return {
-      dayCombo: getDailyStreak(data.results.streak.creditedDates, getUtcDate()),
-      pokedex: data.pokedex,
-      pokedexFound: pokemon.filter((name) => found.has(name)).length,
-      pokedexTotal: pokemon.length,
-    };
-  });
+  const data = readPlayerData();
+  const found = new Set(data.pokedex);
+  const pokemon = Object.keys(catalog.pokemon);
+  const record = {
+    dayCombo: getDailyStreak(data.results.streak.creditedDates, getUtcDate()),
+    pokedex: data.pokedex,
+    pokedexFound: pokemon.filter((name) => found.has(name)).length,
+    pokedexTotal: pokemon.length,
+  };
   const [revealing, setRevealing] = useState(
     !profile.hasBeenRevealed && view === 'front',
   );
