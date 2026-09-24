@@ -256,7 +256,9 @@ const AppScreen = ({
           .reduce((sum, answer) => sum + (answer.responseMilliseconds ?? 0), 0)}
         elapsedMilliseconds={question.elapsedMilliseconds}
         elapsedSeconds={question.elapsedSeconds}
-        interactionPaused={settingsDialog.isOpen}
+        interactionPaused={
+          settingsDialog.isOpen || navigation.leaveConfirmationOpen
+        }
         mode={session.mode}
         nextQuestion={session.questions[session.questionIndex + 1]}
         number={session.questionIndex + 1}

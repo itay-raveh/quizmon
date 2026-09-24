@@ -82,18 +82,13 @@ export const useQuestionAnswer = ({
   const answerStarted = useRef(false);
   const answerAdvanced = useRef(false);
   const answerWrite = useRef<void | Promise<void>>(undefined);
-  const answerTimeout = useRef<number | null>(null);
+  const answerRemaining = useRef(0);
   const questionStartedAt = useRef(
     questionStartedMilliseconds ?? elapsedMilliseconds,
   );
   useEffect(() => {
     preloadQuestionImages(question);
     if (nextQuestion) preloadQuestionImages(nextQuestion);
-    return () => {
-      if (answerTimeout.current !== null) {
-        window.clearTimeout(answerTimeout.current);
-      }
-    };
   }, [nextQuestion, question]);
   const submitAnswer = useCallback(
     async (answer: AnswerResult) => {
@@ -115,8 +110,22 @@ export const useQuestionAnswer = ({
     [onAnswer, onAnswerRecorded],
   );
   const advanceAnswer = useCallback(() => {
-    if (answerResult) void submitAnswer(answerResult);
-  }, [answerResult, submitAnswer]);
+    if (answerResult && !interactionPaused) void submitAnswer(answerResult);
+  }, [answerResult, interactionPaused, submitAnswer]);
+  useEffect(() => {
+    if (!answerResult || answerFlow === 'manual' || interactionPaused) return;
+    const started = performance.now();
+    const timeout = window.setTimeout(() => {
+      void submitAnswer(answerResult);
+    }, answerRemaining.current);
+    return () => {
+      window.clearTimeout(timeout);
+      answerRemaining.current = Math.max(
+        0,
+        answerRemaining.current - (performance.now() - started),
+      );
+    };
+  }, [answerFlow, answerResult, interactionPaused, submitAnswer]);
   const finishAnswer = useCallback(
     (options: string[]) => {
       if (interactionPaused || answered || answerStarted.current) return;
@@ -153,14 +162,12 @@ export const useQuestionAnswer = ({
         },
       };
       const reveal = () => {
+        if (answerFlow !== 'manual')
+          answerRemaining.current = answerFlowDelays[answerFlow];
         setSelectedOptions(options);
         setAnswerResult(answer);
         if (correct) playCorrect();
         else playWrong();
-        if (answerFlow !== 'manual')
-          answerTimeout.current = window.setTimeout(() => {
-            void submitAnswer(answer);
-          }, answerFlowDelays[answerFlow]);
       };
       const saveAnswer = async () => {
         answerWrite.current = onAnswerRecorded?.(answer);
@@ -178,7 +185,6 @@ export const useQuestionAnswer = ({
       answered,
       cluesShown,
       interactionPaused,
-      submitAnswer,
       onAnswerRecorded,
       onFeedbackStart,
       playCorrect,
@@ -209,6 +215,7 @@ export const useQuestionAnswer = ({
       event.metaKey ||
       event.repeat ||
       event.target instanceof HTMLInputElement ||
+      (event.target instanceof Element && event.target.closest('dialog')) ||
       showsSearchResponse(question, cluesShown)
     ) {
       return;
