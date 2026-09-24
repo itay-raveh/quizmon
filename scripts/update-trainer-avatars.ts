@@ -26,12 +26,13 @@ await Promise.all(
       const image = await fetch(`${source}${id}.png`);
       if (!image.ok) throw new Error(`${id}: HTTP ${image.status}`);
       const bytes = new Uint8Array(await image.arrayBuffer());
-      if (bytes.length < 24) continue;
-      const header = new DataView(bytes.buffer);
+      const metadata = await sharp(bytes)
+        .metadata()
+        .catch(() => null);
       if (
-        header.getUint32(0) !== 0x89504e47 ||
-        header.getUint32(16) !== 80 ||
-        header.getUint32(20) !== 80
+        metadata?.format !== 'png' ||
+        metadata.width !== 80 ||
+        metadata.height !== 80
       )
         continue;
       const { data, info } = await sharp(bytes)
