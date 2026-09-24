@@ -24,26 +24,16 @@ export function FriendsScreen({
         <h1 id="social-title">Social</h1>
       </header>
       <SocialSections active="friends" />
-      {account.owner && !account.mergeRequired && (
-        <div className="social-screen__actions">
-          <GameButton
-            className="social-screen__header-action"
-            tone={adding ? 'quiet' : 'primary'}
-            onClick={() => {
-              if (adding && initialInput) onCloseInvitation();
-              else setAdding(!adding);
-            }}
-          >
-            {adding ? 'Your friends' : 'Add friend'}
-          </GameButton>
-        </div>
-      )}
       {account.owner && !account.mergeRequired ? (
         <FriendsPanel
           key={`${account.owner}:${initialInput}`}
           owner={account.owner}
           initialInput={initialInput}
           adding={adding}
+          onToggleAdding={() => {
+            if (adding && initialInput) onCloseInvitation();
+            else setAdding(!adding);
+          }}
           onViewPlayer={onViewPlayer}
         />
       ) : (

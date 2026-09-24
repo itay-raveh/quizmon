@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
+import { SoundButton } from '../../components/SoundButton';
 import { Toast } from '../../components/Toast';
 import { EyeIcon, TrashIcon } from '../../components/icons';
 import { useModalDialog } from '../../hooks/useModalDialog';
@@ -20,7 +21,7 @@ import {
 } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 
-const views = ['incoming', 'friends', 'outgoing'] as const;
+const views = ['friends', 'incoming', 'outgoing'] as const;
 type View = (typeof views)[number];
 const labels = {
   incoming: 'Friend requests',
@@ -58,7 +59,7 @@ function Player({
             title={`View ${player.name}'s profile`}
             tone="quiet"
           >
-            <EyeIcon aria-hidden="true" weight="bold" />
+            <EyeIcon aria-hidden="true" weight="regular" />
           </GameButton>
         )}
       </div>
@@ -127,11 +128,13 @@ export function FriendsPanel({
   initialInput,
   adding,
   onViewPlayer,
+  onToggleAdding,
 }: {
   owner: string;
   initialInput: string;
   adding: boolean;
   onViewPlayer?: (id: string) => void;
+  onToggleAdding: () => void;
 }) {
   const [me, setMe] = useState<SocialPlayer>();
   const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>({});
@@ -324,11 +327,24 @@ export function FriendsPanel({
         </p>
       )}
       {notice && <Toast message={notice} onDismiss={() => setNotice('')} />}
+      <div className="friends-panel__heading">
+        <h2
+          id={adding ? 'add-friend-title' : 'friends-title'}
+          ref={adding ? addHeading : friendsHeading}
+          tabIndex={-1}
+        >
+          {adding
+            ? initialInput
+              ? 'Friend link'
+              : 'Add a friend'
+            : 'Your friends'}
+        </h2>
+        <SoundButton className="friends-panel__switch" onClick={onToggleAdding}>
+          {adding ? 'Your friends' : 'Add friend'}
+        </SoundButton>
+      </div>
       {adding && (
         <section className="friends-add" aria-labelledby="add-friend-title">
-          <h2 id="add-friend-title" ref={addHeading} tabIndex={-1}>
-            {initialInput ? 'Friend link' : 'Add a friend'}
-          </h2>
           {initialInput && (
             <p>
               This link finds a Trainer. It does not send a request until you
@@ -399,51 +415,6 @@ export function FriendsPanel({
               )}
             </section>
           )}
-          {!initialInput && me && (
-            <section
-              className="friends-add__share"
-              aria-label="Share your link"
-            >
-              <h3>Share your link</h3>
-              <GameButton
-                disabled={busy}
-                onClick={() =>
-                  run(async (signal) => {
-                    const outcome = await shareFriendLink(link);
-                    if (!signal.aborted)
-                      setNotice(
-                        outcome === 'shared'
-                          ? 'Friend link shared.'
-                          : outcome === 'copied'
-                            ? 'Friend link copied.'
-                            : '',
-                      );
-                  })
-                }
-              >
-                {canShareFriendLink() ? 'Share my link' : 'Copy my link'}
-              </GameButton>
-              <details className="friends-code">
-                <summary>Show link and code</summary>
-                <label className="friends-field">
-                  Your link
-                  <input
-                    readOnly
-                    value={link}
-                    onFocus={(event) => event.target.select()}
-                  />
-                </label>
-                <label className="friends-field">
-                  Your friend code
-                  <input
-                    readOnly
-                    value={me.code ? formatFriendCode(me.code) : ''}
-                    onFocus={(event) => event.target.select()}
-                  />
-                </label>
-              </details>
-            </section>
-          )}
           {(!initialInput || Boolean(error)) && (
             <form
               className="friends-add__find"
@@ -484,11 +455,56 @@ export function FriendsPanel({
               </GameButton>
             </form>
           )}
+          {!initialInput && me && (
+            <section
+              className="friends-add__share"
+              aria-label="Share your link"
+            >
+              <h3>Share your link</h3>
+              <GameButton
+                tone="quiet"
+                disabled={busy}
+                onClick={() =>
+                  run(async (signal) => {
+                    const outcome = await shareFriendLink(link);
+                    if (!signal.aborted)
+                      setNotice(
+                        outcome === 'shared'
+                          ? 'Friend link shared.'
+                          : outcome === 'copied'
+                            ? 'Friend link copied.'
+                            : '',
+                      );
+                  })
+                }
+              >
+                {canShareFriendLink() ? 'Share my link' : 'Copy my link'}
+              </GameButton>
+              <details className="friends-code">
+                <summary>Show link and code</summary>
+                <label className="friends-field">
+                  Your link
+                  <input
+                    readOnly
+                    value={link}
+                    onFocus={(event) => event.target.select()}
+                  />
+                </label>
+                <label className="friends-field">
+                  Your friend code
+                  <input
+                    readOnly
+                    value={me.code ? formatFriendCode(me.code) : ''}
+                    onFocus={(event) => event.target.select()}
+                  />
+                </label>
+              </details>
+            </section>
+          )}
         </section>
       )}
       {!adding && initialLoading && (
         <section className="friends-loading" aria-label="Loading your friends">
-          <h2>Your friends</h2>
           <ul className="friends-list" aria-hidden="true">
             {[0, 1, 2].map((row) => (
               <li key={row}>
@@ -516,12 +532,7 @@ export function FriendsPanel({
               className={`friends-section friends-section--${view}`}
               aria-label={labels[view]}
             >
-              <h2
-                ref={view === 'friends' ? friendsHeading : undefined}
-                tabIndex={view === 'friends' ? -1 : undefined}
-              >
-                {labels[view]}
-              </h2>
+              {view !== 'friends' && <h2>{labels[view]}</h2>}
               {pages[view] && !pages[view].items.length && (
                 <p className="friends-empty">{empty[view]}</p>
               )}

@@ -222,7 +222,7 @@ function Standings({
                             title={`View ${row.player.name}'s profile`}
                             tone="quiet"
                           >
-                            <EyeIcon aria-hidden="true" weight="bold" />
+                            <EyeIcon aria-hidden="true" weight="regular" />
                           </GameButton>
                         )}
                       </span>
