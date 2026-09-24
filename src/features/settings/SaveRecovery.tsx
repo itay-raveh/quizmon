@@ -15,7 +15,6 @@ import {
 } from '@/lib/storage/save-health';
 import {
   createRecoveryExport,
-  inspectSavedData,
   resetSavedData,
 } from '@/lib/storage/save-recovery';
 import { useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
@@ -242,10 +241,6 @@ const SaveRecoveryDialog = ({
 };
 
 export const SaveRecoveryBoundary = ({ children }: { children: ReactNode }) => {
-  useState(() => {
-    inspectSavedData();
-    return true;
-  });
   const issue = useSyncExternalStore(subscribeToSaveIssue, getSaveIssue);
   if (!issue) return children;
   return (

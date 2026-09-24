@@ -49,11 +49,17 @@ export const mountGame = (root: HTMLElement) => {
     import('../features/settings/SaveRecovery'),
     import('../lib/storage/save-health'),
     import('./LocalGame'),
+    import('../lib/storage/save-recovery'),
   ]);
   return async () => {
     try {
-      const [{ SaveRecoveryBoundary }, { getSaveIssue }, { LocalGame }] =
-        await game;
+      const [
+        { SaveRecoveryBoundary },
+        { getSaveIssue },
+        { LocalGame },
+        { inspectSavedData },
+      ] = await game;
+      inspectSavedData();
       app.render(
         <StrictMode>
           <BrowserRouter>
