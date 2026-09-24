@@ -8,17 +8,32 @@ import {
 
 export const releaseConfigSchema = z.object({
   version: z.literal(1),
-  workerName: z.string().regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
+  workerName: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
   origin: z.string().min(1),
   sync: z.object({
     version: z.literal(1),
     endpoint: z.string().min(1),
     audience: z.string().min(1),
   }),
-  hyperdriveId: z.string().regex(/^[a-fA-F0-9]{32}$/),
-  mailFrom: z.string().regex(/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/),
-  authRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
-  apiRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
+  hyperdriveId: z
+    .string()
+    .min(1)
+    .regex(/^[a-fA-F0-9]{32}$/),
+  mailFrom: z
+    .string()
+    .min(1)
+    .regex(/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/),
+  authRateLimitNamespace: z
+    .string()
+    .min(1)
+    .regex(/^[1-9]\d*$/),
+  apiRateLimitNamespace: z
+    .string()
+    .min(1)
+    .regex(/^[1-9]\d*$/),
 });
 
 export type ReleaseConfig = z.infer<typeof releaseConfigSchema> & {
@@ -47,26 +62,31 @@ function publicUrl(value: string) {
 export function readReleaseConfig(value: unknown): ReleaseConfig {
   if (!isRecord(value) || value.version !== 1)
     throw new Error('Unsupported release configuration.');
-  for (const key of [
-    'workerName',
-    'origin',
-    'hyperdriveId',
-    'mailFrom',
-    'authRateLimitNamespace',
-    'apiRateLimitNamespace',
-  ])
-    if (typeof value[key] !== 'string' || !value[key])
-      throw new Error(`Missing release configuration: ${key}.`);
+  const parsed = releaseConfigSchema.safeParse(value);
+  const missing = parsed.success
+    ? undefined
+    : parsed.error.issues.find(
+        (issue) =>
+          issue.path.length === 1 &&
+          [
+            'workerName',
+            'origin',
+            'hyperdriveId',
+            'mailFrom',
+            'authRateLimitNamespace',
+            'apiRateLimitNamespace',
+          ].includes(String(issue.path[0])) &&
+          (issue.code === 'invalid_type' || issue.code === 'too_small'),
+      );
+  if (missing)
+    throw new Error(
+      `Missing release configuration: ${String(missing.path[0])}.`,
+    );
   const origin = publicUrl(value.origin as string);
   const sync = readSyncConnection(value.sync);
   publicUrl(sync.endpoint);
   if (origin.pathname !== '/')
     throw new Error('The application origin cannot contain a path.');
-  const parsed = releaseConfigSchema.safeParse({
-    ...value,
-    origin: origin.origin,
-    sync,
-  });
   const invalid = new Set(
     parsed.success ? [] : parsed.error.issues.map((issue) => issue.path[0]),
   );
