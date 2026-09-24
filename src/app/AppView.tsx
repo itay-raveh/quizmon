@@ -16,7 +16,6 @@ import { QuestionScreen } from '../features/quiz/QuestionScreen';
 import { ResultsScreen } from '../features/quiz/ResultsScreen';
 import type { useTrainingGame } from '../features/quiz/useTrainingGame';
 import { DailyReminderProvider } from '../features/reminders/DailyReminderProvider';
-import { GenerationPromptDialog } from '../features/settings/GenerationPromptDialog';
 import { SettingsDialog } from '../features/settings/SettingsDialog';
 import type { useSettingsDialog } from '../features/settings/useSettingsDialog';
 import { TrainerPassport } from '../features/trainer/TrainerPassport';
@@ -307,15 +306,9 @@ const AppOverlays = ({
   navigation,
   session,
   settingsDialog,
-  training,
 }: Pick<
   AppViewProps,
-  | 'catalogState'
-  | 'settings'
-  | 'navigation'
-  | 'session'
-  | 'settingsDialog'
-  | 'training'
+  'catalogState' | 'settings' | 'navigation' | 'session' | 'settingsDialog'
 >) => (
   <>
     {settingsDialog.isOpen && catalogState.status === 'ready' ? (
@@ -326,17 +319,6 @@ const AppOverlays = ({
         onClose={settingsDialog.close}
         onSave={settingsDialog.save}
         trainingChangesApplyNextGame={session.phase !== 'landing'}
-      />
-    ) : null}
-    {training.generationPromptOpen ? (
-      <GenerationPromptDialog
-        onCancel={training.closeGenerationPrompt}
-        onChooseAll={() => {
-          void training.chooseAllGenerations();
-        }}
-        onChooseGenOne={() => {
-          void training.chooseGenOne();
-        }}
       />
     ) : null}
     {navigation.leaveConfirmationOpen ? (

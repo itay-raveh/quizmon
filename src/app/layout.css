@@ -284,10 +284,6 @@
     grid-column: 1 / -1;
   }
 
-  .generation-prompt__choices {
-    grid-template-columns: 1fr;
-  }
-
   .answer {
     min-height: 2.75rem;
   }
@@ -364,7 +360,6 @@
   .question--enter,
   .results,
   .settings-dialog[open],
-  .generation-prompt[open],
   .leave-game-dialog[open],
   .share-dialog[open],
   .trainer-passport__artifact--reveal,

@@ -165,7 +165,6 @@ export const savedSettingsSchema = z.object({
     .optional(),
 });
 const playerData = z.object({
-  generationPromptAnswered: z.boolean(),
   pokedex: z.array(name),
   hallOfFame: z
     .array(victoryRecord)
@@ -203,7 +202,6 @@ export const parsePlayerData = (value: unknown): PlayerData => {
   return {
     questionHistory: data.questionHistory,
     leagueLineup: data.leagueLineup,
-    generationPromptAnswered: data.generationPromptAnswered,
     hallOfFame: data.hallOfFame,
     pokedex: [...new Set(data.pokedex)],
     profile,

@@ -107,7 +107,6 @@ export const App = () => {
   const training = useTrainingGame({
     catalog,
     settings,
-    setSettings,
     startGame,
   });
 
@@ -142,7 +141,6 @@ export const App = () => {
 
   const settingsDialog = useSettingsDialog({
     dispatch: dispatchSession,
-    markGenerationKnown: training.markGenerationKnown,
     pauseTimer: pause,
     session,
     setSettings,

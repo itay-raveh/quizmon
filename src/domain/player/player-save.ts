@@ -11,7 +11,6 @@ import { isRecord } from '../../lib/validation.ts';
 import { parseVersionedSave, SaveError } from './save-schema.ts';
 import { parsePlayerData } from './schemas/player-data.ts';
 export interface PlayerData {
-  generationPromptAnswered: boolean;
   profile: TrainerProfile | null;
   results: SavedResults;
   settings: GameSettings | null;
@@ -30,7 +29,6 @@ export interface PlayerSave {
 export const emptyPlayerData = (): PlayerData => ({
   questionHistory: emptyQuestionHistory(),
   leagueLineup: null,
-  generationPromptAnswered: false,
   hallOfFame: [],
   pokedex: [],
   profile: null,
