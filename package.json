@@ -11,7 +11,7 @@
     "commitlint": "commitlint",
     "data:update": "node scripts/update-pokemon-data.ts",
     "avatars:update": "node scripts/update-trainer-avatars.ts",
-    "deploy:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
+    "deploy:dry-run": "wrangler deploy --config deploy/wrangler.jsonc --dry-run --outdir .wrangler/dry-run",
     "dev": "node scripts/dev/start.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
