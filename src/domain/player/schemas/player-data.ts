@@ -20,7 +20,7 @@ import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { isRoundRules } from '../../quiz/round-rules.ts';
 import { isScoreMultipliers } from '../../quiz/score-multipliers.ts';
 import { getUnifiedScoreKey } from '../../quiz/scoring.ts';
-import { isDifficulty } from '../../quiz/difficulty.ts';
+import { isDifficulty, type Difficulty } from '../../quiz/difficulty.ts';
 import {
   getDailyResultKey,
   hasDailyResultOnDate,
@@ -28,7 +28,6 @@ import {
   parseDailyResultKey,
 } from '../../quiz/daily-track.ts';
 import { questionCategories, type GameResult } from '../../quiz/types.ts';
-import { normalizeGameSettings } from '../../settings/game-settings.ts';
 import { SaveError } from '../save-schema.ts';
 import type { PlayerData } from '../player-save.ts';
 import {
@@ -137,14 +136,19 @@ const results = z
 const isResults = (value: unknown): value is SavedResults =>
   results.safeParse(value).success;
 const settings = z.object({
-  difficulty: z.custom(isDifficulty),
+  difficulty: z.custom<Difficulty>(isDifficulty),
   questionSelection: z.enum(['automatic', 'custom']),
   answerFlow: z.enum(answerFlows),
   timerDisplay: z.enum(timerDisplays),
   trainingMode: z.enum(trainingModes),
   reduceMotion: z.boolean(),
   soundVolume: finiteNonnegative.refine((volume) => volume <= 1),
-  formGroups: z.array(z.enum(formGroups)).min(1),
+  formGroups: z
+    .array(z.enum(formGroups))
+    .min(1)
+    .transform((selected) =>
+      formGroups.filter((value) => selected.includes(value)),
+    ),
   generations: z
     .array(z.enum(generations))
     .min(1)
@@ -157,7 +161,12 @@ const settings = z.object({
     .transform((selected) =>
       questionTypes.filter((value) => selected.includes(value)),
     ),
-  automaticQuestionTypes: z.array(z.enum(questionTypes)).optional(),
+  automaticQuestionTypes: z
+    .array(z.enum(questionTypes))
+    .transform((selected) =>
+      questionTypes.filter((value) => selected.includes(value)),
+    )
+    .optional(),
 });
 const playerData = z.object({
   generationPromptAnswered: z.boolean(),
@@ -203,7 +212,6 @@ export const parsePlayerData = (value: unknown): PlayerData => {
     pokedex: [...new Set(data.pokedex)],
     profile,
     results: normalizeResults(data.results),
-    settings:
-      data.settings === null ? null : normalizeGameSettings(data.settings),
+    settings: data.settings,
   };
 };
