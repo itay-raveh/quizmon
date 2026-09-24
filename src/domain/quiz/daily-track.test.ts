@@ -18,7 +18,7 @@ describe('shared Daily tracks', () => {
     );
   });
 
-  it('preserves legacy dates without inventing a track', () => {
+  it('preserves saved dates without inventing a track', () => {
     expect(parseDailyResultKey('2026-09-12')).toEqual({ date: '2026-09-12' });
     expect(getDailyResultKey('2026-09-12')).toBe('2026-09-12');
   });

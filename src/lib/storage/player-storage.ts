@@ -1,4 +1,3 @@
-import { progressProjectionVersion } from '../../domain/player/game-history';
 import { rebuildGuestProgress } from './game-history';
 import { SaveError } from '../../domain/player/save-schema';
 import { trackFailure } from '../analytics';
@@ -12,14 +11,10 @@ import {
   type PlayerSave,
 } from '../../domain/player/player-save';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
-import type {
-  Action,
-  Edit,
-  EditUnit,
-  EditValue,
-} from '../../domain/sync/progress';
 import { trainingConfig } from '../../domain/sync/progress';
+import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { isRecord, isUuid } from '../validation';
+import { convertSavedDatabaseV1 } from './save-compatibility';
 import {
   openLocalDatabase,
   type LocalRow,
@@ -27,15 +22,18 @@ import {
 } from './local-database';
 
 export interface LocalPlayerState {
-  version: 1;
-  projectionVersion?: number;
+  version: 2;
   dailyAttempts?: Record<string, unknown>;
   datasetId: string;
   save: PlayerSave;
-  predecessors: Partial<Record<EditUnit, string>>;
-  account?: { id: string; generationId: string; serverEpoch: string };
-  editRevisions?: Partial<Record<EditUnit, number>>;
+  account?: { id: string; serverEpoch: string };
 }
+export type LocalAction = {
+  id: string;
+  datasetId: string;
+  kind: 'round' | 'edit';
+  payload: unknown;
+};
 let accountDatabase = false;
 let database: ReturnType<typeof openLocalDatabase> | undefined;
 let snapshot: LocalPlayerState | undefined;
@@ -93,48 +91,32 @@ export const parseLocalPlayerState = (value: unknown): LocalPlayerState => {
     value.account !== undefined &&
     (!isRecord(value.account) ||
       typeof value.account.id !== 'string' ||
-      !isUuid(value.account.generationId) ||
       !isUuid(value.account.serverEpoch))
   )
     throw new SaveError(
       'invalid',
       'This save has an invalid account identity.',
     );
-  if (
-    !isRecord(value) ||
-    value.version !== 1 ||
-    !isUuid(value.datasetId) ||
-    !isRecord(value.predecessors) ||
-    !Object.values(value.predecessors).every(isUuid)
-  )
+  if (!isRecord(value) || value.version !== 2 || !isUuid(value.datasetId))
     throw new SaveError(
-      isRecord(value) && typeof value.version === 'number' && value.version > 1
+      isRecord(value) && typeof value.version === 'number' && value.version > 2
         ? 'newer'
         : 'invalid',
       'This local save is damaged or uses an unsupported version. It has been left unchanged.',
     );
   return {
-    version: 1,
-    ...(typeof value.projectionVersion === 'number'
-      ? { projectionVersion: value.projectionVersion }
-      : {}),
+    version: 2,
     datasetId: value.datasetId,
     save: parsePlayerSave(value.save),
-    predecessors: value.predecessors,
     dailyAttempts: isRecord(value.dailyAttempts) ? value.dailyAttempts : {},
     ...(isRecord(value.account) &&
     typeof value.account.id === 'string' &&
-    isUuid(value.account.generationId) &&
     isUuid(value.account.serverEpoch)
       ? {
           account: {
             id: value.account.id,
-            generationId: value.account.generationId,
             serverEpoch: value.account.serverEpoch,
           },
-          editRevisions: isRecord(value.editRevisions)
-            ? value.editRevisions
-            : {},
         }
       : {}),
   };
@@ -168,34 +150,27 @@ export const initializePlayerStorage = (accountId?: string): Promise<void> => {
     accountDatabase = Boolean(accountId);
     database = openLocalDatabase(accountId);
     await database.init();
+    await convertSavedDatabaseV1(database, accountId);
     const [stored] = await database.getAll<LocalRow>(
       "SELECT id,payload FROM local_state WHERE id = 'player'",
     );
     const parsed = stored && parseLocalPlayerState(JSON.parse(stored.payload));
-    const needsProjection = (state: LocalPlayerState) =>
-      !state.account && state.projectionVersion !== progressProjectionVersion;
-    if (
-      !parsed ||
-      needsProjection(parsed) ||
-      JSON.stringify(parsed) !== stored.payload
-    ) {
+    if (!parsed || JSON.stringify(parsed) !== stored.payload) {
       await database.writeTransaction(async (transaction) => {
         const rows = await transaction.getAll<LocalRow>(
           "SELECT id,payload FROM local_state WHERE id = 'player'",
         );
         if (rows.length) {
           const current = parseLocalPlayerState(JSON.parse(rows[0]!.payload));
-          if (needsProjection(current))
+          if (!current.account)
             await rebuildGuestProgress(current, transaction);
           if (JSON.stringify(current) !== rows[0]!.payload)
             await writeState(transaction, current);
           return;
         }
         await writeState(transaction, {
-          version: 1,
-          projectionVersion: progressProjectionVersion,
+          version: 2,
           datasetId: crypto.randomUUID(),
-          predecessors: {},
           save: {
             version: SAVE_SCHEMA_VERSION,
             restoreId: null,
@@ -269,15 +244,13 @@ export const transactPlayer = async <T>(
 export const appendLocalAction = async (
   state: LocalPlayerState,
   transaction: LocalTransaction,
-  kind: Action['kind'],
+  kind: LocalAction['kind'],
   payload: unknown,
   operationId: string = crypto.randomUUID(),
 ) => {
-  const action: Action = {
-    operationId,
+  const action: LocalAction = {
+    id: operationId,
     datasetId: state.datasetId,
-    generationId: state.account?.generationId ?? state.datasetId,
-    payloadVersion: 1,
     kind,
     payload,
   };
@@ -295,19 +268,52 @@ export const appendLocalAction = async (
 const recordEdit = async (
   state: LocalPlayerState,
   transaction: LocalTransaction,
-  unit: EditUnit,
-  value: EditValue,
-  kind: 'profile.patch' | 'preferences.patch',
+  unit:
+    | 'avatar'
+    | 'name'
+    | 'partnerPokemon'
+    | 'specialty'
+    | 'answerFlow'
+    | 'timerDisplay'
+    | 'training',
+  value: unknown,
 ) => {
-  const predecessorId = state.predecessors[unit];
-  const payload: Edit = {
-    unit,
-    value,
-    expectedRevision: state.editRevisions?.[unit] ?? 0,
-    ...(predecessorId ? { predecessorId } : {}),
+  const id = crypto.randomUUID();
+  const names: Partial<Record<typeof unit, string>> = {
+    partnerPokemon: 'partner',
+    answerFlow: 'answer_flow',
+    timerDisplay: 'timer_display',
   };
-  const action = await appendLocalAction(state, transaction, kind, payload);
-  state.predecessors[unit] = action.operationId;
+  const name = names[unit] ?? unit;
+  const normalized =
+    unit === 'training' && value
+      ? {
+          training_mode: (value as ReturnType<typeof trainingConfig>)
+            .trainingMode,
+          difficulty:
+            (value as ReturnType<typeof trainingConfig>).difficulty ??
+            defaultGameSettings.difficulty,
+          question_selection:
+            (value as ReturnType<typeof trainingConfig>).questionSelection ??
+            defaultGameSettings.questionSelection,
+          generations: (value as ReturnType<typeof trainingConfig>).generations,
+          form_groups:
+            (value as ReturnType<typeof trainingConfig>).formGroups ??
+            defaultGameSettings.formGroups,
+          question_types: (value as ReturnType<typeof trainingConfig>)
+            .questionTypes,
+          auto_types:
+            (value as ReturnType<typeof trainingConfig>)
+              .automaticQuestionTypes ?? null,
+        }
+      : value;
+  await appendLocalAction(
+    state,
+    transaction,
+    'edit',
+    { id, unit: name, value: normalized },
+    id,
+  );
 };
 export const updatePlayerData = async (
   patch: Partial<PlayerData>,
@@ -357,23 +363,11 @@ export const updatePlayerData = async (
         'specialty',
       ] as const) {
         if (next.profile && next.profile[unit] !== previous.profile?.[unit])
-          await recordEdit(
-            state,
-            transaction,
-            unit,
-            next.profile[unit],
-            'profile.patch',
-          );
+          await recordEdit(state, transaction, unit, next.profile[unit]);
       }
       for (const unit of ['answerFlow', 'timerDisplay'] as const) {
         if (next.settings && next.settings[unit] !== previous.settings?.[unit])
-          await recordEdit(
-            state,
-            transaction,
-            unit,
-            next.settings[unit],
-            'preferences.patch',
-          );
+          await recordEdit(state, transaction, unit, next.settings[unit]);
       }
       const training = (settings: PlayerData['settings']) =>
         settings && trainingConfig(settings);
@@ -387,15 +381,8 @@ export const updatePlayerData = async (
           transaction,
           'training',
           training(next.settings),
-          'preferences.patch',
         );
-      const discovered = next.pokedex.filter(
-        (name) => !previous.pokedex.includes(name),
-      );
-      if (discovered.length)
-        await appendLocalAction(state, transaction, 'discoveries.add', {
-          pokemon: discovered,
-        });
+      next.pokedex = previous.pokedex;
       state.save.data = next;
     });
     return true;
@@ -433,10 +420,8 @@ export const recoverPlayer = async <T>(
       if (handoff)
         throw new Error('Finish signing in before restoring this save.');
       const state: LocalPlayerState = {
-        version: 1,
-        projectionVersion: progressProjectionVersion,
+        version: 2,
         datasetId: crypto.randomUUID(),
-        predecessors: {},
         dailyAttempts: {},
         save: createPlayerSave(),
       };

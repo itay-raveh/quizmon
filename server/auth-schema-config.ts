@@ -10,6 +10,6 @@ export const auth = betterAuth({
   database: drizzleAdapter(drizzle('postgresql://localhost/unused'), {
     provider: 'pg',
   }),
-  plugins: authPlugins(async () => {}, 'quizmon-pilot'),
+  plugins: authPlugins(async () => {}, 'quizmon'),
   telemetry: { enabled: false },
 });

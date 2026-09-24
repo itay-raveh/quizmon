@@ -9,7 +9,6 @@ import {
 } from '../../src/domain/quiz/scoring.ts';
 import { type AnswerResult } from '../../src/domain/quiz/types.ts';
 import {
-  type Action,
   type RoundCompletion,
   versions,
 } from '../../src/domain/sync/progress.ts';
@@ -110,16 +109,3 @@ export function completion(
         : null,
   };
 }
-export const action = (
-  datasetId: string,
-  generationId: string,
-  kind: Action['kind'],
-  payload: unknown,
-): Action => ({
-  operationId: crypto.randomUUID(),
-  datasetId,
-  generationId,
-  payloadVersion: versions.payload,
-  kind,
-  payload,
-});

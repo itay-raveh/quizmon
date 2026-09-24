@@ -6,7 +6,7 @@ interface __BaseEnv_AccountEnv {
   AUTH_RATE_LIMIT: RateLimit;
   API_RATE_LIMIT: RateLimit;
   POWERSYNC_URL: 'http://127.0.0.1:8089';
-  POWERSYNC_AUDIENCE: 'quizmon-pilot';
+  POWERSYNC_AUDIENCE: 'quizmon';
   AUTH_ORIGIN: 'http://localhost:4188';
   MAIL_DELIVERY: 'cloudflare' | 'test-mailbox';
   MAIL_FROM: '';
@@ -22,7 +22,7 @@ declare namespace Cloudflare {
     AUTH_RATE_LIMIT: RateLimit;
     API_RATE_LIMIT: RateLimit;
     POWERSYNC_URL: 'http://127.0.0.1:8089';
-    POWERSYNC_AUDIENCE: 'quizmon-pilot';
+    POWERSYNC_AUDIENCE: 'quizmon';
     AUTH_ORIGIN: 'http://localhost:4188';
     MAIL_DELIVERY: 'cloudflare';
     MAIL_FROM: '';

@@ -67,6 +67,7 @@ jobs:
             test -n "${!name}" || { echo "::error::Missing $name"; exit 1; }
           done
           npm run build
+          npm run test:sync
           test -z "$(find dist -name '*.map' -print -quit)"
           node deploy/prepare-worker-deploy.ts .wrangler/infra
           npx wrangler deploy --config .wrangler.production.json --dry-run --upload-source-maps --outdir .wrangler/release-worker

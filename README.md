@@ -21,6 +21,8 @@ npm run dev
 
 Optional accounts sync completed progress and add friends and Daily leaderboards. Local development requires Docker. The [Helm chart](charts/quizmon/) packages the online services; `deploy/` contains their release tooling.
 
+The local account service uses `quizmon` and a separate `powersync` bucket database. `npm run dev` creates them if needed. Completed rounds are archived once, and account progress and Pokédex entries are derived from those rounds. Unfinished rounds stay in the browser.
+
 ## Sentry
 
 Production releases send browser errors, bug reports, masked error replays, traces, and game metrics to the browser Sentry project. Worker errors and traces use a separate project. Guests have no Quizmon account identity in Sentry; a verified signed-in session supplies its account ID and email. Sentry is optional for loading, play, and saving.

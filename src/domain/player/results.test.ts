@@ -28,20 +28,20 @@ it.each([
 });
 
 it('does not invent Quick Attack rounds from the retired boolean counter', () => {
-  const legacy = {
+  const previous = {
     correctPokemon: [],
     correctCategories: {},
     quickAttackCompleted: true,
   };
   expect(
-    normalizeResults({ progress: legacy }).progress.quickAttackRounds,
+    normalizeResults({ progress: previous }).progress.quickAttackRounds,
   ).toBe(0);
   expect(
-    normalizeResults({ progress: { ...legacy, quickAttackRounds: 17 } })
+    normalizeResults({ progress: { ...previous, quickAttackRounds: 17 } })
       .progress.quickAttackRounds,
   ).toBe(17);
   expect(
-    normalizeResults(normalizeResults({ progress: legacy })).progress
+    normalizeResults(normalizeResults({ progress: previous })).progress
       .quickAttackRounds,
   ).toBe(0);
 });

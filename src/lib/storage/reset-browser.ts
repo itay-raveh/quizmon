@@ -1,9 +1,6 @@
 import { isUuid } from '../validation';
 
-const oldDatabase = /^quizmon-(?:guest|account)-.*\.sqlite$/;
-
 export const discardOldBrowserData = async (): Promise<void> => {
-  const selectedAccount = localStorage.getItem('quizmon.account.v1');
   const oldReminderId = localStorage.getItem(
     'quizmon.daily-reminder-subscription.v1',
   );
@@ -27,34 +24,4 @@ export const discardOldBrowserData = async (): Promise<void> => {
     } catch {
       // Old server registrations are cleared by their next alarm.
     }
-
-  const known = [
-    'quizmon-guest-v2.sqlite',
-    ...(selectedAccount
-      ? [`quizmon-account-${encodeURIComponent(selectedAccount)}-v2.sqlite`]
-      : []),
-  ];
-  const discovered = await indexedDB.databases?.().catch(() => []);
-  const names = new Set([
-    ...known,
-    ...(discovered
-      ?.map(({ name }) => name)
-      .filter((name): name is string => Boolean(name)) ?? []),
-  ]);
-  await Promise.all(
-    [...names]
-      .filter(
-        (name) => oldDatabase.test(name) && !name.includes('-baseline.sqlite'),
-      )
-      .map(
-        (name) =>
-          new Promise<void>((resolve) => {
-            const request = indexedDB.deleteDatabase(name);
-            request.onsuccess =
-              request.onerror =
-              request.onblocked =
-                () => resolve();
-          }),
-      ),
-  );
 };
