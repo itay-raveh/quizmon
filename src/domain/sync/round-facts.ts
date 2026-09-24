@@ -398,3 +398,13 @@ export function validateRoundFact(value: unknown): value is RoundFact {
         isLeagueVictory(scoreRound(value as unknown as RoundFact)))
   );
 }
+
+export type RoundUpload = Omit<RoundFact, 'credited'>;
+
+export function validateRoundUpload(value: unknown): value is RoundUpload {
+  return (
+    isRecord(value) &&
+    !Object.hasOwn(value, 'credited') &&
+    validateRoundFact({ ...value, credited: true })
+  );
+}

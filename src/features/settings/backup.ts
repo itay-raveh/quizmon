@@ -1,8 +1,10 @@
 import { readRecordedGame } from '../../domain/player/game-history';
 import { canonical, validAction } from '../../domain/sync/progress';
+import { editUploadSchema } from '../../domain/sync/edit-upload';
 import {
   archiveCompletion,
   validateRoundFact,
+  validateRoundUpload,
 } from '../../domain/sync/round-facts';
 import { downloadJson } from '../../lib/download';
 import { rebuildGuestProgress } from '../../lib/storage/game-history';
@@ -240,13 +242,17 @@ export const parseBackup = (text: string): PlayerBackup => {
   const records = value.records;
   const actions = readRows(records, 'local_actions');
   for (const row of actions) {
-    const action = JSON.parse(row.payload) as LocalAction;
+    const action: unknown = JSON.parse(row.payload);
     if (
+      !isRecord(action) ||
       action.id !== row.id ||
       !isUuid(action.datasetId) ||
-      !['round', 'edit'].includes(action.kind) ||
+      (action.kind !== 'round' && action.kind !== 'edit') ||
       !isRecord(action.payload) ||
-      action.payload.id !== row.id
+      action.payload.id !== row.id ||
+      (action.kind === 'round'
+        ? !validateRoundUpload(action.payload)
+        : !editUploadSchema.safeParse(action.payload).success)
     )
       throw new Error('The backup contains an invalid action.');
   }

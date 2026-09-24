@@ -1,6 +1,10 @@
-import { emptyPlayerData } from '../../domain/player/player-save';
+import {
+  emptyPlayerData,
+  SAVE_SCHEMA_VERSION,
+} from '../../domain/player/player-save';
+import { archiveCompletion } from '../../domain/sync/round-facts';
 import { completion } from '../../../tests/online/progress-fixtures';
-import { parseBackup } from './backup';
+import { parseBackup, restoreBackup, type PlayerBackup } from './backup';
 
 it('converts old rounds and keeps pending edits for review', () => {
   const datasetId = crypto.randomUUID();
@@ -78,4 +82,86 @@ it('converts old rounds and keeps pending edits for review', () => {
     mode: 'daily',
     credited: true,
   });
+});
+
+it('rejects malformed pending payloads before restore and retains valid offline edits', async () => {
+  const datasetId = crypto.randomUUID();
+  const id = crypto.randomUUID();
+  const action = {
+    id,
+    datasetId,
+    kind: 'edit',
+    payload: { id, unit: 'name', value: 'Trainer' },
+  };
+  const row = { id, payload: JSON.stringify(action) };
+  const backup = {
+    format: 'quizmon-backup',
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    state: {
+      version: 2,
+      datasetId,
+      save: {
+        version: SAVE_SCHEMA_VERSION,
+        restoreId: null,
+        data: emptyPlayerData(),
+      },
+      account: { id: 'trainer', serverEpoch: crypto.randomUUID() },
+    },
+    records: {
+      local_actions: [row],
+      local_completions: [],
+      pending_actions: [row],
+      server_rounds: [],
+    },
+  };
+  expect(parseBackup(JSON.stringify(backup)).records.pending_actions).toEqual([
+    row,
+  ]);
+
+  const malformed = {
+    ...backup,
+    records: {
+      ...backup.records,
+      local_actions: [
+        {
+          id,
+          payload: JSON.stringify({
+            ...action,
+            payload: { id, unit: 'name', value: { broken: true } },
+          }),
+        },
+      ],
+      pending_actions: [],
+    },
+  };
+  await expect(restoreBackup(malformed as PlayerBackup)).rejects.toThrow(
+    'The backup contains an invalid action.',
+  );
+
+  const { credited: _credited, ...upload } = archiveCompletion(
+    completion(datasetId),
+  );
+  void _credited;
+  const brokenRound = {
+    ...backup,
+    records: {
+      ...backup.records,
+      local_actions: [
+        {
+          id: upload.id,
+          payload: JSON.stringify({
+            id: upload.id,
+            datasetId,
+            kind: 'round',
+            payload: { ...upload, data: { ...upload.data, answers: [] } },
+          }),
+        },
+      ],
+      pending_actions: [],
+    },
+  };
+  expect(() => parseBackup(JSON.stringify(brokenRound))).toThrow(
+    'The backup contains an invalid action.',
+  );
 });

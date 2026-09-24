@@ -3,8 +3,7 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { canonical, hash } from '../src/domain/sync/progress.ts';
 import {
   scoreRound,
-  validateRoundFact,
-  type RoundFact,
+  validateRoundUpload,
 } from '../src/domain/sync/round-facts.ts';
 import { isDailyDate, isRecord, isUuid } from '../src/lib/validation.ts';
 import { isTrainerAvatar } from '../src/domain/player/trainer-avatars.ts';
@@ -141,16 +140,6 @@ export async function linkDataset(
         .where(eq(schema.player.id, playerId));
     return { linked: true };
   });
-}
-
-export type RoundUpload = Omit<RoundFact, 'credited'>;
-
-function validateRoundUpload(value: unknown): value is RoundUpload {
-  return (
-    isRecord(value) &&
-    !Object.hasOwn(value, 'credited') &&
-    validateRoundFact({ ...value, credited: true })
-  );
 }
 
 export async function submitRound(
