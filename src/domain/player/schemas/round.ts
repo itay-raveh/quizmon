@@ -22,6 +22,7 @@ import {
 import {
   dailyDateSchema,
   utcTimestampSchema,
+  uuidSchema,
 } from '../../../lib/validation.ts';
 
 const nonnegativeInteger = z.int().min(0);
@@ -72,7 +73,7 @@ const round = z
     seed: z.string().min(1).max(200),
     answers: z.array(answer),
     questions: z.array(z.custom<QuestionData>(isQuestionData)),
-    roundId: z.string().min(1).max(200).optional(),
+    roundId: uuidSchema,
     mode,
     settings,
     playerRestoreId: z.unknown().optional(),

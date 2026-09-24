@@ -27,7 +27,7 @@ export type GameSession =
       settings: GameSettings;
       phase: 'questions';
       questionIndex: number;
-      roundId?: string;
+      roundId: string;
       startedOn?: string;
       questions: QuestionData[];
       seed: string;
@@ -94,7 +94,7 @@ export const gameSessionReducer = (
         settings: action.settings,
         scoreMultipliers: action.scoreMultipliers,
         phase: 'questions',
-        roundId: action.roundId ?? action.seed,
+        roundId: action.roundId,
         startedOn: action.startedOn,
         questionIndex:
           action.type === 'restored'

@@ -116,7 +116,7 @@ export const parseLocalPlayerState = (value: unknown): LocalPlayerState => {
     );
   if (value.dailyAttempts !== undefined && !isRecord(value.dailyAttempts))
     throw new SaveError('invalid', 'The saved Daily attempts are damaged.');
-  const dailyAttempts = value.dailyAttempts ?? {};
+  const dailyAttempts = { ...(value.dailyAttempts ?? {}) };
   for (const [key, attempt] of Object.entries(dailyAttempts)) {
     const round = parseActiveGameSave(attempt);
     if (
@@ -125,6 +125,8 @@ export const parseLocalPlayerState = (value: unknown): LocalPlayerState => {
       getDailyResultKey(round.mode.date, round.mode.track) !== key
     )
       throw new SaveError('invalid', 'The saved Daily attempts are damaged.');
+    if (isRecord(attempt) && attempt.roundId !== round.roundId)
+      dailyAttempts[key] = { ...attempt, roundId: round.roundId };
   }
   return {
     version: 2,

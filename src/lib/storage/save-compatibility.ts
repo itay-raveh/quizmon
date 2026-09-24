@@ -132,8 +132,11 @@ export async function convertSavedDatabaseV1(
         ),
       };
     });
+    const roundIds = new Map<string, string>();
     const convertUnfinished = (value: unknown) => {
       const round = parseActiveGameSave(value);
+      round.roundId = roundIds.get(round.seed) ?? round.roundId;
+      roundIds.set(round.seed, round.roundId);
       if (round.mode.kind !== 'daily' || round.startedOn) return round;
       return { ...round, startedOn: round.mode.date };
     };

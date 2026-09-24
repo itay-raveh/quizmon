@@ -1,7 +1,9 @@
 import { isQuestionData } from '../../quiz/question-lineup';
 import { defaultGameSettings } from '../../settings/game-settings';
 import { emptyPlayerData } from '../player-save';
+import { parseActiveGameSave } from '../active-game';
 import { SaveError } from '../save-schema';
+import { isUuid } from '../../../lib/validation';
 import { parseRound } from './round';
 import { parsePlayerData } from './player-data';
 
@@ -21,6 +23,7 @@ const round = {
   contentVersion: 1,
   elapsedMilliseconds: 0,
   questionCount: 1,
+  roundId: crypto.randomUUID(),
   seed: 's',
   answers: [],
   questions: [question],
@@ -67,9 +70,16 @@ it('preserves unfinished-round output and unknown settings', () => {
 
 it('rejects unsafe saved round counts', () => {
   expect(parseRound(round)).not.toBeNull();
+  expect(parseRound({ ...round, roundId: round.seed })).toBeNull();
   expect(
     parseRound({ ...round, questionCount: Number.MAX_SAFE_INTEGER + 1 }),
   ).toBeNull();
+});
+
+it('upgrades an unfinished round with a seed ID before strict validation', () => {
+  const upgraded = parseActiveGameSave({ ...round, roundId: round.seed });
+  expect(isUuid(upgraded.roundId)).toBe(true);
+  expect(parseRound(upgraded)?.roundId).toBe(upgraded.roundId);
 });
 
 it('keeps player-data normalization and recovery error category', () => {

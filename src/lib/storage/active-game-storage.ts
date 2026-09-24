@@ -121,7 +121,6 @@ export const writeActiveGame = async (
     throw new Error('Another tab restored a save. Reload before continuing.');
   await persistLocalRound({
     ...snapshot,
-    roundId: snapshot.roundId ?? crypto.randomUUID(),
     playerRestoreId,
     version: SAVE_SCHEMA_VERSION,
   });

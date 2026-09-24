@@ -100,7 +100,7 @@ export const useActiveGame = ({
         settings: snapshot.settings,
         questions,
         seed: snapshot.seed,
-        roundId: snapshot.roundId ?? snapshot.seed,
+        roundId: snapshot.roundId,
         startedOn:
           snapshot.startedOn ??
           (snapshot.mode.kind === 'daily' ? snapshot.mode.date : undefined),
@@ -142,8 +142,7 @@ export const useActiveGame = ({
     )
       ? session.questions[session.questionIndex]
       : undefined;
-  const roundId =
-    session.phase === 'questions' ? (session.roundId ?? session.seed) : '';
+  const roundId = session.phase === 'questions' ? session.roundId : '';
   const questionIndex =
     session.phase === 'questions' ? session.questionIndex : 0;
   useEffect(() => {
@@ -168,7 +167,7 @@ export const useActiveGame = ({
       settings: session.settings,
       questionCount: session.questions.length,
       questions: session.questions,
-      roundId: session.roundId ?? session.seed,
+      roundId: session.roundId,
       startedOn: session.startedOn,
       playerRestoreId,
       seed: session.seed,

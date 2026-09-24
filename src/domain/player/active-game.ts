@@ -11,7 +11,7 @@ import { parseVersionedSave, SaveError } from './save-schema.ts';
 import { parseRound } from './schemas/round.ts';
 export interface ActiveGameSnapshot extends QuestionLineup {
   scoreMultipliers?: ScoreMultipliers;
-  roundId?: string;
+  roundId: string;
   completedAt?: string;
   startedOn?: string;
   answers: AnswerResult[];
@@ -31,8 +31,14 @@ const parseCurrentRound = (value: unknown): ActiveGameSnapshot => {
 };
 export const parseActiveGameSave = (value: unknown): ActiveGameSnapshot => {
   const version = isRecord(value) ? value.version : undefined;
+  const data =
+    isRecord(value) &&
+    version === SAVE_SCHEMA_VERSION &&
+    (value.roundId === undefined || value.roundId === value.seed)
+      ? { ...value, roundId: crypto.randomUUID() }
+      : value;
   return parseVersionedSave(
-    { version, data: value },
+    { version, data },
     {
       currentVersion: SAVE_SCHEMA_VERSION,
       parseCurrent: parseCurrentRound,

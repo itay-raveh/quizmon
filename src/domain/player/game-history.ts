@@ -47,7 +47,6 @@ export async function completeRound(
     | 'settings'
     | 'mode'
     | 'contentVersion'
-    | 'seed'
     | 'scoreMultipliers'
     | 'roundId'
   >,
@@ -71,7 +70,7 @@ export async function completeRound(
     score: calculateScore(answers, scoreMultipliers),
     scoreVersion: SCORE_VERSION,
   };
-  const completionId = round.roundId ?? round.seed;
+  const completionId = round.roundId;
   const victory =
     mode.kind === 'league' && isLeagueVictory(result)
       ? createLeagueVictoryRecord(

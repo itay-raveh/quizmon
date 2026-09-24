@@ -48,7 +48,7 @@ export const useGameCompletion = ({
   const completionTimes = useRef(new Map<string, string>());
   const complete = useCallback<CompleteGame>(
     async (round) => {
-      const { mode, seed, roundId = seed } = round;
+      const { mode, seed, roundId } = round;
       const completedAt =
         readLocalRound()?.completedAt ??
         completionTimes.current.get(roundId) ??

@@ -186,7 +186,7 @@ export const App = () => {
     if (restoringGame || session.phase !== 'questions') return;
     if (session.mode.kind === 'daily' && session.mode.date === daily.linkedDate)
       return;
-    const key = `${daily.linkedDate}:${session.roundId ?? session.seed}`;
+    const key = `${daily.linkedDate}:${session.roundId}`;
     if (promptedDailyLink.current === key) return;
     promptedDailyLink.current = key;
     navigation.requestLeave(true);

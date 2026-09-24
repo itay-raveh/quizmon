@@ -5,6 +5,7 @@ import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
 import { completeRound } from '../../domain/player/game-history';
 import { applyResult } from '../../domain/player/game-progress';
 import { getDailyResultKey } from '../../domain/quiz/daily-track';
+import { isRecord, isUuid } from '../validation';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import type { RoundCompletion } from '../../domain/sync/progress';
 import {
@@ -19,7 +20,9 @@ import { rebuildGuestProgress } from './game-history';
 import {
   appendLocalAction,
   getPlayerDatabase,
+  readLocalDailyAttempts,
   readPlayerData,
+  readState,
   transactPlayer,
 } from './player-storage';
 
@@ -34,7 +37,49 @@ export const initializeLocalRound = async () => {
     [tabId],
   );
   try {
-    active = row ? parseActiveGameSave(JSON.parse(row.payload)) : null;
+    const stored: unknown = row ? JSON.parse(row.payload) : null;
+    active = row ? parseActiveGameSave(stored) : null;
+    if (active && isRecord(stored) && stored.roundId !== active.roundId) {
+      const legacyId =
+        typeof stored.roundId === 'string' ? stored.roundId : stored.seed;
+      if (typeof legacyId === 'string' && active.completedAt) {
+        const database = getPlayerDatabase();
+        const [completed] = await database.getAll<LocalRow>(
+          'SELECT id,payload FROM local_completions WHERE id = ?',
+          [legacyId],
+        );
+        const account = (await readState(database)).account;
+        const [synced] = account
+          ? await database.getAll<{ id: string }>(
+              'SELECT id FROM round WHERE id = ? AND player_id = ?',
+              [legacyId, account.id],
+            )
+          : [];
+        if (completed || synced) {
+          await database.execute('DELETE FROM local_rounds WHERE id = ?', [
+            tabId,
+          ]);
+          active = null;
+          return;
+        }
+      }
+      if (active.mode.kind === 'daily' && active.mode.track) {
+        const linked =
+          readLocalDailyAttempts()[
+            getDailyResultKey(active.mode.date, active.mode.track)
+          ];
+        if (
+          isRecord(linked) &&
+          linked.seed === active.seed &&
+          isUuid(linked.roundId)
+        )
+          active.roundId = linked.roundId;
+      }
+      await getPlayerDatabase().execute(
+        'UPDATE local_rounds SET payload = ? WHERE id = ?',
+        [JSON.stringify({ ...stored, roundId: active.roundId }), tabId],
+      );
+    }
   } catch (error) {
     active = null;
     reportSaveIssue(error);
@@ -113,7 +158,7 @@ export const removeLocalRound = async () => {
       [tabId],
     );
     const round = row ? parseActiveGameSave(JSON.parse(row.payload)) : null;
-    if (round?.roundId)
+    if (round)
       await tx.execute(
         'INSERT OR REPLACE INTO local_closed_rounds(id,payload) VALUES (?,?)',
         [round.roundId, JSON.stringify({ reason: 'left' })],

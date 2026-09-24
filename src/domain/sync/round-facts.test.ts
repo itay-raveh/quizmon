@@ -39,7 +39,6 @@ describe('completed round facts', () => {
         settings: defaultGameSettings,
         mode: { kind: 'league' },
         contentVersion: saved.contentVersion,
-        seed: 'league-seed',
         roundId: saved.completionId,
       },
       saved.completedAt,
