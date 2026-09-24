@@ -16,7 +16,7 @@ export const releaseConfigSchema = z.object({
     audience: z.string().min(1),
   }),
   hyperdriveId: z.string().regex(/^[a-fA-F0-9]{32}$/),
-  mailFrom: z.string().regex(/^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/),
+  mailFrom: z.email(),
   authRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
   apiRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
 });
