@@ -8,13 +8,20 @@ export const writeCatalogFiles = async (
 ): Promise<void> => {
   await mkdir(directory, { recursive: true });
   const root = new URL('pokemon.json', directory);
-  let previous: string[];
+  let previous: string[] = [];
   try {
-    previous =
-      (JSON.parse(await readFile(root, 'utf8')) as { topicFiles?: string[] })
-        .topicFiles ?? [];
-  } catch {
-    previous = [];
+    const catalog = JSON.parse(await readFile(root, 'utf8')) as {
+      topicFiles?: unknown;
+    };
+    if (
+      catalog.topicFiles !== undefined &&
+      (!Array.isArray(catalog.topicFiles) ||
+        !catalog.topicFiles.every((file) => typeof file === 'string'))
+    )
+      throw new Error('Invalid previous catalog topic files');
+    previous = catalog.topicFiles ?? [];
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   }
   const { topics, ...pokemon } = catalog;
   const topicFiles: string[] = [];
