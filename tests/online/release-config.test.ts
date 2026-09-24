@@ -4,7 +4,6 @@ import { readWorkerTemplate } from '../../deploy/worker-template.ts';
 import {
   readReleaseConfig,
   renderSourceWorkerConfig,
-  renderWorkerConfig,
 } from '../../deploy/release-config.ts';
 
 const config = {
@@ -27,7 +26,7 @@ await test('runtime renderer preserves game bindings and limits without local da
     new URL('../../deploy/wrangler.jsonc', import.meta.url).pathname,
   );
   const input = readReleaseConfig(config);
-  const rendered = renderWorkerConfig(rawConfig, input);
+  const rendered = renderSourceWorkerConfig(rawConfig, input);
   assert.equal(input.sync.endpoint, 'https://sync.example.test');
   for (const field of [
     'limits',
@@ -45,8 +44,8 @@ await test('runtime renderer preserves game bindings and limits without local da
   ]);
   assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
   assert.equal(rendered.vars.POWERSYNC_AUDIENCE, input.sync.audience);
-  assert.equal(rendered.assets.directory, './assets');
-  assert.equal(rendered.no_bundle, true);
+  assert.equal(rendered.assets.directory, './dist');
+  assert.equal(rendered.no_bundle, false);
   assert.ok(!JSON.stringify(rendered).includes('127.0.0.1'));
   assert.ok(!JSON.stringify(rendered).includes('test-mailbox'));
 });

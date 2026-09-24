@@ -97,18 +97,21 @@ export function readReleaseConfig(value: unknown): ReleaseConfig {
   };
 }
 
-export function renderWorkerConfig(template: unknown, config: ReleaseConfig) {
+export function renderSourceWorkerConfig(
+  template: unknown,
+  config: ReleaseConfig,
+) {
   if (
     !isRecord(template) ||
     !isRecord(template.assets) ||
     !Array.isArray(template.ratelimits)
   )
-    throw new Error('Invalid bundled Worker configuration template.');
+    throw new Error('Invalid Worker configuration template.');
   return {
     ...template,
-    main: './worker/index.js',
+    main: './worker/index.ts',
     name: config.workerName,
-    no_bundle: true,
+    no_bundle: false,
     vars: {
       AUTH_ORIGIN: config.origin,
       POWERSYNC_URL: config.sync.endpoint,
@@ -116,7 +119,7 @@ export function renderWorkerConfig(template: unknown, config: ReleaseConfig) {
       MAIL_DELIVERY: 'cloudflare',
       MAIL_FROM: config.mailFrom,
     },
-    assets: { ...template.assets, directory: './assets' },
+    assets: { ...template.assets, directory: './dist' },
     hyperdrive: [{ binding: 'ACCOUNT_DB', id: config.hyperdriveId }],
     ratelimits: template.ratelimits.map((limit: unknown) => {
       if (
@@ -132,18 +135,5 @@ export function renderWorkerConfig(template: unknown, config: ReleaseConfig) {
             : config.apiRateLimitNamespace,
       };
     }),
-  };
-}
-
-export function renderSourceWorkerConfig(
-  template: unknown,
-  config: ReleaseConfig,
-) {
-  const rendered = renderWorkerConfig(template, config);
-  return {
-    ...rendered,
-    main: './worker/index.ts',
-    no_bundle: false,
-    assets: { ...rendered.assets, directory: './dist' },
   };
 }
