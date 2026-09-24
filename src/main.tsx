@@ -10,6 +10,7 @@ if (!root) throw new Error('Missing root element');
 
 const showGame = mountGame(root);
 void discardOldBrowserData()
+  .catch(() => undefined)
   .then(() => import('./app/initialize-game'))
   .then(({ initializeGame }) => initializeGame())
   .then(showGame)

@@ -11,7 +11,13 @@ import { initializeLocalRound } from '../lib/storage/round-storage';
 export const initializeGame = async () => {
   void loadPokemonCatalog().catch(() => {});
   trackPageViewed();
-  const activeAccount = selectedAccount();
+  let activeAccount: string | undefined;
+  try {
+    activeAccount = selectedAccount();
+  } catch (error) {
+    reportSaveIssue(error);
+    return;
+  }
   subscribeToPlayerRestore(() => {
     if (selectedAccount() === activeAccount) window.location.assign('/');
   });
