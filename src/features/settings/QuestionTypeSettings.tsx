@@ -2,6 +2,7 @@ import { getQuestionTypeMultiplier } from '@/domain/quiz/score-multipliers';
 import { CaretDownIcon, QuestionIcon, XIcon } from '@/components/icons';
 import { SelectionTile } from './SelectionTile';
 import { SoundButton } from '@/components/SoundButton';
+import { useInteractionSound } from '@/lib/audio/sound-context';
 import {
   questionDefinitions,
   questionTypeGroups,
@@ -63,9 +64,10 @@ export const QuestionTypeSettings = ({
 }: QuestionTypeSettingsProps) => {
   const [explainedQuestionType, setExplainedQuestionType] =
     useState<QuestionType>('pokedex-scan');
-  const [expandedGroup, setExpandedGroup] = useState<QuestionTypeGroup | null>(
-    () => getInitialExpandedGroup(draft.questionTypes),
+  const [initialExpandedGroup] = useState<QuestionTypeGroup>(() =>
+    getInitialExpandedGroup(draft.questionTypes),
   );
+  const playInteractionSound = useInteractionSound();
   const selectedQuestionTypes = new Set(draft.questionTypes);
   const available = new Set(availableQuestionTypes);
   const allSelected =
@@ -125,41 +127,28 @@ export const QuestionTypeSettings = ({
           const selectedCount = group.types.filter(
             (type) => available.has(type) && selectedQuestionTypes.has(type),
           ).length;
-          const expanded = expandedGroup === group.id;
           const titleId = `question-type-group-${group.id}-title`;
-          const panelId = `question-type-group-${group.id}-panel`;
 
           return (
-            <section
+            <details
               className="question-type-group"
               aria-labelledby={titleId}
               key={group.id}
+              name="question-types"
+              open={initialExpandedGroup === group.id}
             >
-              <h4>
-                <SoundButton
-                  aria-controls={panelId}
-                  aria-expanded={expanded}
-                  className="question-type-group__disclosure"
-                  id={titleId}
-                  onClick={() =>
-                    setExpandedGroup((current) =>
-                      current === group.id ? null : group.id,
-                    )
-                  }
-                >
-                  <span>{group.label}</span>
-                  <span className="question-type-group__count">
-                    {selectedCount} / {availableCount}
-                    <span className="visually-hidden"> selected</span>
-                  </span>
-                  <CaretDownIcon aria-hidden="true" weight="bold" />
-                </SoundButton>
-              </h4>
-              <div
-                className="question-type-group__panel"
-                hidden={!expanded}
-                id={panelId}
+              <summary
+                className="question-type-group__disclosure"
+                onClick={() => playInteractionSound('tap')}
               >
+                <h4 id={titleId}>{group.label}</h4>
+                <span className="question-type-group__count">
+                  {selectedCount} / {availableCount}
+                  <span className="visually-hidden"> selected</span>
+                </span>
+                <CaretDownIcon aria-hidden="true" weight="bold" />
+              </summary>
+              <div className="question-type-group__panel">
                 <div
                   aria-label={`${group.label} question types`}
                   className="selection-grid selection-grid--question-types"
@@ -217,7 +206,7 @@ export const QuestionTypeSettings = ({
                   })}
                 </div>
               </div>
-            </section>
+            </details>
           );
         })}
       </section>

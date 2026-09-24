@@ -80,7 +80,7 @@
   transition: transform 120ms ease;
 }
 
-.question-type-group__disclosure[aria-expanded='true'] svg {
+.question-type-group[open] .question-type-group__disclosure svg {
   transform: rotate(180deg);
 }
 
