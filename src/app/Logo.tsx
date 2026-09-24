@@ -3,7 +3,6 @@ import logo496Avif from '@/assets/images/wordmark-496.avif';
 import logo496Webp from '@/assets/images/wordmark-496.webp';
 import logo992Avif from '@/assets/images/wordmark-992.avif';
 import logo992Webp from '@/assets/images/wordmark-992.webp';
-import wordmark from '@/assets/images/wordmark.png';
 
 export const Logo = () => (
   <picture className="logo-picture">
@@ -19,7 +18,7 @@ export const Logo = () => (
     />
     <img
       className="logo"
-      src={wordmark}
+      src="/assets/images/logo.png"
       alt={`${site.name}: ${site.tagline}`}
       fetchPriority="high"
       height="456"
