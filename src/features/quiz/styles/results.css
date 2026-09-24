@@ -170,11 +170,6 @@
   }
 }
 
-html[data-reduce-motion] .result-score__perfect::after {
-  animation: none;
-  display: none;
-}
-
 .result-details {
   padding-block: 6px 10px;
   border-bottom: 2px solid var(--navy);

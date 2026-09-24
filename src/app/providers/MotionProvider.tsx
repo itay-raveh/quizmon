@@ -18,14 +18,6 @@ export const MotionProvider = ({ children }: MotionProviderProps) => {
     return () => preference?.removeEventListener?.('change', updatePreference);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.toggleAttribute(
-      'data-reduce-motion',
-      devicePrefersReducedMotion,
-    );
-    return () => document.documentElement.removeAttribute('data-reduce-motion');
-  }, [devicePrefersReducedMotion]);
-
   return (
     <ReducedMotionContext value={devicePrefersReducedMotion}>
       {children}
