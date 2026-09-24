@@ -62,6 +62,7 @@ interface RoundAnswer {
 }
 
 export interface RoundData {
+  score_version?: number;
   config: {
     training_mode: TrainingConfig['trainingMode'];
     difficulty?: TrainingConfig['difficulty'];
@@ -163,6 +164,7 @@ export function archiveCompletion(
     completed_at: completion.completedAt,
     credited,
     data: {
+      score_version: completion.scoreVersion,
       config: {
         training_mode: completion.training.trainingMode,
         ...(completion.training.difficulty
@@ -247,7 +249,12 @@ export function scoreRound(
     questionCount:
       round.mode === 'training' ? 10 : round.mode === 'daily' ? 5 : 15,
     ...getResponseTime(answers),
-    score: calculateScore(answers, multipliers),
+    score: calculateScore(
+      answers,
+      multipliers,
+      undefined,
+      round.data.score_version ?? 1,
+    ),
     ...(multipliers ? { scoreMultipliers: multipliers } : {}),
     ...(round.mode === 'daily'
       ? {
@@ -269,7 +276,7 @@ export function scoreRound(
         }
       : {}),
     contentVersion: gameVersions.content,
-    scoreVersion: gameVersions.score,
+    scoreVersion: round.data.score_version ?? 1,
   };
 }
 
@@ -281,6 +288,9 @@ export function validateRoundFact(value: unknown): value is RoundFact {
     !isUtcTimestamp(value.completed_at) ||
     typeof value.credited !== 'boolean' ||
     !isRecord(value.data) ||
+    (value.data.score_version !== undefined &&
+      value.data.score_version !== 1 &&
+      value.data.score_version !== 2) ||
     !isRecord(value.data.config) ||
     !Array.isArray(value.data.answers) ||
     !Array.isArray(value.data.found)

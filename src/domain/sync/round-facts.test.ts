@@ -95,6 +95,21 @@ describe('completed round facts', () => {
     expect(scoreRound(round).score).toBe(expected);
   });
 
+  it('keeps the earlier factor rule for archived rounds without a score version', () => {
+    const round = archiveCompletion(completion(crypto.randomUUID()));
+    round.data.config.difficulty = 4;
+    round.data.config.question_types = ['ev-yields'];
+    for (const answer of round.data.answers) answer.question_type = 'ev-yields';
+    delete round.data.score_version;
+    expect(validateRoundFact(round)).toBe(true);
+    const earlier = scoreRound(round);
+    round.data.score_version = 2;
+    const current = scoreRound(round);
+    expect(earlier.scoreVersion).toBe(1);
+    expect(current.scoreVersion).toBe(2);
+    expect(current.score).toBeGreaterThan(earlier.score);
+  });
+
   it('retains a Daily start date through a completion after midnight', () => {
     const old = completion(crypto.randomUUID(), 'daily', {
       dailyDate: '2026-09-11',

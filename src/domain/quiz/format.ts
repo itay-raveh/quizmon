@@ -5,7 +5,7 @@ const scoreFormatter = new Intl.NumberFormat(undefined, {
 });
 const scoreMultiplierFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
+  maximumFractionDigits: 2,
 });
 const dailyDateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',

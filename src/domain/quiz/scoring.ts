@@ -78,6 +78,7 @@ export const calculateScore = (
   answers: readonly SavedAnswerResult[],
   multipliers?: ScoreMultipliers,
   rules: ScoringRules = scoringRules,
+  scoreVersion: number = SCORE_VERSION,
 ): number => {
   const { knowledge, speed, mastery } = getScoreBreakdown(answers, rules);
   if (multipliers?.perQuestion) {
@@ -87,10 +88,20 @@ export const calculateScore = (
         multiplier,
       ]),
     );
-    const weighted = answers.reduce((total, answer) => {
+    const questionFactor = answers.reduce((total, answer) => {
       const factor = factors.get(answer.questionType ?? '');
       if (factor === undefined)
         throw new Error('Missing question score factor');
+      return total * factor;
+    }, 1);
+    if (scoreVersion >= 2)
+      return Math.round(
+        (knowledge + speed + mastery) *
+          questionFactor *
+          getScoreMultiplier(multipliers),
+      );
+    const weighted = answers.reduce((total, answer) => {
+      const factor = factors.get(answer.questionType ?? '')!;
       return (
         total +
         (answer.points +

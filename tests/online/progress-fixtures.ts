@@ -8,6 +8,7 @@ import {
   getSpeedBonusPoints,
 } from '../../src/domain/quiz/scoring.ts';
 import { type AnswerResult } from '../../src/domain/quiz/types.ts';
+import { gameVersions } from '../../src/domain/versions.ts';
 import {
   type RoundCompletion,
   versions,
@@ -80,7 +81,7 @@ export function completion(
       questionTypes: [...coreQuestionTypes],
     },
     contentVersion: versions.content,
-    scoreVersion: 1,
+    scoreVersion: gameVersions.score,
     completedAt: options.completedAt ?? '2026-09-11T10:00:00.000Z',
     discoveries: options.discoveries ?? ['bulbasaur'],
     result: {
@@ -94,7 +95,7 @@ export function completion(
       },
       answers,
       contentVersion: versions.content,
-      scoreVersion: 1,
+      scoreVersion: gameVersions.score,
       questionCount: count,
       correctCount: answers.filter((a) => a.correct).length,
       ...getResponseTime(answers),

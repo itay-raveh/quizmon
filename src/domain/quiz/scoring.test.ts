@@ -42,7 +42,7 @@ describe('scoring', () => {
     expect(getAnswerPoints(question, false)).toBe(0);
   });
 
-  it('weights earned points and mastery by each drawn question type', () => {
+  it('compounds drawn question factors and retains the earlier award rule', () => {
     const answers = [
       {
         category: 'identity' as const,
@@ -73,7 +73,8 @@ describe('scoring', () => {
       speed: 2_000,
       mastery: 2_000,
     });
-    expect(calculateScore(answers, multipliers)).toBe(11_000);
+    expect(calculateScore(answers, multipliers)).toBe(11_250);
+    expect(calculateScore(answers, multipliers, undefined, 1)).toBe(11_000);
     expect(
       calculateScore(answers, { ...multipliers, perQuestion: undefined }),
     ).toBe(11_250);
@@ -89,7 +90,24 @@ describe('scoring', () => {
         [answers[0]!, { ...answers[1]!, correct: false, points: 0 }],
         multipliers,
       ),
-    ).toBe(5_250);
+    ).toBe(6_563);
+  });
+
+  it('applies every drawn factor even when only one of ten answers earns points', () => {
+    const answers = Array.from({ length: 10 }, (_, index) => ({
+      category: 'identity' as const,
+      questionType: 'ev-yields' as const,
+      correct: index === 0,
+      points: index === 0 ? 1_000 : 0,
+    }));
+    const multipliers: ScoreMultipliers = {
+      difficulty: 1,
+      generations: 1,
+      perQuestion: true,
+      questionTypes: [{ questionType: 'ev-yields', multiplier: 1.25 }],
+    };
+    expect(calculateScore(answers, multipliers)).toBe(10_245);
+    expect(calculateScore(answers, multipliers, undefined, 1)).toBe(1_375);
   });
 
   it.each([
