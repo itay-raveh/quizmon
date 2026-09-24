@@ -12,12 +12,15 @@ import { readWorkerTemplate } from './worker-template.ts';
 const infra = process.argv[2];
 if (!infra) throw new Error('Usage: prepare-worker-deploy.ts <infra-checkout>');
 
-const releases = parseAllDocuments(
+const documents = parseAllDocuments(
   await readFile(
     join(infra, 'clusters/shire/apps/quizmon/release/app-chart.yaml'),
     'utf8',
   ),
-).map((document): unknown => {
+);
+const parseError = documents.flatMap((document) => document.errors)[0];
+if (parseError) throw parseError;
+const releases = documents.map((document): unknown => {
   const value: unknown = document.toJSON();
   return value;
 });
