@@ -3,6 +3,7 @@ import {
   validateRoundFact,
   type RoundFact,
 } from '../../domain/sync/round-facts';
+import { isRecord } from '../validation';
 import type { LocalRow, LocalTransaction } from './local-database';
 import type { LocalPlayerState } from './player-storage';
 
@@ -12,12 +13,22 @@ export async function readLocalRounds(
   const rows = await tx.getAll<LocalRow>(
     'SELECT id,payload FROM local_completions',
   );
-  return rows.map((row) => {
+  const rounds: RoundFact[] = [];
+  for (const row of rows) {
     const round: unknown = JSON.parse(row.payload);
+    const needsRepair =
+      isRecord(round) && (round.credited === 0 || round.credited === 1);
+    if (needsRepair) round.credited = round.credited === 1;
     if (!validateRoundFact(round) || round.id !== row.id)
       throw new Error('A saved completed round is damaged.');
-    return round;
-  });
+    if (needsRepair)
+      await tx.execute(
+        'UPDATE local_completions SET payload = ? WHERE id = ?',
+        [JSON.stringify(round), row.id],
+      );
+    rounds.push(round);
+  }
+  return rounds;
 }
 
 export async function rebuildGuestProgress(

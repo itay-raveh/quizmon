@@ -547,8 +547,8 @@ function connector(expected: Binding): PowerSyncBackendConnector {
           seen.add(value.id);
           if (action.kind === 'round' && value.status === 'accepted') {
             await db.execute(
-              "UPDATE local_completions SET payload = json_set(payload,'$.credited',?) WHERE id = ?",
-              [value.credited ? 1 : 0, action.id],
+              "UPDATE local_completions SET payload = json_set(payload,'$.credited',json(?)) WHERE id = ?",
+              [value.credited ? 'true' : 'false', action.id],
             );
           }
           if (value.status !== 'accepted')
