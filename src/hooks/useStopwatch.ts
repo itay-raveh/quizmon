@@ -56,6 +56,7 @@ export const useStopwatch = (showMilliseconds = false) => {
     getElapsedMilliseconds,
     pause,
     reset,
+    running,
     start,
   };
 };

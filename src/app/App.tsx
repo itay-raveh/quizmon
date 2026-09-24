@@ -45,6 +45,7 @@ export const App = () => {
     getElapsedMilliseconds,
     pause,
     reset,
+    running,
     start,
   } = useStopwatch(settings.timerDisplay === 'milliseconds');
 
@@ -143,6 +144,7 @@ export const App = () => {
     resetTimer: reset,
     session,
     startTimer: start,
+    timerRunning: running,
   });
 
   const settingsDialog = useSettingsDialog({
@@ -152,6 +154,7 @@ export const App = () => {
     session,
     setSettings,
     startTimer: start,
+    timerRunning: running,
   });
 
   const {

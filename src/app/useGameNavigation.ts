@@ -1,4 +1,4 @@
-import { useState, type Dispatch } from 'react';
+import { useRef, useState, type Dispatch } from 'react';
 import { clearActiveGame } from '../lib/storage/active-game-storage';
 import { reportSaveError } from '../lib/storage/player-storage';
 import type { GameSession, GameSessionAction } from './game-session';
@@ -9,6 +9,7 @@ interface GameNavigationOptions {
   resetTimer: (elapsedMilliseconds?: number) => void;
   session: GameSession;
   startTimer: () => void;
+  timerRunning: boolean;
 }
 
 export const useGameNavigation = ({
@@ -17,8 +18,10 @@ export const useGameNavigation = ({
   resetTimer,
   session,
   startTimer,
+  timerRunning,
 }: GameNavigationOptions) => {
   const [leaveConfirmationOpen, setLeaveConfirmationOpen] = useState(false);
+  const resumeTimerOnCancel = useRef(false);
 
   const returnToLanding = async () => {
     try {
@@ -38,13 +41,15 @@ export const useGameNavigation = ({
       return;
     }
 
-    pauseTimer();
+    if (!leaveConfirmationOpen) resumeTimerOnCancel.current = timerRunning;
+    if (resumeTimerOnCancel.current) pauseTimer();
     setLeaveConfirmationOpen(true);
   };
 
   const cancelLeave = () => {
     setLeaveConfirmationOpen(false);
-    startTimer();
+    if (resumeTimerOnCancel.current) startTimer();
+    resumeTimerOnCancel.current = false;
   };
 
   return {

@@ -1,4 +1,4 @@
-import type { Dispatch } from 'react';
+import { useRef, type Dispatch } from 'react';
 import type { GameSession, GameSessionAction } from '../../app/game-session';
 import type { GameSettings } from '../../domain/settings/types';
 import { useUpdateState } from '../installation/update-session';
@@ -11,6 +11,7 @@ interface SettingsDialogOptions {
   session: GameSession;
   setSettings: (settings: GameSettings) => Promise<boolean>;
   startTimer: () => void;
+  timerRunning: boolean;
 }
 
 export const useSettingsDialog = ({
@@ -20,7 +21,9 @@ export const useSettingsDialog = ({
   session: { phase },
   setSettings,
   startTimer,
+  timerRunning,
 }: SettingsDialogOptions) => {
+  const resumeTimerOnClose = useRef(false);
   const [isOpen, setIsOpen] = useUpdateState('settings-open', false);
   const [section, setSection] = useUpdateState<SettingsSection>(
     'settings-section',
@@ -28,7 +31,9 @@ export const useSettingsDialog = ({
   );
 
   const openSection = (nextSection: SettingsSection) => {
-    if (phase === 'questions') pauseTimer();
+    if (!isOpen)
+      resumeTimerOnClose.current = phase === 'questions' && timerRunning;
+    if (resumeTimerOnClose.current) pauseTimer();
     setSection(nextSection);
     setIsOpen(true);
   };
@@ -37,7 +42,8 @@ export const useSettingsDialog = ({
 
   const close = () => {
     setIsOpen(false);
-    if (phase === 'questions') startTimer();
+    if (phase === 'questions' && resumeTimerOnClose.current) startTimer();
+    resumeTimerOnClose.current = false;
   };
 
   const save = async (nextSettings: GameSettings) => {
