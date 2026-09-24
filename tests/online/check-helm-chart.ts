@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { parseAllDocuments } from 'yaml';
+import { parse, parseAllDocuments } from 'yaml';
 import { checkReleaseConfigSchema } from '../../scripts/generate-release-config-schema.ts';
 
 checkReleaseConfigSchema();
@@ -54,6 +54,11 @@ const root = resolve('.wrangler/accounts');
 await mkdir(root, { recursive: true });
 const directory = await mkdtemp(join(root, 'chart-check-'));
 const chart = resolve('charts/quizmon');
+const chartVersion = (
+  parse(await readFile(join(chart, 'Chart.yaml'), 'utf8')) as {
+    version: string;
+  }
+).version;
 const helm = (...args: string[]) =>
   execFileSync('mise', ['exec', 'helm@4.3.0', '--', 'helm', ...args], {
     encoding: 'utf8',
@@ -149,8 +154,8 @@ try {
   await writeFile(
     join(newer, 'Chart.yaml'),
     (await readFile(join(newer, 'Chart.yaml'), 'utf8')).replace(
-      'version: 0.3.0',
-      'version: 0.3.1',
+      `version: ${chartVersion}`,
+      `version: ${chartVersion}-test`,
     ),
   );
   assert.notEqual(
@@ -249,9 +254,9 @@ try {
   console.log(validation.stdout.trim());
   helm('lint', '--strict', chart, '-f', join(directory, 'values.json'));
   const packaged = helm('package', chart, '--destination', directory);
-  assert.match(packaged, /quizmon-0.3.0.tgz/);
+  assert.ok(packaged.includes(`quizmon-${chartVersion}.tgz`));
   assert.equal(
-    await render(syncValues, join(directory, 'quizmon-0.3.0.tgz')),
+    await render(syncValues, join(directory, `quizmon-${chartVersion}.tgz`)),
     complete,
   );
   console.log(
