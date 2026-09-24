@@ -680,65 +680,7 @@
 }
 
 .daily-reminder-offer {
-  display: grid;
   margin: 0 0 1.2rem;
-  padding: 0.8rem 0;
-  align-items: center;
-  color: var(--navy);
-  border-block: 2px solid var(--navy);
-  grid-template-columns: 2.3rem minmax(0, 1fr) auto;
-  gap: 0.7rem;
-  text-align: left;
-}
-
-.daily-reminder-offer--install {
-  padding: 0;
-  border: 0;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem;
-}
-
-.daily-reminder-offer--install .daily-reminder-offer__copy strong {
-  color: var(--muted);
-  font-size: var(--text-small);
-  font-weight: 400;
-}
-
-.daily-reminder-offer > svg {
-  width: 2rem;
-  height: 2rem;
-  color: var(--blue);
-}
-
-.daily-reminder-offer__copy {
-  display: grid;
-  min-width: 0;
-  gap: 0.12rem;
-}
-
-.daily-reminder-offer__copy strong {
-  font-size: var(--text-control);
-}
-
-.daily-reminder-offer__copy > span {
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: 1.25;
-}
-
-.daily-reminder-offer__copy > [role='alert'] {
-  color: var(--error-ink);
-}
-
-.daily-reminder-offer__actions {
-  display: flex;
-  gap: 0.45rem;
-}
-
-.daily-reminder-offer__actions .game-button {
-  min-height: 2.5rem;
-  padding: 0.45rem 0.7rem;
-  font-size: var(--text-compact-control);
 }
 
 .level-advancement-offer {

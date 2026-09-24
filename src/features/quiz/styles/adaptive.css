@@ -18,23 +18,6 @@
   .question__topline > .timer {
     padding-inline: 0.35rem;
   }
-
-  .daily-reminder-offer:not(.daily-reminder-offer--install) {
-    grid-template-columns: 2rem minmax(0, 1fr);
-  }
-
-  .daily-reminder-offer > svg {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-
-  .daily-reminder-offer__actions {
-    grid-column: 1 / -1;
-  }
-
-  .daily-reminder-offer__actions .game-button {
-    flex: 1;
-  }
 }
 
 @container (max-width: 12rem) {
