@@ -23,7 +23,7 @@
     "dev:client": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/dev/migrate.ts",
-    "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts",
+    "test:online": "node --test tests/online/account-config.test.ts tests/online/asset-headers.test.ts tests/online/prepare-worker-deploy.test.ts tests/online/release-config.test.ts tests/online/release-inputs.test.ts",
     "test:accounts": "node tests/online/check-accounts.ts",
     "test:sync": "node tests/online/check-accounts.ts && node tests/online/check-restore.ts",
     "check:chart": "node tests/online/check-helm-chart.ts",
