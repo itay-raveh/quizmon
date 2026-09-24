@@ -1,7 +1,7 @@
 import { useRef, type Dispatch } from 'react';
 import type { GameSession, GameSessionAction } from '../../app/game-session';
 import type { GameSettings } from '../../domain/settings/types';
-import { useUpdateState } from '../installation/update-session';
+import { useUpdateState } from '../../lib/storage/update-reload-state';
 import type { SettingsSection } from './SettingsDialog';
 
 interface SettingsDialogOptions {

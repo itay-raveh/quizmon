@@ -35,7 +35,7 @@ import { getUtcDate } from '../../domain/quiz/daily';
 import { requestPersistentStorage } from '../../lib/storage/persistent-storage';
 import { readPlayerData } from '../../lib/storage/player-storage';
 import { type TrainerProfile } from '../../lib/storage/trainer-profile-storage';
-import { useUpdateState } from '../installation/update-session';
+import { useUpdateState } from '../../lib/storage/update-reload-state';
 import { PokemonPicker } from './PokemonPicker';
 import { TrainerBadgeCase } from './TrainerBadgeCase';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';

@@ -10,7 +10,7 @@ import {
 } from '@/domain/quiz/question-generation';
 import { TRAINING_QUESTION_COUNT } from '@/domain/settings/game-settings';
 import { type GameSettings } from '@/domain/settings/types';
-import { useUpdateState } from '@/features/installation/update-session';
+import { useUpdateState } from '@/lib/storage/update-reload-state';
 import { createSeededRandom } from '@/lib/random';
 import { readPlayerData } from '@/lib/storage/player-storage';
 import { useCallback, useRef, useState } from 'react';

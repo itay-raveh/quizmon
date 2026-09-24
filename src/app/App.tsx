@@ -5,7 +5,7 @@ import { useCallback, useReducer, useRef } from 'react';
 import {
   readUpdateState,
   useUpdateSnapshot,
-} from '../features/installation/update-session';
+} from '../lib/storage/update-reload-state';
 import { useLeagueChallenge } from '../features/league/useLeagueChallenge';
 import { useLeagueDestination } from '../features/league/useLeagueDestination';
 import { useActiveGame } from '../features/quiz/useActiveGame';

@@ -6,7 +6,7 @@ import { savedSettingsSchema } from '../../domain/player/schemas/player-data';
 import type { GameSettings } from '../../domain/settings/types';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import { selectedAccount } from '../account/account';
-import { useUpdateState } from '../installation/update-session';
+import { useUpdateState } from '../../lib/storage/update-reload-state';
 import { BackupSettings } from './BackupSettings';
 import { ExperienceSettings } from './ExperienceSettings';
 import { getTrainingSettingsValidation } from './settings-validation';

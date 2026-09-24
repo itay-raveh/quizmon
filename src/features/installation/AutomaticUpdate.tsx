@@ -1,4 +1,4 @@
-import { reloadAfterUpdate } from '@/features/installation/update-session';
+import { reloadAfterUpdate } from '@/lib/storage/update-reload-state';
 import { useEffect, useRef, useState } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 

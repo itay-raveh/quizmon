@@ -1,6 +1,6 @@
 import { PokemonSearch } from '@/components/PokemonSearch';
 import { formatPokemonName } from '@/domain/pokemon/format';
-import { useUpdateState } from '@/features/installation/update-session';
+import { useUpdateState } from '@/lib/storage/update-reload-state';
 
 interface PokemonPickerProps {
   onChange: (pokemon: string | null) => void;

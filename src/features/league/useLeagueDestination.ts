@@ -1,5 +1,5 @@
 import type { LeagueView } from '@/domain/quiz/league';
-import { useUpdateState } from '@/features/installation/update-session';
+import { useUpdateState } from '@/lib/storage/update-reload-state';
 import { useNavigate, useLocation } from 'react-router';
 
 export const useLeagueDestination = () => {
