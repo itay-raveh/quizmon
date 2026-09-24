@@ -95,7 +95,9 @@ export const useDailyChallenge = ({
     refreshSavedData();
   }, [route.date, refreshSavedData]);
   useEffect(() => {
-    const timer = window.setInterval(refresh, 30_000);
+    const timer = window.setInterval(() => {
+      if (getUtcDate() !== today) refresh();
+    }, 30_000);
     window.addEventListener('focus', refresh);
     window.addEventListener('storage', refresh);
     const unsubscribe = subscribeToPlayerChanges(refresh);
@@ -105,7 +107,7 @@ export const useDailyChallenge = ({
       window.removeEventListener('focus', refresh);
       window.removeEventListener('storage', refresh);
     };
-  }, [refresh]);
+  }, [refresh, today]);
 
   const choose = async (
     track: DailyTrack = route.track ?? currentDailyTrack,
