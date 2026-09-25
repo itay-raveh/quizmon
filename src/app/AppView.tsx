@@ -457,25 +457,26 @@ export const AppView = (props: AppViewProps) => {
             >
               <div className="background" aria-hidden="true" />
               <div className="app__screen">
-                <AppNavigation
-                  active={active}
-                  accountOpen={destination.destination === 'account'}
-                  onSettings={props.settingsDialog.open}
-                  socialPath={
-                    props.session.phase === 'results' &&
-                    props.session.mode.kind === 'daily'
-                      ? `/social/rankings?date=${props.session.mode.date}`
-                      : undefined
-                  }
-                  showNavigation={showNavigation}
-                  trainerAvailable={props.catalogState.status === 'ready'}
-                  onNavigate={(next) => {
-                    if (next === 'play') {
-                      props.league.setShowResults(false);
-                      void props.navigation.returnToLanding();
+                {showNavigation ? (
+                  <AppNavigation
+                    active={active}
+                    accountOpen={destination.destination === 'account'}
+                    onSettings={props.settingsDialog.open}
+                    socialPath={
+                      props.session.phase === 'results' &&
+                      props.session.mode.kind === 'daily'
+                        ? `/social/rankings?date=${props.session.mode.date}`
+                        : undefined
                     }
-                  }}
-                />
+                    trainerAvailable={props.catalogState.status === 'ready'}
+                    onNavigate={(next) => {
+                      if (next === 'play') {
+                        props.league.setShowResults(false);
+                        void props.navigation.returnToLanding();
+                      }
+                    }}
+                  />
+                ) : null}
                 <main ref={main}>
                   <AppScreen
                     {...props}

@@ -1,3 +1,4 @@
+import { BugReportButton } from '@/app/BugReportButton';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import { showsSearchResponse } from '@/domain/quiz/question-interaction';
 import { GameButton } from '@/components/GameButton';
@@ -131,7 +132,7 @@ export const QuestionScreen = ({
       aria-describedby="question-prompt"
       aria-labelledby="question-title"
     >
-      <div className="question__topline">
+      <header className="question__topline">
         <GameButton
           aria-label="Leave game"
           className="question__leave"
@@ -149,7 +150,8 @@ export const QuestionScreen = ({
         >
           {timerText}
         </span>
-      </div>
+        <BugReportButton />
+      </header>
 
       {isLeague ? <LeagueProgress currentQuestion={number} /> : null}
 

@@ -17,7 +17,7 @@
 }
 
 .app--questions .app__screen {
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
 }
 
 .app--questions main {
@@ -214,8 +214,9 @@
   }
 
   .question {
+    --question-panel-padding: 0.85rem;
+
     width: 100%;
-    padding: 0.85rem;
     border-radius: 0.55rem;
   }
 
@@ -295,7 +296,7 @@
   }
 
   .question {
-    padding: 0.7rem;
+    --question-panel-padding: 0.7rem;
   }
 
   .question h1 {

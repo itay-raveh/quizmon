@@ -4,7 +4,10 @@
 }
 
 .question {
+  --question-panel-padding: clamp(1rem, 2.4vw, 1.5rem);
+
   display: grid;
+  padding: var(--question-panel-padding);
   --question-stimulus-size: 9rem;
   --question-response-size: 14rem;
 

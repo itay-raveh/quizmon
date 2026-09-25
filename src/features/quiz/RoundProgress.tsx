@@ -11,15 +11,10 @@ export const RoundProgress = ({ current, total }: RoundProgressProps) => (
     aria-valuemax={total}
     aria-valuemin={1}
     aria-valuenow={current}
+    aria-valuetext={`Question ${current} of ${total}`}
   >
     <span className="progress__label">
-      {String(current).padStart(3, '0')} / {String(total).padStart(3, '0')}
-    </span>
-    <span className="progress__track" aria-hidden="true">
-      <span
-        className="progress__fill"
-        style={{ transform: `scaleX(${current / total})` }}
-      />
+      {String(current).padStart(2, '0')} / {String(total).padStart(2, '0')}
     </span>
   </div>
 );

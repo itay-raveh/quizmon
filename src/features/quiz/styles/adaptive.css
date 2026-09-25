@@ -1,44 +1,40 @@
 @container (max-width: 19rem) {
-  .question__topline > .progress {
-    flex-direction: column;
-    gap: 0.25rem;
+  .question__topline {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0 0.3rem;
   }
 
-  .question__topline .progress__label,
-  .question__topline > .timer {
+  .question__topline .question__leave {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .question__topline .progress {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .question__topline .timer {
+    grid-column: 2;
+    grid-row: 2;
+    margin-left: 0;
+  }
+
+  .question__topline .bug-report-button {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+
+  .question__topline .progress,
+  .question__topline .timer {
     font-size: var(--text-micro);
-  }
-
-  .question__topline .progress__track {
-    width: 100%;
-    height: 0.4rem;
-    flex: none;
-  }
-
-  .question__topline > .timer {
-    padding-inline: 0.35rem;
   }
 }
 
 @container (max-width: 12rem) {
   .answer-trail {
     flex-wrap: wrap;
-  }
-
-  .question .question__topline > .progress {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    flex-wrap: wrap;
-  }
-
-  .question .question__topline > .timer {
-    grid-column: 1;
-    grid-row: 3;
-    justify-self: start;
-  }
-
-  .question__topline .progress__track {
-    min-width: 4rem;
   }
 
   .results__header {
