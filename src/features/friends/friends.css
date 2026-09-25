@@ -445,21 +445,11 @@
   font-size: var(--text-label);
 }
 
-.leaderboard-date__reset {
-  font-weight: 500;
-}
-
-.leaderboard-training-note,
-.leaderboard-rule {
+.leaderboard-training-note {
   color: var(--muted);
   font-size: var(--text-small);
 }
 
-.leaderboard-rule {
-  margin: 0;
-}
-
-.leaderboard-controls label,
 .leaderboard-table th[scope='row'] {
   overflow-wrap: anywhere;
 }

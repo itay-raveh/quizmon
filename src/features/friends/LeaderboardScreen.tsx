@@ -205,9 +205,6 @@ function Standings({
           ) : null}
           {data.items.length ? (
             <>
-              <p className="leaderboard-rule">
-                Higher scores rank first. Faster time breaks ties.
-              </p>
               <table className="leaderboard-table">
                 <caption className="visually-hidden">
                   {mode === 'daily'
@@ -351,12 +348,6 @@ export function LeaderboardScreen({
       : getUtcDate(),
   );
   const [today, setToday] = useState(getUtcDate);
-  const nextReset = new Date(`${today}T00:00:00Z`);
-  nextReset.setUTCDate(nextReset.getUTCDate() + 1);
-  const localResetTime = new Intl.DateTimeFormat(undefined, {
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(nextReset);
   useEffect(() => {
     const timer = window.setInterval(() => {
       const next = getUtcDate();
@@ -421,7 +412,6 @@ export function LeaderboardScreen({
               </div>
               <div className="leaderboard-controls">
                 <div className="leaderboard-filter">
-                  <span>Players</span>
                   <div
                     className="leaderboard-scopes"
                     role="group"
@@ -439,29 +429,19 @@ export function LeaderboardScreen({
                       aria-pressed={scope === 'friends'}
                       onClick={() => chooseScope('friends')}
                     >
-                      Friends only
+                      Friends
                     </button>
                   </div>
                 </div>
                 {mode === 'daily' ? (
                   <div className="leaderboard-filter leaderboard-date">
-                    <label htmlFor="leaderboard-challenge-date">
-                      Challenge date
-                    </label>
                     <input
-                      id="leaderboard-challenge-date"
                       type="date"
                       value={date}
                       max={today}
-                      aria-describedby="leaderboard-reset-time"
+                      aria-label="Challenge date"
                       onChange={(event) => chooseDate(event.target.value)}
                     />
-                    <span
-                      className="leaderboard-date__reset"
-                      id="leaderboard-reset-time"
-                    >
-                      New challenge at {localResetTime} your time
-                    </span>
                   </div>
                 ) : (
                   <p className="leaderboard-training-note">
