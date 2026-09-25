@@ -1,8 +1,7 @@
 import { formatPokemonName } from '../../pokemon/format.ts';
 import type { QuestionData } from '../types.ts';
-import type { EvolutionKnowledge } from '../topic-catalog.ts';
 
-export const evolutionRequirement = (condition: string) => {
+const evolutionRequirement = (condition: string) => {
   const level = /^at level (\d+)$/.exec(condition);
   if (level)
     return {
@@ -66,6 +65,8 @@ const formatEvolutionCondition = (condition: string) => {
 };
 
 export const evolutionAnswerSummary = (question: QuestionData): string => {
+  if (question.answer.interaction === 'multi-select')
+    return question.explanation ?? question.answer.correctOptions.join(' · ');
   const option = question.answer.correctOptions[0]!;
   const { shared, requirements, focused } = evolutionChoiceDetails(
     question.options,
@@ -86,78 +87,4 @@ export const evolutionAnswerSummary = (question: QuestionData): string => {
         : formatEvolutionCondition(part),
     );
   return summary.join(' · ');
-};
-
-const hasGameSpecificEvolution = (
-  question: QuestionData,
-  evolutions: readonly EvolutionKnowledge[],
-): boolean => {
-  const visual = question.visual;
-  if (visual?.kind !== 'evolution-endpoints') return true;
-  const methods = new Map<string, Set<string>>();
-  for (const entry of evolutions) {
-    if (entry.before !== visual.before || entry.after !== visual.after)
-      continue;
-    const gameMethods = methods.get(entry.game) ?? new Set<string>();
-    gameMethods.add(
-      JSON.stringify([entry.trigger, entry.item, [...entry.conditions].sort()]),
-    );
-    methods.set(entry.game, gameMethods);
-  }
-  if (!methods.size) return true;
-  return (
-    new Set(
-      [...methods.values()].map((values) => JSON.stringify([...values].sort())),
-    ).size > 1
-  );
-};
-
-export const presentEvolutionQuestion = (
-  question: QuestionData,
-  evolutions?: readonly EvolutionKnowledge[],
-): QuestionData => {
-  if (question.questionType !== 'evolution-conditions') return question;
-  const { shared, missing, requirements, focused } = evolutionChoiceDetails(
-    question.options,
-  );
-  const optionLabels = Object.fromEntries(
-    question.options.map((option, index) => [
-      option,
-      focused
-        ? question.optionLabels?.[option] &&
-          question.optionLabels[option] !== option &&
-          question.optionLabels[option] !== missing[index]![0]
-          ? question.optionLabels[option]
-          : requirements[index]!.label
-        : missing[index]!.map(formatEvolutionCondition).join(' · '),
-    ]),
-  );
-  const numeric =
-    focused && requirements.every(({ value }) => value !== undefined);
-  const game =
-    question.prompt.supportingText?.split(' · ')[0] ??
-    (question.prompt.kind === 'text'
-      ? /^In (Pokémon [^,]+),/.exec(question.prompt.text)?.[1]
-      : undefined);
-  return {
-    ...question,
-    options: numeric
-      ? question.options.toSorted(
-          (a, b) => Number(optionLabels[a]) - Number(optionLabels[b]),
-        )
-      : question.options,
-    optionLabels,
-    prompt: {
-      kind: 'text',
-      text: focused
-        ? requirements[0]!.question
-        : shared.length
-          ? 'Which requirement completes this evolution?'
-          : 'How does this Pokémon evolve?',
-      ...(game &&
-      (!evolutions || hasGameSpecificEvolution(question, evolutions))
-        ? { supportingText: game }
-        : {}),
-    },
-  };
 };

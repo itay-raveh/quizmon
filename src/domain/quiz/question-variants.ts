@@ -58,7 +58,11 @@ export interface VariantRules {
   sameMoveType?: boolean;
   sameColorOrShape?: boolean;
   minimumEvolutionConditions?: number;
-  maximumEvolutionConditions?: number;
+  multiSelectEvolutionConditions?: boolean;
+  exactEvolutionValues?: boolean;
+  exactLevelQuestionChance?: number;
+  directEvolutionItems?: boolean;
+  evolutionLocations?: boolean;
   preferCloseConditionValues?: boolean;
   useFullEffectText?: boolean;
   minimumEffectSimilarity?: number;

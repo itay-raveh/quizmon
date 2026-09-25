@@ -4,23 +4,86 @@ import type { EvolutionKnowledge } from '../topic-catalog.ts';
 import { pokemonOptions } from './answers.ts';
 import { getOptionVisuals, makeQuestion } from './assembly.ts';
 import type { QuestionBuilder } from './context.ts';
-import {
-  evolutionChoiceDetails,
-  evolutionRequirement,
-  presentEvolutionQuestion,
-} from './evolution-presentation.ts';
 import { pokemonPrompt, textPrompt } from './prompts.ts';
 import { targetRepetition } from './repetition.ts';
 import { pickFreshTarget, pickTarget } from './selection.ts';
 import { makeTopicQuestion, ordered, pokemonSubject } from './topic-support.ts';
 import { typeOptions } from './type-options.ts';
 
-const method = (entry: EvolutionKnowledge) =>
-  [formatPokemonName(entry.trigger), ...entry.conditions].join(' · ');
+const evolutionRequirements = (entry: EvolutionKnowledge): string[] =>
+  ['level-up', 'use-item', 'trade'].includes(entry.trigger)
+    ? [
+        ...(entry.trigger === 'trade' &&
+        !entry.conditions.some((condition) =>
+          condition.startsWith('traded for '),
+        )
+          ? ['trade']
+          : []),
+        ...entry.conditions,
+      ]
+    : [];
+
+const evolutionConditionLabel = (
+  condition: string,
+  variant: NonNullable<Parameters<QuestionBuilder>[0]['variant']>,
+): string | undefined => {
+  if (condition === 'trade') return 'Trade this Pokémon';
+  const level = /^at level (\d+)$/.exec(condition);
+  if (level)
+    return variant.exactEvolutionValues
+      ? `Minimum level: ${level[1]}`
+      : undefined;
+  const threshold = /^with at least (\d+) (happiness|beauty|affection)$/.exec(
+    condition,
+  );
+  if (threshold)
+    return variant.exactEvolutionValues
+      ? `Minimum ${threshold[2] === 'happiness' ? 'friendship' : threshold[2]}: ${threshold[1]}`
+      : `High ${threshold[2] === 'happiness' ? 'friendship' : threshold[2]}`;
+  if (/^\d+ times$/.test(condition)) return undefined;
+  if (/\d/.test(condition) && !variant.exactEvolutionValues) return undefined;
+  if (condition.startsWith('use ') && !variant.directEvolutionItems) return;
+  if (!variant.evolutionLocations && /^(at |in |near )/.test(condition))
+    return undefined;
+  if (condition.startsWith('holding '))
+    return `Hold ${formatPokemonName(condition.slice(8).replaceAll(' ', '-'))}`;
+  if (condition.startsWith('use '))
+    return `Use ${formatPokemonName(condition.slice(4).replaceAll(' ', '-'))}`;
+  if (condition.startsWith('knowing '))
+    return `Know ${formatPokemonName(condition.slice(8).replaceAll(' ', '-'))}`;
+  if (condition.startsWith('during the '))
+    return `Evolve during the ${condition.slice(11)}`;
+  if (condition.startsWith('as a ')) return `Be ${condition.slice(5)}`;
+  if (condition.startsWith('at '))
+    return `Level up at ${formatPokemonName(condition.slice(3).replaceAll(' ', '-'))}`;
+  if (condition.startsWith('in '))
+    return `Evolve in ${formatPokemonName(condition.slice(3).replaceAll(' ', '-'))}`;
+  if (condition.startsWith('near ')) return `Level up ${condition}`;
+  if (condition.startsWith('with Attack ')) return `Have ${condition.slice(5)}`;
+  if (condition.startsWith('with ')) return `Have ${condition.slice(5)}`;
+  if (condition.startsWith('traded for '))
+    return `Trade for ${formatPokemonName(condition.slice(11))}`;
+  if (condition.startsWith('under ') || condition.startsWith('while '))
+    return `Evolve ${condition}`;
+  return condition.charAt(0).toUpperCase() + condition.slice(1);
+};
+
+const evolutionConditionKind = (condition: string) =>
+  condition === 'trade'
+    ? 'trade'
+    : condition.replace(/\d+/g, '#').split(' ')[0];
+
 export const buildEvolution: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
-  if (!topics) return;
+  const variant = context.variant;
+  if (!topics || !variant) return;
   const names = new Set(context.pool.map((candidate) => candidate.name));
+  const preferExactLevel =
+    context.random() < (variant.exactLevelQuestionChance ?? 0);
+  const numericOnlyMethod = (entry: EvolutionKnowledge) =>
+    entry.trigger === 'level-up' &&
+    entry.conditions.length === 1 &&
+    /^at level \d+$/.test(entry.conditions[0]!);
   const pool = ordered(
     context,
     topics.evolutions.filter(
@@ -29,145 +92,155 @@ export const buildEvolution: QuestionBuilder = (context) => {
         names.has(entry.after) &&
         (context.generations ?? generations).includes(entry.generation),
     ),
+  ).sort(
+    (a, b) =>
+      Number(numericOnlyMethod(b) === preferExactLevel) -
+      Number(numericOnlyMethod(a) === preferExactLevel),
   );
   for (const target of pool) {
-    const before = context.pool.find(
-      (candidate) => candidate.name === target.before,
-    )!;
-    const after = context.pool.find(
-      (candidate) => candidate.name === target.after,
-    )!;
+    const numericOnly = numericOnlyMethod(target);
+    const before = context.pool.find(({ name }) => name === target.before)!;
+    const after = context.pool.find(({ name }) => name === target.after)!;
     if (
-      !context.variant?.allowMissingSprites &&
+      !variant.allowMissingSprites &&
       (!before.pokemon.sprite || !after.pokemon.sprite)
     )
       continue;
     const game = topics.games[target.game];
     if (!game) continue;
-    const alternatives = topics.evolutions.filter(
+    const methods = topics.evolutions.filter(
       (entry) =>
         entry.before === target.before &&
         entry.after === target.after &&
         entry.game === target.game,
     );
-    const prompt = `What are the minimum requirements to evolve ${before.pokemon.displayName} into ${after.pokemon.displayName}?`;
-    const endpointVisuals = {
-      kind: 'evolution-endpoints' as const,
-      before: target.before,
-      after: target.after,
-      stages: getOptionVisuals(context, [target.before, target.after]),
-    };
-    const itemForRequirement = (condition: string) =>
-      topics.items.find(
-        (entry) =>
-          entry.name.replaceAll('-', ' ') ===
-          condition.replace(/^(use |holding )/, ''),
-      );
     if (
-      (context.variant?.minimumEvolutionConditions ?? 2) >
-      target.conditions.length
+      new Set(
+        methods.map((entry) =>
+          JSON.stringify([entry.trigger, entry.item, entry.conditions]),
+        ),
+      ).size !== 1
     )
       continue;
+    const requirements = evolutionRequirements(target);
+    const allTrue = requirements.flatMap((condition) => {
+      const label = evolutionConditionLabel(condition, variant);
+      return label ? [{ condition, label }] : [];
+    });
     if (
-      (context.variant?.maximumEvolutionConditions ?? Infinity) <
-      target.conditions.length
+      allTrue.length <
+      (numericOnly ? 1 : (variant.minimumEvolutionConditions ?? 1))
     )
       continue;
-    const correct = method(target);
-    let options: string[] = [];
-    for (const condition of ordered(context, target.conditions)) {
-      const requirement = evolutionRequirement(condition);
-      const itemRequirement = ['item', 'held-item'].includes(requirement.kind);
-      if (itemRequirement && !itemForRequirement(condition)?.sprite) continue;
-      const replacements = ordered(context, [
-        ...new Set(
-          topics.evolutions
-            .filter((entry) => entry.game === target.game || itemRequirement)
-            .flatMap((entry) => entry.conditions),
-        ),
-      ]).filter(
-        (replacement) =>
-          replacement !== condition &&
-          (!itemRequirement ||
-            Boolean(
-              itemForRequirement(replacement)?.sprite &&
-              itemForRequirement(replacement)?.generations.includes(
-                target.generation,
-              ),
-            )) &&
-          evolutionRequirement(replacement).kind === requirement.kind &&
-          !alternatives.some((entry) => entry.conditions.includes(replacement)),
-      );
-      if (
-        context.variant?.preferCloseConditionValues &&
-        requirement.value !== undefined
-      )
-        replacements.sort(
-          (a, b) =>
-            Math.abs(evolutionRequirement(a).value! - requirement.value) -
-            Math.abs(evolutionRequirement(b).value! - requirement.value),
-        );
-      if (replacements.length < 3) continue;
-      options = [
-        correct,
-        ...replacements.slice(0, 3).map((replacement) =>
-          method({
-            ...target,
-            conditions: target.conditions.map((value) =>
-              value === condition ? replacement : value,
-            ),
-          }),
-        ),
-      ];
-      break;
+    const trueChoices = ordered(context, allTrue).slice(
+      0,
+      variant.multiSelectEvolutionConditions && !numericOnly ? 3 : 1,
+    );
+    const trueLabels = new Set(allTrue.map(({ label }) => label));
+    const wrongByLabel = new Map<
+      string,
+      { condition: string; label: string }
+    >();
+    for (const entry of topics.evolutions) {
+      if (entry.game !== target.game) continue;
+      for (const condition of evolutionRequirements(entry)) {
+        if (requirements.includes(condition)) continue;
+        if (numericOnly && !/^at level \d+$/.test(condition)) continue;
+        const label = evolutionConditionLabel(condition, variant);
+        if (label && !trueLabels.has(label))
+          wrongByLabel.set(label, { condition, label });
+      }
     }
-    if (options.length !== 4) continue;
-    const { shared, missing } = evolutionChoiceDetails(options);
+    const wrongPool = ordered(context, [...wrongByLabel.values()]);
+    if (numericOnly) {
+      const level = Number(target.conditions[0]!.slice(9));
+      wrongPool.sort(
+        (a, b) =>
+          Math.abs(Number(a.condition.slice(9)) - level) -
+          Math.abs(Number(b.condition.slice(9)) - level),
+      );
+    }
+    const selectedWrong: typeof wrongPool = [];
+    const numeric = trueChoices.find(({ condition }) =>
+      /^at level \d+$/.test(condition),
+    );
+    if (numeric && variant.preferCloseConditionValues) {
+      const level = Number(numeric.condition.slice(9));
+      const closest = wrongPool
+        .filter(({ condition }) => /^at level \d+$/.test(condition))
+        .sort(
+          (a, b) =>
+            Math.abs(Number(a.condition.slice(9)) - level) -
+            Math.abs(Number(b.condition.slice(9)) - level),
+        )[0];
+      if (closest) selectedWrong.push(closest);
+    }
+    const usedKinds = new Set(
+      [...trueChoices, ...selectedWrong].map(({ condition }) =>
+        evolutionConditionKind(condition),
+      ),
+    );
+    for (const choice of wrongPool) {
+      if (selectedWrong.length === 4 - trueChoices.length) break;
+      if (selectedWrong.includes(choice)) continue;
+      const kind = evolutionConditionKind(choice.condition);
+      if (usedKinds.has(kind)) continue;
+      selectedWrong.push(choice);
+      usedKinds.add(kind);
+    }
+    for (const choice of wrongPool) {
+      if (selectedWrong.length === 4 - trueChoices.length) break;
+      if (!selectedWrong.includes(choice)) selectedWrong.push(choice);
+    }
+    if (selectedWrong.length !== 4 - trueChoices.length) continue;
+    const correct = trueChoices.map(({ label }) => label);
+    const options = [...correct, ...selectedWrong.map(({ label }) => label)];
+    const multipleAnswers =
+      variant.multiSelectEvolutionConditions && !numericOnly;
+    const prompt = numericOnly
+      ? 'What is the minimum level for this evolution?'
+      : multipleAnswers
+        ? 'Which of these are requirements for this evolution? Select all that apply.'
+        : 'Which of these is a requirement for this evolution?';
     const question = makeTopicQuestion(
       context,
       pokemonSubject(before),
       prompt,
-      correct,
+      multipleAnswers ? correct : correct[0]!,
       options,
       {
         prompt: {
           kind: 'text',
           text: prompt,
-          supportingText: [`Pokémon ${game.label}`, ...shared].join(' · '),
+          supportingText: `Pokémon ${game.label}`,
         },
         context: target.game,
-        visual: endpointVisuals,
+        visual: {
+          kind: 'evolution-endpoints',
+          before: target.before,
+          after: target.after,
+          stages: getOptionVisuals(context, [target.before, target.after]),
+        },
         optionLabels: Object.fromEntries(
-          options.map((value, index) => {
-            const part = missing[index]![0]!;
-            const requirement = evolutionRequirement(part);
-            const label = ['item', 'held-item'].includes(requirement.kind)
-              ? itemForRequirement(part)!.label
-              : requirement.label;
-            return [value, label];
-          }),
+          options.map((label) => [
+            label,
+            numericOnly ? label.slice('Minimum level: '.length) : label,
+          ]),
         ),
-        optionImages: Object.fromEntries(
-          options.flatMap((option, index) => {
-            const part = missing[index]![0];
-            if (
-              !part ||
-              !['item', 'held-item'].includes(evolutionRequirement(part).kind)
-            )
-              return [];
-            const item = itemForRequirement(part);
-            return item?.sprite ? [[option, item.sprite]] : [];
-          }),
-        ),
-        explanation: correct,
+        explanation: correct.join(' · '),
       },
       'evolution',
     );
     if (question)
-      return presentEvolutionQuestion(
-        { ...question, questionType: 'evolution-conditions' },
-        topics.evolutions,
-      );
+      return {
+        ...question,
+        questionType: 'evolution-conditions',
+        options: numericOnly
+          ? question.options.toSorted(
+              (a, b) => Number(a.slice(15)) - Number(b.slice(15)),
+            )
+          : question.options,
+      };
   }
 };
 export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {

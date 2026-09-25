@@ -133,9 +133,17 @@ export const questionVariants = {
     5: { sameColorOrShape: true, closeAlternatives: true },
   },
   'evolution-conditions': {
-    3: { minimumEvolutionConditions: 1, maximumEvolutionConditions: 1 },
-    4: { minimumEvolutionConditions: 2 },
-    5: { minimumEvolutionConditions: 2, preferCloseConditionValues: true },
+    3: { minimumEvolutionConditions: 1 },
+    4: { minimumEvolutionConditions: 1, evolutionLocations: true },
+    5: {
+      minimumEvolutionConditions: 2,
+      multiSelectEvolutionConditions: true,
+      exactEvolutionValues: true,
+      exactLevelQuestionChance: 0.2,
+      directEvolutionItems: true,
+      evolutionLocations: true,
+      preferCloseConditionValues: true,
+    },
   },
   'ability-effects': {
     3: {
@@ -410,7 +418,11 @@ type FamilyRules = {
   'evolution-conditions': Pick<
     VariantRules,
     | 'minimumEvolutionConditions'
-    | 'maximumEvolutionConditions'
+    | 'multiSelectEvolutionConditions'
+    | 'exactEvolutionValues'
+    | 'exactLevelQuestionChance'
+    | 'directEvolutionItems'
+    | 'evolutionLocations'
     | 'preferCloseConditionValues'
   >;
   'ability-effects': EffectDistractors &
