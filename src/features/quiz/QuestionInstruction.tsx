@@ -17,11 +17,9 @@ export const QuestionInstruction = ({
       : question.questionType === 'hidden-abilities'
         ? 'What is this Pokémon’s Hidden Ability?'
         : kind === 'evolution-endpoints'
-          ? question.questionType === 'evolution-items'
-            ? 'Which item triggers this evolution?'
-            : question.prompt.kind === 'text'
-              ? question.prompt.text
-              : 'Which requirement completes this evolution?'
+          ? question.prompt.kind === 'text'
+            ? question.prompt.text
+            : 'Which requirement completes this evolution?'
           : undefined;
   if (subjectInstruction)
     return (

@@ -40,13 +40,6 @@ export const questionDefinitions = {
     description: 'Identify what an item does.',
     group: 'knowledge',
   },
-  'evolution-items': {
-    label: 'Evolution items',
-    specialty: 'evolution',
-    description:
-      'Choose the item used directly to evolve the pictured Pokémon.',
-    group: 'knowledge',
-  },
   'weight-comparison': {
     label: 'Weight comparison',
     specialty: 'description',
@@ -287,9 +280,6 @@ export const questionDefinitions = {
 
 export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
-export const activeQuestionTypes = questionTypes.filter(
-  (type) => type !== 'evolution-items',
-);
 const standardQuestionTypes = questionTypes.filter(
   (type) => 'standard' in questionDefinitions[type],
 );
@@ -300,11 +290,13 @@ export const supportsStandardQuestion = (type: QuestionType | 'champion') =>
   type === 'champion' || standardQuestionTypes.includes(type);
 
 export const getQuestionTitle = (question: {
-  questionType: QuestionType | 'champion';
+  questionType: QuestionType | 'champion' | 'archived';
 }): string =>
   question.questionType === 'champion'
     ? 'Champion question'
-    : questionDefinitions[question.questionType].label;
+    : question.questionType === 'archived'
+      ? 'Question'
+      : questionDefinitions[question.questionType].label;
 
 const categoryLabels: Record<QuestionCategory, string> = {
   knowledge: 'General knowledge',

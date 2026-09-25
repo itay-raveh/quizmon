@@ -15,7 +15,7 @@ import {
 import { type QuestionHistory } from './question-history.ts';
 import type { QuestionContext } from './questions/context.ts';
 import { buildQuestionType } from './questions/registry.ts';
-import type { QuestionData } from './types.ts';
+import type { QuestionData, QuestionType } from './types.ts';
 
 const getQuestionCount = (
   availableCount: number,
@@ -42,7 +42,7 @@ const createQuestionContext = (
 
 const buildFirstAvailableQuestion = (
   context: QuestionContext,
-  types: readonly QuestionData['questionType'][],
+  types: readonly (QuestionType | 'champion')[],
 ): QuestionData | undefined => {
   for (const type of types) {
     const question = buildQuestionType(context, type);
@@ -89,7 +89,7 @@ export const buildQuestions = (
 
 const buildQuestionSequence = (
   catalog: PokemonCatalog,
-  questionSequence: readonly QuestionData['questionType'][],
+  questionSequence: readonly (QuestionType | 'champion')[],
   settings: GameSettings,
   random: () => number,
   history?: QuestionHistory,

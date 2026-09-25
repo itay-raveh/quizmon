@@ -4,14 +4,13 @@ import { answerObservationSchema } from '../../quiz/answer-observation.ts';
 import type { ActiveGameSnapshot } from '../active-game.ts';
 import { answerSubjectSchema } from '../../quiz/subject.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
-import { isQuestionData } from '../../quiz/question-lineup.ts';
-import { questionTypes } from '../../quiz/questions/definitions.ts';
+import { savedQuestionSchema } from '../../quiz/question-lineup.ts';
 import {
-  questionCategories,
-  type GameMode,
-  type QuestionData,
-} from '../../quiz/types.ts';
-import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
+  questionTypes,
+  type QuestionType,
+} from '../../quiz/questions/definitions.ts';
+import { questionCategories, type GameMode } from '../../quiz/types.ts';
+import { savedScoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
 import { isDailyTrack } from '../../quiz/daily-track.ts';
 import {
@@ -27,6 +26,16 @@ import {
 
 const nonnegativeInteger = z.int().min(0);
 const finiteNonnegative = z.number().nonnegative();
+const currentQuestionTypes = new Set<string>([...questionTypes, 'champion']);
+const historicalQuestionType = z
+  .string()
+  .min(1)
+  .max(200)
+  .transform((type) =>
+    currentQuestionTypes.has(type)
+      ? (type as QuestionType | 'champion')
+      : ('archived' as const),
+  );
 const mode = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('training') }),
   z.object({ kind: z.literal('league') }),
@@ -43,14 +52,20 @@ const answer = z.object({
   unassistedSearch: z.boolean().optional(),
   correct: z.boolean(),
   points: finiteNonnegative,
-  questionType: z.enum([...questionTypes, 'champion']),
+  questionType: historicalQuestionType,
   responseMilliseconds: finiteNonnegative.optional(),
   speedBonus: finiteNonnegative.optional(),
   subject: answerSubjectSchema,
 });
 const settings = z.looseObject({
   generations: z.array(z.enum(generations)).min(1),
-  questionTypes: z.array(z.enum(questionTypes)).min(1),
+  questionTypes: z
+    .array(z.string().min(1).max(200))
+    .min(1)
+    .transform((selected) => {
+      const available = questionTypes.filter((type) => selected.includes(type));
+      return available.length ? available : [...questionTypes];
+    }),
   trainingMode: z.enum(trainingModes),
   formGroups: z.array(z.enum(formGroups)).min(1),
   answerFlow: z.enum(answerFlows),
@@ -59,20 +74,25 @@ const settings = z.looseObject({
   soundVolume: finiteNonnegative.max(1),
   difficulty: difficultySchema.optional(),
   questionSelection: z.enum(['custom', 'automatic']).optional(),
-  automaticQuestionTypes: z.array(z.enum(questionTypes)).optional(),
+  automaticQuestionTypes: z
+    .array(z.string().min(1).max(200))
+    .transform((selected) =>
+      questionTypes.filter((type) => selected.includes(type)),
+    )
+    .optional(),
 });
 const round = z
   .object({
     version: z.literal(SAVE_SCHEMA_VERSION),
     completedAt: utcTimestampSchema.optional(),
     startedOn: dailyDateSchema.optional(),
-    scoreMultipliers: scoreMultipliersSchema.optional(),
+    scoreMultipliers: savedScoreMultipliersSchema.optional(),
     contentVersion: nonnegativeInteger,
     elapsedMilliseconds: finiteNonnegative,
     questionCount: nonnegativeInteger.min(1),
     seed: z.string().min(1).max(200),
     answers: z.array(answer),
-    questions: z.array(z.custom<QuestionData>(isQuestionData)),
+    questions: z.array(savedQuestionSchema),
     roundId: uuidSchema,
     mode,
     settings,

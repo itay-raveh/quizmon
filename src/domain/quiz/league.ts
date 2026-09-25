@@ -1,5 +1,5 @@
 import { createSeededRandom, shuffle } from '../../lib/random.ts';
-import type { GameResult, QuestionData, QuestionType } from './types.ts';
+import type { GameResult, QuestionType } from './types.ts';
 
 const LEAGUE_STAGE_SIZE = 3;
 
@@ -58,7 +58,7 @@ export { getChallengeSettings as getLeagueSettings } from '../settings/game-sett
 
 export const getLeagueQuestionTypes = (
   seed: string,
-): QuestionData['questionType'][] => [
+): (QuestionType | 'champion')[] => [
   ...stageQuestionTypes.flatMap((types, index) =>
     shuffle(types, createSeededRandom(`quizmon-league-types:${seed}:${index}`)),
   ),

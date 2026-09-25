@@ -72,7 +72,7 @@ const roundAnswerSchema = z.object({
   ),
   subject: answerSubjectSchema,
   category: z.enum(questionCategories),
-  question_type: z.enum([...questionTypes, 'champion']),
+  question_type: z.string().min(1).max(200),
   clues_used: z.int().min(0).max(4),
   response_ms: z.int().min(0).max(86_400_000),
   unassisted_search: z.boolean(),
@@ -92,12 +92,12 @@ const configSchema = z.object({
     .max(20)
     .refine((values) => new Set(values).size === values.length),
   question_types: z
-    .array(z.enum(questionTypes))
+    .array(z.string().min(1).max(200))
     .min(1)
     .max(100)
     .refine((values) => new Set(values).size === values.length),
   auto_types: z
-    .array(z.enum(questionTypes))
+    .array(z.string().min(1).max(200))
     .max(100)
     .refine((values) => new Set(values).size === values.length),
   daily_track: z.custom<DailyTrack>(isDailyTrack).optional(),
@@ -299,7 +299,11 @@ export function scoreRound(
       observation,
       subject: answer.subject,
       category: answer.category,
-      questionType: answer.question_type,
+      questionType: questionTypes.some((type) => type === answer.question_type)
+        ? (answer.question_type as (typeof questionTypes)[number])
+        : answer.question_type === 'champion'
+          ? 'champion'
+          : 'archived',
       cluesUsed: answer.clues_used,
       responseMilliseconds: answer.response_ms,
       unassistedSearch: answer.unassisted_search,
@@ -316,7 +320,9 @@ export function scoreRound(
             difficulty: config.difficulty,
             generations: config.generations,
             formGroups: config.form_groups,
-            questionTypes: config.question_types,
+            questionTypes: questionTypes.filter((type) =>
+              config.question_types.includes(type),
+            ),
           },
           answers,
         )

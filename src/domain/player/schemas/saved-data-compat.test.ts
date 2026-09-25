@@ -1,4 +1,6 @@
 import { isQuestionData } from '../../quiz/question-lineup';
+import { getUnifiedScoreKey } from '../../quiz/scoring';
+import { completion } from '../../../../tests/online/progress-fixtures';
 import { defaultGameSettings } from '../../settings/game-settings';
 import { emptyPlayerData } from '../player-save';
 import { parseActiveGameSave } from '../active-game';
@@ -34,7 +36,7 @@ const round = {
 it('keeps saved question acceptance and required option invariants', () => {
   expect(isQuestionData({ ...question, futureField: true })).toBe(true);
   expect(isQuestionData({ ...question, questionType: 'evolution-items' })).toBe(
-    true,
+    false,
   );
   expect(isQuestionData({ ...question, options: ['A', 'A'] })).toBe(false);
   expect(
@@ -69,6 +71,25 @@ it('preserves unfinished-round output and unknown settings', () => {
       ],
     }),
   ).toBeNull();
+});
+
+it('loads an unfinished round with a retired question without offering it again', () => {
+  const saved = {
+    ...round,
+    questions: [{ ...question, questionType: 'evolution-items' }],
+    settings: {
+      ...defaultGameSettings,
+      questionTypes: ['evolution-items'],
+      automaticQuestionTypes: ['evolution-items'],
+    },
+  };
+  const restored = parseRound(saved);
+  expect(restored?.questions[0]?.questionType).toBe('archived');
+  expect(restored?.questions[0]?.prompt).toEqual(question.prompt);
+  expect(restored?.settings.questionTypes).toEqual(
+    defaultGameSettings.questionTypes,
+  );
+  expect(restored?.settings.automaticQuestionTypes).toEqual([]);
 });
 
 it('rejects unsafe saved round counts', () => {
@@ -125,6 +146,36 @@ it('deduplicates saved selections before they become game settings', () => {
   expect(parsed.settings?.automaticQuestionTypes).toEqual(['type-check']);
 });
 
+it('keeps historical scores and counts while filtering retired settings', () => {
+  const base = emptyPlayerData();
+  const result = structuredClone(completion(crypto.randomUUID()).result);
+  Reflect.set(result.answers[0]!, 'questionType', 'evolution-items');
+  result.rules!.questionTypes = ['evolution-items'];
+  result.scoreMultipliers!.questionTypes[0]!.questionType = 'evolution-items';
+  const parsed = parsePlayerData({
+    ...base,
+    settings: {
+      ...defaultGameSettings,
+      questionTypes: ['evolution-items', 'type-check'],
+    },
+    results: {
+      ...base.results,
+      progress: {
+        ...base.results.progress,
+        correctQuestionTypes: { 'evolution-items': 7 },
+      },
+      training: { [getUnifiedScoreKey(result)]: result },
+    },
+  });
+  expect(parsed.settings?.questionTypes).toEqual(['type-check']);
+  expect(parsed.results.progress.correctQuestionTypes['evolution-items']).toBe(
+    7,
+  );
+  expect(parsed.results.training[getUnifiedScoreKey(result)]?.score).toBe(
+    result.score,
+  );
+});
+
 it('accepts sparse saved counts and rejects unknown count keys', () => {
   const base = emptyPlayerData();
   const progress = {
@@ -143,6 +194,20 @@ it('accepts sparse saved counts and rejects unknown count keys', () => {
       results: {
         ...results,
         progress: { ...progress, correctCategories: { unknown: 1 } },
+      },
+    }),
+  ).toThrow(SaveError);
+  expect(() =>
+    parsePlayerData({
+      ...base,
+      results: {
+        ...results,
+        progress: {
+          ...progress,
+          correctQuestionTypes: Object.fromEntries(
+            Array.from({ length: 201 }, (_, index) => [`old-${index}`, 1]),
+          ),
+        },
       },
     }),
   ).toThrow(SaveError);

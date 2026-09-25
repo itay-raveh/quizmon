@@ -7,13 +7,10 @@ import {
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../../quiz/league.ts';
 import { questionHistorySchema } from '../../quiz/question-history.ts';
-import {
-  isQuestionLineup,
-  type QuestionLineup,
-} from '../../quiz/question-lineup.ts';
+import { savedLineupSchema } from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
-import { roundRulesSchema } from '../../quiz/round-rules.ts';
-import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
+import { savedRoundRulesSchema } from '../../quiz/round-rules.ts';
+import { savedScoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { getUnifiedScoreKey } from '../../quiz/scoring.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
 import {
@@ -41,11 +38,11 @@ const nonnegativeInteger = z.int().min(0);
 const finiteNonnegative = z.number().nonnegative();
 const counts = (keys: readonly string[]) =>
   z.partialRecord(z.enum(keys), nonnegativeInteger);
-const savedQuestionTypes = [...questionTypes, 'champion'] as const;
+const historicalQuestionType = z.string().min(1).max(200);
 const savedResult = z
   .object({
-    scoreMultipliers: scoreMultipliersSchema.optional(),
-    rules: roundRulesSchema.optional(),
+    scoreMultipliers: savedScoreMultipliersSchema.optional(),
+    rules: savedRoundRulesSchema.optional(),
     dailyTrack: z.custom<DailyTrack>(isDailyTrack).optional(),
     puzzleId: z
       .string()
@@ -59,7 +56,7 @@ const savedResult = z
         correct: z.boolean(),
         subject: answerSubjectSchema.optional(),
         points: nonnegativeInteger,
-        questionType: z.enum(savedQuestionTypes).optional(),
+        questionType: historicalQuestionType.optional(),
         responseMilliseconds: finiteNonnegative.optional(),
         speedBonus: nonnegativeInteger.optional(),
       }),
@@ -96,7 +93,9 @@ export const progressSchema = z.object({
   championAnswersWithoutClues: nonnegativeInteger,
   correctCategories: counts(questionCategories),
   correctGenerations: counts(generations),
-  correctQuestionTypes: counts(savedQuestionTypes),
+  correctQuestionTypes: z
+    .record(historicalQuestionType, nonnegativeInteger)
+    .refine((value) => Object.keys(value).length <= 200),
   correctPokemon: z.array(name).transform((names) => [...new Set(names)]),
   masteryRounds: nonnegativeInteger,
   quickAttackRounds: nonnegativeInteger,
@@ -148,13 +147,16 @@ export const savedSettingsSchema = z.object({
       generations.filter((value) => selected.includes(value)),
     ),
   questionTypes: z
-    .array(z.enum(questionTypes))
+    .array(historicalQuestionType)
     .min(1)
-    .transform((selected) =>
-      questionTypes.filter((value) => selected.includes(value)),
-    ),
+    .transform((selected) => {
+      const available = questionTypes.filter((value) =>
+        selected.includes(value),
+      );
+      return available.length ? available : [...questionTypes];
+    }),
   automaticQuestionTypes: z
-    .array(z.enum(questionTypes))
+    .array(historicalQuestionType)
     .transform((selected) =>
       questionTypes.filter((value) => selected.includes(value)),
     )
@@ -168,8 +170,7 @@ const playerData = z.object({
       (records) => new Set(records.map(({ id }) => id)).size === records.length,
     ),
   questionHistory: questionHistorySchema,
-  leagueLineup: z
-    .custom<QuestionLineup>(isQuestionLineup)
+  leagueLineup: savedLineupSchema
     .nullable()
     .refine(
       (lineup) =>

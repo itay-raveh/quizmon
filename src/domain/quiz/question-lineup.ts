@@ -158,14 +158,32 @@ const question = z
         answer.correctOptions.length === 1),
   );
 
+const currentQuestionTypes = new Set<string>([...questionTypes, 'champion']);
+export const savedQuestionSchema = z
+  .object({
+    ...question.shape,
+    questionType: z
+      .string()
+      .min(1)
+      .max(200)
+      .transform((type) =>
+        currentQuestionTypes.has(type)
+          ? (type as QuestionData['questionType'])
+          : ('archived' as const),
+      ),
+  })
+  .refine(
+    ({ answer, options }) =>
+      answer.correctOptions.every((option) => options.includes(option)) &&
+      (answer.interaction === 'multi-select' ||
+        answer.correctOptions.length === 1),
+  );
+
 export const isQuestionData = (value: unknown): value is QuestionData =>
   question.safeParse(value).success;
 
-const lineup = z.object({
+export const savedLineupSchema = z.object({
   seed: text.min(1).max(200),
   contentVersion: nonnegativeInteger,
-  questions: z.array(question),
+  questions: z.array(savedQuestionSchema),
 });
-
-export const isQuestionLineup = (value: unknown): value is QuestionLineup =>
-  lineup.safeParse(value).success;

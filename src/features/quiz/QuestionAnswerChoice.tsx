@@ -13,7 +13,6 @@ import { isVisible, spriteState } from '@/domain/quiz/question-rendering';
 import type { QuestionData } from '@/domain/quiz/types';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
 import { answerOptionState } from './answer-option-state';
-import { supplementalItemSprites } from './item-sprites';
 import { MoveReveal } from './MoveReveal';
 import { NatureEffect } from './NatureEffect';
 import { QuestionIdentity, QuestionSprite } from './QuestionEntity';
@@ -73,11 +72,7 @@ export const QuestionAnswerChoice = ({
         )}
       </span>
     ) : null;
-  const itemImage =
-    question.optionImages?.[option] ??
-    (question.questionType === 'evolution-items'
-      ? supplementalItemSprites[option]
-      : undefined);
+  const itemImage = question.optionImages?.[option];
   const visual =
     policy.sprite === 'never' ? undefined : question.optionVisuals?.[option];
   const dexNumber =

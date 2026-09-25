@@ -171,7 +171,7 @@ export interface QuestionData {
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
   prompt: QuestionPrompt;
-  questionType: QuestionType | 'champion';
+  questionType: QuestionType | 'champion' | 'archived';
   searchOptions?: PokemonSearchOption[];
   visual?: QuestionVisual;
 }
@@ -192,7 +192,7 @@ export interface SavedAnswerResult {
   correct: boolean;
   subject?: AnswerSubject;
   points: number;
-  questionType?: QuestionType | 'champion';
+  questionType?: string;
   responseMilliseconds?: number;
   speedBonus?: number;
 }

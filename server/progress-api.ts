@@ -8,6 +8,7 @@ import {
 } from '../src/domain/sync/round-facts.ts';
 import { isRecord, isUuid } from '../src/lib/validation.ts';
 import { getTrainerSpecialtyCount } from '../src/domain/player/trainer-progression.ts';
+import { defaultGameSettings } from '../src/domain/settings/game-settings.ts';
 import * as schema from './schema.ts';
 
 type Tx = Parameters<Parameters<NodePgDatabase['transaction']>[0]>[0];
@@ -47,7 +48,11 @@ export async function bootstrapPlayer(db: NodePgDatabase, playerId: string) {
     if (existing) return { player: existing, epoch: instance.epoch };
     await db
       .insert(schema.player)
-      .values({ id: playerId, code: friendCode() })
+      .values({
+        id: playerId,
+        code: friendCode(),
+        questionTypes: defaultGameSettings.questionTypes,
+      })
       .onConflictDoNothing();
   }
   throw new ProgressError('player_initialization_failed', 503);

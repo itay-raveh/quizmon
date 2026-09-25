@@ -1,4 +1,4 @@
-import { supportsStandardQuestion } from './definitions.ts';
+import { supportsStandardQuestion, type QuestionType } from './definitions.ts';
 import {
   getPokemonRecency,
   getQuestionRecency,
@@ -52,7 +52,6 @@ import { applyQuestionVariant } from './variants.ts';
 const questionBuilders = {
   'item-identification': buildItemIdentification,
   'medicine-cabinet': buildEffect,
-  'evolution-items': buildEvolution,
   'weight-comparison': buildMeasurement('weight'),
   'height-comparison': buildMeasurement('height'),
   'move-types': buildMove,
@@ -90,10 +89,10 @@ const questionBuilders = {
   'type-matchup': buildMatchupQuestion,
   'counter-pick': buildCounterPickQuestion,
   champion: buildChampionQuestion,
-} satisfies Record<QuestionData['questionType'], QuestionBuilder>;
+} satisfies Record<QuestionType | 'champion', QuestionBuilder>;
 export const buildQuestionType = (
   context: QuestionContext,
-  questionType: QuestionData['questionType'],
+  questionType: QuestionType | 'champion',
 ): QuestionData | undefined => {
   if (!context.difficulty && !supportsStandardQuestion(questionType))
     return undefined;

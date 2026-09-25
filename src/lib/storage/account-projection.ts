@@ -1,6 +1,7 @@
 import { projectRoundHistory } from '../../domain/player/game-history';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
+import { questionTypes } from '../../domain/quiz/questions/definitions';
 import { SaveError } from '../../domain/player/save-schema';
 import { canonical } from '../../domain/sync/progress';
 import { validateRoundFact } from '../../domain/sync/round-facts';
@@ -148,5 +149,14 @@ export async function projectAccount(
         automaticQuestionTypes: value.auto_types ?? undefined,
       });
   }
+  settings.questionTypes = questionTypes.filter((type) =>
+    settings.questionTypes.includes(type),
+  );
+  if (!settings.questionTypes.length)
+    settings.questionTypes = [...questionTypes];
+  if (settings.automaticQuestionTypes)
+    settings.automaticQuestionTypes = questionTypes.filter((type) =>
+      settings.automaticQuestionTypes?.includes(type),
+    );
   state.save.data = data;
 }

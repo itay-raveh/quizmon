@@ -18,7 +18,7 @@ it('retains review evidence and prunes only matching downloaded rounds after ack
     CREATE TABLE local_actions (id TEXT PRIMARY KEY, payload TEXT);
     CREATE TABLE local_completions (id TEXT PRIMARY KEY, payload TEXT);
     CREATE TABLE pending_actions (id TEXT PRIMARY KEY, payload TEXT, sequence INTEGER);
-    CREATE TABLE player (id TEXT PRIMARY KEY, joined_on TEXT);
+    CREATE TABLE player (id TEXT PRIMARY KEY, joined_on TEXT, question_types TEXT, auto_types TEXT);
     CREATE TABLE round (id TEXT PRIMARY KEY, player_id TEXT, mode TEXT, day TEXT, puzzle_id TEXT, started_on TEXT, completed_at TEXT, credited INTEGER, data TEXT);
   `);
   const tx = {
@@ -43,10 +43,15 @@ it('retains review evidence and prunes only matching downloaded rounds after ack
     account: { id: 'trainer', serverEpoch: crypto.randomUUID() },
   });
   try {
-    await tx.execute('INSERT INTO player(id,joined_on) VALUES (?,?)', [
-      'trainer',
-      round.completed_at,
-    ]);
+    await tx.execute(
+      'INSERT INTO player(id,joined_on,question_types,auto_types) VALUES (?,?,?,?)',
+      [
+        'trainer',
+        round.completed_at,
+        JSON.stringify(['evolution-items', 'type-check']),
+        JSON.stringify(['evolution-items']),
+      ],
+    );
     await tx.execute('INSERT INTO local_completions(id,payload) VALUES (?,?)', [
       round.id,
       JSON.stringify(round),
@@ -58,6 +63,8 @@ it('retains review evidence and prunes only matching downloaded rounds after ack
     const before = fresh();
     await projectAccount(before, tx);
     expect(before.save.data.pokedex).toContain('bulbasaur');
+    expect(before.save.data.settings?.questionTypes).toEqual(['type-check']);
+    expect(before.save.data.settings?.automaticQuestionTypes).toEqual([]);
 
     await tx.execute('INSERT INTO local_state(id,payload) VALUES (?,?)', [
       `failure:${round.id}`,

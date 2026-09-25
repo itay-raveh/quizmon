@@ -37,7 +37,10 @@ export const addResultToProgress = (
       championAnswersWithoutClues += Number(
         answer.unassistedSearch ?? answer.cluesUsed === 0,
       );
-    } else if (answer.questionType !== undefined) {
+    } else if (
+      answer.questionType !== undefined &&
+      answer.questionType !== 'archived'
+    ) {
       const questionType = answer.questionType;
       correctQuestionTypes[questionType] =
         (correctQuestionTypes[questionType] ?? 0) + 1;

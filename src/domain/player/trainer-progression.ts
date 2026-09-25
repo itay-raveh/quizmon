@@ -1,6 +1,5 @@
 import { generations, type PokemonCatalog } from '../pokemon/types.ts';
 import {
-  activeQuestionTypes,
   questionDefinitions,
   questionTypes,
 } from '../quiz/questions/definitions.ts';
@@ -138,9 +137,9 @@ const trainerBadgeDefinitions = [
           [100, 30],
         ] as const
       ).map(([percentage, minimum]) => {
-        const goal = Math.ceil((activeQuestionTypes.length * percentage) / 100);
+        const goal = Math.ceil((questionTypes.length * percentage) / 100);
         return {
-          current: activeQuestionTypes.filter(
+          current: questionTypes.filter(
             (type) => (stats.correctQuestionTypes[type] ?? 0) >= minimum,
           ).length,
           goal,

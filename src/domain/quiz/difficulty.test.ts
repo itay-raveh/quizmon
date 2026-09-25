@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { difficultyLevels, resolveDifficultyVariant } from './difficulty';
 import { getQuestionVariant, type VariantRules } from './question-variants';
 import { questionVariants } from '../../question-rules';
-import { activeQuestionTypes, questionTypes } from './questions/definitions';
+import { questionTypes } from './questions/definitions';
 
 describe('difficulty variants', () => {
   it.each([
@@ -57,12 +57,6 @@ it('can disable an inherited family at a later level', () => {
   }
 });
 
-it('retires evolution items without invalidating saved question identities', () => {
-  expect(questionTypes).toContain('evolution-items');
-  expect(activeQuestionTypes).not.toContain('evolution-items');
-  expect(
-    difficultyLevels.map((level) =>
-      getQuestionVariant('evolution-items', level),
-    ),
-  ).toEqual([undefined, undefined, undefined, undefined, undefined]);
+it('does not offer evolution items as a question family', () => {
+  expect(questionTypes).not.toContain('evolution-items');
 });

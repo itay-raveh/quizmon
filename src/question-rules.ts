@@ -1,7 +1,7 @@
 import type { DifficultyVariants } from './domain/quiz/difficulty.ts';
 import type { VariantRules } from './domain/quiz/question-variants.ts';
 import type { RenderingOverrides } from './domain/quiz/question-rendering.ts';
-import type { QuestionData } from './domain/quiz/types.ts';
+import type { QuestionType } from './domain/quiz/questions/definitions.ts';
 
 // Shared ranking defaults. Per-family distractorPoolSize overrides the shortlist.
 export const questionTuning = {
@@ -56,7 +56,6 @@ export const questionVariants = {
       allowMissingSprites: true,
     },
   },
-  'evolution-items': { 1: { enabled: false } },
   'weight-comparison': {
     2: {
       measurement: {
@@ -363,7 +362,7 @@ export const questionVariants = {
     5: { finale: { opening: 'search', assistance: false, penalty: 0 } },
   },
 } satisfies {
-  [Type in QuestionData['questionType']]: DifficultyVariants<
+  [Type in QuestionType | 'champion']: DifficultyVariants<
     FamilyRules[Type] & Pick<VariantRules, 'enabled' | 'rendering'>
   > & { rendering?: RenderingOverrides };
 };
@@ -396,13 +395,6 @@ type FamilyRules = {
   >;
   'medicine-cabinet': EffectDistractors &
     Pick<VariantRules, 'sameItemCategory' | 'allowMissingSprites'>;
-  'evolution-items': Pick<
-    VariantRules,
-    | 'distinctItemCategories'
-    | 'stonesOnly'
-    | 'directUseItemsOnly'
-    | 'allowMissingSprites'
-  >;
   'weight-comparison': Pick<VariantRules, 'measurement'>;
   'height-comparison': Pick<VariantRules, 'measurement'>;
   'move-types': Pick<

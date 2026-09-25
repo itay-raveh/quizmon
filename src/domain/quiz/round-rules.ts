@@ -6,7 +6,7 @@ import { difficultySchema } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
 import { type GameResult } from './types.ts';
 
-export const roundRulesSchema = z.object({
+const roundRulesSchema = z.object({
   automaticQuestionTypes: z.array(z.enum(questionTypes)).min(1).optional(),
   version: z.int().min(0),
   difficulty: difficultySchema,
@@ -15,7 +15,12 @@ export const roundRulesSchema = z.object({
   questionTypes: z.array(z.enum(questionTypes)).min(1),
 });
 
-export type RoundRules = z.infer<typeof roundRulesSchema>;
+export const savedRoundRulesSchema = roundRulesSchema.extend({
+  automaticQuestionTypes: z.array(z.string().min(1).max(200)).min(1).optional(),
+  questionTypes: z.array(z.string().min(1).max(200)).min(1),
+});
+
+export type RoundRules = z.infer<typeof savedRoundRulesSchema>;
 
 export const getRulesScoreKey = (
   result: Pick<GameResult, 'contentVersion' | 'scoreVersion' | 'rules'>,

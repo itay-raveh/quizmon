@@ -11,6 +11,7 @@ import {
 } from '../quiz/scoring.ts';
 import { trainingConfig, versions } from '../sync/progress.ts';
 import { defaultGameSettings } from '../settings/game-settings.ts';
+import { questionTypes } from '../quiz/questions/definitions.ts';
 import type { RoundCompletion } from '../sync/progress.ts';
 import { emptyPlayerData, type PlayerData } from './player-save.ts';
 import { applyResult } from './game-progress.ts';
@@ -109,8 +110,12 @@ export function projectRoundHistory(rounds: Iterable<RoundFact>): GameProgress {
       questionSelection: config.question_selection,
       generations: config.generations,
       formGroups: config.form_groups,
-      questionTypes: config.question_types,
-      automaticQuestionTypes: config.auto_types,
+      questionTypes: questionTypes.filter((type) =>
+        config.question_types.includes(type),
+      ),
+      automaticQuestionTypes: questionTypes.filter((type) =>
+        config.auto_types.includes(type),
+      ),
     };
     const victory = round.data.victory
       ? {

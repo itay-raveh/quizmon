@@ -50,8 +50,6 @@ export interface VariantRules {
   distinctItemCategories?: boolean;
   sameItemPocket?: boolean;
   sameItemCategory?: boolean;
-  stonesOnly?: boolean;
-  directUseItemsOnly?: boolean;
   measurement?: MeasurementRules;
   showMoveDescription?: boolean;
   excludeTypeHintNames?: boolean;
@@ -87,9 +85,12 @@ export const getQuestionVariant = (
   type: QuestionData['questionType'],
   difficulty: Difficulty,
 ) => {
-  const row: DifficultyVariants<VariantRules> & {
-    rendering?: RenderingOverrides;
-  } = questionVariants[type];
+  const row:
+    | (DifficultyVariants<VariantRules> & {
+        rendering?: RenderingOverrides;
+      })
+    | undefined = type === 'archived' ? undefined : questionVariants[type];
+  if (!row) return undefined;
   const resolved = resolveDifficultyVariant(row, difficulty);
   if (resolved?.variant.enabled === false) return undefined;
   return (
@@ -113,7 +114,10 @@ export const resolveQuestionRendering = (
   (level ? getQuestionVariant(type, level)?.variant.rendering : undefined) ??
   mergeRendering(
     defaultQuestionRendering,
-    (questionVariants[type] as { rendering?: RenderingOverrides }).rendering,
+    type === 'archived'
+      ? undefined
+      : (questionVariants[type] as { rendering?: RenderingOverrides })
+          .rendering,
   );
 
 export const getQuestionRendering = (
