@@ -1,26 +1,15 @@
 import { site } from '@/app/site';
 import { downloadBlob } from '@/lib/download';
-import {
-  trainerViewLabels,
-  type TrainerView,
-} from '@/domain/player/trainer-progression';
+import { trainerViewLabels } from '@/domain/player/trainer-progression';
 import { shareContent } from '@/features/sharing/result-sharing';
 
-type TrainerArtifactView = Exclude<TrainerView, 'pokedex'> | 'hall';
+type TrainerArtifactView = 'front' | 'hall';
 
 const artifactDetails = {
   hall: { filename: 'quizmon-hall-of-fame.png', label: 'Hall of Fame' },
-  badges: {
-    filename: 'quizmon-league-badge-case.png',
-    label: trainerViewLabels.badges,
-  },
   front: {
     filename: 'quizmon-trainer-card.png',
     label: trainerViewLabels.front,
-  },
-  titles: {
-    filename: 'quizmon-trainer-titles.png',
-    label: trainerViewLabels.titles,
   },
 } satisfies Record<TrainerArtifactView, { filename: string; label: string }>;
 

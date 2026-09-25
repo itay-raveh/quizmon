@@ -69,12 +69,6 @@ const trainerViews = [
   ['pokedex', 'Pokédex', BookOpenIcon],
 ] as const;
 
-const shareLabels = {
-  badges: 'case',
-  front: 'card',
-  titles: 'titles',
-} satisfies Record<Exclude<TrainerView, 'pokedex'>, string>;
-
 const searchAvatars = createSearch(
   trainerAvatarOptions.map((avatar) => ({
     ...avatar,
@@ -125,6 +119,10 @@ export const TrainerPassport = ({
     image: Blob;
     key: string;
   } | null>(null);
+  const [failedPreparationKey, setFailedPreparationKey] = useState<
+    string | null
+  >(null);
+  const [preparationAttempt, setPreparationAttempt] = useState(0);
   const [shareNotice, setShareNotice] = useState<ShareNotice | null>(null);
   const [selectedBadgeId, setSelectedBadgeId] = useState<TrainerBadgeId | null>(
     null,
@@ -154,6 +152,9 @@ export const TrainerPassport = ({
   const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank).toLowerCase();
   const canShareArtifact = supportsTrainerArtifactSharing();
+  const preparedImage =
+    preparedArtifact?.key === artifactKey ? preparedArtifact.image : undefined;
+  const preparationFailed = failedPreparationKey === artifactKey;
   const badges = getTrainerBadges(stats, catalog);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
 
@@ -168,6 +169,30 @@ export const TrainerPassport = ({
     const timeoutId = window.setTimeout(() => setRevealing(false), 560);
     return () => window.clearTimeout(timeoutId);
   }, [revealing]);
+
+  useEffect(() => {
+    if (view !== 'front' || !canShareArtifact) return;
+    const card = artifactRef.current;
+    if (!card) return;
+    let active = true;
+    void renderTrainerArtifactImage(card)
+      .then((image) => {
+        if (!active) return;
+        setPreparedArtifact({ image, key: artifactKey });
+        setShareNotice(null);
+      })
+      .catch(() => {
+        if (!active) return;
+        setFailedPreparationKey(artifactKey);
+        setShareNotice({
+          message: 'Image could not be prepared.',
+          visible: true,
+        });
+      });
+    return () => {
+      active = false;
+    };
+  }, [artifactKey, canShareArtifact, preparationAttempt, view]);
 
   const save = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -210,29 +235,22 @@ export const TrainerPassport = ({
 
   const exportArtifact = async () => {
     const artifact = artifactRef.current;
-    if (!artifact || preparingArtifact || view === 'pokedex') return;
+    if (!artifact || preparingArtifact || view !== 'front') return;
+    if (canShareArtifact && !preparedImage) {
+      setFailedPreparationKey(null);
+      setShareNotice(null);
+      setPreparationAttempt((attempt) => attempt + 1);
+      return;
+    }
 
     setPreparingArtifact(true);
     setShareNotice(null);
     try {
-      if (canShareArtifact && preparedArtifact?.key !== artifactKey) {
-        const image = await renderTrainerArtifactImage(artifact);
-        setPreparedArtifact({ image, key: artifactKey });
-        setShareNotice({
-          message: 'PNG ready. Select Share again to open your share sheet.',
-          visible: true,
-        });
-        return;
-      }
-      const outcome = await exportArtifactImage(artifact, view, {
+      const outcome = await exportArtifactImage(artifact, 'front', {
         attemptShare: canShareArtifact,
         onShareError: 'download',
-        preparedImage:
-          preparedArtifact?.key === artifactKey
-            ? preparedArtifact.image
-            : undefined,
+        preparedImage,
       });
-      if (outcome !== 'cancelled') setPreparedArtifact(null);
       if (outcome === 'unsupported-downloaded') {
         setShareNotice({
           message: 'PNG downloaded. Share it from your photos.',
@@ -245,7 +263,7 @@ export const TrainerPassport = ({
         });
       } else if (outcome === 'shared') {
         setShareNotice({
-          message: `${trainerViewLabels[view]} shared.`,
+          message: `${trainerViewLabels.front} shared.`,
           visible: false,
         });
       }
@@ -394,12 +412,10 @@ export const TrainerPassport = ({
         ) : view === 'badges' ? (
           <TrainerBadgeCase
             badges={badges}
-            caseRef={artifactRef}
             onSelect={(badge) => setSelectedBadgeId(badge.id)}
           />
         ) : view === 'titles' ? (
           <TrainerTitles
-            collectionRef={artifactRef}
             equipped={savedSpecialty}
             onSelect={(title) => setSelectedSpecialty(title.specialty)}
             stats={stats}
@@ -419,11 +435,17 @@ export const TrainerPassport = ({
         )}
       </div>
 
-      {view !== 'pokedex' && (
+      {view === 'front' && (
         <div className="trainer-passport__controls">
           <GameButton
-            aria-busy={preparingArtifact}
-            disabled={preparingArtifact}
+            aria-busy={
+              preparingArtifact ||
+              (canShareArtifact && !preparedImage && !preparationFailed)
+            }
+            disabled={
+              preparingArtifact ||
+              (canShareArtifact && !preparedImage && !preparationFailed)
+            }
             onClick={() => void exportArtifact()}
           >
             {canShareArtifact ? (
@@ -432,11 +454,11 @@ export const TrainerPassport = ({
               <DownloadSimpleIcon aria-hidden="true" weight="bold" />
             )}
             {preparingArtifact
-              ? 'Preparing PNG…'
-              : canShareArtifact && preparedArtifact?.key === artifactKey
-                ? `Share ${shareLabels[view]}`
+              ? 'Preparing image…'
+              : preparationFailed
+                ? 'Retry share'
                 : canShareArtifact
-                  ? `Prepare ${shareLabels[view]} PNG`
+                  ? 'Share card'
                   : 'Download PNG'}
           </GameButton>
         </div>

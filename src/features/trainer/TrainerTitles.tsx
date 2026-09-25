@@ -7,20 +7,17 @@ import {
   type TrainerSpecialty,
   type TrainerTitle,
 } from '@/domain/player/trainer-progression';
-import type { Ref } from 'react';
 import type { TrainerStats } from '../../domain/player/progress';
 import { CollectionCorners } from './CollectionCorners';
 import { TrainerTitleMark } from './TrainerTitleMark';
 
 interface TrainerTitlesProps {
-  collectionRef?: Ref<HTMLElement>;
   equipped: TrainerSpecialty | null;
   onSelect: (title: TrainerTitle) => void;
   stats: TrainerStats;
 }
 
 export const TrainerTitles = ({
-  collectionRef,
   equipped,
   onSelect,
   stats,
@@ -30,7 +27,6 @@ export const TrainerTitles = ({
 
   return (
     <article
-      ref={collectionRef}
       aria-label={`${trainerViewLabels.titles} collection`}
       className="trainer-titles"
     >

@@ -4,26 +4,22 @@ import {
   trainerViewLabels,
   type TrainerBadge,
 } from '@/domain/player/trainer-progression';
-import type { Ref } from 'react';
 import { CollectionCorners } from './CollectionCorners';
 import { TrainerBadgeMark } from './TrainerBadgeMark';
 
 interface TrainerBadgeCaseProps {
   badges: TrainerBadge[];
-  caseRef?: Ref<HTMLElement>;
   onSelect: (badge: TrainerBadge) => void;
 }
 
 export const TrainerBadgeCase = ({
   badges,
-  caseRef,
   onSelect,
 }: TrainerBadgeCaseProps) => {
   const earnedCount = badges.filter(({ earned }) => earned).length;
 
   return (
     <article
-      ref={caseRef}
       aria-label={trainerViewLabels.badges}
       className="trainer-artifact-frame trainer-badge-case"
     >
