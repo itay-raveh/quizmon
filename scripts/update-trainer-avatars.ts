@@ -21,7 +21,7 @@ const updating = process.argv[2] === '--update' && process.argv.length === 3;
 if (process.argv.length > 2 && !updating)
   throw new Error('Use --update to refresh the trainer avatar manifest.');
 
-type Avatar = { bottom: number; sha256: string };
+type Avatar = { bottom: number; height: number; sha256: string };
 const pinned = JSON.parse(await readFile(manifest, 'utf8')) as Record<
   string,
   Avatar
@@ -74,20 +74,29 @@ try {
         .ensureAlpha()
         .raw()
         .toBuffer({ resolveWithObject: true });
-      let bottom = 1;
+      let top = 0;
+      for (let pixel = 0; pixel < info.width * info.height; pixel++) {
+        if (data[pixel * info.channels + 3]) {
+          top = Math.floor(pixel / info.width);
+          break;
+        }
+      }
+      let bottom = info.height;
       for (let pixel = info.width * info.height - 1; pixel >= 0; pixel--) {
         if (data[pixel * info.channels + 3]) {
-          bottom = (Math.floor(pixel / info.width) + 1) / info.height;
+          bottom = Math.floor(pixel / info.width) + 1;
           break;
         }
       }
       const avatar = {
-        bottom,
+        bottom: bottom / info.height,
+        height: (bottom - top) / info.height,
         sha256: createHash('sha256').update(normalized).digest('hex'),
       };
       if (
         !updating &&
         (avatar.bottom !== pinned[id]?.bottom ||
+          avatar.height !== pinned[id]?.height ||
           avatar.sha256 !== pinned[id]?.sha256)
       )
         throw new Error(`${id}: trainer sprite changed; update the manifest`);

@@ -2,11 +2,12 @@ import { createTrainerProfile } from '@/domain/player/trainer-profile';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { TrainerCard } from './TrainerCard';
 
-const renderPartner = (partnerHeight: number) =>
+const renderPartner = (partnerHeight: number, avatar: string) =>
   renderToStaticMarkup(
     <TrainerCard
       profile={{
         ...createTrainerProfile(),
+        avatar,
         partnerPokemon: 'typhlosion-hisui',
       }}
       partnerDexNumber={157}
@@ -20,11 +21,14 @@ const renderPartner = (partnerHeight: number) =>
     />,
   );
 
-test('places Pokémon at the large-partner boundary behind the trainer', () => {
-  expect(renderPartner(16)).toContain(
+test('places partners behind trainers when their visible height is within 15%', () => {
+  expect(renderPartner(8, 'twins-gen2')).toContain(
     'trainer-card__partner-sprite trainer-card__partner-sprite--behind',
   );
-  expect(renderPartner(15)).not.toContain(
+  expect(renderPartner(8, 'teamrocket')).not.toContain(
     'trainer-card__partner-sprite--behind',
+  );
+  expect(renderPartner(16, 'teamrocket')).toContain(
+    'trainer-card__partner-sprite trainer-card__partner-sprite--behind',
   );
 });
