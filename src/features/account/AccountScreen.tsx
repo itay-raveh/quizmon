@@ -39,7 +39,7 @@ export function AccountScreen({
 
   return (
     <section
-      className={`game-panel account-screen${signingIn ? ' account-screen--sign-in' : ''}`}
+      className="game-panel account-screen"
       aria-labelledby="account-title"
     >
       <header className="account-screen__header">

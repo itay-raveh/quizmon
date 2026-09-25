@@ -189,7 +189,7 @@ main {
 }
 
 .game-panel {
-  width: min(42rem, 94vw);
+  width: min(42rem, 100%);
   min-width: 0;
   padding: clamp(1rem, 2.4vw, 1.5rem);
   color: var(--ink);

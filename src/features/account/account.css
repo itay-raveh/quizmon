@@ -1,5 +1,4 @@
 .account-screen {
-  width: min(38rem, calc(100vw - 2rem));
   text-align: left;
 }
 
@@ -8,10 +7,6 @@
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
-}
-
-.account-screen--sign-in {
-  width: min(32rem, calc(100vw - 2rem));
 }
 
 .account-screen__header h1 {

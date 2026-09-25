@@ -209,14 +209,9 @@
     width: 2.9rem;
   }
 
-  .results {
-    width: 100%;
-  }
-
   .question {
     --question-panel-padding: 0.85rem;
 
-    width: 100%;
     border-radius: 0.55rem;
   }
 
