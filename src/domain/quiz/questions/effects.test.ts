@@ -77,8 +77,8 @@ it('narrows Item uses distractors at each level', () => {
     (item) => item.effectKind === 'bag',
   );
   const target = bagItems.find((item) => item.name === 'rare-candy')!;
-  const choices = ([2, 3, 4, 5] as const).map((difficulty) => {
-    const question = buildEffectDescription(
+  const build = (item: typeof target, difficulty: 2 | 3 | 4 | 5) =>
+    buildEffectDescription(
       {
         catalog,
         questionType: 'medicine-cabinet',
@@ -89,10 +89,12 @@ it('narrows Item uses distractors at each level', () => {
         random: createSeededRandom('item-distractors'),
         used: new Set(),
       },
-      target,
+      item,
       'item',
       bagItems,
-    )!;
+    );
+  const choices = ([2, 3, 4, 5] as const).map((difficulty) => {
+    const question = build(target, difficulty)!;
     return question.options.filter(
       (option) => option !== question.answer.correctOptions[0],
     );
@@ -106,12 +108,45 @@ it('narrows Item uses distractors at each level', () => {
   expect(sources(choices[0]!).some((item) => item.pocket !== 'medicine')).toBe(
     true,
   );
-  expect(sources(choices[1]!).every((item) => item.pocket === 'medicine')).toBe(
-    true,
-  );
-  for (const level of [2, 3] as const)
+  for (const level of [1, 2, 3] as const)
     expect(
       sources(choices[level]!).every((item) => item.category === 'vitamins'),
     ).toBe(true);
-  expect([...choices[2]!].sort()).not.toEqual([...choices[3]!].sort());
+  const masterBall = bagItems.find((item) => item.name === 'master-ball')!;
+  expect(build(masterBall, 3)).toBeDefined();
+  expect(build(masterBall, 4)).toBeUndefined();
+  const luxuryBall = bagItems.find((item) => item.name === 'luxury-ball')!;
+  expect(build(luxuryBall, 4)).toBeDefined();
+  expect(build(luxuryBall, 5)).toBeUndefined();
+});
+
+it('keeps held Berry distractors among Berries', () => {
+  const heldItems = catalog.topics!.items.filter(
+    (item) => item.effectKind === 'held',
+  );
+  const target = heldItems.find((item) => item.name === 'cheri-berry')!;
+  const question = buildEffectDescription(
+    {
+      catalog,
+      questionType: 'held-item-effects',
+      difficulty: 3,
+      generations: ['IX'],
+      variant: getQuestionVariant('held-item-effects', 3)!.variant,
+      pool: [],
+      random: createSeededRandom('held-berries'),
+      used: new Set(),
+    },
+    target,
+    'item',
+    heldItems,
+  )!;
+  expect(
+    question.options.every((option) =>
+      heldItems.some(
+        (item) =>
+          item.pocket === 'berries' &&
+          item.descriptions?.some((entry) => entry.text === option),
+      ),
+    ),
+  ).toBe(true);
 });

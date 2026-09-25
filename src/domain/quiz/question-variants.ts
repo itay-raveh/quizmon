@@ -126,10 +126,10 @@ const questionVariants: Record<
   },
   'medicine-cabinet': {
     2: { effectChoices: 'broad' },
-    3: { effectChoices: 'broad', itemChoices: 'pocket' },
-    4: { effectChoices: 'broad', itemChoices: 'category' },
+    3: { effectChoices: 'broad', itemChoices: 'category' },
+    4: { effectChoices: 'related', itemChoices: 'category' },
     5: {
-      effectChoices: 'related',
+      effectChoices: 'exact',
       itemChoices: 'category',
       allowMissingSprites: true,
     },
@@ -164,7 +164,15 @@ const questionVariants: Record<
     5: { evolutionConditions: 'one-condition' },
   },
   'ability-effects': effectVariants,
-  'held-item-effects': effectVariants,
+  'held-item-effects': {
+    3: { effectChoices: 'broad', itemChoices: 'category' },
+    4: { effectChoices: 'related', itemChoices: 'category' },
+    5: {
+      effectChoices: 'exact',
+      itemChoices: 'category',
+      allowMissingSprites: true,
+    },
+  },
   'hidden-abilities': {
     4: { hiddenAbility: 'ordinary' },
     5: { hiddenAbility: 'similar', allowMissingSprites: true },
