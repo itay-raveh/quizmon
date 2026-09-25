@@ -1,7 +1,9 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { Link } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import { EyeIcon } from '../../components/icons';
 import { isDailyDate } from '../../lib/validation';
+import { useInteractionSound } from '../../lib/audio/sound-context';
 import { getUtcDate } from '../../domain/quiz/daily';
 import { currentDailyTrack } from '../../domain/quiz/daily-track';
 import { getDailyPuzzleId } from '../../domain/quiz/puzzle-id';
@@ -66,6 +68,7 @@ function Standings({
   date,
   scope,
   onViewPlayer,
+  onOpenPlay,
 }: {
   owner: string;
   catalog?: PokemonCatalog;
@@ -73,7 +76,9 @@ function Standings({
   date: string;
   scope: LeaderboardScope;
   onViewPlayer: (id: string) => void;
+  onOpenPlay: () => void;
 }) {
+  const playSound = useInteractionSound();
   const dailyDate = mode === 'daily' ? date : '';
   const dailyCatalog = mode === 'daily' ? catalog : undefined;
   const cacheKey = `${owner}:${mode}:${dailyDate}:${scope}`;
@@ -192,67 +197,93 @@ function Standings({
               </span>
               <span>
                 <strong>{data.viewer.score.toLocaleString()}</strong> points
+                <small>
+                  {(data.viewer.elapsedMilliseconds / 1000).toFixed(3)}s
+                </small>
               </span>
             </div>
           ) : null}
           {data.items.length ? (
-            <table className="leaderboard-table">
-              <caption className="visually-hidden">
-                {mode === 'daily'
-                  ? `Daily standings for ${date}`
-                  : 'Training standings'}
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Rank</th>
-                  <th scope="col">Trainer</th>
-                  <th scope="col">Score / time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.items.map((row) => (
-                  <tr
-                    key={row.player.id}
-                    aria-current={row.player.id === owner ? 'true' : undefined}
-                  >
-                    <td>{row.rank}</td>
-                    <th scope="row">
-                      <span className="leaderboard-player">
-                        <span>
-                          {row.player.name}
-                          {row.player.id === owner ? ' (you)' : ''}
-                        </span>
-                        {row.player.id !== owner && (
-                          <GameButton
-                            aria-label={`View ${row.player.name}'s profile`}
-                            className="friends-icon-button"
-                            onClick={() => onViewPlayer(row.player.id)}
-                            title={`View ${row.player.name}'s profile`}
-                            tone="quiet"
-                          >
-                            <EyeIcon aria-hidden="true" weight="regular" />
-                          </GameButton>
-                        )}
-                      </span>
-                    </th>
-                    <td>
-                      <strong>{row.score.toLocaleString()}</strong>
-                      <small>
-                        {(row.elapsedMilliseconds / 1000).toFixed(3)}s
-                      </small>
-                    </td>
+            <>
+              <p className="leaderboard-rule">
+                Higher scores rank first. Faster time breaks ties.
+              </p>
+              <table className="leaderboard-table">
+                <caption className="visually-hidden">
+                  {mode === 'daily'
+                    ? `Daily standings for ${date}`
+                    : 'Training standings'}
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Trainer</th>
+                    <th scope="col">Score / time</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.items.map((row) => (
+                    <tr
+                      key={row.player.id}
+                      aria-current={
+                        row.player.id === owner ? 'true' : undefined
+                      }
+                    >
+                      <td>{row.rank}</td>
+                      <th scope="row">
+                        <span className="leaderboard-player">
+                          <span>
+                            {row.player.name}
+                            {row.player.id === owner ? ' (you)' : ''}
+                          </span>
+                          {row.player.id !== owner && (
+                            <GameButton
+                              aria-label={`View ${row.player.name}'s profile`}
+                              className="friends-icon-button"
+                              onClick={() => onViewPlayer(row.player.id)}
+                              title={`View ${row.player.name}'s profile`}
+                              tone="quiet"
+                            >
+                              <EyeIcon aria-hidden="true" weight="regular" />
+                            </GameButton>
+                          )}
+                        </span>
+                      </th>
+                      <td>
+                        <strong>{row.score.toLocaleString()}</strong>
+                        <small>
+                          {(row.elapsedMilliseconds / 1000).toFixed(3)}s
+                        </small>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           ) : (
             <div className="leaderboard-empty">
-              <strong>No scores yet</strong>
-              <p>
+              <strong>
                 {mode === 'daily'
-                  ? 'Completed Daily rounds appear here after syncing.'
-                  : 'Finish a Training round to join the standings.'}
-              </p>
+                  ? 'No scores for this date'
+                  : 'No Training scores yet'}
+              </strong>
+              <Link
+                className="game-button leaderboard-empty__action"
+                to="/"
+                onClick={(event) => {
+                  if (
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  )
+                    return;
+                  playSound('tap');
+                  onOpenPlay();
+                }}
+              >
+                Open {mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}
+              </Link>
             </div>
           )}
           {data.items.length > 0 && (
@@ -292,6 +323,7 @@ export function LeaderboardScreen({
   catalog,
   onAccount,
   onViewPlayer,
+  onOpenPlay,
   initialDate,
   initialScope = 'global',
   initialMode = 'daily',
@@ -300,6 +332,7 @@ export function LeaderboardScreen({
   catalog?: PokemonCatalog;
   onAccount: () => void;
   onViewPlayer: (id: string) => void;
+  onOpenPlay: () => void;
   initialDate?: string;
   initialScope?: LeaderboardScope;
   initialMode?: LeaderboardMode;
@@ -365,64 +398,77 @@ export function LeaderboardScreen({
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
           <>
-            <div
-              className="leaderboard-modes"
-              role="group"
-              aria-label="Game mode"
-            >
-              <button
-                type="button"
-                aria-pressed={mode === 'daily'}
-                onClick={() => chooseMode('daily')}
+            <div className="leaderboard-toolbar">
+              <div
+                className="leaderboard-modes"
+                role="group"
+                aria-label="Game mode"
               >
-                Daily
-              </button>
-              <button
-                type="button"
-                aria-pressed={mode === 'training'}
-                onClick={() => chooseMode('training')}
-              >
-                Training
-              </button>
-            </div>
-            <div className="leaderboard-controls">
-              <div className="leaderboard-filter">
-                <span>Players</span>
-                <div
-                  className="leaderboard-scopes"
-                  role="group"
-                  aria-label="Leaderboard players"
+                <button
+                  type="button"
+                  aria-pressed={mode === 'daily'}
+                  onClick={() => chooseMode('daily')}
                 >
-                  <button
-                    type="button"
-                    aria-pressed={scope === 'global'}
-                    onClick={() => chooseScope('global')}
-                  >
-                    Global
-                  </button>
-                  <button
-                    type="button"
-                    aria-pressed={scope === 'friends'}
-                    onClick={() => chooseScope('friends')}
-                  >
-                    Friends only
-                  </button>
-                </div>
+                  Daily
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={mode === 'training'}
+                  onClick={() => chooseMode('training')}
+                >
+                  Training
+                </button>
               </div>
-              {mode === 'daily' && (
-                <label className="leaderboard-filter leaderboard-date">
-                  Challenge date
-                  <input
-                    type="date"
-                    value={date}
-                    max={today}
-                    onChange={(event) => chooseDate(event.target.value)}
-                  />
-                  <span className="leaderboard-date__reset">
-                    New challenge at {localResetTime} your time
-                  </span>
-                </label>
-              )}
+              <div className="leaderboard-controls">
+                <div className="leaderboard-filter">
+                  <span>Players</span>
+                  <div
+                    className="leaderboard-scopes"
+                    role="group"
+                    aria-label="Leaderboard players"
+                  >
+                    <button
+                      type="button"
+                      aria-pressed={scope === 'global'}
+                      onClick={() => chooseScope('global')}
+                    >
+                      Global
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={scope === 'friends'}
+                      onClick={() => chooseScope('friends')}
+                    >
+                      Friends only
+                    </button>
+                  </div>
+                </div>
+                {mode === 'daily' ? (
+                  <div className="leaderboard-filter leaderboard-date">
+                    <label htmlFor="leaderboard-challenge-date">
+                      Challenge date
+                    </label>
+                    <input
+                      id="leaderboard-challenge-date"
+                      type="date"
+                      value={date}
+                      max={today}
+                      aria-describedby="leaderboard-reset-time"
+                      onChange={(event) => chooseDate(event.target.value)}
+                    />
+                    <span
+                      className="leaderboard-date__reset"
+                      id="leaderboard-reset-time"
+                    >
+                      New challenge at {localResetTime} your time
+                    </span>
+                  </div>
+                ) : (
+                  <p className="leaderboard-training-note">
+                    Each Trainer’s best Training score counts across settings.
+                  </p>
+                )}
+              </div>
             </div>
             <Standings
               key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}`}
@@ -432,6 +478,7 @@ export function LeaderboardScreen({
               date={date}
               scope={scope}
               onViewPlayer={onViewPlayer}
+              onOpenPlay={onOpenPlay}
             />
           </>
         ) : (

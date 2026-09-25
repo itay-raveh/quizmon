@@ -93,9 +93,11 @@ const AppScreen = ({
   training,
   destination,
   onViewPlayer,
+  onOpenPlay,
 }: AppViewProps & {
   destination: DestinationNavigation;
   onViewPlayer: (id: string) => void;
+  onOpenPlay: () => void;
 }) => {
   if (session.phase !== 'questions' && !destination.isKnownPath) {
     return (
@@ -151,6 +153,7 @@ const AppScreen = ({
             }
             onAccount={() => destination.account()}
             onViewPlayer={onViewPlayer}
+            onOpenPlay={onOpenPlay}
             initialDate={destination.standingsDate}
             initialScope={destination.standingsScope}
             initialMode={destination.standingsMode}
@@ -434,6 +437,10 @@ export const AppView = (props: AppViewProps) => {
     profileTrigger.current = document.activeElement as HTMLElement;
     destination.viewPlayer(id);
   };
+  const onOpenPlay = () => {
+    props.league.setShowResults(false);
+    void props.navigation.returnToLanding();
+  };
   const showNavigation = props.session.phase !== 'questions';
   const active =
     destination.destination === 'account'
@@ -470,10 +477,7 @@ export const AppView = (props: AppViewProps) => {
                     }
                     trainerAvailable={props.catalogState.status === 'ready'}
                     onNavigate={(next) => {
-                      if (next === 'play') {
-                        props.league.setShowResults(false);
-                        void props.navigation.returnToLanding();
-                      }
+                      if (next === 'play') onOpenPlay();
                     }}
                   />
                 ) : null}
@@ -482,6 +486,7 @@ export const AppView = (props: AppViewProps) => {
                     {...props}
                     destination={destination}
                     onViewPlayer={onViewPlayer}
+                    onOpenPlay={onOpenPlay}
                   />
                 </main>
                 {showNavigation ? <Footer /> : null}

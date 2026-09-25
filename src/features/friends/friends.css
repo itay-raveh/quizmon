@@ -137,7 +137,7 @@
 .friends-panel {
   align-content: start;
   display: grid;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .friends-panel p,
@@ -307,16 +307,25 @@
   margin-top: 0;
 }
 
+.leaderboard-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+}
+
 .leaderboard-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 0.75rem 1rem;
+  display: grid;
+  min-height: 6.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .leaderboard-modes {
   display: flex;
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
   padding: 2px;
   background: var(--navy);
   border-radius: var(--button-radius);
@@ -324,8 +333,9 @@
 
 .leaderboard-modes button {
   flex: 1;
-  min-height: 2.75rem;
-  padding: 0.4rem 0.75rem;
+  min-width: 7rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.75rem;
   color: var(--navy);
   background: var(--paper);
   border: 0;
@@ -343,6 +353,33 @@
   color: var(--primary-text);
   background: var(--blue);
   font-weight: 800;
+}
+
+@container app-shell (max-width: 36rem) {
+  .leaderboard-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  .leaderboard-controls {
+    gap: 0.5rem;
+  }
+
+  .leaderboard-scopes {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@container app-shell (max-width: 22.5rem) {
+  .leaderboard-controls {
+    min-height: 7.5rem;
+  }
+
+  .leaderboard-date input {
+    padding-inline: 0.25rem;
+    font-size: var(--text-small);
+  }
 }
 
 .leaderboard-filter {
@@ -391,10 +428,13 @@
 }
 
 .leaderboard-date {
-  margin-left: auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .leaderboard-date input {
+  width: 100%;
+  min-width: 0;
   min-height: 2.75rem;
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--navy);
@@ -407,6 +447,16 @@
 
 .leaderboard-date__reset {
   font-weight: 500;
+}
+
+.leaderboard-training-note,
+.leaderboard-rule {
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.leaderboard-rule {
+  margin: 0;
 }
 
 .leaderboard-controls label,
@@ -423,7 +473,6 @@
   display: grid;
   align-content: start;
   gap: 0.75rem;
-  min-height: 12rem;
 }
 
 .leaderboard-loading {
@@ -489,9 +538,9 @@
   display: grid;
   gap: 0.4rem;
   justify-items: center;
-  padding: 2rem 1rem;
+  padding: 1.25rem 1rem;
   color: var(--navy);
-  background: var(--cream);
+  background: var(--sky);
   border: 2px solid var(--navy);
   border-radius: var(--button-radius);
   text-align: center;
@@ -499,6 +548,21 @@
 
 .leaderboard-empty p {
   margin: 0;
+}
+
+.leaderboard-empty__action.game-button {
+  display: inline-flex;
+  width: auto;
+  align-items: center;
+  margin-top: 0.25rem;
+  text-decoration: none;
+}
+
+.leaderboard-viewer small {
+  display: block;
+  font-family: var(--font-data);
+  font-size: var(--text-small);
+  font-weight: 400;
 }
 
 .leaderboard-table {
