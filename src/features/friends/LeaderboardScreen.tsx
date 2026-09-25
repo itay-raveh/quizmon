@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../../components/GameButton';
-import { EyeIcon, LockSimpleIcon } from '../../components/icons';
+import { EyeIcon } from '../../components/icons';
 import { isDailyDate } from '../../lib/validation';
 import { getUtcDate } from '../../domain/quiz/daily';
 import { currentDailyTrack } from '../../domain/quiz/daily-track';
@@ -399,13 +399,13 @@ export function LeaderboardScreen({
                     aria-pressed={scope === 'friends'}
                     onClick={() => chooseScope('friends')}
                   >
-                    Friends
+                    Friends only
                   </button>
                 </div>
               </div>
               {mode === 'daily' && (
                 <label className="leaderboard-filter leaderboard-date">
-                  Date
+                  UTC date
                   <input
                     type="date"
                     value={date}
@@ -426,16 +426,22 @@ export function LeaderboardScreen({
             />
           </>
         ) : (
-          <div className="leaderboard-locked">
-            <LockSimpleIcon aria-hidden="true" weight="duotone" />
+          <div className="social-screen__intro">
+            <h2>
+              {account.mergeRequired
+                ? 'Choose your progress'
+                : 'Compare scores'}
+            </h2>
             <p>
               {account.mergeRequired
-                ? 'Choose your progress to view rankings.'
-                : 'Sign in to view rankings.'}
+                ? 'Add this browser’s progress or use your account progress before viewing rankings.'
+                : 'See Daily and Training rankings for Trainers worldwide or your friends.'}
             </p>
-            {account.mergeRequired && (
-              <GameButton onClick={onAccount}>Choose progress</GameButton>
-            )}
+            <GameButton onClick={onAccount}>
+              {account.mergeRequired
+                ? 'Choose progress'
+                : 'Sign in to view rankings'}
+            </GameButton>
           </div>
         )}
       </div>

@@ -67,21 +67,6 @@
   font-size: var(--text-small);
 }
 
-.leaderboard-locked {
-  display: grid;
-  justify-items: center;
-  align-content: center;
-  gap: 1rem;
-  min-height: 12rem;
-  text-align: center;
-  color: var(--navy);
-}
-
-.leaderboard-locked svg {
-  width: 4rem;
-  height: 4rem;
-}
-
 .friends-player__name {
   display: flex;
   align-items: center;
@@ -283,11 +268,6 @@
 
 .friends-empty {
   color: var(--muted);
-}
-
-.leaderboard-locked p {
-  margin: 0;
-  font-weight: 700;
 }
 
 .friends-player {
