@@ -92,7 +92,9 @@ export function PublicTrainerScreen({
           <ArrowLeftIcon aria-hidden="true" weight="bold" />
           <span className="trainer-passport__back-label">{backLabel}</span>
         </GameButton>
-        <h1 id="public-trainer-title">Trainer profile</h1>
+        <h1 className="game-panel__title" id="public-trainer-title">
+          Trainer profile
+        </h1>
       </header>
       {!owner ? (
         <p role="alert">Sign in to view Trainer profiles.</p>

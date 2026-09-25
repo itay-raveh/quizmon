@@ -52,14 +52,6 @@
   outline-color: var(--navy);
 }
 
-.social-screen__header h1 {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  color: var(--navy);
-  font-size: var(--text-headline);
-}
-
 .social-screen__intro,
 .friends-add {
   display: grid;

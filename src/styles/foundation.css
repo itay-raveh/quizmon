@@ -190,6 +190,7 @@ main {
 
 .game-panel {
   width: min(42rem, 100%);
+  margin-inline: auto;
   min-width: 0;
   padding: clamp(1rem, 2.4vw, 1.5rem);
   color: var(--ink);
@@ -199,6 +200,20 @@ main {
   box-shadow:
     0 0.28rem 0 var(--yellow),
     0 0.62rem 0 var(--navy-shadow);
+}
+
+.game-panel__title {
+  min-width: 0;
+  margin: 0;
+  color: var(--navy);
+  font-size: var(--text-display);
+  line-height: 1;
+}
+
+@media (max-width: 42rem) {
+  .game-panel__title {
+    font-size: var(--text-headline);
+  }
 }
 
 .game-button {

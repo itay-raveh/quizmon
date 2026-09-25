@@ -265,7 +265,9 @@ export const TrainerPassport = ({
       aria-labelledby="trainer-passport-title"
     >
       <header className="trainer-passport__header">
-        <h1 id="trainer-passport-title">{trainerViewLabels[view]}</h1>
+        <h1 className="game-panel__title" id="trainer-passport-title">
+          {trainerViewLabels[view]}
+        </h1>
         {view === 'front' ? (
           <GameButton
             className="trainer-passport__edit"

@@ -80,7 +80,11 @@ export function PublicTrainerPassport({
           <span className="trainer-passport__back-label">{backLabel}</span>
         </GameButton>
         <div className="trainer-passport__public-heading">
-          <h1 id="public-trainer-title" tabIndex={-1}>
+          <h1
+            className="game-panel__title"
+            id="public-trainer-title"
+            tabIndex={-1}
+          >
             {name}
           </h1>
           <p>Trainer profile · View only</p>

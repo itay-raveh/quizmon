@@ -38,11 +38,6 @@
     flex-wrap: nowrap;
   }
 
-  .trainer-passport__header h1 {
-    min-width: 0;
-    font-size: var(--text-headline);
-  }
-
   .trainer-passport__header .game-button {
     min-height: 2.75rem;
     padding-inline: 0.65rem;

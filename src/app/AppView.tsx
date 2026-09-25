@@ -116,7 +116,7 @@ const AppScreen = ({
   if (session.phase !== 'questions' && destination.destination === 'friends') {
     return (
       <>
-        <div hidden={Boolean(destination.playerId)}>
+        <div className="social-route" hidden={Boolean(destination.playerId)}>
           <FriendsScreen
             key={destination.friendCode}
             onCloseInvitation={() => destination.open('friends')}
@@ -144,7 +144,7 @@ const AppScreen = ({
   if (session.phase !== 'questions' && destination.destination === 'rankings') {
     return (
       <>
-        <div hidden={Boolean(destination.playerId)}>
+        <div className="social-route" hidden={Boolean(destination.playerId)}>
           <LeaderboardScreen
             catalog={
               catalogState.status === 'ready' ? catalogState.catalog : undefined

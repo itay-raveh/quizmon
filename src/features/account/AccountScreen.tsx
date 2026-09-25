@@ -43,7 +43,12 @@ export function AccountScreen({
       aria-labelledby="account-title"
     >
       <header className="account-screen__header">
-        <h1 id="account-title" tabIndex={-1} ref={heading}>
+        <h1
+          className="game-panel__title"
+          id="account-title"
+          tabIndex={-1}
+          ref={heading}
+        >
           {signingIn ? 'Sign in' : 'Account'}
         </h1>
       </header>

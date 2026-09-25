@@ -24,7 +24,9 @@ export function FriendsScreen({
       aria-labelledby="social-title"
     >
       <header className="social-screen__header">
-        <h1 id="social-title">Social</h1>
+        <h1 className="game-panel__title" id="social-title">
+          Social
+        </h1>
       </header>
       <SocialSections active="friends" />
       {account.owner && !account.mergeRequired ? (
