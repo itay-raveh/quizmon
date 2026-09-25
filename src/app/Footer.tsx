@@ -12,22 +12,22 @@ const footerDisclaimer =
 
 const footerCredits = [
   {
-    label: 'Badges:',
+    label: 'Badges',
     name: '@beresteyskaya',
     href: 'https://www.fiverr.com/beresteyskaya',
   },
   {
-    label: 'Logo made with',
+    label: 'Logo',
     name: 'TextStudio',
     href: 'https://www.textstudio.com',
   },
   {
-    label: 'Data:',
+    label: 'Data',
     name: 'PokéAPI',
     href: 'https://pokeapi.co/',
   },
   {
-    label: 'Sprites & text:',
+    label: 'Sprites & text',
     name: 'Pokémon Showdown',
     href: 'https://pokemonshowdown.com/',
   },
@@ -75,7 +75,8 @@ export const Footer = ({ currentPath }: { currentPath?: string }) => {
         <div className="site-footer__credits">
           {footerCredits.map(({ label, name, href }) => (
             <span key={href}>
-              {label}{' '}
+              {label}
+              {': '}
               <a href={href} rel="noreferrer" target="_blank">
                 {name}
               </a>
