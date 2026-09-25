@@ -9,6 +9,7 @@ COPY --from=dependencies /opt/quizmon/node_modules ./node_modules
 COPY deploy/migrate-release.ts deploy/migration-runner.ts deploy/release-lock.ts deploy/release-inputs.ts deploy/publication.ts deploy/rebuild-round-score.ts ./deploy/
 COPY deploy/powersync/sync-config.yaml ./deploy/powersync/
 COPY src/lib/validation.ts src/lib/random.ts ./src/lib/
+COPY src/question-rules.ts ./src/
 COPY src/domain ./src/domain
 COPY server/migrations ./server/migrations
 RUN node --input-type=module -e "try { await import('./deploy/migrate-release.ts') } catch (error) { if (error.message !== 'Usage: migrate-release.ts <migration-connection.json>') throw error }"
