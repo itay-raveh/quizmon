@@ -33,8 +33,9 @@ const build = (
     'evolution-conditions',
   );
 
-it('uses one condition at levels 3 and 4 and reserves multi-select and exact levels for level 5', () => {
+it('uses one condition at levels 3 and 4 and reserves multi-select and exact-level quizzes for level 5', () => {
   const levelFiveInteractions = new Set<string>();
+  let mixedLevelQuestions = 0;
   for (const level of [3, 4, 5] as const)
     for (let seed = 0; seed < 10; seed++) {
       const question = build(level, `${level}:${seed}`);
@@ -53,24 +54,45 @@ it('uses one condition at levels 3 and 4 and reserves multi-select and exact lev
         else {
           expect(question!.answer.correctOptions).toHaveLength(1);
           expect(
-            question!.options.every((option) =>
-              option.startsWith('Minimum level:'),
-            ),
+            question!.options.every((option) => option.startsWith('Level ')),
           ).toBe(true);
         }
       } else {
         expect(question!.answer.interaction).toBe('single-choice');
         expect(question!.answer.correctOptions).toHaveLength(1);
-        expect(
-          question!.options.some((option) =>
-            option.startsWith('Minimum level:'),
-          ),
-        ).toBe(false);
+        expect(question!.prompt).not.toMatchObject({
+          text: 'What is the minimum level for this evolution?',
+        });
+        if (question!.answer.correctOptions[0]?.startsWith('Reach level ')) {
+          mixedLevelQuestions++;
+          expect(
+            question!.options.filter((option) =>
+              option.startsWith('Reach level '),
+            ),
+          ).toHaveLength(1);
+        }
       }
     }
   expect(levelFiveInteractions).toEqual(
     new Set(['multi-select', 'single-choice']),
   );
+  expect(mixedLevelQuestions).toBeGreaterThan(0);
+});
+
+it('offers level-up as one mixed condition at level 3', () => {
+  const selected = pool.filter(({ name }) =>
+    ['turtwig', 'grotle'].includes(name),
+  );
+  const question = build(3, 'turtwig', selected);
+  expect(question?.prompt).toMatchObject({
+    kind: 'text',
+    text: 'Which of these is a requirement for this evolution?',
+  });
+  expect(question?.answer.correctOptions).toEqual(['Reach level 18']);
+  expect(question?.options).toHaveLength(4);
+  expect(
+    question?.options.filter((option) => option.startsWith('Reach level ')),
+  ).toEqual(['Reach level 18']);
 });
 
 it('includes trade and held item as independent Rhyperior requirements', () => {
@@ -80,7 +102,7 @@ it('includes trade and held item as independent Rhyperior requirements', () => {
   const question = build(5, 'rhyperior', selected);
   expect(question?.answer.correctOptions).toHaveLength(2);
   expect(question?.answer.correctOptions).toEqual(
-    expect.arrayContaining(['Trade this Pokémon', 'Hold Protector']),
+    expect.arrayContaining(['Trade', 'Hold Protector']),
   );
 });
 

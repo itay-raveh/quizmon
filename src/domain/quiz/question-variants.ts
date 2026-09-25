@@ -60,6 +60,8 @@ export interface VariantRules {
   minimumEvolutionConditions?: number;
   multiSelectEvolutionConditions?: boolean;
   exactEvolutionValues?: boolean;
+  mixedLevelEvolutionConditions?: boolean;
+  compactEvolutionLabels?: boolean;
   exactLevelQuestionChance?: number;
   directEvolutionItems?: boolean;
   evolutionLocations?: boolean;

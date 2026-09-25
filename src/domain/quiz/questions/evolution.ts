@@ -27,11 +27,14 @@ const evolutionConditionLabel = (
   condition: string,
   variant: NonNullable<Parameters<QuestionBuilder>[0]['variant']>,
 ): string | undefined => {
-  if (condition === 'trade') return 'Trade this Pokémon';
+  if (condition === 'trade')
+    return variant.compactEvolutionLabels ? 'Trade' : 'Trade this Pokémon';
   const level = /^at level (\d+)$/.exec(condition);
   if (level)
-    return variant.exactEvolutionValues
-      ? `Minimum level: ${level[1]}`
+    return variant.exactEvolutionValues || variant.mixedLevelEvolutionConditions
+      ? variant.compactEvolutionLabels
+        ? `Level ${level[1]}`
+        : `Reach level ${level[1]}`
       : undefined;
   const threshold = /^with at least (\d+) (happiness|beauty|affection)$/.exec(
     condition,
@@ -39,7 +42,7 @@ const evolutionConditionLabel = (
   if (threshold)
     return variant.exactEvolutionValues
       ? `Minimum ${threshold[2] === 'happiness' ? 'friendship' : threshold[2]}: ${threshold[1]}`
-      : `High ${threshold[2] === 'happiness' ? 'friendship' : threshold[2]}`;
+      : `Have high ${threshold[2] === 'happiness' ? 'friendship' : threshold[2]}`;
   if (/^\d+ times$/.test(condition)) return undefined;
   if (/\d/.test(condition) && !variant.exactEvolutionValues) return undefined;
   if (condition.startsWith('use ') && !variant.directEvolutionItems) return;
@@ -92,13 +95,15 @@ export const buildEvolution: QuestionBuilder = (context) => {
         names.has(entry.after) &&
         (context.generations ?? generations).includes(entry.generation),
     ),
-  ).sort(
-    (a, b) =>
-      Number(numericOnlyMethod(b) === preferExactLevel) -
-      Number(numericOnlyMethod(a) === preferExactLevel),
   );
+  if (variant.exactLevelQuestionChance)
+    pool.sort(
+      (a, b) =>
+        Number(numericOnlyMethod(b) === preferExactLevel) -
+        Number(numericOnlyMethod(a) === preferExactLevel),
+    );
   for (const target of pool) {
-    const numericOnly = numericOnlyMethod(target);
+    const exactLevel = preferExactLevel && numericOnlyMethod(target);
     const before = context.pool.find(({ name }) => name === target.before)!;
     const after = context.pool.find(({ name }) => name === target.after)!;
     if (
@@ -129,12 +134,12 @@ export const buildEvolution: QuestionBuilder = (context) => {
     });
     if (
       allTrue.length <
-      (numericOnly ? 1 : (variant.minimumEvolutionConditions ?? 1))
+      (exactLevel ? 1 : (variant.minimumEvolutionConditions ?? 1))
     )
       continue;
     const trueChoices = ordered(context, allTrue).slice(
       0,
-      variant.multiSelectEvolutionConditions && !numericOnly ? 3 : 1,
+      variant.multiSelectEvolutionConditions && !exactLevel ? 3 : 1,
     );
     const trueLabels = new Set(allTrue.map(({ label }) => label));
     const wrongByLabel = new Map<
@@ -145,14 +150,14 @@ export const buildEvolution: QuestionBuilder = (context) => {
       if (entry.game !== target.game) continue;
       for (const condition of evolutionRequirements(entry)) {
         if (requirements.includes(condition)) continue;
-        if (numericOnly && !/^at level \d+$/.test(condition)) continue;
+        if (exactLevel && !/^at level \d+$/.test(condition)) continue;
         const label = evolutionConditionLabel(condition, variant);
         if (label && !trueLabels.has(label))
           wrongByLabel.set(label, { condition, label });
       }
     }
     const wrongPool = ordered(context, [...wrongByLabel.values()]);
-    if (numericOnly) {
+    if (exactLevel) {
       const level = Number(target.conditions[0]!.slice(9));
       wrongPool.sort(
         (a, b) =>
@@ -188,6 +193,8 @@ export const buildEvolution: QuestionBuilder = (context) => {
       selectedWrong.push(choice);
       usedKinds.add(kind);
     }
+    if (numericOnlyMethod(target) && !exactLevel && selectedWrong.length < 3)
+      continue;
     for (const choice of wrongPool) {
       if (selectedWrong.length === 4 - trueChoices.length) break;
       if (!selectedWrong.includes(choice)) selectedWrong.push(choice);
@@ -196,8 +203,8 @@ export const buildEvolution: QuestionBuilder = (context) => {
     const correct = trueChoices.map(({ label }) => label);
     const options = [...correct, ...selectedWrong.map(({ label }) => label)];
     const multipleAnswers =
-      variant.multiSelectEvolutionConditions && !numericOnly;
-    const prompt = numericOnly
+      variant.multiSelectEvolutionConditions && !exactLevel;
+    const prompt = exactLevel
       ? 'What is the minimum level for this evolution?'
       : multipleAnswers
         ? 'Which of these are requirements for this evolution? Select all that apply.'
@@ -224,7 +231,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
         optionLabels: Object.fromEntries(
           options.map((label) => [
             label,
-            numericOnly ? label.slice('Minimum level: '.length) : label,
+            exactLevel ? label.split(' ').at(-1)! : label,
           ]),
         ),
       },
@@ -234,9 +241,10 @@ export const buildEvolution: QuestionBuilder = (context) => {
       return {
         ...question,
         questionType: 'evolution-conditions',
-        options: numericOnly
+        options: exactLevel
           ? question.options.toSorted(
-              (a, b) => Number(a.slice(15)) - Number(b.slice(15)),
+              (a, b) =>
+                Number(a.split(' ').at(-1)) - Number(b.split(' ').at(-1)),
             )
           : question.options,
       };
