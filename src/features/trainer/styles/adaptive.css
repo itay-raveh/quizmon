@@ -30,10 +30,6 @@
 }
 
 @media (max-width: 42rem) {
-  .trainer-passport {
-    padding: 0.5rem;
-  }
-
   .trainer-passport__header {
     flex-wrap: nowrap;
   }

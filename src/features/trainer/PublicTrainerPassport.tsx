@@ -69,7 +69,7 @@ export function PublicTrainerPassport({
       className={`game-panel trainer-passport trainer-passport--public trainer-passport--${getCardFinish(rank).toLowerCase()}`}
       aria-labelledby="public-trainer-title"
     >
-      <header className="trainer-passport__header trainer-passport__public-header">
+      <header className="game-panel__header trainer-passport__header trainer-passport__public-header">
         <GameButton
           aria-label={backLabel}
           className="trainer-passport__back"

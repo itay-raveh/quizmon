@@ -42,7 +42,7 @@ export function AccountScreen({
       className="game-panel account-screen"
       aria-labelledby="account-title"
     >
-      <header className="account-screen__header">
+      <header className="game-panel__header">
         <h1
           className="game-panel__title"
           id="account-title"

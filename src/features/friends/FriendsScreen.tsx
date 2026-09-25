@@ -23,7 +23,7 @@ export function FriendsScreen({
       className="game-panel social-screen"
       aria-labelledby="social-title"
     >
-      <header className="social-screen__header">
+      <header className="game-panel__header">
         <h1 className="game-panel__title" id="social-title">
           Social
         </h1>

@@ -264,7 +264,7 @@ export const TrainerPassport = ({
       className={`game-panel trainer-passport trainer-passport--${finish}`}
       aria-labelledby="trainer-passport-title"
     >
-      <header className="trainer-passport__header">
+      <header className="game-panel__header trainer-passport__header">
         <h1 className="game-panel__title" id="trainer-passport-title">
           {trainerViewLabels[view]}
         </h1>
