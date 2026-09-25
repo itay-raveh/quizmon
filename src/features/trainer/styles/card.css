@@ -10,18 +10,8 @@
   --trainer-rank-surface: var(--cream);
 
   display: grid;
-  width: min(42rem, calc(100vw - 2rem));
-  min-width: 0;
   container-type: inline-size;
-  padding: clamp(1rem, 2.4vw, 1.5rem);
   grid-template-columns: minmax(0, 1fr);
-  color: var(--ink);
-  background: color-mix(in srgb, var(--paper) 94%, transparent);
-  border: 3px solid var(--navy);
-  border-radius: var(--surface-radius);
-  box-shadow:
-    0 0.28rem 0 var(--yellow),
-    0 0.62rem 0 var(--navy-shadow);
   gap: 1.1rem;
 }
 

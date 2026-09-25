@@ -117,6 +117,7 @@ export const QuestionScreen = ({
       </GameButton>
     ) : null;
   const className = [
+    'game-panel',
     'question',
     isChampion ? 'question--champion' : '',
     isLeague ? 'question--league' : '',

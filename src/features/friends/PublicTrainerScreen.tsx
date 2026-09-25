@@ -79,7 +79,7 @@ export function PublicTrainerScreen({
 
   return (
     <section
-      className="trainer-passport trainer-passport--public"
+      className="game-panel trainer-passport trainer-passport--public"
       aria-labelledby="public-trainer-title"
     >
       <header className="trainer-passport__header trainer-passport__public-header">

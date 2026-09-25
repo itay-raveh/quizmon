@@ -1,15 +1,6 @@
 .account-screen {
   width: min(38rem, calc(100vw - 2rem));
-  min-width: 0;
-  padding: clamp(1rem, 2.4vw, 1.5rem);
-  color: var(--ink);
   text-align: left;
-  background: var(--paper);
-  border: 3px solid var(--navy);
-  border-radius: var(--surface-radius);
-  box-shadow:
-    0 0.28rem 0 var(--yellow),
-    0 0.62rem 0 var(--navy-shadow);
 }
 
 .account-screen__header {

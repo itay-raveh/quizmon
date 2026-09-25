@@ -261,7 +261,7 @@ export const TrainerPassport = ({
 
   return (
     <section
-      className={`trainer-passport trainer-passport--${finish}`}
+      className={`game-panel trainer-passport trainer-passport--${finish}`}
       aria-labelledby="trainer-passport-title"
     >
       <header className="trainer-passport__header">

@@ -1,14 +1,4 @@
 .social-screen {
-  width: min(42rem, 94vw);
-  min-width: 0;
-  padding: clamp(1rem, 2.4vw, 1.5rem);
-  color: var(--ink);
-  background: var(--paper);
-  border: 2px solid var(--navy);
-  border-radius: var(--surface-radius);
-  box-shadow:
-    0 0.2rem 0 var(--yellow),
-    0 0.4rem 0 var(--navy-shadow);
   text-align: left;
 }
 
@@ -21,33 +11,45 @@
 
 .social-sections {
   display: flex;
-  gap: 2px;
-  padding: 2px;
+  gap: 0.45rem;
   margin-bottom: 1.25rem;
-  background: var(--navy);
-  border-radius: var(--button-radius);
-  box-shadow: 0 0.18rem 0 var(--yellow);
+  border-bottom: 2px solid var(--navy);
 }
 
-.social-sections .game-button {
-  display: flex;
+.social-sections a {
+  display: grid;
   flex: 1;
   min-width: 0;
   min-height: 2.75rem;
-  padding: 0.45rem;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 0.25rem;
-  box-shadow: none;
-  text-align: center;
+  margin-bottom: -2px;
+  padding: 0.45rem 0.7rem;
+  place-items: center;
+  color: var(--navy);
+  background: var(--cream);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius) var(--button-radius) 0 0;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.social-sections .game-button:hover,
-.social-sections .game-button:active {
-  box-shadow: none;
-  transform: none;
+.social-sections a[aria-current='page'] {
+  color: var(--primary-text);
+  background: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.social-sections a:hover:not([aria-current='page']) {
+  background: var(--sky);
+}
+
+.social-sections a:focus-visible {
+  position: relative;
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.social-sections a[aria-current='page']:focus-visible {
+  outline-color: var(--navy);
 }
 
 .social-screen__header h1 {
@@ -350,25 +352,31 @@
 .leaderboard-modes {
   display: flex;
   width: 100%;
-  border-bottom: 1px solid var(--navy);
+  padding: 2px;
+  background: var(--navy);
+  border-radius: var(--button-radius);
 }
 
 .leaderboard-modes button {
   flex: 1;
   min-height: 2.75rem;
   padding: 0.4rem 0.75rem;
-  color: var(--muted);
-  background: none;
+  color: var(--navy);
+  background: var(--paper);
   border: 0;
-  border-bottom: 3px solid transparent;
+  border-radius: var(--icon-control-radius);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
+.leaderboard-modes button + button {
+  margin-left: 2px;
+}
+
 .leaderboard-modes button[aria-pressed='true'] {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
+  color: var(--primary-text);
+  background: var(--blue);
   font-weight: 800;
 }
 
@@ -383,19 +391,16 @@
 .leaderboard-scopes {
   display: flex;
   width: max-content;
-  gap: 1px;
-  padding: 1px;
-  background: var(--navy);
-  border-radius: var(--icon-control-radius);
+  gap: 0.75rem;
 }
 
 .leaderboard-scopes button {
   min-height: 2.75rem;
-  padding: 0.4rem 0.7rem;
-  color: var(--navy);
-  background: var(--paper);
+  padding: 0.4rem 0.2rem;
+  color: var(--muted);
+  background: none;
   border: 0;
-  border-radius: 0.2rem;
+  border-bottom: 2px solid transparent;
   font: inherit;
   font-size: var(--text-label);
   font-weight: 700;
@@ -403,7 +408,8 @@
 }
 
 .leaderboard-scopes button[aria-pressed='true'] {
-  background: var(--sky);
+  color: var(--blue);
+  border-bottom-color: var(--blue);
   font-weight: 800;
 }
 

@@ -174,7 +174,7 @@ export const ResultsScreen = ({
   ]);
 
   return (
-    <section className="results" aria-labelledby="results-title">
+    <section className="game-panel results" aria-labelledby="results-title">
       <div
         className={`results__header ${isDaily && dailyStreak > 0 ? 'results__header--with-combo' : ''}`.trim()}
       >

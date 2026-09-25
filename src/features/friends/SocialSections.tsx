@@ -8,7 +8,6 @@ export function SocialSections({ active }: { active: 'rankings' | 'friends' }) {
       <Link
         to="/social/rankings"
         aria-current={active === 'rankings' ? 'page' : undefined}
-        className={`game-button game-button--${active === 'rankings' ? 'primary' : 'quiet'}`}
         onClick={(event) => {
           if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
             return;
@@ -21,7 +20,6 @@ export function SocialSections({ active }: { active: 'rankings' | 'friends' }) {
       <Link
         to="/social/friends"
         aria-current={active === 'friends' ? 'page' : undefined}
-        className={`game-button game-button--${active === 'friends' ? 'primary' : 'quiet'}`}
         onClick={(event) => {
           if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
             return;

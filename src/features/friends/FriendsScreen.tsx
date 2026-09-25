@@ -19,7 +19,10 @@ export function FriendsScreen({
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const [adding, setAdding] = useState(Boolean(initialInput));
   return (
-    <section className="social-screen" aria-labelledby="social-title">
+    <section
+      className="game-panel social-screen"
+      aria-labelledby="social-title"
+    >
       <header className="social-screen__header">
         <h1 id="social-title">Social</h1>
       </header>
