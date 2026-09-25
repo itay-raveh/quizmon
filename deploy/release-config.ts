@@ -7,7 +7,6 @@ import {
 } from '../src/domain/sync/connection.ts';
 
 export const releaseConfigSchema = z.object({
-  version: z.literal(1).optional(),
   workerName: z.string().regex(/^[a-z0-9][a-z0-9-]{0,62}$/),
   origin: z.string().min(1),
   sync: z.object({
@@ -55,7 +54,6 @@ export function readReleaseConfig(value: unknown): ReleaseConfig {
   if (config.authRateLimitNamespace === config.apiRateLimitNamespace)
     throw new Error('Distinct rate-limit namespace identifiers are required.');
   return {
-    version: 1,
     workerName: config.workerName,
     origin: origin.origin,
     sync,

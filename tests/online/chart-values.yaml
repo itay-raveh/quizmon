@@ -2,7 +2,6 @@ releaseImage:
   repository: ghcr.io/example/quizmon/release
   digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
 runtimeConfig:
-  version: 1
   workerName: quizmon-test
   origin: https://game.example.test
   sync:

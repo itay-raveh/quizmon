@@ -7,7 +7,6 @@ import {
 } from '../../deploy/release-config.ts';
 
 const config = {
-  version: 1,
   workerName: 'quizmon-release-check',
   origin: 'https://game.example.test',
   sync: {
@@ -56,7 +55,6 @@ await test('runtime renderer preserves game bindings and limits without local da
 
 await test('unsupported, incomplete, or local production inputs are rejected before preparing output', () => {
   for (const invalid of [
-    { ...config, version: 2 },
     { ...config, origin: '' },
     { ...config, mailFrom: '' },
     { ...config, origin: 'https://game.example.test/path' },
