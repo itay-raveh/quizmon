@@ -3,7 +3,6 @@ import type { ClientConfig } from 'pg';
 import { z } from 'zod';
 
 const connectionSchema = z.strictObject({
-  version: z.literal(1).optional(),
   host: z
     .hostname()
     .max(253)

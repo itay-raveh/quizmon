@@ -12,10 +12,6 @@ await test('migration inputs enforce verified TLS without URI or environment ove
     password: randomBytes(32).toString('hex'),
   };
   const connection = readMigrationConnection(input);
-  assert.deepEqual(
-    readMigrationConnection({ ...input, version: 1 }),
-    connection,
-  );
   assert.deepEqual(connection.ssl, { rejectUnauthorized: true });
   assert.equal(connection.connectionString, undefined);
   assert.equal(connection.host, input.host);
