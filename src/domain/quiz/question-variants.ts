@@ -52,16 +52,10 @@ export interface VariantRules {
   allowMissingSprites?: boolean;
   closeAlternatives?: boolean;
   itemChoices?:
-    | 'different-categories'
-    | 'pocket'
-    | 'category'
-    | 'medicines'
-    | 'stones'
-    | 'direct-use';
+    'different-categories' | 'pocket' | 'category' | 'stones' | 'direct-use';
   measurement?: MeasurementRules;
-  reviewedDescription?: boolean;
+  showMoveDescription?: boolean;
   excludeTypeHintNames?: boolean;
-  excludeUniversalCures?: boolean;
   fullList?: 'types' | 'regions' | 'flavors';
   damageClass?: 'status' | 'any';
   sameMoveType?: boolean;
@@ -131,11 +125,12 @@ const questionVariants: Record<
     3: { itemChoices: 'category' },
   },
   'medicine-cabinet': {
-    1: { itemChoices: 'different-categories' },
-    2: { itemChoices: 'medicines', excludeUniversalCures: true },
-    3: {
-      itemChoices: 'medicines',
-      excludeUniversalCures: true,
+    2: { effectChoices: 'broad' },
+    3: { effectChoices: 'broad', itemChoices: 'category' },
+    4: { effectChoices: 'related', itemChoices: 'category' },
+    5: {
+      effectChoices: 'exact',
+      itemChoices: 'category',
       allowMissingSprites: true,
     },
   },
@@ -148,7 +143,7 @@ const questionVariants: Record<
   'weight-comparison': measurementVariants,
   'height-comparison': measurementVariants,
   'move-types': {
-    2: { reviewedDescription: true },
+    2: { showMoveDescription: true },
     3: { fullList: 'types', excludeTypeHintNames: true },
   },
   'name-that-region': { 2: {}, 3: { fullList: 'regions' } },
@@ -169,7 +164,15 @@ const questionVariants: Record<
     5: { evolutionConditions: 'one-condition' },
   },
   'ability-effects': effectVariants,
-  'held-item-effects': effectVariants,
+  'held-item-effects': {
+    3: { effectChoices: 'broad', itemChoices: 'category' },
+    4: { effectChoices: 'related', itemChoices: 'category' },
+    5: {
+      effectChoices: 'exact',
+      itemChoices: 'category',
+      allowMissingSprites: true,
+    },
+  },
   'hidden-abilities': {
     4: { hiddenAbility: 'ordinary' },
     5: { hiddenAbility: 'similar', allowMissingSprites: true },

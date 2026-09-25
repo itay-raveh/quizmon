@@ -34,7 +34,7 @@ it.each(['height-comparison', 'weight-comparison'] as const)(
   },
 );
 
-it.each(['move-types', 'type-check'] as const)(
+it.each(['move-types', 'type-check', 'medicine-cabinet'] as const)(
   '%s starts at Level 2',
   (type) => {
     expect(getQuestionVariant(type, 1)).toBeUndefined();

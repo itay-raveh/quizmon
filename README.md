@@ -31,11 +31,13 @@ Set the GitHub Actions secrets `SENTRY_BROWSER_DSN`, `SENTRY_WORKER_DSN`, `SENTR
 
 ## Data
 
-Quizmon builds an offline dataset of Pokémon species and selected forms from [PokéAPI](https://pokeapi.co/). Ability effect choices use short descriptions from [Pokémon Showdown](https://github.com/smogon/pokemon-showdown), with generation-specific mechanics and fuller explanations available after answering. The importer pins its source revision in `scripts/ability-text.ts`. Live games do not request either source.
+Quizmon builds an offline catalog from two sources. [PokéAPI](https://pokeapi.co/) owns stable species and form IDs, names, Pokédex details, EV yields, game versions, evolutions, locations, encounters, berries, bag-item uses, and sprite metadata. [@pkmn/dex](https://github.com/pkmn/ps/tree/main/dex) owns types, matchups, stats, abilities, level-up moves, natures, move battle properties, and battle effect descriptions. PokéAPI supplies the game-version contexts for moves; Showdown supplies their type and damage class in each generation. Missing Showdown abilities and move facts are omitted, while an unmapped species stops the update. Neither source silently fills the other's facts. Live games do not request either source.
 
 ```sh
 npm run data:update
 ```
+
+Run `npm run data:update -- --showdown-only` to refresh packaged Showdown battle data without fetching PokéAPI again. Run a full update to discover new PokéAPI game-version contexts and forms, and to recheck ability disagreements between the sources.
 
 The build fetches the trainer sprites listed in `src/domain/player/data/trainer-avatars.json` from [Pokémon Showdown](https://play.pokemonshowdown.com/sprites/trainers/) and verifies their checksums before Vite copies them into `dist/`. The PNGs stay ignored in Git. Run `npm run avatars:prepare` for local development, or `npm run avatars:update` to refresh the tracked manifest from the current uncredited 80 × 80 sprite index.
 

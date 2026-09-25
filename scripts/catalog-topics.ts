@@ -1,11 +1,7 @@
-import { addAbilityDescriptions } from './ability-text.ts';
+import { addPkmnDescriptions } from './pkmn-descriptions.ts';
+import { bagItemEffect } from './bag-item-effect.ts';
 import { clean, english, titleCase } from './catalog-text.ts';
-import { reviewedEffects } from './reviewed-effects.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
-import {
-  medicineChoices,
-  reviewedMoveDescriptions,
-} from './reviewed-topic-facts.ts';
 import {
   flattenChain,
   formatRequirements,
@@ -18,7 +14,6 @@ import {
   type Location,
   type LocationArea,
   type NamedAPIResourceList,
-  type Nature,
   type Move,
   type MainClient,
   type Region,
@@ -29,13 +24,11 @@ import {
   generations,
   type Generation,
   type PokemonCatalog,
-  type StatName,
 } from '../src/domain/pokemon/types.ts';
 import type {
   TopicCatalog,
   TopicEntity,
 } from '../src/domain/quiz/topic-catalog.ts';
-import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 import {
   isItemSpritePath,
   normalizeSpriteUrl,
@@ -51,7 +44,7 @@ const label = (entity: {
 export const buildTopicCatalog = async (
   client: MainClient,
   catalog: PokemonCatalog,
-): Promise<EditorialTopicCatalog> => {
+): Promise<TopicCatalog> => {
   const all = async <T>(endpoint: string): Promise<T[]> => {
     const [list] = await client.resolveAll<NamedAPIResourceList<T>>(
       [`https://pokeapi.co/api/v2/${endpoint}/?limit=10000`],
@@ -97,7 +90,6 @@ export const buildTopicCatalog = async (
   );
   const moves = await all<Move>('move');
   const abilities = await all<Ability>('ability');
-  const natures = await all<Nature>('nature');
   const berries = await all<Berry>('berry');
   const regions = await all<Region>('region');
   const locations = await all<Location>('location');
@@ -123,36 +115,6 @@ export const buildTopicCatalog = async (
       .map(([name, pokemon]) => [pokemon.speciesName, name]),
   );
   const encounters: TopicCatalog['encounters'] = [];
-  const gaps: EditorialTopicCatalog['gaps'] = {
-    itemGeneration: [],
-    itemSprite: [],
-    moveDescription: [],
-    abilityEffect: [],
-    encounterGames: [],
-    evolutionMethods: [],
-    moveDescriptionReview: moves
-      .filter((move) => !reviewedMoveDescriptions[move.name])
-      .map((move) => move.name),
-    heldItemEffectReview: items
-      .filter(
-        (item) =>
-          categories.get(item.category.name)?.pocket.name === 'misc' &&
-          !reviewedEffects.some(
-            (fact) => fact.kind === 'item' && fact.name === item.name,
-          ),
-      )
-      .map((item) => item.name),
-    dynamicMoveClass: [
-      'photon-geyser',
-      'light-that-burns-the-sky',
-      'shell-side-arm',
-      'tera-blast',
-      'tera-starstorm',
-    ],
-    encounterCoverage: [
-      'Only ordinary encounter contexts whose recorded slot chances total 100 percent are used. Special-event and Generation III record-mixing swarm coverage remains unverified.',
-    ],
-  };
   for (const area of areas) {
     const location = locationsByName.get(area.location.name);
     if (!location?.region) continue;
@@ -211,9 +173,6 @@ export const buildTopicCatalog = async (
         });
     }
   }
-  for (const version of versions)
-    if (!encounters.some((entry) => entry.game === version.name))
-      gaps.encounterGames!.push(version.name);
   const evolutions: TopicCatalog['evolutions'] = [];
   for (const chain of chains) {
     for (const step of flattenChain(chain)) {
@@ -235,16 +194,10 @@ export const buildTopicCatalog = async (
         const after = detail.evolved_form
           ? resolveForm(detail.evolved_form)
           : defaultAfter;
-        if (!before || !after) {
-          gaps.evolutionMethods!.push(`${step.from.name}:${step.to.name}`);
-          continue;
-        }
+        if (!before || !after) continue;
         const group = groupsByName.get(detail.version_group?.name);
         const gen = group && generation(group.generation.name);
-        if (!group || !gen) {
-          gaps.evolutionMethods!.push(`${before}:${after}`);
-          continue;
-        }
+        if (!group || !gen) continue;
         const requirements = requirementsOf(detail).filter(
           (requirement) =>
             !['base-form', 'evolved-form', 'trigger'].includes(
@@ -268,87 +221,62 @@ export const buildTopicCatalog = async (
       }
     }
   }
-  const topics: EditorialTopicCatalog = {
+  const topics: TopicCatalog = {
     games,
     encounters,
     evolutions,
-    gaps,
-    medicineChoices,
-    effects: reviewedEffects,
     items: items.map((item) => {
       const gens = item.game_indices.map((index) =>
         generation(index.generation.name),
       );
+      const topic = entity(item, gens);
       const sprite = normalizeSpriteUrl(item.sprites.default);
-      if (!gens.some(Boolean)) gaps.itemGeneration!.push(item.name);
-      if (!sprite || !isItemSpritePath(sprite))
-        gaps.itemSprite!.push(item.name);
+      const effect = bagItemEffect(
+        item.name,
+        item.effect_entries.find(english)?.short_effect,
+      );
       return {
-        ...entity(item, gens),
+        ...topic,
         sprite: sprite && isItemSpritePath(sprite) ? sprite : null,
         category: item.category.name,
         pocket: categories.get(item.category.name)?.pocket.name ?? '',
+        ...(topic.generations.length && effect
+          ? {
+              effectKind: 'bag' as const,
+              descriptions: topic.generations.map((generation) => ({
+                generation,
+                text: effect,
+                explanation: effect,
+              })),
+            }
+          : {}),
       };
     }),
     moves: moves.map((move) => {
-      if (!move.flavor_text_entries.some(english))
-        gaps.moveDescription!.push(move.name);
       const contexts = move.flavor_text_entries
         .filter(english)
         .flatMap((entry) => {
           const group = groupsByName.get(entry.version_group.name);
           const gen = group && generation(group.generation.name);
           if (!group || !gen) return [];
-          const historical = move.past_values
-            .filter(
-              (value) =>
-                value.type &&
-                (groupsByName.get(value.version_group.name)?.order ?? -1) >=
-                  group.order,
-            )
-            .sort(
-              (a, b) =>
-                groupsByName.get(a.version_group.name)!.order -
-                groupsByName.get(b.version_group.name)!.order,
-            )[0];
-          const type = historical?.type?.name ?? move.type.name;
-          const damageClass =
-            move.name === 'water-shuriken' && gen === 'VI'
-              ? 'physical'
-              : (move.damage_class?.name ?? '');
           return group.versions.map((version) => ({
             game: version.name,
             generation: gen,
-            type,
-            damageClass,
+            type: '',
+            damageClass: '',
           }));
         });
       return {
         ...entity(move, [generation(move.generation.name)]),
         contexts,
-        reviewedDescription: reviewedMoveDescriptions[move.name],
-        type: move.type.name,
-        damageClass: move.damage_class?.name ?? '',
+        type: '',
+        damageClass: '',
       };
     }),
-    abilities: abilities.map((ability) => {
-      const effect = clean(ability.effect_entries.find(english)?.effect ?? '');
-      if (!effect) gaps.abilityEffect!.push(ability.name);
-      return {
-        ...entity(ability, [generation(ability.generation.name)]),
-      };
-    }),
-    natures: natures.flatMap((nature) =>
-      nature.increased_stat && nature.decreased_stat
-        ? [
-            {
-              ...entity(nature, ['III']),
-              raised: nature.increased_stat.name as StatName,
-              lowered: nature.decreased_stat.name as StatName,
-            },
-          ]
-        : [],
+    abilities: abilities.map((ability) =>
+      entity(ability, [generation(ability.generation.name)]),
     ),
+    natures: [],
     berries: berries.map((berry) => ({
       ...entity(
         berry,
@@ -375,9 +303,6 @@ export const buildTopicCatalog = async (
         : [];
     }),
   };
-  await addAbilityDescriptions(topics.abilities);
-  topics.gaps.abilityDescription = topics.abilities
-    .filter((ability) => !ability.descriptions?.length)
-    .map((ability) => ability.name);
+  addPkmnDescriptions(topics);
   return topics;
 };

@@ -133,7 +133,7 @@ export interface QuestionSubject extends AnswerSubject {
   types?: string[];
 }
 
-export interface ChoiceDetail {
+interface ChoiceDetail {
   value: string;
   label: string;
 }

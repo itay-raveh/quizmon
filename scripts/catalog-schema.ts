@@ -13,50 +13,25 @@ const entity = z.object({
   label: text,
   generations: z.array(generation),
 });
-const choice = z.object({
-  value: text,
-  label: text,
-  details: z.array(z.object({ value: text, label: text })).optional(),
-});
-const effectQuestion = z.object({
-  prompt: text.optional(),
-  supportingText: text.optional(),
-  correct: choice,
-  wrong: z.tuple([choice, choice, choice]),
+const description = z.object({
+  generation,
+  text,
+  explanation: text,
 });
 const topics = z.object({
-  medicineChoices: z.array(
-    z.object({
-      name: text,
-      cures: texts,
-      hp: z.union([z.number(), z.literal('full')]),
-    }),
-  ),
-  effects: z.array(
-    z.object({
-      kind: z.enum(['ability', 'item']),
-      name: text,
-      generation,
-      battleGeneration: generation,
-      context: text,
-      explanation: text,
-      questions: z.record(
-        z.enum(['broad', 'related', 'exact']),
-        effectQuestion,
-      ),
-    }),
-  ),
   items: z.array(
     entity.extend({
       sprite: text.nullable(),
       spriteIdentity: text.optional(),
       category: text,
       pocket: text,
+      effectKind: z.enum(['bag', 'held']).optional(),
+      descriptions: z.array(description).optional(),
     }),
   ),
   moves: z.array(
     entity.extend({
-      reviewedDescription: text.optional(),
+      descriptions: z.partialRecord(generation, text).optional(),
       contexts: z.array(
         z.object({
           game: text,
@@ -71,15 +46,7 @@ const topics = z.object({
   ),
   abilities: z.array(
     entity.extend({
-      descriptions: z
-        .array(
-          z.object({
-            generation,
-            text,
-            explanation: text,
-          }),
-        )
-        .optional(),
+      descriptions: z.array(description).optional(),
     }),
   ),
   natures: z.array(

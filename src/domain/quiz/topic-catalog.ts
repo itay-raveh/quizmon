@@ -1,4 +1,3 @@
-import type { ChoiceDetail } from './types.ts';
 import type { Generation, StatName } from '../pokemon/types.ts';
 
 export interface TopicEntity {
@@ -11,9 +10,11 @@ interface ItemKnowledge extends TopicEntity {
   spriteIdentity?: string;
   category: string;
   pocket: string;
+  effectKind?: 'bag' | 'held';
+  descriptions?: EffectDescription[];
 }
 interface MoveKnowledge extends TopicEntity {
-  reviewedDescription?: string;
+  descriptions?: Partial<Record<Generation, string>>;
   contexts: {
     game: string;
     generation: Generation;
@@ -44,42 +45,17 @@ interface EncounterKnowledge {
   pokemon: string[];
 }
 export type EffectMode = 'broad' | 'related' | 'exact';
-interface EffectChoice {
-  details?: ChoiceDetail[];
-  value: string;
-  label: string;
-}
-export interface EffectQuestion {
-  prompt?: string;
-  supportingText?: string;
-  correct: EffectChoice;
-  wrong: [EffectChoice, EffectChoice, EffectChoice];
-}
-export interface EffectKnowledge {
-  kind: 'ability' | 'item';
-  name: string;
+interface EffectDescription {
   generation: Generation;
-  battleGeneration: Generation;
-  context: string;
+  text: string;
   explanation: string;
-  questions: Record<EffectMode, EffectQuestion>;
 }
 
 export interface TopicCatalog {
-  medicineChoices: {
-    name: string;
-    cures: string[];
-    hp: number | 'full';
-  }[];
-  effects: EffectKnowledge[];
   items: ItemKnowledge[];
   moves: MoveKnowledge[];
   abilities: (TopicEntity & {
-    descriptions?: {
-      generation: Generation;
-      text: string;
-      explanation: string;
-    }[];
+    descriptions?: EffectDescription[];
   })[];
   natures: (TopicEntity & { raised: StatName; lowered: StatName })[];
   berries: (TopicEntity & {

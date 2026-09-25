@@ -1,7 +1,14 @@
 {
-  "contentVersion": 1,
+  "contentVersion": 3,
   "key": "natures",
   "values": [
+    {
+      "name": "adamant",
+      "label": "Adamant",
+      "generations": ["III"],
+      "raised": "attack",
+      "lowered": "special-attack"
+    },
     {
       "name": "bold",
       "label": "Bold",
@@ -10,11 +17,11 @@
       "lowered": "attack"
     },
     {
-      "name": "modest",
-      "label": "Modest",
+      "name": "brave",
+      "label": "Brave",
       "generations": ["III"],
-      "raised": "special-attack",
-      "lowered": "attack"
+      "raised": "attack",
+      "lowered": "speed"
     },
     {
       "name": "calm",
@@ -24,25 +31,11 @@
       "lowered": "attack"
     },
     {
-      "name": "timid",
-      "label": "Timid",
+      "name": "careful",
+      "label": "Careful",
       "generations": ["III"],
-      "raised": "speed",
-      "lowered": "attack"
-    },
-    {
-      "name": "lonely",
-      "label": "Lonely",
-      "generations": ["III"],
-      "raised": "attack",
-      "lowered": "defense"
-    },
-    {
-      "name": "mild",
-      "label": "Mild",
-      "generations": ["III"],
-      "raised": "special-attack",
-      "lowered": "defense"
+      "raised": "special-defense",
+      "lowered": "special-attack"
     },
     {
       "name": "gentle",
@@ -59,32 +52,11 @@
       "lowered": "defense"
     },
     {
-      "name": "adamant",
-      "label": "Adamant",
-      "generations": ["III"],
-      "raised": "attack",
-      "lowered": "special-attack"
-    },
-    {
       "name": "impish",
       "label": "Impish",
       "generations": ["III"],
       "raised": "defense",
       "lowered": "special-attack"
-    },
-    {
-      "name": "careful",
-      "label": "Careful",
-      "generations": ["III"],
-      "raised": "special-defense",
-      "lowered": "special-attack"
-    },
-    {
-      "name": "rash",
-      "label": "Rash",
-      "generations": ["III"],
-      "raised": "special-attack",
-      "lowered": "special-defense"
     },
     {
       "name": "jolly",
@@ -94,18 +66,32 @@
       "lowered": "special-attack"
     },
     {
-      "name": "naughty",
-      "label": "Naughty",
-      "generations": ["III"],
-      "raised": "attack",
-      "lowered": "special-defense"
-    },
-    {
       "name": "lax",
       "label": "Lax",
       "generations": ["III"],
       "raised": "defense",
       "lowered": "special-defense"
+    },
+    {
+      "name": "lonely",
+      "label": "Lonely",
+      "generations": ["III"],
+      "raised": "attack",
+      "lowered": "defense"
+    },
+    {
+      "name": "mild",
+      "label": "Mild",
+      "generations": ["III"],
+      "raised": "special-attack",
+      "lowered": "defense"
+    },
+    {
+      "name": "modest",
+      "label": "Modest",
+      "generations": ["III"],
+      "raised": "special-attack",
+      "lowered": "attack"
     },
     {
       "name": "naive",
@@ -115,18 +101,11 @@
       "lowered": "special-defense"
     },
     {
-      "name": "brave",
-      "label": "Brave",
+      "name": "naughty",
+      "label": "Naughty",
       "generations": ["III"],
       "raised": "attack",
-      "lowered": "speed"
-    },
-    {
-      "name": "relaxed",
-      "label": "Relaxed",
-      "generations": ["III"],
-      "raised": "defense",
-      "lowered": "speed"
+      "lowered": "special-defense"
     },
     {
       "name": "quiet",
@@ -136,11 +115,32 @@
       "lowered": "speed"
     },
     {
+      "name": "rash",
+      "label": "Rash",
+      "generations": ["III"],
+      "raised": "special-attack",
+      "lowered": "special-defense"
+    },
+    {
+      "name": "relaxed",
+      "label": "Relaxed",
+      "generations": ["III"],
+      "raised": "defense",
+      "lowered": "speed"
+    },
+    {
       "name": "sassy",
       "label": "Sassy",
       "generations": ["III"],
       "raised": "special-defense",
       "lowered": "speed"
+    },
+    {
+      "name": "timid",
+      "label": "Timid",
+      "generations": ["III"],
+      "raised": "speed",
+      "lowered": "attack"
     }
   ]
 }

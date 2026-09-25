@@ -34,6 +34,7 @@ export const buildMove: QuestionBuilder = (context) => {
     const contexts = target.contexts.filter(
       (entry) =>
         (context.generations ?? generations).includes(entry.generation) &&
+        Boolean(entry.type && entry.damageClass) &&
         (!purpose || generations.indexOf(entry.generation) >= 3),
     );
     for (const rules of ordered(context, contexts)) {
@@ -43,10 +44,13 @@ export const buildMove: QuestionBuilder = (context) => {
         target.label.toLowerCase().includes(rules.type)
       )
         continue;
-      if (context.variant?.reviewedDescription && !target.reviewedDescription)
-        continue;
       const game = topics.games[rules.game];
       if (!game) continue;
+      if (
+        context.variant?.showMoveDescription &&
+        !target.descriptions?.[rules.generation]
+      )
+        continue;
       if (purpose) {
         if (
           context.variant?.damageClass === 'status' &&
@@ -60,6 +64,8 @@ export const buildMove: QuestionBuilder = (context) => {
               move.contexts.some(
                 (entry) =>
                   entry.game === rules.game &&
+                  entry.type &&
+                  entry.damageClass &&
                   entry.damageClass !== rules.damageClass &&
                   (!context.variant?.sameMoveType || entry.type === rules.type),
               ),
@@ -125,8 +131,8 @@ export const buildMove: QuestionBuilder = (context) => {
             prompt: {
               kind: 'text',
               text: prompt,
-              description: context.variant?.reviewedDescription
-                ? target.reviewedDescription
+              description: context.variant?.showMoveDescription
+                ? target.descriptions?.[rules.generation]
                 : undefined,
               supportingText: `Pokémon ${game.label}`,
             },

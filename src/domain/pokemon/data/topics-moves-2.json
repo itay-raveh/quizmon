@@ -1,0 +1,4624 @@
+{
+  "contentVersion": 3,
+  "key": "moves",
+  "values": [
+    {
+      "name": "max-ooze",
+      "label": "Max Ooze",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "poison",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "poison",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "poison",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Allies: +1 Sp. Atk." }
+    },
+    {
+      "name": "max-geyser",
+      "label": "Max Geyser",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Starts Rain Dance." }
+    },
+    {
+      "name": "max-airstream",
+      "label": "Max Airstream",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "flying",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "flying",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "flying",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Allies: +1 Speed." }
+    },
+    {
+      "name": "max-starfall",
+      "label": "Max Starfall",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Base move affects power. Starts Misty Terrain."
+      }
+    },
+    {
+      "name": "max-wyrmwind",
+      "label": "Max Wyrmwind",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Foes: -1 Attack." }
+    },
+    {
+      "name": "max-mindstorm",
+      "label": "Max Mindstorm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "physical"
+    },
+    {
+      "name": "max-rockfall",
+      "label": "Max Rockfall",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "rock",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Starts Sandstorm." }
+    },
+    {
+      "name": "max-quake",
+      "label": "Max Quake",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ground",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ground",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ground",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Allies: +1 Sp. Def." }
+    },
+    {
+      "name": "max-darkness",
+      "label": "Max Darkness",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Foes: -1 Sp. Def." }
+    },
+    {
+      "name": "max-overgrowth",
+      "label": "Max Overgrowth",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Base move affects power. Starts Grassy Terrain."
+      }
+    },
+    {
+      "name": "max-steelspike",
+      "label": "Max Steelspike",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Base move affects power. Allies: +1 Defense." }
+    },
+    {
+      "name": "clangorous-soul",
+      "label": "Clangorous Soul",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "status"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "User loses 33% of its max HP. +1 to all stats.",
+        "IX": "User loses 33% of its max HP. +1 to all stats."
+      }
+    },
+    {
+      "name": "body-press",
+      "label": "Body Press",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Uses user's Def stat as Atk in damage calculation.",
+        "IX": "Uses user's Def stat as Atk in damage calculation."
+      }
+    },
+    {
+      "name": "decorate",
+      "label": "Decorate",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "status"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Raises the target's Attack and Sp. Atk by 2.",
+        "IX": "Raises the target's Attack and Sp. Atk by 2."
+      }
+    },
+    {
+      "name": "drum-beating",
+      "label": "Drum Beating",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "100% chance to lower the target's Speed by 1.",
+        "IX": "100% chance to lower the target's Speed by 1."
+      }
+    },
+    {
+      "name": "snap-trap",
+      "label": "Snap Trap",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Traps and damages the target for 4-5 turns." }
+    },
+    {
+      "name": "pyro-ball",
+      "label": "Pyro Ball",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "10% chance to burn the target. Thaws user.",
+        "IX": "10% chance to burn the target. Thaws user."
+      }
+    },
+    {
+      "name": "behemoth-blade",
+      "label": "Behemoth Blade",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Damage doubles if the target is Dynamaxed." }
+    },
+    {
+      "name": "behemoth-bash",
+      "label": "Behemoth Bash",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "Damage doubles if the target is Dynamaxed." }
+    },
+    {
+      "name": "aura-wheel",
+      "label": "Aura Wheel",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "physical"
+    },
+    {
+      "name": "breaking-swipe",
+      "label": "Breaking Swipe",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "100% chance to lower the foe(s) Attack by 1.",
+        "IX": "100% chance to lower the foe(s) Attack by 1."
+      }
+    },
+    {
+      "name": "branch-poke",
+      "label": "Branch Poke",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical"
+    },
+    {
+      "name": "overdrive",
+      "label": "Overdrive",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "special"
+    },
+    {
+      "name": "apple-acid",
+      "label": "Apple Acid",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "100% chance to lower the target's Sp. Def by 1.",
+        "IX": "100% chance to lower the target's Sp. Def by 1."
+      }
+    },
+    {
+      "name": "grav-apple",
+      "label": "Grav Apple",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Target: 100% -1 Def. During Gravity: 1.5x power.",
+        "IX": "Target: 100% -1 Def. During Gravity: 1.5x power."
+      }
+    },
+    {
+      "name": "spirit-break",
+      "label": "Spirit Break",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "100% chance to lower the target's Sp. Atk by 1.",
+        "IX": "100% chance to lower the target's Sp. Atk by 1."
+      }
+    },
+    {
+      "name": "strange-steam",
+      "label": "Strange Steam",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "20% chance to confuse the target.",
+        "IX": "20% chance to confuse the target."
+      }
+    },
+    {
+      "name": "life-dew",
+      "label": "Life Dew",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "status"
+        }
+      ],
+      "type": "water",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Heals the user and its allies by 1/4 their max HP.",
+        "IX": "Heals the user and its allies by 1/4 their max HP."
+      }
+    },
+    {
+      "name": "obstruct",
+      "label": "Obstruct",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "status"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Protects from damaging attacks. Contact: -2 Def."
+      }
+    },
+    {
+      "name": "false-surrender",
+      "label": "False Surrender",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "This move does not check accuracy.",
+        "IX": "This move does not check accuracy."
+      }
+    },
+    {
+      "name": "meteor-assault",
+      "label": "Meteor Assault",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": { "VIII": "User cannot move next turn." }
+    },
+    {
+      "name": "eternabeam",
+      "label": "Eternabeam",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "special",
+      "descriptions": { "VIII": "User cannot move next turn." }
+    },
+    {
+      "name": "steel-beam",
+      "label": "Steel Beam",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "special"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "User loses 50% max HP.",
+        "IX": "User loses 50% max HP."
+      }
+    },
+    {
+      "name": "expanding-force",
+      "label": "Expanding Force",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special"
+    },
+    {
+      "name": "steel-roller",
+      "label": "Steel Roller",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Fails if there is no terrain active. Ends the terrain.",
+        "IX": "Fails if there is no terrain active. Ends the terrain."
+      }
+    },
+    {
+      "name": "scale-shot",
+      "label": "Scale Shot",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Hits 2-5 times. User: -1 Def, +1 Spe after last hit.",
+        "IX": "Hits 2-5 times. User: -1 Def, +1 Spe after last hit."
+      }
+    },
+    {
+      "name": "meteor-beam",
+      "label": "Meteor Beam",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "rock",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "special"
+        }
+      ],
+      "type": "rock",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "Raises user's Sp. Atk by 1 on turn 1. Hits turn 2.",
+        "IX": "Raises user's Sp. Atk by 1 on turn 1. Hits turn 2."
+      }
+    },
+    {
+      "name": "shell-side-arm",
+      "label": "Shell Side Arm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "poison",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "poison",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "poison",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "special"
+        }
+      ],
+      "type": "poison",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "20% psn. Physical+contact if it would be stronger.",
+        "IX": "20% psn. Physical+contact if it would be stronger."
+      }
+    },
+    {
+      "name": "misty-explosion",
+      "label": "Misty Explosion",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "User faints. User on Misty Terrain: 1.5x power.",
+        "IX": "User faints. User on Misty Terrain: 1.5x power."
+      }
+    },
+    {
+      "name": "grassy-glide",
+      "label": "Grassy Glide",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "User on Grassy Terrain: +1 priority.",
+        "IX": "User on Grassy Terrain: +1 priority."
+      }
+    },
+    {
+      "name": "rising-voltage",
+      "label": "Rising Voltage",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "special"
+    },
+    {
+      "name": "terrain-pulse",
+      "label": "Terrain Pulse",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "normal",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "User on terrain: power doubles, type varies.",
+        "IX": "User on terrain: power doubles, type varies."
+      }
+    },
+    {
+      "name": "skitter-smack",
+      "label": "Skitter Smack",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "bug",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "bug",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "bug",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "bug",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "bug",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "bug",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "100% chance to lower target's Sp. Atk by 1.",
+        "IX": "100% chance to lower target's Sp. Atk by 1."
+      }
+    },
+    {
+      "name": "burning-jealousy",
+      "label": "Burning Jealousy",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fire",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "100% burns a target that had a stat rise this turn.",
+        "IX": "100% burns a target that had a stat rise this turn."
+      }
+    },
+    {
+      "name": "lash-out",
+      "label": "Lash Out",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "2x power if the user had a stat lowered this turn.",
+        "IX": "2x power if the user had a stat lowered this turn."
+      }
+    },
+    {
+      "name": "poltergeist",
+      "label": "Poltergeist",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ghost",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Fails if the target has no held item.",
+        "IX": "Fails if the target has no held item."
+      }
+    },
+    {
+      "name": "corrosive-gas",
+      "label": "Corrosive Gas",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "poison",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "poison",
+          "damageClass": "status"
+        }
+      ],
+      "type": "poison",
+      "damageClass": "status",
+      "descriptions": { "VIII": "Removes adjacent Pokemon's held items." }
+    },
+    {
+      "name": "coaching",
+      "label": "Coaching",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "status"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "Raises an ally's Attack and Defense by 1.",
+        "IX": "Raises an ally's Attack and Defense by 1."
+      }
+    },
+    {
+      "name": "flip-turn",
+      "label": "Flip Turn",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "User switches out after damaging the target.",
+        "IX": "User switches out after damaging the target."
+      }
+    },
+    {
+      "name": "triple-axel",
+      "label": "Triple Axel",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Hits 3 times. Each hit can miss, but power rises.",
+        "IX": "Hits 3 times. Each hit can miss, but power rises."
+      }
+    },
+    {
+      "name": "dual-wingbeat",
+      "label": "Dual Wingbeat",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "flying",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "flying",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "flying",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "flying",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "flying",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "flying",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Hits 2 times in one turn.",
+        "IX": "Hits 2 times in one turn."
+      }
+    },
+    {
+      "name": "scorching-sands",
+      "label": "Scorching Sands",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ground",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ground",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "ground",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ground",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ground",
+          "damageClass": "special"
+        }
+      ],
+      "type": "ground",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "30% chance to burn the target. Thaws target.",
+        "IX": "30% chance to burn the target. Thaws target."
+      }
+    },
+    {
+      "name": "jungle-healing",
+      "label": "Jungle Healing",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "status"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "status"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "grass",
+          "damageClass": "status"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "status"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "status",
+      "descriptions": {
+        "VIII": "User and allies: healed 1/4 max HP, status cured.",
+        "IX": "User and allies: healed 1/4 max HP, status cured."
+      }
+    },
+    {
+      "name": "wicked-blow",
+      "label": "Wicked Blow",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Always results in a critical hit.",
+        "IX": "Always results in a critical hit."
+      }
+    },
+    {
+      "name": "surging-strikes",
+      "label": "Surging Strikes",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "Always results in a critical hit. Hits 3 times.",
+        "IX": "Always results in a critical hit. Hits 3 times."
+      }
+    },
+    {
+      "name": "thunder-cage",
+      "label": "Thunder Cage",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "Traps and damages the target for 4-5 turns.",
+        "IX": "Traps and damages the target for 4-5 turns."
+      }
+    },
+    {
+      "name": "dragon-energy",
+      "label": "Dragon Energy",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "special"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "Less power as user's HP decreases. Hits foe(s).",
+        "IX": "Less power as user's HP decreases. Hits foe(s)."
+      }
+    },
+    {
+      "name": "freezing-glare",
+      "label": "Freezing Glare",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "10% chance to freeze the target.",
+        "IX": "10% chance to freeze the target."
+      }
+    },
+    {
+      "name": "fiery-wrath",
+      "label": "Fiery Wrath",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "special"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "20% chance to make the foe(s) flinch.",
+        "IX": "20% chance to make the foe(s) flinch."
+      }
+    },
+    {
+      "name": "thunderous-kick",
+      "label": "Thunderous Kick",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": {
+        "VIII": "100% chance to lower the target's Defense by 1.",
+        "IX": "100% chance to lower the target's Defense by 1."
+      }
+    },
+    {
+      "name": "glacial-lance",
+      "label": "Glacial Lance",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "physical"
+    },
+    {
+      "name": "astral-barrage",
+      "label": "Astral Barrage",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "ghost",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "special"
+        }
+      ],
+      "type": "ghost",
+      "damageClass": "special"
+    },
+    {
+      "name": "eerie-spell",
+      "label": "Eerie Spell",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "sword",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "shield",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special",
+      "descriptions": {
+        "VIII": "Removes 3 PP from the target's last move.",
+        "IX": "Removes 3 PP from the target's last move."
+      }
+    },
+    {
+      "name": "dire-claw",
+      "label": "Dire Claw",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "poison",
+      "damageClass": "physical"
+    },
+    {
+      "name": "psyshield-bash",
+      "label": "Psyshield Bash",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "physical",
+      "descriptions": { "IX": "100% chance to raise the user's Defense by 1." }
+    },
+    {
+      "name": "power-shift",
+      "label": "Power Shift",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status"
+    },
+    {
+      "name": "stone-axe",
+      "label": "Stone Axe",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "rock",
+      "damageClass": "physical"
+    },
+    {
+      "name": "springtide-storm",
+      "label": "Springtide Storm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "special",
+      "descriptions": { "IX": "30% chance to lower the foe(s) Attack by 1." }
+    },
+    {
+      "name": "mystical-power",
+      "label": "Mystical Power",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special",
+      "descriptions": { "IX": "100% chance to raise the user's Sp. Atk by 1." }
+    },
+    {
+      "name": "raging-fury",
+      "label": "Raging Fury",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Lasts 2-3 turns. Confuses the user afterwards." }
+    },
+    {
+      "name": "wave-crash",
+      "label": "Wave Crash",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Has 33% recoil." }
+    },
+    {
+      "name": "chloroblast",
+      "label": "Chloroblast",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "special",
+      "descriptions": { "IX": "User loses 50% max HP." }
+    },
+    {
+      "name": "mountain-gale",
+      "label": "Mountain Gale",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "physical",
+      "descriptions": { "IX": "30% chance to make the target flinch." }
+    },
+    {
+      "name": "victory-dance",
+      "label": "Victory Dance",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "status"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "status",
+      "descriptions": { "IX": "Raises the user's Attack, Defense, Speed by 1." }
+    },
+    {
+      "name": "headlong-rush",
+      "label": "Headlong Rush",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ground",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ground",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ground",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Lowers the user's Defense and Sp. Def by 1." }
+    },
+    {
+      "name": "barb-barrage",
+      "label": "Barb Barrage",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "poison",
+      "damageClass": "physical",
+      "descriptions": { "IX": "50% psn. 2x power if target already poisoned." }
+    },
+    {
+      "name": "esper-wing",
+      "label": "Esper Wing",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "100% chance to raise user Speed by 1. High crit."
+      }
+    },
+    {
+      "name": "bitter-malice",
+      "label": "Bitter Malice",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "special"
+        }
+      ],
+      "type": "ghost",
+      "damageClass": "special",
+      "descriptions": { "IX": "100% chance to lower the target's Attack by 1." }
+    },
+    {
+      "name": "shelter",
+      "label": "Shelter",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "status"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "status",
+      "descriptions": { "IX": "Raises the user's Defense by 2." }
+    },
+    {
+      "name": "triple-arrows",
+      "label": "Triple Arrows",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": { "IX": "High crit. Target: 50% -1 Defense, 30% flinch." }
+    },
+    {
+      "name": "infernal-parade",
+      "label": "Infernal Parade",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "special"
+        }
+      ],
+      "type": "ghost",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "30% burn. 2x power if target is already statused."
+      }
+    },
+    {
+      "name": "ceaseless-edge",
+      "label": "Ceaseless Edge",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Sets a layer of Spikes on the opposing side." }
+    },
+    {
+      "name": "bleakwind-storm",
+      "label": "Bleakwind Storm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "flying",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "flying",
+          "damageClass": "special"
+        }
+      ],
+      "type": "flying",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "30% to lower foe(s) Speed by 1. Rain: can't miss."
+      }
+    },
+    {
+      "name": "wildbolt-storm",
+      "label": "Wildbolt Storm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "20% chance to paralyze foe(s). Rain: can't miss."
+      }
+    },
+    {
+      "name": "sandsear-storm",
+      "label": "Sandsear Storm",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ground",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ground",
+          "damageClass": "special"
+        }
+      ],
+      "type": "ground",
+      "damageClass": "special",
+      "descriptions": { "IX": "20% chance to burn foe(s). Can't miss in rain." }
+    },
+    {
+      "name": "lunar-blessing",
+      "label": "Lunar Blessing",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "status"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "User and allies: healed 1/4 max HP, status cured."
+      }
+    },
+    {
+      "name": "take-heart",
+      "label": "Take Heart",
+      "generations": ["VIII"],
+      "contexts": [
+        {
+          "game": "legends-arceus",
+          "generation": "VIII",
+          "type": "",
+          "damageClass": ""
+        },
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "status"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "Cures user's status, raises Sp. Atk, Sp. Def by 1."
+      }
+    },
+    {
+      "name": "tera-blast",
+      "label": "Tera Blast",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "If Terastallized: Phys. if Atk > SpA, type = Tera."
+      }
+    },
+    {
+      "name": "silk-trap",
+      "label": "Silk Trap",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "bug",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "bug",
+          "damageClass": "status"
+        }
+      ],
+      "type": "bug",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "Protects from damaging attacks. Contact: -1 Spe."
+      }
+    },
+    {
+      "name": "axe-kick",
+      "label": "Axe Kick",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": { "IX": "30% confusion. User loses 50% max HP if miss." }
+    },
+    {
+      "name": "last-respects",
+      "label": "Last Respects",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ghost",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "+50 power for each time a party member fainted."
+      }
+    },
+    {
+      "name": "lumina-crash",
+      "label": "Lumina Crash",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "100% chance to lower the target's Sp. Def by 2."
+      }
+    },
+    {
+      "name": "order-up",
+      "label": "Order Up",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Curly|Droopy|Stretchy eaten: +1 Atk|Def|Spe." }
+    },
+    {
+      "name": "jet-punch",
+      "label": "Jet Punch",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Usually goes first." }
+    },
+    {
+      "name": "spicy-extract",
+      "label": "Spicy Extract",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "status"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "Raises target's Atk by 2 and lowers its Def by 2."
+      }
+    },
+    {
+      "name": "spin-out",
+      "label": "Spin Out",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Lowers the user's Speed by 2." }
+    },
+    {
+      "name": "population-bomb",
+      "label": "Population Bomb",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Hits 10 times. Each hit can miss." }
+    },
+    {
+      "name": "ice-spinner",
+      "label": "Ice Spinner",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Ends the effects of terrain." }
+    },
+    {
+      "name": "glaive-rush",
+      "label": "Glaive Rush",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "User takes sure-hit 2x damage until its next turn."
+      }
+    },
+    {
+      "name": "revival-blessing",
+      "label": "Revival Blessing",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": { "IX": "Revives a fainted Pokemon to 50% HP." }
+    },
+    {
+      "name": "salt-cure",
+      "label": "Salt Cure",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "rock",
+      "damageClass": "physical"
+    },
+    {
+      "name": "triple-dive",
+      "label": "Triple Dive",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Hits 3 times." }
+    },
+    {
+      "name": "mortal-spin",
+      "label": "Mortal Spin",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "poison",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "Poisons foes, frees user from hazards/bind/leech."
+      }
+    },
+    {
+      "name": "doodle",
+      "label": "Doodle",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "User and ally's Abilities become target's Ability."
+      }
+    },
+    {
+      "name": "fillet-away",
+      "label": "Fillet Away",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "+2 Attack, Sp. Atk, Speed for 1/2 user's max HP."
+      }
+    },
+    {
+      "name": "kowtow-cleave",
+      "label": "Kowtow Cleave",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": { "IX": "This move does not check accuracy." }
+    },
+    {
+      "name": "flower-trick",
+      "label": "Flower Trick",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "Always results in a critical hit; no accuracy check."
+      }
+    },
+    {
+      "name": "torch-song",
+      "label": "Torch Song",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "special",
+      "descriptions": { "IX": "100% chance to raise the user's Sp. Atk by 1." }
+    },
+    {
+      "name": "aqua-step",
+      "label": "Aqua Step",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": { "IX": "100% chance to raise the user's Speed by 1." }
+    },
+    {
+      "name": "raging-bull",
+      "label": "Raging Bull",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Destroys screens. Type depends on user's form." }
+    },
+    {
+      "name": "make-it-rain",
+      "label": "Make It Rain",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "special"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "special",
+      "descriptions": { "IX": "Lowers the user's Sp. Atk by 1. Hits foe(s)." }
+    },
+    {
+      "name": "psyblade",
+      "label": "Psyblade",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "physical"
+    },
+    {
+      "name": "hydro-steam",
+      "label": "Hydro Steam",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "special"
+        }
+      ],
+      "type": "water",
+      "damageClass": "special",
+      "descriptions": { "IX": "During Sunny Day: 1.5x damage instead of half." }
+    },
+    {
+      "name": "ruination",
+      "label": "Ruination",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "special"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "special",
+      "descriptions": { "IX": "Does damage equal to 1/2 target's current HP." }
+    },
+    {
+      "name": "collision-course",
+      "label": "Collision Course",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Deals 1.3333x damage with supereffective hits." }
+    },
+    {
+      "name": "electro-drift",
+      "label": "Electro Drift",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "special",
+      "descriptions": { "IX": "Deals 1.3333x damage with supereffective hits." }
+    },
+    {
+      "name": "shed-tail",
+      "label": "Shed Tail",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "User takes 1/2 its max HP to pass a substitute."
+      }
+    },
+    {
+      "name": "chilly-reception",
+      "label": "Chilly Reception",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "status"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "status",
+      "descriptions": { "IX": "Starts Snow. User switches out." }
+    },
+    {
+      "name": "tidy-up",
+      "label": "Tidy Up",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "status"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "status",
+      "descriptions": {
+        "IX": "User +1 Atk, Spe. Clears all substitutes/hazards."
+      }
+    },
+    {
+      "name": "snowscape",
+      "label": "Snowscape",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ice",
+          "damageClass": "status"
+        }
+      ],
+      "type": "ice",
+      "damageClass": "status"
+    },
+    {
+      "name": "pounce",
+      "label": "Pounce",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "bug",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "bug",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "bug",
+      "damageClass": "physical",
+      "descriptions": { "IX": "100% chance to lower the target's Speed by 1." }
+    },
+    {
+      "name": "trailblaze",
+      "label": "Trailblaze",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": { "IX": "100% chance to raise the user's Speed by 1." }
+    },
+    {
+      "name": "chilling-water",
+      "label": "Chilling Water",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "special"
+        }
+      ],
+      "type": "water",
+      "damageClass": "special",
+      "descriptions": { "IX": "100% chance to lower the target's Attack by 1." }
+    },
+    {
+      "name": "hyper-drill",
+      "label": "Hyper Drill",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Bypasses protection without breaking it." }
+    },
+    {
+      "name": "twin-beam",
+      "label": "Twin Beam",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special",
+      "descriptions": { "IX": "Hits 2 times in one turn." }
+    },
+    {
+      "name": "rage-fist",
+      "label": "Rage Fist",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "ghost",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "ghost",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "+50 power for each time user was hit. Max 6 hits."
+      }
+    },
+    {
+      "name": "armor-cannon",
+      "label": "Armor Cannon",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "special",
+      "descriptions": { "IX": "Lowers the user's Defense and Sp. Def by 1." }
+    },
+    {
+      "name": "bitter-blade",
+      "label": "Bitter Blade",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "physical",
+      "descriptions": { "IX": "User recovers 50% of the damage dealt." }
+    },
+    {
+      "name": "double-shock",
+      "label": "Double Shock",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "physical"
+    },
+    {
+      "name": "gigaton-hammer",
+      "label": "Gigaton Hammer",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Cannot be selected the turn after it's used." }
+    },
+    {
+      "name": "comeuppance",
+      "label": "Comeuppance",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dark",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "dark",
+      "damageClass": "physical",
+      "descriptions": { "IX": "If hit by an attack, returns 1.5x damage." }
+    },
+    {
+      "name": "aqua-cutter",
+      "label": "Aqua Cutter",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "water",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "water",
+      "damageClass": "physical",
+      "descriptions": { "IX": "High critical hit ratio." }
+    },
+    {
+      "name": "blazing-torque",
+      "label": "Blazing Torque",
+      "generations": ["IX"],
+      "contexts": [],
+      "type": "fire",
+      "damageClass": "physical"
+    },
+    {
+      "name": "wicked-torque",
+      "label": "Wicked Torque",
+      "generations": ["IX"],
+      "contexts": [],
+      "type": "dark",
+      "damageClass": "physical"
+    },
+    {
+      "name": "noxious-torque",
+      "label": "Noxious Torque",
+      "generations": ["IX"],
+      "contexts": [],
+      "type": "poison",
+      "damageClass": "physical"
+    },
+    {
+      "name": "combat-torque",
+      "label": "Combat Torque",
+      "generations": ["IX"],
+      "contexts": [],
+      "type": "fighting",
+      "damageClass": "physical"
+    },
+    {
+      "name": "magical-torque",
+      "label": "Magical Torque",
+      "generations": ["IX"],
+      "contexts": [],
+      "type": "fairy",
+      "damageClass": "physical"
+    },
+    {
+      "name": "blood-moon",
+      "label": "Blood Moon",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "special",
+      "descriptions": { "IX": "Cannot be selected the turn after it's used." }
+    },
+    {
+      "name": "matcha-gotcha",
+      "label": "Matcha Gotcha",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "20% burn. Recovers 50% dmg dealt. Thaws foe(s)."
+      }
+    },
+    {
+      "name": "syrup-bomb",
+      "label": "Syrup Bomb",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "special"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "Target's Speed is lowered by 1 stage for 3 turns."
+      }
+    },
+    {
+      "name": "ivy-cudgel",
+      "label": "Ivy Cudgel",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "grass",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "grass",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "High critical hit ratio. Type depends on user's form."
+      }
+    },
+    {
+      "name": "electro-shot",
+      "label": "Electro Shot",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "Raises Sp. Atk by 1, hits turn 2. Rain: no charge."
+      }
+    },
+    {
+      "name": "tera-starstorm",
+      "label": "Tera Starstorm",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "normal",
+          "damageClass": "special"
+        }
+      ],
+      "type": "normal",
+      "damageClass": "special"
+    },
+    {
+      "name": "fickle-beam",
+      "label": "Fickle Beam",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "special"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "special",
+      "descriptions": { "IX": "Has a 30% chance this move's power is doubled." }
+    },
+    {
+      "name": "burning-bulwark",
+      "label": "Burning Bulwark",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "status"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "status",
+      "descriptions": { "IX": "Protects from damaging attacks. Contact: burn." }
+    },
+    {
+      "name": "thunderclap",
+      "label": "Thunderclap",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "special"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "Usually goes first. Fails if target is not attacking."
+      }
+    },
+    {
+      "name": "mighty-cleave",
+      "label": "Mighty Cleave",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "rock",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "rock",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Bypasses protection without breaking it." }
+    },
+    {
+      "name": "tachyon-cutter",
+      "label": "Tachyon Cutter",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "special"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "special",
+      "descriptions": { "IX": "Hits twice. This move does not check accuracy." }
+    },
+    {
+      "name": "hard-press",
+      "label": "Hard Press",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "steel",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "steel",
+      "damageClass": "physical",
+      "descriptions": { "IX": "More power the more HP the target has left." }
+    },
+    {
+      "name": "dragon-cheer",
+      "label": "Dragon Cheer",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "status"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "dragon",
+          "damageClass": "status"
+        }
+      ],
+      "type": "dragon",
+      "damageClass": "status"
+    },
+    {
+      "name": "alluring-voice",
+      "label": "Alluring Voice",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fairy",
+          "damageClass": "special"
+        }
+      ],
+      "type": "fairy",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "100% confuse target that had a stat rise this turn."
+      }
+    },
+    {
+      "name": "temper-flare",
+      "label": "Temper Flare",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fire",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fire",
+      "damageClass": "physical",
+      "descriptions": { "IX": "Power doubles if the user's last move failed." }
+    },
+    {
+      "name": "supercell-slam",
+      "label": "Supercell Slam",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "electric",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "electric",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "User is hurt by 50% of its max HP if it misses."
+      }
+    },
+    {
+      "name": "psychic-noise",
+      "label": "Psychic Noise",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "psychic",
+          "damageClass": "special"
+        }
+      ],
+      "type": "psychic",
+      "damageClass": "special",
+      "descriptions": {
+        "IX": "For 2 turns, the target is prevented from healing."
+      }
+    },
+    {
+      "name": "upper-hand",
+      "label": "Upper Hand",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "fighting",
+          "damageClass": "physical"
+        }
+      ],
+      "type": "fighting",
+      "damageClass": "physical",
+      "descriptions": {
+        "IX": "100% flinch. Fails unless target using priority."
+      }
+    },
+    {
+      "name": "malignant-chain",
+      "label": "Malignant Chain",
+      "generations": ["IX"],
+      "contexts": [
+        {
+          "game": "scarlet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "special"
+        },
+        {
+          "game": "violet",
+          "generation": "IX",
+          "type": "poison",
+          "damageClass": "special"
+        }
+      ],
+      "type": "poison",
+      "damageClass": "special"
+    },
+    {
+      "name": "shadow-rush",
+      "label": "Shadow Rush",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-blast",
+      "label": "Shadow Blast",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-blitz",
+      "label": "Shadow Blitz",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-bolt",
+      "label": "Shadow Bolt",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-break",
+      "label": "Shadow Break",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-chill",
+      "label": "Shadow Chill",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-end",
+      "label": "Shadow End",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-fire",
+      "label": "Shadow Fire",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-rave",
+      "label": "Shadow Rave",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-storm",
+      "label": "Shadow Storm",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-wave",
+      "label": "Shadow Wave",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-down",
+      "label": "Shadow Down",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-half",
+      "label": "Shadow Half",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-hold",
+      "label": "Shadow Hold",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-mist",
+      "label": "Shadow Mist",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-panic",
+      "label": "Shadow Panic",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-shed",
+      "label": "Shadow Shed",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    },
+    {
+      "name": "shadow-sky",
+      "label": "Shadow Sky",
+      "generations": ["III"],
+      "contexts": [],
+      "type": "",
+      "damageClass": ""
+    }
+  ]
+}

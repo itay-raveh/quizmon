@@ -1,5 +1,5 @@
 export const gameVersions = {
-  content: 1,
+  content: 3,
   score: 2,
 } as const;
 

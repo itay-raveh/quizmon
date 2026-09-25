@@ -7,7 +7,7 @@ import {
 
 export const extractPokemonKnowledge = (
   pokemon: Pokemon,
-): Pick<PokemonKnowledge, 'height' | 'weight' | 'abilitySlots' | 'evYield'> => {
+): Pick<PokemonKnowledge, 'height' | 'weight' | 'evYield'> => {
   const measurement = (value: number) =>
     Number.isSafeInteger(value) && value > 0 ? value : undefined;
   const stats = pokemon.stats ?? [];
@@ -22,23 +22,6 @@ export const extractPokemonKnowledge = (
   return {
     height: measurement(pokemon.height),
     weight: measurement(pokemon.weight),
-    abilitySlots:
-      pokemon.abilities?.length &&
-      pokemon.abilities.every(
-        ({ is_hidden, slot, ability }) =>
-          typeof is_hidden === 'boolean' &&
-          Number.isSafeInteger(slot) &&
-          slot > 0 &&
-          ability.name,
-      )
-        ? pokemon.abilities
-            .map(({ ability, is_hidden, slot }) => ({
-              name: ability.name,
-              hidden: is_hidden,
-              slot,
-            }))
-            .sort((a, b) => a.slot - b.slot)
-        : undefined,
     evYield: validYield
       ? (Object.fromEntries(
           statNames.map((name) => [

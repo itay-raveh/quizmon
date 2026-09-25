@@ -35,9 +35,9 @@ export const questionDefinitions = {
     group: 'identity',
   },
   'medicine-cabinet': {
-    label: 'Medicine cabinet',
+    label: 'Item uses',
     specialty: 'item',
-    description: 'Choose an item that meets the stated healing requirements.',
+    description: 'Identify what an item does.',
     group: 'knowledge',
   },
   'evolution-items': {

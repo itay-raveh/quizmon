@@ -69,7 +69,7 @@ const questionScoreFactors: Record<
   readonly (0.75 | 1 | 1.25 | null)[]
 > = {
   'item-identification': [0.75, 0.75, 1, 1, 1],
-  'medicine-cabinet': [0.75, 0.75, 1, 1, 1],
+  'medicine-cabinet': [null, 0.75, 1, 1.25, 1.25],
   'evolution-items': [0.75, 0.75, 1, 1.25, 1.25],
   'weight-comparison': [null, 0.75, 1, 1.25, 1.25],
   'height-comparison': [null, 0.75, 1, 1.25, 1.25],
