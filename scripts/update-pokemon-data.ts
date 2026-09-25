@@ -1,8 +1,4 @@
-import {
-  readCatalogFiles,
-  readEditorialCatalogFiles,
-  writeCatalogFiles,
-} from './catalog-output.ts';
+import { readCatalogFiles, writeCatalogFiles } from './catalog-output.ts';
 import { clean, english, titleCase } from './catalog-text.ts';
 import { addItemSpriteIdentities } from './item-sprite-identities.ts';
 import { writeFile } from 'node:fs/promises';
@@ -43,7 +39,6 @@ import { extractPokemonKnowledge } from './catalog-knowledge.ts';
 import { addPkmnDescriptions } from './pkmn-descriptions.ts';
 import { addShowdownBattleData } from './showdown-battle.ts';
 import { gameVersions } from '../src/domain/versions.ts';
-import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 const DATA_DIRECTORY = new URL('../src/domain/pokemon/data/', import.meta.url);
 const CONCURRENCY = 4;
@@ -362,7 +357,7 @@ if (import.meta.main) {
   });
   const catalog =
     mode === '--showdown-only'
-      ? await readEditorialCatalogFiles(DATA_DIRECTORY)
+      ? await readCatalogFiles(DATA_DIRECTORY)
       : mode === '--topics-only'
         ? await readCatalogFiles(DATA_DIRECTORY)
         : mode === '--sprites-only'
@@ -372,7 +367,8 @@ if (import.meta.main) {
             )
           : await buildPokemonCatalog(client);
   if (mode === '--showdown-only') {
-    addPkmnDescriptions(catalog.topics as EditorialTopicCatalog);
+    if (!catalog.topics) throw new Error('Missing topic catalog');
+    addPkmnDescriptions(catalog.topics);
     catalog.contentVersion = gameVersions.content;
   } else if (mode === '--topics-only' || mode === undefined) {
     const topics = await buildTopicCatalog(client, catalog);

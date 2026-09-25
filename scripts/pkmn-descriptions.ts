@@ -1,19 +1,15 @@
 import { Dex } from '@pkmn/dex';
 import { generations } from '../src/domain/pokemon/types.ts';
-import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
+import type { TopicCatalog } from '../src/domain/quiz/topic-catalog.ts';
 
-const source = 'https://www.npmjs.com/package/@pkmn/dex';
 const usable = (text: string) =>
   text &&
   !/^(No competitive use\.|No additional effect\.|See |Does nothing\.)/i.test(
     text,
   );
 
-const addAbilityDescriptions = (
-  abilities: EditorialTopicCatalog['abilities'],
-): void => {
+const addAbilityDescriptions = (abilities: TopicCatalog['abilities']): void => {
   for (const ability of abilities) {
-    delete ability.descriptionSource;
     const introduced = generations.indexOf(ability.generations[0]!);
     ability.descriptions = generations.flatMap((generation, index) => {
       if (index < introduced) return [];
@@ -32,14 +28,12 @@ const addAbilityDescriptions = (
         },
       ];
     });
-    if (ability.descriptions.length) ability.descriptionSource = source;
   }
 };
 
-const addItemDescriptions = (items: EditorialTopicCatalog['items']): void => {
+const addItemDescriptions = (items: TopicCatalog['items']): void => {
   for (const item of items) {
     delete item.descriptions;
-    delete item.descriptionSource;
     if (item.pocket !== 'misc') continue;
     const descriptions = generations.flatMap((generation, index) => {
       const entry = Dex.forGen(index + 1).items.get(item.name);
@@ -54,10 +48,7 @@ const addItemDescriptions = (items: EditorialTopicCatalog['items']): void => {
         },
       ];
     });
-    if (descriptions.length) {
-      item.descriptions = descriptions;
-      item.descriptionSource = source;
-    }
+    if (descriptions.length) item.descriptions = descriptions;
   }
 };
 
@@ -77,7 +68,7 @@ export const moveDescriptions = (name: string) =>
     }),
   );
 
-export const addPkmnDescriptions = (topics: EditorialTopicCatalog): void => {
+export const addPkmnDescriptions = (topics: TopicCatalog): void => {
   addAbilityDescriptions(topics.abilities);
   addItemDescriptions(topics.items);
   for (const move of topics.moves) {
@@ -87,11 +78,4 @@ export const addPkmnDescriptions = (topics: EditorialTopicCatalog): void => {
     const descriptions = moveDescriptions(move.name);
     if (Object.keys(descriptions).length) move.descriptions = descriptions;
   }
-  delete topics.gaps.heldItemEffectReview;
-  delete topics.gaps.moveDescriptionReview;
-  delete topics.gaps.moveDescription;
-  delete topics.gaps.abilityEffect;
-  topics.gaps.abilityDescription = topics.abilities
-    .filter((ability) => !ability.descriptions?.length)
-    .map((ability) => ability.name);
 };

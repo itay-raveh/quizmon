@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { chromium } from '@playwright/test';
 import { fetchSpriteSource } from '../src/domain/pokemon/sprite-source.ts';
-import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
+import type { TopicCatalog } from '../src/domain/quiz/topic-catalog.ts';
 
 export const addItemSpriteIdentities = async (
-  topics: EditorialTopicCatalog,
+  topics: TopicCatalog,
   load: (path: string) => Promise<Response> = fetchSpriteSource,
 ): Promise<void> => {
   const browser = await chromium.launch();
@@ -16,7 +16,6 @@ export const addItemSpriteIdentities = async (
         items.slice(offset, offset + 4).map(async (item) => {
           const response = await load(item.sprite!);
           if (!response.ok) {
-            topics.gaps.itemSprite!.push(item.name);
             item.sprite = null;
             return null;
           }
@@ -85,7 +84,6 @@ export const addItemSpriteIdentities = async (
             .digest('hex');
         else {
           item.sprite = null;
-          topics.gaps.itemSprite!.push(item.name);
         }
       }
     }

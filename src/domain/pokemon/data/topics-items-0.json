@@ -1022,8 +1022,7 @@
           "text": "Evolves Happiny into Chansey when held and leveled up during the day.",
           "explanation": "Evolves Happiny into Chansey when held and leveled up during the day."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "odd-keystone",
@@ -1073,8 +1072,7 @@
           "text": "If held by a Dialga, its Steel- and Dragon-type attacks have 1.2x power.",
           "explanation": "If held by a Dialga, its Steel- and Dragon-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "lustrous-orb",
@@ -1115,8 +1113,7 @@
           "text": "If held by a Palkia, its Water- and Dragon-type attacks have 1.2x power.",
           "explanation": "If held by a Palkia, its Water- and Dragon-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "grass-mail",
@@ -1851,8 +1848,7 @@
           "text": "The accuracy of attacks against the holder is 0.9x.",
           "explanation": "The accuracy of attacks against the holder is 0.9x."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "white-herb",
@@ -1897,8 +1893,7 @@
           "text": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
           "explanation": "Holder's Speed is halved. The Klutz Ability does not ignore this effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "exp-share",
@@ -1958,8 +1953,7 @@
           "text": "Each turn, holder has a 20% chance to move first in its priority bracket.",
           "explanation": "Each turn, holder has a 20% chance to move first in its priority bracket."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "soothe-bell",
@@ -2014,8 +2008,7 @@
           "text": "Cures holder of Attract, Disable, Encore, Heal Block, Taunt, Torment. Single use.",
           "explanation": "Cures holder of Attract, Disable, Encore, Heal Block, Taunt, Torment. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "choice-band",
@@ -2061,8 +2054,7 @@
           "text": "Holder's Attack is 1.5x, but it can only select the first move it executes.",
           "explanation": "Holder's Attack is 1.5x, but it can only select the first move it executes."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "kings-rock",
@@ -2113,8 +2105,7 @@
           "text": "Holder's attacks without a chance to flinch gain a 10% chance to flinch.",
           "explanation": "Holder's attacks without a chance to make the target flinch gain a 10% chance to make the target flinch. Evolves Poliwhirl into Politoed and Slowpoke into Slowking when traded."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "silver-powder",
@@ -2165,8 +2156,7 @@
           "text": "Holder's Bug-type attacks have 1.2x power.",
           "explanation": "Holder's Bug-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "amulet-coin",
@@ -2230,8 +2220,7 @@
           "text": "If held by a Latias/Latios, its Dragon- and Psychic-type moves have 1.2x power.",
           "explanation": "If held by a Latias/Latios, its Dragon- and Psychic-type moves have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "deep-sea-tooth",
@@ -2272,8 +2261,7 @@
           "text": "If held by a Clamperl, its Sp. Atk is doubled.",
           "explanation": "If held by a Clamperl, its Sp. Atk is doubled. Evolves Clamperl into Huntail when traded."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "deep-sea-scale",
@@ -2314,8 +2302,7 @@
           "text": "If held by a Clamperl, its Sp. Def is doubled.",
           "explanation": "If held by a Clamperl, its Sp. Def is doubled. Evolves Clamperl into Gorebyss when traded."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "smoke-ball",
@@ -2384,8 +2371,7 @@
           "text": "Holder has a 10% chance to survive an attack that would KO it with 1 HP.",
           "explanation": "Holder has a 10% chance to survive an attack that would KO it with 1 HP."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "lucky-egg",
@@ -2445,8 +2431,7 @@
           "text": "Holder's critical hit ratio is raised by 1 stage.",
           "explanation": "Holder's critical hit ratio is raised by 1 stage."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "metal-coat",
@@ -2497,8 +2482,7 @@
           "text": "Holder's Steel-type attacks have 1.2x power.",
           "explanation": "Holder's Steel-type attacks have 1.2x power. Evolves Onix into Steelix and Scyther into Scizor when traded."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "leftovers",
@@ -2549,8 +2533,7 @@
           "text": "At the end of every turn, holder restores 1/16 of its max HP.",
           "explanation": "At the end of every turn, holder restores 1/16 of its max HP."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "dragon-scale",
@@ -2566,8 +2549,7 @@
           "text": "Holder's Dragon-type attacks have 1.1x power. Evolves Seadra (trade).",
           "explanation": "Holder's Dragon-type attacks have 1.1x power. Evolves Seadra (trade)."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "light-ball",
@@ -2618,8 +2600,7 @@
           "text": "If held by a Pikachu, its Attack and Sp. Atk are doubled.",
           "explanation": "If held by a Pikachu, its Attack and Sp. Atk are doubled."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "soft-sand",
@@ -2670,8 +2651,7 @@
           "text": "Holder's Ground-type attacks have 1.2x power.",
           "explanation": "Holder's Ground-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "hard-stone",
@@ -2722,8 +2702,7 @@
           "text": "Holder's Rock-type attacks have 1.2x power.",
           "explanation": "Holder's Rock-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "miracle-seed",
@@ -2774,8 +2753,7 @@
           "text": "Holder's Grass-type attacks have 1.2x power.",
           "explanation": "Holder's Grass-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "black-glasses",
@@ -2826,8 +2804,7 @@
           "text": "Holder's Dark-type attacks have 1.2x power.",
           "explanation": "Holder's Dark-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "black-belt",
@@ -2878,8 +2855,7 @@
           "text": "Holder's Fighting-type attacks have 1.2x power.",
           "explanation": "Holder's Fighting-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "magnet",
@@ -2930,8 +2906,7 @@
           "text": "Holder's Electric-type attacks have 1.2x power.",
           "explanation": "Holder's Electric-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "mystic-water",
@@ -2982,8 +2957,7 @@
           "text": "Holder's Water-type attacks have 1.2x power.",
           "explanation": "Holder's Water-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sharp-beak",
@@ -3034,8 +3008,7 @@
           "text": "Holder's Flying-type attacks have 1.2x power.",
           "explanation": "Holder's Flying-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "poison-barb",
@@ -3086,8 +3059,7 @@
           "text": "Holder's Poison-type attacks have 1.2x power.",
           "explanation": "Holder's Poison-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "never-melt-ice",
@@ -3138,8 +3110,7 @@
           "text": "Holder's Ice-type attacks have 1.2x power.",
           "explanation": "Holder's Ice-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "spell-tag",
@@ -3190,8 +3161,7 @@
           "text": "Holder's Ghost-type attacks have 1.2x power.",
           "explanation": "Holder's Ghost-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "twisted-spoon",
@@ -3242,8 +3212,7 @@
           "text": "Holder's Psychic-type attacks have 1.2x power.",
           "explanation": "Holder's Psychic-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "charcoal",
@@ -3294,8 +3263,7 @@
           "text": "Holder's Fire-type attacks have 1.2x power.",
           "explanation": "Holder's Fire-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "dragon-fang",
@@ -3341,8 +3309,7 @@
           "text": "Holder's Dragon-type attacks have 1.2x power.",
           "explanation": "Holder's Dragon-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "silk-scarf",
@@ -3388,8 +3355,7 @@
           "text": "Holder's Normal-type attacks have 1.2x power.",
           "explanation": "Holder's Normal-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "up-grade",
@@ -3444,8 +3410,7 @@
           "text": "After an attack, holder gains 1/8 of the damage in HP dealt to other Pokemon.",
           "explanation": "After an attack, holder gains 1/8 of the damage in HP dealt to other Pokemon."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sea-incense",
@@ -3486,8 +3451,7 @@
           "text": "Holder's Water-type attacks have 1.2x power.",
           "explanation": "Holder's Water-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "lax-incense",
@@ -3528,8 +3492,7 @@
           "text": "The accuracy of attacks against the holder is 0.9x.",
           "explanation": "The accuracy of attacks against the holder is 0.9x."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "lucky-punch",
@@ -3570,8 +3533,7 @@
           "text": "If held by a Chansey, its critical hit ratio is raised by 2 stages.",
           "explanation": "If held by a Chansey, its critical hit ratio is raised by 2 stages."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "metal-powder",
@@ -3617,8 +3579,7 @@
           "text": "If held by a Ditto that hasn't Transformed, its Defense is doubled.",
           "explanation": "If held by a Ditto that hasn't Transformed, its Defense is doubled."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "thick-club",
@@ -3664,8 +3625,7 @@
           "text": "If held by a Cubone or a Marowak, its Attack is doubled.",
           "explanation": "If held by a Cubone or a Marowak, its Attack is doubled."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "stick",
@@ -3706,8 +3666,7 @@
           "text": "If held by a Farfetch’d, its critical hit ratio is raised by 2 stages.",
           "explanation": "If held by a Farfetch’d, its critical hit ratio is raised by 2 stages."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "red-scarf",
@@ -3793,8 +3752,7 @@
           "text": "The accuracy of attacks by the holder is 1.1x.",
           "explanation": "The accuracy of attacks by the holder is 1.1x."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "muscle-band",
@@ -3835,8 +3793,7 @@
           "text": "Holder's physical attacks have 1.1x power.",
           "explanation": "Holder's physical attacks have 1.1x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "wise-glasses",
@@ -3877,8 +3834,7 @@
           "text": "Holder's special attacks have 1.1x power.",
           "explanation": "Holder's special attacks have 1.1x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "expert-belt",
@@ -3919,8 +3875,7 @@
           "text": "Holder's attacks that are super effective against the target do 1.2x damage.",
           "explanation": "Holder's attacks that are super effective against the target do 1.2x damage."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "light-clay",
@@ -3961,8 +3916,7 @@
           "text": "Holder's use of Aurora Veil, Light Screen, or Reflect lasts 8 turns instead of 5.",
           "explanation": "Holder's use of Aurora Veil, Light Screen, or Reflect lasts 8 turns instead of 5."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "life-orb",
@@ -4003,8 +3957,7 @@
           "text": "Holder's attacks do 1.3x damage, and it loses 1/10 its max HP after the attack.",
           "explanation": "Holder's attacks do 1.3x damage, and it loses 1/10 its max HP after the attack."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "power-herb",
@@ -4045,8 +3998,7 @@
           "text": "Holder's two-turn moves complete in one turn (except Sky Drop). Single use.",
           "explanation": "Holder's two-turn moves complete in one turn (except Sky Drop). Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "toxic-orb",
@@ -4087,8 +4039,7 @@
           "text": "At the end of every turn, this item attempts to badly poison the holder.",
           "explanation": "At the end of every turn, this item attempts to badly poison the holder."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "flame-orb",
@@ -4129,8 +4080,7 @@
           "text": "At the end of every turn, this item attempts to burn the holder.",
           "explanation": "At the end of every turn, this item attempts to burn the holder."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "quick-powder",
@@ -4166,8 +4116,7 @@
           "text": "If held by a Ditto that hasn't Transformed, its Speed is doubled.",
           "explanation": "If held by a Ditto that hasn't Transformed, its Speed is doubled."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "focus-sash",
@@ -4208,8 +4157,7 @@
           "text": "If holder's HP is full, will survive an attack that would KO it with 1 HP. Single use.",
           "explanation": "If holder's HP is full, will survive an attack that would KO it with 1 HP. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "zoom-lens",
@@ -4250,8 +4198,7 @@
           "text": "The accuracy of attacks by the holder is 1.2x if it moves after its target.",
           "explanation": "The accuracy of attacks by the holder is 1.2x if it moves after its target."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "metronome",
@@ -4301,8 +4248,7 @@
           "text": "Holder is grounded, Speed halved. If Flying type, takes neutral Ground damage.",
           "explanation": "Holder is grounded, Speed halved. If Flying type, takes neutral Ground damage."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "lagging-tail",
@@ -4343,8 +4289,7 @@
           "text": "Holder moves last in its priority bracket.",
           "explanation": "Holder moves last in its priority bracket."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "destiny-knot",
@@ -4385,8 +4330,7 @@
           "text": "If holder becomes infatuated, the other Pokemon also becomes infatuated.",
           "explanation": "If holder becomes infatuated, the other Pokemon also becomes infatuated."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "black-sludge",
@@ -4427,8 +4371,7 @@
           "text": "Each turn, if holder is a Poison type, restores 1/16 max HP; loses 1/8 if not.",
           "explanation": "Each turn, if holder is a Poison type, restores 1/16 max HP; loses 1/8 if not."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "icy-rock",
@@ -4469,8 +4412,7 @@
           "text": "Holder's use of Snowscape lasts 8 turns instead of 5.",
           "explanation": "Holder's use of Snowscape lasts 8 turns instead of 5."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "smooth-rock",
@@ -4511,8 +4453,7 @@
           "text": "Holder's use of Sandstorm lasts 8 turns instead of 5.",
           "explanation": "Holder's use of Sandstorm lasts 8 turns instead of 5."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "heat-rock",
@@ -4553,8 +4494,7 @@
           "text": "Holder's use of Sunny Day lasts 8 turns instead of 5.",
           "explanation": "Holder's use of Sunny Day lasts 8 turns instead of 5."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "damp-rock",
@@ -4595,8 +4535,7 @@
           "text": "Holder's use of Rain Dance lasts 8 turns instead of 5.",
           "explanation": "Holder's use of Rain Dance lasts 8 turns instead of 5."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "grip-claw",
@@ -4637,8 +4576,7 @@
           "text": "Holder's partial-trapping moves always last 7 turns.",
           "explanation": "Holder's partial-trapping moves always last 7 turns."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "choice-scarf",
@@ -4679,8 +4617,7 @@
           "text": "Holder's Speed is 1.5x, but it can only select the first move it executes.",
           "explanation": "Holder's Speed is 1.5x, but it can only select the first move it executes."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sticky-barb",
@@ -4721,8 +4658,7 @@
           "text": "Each turn, holder loses 1/8 max HP. An attacker making contact can receive it.",
           "explanation": "Each turn, holder loses 1/8 max HP. An attacker making contact can receive it."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "power-bracer",
@@ -4763,8 +4699,7 @@
           "text": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
           "explanation": "Holder's Speed is halved. The Klutz Ability does not ignore this effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "power-belt",
@@ -4805,8 +4740,7 @@
           "text": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
           "explanation": "Holder's Speed is halved. The Klutz Ability does not ignore this effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "power-lens",
@@ -4847,8 +4781,7 @@
           "text": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
           "explanation": "Holder's Speed is halved. The Klutz Ability does not ignore this effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "power-band",
@@ -4889,8 +4822,7 @@
           "text": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
           "explanation": "Holder's Speed is halved. The Klutz Ability does not ignore this effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "power-anklet",
@@ -4931,8 +4863,7 @@
           "text": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
           "explanation": "Holder's Speed is halved. The Klutz Ability does not ignore this effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "power-weight",
@@ -4973,8 +4904,7 @@
           "text": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
           "explanation": "Holder's Speed is halved. The Klutz Ability does not ignore this effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "shed-shell",
@@ -5015,8 +4945,7 @@
           "text": "Holder cannot be prevented from choosing to switch out by any effect.",
           "explanation": "Holder cannot be prevented from choosing to switch out by any effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "big-root",
@@ -5057,8 +4986,7 @@
           "text": "Holder gains 1.3x HP from draining/Aqua Ring/Ingrain/Leech Seed/Strength Sap.",
           "explanation": "Holder gains 1.3x HP from draining/Aqua Ring/Ingrain/Leech Seed/Strength Sap."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "choice-specs",
@@ -5099,8 +5027,7 @@
           "text": "Holder's Sp. Atk is 1.5x, but it can only select the first move it executes.",
           "explanation": "Holder's Sp. Atk is 1.5x, but it can only select the first move it executes."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "flame-plate",
@@ -5136,8 +5063,7 @@
           "text": "Holder's Fire-type attacks have 1.2x power. Judgment is Fire type.",
           "explanation": "Holder's Fire-type attacks have 1.2x power. Judgment is Fire type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "splash-plate",
@@ -5173,8 +5099,7 @@
           "text": "Holder's Water-type attacks have 1.2x power. Judgment is Water type.",
           "explanation": "Holder's Water-type attacks have 1.2x power. Judgment is Water type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "zap-plate",
@@ -5210,8 +5135,7 @@
           "text": "Holder's Electric-type attacks have 1.2x power. Judgment is Electric type.",
           "explanation": "Holder's Electric-type attacks have 1.2x power. Judgment is Electric type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "meadow-plate",
@@ -5247,8 +5171,7 @@
           "text": "Holder's Grass-type attacks have 1.2x power. Judgment is Grass type.",
           "explanation": "Holder's Grass-type attacks have 1.2x power. Judgment is Grass type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "icicle-plate",
@@ -5284,8 +5207,7 @@
           "text": "Holder's Ice-type attacks have 1.2x power. Judgment is Ice type.",
           "explanation": "Holder's Ice-type attacks have 1.2x power. Judgment is Ice type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "fist-plate",
@@ -5321,8 +5243,7 @@
           "text": "Holder's Fighting-type attacks have 1.2x power. Judgment is Fighting type.",
           "explanation": "Holder's Fighting-type attacks have 1.2x power. Judgment is Fighting type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "toxic-plate",
@@ -5358,8 +5279,7 @@
           "text": "Holder's Poison-type attacks have 1.2x power. Judgment is Poison type.",
           "explanation": "Holder's Poison-type attacks have 1.2x power. Judgment is Poison type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "earth-plate",
@@ -5395,8 +5315,7 @@
           "text": "Holder's Ground-type attacks have 1.2x power. Judgment is Ground type.",
           "explanation": "Holder's Ground-type attacks have 1.2x power. Judgment is Ground type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sky-plate",
@@ -5432,8 +5351,7 @@
           "text": "Holder's Flying-type attacks have 1.2x power. Judgment is Flying type.",
           "explanation": "Holder's Flying-type attacks have 1.2x power. Judgment is Flying type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "mind-plate",
@@ -5469,8 +5387,7 @@
           "text": "Holder's Psychic-type attacks have 1.2x power. Judgment is Psychic type.",
           "explanation": "Holder's Psychic-type attacks have 1.2x power. Judgment is Psychic type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "insect-plate",
@@ -5506,8 +5423,7 @@
           "text": "Holder's Bug-type attacks have 1.2x power. Judgment is Bug type.",
           "explanation": "Holder's Bug-type attacks have 1.2x power. Judgment is Bug type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "stone-plate",
@@ -5543,8 +5459,7 @@
           "text": "Holder's Rock-type attacks have 1.2x power. Judgment is Rock type.",
           "explanation": "Holder's Rock-type attacks have 1.2x power. Judgment is Rock type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "spooky-plate",
@@ -5580,8 +5495,7 @@
           "text": "Holder's Ghost-type attacks have 1.2x power. Judgment is Ghost type.",
           "explanation": "Holder's Ghost-type attacks have 1.2x power. Judgment is Ghost type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "draco-plate",
@@ -5617,8 +5531,7 @@
           "text": "Holder's Dragon-type attacks have 1.2x power. Judgment is Dragon type.",
           "explanation": "Holder's Dragon-type attacks have 1.2x power. Judgment is Dragon type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "dread-plate",
@@ -5654,8 +5567,7 @@
           "text": "Holder's Dark-type attacks have 1.2x power. Judgment is Dark type.",
           "explanation": "Holder's Dark-type attacks have 1.2x power. Judgment is Dark type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "iron-plate",
@@ -5691,8 +5603,7 @@
           "text": "Holder's Steel-type attacks have 1.2x power. Judgment is Steel type.",
           "explanation": "Holder's Steel-type attacks have 1.2x power. Judgment is Steel type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "odd-incense",
@@ -5728,8 +5639,7 @@
           "text": "Holder's Psychic-type attacks have 1.2x power.",
           "explanation": "Holder's Psychic-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "rock-incense",
@@ -5765,8 +5675,7 @@
           "text": "Holder's Rock-type attacks have 1.2x power.",
           "explanation": "Holder's Rock-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "full-incense",
@@ -5802,8 +5711,7 @@
           "text": "Holder moves last in its priority bracket.",
           "explanation": "Holder moves last in its priority bracket."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "wave-incense",
@@ -5839,8 +5747,7 @@
           "text": "Holder's Water-type attacks have 1.2x power.",
           "explanation": "Holder's Water-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "rose-incense",
@@ -5876,8 +5783,7 @@
           "text": "Holder's Grass-type attacks have 1.2x power.",
           "explanation": "Holder's Grass-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "luck-incense",
@@ -5981,8 +5887,7 @@
           "text": "Holder's critical hit ratio is raised by 1 stage.",
           "explanation": "Holder's critical hit ratio is raised by 1 stage. Evolves Sneasel into Weavile when held and leveled up during the night."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "razor-fang",
@@ -6018,8 +5923,7 @@
           "text": "Holder's attacks without a chance to flinch gain a 10% chance to flinch.",
           "explanation": "Holder's attacks without a chance to make the target flinch gain a 10% chance to make the target flinch. Evolves Gligar into Gliscor when held and leveled up during the night."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "tm01",
@@ -7293,8 +7197,7 @@
           "text": "If held by a Giratina, its Ghost- and Dragon-type attacks have 1.2x power.",
           "explanation": "If held by a Giratina, its Ghost- and Dragon-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "vs-recorder",
@@ -8405,8 +8308,7 @@
           "text": "Holder's Techno Blast is Water type.",
           "explanation": "Holder's Techno Blast is Water type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "shock-drive",
@@ -8437,8 +8339,7 @@
           "text": "Holder's Techno Blast is Electric type.",
           "explanation": "Holder's Techno Blast is Electric type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "burn-drive",
@@ -8469,8 +8370,7 @@
           "text": "Holder's Techno Blast is Fire type.",
           "explanation": "Holder's Techno Blast is Fire type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "chill-drive",
@@ -8501,8 +8401,7 @@
           "text": "Holder's Techno Blast is Ice type.",
           "explanation": "Holder's Techno Blast is Ice type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sweet-heart",
@@ -8664,8 +8563,7 @@
           "text": "If holder's species can evolve, its Defense and Sp. Def are 1.5x.",
           "explanation": "If holder's species can evolve, its Defense and Sp. Def are 1.5x."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "float-stone",
@@ -8701,8 +8599,7 @@
           "text": "Holder's weight is halved.",
           "explanation": "Holder's weight is halved."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "rocky-helmet",
@@ -8738,8 +8635,7 @@
           "text": "If holder is hit by a contact move, the attacker loses 1/6 of its max HP.",
           "explanation": "If holder is hit by a contact move, the attacker loses 1/6 of its max HP."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "air-balloon",
@@ -8775,8 +8671,7 @@
           "text": "Holder is immune to Ground-type attacks. Pops when holder is hit.",
           "explanation": "Holder is immune to Ground-type attacks. Pops when holder is hit."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "red-card",
@@ -8812,8 +8707,7 @@
           "text": "If holder survives a hit, attacker is forced to switch to a random ally. Single use.",
           "explanation": "If holder survives a hit, attacker is forced to switch to a random ally. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ring-target",
@@ -8849,8 +8743,7 @@
           "text": "The holder's type immunities granted solely by its typing are negated.",
           "explanation": "The holder's type immunities granted solely by its typing are negated."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "binding-band",
@@ -8886,8 +8779,7 @@
           "text": "Holder's partial-trapping moves deal 1/6 max HP per turn instead of 1/8.",
           "explanation": "Holder's partial-trapping moves deal 1/6 max HP per turn instead of 1/8."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "absorb-bulb",
@@ -8923,8 +8815,7 @@
           "text": "Raises holder's Sp. Atk by 1 stage if hit by a Water-type attack. Single use.",
           "explanation": "Raises holder's Sp. Atk by 1 stage if hit by a Water-type attack. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "cell-battery",
@@ -8960,8 +8851,7 @@
           "text": "Raises holder's Attack by 1 if hit by an Electric-type attack. Single use.",
           "explanation": "Raises holder's Attack by 1 if hit by an Electric-type attack. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "eject-button",
@@ -8997,8 +8887,7 @@
           "text": "If holder survives a hit, it immediately switches out to a chosen ally. Single use.",
           "explanation": "If holder survives a hit, it immediately switches out to a chosen ally. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "fire-gem",
@@ -9014,8 +8903,7 @@
           "text": "Holder's first successful Fire-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Fire-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "water-gem",
@@ -9031,8 +8919,7 @@
           "text": "Holder's first successful Water-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Water-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "electric-gem",
@@ -9048,8 +8935,7 @@
           "text": "Holder's first successful Electric-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Electric-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "grass-gem",
@@ -9065,8 +8951,7 @@
           "text": "Holder's first successful Grass-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Grass-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ice-gem",
@@ -9082,8 +8967,7 @@
           "text": "Holder's first successful Ice-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Ice-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "fighting-gem",
@@ -9099,8 +8983,7 @@
           "text": "Holder's first successful Fighting-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Fighting-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "poison-gem",
@@ -9116,8 +8999,7 @@
           "text": "Holder's first successful Poison-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Poison-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ground-gem",
@@ -9133,8 +9015,7 @@
           "text": "Holder's first successful Ground-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Ground-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "flying-gem",
@@ -9150,8 +9031,7 @@
           "text": "Holder's first successful Flying-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Flying-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "psychic-gem",
@@ -9167,8 +9047,7 @@
           "text": "Holder's first successful Psychic-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Psychic-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "bug-gem",
@@ -9184,8 +9063,7 @@
           "text": "Holder's first successful Bug-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Bug-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "rock-gem",
@@ -9201,8 +9079,7 @@
           "text": "Holder's first successful Rock-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Rock-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ghost-gem",
@@ -9218,8 +9095,7 @@
           "text": "Holder's first successful Ghost-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Ghost-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "dark-gem",
@@ -9235,8 +9111,7 @@
           "text": "Holder's first successful Dark-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Dark-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "steel-gem",
@@ -9252,8 +9127,7 @@
           "text": "Holder's first successful Steel-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Steel-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "health-wing",
@@ -9818,8 +9692,7 @@
           "text": "Holder's first successful Dragon-type attack will have 1.5x power. Single use.",
           "explanation": "Holder's first successful Dragon-type attack will have 1.5x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "normal-gem",
@@ -9855,8 +9728,7 @@
           "text": "Holder's first successful Normal-type attack will have 1.3x power. Single use.",
           "explanation": "Holder's first successful Normal-type attack will have 1.3x power. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "medal-box",
@@ -9977,8 +9849,7 @@
           "text": "If holder is hit super effectively, raises Attack, Sp. Atk by 2 stages. Single use.",
           "explanation": "If holder is hit super effectively, raises Attack, Sp. Atk by 2 stages. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "assault-vest",
@@ -10009,8 +9880,7 @@
           "text": "Holder's Sp. Def is 1.5x, but it can only select damaging moves.",
           "explanation": "Holder's Sp. Def is 1.5x, but it can only select damaging moves."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "pixie-plate",
@@ -10041,8 +9911,7 @@
           "text": "Holder's Fairy-type attacks have 1.2x power. Judgment is Fairy type.",
           "explanation": "Holder's Fairy-type attacks have 1.2x power. Judgment is Fairy type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ability-capsule",
@@ -10100,8 +9969,7 @@
           "text": "Raises holder's Sp. Def by 1 stage if hit by a Water-type attack. Single use.",
           "explanation": "Raises holder's Sp. Def by 1 stage if hit by a Water-type attack. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "snowball",
@@ -10132,8 +10000,7 @@
           "text": "Raises holder's Attack by 1 if hit by an Ice-type attack. Single use.",
           "explanation": "Raises holder's Attack by 1 if hit by an Ice-type attack. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "safety-goggles",
@@ -10164,8 +10031,7 @@
           "text": "Holder is immune to powder moves and damage from Sandstorm or Hail.",
           "explanation": "Holder is immune to powder moves and damage from Sandstorm or Hail."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "rich-mulch",
@@ -10222,8 +10088,7 @@
           "text": "If held by a Gengar, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Gengar, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "gardevoirite",
@@ -10244,8 +10109,7 @@
           "text": "If held by a Gardevoir, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Gardevoir, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ampharosite",
@@ -10266,8 +10130,7 @@
           "text": "If held by an Ampharos, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by an Ampharos, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "venusaurite",
@@ -10288,8 +10151,7 @@
           "text": "If held by a Venusaur, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Venusaur, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "charizardite-x",
@@ -10310,8 +10172,7 @@
           "text": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard X.",
           "explanation": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard X."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "blastoisinite",
@@ -10332,8 +10193,7 @@
           "text": "If held by a Blastoise, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Blastoise, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "mewtwonite-x",
@@ -10354,8 +10214,7 @@
           "text": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo X in battle.",
           "explanation": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo X in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "mewtwonite-y",
@@ -10376,8 +10235,7 @@
           "text": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo Y in battle.",
           "explanation": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo Y in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "blazikenite",
@@ -10398,8 +10256,7 @@
           "text": "If held by a Blaziken, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Blaziken, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "medichamite",
@@ -10420,8 +10277,7 @@
           "text": "If held by a Medicham, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Medicham, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "houndoominite",
@@ -10442,8 +10298,7 @@
           "text": "If held by a Houndoom, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Houndoom, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "aggronite",
@@ -10464,8 +10319,7 @@
           "text": "If held by an Aggron, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by an Aggron, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "banettite",
@@ -10486,8 +10340,7 @@
           "text": "If held by a Banette, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Banette, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "tyranitarite",
@@ -10508,8 +10361,7 @@
           "text": "If held by a Tyranitar, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Tyranitar, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "scizorite",
@@ -10530,8 +10382,7 @@
           "text": "If held by a Scizor, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Scizor, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "pinsirite",
@@ -10552,8 +10403,7 @@
           "text": "If held by a Pinsir, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Pinsir, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "aerodactylite",
@@ -10574,8 +10424,7 @@
           "text": "If held by an Aerodactyl, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by an Aerodactyl, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "lucarionite",
@@ -10596,8 +10445,7 @@
           "text": "If held by a Lucario, this item allows it to Mega Evolve into Mega Lucario in battle.",
           "explanation": "If held by a Lucario, this item allows it to Mega Evolve into Mega Lucario in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "abomasite",
@@ -10618,8 +10466,7 @@
           "text": "If held by an Abomasnow, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by an Abomasnow, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "kangaskhanite",
@@ -10640,8 +10487,7 @@
           "text": "If held by a Kangaskhan, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Kangaskhan, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "gyaradosite",
@@ -10662,8 +10508,7 @@
           "text": "If held by a Gyarados, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Gyarados, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "absolite",
@@ -10684,8 +10529,7 @@
           "text": "If held by an Absol, this item allows it to Mega Evolve into Mega Absol in battle.",
           "explanation": "If held by an Absol, this item allows it to Mega Evolve into Mega Absol in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "charizardite-y",
@@ -10706,8 +10550,7 @@
           "text": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard Y.",
           "explanation": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard Y."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "alakazite",
@@ -10728,8 +10571,7 @@
           "text": "If held by an Alakazam, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by an Alakazam, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "heracronite",
@@ -10750,8 +10592,7 @@
           "text": "If held by a Heracross, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Heracross, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "mawilite",
@@ -10772,8 +10613,7 @@
           "text": "If held by a Mawile, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Mawile, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "manectite",
@@ -10794,8 +10634,7 @@
           "text": "If held by a Manectric, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Manectric, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "garchompite",
@@ -10816,8 +10655,7 @@
           "text": "If held by a Garchomp, this item allows it to Mega Evolve into Mega Garchomp.",
           "explanation": "If held by a Garchomp, this item allows it to Mega Evolve into Mega Garchomp."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "roseli-berry",
@@ -11080,8 +10918,7 @@
           "text": "If held by a Latias, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Latias, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "latiosite",
@@ -11102,8 +10939,7 @@
           "text": "If held by a Latios, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Latios, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "common-stone",
@@ -11339,8 +11175,7 @@
           "text": "If held by a Swampert, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Swampert, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sceptilite",
@@ -11361,8 +11196,7 @@
           "text": "If held by a Sceptile, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Sceptile, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sablenite",
@@ -11383,8 +11217,7 @@
           "text": "If held by a Sableye, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Sableye, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "altarianite",
@@ -11405,8 +11238,7 @@
           "text": "If held by an Altaria, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by an Altaria, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "galladite",
@@ -11427,8 +11259,7 @@
           "text": "If held by a Gallade, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Gallade, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "audinite",
@@ -11449,8 +11280,7 @@
           "text": "If held by an Audino, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by an Audino, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "metagrossite",
@@ -11471,8 +11301,7 @@
           "text": "If held by a Metagross, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Metagross, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sharpedonite",
@@ -11493,8 +11322,7 @@
           "text": "If held by a Sharpedo, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Sharpedo, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "slowbronite",
@@ -11515,8 +11343,7 @@
           "text": "If held by a Slowbro, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Slowbro, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "steelixite",
@@ -11537,8 +11364,7 @@
           "text": "If held by a Steelix, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Steelix, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "pidgeotite",
@@ -11559,8 +11385,7 @@
           "text": "If held by a Pidgeot, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Pidgeot, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "glalitite",
@@ -11581,8 +11406,7 @@
           "text": "If held by a Glalie, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Glalie, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "diancite",
@@ -11603,8 +11427,7 @@
           "text": "If held by a Diancie, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Diancie, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "prison-bottle",
@@ -11643,8 +11466,7 @@
           "text": "If held by a Camerupt, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Camerupt, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "lopunnite",
@@ -11665,8 +11487,7 @@
           "text": "If held by a Lopunny, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Lopunny, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "salamencite",
@@ -11687,8 +11508,7 @@
           "text": "If held by a Salamence, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Salamence, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "beedrillite",
@@ -11709,8 +11529,7 @@
           "text": "If held by a Beedrill, this item allows it to Mega Evolve in battle.",
           "explanation": "If held by a Beedrill, this item allows it to Mega Evolve in battle."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "key-stone",
@@ -12067,8 +11886,7 @@
           "text": "Raises holder's Speed by 1 stage if it gets affected by Intimidate. Single use.",
           "explanation": "Raises holder's Speed by 1 stage if it gets affected by Intimidate. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "zygarde-cube",
@@ -12202,8 +12020,7 @@
           "text": "Holder's use of Electric/Grassy/Misty/Psychic Terrain lasts 8 turns instead of 5.",
           "explanation": "Holder's use of Electric/Grassy/Misty/Psychic Terrain lasts 8 turns instead of 5."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "protective-pads",
@@ -12229,8 +12046,7 @@
           "text": "Holder's moves are protected from adverse contact effects, except Pickpocket.",
           "explanation": "Holder's moves are protected from adverse contact effects, except Pickpocket."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "electric-seed",
@@ -12256,8 +12072,7 @@
           "text": "If the terrain is Electric Terrain, raises holder's Defense by 1 stage. Single use.",
           "explanation": "If the terrain is Electric Terrain, raises holder's Defense by 1 stage. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "psychic-seed",
@@ -12283,8 +12098,7 @@
           "text": "If the terrain is Psychic Terrain, raises holder's Sp. Def by 1 stage. Single use.",
           "explanation": "If the terrain is Psychic Terrain, raises holder's Sp. Def by 1 stage. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "misty-seed",
@@ -12310,8 +12124,7 @@
           "text": "If the terrain is Misty Terrain, raises holder's Sp. Def by 1 stage. Single use.",
           "explanation": "If the terrain is Misty Terrain, raises holder's Sp. Def by 1 stage. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "grassy-seed",
@@ -12337,8 +12150,7 @@
           "text": "If the terrain is Grassy Terrain, raises holder's Defense by 1 stage. Single use.",
           "explanation": "If the terrain is Grassy Terrain, raises holder's Defense by 1 stage. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "fighting-memory",
@@ -12359,8 +12171,7 @@
           "text": "Holder's Multi-Attack is Fighting type.",
           "explanation": "Holder's Multi-Attack is Fighting type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "flying-memory",
@@ -12381,8 +12192,7 @@
           "text": "Holder's Multi-Attack is Flying type.",
           "explanation": "Holder's Multi-Attack is Flying type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "poison-memory",
@@ -12403,8 +12213,7 @@
           "text": "Holder's Multi-Attack is Poison type.",
           "explanation": "Holder's Multi-Attack is Poison type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ground-memory",
@@ -12425,8 +12234,7 @@
           "text": "Holder's Multi-Attack is Ground type.",
           "explanation": "Holder's Multi-Attack is Ground type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "rock-memory",
@@ -12447,8 +12255,7 @@
           "text": "Holder's Multi-Attack is Rock type.",
           "explanation": "Holder's Multi-Attack is Rock type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "bug-memory",
@@ -12469,8 +12276,7 @@
           "text": "Holder's Multi-Attack is Bug type.",
           "explanation": "Holder's Multi-Attack is Bug type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ghost-memory",
@@ -12491,8 +12297,7 @@
           "text": "Holder's Multi-Attack is Ghost type.",
           "explanation": "Holder's Multi-Attack is Ghost type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "steel-memory",
@@ -12513,8 +12318,7 @@
           "text": "Holder's Multi-Attack is Steel type.",
           "explanation": "Holder's Multi-Attack is Steel type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "fire-memory",
@@ -12535,8 +12339,7 @@
           "text": "Holder's Multi-Attack is Fire type.",
           "explanation": "Holder's Multi-Attack is Fire type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "water-memory",
@@ -12557,8 +12360,7 @@
           "text": "Holder's Multi-Attack is Water type.",
           "explanation": "Holder's Multi-Attack is Water type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "grass-memory",
@@ -12579,8 +12381,7 @@
           "text": "Holder's Multi-Attack is Grass type.",
           "explanation": "Holder's Multi-Attack is Grass type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "electric-memory",
@@ -12601,8 +12402,7 @@
           "text": "Holder's Multi-Attack is Electric type.",
           "explanation": "Holder's Multi-Attack is Electric type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "psychic-memory",
@@ -12623,8 +12423,7 @@
           "text": "Holder's Multi-Attack is Psychic type.",
           "explanation": "Holder's Multi-Attack is Psychic type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ice-memory",
@@ -12645,8 +12444,7 @@
           "text": "Holder's Multi-Attack is Ice type.",
           "explanation": "Holder's Multi-Attack is Ice type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "dragon-memory",
@@ -12667,8 +12465,7 @@
           "text": "Holder's Multi-Attack is Dragon type.",
           "explanation": "Holder's Multi-Attack is Dragon type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "dark-memory",
@@ -12689,8 +12486,7 @@
           "text": "Holder's Multi-Attack is Dark type.",
           "explanation": "Holder's Multi-Attack is Dark type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "fairy-memory",
@@ -12711,8 +12507,7 @@
           "text": "Holder's Multi-Attack is Fairy type.",
           "explanation": "Holder's Multi-Attack is Fairy type."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "bike--green",
@@ -14691,8 +14486,7 @@
           "text": "If held by a Zacian, this item changes its forme to Crowned Sword.",
           "explanation": "If held by a Zacian, this item changes its forme to Crowned Sword."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "rusted-shield",
@@ -14712,8 +14506,7 @@
           "text": "If held by a Zamazenta, this item changes its forme to Crowned Shield.",
           "explanation": "If held by a Zamazenta, this item changes its forme to Crowned Shield."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "fossilized-bird",
@@ -14765,8 +14558,7 @@
           "text": "Evolves Milcery into Alcremie when held and spun around.",
           "explanation": "Evolves Milcery into Alcremie when held and spun around."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "love-sweet",
@@ -14786,8 +14578,7 @@
           "text": "Evolves Milcery into Alcremie when held and spun around.",
           "explanation": "Evolves Milcery into Alcremie when held and spun around."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "berry-sweet",
@@ -14807,8 +14598,7 @@
           "text": "Evolves Milcery into Alcremie when held and spun around.",
           "explanation": "Evolves Milcery into Alcremie when held and spun around."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "clover-sweet",
@@ -14828,8 +14618,7 @@
           "text": "Evolves Milcery into Alcremie when held and spun around.",
           "explanation": "Evolves Milcery into Alcremie when held and spun around."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "flower-sweet",
@@ -14849,8 +14638,7 @@
           "text": "Evolves Milcery into Alcremie when held and spun around.",
           "explanation": "Evolves Milcery into Alcremie when held and spun around."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "star-sweet",
@@ -14870,8 +14658,7 @@
           "text": "Evolves Milcery into Alcremie when held and spun around.",
           "explanation": "Evolves Milcery into Alcremie when held and spun around."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "ribbon-sweet",
@@ -14891,8 +14678,7 @@
           "text": "Evolves Milcery into Alcremie when held and spun around.",
           "explanation": "Evolves Milcery into Alcremie when held and spun around."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "sweet-apple",
@@ -14928,8 +14714,7 @@
           "text": "Raises holder's Special Attack by 1 stage after it uses a sound move. Single use.",
           "explanation": "Raises holder's Special Attack by 1 stage after it uses a sound move. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "eject-pack",
@@ -14949,8 +14734,7 @@
           "text": "If the holder's stat stages are lowered, it switches to a chosen ally. Single use.",
           "explanation": "If the holder's stat stages are lowered, it switches to a chosen ally. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "heavy-duty-boots",
@@ -14970,8 +14754,7 @@
           "text": "When switching in, the holder is unaffected by hazards on its side of the field.",
           "explanation": "When switching in, the holder is unaffected by hazards on its side of the field."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "blunder-policy",
@@ -14991,8 +14774,7 @@
           "text": "If the holder misses due to accuracy, its Speed is raised by 2 stages. Single use.",
           "explanation": "If the holder misses due to accuracy, its Speed is raised by 2 stages. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "room-service",
@@ -15012,8 +14794,7 @@
           "text": "If Trick Room is active, the holder's Speed is lowered by 1 stage. Single use.",
           "explanation": "If Trick Room is active, the holder's Speed is lowered by 1 stage. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "utility-umbrella",
@@ -15033,8 +14814,7 @@
           "text": "The holder ignores rain- and sun-based effects.",
           "explanation": "The holder ignores rain- and sun-based effects, including those of its Ability unless it is Orichalcum Pulse or Protosynthesis. Damage and accuracy calculations from attacks used by the holder are affected by rain and sun, but not attacks used against the holder."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "exp-candy-xs",
@@ -19170,8 +18950,7 @@
           "text": "Holder's Ability cannot be changed, suppressed, or ignored by any effect.",
           "explanation": "Holder's Ability cannot be changed, suppressed, or ignored by any effect."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "clear-amulet",
@@ -19186,8 +18965,7 @@
           "text": "Prevents other Pokemon from lowering the holder's stat stages.",
           "explanation": "Prevents other Pokemon from lowering the holder's stat stages."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "mirror-herb",
@@ -19202,8 +18980,7 @@
           "text": "When an opposing Pokemon raises a stat stage, the holder copies it. Single use.",
           "explanation": "When an opposing Pokemon raises a stat stage, the holder copies it. Single use."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "punching-glove",
@@ -19218,8 +18995,7 @@
           "text": "Holder's punch-based attacks have 1.1x power and do not make contact.",
           "explanation": "Holder's punch-based attacks have 1.1x power and do not make contact."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "covert-cloak",
@@ -19234,8 +19010,7 @@
           "text": "Holder is not affected by the secondary effect of another Pokemon's attack.",
           "explanation": "The holder is not affected by the secondary effect of another Pokemon's attack. Attacks with secondary effects that are prevented include those with a chance (even 100%) to paralyze, sleep, freeze, burn, poison, confuse, cause the holder to flinch, cause the holder's stat stages to be lowered, as well as Anchor Shot, Eerie Spell, Fling, Psychic Noise, Salt Cure, Spirit Shackle, Syrup Bomb, and Throat Chop. The effect of Sparkling Aria is prevented if the holder is the only target. Secondary effects added by King's Rock, Razor Fang, and the Poison Touch, Stench, and Toxic Chain Abilities are also prevented against the holder."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "loaded-dice",
@@ -19250,8 +19025,7 @@
           "text": "Holder's moves that hit 2-5 times hit 4-5 times; Population Bomb hits 4-10 times.",
           "explanation": "The holder's moves that normally hit 2 to 5 times instead hit 4 or 5 times. If the first hit is successful, the holder's use of Triple Kick or Triple Axel hits 3 times, and Population Bomb hits 4 to 10 times, at random."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "baguette",
@@ -22513,8 +22287,7 @@
           "text": "Holder's Fairy-type attacks have 1.2x power.",
           "explanation": "Holder's Fairy-type attacks have 1.2x power."
         }
-      ],
-      "descriptionSource": "https://www.npmjs.com/package/@pkmn/dex"
+      ]
     },
     {
       "name": "wellspring-mask",

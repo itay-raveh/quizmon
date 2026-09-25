@@ -10,7 +10,6 @@ interface ItemKnowledge extends TopicEntity {
   spriteIdentity?: string;
   category: string;
   pocket: string;
-  descriptionSource?: string;
   descriptions?: EffectDescription[];
 }
 interface MoveKnowledge extends TopicEntity {
@@ -60,7 +59,6 @@ export interface TopicCatalog {
   items: ItemKnowledge[];
   moves: MoveKnowledge[];
   abilities: (TopicEntity & {
-    descriptionSource?: string;
     descriptions?: EffectDescription[];
   })[];
   natures: (TopicEntity & { raised: StatName; lowered: StatName })[];

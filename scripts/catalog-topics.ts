@@ -29,7 +29,6 @@ import type {
   TopicCatalog,
   TopicEntity,
 } from '../src/domain/quiz/topic-catalog.ts';
-import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 import {
   isItemSpritePath,
   normalizeSpriteUrl,
@@ -45,7 +44,7 @@ const label = (entity: {
 export const buildTopicCatalog = async (
   client: MainClient,
   catalog: PokemonCatalog,
-): Promise<EditorialTopicCatalog> => {
+): Promise<TopicCatalog> => {
   const all = async <T>(endpoint: string): Promise<T[]> => {
     const [list] = await client.resolveAll<NamedAPIResourceList<T>>(
       [`https://pokeapi.co/api/v2/${endpoint}/?limit=10000`],
@@ -116,22 +115,6 @@ export const buildTopicCatalog = async (
       .map(([name, pokemon]) => [pokemon.speciesName, name]),
   );
   const encounters: TopicCatalog['encounters'] = [];
-  const gaps: EditorialTopicCatalog['gaps'] = {
-    itemGeneration: [],
-    itemSprite: [],
-    encounterGames: [],
-    evolutionMethods: [],
-    dynamicMoveClass: [
-      'photon-geyser',
-      'light-that-burns-the-sky',
-      'shell-side-arm',
-      'tera-blast',
-      'tera-starstorm',
-    ],
-    encounterCoverage: [
-      'Only ordinary encounter contexts whose recorded slot chances total 100 percent are used. Special-event and Generation III record-mixing swarm coverage remains unverified.',
-    ],
-  };
   for (const area of areas) {
     const location = locationsByName.get(area.location.name);
     if (!location?.region) continue;
@@ -190,9 +173,6 @@ export const buildTopicCatalog = async (
         });
     }
   }
-  for (const version of versions)
-    if (!encounters.some((entry) => entry.game === version.name))
-      gaps.encounterGames!.push(version.name);
   const evolutions: TopicCatalog['evolutions'] = [];
   for (const chain of chains) {
     for (const step of flattenChain(chain)) {
@@ -214,16 +194,10 @@ export const buildTopicCatalog = async (
         const after = detail.evolved_form
           ? resolveForm(detail.evolved_form)
           : defaultAfter;
-        if (!before || !after) {
-          gaps.evolutionMethods!.push(`${step.from.name}:${step.to.name}`);
-          continue;
-        }
+        if (!before || !after) continue;
         const group = groupsByName.get(detail.version_group?.name);
         const gen = group && generation(group.generation.name);
-        if (!group || !gen) {
-          gaps.evolutionMethods!.push(`${before}:${after}`);
-          continue;
-        }
+        if (!group || !gen) continue;
         const requirements = requirementsOf(detail).filter(
           (requirement) =>
             !['base-form', 'evolved-form', 'trigger'].includes(
@@ -247,20 +221,16 @@ export const buildTopicCatalog = async (
       }
     }
   }
-  const topics: EditorialTopicCatalog = {
+  const topics: TopicCatalog = {
     games,
     encounters,
     evolutions,
-    gaps,
     medicineChoices: buildMedicineChoices(items),
     items: items.map((item) => {
       const gens = item.game_indices.map((index) =>
         generation(index.generation.name),
       );
       const sprite = normalizeSpriteUrl(item.sprites.default);
-      if (!gens.some(Boolean)) gaps.itemGeneration!.push(item.name);
-      if (!sprite || !isItemSpritePath(sprite))
-        gaps.itemSprite!.push(item.name);
       return {
         ...entity(item, gens),
         sprite: sprite && isItemSpritePath(sprite) ? sprite : null,

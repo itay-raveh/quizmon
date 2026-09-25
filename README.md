@@ -31,7 +31,7 @@ Set the GitHub Actions secrets `SENTRY_BROWSER_DSN`, `SENTRY_WORKER_DSN`, `SENTR
 
 ## Data
 
-Quizmon builds an offline catalog from two sources. [PokéAPI](https://pokeapi.co/) owns stable species and form IDs, names, Pokédex details, EV yields, game versions, evolutions, locations, encounters, berries, medicine, and sprite metadata. [@pkmn/dex](https://github.com/pkmn/ps/tree/main/dex) owns types, matchups, stats, abilities, level-up moves, natures, move battle properties, and battle effect descriptions. PokéAPI supplies the game-version contexts for moves; Showdown supplies their type and damage class in each generation. Missing Showdown abilities and move facts become catalog gaps, while an unmapped species stops the update. Neither source silently fills the other's facts. Live games do not request either source.
+Quizmon builds an offline catalog from two sources. [PokéAPI](https://pokeapi.co/) owns stable species and form IDs, names, Pokédex details, EV yields, game versions, evolutions, locations, encounters, berries, medicine, and sprite metadata. [@pkmn/dex](https://github.com/pkmn/ps/tree/main/dex) owns types, matchups, stats, abilities, level-up moves, natures, move battle properties, and battle effect descriptions. PokéAPI supplies the game-version contexts for moves; Showdown supplies their type and damage class in each generation. Missing Showdown abilities and move facts are omitted, while an unmapped species stops the update. Neither source silently fills the other's facts. Live games do not request either source.
 
 ```sh
 npm run data:update

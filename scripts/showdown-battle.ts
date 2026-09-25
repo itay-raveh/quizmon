@@ -6,7 +6,6 @@ import {
   type PokemonKnowledge,
   type StatName,
 } from '../src/domain/pokemon/types.ts';
-import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
 
 const statNames = {
   hp: 'hp',
@@ -67,18 +66,14 @@ const moveFacts = (name: string, generation: Generation) => {
 export const addShowdownBattleData = async (
   catalog: PokemonCatalog,
 ): Promise<void> => {
-  const topics = catalog.topics as EditorialTopicCatalog | undefined;
+  const topics = catalog.topics;
   if (!topics) throw new Error('Missing topic catalog');
-  const previousConflicts = topics.gaps.showdownAbilityConflicts;
-  const conflicts: string[] = [];
-  const missingLearnsets: string[] = [];
   const abilityTopicNames = new Map(
     topics.abilities.map((ability) => [toID(ability.name), ability.name]),
   );
   const moveTopicNames = new Map(
     topics.moves.map((move) => [toID(move.name), move.name]),
   );
-  const missingAbilityTopics = new Set<string>();
 
   for (const [key, pokemon] of Object.entries(catalog.pokemon)) {
     const entry = showdownSpecies(key, pokemon);
@@ -87,7 +82,6 @@ export const addShowdownBattleData = async (
       const ability = entry.abilities[kind];
       if (!ability) return [];
       const name = abilityTopicNames.get(toID(ability)) ?? slug(ability);
-      if (!abilityTopicNames.has(toID(ability))) missingAbilityTopics.add(name);
       return [
         {
           name,
@@ -98,11 +92,8 @@ export const addShowdownBattleData = async (
     });
     const abilityNames = slots.map(({ name }) => name);
     const conflict =
-      previousConflicts?.includes(key) ||
-      (!previousConflicts &&
-        oldAbilities.map(toID).sort().join(',') !==
-          abilityNames.map(toID).sort().join(','));
-    if (conflict) conflicts.push(key);
+      oldAbilities.map(toID).sort().join(',') !==
+      abilityNames.map(toID).sort().join(',');
     pokemon.abilities = conflict ? [] : abilityNames;
     pokemon.abilitySlots = conflict ? undefined : slots;
     pokemon.types = entry.types.map((type) => type.toLowerCase());
@@ -116,7 +107,6 @@ export const addShowdownBattleData = async (
     const inherited = learnset.exists
       ? learnset
       : await Dex.learnsets.get(entry.changesFrom ?? entry.baseSpecies);
-    if (!inherited.exists) missingLearnsets.push(key);
     pokemon.levelMoves = Object.entries(inherited.learnset ?? {})
       .filter(([, sources]) =>
         sources.some((source) => /^\d+L\d+/.test(source)),
@@ -165,12 +155,10 @@ export const addShowdownBattleData = async (
       : [],
   );
 
-  const missingMoves: string[] = [];
   for (const move of topics.moves) {
     move.contexts = move.contexts.map((context) => {
       const facts = moveFacts(move.name, context.generation);
       if (!facts || !types.includes(facts.type)) {
-        missingMoves.push(`${move.name}:${context.game}`);
         return { ...context, type: '', damageClass: '' };
       }
       return { ...context, ...facts };
@@ -179,8 +167,4 @@ export const addShowdownBattleData = async (
     move.type = current?.type ?? '';
     move.damageClass = current?.damageClass ?? '';
   }
-  topics.gaps.showdownAbilityConflicts = conflicts;
-  topics.gaps.showdownAbilityTopics = [...missingAbilityTopics].sort();
-  topics.gaps.showdownLearnsets = missingLearnsets;
-  topics.gaps.showdownMoveContexts = missingMoves;
 };

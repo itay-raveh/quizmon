@@ -1,5 +1,5 @@
 import type { Item } from 'pokenode-ts';
-import type { EditorialTopicCatalog } from './editorial-topic-catalog.ts';
+import type { TopicCatalog } from '../src/domain/quiz/topic-catalog.ts';
 
 const statusPatterns = {
   poison: /\bcures? (?:bad )?poison(?:ing)?\b/i,
@@ -11,7 +11,7 @@ const statusPatterns = {
 
 export const buildMedicineChoices = (
   items: Item[],
-): EditorialTopicCatalog['medicineChoices'] =>
+): TopicCatalog['medicineChoices'] =>
   items.flatMap((item) => {
     const effect = item.effect_entries.find(
       (entry) => entry.language.name === 'en',
@@ -35,7 +35,6 @@ export const buildMedicineChoices = (
         name: item.name,
         cures,
         hp,
-        source: 'https://pokeapi.co/docs/v2#item',
       },
     ];
   });
