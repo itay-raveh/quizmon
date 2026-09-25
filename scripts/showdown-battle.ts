@@ -1,4 +1,4 @@
-import { Dex } from '@pkmn/dex';
+import { Dex, toID } from '@pkmn/dex';
 import {
   generations,
   type Generation,
@@ -16,8 +16,6 @@ const statNames = {
   'special-defense': 'spd',
   speed: 'spe',
 } as const;
-const normalize = (name: string) =>
-  name.toLowerCase().replace(/[^a-z0-9]/g, '');
 const slug = (name: string) =>
   name
     .toLowerCase()
@@ -25,7 +23,7 @@ const slug = (name: string) =>
     .replace(/^-|-$/g, '');
 const species = Dex.species.all();
 
-const showdownSpecies = (key: string, pokemon: PokemonKnowledge) => {
+export const showdownSpecies = (key: string, pokemon: PokemonKnowledge) => {
   const direct = Dex.species.get(key);
   if (direct.exists && direct.num === pokemon.speciesId) return direct;
   const candidates = species.filter(
@@ -38,19 +36,23 @@ const showdownSpecies = (key: string, pokemon: PokemonKnowledge) => {
           entry.baseStats[stat] === pokemon.stats[name as StatName],
       ),
   );
-  if (candidates.length === 1) return candidates[0]!;
-  const byLabel = candidates.filter(
-    (entry) => normalize(entry.name) === normalize(pokemon.displayName),
-  );
-  if (byLabel.length === 1) return byLabel[0]!;
-  const sex = key.includes('-male')
-    ? '-M-'
+  const byForm = candidates.filter((entry) => {
+    const form = slug(entry.forme || entry.baseForme);
+    return form && `-${key}-`.includes(`-${form}-`);
+  });
+  const gender = key.includes('-male')
+    ? 'M'
     : key.includes('-female')
-      ? '-F-'
-      : '';
-  const bySex = candidates.filter((entry) => sex && entry.name.includes(sex));
-  if (bySex.length === 1) return bySex[0]!;
-  throw new Error(`No unambiguous Showdown species for ${key}`);
+      ? 'F'
+      : undefined;
+  const byGender = candidates.filter(
+    (entry) => gender && entry.gender === gender,
+  );
+  const match = [candidates, byForm, byGender].find(
+    (matches) => matches.length === 1,
+  )?.[0];
+  if (!match) throw new Error(`No unambiguous Showdown species for ${key}`);
+  return match;
 };
 
 const moveFacts = (name: string, generation: Generation) => {
@@ -71,33 +73,26 @@ export const addShowdownBattleData = async (
   const conflicts: string[] = [];
   const missingLearnsets: string[] = [];
   const abilityTopicNames = new Map(
-    topics.abilities.map((ability) => [normalize(ability.name), ability.name]),
+    topics.abilities.map((ability) => [toID(ability.name), ability.name]),
   );
   const moveTopicNames = new Map(
-    topics.moves.map((move) => [normalize(move.name), move.name]),
+    topics.moves.map((move) => [toID(move.name), move.name]),
   );
   const missingAbilityTopics = new Set<string>();
 
   for (const [key, pokemon] of Object.entries(catalog.pokemon)) {
     const entry = showdownSpecies(key, pokemon);
     const oldAbilities = pokemon.abilities;
-    const slots = (
-      [
-        ['0', 1],
-        ['1', 2],
-        ['H', 3],
-      ] as const
-    ).flatMap(([kind, slot]) => {
+    const slots = (['0', '1', 'H'] as const).flatMap((kind) => {
       const ability = entry.abilities[kind];
       if (!ability) return [];
-      const name = abilityTopicNames.get(normalize(ability)) ?? slug(ability);
-      if (!abilityTopicNames.has(normalize(ability)))
-        missingAbilityTopics.add(name);
+      const name = abilityTopicNames.get(toID(ability)) ?? slug(ability);
+      if (!abilityTopicNames.has(toID(ability))) missingAbilityTopics.add(name);
       return [
         {
           name,
           hidden: kind === 'H',
-          slot,
+          slot: kind === 'H' ? 3 : Number(kind) + 1,
         },
       ];
     });
@@ -105,8 +100,8 @@ export const addShowdownBattleData = async (
     const conflict =
       previousConflicts?.includes(key) ||
       (!previousConflicts &&
-        oldAbilities.map(normalize).sort().join(',') !==
-          abilityNames.map(normalize).sort().join(','));
+        oldAbilities.map(toID).sort().join(',') !==
+          abilityNames.map(toID).sort().join(','));
     if (conflict) conflicts.push(key);
     pokemon.abilities = conflict ? [] : abilityNames;
     pokemon.abilitySlots = conflict ? undefined : slots;
@@ -126,7 +121,7 @@ export const addShowdownBattleData = async (
       .filter(([, sources]) =>
         sources.some((source) => /^\d+L\d+/.test(source)),
       )
-      .map(([name]) => moveTopicNames.get(normalize(name)))
+      .map(([name]) => moveTopicNames.get(toID(name)))
       .filter((name): name is string => Boolean(name))
       .sort();
   }

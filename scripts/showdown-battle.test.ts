@@ -1,10 +1,14 @@
 import { readEditorialCatalogFiles } from './catalog-output.ts';
-import { addShowdownBattleData } from './showdown-battle.ts';
+import { addShowdownBattleData, showdownSpecies } from './showdown-battle.ts';
 
 it('uses Showdown battle facts and records disagreements without fallback', async () => {
   const catalog = await readEditorialCatalogFiles(
     new URL('../src/domain/pokemon/data/', import.meta.url),
   );
+  const species = (name: string) =>
+    showdownSpecies(name, catalog.pokemon[name]!).name;
+  expect(species('maushold-family-of-four')).toBe('Maushold-Four');
+  expect(species('meowstic-male-mega')).toBe('Meowstic-M-Mega');
   const pikachu = catalog.pokemon.pikachu!;
   pikachu.stats.attack = 1;
   pikachu.abilities = ['blaze'];
