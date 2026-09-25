@@ -6,7 +6,7 @@ import { useInteractionSound } from '@/lib/audio/sound-context';
 import {
   questionDefinitions,
   questionTypeGroups,
-  questionTypes,
+  activeQuestionTypes,
   type QuestionTypeGroup,
 } from '@/domain/quiz/questions/definitions';
 import type { QuestionType } from '@/domain/quiz/types';
@@ -35,7 +35,7 @@ interface QuestionTypeSettingsProps extends Pick<
 
 const groupedQuestionTypes = questionTypeGroups.map((group) => ({
   ...group,
-  types: questionTypes.filter(
+  types: activeQuestionTypes.filter(
     (questionType) => questionDefinitions[questionType].group === group.id,
   ),
 }));
@@ -96,7 +96,7 @@ export const QuestionTypeSettings = ({
                 ...current,
                 questionTypes: allSelected
                   ? current.questionTypes.filter((type) => !available.has(type))
-                  : questionTypes.filter(
+                  : activeQuestionTypes.filter(
                       (type) =>
                         available.has(type) ||
                         current.questionTypes.includes(type),

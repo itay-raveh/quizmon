@@ -287,6 +287,9 @@ export const questionDefinitions = {
 
 export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
+export const activeQuestionTypes = questionTypes.filter(
+  (type) => type !== 'evolution-items',
+);
 const standardQuestionTypes = questionTypes.filter(
   (type) => 'standard' in questionDefinitions[type],
 );

@@ -33,6 +33,9 @@ const round = {
 
 it('keeps saved question acceptance and required option invariants', () => {
   expect(isQuestionData({ ...question, futureField: true })).toBe(true);
+  expect(isQuestionData({ ...question, questionType: 'evolution-items' })).toBe(
+    true,
+  );
   expect(isQuestionData({ ...question, options: ['A', 'A'] })).toBe(false);
   expect(
     isQuestionData({

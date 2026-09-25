@@ -56,12 +56,7 @@ export const questionVariants = {
       allowMissingSprites: true,
     },
   },
-  'evolution-items': {
-    1: { distinctItemCategories: true },
-    2: { stonesOnly: true },
-    3: { directUseItemsOnly: true },
-    4: { directUseItemsOnly: true, allowMissingSprites: true },
-  },
+  'evolution-items': { 1: { enabled: false } },
   'weight-comparison': {
     2: {
       measurement: {

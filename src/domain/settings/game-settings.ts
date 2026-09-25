@@ -10,7 +10,7 @@ import {
   type PokemonCatalog,
 } from '../pokemon/types.ts';
 import type { Candidate } from '../quiz/questions/context.ts';
-import { questionTypes } from '../quiz/questions/definitions.ts';
+import { activeQuestionTypes } from '../quiz/questions/definitions.ts';
 import { type ExperienceSettings, type GameSettings } from './types.ts';
 
 export const defaultGameSettings: GameSettings = {
@@ -19,7 +19,7 @@ export const defaultGameSettings: GameSettings = {
   answerFlow: 'manual',
   formGroups: [...formGroups],
   generations: ['I'],
-  questionTypes: [...questionTypes],
+  questionTypes: [...activeQuestionTypes],
   reduceMotion: false,
   soundVolume: 1,
   timerDisplay: 'seconds',
@@ -56,7 +56,7 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
   questionTypes: settings.difficulty
     ? (settings.questionSelection === 'custom'
         ? settings.questionTypes
-        : questionTypes
+        : activeQuestionTypes
       ).filter(
         (type) =>
           getQuestionVariant(type, settings.difficulty!) &&
