@@ -26,11 +26,10 @@ export const buildEffectDescription = (
   context: QuestionContext,
   target: TopicCatalog['abilities'][number] | TopicCatalog['items'][number],
   kind: 'ability' | 'item',
+  entities: (
+    TopicCatalog['abilities'][number] | TopicCatalog['items'][number]
+  )[],
 ) => {
-  const entities =
-    kind === 'ability'
-      ? context.catalog.topics!.abilities
-      : context.catalog.topics!.items;
   const descriptions = (target.descriptions ?? []).filter(
     (entry) =>
       !context.generations || context.generations.includes(entry.generation),
@@ -65,7 +64,7 @@ export const buildEffectDescription = (
     const prompt = `What does ${target.label} do?`;
     return makeTopicQuestion(
       context,
-      topicSubject(context, kind, target),
+      { ...topicSubject(context, kind, target), generation: fact.generation },
       prompt,
       correct,
       options,
@@ -74,7 +73,9 @@ export const buildEffectDescription = (
         prompt: {
           kind: 'text',
           text: prompt,
-          supportingText: `Generation ${fact.generation}`,
+          ...(context.questionType === 'medicine-cabinet'
+            ? {}
+            : { supportingText: `Generation ${fact.generation}` }),
         },
         ...(kind === 'item' && 'sprite' in target && target.sprite
           ? { media: { kind: 'pixel-sprite' as const, src: target.sprite } }

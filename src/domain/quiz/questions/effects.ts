@@ -6,7 +6,14 @@ export const buildEffect: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const kind = context.questionType === 'ability-effects' ? 'ability' : 'item';
-  const entities = kind === 'ability' ? topics.abilities : topics.items;
+  const entities =
+    kind === 'ability'
+      ? topics.abilities
+      : topics.items.filter(
+          (item) =>
+            item.effectKind ===
+            (context.questionType === 'medicine-cabinet' ? 'bag' : 'held'),
+        );
   for (const target of ordered(
     context,
     entities.filter((entity) => topicEligible(context, entity)),
@@ -18,7 +25,7 @@ export const buildEffect: QuestionBuilder = (context) => {
       !context.variant?.allowMissingSprites
     )
       continue;
-    const question = buildEffectDescription(context, target, kind);
+    const question = buildEffectDescription(context, target, kind, entities);
     if (question) return question;
   }
 };

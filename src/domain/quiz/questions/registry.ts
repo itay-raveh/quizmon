@@ -31,7 +31,7 @@ import {
   buildSpriteMatchQuestion,
   buildWhosThatPokemonQuestion,
 } from './identity.ts';
-import { buildItemIdentification, buildMedicine } from './items.ts';
+import { buildItemIdentification } from './items.ts';
 import { buildLegendHuntQuestion } from './legendaries.ts';
 import { buildEncounter, buildRegion } from './locations.ts';
 import { buildMeasurement } from './measurements.ts';
@@ -51,7 +51,7 @@ import { applyQuestionVariant } from './variants.ts';
 
 const questionBuilders = {
   'item-identification': buildItemIdentification,
-  'medicine-cabinet': buildMedicine,
+  'medicine-cabinet': buildEffect,
   'evolution-items': buildEvolution,
   'weight-comparison': buildMeasurement('weight'),
   'height-comparison': buildMeasurement('height'),

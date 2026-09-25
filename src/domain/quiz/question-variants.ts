@@ -52,16 +52,10 @@ export interface VariantRules {
   allowMissingSprites?: boolean;
   closeAlternatives?: boolean;
   itemChoices?:
-    | 'different-categories'
-    | 'pocket'
-    | 'category'
-    | 'medicines'
-    | 'stones'
-    | 'direct-use';
+    'different-categories' | 'pocket' | 'category' | 'stones' | 'direct-use';
   measurement?: MeasurementRules;
   showMoveDescription?: boolean;
   excludeTypeHintNames?: boolean;
-  excludeUniversalCures?: boolean;
   fullList?: 'types' | 'regions' | 'flavors';
   damageClass?: 'status' | 'any';
   sameMoveType?: boolean;
@@ -131,13 +125,9 @@ const questionVariants: Record<
     3: { itemChoices: 'category' },
   },
   'medicine-cabinet': {
-    1: { itemChoices: 'different-categories' },
-    2: { itemChoices: 'medicines', excludeUniversalCures: true },
-    3: {
-      itemChoices: 'medicines',
-      excludeUniversalCures: true,
-      allowMissingSprites: true,
-    },
+    1: { effectChoices: 'broad' },
+    2: { effectChoices: 'related' },
+    3: { effectChoices: 'exact', allowMissingSprites: true },
   },
   'evolution-items': {
     1: { itemChoices: 'different-categories' },

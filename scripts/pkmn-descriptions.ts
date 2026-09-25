@@ -33,8 +33,10 @@ const addAbilityDescriptions = (abilities: TopicCatalog['abilities']): void => {
 
 const addItemDescriptions = (items: TopicCatalog['items']): void => {
   for (const item of items) {
-    delete item.descriptions;
-    if (item.pocket !== 'misc') continue;
+    if (item.effectKind === 'held') {
+      delete item.descriptions;
+      delete item.effectKind;
+    }
     const descriptions = generations.flatMap((generation, index) => {
       const entry = Dex.forGen(index + 1).items.get(item.name);
       if (entry.isNonstandard || !entry.exists || !usable(entry.shortDesc))
@@ -48,7 +50,10 @@ const addItemDescriptions = (items: TopicCatalog['items']): void => {
         },
       ];
     });
-    if (descriptions.length) item.descriptions = descriptions;
+    if (descriptions.length) {
+      item.descriptions = descriptions;
+      item.effectKind = 'held';
+    }
   }
 };
 

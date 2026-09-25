@@ -128002,6 +128002,7 @@
     "topics-encounters-8.json",
     "topics-evolutions-0.json",
     "topics-items-0.json",
+    "topics-items-1.json",
     "topics-moves-0.json",
     "topics-moves-1.json",
     "topics-moves-2.json",
@@ -128009,7 +128010,6 @@
     "topics-natures-0.json",
     "topics-berries-0.json",
     "topics-regions-0.json",
-    "topics-locations-0.json",
-    "topics-medicineChoices-0.json"
+    "topics-locations-0.json"
   ]
 }

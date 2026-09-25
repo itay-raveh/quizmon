@@ -1,7 +1,7 @@
 import { addPkmnDescriptions } from './pkmn-descriptions.ts';
+import { bagItemEffect } from './bag-item-effect.ts';
 import { clean, english, titleCase } from './catalog-text.ts';
 import { formatLocationLabel } from '../src/domain/pokemon/location-label.ts';
-import { buildMedicineChoices } from './medicine-choices.ts';
 import {
   flattenChain,
   formatRequirements,
@@ -225,17 +225,31 @@ export const buildTopicCatalog = async (
     games,
     encounters,
     evolutions,
-    medicineChoices: buildMedicineChoices(items),
     items: items.map((item) => {
       const gens = item.game_indices.map((index) =>
         generation(index.generation.name),
       );
+      const topic = entity(item, gens);
       const sprite = normalizeSpriteUrl(item.sprites.default);
+      const effect = bagItemEffect(
+        item.name,
+        item.effect_entries.find(english)?.short_effect,
+      );
       return {
-        ...entity(item, gens),
+        ...topic,
         sprite: sprite && isItemSpritePath(sprite) ? sprite : null,
         category: item.category.name,
         pocket: categories.get(item.category.name)?.pocket.name ?? '',
+        ...(topic.generations.length && effect
+          ? {
+              effectKind: 'bag' as const,
+              descriptions: topic.generations.map((generation) => ({
+                generation,
+                text: effect,
+                explanation: effect,
+              })),
+            }
+          : {}),
       };
     }),
     moves: moves.map((move) => {

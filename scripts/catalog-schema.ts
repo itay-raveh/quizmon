@@ -19,19 +19,13 @@ const description = z.object({
   explanation: text,
 });
 const topics = z.object({
-  medicineChoices: z.array(
-    z.object({
-      name: text,
-      cures: texts,
-      hp: z.union([z.number(), z.literal('full')]),
-    }),
-  ),
   items: z.array(
     entity.extend({
       sprite: text.nullable(),
       spriteIdentity: text.optional(),
       category: text,
       pocket: text,
+      effectKind: z.enum(['bag', 'held']).optional(),
       descriptions: z.array(description).optional(),
     }),
   ),
