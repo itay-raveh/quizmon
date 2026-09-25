@@ -13,7 +13,6 @@ import {
   QuestionSubjectIdentity,
   QuestionSubjectTypes,
 } from './QuestionSubject';
-import { evolutionAnswerSummary } from '@/domain/quiz/questions/evolution-presentation';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { RelationArrow, TypeEffectArrow } from './RelationArrow';
 import { Sprite } from './Sprite';
@@ -120,10 +119,6 @@ export const QuestionArtwork = ({
     );
   }
   if (visual?.kind === 'evolution-endpoints') {
-    const requirements =
-      question.questionType === 'evolution-conditions' && answered
-        ? evolutionAnswerSummary(question)
-        : '';
     return (
       <div className="question-visual question-evolution-endpoints">
         {[visual.before, visual.after].map((name, index) => (
@@ -139,14 +134,6 @@ export const QuestionArtwork = ({
             />
           </Fragment>
         ))}
-        {requirements ? (
-          <p
-            className="question-evolution-endpoints__conditions"
-            aria-label="Evolution requirements"
-          >
-            {requirements}
-          </p>
-        ) : null}
       </div>
     );
   }

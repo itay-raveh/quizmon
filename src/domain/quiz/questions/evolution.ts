@@ -227,7 +227,6 @@ export const buildEvolution: QuestionBuilder = (context) => {
             numericOnly ? label.slice('Minimum level: '.length) : label,
           ]),
         ),
-        explanation: correct.join(' · '),
       },
       'evolution',
     );
