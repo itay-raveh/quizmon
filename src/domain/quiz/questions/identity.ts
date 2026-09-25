@@ -1,6 +1,7 @@
 import { pick } from '../../../lib/random.ts';
 import { getPixelPeekCrop } from '../../pokemon/pixel-peek.ts';
 import type { PokemonKnowledge } from '../../pokemon/types.ts';
+import { questionTuning } from '../question-variants.ts';
 import { pokemonOptions } from './answers.ts';
 import type { AnswerPresentation, QuestionAssembly } from './assembly.ts';
 import { makeQuestion } from './assembly.ts';
@@ -32,11 +33,12 @@ const makeIdentityQuestion = (
 const pickScanSprite = (
   pokemon: PokemonKnowledge,
   random: () => number,
-  preferBack = false,
+  backChance = 0,
+  frontChance = questionTuning.frontSpriteChance,
 ): string | null => {
   if (!pokemon.sprite) return null;
 
-  if (preferBack) {
+  if (backChance > 0 && (backChance === 1 || random() < backChance)) {
     const back = pokemon.identitySprites.generations
       .filter(({ generation }) =>
         ['I', 'II', 'III', 'IV', 'V'].includes(generation),
@@ -52,7 +54,7 @@ const pickScanSprite = (
     random,
   );
   if (!generation) return pokemon.sprite;
-  const preferFront = random() < 0.75;
+  const preferFront = random() < frontChance;
   const usesBack =
     generation.back.length > 0 &&
     (!preferFront || generation.front.length === 0);
@@ -63,13 +65,17 @@ const pickScanSprite = (
 export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target) return undefined;
-  const sprite = context.variant?.currentSprite
-    ? target.pokemon.sprite
-    : pickScanSprite(
-        target.pokemon,
-        context.random,
-        context.variant?.preferBackSprite,
-      );
+  const currentChance = context.variant?.currentSpriteChance ?? 0;
+  const sprite =
+    currentChance === 1 ||
+    (currentChance > 0 && context.random() < currentChance)
+      ? target.pokemon.sprite
+      : pickScanSprite(
+          target.pokemon,
+          context.random,
+          context.variant?.backSpriteChance,
+          context.variant?.frontSpriteChance,
+        );
   if (!sprite) return undefined;
   return makeIdentityQuestion(context, {
     target,

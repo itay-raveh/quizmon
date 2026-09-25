@@ -37,8 +37,7 @@ export const buildHidden: QuestionBuilder = (context) => {
     ].filter((name) => name !== correct);
     const similar = pool.filter(
       ({ pokemon }) =>
-        !context.variant?.hiddenAbility ||
-        context.variant.hiddenAbility !== 'similar' ||
+        !context.variant?.sameTypeAbilityDistractors ||
         pokemon.types.some((type) => target.pokemon.types.includes(type)),
     );
     const other = ordered(context, [

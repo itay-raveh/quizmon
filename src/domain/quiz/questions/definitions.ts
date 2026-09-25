@@ -31,7 +31,7 @@ export const questionDefinitions = {
   'item-identification': {
     label: 'Item identification',
     specialty: 'item',
-    description: 'Identify an item from its sprite.',
+    description: 'Identify an item or match a move to a type-colored TM disc.',
     group: 'identity',
   },
   'medicine-cabinet': {

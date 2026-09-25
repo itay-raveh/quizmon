@@ -1,5 +1,5 @@
 import { createSeededRandom, shuffle } from '../../../lib/random.ts';
-import { questionTuning } from '../question-variants.ts';
+import { questionTuning, type VariantRules } from '../question-variants.ts';
 import { statNames, type PokemonKnowledge } from '../../pokemon/types.ts';
 import type { Candidate, QuestionContext } from './context.ts';
 import { groupPokemon } from './sampling.ts';
@@ -60,7 +60,9 @@ const totalStats = (pokemon: PokemonKnowledge): number =>
 
 export const createPokemonSimilarityScorer = (
   target: PokemonKnowledge,
+  weightOverrides?: VariantRules['similarityWeights'],
 ): ((candidate: PokemonKnowledge) => number) => {
+  const weights = { ...questionTuning.similarity, ...weightOverrides };
   const targetStats = totalStats(target);
   const targetStage = evolutionStage(target);
 
@@ -71,20 +73,15 @@ export const createPokemonSimilarityScorer = (
     const candidateStats = totalStats(candidate);
 
     return (
-      sharedTypes * questionTuning.similarity.sharedType +
-      (target.shape === candidate.shape ? questionTuning.similarity.shape : 0) +
-      (target.color === candidate.color ? questionTuning.similarity.color : 0) +
-      (target.generation === candidate.generation
-        ? questionTuning.similarity.generation
-        : 0) +
-      (targetStage === evolutionStage(candidate)
-        ? questionTuning.similarity.evolutionStage
-        : 0) +
+      sharedTypes * weights.sharedType +
+      (target.shape === candidate.shape ? weights.shape : 0) +
+      (target.color === candidate.color ? weights.color : 0) +
+      (target.generation === candidate.generation ? weights.generation : 0) +
+      (targetStage === evolutionStage(candidate) ? weights.evolutionStage : 0) +
       Math.max(
         0,
-        questionTuning.similarity.statMaximum -
-          Math.abs(targetStats - candidateStats) /
-            questionTuning.similarity.statScale,
+        weights.statMaximum -
+          Math.abs(targetStats - candidateStats) / weights.statScale,
       )
     );
   };
@@ -102,7 +99,10 @@ export const pokemonOptions = (
     candidates?: readonly Candidate[];
   },
 ): string[] => {
-  const similarityToTarget = createPokemonSimilarityScorer(target.pokemon);
+  const similarityToTarget = createPokemonSimilarityScorer(
+    target.pokemon,
+    context.variant?.similarityWeights,
+  );
   const similarityFor = (name: string) => {
     const candidate = context.catalog.pokemon[name];
     return candidate ? similarityToTarget(candidate) : 0;
@@ -124,7 +124,7 @@ export const pokemonOptions = (
       pokemon: context.catalog.pokemon[candidate]!,
     })),
   );
-  if (context.variant?.distractors === 'dissimilar') scored.reverse();
+  if (context.variant?.distractorRankDirection === -1) scored.reverse();
   const shortlistSize = Math.max(
     3,
     Math.floor(
@@ -135,7 +135,7 @@ export const pokemonOptions = (
   if (
     context.variant?.distractorPoolSize === undefined &&
     scored.length < shortlistSize &&
-    context.variant?.distractors !== 'dissimilar'
+    context.variant?.distractorRankDirection !== -1
   ) {
     const bestScore = scored[0]?.[0]
       ? similarityFor(scored[0][0].name)
@@ -143,7 +143,9 @@ export const pokemonOptions = (
     const semanticBand = scored.filter(
       (group) =>
         similarityFor(group[0]!.name) >=
-        bestScore * questionTuning.smallPoolSimilarityRatio,
+        bestScore *
+          (context.variant?.smallPoolSimilarityRatio ??
+            questionTuning.smallPoolSimilarityRatio),
     );
     shortlisted = semanticBand.length >= 3 ? semanticBand : scored.slice(0, 3);
   }
@@ -168,7 +170,11 @@ export const pokemonOptions = (
     .sort((left, right) => distanceFromTarget(right) - distanceFromTarget(left))
     .slice(
       0,
-      Math.ceil(shortlisted.length * questionTuning.distantSpeciesFraction),
+      Math.ceil(
+        shortlisted.length *
+          (context.variant?.distantSpeciesFraction ??
+            questionTuning.distantSpeciesFraction),
+      ),
     )
     .flat();
   const spreadSpecies = new Set(

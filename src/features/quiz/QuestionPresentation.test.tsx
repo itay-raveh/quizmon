@@ -94,3 +94,41 @@ test('reveals a Field notes answer in its choice without a duplicate portrait', 
     ),
   ).toContain('/grotle.png');
 });
+
+test('shows TM disc art and a visible type label for each choice', () => {
+  const question: QuestionData = {
+    answer: { interaction: 'single-choice', correctOptions: ['fire'] },
+    category: 'move',
+    id: 'item-identification:move:flamethrower',
+    media: { kind: 'none' },
+    options: ['fire', 'water', 'grass', 'electric'],
+    optionImages: Object.fromEntries(
+      ['fire', 'water', 'grass', 'electric'].map((type) => [
+        type,
+        `/sprites/items/tm-${type}.png`,
+      ]),
+    ),
+    prompt: {
+      kind: 'text',
+      text: 'Which TM disc matches Flamethrower?',
+    },
+    questionType: 'item-identification',
+    repetition: {
+      identity: 'flamethrower',
+      subjects: ['move/flamethrower'],
+      primary: [],
+      distractors: [],
+    },
+    subject: { kind: 'move', name: 'flamethrower', generation: 'II' },
+  };
+  const markup = renderToStaticMarkup(
+    <QuestionAnswers
+      question={question}
+      answered={false}
+      onSelect={() => {}}
+      selectedOptions={[]}
+    />,
+  );
+  expect(markup).toContain('/sprites/items/tm-fire.png');
+  expect(markup).toContain('>Fire</span>');
+});

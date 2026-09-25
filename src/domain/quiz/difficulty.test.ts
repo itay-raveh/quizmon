@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { difficultyLevels, resolveDifficultyVariant } from './difficulty';
-import { getQuestionVariant } from './question-variants';
+import { getQuestionVariant, type VariantRules } from './question-variants';
+import { questionVariants } from '../../question-rules';
 
 describe('difficulty variants', () => {
   it.each([
@@ -41,3 +42,16 @@ it.each(['move-types', 'type-check', 'medicine-cabinet'] as const)(
     expect(getQuestionVariant(type, 2)?.level).toBe(2);
   },
 );
+
+it('can disable an inherited family at a later level', () => {
+  const row = questionVariants['item-identification'][5] as VariantRules;
+  const previous = row.enabled;
+  row.enabled = false;
+  try {
+    expect(getQuestionVariant('item-identification', 4)?.level).toBe(3);
+    expect(getQuestionVariant('item-identification', 5)).toBeUndefined();
+  } finally {
+    if (previous === undefined) delete row.enabled;
+    else row.enabled = previous;
+  }
+});

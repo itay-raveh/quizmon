@@ -20,7 +20,7 @@ export const buildRegion: QuestionBuilder = (context) => {
   const regions = topics.regions.filter((entity) =>
     topicEligible(context, entity),
   );
-  if (regions.length < (context.variant?.fullList ? 2 : 4)) return;
+  if (regions.length < (context.variant?.allOptions ? 2 : 4)) return;
   const pool = ordered(
     context,
     topics.locations.filter(
@@ -43,7 +43,7 @@ export const buildRegion: QuestionBuilder = (context) => {
       )
     )
       continue;
-    const options = context.variant?.fullList
+    const options = context.variant?.allOptions
       ? regions
       : [
           targetRegion,
@@ -119,7 +119,10 @@ export const buildEncounter: QuestionBuilder = (context) => {
         )
         .flatMap((entry) => entry.pokemon),
     );
-    const similarity = createPokemonSimilarityScorer(correct.pokemon);
+    const similarity = createPokemonSimilarityScorer(
+      correct.pokemon,
+      context.variant?.similarityWeights,
+    );
     const score = (candidate: typeof correct) =>
       (sameMethod.has(candidate.name)
         ? questionTuning.sameEncounterMethodWeight

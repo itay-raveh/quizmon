@@ -44,7 +44,6 @@ interface EncounterKnowledge {
   conditions: string[];
   pokemon: string[];
 }
-export type EffectMode = 'broad' | 'related' | 'exact';
 interface EffectDescription {
   generation: Generation;
   text: string;

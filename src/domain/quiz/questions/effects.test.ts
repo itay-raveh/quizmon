@@ -150,3 +150,31 @@ it('keeps held Berry distractors among Berries', () => {
     ),
   ).toBe(true);
 });
+
+it('respects a raw effect similarity limit', () => {
+  const bagItems = catalog.topics!.items.filter(
+    (item) => item.effectKind === 'bag',
+  );
+  const target = bagItems.find((item) => item.name === 'rare-candy')!;
+  const variant = {
+    ...getQuestionVariant('medicine-cabinet', 2)!.variant,
+    maximumEffectSimilarity: 0,
+  };
+  expect(
+    buildEffectDescription(
+      {
+        catalog,
+        questionType: 'medicine-cabinet',
+        difficulty: 2,
+        generations: ['IX'],
+        variant,
+        pool: [],
+        random: createSeededRandom('raw-effect-limit'),
+        used: new Set(),
+      },
+      target,
+      'item',
+      bagItems,
+    ),
+  ).toBeUndefined();
+});

@@ -172,7 +172,7 @@ export const buildQuestionType = (
     if (
       !original ||
       (!resolved?.variant.search &&
-        !resolved?.variant.fullList &&
+        !resolved?.variant.allOptions &&
         original.options.length !== 4)
     )
       continue;

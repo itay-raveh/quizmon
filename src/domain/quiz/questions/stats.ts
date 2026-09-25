@@ -110,7 +110,7 @@ export const buildNature: QuestionBuilder = (context) => {
     const wrong = pool
       .filter((candidate) => {
         if (candidate.name === target.name) return false;
-        if (context.variant?.natureChoices === 'shared-stat')
+        if (context.variant?.shareNatureStat)
           return (
             candidate.raised === target.raised ||
             candidate.lowered === target.lowered

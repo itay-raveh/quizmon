@@ -52,10 +52,7 @@ export const buildMove: QuestionBuilder = (context) => {
       )
         continue;
       if (purpose) {
-        if (
-          context.variant?.damageClass === 'status' &&
-          rules.damageClass !== 'status'
-        )
+        if (context.variant?.statusMovesOnly && rules.damageClass !== 'status')
           continue;
         const wrong = pool
           .filter(
@@ -109,7 +106,7 @@ export const buildMove: QuestionBuilder = (context) => {
       } else {
         const prompt = `What is the default type of ${target.label}?`;
         const types = Object.keys(context.catalog.typeRelations);
-        const options = context.variant?.fullList
+        const options = context.variant?.allOptions
           ? types
           : [
               rules.type,

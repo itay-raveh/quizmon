@@ -81,8 +81,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
       if (
         target.trigger !== 'use-item' ||
         !target.item ||
-        (!['direct-use'].includes(context.variant?.itemChoices ?? '') &&
-          !stones.has(target.item))
+        (!context.variant?.directUseItemsOnly && !stones.has(target.item))
       )
         continue;
       const correct = topics.items.find(
@@ -104,15 +103,16 @@ export const buildEvolution: QuestionBuilder = (context) => {
       const seen = new Set([correct.category]);
       const wrong = ordered(context, invalid)
         .filter((item) => {
-          if (context.variant?.itemChoices === 'stones')
-            return stones.has(item.name);
-          if (context.variant?.itemChoices === 'direct-use')
+          if (context.variant?.stonesOnly) return stones.has(item.name);
+          if (context.variant?.directUseItemsOnly)
             return topics.evolutions.some(
               (entry) =>
                 entry.trigger === 'use-item' && entry.item === item.name,
             );
-          if (seen.has(item.category)) return false;
-          seen.add(item.category);
+          if (context.variant?.distinctItemCategories ?? !context.variant) {
+            if (seen.has(item.category)) return false;
+            seen.add(item.category);
+          }
           return true;
         })
         .slice(0, 3);
@@ -157,13 +157,13 @@ export const buildEvolution: QuestionBuilder = (context) => {
             condition.replace(/^(use |holding )/, ''),
         );
       if (
-        context.variant?.evolutionConditions === 'simple' &&
-        target.conditions.length !== 1
+        (context.variant?.minimumEvolutionConditions ?? 2) >
+        target.conditions.length
       )
         continue;
       if (
-        context.variant?.evolutionConditions !== 'simple' &&
-        target.conditions.length < 2
+        (context.variant?.maximumEvolutionConditions ?? Infinity) <
+        target.conditions.length
       )
         continue;
       const correct = method(target);
@@ -196,7 +196,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
             ),
         );
         if (
-          context.variant?.evolutionConditions === 'one-condition' &&
+          context.variant?.preferCloseConditionValues &&
           requirement.value !== undefined
         )
           replacements.sort(

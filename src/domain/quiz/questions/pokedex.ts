@@ -20,7 +20,10 @@ export const buildCategory: QuestionBuilder = (context) => {
     ),
   );
   for (const target of pool) {
-    const similarity = createPokemonSimilarityScorer(target.pokemon);
+    const similarity = createPokemonSimilarityScorer(
+      target.pokemon,
+      context.variant?.similarityWeights,
+    );
     const wrong = pool
       .filter(
         ({ pokemon }) =>

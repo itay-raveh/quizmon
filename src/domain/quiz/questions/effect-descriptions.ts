@@ -1,4 +1,5 @@
 import type { TopicCatalog } from '../topic-catalog.ts';
+import { questionTuning } from '../question-variants.ts';
 import type { QuestionContext } from './context.ts';
 import { makeTopicQuestion, ordered, topicSubject } from './topic-support.ts';
 
@@ -35,16 +36,13 @@ export const buildEffectDescription = (
       !context.generations || context.generations.includes(entry.generation),
   );
   for (const fact of ordered(context, descriptions)) {
-    const exact = context.variant?.effectChoices === 'exact';
+    const exact = context.variant?.useFullEffectText;
     const correct = exact ? fact.explanation : fact.text;
-    const sameCategory = context.variant?.itemChoices === 'category';
-    const minimumSimilarity = sameCategory
-      ? context.variant?.effectChoices === 'exact'
-        ? 0.5
-        : context.variant?.effectChoices === 'related'
-          ? 0.3
-          : 0
-      : 0;
+    const sameCategory = context.variant?.sameItemCategory;
+    const minimumSimilarity = context.variant?.minimumEffectSimilarity ?? 0;
+    const maximumSimilarity =
+      context.variant?.maximumEffectSimilarity ??
+      questionTuning.maximumEffectSimilarity;
     const alternatives = ordered(context, entities)
       .flatMap((entity) => {
         const entry = entity.descriptions?.find(
@@ -59,7 +57,7 @@ export const buildEffectDescription = (
           if (targetGroup !== entityGroup) return [];
         }
         const score = similarity(fact.text, entry.text);
-        if (score >= (sameCategory ? 0.8 : 0.35)) return [];
+        if (score >= maximumSimilarity) return [];
         if (score < minimumSimilarity) return [];
         return [
           {
@@ -75,7 +73,7 @@ export const buildEffectDescription = (
             (entry) => entry.text.toLowerCase() === text.toLowerCase(),
           ) === index,
       );
-    if (context.variant?.effectChoices !== 'broad')
+    if (context.variant?.preferSimilarEffects ?? true)
       alternatives.sort((a, b) => b.score - a.score);
     const options = [
       correct,
