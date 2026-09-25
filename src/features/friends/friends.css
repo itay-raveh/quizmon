@@ -405,6 +405,10 @@
   font-size: var(--text-label);
 }
 
+.leaderboard-date__reset {
+  font-weight: 500;
+}
+
 .leaderboard-controls label,
 .leaderboard-table th[scope='row'] {
   overflow-wrap: anywhere;

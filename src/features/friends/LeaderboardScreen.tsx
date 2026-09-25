@@ -318,6 +318,12 @@ export function LeaderboardScreen({
       : getUtcDate(),
   );
   const [today, setToday] = useState(getUtcDate);
+  const nextReset = new Date(`${today}T00:00:00Z`);
+  nextReset.setUTCDate(nextReset.getUTCDate() + 1);
+  const localResetTime = new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(nextReset);
   useEffect(() => {
     const timer = window.setInterval(() => {
       const next = getUtcDate();
@@ -405,13 +411,16 @@ export function LeaderboardScreen({
               </div>
               {mode === 'daily' && (
                 <label className="leaderboard-filter leaderboard-date">
-                  UTC date
+                  Challenge date
                   <input
                     type="date"
                     value={date}
                     max={today}
                     onChange={(event) => chooseDate(event.target.value)}
                   />
+                  <span className="leaderboard-date__reset">
+                    New challenge at {localResetTime} your time
+                  </span>
                 </label>
               )}
             </div>
