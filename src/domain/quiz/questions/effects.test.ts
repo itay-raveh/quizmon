@@ -3,6 +3,8 @@ import itemData from '../../pokemon/data/topics-items-0.json' with { type: 'json
 import moreItems from '../../pokemon/data/topics-items-1.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
+import { getQuestionVariant } from '../question-variants.ts';
+import { buildEffectDescription } from './effect-descriptions.ts';
 import { buildQuestionType } from './registry.ts';
 
 const items = [...itemData.values, ...moreItems.values];
@@ -16,7 +18,7 @@ const catalog = {
 it('builds ability, bag-item, and held-item effects from their own source pools', () => {
   const families = [
     { type: 'ability-effects', levels: [3, 4, 5], kind: undefined },
-    { type: 'medicine-cabinet', levels: [1, 2, 3], kind: 'bag' },
+    { type: 'medicine-cabinet', levels: [2, 3, 4, 5], kind: 'bag' },
     { type: 'held-item-effects', levels: [3, 4, 5], kind: 'held' },
   ] as const;
   for (const { type: questionType, levels, kind } of families)
@@ -59,7 +61,7 @@ it('builds bag-item uses in an older-generation round', () => {
   const question = buildQuestionType(
     {
       catalog,
-      difficulty: 1,
+      difficulty: 2,
       generations: ['I'],
       pool: [],
       random: createSeededRandom('bag-gen-one'),
@@ -68,4 +70,48 @@ it('builds bag-item uses in an older-generation round', () => {
     'medicine-cabinet',
   );
   expect(question?.subject.generation).toBe('I');
+});
+
+it('narrows Item uses distractors at each level', () => {
+  const bagItems = catalog.topics!.items.filter(
+    (item) => item.effectKind === 'bag',
+  );
+  const target = bagItems.find((item) => item.name === 'rare-candy')!;
+  const choices = ([2, 3, 4, 5] as const).map((difficulty) => {
+    const question = buildEffectDescription(
+      {
+        catalog,
+        questionType: 'medicine-cabinet',
+        difficulty,
+        generations: ['IX'],
+        variant: getQuestionVariant('medicine-cabinet', difficulty)!.variant,
+        pool: [],
+        random: createSeededRandom('item-distractors'),
+        used: new Set(),
+      },
+      target,
+      'item',
+      bagItems,
+    )!;
+    return question.options.filter(
+      (option) => option !== question.answer.correctOptions[0],
+    );
+  });
+  const sources = (options: string[]) =>
+    options.map((option) =>
+      bagItems.find((item) =>
+        item.descriptions?.some((entry) => entry.text === option),
+      )!,
+    );
+  expect(sources(choices[0]!).some((item) => item.pocket !== 'medicine')).toBe(
+    true,
+  );
+  expect(sources(choices[1]!).every((item) => item.pocket === 'medicine')).toBe(
+    true,
+  );
+  for (const level of [2, 3] as const)
+    expect(
+      sources(choices[level]!).every((item) => item.category === 'vitamins'),
+    ).toBe(true);
+  expect([...choices[2]!].sort()).not.toEqual([...choices[3]!].sort());
 });

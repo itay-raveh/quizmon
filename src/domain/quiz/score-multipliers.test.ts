@@ -39,6 +39,14 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
   ).toBe(70.3125);
 });
 
+it('uses the Item uses level factors', () => {
+  expect(
+    ([1, 2, 3, 4, 5] as const).map((level) =>
+      getQuestionTypeMultiplier('medicine-cabinet', level),
+    ),
+  ).toEqual([undefined, 0.75, 1, 1.25, 1.25]);
+});
+
 it('scores the drawn question mix without rewarding unused selected types', () => {
   const settings = {
     difficulty: 5 as const,

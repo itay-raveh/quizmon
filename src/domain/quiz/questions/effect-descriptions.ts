@@ -6,7 +6,7 @@ const words = (text: string) =>
   new Set(
     text
       .toLowerCase()
-      .match(/[a-z]+/g)
+      .match(/[a-z]+|\d+(?:\.\d+)?/g)
       ?.filter(
         (word) =>
           !/^(the|a|an|this|that|its|it|is|of|to|and|or|in|on|by|for|with|when|from|has|have|can|will|s|pok|mon|pokemon|user|target|opponent|other|their|own|also|as|at|be|being|which|out|into|any)$/.test(
@@ -37,6 +37,15 @@ export const buildEffectDescription = (
   for (const fact of ordered(context, descriptions)) {
     const exact = context.variant?.effectChoices === 'exact';
     const correct = exact ? fact.explanation : fact.text;
+    const maxSimilarity =
+      context.questionType === 'medicine-cabinet' &&
+      context.variant?.itemChoices === 'category'
+        ? 0.8
+        : 0.35;
+    const itemChoices =
+      context.questionType === 'medicine-cabinet'
+        ? context.variant?.itemChoices
+        : undefined;
     const alternatives = ordered(context, entities)
       .flatMap((entity) => {
         const entry = entity.descriptions?.find(
@@ -44,8 +53,22 @@ export const buildEffectDescription = (
         );
         if (!entry || entity.name === target.name) return [];
         const score = similarity(fact.text, entry.text);
-        if (score >= 0.35) return [];
-        return [{ text: exact ? entry.explanation : entry.text, score }];
+        if (score >= maxSimilarity) return [];
+        const group =
+          itemChoices && 'category' in entity && 'category' in target
+            ? itemChoices === 'category' && entity.category === target.category
+              ? 2
+              : entity.pocket === target.pocket
+                ? 1
+                : 0
+            : 0;
+        return [
+          {
+            text: exact ? entry.explanation : entry.text,
+            score,
+            group,
+          },
+        ];
       })
       .filter(
         ({ text }, index, all) =>
@@ -54,8 +77,11 @@ export const buildEffectDescription = (
             (entry) => entry.text.toLowerCase() === text.toLowerCase(),
           ) === index,
       );
-    if (context.variant?.effectChoices !== 'broad')
-      alternatives.sort((a, b) => b.score - a.score);
+    alternatives.sort(
+      (a, b) =>
+        b.group - a.group ||
+        (context.variant?.effectChoices === 'broad' ? 0 : b.score - a.score),
+    );
     const options = [
       correct,
       ...alternatives.slice(0, 3).map(({ text }) => text),

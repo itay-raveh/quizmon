@@ -125,9 +125,14 @@ const questionVariants: Record<
     3: { itemChoices: 'category' },
   },
   'medicine-cabinet': {
-    1: { effectChoices: 'broad' },
-    2: { effectChoices: 'related' },
-    3: { effectChoices: 'exact', allowMissingSprites: true },
+    2: { effectChoices: 'broad' },
+    3: { effectChoices: 'broad', itemChoices: 'pocket' },
+    4: { effectChoices: 'broad', itemChoices: 'category' },
+    5: {
+      effectChoices: 'related',
+      itemChoices: 'category',
+      allowMissingSprites: true,
+    },
   },
   'evolution-items': {
     1: { itemChoices: 'different-categories' },
