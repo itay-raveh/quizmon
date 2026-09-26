@@ -12,7 +12,11 @@ export const buildEffect: QuestionBuilder = (context) => {
       : topics.items.filter(
           (item) =>
             item.effectKind ===
-            (context.questionType === 'medicine-cabinet' ? 'bag' : 'held'),
+              (context.questionType === 'medicine-cabinet' ? 'bag' : 'held') &&
+            (context.questionType !== 'medicine-cabinet' ||
+              (item.category !== 'data-cards' &&
+                item.name !== 'key-stone' &&
+                !item.name.startsWith('mega-'))),
         );
   for (const target of ordered(
     context,

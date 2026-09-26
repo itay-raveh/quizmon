@@ -27,7 +27,8 @@ export const questionVariants = {
     1: { distinctItemCategories: true },
     2: { sameItemPocket: true },
     3: { sameItemCategory: true },
-    5: { sameItemCategory: true, machineDiscChance: 0.5 },
+    4: { search: true },
+    5: { search: true, machineDiscChance: 0.5 },
   },
   'medicine-cabinet': {
     2: {
@@ -401,6 +402,7 @@ type FamilyRules = {
     | 'distinctItemCategories'
     | 'sameItemPocket'
     | 'sameItemCategory'
+    | 'search'
     | 'machineDiscChance'
   >;
   'medicine-cabinet': EffectDistractors &

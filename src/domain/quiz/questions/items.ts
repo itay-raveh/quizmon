@@ -12,7 +12,7 @@ const buildMachineDiscQuestion: QuestionBuilder = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const types = Object.keys(context.catalog.typeRelations);
-  if (types.length < 4) return;
+  if (!context.variant?.search && types.length < 4) return;
   for (const target of ordered(
     context,
     topics.moves.filter((move) =>
@@ -32,32 +32,46 @@ const buildMachineDiscQuestion: QuestionBuilder = (context) => {
         continue;
       const game = topics.games[rules.game];
       if (!game) continue;
-      const seenTypes = new Set([rules.type]);
-      const alternatives = ordered(
-        context,
-        topics.moves.flatMap((move) =>
-          move.contexts.flatMap((entry) =>
-            entry.game === rules.game &&
-            entry.machine &&
-            types.includes(entry.type) &&
-            entry.type !== rules.type
-              ? [{ machine: entry.machine, type: entry.type }]
-              : [],
+      const search = context.variant?.search;
+      const machines = [
+        ...new Set(
+          topics.moves.flatMap((move) =>
+            move.contexts.flatMap((entry) =>
+              entry.game === rules.game && entry.machine ? [entry.machine] : [],
+            ),
           ),
         ),
-      )
-        .filter(({ type }) => {
-          if (seenTypes.has(type)) return false;
-          seenTypes.add(type);
-          return true;
-        })
-        .slice(0, 3);
-      if (alternatives.length !== 3) continue;
+      ];
+      const seenTypes = new Set([rules.type]);
+      const alternatives = search
+        ? []
+        : ordered(
+            context,
+            topics.moves.flatMap((move) =>
+              move.contexts.flatMap((entry) =>
+                entry.game === rules.game &&
+                entry.machine &&
+                types.includes(entry.type) &&
+                entry.type !== rules.type
+                  ? [{ machine: entry.machine, type: entry.type }]
+                  : [],
+              ),
+            ),
+          )
+            .filter(({ type }) => {
+              if (seenTypes.has(type)) return false;
+              seenTypes.add(type);
+              return true;
+            })
+            .slice(0, 3);
+      if (!search && alternatives.length !== 3) continue;
       const options = [
         { machine: rules.machine, type: rules.type },
         ...alternatives,
       ];
-      const prompt = `Which TM disc matches ${target.label}?`;
+      const prompt = search
+        ? `Which TM teaches ${target.label}?`
+        : `Which TM disc matches ${target.label}?`;
       const question = makeTopicQuestion(
         context,
         { kind: 'move', name: target.name, generation: rules.generation },
@@ -71,6 +85,14 @@ const buildMachineDiscQuestion: QuestionBuilder = (context) => {
             supportingText: `Pokémon ${game.label}`,
           },
           context: rules.game,
+          ...(search
+            ? {
+                searchOptions: machines.map((machine) => ({
+                  name: machine,
+                  label: `TM ${machine.slice(2)}`,
+                })),
+              }
+            : {}),
           optionImages: Object.fromEntries(
             options.map(({ machine, type }) => [
               machine,
@@ -101,7 +123,10 @@ export const buildItemIdentification: QuestionBuilder = (context) => {
     context,
     topics.items.filter(
       (item) =>
-        topicEligible(context, item) && item.sprite && item.spriteIdentity,
+        topicEligible(context, item) &&
+        item.sprite &&
+        item.spriteIdentity &&
+        !/glasses|goggles|scarf/i.test(item.name),
     ),
   );
   const spriteCounts = new Map<string, number>();
@@ -110,8 +135,38 @@ export const buildItemIdentification: QuestionBuilder = (context) => {
       item.spriteIdentity!,
       (spriteCounts.get(item.spriteIdentity!) ?? 0) + 1,
     );
+  const searchable = pool.filter(
+    (item) => spriteCounts.get(item.spriteIdentity!) === 1,
+  );
+  const labelCounts = new Map<string, number>();
+  for (const item of searchable)
+    labelCounts.set(item.label, (labelCounts.get(item.label) ?? 0) + 1);
+  const uniqueNames = searchable.filter(
+    (item) => labelCounts.get(item.label) === 1,
+  );
   for (const target of pool) {
     if (spriteCounts.get(target.spriteIdentity!) !== 1) continue;
+    if (context.variant?.search) {
+      if (labelCounts.get(target.label) !== 1) continue;
+      const question = makeTopicQuestion(
+        context,
+        topicSubject(context, 'item', target),
+        'Which item is shown?',
+        target.name,
+        [target.name],
+        {
+          media: { kind: 'pixel-sprite', src: target.sprite! },
+          searchOptions: uniqueNames.map((item) => ({
+            name: item.name,
+            label: item.label,
+          })),
+          optionLabels: { [target.name]: target.label },
+          explanation: `${target.label}. Bag pocket: ${formatPokemonName(target.pocket)}. Category: ${formatPokemonName(target.category)}.`,
+        },
+      );
+      if (question) return question;
+      continue;
+    }
     const seen = new Set([target.category]);
     const wrong = pool.filter((item) => {
       if (

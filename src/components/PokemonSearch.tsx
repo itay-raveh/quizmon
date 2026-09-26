@@ -11,11 +11,12 @@ import { GameButton } from './GameButton';
 
 interface SearchPokemon {
   name: string;
+  label?: string;
   dexNumber?: number;
   sprite?: string | null;
 }
 interface PokemonSearchProps {
-  searchSubject?: 'Pokémon' | 'ability';
+  searchSubject?: 'Pokémon' | 'ability' | 'item' | 'TM';
   renderPokemon?: (pokemon: SearchPokemon) => ReactNode;
   disabled?: boolean;
   mode: 'partner' | 'champion';
@@ -96,10 +97,12 @@ export const PokemonSearch = ({
           getKey={(suggestion) => suggestion.name}
           placeholder={
             champion
-              ? `Type ${searchSubject === 'ability' ? 'an ability' : 'a Pokémon'} name`
+              ? searchSubject === 'TM'
+                ? 'Type a TM number'
+                : `Type ${searchSubject === 'Pokémon' ? 'a Pokémon' : `an ${searchSubject}`} name`
               : 'Search all Pokémon'
           }
-          emptyMessage={`No ${searchSubject === 'ability' ? 'abilities' : 'Pokémon'} found. Try another spelling.`}
+          emptyMessage={`No ${searchSubject === 'ability' ? 'abilities' : searchSubject === 'item' ? 'items' : searchSubject === 'TM' ? 'TMs' : 'Pokémon'} found. Try another spelling.`}
           renderOption={(suggestion) =>
             renderPokemon ? (
               renderPokemon(suggestion)

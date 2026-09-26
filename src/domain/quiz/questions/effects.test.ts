@@ -135,6 +135,32 @@ it('builds bag-item uses in an older-generation round', () => {
   expect(question?.subject.generation).toBe('I');
 });
 
+it('excludes Data Cards and Mega accessories from Item uses', () => {
+  const excluded = catalog.topics!.items.filter(
+    (item) =>
+      item.category === 'data-cards' ||
+      item.name === 'key-stone' ||
+      item.name.startsWith('mega-'),
+  );
+  expect(excluded.some((item) => item.category === 'data-cards')).toBe(true);
+  expect(excluded.some((item) => item.name === 'mega-ring')).toBe(true);
+  expect(
+    buildQuestionType(
+      {
+        catalog: {
+          ...catalog,
+          topics: { ...catalog.topics!, items: excluded },
+        },
+        difficulty: 2,
+        pool: [],
+        random: createSeededRandom('excluded-item-uses'),
+        used: new Set(),
+      },
+      'medicine-cabinet',
+    ),
+  ).toBeUndefined();
+});
+
 it('narrows Item uses distractors at each level', () => {
   const bagItems = catalog.topics!.items.filter(
     (item) => item.effectKind === 'bag',

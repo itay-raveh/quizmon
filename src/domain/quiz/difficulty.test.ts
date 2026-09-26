@@ -49,7 +49,7 @@ it('can disable an inherited family at a later level', () => {
   const previous = row.enabled;
   row.enabled = false;
   try {
-    expect(getQuestionVariant('item-identification', 4)?.level).toBe(3);
+    expect(getQuestionVariant('item-identification', 4)?.level).toBe(4);
     expect(getQuestionVariant('item-identification', 5)).toBeUndefined();
   } finally {
     if (previous === undefined) delete row.enabled;

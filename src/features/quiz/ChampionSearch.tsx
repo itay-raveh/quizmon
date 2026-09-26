@@ -9,7 +9,7 @@ import type { PokemonSearchOption } from '@/domain/quiz/types';
 import { useMemo, useState } from 'react';
 
 interface ChampionSearchProps {
-  answerKind?: 'pokemon' | 'ability';
+  answerKind?: 'pokemon' | 'ability' | 'item' | 'tm';
   policy: EntityRendering;
   cluesShown: number;
   answered: boolean;
@@ -34,8 +34,9 @@ export const ChampionSearch = ({
   const [query, setQuery] = useState('');
   const searchOptions = useMemo(
     () =>
-      options.map(({ name, dexNumber, sprite }) => ({
+      options.map(({ name, label, dexNumber, sprite }) => ({
         name,
+        label,
         dexNumber: isVisible(policy.number, { answered, cluesShown })
           ? dexNumber
           : undefined,
@@ -56,7 +57,7 @@ export const ChampionSearch = ({
       disabled={disabled || answered}
       mode="champion"
       renderPokemon={
-        answerKind === 'ability'
+        answerKind !== 'pokemon'
           ? undefined
           : (pokemon) => (
               <>
@@ -80,7 +81,13 @@ export const ChampionSearch = ({
             )
       }
       onConfirm={onAnswer}
-      searchSubject={answerKind === 'ability' ? 'ability' : 'Pokémon'}
+      searchSubject={
+        answerKind === 'pokemon'
+          ? 'Pokémon'
+          : answerKind === 'tm'
+            ? 'TM'
+            : answerKind
+      }
       onQueryChange={setQuery}
       options={searchOptions}
       query={query}

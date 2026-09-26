@@ -1,5 +1,6 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { expect, test } from 'vitest';
+import { isQuestionData } from '../question-lineup.ts';
 import { buildQuestionType } from './registry.ts';
 
 const item = (name: string, category: string, spriteIdentity: string) => ({
@@ -43,7 +44,45 @@ test('item identification never asks for an item with shared sprite art', () => 
   expect(question?.options).toHaveLength(4);
 });
 
-test('level five offers real TM labels without revealing disc types', () => {
+test('item identification searches item names from level four', () => {
+  const catalog = {
+    contentVersion: 1,
+    pokemon: {},
+    typeRelations: {},
+    topics: {
+      items: [
+        item('potion', 'medicine', 'potion'),
+        { ...item('poke-ball', 'balls', 'poke-ball'), label: 'Poké Ball' },
+        {
+          ...item('la-poke-ball', 'balls', 'la-poke-ball'),
+          label: 'Poké Ball',
+        },
+        item('black-glasses', 'type-enhancement', 'black-glasses'),
+        item('red-scarf', 'scarves', 'red-scarf'),
+        item('go-goggles', 'gameplay', 'go-goggles'),
+      ],
+    },
+  } as unknown as PokemonCatalog;
+  const question = buildQuestionType(
+    {
+      catalog,
+      difficulty: 4,
+      pool: [],
+      random: () => 0,
+      used: new Set(),
+    },
+    'item-identification',
+  );
+  expect(question?.answer.interaction).toBe('search');
+  expect(question?.searchOptions).toContainEqual({
+    name: 'potion',
+    label: 'potion',
+  });
+  expect(question?.searchOptions).toHaveLength(1);
+  expect(isQuestionData(question)).toBe(true);
+});
+
+test('level five searches real TM numbers without revealing disc types', () => {
   const catalog = {
     contentVersion: 1,
     pokemon: {},
@@ -113,19 +152,22 @@ test('level five offers real TM labels without revealing disc types', () => {
   expect(question?.answer.correctOptions).toEqual([
     tmByMove[question!.subject.name],
   ]);
-  expect(question?.options).toHaveLength(4);
+  expect(question?.answer.interaction).toBe('search');
+  expect(question?.options).toHaveLength(1);
+  expect(question?.searchOptions).toContainEqual({
+    name: 'tm01',
+    label: 'TM 01',
+  });
   expect(question?.prompt).toMatchObject({
     supportingText: 'Pokémon Silver',
   });
-  expect(question?.optionImages).toEqual({
-    tm01: '/sprites/items/tm-fire.png',
-    tm02: '/sprites/items/tm-water.png',
-    tm03: '/sprites/items/tm-grass.png',
-    tm04: '/sprites/items/tm-electric.png',
-  });
+  expect(Object.values(question?.optionImages ?? {})[0]).toMatch(
+    /^\/sprites\/items\/tm-[a-z]+\.png$/,
+  );
   expect(
     question?.options.every((option) =>
       /^TM \d+$/.test(question.optionLabels?.[option] ?? ''),
     ),
   ).toBe(true);
+  expect(isQuestionData(question)).toBe(true);
 });

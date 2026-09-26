@@ -48,6 +48,7 @@ export interface PokemonSearchOption {
   sprite?: string | null;
   dexNumber?: number;
   name: string;
+  label?: string;
 }
 
 type QuestionVisual =

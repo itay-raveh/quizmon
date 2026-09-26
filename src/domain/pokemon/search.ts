@@ -15,10 +15,12 @@ export const normalizeSearch = (value: string): string =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '');
 
-export const createPokemonSearchEntry = <Pokemon extends { name: string }>(
+export const createPokemonSearchEntry = <
+  Pokemon extends { name: string; label?: string },
+>(
   pokemon: Pokemon,
 ) => {
-  const label = formatPokemonName(pokemon.name);
+  const label = pokemon.label ?? formatPokemonName(pokemon.name);
   return {
     ...pokemon,
     label,
