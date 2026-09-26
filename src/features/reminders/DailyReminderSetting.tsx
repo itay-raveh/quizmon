@@ -2,7 +2,7 @@ import { Checkbox } from '@/components/Checkbox';
 import { useDailyReminder } from '@/features/reminders/daily-reminder-context';
 
 export const DailyReminderSetting = () => {
-  const { busy, disable, enable, error, hour, setHour, status } =
+  const { busy, disable, enable, error, time, setTime, status } =
     useDailyReminder();
 
   if (status === 'unsupported') {
@@ -29,26 +29,26 @@ export const DailyReminderSetting = () => {
     <>
       <Checkbox
         checked={status === 'enabled'}
-        description="Saves immediately."
         disabled={busy || status === 'checking'}
-        label="Daily reminder"
+        label="Remind me each day"
         onChange={(event) => void (event.target.checked ? enable() : disable())}
       />
       <label className="reminder-time-control">
-        <span>Reminder time</span>
+        <span>Time</span>
         <input
-          disabled={busy || status === 'checking'}
-          min="00:00"
-          onChange={(event) => {
-            if (!/^\d{2}:00$/.test(event.target.value)) return;
-            void setHour(Number(event.target.value.slice(0, 2)));
-          }}
-          step="3600"
+          aria-describedby="reminder-time-hint"
+          disabled={status === 'checking' || (busy && status !== 'enabled')}
+          onChange={(event) => void setTime(event.target.value)}
           type="time"
-          value={`${String(hour).padStart(2, '0')}:00`}
+          value={time}
         />
       </label>
-      <p className="experience-status">Uses this device’s time zone.</p>
+      <p
+        className="experience-status reminder-time-hint"
+        id="reminder-time-hint"
+      >
+        Local time · saves automatically
+      </p>
       {error ? (
         <p className="experience-status experience-status--error" role="alert">
           {error}

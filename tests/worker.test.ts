@@ -48,10 +48,24 @@ describe('Daily reminders', () => {
         getNextReminderAt(
           'America/New_York',
           8,
+          0,
           Date.parse('2026-10-31T13:00:00.000Z'),
         ),
       ).toISOString(),
     ).toBe('2026-11-01T13:00:00.000Z');
+  });
+
+  it('schedules a selected minute in the saved time zone', () => {
+    expect(
+      new Date(
+        getNextReminderAt(
+          'Asia/Jerusalem',
+          13,
+          30,
+          Date.parse('2026-09-26T10:00:00.000Z'),
+        ),
+      ).toISOString(),
+    ).toBe('2026-09-26T10:30:00.000Z');
   });
 
   it.each([-1, 24, 1.5, '8', null])(
@@ -79,7 +93,33 @@ describe('Daily reminders', () => {
     },
   );
 
-  it('reschedules a changed hour', async () => {
+  it.each([-1, 60, 1.5, '30', null])(
+    'rejects invalid reminder minute %j',
+    async (minute) => {
+      const storage = { get: vi.fn(), put: vi.fn(), setAlarm: vi.fn() };
+      const reminder = new DailyReminder({ storage }, makeEnv().env);
+      const response = await reminder.fetch(
+        new Request('https://example.com/', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subscription: {
+              endpoint: 'https://example.com/push',
+              keys: { auth: 'test-auth', p256dh: 'test-key' },
+            },
+            timeZone: 'UTC',
+            hour: 13,
+            minute,
+          }),
+        }),
+      );
+      expect(response.status).toBe(400);
+      expect(storage.put).not.toHaveBeenCalled();
+      expect(storage.setAlarm).not.toHaveBeenCalled();
+    },
+  );
+
+  it('reschedules a changed hour and minute', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-09-08T09:00:00.000Z'));
     try {
@@ -107,16 +147,17 @@ describe('Daily reminders', () => {
             },
             timeZone: 'UTC',
             hour: 12,
+            minute: 30,
           }),
         }),
       );
       expect(response.status).toBe(204);
       expect(storage.put).toHaveBeenCalledWith(
         'daily-reminder',
-        expect.objectContaining({ hour: 12 }),
+        expect.objectContaining({ hour: 12, minute: 30 }),
       );
       expect(storage.setAlarm).toHaveBeenCalledExactlyOnceWith(
-        Date.parse('2026-09-08T12:00:00.000Z'),
+        Date.parse('2026-09-08T12:30:00.000Z'),
       );
     } finally {
       vi.useRealTimers();
@@ -169,6 +210,7 @@ describe('Daily reminders', () => {
             ...registration,
             completedDate,
             hour: 8,
+            minute: 0,
           });
         } else {
           expect(storage.put).not.toHaveBeenCalled();

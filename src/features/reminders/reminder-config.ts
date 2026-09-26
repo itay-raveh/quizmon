@@ -7,11 +7,15 @@ export const DAILY_REMINDER_MESSAGE = {
   title: "Today's Daily is ready",
 };
 
-const hourFormatter = new Intl.DateTimeFormat(undefined, {
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
   hour: 'numeric',
   minute: '2-digit',
   timeZone: 'UTC',
 });
 
-export const formatReminderHour = (hour: number) =>
-  hourFormatter.format(new Date(Date.UTC(2020, 0, 1, hour)));
+export const formatReminderTime = (time: string) =>
+  timeFormatter.format(
+    new Date(
+      Date.UTC(2020, 0, 1, Number(time.slice(0, 2)), Number(time.slice(3, 5))),
+    ),
+  );

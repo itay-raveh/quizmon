@@ -13,9 +13,9 @@ export interface DailyReminderContextValue {
   disable: () => Promise<void>;
   enable: () => Promise<void>;
   error: string | null;
-  hour: number;
+  time: string;
   recordDailyCompletion: (date: string) => void;
-  setHour: (hour: number) => Promise<void>;
+  setTime: (time: string) => Promise<void>;
   status: DailyReminderStatus;
 }
 
@@ -26,9 +26,9 @@ export const DailyReminderContext = createContext<DailyReminderContextValue>({
   disable: unavailable,
   enable: unavailable,
   error: null,
-  hour: 8,
+  time: '08:00',
   recordDailyCompletion: () => undefined,
-  setHour: unavailable,
+  setTime: unavailable,
   status: 'unsupported',
 });
 

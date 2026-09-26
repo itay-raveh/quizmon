@@ -74,13 +74,14 @@ const addLocalDay = (parts: ZonedDateParts): ZonedDateParts => {
 export const getNextReminderAt = (
   timeZone: string,
   hour: number,
+  minute: number,
   now = Date.now(),
 ): number => {
   const localNow = getZonedDateParts(now, timeZone);
   const target = {
     ...localNow,
     hour,
-    minute: 0,
+    minute,
     second: 0,
   };
   const timestamp = zonedTimeToTimestamp(target, timeZone);

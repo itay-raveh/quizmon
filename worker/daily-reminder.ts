@@ -43,6 +43,7 @@ const key = (max: number) =>
 const registrationSchema = z.object({
   completedDate: dailyDateSchema.optional(),
   hour: z.int().min(0).max(23).default(8),
+  minute: z.int().min(0).max(59).default(0),
   subscription: z.object({
     endpoint: z
       .url()
@@ -153,7 +154,11 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       completedDate: registration.completedDate ?? current?.completedDate,
     });
     await this.ctx.storage.setAlarm(
-      getNextReminderAt(registration.timeZone, registration.hour),
+      getNextReminderAt(
+        registration.timeZone,
+        registration.hour,
+        registration.minute,
+      ),
     );
     return noStoreResponse(null, 204);
   }
@@ -203,6 +208,7 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       getNextReminderAt(
         registration.timeZone,
         registration.hour,
+        registration.minute,
         Date.now() + 60_000,
       ),
     );
