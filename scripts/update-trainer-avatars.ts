@@ -69,11 +69,23 @@ try {
         if (updating) continue;
         throw new Error(`${id}: invalid trainer sprite`);
       }
-      const normalized = await sharp(bytes).png().toBuffer();
-      const { data, info } = await sharp(normalized)
+      const { data, info } = await sharp(bytes)
         .ensureAlpha()
         .raw()
         .toBuffer({ resolveWithObject: true });
+      for (let pixel = 0; pixel < info.width * info.height; pixel++) {
+        const offset = pixel * info.channels;
+        if (data[offset + 3] === 0) data.fill(0, offset, offset + 3);
+      }
+      const normalized = await sharp(data, {
+        raw: {
+          width: info.width,
+          height: info.height,
+          channels: info.channels,
+        },
+      })
+        .png()
+        .toBuffer();
       let top = 0;
       for (let pixel = 0; pixel < info.width * info.height; pixel++) {
         if (data[pixel * info.channels + 3]) {
