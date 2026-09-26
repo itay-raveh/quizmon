@@ -1,6 +1,5 @@
 import { Checkbox } from '@/components/Checkbox';
 import { useDailyReminder } from '@/features/reminders/daily-reminder-context';
-import { formatReminderHour } from '@/features/reminders/reminder-config';
 
 export const DailyReminderSetting = () => {
   const { busy, disable, enable, error, hour, setHour, status } =
@@ -37,17 +36,17 @@ export const DailyReminderSetting = () => {
       />
       <label className="reminder-time-control">
         <span>Reminder time</span>
-        <select
+        <input
           disabled={busy || status === 'checking'}
-          onChange={(event) => void setHour(Number(event.target.value))}
-          value={hour}
-        >
-          {Array.from({ length: 24 }, (_, value) => (
-            <option key={value} value={value}>
-              {formatReminderHour(value)}
-            </option>
-          ))}
-        </select>
+          min="00:00"
+          onChange={(event) => {
+            if (!/^\d{2}:00$/.test(event.target.value)) return;
+            void setHour(Number(event.target.value.slice(0, 2)));
+          }}
+          step="3600"
+          type="time"
+          value={`${String(hour).padStart(2, '0')}:00`}
+        />
       </label>
       <p className="experience-status">Uses this device’s time zone.</p>
       {error ? (

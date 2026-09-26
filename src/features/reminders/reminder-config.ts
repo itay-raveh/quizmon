@@ -7,7 +7,7 @@ export const DAILY_REMINDER_MESSAGE = {
   title: "Today's Daily is ready",
 };
 
-const hourFormatter = new Intl.DateTimeFormat('en-US', {
+const hourFormatter = new Intl.DateTimeFormat(undefined, {
   hour: 'numeric',
   minute: '2-digit',
   timeZone: 'UTC',

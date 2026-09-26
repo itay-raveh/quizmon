@@ -410,17 +410,18 @@
   font-weight: 700;
 }
 
-.reminder-time-control select {
-  min-height: 2.5rem;
-  padding: 0.3rem 0.5rem;
+.reminder-time-control input {
+  min-height: 2.8rem;
+  padding: 0.45rem 0.6rem;
   border: 2px solid var(--navy);
   border-radius: 0.3rem;
-  background: var(--game-surface);
+  background: var(--paper);
   color: var(--ink);
   font: inherit;
+  font-variant-numeric: tabular-nums;
 }
 
-.reminder-time-control select:focus-visible {
+.reminder-time-control input:focus-visible {
   outline: 0.2rem solid var(--focus);
   outline-offset: 0.1rem;
 }
