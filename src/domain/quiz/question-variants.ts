@@ -75,6 +75,7 @@ export interface VariantRules {
   machineDiscChance?: number;
   completeEvYield?: boolean;
   encounterConditions?: boolean;
+  multiSelectEncounters?: boolean;
   completeFlavors?: boolean;
 }
 

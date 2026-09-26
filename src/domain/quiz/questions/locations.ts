@@ -90,20 +90,29 @@ export const buildEncounter: QuestionBuilder = (context) => {
         )),
   );
   for (const target of orderEncounterLocations(context, encounters)) {
-    const available = target.pokemon.flatMap((name) =>
-      eligible.has(name) ? [eligible.get(name)!] : [],
+    const location = target.label.split(' (')[0]!;
+    const sameLocation = topics.encounters.filter(
+      (entry) =>
+        entry.game === target.game &&
+        entry.region === target.region &&
+        entry.label.split(' (')[0] === location,
     );
-    const correct = orderedPokemon(context, available)[0];
-    if (!correct) continue;
     const possiblyAvailable = new Set(
-      topics.encounters
-        .filter(
-          (entry) =>
-            entry.game === target.game &&
-            entry.area === target.area &&
-            entry.method === target.method,
-        )
+      sameLocation
+        .filter((entry) => entry.method === target.method)
         .flatMap((entry) => entry.pokemon),
+    );
+    const available = orderedPokemon(
+      context,
+      context.pool.filter((candidate) => possiblyAvailable.has(candidate.name)),
+    );
+    const multiSelect = context.variant?.multiSelectEncounters;
+    if (available.length < (multiSelect ? 2 : 1)) continue;
+    const correct = available.slice(
+      0,
+      multiSelect
+        ? Math.min(available.length, context.random() < 0.5 ? 2 : 3)
+        : 1,
     );
     const regional = new Set(
       topics.encounters
@@ -124,10 +133,10 @@ export const buildEncounter: QuestionBuilder = (context) => {
         .flatMap((entry) => entry.pokemon),
     );
     const similarity = createPokemonSimilarityScorer(
-      correct.pokemon,
+      correct[0]!.pokemon,
       context.variant?.similarityWeights,
     );
-    const score = (candidate: typeof correct) =>
+    const score = (candidate: (typeof correct)[number]) =>
       (sameMethod.has(candidate.name)
         ? questionTuning.sameEncounterMethodWeight
         : 0) + similarity(candidate.pokemon);
@@ -145,21 +154,19 @@ export const buildEncounter: QuestionBuilder = (context) => {
       .sort((a, b) =>
         context.variant?.closeAlternatives ? score(b) - score(a) : 0,
       )
-      .slice(0, 3);
-    const options = distinctPokemon([correct, ...wrong]);
-    if (options.length < 4) continue;
+      .slice(0, 4 - correct.length);
+    const options = distinctPokemon([...correct, ...wrong]);
+    if (options.length !== 4) continue;
     const game = topics.games[target.game];
     if (!game) continue;
-    const needsMethod = topics.encounters.some(
-      (entry) =>
-        entry.game === target.game &&
-        entry.area === target.area &&
-        entry.pokemon.some((name) =>
-          wrong.some((candidate) => candidate.name === name),
-        ),
+    const needsMethod = sameLocation.some((entry) =>
+      entry.pokemon.some((name) =>
+        wrong.some((candidate) => candidate.name === name),
+      ),
     );
-    const location = target.label;
-    const prompt = `Which Pokémon can you find at ${location}?`;
+    const prompt = multiSelect
+      ? `Which Pokémon can you find at ${location}? Select all that apply.`
+      : `Which Pokémon can you find at ${location}?`;
     const supportingText = [
       `Pokémon ${game.label}`,
       ...(needsMethod
@@ -170,7 +177,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
       context,
       { kind: 'location', name: target.area, generation: target.generation },
       prompt,
-      correct.name,
+      multiSelect ? correct.map(({ name }) => name) : correct[0]!.name,
       options.map((candidate) => candidate.name),
       {
         prompt: { kind: 'text', text: prompt, supportingText },
@@ -181,7 +188,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
           target.conditions,
         ]),
         ...picturedPokemon(context, options),
-        explanation: `${correct.pokemon.displayName} can be found at ${location} in Pokémon ${game.label}.`,
+        explanation: `${correct.map(({ pokemon }) => pokemon.displayName).join(', ')} can be found at ${location} in Pokémon ${game.label}.`,
       },
     );
     if (question) return question;

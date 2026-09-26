@@ -203,7 +203,11 @@ export const questionVariants = {
   },
   'encounter-locations': {
     4: {},
-    5: { encounterConditions: true, closeAlternatives: true },
+    5: {
+      encounterConditions: true,
+      closeAlternatives: true,
+      multiSelectEncounters: true,
+    },
   },
   'berry-flavors': {
     4: { completeFlavors: false },
@@ -443,7 +447,10 @@ type FamilyRules = {
   'ev-yields': Pick<VariantRules, 'completeEvYield' | 'closeAlternatives'>;
   'encounter-locations': Pick<
     VariantRules,
-    'encounterConditions' | 'closeAlternatives' | 'similarityWeights'
+    | 'encounterConditions'
+    | 'closeAlternatives'
+    | 'multiSelectEncounters'
+    | 'similarityWeights'
   >;
   'berry-flavors': Pick<VariantRules, 'completeFlavors' | 'allOptions'>;
   'natural-gift': Pick<VariantRules, 'allOptions'>;
