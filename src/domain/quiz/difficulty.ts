@@ -5,6 +5,12 @@ export const difficultyLevels = [1, 2, 3, 4, 5] as const;
 export const difficultySchema = z.literal(difficultyLevels);
 export type Difficulty = z.infer<typeof difficultySchema>;
 
+export type DifficultyRules<Rules> = {
+  [Level in Difficulty]: Readonly<
+    Record<Level, Rules> & Partial<Record<Exclude<Difficulty, Level>, Rules>>
+  >;
+}[Difficulty];
+
 export type DifficultyVariants<Variant> = Readonly<
   Partial<Record<Difficulty, Variant>>
 >;

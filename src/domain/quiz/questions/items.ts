@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { generations } from '../../pokemon/types.ts';
 import type { QuestionBuilder } from './context.ts';
@@ -8,11 +9,13 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
-const buildMachineDiscQuestion: QuestionBuilder = (context) => {
+const buildMachineDiscQuestion: QuestionBuilder<
+  FamilyRules['item-identification']
+> = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const types = Object.keys(context.catalog.typeRelations);
-  if (!context.variant?.search && types.length < 4) return;
+  if (context.variant.response.kind !== 'search' && types.length < 4) return;
   for (const target of ordered(
     context,
     topics.moves.filter((move) =>
@@ -32,7 +35,7 @@ const buildMachineDiscQuestion: QuestionBuilder = (context) => {
         continue;
       const game = topics.games[rules.game];
       if (!game) continue;
-      const search = context.variant?.search;
+      const search = context.variant.response.kind === 'search';
       const machines = [
         ...new Set(
           topics.moves.flatMap((move) =>
@@ -111,8 +114,10 @@ const buildMachineDiscQuestion: QuestionBuilder = (context) => {
   }
 };
 
-export const buildItemIdentification: QuestionBuilder = (context) => {
-  const chance = context.variant?.machineDiscChance ?? 0;
+export const buildItemIdentification: QuestionBuilder<
+  FamilyRules['item-identification']
+> = (context) => {
+  const chance = context.variant.machineDiscChance;
   if (chance === 1 || (chance > 0 && context.random() < chance)) {
     const question = buildMachineDiscQuestion(context);
     if (question) return question;
@@ -146,7 +151,7 @@ export const buildItemIdentification: QuestionBuilder = (context) => {
   );
   for (const target of pool) {
     if (spriteCounts.get(target.spriteIdentity!) !== 1) continue;
-    if (context.variant?.search) {
+    if (context.variant.response.kind === 'search') {
       if (labelCounts.get(target.label) !== 1) continue;
       const question = makeTopicQuestion(
         context,
@@ -175,12 +180,12 @@ export const buildItemIdentification: QuestionBuilder = (context) => {
         item.spriteIdentity === target.spriteIdentity
       )
         return false;
-      if (context.variant?.sameItemCategory)
+      if (context.variant.sameItemCategory)
         return (
           item.pocket === target.pocket && item.category === target.category
         );
-      if (context.variant?.sameItemPocket) return item.pocket === target.pocket;
-      if (context.variant?.distinctItemCategories ?? !context.variant) {
+      if (context.variant.sameItemPocket) return item.pocket === target.pocket;
+      if (context.variant.distinctItemCategories) {
         if (seen.has(item.category)) return false;
         seen.add(item.category);
       }

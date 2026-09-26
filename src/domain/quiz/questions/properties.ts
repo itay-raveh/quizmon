@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { pick, shuffle } from '../../../lib/random.ts';
 import { randomOptionSet } from './answers.ts';
 import { makeQuestion, targetMedia } from './assembly.ts';
@@ -8,7 +9,7 @@ import { pickTarget } from './selection.ts';
 
 export const buildPropertyQuestion = (
   category: 'ability' | 'move',
-): QuestionBuilder => {
+): QuestionBuilder<FamilyRules['ability-check']> => {
   const property = category === 'ability' ? 'abilities' : 'levelMoves';
   const subject = category === 'ability' ? 'ability' : 'move by leveling up';
   return (context) => {
@@ -23,7 +24,7 @@ export const buildPropertyQuestion = (
       context.pool.flatMap(({ pokemon }) => pokemon[property]),
     );
     for (const invalid of target.pokemon[property]) candidates.delete(invalid);
-    const preferred = context.variant?.plausibleProperties
+    const preferred = context.variant.plausibleProperties
       ? new Set(
           context.pool
             .filter(({ pokemon }) =>
@@ -33,7 +34,7 @@ export const buildPropertyQuestion = (
             .filter((value) => candidates.has(value)),
         )
       : new Set<string>();
-    const options = context.variant?.plausibleProperties
+    const options = context.variant.plausibleProperties
       ? shuffle(
           [
             correct,

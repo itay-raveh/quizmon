@@ -1,4 +1,6 @@
 import type { QuestionData } from './types';
+import { savedQuestionSchema } from './question-lineup.ts';
+import { getQuestionView } from './question-presentation.ts';
 import { showsSearchResponse, usesSearchAnswer } from './question-interaction';
 
 const question: QuestionData = {
@@ -31,4 +33,16 @@ it('keeps Champion search and keyboard behavior in sync with the visible respons
   expect(
     showsSearchResponse({ ...question, searchOptions: undefined }, 0),
   ).toBe(false);
+});
+
+it('keeps the answer view in saved rounds and adapts older questions', () => {
+  const view = {
+    answer: { kind: 'pokemon' as const, revealTypes: 'after-answer' as const },
+  };
+  const saved = savedQuestionSchema.parse({ ...question, view });
+  expect(saved.view).toEqual(view);
+  expect(getQuestionView({ ...question, view })).toEqual(view);
+  expect(
+    getQuestionView({ ...question, questionType: 'archived' }).answer.kind,
+  ).toBe('text');
 });

@@ -80,7 +80,7 @@ export const TypeAnswerPicker = ({
               ) : (
                 <XIcon aria-hidden="true" weight="bold" />
               )}
-              {question.questionType === 'type-matchup' && typeRelations ? (
+              {question.visual?.kind === 'type-matchup' && typeRelations ? (
                 <AnswerEffectiveness
                   option={type}
                   isTypeOption

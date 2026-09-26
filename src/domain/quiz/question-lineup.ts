@@ -1,3 +1,4 @@
+import { questionViewSchema } from './question-presentation.ts';
 import { z } from 'zod';
 import { questionRenderingSchema } from './question-rendering.ts';
 import { questionSubjectSchema } from './subject.ts';
@@ -124,6 +125,7 @@ const question = z
     context: text.optional(),
     variantLevel: difficultySchema.optional(),
     rendering: questionRenderingSchema.optional(),
+    view: questionViewSchema.optional(),
     namesOnly: z.boolean().optional(),
     showTypes: z.boolean().optional(),
     assistanceUsed: nonnegativeInteger.optional(),

@@ -1,3 +1,4 @@
+import { questionRules } from '../../../question-rules.ts';
 import type { TrainerSpecialty } from '../../player/trainer-progression.ts';
 import type { QuestionCategory } from '../types.ts';
 
@@ -6,7 +7,6 @@ interface QuestionDefinition {
   group: QuestionTypeGroup;
   label: string;
   specialty: TrainerSpecialty;
-  standard?: boolean;
   league?: boolean;
 }
 
@@ -134,63 +134,54 @@ export const questionDefinitions = {
 
   'pokedex-scan': {
     label: 'Pokédex scan',
-    standard: true,
     specialty: 'identity',
     description: 'Identify Pokémon across generations of game sprites.',
     group: 'identity',
   },
   'silhouette-match': {
     label: 'Silhouette match',
-    standard: true,
     specialty: 'identity',
     description: 'Pick the silhouette of a named Pokémon.',
     group: 'identity',
   },
   'sprite-match': {
     label: 'Sprite match',
-    standard: true,
     specialty: 'identity',
     description: 'Pick the sprite of a named Pokémon.',
     group: 'identity',
   },
   'whos-that-pokemon': {
     label: 'Who’s that Pokémon?',
-    standard: true,
     specialty: 'identity',
     description: 'Name the Pokémon hidden in a silhouette.',
     group: 'identity',
   },
   'pixel-peek': {
     label: 'Pixel peek',
-    standard: true,
     specialty: 'identity',
     description: 'Name a Pokémon from a tiny sprite crop.',
     group: 'identity',
   },
   'shiny-spotter': {
     label: 'Shiny spotter',
-    standard: true,
     specialty: 'identity',
     description: 'Find the Pokémon shown in shiny colors.',
     group: 'identity',
   },
   'field-notes': {
     label: 'Field notes',
-    standard: true,
     specialty: 'description',
     description: 'Match a Pokédex entry to its Pokémon.',
     group: 'knowledge',
   },
   'type-check': {
     label: 'Type check',
-    standard: true,
     specialty: 'type',
     description: 'Identify a Pokémon’s typing.',
     group: 'knowledge',
   },
   'odd-one-out': {
     label: 'Odd one out',
-    standard: true,
     specialty: 'type',
     description:
       'Three Pokémon share a type. Choose the Pokémon that does not have that type.',
@@ -198,49 +189,42 @@ export const questionDefinitions = {
   },
   'type-roundup': {
     label: 'Type roundup',
-    standard: true,
     specialty: 'type',
     description: 'Select every Pokémon with the named type.',
     group: 'knowledge',
   },
   'type-twins': {
     label: 'Type twins',
-    standard: true,
     specialty: 'type',
     description: 'Match both types of a dual-type Pokémon.',
     group: 'knowledge',
   },
   'legend-hunt': {
     label: 'Legend hunt',
-    standard: true,
     specialty: 'identity',
     description: 'Select every Legendary or Mythical Pokémon.',
     group: 'knowledge',
   },
   'generation-roundup': {
     label: 'Generation roundup',
-    standard: true,
     specialty: 'identity',
     description: 'Select every Pokémon introduced in the named generation.',
     group: 'knowledge',
   },
   'evolution-link': {
     label: 'Evolution link',
-    standard: true,
     specialty: 'evolution',
     description: 'Complete an evolution chain using four name-only choices.',
     group: 'knowledge',
   },
   'evolution-shift': {
     label: 'Evolution shift',
-    standard: true,
     specialty: 'evolution',
     description: 'Choose the type a Pokémon gains when it evolves.',
     group: 'knowledge',
   },
   'ability-check': {
     label: 'Ability check',
-    standard: true,
     league: false,
     specialty: 'ability',
     description: 'Choose an ability the named Pokémon can have.',
@@ -248,7 +232,6 @@ export const questionDefinitions = {
   },
   'move-check': {
     label: 'Move check',
-    standard: true,
     league: false,
     specialty: 'move',
     description: 'Choose a move the Pokémon learns by leveling up.',
@@ -256,7 +239,6 @@ export const questionDefinitions = {
   },
   'stat-showdown': {
     label: 'Stat showdown',
-    standard: true,
     league: false,
     specialty: 'stat',
     description: 'Find the highest or lowest stat among four Pokémon.',
@@ -264,14 +246,12 @@ export const questionDefinitions = {
   },
   'type-matchup': {
     label: 'Type matchup',
-    standard: true,
     specialty: 'matchup',
     description: 'Choose a type that hits the Pokémon super effectively.',
     group: 'battle',
   },
   'counter-pick': {
     label: 'Counter pick',
-    standard: true,
     specialty: 'matchup',
     description: 'Pick a Pokémon with a super-effective attack type.',
     group: 'battle',
@@ -281,7 +261,7 @@ export const questionDefinitions = {
 export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
 const standardQuestionTypes = questionTypes.filter(
-  (type) => 'standard' in questionDefinitions[type],
+  (type) => 'standard' in questionRules[type],
 );
 export const standardLeagueQuestionTypes = standardQuestionTypes.filter(
   (type) => !('league' in questionDefinitions[type]),

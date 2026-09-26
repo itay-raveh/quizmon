@@ -50,6 +50,8 @@ it('builds ability, bag-item, and held-item effects from their own source pools'
         expect(question!.answer.interaction).toBe(
           difficulty === 5 ? 'search' : 'single-choice',
         );
+        if (difficulty === 5)
+          expect(question!.searchOptions!.length).toBeGreaterThan(100);
         expect(isQuestionData(question)).toBe(true);
       }
       if (kind) {

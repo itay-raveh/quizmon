@@ -1,6 +1,7 @@
 import berries from '../../pokemon/data/topics-berries-0.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { buildBerry } from './berries.ts';
+import { getQuestionVariant } from '../question-variants.ts';
 
 const question = (name: string) => {
   const berry = berries.values.find((entry) => entry.name === name)!;
@@ -20,6 +21,7 @@ const question = (name: string) => {
     generations: ['VI'],
     pool: [],
     questionType: 'natural-gift',
+    variant: getQuestionVariant('natural-gift', 5)!.variant,
     random: () => 0.5,
     used: new Set(),
   });

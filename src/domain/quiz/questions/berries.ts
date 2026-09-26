@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { generations } from '../../pokemon/types.ts';
 import type { QuestionBuilder } from './context.ts';
@@ -12,7 +13,9 @@ const positiveFlavors = (flavors: Record<string, number>) =>
   Object.keys(flavors)
     .filter((flavor) => flavors[flavor]! > 0)
     .sort();
-export const buildBerry: QuestionBuilder = (context) => {
+export const buildBerry: QuestionBuilder<
+  FamilyRules['berry-flavors'] | FamilyRules['natural-gift']
+> = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const pool = ordered(
@@ -33,19 +36,26 @@ export const buildBerry: QuestionBuilder = (context) => {
     const strongest = positive.filter(
       (flavor) => target.flavors[flavor] === max,
     );
-    if (!gift && !context.variant?.completeFlavors && strongest.length !== 1)
+    if (
+      !gift &&
+      !(
+        'completeFlavors' in context.variant && context.variant.completeFlavors
+      ) &&
+      strongest.length !== 1
+    )
       continue;
     const strongestFlavor = gift ? '' : formatPokemonName(strongest[0]!);
     const correct = gift
       ? target.giftType
-      : context.variant?.completeFlavors
+      : 'completeFlavors' in context.variant && context.variant.completeFlavors
         ? positive.map(formatPokemonName)
         : strongestFlavor;
     const other = gift
       ? Object.keys(context.catalog.typeRelations)
       : Object.keys(target.flavors).map(formatPokemonName);
     const options =
-      gift || context.variant?.completeFlavors
+      gift ||
+      ('completeFlavors' in context.variant && context.variant.completeFlavors)
         ? other
         : [
             strongestFlavor,
@@ -58,7 +68,7 @@ export const buildBerry: QuestionBuilder = (context) => {
     if (!item?.sprite) continue;
     const prompt = gift
       ? `Which type does Natural Gift have with ${item.label}?`
-      : context.variant?.completeFlavors
+      : 'completeFlavors' in context.variant && context.variant.completeFlavors
         ? `Which flavors does ${item.label} have?`
         : `What is the strongest flavor of ${item.label}?`;
     const question = makeTopicQuestion(

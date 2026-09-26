@@ -1,6 +1,6 @@
+import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { generations } from '../../pokemon/types.ts';
-import { questionTuning } from '../question-variants.ts';
 import { createPokemonSimilarityScorer } from './answers.ts';
 import type { QuestionBuilder } from './context.ts';
 import { orderEncounterLocations } from './encounter-order.ts';
@@ -14,13 +14,15 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
-export const buildRegion: QuestionBuilder = (context) => {
+export const buildRegion: QuestionBuilder<FamilyRules['name-that-region']> = (
+  context,
+) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const regions = topics.regions.filter((entity) =>
     topicEligible(context, entity),
   );
-  if (regions.length < (context.variant?.allOptions ? 2 : 4)) return;
+  if (regions.length < (context.variant.allOptions ? 2 : 4)) return;
   const pool = ordered(
     context,
     topics.locations.filter(
@@ -47,7 +49,7 @@ export const buildRegion: QuestionBuilder = (context) => {
       )
     )
       continue;
-    const options = context.variant?.allOptions
+    const options = context.variant.allOptions
       ? regions
       : [
           targetRegion,
@@ -72,7 +74,9 @@ export const buildRegion: QuestionBuilder = (context) => {
     if (question) return question;
   }
 };
-export const buildEncounter: QuestionBuilder = (context) => {
+export const buildEncounter: QuestionBuilder<
+  FamilyRules['encounter-locations']
+> = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const eligible = new Map(
@@ -83,7 +87,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
       target.complete &&
       (context.generations ?? generations).includes(target.generation) &&
       target.pokemon.some((name) => eligible.has(name)) &&
-      (context.variant?.encounterConditions ||
+      (context.variant.encounterConditions ||
         !target.conditions.some(
           (condition) =>
             condition.startsWith('time-') || condition.startsWith('weather-'),
@@ -106,7 +110,7 @@ export const buildEncounter: QuestionBuilder = (context) => {
       context,
       context.pool.filter((candidate) => possiblyAvailable.has(candidate.name)),
     );
-    const multiSelect = context.variant?.multiSelectEncounters;
+    const multiSelect = context.variant.multiSelectEncounters;
     if (available.length < (multiSelect ? 2 : 1)) continue;
     const correct = available.slice(
       0,
@@ -134,11 +138,11 @@ export const buildEncounter: QuestionBuilder = (context) => {
     );
     const similarity = createPokemonSimilarityScorer(
       correct[0]!.pokemon,
-      context.variant?.similarityWeights,
+      context.variant.similarityWeights,
     );
     const score = (candidate: (typeof correct)[number]) =>
       (sameMethod.has(candidate.name)
-        ? questionTuning.sameEncounterMethodWeight
+        ? context.variant.sameEncounterMethodWeight
         : 0) + similarity(candidate.pokemon);
     const wrong = distinctPokemon(
       orderedPokemon(
@@ -146,13 +150,13 @@ export const buildEncounter: QuestionBuilder = (context) => {
         context.pool.filter(
           (candidate) =>
             !possiblyAvailable.has(candidate.name) &&
-            (!context.variant?.encounterConditions ||
+            (!context.variant.encounterConditions ||
               regional.has(candidate.name)),
         ),
       ),
     )
       .sort((a, b) =>
-        context.variant?.closeAlternatives ? score(b) - score(a) : 0,
+        context.variant.closeAlternatives ? score(b) - score(a) : 0,
       )
       .slice(0, 4 - correct.length);
     const options = distinctPokemon([...correct, ...wrong]);

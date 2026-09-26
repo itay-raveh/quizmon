@@ -8,7 +8,7 @@ import {
 } from '../question-history.ts';
 import {
   getQuestionVariant,
-  resolveQuestionRendering,
+  getStandardQuestionRule,
 } from '../question-variants.ts';
 import type { QuestionData } from '../types.ts';
 import { buildHidden } from './abilities.ts';
@@ -47,7 +47,8 @@ import {
   buildTypeQuestion,
   buildTypeTwinsQuestion,
 } from './types.ts';
-import { applyQuestionVariant } from './variants.ts';
+import { applyResponseStrategy } from './response-strategies.ts';
+import type { FamilyRules } from './family-rules.ts';
 
 const questionBuilders = {
   'item-identification': buildItemIdentification,
@@ -89,7 +90,7 @@ const questionBuilders = {
   'type-matchup': buildMatchupQuestion,
   'counter-pick': buildCounterPickQuestion,
   champion: buildChampionQuestion,
-} satisfies Record<QuestionType | 'champion', QuestionBuilder>;
+} satisfies { [Type in keyof FamilyRules]: QuestionBuilder<FamilyRules[Type]> };
 export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionType | 'champion',
@@ -100,12 +101,22 @@ export const buildQuestionType = (
     ? getQuestionVariant(questionType, context.difficulty)
     : undefined;
   if (context.difficulty && !resolved) return undefined;
-  const build = questionBuilders[questionType];
+  const activeRules =
+    resolved?.variant ??
+    (!context.difficulty ? getStandardQuestionRule(questionType) : undefined);
+  if (!activeRules) return undefined;
+  const build = questionBuilders[questionType] as QuestionBuilder<
+    FamilyRules[typeof questionType]
+  >;
+  const rules = activeRules;
+  const singleType = Boolean(
+    'singleType' in activeRules && activeRules.singleType,
+  );
   const variantContext = {
     ...context,
     questionType,
-    variant: resolved?.variant,
-    pool: resolved?.variant.singleType
+    variant: activeRules,
+    pool: singleType
       ? context.pool.filter(({ pokemon }) => pokemon.types.length === 1)
       : context.pool,
   };
@@ -170,25 +181,23 @@ export const buildQuestionType = (
     const original = build(variantContext);
     if (
       !original ||
-      (!resolved?.variant.search &&
-        !resolved?.variant.allOptions &&
-        original.options.length !== 4)
+      (rules.response.kind === 'choices' &&
+        (rules.response.minimumOptions === 4
+          ? original.options.length !== 4
+          : original.options.length < 2))
     )
       continue;
-    const draft = resolved
-      ? applyQuestionVariant(
-          original,
-          variantContext,
-          resolved.variant,
-          resolved.level,
-        )
-      : original;
+    const draft = applyResponseStrategy(
+      original,
+      variantContext,
+      rules,
+      resolved?.level,
+    );
 
     const question = {
       ...draft,
       questionType,
     };
-    question.rendering ??= resolveQuestionRendering(questionType);
     const questionRarity = rarity(question);
     // Choosing a less-seen draft must not turn the initial rarity draw into more Megas.
     if (

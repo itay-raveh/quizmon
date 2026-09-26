@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { pick, shuffle } from '../../../lib/random.ts';
 import { formatTypeMultiplier } from '../../pokemon/format.ts';
 import { attackMultiplier } from '../../pokemon/type-effectiveness.ts';
@@ -9,8 +10,6 @@ import { pokemonPrompt } from './prompts.ts';
 import { targetRepetition } from './repetition.ts';
 import { pickForm } from './sampling.ts';
 import { orderSpecies, pickFreshTarget } from './selection.ts';
-
-const matchupMultipliers = [4, 2, 0.5, 0.25] as const;
 
 const createMatchupChecker = (
   catalog: PokemonCatalog,
@@ -27,10 +26,12 @@ const createMatchupChecker = (
     multiplier;
 };
 
-export const buildMatchupQuestion: QuestionBuilder = (context) => {
+export const buildMatchupQuestion: QuestionBuilder<
+  FamilyRules['type-matchup']
+> = (context) => {
   const attackTypes = Object.keys(context.catalog.typeRelations);
   for (const multiplier of shuffle(
-    context.variant?.multipliers ?? matchupMultipliers,
+    context.variant.multipliers,
     context.random,
   )) {
     const targets = context.pool.filter(({ pokemon }) =>
@@ -93,7 +94,9 @@ export const buildMatchupQuestion: QuestionBuilder = (context) => {
   return undefined;
 };
 
-export const buildCounterPickQuestion: QuestionBuilder = (context) => {
+export const buildCounterPickQuestion: QuestionBuilder<
+  FamilyRules['counter-pick']
+> = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const typeKey = (types: readonly string[]) => [...types].sort().join(',');
   const typeGroups = new Map<string, { types: string[]; count: number }>();
@@ -105,7 +108,7 @@ export const buildCounterPickQuestion: QuestionBuilder = (context) => {
   }
 
   for (const multiplier of shuffle(
-    context.variant?.multipliers ?? matchupMultipliers,
+    context.variant.multipliers,
     context.random,
   )) {
     const eligibleTypes = new Set<string>();

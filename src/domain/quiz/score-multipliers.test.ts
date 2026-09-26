@@ -117,6 +117,7 @@ it.each([
 
 it.each([
   ['pokedex-scan', 3, 0.75],
+  ['item-identification', 5, 1.25],
   ['sprite-match', 3, 1],
   ['hidden-abilities', 3, undefined],
   ['hidden-abilities', 4, 1.25],

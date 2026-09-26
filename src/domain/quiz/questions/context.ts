@@ -1,5 +1,4 @@
 import type { Difficulty } from '../difficulty.ts';
-import type { VariantRules } from '../question-variants.ts';
 import type {
   Generation,
   PokemonCatalog,
@@ -13,10 +12,10 @@ export interface Candidate {
   pokemon: PokemonKnowledge;
 }
 
-export interface QuestionContext {
+export interface QuestionContext<Rules extends object = object> {
   generations?: Generation[];
   difficulty?: Difficulty;
-  variant?: VariantRules;
+  variant?: Rules;
   catalog: PokemonCatalog;
   pool: Candidate[];
   random: () => number;
@@ -28,6 +27,6 @@ export interface QuestionContext {
 
 export type QuestionDraft = Omit<QuestionData, 'questionType'>;
 
-export type QuestionBuilder = (
-  context: QuestionContext,
+export type QuestionBuilder<Rules extends object = object> = (
+  context: QuestionContext<Rules> & { variant: Rules },
 ) => QuestionDraft | undefined;

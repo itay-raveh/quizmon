@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { createPokemonSimilarityScorer, pokemonOptions } from './answers.ts';
 import { makeQuestion } from './assembly.ts';
 import type { QuestionBuilder } from './context.ts';
@@ -12,7 +13,9 @@ import {
   pokemonSubject,
 } from './topic-support.ts';
 
-export const buildCategory: QuestionBuilder = (context) => {
+export const buildCategory: QuestionBuilder<
+  FamilyRules['pokedex-categories']
+> = (context) => {
   const pool = distinctPokemon(
     orderedPokemon(
       context,
@@ -22,18 +25,18 @@ export const buildCategory: QuestionBuilder = (context) => {
   for (const target of pool) {
     const similarity = createPokemonSimilarityScorer(
       target.pokemon,
-      context.variant?.similarityWeights,
+      context.variant.similarityWeights,
     );
     const wrong = pool
       .filter(
         ({ pokemon }) =>
           pokemon.genus !== target.pokemon.genus &&
-          (!context.variant?.sameColorOrShape ||
+          (!context.variant.sameColorOrShape ||
             (!!pokemon.color && pokemon.color === target.pokemon.color) ||
             (!!pokemon.shape && pokemon.shape === target.pokemon.shape)),
       )
       .sort((a, b) =>
-        context.variant?.closeAlternatives
+        context.variant.closeAlternatives
           ? similarity(b.pokemon) - similarity(a.pokemon)
           : 0,
       )
@@ -59,11 +62,14 @@ export const buildCategory: QuestionBuilder = (context) => {
     );
   }
 };
-export const buildDescriptionQuestion: QuestionBuilder = (context) => {
+export const buildDescriptionQuestion: QuestionBuilder<
+  FamilyRules['field-notes']
+> = (context) => {
   const eligible = unambiguousDescriptions(
     context.pool.filter(
       ({ pokemon }) =>
-        !context.variant?.search || pokemon.hasDistinctDescription,
+        context.variant.response.kind !== 'search' ||
+        pokemon.hasDistinctDescription,
     ),
   );
   const target = pickFreshTarget(context, eligible);

@@ -1,22 +1,10 @@
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import { getQuestionView } from '@/domain/quiz/question-presentation';
 import { QuestionAnswerChoice } from './QuestionAnswerChoice';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import type { QuestionData } from '@/domain/quiz/types';
 import { TypeAnswerPicker } from './TypeAnswerPicker';
 import { orderRegionOptions } from './region-option-order';
-const typeOptionQuestionTypes = new Set<QuestionData['questionType']>([
-  'move-types',
-  'natural-gift',
-  'evolution-shift',
-  'type-check',
-  'type-matchup',
-]);
-const optionTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
-  'counter-pick',
-  'odd-one-out',
-  'type-roundup',
-  'type-twins',
-]);
 interface QuestionAnswersProps {
   typeRelations?: PokemonCatalog['typeRelations'];
   answered: boolean;
@@ -33,12 +21,8 @@ export const QuestionAnswers = ({
   question,
   selectedOptions,
 }: QuestionAnswersProps) => {
-  const hasTypeOptionBadges = typeOptionQuestionTypes.has(
-    question.questionType,
-  );
-  const reservesOptionTypes = optionTypeRevealQuestionTypes.has(
-    question.questionType,
-  );
+  const view = getQuestionView(question);
+  const hasTypeOptionBadges = view.answer.kind === 'type';
   const multiSelect = question.answer.interaction === 'multi-select';
   const policy = getQuestionRendering(question).choices;
   if (hasTypeOptionBadges && question.options.length > 4) {
@@ -57,16 +41,15 @@ export const QuestionAnswers = ({
     <div
       className={[
         'answers',
-        question.questionType === 'nature-effects' ? 'answers--nature' : '',
-        question.questionType === 'held-item-effects' ||
-        (question.questionType === 'ability-effects' &&
-          question.answer.correctOptions[0] !== question.subject.name) ||
+        view.answer.kind === 'text' && view.answer.detail === 'nature'
+          ? 'answers--nature'
+          : '',
+        (view.answer.kind === 'text' && view.answer.layout === 'statements') ||
         question.options.some(
           (option) => (question.optionLabels?.[option]?.length ?? 0) > 75,
         )
           ? 'answers--statements'
           : '',
-        question.questionType === 'evolution-conditions' &&
         question.options.every((option) =>
           /^\d+$/.test(question.optionLabels?.[option] ?? ''),
         )
@@ -80,7 +63,9 @@ export const QuestionAnswers = ({
         question.optionVisuals && policy.sprite !== 'never'
           ? 'answers--pokemon'
           : '',
-        question.questionType === 'counter-pick' ? 'answers--counter-pick' : '',
+        view.answer.kind === 'pokemon' && view.answer.layout === 'counter-pick'
+          ? 'answers--counter-pick'
+          : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
         question.options.length > 4 && !multiSelect ? 'answers--many' : '',
       ]
@@ -98,8 +83,6 @@ export const QuestionAnswers = ({
           selectedOptions={selectedOptions}
           onSelect={onSelect}
           typeRelations={typeRelations}
-          hasTypeOptionBadges={hasTypeOptionBadges}
-          reservesOptionTypes={reservesOptionTypes}
         />
       ))}
     </div>

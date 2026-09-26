@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { pick, shuffle } from '../../../lib/random.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { statNames, type StatName } from '../../pokemon/types.ts';
@@ -24,7 +25,9 @@ const yieldLabel = (yieldValues: Record<string, number>) =>
     .filter((stat) => yieldValues[stat]! > 0)
     .map((stat) => `${yieldValues[stat]} ${formatPokemonName(stat)}`)
     .join(' + ');
-export const buildEvYield: QuestionBuilder = (context) => {
+export const buildEvYield: QuestionBuilder<FamilyRules['ev-yields']> = (
+  context,
+) => {
   const pool = orderedPokemon(
     context,
     context.pool.filter(
@@ -35,8 +38,8 @@ export const buildEvYield: QuestionBuilder = (context) => {
   );
   for (const target of pool) {
     const stats = statNames.filter((stat) => target.pokemon.evYield![stat] > 0);
-    if (!context.variant?.completeEvYield && stats.length !== 1) continue;
-    const correct = context.variant?.completeEvYield
+    if (!context.variant.completeEvYield && stats.length !== 1) continue;
+    const correct = context.variant.completeEvYield
       ? yieldLabel(target.pokemon.evYield!)
       : formatPokemonName(stats[0]!);
     const yieldDistances = new Map(
@@ -52,21 +55,21 @@ export const buildEvYield: QuestionBuilder = (context) => {
     );
     const wrong = ordered(context, [
       ...new Set(
-        context.variant?.completeEvYield
+        context.variant.completeEvYield
           ? pool.map((candidate) => yieldLabel(candidate.pokemon.evYield!))
           : statNames.map(formatPokemonName),
       ),
     ])
       .filter((value) => value !== correct)
       .sort((a, b) =>
-        context.variant?.closeAlternatives
+        context.variant.closeAlternatives
           ? (yieldDistances.get(a) ?? Infinity) -
             (yieldDistances.get(b) ?? Infinity)
           : 0,
       )
       .slice(0, 3);
     const options = [correct, ...wrong];
-    const prompt = context.variant?.completeEvYield
+    const prompt = context.variant.completeEvYield
       ? `What EVs does defeating ${target.pokemon.displayName} give?`
       : `Which stat gains EVs from defeating ${target.pokemon.displayName}?`;
     const question = makeTopicQuestion(
@@ -79,10 +82,10 @@ export const buildEvYield: QuestionBuilder = (context) => {
         prompt: {
           ...pokemonPrompt(
             target,
-            context.variant?.completeEvYield
+            context.variant.completeEvYield
               ? 'What EVs does defeating '
               : 'Which stat gains EVs from defeating ',
-            context.variant?.completeEvYield ? ' give?' : '?',
+            context.variant.completeEvYield ? ' give?' : '?',
           ),
           supportingText: 'Base yield, before bonuses',
         },
@@ -97,7 +100,9 @@ export const buildEvYield: QuestionBuilder = (context) => {
     if (question) return question;
   }
 };
-export const buildNature: QuestionBuilder = (context) => {
+export const buildNature: QuestionBuilder<FamilyRules['nature-effects']> = (
+  context,
+) => {
   const pool = ordered(
     context,
     (context.catalog.topics?.natures ?? []).filter(
@@ -110,7 +115,7 @@ export const buildNature: QuestionBuilder = (context) => {
     const wrong = pool
       .filter((candidate) => {
         if (candidate.name === target.name) return false;
-        if (context.variant?.shareNatureStat)
+        if (context.variant.shareNatureStat)
           return (
             candidate.raised === target.raised ||
             candidate.lowered === target.lowered
@@ -143,7 +148,9 @@ export const buildNature: QuestionBuilder = (context) => {
     if (question) return question;
   }
 };
-export const buildStatQuestion: QuestionBuilder = (context) => {
+export const buildStatQuestion: QuestionBuilder<
+  FamilyRules['stat-showdown']
+> = (context) => {
   const stat = pick(statNames, context.random) as StatName;
   const direction = context.random() < 0.5 ? 'highest' : 'lowest';
   const candidates = context.pool;
@@ -152,7 +159,7 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
       target.pokemon.stats[stat] - other.pokemon.stats[stat],
     );
     if (
-      context.variant?.statGap &&
+      context.variant.statGap &&
       (gap < context.variant.statGap[0] || gap > context.variant.statGap[1])
     )
       return false;
@@ -172,7 +179,7 @@ export const buildStatQuestion: QuestionBuilder = (context) => {
         : pokemon.stats[stat] < boundary),
   );
   const examplesByValue = new Map<number, Candidate[]>();
-  const targets = context.variant?.statGap
+  const targets = context.variant.statGap
     ? eligible.filter((candidate) => {
         const value = candidate.pokemon.stats[stat];
         let examples = examplesByValue.get(value);

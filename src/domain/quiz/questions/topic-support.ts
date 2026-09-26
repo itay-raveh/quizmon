@@ -51,7 +51,11 @@ export const topicSubject = (
   generation: topicGeneration(context, target),
 });
 export const makeTopicQuestion = (
-  context: QuestionContext,
+  context: QuestionContext<{
+    response: import('./response-strategies.ts').ResponseStrategy;
+  }> & {
+    variant: { response: import('./response-strategies.ts').ResponseStrategy };
+  },
   subject: QuestionSubject,
   prompt: string,
   correct: string | string[],
@@ -68,7 +72,11 @@ export const makeTopicQuestion = (
     new Set(options.map((option) => labels[option] ?? option)).size !==
       options.length ||
     options.length <
-      (context.variant?.search ? 1 : context.variant?.allOptions ? 2 : 4)
+      (context.variant.response.kind === 'choices'
+        ? context.variant.response.minimumOptions
+        : context.variant.response.kind === 'search'
+          ? 1
+          : 4)
   )
     return;
   const primary = [

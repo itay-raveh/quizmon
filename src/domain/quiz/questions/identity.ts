@@ -1,7 +1,7 @@
+import type { FamilyRules, PokemonDistractors } from './family-rules.ts';
 import { pick } from '../../../lib/random.ts';
 import { getPixelPeekCrop } from '../../pokemon/pixel-peek.ts';
 import type { PokemonKnowledge } from '../../pokemon/types.ts';
-import { questionTuning } from '../question-variants.ts';
 import { pokemonOptions } from './answers.ts';
 import type { AnswerPresentation, QuestionAssembly } from './assembly.ts';
 import { makeQuestion } from './assembly.ts';
@@ -33,8 +33,8 @@ const makeIdentityQuestion = (
 const pickScanSprite = (
   pokemon: PokemonKnowledge,
   random: () => number,
-  backChance = 0,
-  frontChance = questionTuning.frontSpriteChance,
+  backChance: number,
+  frontChance: number,
 ): string | null => {
   if (!pokemon.sprite) return null;
 
@@ -62,10 +62,12 @@ const pickScanSprite = (
   return version || pokemon.sprite;
 };
 
-export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
+export const buildPokedexScanQuestion: QuestionBuilder<
+  FamilyRules['pokedex-scan']
+> = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target) return undefined;
-  const currentChance = context.variant?.currentSpriteChance ?? 0;
+  const currentChance = context.variant.currentSpriteChance;
   const sprite =
     currentChance === 1 ||
     (currentChance > 0 && context.random() < currentChance)
@@ -73,8 +75,8 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
       : pickScanSprite(
           target.pokemon,
           context.random,
-          context.variant?.backSpriteChance,
-          context.variant?.frontSpriteChance,
+          context.variant.backSpriteChance,
+          context.variant.frontSpriteChance,
         );
   if (!sprite) return undefined;
   return makeIdentityQuestion(context, {
@@ -85,7 +87,9 @@ export const buildPokedexScanQuestion: QuestionBuilder = (context) => {
   });
 };
 
-const buildNamedPokemonQuestion: QuestionBuilder = (context) => {
+const buildNamedPokemonQuestion: QuestionBuilder<PokemonDistractors> = (
+  context,
+) => {
   const eligible = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const target = pickFreshTarget(context, eligible);
   if (!target) return undefined;
@@ -108,7 +112,9 @@ const buildNamedPokemonQuestion: QuestionBuilder = (context) => {
 export const buildSilhouetteMatchQuestion = buildNamedPokemonQuestion;
 export const buildSpriteMatchQuestion = buildNamedPokemonQuestion;
 
-export const buildWhosThatPokemonQuestion: QuestionBuilder = (context) => {
+export const buildWhosThatPokemonQuestion: QuestionBuilder<
+  FamilyRules['whos-that-pokemon']
+> = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;
 
@@ -120,7 +126,9 @@ export const buildWhosThatPokemonQuestion: QuestionBuilder = (context) => {
   });
 };
 
-export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
+export const buildPixelPeekQuestion: QuestionBuilder<
+  FamilyRules['pixel-peek']
+> = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;
 
@@ -140,7 +148,9 @@ export const buildPixelPeekQuestion: QuestionBuilder = (context) => {
   });
 };
 
-export const buildShinySpotterQuestion: QuestionBuilder = (context) => {
+export const buildShinySpotterQuestion: QuestionBuilder<
+  FamilyRules['shiny-spotter']
+> = (context) => {
   const eligible = context.pool.filter(
     ({ pokemon }) => pokemon.sprite && pokemon.shinySprite,
   );

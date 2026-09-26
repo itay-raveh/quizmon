@@ -8,6 +8,7 @@ import { getFormGroup } from '../pokemon/forms.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { difficultySchema } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
+import { getQuestionVariant } from './question-variants.ts';
 
 export const scoreMultipliersSchema = z
   .object({
@@ -82,50 +83,10 @@ export const getScoreMultiplier = (multipliers: ScoreMultipliers): number =>
 export const getQuestionTypeMultiplier = (
   type: QuestionType,
   difficulty: Difficulty,
-): 0.75 | 1 | 1.25 | undefined =>
-  questionScoreFactors[type][difficulty - 1] ?? undefined;
-
-const questionScoreFactors: Record<
-  QuestionType,
-  readonly (0.75 | 1 | 1.25 | null)[]
-> = {
-  'item-identification': [0.75, 0.75, 1, 1, 1],
-  'medicine-cabinet': [null, 0.75, 1, 1.25, 1.25],
-  'weight-comparison': [null, 0.75, 1, 1.25, 1.25],
-  'height-comparison': [null, 0.75, 1, 1.25, 1.25],
-  'move-types': [null, 0.75, 1, 1, 1],
-  'name-that-region': [null, 0.75, 1, 1, 1],
-  'move-purpose': [null, 0.75, 1, 1.25, 1.25],
-  'pokedex-categories': [null, 0.75, 1, 1, 1.25],
-  'evolution-conditions': [null, null, 1, 1.25, 1.25],
-  'ability-effects': [null, null, 1, 1.25, 1.25],
-  'held-item-effects': [null, null, 1, 1.25, 1.25],
-  'hidden-abilities': [null, null, null, 1.25, 1.25],
-  'nature-effects': [null, null, null, 1.25, 1.25],
-  'ev-yields': [null, null, null, 1.25, 1.25],
-  'encounter-locations': [null, null, null, 1.25, 1.25],
-  'berry-flavors': [null, null, null, 1.25, 1.25],
-  'natural-gift': [null, null, null, null, 1.25],
-  'pokedex-scan': [0.75, 0.75, 0.75, 1.25, 1.25],
-  'silhouette-match': [null, 0.75, 0.75, 1.25, 1.25],
-  'sprite-match': [0.75, 0.75, 1, 1.25, 1.25],
-  'whos-that-pokemon': [null, 0.75, 1, 1, 1.25],
-  'pixel-peek': [null, null, 1, 1.25, 1.25],
-  'shiny-spotter': [null, null, 1, 1.25, 1.25],
-  'field-notes': [null, 0.75, 0.75, 1.25, 1.25],
-  'type-check': [null, 0.75, 1, 1, 1],
-  'odd-one-out': [null, 0.75, 1, 1, 1],
-  'type-roundup': [null, 0.75, 1, 1, 1],
-  'type-twins': [null, null, 1, 1, 1],
-  'legend-hunt': [null, 0.75, 0.75, 0.75, 0.75],
-  'generation-roundup': [null, 0.75, 0.75, 0.75, 0.75],
-  'evolution-link': [null, 0.75, 0.75, 1.25, 1.25],
-  'evolution-shift': [null, null, 1, 1, 1.25],
-  'ability-check': [null, null, 1, 1, 1.25],
-  'move-check': [null, null, null, 1.25, 1.25],
-  'stat-showdown': [null, null, 1, 1.25, 1.25],
-  'type-matchup': [0.75, 0.75, 1, 1.25, 1.25],
-  'counter-pick': [null, 0.75, 1, 1.25, 1.25],
+): 0.75 | 1 | 1.25 | undefined => {
+  const level = getQuestionVariant(type, difficulty)?.level;
+  if (level === undefined) return undefined;
+  return level <= 2 ? 0.75 : level === 3 ? 1 : 1.25;
 };
 
 export const getTrainingScoreMultipliers = (

@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { targetMedia } from './assembly.ts';
 import type { QuestionBuilder } from './context.ts';
@@ -10,7 +11,9 @@ import {
   topicEligible,
 } from './topic-support.ts';
 
-export const buildHidden: QuestionBuilder = (context) => {
+export const buildHidden: QuestionBuilder<FamilyRules['hidden-abilities']> = (
+  context,
+) => {
   const pool = orderedPokemon(context, context.pool);
   for (const target of pool) {
     const slots = target.pokemon.abilitySlots;
@@ -20,7 +23,7 @@ export const buildHidden: QuestionBuilder = (context) => {
     if (
       !hidden ||
       hidden.length !== 1 ||
-      (!context.variant?.allowMissingSprites && !target.pokemon.sprite)
+      (!context.variant.allowMissingSprites && !target.pokemon.sprite)
     )
       continue;
     const allowed = new Set(
@@ -37,7 +40,7 @@ export const buildHidden: QuestionBuilder = (context) => {
     ].filter((name) => name !== correct);
     const similar = pool.filter(
       ({ pokemon }) =>
-        !context.variant?.sameTypeAbilityDistractors ||
+        !context.variant.sameTypeAbilityDistractors ||
         pokemon.types.some((type) => target.pokemon.types.includes(type)),
     );
     const other = ordered(context, [

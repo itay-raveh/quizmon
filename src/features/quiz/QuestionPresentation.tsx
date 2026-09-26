@@ -18,14 +18,9 @@ import { QuestionClues } from './QuestionClues';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionInstruction } from './QuestionInstruction';
 import { usesVisualInstruction } from './question-instruction-policy';
+import { getQuestionView } from '@/domain/quiz/question-presentation';
 import { supplementalItemSprites } from './item-sprites';
 
-const subjectTypeRevealQuestionTypes = new Set<QuestionData['questionType']>([
-  'counter-pick',
-  'type-check',
-  'type-twins',
-  'type-matchup',
-]);
 const QuestionPrompt = ({
   className,
   prompt,
@@ -117,17 +112,14 @@ export const QuestionPresentation = ({
   isLeague: boolean;
 }) => {
   const revealState = { answered, cluesShown };
+  const view = getQuestionView(question);
   const visualInstruction = usesVisualInstruction(question);
   const isChampion = question.category === 'champion';
-  const inlineItem =
-    question.subject.kind !== 'pokemon' &&
-    question.questionType !== 'item-identification' &&
-    question.media.kind === 'pixel-sprite'
+  const inlineItem = view.subject?.inlineItem
+    ? question.media.kind === 'pixel-sprite'
       ? question.media.src
-      : question.subject.kind === 'item' &&
-          question.questionType !== 'item-identification'
-        ? supplementalItemSprites[question.subject.name]
-        : undefined;
+      : supplementalItemSprites[question.subject.name]
+    : undefined;
   return (
     <>
       {visualInstruction ? (
@@ -153,7 +145,7 @@ export const QuestionPresentation = ({
               prompt={question.prompt}
               itemSprite={inlineItem}
               itemName={
-                question.questionType === 'held-item-effects'
+                view.subject?.inlineItem === 'named'
                   ? formatPokemonName(question.subject.name)
                   : undefined
               }
@@ -190,7 +182,7 @@ export const QuestionPresentation = ({
         question.media.kind === 'pixel-sprite'
       ) &&
       (question.subject.types ?? []).length > 0 &&
-      subjectTypeRevealQuestionTypes.has(question.questionType) ? (
+      view.subject?.types === 'after-answer' ? (
         <TypeBadges
           className={
             question.visual && visualInstruction

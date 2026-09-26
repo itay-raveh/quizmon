@@ -1,8 +1,9 @@
+import type { EffectRules } from './family-rules.ts';
 import type { QuestionBuilder } from './context.ts';
 import { buildEffectDescription } from './effect-descriptions.ts';
 import { ordered, topicEligible } from './topic-support.ts';
 
-export const buildEffect: QuestionBuilder = (context) => {
+export const buildEffect: QuestionBuilder<EffectRules> = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const kind = context.questionType === 'ability-effects' ? 'ability' : 'item';
@@ -26,7 +27,7 @@ export const buildEffect: QuestionBuilder = (context) => {
       kind === 'item' &&
       'sprite' in target &&
       !target.sprite &&
-      !context.variant?.allowMissingSprites
+      !context.variant.allowMissingSprites
     )
       continue;
     const question = buildEffectDescription(context, target, kind, entities);

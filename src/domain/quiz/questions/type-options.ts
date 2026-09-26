@@ -1,12 +1,18 @@
 import { createPokemonSimilarityScorer, rankedOptionSet } from './answers.ts';
 import { type Candidate, type QuestionContext } from './context.ts';
+import type { SimilarityWeights } from './family-rules.ts';
 
 export const typeOptions = (
-  context: QuestionContext,
+  context: QuestionContext<{ similarityWeights: SimilarityWeights }> & {
+    variant: { similarityWeights: SimilarityWeights };
+  },
   target: Candidate,
   correct: string,
 ): string[] => {
-  const similarityToTarget = createPokemonSimilarityScorer(target.pokemon);
+  const similarityToTarget = createPokemonSimilarityScorer(
+    target.pokemon,
+    context.variant.similarityWeights,
+  );
   const bestScores = new Map<string, number>();
   for (const { pokemon } of context.pool) {
     const score = similarityToTarget(pokemon);

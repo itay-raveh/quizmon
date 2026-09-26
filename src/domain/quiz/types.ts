@@ -1,4 +1,5 @@
 import type { QuestionRendering } from './question-rendering.ts';
+import type { QuestionView } from './question-presentation.ts';
 import type { Generation, StatName } from '../pokemon/types.ts';
 import type { Difficulty } from './difficulty.ts';
 import type { DailyTrack } from './daily-track.ts';
@@ -149,6 +150,7 @@ export interface QuestionData {
   variantLevel?: Difficulty;
   rulesVersion?: number;
   rendering?: QuestionRendering;
+  view?: QuestionView;
   namesOnly?: boolean;
   showTypes?: boolean;
   initialClues?: number;

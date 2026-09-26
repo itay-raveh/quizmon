@@ -1,9 +1,7 @@
-import { questionVariants } from '../../question-rules.ts';
-export { questionTuning } from '../../question-rules.ts';
+import { questionRules } from '../../question-rules.ts';
 import {
   mergeRendering,
   type QuestionRendering,
-  type RenderingOverrides,
 } from './question-rendering.ts';
 import {
   resolveDifficultyVariant,
@@ -11,76 +9,9 @@ import {
   type DifficultyVariants,
 } from './difficulty.ts';
 import type { QuestionData } from './types.ts';
-import type { MeasurementRules } from './measurement-comparison.ts';
+import type { FamilyRules } from './questions/family-rules.ts';
 
-export interface VariantRules {
-  enabled?: boolean;
-  distractorRankDirection?: 1 | -1;
-  distractorPoolSize?: number;
-  smallPoolSimilarityRatio?: number;
-  distantSpeciesFraction?: number;
-  similarityWeights?: Partial<{
-    sharedType: number;
-    shape: number;
-    color: number;
-    generation: number;
-    evolutionStage: number;
-    statMaximum: number;
-    statScale: number;
-  }>;
-  search?: boolean;
-  singleType?: boolean;
-  showTypes?: boolean;
-  typeGrid?: boolean;
-  currentSpriteChance?: number;
-  backSpriteChance?: number;
-  frontSpriteChance?: number;
-  cropScale?: number;
-  plausibleProperties?: boolean;
-  statGap?: readonly [number, number];
-  multipliers?: readonly number[];
-  finale?: {
-    opening: 'choices-types' | 'choices' | 'search';
-    assistance: boolean;
-    penalty: number;
-  };
-  rendering?: RenderingOverrides;
-  allowMissingSprites?: boolean;
-  closeAlternatives?: boolean;
-  distinctItemCategories?: boolean;
-  sameItemPocket?: boolean;
-  sameItemCategory?: boolean;
-  measurement?: MeasurementRules;
-  showMoveDescription?: boolean;
-  excludeTypeHintNames?: boolean;
-  allOptions?: boolean;
-  statusMovesOnly?: boolean;
-  sameMoveType?: boolean;
-  sameColorOrShape?: boolean;
-  minimumEvolutionConditions?: number;
-  multiSelectEvolutionConditions?: boolean;
-  exactEvolutionValues?: boolean;
-  mixedLevelEvolutionConditions?: boolean;
-  compactEvolutionLabels?: boolean;
-  exactLevelQuestionChance?: number;
-  directEvolutionItems?: boolean;
-  evolutionLocations?: boolean;
-  preferCloseConditionValues?: boolean;
-  useFullEffectText?: boolean;
-  minimumEffectSimilarity?: number;
-  maximumEffectSimilarity?: number;
-  preferSimilarEffects?: boolean;
-  sameTypeAbilityDistractors?: boolean;
-  shareNatureStat?: boolean;
-  machineDiscChance?: number;
-  completeEvYield?: boolean;
-  encounterConditions?: boolean;
-  multiSelectEncounters?: boolean;
-  completeFlavors?: boolean;
-}
-
-// Family rendering is the baseline; each level overrides individual fields.
-// Generated questions keep a snapshot so later grid edits do not change saved rounds.
+// Older saved questions may not contain a rendering snapshot.
 export const defaultQuestionRendering: QuestionRendering = {
   subject: { sprite: 'always', name: 'always', number: 'always' },
   choices: { sprite: 'always', name: 'always', number: 'always' },
@@ -88,44 +19,37 @@ export const defaultQuestionRendering: QuestionRendering = {
   search: { sprite: 'always', name: 'always', number: 'always' },
 };
 
-export const getQuestionVariant = (
-  type: QuestionData['questionType'],
+export const getStandardQuestionRule = <Type extends keyof FamilyRules>(
+  type: Type,
+): FamilyRules[Type] | undefined =>
+  (questionRules[type] as { standard?: FamilyRules[Type] }).standard;
+
+export const getQuestionVariant = <Type extends keyof FamilyRules>(
+  type: Type,
   difficulty: Difficulty,
-) => {
-  const row:
-    | (DifficultyVariants<VariantRules> & {
-        rendering?: RenderingOverrides;
-      })
-    | undefined = type === 'archived' ? undefined : questionVariants[type];
-  if (!row) return undefined;
-  const resolved = resolveDifficultyVariant(row, difficulty);
-  if (resolved?.variant.enabled === false) return undefined;
-  return (
-    resolved && {
-      ...resolved,
-      variant: {
-        ...resolved.variant,
-        rendering: mergeRendering(
-          mergeRendering(defaultQuestionRendering, row.rendering),
-          resolved.variant.rendering,
-        ),
-      },
+):
+  | {
+      level: Difficulty;
+      variant: FamilyRules[Type];
     }
-  );
+  | undefined => {
+  const row = questionRules[type].levels as DifficultyVariants<
+    FamilyRules[Type]
+  >;
+  return resolveDifficultyVariant(row, difficulty);
 };
 
 export const resolveQuestionRendering = (
   type: QuestionData['questionType'],
   level?: Difficulty,
 ): QuestionRendering =>
-  (level ? getQuestionVariant(type, level)?.variant.rendering : undefined) ??
-  mergeRendering(
-    defaultQuestionRendering,
-    type === 'archived'
-      ? undefined
-      : (questionVariants[type] as { rendering?: RenderingOverrides })
-          .rendering,
-  );
+  type === 'archived'
+    ? defaultQuestionRendering
+    : ((level
+        ? getQuestionVariant(type, level)?.variant.rendering
+        : undefined) ??
+      getStandardQuestionRule(type)?.rendering ??
+      defaultQuestionRendering);
 
 export const getQuestionRendering = (
   question: QuestionData,

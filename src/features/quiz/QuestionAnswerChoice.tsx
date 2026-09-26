@@ -9,6 +9,7 @@ import {
 } from '@/domain/pokemon/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import { getQuestionView } from '@/domain/quiz/question-presentation';
 import { isVisible, spriteState } from '@/domain/quiz/question-rendering';
 import type { QuestionData } from '@/domain/quiz/types';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
@@ -26,8 +27,6 @@ interface QuestionAnswerChoiceProps {
   selectedOptions: readonly string[];
   onSelect: (option: string) => void;
   typeRelations?: PokemonCatalog['typeRelations'];
-  hasTypeOptionBadges: boolean;
-  reservesOptionTypes: boolean;
 }
 
 export const QuestionAnswerChoice = ({
@@ -39,11 +38,14 @@ export const QuestionAnswerChoice = ({
   selectedOptions,
   onSelect,
   typeRelations,
-  hasTypeOptionBadges,
-  reservesOptionTypes,
 }: QuestionAnswerChoiceProps) => {
   const multiSelect = question.answer.interaction === 'multi-select';
   const policy = getQuestionRendering(question).choices;
+  const view = getQuestionView(question);
+  const hasTypeOptionBadges = view.answer.kind === 'type';
+  const reservesOptionTypes =
+    view.answer.kind === 'pokemon' &&
+    view.answer.revealTypes === 'after-answer';
   const state = { answered, cluesShown };
   const concealed = !isVisible(policy.name, state);
   const revealsOptionTypes =
@@ -54,18 +56,16 @@ export const QuestionAnswerChoice = ({
       : undefined;
   const label = question.optionLabels?.[option] ?? formatPokemonName(option);
   const reveal = question.optionReveals?.[option];
-  const measurement =
-    question.questionType === 'weight-comparison' ||
-    question.questionType === 'height-comparison';
+  const measurement = question.visual?.kind === 'measurement-comparison';
   const detail =
     reveal && !measurement ? (
       <span
         aria-hidden="true"
         className={`answer__reveal ${answered ? '' : 'answer__reveal--reserved'}`.trim()}
       >
-        {question.questionType === 'nature-effects' ? (
+        {view.answer.kind === 'text' && view.answer.detail === 'nature' ? (
           <NatureEffect description={reveal} compact />
-        ) : question.questionType === 'move-purpose' ? (
+        ) : view.answer.kind === 'text' && view.answer.detail === 'move' ? (
           <MoveReveal description={reveal} />
         ) : (
           reveal
@@ -133,9 +133,9 @@ export const QuestionAnswerChoice = ({
       index + 1
     );
   const attackTypes = typeRelations
-    ? question.questionType === 'type-matchup'
+    ? question.visual?.kind === 'type-matchup'
       ? [option]
-      : question.questionType === 'counter-pick'
+      : question.visual?.kind === 'counter-pick'
         ? visual?.types
         : undefined
     : undefined;
@@ -264,7 +264,7 @@ export const QuestionAnswerChoice = ({
       {answered ? (
         <AnswerEffectiveness
           option={option}
-          isTypeOption={question.questionType === 'type-matchup'}
+          isTypeOption={question.visual?.kind === 'type-matchup'}
           attackTypes={attackTypes}
           defenderTypes={question.subject.types ?? []}
           typeRelations={typeRelations}

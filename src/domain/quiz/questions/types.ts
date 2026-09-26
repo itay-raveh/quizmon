@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { pick, shuffle } from '../../../lib/random.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { pokemonOptions, selectPokemonAnswerGroups } from './answers.ts';
@@ -17,7 +18,9 @@ import {
 } from './selection.ts';
 import { typeOptions } from './type-options.ts';
 
-export const buildTypeQuestion: QuestionBuilder = (context) => {
+export const buildTypeQuestion: QuestionBuilder<FamilyRules['type-check']> = (
+  context,
+) => {
   const target = pickTarget(context, ({ types }) => types.length > 0);
   if (!target) return undefined;
   const correct = pick(target.pokemon.types, context.random);
@@ -149,7 +152,9 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
 };
 const sameTypes = (left: readonly string[], right: readonly string[]) =>
   left.length === right.length && left.every((type) => right.includes(type));
-export const buildTypeTwinsQuestion: QuestionBuilder = (context) => {
+export const buildTypeTwinsQuestion: QuestionBuilder<
+  FamilyRules['type-twins']
+> = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const typePairKey = (types: readonly string[]) => [...types].sort().join('|');
   const pairCounts = new Map<string, number>();

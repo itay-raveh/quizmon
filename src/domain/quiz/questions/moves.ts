@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { generations } from '../../pokemon/types.ts';
 import type { QuestionBuilder } from './context.ts';
@@ -16,7 +17,9 @@ const purposeExcludedMoves = new Set([
   'tera-starstorm',
 ]);
 
-export const buildMove: QuestionBuilder = (context) => {
+export const buildMove: QuestionBuilder<
+  FamilyRules['move-types'] | FamilyRules['move-purpose']
+> = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
   const pool = ordered(
@@ -40,19 +43,25 @@ export const buildMove: QuestionBuilder = (context) => {
     for (const rules of ordered(context, contexts)) {
       if (
         !purpose &&
-        context.variant?.excludeTypeHintNames &&
+        'excludeTypeHintNames' in context.variant &&
+        context.variant.excludeTypeHintNames &&
         target.label.toLowerCase().includes(rules.type)
       )
         continue;
       const game = topics.games[rules.game];
       if (!game) continue;
       if (
-        context.variant?.showMoveDescription &&
+        'showMoveDescription' in context.variant &&
+        context.variant.showMoveDescription &&
         !target.descriptions?.[rules.generation]
       )
         continue;
       if (purpose) {
-        if (context.variant?.statusMovesOnly && rules.damageClass !== 'status')
+        if (
+          'statusMovesOnly' in context.variant &&
+          context.variant.statusMovesOnly &&
+          rules.damageClass !== 'status'
+        )
           continue;
         const wrong = pool
           .filter(
@@ -64,7 +73,11 @@ export const buildMove: QuestionBuilder = (context) => {
                   entry.type &&
                   entry.damageClass &&
                   entry.damageClass !== rules.damageClass &&
-                  (!context.variant?.sameMoveType || entry.type === rules.type),
+                  (!(
+                    'sameMoveType' in context.variant &&
+                    context.variant.sameMoveType
+                  ) ||
+                    entry.type === rules.type),
               ),
           )
           .slice(0, 3);
@@ -106,15 +119,16 @@ export const buildMove: QuestionBuilder = (context) => {
       } else {
         const prompt = `What is the default type of ${target.label}?`;
         const types = Object.keys(context.catalog.typeRelations);
-        const options = context.variant?.allOptions
-          ? types
-          : [
-              rules.type,
-              ...ordered(
-                context,
-                types.filter((type) => type !== rules.type),
-              ).slice(0, 3),
-            ];
+        const options =
+          'allOptions' in context.variant && context.variant.allOptions
+            ? types
+            : [
+                rules.type,
+                ...ordered(
+                  context,
+                  types.filter((type) => type !== rules.type),
+                ).slice(0, 3),
+              ];
         return makeTopicQuestion(
           context,
           {
@@ -128,9 +142,11 @@ export const buildMove: QuestionBuilder = (context) => {
             prompt: {
               kind: 'text',
               text: prompt,
-              description: context.variant?.showMoveDescription
-                ? target.descriptions?.[rules.generation]
-                : undefined,
+              description:
+                'showMoveDescription' in context.variant &&
+                context.variant.showMoveDescription
+                  ? target.descriptions?.[rules.generation]
+                  : undefined,
               supportingText: `Pokémon ${game.label}`,
             },
             context: rules.game,

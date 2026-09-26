@@ -8,6 +8,7 @@ import type { QuestionData } from '../types.ts';
 import { targetRepetition } from './repetition.ts';
 import { getSpeciesHistory, speciesQuestion } from './species-history.ts';
 import { makeTopicQuestion } from './topic-support.ts';
+import { getStandardQuestionRule } from '../question-variants.ts';
 
 it('matches form repetitions in legacy and structured identities', () => {
   const catalog = {
@@ -22,6 +23,7 @@ it('matches form repetitions in legacy and structured identities', () => {
     random: () => 0,
     used: new Set<string>(),
     questionType: 'pokedex-scan' as const,
+    variant: getStandardQuestionRule('pokedex-scan')!,
   };
   const topic = makeTopicQuestion(
     context,

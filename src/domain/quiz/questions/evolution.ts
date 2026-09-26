@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
 import { generations } from '../../pokemon/types.ts';
 import type { EvolutionKnowledge } from '../topic-catalog.ts';
@@ -25,7 +26,11 @@ const evolutionRequirements = (entry: EvolutionKnowledge): string[] =>
 
 const evolutionConditionLabel = (
   condition: string,
-  variant: NonNullable<Parameters<QuestionBuilder>[0]['variant']>,
+  variant: NonNullable<
+    Parameters<
+      QuestionBuilder<FamilyRules['evolution-conditions']>
+    >[0]['variant']
+  >,
 ): string | undefined => {
   if (condition === 'trade')
     return variant.compactEvolutionLabels ? 'Trade' : 'Trade this Pokémon';
@@ -76,13 +81,14 @@ const evolutionConditionKind = (condition: string) =>
     ? 'trade'
     : condition.replace(/\d+/g, '#').split(' ')[0];
 
-export const buildEvolution: QuestionBuilder = (context) => {
+export const buildEvolution: QuestionBuilder<
+  FamilyRules['evolution-conditions']
+> = (context) => {
   const topics = context.catalog.topics;
   const variant = context.variant;
   if (!topics || !variant) return;
   const names = new Set(context.pool.map((candidate) => candidate.name));
-  const preferExactLevel =
-    context.random() < (variant.exactLevelQuestionChance ?? 0);
+  const preferExactLevel = context.random() < variant.exactLevelQuestionChance;
   const numericOnlyMethod = (entry: EvolutionKnowledge) =>
     entry.trigger === 'level-up' &&
     entry.conditions.length === 1 &&
@@ -132,10 +138,7 @@ export const buildEvolution: QuestionBuilder = (context) => {
       const label = evolutionConditionLabel(condition, variant);
       return label ? [{ condition, label }] : [];
     });
-    if (
-      allTrue.length <
-      (exactLevel ? 1 : (variant.minimumEvolutionConditions ?? 1))
-    )
+    if (allTrue.length < (exactLevel ? 1 : variant.minimumEvolutionConditions))
       continue;
     const trueChoices = ordered(context, allTrue).slice(
       0,
@@ -250,7 +253,9 @@ export const buildEvolution: QuestionBuilder = (context) => {
       };
   }
 };
-export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
+export const buildEvolutionShiftQuestion: QuestionBuilder<
+  FamilyRules['evolution-shift']
+> = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
   const target = pickTarget(context, ({ evolvesTo, types }) => {
     if (evolvesTo.length !== 1) return false;
@@ -303,7 +308,9 @@ export const buildEvolutionShiftQuestion: QuestionBuilder = (context) => {
 };
 const regionalForm = (name: string): string | undefined =>
   name.match(/-(alola|galar|hisui|paldea)(?:-|$)/)?.[1];
-export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
+export const buildEvolutionLinkQuestion: QuestionBuilder<
+  FamilyRules['evolution-link']
+> = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
   const middleStages = context.pool.filter(
     ({ pokemon }) => pokemon.evolvesFrom && pokemon.evolvesTo.length > 0,
@@ -342,7 +349,11 @@ export const buildEvolutionLinkQuestion: QuestionBuilder = (context) => {
         candidate.speciesName !== pokemon.speciesName &&
         regions.get(option) === region,
     );
-    if (!context.variant?.search && possibleAnswers.length < 3) return [];
+    if (
+      context.variant.response.kind !== 'search' &&
+      possibleAnswers.length < 3
+    )
+      return [];
     return [{ target, before, after, possibleAnswers }];
   });
   const selected = pickFreshTarget(

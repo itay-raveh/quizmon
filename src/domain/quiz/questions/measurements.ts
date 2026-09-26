@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import {
   formatMeasurement,
   isMeasurementClusterMember,
@@ -14,9 +15,11 @@ import {
 } from './topic-support.ts';
 
 export const buildMeasurement =
-  (measurement: 'height' | 'weight'): QuestionBuilder =>
+  (
+    measurement: 'height' | 'weight',
+  ): QuestionBuilder<FamilyRules['weight-comparison']> =>
   (context) => {
-    const rules = context.variant?.measurement;
+    const rules = context.variant.measurement;
     if (!rules) return;
     const pool = distinctPokemon(
       orderedPokemon(

@@ -1,5 +1,5 @@
+import type { PokemonDistractors, SimilarityWeights } from './family-rules.ts';
 import { createSeededRandom, shuffle } from '../../../lib/random.ts';
-import { questionTuning, type VariantRules } from '../question-variants.ts';
 import { statNames, type PokemonKnowledge } from '../../pokemon/types.ts';
 import type { Candidate, QuestionContext } from './context.ts';
 import { groupPokemon } from './sampling.ts';
@@ -60,9 +60,8 @@ const totalStats = (pokemon: PokemonKnowledge): number =>
 
 export const createPokemonSimilarityScorer = (
   target: PokemonKnowledge,
-  weightOverrides?: VariantRules['similarityWeights'],
+  weights: SimilarityWeights,
 ): ((candidate: PokemonKnowledge) => number) => {
-  const weights = { ...questionTuning.similarity, ...weightOverrides };
   const targetStats = totalStats(target);
   const targetStage = evolutionStage(target);
 
@@ -88,7 +87,9 @@ export const createPokemonSimilarityScorer = (
 };
 
 export const pokemonOptions = (
-  context: QuestionContext,
+  context: QuestionContext<PokemonDistractors> & {
+    variant: PokemonDistractors;
+  },
   {
     correct: target,
     excluded = [],
@@ -99,9 +100,10 @@ export const pokemonOptions = (
     candidates?: readonly Candidate[];
   },
 ): string[] => {
+  const variant = context.variant;
   const similarityToTarget = createPokemonSimilarityScorer(
     target.pokemon,
-    context.variant?.similarityWeights,
+    variant.similarityWeights,
   );
   const similarityFor = (name: string) => {
     const candidate = context.catalog.pokemon[name];
@@ -124,18 +126,13 @@ export const pokemonOptions = (
       pokemon: context.catalog.pokemon[candidate]!,
     })),
   );
-  if (context.variant?.distractorRankDirection === -1) scored.reverse();
-  const shortlistSize = Math.max(
-    3,
-    Math.floor(
-      context.variant?.distractorPoolSize ?? questionTuning.distractorPoolSize,
-    ),
-  );
+  if (variant.distractorRankDirection === 'least-similar') scored.reverse();
+  const shortlistSize = Math.max(3, Math.floor(variant.distractorPoolSize));
   let shortlisted = scored.slice(0, shortlistSize);
   if (
-    context.variant?.distractorPoolSize === undefined &&
+    variant.smallPoolPolicy === 'semantic-band' &&
     scored.length < shortlistSize &&
-    context.variant?.distractorRankDirection !== -1
+    variant.distractorRankDirection !== 'least-similar'
   ) {
     const bestScore = scored[0]?.[0]
       ? similarityFor(scored[0][0].name)
@@ -143,9 +140,7 @@ export const pokemonOptions = (
     const semanticBand = scored.filter(
       (group) =>
         similarityFor(group[0]!.name) >=
-        bestScore *
-          (context.variant?.smallPoolSimilarityRatio ??
-            questionTuning.smallPoolSimilarityRatio),
+        bestScore * variant.smallPoolSimilarityRatio,
     );
     shortlisted = semanticBand.length >= 3 ? semanticBand : scored.slice(0, 3);
   }
@@ -168,14 +163,7 @@ export const pokemonOptions = (
     Math.abs(group[0]!.pokemon.speciesId - target.pokemon.speciesId);
   const spreadBand = [...shortlisted]
     .sort((left, right) => distanceFromTarget(right) - distanceFromTarget(left))
-    .slice(
-      0,
-      Math.ceil(
-        shortlisted.length *
-          (context.variant?.distantSpeciesFraction ??
-            questionTuning.distantSpeciesFraction),
-      ),
-    )
+    .slice(0, Math.ceil(shortlisted.length * variant.distantSpeciesFraction))
     .flat();
   const spreadSpecies = new Set(
     spreadBand.map(({ pokemon }) => pokemon.speciesId),

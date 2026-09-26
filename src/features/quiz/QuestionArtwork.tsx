@@ -22,6 +22,7 @@ import {
   formatPokemonTypeAnnouncement,
 } from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
+import { getQuestionView } from '@/domain/quiz/question-presentation';
 import { Fragment, type CSSProperties } from 'react';
 interface QuestionArtworkProps {
   answered: boolean;
@@ -49,6 +50,7 @@ export const QuestionArtwork = ({
   question,
 }: QuestionArtworkProps) => {
   const { visual } = question;
+  const view = getQuestionView(question);
   const rendering = getQuestionRendering(question);
   const state = { answered, cluesShown };
   const subjectTypesVisible =
@@ -57,7 +59,7 @@ export const QuestionArtwork = ({
       isVisible(rendering.subject.types ?? 'always', state));
   const media = question.media;
   const answerOnlyPortrait =
-    question.questionType === 'field-notes' && usesSearchAnswer(question);
+    view.subject?.portrait === 'after-answer' && usesSearchAnswer(question);
   const subjectVisual = question.optionVisuals?.[question.subject.name];
   const subjectSearchOption = question.searchOptions?.find(
     ({ name }) => name === question.subject.name,
@@ -73,19 +75,18 @@ export const QuestionArtwork = ({
     question.prompt.kind === 'pokemon'
       ? question.prompt.dexNumber
       : (subjectVisual?.dexNumber ?? subjectSearchOption?.dexNumber);
-  const subjectPolicy: EntityRendering = [
-    'pokedex-scan',
-    'whos-that-pokemon',
-    'champion',
-    'field-notes',
-  ].includes(question.questionType)
-    ? {
-        ...rendering.subject,
-        sprite: answerOnlyPortrait ? 'after-answer' : rendering.subject.sprite,
-        name: rendering.related.name === 'never' ? 'never' : 'after-answer',
-        number: rendering.related.number === 'never' ? 'never' : 'after-answer',
-      }
-    : rendering.subject;
+  const subjectPolicy: EntityRendering =
+    view.subject?.identity === 'after-answer'
+      ? {
+          ...rendering.subject,
+          sprite: answerOnlyPortrait
+            ? 'after-answer'
+            : rendering.subject.sprite,
+          name: rendering.related.name === 'never' ? 'never' : 'after-answer',
+          number:
+            rendering.related.number === 'never' ? 'never' : 'after-answer',
+        }
+      : rendering.subject;
   const subject: Parameters<typeof QuestionSubject>[0] = {
     policy: subjectPolicy,
     state,
@@ -180,7 +181,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (question.questionType === 'nature-effects') {
+  if (view.answer.kind === 'text' && view.answer.detail === 'nature') {
     const effect = question.optionReveals?.[question.answer.correctOptions[0]!];
     if (effect)
       return (

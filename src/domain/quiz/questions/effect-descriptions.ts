@@ -1,5 +1,5 @@
+import type { EffectRules } from './family-rules.ts';
 import type { TopicCatalog } from '../topic-catalog.ts';
-import { questionTuning } from '../question-variants.ts';
 import type { QuestionContext } from './context.ts';
 import { makeTopicQuestion, ordered, topicSubject } from './topic-support.ts';
 
@@ -24,7 +24,7 @@ const similarity = (left: string, right: string) => {
 };
 
 export const buildEffectDescription = (
-  context: QuestionContext,
+  context: QuestionContext<EffectRules> & { variant: EffectRules },
   target: TopicCatalog['abilities'][number] | TopicCatalog['items'][number],
   kind: 'ability' | 'item',
   entities: (
@@ -36,7 +36,7 @@ export const buildEffectDescription = (
       !context.generations || context.generations.includes(entry.generation),
   );
   for (const fact of ordered(context, descriptions)) {
-    if (kind === 'ability' && context.variant?.search) {
+    if (kind === 'ability' && context.variant.response.kind === 'search') {
       const searchable = entities.filter((entity) =>
         entity.descriptions?.some(
           (entry) => entry.generation === fact.generation,
@@ -75,13 +75,11 @@ export const buildEffectDescription = (
         'ability',
       );
     }
-    const exact = context.variant?.useFullEffectText;
+    const exact = context.variant.useFullEffectText;
     const correct = exact ? fact.explanation : fact.text;
-    const sameCategory = context.variant?.sameItemCategory;
-    const minimumSimilarity = context.variant?.minimumEffectSimilarity ?? 0;
-    const maximumSimilarity =
-      context.variant?.maximumEffectSimilarity ??
-      questionTuning.maximumEffectSimilarity;
+    const sameCategory = context.variant.sameItemCategory;
+    const minimumSimilarity = context.variant.minimumEffectSimilarity;
+    const maximumSimilarity = context.variant.maximumEffectSimilarity;
     const alternatives = ordered(context, entities)
       .flatMap((entity) => {
         const entry = entity.descriptions?.find(
@@ -114,7 +112,7 @@ export const buildEffectDescription = (
             (entry) => entry.text.toLowerCase() === text.toLowerCase(),
           ) === index,
       );
-    if (context.variant?.preferSimilarEffects ?? true)
+    if (context.variant.preferSimilarEffects)
       alternatives.sort((a, b) => b.score - a.score);
     const options =
       kind === 'ability'

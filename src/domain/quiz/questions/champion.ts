@@ -1,3 +1,4 @@
+import type { FamilyRules } from './family-rules.ts';
 import type { PokemonKnowledge } from '../../pokemon/types.ts';
 import { pokemonOptions } from './answers.ts';
 import { makeQuestion } from './assembly.ts';
@@ -21,7 +22,9 @@ const canIdentify = ({
     types.length > 0,
   );
 
-export const buildChampionQuestion: QuestionBuilder = (context) => {
+export const buildChampionQuestion: QuestionBuilder<FamilyRules['champion']> = (
+  context,
+) => {
   const eligible = unambiguousDescriptions(
     context.pool.filter(({ pokemon }) => canIdentify(pokemon)),
   );
