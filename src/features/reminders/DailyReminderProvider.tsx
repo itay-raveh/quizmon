@@ -20,6 +20,14 @@ import {
 import { VAPID_PUBLIC_KEY } from './reminder-config';
 
 const SUBSCRIPTION_ID_KEY = 'quizmon.baseline.daily-reminder-subscription';
+const REMINDER_HOUR_KEY = 'quizmon.baseline.daily-reminder-hour';
+
+const readReminderHour = (): number => {
+  const value = readStoredValue('localStorage', REMINDER_HOUR_KEY);
+  return value !== null && /^(?:[0-9]|1[0-9]|2[0-3])$/.test(value)
+    ? Number(value)
+    : 8;
+};
 
 const supportsPush = () =>
   'Notification' in window &&
@@ -46,6 +54,7 @@ const getSubscriptionId = (): string => {
 const registerSubscription = async (
   id: string,
   subscription: PushSubscription,
+  hour: number,
 ) => {
   const today = getUtcDate();
   const response = await fetch(`/api/daily-reminders/${id}`, {
@@ -54,6 +63,7 @@ const registerSubscription = async (
         readDailyState(today).completed.length > 0 ? today : undefined,
       subscription: subscription.toJSON(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+      hour,
     }),
     headers: { 'Content-Type': 'application/json' },
     method: 'PUT',
@@ -70,6 +80,7 @@ export const DailyReminderProvider = ({
   const [status, setStatus] = useState<DailyReminderStatus>(getInitialStatus);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hour, setHourState] = useState(readReminderHour);
 
   useEffect(() => {
     if (status !== 'checking') return;
@@ -84,7 +95,7 @@ export const DailyReminderProvider = ({
           return;
         }
 
-        await registerSubscription(getSubscriptionId(), subscription);
+        await registerSubscription(getSubscriptionId(), subscription, hour);
         if (active) setStatus('enabled');
       })
       .catch(() => {
@@ -96,7 +107,7 @@ export const DailyReminderProvider = ({
     return () => {
       active = false;
     };
-  }, [status]);
+  }, [hour, status]);
 
   const enable = useCallback(async () => {
     if (!supportsPush() || status === 'install-required') return;
@@ -121,7 +132,7 @@ export const DailyReminderProvider = ({
           applicationServerKey: VAPID_PUBLIC_KEY,
           userVisibleOnly: true,
         }));
-      await registerSubscription(getSubscriptionId(), subscription);
+      await registerSubscription(getSubscriptionId(), subscription, hour);
       setStatus('enabled');
     } catch {
       setError('The reminder could not be turned on. Try again.');
@@ -129,7 +140,38 @@ export const DailyReminderProvider = ({
     } finally {
       setBusy(false);
     }
-  }, [status]);
+  }, [hour, status]);
+
+  const setHour = useCallback(
+    async (nextHour: number) => {
+      if (!Number.isInteger(nextHour) || nextHour < 0 || nextHour > 23) return;
+      setBusy(true);
+      setError(null);
+      try {
+        if (
+          !writeStoredValue('localStorage', REMINDER_HOUR_KEY, String(nextHour))
+        )
+          throw new Error('The reminder time could not be saved.');
+        if (status === 'enabled') {
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.getSubscription();
+          if (!subscription) throw new Error('The reminder is unavailable.');
+          await registerSubscription(
+            getSubscriptionId(),
+            subscription,
+            nextHour,
+          );
+        }
+        setHourState(nextHour);
+      } catch {
+        writeStoredValue('localStorage', REMINDER_HOUR_KEY, String(hour));
+        setError('The reminder time could not be saved. Try again.');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [hour, status],
+  );
 
   const disable = useCallback(async () => {
     if (!supportsPush()) return;
@@ -171,8 +213,26 @@ export const DailyReminderProvider = ({
   }, []);
 
   const value = useMemo(
-    () => ({ busy, disable, enable, error, recordDailyCompletion, status }),
-    [busy, disable, enable, error, recordDailyCompletion, status],
+    () => ({
+      busy,
+      disable,
+      enable,
+      error,
+      hour,
+      recordDailyCompletion,
+      setHour,
+      status,
+    }),
+    [
+      busy,
+      disable,
+      enable,
+      error,
+      hour,
+      recordDailyCompletion,
+      setHour,
+      status,
+    ],
   );
 
   return <DailyReminderContext value={value}>{children}</DailyReminderContext>;

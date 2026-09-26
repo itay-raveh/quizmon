@@ -400,6 +400,31 @@
   outline-offset: 0.1rem;
 }
 
+.reminder-time-control {
+  display: flex;
+  margin-top: 0.7rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.reminder-time-control select {
+  min-height: 2.5rem;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid var(--navy);
+  border-radius: 0.3rem;
+  background: var(--game-surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.reminder-time-control select:focus-visible {
+  outline: 0.2rem solid var(--focus);
+  outline-offset: 0.1rem;
+}
+
 .experience-status {
   margin: 0.55rem 0 0;
   color: var(--muted);

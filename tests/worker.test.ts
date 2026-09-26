@@ -47,10 +47,80 @@ describe('Daily reminders', () => {
       new Date(
         getNextReminderAt(
           'America/New_York',
+          8,
           Date.parse('2026-10-31T13:00:00.000Z'),
         ),
       ).toISOString(),
     ).toBe('2026-11-01T13:00:00.000Z');
+  });
+
+  it.each([-1, 24, 1.5, '8', null])(
+    'rejects invalid reminder hour %j',
+    async (hour) => {
+      const storage = { get: vi.fn(), put: vi.fn(), setAlarm: vi.fn() };
+      const reminder = new DailyReminder({ storage }, makeEnv().env);
+      const response = await reminder.fetch(
+        new Request('https://example.com/', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subscription: {
+              endpoint: 'https://example.com/push',
+              keys: { auth: 'test-auth', p256dh: 'test-key' },
+            },
+            timeZone: 'UTC',
+            hour,
+          }),
+        }),
+      );
+      expect(response.status).toBe(400);
+      expect(storage.put).not.toHaveBeenCalled();
+      expect(storage.setAlarm).not.toHaveBeenCalled();
+    },
+  );
+
+  it('reschedules a changed hour', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-09-08T09:00:00.000Z'));
+    try {
+      const storage = {
+        get: vi.fn().mockResolvedValue({
+          subscription: {
+            endpoint: 'https://example.com/push',
+            keys: { auth: 'test-auth', p256dh: 'test-key' },
+          },
+          timeZone: 'UTC',
+          hour: 8,
+        }),
+        put: vi.fn(),
+        setAlarm: vi.fn(),
+      };
+      const reminder = new DailyReminder({ storage }, makeEnv().env);
+      const response = await reminder.fetch(
+        new Request('https://example.com/', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subscription: {
+              endpoint: 'https://example.com/push',
+              keys: { auth: 'test-auth', p256dh: 'test-key' },
+            },
+            timeZone: 'UTC',
+            hour: 12,
+          }),
+        }),
+      );
+      expect(response.status).toBe(204);
+      expect(storage.put).toHaveBeenCalledWith(
+        'daily-reminder',
+        expect.objectContaining({ hour: 12 }),
+      );
+      expect(storage.setAlarm).toHaveBeenCalledExactlyOnceWith(
+        Date.parse('2026-09-08T12:00:00.000Z'),
+      );
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it.each([
@@ -98,6 +168,7 @@ describe('Daily reminders', () => {
           expect(storage.put).toHaveBeenCalledWith('daily-reminder', {
             ...registration,
             completedDate,
+            hour: 8,
           });
         } else {
           expect(storage.put).not.toHaveBeenCalled();

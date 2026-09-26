@@ -1,5 +1,3 @@
-const REMINDER_HOUR = 8;
-
 interface ZonedDateParts {
   day: number;
   hour: number;
@@ -75,12 +73,13 @@ const addLocalDay = (parts: ZonedDateParts): ZonedDateParts => {
 
 export const getNextReminderAt = (
   timeZone: string,
+  hour: number,
   now = Date.now(),
 ): number => {
   const localNow = getZonedDateParts(now, timeZone);
   const target = {
     ...localNow,
-    hour: REMINDER_HOUR,
+    hour,
     minute: 0,
     second: 0,
   };

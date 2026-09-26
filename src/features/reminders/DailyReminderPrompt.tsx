@@ -3,6 +3,7 @@ import { BellSimpleRingingIcon } from '@/components/icons';
 import { useInstall } from '@/features/installation/install-context';
 import { InstallAction } from '@/features/installation/InstallAction';
 import { useDailyReminder } from '@/features/reminders/daily-reminder-context';
+import { formatReminderHour } from '@/features/reminders/reminder-config';
 import {
   markDailyReminderOffered,
   shouldOfferDailyReminder,
@@ -11,7 +12,7 @@ import { readCompletedDailyCount } from '@/lib/storage/results-storage';
 import { useEffect, useState } from 'react';
 
 export const DailyReminderPrompt = ({ dailyDate }: { dailyDate: string }) => {
-  const { busy, enable, error, recordDailyCompletion, status } =
+  const { busy, enable, error, hour, recordDailyCompletion, status } =
     useDailyReminder();
   const [completedDailyCount] = useState(readCompletedDailyCount);
   const installation = useInstall();
@@ -72,7 +73,10 @@ export const DailyReminderPrompt = ({ dailyDate }: { dailyDate: string }) => {
       <BellSimpleRingingIcon aria-hidden="true" weight="bold" />
       <span className="daily-reminder-offer__copy">
         <strong id="daily-reminder-title">Daily reminder?</strong>
-        <span>Get a reminder for the Daily at 8:00 AM in your time zone.</span>
+        <span>
+          Get a reminder for the Daily at {formatReminderHour(hour)} in your
+          time zone. Change the time in Settings.
+        </span>
         {error ? <span role="alert">{error}</span> : null}
       </span>
       <span className="daily-reminder-offer__actions">

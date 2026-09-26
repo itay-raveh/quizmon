@@ -42,6 +42,7 @@ const key = (max: number) =>
     .regex(/^[A-Za-z0-9_-]+$/);
 const registrationSchema = z.object({
   completedDate: dailyDateSchema.optional(),
+  hour: z.int().min(0).max(23).default(8),
   subscription: z.object({
     endpoint: z
       .url()
@@ -151,7 +152,9 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
       ...registration,
       completedDate: registration.completedDate ?? current?.completedDate,
     });
-    await this.ctx.storage.setAlarm(getNextReminderAt(registration.timeZone));
+    await this.ctx.storage.setAlarm(
+      getNextReminderAt(registration.timeZone, registration.hour),
+    );
     return noStoreResponse(null, 204);
   }
 
@@ -197,7 +200,11 @@ export class DailyReminder extends DurableObject<DailyReminderEnv> {
     }
 
     await this.ctx.storage.setAlarm(
-      getNextReminderAt(registration.timeZone, Date.now() + 60_000),
+      getNextReminderAt(
+        registration.timeZone,
+        registration.hour,
+        Date.now() + 60_000,
+      ),
     );
   }
 }
