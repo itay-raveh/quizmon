@@ -27,6 +27,10 @@ export const buildRegion: QuestionBuilder = (context) => {
       (location) =>
         topicEligible(context, location) &&
         regions.some((region) => region.name === location.region) &&
+        !/^(?:\?+|unknown\b.*|caf[eé]|restaurant)$/i.test(location.label) &&
+        !/^(?:north|south|east|west) province \(area \w+\)$/i.test(
+          location.label,
+        ) &&
         !topics.regions.some((region) =>
           location.label.toLowerCase().includes(region.name.toLowerCase()),
         ),
