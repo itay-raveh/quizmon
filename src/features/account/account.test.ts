@@ -2,18 +2,36 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { UpdateType } from '@powersync/web';
 import * as storage from '../../lib/storage/player-storage';
 import * as saveHealth from '../../lib/storage/save-health';
+const signInWithCode = vi.hoisted(() => vi.fn());
+vi.mock('better-auth/react', () => ({
+  createAuthClient: () => ({ signIn: { emailOtp: signInWithCode } }),
+}));
 import {
   accountSnapshot,
   connector,
   continueSignIn,
   loadAccountConfig,
   reconnectAccount,
+  verifySignInCode,
 } from './account';
 
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
+
+it.each(['INVALID_OTP', 'OTP_EXPIRED'])(
+  'shows a plain-language error for %s',
+  async (code) => {
+    signInWithCode.mockResolvedValue({
+      error: { code, message: 'Invalid OTP' },
+    });
+
+    await expect(
+      verifySignInCode('trainer@example.com', '123456'),
+    ).rejects.toThrow('Invalid code');
+  },
+);
 
 it('reauthenticates for save recovery without reading the damaged account state', async () => {
   const owner = crypto.randomUUID();

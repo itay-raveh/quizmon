@@ -179,7 +179,11 @@ export async function verifySignInCode(email: string, otp: string) {
   clearSentryUser();
   const result = await auth.signIn.emailOtp({ email, otp });
   if (result.error)
-    throw new Error(result.error.message ?? 'Check your code and try again.');
+    throw new Error(
+      result.error.code === 'INVALID_OTP' || result.error.code === 'OTP_EXPIRED'
+        ? 'Invalid code'
+        : (result.error.message ?? 'Check your code and try again.'),
+    );
   await continueSignIn();
 }
 export async function continueSignIn() {

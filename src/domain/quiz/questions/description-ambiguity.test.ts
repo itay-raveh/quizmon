@@ -3,9 +3,22 @@ import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
 import { buildQuestionType } from './registry.ts';
 import { redactName } from './prompts.ts';
+import {
+  createPokemonSearchEntry,
+  createSearch,
+} from '../../pokemon/search.ts';
 
 const ambiguous = ['celesteela', 'kartana', 'pheromosa'];
-const names = [...ambiguous, 'mew', 'bulbasaur', 'charmander', 'squirtle'];
+const names = [
+  ...ambiguous,
+  'mew',
+  'bulbasaur',
+  'charmander',
+  'squirtle',
+  'voltorb',
+  'sharpedo',
+  'sharpedo-mega',
+];
 const pokemon = catalog.pokemon as unknown as PokemonCatalog['pokemon'];
 const pool = names.map((name) => ({ name, pokemon: pokemon[name]! }));
 
@@ -36,9 +49,13 @@ it('keeps duplicate catalog clues out of Field Notes and the League finale', () 
     for (const name of ambiguous) {
       expect(question!.subject.name).not.toBe(name);
       expect(question!.options).not.toContain(name);
-      expect(
-        question!.searchOptions?.map((option) => option.name) ?? [],
-      ).not.toContain(name);
+    }
+    if (question!.searchOptions) {
+      const search = createSearch(
+        question!.searchOptions.map(createPokemonSearchEntry),
+      );
+      expect(search('voltorb').map(({ name }) => name)).toContain('voltorb');
+      expect(search('sharpedo')[0]?.name).toBe('sharpedo');
     }
   }
 });

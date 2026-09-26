@@ -59,16 +59,10 @@ export const buildChampionQuestion: QuestionBuilder = (context) => {
       },
       `National Pokédex number #${target.pokemon.speciesId}.`,
     ],
-    searchOptions: eligible
-      .filter(
-        ({ name, pokemon }) =>
-          name === target.name ||
-          pokemon.speciesName !== target.pokemon.speciesName,
-      )
-      .map(({ name, pokemon }) => ({
-        sprite: pokemon.sprite,
-        dexNumber: pokemon.speciesId,
-        name,
-      })),
+    searchOptions: context.pool.map(({ name, pokemon }) => ({
+      sprite: pokemon.sprite,
+      dexNumber: pokemon.speciesId,
+      name,
+    })),
   };
 };

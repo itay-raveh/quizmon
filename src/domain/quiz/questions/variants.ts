@@ -3,7 +3,6 @@ import { attackMultiplier } from '../../pokemon/type-effectiveness.ts';
 import { type VariantRules } from '../question-variants.ts';
 import type { Difficulty } from '../difficulty.ts';
 import type { QuestionContext, QuestionDraft } from './context.ts';
-import { unambiguousDescriptions } from './prompts.ts';
 export const applyQuestionVariant = (
   draft: QuestionDraft,
   context: QuestionContext,
@@ -27,25 +26,11 @@ export const applyQuestionVariant = (
     question.answer = { ...question.answer, interaction: 'search' };
     question.optionVisuals = undefined;
     question.optionDexNumbers = undefined;
-    question.searchOptions = (
-      context.questionType === 'field-notes'
-        ? unambiguousDescriptions(context.pool)
-        : context.pool
-    )
-      .filter(
-        ({ pokemon, name }) =>
-          context.questionType !== 'field-notes' ||
-          (pokemon.description &&
-            pokemon.hasDistinctDescription &&
-            (name === question.subject.name ||
-              pokemon.speciesName !==
-                context.catalog.pokemon[question.subject.name]?.speciesName)),
-      )
-      .map(({ name, pokemon }) => ({
-        name,
-        dexNumber: pokemon.speciesId,
-        sprite: pokemon.sprite,
-      }));
+    question.searchOptions = context.pool.map(({ name, pokemon }) => ({
+      name,
+      dexNumber: pokemon.speciesId,
+      sprite: pokemon.sprite,
+    }));
   }
   if (rules.typeGrid) {
     question.options = Object.keys(context.catalog.typeRelations);
