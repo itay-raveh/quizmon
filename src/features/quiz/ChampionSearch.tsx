@@ -9,6 +9,7 @@ import type { PokemonSearchOption } from '@/domain/quiz/types';
 import { useMemo, useState } from 'react';
 
 interface ChampionSearchProps {
+  answerKind?: 'pokemon' | 'ability';
   policy: EntityRendering;
   cluesShown: number;
   answered: boolean;
@@ -20,6 +21,7 @@ interface ChampionSearchProps {
 }
 
 export const ChampionSearch = ({
+  answerKind = 'pokemon',
   policy,
   cluesShown,
   answered,
@@ -53,27 +55,32 @@ export const ChampionSearch = ({
     <PokemonSearch
       disabled={disabled || answered}
       mode="champion"
-      renderPokemon={(pokemon) => (
-        <>
-          {pokemon.sprite ? (
-            <span className="pokemon-picker__sprite" aria-hidden="true">
-              <QuestionSprite
-                src={pokemon.sprite}
-                rule={policy.sprite}
-                state={{ answered, cluesShown }}
-              />
-            </span>
-          ) : null}
-          <QuestionIdentity
-            name={pokemon.name}
-            dexNumber={pokemon.dexNumber}
-            policy={policy}
-            state={{ answered, cluesShown }}
-            hideNumberFromAccessibility
-          />
-        </>
-      )}
+      renderPokemon={
+        answerKind === 'ability'
+          ? undefined
+          : (pokemon) => (
+              <>
+                {pokemon.sprite ? (
+                  <span className="pokemon-picker__sprite" aria-hidden="true">
+                    <QuestionSprite
+                      src={pokemon.sprite}
+                      rule={policy.sprite}
+                      state={{ answered, cluesShown }}
+                    />
+                  </span>
+                ) : null}
+                <QuestionIdentity
+                  name={pokemon.name}
+                  dexNumber={pokemon.dexNumber}
+                  policy={policy}
+                  state={{ answered, cluesShown }}
+                  hideNumberFromAccessibility
+                />
+              </>
+            )
+      }
       onConfirm={onAnswer}
+      searchSubject={answerKind === 'ability' ? 'ability' : 'Pokémon'}
       onQueryChange={setQuery}
       options={searchOptions}
       query={query}

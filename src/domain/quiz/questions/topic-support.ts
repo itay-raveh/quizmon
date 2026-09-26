@@ -67,7 +67,8 @@ export const makeTopicQuestion = (
     new Set(options).size !== options.length ||
     new Set(options.map((option) => labels[option] ?? option)).size !==
       options.length ||
-    options.length < (context.variant?.allOptions ? 2 : 4)
+    options.length <
+      (context.variant?.search ? 1 : context.variant?.allOptions ? 2 : 4)
   )
     return;
   const primary = [

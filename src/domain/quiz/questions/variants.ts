@@ -26,7 +26,7 @@ export const applyQuestionVariant = (
     question.answer = { ...question.answer, interaction: 'search' };
     question.optionVisuals = undefined;
     question.optionDexNumbers = undefined;
-    question.searchOptions = context.pool.map(({ name, pokemon }) => ({
+    question.searchOptions ??= context.pool.map(({ name, pokemon }) => ({
       name,
       dexNumber: pokemon.speciesId,
       sprite: pokemon.sprite,

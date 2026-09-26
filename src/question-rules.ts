@@ -162,9 +162,7 @@ export const questionVariants = {
       preferSimilarEffects: true,
     },
     5: {
-      minimumEffectSimilarity: 0,
-      maximumEffectSimilarity: 0.35,
-      preferSimilarEffects: true,
+      search: true,
       allowMissingSprites: true,
     },
   },
@@ -432,7 +430,7 @@ type FamilyRules = {
     | 'preferCloseConditionValues'
   >;
   'ability-effects': EffectDistractors &
-    Pick<VariantRules, 'allowMissingSprites'>;
+    Pick<VariantRules, 'allowMissingSprites' | 'search'>;
   'held-item-effects': EffectDistractors &
     Pick<VariantRules, 'sameItemCategory' | 'allowMissingSprites'>;
   'hidden-abilities': Pick<

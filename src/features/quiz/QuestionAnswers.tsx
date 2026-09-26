@@ -59,7 +59,8 @@ export const QuestionAnswers = ({
         'answers',
         question.questionType === 'nature-effects' ? 'answers--nature' : '',
         question.questionType === 'held-item-effects' ||
-        question.questionType === 'ability-effects' ||
+        (question.questionType === 'ability-effects' &&
+          question.answer.correctOptions[0] !== question.subject.name) ||
         question.options.some(
           (option) => (question.optionLabels?.[option]?.length ?? 0) > 75,
         )

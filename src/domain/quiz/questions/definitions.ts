@@ -85,7 +85,7 @@ export const questionDefinitions = {
   'ability-effects': {
     label: 'Ability effects',
     specialty: 'ability',
-    description: 'Match an ability to its effect.',
+    description: 'Identify an ability from its effect.',
     group: 'battle',
   },
   'held-item-effects': {

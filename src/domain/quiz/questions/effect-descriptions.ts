@@ -36,6 +36,45 @@ export const buildEffectDescription = (
       !context.generations || context.generations.includes(entry.generation),
   );
   for (const fact of ordered(context, descriptions)) {
+    if (kind === 'ability' && context.variant?.search) {
+      const searchable = entities.filter((entity) =>
+        entity.descriptions?.some(
+          (entry) => entry.generation === fact.generation,
+        ),
+      );
+      if (
+        searchable.some(
+          (entity) =>
+            entity.name !== target.name &&
+            entity.descriptions?.some(
+              (entry) =>
+                entry.generation === fact.generation &&
+                entry.text === fact.text,
+            ),
+        )
+      )
+        continue;
+      const prompt = 'Which Ability has this effect?';
+      return makeTopicQuestion(
+        context,
+        { ...topicSubject(context, kind, target), generation: fact.generation },
+        prompt,
+        target.name,
+        [target.name],
+        {
+          context: `effect-description:${fact.generation}`,
+          prompt: {
+            kind: 'text',
+            text: prompt,
+            description: fact.text,
+            supportingText: `Generation ${fact.generation}`,
+          },
+          searchOptions: searchable.map(({ name }) => ({ name })),
+          explanation: fact.text,
+        },
+        'ability',
+      );
+    }
     const exact = context.variant?.useFullEffectText;
     const correct = exact ? fact.explanation : fact.text;
     const sameCategory = context.variant?.sameItemCategory;
@@ -61,6 +100,8 @@ export const buildEffectDescription = (
         if (score < minimumSimilarity) return [];
         return [
           {
+            name: entity.name,
+            label: entity.label,
             text: exact ? entry.explanation : entry.text,
             score,
           },
@@ -75,23 +116,27 @@ export const buildEffectDescription = (
       );
     if (context.variant?.preferSimilarEffects ?? true)
       alternatives.sort((a, b) => b.score - a.score);
-    const options = [
-      correct,
-      ...alternatives.slice(0, 3).map(({ text }) => text),
-    ];
+    const options =
+      kind === 'ability'
+        ? [target.name, ...alternatives.slice(0, 3).map(({ name }) => name)]
+        : [correct, ...alternatives.slice(0, 3).map(({ text }) => text)];
     if (options.length !== 4) continue;
-    const prompt = `What does ${target.label} do?`;
+    const prompt =
+      kind === 'ability'
+        ? 'Which Ability has this effect?'
+        : `What does ${target.label} do?`;
     return makeTopicQuestion(
       context,
       { ...topicSubject(context, kind, target), generation: fact.generation },
       prompt,
-      correct,
+      kind === 'ability' ? target.name : correct,
       options,
       {
         context: `effect-description:${fact.generation}`,
         prompt: {
           kind: 'text',
           text: prompt,
+          ...(kind === 'ability' ? { description: fact.text } : {}),
           ...(context.questionType === 'medicine-cabinet'
             ? {}
             : { supportingText: `Generation ${fact.generation}` }),
@@ -99,7 +144,15 @@ export const buildEffectDescription = (
         ...(kind === 'item' && 'sprite' in target && target.sprite
           ? { media: { kind: 'pixel-sprite' as const, src: target.sprite } }
           : {}),
-        optionLabels: Object.fromEntries(options.map((text) => [text, text])),
+        optionLabels:
+          kind === 'ability'
+            ? Object.fromEntries([
+                [target.name, target.label] as const,
+                ...alternatives
+                  .slice(0, 3)
+                  .map(({ name, label }) => [name, label] as const),
+              ])
+            : Object.fromEntries(options.map((text) => [text, text])),
         explanation: kind === 'ability' ? fact.text : fact.explanation,
       },
       kind === 'ability' ? 'ability' : 'knowledge',

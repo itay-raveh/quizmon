@@ -6,6 +6,7 @@ import { createSeededRandom } from '../../../lib/random.ts';
 import { getQuestionVariant } from '../question-variants.ts';
 import { buildEffectDescription } from './effect-descriptions.ts';
 import { buildQuestionType } from './registry.ts';
+import { isQuestionData } from '../question-lineup.ts';
 
 const items = [...itemData.values, ...moreItems.values];
 const catalog = {
@@ -34,9 +35,23 @@ it('builds ability, bag-item, and held-item effects from their own source pools'
         questionType,
       );
       expect(question, `${questionType} level ${difficulty}`).toBeDefined();
-      expect(question!.options).toHaveLength(4);
-      expect(new Set(question!.options).size).toBe(4);
+      expect(question!.options).toHaveLength(
+        questionType === 'ability-effects' && difficulty === 5 ? 1 : 4,
+      );
+      expect(new Set(question!.options).size).toBe(question!.options.length);
       expect(question!.options).toContain(question!.answer.correctOptions[0]);
+      if (questionType === 'ability-effects') {
+        const answer = question!.answer.correctOptions[0]!;
+        expect(answer).toBe(question!.subject.name);
+        expect(question!.prompt.kind).toBe('text');
+        expect(
+          question!.prompt.kind === 'text' && question!.prompt.description,
+        ).toBeTruthy();
+        expect(question!.answer.interaction).toBe(
+          difficulty === 5 ? 'search' : 'single-choice',
+        );
+        expect(isQuestionData(question)).toBe(true);
+      }
       if (kind) {
         const source = items.filter((item) => item.effectKind === kind);
         expect(
@@ -57,9 +72,9 @@ it('builds ability, bag-item, and held-item effects from their own source pools'
     }
 });
 
-it('uses short Ability effects choices at level 5', () => {
+it('searches ability names from an unambiguous short effect at level 5', () => {
   const abilities = catalog.topics!.abilities;
-  const target = abilities.find((ability) => ability.name === 'mold-breaker')!;
+  const target = abilities.find((ability) => ability.name === 'levitate')!;
   const description = target.descriptions!.find(
     (entry) => entry.generation === 'IX',
   )!;
@@ -79,18 +94,30 @@ it('uses short Ability effects choices at level 5', () => {
     abilities,
   )!;
 
-  expect(question.options).toContain(description.text);
-  expect(question.options).not.toContain(description.explanation);
-  expect(
-    question.options.every((option) =>
-      abilities.some((ability) =>
-        ability.descriptions?.some(
-          (entry) => entry.generation === 'IX' && entry.text === option,
-        ),
-      ),
-    ),
-  ).toBe(true);
+  expect(question.options).toEqual([target.name]);
+  expect(question.prompt.kind === 'text' && question.prompt.description).toBe(
+    description.text,
+  );
+  expect(question.searchOptions).toContainEqual({ name: 'levitate' });
+  expect(question.searchOptions!.length).toBeGreaterThan(100);
   expect(question.explanation).toBe(description.text);
+  expect(
+    buildEffectDescription(
+      {
+        catalog,
+        questionType: 'ability-effects',
+        difficulty: 5,
+        generations: ['IX'],
+        variant: getQuestionVariant('ability-effects', 5)!.variant,
+        pool: [],
+        random: createSeededRandom('duplicate-ability-effect'),
+        used: new Set(),
+      },
+      abilities.find((ability) => ability.name === 'mold-breaker')!,
+      'ability',
+      abilities,
+    ),
+  ).toBeUndefined();
 });
 
 it('builds bag-item uses in an older-generation round', () => {

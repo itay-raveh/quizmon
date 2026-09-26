@@ -181,6 +181,9 @@ export const QuestionScreen = ({
       >
         {searchVisible && question.searchOptions ? (
           <ChampionSearch
+            answerKind={
+              question.subject.kind === 'ability' ? 'ability' : 'pokemon'
+            }
             policy={rendering.search}
             cluesShown={cluesShown}
             answered={answered}

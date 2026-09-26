@@ -15,6 +15,7 @@ interface SearchPokemon {
   sprite?: string | null;
 }
 interface PokemonSearchProps {
+  searchSubject?: 'Pokémon' | 'ability';
   renderPokemon?: (pokemon: SearchPokemon) => ReactNode;
   disabled?: boolean;
   mode: 'partner' | 'champion';
@@ -27,6 +28,7 @@ interface PokemonSearchProps {
 }
 
 export const PokemonSearch = ({
+  searchSubject = 'Pokémon',
   renderPokemon,
   disabled = false,
   mode,
@@ -92,8 +94,12 @@ export const PokemonSearch = ({
             if (!champion) onConfirm(suggestion.name);
           }}
           getKey={(suggestion) => suggestion.name}
-          placeholder={champion ? 'Type a Pokémon name' : 'Search all Pokémon'}
-          emptyMessage="No Pokémon found. Try another spelling."
+          placeholder={
+            champion
+              ? `Type ${searchSubject === 'ability' ? 'an ability' : 'a Pokémon'} name`
+              : 'Search all Pokémon'
+          }
+          emptyMessage={`No ${searchSubject === 'ability' ? 'abilities' : 'Pokémon'} found. Try another spelling.`}
           renderOption={(suggestion) =>
             renderPokemon ? (
               renderPokemon(suggestion)

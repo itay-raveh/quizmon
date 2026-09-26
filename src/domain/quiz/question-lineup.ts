@@ -145,7 +145,7 @@ const question = z
       .array(
         z.object({
           name: text,
-          dexNumber: nonnegativeInteger,
+          dexNumber: nonnegativeInteger.optional(),
           sprite: text.nullable().optional(),
         }),
       )
