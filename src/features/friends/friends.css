@@ -445,11 +445,6 @@
   font-size: var(--text-label);
 }
 
-.leaderboard-training-note {
-  color: var(--muted);
-  font-size: var(--text-small);
-}
-
 .leaderboard-table th[scope='row'] {
   overflow-wrap: anywhere;
 }

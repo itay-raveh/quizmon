@@ -433,7 +433,7 @@ export function LeaderboardScreen({
                     </button>
                   </div>
                 </div>
-                {mode === 'daily' ? (
+                {mode === 'daily' && (
                   <div className="leaderboard-filter leaderboard-date">
                     <input
                       type="date"
@@ -443,10 +443,6 @@ export function LeaderboardScreen({
                       onChange={(event) => chooseDate(event.target.value)}
                     />
                   </div>
-                ) : (
-                  <p className="leaderboard-training-note">
-                    Each Trainer’s best Training score counts across settings.
-                  </p>
                 )}
               </div>
             </div>
