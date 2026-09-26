@@ -38,6 +38,7 @@ const topics = z.object({
           generation,
           type: text,
           damageClass: text,
+          machine: text.optional(),
         }),
       ),
       type: text,

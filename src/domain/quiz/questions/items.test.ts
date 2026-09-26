@@ -43,7 +43,7 @@ test('item identification never asks for an item with shared sprite art', () => 
   expect(question?.options).toHaveLength(4);
 });
 
-test('level five can offer four type-colored TM discs for a move', () => {
+test('level five offers real TM labels without revealing disc types', () => {
   const catalog = {
     contentVersion: 1,
     pokemon: {},
@@ -51,18 +51,39 @@ test('level five can offer four type-colored TM discs for a move', () => {
     topics: {
       items: [],
       moves: [
-        {
-          name: 'flamethrower',
-          label: 'Flamethrower',
-          generations: ['II'],
-          type: 'fire',
+        ...[
+          ['fire-move', 'fire', 'tm01'],
+          ['water-move', 'water', 'tm02'],
+          ['grass-move', 'grass', 'tm03'],
+          ['electric-move', 'electric', 'tm04'],
+        ].map(([name, type, machine]) => ({
+          name,
+          label: name,
+          generations: ['I'],
+          type,
           damageClass: 'special',
           contexts: [
             {
               game: 'silver',
               generation: 'II',
-              type: 'fire',
+              type,
               damageClass: 'special',
+              machine,
+            },
+          ],
+        })),
+        {
+          name: 'court-change',
+          label: 'Court Change',
+          generations: ['II'],
+          type: 'normal',
+          damageClass: 'status',
+          contexts: [
+            {
+              game: 'silver',
+              generation: 'II',
+              type: 'normal',
+              damageClass: 'status',
             },
           ],
         },
@@ -81,23 +102,30 @@ test('level five can offer four type-colored TM discs for a move', () => {
     },
     'item-identification',
   );
-  expect(question?.subject).toMatchObject({
-    kind: 'move',
-    name: 'flamethrower',
-    generation: 'II',
-  });
-  expect(question?.answer.correctOptions).toEqual(['fire']);
+  expect(question?.subject.kind).toBe('move');
+  expect(question?.subject.name).not.toBe('court-change');
+  const tmByMove: Record<string, string> = {
+    'fire-move': 'tm01',
+    'water-move': 'tm02',
+    'grass-move': 'tm03',
+    'electric-move': 'tm04',
+  };
+  expect(question?.answer.correctOptions).toEqual([
+    tmByMove[question!.subject.name],
+  ]);
   expect(question?.options).toHaveLength(4);
   expect(question?.prompt).toMatchObject({
     supportingText: 'Pokémon Silver',
   });
   expect(question?.optionImages).toEqual({
-    fire: '/sprites/items/tm-fire.png',
-    water: '/sprites/items/tm-water.png',
-    grass: '/sprites/items/tm-grass.png',
-    electric: '/sprites/items/tm-electric.png',
+    tm01: '/sprites/items/tm-fire.png',
+    tm02: '/sprites/items/tm-water.png',
+    tm03: '/sprites/items/tm-grass.png',
+    tm04: '/sprites/items/tm-electric.png',
   });
   expect(
-    question?.options.every((option) => question.optionLabels?.[option]),
+    question?.options.every((option) =>
+      /^TM \d+$/.test(question.optionLabels?.[option] ?? ''),
+    ),
   ).toBe(true);
 });

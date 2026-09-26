@@ -20,6 +20,7 @@ interface MoveKnowledge extends TopicEntity {
     generation: Generation;
     type: string;
     damageClass: string;
+    machine?: string;
   }[];
   type: string;
   damageClass: string;

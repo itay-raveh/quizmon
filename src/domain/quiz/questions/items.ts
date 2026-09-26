@@ -15,33 +15,55 @@ const buildMachineDiscQuestion: QuestionBuilder = (context) => {
   if (types.length < 4) return;
   for (const target of ordered(
     context,
-    topics.moves.filter((move) => topicEligible(context, move)),
+    topics.moves.filter((move) =>
+      move.contexts.some(
+        (entry) =>
+          entry.machine &&
+          (context.generations ?? generations).includes(entry.generation),
+      ),
+    ),
   )) {
     for (const rules of ordered(context, target.contexts)) {
       if (
         !(context.generations ?? generations).includes(rules.generation) ||
-        !types.includes(rules.type)
+        !types.includes(rules.type) ||
+        !rules.machine
       )
         continue;
       const game = topics.games[rules.game];
       if (!game) continue;
+      const seenTypes = new Set([rules.type]);
+      const alternatives = ordered(
+        context,
+        topics.moves.flatMap((move) =>
+          move.contexts.flatMap((entry) =>
+            entry.game === rules.game &&
+            entry.machine &&
+            types.includes(entry.type) &&
+            entry.type !== rules.type
+              ? [{ machine: entry.machine, type: entry.type }]
+              : [],
+          ),
+        ),
+      )
+        .filter(({ type }) => {
+          if (seenTypes.has(type)) return false;
+          seenTypes.add(type);
+          return true;
+        })
+        .slice(0, 3);
+      if (alternatives.length !== 3) continue;
       const options = [
-        rules.type,
-        ...ordered(
-          context,
-          types.filter((type) => type !== rules.type),
-        ).slice(0, 3),
+        { machine: rules.machine, type: rules.type },
+        ...alternatives,
       ];
       const prompt = `Which TM disc matches ${target.label}?`;
       const question = makeTopicQuestion(
         context,
-        {
-          ...topicSubject(context, 'move', target),
-          generation: rules.generation,
-        },
+        { kind: 'move', name: target.name, generation: rules.generation },
         prompt,
-        rules.type,
-        options,
+        rules.machine,
+        options.map(({ machine }) => machine),
         {
           prompt: {
             kind: 'text',
@@ -50,12 +72,15 @@ const buildMachineDiscQuestion: QuestionBuilder = (context) => {
           },
           context: rules.game,
           optionImages: Object.fromEntries(
-            options.map((type) => [type, `/sprites/items/tm-${type}.png`]),
+            options.map(({ machine, type }) => [
+              machine,
+              `/sprites/items/tm-${type}.png`,
+            ]),
           ),
           optionLabels: Object.fromEntries(
-            options.map((type) => [type, formatPokemonName(type)]),
+            options.map(({ machine }) => [machine, `TM ${machine.slice(2)}`]),
           ),
-          explanation: `${target.label} is ${formatPokemonName(rules.type)} type in Pokémon ${game.label}.`,
+          explanation: `${target.label} is taught by TM ${rules.machine.slice(2)} (${formatPokemonName(rules.type)} type) in Pokémon ${game.label}.`,
         },
         'move',
       );

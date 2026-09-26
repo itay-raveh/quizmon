@@ -89,6 +89,29 @@ export const buildTopicCatalog = async (
     ]),
   );
   const moves = await all<Move>('move');
+  const machinesResponse = await fetch(
+    'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/machines.csv',
+    { signal: AbortSignal.timeout(30_000) },
+  );
+  if (!machinesResponse.ok)
+    throw new Error(`Machine catalog: HTTP ${machinesResponse.status}`);
+  const machineRows = (await machinesResponse.text()).trim().split('\n');
+  if (machineRows.shift() !== 'machine_number,version_group_id,item_id,move_id')
+    throw new Error('Unexpected machine catalog format');
+  const itemsById = new Map(items.map((item) => [item.id, item]));
+  const machines = new Map<string, string>();
+  for (const row of machineRows) {
+    const fields = row.trim();
+    if (!/^\d+,\d+,\d+,\d+$/.test(fields))
+      throw new Error(`Invalid machine catalog row: ${fields}`);
+    const [number, groupId, itemId, moveId] = fields.split(',').map(Number);
+    const item = itemsById.get(itemId!);
+    if (item && /^tm\d+$/.test(item.name)) {
+      if (Number(item.name.slice(2)) !== number)
+        throw new Error(`TM number mismatch: ${fields}`);
+      machines.set(`${groupId}:${moveId}`, item.name);
+    }
+  }
   const abilities = await all<Ability>('ability');
   const berries = await all<Berry>('berry');
   const regions = await all<Region>('region');
@@ -264,6 +287,9 @@ export const buildTopicCatalog = async (
             generation: gen,
             type: '',
             damageClass: '',
+            ...(machines.has(`${group.id}:${move.id}`)
+              ? { machine: machines.get(`${group.id}:${move.id}`) }
+              : {}),
           }));
         });
       return {

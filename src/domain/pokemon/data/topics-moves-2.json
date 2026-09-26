@@ -22,7 +22,9 @@
       ],
       "type": "poison",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Allies: +1 Sp. Atk." }
+      "descriptions": {
+        "VIII": "Base move affects power. Allies: +1 Sp. Atk."
+      }
     },
     {
       "name": "max-geyser",
@@ -44,7 +46,9 @@
       ],
       "type": "water",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Starts Rain Dance." }
+      "descriptions": {
+        "VIII": "Base move affects power. Starts Rain Dance."
+      }
     },
     {
       "name": "max-airstream",
@@ -66,7 +70,9 @@
       ],
       "type": "flying",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Allies: +1 Speed." }
+      "descriptions": {
+        "VIII": "Base move affects power. Allies: +1 Speed."
+      }
     },
     {
       "name": "max-starfall",
@@ -112,7 +118,9 @@
       ],
       "type": "dragon",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Foes: -1 Attack." }
+      "descriptions": {
+        "VIII": "Base move affects power. Foes: -1 Attack."
+      }
     },
     {
       "name": "max-mindstorm",
@@ -155,7 +163,9 @@
       ],
       "type": "rock",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Starts Sandstorm." }
+      "descriptions": {
+        "VIII": "Base move affects power. Starts Sandstorm."
+      }
     },
     {
       "name": "max-quake",
@@ -177,7 +187,9 @@
       ],
       "type": "ground",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Allies: +1 Sp. Def." }
+      "descriptions": {
+        "VIII": "Base move affects power. Allies: +1 Sp. Def."
+      }
     },
     {
       "name": "max-darkness",
@@ -199,7 +211,9 @@
       ],
       "type": "dark",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Foes: -1 Sp. Def." }
+      "descriptions": {
+        "VIII": "Base move affects power. Foes: -1 Sp. Def."
+      }
     },
     {
       "name": "max-overgrowth",
@@ -245,7 +259,9 @@
       ],
       "type": "steel",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Base move affects power. Allies: +1 Defense." }
+      "descriptions": {
+        "VIII": "Base move affects power. Allies: +1 Defense."
+      }
     },
     {
       "name": "clangorous-soul",
@@ -317,13 +333,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "fighting",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm89"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "fighting",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm89"
         }
       ],
       "type": "fighting",
@@ -439,7 +457,9 @@
       ],
       "type": "grass",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Traps and damages the target for 4-5 turns." }
+      "descriptions": {
+        "VIII": "Traps and damages the target for 4-5 turns."
+      }
     },
     {
       "name": "pyro-ball",
@@ -504,7 +524,9 @@
       ],
       "type": "steel",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Damage doubles if the target is Dynamaxed." }
+      "descriptions": {
+        "VIII": "Damage doubles if the target is Dynamaxed."
+      }
     },
     {
       "name": "behemoth-bash",
@@ -526,7 +548,9 @@
       ],
       "type": "steel",
       "damageClass": "physical",
-      "descriptions": { "VIII": "Damage doubles if the target is Dynamaxed." }
+      "descriptions": {
+        "VIII": "Damage doubles if the target is Dynamaxed."
+      }
     },
     {
       "name": "aura-wheel",
@@ -576,13 +600,15 @@
           "game": "sword",
           "generation": "VIII",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm99"
         },
         {
           "game": "shield",
           "generation": "VIII",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm99"
         },
         {
           "game": "legends-arceus",
@@ -594,13 +620,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm222"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm222"
         }
       ],
       "type": "dragon",
@@ -990,7 +1018,9 @@
       ],
       "type": "fighting",
       "damageClass": "physical",
-      "descriptions": { "VIII": "User cannot move next turn." }
+      "descriptions": {
+        "VIII": "User cannot move next turn."
+      }
     },
     {
       "name": "eternabeam",
@@ -1012,7 +1042,9 @@
       ],
       "type": "dragon",
       "damageClass": "special",
-      "descriptions": { "VIII": "User cannot move next turn." }
+      "descriptions": {
+        "VIII": "User cannot move next turn."
+      }
     },
     {
       "name": "steel-beam",
@@ -1041,13 +1073,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "steel",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm170"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "steel",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm170"
         }
       ],
       "type": "steel",
@@ -1084,13 +1118,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "psychic",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm218"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "psychic",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm218"
         }
       ],
       "type": "psychic",
@@ -1166,13 +1202,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm200"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "dragon",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm200"
         }
       ],
       "type": "dragon",
@@ -1209,13 +1247,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm220"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "rock",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm220"
         }
       ],
       "type": "rock",
@@ -1295,13 +1335,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "fairy",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm201"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "fairy",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm201"
         }
       ],
       "type": "fairy",
@@ -1338,13 +1380,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm194"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm194"
         }
       ],
       "type": "grass",
@@ -1463,13 +1507,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "bug",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm219"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "bug",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm219"
         }
       ],
       "type": "bug",
@@ -1506,13 +1552,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "fire",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm195"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "fire",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm195"
         }
       ],
       "type": "fire",
@@ -1549,13 +1597,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm199"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "dark",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm199"
         }
       ],
       "type": "dark",
@@ -1592,13 +1642,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "ghost",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm198"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "ghost",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm198"
         }
       ],
       "type": "ghost",
@@ -1628,7 +1680,9 @@
       ],
       "type": "poison",
       "damageClass": "status",
-      "descriptions": { "VIII": "Removes adjacent Pokemon's held items." }
+      "descriptions": {
+        "VIII": "Removes adjacent Pokemon's held items."
+      }
     },
     {
       "name": "coaching",
@@ -1657,13 +1711,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "fighting",
-          "damageClass": "status"
+          "damageClass": "status",
+          "machine": "tm213"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "fighting",
-          "damageClass": "status"
+          "damageClass": "status",
+          "machine": "tm213"
         }
       ],
       "type": "fighting",
@@ -1700,13 +1756,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm196"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "water",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm196"
         }
       ],
       "type": "water",
@@ -1743,13 +1801,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm212"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm212"
         }
       ],
       "type": "ice",
@@ -1786,13 +1846,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "flying",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm197"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "flying",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm197"
         }
       ],
       "type": "flying",
@@ -1829,13 +1891,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm215"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "ground",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm215"
         }
       ],
       "type": "ground",
@@ -2363,7 +2427,9 @@
       ],
       "type": "psychic",
       "damageClass": "physical",
-      "descriptions": { "IX": "100% chance to raise the user's Defense by 1." }
+      "descriptions": {
+        "IX": "100% chance to raise the user's Defense by 1."
+      }
     },
     {
       "name": "power-shift",
@@ -2445,7 +2511,9 @@
       ],
       "type": "fairy",
       "damageClass": "special",
-      "descriptions": { "IX": "30% chance to lower the foe(s) Attack by 1." }
+      "descriptions": {
+        "IX": "30% chance to lower the foe(s) Attack by 1."
+      }
     },
     {
       "name": "mystical-power",
@@ -2473,7 +2541,9 @@
       ],
       "type": "psychic",
       "damageClass": "special",
-      "descriptions": { "IX": "100% chance to raise the user's Sp. Atk by 1." }
+      "descriptions": {
+        "IX": "100% chance to raise the user's Sp. Atk by 1."
+      }
     },
     {
       "name": "raging-fury",
@@ -2501,7 +2571,9 @@
       ],
       "type": "fire",
       "damageClass": "physical",
-      "descriptions": { "IX": "Lasts 2-3 turns. Confuses the user afterwards." }
+      "descriptions": {
+        "IX": "Lasts 2-3 turns. Confuses the user afterwards."
+      }
     },
     {
       "name": "wave-crash",
@@ -2529,7 +2601,9 @@
       ],
       "type": "water",
       "damageClass": "physical",
-      "descriptions": { "IX": "Has 33% recoil." }
+      "descriptions": {
+        "IX": "Has 33% recoil."
+      }
     },
     {
       "name": "chloroblast",
@@ -2557,7 +2631,9 @@
       ],
       "type": "grass",
       "damageClass": "special",
-      "descriptions": { "IX": "User loses 50% max HP." }
+      "descriptions": {
+        "IX": "User loses 50% max HP."
+      }
     },
     {
       "name": "mountain-gale",
@@ -2585,7 +2661,9 @@
       ],
       "type": "ice",
       "damageClass": "physical",
-      "descriptions": { "IX": "30% chance to make the target flinch." }
+      "descriptions": {
+        "IX": "30% chance to make the target flinch."
+      }
     },
     {
       "name": "victory-dance",
@@ -2613,7 +2691,9 @@
       ],
       "type": "fighting",
       "damageClass": "status",
-      "descriptions": { "IX": "Raises the user's Attack, Defense, Speed by 1." }
+      "descriptions": {
+        "IX": "Raises the user's Attack, Defense, Speed by 1."
+      }
     },
     {
       "name": "headlong-rush",
@@ -2641,7 +2721,9 @@
       ],
       "type": "ground",
       "damageClass": "physical",
-      "descriptions": { "IX": "Lowers the user's Defense and Sp. Def by 1." }
+      "descriptions": {
+        "IX": "Lowers the user's Defense and Sp. Def by 1."
+      }
     },
     {
       "name": "barb-barrage",
@@ -2669,7 +2751,9 @@
       ],
       "type": "poison",
       "damageClass": "physical",
-      "descriptions": { "IX": "50% psn. 2x power if target already poisoned." }
+      "descriptions": {
+        "IX": "50% psn. 2x power if target already poisoned."
+      }
     },
     {
       "name": "esper-wing",
@@ -2727,7 +2811,9 @@
       ],
       "type": "ghost",
       "damageClass": "special",
-      "descriptions": { "IX": "100% chance to lower the target's Attack by 1." }
+      "descriptions": {
+        "IX": "100% chance to lower the target's Attack by 1."
+      }
     },
     {
       "name": "shelter",
@@ -2755,7 +2841,9 @@
       ],
       "type": "steel",
       "damageClass": "status",
-      "descriptions": { "IX": "Raises the user's Defense by 2." }
+      "descriptions": {
+        "IX": "Raises the user's Defense by 2."
+      }
     },
     {
       "name": "triple-arrows",
@@ -2783,7 +2871,9 @@
       ],
       "type": "fighting",
       "damageClass": "physical",
-      "descriptions": { "IX": "High crit. Target: 50% -1 Defense, 30% flinch." }
+      "descriptions": {
+        "IX": "High crit. Target: 50% -1 Defense, 30% flinch."
+      }
     },
     {
       "name": "infernal-parade",
@@ -2841,7 +2931,9 @@
       ],
       "type": "dark",
       "damageClass": "physical",
-      "descriptions": { "IX": "Sets a layer of Spikes on the opposing side." }
+      "descriptions": {
+        "IX": "Sets a layer of Spikes on the opposing side."
+      }
     },
     {
       "name": "bleakwind-storm",
@@ -2929,7 +3021,9 @@
       ],
       "type": "ground",
       "damageClass": "special",
-      "descriptions": { "IX": "20% chance to burn foe(s). Can't miss in rain." }
+      "descriptions": {
+        "IX": "20% chance to burn foe(s). Can't miss in rain."
+      }
     },
     {
       "name": "lunar-blessing",
@@ -3000,13 +3094,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm171"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "normal",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm171"
         }
       ],
       "type": "normal",
@@ -3059,7 +3155,9 @@
       ],
       "type": "fighting",
       "damageClass": "physical",
-      "descriptions": { "IX": "30% confusion. User loses 50% max HP if miss." }
+      "descriptions": {
+        "IX": "30% confusion. User loses 50% max HP if miss."
+      }
     },
     {
       "name": "last-respects",
@@ -3129,7 +3227,9 @@
       ],
       "type": "dragon",
       "damageClass": "physical",
-      "descriptions": { "IX": "Curly|Droopy|Stretchy eaten: +1 Atk|Def|Spe." }
+      "descriptions": {
+        "IX": "Curly|Droopy|Stretchy eaten: +1 Atk|Def|Spe."
+      }
     },
     {
       "name": "jet-punch",
@@ -3151,7 +3251,9 @@
       ],
       "type": "water",
       "damageClass": "physical",
-      "descriptions": { "IX": "Usually goes first." }
+      "descriptions": {
+        "IX": "Usually goes first."
+      }
     },
     {
       "name": "spicy-extract",
@@ -3197,7 +3299,9 @@
       ],
       "type": "steel",
       "damageClass": "physical",
-      "descriptions": { "IX": "Lowers the user's Speed by 2." }
+      "descriptions": {
+        "IX": "Lowers the user's Speed by 2."
+      }
     },
     {
       "name": "population-bomb",
@@ -3219,7 +3323,9 @@
       ],
       "type": "normal",
       "damageClass": "physical",
-      "descriptions": { "IX": "Hits 10 times. Each hit can miss." }
+      "descriptions": {
+        "IX": "Hits 10 times. Each hit can miss."
+      }
     },
     {
       "name": "ice-spinner",
@@ -3230,18 +3336,22 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm124"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "ice",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm124"
         }
       ],
       "type": "ice",
       "damageClass": "physical",
-      "descriptions": { "IX": "Ends the effects of terrain." }
+      "descriptions": {
+        "IX": "Ends the effects of terrain."
+      }
     },
     {
       "name": "glaive-rush",
@@ -3287,7 +3397,9 @@
       ],
       "type": "normal",
       "damageClass": "status",
-      "descriptions": { "IX": "Revives a fainted Pokemon to 50% HP." }
+      "descriptions": {
+        "IX": "Revives a fainted Pokemon to 50% HP."
+      }
     },
     {
       "name": "salt-cure",
@@ -3330,7 +3442,9 @@
       ],
       "type": "water",
       "damageClass": "physical",
-      "descriptions": { "IX": "Hits 3 times." }
+      "descriptions": {
+        "IX": "Hits 3 times."
+      }
     },
     {
       "name": "mortal-spin",
@@ -3424,7 +3538,9 @@
       ],
       "type": "dark",
       "damageClass": "physical",
-      "descriptions": { "IX": "This move does not check accuracy." }
+      "descriptions": {
+        "IX": "This move does not check accuracy."
+      }
     },
     {
       "name": "flower-trick",
@@ -3470,7 +3586,9 @@
       ],
       "type": "fire",
       "damageClass": "special",
-      "descriptions": { "IX": "100% chance to raise the user's Sp. Atk by 1." }
+      "descriptions": {
+        "IX": "100% chance to raise the user's Sp. Atk by 1."
+      }
     },
     {
       "name": "aqua-step",
@@ -3492,7 +3610,9 @@
       ],
       "type": "water",
       "damageClass": "physical",
-      "descriptions": { "IX": "100% chance to raise the user's Speed by 1." }
+      "descriptions": {
+        "IX": "100% chance to raise the user's Speed by 1."
+      }
     },
     {
       "name": "raging-bull",
@@ -3514,7 +3634,9 @@
       ],
       "type": "normal",
       "damageClass": "physical",
-      "descriptions": { "IX": "Destroys screens. Type depends on user's form." }
+      "descriptions": {
+        "IX": "Destroys screens. Type depends on user's form."
+      }
     },
     {
       "name": "make-it-rain",
@@ -3536,7 +3658,9 @@
       ],
       "type": "steel",
       "damageClass": "special",
-      "descriptions": { "IX": "Lowers the user's Sp. Atk by 1. Hits foe(s)." }
+      "descriptions": {
+        "IX": "Lowers the user's Sp. Atk by 1. Hits foe(s)."
+      }
     },
     {
       "name": "psyblade",
@@ -3579,7 +3703,9 @@
       ],
       "type": "water",
       "damageClass": "special",
-      "descriptions": { "IX": "During Sunny Day: 1.5x damage instead of half." }
+      "descriptions": {
+        "IX": "During Sunny Day: 1.5x damage instead of half."
+      }
     },
     {
       "name": "ruination",
@@ -3601,7 +3727,9 @@
       ],
       "type": "dark",
       "damageClass": "special",
-      "descriptions": { "IX": "Does damage equal to 1/2 target's current HP." }
+      "descriptions": {
+        "IX": "Does damage equal to 1/2 target's current HP."
+      }
     },
     {
       "name": "collision-course",
@@ -3623,7 +3751,9 @@
       ],
       "type": "fighting",
       "damageClass": "physical",
-      "descriptions": { "IX": "Deals 1.3333x damage with supereffective hits." }
+      "descriptions": {
+        "IX": "Deals 1.3333x damage with supereffective hits."
+      }
     },
     {
       "name": "electro-drift",
@@ -3645,7 +3775,9 @@
       ],
       "type": "electric",
       "damageClass": "special",
-      "descriptions": { "IX": "Deals 1.3333x damage with supereffective hits." }
+      "descriptions": {
+        "IX": "Deals 1.3333x damage with supereffective hits."
+      }
     },
     {
       "name": "shed-tail",
@@ -3691,7 +3823,9 @@
       ],
       "type": "ice",
       "damageClass": "status",
-      "descriptions": { "IX": "Starts Snow. User switches out." }
+      "descriptions": {
+        "IX": "Starts Snow. User switches out."
+      }
     },
     {
       "name": "tidy-up",
@@ -3726,13 +3860,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "ice",
-          "damageClass": "status"
+          "damageClass": "status",
+          "machine": "tm52"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "ice",
-          "damageClass": "status"
+          "damageClass": "status",
+          "machine": "tm52"
         }
       ],
       "type": "ice",
@@ -3747,18 +3883,22 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "bug",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm21"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "bug",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm21"
         }
       ],
       "type": "bug",
       "damageClass": "physical",
-      "descriptions": { "IX": "100% chance to lower the target's Speed by 1." }
+      "descriptions": {
+        "IX": "100% chance to lower the target's Speed by 1."
+      }
     },
     {
       "name": "trailblaze",
@@ -3769,18 +3909,22 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm20"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "grass",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm20"
         }
       ],
       "type": "grass",
       "damageClass": "physical",
-      "descriptions": { "IX": "100% chance to raise the user's Speed by 1." }
+      "descriptions": {
+        "IX": "100% chance to raise the user's Speed by 1."
+      }
     },
     {
       "name": "chilling-water",
@@ -3791,18 +3935,22 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "water",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm22"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "water",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm22"
         }
       ],
       "type": "water",
       "damageClass": "special",
-      "descriptions": { "IX": "100% chance to lower the target's Attack by 1." }
+      "descriptions": {
+        "IX": "100% chance to lower the target's Attack by 1."
+      }
     },
     {
       "name": "hyper-drill",
@@ -3824,7 +3972,9 @@
       ],
       "type": "normal",
       "damageClass": "physical",
-      "descriptions": { "IX": "Bypasses protection without breaking it." }
+      "descriptions": {
+        "IX": "Bypasses protection without breaking it."
+      }
     },
     {
       "name": "twin-beam",
@@ -3846,7 +3996,9 @@
       ],
       "type": "psychic",
       "damageClass": "special",
-      "descriptions": { "IX": "Hits 2 times in one turn." }
+      "descriptions": {
+        "IX": "Hits 2 times in one turn."
+      }
     },
     {
       "name": "rage-fist",
@@ -3892,7 +4044,9 @@
       ],
       "type": "fire",
       "damageClass": "special",
-      "descriptions": { "IX": "Lowers the user's Defense and Sp. Def by 1." }
+      "descriptions": {
+        "IX": "Lowers the user's Defense and Sp. Def by 1."
+      }
     },
     {
       "name": "bitter-blade",
@@ -3914,7 +4068,9 @@
       ],
       "type": "fire",
       "damageClass": "physical",
-      "descriptions": { "IX": "User recovers 50% of the damage dealt." }
+      "descriptions": {
+        "IX": "User recovers 50% of the damage dealt."
+      }
     },
     {
       "name": "double-shock",
@@ -3957,7 +4113,9 @@
       ],
       "type": "steel",
       "damageClass": "physical",
-      "descriptions": { "IX": "Cannot be selected the turn after it's used." }
+      "descriptions": {
+        "IX": "Cannot be selected the turn after it's used."
+      }
     },
     {
       "name": "comeuppance",
@@ -3979,7 +4137,9 @@
       ],
       "type": "dark",
       "damageClass": "physical",
-      "descriptions": { "IX": "If hit by an attack, returns 1.5x damage." }
+      "descriptions": {
+        "IX": "If hit by an attack, returns 1.5x damage."
+      }
     },
     {
       "name": "aqua-cutter",
@@ -4001,7 +4161,9 @@
       ],
       "type": "water",
       "damageClass": "physical",
-      "descriptions": { "IX": "High critical hit ratio." }
+      "descriptions": {
+        "IX": "High critical hit ratio."
+      }
     },
     {
       "name": "blazing-torque",
@@ -4063,7 +4225,9 @@
       ],
       "type": "normal",
       "damageClass": "special",
-      "descriptions": { "IX": "Cannot be selected the turn after it's used." }
+      "descriptions": {
+        "IX": "Cannot be selected the turn after it's used."
+      }
     },
     {
       "name": "matcha-gotcha",
@@ -4202,7 +4366,9 @@
       ],
       "type": "dragon",
       "damageClass": "special",
-      "descriptions": { "IX": "Has a 30% chance this move's power is doubled." }
+      "descriptions": {
+        "IX": "Has a 30% chance this move's power is doubled."
+      }
     },
     {
       "name": "burning-bulwark",
@@ -4224,7 +4390,9 @@
       ],
       "type": "fire",
       "damageClass": "status",
-      "descriptions": { "IX": "Protects from damaging attacks. Contact: burn." }
+      "descriptions": {
+        "IX": "Protects from damaging attacks. Contact: burn."
+      }
     },
     {
       "name": "thunderclap",
@@ -4270,7 +4438,9 @@
       ],
       "type": "rock",
       "damageClass": "physical",
-      "descriptions": { "IX": "Bypasses protection without breaking it." }
+      "descriptions": {
+        "IX": "Bypasses protection without breaking it."
+      }
     },
     {
       "name": "tachyon-cutter",
@@ -4292,7 +4462,9 @@
       ],
       "type": "steel",
       "damageClass": "special",
-      "descriptions": { "IX": "Hits twice. This move does not check accuracy." }
+      "descriptions": {
+        "IX": "Hits twice. This move does not check accuracy."
+      }
     },
     {
       "name": "hard-press",
@@ -4303,18 +4475,22 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "steel",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm225"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "steel",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm225"
         }
       ],
       "type": "steel",
       "damageClass": "physical",
-      "descriptions": { "IX": "More power the more HP the target has left." }
+      "descriptions": {
+        "IX": "More power the more HP the target has left."
+      }
     },
     {
       "name": "dragon-cheer",
@@ -4325,13 +4501,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "dragon",
-          "damageClass": "status"
+          "damageClass": "status",
+          "machine": "tm226"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "dragon",
-          "damageClass": "status"
+          "damageClass": "status",
+          "machine": "tm226"
         }
       ],
       "type": "dragon",
@@ -4346,13 +4524,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "fairy",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm227"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "fairy",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm227"
         }
       ],
       "type": "fairy",
@@ -4370,18 +4550,22 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm207"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "fire",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm207"
         }
       ],
       "type": "fire",
       "damageClass": "physical",
-      "descriptions": { "IX": "Power doubles if the user's last move failed." }
+      "descriptions": {
+        "IX": "Power doubles if the user's last move failed."
+      }
     },
     {
       "name": "supercell-slam",
@@ -4392,13 +4576,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm210"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "electric",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm210"
         }
       ],
       "type": "electric",
@@ -4416,13 +4602,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "psychic",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm228"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "psychic",
-          "damageClass": "special"
+          "damageClass": "special",
+          "machine": "tm228"
         }
       ],
       "type": "psychic",
@@ -4440,13 +4628,15 @@
           "game": "scarlet",
           "generation": "IX",
           "type": "fighting",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm229"
         },
         {
           "game": "violet",
           "generation": "IX",
           "type": "fighting",
-          "damageClass": "physical"
+          "damageClass": "physical",
+          "machine": "tm229"
         }
       ],
       "type": "fighting",
