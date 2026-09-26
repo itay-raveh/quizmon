@@ -100,7 +100,7 @@ export const buildEffectDescription = (
           ? { media: { kind: 'pixel-sprite' as const, src: target.sprite } }
           : {}),
         optionLabels: Object.fromEntries(options.map((text) => [text, text])),
-        explanation: fact.explanation,
+        explanation: kind === 'ability' ? fact.text : fact.explanation,
       },
       kind === 'ability' ? 'ability' : 'knowledge',
     );

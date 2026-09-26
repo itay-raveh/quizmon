@@ -57,6 +57,42 @@ it('builds ability, bag-item, and held-item effects from their own source pools'
     }
 });
 
+it('uses short Ability effects choices at level 5', () => {
+  const abilities = catalog.topics!.abilities;
+  const target = abilities.find((ability) => ability.name === 'mold-breaker')!;
+  const description = target.descriptions!.find(
+    (entry) => entry.generation === 'IX',
+  )!;
+  const question = buildEffectDescription(
+    {
+      catalog,
+      questionType: 'ability-effects',
+      difficulty: 5,
+      generations: ['IX'],
+      variant: getQuestionVariant('ability-effects', 5)!.variant,
+      pool: [],
+      random: createSeededRandom('short-ability-effects'),
+      used: new Set(),
+    },
+    target,
+    'ability',
+    abilities,
+  )!;
+
+  expect(question.options).toContain(description.text);
+  expect(question.options).not.toContain(description.explanation);
+  expect(
+    question.options.every((option) =>
+      abilities.some((ability) =>
+        ability.descriptions?.some(
+          (entry) => entry.generation === 'IX' && entry.text === option,
+        ),
+      ),
+    ),
+  ).toBe(true);
+  expect(question.explanation).toBe(description.text);
+});
+
 it('builds bag-item uses in an older-generation round', () => {
   const question = buildQuestionType(
     {

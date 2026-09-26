@@ -165,7 +165,6 @@ export const questionVariants = {
       minimumEffectSimilarity: 0,
       maximumEffectSimilarity: 0.35,
       preferSimilarEffects: true,
-      useFullEffectText: true,
       allowMissingSprites: true,
     },
   },

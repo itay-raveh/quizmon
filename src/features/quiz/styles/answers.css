@@ -503,6 +503,7 @@
 .answers--statements,
 .answers--effect-details {
   grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
 }
 
 .answer--item {
