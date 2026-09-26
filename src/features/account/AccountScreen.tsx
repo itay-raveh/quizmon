@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
+import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   readStoredValue,
   removeStoredValue,
@@ -12,6 +13,46 @@ import {
   accountWelcomeKey,
   subscribeAccount,
 } from './account';
+
+const WelcomeTrainerDialog = ({
+  onContinue,
+  onEditCard,
+}: {
+  onContinue: () => void;
+  onEditCard: () => void;
+}) => {
+  const { dialog, dialogProps, closeDialog } = useModalDialog(onContinue);
+
+  return (
+    <dialog
+      {...dialogProps}
+      aria-describedby="welcome-trainer-description"
+      aria-labelledby="welcome-trainer-title"
+      className="confirm-dialog"
+    >
+      <div className="confirm-dialog__body">
+        <h2 id="welcome-trainer-title">Welcome, Trainer!</h2>
+        <p id="welcome-trainer-description">
+          Other players can see your Trainer Card. Give it a name.
+        </p>
+        <div className="confirm-dialog__actions">
+          <GameButton
+            autoFocus
+            onClick={() => {
+              dialog.current?.close();
+              onEditCard();
+            }}
+          >
+            Edit card
+          </GameButton>
+          <GameButton tone="quiet" onClick={closeDialog}>
+            Continue
+          </GameButton>
+        </div>
+      </div>
+    </dialog>
+  );
+};
 
 export function AccountScreen({
   hasTrainerName,
@@ -27,7 +68,11 @@ export function AccountScreen({
   const [welcomeFor] = useState(() =>
     readStoredValue('sessionStorage', accountWelcomeKey),
   );
-  useEffect(() => heading.current?.focus(), []);
+  const showWelcome =
+    Boolean(account.owner) && welcomeFor === account.owner && !hasTrainerName;
+  useEffect(() => {
+    if (!showWelcome) heading.current?.focus();
+  }, [showWelcome]);
   useEffect(() => {
     if (!account.owner || welcomeFor !== account.owner) return;
     removeStoredValue('sessionStorage', accountWelcomeKey);
@@ -35,43 +80,34 @@ export function AccountScreen({
       void navigate(accountReturnPath(window.location.href), { replace: true });
     }
   }, [account.owner, hasTrainerName, navigate, welcomeFor]);
-  const showWelcome = welcomeFor === account.owner && !hasTrainerName;
-
   return (
-    <section
-      className="game-panel account-screen"
-      aria-labelledby="account-title"
-    >
-      <header className="game-panel__header">
-        <h1
-          className="game-panel__title"
-          id="account-title"
-          tabIndex={-1}
-          ref={heading}
-        >
-          {signingIn ? 'Sign in' : 'Account'}
-        </h1>
-      </header>
-      {showWelcome && (
-        <section className="account-screen__welcome" aria-label="Welcome">
-          <h2>Welcome, Trainer!</h2>
-          <p>Other players can see your Trainer Card. Give it a name.</p>
-          <div className="account-settings__actions">
-            <GameButton onClick={onEditCard}>Edit card</GameButton>
-            <GameButton
-              tone="quiet"
-              onClick={() => {
-                void navigate(accountReturnPath(window.location.href), {
-                  replace: true,
-                });
-              }}
-            >
-              Continue
-            </GameButton>
-          </div>
-        </section>
-      )}
-      <AccountSettings />
-    </section>
+    <>
+      <section
+        className="game-panel account-screen"
+        aria-labelledby="account-title"
+      >
+        <header className="game-panel__header">
+          <h1
+            className="game-panel__title"
+            id="account-title"
+            tabIndex={-1}
+            ref={heading}
+          >
+            {signingIn ? 'Sign in' : 'Account'}
+          </h1>
+        </header>
+        <AccountSettings />
+      </section>
+      {showWelcome ? (
+        <WelcomeTrainerDialog
+          onEditCard={onEditCard}
+          onContinue={() => {
+            void navigate(accountReturnPath(window.location.href), {
+              replace: true,
+            });
+          }}
+        />
+      ) : null}
+    </>
   );
 }
