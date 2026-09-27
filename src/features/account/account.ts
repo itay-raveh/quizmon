@@ -163,7 +163,7 @@ export async function continueSignIn() {
     player ||
     local.some((entry) => entry.id !== 'state') ||
     (state &&
-      JSON.stringify(parseDeviceState(state.toMutableJSON().payload)) !==
+      JSON.stringify(parseDeviceState(state.toJSON().payload)) !==
         JSON.stringify(emptyDeviceState()))
   ) {
     update({ mergeRequired: true });

@@ -59,9 +59,7 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     db.device.findOne(roundKey()).exec(),
   ]);
   if (completed || closed) return;
-  const previous = stored
-    ? parseActiveGameSave(stored.toMutableJSON().payload)
-    : null;
+  const previous = stored ? parseActiveGameSave(stored.toJSON().payload) : null;
   if (
     previous?.roundId === round.roundId &&
     previous.answers.length > round.answers.length
@@ -90,7 +88,7 @@ export const removeLocalRound = async () => {
   const db = getPlayerDatabase();
   const stored = await db.device.findOne(roundKey()).exec();
   if (stored) {
-    const round = parseActiveGameSave(stored.toMutableJSON().payload);
+    const round = parseActiveGameSave(stored.toJSON().payload);
     await db.device.incrementalUpsert({
       id: `closed:${round.roundId}`,
       payload: { reason: 'left' },

@@ -270,7 +270,7 @@ export async function restoreBackup(backup: PlayerBackup): Promise<void> {
     };
   });
   const currentState = parseDeviceState(
-    (await db.device.findOne('state').exec())!.toMutableJSON().payload,
+    (await db.device.findOne('state').exec())!.toJSON().payload,
   );
   for (const record of backup.device) {
     if (record.id === 'state' || (await db.device.findOne(record.id).exec()))
