@@ -4,18 +4,17 @@ const metrics = vi.hoisted(() => ({
   count: vi.fn(),
   distribution: vi.fn(),
 }));
-const storage = vi.hoisted(() => new Map<string, string>());
+type MetricCall = [
+  string,
+  number,
+  { scope: object; attributes?: Record<string, string> },
+];
+const countCalls = () => metrics.count.mock.calls as MetricCall[];
 
-vi.mock('./sentry', () => ({ Sentry: { metrics }, sentryEnabled: true }));
-vi.mock('./storage/browser-storage', () => ({
-  readStoredValue: (type: string, key: string) =>
-    storage.get(`${type}:${key}`) ?? null,
-  writeStoredValue: (type: string, key: string, value: string) => {
-    storage.set(`${type}:${key}`, value);
-    return true;
-  },
+vi.mock('./sentry', () => ({
+  Sentry: { Scope: class {}, metrics },
+  sentryEnabled: true,
 }));
-
 import {
   trackGameCompleted,
   trackGameStarted,
@@ -25,11 +24,10 @@ import {
 beforeEach(() => {
   metrics.count.mockReset();
   metrics.distribution.mockReset();
-  storage.clear();
 });
 
 it('emits bounded game metrics without answers or player identity', () => {
-  trackPageViewed(new Date('2026-09-23T12:00:00Z'));
+  trackPageViewed();
   trackGameStarted({ kind: 'training' }, 10);
   trackGameCompleted('training', {
     score: 1200,
@@ -39,10 +37,21 @@ it('emits bounded game metrics without answers or player identity', () => {
     answers: [{ secret: 'never send answers' }],
   } as unknown as GameResult);
 
-  expect(metrics.count).toHaveBeenCalledWith('quizmon.page_view');
-  expect(metrics.count).toHaveBeenCalledWith('quizmon.game_completed', 1, {
-    attributes: { 'game.mode': 'training' },
-  });
+  expect(
+    countCalls().some(
+      ([name, value, options]) =>
+        name === 'quizmon.page_view' && value === 1 && !!options.scope,
+    ),
+  ).toBe(true);
+  expect(
+    countCalls().some(
+      ([name, value, options]) =>
+        name === 'quizmon.game_completed' &&
+        value === 1 &&
+        options.attributes?.['game.mode'] === 'training' &&
+        !!options.scope,
+    ),
+  ).toBe(true);
   const emitted = JSON.stringify([
     metrics.count.mock.calls,
     metrics.distribution.mock.calls,
@@ -55,20 +64,19 @@ it('emits bounded game metrics without answers or player identity', () => {
   );
 });
 
-it('counts anonymous visitors once per install, UTC day, and tab session', () => {
-  trackPageViewed(new Date('2026-09-23T23:59:00Z'));
-  trackPageViewed(new Date('2026-09-23T23:59:30Z'));
-  trackPageViewed(new Date('2026-09-24T00:00:00Z'));
+it('counts page views without storing visitor markers', () => {
+  trackPageViewed();
+  trackPageViewed();
+  trackPageViewed();
 
-  expect(metrics.count.mock.calls).toEqual([
-    ['quizmon.page_view'],
-    ['quizmon.visitor_first_seen'],
-    ['quizmon.visitor_daily_active'],
-    ['quizmon.session_started'],
-    ['quizmon.page_view'],
-    ['quizmon.page_view'],
-    ['quizmon.visitor_daily_active'],
+  expect(countCalls().map(([name]) => name)).toEqual([
+    'quizmon.page_view',
+    'quizmon.page_view',
+    'quizmon.page_view',
   ]);
+  expect(new Set(countCalls().map(([, , options]) => options.scope)).size).toBe(
+    countCalls().length,
+  );
 });
 
 it('keeps game actions available when telemetry throws', () => {

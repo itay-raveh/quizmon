@@ -349,7 +349,7 @@ export async function startAccountSync() {
     const version = clearSentryUser();
     const { data } = await auth.getSession();
     if (data?.user.id === owner && data.user.email)
-      await setVerifiedSentryUser(owner, data.user.email, version);
+      setVerifiedSentryUser(owner, data.user.email, version);
   };
   void refreshIdentity().catch(() => {});
   window.addEventListener('online', () => {
@@ -519,6 +519,31 @@ export async function signOutAccount() {
   clearRetryTimer();
   await stopReplication();
   await auth.signOut();
+  localStorage.removeItem(selectionKey);
+  window.location.assign('/');
+}
+
+export async function deleteAccount() {
+  clearRetryTimer();
+  await stopReplication();
+  try {
+    const result = await auth.deleteUser();
+    if (result.error?.code === 'SESSION_EXPIRED')
+      throw new AccountNotice('Sign in again to delete your account.');
+    if (result.error)
+      throw new AccountNotice('The account could not be deleted. Try again.');
+  } catch (error) {
+    void retryAccountSync();
+    throw error;
+  }
+  clearSentryUser();
+  try {
+    await getPlayerDatabase().remove();
+  } catch {
+    window.alert(
+      'Your account was deleted, but this browser could not remove its local copy. Clear Quizmon site data on this device.',
+    );
+  }
   localStorage.removeItem(selectionKey);
   window.location.assign('/');
 }

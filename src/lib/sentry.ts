@@ -7,7 +7,6 @@ const env = (import.meta.env ?? { PROD: false }) as {
 };
 const dsn = env.PROD ? env.VITE_SENTRY_DSN : undefined;
 let feedback: ReturnType<typeof Sentry.feedbackIntegration> | undefined;
-let replayTransition = Promise.resolve();
 let identityVersion = 0;
 
 export const sentryEnabled = Boolean(dsn);
@@ -32,8 +31,6 @@ export const initSentry = () => {
         /^https:\/\/quizmon\.raveh\.dev\/api\//,
         /^https:\/\/quizmon-sync\.raveh\.dev\//,
       ],
-      replaysSessionSampleRate: 0,
-      replaysOnErrorSampleRate: 1,
       integrations: [
         Sentry.browserTracingIntegration({
           traceFetch: true,
@@ -42,11 +39,6 @@ export const initSentry = () => {
             url.startsWith('/api/') ||
             url.startsWith('https://quizmon.raveh.dev/api/') ||
             url.startsWith('https://quizmon-sync.raveh.dev/'),
-        }),
-        Sentry.replayIntegration({
-          maskAllText: true,
-          maskAllInputs: true,
-          blockAllMedia: true,
         }),
         feedback,
       ],
@@ -79,6 +71,12 @@ export const initSentry = () => {
       beforeSendLog(log) {
         return log.message === 'quizmon.failure' ? log : null;
       },
+      beforeSendMetric(metric) {
+        delete metric.attributes?.['user.id'];
+        delete metric.attributes?.['user.email'];
+        delete metric.attributes?.['user.name'];
+        return metric;
+      },
     });
     Sentry.setUser(null);
   } catch {
@@ -101,24 +99,14 @@ export const clearSentryUser = () => {
   } catch {
     // Local sign-out must continue if monitoring fails.
   }
-  replayTransition = replayTransition.then(async () => {
-    try {
-      const replay = Sentry.getReplay();
-      await replay?.stop({ flush: false });
-      replay?.startBuffering();
-    } catch {
-      // Identity changes cannot interrupt account actions.
-    }
-  });
   return version;
 };
 
-export const setVerifiedSentryUser = async (
+export const setVerifiedSentryUser = (
   id: string,
   email: string,
   version: number,
 ) => {
-  await replayTransition;
   if (version === identityVersion)
     try {
       Sentry.setUser({ id, email });

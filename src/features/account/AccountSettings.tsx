@@ -17,6 +17,7 @@ import {
   loadAccountConfig,
   accountSnapshot,
   continueSignIn,
+  deleteAccount,
   finishSignIn,
   retryAccountSync,
   sendSignInCode,
@@ -285,6 +286,14 @@ export const AccountSettings = ({
                 )}
               </div>
             )}
+            {!sent && (
+              <p>
+                By continuing, you agree to our{' '}
+                <a href="/terms">Terms of Use</a>. See our{' '}
+                <a href="/privacy">Privacy and Cookies policy</a> for how we
+                handle your data.
+              </p>
+            )}
             <div className="account-settings__actions">
               <GameButton
                 type="submit"
@@ -393,6 +402,38 @@ export const AccountSettings = ({
               Download account archive
             </GameButton>
           </div>
+          <section
+            className="account-settings__section"
+            aria-label="Delete account"
+          >
+            <p>
+              Delete your account and synced progress. This also removes the
+              account save from this device.
+            </p>
+            <GameButton
+              tone="quiet"
+              disabled={busy}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    'Delete your account and synced progress? This cannot be undone. Other devices may retain local copies.',
+                  )
+                )
+                  run(deleteAccount);
+              }}
+            >
+              Delete account
+            </GameButton>
+            {error === 'Sign in again to delete your account.' && (
+              <GameButton
+                tone="quiet"
+                disabled={busy}
+                onClick={() => setReauthenticating(true)}
+              >
+                Sign in again
+              </GameButton>
+            )}
+          </section>
           {(syncPaused || syncOffline) && (
             <section
               className="account-settings__sync"

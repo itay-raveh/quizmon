@@ -38,12 +38,37 @@ export interface AccountServices {
 
 const createAuth = (db: NodePgDatabase, services: AccountServices) => {
   let deliveryError: EmailDeliveryError | undefined;
-  return betterAuth({
+  const auth = betterAuth({
     baseURL: services.origin,
     secret: services.secret,
     database: drizzleAdapter(db, { provider: 'pg', schema, transaction: true }),
     trustedOrigins: [services.origin],
     telemetry: { enabled: false },
+    user: {
+      deleteUser: {
+        enabled: true,
+        beforeDelete: async (_user, request) => {
+          if (!request) throw new APIError('BAD_REQUEST');
+          const { token } = await auth.api.getToken({
+            headers: request.headers,
+          });
+          const response = await fetch(
+            `${services.sync.endpoint}/read/account`,
+            {
+              method: 'DELETE',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Origin: services.origin,
+              },
+            },
+          );
+          if (!response.ok)
+            throw new APIError('SERVICE_UNAVAILABLE', {
+              message: 'Account progress could not be deleted. Try again.',
+            });
+        },
+      },
+    },
     hooks: {
       before: createAuthMiddleware((context) => {
         if (context.path !== '/email-otp/send-verification-otp')
@@ -94,6 +119,7 @@ const createAuth = (db: NodePgDatabase, services: AccountServices) => {
       }
     }, services.sync.audience),
   });
+  return auth;
 };
 
 export interface AccountEnv {

@@ -2,6 +2,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import express from 'express';
 import type { ErrorRequestHandler } from 'express';
 import * as Sentry from '@sentry/node';
+import { MongoClient } from 'mongodb';
 import { z } from 'zod';
 import { createRxServer } from 'rxdb-server/plugins/server';
 import { RxServerAdapterExpress } from 'rxdb-server/plugins/adapter-express';
@@ -174,6 +175,30 @@ export async function startSyncServer(config: {
           }),
         next,
       );
+    });
+    server.serverApp.delete('/read/account', (_request, response, next) => {
+      const ownerId = accountId.parse(response.locals.ownerId as unknown);
+      void (async () => {
+        const [rounds, player] = await Promise.all([
+          db.rounds.find({ selector: { ownerId } }).exec(),
+          db.players.findOne(ownerId).exec(),
+        ]);
+        const removed = await db.rounds.bulkRemove(rounds);
+        if (removed.error.length)
+          throw new Error('Could not delete account rounds.');
+        await player?.remove();
+        const client = await new MongoClient(connection.toString()).connect();
+        try {
+          const storage = client.db(`${db.name}-v${db.rounds.schema.version}`);
+          await Promise.all([
+            storage.collection(db.rounds.name).deleteMany({ ownerId }),
+            storage.collection(db.players.name).deleteMany({ ownerId }),
+          ]);
+          response.sendStatus(204);
+        } finally {
+          await client.close();
+        }
+      })().catch(next);
     });
     Sentry.setupExpressErrorHandler(server.serverApp);
     const safeErrorResponse: ErrorRequestHandler = (

@@ -1,6 +1,6 @@
 # Terms of Use
 
-_Last updated: September 15, 2026_
+_Last updated: September 27, 2026_
 
 Quizmon is an open-source Pokémon knowledge game operated by Itay Raveh. By using this service, you agree to these terms.
 
@@ -17,7 +17,7 @@ You agree not to use this service to:
 - Break the law or infringe another person's rights.
 - Attempt unauthorized access to data or infrastructure.
 - Interfere with the service or use automated tools to overload it.
-- Generate fraudulent traffic or artificial ad impressions or clicks.
+- Generate fraudulent traffic.
 
 We may restrict access to address abuse, security risks, or legal requirements.
 

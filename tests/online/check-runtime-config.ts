@@ -272,8 +272,43 @@ try {
   replications.push(isolated);
   await within(isolated.awaitInitialReplication(), 'owner isolation pull');
   assert.equal((await other.rounds.find().exec()).length, 0);
+  await Promise.all(replications.map((replication) => replication.cancel()));
+  assert.equal(
+    (
+      await fetch(worker.base + '/api/auth/delete-user', {
+        method: 'POST',
+        headers: {
+          Cookie: a.cookie,
+          Origin: origin,
+          'Content-Type': 'application/json',
+        },
+        body: '{}',
+      })
+    ).status,
+    200,
+  );
+  assert.equal((await request('/api/me', a)).status, 401);
+  assert.equal((await request('/api/account', b)).status, 200);
+  assert.equal(
+    (await json(await request('/api/leaderboards/training', b))).total,
+    0,
+  );
+  assert.equal(
+    await mongo
+      .db(`${mongoName}-v0`)
+      .collection('players')
+      .countDocuments({ ownerId: a.id }),
+    0,
+  );
+  assert.equal(
+    await mongo
+      .db(`${mongoName}-v0`)
+      .collection('rounds')
+      .countDocuments({ ownerId: a.id }),
+    0,
+  );
   console.log(
-    'RxServer account JWT, offline push, second-device pull, and owner isolation passed.',
+    'RxServer account JWT, offline push, second-device pull, owner isolation, and deletion passed.',
   );
 } finally {
   await Promise.allSettled(
