@@ -1,5 +1,7 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import express from 'express';
+import type { ErrorRequestHandler } from 'express';
+import * as Sentry from '@sentry/node';
 import { z } from 'zod';
 import { createRxServer } from 'rxdb-server/plugins/server';
 import { RxServerAdapterExpress } from 'rxdb-server/plugins/adapter-express';
@@ -173,6 +175,17 @@ export async function startSyncServer(config: {
         next,
       );
     });
+    Sentry.setupExpressErrorHandler(server.serverApp);
+    const safeErrorResponse: ErrorRequestHandler = (
+      error,
+      _request,
+      response,
+      next,
+    ) => {
+      if (response.headersSent) return next(error);
+      response.status(500).json({ error: 'Sync temporarily unavailable.' });
+    };
+    server.serverApp.use(safeErrorResponse);
     await server.start();
     return { server, db };
   } catch (error) {
@@ -187,12 +200,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const audience = process.env.SYNC_AUDIENCE;
   if (!mongoUrl || !origin || !audience)
     throw new Error('MONGO_URL, AUTH_ORIGIN, and SYNC_AUDIENCE are required.');
-  await startSyncServer({
-    mongoUrl,
-    mongoTlsCaFile: process.env.MONGO_TLS_CA_FILE,
-    mongoTlsCertKeyFile: process.env.MONGO_TLS_CERT_KEY_FILE,
-    origin,
-    audience,
-    port: Number(process.env.PORT ?? 8080),
-  });
+  try {
+    await startSyncServer({
+      mongoUrl,
+      mongoTlsCaFile: process.env.MONGO_TLS_CA_FILE,
+      mongoTlsCertKeyFile: process.env.MONGO_TLS_CERT_KEY_FILE,
+      origin,
+      audience,
+      port: Number(process.env.PORT ?? 8080),
+    });
+  } catch (error) {
+    Sentry.captureException(error, { tags: { 'error.kind': 'sync.startup' } });
+    await Sentry.flush(2_000);
+    throw error;
+  }
 }

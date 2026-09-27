@@ -111,6 +111,38 @@ try {
   }
   const [a, b] = accounts;
   assert.ok(a && b && a.id !== b.id);
+  const preflight = await fetch(
+    `${endpoint}/players/${playerSchema.version}/pull`,
+    {
+      method: 'OPTIONS',
+      headers: {
+        Origin: origin,
+        'Access-Control-Request-Method': 'GET',
+        'Access-Control-Request-Headers': 'authorization,sentry-trace,baggage',
+      },
+    },
+  );
+  assert.equal(preflight.status, 200);
+  assert.equal(preflight.headers.get('access-control-allow-origin'), origin);
+  assert.match(
+    preflight.headers.get('access-control-allow-headers') ?? '',
+    /sentry-trace/,
+  );
+  const failedSync = await fetch(
+    `${endpoint}/players/${playerSchema.version}/push`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${a.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    },
+  );
+  assert.equal(failedSync.status, 500);
+  assert.deepEqual(await failedSync.json(), {
+    error: 'Sync temporarily unavailable.',
+  });
   await jwtVerify(
     a.token,
     createRemoteJWKSet(new URL('/api/auth/jwks', origin)),

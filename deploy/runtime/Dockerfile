@@ -11,8 +11,11 @@ COPY src/lib/validation.ts src/lib/random.ts ./src/lib/
 COPY src/lib/storage/rxdb-database.ts src/lib/storage/rxdb-schema.ts ./src/lib/storage/
 COPY src/question-rules.ts ./src/
 COPY src/domain ./src/domain
-COPY server/rxdb-sync.ts server/rxdb-read.ts ./server/
+COPY server/instrument.ts server/rxdb-sync.ts server/rxdb-read.ts ./server/
 COPY server/migrations ./server/migrations
-RUN node --input-type=module -e "await import('./server/rxdb-sync.ts'); for (const [file, usage] of [['migrate-release.ts', 'Usage: migrate-release.ts <migration-connection.json>'], ['transfer-alpha-progress.ts', 'Usage: transfer-alpha-progress.ts <migration-connection.json> [--dry-run|--install-write-gate|--remove-write-gate]']]) { try { await import('./deploy/' + file) } catch (error) { if (error.message !== usage) throw error } }"
+RUN node --input-type=module -e "await import('./server/instrument.ts'); await import('./server/rxdb-sync.ts'); for (const [file, usage] of [['migrate-release.ts', 'Usage: migrate-release.ts <migration-connection.json>'], ['transfer-alpha-progress.ts', 'Usage: transfer-alpha-progress.ts <migration-connection.json> [--dry-run|--install-write-gate|--remove-write-gate]']]) { try { await import('./deploy/' + file) } catch (error) { if (error.message !== usage) throw error } }"
+ARG SENTRY_DSN
+ARG SENTRY_RELEASE
+ENV SENTRY_DSN=$SENTRY_DSN SENTRY_RELEASE=$SENTRY_RELEASE NODE_OPTIONS=--import=./server/instrument.ts
 USER node
 ENTRYPOINT ["node", "deploy/migrate-release.ts"]

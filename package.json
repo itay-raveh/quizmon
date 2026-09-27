@@ -37,6 +37,7 @@
     "@hookform/resolvers": "^5.9.1",
     "@phosphor-icons/react": "^2.1.10",
     "@sentry/cloudflare": "^10.75.1",
+    "@sentry/node": "10.75.1",
     "@sentry/react": "^10.75.1",
     "@zumer/snapdom": "^2.24.15",
     "better-auth": "1.7.4",
@@ -136,6 +137,7 @@
       ".": {
         "entry": [
           "server/auth-schema-config.ts",
+          "server/instrument.ts",
           "deploy/migrate-release.ts",
           "deploy/transfer-alpha-progress.ts",
           "worker/index.ts"

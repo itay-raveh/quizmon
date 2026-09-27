@@ -75,9 +75,13 @@ jobs:
           ./node_modules/.bin/sentry-cli sourcemaps upload --strict --wait --release "$GITHUB_SHA" --org "$SENTRY_ORG" --project "$SENTRY_WORKER_PROJECT" .wrangler/release-worker
           test -f .wrangler/release-worker/index.js.map
       - name: Build checked migration image
+        env:
+          SENTRY_WORKER_DSN: ${{ secrets.SENTRY_WORKER_DSN }}
         run: |
           mkdir -p .wrangler
           docker build -f deploy/runtime/Dockerfile \
+            --build-arg "SENTRY_DSN=$SENTRY_WORKER_DSN" \
+            --build-arg "SENTRY_RELEASE=$GITHUB_SHA" \
             --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
             --label "org.opencontainers.image.revision=$GITHUB_SHA" \
             --iidfile .wrangler/release-image-id -t "$QUIZMON_RELEASE_IMAGE" .

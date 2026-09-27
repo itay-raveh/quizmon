@@ -1,6 +1,7 @@
 import { useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../components/GameButton';
 import { downloadBackup } from '../features/settings/backup';
+import { BugReportButton } from './BugReportButton';
 import {
   getSaveError,
   isSaveRetrying,
@@ -23,8 +24,8 @@ export const LocalGame = () => {
           <h2>Your progress has not been saved</h2>
           <p>{error}</p>
           <p>
-            Keep this tab open while you free some storage or allow site
-            storage.
+            Keep this tab open. Check that site storage is available, then try
+            again.
           </p>
           <GameButton
             disabled={retrying}
@@ -45,6 +46,7 @@ export const LocalGame = () => {
           >
             Download saved progress
           </GameButton>
+          <BugReportButton label="Report issue" />
           {exportError && <p>{exportError}</p>}
         </section>
       )}

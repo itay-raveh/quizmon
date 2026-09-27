@@ -27,12 +27,21 @@ export const initSentry = () => {
       sendDefaultPii: false,
       enableLogs: true,
       tracesSampleRate: 0.1,
+      tracePropagationTargets: [
+        /^\/api\//,
+        /^https:\/\/quizmon\.raveh\.dev\/api\//,
+        /^https:\/\/quizmon-sync\.raveh\.dev\//,
+      ],
       replaysSessionSampleRate: 0,
       replaysOnErrorSampleRate: 1,
       integrations: [
         Sentry.browserTracingIntegration({
-          traceFetch: false,
+          traceFetch: true,
           traceXHR: false,
+          shouldCreateSpanForRequest: (url) =>
+            url.startsWith('/api/') ||
+            url.startsWith('https://quizmon.raveh.dev/api/') ||
+            url.startsWith('https://quizmon-sync.raveh.dev/'),
         }),
         Sentry.replayIntegration({
           maskAllText: true,
@@ -56,6 +65,16 @@ export const initSentry = () => {
         for (const exception of event.exception?.values ?? [])
           exception.value = exception.type ?? 'Unexpected error';
         return event;
+      },
+      beforeSendSpan(span) {
+        if (span.op?.startsWith('http')) {
+          span.description = span.description?.split('?')[0];
+          for (const key of ['url', 'http.url']) {
+            const value = span.data[key];
+            if (typeof value === 'string') span.data[key] = value.split('?')[0];
+          }
+        }
+        return span;
       },
       beforeSendLog(log) {
         return log.message === 'quizmon.failure' ? log : null;

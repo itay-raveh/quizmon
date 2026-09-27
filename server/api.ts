@@ -129,6 +129,13 @@ export function createAccountApi(services: AccountServices) {
       });
     }
     console.error(error);
+    try {
+      Sentry.captureException(error, {
+        tags: { 'error.kind': 'account.api' },
+      });
+    } catch {
+      // Monitoring must not change account responses.
+    }
     return context.text('Internal Server Error', 500);
   });
   app.get('/api/account/config', (context) =>
@@ -142,7 +149,16 @@ export function createAccountApi(services: AccountServices) {
     )
       return context.notFound();
     const client = new Client({ connectionString: services.connectionString });
-    await client.connect();
+    await Sentry.startSpan(
+      { name: 'PostgreSQL connect', op: 'db.connect' },
+      () => client.connect(),
+    );
+    const query = client.query.bind(client);
+    client.query = ((...args: unknown[]) =>
+      Sentry.startSpan(
+        { name: 'PostgreSQL query', op: 'db.query' },
+        () => Reflect.apply(query, undefined, args) as unknown,
+      )) as typeof client.query;
     try {
       const db = drizzle(client);
       context.set('db', db);

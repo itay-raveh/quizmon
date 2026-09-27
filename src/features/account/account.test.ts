@@ -19,7 +19,9 @@ vi.mock('../../domain/sync/connection', () => ({
     return { endpoint: 'https://sync.test' };
   },
 }));
+const sentry = vi.hoisted(() => ({ captureUnexpectedError: vi.fn() }));
 vi.mock('../../lib/sentry', () => ({
+  captureUnexpectedError: sentry.captureUnexpectedError,
   clearSentryUser: () => 0,
   setVerifiedSentryUser: () => Promise.resolve(),
 }));
@@ -114,8 +116,12 @@ it('retries account startup and wake failures, then clears a recovered replicati
   expect(accountCalls).toBe(2);
   expect(accountSnapshot()).toMatchObject({ offline: false, status: 'Synced' });
 
-  first.error.emit(new Error('temporary network failure'));
-  expect(accountSnapshot().error).toContain('temporary network failure');
+  first.error.emit(new Error('private server details'));
+  expect(accountSnapshot().error).toBe('Sync could not finish.');
+  expect(sentry.captureUnexpectedError).toHaveBeenCalledWith(
+    'account.sync.players',
+    expect.objectContaining({ message: 'Replication failed' }),
+  );
   first.active.emit(true);
   first.active.emit(false);
   expect(accountSnapshot()).toMatchObject({ error: '', status: 'Synced' });
@@ -148,11 +154,27 @@ it('retries account startup and wake failures, then clears a recovered replicati
   await retryAccountSync();
   expect(accountSnapshot()).toMatchObject({
     offline: false,
-    error: 'Invalid URL',
+    error: 'Sync could not finish.',
   });
   await vi.advanceTimersByTimeAsync(5_000);
   expect(accountCalls).toBe(5);
 
   vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+it('does not display a server error body', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValue(
+        Response.json({ error: 'private database details' }, { status: 500 }),
+      ),
+  );
+  const { accountRequest } = await import('./account');
+  await expect(accountRequest('/api/account')).rejects.toThrow(
+    'Account service unavailable. Try again.',
+  );
   vi.unstubAllGlobals();
 });

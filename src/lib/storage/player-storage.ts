@@ -50,7 +50,7 @@ export const reportSaveError = (
   if (!(error instanceof SaveError))
     captureUnexpectedError('save.write', error);
   saveError =
-    error instanceof Error
+    error instanceof SaveError
       ? error.message
       : 'Your browser could not save your progress.';
   retryWrite = retry;

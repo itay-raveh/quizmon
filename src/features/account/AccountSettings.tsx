@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
+import { BugReportButton } from '../../app/BugReportButton';
 import {
   ArrowsClockwiseIcon,
   MedalIcon,
@@ -12,6 +13,7 @@ import {
 import { isRecord } from '../../lib/validation';
 import {
   accountRequest,
+  AccountNotice,
   loadAccountConfig,
   accountSnapshot,
   continueSignIn,
@@ -79,7 +81,11 @@ export const AccountSettings = ({
     setMessage('');
     void work()
       .catch((cause: unknown) => {
-        setError(cause instanceof Error ? cause.message : 'Please try again.');
+        setError(
+          cause instanceof AccountNotice
+            ? cause.message
+            : 'Please try again or report the issue.',
+        );
       })
       .finally(() => setBusy(false));
   };
@@ -404,32 +410,26 @@ export const AccountSettings = ({
                     : 'Your changes are saved on this device.'}
               </p>
               {syncPaused && (
-                <button
-                  className="account-settings__text-action"
-                  type="button"
-                  disabled={busy}
-                  onClick={() =>
-                    syncNeedsSignIn
-                      ? setReauthenticating(true)
-                      : run(retryAccountSync)
-                  }
-                >
-                  {syncNeedsSignIn
-                    ? 'Sign in again'
-                    : busy
-                      ? 'Reconnecting…'
-                      : 'Try again'}
-                </button>
+                <div className="account-settings__actions">
+                  <GameButton
+                    tone="quiet"
+                    disabled={busy}
+                    onClick={() =>
+                      syncNeedsSignIn
+                        ? setReauthenticating(true)
+                        : run(retryAccountSync)
+                    }
+                  >
+                    {syncNeedsSignIn
+                      ? 'Sign in again'
+                      : busy
+                        ? 'Reconnecting…'
+                        : 'Try again'}
+                  </GameButton>
+                  <BugReportButton label="Report issue" />
+                </div>
               )}
             </section>
-          )}
-          {syncPaused && account.diagnostic && (
-            <details className="account-settings__details">
-              <summary>Technical details</summary>
-              <pre className="account-settings__diagnostic">
-                {account.diagnostic}
-              </pre>
-            </details>
           )}
           {(syncPaused || syncOffline) && (
             <details className="account-settings__details">

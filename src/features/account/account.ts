@@ -6,7 +6,11 @@ import {
   type RxServerReplicationState,
 } from 'rxdb-server/plugins/replication-server';
 import { readSyncConnection } from '../../domain/sync/connection';
-import { clearSentryUser, setVerifiedSentryUser } from '../../lib/sentry';
+import {
+  captureUnexpectedError,
+  clearSentryUser,
+  setVerifiedSentryUser,
+} from '../../lib/sentry';
 import {
   currentOwnerId,
   getPlayerDatabase,
@@ -42,7 +46,6 @@ let snapshot = {
   error: '',
   recoveryReason: null as RecoveryReason,
   offline: false,
-  diagnostic: '',
   mergeRequired: false,
   emailDelivery: '',
 };
@@ -62,7 +65,9 @@ export const subscribeAccount = (listener: () => void) => {
 export const selectedAccount = () =>
   localStorage.getItem(selectionKey) ?? undefined;
 
-class AccountServiceError extends Error {
+export class AccountNotice extends Error {}
+
+class AccountServiceError extends AccountNotice {
   constructor(
     message: string,
     readonly status: number,
@@ -71,7 +76,7 @@ class AccountServiceError extends Error {
   }
 }
 
-class AccountNetworkError extends Error {
+class AccountNetworkError extends AccountNotice {
   constructor(cause: unknown) {
     super('Connection temporarily unavailable.', { cause });
   }
@@ -91,11 +96,11 @@ export async function accountRequest(path: string, body?: unknown) {
   if (!response.ok) {
     if (response.status === 401) clearSentryUser();
     throw new AccountServiceError(
-      isRecord(value) && typeof value.error === 'string'
-        ? value.error
-        : response.status === 401
-          ? 'Sign in to resume syncing.'
-          : `Account service unavailable (${response.status}).`,
+      response.status === 401
+        ? 'Sign in to resume syncing.'
+        : response.status === 429
+          ? 'Too many requests. Try again shortly.'
+          : 'Account service unavailable. Try again.',
       response.status,
     );
   }
@@ -118,17 +123,17 @@ export async function sendSignInCode(email: string) {
     type: 'sign-in',
   });
   if (result.error)
-    throw new Error(result.error.message ?? 'The code could not be sent.');
+    throw new AccountNotice('The code could not be sent. Try again.');
 }
 
 export async function verifySignInCode(email: string, otp: string) {
   clearSentryUser();
   const result = await auth.signIn.emailOtp({ email, otp });
   if (result.error)
-    throw new Error(
+    throw new AccountNotice(
       result.error.code === 'INVALID_OTP' || result.error.code === 'OTP_EXPIRED'
         ? 'Invalid code'
-        : (result.error.message ?? 'Check the code and try again.'),
+        : 'Check the code and try again.',
     );
   await continueSignIn();
 }
@@ -140,7 +145,9 @@ export async function continueSignIn() {
     return;
   }
   if (currentOwnerId() !== 'guest')
-    throw new Error('Sign out of the current account before switching.');
+    throw new AccountNotice(
+      'Sign out of the current account before switching.',
+    );
   const guest = getPlayerDatabase();
   const [rounds, player, local] = await Promise.all([
     guest.rounds.find().exec(),
@@ -282,7 +289,6 @@ const reportTokenError = (error: unknown) => {
   if (retryableConnectionError(error)) {
     update({
       error: '',
-      diagnostic: '',
       recoveryReason: 'retry',
       offline: true,
       status: 'Saved on this device. Will sync when connected.',
@@ -290,9 +296,13 @@ const reportTokenError = (error: unknown) => {
     scheduleConnectionRetry();
     return;
   }
+  if (!(error instanceof AccountServiceError && error.status === 401))
+    captureUnexpectedError(
+      'account.sync.token',
+      new Error('Sync token failed'),
+    );
   update({
-    error:
-      error instanceof Error ? error.message : 'Sign in to resume syncing.',
+    error: 'Sync could not finish.',
     recoveryReason:
       error instanceof AccountServiceError && error.status === 401
         ? 'sign-in'
@@ -411,12 +421,16 @@ async function connectAccountSync() {
     replications = [players, rounds];
     const failed = new Set<RxServerReplicationState<unknown>>();
     for (const replication of replications) {
-      replication.error$.subscribe((error) => {
+      replication.error$.subscribe(() => {
+        if (!failed.size && navigator.onLine)
+          captureUnexpectedError(
+            `account.sync.${replication === players ? 'players' : 'rounds'}`,
+            new Error('Replication failed'),
+          );
         failed.add(replication);
         update({
-          error: error.message,
+          error: 'Sync could not finish.',
           recoveryReason: 'retry',
-          diagnostic: error.stack ?? error.message,
           status: 'Saved on this device. Sync is retrying.',
         });
       });
@@ -431,7 +445,6 @@ async function connectAccountSync() {
           return;
         update({
           error: '',
-          diagnostic: '',
           recoveryReason: null,
           offline: false,
           status: 'Synced',
@@ -452,7 +465,6 @@ async function connectAccountSync() {
     }, 240_000);
     update({
       error: '',
-      diagnostic: '',
       recoveryReason: null,
       status: navigator.onLine
         ? 'Saved on this device. Syncing…'
@@ -466,26 +478,29 @@ async function connectAccountSync() {
         update({
           status: 'Synced',
           error: '',
-          diagnostic: '',
           recoveryReason: null,
           offline: false,
         });
       })
-      .catch((error: Error) =>
+      .catch(() =>
         update({
-          error: error.message,
+          error: 'Sync could not finish.',
           recoveryReason: 'retry',
           status: 'Saved on this device. Sync is retrying.',
         }),
       );
   } catch (error) {
     const retryable = retryableConnectionError(error);
+    if (
+      !retryable &&
+      !(error instanceof AccountServiceError && error.status === 401)
+    )
+      captureUnexpectedError(
+        'account.sync.connect',
+        new Error('Sync connection failed'),
+      );
     update({
-      error: retryable
-        ? ''
-        : error instanceof Error
-          ? error.message
-          : 'Sync is unavailable.',
+      error: retryable ? '' : 'Sync could not finish.',
       recoveryReason:
         error instanceof AccountServiceError && error.status === 401
           ? 'sign-in'
