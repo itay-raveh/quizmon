@@ -27,6 +27,7 @@
     "tests",
     "eslint.config.js",
     "vite.config.ts",
+    "vite.worker.config.ts",
     "server",
     "deploy",
     "drizzle.config.ts"

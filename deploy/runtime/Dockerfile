@@ -11,7 +11,7 @@ COPY src/lib/validation.ts src/lib/random.ts ./src/lib/
 COPY src/lib/storage/rxdb-database.ts src/lib/storage/rxdb-schema.ts ./src/lib/storage/
 COPY src/question-rules.ts ./src/
 COPY src/domain ./src/domain
-COPY server/instrument.ts server/rxdb-sync.ts server/rxdb-read.ts ./server/
+COPY server/instrument.ts server/sentry-spans.ts server/rxdb-sync.ts server/rxdb-read.ts ./server/
 COPY server/migrations ./server/migrations
 RUN node --input-type=module -e "await import('./server/instrument.ts'); await import('./server/rxdb-sync.ts'); try { await import('./deploy/migrate-release.ts') } catch (error) { if (error.message !== 'Usage: migrate-release.ts <migration-connection.json>') throw error }"
 ARG SENTRY_DSN

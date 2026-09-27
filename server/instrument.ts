@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node';
+import { filterNodeDatabaseSpan } from './sentry-spans.ts';
 
 if (process.env.SENTRY_DSN)
   Sentry.init({
@@ -16,21 +17,5 @@ if (process.env.SENTRY_DSN)
         exception.value = exception.type ?? 'Unexpected error';
       return event;
     },
-    beforeSendSpan(span) {
-      if (span.op?.startsWith('db')) {
-        span.description = 'Database operation';
-        for (const key of Object.keys(span.data))
-          if (
-            key.startsWith('db.') &&
-            ![
-              'db.system',
-              'db.name',
-              'db.operation',
-              'db.mongodb.collection',
-            ].includes(key)
-          )
-            delete span.data[key];
-      }
-      return span;
-    },
+    beforeSendSpan: filterNodeDatabaseSpan,
   });

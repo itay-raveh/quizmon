@@ -70,7 +70,8 @@ jobs:
           npm run test:sync
           test -z "$(find dist -name '*.map' -print -quit)"
           node deploy/prepare-worker-deploy.ts .wrangler/infra
-          npx wrangler deploy --config .wrangler.production.json --dry-run --upload-source-maps --outdir .wrangler/release-worker
+          QUIZMON_WRANGLER_CONFIG=.wrangler.production.json npm run build:worker
+          npx wrangler deploy .wrangler/vite-worker/worker/index.js --config .wrangler.production.json --dry-run --upload-source-maps --outdir .wrangler/release-worker
           ./node_modules/.bin/sentry-cli sourcemaps inject .wrangler/release-worker
           ./node_modules/.bin/sentry-cli sourcemaps upload --strict --wait --release "$GITHUB_SHA" --org "$SENTRY_ORG" --project "$SENTRY_WORKER_PROJECT" .wrangler/release-worker
           test -f .wrangler/release-worker/index.js.map

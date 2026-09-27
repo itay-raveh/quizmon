@@ -175,16 +175,7 @@ export function createAccountApi(services: AccountServices) {
     )
       return context.notFound();
     const client = new Client({ connectionString: services.connectionString });
-    await Sentry.startSpan(
-      { name: 'PostgreSQL connect', op: 'db.connect' },
-      () => client.connect(),
-    );
-    const query = client.query.bind(client);
-    client.query = ((...args: unknown[]) =>
-      Sentry.startSpan(
-        { name: 'PostgreSQL query', op: 'db.query' },
-        () => Reflect.apply(query, undefined, args) as unknown,
-      )) as typeof client.query;
+    await client.connect();
     try {
       const db = drizzle(client);
       context.set('db', db);

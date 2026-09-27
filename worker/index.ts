@@ -1,6 +1,7 @@
 import game, { DailyReminder as DailyReminderClass } from './game.ts';
 import accounts from '../server/worker.ts';
 import * as Sentry from '@sentry/cloudflare';
+import { filterWorkerDatabaseSpan } from '../server/sentry-spans.ts';
 import type { DailyReminderEnv } from './daily-reminder.ts';
 
 type GameAccountEnv = Partial<AccountEnv> &
@@ -8,6 +9,18 @@ type GameAccountEnv = Partial<AccountEnv> &
     SENTRY_DSN?: string;
     SENTRY_RELEASE?: string;
   };
+
+const dataCollection = {
+  userInfo: false,
+  cookies: false,
+  httpHeaders: false,
+  httpBodies: [],
+  urlQueryParams: false,
+  genAI: { inputs: false, outputs: false },
+  databaseQueryData: false,
+  queues: false,
+  graphQL: { document: false, variables: false },
+} satisfies NonNullable<Sentry.CloudflareOptions['dataCollection']>;
 
 const handler = {
   fetch(request: Request, env: GameAccountEnv): Promise<Response> {
@@ -18,14 +31,14 @@ const handler = {
   },
 };
 
-export default Sentry.withSentry<GameAccountEnv>(
+export default Sentry.withSentry(
   (env) =>
     env.SENTRY_DSN
       ? {
           dsn: env.SENTRY_DSN,
           release: env.SENTRY_RELEASE,
           tracesSampleRate: 0.1,
-          sendDefaultPii: false,
+          dataCollection,
           beforeSend(event) {
             delete event.request;
             delete event.extra;
@@ -35,6 +48,7 @@ export default Sentry.withSentry<GameAccountEnv>(
               exception.value = exception.type ?? 'Unexpected error';
             return event;
           },
+          beforeSendSpan: filterWorkerDatabaseSpan,
         }
       : undefined,
   handler,
@@ -42,6 +56,8 @@ export default Sentry.withSentry<GameAccountEnv>(
 
 export const DailyReminder = Sentry.instrumentDurableObjectWithSentry(
   (env: DailyReminderEnv & { SENTRY_DSN?: string; SENTRY_RELEASE?: string }) =>
-    env.SENTRY_DSN ? { dsn: env.SENTRY_DSN, release: env.SENTRY_RELEASE } : {},
+    env.SENTRY_DSN
+      ? { dsn: env.SENTRY_DSN, release: env.SENTRY_RELEASE, dataCollection }
+      : {},
   DailyReminderClass,
 );
