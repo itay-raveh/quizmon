@@ -147,6 +147,7 @@ function Standings({
   date,
   scope,
   active,
+  pageSize,
   onViewPlayer,
   onOpenPlay,
   onError,
@@ -157,6 +158,7 @@ function Standings({
   date: string;
   scope: LeaderboardScope;
   active: boolean;
+  pageSize: number;
   onViewPlayer: (id: string) => void;
   onOpenPlay: () => void;
   onError: (message: string) => void;
@@ -183,8 +185,9 @@ function Standings({
       scope,
       savedId,
       after,
+      pageSize,
     ],
-    queryFn: async (): Promise<Leaderboard> => {
+    queryFn: async ({ signal }): Promise<Leaderboard> => {
       if (mode === 'daily') {
         if (!savedId && !dailyCatalog)
           throw new Error('Daily catalog is unavailable.');
@@ -194,9 +197,11 @@ function Standings({
           scope,
           savedId ?? (await getDailyPuzzleId(dailyCatalog!, dailyDate)),
           after,
+          pageSize,
+          signal,
         );
       }
-      return readTrainingLeaderboard(owner, scope, after);
+      return readTrainingLeaderboard(owner, scope, after, pageSize, signal);
     },
     refetchInterval: 60_000,
   });
@@ -229,6 +234,7 @@ function Standings({
   const checkingFriends =
     scope === 'friends' && data?.items.length === 0 && friends.isPending;
   const pastDaily = mode === 'daily' && date < getUtcDate();
+  const offset = Number(after ?? 0);
   const versionHelpId = `leaderboard-version-help-${scope}`;
   return (
     <section
@@ -380,23 +386,29 @@ function Standings({
             </p>
           )}
           {(after || data.nextCursor) && (
-            <div className="friends-actions">
+            <div className="leaderboard-pagination">
               {after && (
                 <GameButton
                   tone="quiet"
                   disabled={busy}
-                  onClick={() => load(null)}
+                  onClick={() =>
+                    load(offset > pageSize ? String(offset - pageSize) : null)
+                  }
                 >
-                  First page
+                  Previous
                 </GameButton>
               )}
+              <span>
+                Page {Math.floor(offset / pageSize) + 1} of{' '}
+                {Math.ceil(data.total / pageSize)}
+              </span>
               {data.nextCursor && (
                 <GameButton
                   tone="quiet"
                   disabled={busy}
                   onClick={() => load(data.nextCursor)}
                 >
-                  Next page
+                  Next
                 </GameButton>
               )}
             </div>
@@ -440,6 +452,15 @@ export function LeaderboardScreen({
       : getUtcDate(),
   );
   const [today, setToday] = useState(getUtcDate);
+  const [pageSize, setPageSize] = useState(() =>
+    window.matchMedia('(max-width: 42rem)').matches ? 5 : 10,
+  );
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 42rem)');
+    const update = () => setPageSize(media.matches ? 5 : 10);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
   const [inviteError, setInviteError] = useState(false);
   const [standingsErrors, setStandingsErrors] = useState({
     friends: '',
@@ -639,13 +660,14 @@ export function LeaderboardScreen({
             >
               {(['friends', 'global'] as const).map((boardScope) => (
                 <Standings
-                  key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${boardScope}`}
+                  key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${boardScope}:${pageSize}`}
                   owner={account.owner}
                   catalog={catalog}
                   mode={mode}
                   date={date}
                   scope={boardScope}
                   active={scope === boardScope}
+                  pageSize={pageSize}
                   onViewPlayer={onViewPlayer}
                   onOpenPlay={onOpenPlay}
                   onError={(message) =>

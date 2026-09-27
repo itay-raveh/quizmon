@@ -39,11 +39,12 @@ test('rejects a malformed leaderboard count from the server', async () => {
   try {
     const signal = new AbortController().signal;
     await expect(
-      readTrainingLeaderboard('trainer', 'global', null, signal),
+      readTrainingLeaderboard('trainer', 'global', null, 5, signal),
     ).resolves.toMatchObject({ total: 1, items: [{ comparable: true }] });
+    expect(vi.mocked(fetch).mock.calls[0]?.[0]).toContain('limit=5');
     response.items[0]!.rank = -1;
     await expect(
-      readTrainingLeaderboard('trainer', 'global', null, signal),
+      readTrainingLeaderboard('trainer', 'global', null, 5, signal),
     ).rejects.toThrow('unreadable response');
   } finally {
     vi.unstubAllGlobals();

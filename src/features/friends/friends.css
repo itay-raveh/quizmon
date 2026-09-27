@@ -593,7 +593,7 @@
 
 .leaderboard-table th,
 .leaderboard-table td {
-  padding: 0.65rem 0.25rem;
+  padding: 0.45rem 0.25rem;
   border-bottom: 1px solid var(--navy);
   text-align: left;
 }
@@ -607,6 +607,20 @@
 .leaderboard-table small {
   display: block;
   font-weight: normal;
+}
+
+.leaderboard-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.leaderboard-pagination span {
+  white-space: nowrap;
 }
 
 .leaderboard-table tr[aria-current='true'] {

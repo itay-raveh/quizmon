@@ -34,6 +34,7 @@ export async function readDailyLeaderboard(
   scope: LeaderboardScope,
   puzzleId: string,
   after: string | null,
+  limit: number,
   signal?: AbortSignal,
 ): Promise<DailyLeaderboard> {
   return readLeaderboard(
@@ -43,6 +44,7 @@ export async function readDailyLeaderboard(
     scope,
     puzzleId,
     after,
+    limit,
     signal,
   ) as Promise<DailyLeaderboard>;
 }
@@ -51,6 +53,7 @@ export async function readTrainingLeaderboard(
   owner: string,
   scope: LeaderboardScope,
   after: string | null,
+  limit: number,
   signal?: AbortSignal,
 ): Promise<Leaderboard> {
   return readLeaderboard(
@@ -60,6 +63,7 @@ export async function readTrainingLeaderboard(
     scope,
     undefined,
     after,
+    limit,
     signal,
   );
 }
@@ -71,6 +75,7 @@ async function readLeaderboard(
   scope: LeaderboardScope,
   puzzleId: string | undefined,
   after: string | null,
+  limit: number,
   signal?: AbortSignal,
 ): Promise<Leaderboard> {
   const changed = 'Your account changed. Reopen the leaderboard.';
@@ -79,6 +84,7 @@ async function readLeaderboard(
   if (puzzleId) query.set('puzzle', puzzleId);
   if (mode === 'daily') query.set('versions', 'all');
   if (after) query.set('after', after);
+  query.set('limit', String(limit));
   const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
     credentials: 'same-origin',
     signal: signal
