@@ -42,7 +42,7 @@
     "@sentry/react": "^10.75.1",
     "@sentry/server-utils": "^11.0.0",
     "@zumer/snapdom": "^2.24.15",
-    "better-auth": "1.7.4",
+    "better-auth": "1.7.6",
     "drizzle-orm": "0.45.2",
     "express": "5.2.1",
     "fuse.js": "7.5.0",
