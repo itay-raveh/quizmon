@@ -9,6 +9,7 @@ import { completion } from '../../../tests/online/progress-fixtures';
 import { openPlayerDatabase } from './rxdb-database';
 import {
   ensureDeviceState,
+  readDeviceState,
   readGameData,
   writeCompletedRound,
   writePlayerPreferences,
@@ -45,6 +46,59 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   await writePlayerPreferences(second, 'guest', { settings: null });
   expect((await readGameData(second, 'guest')).data.settings).toBeNull();
   await second.remove();
+});
+
+it('returns cloneable Daily attempts from RxDB documents', async () => {
+  const db = await openPlayerDatabase(
+    `quizmon_daily_save_${crypto.randomUUID().replaceAll('-', '')}`,
+    getRxStorageDexie({ indexedDB, IDBKeyRange }),
+    false,
+  );
+  try {
+    await ensureDeviceState(db);
+    const saved = await readDeviceState(db);
+    const date = '2026-09-27';
+    const round = {
+      elapsedMilliseconds: 0,
+      questionCount: 1,
+      roundId: crypto.randomUUID(),
+      seed: 's',
+      answers: [],
+      questions: [
+        {
+          id: 'q',
+          questionType: 'type-check',
+          category: 'knowledge',
+          subject: { kind: 'pokemon', name: 'A', generation: 'I', types: [] },
+          repetition: {
+            identity: 'A',
+            subjects: [],
+            primary: [],
+            distractors: [],
+          },
+          options: ['A'],
+          answer: { interaction: 'single-choice', correctOptions: ['A'] },
+          prompt: { kind: 'text', text: 'A?' },
+          media: { kind: 'none' },
+        },
+      ],
+      mode: { kind: 'daily', date, track: { difficulty: 3, scope: 'all' } },
+      settings: defaultGameSettings,
+    };
+    await (await db.device.findOne('state').exec())!.incrementalModify(
+      (data) => ({
+        ...data,
+        payload: {
+          ...saved,
+          dailyAttempts: { [`${date}:3:all`]: round },
+        },
+      }),
+    );
+    const attempt = (await readDeviceState(db)).dailyAttempts[`${date}:3:all`];
+    expect(structuredClone(attempt!).mode).toEqual(round.mode);
+  } finally {
+    await db.remove();
+  }
 });
 
 it('credits only the first Daily round after two offline devices sync', async () => {

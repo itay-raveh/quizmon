@@ -148,11 +148,19 @@ it('retries account startup and wake failures, then clears a recovered replicati
   await vi.waitFor(() => expect(accountCalls).toBe(4));
   expect(accountSnapshot()).toMatchObject({ offline: false, status: 'Synced' });
 
-  third.error.emit(new Error('private server details'));
+  third.error.emit(
+    Object.assign(new Error('private server details'), {
+      code: 'RC_PULL',
+      parameters: { errors: [{ code: 'RC_UNAUTHORIZED' }] },
+    }),
+  );
   await vi.advanceTimersByTimeAsync(60_000);
   expect(sentry.captureUnexpectedError).toHaveBeenCalledWith(
     'account.sync.players',
-    expect.objectContaining({ message: 'Replication stalled' }),
+    expect.objectContaining({
+      message: 'Replication stalled',
+      name: 'Replication stalled (RC_PULL, RC_UNAUTHORIZED)',
+    }),
   );
   third.active.emit(true);
   third.active.emit(false);

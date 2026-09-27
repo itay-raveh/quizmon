@@ -26,7 +26,9 @@ export const initializeLocalRound = async () => {
   tabId = sessionStorage.getItem('quizmon.baseline.tab') ?? crypto.randomUUID();
   sessionStorage.setItem('quizmon.baseline.tab', tabId);
   const document = await getPlayerDatabase().device.findOne(roundKey()).exec();
-  active = document ? parseActiveGameSave(document.payload) : null;
+  active = document
+    ? parseActiveGameSave(document.toMutableJSON().payload)
+    : null;
   if (!active) return;
   const closed = await getPlayerDatabase()
     .device.findOne(`closed:${active.roundId}`)
@@ -57,7 +59,9 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     db.device.findOne(roundKey()).exec(),
   ]);
   if (completed || closed) return;
-  const previous = stored ? parseActiveGameSave(stored.payload) : null;
+  const previous = stored
+    ? parseActiveGameSave(stored.toMutableJSON().payload)
+    : null;
   if (
     previous?.roundId === round.roundId &&
     previous.answers.length > round.answers.length
@@ -86,7 +90,7 @@ export const removeLocalRound = async () => {
   const db = getPlayerDatabase();
   const stored = await db.device.findOne(roundKey()).exec();
   if (stored) {
-    const round = parseActiveGameSave(stored.payload);
+    const round = parseActiveGameSave(stored.toMutableJSON().payload);
     await db.device.incrementalUpsert({
       id: `closed:${round.roundId}`,
       payload: { reason: 'left' },
@@ -119,7 +123,7 @@ export const commitRoundCompletion = async (
         fact.mode === 'daily' && fact.day === round.day && fact.credited,
     );
   }
-  const fact = existing?.fact ?? round;
+  const fact = existing?.toMutableJSON().fact ?? round;
   const result = scoreRound(fact);
   const data = readPlayerData();
   const outcome = applyResult(

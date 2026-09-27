@@ -69,7 +69,7 @@ export async function readDeviceState(
 ): Promise<DeviceState> {
   const doc = await db.device.findOne('state').exec();
   if (!doc) throw new Error('The device save is missing. Reload Quizmon.');
-  return parseDeviceState(doc.payload);
+  return parseDeviceState(doc.toMutableJSON().payload);
 }
 
 export async function updateDeviceState<T>(
@@ -98,9 +98,10 @@ export async function readGameData(
     db.rounds.find().exec(),
   ]);
   const rounds = documents.map((document) => {
-    if (document.ownerId !== ownerId || !validateRoundFact(document.fact))
+    const saved = document.toMutableJSON();
+    if (saved.ownerId !== ownerId || !validateRoundFact(saved.fact))
       throw new Error('A saved completed round is invalid.');
-    return document.fact;
+    return saved.fact;
   });
   rounds.sort(
     (a, b) =>
@@ -108,14 +109,17 @@ export async function readGameData(
   );
   if (player && player.ownerId !== ownerId)
     throw new Error('The saved player belongs to another account.');
+  const savedPlayer = player?.toMutableJSON();
   return {
     device,
     data: parsePlayerData({
       ...emptyPlayerData(),
       ...projectRoundHistory(rounds),
-      profile: player ? trainerProfileSchema.parse(player.profile) : null,
-      settings: player?.settings
-        ? savedSettingsSchema.parse(player.settings)
+      profile: savedPlayer
+        ? trainerProfileSchema.parse(savedPlayer.profile)
+        : null,
+      settings: savedPlayer?.settings
+        ? savedSettingsSchema.parse(savedPlayer.settings)
         : null,
       questionHistory: device.questionHistory,
     }),

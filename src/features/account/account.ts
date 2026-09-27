@@ -163,7 +163,7 @@ export async function continueSignIn() {
     player ||
     local.some((entry) => entry.id !== 'state') ||
     (state &&
-      JSON.stringify(parseDeviceState(state.payload)) !==
+      JSON.stringify(parseDeviceState(state.toMutableJSON().payload)) !==
         JSON.stringify(emptyDeviceState()))
   ) {
     update({ mergeRequired: true });
@@ -183,7 +183,7 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         await ensureDeviceState(target);
         const rounds = await guest.rounds.find().exec();
         for (const round of rounds)
-          await writeCompletedRound(target, owner, round.fact);
+          await writeCompletedRound(target, owner, round.toMutableJSON().fact);
         const [guestPlayer, accountPlayer] = await Promise.all([
           guest.players.findOne('guest').exec(),
           target.players.findOne(owner).exec(),
@@ -198,7 +198,7 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         const accountState = await readDeviceState(target);
         const source = local.find((entry) => entry.id === 'state');
         const guestState = source
-          ? parseDeviceState(source.payload)
+          ? parseDeviceState(source.toMutableJSON().payload)
           : emptyDeviceState();
         await updateDeviceState(target, (state) => {
           if (
@@ -214,13 +214,15 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         for (const entry of local.filter(
           (document) => document.id !== 'state',
         )) {
-          if (!(await target.device.findOne(entry.id).exec()))
+          if (!(await target.device.findOne(entry.id).exec())) {
+            const payload = entry.toMutableJSON().payload;
             await target.device.insert({
               id: entry.id,
               payload: entry.id.startsWith('round:')
-                ? { ...entry.payload, playerRestoreId: accountState.restoreId }
-                : entry.payload,
+                ? { ...payload, playerRestoreId: accountState.restoreId }
+                : payload,
             });
+          }
         }
       } finally {
         await target.close();
@@ -274,6 +276,19 @@ const retryableConnectionError = (error: unknown) =>
   error instanceof AccountNetworkError ||
   (error instanceof AccountServiceError &&
     (error.status === 429 || error.status >= 500));
+
+const rxErrorCode = (value: unknown) =>
+  isRecord(value) &&
+  typeof value.code === 'string' &&
+  [
+    'RC_PULL',
+    'RC_PUSH',
+    'RC_UNAUTHORIZED',
+    'RC_FORBIDDEN',
+    'RC_OUTDATED',
+  ].includes(value.code)
+    ? value.code
+    : 'unknown';
 
 const scheduleConnectionRetry = () => {
   if (retryTimer || document.visibilityState !== 'visible') return;
@@ -429,9 +444,16 @@ async function connectAccountSync() {
       live: true,
     });
     replications = [players, rounds];
-    const failed = new Set<RxServerReplicationState<unknown>>();
+    const failed = new Map<RxServerReplicationState<unknown>, Error>();
     for (const replication of replications) {
-      replication.error$.subscribe(() => {
+      replication.error$.subscribe((error) => {
+        const errors =
+          isRecord(error) && isRecord(error.parameters)
+            ? error.parameters.errors
+            : null;
+        const diagnostic = new Error('Replication stalled');
+        diagnostic.name = `Replication stalled (${rxErrorCode(error)}, ${rxErrorCode(Array.isArray(errors) ? errors[0] : null)})`;
+        failed.set(replication, diagnostic);
         if (
           !replicationErrorTimer &&
           !replicationErrorReported &&
@@ -439,19 +461,19 @@ async function connectAccountSync() {
         )
           replicationErrorTimer = setTimeout(() => {
             replicationErrorTimer = undefined;
+            const stalled = failed.entries().next().value;
             if (
-              !failed.size ||
+              !stalled ||
               !navigator.onLine ||
               document.visibilityState !== 'visible'
             )
               return;
             replicationErrorReported = true;
             captureUnexpectedError(
-              `account.sync.${replication === players ? 'players' : 'rounds'}`,
-              new Error('Replication stalled'),
+              `account.sync.${stalled[0] === players ? 'players' : 'rounds'}`,
+              stalled[1],
             );
           }, 60_000);
-        failed.add(replication);
         update({
           error: 'Sync could not finish.',
           recoveryReason: 'retry',
