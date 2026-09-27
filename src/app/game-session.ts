@@ -22,7 +22,6 @@ export type GameSession =
   | {
       answers: AnswerResult[];
       scoreMultipliers?: ScoreMultipliers;
-      contentVersion: number;
       mode: GameMode;
       settings: GameSettings;
       phase: 'questions';
@@ -89,7 +88,6 @@ export const gameSessionReducer = (
     case 'restored':
       return {
         answers: action.type === 'restored' ? action.answers : [],
-        contentVersion: action.contentVersion,
         mode: action.mode,
         settings: action.settings,
         scoreMultipliers: action.scoreMultipliers,

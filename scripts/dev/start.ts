@@ -29,8 +29,12 @@ const run = (command: string, args: string[]) =>
         : reject(new Error(`${command} exited with ${code}`)),
     );
   });
-const launch = (command: string, args: string[]) => {
-  const child = spawn(command, args, { stdio: 'inherit', detached: true });
+const launch = (
+  command: string,
+  args: string[],
+  env: NodeJS.ProcessEnv = process.env,
+) => {
+  const child = spawn(command, args, { stdio: 'inherit', detached: true, env });
   children.push(child);
   return child;
 };
@@ -55,7 +59,7 @@ async function stop() {
   const before = runningBefore;
   if (!before) return;
   const running = await runningServices();
-  const started = ['powersync', 'db'].filter(
+  const started = ['mongo', 'db'].filter(
     (service) => running.has(service) && !before.has(service),
   );
   if (started.length) await run('docker', ['compose', 'stop', ...started]);
@@ -65,7 +69,7 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const)
 try {
   runningBefore = await runningServices();
   if (stopping) throw new Error('Development interrupted.');
-  await start('docker', ['compose', 'up', '-d', '--wait', 'db']);
+  await start('docker', ['compose', 'up', '-d', '--wait', 'db', 'mongo']);
   await start('npm', ['run', 'db:migrate']);
   if (preview) await start('npm', ['run', 'build']);
   const api = launch('node_modules/.bin/wrangler', [
@@ -106,7 +110,13 @@ try {
   }
   if (!ready || stopping)
     throw new Error('The account API did not become ready.');
-  await start('docker', ['compose', 'up', '-d', 'powersync']);
+  const sync = launch('node', ['server/rxdb-sync.ts'], {
+    ...process.env,
+    MONGO_URL: 'mongodb://127.0.0.1:27018/quizmon?directConnection=true',
+    AUTH_ORIGIN: origin,
+    SYNC_AUDIENCE: 'quizmon',
+    PORT: '8089',
+  } as NodeJS.ProcessEnv);
   const browser = launch(
     'npm',
     preview
@@ -126,7 +136,7 @@ try {
     `Open ${origin}. Ctrl+C stops services started here and preserves their data.`,
   );
   await new Promise<void>((resolve, reject) => {
-    for (const child of [api, browser]) {
+    for (const child of [api, sync, browser]) {
       child.once('error', reject);
       child.once('exit', (code) =>
         stopping || code === 0

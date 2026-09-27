@@ -32,8 +32,8 @@
     "required": ["BETTER_AUTH_SECRET"],
   },
   "vars": {
-    "POWERSYNC_URL": "http://127.0.0.1:8089",
-    "POWERSYNC_AUDIENCE": "quizmon",
+    "SYNC_URL": "http://127.0.0.1:8089",
+    "SYNC_AUDIENCE": "quizmon",
     "AUTH_ORIGIN": "http://localhost:4188",
     "MAIL_DELIVERY": "test-mailbox",
     "MAIL_FROM": "",
@@ -74,8 +74,8 @@
         "required": ["BETTER_AUTH_SECRET"],
       },
       "vars": {
-        "POWERSYNC_URL": "http://127.0.0.1:8089",
-        "POWERSYNC_AUDIENCE": "quizmon",
+        "SYNC_URL": "http://127.0.0.1:8089",
+        "SYNC_AUDIENCE": "quizmon",
         "AUTH_ORIGIN": "http://localhost:4188",
         "MAIL_DELIVERY": "cloudflare",
         "MAIL_FROM": "",

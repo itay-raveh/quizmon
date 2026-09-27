@@ -8,14 +8,9 @@ import {
   getSpeedBonusPoints,
 } from '../../src/domain/quiz/scoring.ts';
 import { type AnswerResult } from '../../src/domain/quiz/types.ts';
-import { gameVersions } from '../../src/domain/versions.ts';
-import {
-  type RoundCompletion,
-  versions,
-} from '../../src/domain/sync/progress.ts';
+import { type RoundCompletion } from '../../src/domain/sync/progress.ts';
 
 export function completion(
-  datasetId: string,
   mode: RoundCompletion['mode'] = 'training',
   options: {
     failedLeague?: boolean;
@@ -68,9 +63,7 @@ export function completion(
         )
       : undefined;
   return {
-    recordVersion: 1,
     completionId: crypto.randomUUID(),
-    datasetId,
     mode,
     dailyDate: mode === 'daily' ? (options.dailyDate ?? '2026-09-11') : null,
     training: {
@@ -80,22 +73,17 @@ export function completion(
       generations: [...generations],
       questionTypes: [...coreQuestionTypes],
     },
-    contentVersion: versions.content,
-    scoreVersion: gameVersions.score,
     completedAt: options.completedAt ?? '2026-09-11T10:00:00.000Z',
     discoveries: options.discoveries ?? ['bulbasaur'],
     result: {
       ...(mode === 'daily' ? { puzzleId: 'a'.repeat(64) } : {}),
       rules: {
-        version: versions.content,
         difficulty: 3,
         generations: [...generations],
         formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
         questionTypes: [...coreQuestionTypes],
       },
       answers,
-      contentVersion: versions.content,
-      scoreVersion: gameVersions.score,
       questionCount: count,
       correctCount: answers.filter((a) => a.correct).length,
       ...getResponseTime(answers),

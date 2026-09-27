@@ -22,7 +22,6 @@ const move = (name: string, label: string, type: string) => ({
 
 test('Move types excludes names that reveal their type from Level 3', () => {
   const catalog = {
-    contentVersion: 1,
     pokemon: {},
     typeRelations: { fire: {}, water: {}, normal: {}, grass: {} },
     topics: {

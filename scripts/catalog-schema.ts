@@ -136,7 +136,6 @@ const pokemon = z.object({
 });
 
 export const catalogSchema: z.ZodType<PokemonCatalog> = z.object({
-  contentVersion: z.int().nonnegative(),
   pokemon: z.record(text, pokemon),
   typeRelations: z.record(
     text,

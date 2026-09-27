@@ -82,10 +82,10 @@ jobs:
             --label "org.opencontainers.image.revision=$GITHUB_SHA" \
             --iidfile .wrangler/release-image-id -t "$QUIZMON_RELEASE_IMAGE" .
           docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/migrations/meta/_journal.json
-          docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/deploy/powersync/sync-config.yaml
+          docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/rxdb-sync.ts
       - name: Check real sync isolation
         run: |
-          docker compose -f compose.yaml pull powersync
+          docker compose -f compose.yaml up -d --wait mongo
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-runtime-config.ts
       - name: Publish checked migration image

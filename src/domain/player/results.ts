@@ -27,7 +27,7 @@ export interface SavedResults {
   league: LeagueState;
   progress: TrainerProgress;
   streak: DailyStreakState;
-  training: Partial<Record<`score:${number}`, GameResult>>;
+  training: { score?: GameResult };
 }
 
 export const emptyResults = (): SavedResults => ({

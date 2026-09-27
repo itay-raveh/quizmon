@@ -15,7 +15,6 @@ const item = (name: string, category: string, spriteIdentity: string) => ({
 
 test('item identification never asks for an item with shared sprite art', () => {
   const catalog = {
-    contentVersion: 1,
     pokemon: {},
     typeRelations: {},
     topics: {
@@ -46,7 +45,6 @@ test('item identification never asks for an item with shared sprite art', () => 
 
 test('item identification searches item names from level four', () => {
   const catalog = {
-    contentVersion: 1,
     pokemon: {},
     typeRelations: {},
     topics: {
@@ -84,7 +82,6 @@ test('item identification searches item names from level four', () => {
 
 test('level five searches real TM numbers without revealing disc types', () => {
   const catalog = {
-    contentVersion: 1,
     pokemon: {},
     typeRelations: { fire: {}, water: {}, grass: {}, electric: {} },
     topics: {

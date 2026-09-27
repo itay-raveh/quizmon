@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { SAVE_SCHEMA_VERSION } from '../player-save.ts';
 import { answerObservationSchema } from '../../quiz/answer-observation.ts';
 import type { ActiveGameSnapshot } from '../active-game.ts';
 import { answerSubjectSchema } from '../../quiz/subject.ts';
@@ -83,11 +82,9 @@ const settings = z.looseObject({
 });
 const round = z
   .object({
-    version: z.literal(SAVE_SCHEMA_VERSION),
     completedAt: utcTimestampSchema.optional(),
     startedOn: dailyDateSchema.optional(),
     scoreMultipliers: savedScoreMultipliersSchema.optional(),
-    contentVersion: nonnegativeInteger,
     elapsedMilliseconds: finiteNonnegative,
     questionCount: nonnegativeInteger.min(1),
     seed: z.string().min(1).max(200),

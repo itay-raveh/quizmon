@@ -39,8 +39,7 @@ leaderboardApi.get('/daily', async (context) => {
     return context.json({ error: 'invalid_leaderboard' }, 400);
   return context.json(
     await readBoard(
-      context.get('db'),
-      context.get('accountId'),
+      context,
       'daily',
       page.scope,
       page.offset,
@@ -55,13 +54,6 @@ leaderboardApi.get('/training', async (context) => {
   const page = parameters((key) => context.req.query(key));
   if (!page) return context.json({ error: 'invalid_leaderboard' }, 400);
   return context.json(
-    await readBoard(
-      context.get('db'),
-      context.get('accountId'),
-      'training',
-      page.scope,
-      page.offset,
-      page.limit,
-    ),
+    await readBoard(context, 'training', page.scope, page.offset, page.limit),
   );
 });

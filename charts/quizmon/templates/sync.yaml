@@ -1,0 +1,103 @@
+{{- if .Values.sync.enabled }}
+{{- $name := printf "%s-sync" (include "quizmon.name" .) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/component: sync
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  annotations:
+    secret.reloader.stakater.com/reload: {{ join "," (compact (list .Values.sync.mongoSecret.name .Values.sync.mongoTlsSecret.name)) | quote }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+      app.kubernetes.io/component: sync
+  template:
+    metadata:
+      labels:
+        {{- include "quizmon.labels" . | nindent 8 }}
+        app.kubernetes.io/component: sync
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      {{- if .Values.sync.mongoTlsSecret.name }}
+      initContainers:
+        - name: mongo-tls
+          image: {{ include "quizmon.image" . | quote }}
+          command: [sh, -c, "cat /mongo-tls/tls.crt /mongo-tls/tls.key > /mongo-client/client.pem"]
+          securityContext:
+            {{- include "quizmon.containerSecurity" . | nindent 12 }}
+          volumeMounts:
+            - { name: mongo-tls, mountPath: /mongo-tls, readOnly: true }
+            - { name: mongo-client, mountPath: /mongo-client }
+      {{- end }}
+      containers:
+        - name: sync
+          image: {{ include "quizmon.image" . | quote }}
+          command: [node, server/rxdb-sync.ts]
+          securityContext:
+            {{- include "quizmon.containerSecurity" . | nindent 12 }}
+          env:
+            - { name: PORT, value: "8080" }
+            - { name: AUTH_ORIGIN, value: {{ .Values.runtimeConfig.origin | quote }} }
+            - { name: SYNC_AUDIENCE, value: {{ .Values.runtimeConfig.sync.audience | quote }} }
+            - name: MONGO_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.sync.mongoSecret.name | quote }}
+                  key: {{ .Values.sync.mongoSecret.key | quote }}
+            {{- if .Values.sync.mongoTlsSecret.name }}
+            - { name: MONGO_TLS_CA_FILE, value: /mongo-tls/ca.crt }
+            - { name: MONGO_TLS_CERT_KEY_FILE, value: /mongo-client/client.pem }
+            {{- end }}
+          {{- if .Values.sync.mongoTlsSecret.name }}
+          volumeMounts:
+            - { name: mongo-tls, mountPath: /mongo-tls, readOnly: true }
+            - { name: mongo-client, mountPath: /mongo-client, readOnly: true }
+          {{- end }}
+          ports:
+            - { name: http, containerPort: 8080 }
+          startupProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.sync.resources | nindent 12 }}
+      {{- if .Values.sync.mongoTlsSecret.name }}
+      volumes:
+        - name: mongo-tls
+          secret:
+            secretName: {{ .Values.sync.mongoTlsSecret.name | quote }}
+        - name: mongo-client
+          emptyDir: {}
+      {{- end }}
+{{- end }}

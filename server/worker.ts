@@ -24,8 +24,8 @@ export default {
       !env.API_RATE_LIMIT ||
       !env.BETTER_AUTH_SECRET ||
       !env.AUTH_ORIGIN ||
-      !env.POWERSYNC_URL ||
-      !env.POWERSYNC_AUDIENCE ||
+      !env.SYNC_URL ||
+      !env.SYNC_AUDIENCE ||
       !env.MAIL_DELIVERY
     )
       return new Response('Account service is not configured.', {
@@ -56,8 +56,8 @@ export default {
         throw new Error('Email binding is missing.');
       return createAccountApi({
         sync: {
-          endpoint: env.POWERSYNC_URL,
-          audience: env.POWERSYNC_AUDIENCE,
+          endpoint: env.SYNC_URL,
+          audience: env.SYNC_AUDIENCE,
         },
         connectionString: env.ACCOUNT_DB.connectionString,
         origin: env.AUTH_ORIGIN,

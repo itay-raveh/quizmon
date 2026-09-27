@@ -45,7 +45,7 @@ await test('runtime renderer preserves game bindings and limits without local da
   ]);
   assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
   assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
-  assert.equal(rendered.vars.POWERSYNC_AUDIENCE, input.sync.audience);
+  assert.equal(rendered.vars.SYNC_AUDIENCE, input.sync.audience);
   assert.equal(rendered.main, './worker/index.ts');
   assert.equal(rendered.assets.directory, './dist');
   assert.equal(rendered.no_bundle, false);

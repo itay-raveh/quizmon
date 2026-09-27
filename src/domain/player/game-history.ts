@@ -4,12 +4,8 @@ import { isLeagueVictory } from '../quiz/league.ts';
 import { getQuestionPokemon } from '../quiz/question-pokemon.ts';
 import { snapshotRoundRules } from '../quiz/round-rules.ts';
 import { getPuzzleId } from '../quiz/puzzle-id.ts';
-import {
-  SCORE_VERSION,
-  calculateScore,
-  getResponseTime,
-} from '../quiz/scoring.ts';
-import { trainingConfig, versions } from '../sync/progress.ts';
+import { calculateScore, getResponseTime } from '../quiz/scoring.ts';
+import { trainingConfig } from '../sync/progress.ts';
 import { defaultGameSettings } from '../settings/game-settings.ts';
 import { questionTypes } from '../quiz/questions/definitions.ts';
 import type { RoundCompletion } from '../sync/progress.ts';
@@ -38,7 +34,6 @@ export async function completeRound(
     | 'questions'
     | 'settings'
     | 'mode'
-    | 'contentVersion'
     | 'scoreMultipliers'
     | 'roundId'
   >,
@@ -46,7 +41,7 @@ export async function completeRound(
   trainerName: string,
 ) {
   const { answers, questions, settings, mode, scoreMultipliers } = round;
-  const rules = snapshotRoundRules(settings, questions);
+  const rules = snapshotRoundRules(settings);
   const puzzleId =
     mode.kind === 'daily' ? await getPuzzleId(questions) : undefined;
   const result = {
@@ -55,12 +50,10 @@ export async function completeRound(
     ...(puzzleId ? { puzzleId } : {}),
     answers,
     ...(scoreMultipliers ? { scoreMultipliers } : {}),
-    contentVersion: round.contentVersion,
     correctCount: answers.filter(({ correct }) => correct).length,
     ...getResponseTime(answers),
     questionCount: questions.length,
     score: calculateScore(answers, scoreMultipliers),
-    scoreVersion: SCORE_VERSION,
   };
   const completionId = round.roundId;
   const victory =
@@ -73,12 +66,9 @@ export async function completeRound(
           trainerName,
         )
       : undefined;
-  const completion: Omit<RoundCompletion, 'datasetId'> = {
-    recordVersion: versions.record,
+  const completion: RoundCompletion = {
     completionId,
     completedAt,
-    contentVersion: round.contentVersion,
-    scoreVersion: result.scoreVersion,
     mode: mode.kind,
     dailyDate: mode.kind === 'daily' ? mode.date : null,
     training: trainingConfig(settings),
@@ -96,11 +86,16 @@ type GameProgress = Pick<PlayerData, 'results' | 'hallOfFame' | 'pokedex'>;
 export function projectRoundHistory(rounds: Iterable<RoundFact>): GameProgress {
   const data = emptyPlayerData();
   const seen = new Set<string>();
+  const creditedDaily = new Set<string>();
   for (const round of rounds) {
     if (seen.has(round.id)) continue;
     seen.add(round.id);
     data.pokedex = [...new Set([...data.pokedex, ...round.data.found])];
     if (!round.credited) continue;
+    if (round.mode === 'daily') {
+      if (creditedDaily.has(round.day!)) continue;
+      creditedDaily.add(round.day!);
+    }
     const result = scoreRound(round);
     const config = round.data.config;
     const settings = {

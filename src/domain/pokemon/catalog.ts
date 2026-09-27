@@ -5,7 +5,6 @@ import { isRecord } from '@/lib/validation';
 export const parsePokemonCatalog = (value: unknown): PokemonCatalog => {
   if (
     !isRecord(value) ||
-    typeof value.contentVersion !== 'number' ||
     !isRecord(value.pokemon) ||
     Object.keys(value.pokemon).length === 0 ||
     !isRecord(value.typeRelations)

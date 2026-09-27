@@ -8,7 +8,6 @@ import { Logo } from '@/app/Logo';
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
 import { AccountSettings } from '@/features/account/AccountSettings';
-import { SAVE_SCHEMA_VERSION } from '@/domain/player/player-save';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
 import { useModalDialog } from '@/hooks/useModalDialog';
 import { downloadJson } from '@/lib/download';
@@ -23,6 +22,7 @@ import {
 } from '@/lib/storage/save-recovery';
 import { useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import {
+  backupPreview,
   parseBackup,
   restoreBackup,
   validateBackupSize,
@@ -88,11 +88,11 @@ const SaveRecoveryDialog = ({
     let accountBackup = false;
     try {
       validateBackupSize(file.size);
-      const backup = parseBackup(await file.text());
-      accountBackup = Boolean(backup.state.account);
-      if (backup.state.account && canRecoverAccountSave())
-        await verifyAccountBackupRecovery(backup);
-      else if (backup.state.account || !canRecoverGuestSave())
+      const backup = await parseBackup(await file.text());
+      accountBackup = Boolean(backup.accountId);
+      if (backup.accountId && canRecoverAccountSave())
+        verifyAccountBackupRecovery(backup);
+      else if (backup.accountId || !canRecoverGuestSave())
         throw new Error(
           canRecoverGuestSave()
             ? 'Choose a guest backup for this save.'
@@ -192,12 +192,12 @@ const SaveRecoveryDialog = ({
         >
           <h2>Restore this backup?</h2>
           <p>
-            {preview.state.save.data.pokedex.length} Pokédex entries and{' '}
-            {Object.keys(preview.state.save.data.results.daily).length} Daily
+            {backupPreview(preview).pokedex.length} Pokédex entries and{' '}
+            {Object.keys(backupPreview(preview).results.daily).length} Daily
             results.{' '}
-            {preview.state.account
-              ? 'This restores local account data. Synced account history remains authoritative.'
-              : 'This replaces saved progress, profile, settings, and unfinished rounds on this device.'}
+            {preview.accountId
+              ? 'This merges missing account rounds and device data.'
+              : 'This merges completed rounds and device data, and applies the backup profile and settings.'}
           </p>
           <div className="save-recovery__actions">
             <GameButton
@@ -208,7 +208,7 @@ const SaveRecoveryDialog = ({
                 })
               }
             >
-              Replace and restore
+              Merge and restore
             </GameButton>
             <GameButton tone="quiet" onClick={() => setPreview(null)}>
               Cancel restore
@@ -257,9 +257,7 @@ const SaveRecoveryDialog = ({
         )}
       <details>
         <summary>Save details</summary>
-        <p>
-          {issue.message} Current save format: {SAVE_SCHEMA_VERSION}.
-        </p>
+        <p>{issue.message}</p>
       </details>
     </dialog>
   );

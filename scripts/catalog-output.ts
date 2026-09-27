@@ -42,7 +42,6 @@ export const writeCatalogFiles = async (
         const file = `topics-${key}-${index}.json`;
         const output = await format(
           JSON.stringify({
-            contentVersion: catalog.contentVersion,
             key,
             values,
           }),
@@ -80,9 +79,7 @@ export const readCatalogFiles = async (
       throw new Error('Invalid topic file name');
     const chunk = JSON.parse(
       await readFile(new URL(file, directory), 'utf8'),
-    ) as { contentVersion: number; key: string; values: unknown };
-    if (chunk.contentVersion !== catalog.contentVersion)
-      throw new Error('Mismatched topic content version');
+    ) as { key: string; values: unknown };
     topics[chunk.key] = Array.isArray(chunk.values)
       ? [
           ...((topics[chunk.key] as unknown[]) ?? []),

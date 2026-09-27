@@ -68,7 +68,6 @@ export const App = () => {
             : {};
         await writeActiveGame({
           answers: [],
-          contentVersion: catalog.contentVersion,
           mode: nextMode,
           settings: nextSettings,
           questions: nextQuestions,
@@ -81,7 +80,6 @@ export const App = () => {
         });
         trackGameStarted(nextMode, nextQuestions.length);
         dispatchSession({
-          contentVersion: catalog.contentVersion,
           mode: nextMode,
           settings: nextSettings,
           questions: nextQuestions,

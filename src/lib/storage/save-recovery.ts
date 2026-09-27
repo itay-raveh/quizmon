@@ -1,23 +1,15 @@
-import { localTables } from './local-database';
-import {
-  SAVE_SCHEMA_VERSION,
-  parsePlayerSave,
-} from '../../domain/player/player-save';
-import { removeStoredValue } from './browser-storage';
 import { parseUpdateSave } from '../../domain/player/update-save';
+import { removeStoredValue } from './browser-storage';
 import { inspectRoundStorage } from './active-game-storage';
 import {
-  createPlayerSave,
+  canRecoverGuestSave,
+  currentOwnerId,
   readPlayerSave,
   recoveryDatabase,
-  recoverPlayer,
-  canRecoverGuestSave,
+  refreshPlayerData,
 } from './player-storage';
 import { clearSaveIssue, reportSaveIssue } from './save-health';
-
-const recoveryKeys = {
-  sessionStorage: ['quizmon.baseline.update-state'],
-} as const;
+import { ensureDeviceState } from './rxdb-game';
 
 export const inspectSavedData = (): void => {
   try {
@@ -32,52 +24,32 @@ export const inspectSavedData = (): void => {
   }
 };
 
-export const createRecoveryExport = async () => ({
-  format: 'quizmon-recovery',
-  version: SAVE_SCHEMA_VERSION,
-  exportedAt: new Date().toISOString(),
-  database: await recoveryDatabase().readTransaction(async (transaction) =>
-    Object.fromEntries(
-      await Promise.all(
-        [
-          ...localTables,
-          ...(!canRecoverGuestSave()
-            ? ['pending_actions', 'player', 'round']
-            : []),
-        ].map(
-          async (table) =>
-            [
-              table,
-              await transaction.getAll(`SELECT * FROM ${table}`),
-            ] as const,
-        ),
-      ),
-    ),
-  ),
-  entries: Object.entries(recoveryKeys).flatMap(([storage, keys]) =>
-    keys.flatMap((key) => {
-      const raw = window[storage as keyof typeof recoveryKeys].getItem(key);
-      return raw === null ? [] : [{ storage, key, raw }];
-    }),
-  ),
-});
-
-const clearUpdateState = (): void => {
-  for (const [storage, keys] of Object.entries(recoveryKeys))
-    for (const key of keys)
-      removeStoredValue(storage as keyof typeof recoveryKeys, key);
+export const createRecoveryExport = async () => {
+  const db = recoveryDatabase();
+  const [players, rounds, device] = await Promise.all([
+    db.players.find().exec(),
+    db.rounds.find().exec(),
+    db.device.find().exec(),
+  ]);
+  return {
+    format: 'quizmon-recovery',
+    exportedAt: new Date().toISOString(),
+    ownerId: currentOwnerId(),
+    players: players.map((doc) => doc.toMutableJSON()),
+    rounds: rounds.map((doc) => doc.toMutableJSON()),
+    device: device.map((doc) => doc.toMutableJSON()),
+    updateState: window.sessionStorage.getItem('quizmon.baseline.update-state'),
+  };
 };
 
 export const resetSavedData = async (): Promise<void> => {
-  const save = parsePlayerSave({
-    ...createPlayerSave(),
-    restoreId: crypto.randomUUID(),
-  });
-  await recoverPlayer(async (state, transaction) => {
-    for (const table of localTables)
-      await transaction.execute(`DELETE FROM ${table}`);
-    state.save = save;
-  });
-  clearUpdateState();
+  if (!canRecoverGuestSave())
+    throw new Error('Account progress cannot be reset here.');
+  const db = recoveryDatabase();
+  for (const collection of [db.players, db.rounds, db.device])
+    for (const doc of await collection.find().exec()) await doc.remove();
+  await ensureDeviceState(db);
+  removeStoredValue('sessionStorage', 'quizmon.baseline.update-state');
+  await refreshPlayerData();
   clearSaveIssue();
 };

@@ -36,18 +36,12 @@ it('emits bounded game metrics without answers or player identity', () => {
     correctCount: 8,
     questionCount: 10,
     elapsedSeconds: 60,
-    contentVersion: 4,
-    scoreVersion: 2,
     answers: [{ secret: 'never send answers' }],
   } as unknown as GameResult);
 
   expect(metrics.count).toHaveBeenCalledWith('quizmon.page_view');
   expect(metrics.count).toHaveBeenCalledWith('quizmon.game_completed', 1, {
-    attributes: {
-      'game.mode': 'training',
-      'game.content_version': 4,
-      'game.score_version': 2,
-    },
+    attributes: { 'game.mode': 'training' },
   });
   const emitted = JSON.stringify([
     metrics.count.mock.calls,

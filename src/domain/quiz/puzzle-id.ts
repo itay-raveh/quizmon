@@ -14,7 +14,6 @@ export async function getPuzzleId(questions: readonly QuestionData[]) {
       questions.map((question) => ({
         ...question,
         assistanceUsed: undefined,
-        rulesVersion: undefined,
       })),
     ),
   );

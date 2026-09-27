@@ -6,7 +6,6 @@ import { getUtcDate } from '../quiz/daily.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
 import { getBestResult, isBetterResult } from '../quiz/result-ranking.ts';
 import { getRulesScoreKey } from '../quiz/round-rules.ts';
-import { getUnifiedScoreKey } from '../quiz/scoring.ts';
 import { getDailyResultKey } from '../quiz/daily-track.ts';
 import { defaultGameSettings } from '../settings/game-settings.ts';
 import type { GameSettings } from '../settings/types.ts';
@@ -69,7 +68,6 @@ export const applyResult = (
     const completed = Boolean(victory) || isLeagueVictory(result);
     results.league.completed = results.league.completed || completed;
     if (completed) results.league.seed = null;
-    if (completed) data.leagueLineup = null;
     if (completed && victory) data.hallOfFame = [...hallOfFame, victory];
     return {
       best: result,
@@ -77,11 +75,10 @@ export const applyResult = (
     };
   }
 
-  const key = getUnifiedScoreKey(result);
-  const previous = results.training[key];
+  const previous = results.training.score;
   const isNewBest = !previous || isBetterResult(result, previous);
   recordProgress();
-  if (isNewBest) results.training[key] = result;
+  if (isNewBest) results.training.score = result;
   return {
     best: isNewBest ? result : previous,
     isNewBest,

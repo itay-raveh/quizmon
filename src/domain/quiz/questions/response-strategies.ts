@@ -19,9 +19,7 @@ export const applyResponseStrategy = (
 ): QuestionDraft => {
   const question: QuestionDraft = {
     ...draft,
-    ...(level === undefined
-      ? {}
-      : { variantLevel: level, rulesVersion: context.catalog.contentVersion }),
+    ...(level === undefined ? {} : { variantLevel: level }),
     rendering: rules.rendering,
     view: draft.optionImages
       ? { ...rules.view, answer: { kind: 'item' } }

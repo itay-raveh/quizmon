@@ -8,15 +8,14 @@ import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { createTestHarness } from 'wrangler';
 import { localSync } from '../../scripts/dev/local-sync.ts';
 import { isRecord } from '../../src/lib/validation.ts';
-import { publishPlayerTables } from '../../deploy/publication.ts';
 
-export const docker = (...args: string[]) =>
+const docker = (...args: string[]) =>
   execFileSync('docker', args, { encoding: 'utf8', timeout: 30_000 }).trim();
 export const migrationsFolder = fileURLToPath(
   new URL('../../server/migrations', import.meta.url),
 );
 
-export async function testDatabase() {
+export async function testDatabase(migrationDirectory = migrationsFolder) {
   assert.equal(
     docker('context', 'inspect', '--format', '{{.Endpoints.docker.Host}}'),
     'unix:///var/run/docker.sock',
@@ -42,8 +41,6 @@ export async function testDatabase() {
     '--env',
     'POSTGRES_HOST_AUTH_METHOD=trust',
     image,
-    '-c',
-    'wal_level=logical',
   );
   const port = Number(docker('port', container, '5432/tcp').split(':').at(-1));
   const connectionString = `postgresql://postgres:unused@127.0.0.1:${port}/postgres`;
@@ -65,13 +62,7 @@ export async function testDatabase() {
         await new Promise((resolve) => setTimeout(resolve, 250));
       }
     }
-    await migrate(drizzle(pool), { migrationsFolder });
-    const client = await pool.connect();
-    try {
-      await publishPlayerTables(client);
-    } finally {
-      client.release();
-    }
+    await migrate(drizzle(pool), { migrationsFolder: migrationDirectory });
     return { container, connectionString, pool, close };
   } catch (error) {
     await close();
@@ -105,8 +96,8 @@ export async function startAccountWorker({
           AUTH_ORIGIN: origin,
           MAIL_DELIVERY: 'test-mailbox',
           MAIL_FROM: '',
-          POWERSYNC_URL: sync.endpoint,
-          POWERSYNC_AUDIENCE: sync.audience,
+          SYNC_URL: sync.endpoint,
+          SYNC_AUDIENCE: sync.audience,
         },
         secrets: {
           BETTER_AUTH_SECRET: secret,

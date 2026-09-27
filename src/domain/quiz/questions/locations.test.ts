@@ -24,7 +24,6 @@ it('asks only about distinct named places in Name that region', () => {
     generations: ['I' as const],
   }));
   const catalog = {
-    contentVersion: 1,
     pokemon: {},
     topics: { regions, locations },
   } as unknown as PokemonCatalog;
@@ -94,7 +93,6 @@ it('uses the whole location and selects every offered encounter at level five', 
     conditions: [],
   });
   const catalog = {
-    contentVersion: 1,
     pokemon,
     topics: {
       games: { red: { label: 'Red', generation: 'I' } },

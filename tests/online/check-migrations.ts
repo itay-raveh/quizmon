@@ -1,4 +1,14 @@
 import assert from 'node:assert/strict';
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { Client } from 'pg';
 import { migrateDatabase } from '../../deploy/migration-runner.ts';
 import { migrationsFolder, testDatabase } from './account-fixture.ts';
@@ -8,20 +18,11 @@ const oldName = `old_probe_${crypto.randomUUID().replaceAll('-', '')}`;
 try {
   const run = (connectionString = database.connectionString) =>
     migrateDatabase({ connectionString, migrationsFolder });
-  assert.deepEqual(await run(), { applied: 0, total: 1 });
+  assert.deepEqual(await run(), { applied: 0, total: 2 });
   const schema = await database.pool.query<{ name: string }>(
     "SELECT tablename AS name FROM pg_tables WHERE schemaname='public' ORDER BY tablename",
   );
-  for (const name of [
-    'player',
-    'round',
-    'dataset',
-    'op',
-    'friend',
-    'mail_budget',
-    'instance',
-    'user',
-  ])
+  for (const name of ['player', 'friend', 'mail_budget', 'user'])
     assert.ok(
       schema.rows.some((row) => row.name === name),
       name,
@@ -31,6 +32,11 @@ try {
     'completion_facts',
     'player_pokemon',
     'test_mailbox',
+    'round',
+    'round_score',
+    'dataset',
+    'op',
+    'instance',
   ])
     assert.ok(!schema.rows.some((row) => row.name === name), name);
   await database.pool
@@ -39,7 +45,7 @@ try {
   await database.pool.query(
     "INSERT INTO player(id,code) VALUES ('migration-check','ABCDEF0123456789')",
   );
-  assert.deepEqual(await run(), { applied: 0, total: 1 });
+  assert.deepEqual(await run(), { applied: 0, total: 2 });
   const kept = await database.pool.query<{ count: string }>(
     'SELECT count(*)::text AS count FROM player',
   );
@@ -76,4 +82,57 @@ try {
   );
 } finally {
   await database.close();
+}
+
+const oldFolder = await mkdtemp(join(tmpdir(), 'quizmon-migrations-'));
+try {
+  await mkdir(join(oldFolder, 'meta'));
+  const journal = JSON.parse(
+    await readFile(join(migrationsFolder, 'meta/_journal.json'), 'utf8'),
+  ) as {
+    entries: unknown[];
+  };
+  await writeFile(
+    join(oldFolder, 'meta/_journal.json'),
+    JSON.stringify({
+      ...journal,
+      entries: journal.entries.slice(0, 1),
+    }),
+  );
+  await copyFile(
+    join(migrationsFolder, '0000_initial.sql'),
+    join(oldFolder, '0000_initial.sql'),
+  );
+  const legacy = await testDatabase(oldFolder);
+  try {
+    await legacy.pool
+      .query(`INSERT INTO "user"(id,name,email,email_verified,created_at,updated_at)
+      VALUES ('preserved','Preserved','preserved@example.test',true,now(),now())`);
+    await legacy.pool.query(
+      "INSERT INTO player(id,code) VALUES ('preserved','0123456789ABCDEF')",
+    );
+    await legacy.pool.query(
+      'INSERT INTO round(id,player_id,mode,completed_at,credited,data) VALUES ($1,$2,$3,now(),true,$4)',
+      [crypto.randomUUID(), 'preserved', 'training', {}],
+    );
+    assert.deepEqual(
+      await migrateDatabase({
+        connectionString: legacy.connectionString,
+        migrationsFolder,
+      }),
+      { applied: 1, total: 2 },
+    );
+    const identity = await legacy.pool.query<{ code: string }>(
+      "SELECT code FROM player WHERE id='preserved'",
+    );
+    assert.equal(identity.rows[0]?.code, '0123456789ABCDEF');
+    const removed = await legacy.pool.query<{ name: string | null }>(
+      "SELECT to_regclass('public.round')::text AS name",
+    );
+    assert.equal(removed.rows[0]?.name, null);
+  } finally {
+    await legacy.close();
+  }
+} finally {
+  await rm(oldFolder, { recursive: true, force: true });
 }

@@ -74,7 +74,6 @@ describe('scoring', () => {
       mastery: 2_000,
     });
     expect(calculateScore(answers, multipliers)).toBe(11_250);
-    expect(calculateScore(answers, multipliers, undefined, 1)).toBe(11_000);
     expect(
       calculateScore(answers, { ...multipliers, perQuestion: undefined }),
     ).toBe(11_250);
@@ -107,7 +106,6 @@ describe('scoring', () => {
       questionTypes: [{ questionType: 'ev-yields', multiplier: 1.25 }],
     };
     expect(calculateScore(answers, multipliers)).toBe(10_245);
-    expect(calculateScore(answers, multipliers, undefined, 1)).toBe(1_375);
   });
 
   it.each([

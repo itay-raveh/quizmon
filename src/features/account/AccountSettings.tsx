@@ -16,15 +16,12 @@ import {
   accountSnapshot,
   continueSignIn,
   finishSignIn,
-  reconnectAccount,
   retryAccountSync,
-  resolveAccountIssue,
   sendSignInCode,
   signOutAccount,
   subscribeAccount,
   verifySignInCode,
 } from './account';
-import { AccountConflicts } from './AccountConflicts';
 import { downloadAccountExport } from './account-export';
 import { BackupSettings } from '../settings/BackupSettings';
 import './account.css';
@@ -96,10 +93,8 @@ export const AccountSettings = ({
   const showSignIn = recoverySignIn || !account.owner || reauthenticating;
   const codeError = codeForm.formState.errors.code?.message || (sent && error);
   const syncNeedsSignIn = account.recoveryReason === 'sign-in';
-  const syncNeedsReconnect = account.recoveryReason === 'reconnect';
   const syncPaused = !!account.error;
   const syncOffline = account.offline;
-  const syncNeedsReview = account.issues.length > 0;
 
   return (
     <div className="account-settings">
@@ -392,30 +387,21 @@ export const AccountSettings = ({
               Download account archive
             </GameButton>
           </div>
-          {(syncPaused || syncOffline || syncNeedsReview) && (
+          {(syncPaused || syncOffline) && (
             <section
               className="account-settings__sync"
               aria-label="Sync status"
               role="status"
             >
               <strong>
-                {syncPaused
-                  ? 'Sync needs attention'
-                  : syncNeedsReview
-                    ? 'Changes need review'
-                    : 'Waiting for connection'}
+                {syncPaused ? 'Sync needs attention' : 'Waiting for connection'}
               </strong>
               <p>
-                {syncNeedsReconnect
-                  ? 'Your changes are saved on this device. Download a backup, then reconnect this device.'
-                  : syncNeedsReview
-                    ? 'Choose how to resolve the changes below.'
-                    : syncNeedsSignIn
-                      ? 'Sign in again to continue.'
-                      : syncOffline
-                        ? 'Changes will sync when you reconnect.'
-                        : 'Your changes are saved on this device.'}
-                {account.pending > 0 && ` ${account.pending} waiting.`}
+                {syncNeedsSignIn
+                  ? 'Sign in again to continue.'
+                  : syncOffline
+                    ? 'Changes will sync when you reconnect.'
+                    : 'Your changes are saved on this device.'}
               </p>
               {syncPaused && (
                 <button
@@ -423,22 +409,16 @@ export const AccountSettings = ({
                   type="button"
                   disabled={busy}
                   onClick={() =>
-                    syncNeedsReconnect
-                      ? run(reconnectAccount)
-                      : syncNeedsSignIn
-                        ? setReauthenticating(true)
-                        : run(retryAccountSync)
+                    syncNeedsSignIn
+                      ? setReauthenticating(true)
+                      : run(retryAccountSync)
                   }
                 >
-                  {syncNeedsReconnect
-                    ? busy
+                  {syncNeedsSignIn
+                    ? 'Sign in again'
+                    : busy
                       ? 'Reconnecting…'
-                      : 'Reconnect this device'
-                    : syncNeedsSignIn
-                      ? 'Sign in again'
-                      : busy
-                        ? 'Reconnecting…'
-                        : 'Try again'}
+                      : 'Try again'}
                 </button>
               )}
             </section>
@@ -451,19 +431,11 @@ export const AccountSettings = ({
               </pre>
             </details>
           )}
-          {(syncPaused || syncOffline) &&
-            (account.pending > 0 || syncNeedsReconnect) && (
-              <details className="account-settings__details">
-                <summary>Recover device changes</summary>
-                <BackupSettings accountRecovery />
-              </details>
-            )}
-          {account.issues.length > 0 && (
-            <AccountConflicts
-              issues={account.issues}
-              resolve={resolveAccountIssue}
-              disabled={busy}
-            />
+          {(syncPaused || syncOffline) && (
+            <details className="account-settings__details">
+              <summary>Recover device changes</summary>
+              <BackupSettings accountRecovery />
+            </details>
           )}
         </>
       )}

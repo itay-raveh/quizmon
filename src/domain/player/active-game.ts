@@ -5,9 +5,7 @@ import type {
   ScoreMultipliers,
 } from '../quiz/types.ts';
 import type { GameSettings } from '../settings/types.ts';
-import { isRecord, isUuid } from '../../lib/validation.ts';
-import { SAVE_SCHEMA_VERSION } from './player-save.ts';
-import { parseVersionedSave, SaveError } from './save-schema.ts';
+import { SaveError } from './save-schema.ts';
 import { parseRound } from './schemas/round.ts';
 export interface ActiveGameSnapshot extends QuestionLineup {
   scoreMultipliers?: ScoreMultipliers;
@@ -20,7 +18,6 @@ export interface ActiveGameSnapshot extends QuestionLineup {
   settings: GameSettings;
   questionCount: number;
   playerRestoreId?: string | null;
-  version: number;
 }
 
 const parseCurrentRound = (value: unknown): ActiveGameSnapshot => {
@@ -30,21 +27,5 @@ const parseCurrentRound = (value: unknown): ActiveGameSnapshot => {
   return snapshot;
 };
 export const parseActiveGameSave = (value: unknown): ActiveGameSnapshot => {
-  const version = isRecord(value) ? value.version : undefined;
-  const data =
-    isRecord(value) &&
-    version === SAVE_SCHEMA_VERSION &&
-    (value.roundId === undefined || value.roundId === value.seed)
-      ? {
-          ...value,
-          roundId: isUuid(value.seed) ? value.seed : crypto.randomUUID(),
-        }
-      : value;
-  return parseVersionedSave(
-    { version, data },
-    {
-      currentVersion: SAVE_SCHEMA_VERSION,
-      parseCurrent: parseCurrentRound,
-    },
-  ).data;
+  return parseCurrentRound(value);
 };

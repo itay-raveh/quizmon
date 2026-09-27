@@ -3,7 +3,6 @@ import {
   type ActiveGameSnapshot,
 } from '../../domain/player/active-game';
 export type { ActiveGameSnapshot } from '../../domain/player/active-game';
-import { SAVE_SCHEMA_VERSION } from '../../domain/player/player-save';
 import { SaveError } from '../../domain/player/save-schema';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import type { QuestionData } from '../../domain/quiz/types';
@@ -111,7 +110,7 @@ export const readActiveGame = (
 };
 
 export const writeActiveGame = async (
-  snapshot: Omit<ActiveGameSnapshot, 'version'>,
+  snapshot: ActiveGameSnapshot,
 ): Promise<void> => {
   const playerRestoreId = readPlayerSave().restoreId;
   if (
@@ -122,7 +121,6 @@ export const writeActiveGame = async (
   await persistLocalRound({
     ...snapshot,
     playerRestoreId,
-    version: SAVE_SCHEMA_VERSION,
   });
 };
 

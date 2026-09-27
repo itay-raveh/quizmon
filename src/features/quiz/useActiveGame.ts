@@ -94,7 +94,6 @@ export const useActiveGame = ({
       const { questions } = snapshot;
       const round = {
         scoreMultipliers: snapshot.scoreMultipliers,
-        contentVersion: snapshot.contentVersion,
         answers: snapshot.answers,
         mode: snapshot.mode,
         settings: snapshot.settings,
@@ -161,7 +160,6 @@ export const useActiveGame = ({
     void writeActiveGame({
       scoreMultipliers: session.scoreMultipliers,
       answers: session.answers,
-      contentVersion: session.contentVersion,
       elapsedMilliseconds: getElapsedMilliseconds(),
       mode: session.mode,
       settings: session.settings,

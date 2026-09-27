@@ -148,7 +148,6 @@ export interface QuestionData {
   explanation?: string;
   context?: string;
   variantLevel?: Difficulty;
-  rulesVersion?: number;
   rendering?: QuestionRendering;
   view?: QuestionView;
   namesOnly?: boolean;
@@ -213,13 +212,11 @@ export interface GameResult {
   puzzleId?: string;
   rules?: RoundRules;
   answers: SavedAnswerResult[];
-  contentVersion: number;
   correctCount: number;
   elapsedMilliseconds?: number;
   elapsedSeconds: number;
   questionCount: number;
   score: number;
-  scoreVersion?: number;
 }
 
 export type { ScoreMultipliers } from './score-multipliers.ts';

@@ -4,7 +4,7 @@ import { normalizeFriendCode } from '../src/domain/social/friends.ts';
 import { lookupSocialPlayer, ownSocialPlayer } from './friend-identity.ts';
 import { publicPlayers } from './read.ts';
 import { isRecord } from '../src/lib/validation.ts';
-import { uuid } from '../src/domain/sync/progress.ts';
+import { isUuid as uuid } from '../src/lib/validation.ts';
 import {
   changeFriendRequest,
   friendRequestView,
@@ -67,7 +67,7 @@ async function list(
   return context.json({
     ...result,
     players: await publicPlayers(
-      context.get('db'),
+      context,
       result.items.map((item) => item.peerId),
     ),
   });
@@ -76,14 +76,14 @@ friendshipApi.post('/identity', async (context) => {
   await body(context);
   return context.json({
     accountId: context.get('accountId'),
-    player: await ownSocialPlayer(context.get('db'), context.get('accountId')),
+    player: await ownSocialPlayer(context),
   });
 });
 friendshipApi.get('/player/:code', async (context) => {
   const code = normalizeFriendCode(context.req.param('code'));
   if (!code) throw new FriendshipError('invalid_code', 400);
   return context.json(
-    await lookupSocialPlayer(context.get('db'), context.get('accountId'), code),
+    await lookupSocialPlayer(context, context.get('accountId'), code),
   );
 });
 friendshipApi.get('/', (context) => list(context, 'friends'));

@@ -91,7 +91,7 @@ export function AppNavigation({
           <Link
             to={accountPath}
             aria-label={
-              account.owner && (account.error || account.issues.length)
+              account.owner && account.error
                 ? 'Account, sync needs attention'
                 : undefined
             }
@@ -111,7 +111,7 @@ export function AppNavigation({
           >
             <UserCircleIcon aria-hidden="true" weight="bold" />
             {account.owner ? 'Account' : 'Sign in'}
-            {account.owner && (account.error || account.issues.length) ? (
+            {account.owner && account.error ? (
               <span className="app-navigation__alert" aria-hidden="true">
                 !
               </span>

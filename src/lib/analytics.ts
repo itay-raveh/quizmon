@@ -58,8 +58,6 @@ export const trackGameCompleted = (
     const options = {
       attributes: {
         'game.mode': mode,
-        'game.content_version': result.contentVersion,
-        'game.score_version': result.scoreVersion,
       },
     };
     Sentry.metrics.count('quizmon.game_completed', 1, options);

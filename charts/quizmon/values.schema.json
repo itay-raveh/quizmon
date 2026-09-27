@@ -1,13 +1,7 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "releaseImage",
-    "runtimeConfig",
-    "inputs",
-    "release",
-    "powersync"
-  ],
+  "required": ["releaseImage", "runtimeConfig", "inputs", "release", "sync"],
   "properties": {
     "releaseImage": {
       "type": "object",
@@ -89,19 +83,24 @@
         }
       }
     },
-    "powersync": {
+    "sync": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["enabled", "sourceSecret", "storageSecret", "resources"],
+      "required": ["enabled", "mongoSecret", "mongoTlsSecret", "resources"],
       "properties": {
         "enabled": {
           "type": "boolean"
         },
-        "sourceSecret": {
+        "mongoSecret": {
           "$ref": "#/definitions/optionalSecretKey"
         },
-        "storageSecret": {
-          "$ref": "#/definitions/optionalSecretKey"
+        "mongoTlsSecret": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name"],
+          "properties": {
+            "name": { "type": "string" }
+          }
         },
         "resources": {
           "type": "object",
@@ -157,11 +156,8 @@
           },
           "then": {
             "properties": {
-              "sourceSecret": {
-                "$ref": "#/definitions/secretKey"
-              },
-              "storageSecret": {
-                "$ref": "#/definitions/secretKey"
+              "mongoSecret": {
+                "$ref": "#/definitions/mongoSecretKey"
               }
             }
           }
@@ -253,16 +249,29 @@
     "optionalSecretKey": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "key", "revision"],
+      "required": ["name", "key"],
       "properties": {
         "name": {
           "type": "string"
         },
         "key": {
           "type": "string"
+        }
+      }
+    },
+    "mongoSecretKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "key"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 253,
+          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
         },
-        "revision": {
-          "type": "string"
+        "key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+$"
         }
       }
     }
