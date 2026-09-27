@@ -7,6 +7,7 @@ import { savedSettingsSchema } from '../src/domain/player/schemas/player-data.ts
 import { trainerProfileSchema } from '../src/domain/player/trainer-profile.ts';
 import { validateRoundFact } from '../src/domain/sync/round-facts.ts';
 import { openPlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
+import { assertAlphaWriteGate, setAlphaWriteGate } from './alpha-write-gate.ts';
 import { readMigrationConnection } from './release-inputs.ts';
 import { withReleaseLock } from './release-lock.ts';
 
@@ -41,10 +42,17 @@ interface OldRoundRow extends QueryResultRow {
 }
 
 const configFile = process.argv[2];
-const dryRun = process.argv[3] === '--dry-run';
-if (!configFile || (process.argv[3] && !dryRun))
+const mode = process.argv[3];
+const dryRun = mode === '--dry-run';
+if (
+  !configFile ||
+  (mode &&
+    !['--dry-run', '--install-write-gate', '--remove-write-gate'].includes(
+      mode,
+    ))
+)
   throw new Error(
-    'Usage: transfer-alpha-progress.ts <migration-connection.json> [--dry-run]',
+    'Usage: transfer-alpha-progress.ts <migration-connection.json> [--dry-run|--install-write-gate|--remove-write-gate]',
   );
 
 let stage = 'configuration';
@@ -54,11 +62,24 @@ try {
   );
   stage = 'PostgreSQL connection';
   await withReleaseLock(connection, async ({ client, assertConnected }) => {
+    if (mode === '--install-write-gate') {
+      stage = 'write gate installation';
+      await setAlphaWriteGate(client, true);
+      console.log('Alpha progress writes are paused.');
+      return;
+    }
+    if (mode === '--remove-write-gate') {
+      stage = 'write gate removal';
+      await setAlphaWriteGate(client, false);
+      console.log('Alpha progress writes are resumed.');
+      return;
+    }
     stage = 'source query';
     await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
     let players: OldPlayerRow[];
     let rounds: OldRoundRow[];
     try {
+      if (!dryRun) await assertAlphaWriteGate(client);
       players = (
         await client.query<OldPlayerRow>(`
           SELECT id, joined_on::text, name, avatar, partner, specialty,

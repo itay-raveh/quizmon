@@ -10,6 +10,10 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Client } from 'pg';
+import {
+  assertAlphaWriteGate,
+  setAlphaWriteGate,
+} from '../../deploy/alpha-write-gate.ts';
 import { migrateDatabase } from '../../deploy/migration-runner.ts';
 import { migrationsFolder, testDatabase } from './account-fixture.ts';
 
@@ -115,6 +119,31 @@ try {
       'INSERT INTO round(id,player_id,mode,completed_at,credited,data) VALUES ($1,$2,$3,now(),true,$4)',
       [crypto.randomUUID(), 'preserved', 'training', {}],
     );
+    const gateClient = new Client({
+      connectionString: legacy.connectionString,
+    });
+    try {
+      await gateClient.connect();
+      await setAlphaWriteGate(gateClient, true);
+      await assertAlphaWriteGate(gateClient);
+      await assert.rejects(
+        legacy.pool.query("UPDATE player SET name=name WHERE id='preserved'"),
+        /progress writes are paused/,
+      );
+      await assert.rejects(
+        legacy.pool.query(
+          'INSERT INTO round(id,player_id,mode,completed_at,credited,data) VALUES ($1,$2,$3,now(),true,$4)',
+          [crypto.randomUUID(), 'preserved', 'training', {}],
+        ),
+        /progress writes are paused/,
+      );
+      await setAlphaWriteGate(gateClient, false);
+      await legacy.pool.query(
+        "UPDATE player SET name=name WHERE id='preserved'",
+      );
+    } finally {
+      await gateClient.end();
+    }
     assert.deepEqual(
       await migrateDatabase({
         connectionString: legacy.connectionString,
