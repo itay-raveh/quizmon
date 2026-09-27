@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import { formatFriendCode } from '../../domain/social/friends';
@@ -76,6 +82,15 @@ export function AccountScreen({
     owner: account.owner,
     code: cachedOwnPlayer(account.owner ?? '')?.code ?? '',
   }));
+  const updateOwnCode = useCallback(
+    (code: string) =>
+      setOwnCode((current) =>
+        current.owner === account.owner && current.code === code
+          ? current
+          : { owner: account.owner, code },
+      ),
+    [account.owner],
+  );
   const returnPath = friendCode
     ? `/social/friends?code=${friendCode}`
     : accountReturnPath(window.location.href);
@@ -164,7 +179,7 @@ export function AccountScreen({
                   void navigate('/account', { replace: true })
                 }
                 onViewPlayer={onViewPlayer}
-                onOwnCode={(code) => setOwnCode({ owner: account.owner, code })}
+                onOwnCode={updateOwnCode}
               />
             </details>
           </div>
