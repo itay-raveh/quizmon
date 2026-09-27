@@ -1,3 +1,6 @@
+DROP TRIGGER IF EXISTS quizmon_alpha_progress_write_gate ON public.player;--> statement-breakpoint
+DROP TRIGGER IF EXISTS quizmon_alpha_progress_write_gate ON public.round;--> statement-breakpoint
+DROP FUNCTION IF EXISTS public.quizmon_alpha_reject_progress_write();--> statement-breakpoint
 ALTER TABLE "dataset" DISABLE ROW LEVEL SECURITY;--> statement-breakpoint
 ALTER TABLE "instance" DISABLE ROW LEVEL SECURITY;--> statement-breakpoint
 ALTER TABLE "op" DISABLE ROW LEVEL SECURITY;--> statement-breakpoint

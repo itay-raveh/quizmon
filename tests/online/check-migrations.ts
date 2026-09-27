@@ -141,6 +141,7 @@ try {
       await legacy.pool.query(
         "UPDATE player SET name=name WHERE id='preserved'",
       );
+      await setAlphaWriteGate(gateClient, true);
     } finally {
       await gateClient.end();
     }
@@ -155,6 +156,12 @@ try {
       "SELECT code FROM player WHERE id='preserved'",
     );
     assert.equal(identity.rows[0]?.code, '0123456789ABCDEF');
+    await legacy.pool
+      .query(`INSERT INTO "user"(id,name,email,email_verified,created_at,updated_at)
+      VALUES ('after-cutover','After cutover','after-cutover@example.test',true,now(),now())`);
+    await legacy.pool.query(
+      "INSERT INTO player(id,code) VALUES ('after-cutover','ABCDEF0123456789')",
+    );
     const removed = await legacy.pool.query<{ name: string | null }>(
       "SELECT to_regclass('public.round')::text AS name",
     );
