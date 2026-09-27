@@ -598,6 +598,15 @@
   text-align: left;
 }
 
+.leaderboard-table tbody tr {
+  height: 3rem;
+}
+
+.leaderboard-table tbody th,
+.leaderboard-table tbody td {
+  padding-block: 0.1rem;
+}
+
 .leaderboard-table td {
   font-family: var(--font-data);
   font-size: var(--text-label);
