@@ -11,6 +11,7 @@ import {
 } from '../../domain/social/friends';
 import {
   changeRequest,
+  cachedOwnPlayer,
   friendPage,
   lookupPlayer,
   ownPlayer,
@@ -38,6 +39,9 @@ const errorMessage = (error: unknown) =>
     : error instanceof Error
       ? error.message
       : 'Reconnect and try again.';
+
+const friendsCache = new Map<string, Record<View, FriendsPage>>();
+const friendsCacheFetchedAt = new Map<string, number>();
 
 function Player({
   player,
@@ -141,12 +145,16 @@ export function FriendsPanel({
   onToggleAdding: () => void;
   onOwnCode?: (code: string) => void;
 }) {
-  const [me, setMe] = useState<SocialPlayer>();
-  const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>({});
+  const [me, setMe] = useState<SocialPlayer | undefined>(() =>
+    cachedOwnPlayer(owner),
+  );
+  const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>(
+    () => friendsCache.get(owner) ?? {},
+  );
   const [found, setFound] = useState<PlayerLookup>();
   const [showLink, setShowLink] = useState(false);
   const [lookupRetry, setLookupRetry] = useState(0);
-  const [busy, setBusy] = useState(true);
+  const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [removing, setRemoving] = useState<{
@@ -184,6 +192,8 @@ export function FriendsPanel({
       if (signal.aborted) return;
       setMe(data.me);
       onOwnCode?.(data.me.code ?? '');
+      friendsCache.set(owner, data.pages);
+      friendsCacheFetchedAt.set(owner, Date.now());
       setPages(data.pages);
       setError('');
     },
@@ -193,13 +203,39 @@ export function FriendsPanel({
   useEffect(() => {
     const controller = new AbortController();
     lifetime.current = controller;
-    void loadFriends(owner, controller.signal)
-      .then(async (data) => {
+    const cachedMe = cachedOwnPlayer(owner, 60_000);
+    void (
+      cachedMe ? Promise.resolve(cachedMe) : ownPlayer(owner, controller.signal)
+    )
+      .then((player) => {
         if (controller.signal.aborted) return;
-        setMe(data.me);
-        onOwnCode?.(data.me.code ?? '');
-        setPages(data.pages);
-        if (!initialInput || controller.signal.aborted) return;
+        setMe(player);
+        onOwnCode?.(player.code ?? '');
+      })
+      .catch((cause: unknown) => {
+        if (!controller.signal.aborted) setError(errorMessage(cause));
+      });
+    if (Date.now() - (friendsCacheFetchedAt.get(owner) ?? 0) >= 60_000) {
+      void Promise.all(
+        views.map((view) =>
+          friendPage(owner, view, undefined, controller.signal),
+        ),
+      )
+        .then((lists) => {
+          if (controller.signal.aborted) return;
+          const next = Object.fromEntries(
+            views.map((view, i) => [view, lists[i]]),
+          ) as Record<View, FriendsPage>;
+          friendsCache.set(owner, next);
+          friendsCacheFetchedAt.set(owner, Date.now());
+          setPages(next);
+        })
+        .catch((cause: unknown) => {
+          if (!controller.signal.aborted) setError(errorMessage(cause));
+        });
+    }
+    if (initialInput) {
+      void (async () => {
         const code = parseFriendInput(initialInput, location.origin);
         if (!code)
           throw new Error(
@@ -210,13 +246,10 @@ export function FriendsPanel({
           revealFound.current = true;
           setFound(result);
         }
-      })
-      .catch((error: unknown) => {
-        if (!controller.signal.aborted) setError(errorMessage(error));
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setBusy(false);
+      })().catch((cause: unknown) => {
+        if (!controller.signal.aborted) setError(errorMessage(cause));
       });
+    }
     return () => controller.abort();
   }, [owner, initialInput, lookupRetry, onOwnCode]);
 
@@ -333,15 +366,12 @@ export function FriendsPanel({
   const link = me?.code
     ? `${location.origin}/social/friends?code=${me.code}`
     : '';
-  const initialLoading = busy && !me && !pages.friends && !error;
+  const initialLoading = !pages.friends && !error;
   return (
     <div className="friends-panel">
       {(error || showLink) && (
         <div className="social-error-banner" role="alert">
-          <strong>
-            {error ? 'Friends unavailable' : 'Invite link could not be shared'}
-          </strong>
-          <span>{error || 'Select and copy the link below.'}</span>
+          <strong>{error || 'Invite link could not be shared.'}</strong>
           {showLink && (
             <label className="friends-field">
               Invite link
@@ -352,11 +382,10 @@ export function FriendsPanel({
               />
             </label>
           )}
-          {error && !busy && (!me || (adding && !found)) && (
+          {error && !busy && (
             <GameButton
               tone="quiet"
               onClick={() => {
-                setBusy(true);
                 setError('');
                 setLookupRetry((n) => n + 1);
               }}
@@ -366,7 +395,7 @@ export function FriendsPanel({
           )}
         </div>
       )}
-      {busy && (
+      {initialLoading && (
         <p className="visually-hidden" role="status">
           Loading friends
         </p>
@@ -419,7 +448,7 @@ export function FriendsPanel({
             This link finds a Trainer. It does not send a request until you
             choose to send one.
           </p>
-          {initialInput && busy && !found && (
+          {initialInput && !found && !error && (
             <div className="friends-link-loading" aria-hidden="true">
               <span className="social-skeleton" />
               <span className="social-skeleton" />

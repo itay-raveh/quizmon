@@ -4,9 +4,9 @@ import { GameButton } from '../components/GameButton';
 import { useInteractionSound } from '../lib/audio/sound-context';
 import {
   CardholderIcon,
+  ChartBarIcon,
   PuzzlePieceIcon,
   UserCircleIcon,
-  UsersIcon,
 } from '../components/icons';
 import { accountSnapshot, subscribeAccount } from '../features/account/account';
 import { SettingsButton } from '../features/settings/SettingsButton';
@@ -17,7 +17,7 @@ export type MainDestination = 'play' | 'trainer' | 'social';
 const destinations = [
   ['play', 'Play', PuzzlePieceIcon],
   ['trainer', 'Trainer', CardholderIcon],
-  ['social', 'Rankings', UsersIcon],
+  ['social', 'Rankings', ChartBarIcon],
 ] as const;
 
 export function AppNavigation({

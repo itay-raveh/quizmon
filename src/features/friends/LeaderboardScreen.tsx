@@ -24,11 +24,14 @@ import {
   readDailyLeaderboard,
   readTrainingLeaderboard,
 } from './leaderboards-client';
-import { friendPage, ownPlayer } from './friends-client';
+import { cachedOwnPlayer, friendPage, ownPlayer } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import './friends.css';
 
 const standingsCache = new Map<string, Leaderboard>();
+const standingsCacheFetchedAt = new Map<string, number>();
+const hasFriendsCache = new Map<string, boolean>();
+const hasFriendsCacheFetchedAt = new Map<string, number>();
 
 function InviteFriends({
   owner,
@@ -43,14 +46,24 @@ function InviteFriends({
   failed: boolean;
   onShareFailure: (link: string) => void;
 }) {
-  const [code, setCode] = useState('');
+  const [identity, setIdentity] = useState(() => ({
+    owner,
+    code: cachedOwnPlayer(owner)?.code ?? '',
+  }));
+  const code = identity.owner === owner ? identity.code : '';
   const [message, setMessage] = useState('');
   useEffect(() => {
+    const cached = cachedOwnPlayer(owner, 60_000);
+    if (cached) {
+      queueMicrotask(() => setIdentity({ owner, code: cached.code ?? '' }));
+      onError(!cached.code);
+      return;
+    }
     const controller = new AbortController();
     void ownPlayer(owner, controller.signal)
       .then((player) => {
         if (!controller.signal.aborted) {
-          setCode(player.code ?? '');
+          setIdentity({ owner, code: player.code ?? '' });
           onError(!player.code);
         }
       })
@@ -166,7 +179,9 @@ function Standings({
   const [data, setData] = useState<Leaderboard | undefined>(() =>
     standingsCache.get(`${cacheKey}:`),
   );
-  const [hasFriends, setHasFriends] = useState<boolean | null>();
+  const [hasFriends, setHasFriends] = useState<boolean | null | undefined>(() =>
+    hasFriendsCache.get(owner),
+  );
   const [busy, setBusy] = useState(!data);
   const [request, setRequest] = useState({
     after: null as string | null,
@@ -174,10 +189,16 @@ function Standings({
   });
   useEffect(() => {
     if (scope !== 'friends' || data?.items.length !== 0) return;
+    if (Date.now() - (hasFriendsCacheFetchedAt.get(owner) ?? 0) < 60_000)
+      return;
     const controller = new AbortController();
     void friendPage(owner, 'friends', undefined, controller.signal)
       .then((page) => {
-        if (!controller.signal.aborted) setHasFriends(page.items.length > 0);
+        if (!controller.signal.aborted) {
+          hasFriendsCache.set(owner, page.items.length > 0);
+          hasFriendsCacheFetchedAt.set(owner, Date.now());
+          setHasFriends(page.items.length > 0);
+        }
       })
       .catch(() => {
         if (!controller.signal.aborted) setHasFriends(null);
@@ -186,6 +207,11 @@ function Standings({
   }, [owner, scope, data]);
   useEffect(() => {
     const key = `${cacheKey}:${request.after ?? ''}`;
+    if (
+      request.revision === 0 &&
+      Date.now() - (standingsCacheFetchedAt.get(key) ?? 0) < 60_000
+    )
+      return;
     const controller = new AbortController();
     const read = async () => {
       if (mode === 'daily') {
@@ -218,8 +244,12 @@ function Standings({
         if (!controller.signal.aborted) {
           standingsCache.delete(key);
           standingsCache.set(key, next);
-          if (standingsCache.size > 24)
-            standingsCache.delete(standingsCache.keys().next().value!);
+          standingsCacheFetchedAt.set(key, Date.now());
+          if (standingsCache.size > 24) {
+            const oldest = standingsCache.keys().next().value!;
+            standingsCache.delete(oldest);
+            standingsCacheFetchedAt.delete(oldest);
+          }
           setData(next);
           onError('');
         }
@@ -482,44 +512,98 @@ export function LeaderboardScreen({
         <h1 className="game-panel__title" id="social-title">
           Rankings
         </h1>
-        {account.owner && !account.mergeRequired && (
-          <div className="leaderboard-header__actions">
-            <Link to="/account" className="leaderboard-friends-link">
-              Friends list
-            </Link>
-            <InviteFriends
-              owner={account.owner}
-              onError={setInviteError}
-              retry={retry}
-              failed={inviteError}
-              onShareFailure={setShareFallbackLink}
-            />
-          </div>
-        )}
       </header>
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
           <>
+            <div className="leaderboard-toolbar">
+              <div
+                className="leaderboard-modes"
+                role="group"
+                aria-label="Game mode"
+              >
+                <button
+                  type="button"
+                  aria-pressed={mode === 'daily'}
+                  onClick={() => chooseMode('daily')}
+                >
+                  Daily
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={mode === 'training'}
+                  onClick={() => chooseMode('training')}
+                >
+                  Training
+                </button>
+              </div>
+              <div className="leaderboard-filter leaderboard-filter--players">
+                <div
+                  className="leaderboard-scopes"
+                  role="group"
+                  aria-label="Leaderboard players"
+                >
+                  <button
+                    type="button"
+                    aria-pressed={scope === 'friends'}
+                    onClick={() => chooseScope('friends')}
+                  >
+                    Friends
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={scope === 'global'}
+                    onClick={() => chooseScope('global')}
+                  >
+                    Global
+                  </button>
+                </div>
+                <InviteFriends
+                  owner={account.owner}
+                  onError={setInviteError}
+                  retry={retry}
+                  failed={inviteError}
+                  onShareFailure={setShareFallbackLink}
+                />
+              </div>
+              {mode === 'daily' && (
+                <div className="leaderboard-filter leaderboard-date">
+                  <GameButton
+                    tone="quiet"
+                    aria-label="Previous day"
+                    onClick={() => chooseDate(shiftDailyDate(date, -1))}
+                  >
+                    <ArrowLeftIcon aria-hidden="true" />
+                  </GameButton>
+                  <input
+                    type="date"
+                    value={date}
+                    max={today}
+                    aria-label="Challenge date"
+                    onChange={(event) => chooseDate(event.target.value)}
+                  />
+                  <GameButton
+                    tone="quiet"
+                    aria-label="Next day"
+                    disabled={date >= today}
+                    onClick={() => chooseDate(shiftDailyDate(date, 1))}
+                  >
+                    <ArrowRightIcon aria-hidden="true" />
+                  </GameButton>
+                </div>
+              )}
+            </div>
             {(inviteError || standingsError || shareFallbackLink) && (
               <div className="social-error-banner" role="alert">
                 <strong>
                   {shareFallbackLink
-                    ? standingsError
-                      ? 'Standings and invite sharing unavailable'
-                      : 'Could not share invite link'
+                    ? 'Invite link could not be shared.'
                     : standingsError && inviteError
-                      ? 'Rankings and invite link unavailable'
+                      ? 'Rankings and invite links could not load.'
                       : standingsError
-                        ? 'Standings unavailable'
-                        : 'Invite link unavailable'}
+                        ? standingsError
+                        : 'Invite link could not load.'}
                 </strong>
-                {standingsError && <span>{standingsError}</span>}
-                {inviteError && (
-                  <span>Your invite link could not be loaded.</span>
-                )}
-                {shareFallbackLink && (
-                  <span>Select the link below to copy it.</span>
-                )}
                 {shareFallbackLink && (
                   <label className="friends-field">
                     Invite link
@@ -545,78 +629,6 @@ export function LeaderboardScreen({
                 )}
               </div>
             )}
-            <div className="leaderboard-toolbar">
-              <div
-                className="leaderboard-modes"
-                role="group"
-                aria-label="Game mode"
-              >
-                <button
-                  type="button"
-                  aria-pressed={mode === 'daily'}
-                  onClick={() => chooseMode('daily')}
-                >
-                  Daily
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={mode === 'training'}
-                  onClick={() => chooseMode('training')}
-                >
-                  Training
-                </button>
-              </div>
-              <div className="leaderboard-controls">
-                <div className="leaderboard-filter">
-                  <div
-                    className="leaderboard-scopes"
-                    role="group"
-                    aria-label="Leaderboard players"
-                  >
-                    <button
-                      type="button"
-                      aria-pressed={scope === 'friends'}
-                      onClick={() => chooseScope('friends')}
-                    >
-                      Friends
-                    </button>
-                    <button
-                      type="button"
-                      aria-pressed={scope === 'global'}
-                      onClick={() => chooseScope('global')}
-                    >
-                      Global
-                    </button>
-                  </div>
-                </div>
-                {mode === 'daily' && (
-                  <div className="leaderboard-filter leaderboard-date">
-                    <GameButton
-                      tone="quiet"
-                      aria-label="Previous day"
-                      onClick={() => chooseDate(shiftDailyDate(date, -1))}
-                    >
-                      <ArrowLeftIcon aria-hidden="true" />
-                    </GameButton>
-                    <input
-                      type="date"
-                      value={date}
-                      max={today}
-                      aria-label="Challenge date"
-                      onChange={(event) => chooseDate(event.target.value)}
-                    />
-                    <GameButton
-                      tone="quiet"
-                      aria-label="Next day"
-                      disabled={date >= today}
-                      onClick={() => chooseDate(shiftDailyDate(date, 1))}
-                    >
-                      <ArrowRightIcon aria-hidden="true" />
-                    </GameButton>
-                  </div>
-                )}
-              </div>
-            </div>
             <div
               className="leaderboard-swipe"
               onTouchStart={(event) => {

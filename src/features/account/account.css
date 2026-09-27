@@ -31,6 +31,13 @@
   cursor: pointer;
 }
 
+.account-screen__sync-status {
+  display: block;
+  color: var(--error-ink);
+  font-size: var(--text-status);
+  font-weight: 700;
+}
+
 .account-screen__section summary:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 2px;

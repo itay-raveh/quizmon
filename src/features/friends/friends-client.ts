@@ -16,6 +16,18 @@ export interface PlayerLookup {
   request: FriendRelation | null;
 }
 
+const ownPlayers = new Map<
+  string,
+  { player: SocialPlayer; fetchedAt: number }
+>();
+
+export function cachedOwnPlayer(owner: string, maxAge = Infinity) {
+  const cached = ownPlayers.get(owner);
+  return cached && Date.now() - cached.fetchedAt < maxAge
+    ? cached.player
+    : undefined;
+}
+
 const messages: Record<string, string> = {
   player_not_found:
     'No player has that friend code. Check the code and try again.',
@@ -97,7 +109,9 @@ function relation(value: unknown): FriendRelation {
 }
 
 export async function ownPlayer(owner: string, signal?: AbortSignal) {
-  return player((await request(owner, '/identity', {}, signal)).player);
+  const me = player((await request(owner, '/identity', {}, signal)).player);
+  ownPlayers.set(owner, { player: me, fetchedAt: Date.now() });
+  return me;
 }
 
 export async function friendPage(

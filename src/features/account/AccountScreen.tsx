@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import { formatFriendCode } from '../../domain/social/friends';
 import { FriendsPanel } from '../friends/FriendsPanel';
+import { cachedOwnPlayer } from '../friends/friends-client';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   readStoredValue,
@@ -71,7 +72,10 @@ export function AccountScreen({
   const navigate = useNavigate();
   const signingIn = !account.owner && !account.mergeRequired;
   const hasTrainerName = Boolean(trainerName.trim());
-  const [ownCode, setOwnCode] = useState('');
+  const [ownCode, setOwnCode] = useState(() => ({
+    owner: account.owner,
+    code: cachedOwnPlayer(account.owner ?? '')?.code ?? '',
+  }));
   const returnPath = friendCode
     ? `/social/friends?code=${friendCode}`
     : accountReturnPath(window.location.href);
@@ -117,9 +121,9 @@ export function AccountScreen({
           >
             {signingIn ? 'Sign in' : trainerName.trim() || 'Account'}
           </h1>
-          {!signingIn && ownCode && (
+          {!signingIn && ownCode.owner === account.owner && ownCode.code && (
             <small className="account-screen__code">
-              {formatFriendCode(ownCode)}
+              {formatFriendCode(ownCode.code)}
             </small>
           )}
         </header>
@@ -137,7 +141,16 @@ export function AccountScreen({
               className="account-screen__section"
               open={Boolean(account.error)}
             >
-              <summary>Account settings</summary>
+              <summary>
+                Settings, backup & sign out
+                {(account.error || account.offline) && (
+                  <small className="account-screen__sync-status">
+                    {account.error
+                      ? 'Sync needs attention'
+                      : 'Waiting for connection'}
+                  </small>
+                )}
+              </summary>
               <AccountSettings />
             </details>
             <details className="account-screen__section" open>
@@ -151,7 +164,7 @@ export function AccountScreen({
                   void navigate('/account', { replace: true })
                 }
                 onViewPlayer={onViewPlayer}
-                onOwnCode={setOwnCode}
+                onOwnCode={(code) => setOwnCode({ owner: account.owner, code })}
               />
             </details>
           </div>
