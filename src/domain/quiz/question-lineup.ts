@@ -159,26 +159,7 @@ const question = z
         answer.correctOptions.length === 1),
   );
 
-const currentQuestionTypes = new Set<string>([...questionTypes, 'champion']);
-export const savedQuestionSchema = z
-  .object({
-    ...question.shape,
-    questionType: z
-      .string()
-      .min(1)
-      .max(200)
-      .transform((type) =>
-        currentQuestionTypes.has(type)
-          ? (type as QuestionData['questionType'])
-          : ('archived' as const),
-      ),
-  })
-  .refine(
-    ({ answer, options }) =>
-      answer.correctOptions.every((option) => options.includes(option)) &&
-      (answer.interaction === 'multi-select' ||
-        answer.correctOptions.length === 1),
-  );
+export const savedQuestionSchema = question;
 
 export const isQuestionData = (value: unknown): value is QuestionData =>
   question.safeParse(value).success;

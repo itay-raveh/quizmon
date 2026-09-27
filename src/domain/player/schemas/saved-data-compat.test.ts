@@ -69,7 +69,7 @@ it('preserves unfinished-round output and unknown settings', () => {
   ).toBeNull();
 });
 
-it('loads an unfinished round with a retired question without offering it again', () => {
+it('discards an unfinished round with a retired question', () => {
   const saved = {
     ...round,
     questions: [{ ...question, questionType: 'evolution-items' }],
@@ -79,13 +79,7 @@ it('loads an unfinished round with a retired question without offering it again'
       automaticQuestionTypes: ['evolution-items'],
     },
   };
-  const restored = parseRound(saved);
-  expect(restored?.questions[0]?.questionType).toBe('archived');
-  expect(restored?.questions[0]?.prompt).toEqual(question.prompt);
-  expect(restored?.settings.questionTypes).toEqual(
-    defaultGameSettings.questionTypes,
-  );
-  expect(restored?.settings.automaticQuestionTypes).toEqual([]);
+  expect(parseRound(saved)).toBeNull();
 });
 
 it('rejects unsafe saved round counts', () => {

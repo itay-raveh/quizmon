@@ -1,4 +1,4 @@
-import { supportsStandardQuestion, type QuestionType } from './definitions.ts';
+import { supportsUnleveledQuestion, type QuestionType } from './definitions.ts';
 import {
   getPokemonRecency,
   getQuestionRecency,
@@ -8,7 +8,7 @@ import {
 } from '../question-history.ts';
 import {
   getQuestionVariant,
-  getStandardQuestionRule,
+  getUnleveledQuestionRule,
 } from '../question-variants.ts';
 import type { QuestionData } from '../types.ts';
 import { buildHidden } from './abilities.ts';
@@ -95,7 +95,7 @@ export const buildQuestionType = (
   context: QuestionContext,
   questionType: QuestionType | 'champion',
 ): QuestionData | undefined => {
-  if (!context.difficulty && !supportsStandardQuestion(questionType))
+  if (!context.difficulty && !supportsUnleveledQuestion(questionType))
     return undefined;
   const resolved = context.difficulty
     ? getQuestionVariant(questionType, context.difficulty)
@@ -103,7 +103,7 @@ export const buildQuestionType = (
   if (context.difficulty && !resolved) return undefined;
   const activeRules =
     resolved?.variant ??
-    (!context.difficulty ? getStandardQuestionRule(questionType) : undefined);
+    (!context.difficulty ? getUnleveledQuestionRule(questionType) : undefined);
   if (!activeRules) return undefined;
   const build = questionBuilders[questionType] as QuestionBuilder<
     FamilyRules[typeof questionType]

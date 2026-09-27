@@ -1,28 +1,34 @@
-import { questionRules } from '../../question-rules.ts';
 import {
+  questionRules,
+  type QuestionRuleEntry,
+  type QuestionRuleRow,
+} from '../../question-rules.ts';
+import {
+  defaultQuestionRendering,
   mergeRendering,
   type QuestionRendering,
 } from './question-rendering.ts';
-import {
-  resolveDifficultyVariant,
-  type Difficulty,
-  type DifficultyVariants,
-} from './difficulty.ts';
+import { resolveDifficultyVariant, type Difficulty } from './difficulty.ts';
 import type { QuestionData } from './types.ts';
 import type { FamilyRules } from './questions/family-rules.ts';
 
-// Older saved questions may not contain a rendering snapshot.
-export const defaultQuestionRendering: QuestionRendering = {
-  subject: { sprite: 'always', name: 'always', number: 'always' },
-  choices: { sprite: 'always', name: 'always', number: 'always' },
-  related: { sprite: 'always', name: 'always', number: 'always' },
-  search: { sprite: 'always', name: 'always', number: 'always' },
-};
+export { defaultQuestionRendering } from './question-rendering.ts';
 
-export const getStandardQuestionRule = <Type extends keyof FamilyRules>(
+const withRendering = <Rules extends { rendering: QuestionRendering }>(
+  row: QuestionRuleRow<Rules>,
+  entry: QuestionRuleEntry<Rules>,
+): Rules =>
+  ({
+    ...entry,
+    rendering: mergeRendering(row.rendering, entry.rendering),
+  }) as Rules;
+
+export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
   type: Type,
-): FamilyRules[Type] | undefined =>
-  (questionRules[type] as { standard?: FamilyRules[Type] }).standard;
+): FamilyRules[Type] | undefined => {
+  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type]>;
+  return row.unleveled ? withRendering(row, row.unleveled) : undefined;
+};
 
 export const getQuestionVariant = <Type extends keyof FamilyRules>(
   type: Type,
@@ -33,23 +39,20 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
       variant: FamilyRules[Type];
     }
   | undefined => {
-  const row = questionRules[type].levels as DifficultyVariants<
-    FamilyRules[Type]
-  >;
-  return resolveDifficultyVariant(row, difficulty);
+  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type]>;
+  const resolved = resolveDifficultyVariant(row.levels, difficulty);
+  return resolved
+    ? { level: resolved.level, variant: withRendering(row, resolved.variant) }
+    : undefined;
 };
 
 export const resolveQuestionRendering = (
   type: QuestionData['questionType'],
   level?: Difficulty,
 ): QuestionRendering =>
-  type === 'archived'
-    ? defaultQuestionRendering
-    : ((level
-        ? getQuestionVariant(type, level)?.variant.rendering
-        : undefined) ??
-      getStandardQuestionRule(type)?.rendering ??
-      defaultQuestionRendering);
+  (level ? getQuestionVariant(type, level)?.variant.rendering : undefined) ??
+  getUnleveledQuestionRule(type)?.rendering ??
+  defaultQuestionRendering;
 
 export const getQuestionRendering = (
   question: QuestionData,

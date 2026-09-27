@@ -11,7 +11,11 @@ import { questionTypes } from '../quiz/questions/definitions.ts';
 import type { RoundCompletion } from '../sync/progress.ts';
 import { emptyPlayerData, type PlayerData } from './player-save.ts';
 import { applyResult } from './game-progress.ts';
-import { scoreRound, type RoundFact } from '../sync/round-facts.ts';
+import {
+  scoreRound,
+  validateRoundFact,
+  type RoundFact,
+} from '../sync/round-facts.ts';
 
 function roundDiscoveries(
   round: Pick<ActiveGameSnapshot, 'answers' | 'questions'>,
@@ -88,6 +92,7 @@ export function projectRoundHistory(rounds: Iterable<RoundFact>): GameProgress {
   const seen = new Set<string>();
   const creditedDaily = new Set<string>();
   for (const round of rounds) {
+    if (!validateRoundFact(round)) continue;
     if (seen.has(round.id)) continue;
     seen.add(round.id);
     data.pokedex = [...new Set([...data.pokedex, ...round.data.found])];

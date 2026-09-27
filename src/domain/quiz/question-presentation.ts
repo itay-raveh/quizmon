@@ -33,22 +33,14 @@ export type QuestionView = z.infer<typeof questionViewSchema>;
 
 export const getQuestionView = (question: QuestionData): QuestionView => {
   if (question.view) return question.view;
-  if (question.questionType === 'archived')
-    return {
-      answer: question.optionImages
-        ? { kind: 'item' }
-        : question.optionVisuals
-          ? { kind: 'pokemon' }
-          : { kind: 'text' },
-    };
   const row = questionRules[question.questionType] as {
-    standard?: { view: QuestionView };
+    unleveled?: { view: QuestionView };
     levels: Record<number, { view: QuestionView }>;
   };
   const level = question.variantLevel;
   const resolved =
     level === undefined
-      ? row.standard
+      ? row.unleveled
       : Object.entries(row.levels)
           .filter(([key]) => Number(key) <= level)
           .at(-1)?.[1];

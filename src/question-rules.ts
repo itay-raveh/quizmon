@@ -1,326 +1,20 @@
 import type { DifficultyRules } from './domain/quiz/difficulty.ts';
-import type { QuestionRendering } from './domain/quiz/question-rendering.ts';
+import {
+  defaultQuestionRendering,
+  type QuestionRendering,
+  type RenderingOverrides,
+} from './domain/quiz/question-rendering.ts';
 import type { QuestionView } from './domain/quiz/question-presentation.ts';
 import type { FamilyRules } from './domain/quiz/questions/family-rules.ts';
 
-const renderings = {
-  'item-identification': {
-    subject: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'pokedex-scan': {
-    subject: {
-      sprite: 'always',
-      name: 'never',
-      number: 'never',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'never',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'never',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'sprite-match': {
-    subject: {
-      sprite: 'never',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'always',
-      name: 'after-answer',
-      number: 'after-answer',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'silhouette-match': {
-    subject: {
-      sprite: 'never',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'silhouette',
-      name: 'after-answer',
-      number: 'after-answer',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'whos-that-pokemon': {
-    subject: {
-      sprite: 'silhouette',
-      name: 'never',
-      number: 'never',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'never',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'never',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'generation-roundup': {
-    subject: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'always',
-      name: 'always',
-      number: 'after-answer',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'evolution-link': {
-    subject: {
-      sprite: 'after-answer',
-      name: 'after-answer',
-      number: 'after-answer',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'never',
-      name: 'always',
-      number: 'never',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'never',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'evolution-shift': {
-    subject: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    related: {
-      sprite: 'after-answer',
-      name: 'after-answer',
-      number: 'after-answer',
-      types: 'always',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'evolution-shift@5': {
-    subject: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'after-answer',
-    },
-    choices: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    related: {
-      sprite: 'after-answer',
-      name: 'after-answer',
-      number: 'after-answer',
-      types: 'after-answer',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'counter-pick': {
-    subject: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    related: {
-      sprite: 'after-answer',
-      name: 'never',
-      number: 'never',
-      types: 'always',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  'counter-pick@3': {
-    subject: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'after-answer',
-    },
-    choices: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    related: {
-      sprite: 'after-answer',
-      name: 'never',
-      number: 'never',
-      types: 'always',
-    },
-    search: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-  },
-  champion: {
-    subject: {
-      sprite: {
-        afterClues: 4,
-        silhouette: true,
-      },
-      name: 'never',
-      number: 'never',
-      types: 'always',
-    },
-    choices: {
-      sprite: 'never',
-      name: 'always',
-      number: 'after-answer',
-      types: 'always',
-    },
-    related: {
-      sprite: 'always',
-      name: 'always',
-      number: 'always',
-      types: 'always',
-    },
-    search: {
-      sprite: 'never',
-      name: 'always',
-      number: 'never',
-      types: 'always',
-    },
-  },
-} satisfies Record<string, QuestionRendering>;
+export type QuestionRuleEntry<Rules extends { rendering: QuestionRendering }> =
+  Omit<Rules, 'rendering'> & { rendering?: RenderingOverrides };
 
+export type QuestionRuleRow<Rules extends { rendering: QuestionRendering }> = {
+  rendering: QuestionRendering;
+  unleveled?: QuestionRuleEntry<Rules>;
+  levels: DifficultyRules<QuestionRuleEntry<Rules>>;
+};
 const controls = {
   'item-identification': {
     view: { answer: { kind: 'text' } },
@@ -727,6 +421,7 @@ const controls = {
 
 export const questionRules = {
   'item-identification': {
+    rendering: defaultQuestionRendering,
     levels: {
       '1': {
         ...controls['item-identification'],
@@ -735,7 +430,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '2': {
         ...controls['item-identification'],
@@ -744,7 +438,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['item-identification'],
@@ -753,22 +446,20 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['item-identification'],
         response: { kind: 'search', candidates: 'provided' },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['item-identification'],
         machineDiscChance: 0.5,
         response: { kind: 'search', candidates: 'provided' },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'medicine-cabinet': {
+    rendering: defaultQuestionRendering,
     levels: {
       '2': {
         ...controls['medicine-cabinet'],
@@ -779,7 +470,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['medicine-cabinet'],
@@ -791,7 +481,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['medicine-cabinet'],
@@ -803,7 +492,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['medicine-cabinet'],
@@ -817,11 +505,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'weight-comparison': {
+    rendering: defaultQuestionRendering,
     levels: {
       '2': {
         ...controls['weight-comparison'],
@@ -834,7 +522,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['weight-comparison'],
@@ -847,7 +534,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['weight-comparison'],
@@ -860,7 +546,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['weight-comparison'],
@@ -873,11 +558,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'height-comparison': {
+    rendering: defaultQuestionRendering,
     levels: {
       '2': {
         ...controls['height-comparison'],
@@ -890,7 +575,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['height-comparison'],
@@ -903,7 +587,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['height-comparison'],
@@ -916,7 +599,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['height-comparison'],
@@ -929,11 +611,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'move-types': {
+    rendering: defaultQuestionRendering,
     levels: {
       '2': {
         ...controls['move-types'],
@@ -942,7 +624,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['move-types'],
@@ -952,11 +633,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 2,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'name-that-region': {
+    rendering: defaultQuestionRendering,
     levels: {
       '2': {
         ...controls['name-that-region'],
@@ -964,7 +645,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['name-that-region'],
@@ -973,11 +653,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 2,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'move-purpose': {
+    rendering: defaultQuestionRendering,
     levels: {
       '2': {
         ...controls['move-purpose'],
@@ -986,7 +666,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['move-purpose'],
@@ -995,7 +674,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['move-purpose'],
@@ -1005,11 +683,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'pokedex-categories': {
+    rendering: defaultQuestionRendering,
     levels: {
       '2': {
         ...controls['pokedex-categories'],
@@ -1017,7 +695,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['pokedex-categories'],
@@ -1026,7 +703,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['pokedex-categories'],
@@ -1036,11 +712,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'evolution-conditions': {
+    rendering: defaultQuestionRendering,
     levels: {
       '3': {
         ...controls['evolution-conditions'],
@@ -1050,7 +726,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['evolution-conditions'],
@@ -1061,7 +736,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['evolution-conditions'],
@@ -1077,11 +751,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'ability-effects': {
+    rendering: defaultQuestionRendering,
     levels: {
       '3': {
         ...controls['ability-effects'],
@@ -1092,7 +766,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['ability-effects'],
@@ -1103,7 +776,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['ability-effects'],
@@ -1115,11 +787,11 @@ export const questionRules = {
           kind: 'search',
           candidates: 'provided',
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'held-item-effects': {
+    rendering: defaultQuestionRendering,
     levels: {
       '3': {
         ...controls['held-item-effects'],
@@ -1131,7 +803,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['held-item-effects'],
@@ -1143,7 +814,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['held-item-effects'],
@@ -1157,11 +827,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'hidden-abilities': {
+    rendering: defaultQuestionRendering,
     levels: {
       '4': {
         ...controls['hidden-abilities'],
@@ -1170,7 +840,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['hidden-abilities'],
@@ -1180,11 +849,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'nature-effects': {
+    rendering: defaultQuestionRendering,
     levels: {
       '4': {
         ...controls['nature-effects'],
@@ -1193,7 +862,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['nature-effects'],
@@ -1202,11 +870,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'ev-yields': {
+    rendering: defaultQuestionRendering,
     levels: {
       '4': {
         ...controls['ev-yields'],
@@ -1215,7 +883,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['ev-yields'],
@@ -1225,11 +892,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'encounter-locations': {
+    rendering: defaultQuestionRendering,
     levels: {
       '4': {
         ...controls['encounter-locations'],
@@ -1237,7 +904,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['encounter-locations'],
@@ -1248,11 +914,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'berry-flavors': {
+    rendering: defaultQuestionRendering,
     levels: {
       '4': {
         ...controls['berry-flavors'],
@@ -1261,7 +927,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['berry-flavors'],
@@ -1271,11 +936,11 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 2,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'natural-gift': {
+    rendering: defaultQuestionRendering,
     levels: {
       '5': {
         ...controls['natural-gift'],
@@ -1284,18 +949,42 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 2,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'pokedex-scan': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'always',
+        name: 'never',
+        number: 'never',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['pokedex-scan'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['pokedex-scan'],
     },
     levels: {
       '1': {
@@ -1306,7 +995,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['pokedex-scan'],
       },
       '2': {
         ...controls['pokedex-scan'],
@@ -1316,7 +1004,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['pokedex-scan'],
       },
       '4': {
         ...controls['pokedex-scan'],
@@ -1327,7 +1014,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['pokedex-scan'],
       },
       '5': {
         ...controls['pokedex-scan'],
@@ -1336,18 +1022,42 @@ export const questionRules = {
           candidates: 'pool',
         },
         backSpriteChance: 1,
-        rendering: renderings['pokedex-scan'],
       },
     },
   },
   'sprite-match': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'always',
+        name: 'after-answer',
+        number: 'after-answer',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['sprite-match'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['sprite-match'],
     },
     levels: {
       '1': {
@@ -1357,7 +1067,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['sprite-match'],
       },
       '3': {
         ...controls['sprite-match'],
@@ -1366,7 +1075,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['sprite-match'],
       },
       '4': {
         ...controls['sprite-match'],
@@ -1377,7 +1085,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['sprite-match'],
       },
       '5': {
         ...controls['sprite-match'],
@@ -1388,18 +1095,42 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['sprite-match'],
       },
     },
   },
   'silhouette-match': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'silhouette',
+        name: 'after-answer',
+        number: 'after-answer',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['silhouette-match'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['silhouette-match'],
     },
     levels: {
       '2': {
@@ -1409,7 +1140,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['silhouette-match'],
       },
       '4': {
         ...controls['silhouette-match'],
@@ -1420,7 +1150,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['silhouette-match'],
       },
       '5': {
         ...controls['silhouette-match'],
@@ -1431,18 +1160,42 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['silhouette-match'],
       },
     },
   },
   'whos-that-pokemon': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'silhouette',
+        name: 'never',
+        number: 'never',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['whos-that-pokemon'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['whos-that-pokemon'],
     },
     levels: {
       '2': {
@@ -1452,7 +1205,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['whos-that-pokemon'],
       },
       '3': {
         ...controls['whos-that-pokemon'],
@@ -1461,7 +1213,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['whos-that-pokemon'],
       },
       '5': {
         ...controls['whos-that-pokemon'],
@@ -1469,18 +1220,42 @@ export const questionRules = {
           kind: 'search',
           candidates: 'pool',
         },
-        rendering: renderings['whos-that-pokemon'],
       },
     },
   },
   'pixel-peek': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'always',
+        name: 'never',
+        number: 'never',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['pixel-peek'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['pokedex-scan'],
     },
     levels: {
       '3': {
@@ -1490,7 +1265,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['pokedex-scan'],
       },
       '4': {
         ...controls['pixel-peek'],
@@ -1501,7 +1275,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['pokedex-scan'],
       },
       '5': {
         ...controls['pixel-peek'],
@@ -1510,18 +1283,17 @@ export const questionRules = {
           candidates: 'pool',
         },
         cropScale: 1.4,
-        rendering: renderings['pokedex-scan'],
       },
     },
   },
   'shiny-spotter': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['shiny-spotter'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '3': {
@@ -1530,7 +1302,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['shiny-spotter'],
@@ -1541,7 +1312,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['shiny-spotter'],
@@ -1552,18 +1322,17 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'field-notes': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['field-notes'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '2': {
@@ -1572,7 +1341,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['field-notes'],
@@ -1584,18 +1352,17 @@ export const questionRules = {
           answer: { kind: 'pokemon' },
           subject: { identity: 'after-answer', portrait: 'after-answer' },
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'type-check': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['type-check'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '2': {
@@ -1605,7 +1372,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['type-check'],
@@ -1613,18 +1379,17 @@ export const questionRules = {
           kind: 'type-grid',
           correct: 'subject-types',
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'odd-one-out': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['odd-one-out'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '2': {
@@ -1634,7 +1399,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['odd-one-out'],
@@ -1642,18 +1406,17 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'type-roundup': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['type-roundup'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '2': {
@@ -1663,7 +1426,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['type-roundup'],
@@ -1671,18 +1433,17 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'type-twins': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['type-twins'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '3': {
@@ -1691,18 +1452,17 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'legend-hunt': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['legend-hunt'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '2': {
@@ -1711,18 +1471,42 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'generation-roundup': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'always',
+        name: 'always',
+        number: 'after-answer',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['generation-roundup'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['generation-roundup'],
     },
     levels: {
       '2': {
@@ -1731,18 +1515,42 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['generation-roundup'],
       },
     },
   },
   'evolution-link': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'after-answer',
+        name: 'after-answer',
+        number: 'after-answer',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'never',
+        name: 'always',
+        number: 'never',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'never',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['evolution-link'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['evolution-link'],
     },
     levels: {
       '2': {
@@ -1751,7 +1559,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['evolution-link'],
       },
       '4': {
         ...controls['evolution-link'],
@@ -1759,18 +1566,42 @@ export const questionRules = {
           kind: 'search',
           candidates: 'pool',
         },
-        rendering: renderings['evolution-link'],
       },
     },
   },
   'evolution-shift': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      related: {
+        sprite: 'after-answer',
+        name: 'after-answer',
+        number: 'after-answer',
+        types: 'always',
+      },
+      search: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['evolution-shift'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['evolution-shift'],
     },
     levels: {
       '3': {
@@ -1779,7 +1610,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['evolution-shift'],
       },
       '5': {
         ...controls['evolution-shift'],
@@ -1787,18 +1617,21 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['evolution-shift@5'],
+        rendering: {
+          subject: { types: 'after-answer' },
+          related: { types: 'after-answer' },
+        },
       },
     },
   },
   'ability-check': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['ability-check'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '3': {
@@ -1807,7 +1640,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['ability-check'],
@@ -1816,18 +1648,17 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'move-check': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['move-check'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '4': {
@@ -1836,7 +1667,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['move-check'],
@@ -1845,18 +1675,17 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'stat-showdown': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['stat-showdown'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '3': {
@@ -1866,7 +1695,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['stat-showdown'],
@@ -1875,7 +1703,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['stat-showdown'],
@@ -1884,18 +1711,17 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
     },
   },
   'type-matchup': {
-    standard: {
+    rendering: defaultQuestionRendering,
+    unleveled: {
       ...controls['type-matchup'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['item-identification'],
     },
     levels: {
       '1': {
@@ -1907,7 +1733,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '2': {
         ...controls['type-matchup'],
@@ -1917,7 +1742,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '3': {
         ...controls['type-matchup'],
@@ -1927,7 +1751,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '4': {
         ...controls['type-matchup'],
@@ -1936,7 +1759,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['item-identification'],
       },
       '5': {
         ...controls['type-matchup'],
@@ -1945,18 +1767,42 @@ export const questionRules = {
           correct: 'effectiveness',
         },
         multipliers: [0, 0.25, 0.5, 1, 2, 4],
-        rendering: renderings['item-identification'],
       },
     },
   },
   'counter-pick': {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      related: {
+        sprite: 'after-answer',
+        name: 'never',
+        number: 'never',
+        types: 'always',
+      },
+      search: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['counter-pick'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['counter-pick'],
     },
     levels: {
       '2': {
@@ -1968,7 +1814,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['counter-pick'],
       },
       '3': {
         ...controls['counter-pick'],
@@ -1978,7 +1823,7 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['counter-pick@3'],
+        rendering: { subject: { types: 'after-answer' } },
       },
       '4': {
         ...controls['counter-pick'],
@@ -1987,7 +1832,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['counter-pick'],
       },
       '5': {
         ...controls['counter-pick'],
@@ -1999,18 +1843,45 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['counter-pick'],
       },
     },
   },
   champion: {
-    standard: {
+    rendering: {
+      subject: {
+        sprite: {
+          afterClues: 4,
+          silhouette: true,
+        },
+        name: 'never',
+        number: 'never',
+        types: 'always',
+      },
+      choices: {
+        sprite: 'never',
+        name: 'always',
+        number: 'after-answer',
+        types: 'always',
+      },
+      related: {
+        sprite: 'always',
+        name: 'always',
+        number: 'always',
+        types: 'always',
+      },
+      search: {
+        sprite: 'never',
+        name: 'always',
+        number: 'never',
+        types: 'always',
+      },
+    },
+    unleveled: {
       ...controls['champion'],
       response: {
         kind: 'choices',
         minimumOptions: 4,
       },
-      rendering: renderings['champion'],
     },
     levels: {
       '1': {
@@ -2024,7 +1895,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['champion'],
       },
       '2': {
         ...controls['champion'],
@@ -2037,7 +1907,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['champion'],
       },
       '3': {
         ...controls['champion'],
@@ -2050,7 +1919,6 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['champion'],
       },
       '5': {
         ...controls['champion'],
@@ -2063,13 +1931,7 @@ export const questionRules = {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: renderings['champion'],
       },
     },
   },
-} satisfies {
-  [Type in keyof FamilyRules]: {
-    standard?: FamilyRules[Type];
-    levels: DifficultyRules<FamilyRules[Type]>;
-  };
-};
+} satisfies { [Type in keyof FamilyRules]: QuestionRuleRow<FamilyRules[Type]> };

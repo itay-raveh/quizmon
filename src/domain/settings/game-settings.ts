@@ -1,6 +1,6 @@
 import {
-  supportsStandardQuestion,
-  standardLeagueQuestionTypes,
+  supportsUnleveledQuestion,
+  leagueQuestionTypes,
 } from '../quiz/questions/definitions.ts';
 import { getQuestionVariant } from '../quiz/question-variants.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
@@ -63,8 +63,10 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
           (type !== 'generation-roundup' || settings.generations.length > 1),
       )
     : isLeagueTraining(settings)
-      ? [...standardLeagueQuestionTypes]
-      : settings.questionTypes.filter((type) => supportsStandardQuestion(type)),
+      ? [...leagueQuestionTypes]
+      : settings.questionTypes.filter((type) =>
+          supportsUnleveledQuestion(type),
+        ),
 });
 
 export const filterPokemon = (

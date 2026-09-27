@@ -1,4 +1,4 @@
-import { standardLeagueQuestionTypes } from '../quiz/questions/definitions';
+import { leagueQuestionTypes } from '../quiz/questions/definitions';
 import { defaultGameSettings, getTrainingSettings } from './game-settings';
 
 describe('getTrainingSettings', () => {
@@ -10,12 +10,12 @@ describe('getTrainingSettings', () => {
         questionTypes: ['evolution-shift'],
       }),
     ).toMatchObject({
-      questionTypes: standardLeagueQuestionTypes,
+      questionTypes: leagueQuestionTypes,
       trainingMode: 'league',
     });
-    expect(standardLeagueQuestionTypes).toHaveLength(17);
+    expect(leagueQuestionTypes).toHaveLength(17);
     for (const advanced of ['ability-check', 'move-check', 'stat-showdown']) {
-      expect(standardLeagueQuestionTypes).not.toContain(advanced);
+      expect(leagueQuestionTypes).not.toContain(advanced);
     }
     expect(
       getTrainingSettings({

@@ -28,6 +28,14 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   const fact = archiveCompletion(completion('training'));
   expect(await writeCompletedRound(first, 'guest', fact)).toBe(true);
   expect(await writeCompletedRound(first, 'guest', fact)).toBe(false);
+  const retired = structuredClone(fact);
+  retired.id = crypto.randomUUID();
+  Reflect.set(retired.data.answers[0]!, 'question_type', 'retired-type');
+  await first.rounds.insert({
+    id: retired.id,
+    ownerId: 'guest',
+    fact: retired,
+  });
   await first.close();
 
   const second = await openPlayerDatabase(name, storage, false);
@@ -35,6 +43,7 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   expect(data.profile?.name).toBe('Trainer');
   expect(data.settings).toEqual(defaultGameSettings);
   expect(Object.keys(data.results.training)).toHaveLength(1);
+  expect(await boardRows(second, 'training', null)).toHaveLength(1);
   await expect(
     writePlayerPreferences(second, 'guest', {
       settings: { ...defaultGameSettings, soundVolume: 2 },
@@ -90,12 +99,22 @@ it('returns cloneable Daily attempts from RxDB documents', async () => {
         ...data,
         payload: {
           ...saved,
-          dailyAttempts: { [`${date}:3:all`]: round },
+          dailyAttempts: {
+            [`${date}:3:all`]: round,
+            [`${date}:5:all`]: {
+              ...round,
+              questions: [
+                { ...round.questions[0], questionType: 'retired-type' },
+              ],
+            },
+          },
         },
       }),
     );
-    const attempt = (await readDeviceState(db)).dailyAttempts[`${date}:3:all`];
+    const attempts = (await readDeviceState(db)).dailyAttempts;
+    const attempt = attempts[`${date}:3:all`];
     expect(structuredClone(attempt!).mode).toEqual(round.mode);
+    expect(attempts[`${date}:5:all`]).toBeUndefined();
   } finally {
     await db.remove();
   }

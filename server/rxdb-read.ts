@@ -6,7 +6,10 @@ import {
   getTrainerStats,
 } from '../src/domain/player/progress.ts';
 import { getUtcDate } from '../src/domain/quiz/daily.ts';
-import { scoreRound } from '../src/domain/sync/round-facts.ts';
+import {
+  scoreRound,
+  validateRoundFact,
+} from '../src/domain/sync/round-facts.ts';
 import pokemonGenerations from '../src/domain/pokemon/data/pokemon-generations.json' with { type: 'json' };
 
 export async function playerProfiles(db: PlayerDatabase, ids: string[]) {
@@ -58,7 +61,9 @@ export async function boardRows(
   includeOther = false,
 ) {
   // ponytail: scores are calculated on read; add a server index when board traffic grows.
-  const rounds = await db.rounds.find().exec();
+  const rounds = (await db.rounds.find().exec()).filter((round) =>
+    validateRoundFact(round.fact),
+  );
   const allowed = visible ? new Set(visible) : null;
   const firstDaily = new Map<string, (typeof rounds)[number]>();
   if (mode === 'daily')

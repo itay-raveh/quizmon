@@ -71,21 +71,10 @@ describe('completed round facts', () => {
     expect(validateRoundFact(missingVictory)).toBe(false);
   });
 
-  it('accepts bounded retired IDs in completed facts without counting them as current types', () => {
+  it('rejects completed facts with retired question types', () => {
     const round = archiveCompletion(completion());
-    round.data.answers[0]!.question_type = 'evolution-items';
-    round.data.config.question_types = ['evolution-items', 'type-check'];
-    expect(validateRoundFact(round)).toBe(true);
-    expect(scoreRound(round).answers[0]?.questionType).toBe('archived');
-    expect(
-      projectRoundHistory([round]).results.progress.correctQuestionTypes[
-        'evolution-items'
-      ],
-    ).toBeUndefined();
-    expect(
-      projectRoundHistory([round]).results.progress.correctQuestionTypes
-        .archived,
-    ).toBeUndefined();
+    Reflect.set(round.data.answers[0]!, 'question_type', 'evolution-items');
+    expect(validateRoundFact(round)).toBe(false);
   });
 
   it('rejects array-shaped enum fields in uploaded rounds', () => {

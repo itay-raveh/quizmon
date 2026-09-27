@@ -1,8 +1,6 @@
 import { z } from 'zod';
-import {
-  parseActiveGameSave,
-  type ActiveGameSnapshot,
-} from '../../domain/player/active-game';
+import type { ActiveGameSnapshot } from '../../domain/player/active-game';
+import { parseRound } from '../../domain/player/schemas/round';
 import { projectRoundHistory } from '../../domain/player/game-history';
 import {
   emptyPlayerData,
@@ -17,6 +15,7 @@ import {
   trainerProfileSchema,
 } from '../../domain/player/trainer-profile';
 import { questionHistorySchema } from '../../domain/quiz/question-history';
+import { questionTypes } from '../../domain/quiz/questions/definitions';
 import {
   validateRoundFact,
   type RoundFact,
@@ -47,12 +46,28 @@ export const parseDeviceState = (payload: unknown): DeviceState => {
   return {
     ...parsed,
     dailyAttempts: Object.fromEntries(
-      Object.entries(parsed.dailyAttempts).map(([key, value]) => [
-        key,
-        parseActiveGameSave(value),
-      ]),
+      Object.entries(parsed.dailyAttempts).flatMap(([key, value]) => {
+        const round = parseRound(value);
+        return round ? [[key, round]] : [];
+      }),
     ),
   };
+};
+
+const currentQuestionTypes = new Set<string>([...questionTypes, 'champion']);
+
+const hasRetiredQuestionType = (fact: RoundFact): boolean => {
+  const { config, answers } = fact.data;
+  const types = [
+    ...(Array.isArray(config.question_types) ? config.question_types : []),
+    ...(Array.isArray(config.auto_types) ? config.auto_types : []),
+    ...(Array.isArray(answers)
+      ? answers.map((answer) => answer.question_type)
+      : []),
+  ];
+  return types.some(
+    (type) => typeof type === 'string' && !currentQuestionTypes.has(type),
+  );
 };
 
 export async function ensureDeviceState(db: PlayerDatabase): Promise<void> {
@@ -97,11 +112,13 @@ export async function readGameData(
     readDeviceState(db),
     db.rounds.find().exec(),
   ]);
-  const rounds = documents.map((document) => {
+  const rounds = documents.flatMap((document) => {
     const saved = document.toMutableJSON();
-    if (saved.ownerId !== ownerId || !validateRoundFact(saved.fact))
-      throw new Error('A saved completed round is invalid.');
-    return saved.fact;
+    if (saved.ownerId !== ownerId)
+      throw new Error('A saved completed round belongs to another account.');
+    if (validateRoundFact(saved.fact)) return [saved.fact];
+    if (hasRetiredQuestionType(saved.fact)) return [];
+    throw new Error('A saved completed round is invalid.');
   });
   rounds.sort(
     (a, b) =>

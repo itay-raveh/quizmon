@@ -48,7 +48,7 @@ it('builds every configured family with a renderable answer and saved view', () 
     const levels = Object.keys(row.levels).map(Number) as (1 | 2 | 3 | 4 | 5)[];
     for (const difficulty of [
       ...levels,
-      ...('standard' in row ? [undefined] : []),
+      ...('unleveled' in row ? [undefined] : []),
     ]) {
       const question = Array.from({ length: 5 }, (_, attempt) =>
         buildQuestionType(

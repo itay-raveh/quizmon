@@ -35,7 +35,7 @@ it('keeps Champion search and keyboard behavior in sync with the visible respons
   ).toBe(false);
 });
 
-it('keeps the answer view in saved rounds and adapts older questions', () => {
+it('keeps the answer view in saved rounds and rejects retired question types', () => {
   const view = {
     answer: { kind: 'pokemon' as const, revealTypes: 'after-answer' as const },
   };
@@ -43,6 +43,9 @@ it('keeps the answer view in saved rounds and adapts older questions', () => {
   expect(saved.view).toEqual(view);
   expect(getQuestionView({ ...question, view })).toEqual(view);
   expect(
-    getQuestionView({ ...question, questionType: 'archived' }).answer.kind,
-  ).toBe('text');
+    savedQuestionSchema.safeParse({
+      ...question,
+      questionType: 'retired-question-type',
+    }).success,
+  ).toBe(false);
 });

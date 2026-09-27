@@ -260,23 +260,21 @@ export const questionDefinitions = {
 
 export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
-const standardQuestionTypes = questionTypes.filter(
-  (type) => 'standard' in questionRules[type],
+const unleveledQuestionTypes = questionTypes.filter(
+  (type) => 'unleveled' in questionRules[type],
 );
-export const standardLeagueQuestionTypes = standardQuestionTypes.filter(
+export const leagueQuestionTypes = unleveledQuestionTypes.filter(
   (type) => !('league' in questionDefinitions[type]),
 );
-export const supportsStandardQuestion = (type: QuestionType | 'champion') =>
-  type === 'champion' || standardQuestionTypes.includes(type);
+export const supportsUnleveledQuestion = (type: QuestionType | 'champion') =>
+  type === 'champion' || unleveledQuestionTypes.includes(type);
 
 export const getQuestionTitle = (question: {
-  questionType: QuestionType | 'champion' | 'archived';
+  questionType: QuestionType | 'champion';
 }): string =>
   question.questionType === 'champion'
     ? 'Champion question'
-    : question.questionType === 'archived'
-      ? 'Question'
-      : questionDefinitions[question.questionType].label;
+    : questionDefinitions[question.questionType].label;
 
 const categoryLabels: Record<QuestionCategory, string> = {
   knowledge: 'General knowledge',

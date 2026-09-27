@@ -173,7 +173,7 @@ export interface QuestionData {
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
   prompt: QuestionPrompt;
-  questionType: QuestionType | 'champion' | 'archived';
+  questionType: QuestionType | 'champion';
   searchOptions?: PokemonSearchOption[];
   visual?: QuestionVisual;
 }

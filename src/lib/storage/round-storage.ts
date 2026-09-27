@@ -1,12 +1,16 @@
 import { trackGameCompleted } from '../analytics';
-import { parseActiveGameSave } from '../../domain/player/active-game';
+import { parseRound } from '../../domain/player/schemas/round';
 import { completeRound } from '../../domain/player/game-history';
 import { applyResult } from '../../domain/player/game-progress';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import type { RoundCompletion } from '../../domain/sync/progress';
-import { archiveCompletion, scoreRound } from '../../domain/sync/round-facts';
+import {
+  archiveCompletion,
+  scoreRound,
+  validateRoundFact,
+} from '../../domain/sync/round-facts';
 import type { ActiveGameSnapshot } from './active-game-storage';
 import {
   currentOwnerId,
@@ -26,10 +30,11 @@ export const initializeLocalRound = async () => {
   tabId = sessionStorage.getItem('quizmon.baseline.tab') ?? crypto.randomUUID();
   sessionStorage.setItem('quizmon.baseline.tab', tabId);
   const document = await getPlayerDatabase().device.findOne(roundKey()).exec();
-  active = document
-    ? parseActiveGameSave(document.toMutableJSON().payload)
-    : null;
-  if (!active) return;
+  active = document ? parseRound(document.toMutableJSON().payload) : null;
+  if (!active) {
+    await document?.remove();
+    return;
+  }
   const closed = await getPlayerDatabase()
     .device.findOne(`closed:${active.roundId}`)
     .exec();
@@ -59,7 +64,7 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     db.device.findOne(roundKey()).exec(),
   ]);
   if (completed || closed) return;
-  const previous = stored ? parseActiveGameSave(stored.toJSON().payload) : null;
+  const previous = stored ? parseRound(stored.toJSON().payload) : null;
   if (
     previous?.roundId === round.roundId &&
     previous.answers.length > round.answers.length
@@ -88,11 +93,12 @@ export const removeLocalRound = async () => {
   const db = getPlayerDatabase();
   const stored = await db.device.findOne(roundKey()).exec();
   if (stored) {
-    const round = parseActiveGameSave(stored.toJSON().payload);
-    await db.device.incrementalUpsert({
-      id: `closed:${round.roundId}`,
-      payload: { reason: 'left' },
-    });
+    const round = parseRound(stored.toJSON().payload);
+    if (round)
+      await db.device.incrementalUpsert({
+        id: `closed:${round.roundId}`,
+        payload: { reason: 'left' },
+      });
     await stored.remove();
   }
   active = null;
@@ -118,7 +124,10 @@ export const commitRoundCompletion = async (
     const all = await db.rounds.find().exec();
     round.credited = !all.some(
       ({ fact }) =>
-        fact.mode === 'daily' && fact.day === round.day && fact.credited,
+        validateRoundFact(fact) &&
+        fact.mode === 'daily' &&
+        fact.day === round.day &&
+        fact.credited,
     );
   }
   const fact = existing?.toMutableJSON().fact ?? round;

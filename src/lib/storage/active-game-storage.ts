@@ -73,6 +73,7 @@ export const readActiveGame = (
     snapshot = parseActiveGameSave(stored);
   } catch (error) {
     reportSaveIssue(error);
+    void clearActiveGame().catch(reportSaveError);
     return null;
   }
   try {
@@ -134,7 +135,12 @@ export const readDailyAttempts = (
   const attempts: Record<string, ActiveGameSnapshot> = {};
   for (const [key, value] of Object.entries(stored)) {
     if (!key.startsWith(`${date}:`)) continue;
-    const snapshot = parseActiveGameSave(value);
+    let snapshot: ActiveGameSnapshot;
+    try {
+      snapshot = parseActiveGameSave(value);
+    } catch {
+      continue;
+    }
     if (
       snapshot?.mode.kind === 'daily' &&
       snapshot.mode.track &&
