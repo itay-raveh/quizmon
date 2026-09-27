@@ -22,6 +22,7 @@ const boardRequest = z.object({
   limit: z.int().min(1).max(100),
   day: z.string().optional(),
   puzzleId: z.string().optional(),
+  includeOther: z.boolean().optional().default(false),
 });
 
 export const syncAdapter: typeof RxServerAdapterExpress = {
@@ -156,14 +157,17 @@ export async function startSyncServer(config: {
     server.serverApp.post('/read/board', (request, response, next) => {
       const body = boardRequest.safeParse(request.body);
       if (!body.success) return response.sendStatus(400);
-      const { mode, visible, day, puzzleId, offset, limit } = body.data;
+      const { mode, visible, day, puzzleId, includeOther, offset, limit } =
+        body.data;
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
-      void boardRows(db, mode, visible, day, puzzleId).then(
+      void boardRows(db, mode, visible, day, puzzleId, includeOther).then(
         (rows) =>
           response.json({
             total: rows.length,
             page: rows.slice(offset, offset + limit),
-            viewer: rows.find((row) => row.playerId === ownerId) ?? null,
+            viewer:
+              rows.find((row) => row.playerId === ownerId && row.comparable) ??
+              null,
           }),
         next,
       );

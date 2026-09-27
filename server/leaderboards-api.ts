@@ -28,6 +28,7 @@ leaderboardApi.get('/daily', async (context) => {
   const date =
     context.req.query('date') ?? new Date().toISOString().slice(0, 10);
   const puzzleId = context.req.query('puzzle');
+  const includeOther = context.req.query('versions') === 'all';
   const page = parameters((key) => context.req.query(key));
   if (
     !page ||
@@ -46,6 +47,7 @@ leaderboardApi.get('/daily', async (context) => {
       page.limit,
       date,
       puzzleId,
+      includeOther,
     ),
   );
 });

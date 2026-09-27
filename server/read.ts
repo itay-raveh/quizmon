@@ -97,6 +97,7 @@ export async function readBoard(
   limit: number,
   day?: string,
   puzzleId?: string,
+  includeOther = false,
 ): Promise<Leaderboard> {
   const viewerId = context.get('accountId');
   let visible: string[] | null = null;
@@ -121,16 +122,25 @@ export async function readBoard(
   }
   type Row = {
     playerId: string;
-    rank: number;
+    rank: number | null;
     score: number;
     elapsedMilliseconds: number;
     ordinal: number;
+    comparable: boolean;
   };
   const { total, page, viewer } = await read<{
     total: number;
     page: Row[];
     viewer: Row | null;
-  }>(context, 'board', { mode, visible, day, puzzleId, offset, limit });
+  }>(context, 'board', {
+    mode,
+    visible,
+    day,
+    puzzleId,
+    includeOther,
+    offset,
+    limit,
+  });
   const players = new Map(
     (
       await publicPlayers(context, [
@@ -145,6 +155,7 @@ export async function readBoard(
     rank: row.rank,
     score: row.score,
     elapsedMilliseconds: row.elapsedMilliseconds,
+    comparable: row.comparable,
   });
   return {
     accountId: viewerId,

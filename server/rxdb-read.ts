@@ -55,6 +55,7 @@ export async function boardRows(
   visible: string[] | null,
   day?: string,
   puzzleId?: string,
+  includeOther = false,
 ) {
   // ponytail: scores are calculated on read; add a server index when board traffic grows.
   const rounds = await db.rounds.find().exec();
@@ -81,7 +82,7 @@ export async function boardRows(
       (allowed && !allowed.has(round.ownerId)) ||
       (mode === 'daily' &&
         (fact.day !== day ||
-          fact.puzzle_id !== puzzleId ||
+          (!includeOther && fact.puzzle_id !== puzzleId) ||
           firstDaily.get(`${round.ownerId}:${fact.day}`)?.id !== round.id ||
           fact.completed_at.slice(0, 10) !== day))
     )
@@ -94,11 +95,13 @@ export async function boardRows(
         completedAt: fact.completed_at,
         score: result.score,
         elapsedMilliseconds: result.elapsedMilliseconds ?? 0,
+        comparable: mode !== 'daily' || fact.puzzle_id === puzzleId,
       },
     ];
   });
   rows.sort(
     (a, b) =>
+      Number(b.comparable) - Number(a.comparable) ||
       b.score - a.score ||
       a.elapsedMilliseconds - b.elapsedMilliseconds ||
       a.completedAt.localeCompare(b.completedAt) ||
@@ -116,6 +119,7 @@ export async function boardRows(
       : rows;
   let rank = 0;
   return best.map((row, index) => {
+    if (!row.comparable) return { ...row, rank: null, ordinal: index + 1 };
     const previous = best[index - 1];
     if (
       !previous ||

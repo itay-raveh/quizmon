@@ -6,11 +6,14 @@ import {
 } from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { GameButton } from '../../components/GameButton';
+import { SoundButton } from '../../components/SoundButton';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   EyeIcon,
+  QuestionIcon,
   ShareNetworkIcon,
+  XIcon,
 } from '../../components/icons';
 import { isDailyDate } from '../../lib/validation';
 import { useInteractionSound } from '../../lib/audio/sound-context';
@@ -253,11 +256,27 @@ function Standings({
                   {data.items.map((row) => (
                     <tr
                       key={row.player.id}
+                      data-comparable={row.comparable}
                       aria-current={
-                        row.player.id === owner ? 'true' : undefined
+                        row.player.id === owner && row.comparable
+                          ? 'true'
+                          : undefined
                       }
                     >
-                      <td>{row.rank}</td>
+                      <td>
+                        {row.comparable ? (
+                          row.rank
+                        ) : (
+                          <SoundButton
+                            aria-label={`Why is ${row.player.name}'s score unranked?`}
+                            className="leaderboard-version-button"
+                            popoverTarget="leaderboard-version-help"
+                            popoverTargetAction="show"
+                          >
+                            <QuestionIcon aria-hidden="true" weight="bold" />
+                          </SoundButton>
+                        )}
+                      </td>
                       <th scope="row">
                         <span className="leaderboard-player">
                           <span>
@@ -287,6 +306,28 @@ function Standings({
                   ))}
                 </tbody>
               </table>
+              {mode === 'daily' && (
+                <div
+                  className="leaderboard-version-help"
+                  id="leaderboard-version-help"
+                  popover="auto"
+                  role="note"
+                >
+                  <SoundButton
+                    aria-label="Close puzzle version explanation"
+                    className="leaderboard-version-help__close"
+                    popoverTarget="leaderboard-version-help"
+                    popoverTargetAction="hide"
+                  >
+                    <XIcon aria-hidden="true" weight="bold" />
+                  </SoundButton>
+                  <strong>Another puzzle version</strong>
+                  <p>
+                    An update can change the Daily puzzle. Scores from different
+                    versions stay visible, but do not share a rank.
+                  </p>
+                </div>
+              )}
             </>
           ) : (
             <div className="leaderboard-empty">

@@ -9,9 +9,10 @@ import { accountSnapshot } from '../account/account';
 
 const entry = z.object({
   player: socialPlayerSchema,
-  rank: z.int().min(1),
+  rank: z.int().min(1).nullable(),
   score: z.int().min(0),
   elapsedMilliseconds: z.int().min(0),
+  comparable: z.boolean().optional().default(true),
 });
 const leaderboardResponse = z.object({
   accountId: z.string(),
@@ -76,6 +77,7 @@ async function readLeaderboard(
   if (accountSnapshot().owner !== owner) throw new Error(changed);
   const query = new URLSearchParams(date ? { date, scope } : { scope });
   if (puzzleId) query.set('puzzle', puzzleId);
+  if (mode === 'daily') query.set('versions', 'all');
   if (after) query.set('after', after);
   const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
     credentials: 'same-origin',

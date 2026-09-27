@@ -40,7 +40,7 @@ test('rejects a malformed leaderboard count from the server', async () => {
     const signal = new AbortController().signal;
     await expect(
       readTrainingLeaderboard('trainer', 'global', null, signal),
-    ).resolves.toMatchObject({ total: 1 });
+    ).resolves.toMatchObject({ total: 1, items: [{ comparable: true }] });
     response.items[0]!.rank = -1;
     await expect(
       readTrainingLeaderboard('trainer', 'global', null, signal),
