@@ -156,8 +156,8 @@ export const updatePlayerData = async (
 ): Promise<boolean> => {
   try {
     await writePlayerPreferences(getPlayerDatabase(), currentOwnerId(), {
-      ...(patch.profile !== undefined ? { profile: patch.profile } : {}),
-      ...(patch.settings !== undefined ? { settings: patch.settings } : {}),
+      profile: patch.profile,
+      settings: patch.settings,
     });
     await refreshPlayerData();
     return true;

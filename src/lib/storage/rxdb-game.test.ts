@@ -2,6 +2,7 @@ import { IDBKeyRange, indexedDB } from 'fake-indexeddb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { expect, it } from 'vitest';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
+import { defaultGameSettings } from '../../domain/settings/game-settings';
 import { archiveCompletion } from '../../domain/sync/round-facts';
 import { boardRows } from '../../../server/rxdb-read';
 import { completion } from '../../../tests/online/progress-fixtures';
@@ -19,6 +20,9 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   const first = await openPlayerDatabase(name, storage, false);
   await ensureDeviceState(first);
   const profile = { ...createTrainerProfile(), name: 'Trainer' };
+  await writePlayerPreferences(first, 'guest', {
+    settings: defaultGameSettings,
+  });
   await writePlayerPreferences(first, 'guest', { profile });
   const fact = archiveCompletion(completion('training'));
   expect(await writeCompletedRound(first, 'guest', fact)).toBe(true);
@@ -28,7 +32,18 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   const second = await openPlayerDatabase(name, storage, false);
   const { data } = await readGameData(second, 'guest');
   expect(data.profile?.name).toBe('Trainer');
+  expect(data.settings).toEqual(defaultGameSettings);
   expect(Object.keys(data.results.training)).toHaveLength(1);
+  await expect(
+    writePlayerPreferences(second, 'guest', {
+      settings: { ...defaultGameSettings, soundVolume: 2 },
+    }),
+  ).rejects.toThrow();
+  expect((await readGameData(second, 'guest')).data.settings).toEqual(
+    defaultGameSettings,
+  );
+  await writePlayerPreferences(second, 'guest', { settings: null });
+  expect((await readGameData(second, 'guest')).data.settings).toBeNull();
   await second.remove();
 });
 

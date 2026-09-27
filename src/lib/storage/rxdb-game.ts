@@ -136,11 +136,9 @@ export async function writePlayerPreferences(
       patch.profile ?? current.profile ?? createTrainerProfile(),
     ),
     settings:
-      patch.settings !== undefined && patch.settings !== null
-        ? savedSettingsSchema.parse(patch.settings)
-        : patch.settings === null
-          ? null
-          : (current.settings ?? null),
+      patch.settings === undefined
+        ? (current.settings ?? null)
+        : savedSettingsSchema.nullable().parse(patch.settings),
   });
   if (player) {
     await player.incrementalModify((data) => ({ ...data, ...apply(data) }));

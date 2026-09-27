@@ -51,7 +51,7 @@ jobs:
         run: |
           mise install helm kubeconform
           mise run check:chart
-          docker compose -f compose.yaml up -d --wait db
+          docker compose -f compose.yaml up -d --wait db mongo
           node tests/online/check-migrations.ts
       - name: Build and prepare Worker
         env:
@@ -85,7 +85,6 @@ jobs:
           docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/rxdb-sync.ts
       - name: Check real sync isolation
         run: |
-          docker compose -f compose.yaml up -d --wait mongo
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-runtime-config.ts
       - name: Publish checked migration image
