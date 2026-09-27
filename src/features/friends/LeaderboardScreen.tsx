@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import {
   useInfiniteQuery,
   useQuery,
@@ -140,6 +146,7 @@ function Standings({
   mode,
   date,
   scope,
+  active,
   onViewPlayer,
   onOpenPlay,
   onError,
@@ -149,6 +156,7 @@ function Standings({
   mode: LeaderboardMode;
   date: string;
   scope: LeaderboardScope;
+  active: boolean;
   onViewPlayer: (id: string) => void;
   onOpenPlay: () => void;
   onError: (message: string) => void;
@@ -221,11 +229,13 @@ function Standings({
   const checkingFriends =
     scope === 'friends' && data?.items.length === 0 && friends.isPending;
   const pastDaily = mode === 'daily' && date < getUtcDate();
+  const versionHelpId = `leaderboard-version-help-${scope}`;
   return (
     <section
       className="leaderboard-standings"
       aria-label={`${scope === 'global' ? 'Global' : 'Friends'} ${mode === 'daily' ? 'Daily' : 'Training'} standings`}
       aria-busy={busy || checkingFriends}
+      inert={!active}
     >
       {busy && !data && <StandingsSkeleton />}
       {checkingFriends && <StandingsSkeleton />}
@@ -270,7 +280,7 @@ function Standings({
                           <SoundButton
                             aria-label={`Why is ${row.player.name}'s score unranked?`}
                             className="leaderboard-version-button"
-                            popoverTarget="leaderboard-version-help"
+                            popoverTarget={versionHelpId}
                             popoverTargetAction="show"
                           >
                             <QuestionIcon aria-hidden="true" weight="bold" />
@@ -309,14 +319,14 @@ function Standings({
               {mode === 'daily' && (
                 <div
                   className="leaderboard-version-help"
-                  id="leaderboard-version-help"
+                  id={versionHelpId}
                   popover="auto"
                   role="note"
                 >
                   <SoundButton
                     aria-label="Close puzzle version explanation"
                     className="leaderboard-version-help__close"
-                    popoverTarget="leaderboard-version-help"
+                    popoverTarget={versionHelpId}
                     popoverTargetAction="hide"
                   >
                     <XIcon aria-hidden="true" weight="bold" />
@@ -431,9 +441,19 @@ export function LeaderboardScreen({
   );
   const [today, setToday] = useState(getUtcDate);
   const [inviteError, setInviteError] = useState(false);
-  const [standingsError, setStandingsError] = useState('');
+  const [standingsErrors, setStandingsErrors] = useState({
+    friends: '',
+    global: '',
+  });
+  const standingsError = standingsErrors[scope];
   const [shareFallbackLink, setShareFallbackLink] = useState('');
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const swipe = useRef<HTMLDivElement>(null);
+  const firstScope = useRef(initialScope);
+  useLayoutEffect(() => {
+    if (account.owner && !account.mergeRequired && swipe.current)
+      swipe.current.scrollLeft =
+        firstScope.current === 'global' ? swipe.current.clientWidth : 0;
+  }, [account.owner, account.mergeRequired]);
   useEffect(() => {
     const timer = window.setInterval(() => {
       const next = getUtcDate();
@@ -448,19 +468,24 @@ export function LeaderboardScreen({
     return () => window.clearInterval(timer);
   }, [today, date, scope, mode, onSelectionChange]);
   const chooseScope = (next: LeaderboardScope) => {
+    if (next === scope) return;
     setScope(next);
-    setStandingsError('');
     onSelectionChange?.(date, next, mode);
+  };
+  const scrollToScope = (next: LeaderboardScope) => {
+    swipe.current?.scrollTo({
+      left: next === 'global' ? swipe.current.clientWidth : 0,
+    });
   };
   const chooseMode = (next: LeaderboardMode) => {
     setMode(next);
-    setStandingsError('');
+    setStandingsErrors({ friends: '', global: '' });
     onSelectionChange?.(date, scope, next);
   };
   const chooseDate = (next: string) => {
     if (isDailyDate(next) && next <= today) {
       setDate(next);
-      setStandingsError('');
+      setStandingsErrors({ friends: '', global: '' });
       onSelectionChange?.(next, scope, mode);
     }
   };
@@ -515,14 +540,14 @@ export function LeaderboardScreen({
                   <button
                     type="button"
                     aria-pressed={scope === 'friends'}
-                    onClick={() => chooseScope('friends')}
+                    onClick={() => scrollToScope('friends')}
                   >
                     Friends
                   </button>
                   <button
                     type="button"
                     aria-pressed={scope === 'global'}
-                    onClick={() => chooseScope('global')}
+                    onClick={() => scrollToScope('global')}
                   >
                     Global
                   </button>
@@ -581,7 +606,7 @@ export function LeaderboardScreen({
                     tone="quiet"
                     onClick={() => {
                       setInviteError(false);
-                      setStandingsError('');
+                      setStandingsErrors({ friends: '', global: '' });
                       setShareFallbackLink('');
                       void queryClient.invalidateQueries({
                         queryKey: ['social', account.owner],
@@ -595,41 +620,36 @@ export function LeaderboardScreen({
             )}
             <div
               className="leaderboard-swipe"
-              onTouchStart={(event) => {
-                const touch = event.touches.item(0);
-                touchStart.current =
-                  event.touches.length === 1 && touch
-                    ? { x: touch.clientX, y: touch.clientY }
-                    : null;
-              }}
-              onTouchEnd={(event) => {
-                const start = touchStart.current;
-                touchStart.current = null;
-                const touch = event.changedTouches.item(0);
-                if (!start || event.changedTouches.length !== 1 || !touch)
-                  return;
-                const dx = touch.clientX - start.x;
-                const dy = touch.clientY - start.y;
-                if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5)
-                  return;
-                if (dx < 0 && scope === 'friends') chooseScope('global');
-                if (dx > 0 && scope === 'global') chooseScope('friends');
-              }}
-              onTouchCancel={() => {
-                touchStart.current = null;
+              ref={swipe}
+              onScroll={(event) => {
+                chooseScope(
+                  event.currentTarget.scrollLeft >
+                    event.currentTarget.clientWidth / 2
+                    ? 'global'
+                    : 'friends',
+                );
               }}
             >
-              <Standings
-                key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}`}
-                owner={account.owner}
-                catalog={catalog}
-                mode={mode}
-                date={date}
-                scope={scope}
-                onViewPlayer={onViewPlayer}
-                onOpenPlay={onOpenPlay}
-                onError={setStandingsError}
-              />
+              {(['friends', 'global'] as const).map((boardScope) => (
+                <Standings
+                  key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${boardScope}`}
+                  owner={account.owner}
+                  catalog={catalog}
+                  mode={mode}
+                  date={date}
+                  scope={boardScope}
+                  active={scope === boardScope}
+                  onViewPlayer={onViewPlayer}
+                  onOpenPlay={onOpenPlay}
+                  onError={(message) =>
+                    setStandingsErrors((current) =>
+                      current[boardScope] === message
+                        ? current
+                        : { ...current, [boardScope]: message },
+                    )
+                  }
+                />
+              ))}
             </div>
           </>
         ) : (
