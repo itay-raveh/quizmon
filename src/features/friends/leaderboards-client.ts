@@ -33,7 +33,7 @@ export async function readDailyLeaderboard(
   scope: LeaderboardScope,
   puzzleId: string,
   after: string | null,
-  signal: AbortSignal,
+  signal?: AbortSignal,
 ): Promise<DailyLeaderboard> {
   return readLeaderboard(
     owner,
@@ -50,7 +50,7 @@ export async function readTrainingLeaderboard(
   owner: string,
   scope: LeaderboardScope,
   after: string | null,
-  signal: AbortSignal,
+  signal?: AbortSignal,
 ): Promise<Leaderboard> {
   return readLeaderboard(
     owner,
@@ -70,7 +70,7 @@ async function readLeaderboard(
   scope: LeaderboardScope,
   puzzleId: string | undefined,
   after: string | null,
-  signal: AbortSignal,
+  signal?: AbortSignal,
 ): Promise<Leaderboard> {
   const changed = 'Your account changed. Reopen the leaderboard.';
   if (accountSnapshot().owner !== owner) throw new Error(changed);
@@ -79,7 +79,9 @@ async function readLeaderboard(
   if (after) query.set('after', after);
   const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
     credentials: 'same-origin',
-    signal: AbortSignal.any([signal, AbortSignal.timeout(30_000)]),
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
+      : AbortSignal.timeout(30_000),
   });
   if (response.status === 401)
     throw new Error('Sign in again to view leaderboards.');

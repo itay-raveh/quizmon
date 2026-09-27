@@ -1,11 +1,13 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { getUtcDate } from '../domain/quiz/daily';
 import { AppNavigation } from './AppNavigation';
 import { Footer } from './Footer';
 import { Sentry, captureUnexpectedError } from '../lib/sentry';
 import { HomeScreen } from './HomeScreen';
+import { queryClient } from '../lib/query-client';
 
 export const mountGame = (root: HTMLElement) => {
   const app = createRoot(root);
@@ -62,20 +64,22 @@ export const mountGame = (root: HTMLElement) => {
       inspectSavedData();
       app.render(
         <StrictMode>
-          <BrowserRouter>
-            <SaveRecoveryBoundary>
-              <Sentry.ErrorBoundary
-                fallback={
-                  <p role="alert">
-                    Quizmon could not display this screen.{' '}
-                    <a href="/">Reload Quizmon</a>.
-                  </p>
-                }
-              >
-                {getSaveIssue() ? null : <LocalGame />}
-              </Sentry.ErrorBoundary>
-            </SaveRecoveryBoundary>
-          </BrowserRouter>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+              <SaveRecoveryBoundary>
+                <Sentry.ErrorBoundary
+                  fallback={
+                    <p role="alert">
+                      Quizmon could not display this screen.{' '}
+                      <a href="/">Reload Quizmon</a>.
+                    </p>
+                  }
+                >
+                  {getSaveIssue() ? null : <LocalGame />}
+                </Sentry.ErrorBoundary>
+              </SaveRecoveryBoundary>
+            </BrowserRouter>
+          </QueryClientProvider>
         </StrictMode>,
       );
     } catch (error) {

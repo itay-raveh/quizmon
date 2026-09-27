@@ -1,4 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { GameButton } from '../../components/GameButton';
 import { Toast } from '../../components/Toast';
 import { EyeIcon, ShareNetworkIcon, TrashIcon } from '../../components/icons';
@@ -11,15 +16,13 @@ import {
 } from '../../domain/social/friends';
 import {
   changeRequest,
-  cachedOwnPlayer,
-  friendPage,
   lookupPlayer,
-  ownPlayer,
   sendRequest,
   type FriendsPage,
   type PlayerLookup,
 } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
+import { friendsPageQuery, identityQuery } from './social-queries';
 
 const views = ['friends', 'incoming', 'outgoing'] as const;
 type View = (typeof views)[number];
@@ -39,9 +42,6 @@ const errorMessage = (error: unknown) =>
     : error instanceof Error
       ? error.message
       : 'Reconnect and try again.';
-
-const friendsCache = new Map<string, Record<View, FriendsPage>>();
-const friendsCacheFetchedAt = new Map<string, number>();
 
 function Player({
   player,
@@ -117,19 +117,6 @@ function RemoveFriendDialog({
   );
 }
 
-async function loadFriends(owner: string, signal: AbortSignal) {
-  const [me, ...lists] = await Promise.all([
-    ownPlayer(owner, signal),
-    ...views.map((view) => friendPage(owner, view, undefined, signal)),
-  ]);
-  return {
-    me,
-    pages: Object.fromEntries(
-      views.map((view, i) => [view, lists[i]]),
-    ) as Record<View, FriendsPage>,
-  };
-}
-
 export function FriendsPanel({
   owner,
   initialInput,
@@ -145,18 +132,37 @@ export function FriendsPanel({
   onToggleAdding: () => void;
   onOwnCode?: (code: string) => void;
 }) {
-  const [me, setMe] = useState<SocialPlayer | undefined>(() =>
-    cachedOwnPlayer(owner),
-  );
-  const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>(
-    () => friendsCache.get(owner) ?? {},
-  );
+  const queryClient = useQueryClient();
+  const identity = useQuery(identityQuery(owner));
+  const friends = useInfiniteQuery(friendsPageQuery(owner, 'friends'));
+  const incoming = useInfiniteQuery(friendsPageQuery(owner, 'incoming'));
+  const outgoing = useInfiniteQuery(friendsPageQuery(owner, 'outgoing'));
+  const me = identity.data;
+  const pages = Object.fromEntries(
+    views.map((view) => {
+      const data = { friends, incoming, outgoing }[view].data?.pages;
+      return [
+        view,
+        data
+          ? {
+              items: data.flatMap((page) => page.items),
+              players: data.flatMap((page) => page.players),
+              nextCursor: data.at(-1)?.nextCursor ?? null,
+            }
+          : undefined,
+      ];
+    }),
+  ) as Partial<Record<View, FriendsPage>>;
   const [found, setFound] = useState<PlayerLookup>();
   const [showLink, setShowLink] = useState(false);
   const [lookupRetry, setLookupRetry] = useState(0);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
-  const [error, setError] = useState('');
+  const [localError, setError] = useState('');
+  const queryError = [identity, friends, incoming, outgoing]
+    .map((query) => query.error)
+    .find(Boolean);
+  const error = localError || (queryError ? errorMessage(queryError) : '');
   const [removing, setRemoving] = useState<{
     row: FriendRelation;
     name: string;
@@ -176,64 +182,25 @@ export function FriendsPanel({
 
   const refresh = useCallback(
     async (signal: AbortSignal) => {
-      const data = await loadFriends(owner, signal);
-      await Promise.all(
-        views.map(async (view) => {
-          const page = data.pages[view];
-          const loaded = pages[view]?.items.length ?? 0;
-          while (page.nextCursor && page.items.length < loaded) {
-            const next = await friendPage(owner, view, page.nextCursor, signal);
-            page.items.push(...next.items);
-            page.players.push(...next.players);
-            page.nextCursor = next.nextCursor;
-          }
-        }),
-      );
       if (signal.aborted) return;
-      setMe(data.me);
-      onOwnCode?.(data.me.code ?? '');
-      friendsCache.set(owner, data.pages);
-      friendsCacheFetchedAt.set(owner, Date.now());
-      setPages(data.pages);
+      await queryClient.invalidateQueries({ queryKey: ['social', owner] });
       setError('');
     },
-    [owner, pages, onOwnCode],
+    [owner, queryClient],
   );
 
   useEffect(() => {
     const controller = new AbortController();
     lifetime.current = controller;
-    const cachedMe = cachedOwnPlayer(owner, 60_000);
-    void (
-      cachedMe ? Promise.resolve(cachedMe) : ownPlayer(owner, controller.signal)
-    )
-      .then((player) => {
-        if (controller.signal.aborted) return;
-        setMe(player);
-        onOwnCode?.(player.code ?? '');
-      })
-      .catch((cause: unknown) => {
-        if (!controller.signal.aborted) setError(errorMessage(cause));
-      });
-    if (Date.now() - (friendsCacheFetchedAt.get(owner) ?? 0) >= 60_000) {
-      void Promise.all(
-        views.map((view) =>
-          friendPage(owner, view, undefined, controller.signal),
-        ),
-      )
-        .then((lists) => {
-          if (controller.signal.aborted) return;
-          const next = Object.fromEntries(
-            views.map((view, i) => [view, lists[i]]),
-          ) as Record<View, FriendsPage>;
-          friendsCache.set(owner, next);
-          friendsCacheFetchedAt.set(owner, Date.now());
-          setPages(next);
-        })
-        .catch((cause: unknown) => {
-          if (!controller.signal.aborted) setError(errorMessage(cause));
-        });
-    }
+    return () => controller.abort();
+  }, [owner]);
+
+  useEffect(() => {
+    if (me) onOwnCode?.(me.code ?? '');
+  }, [me, onOwnCode]);
+
+  useEffect(() => {
+    const controller = new AbortController();
     if (initialInput) {
       void (async () => {
         const code = parseFriendInput(initialInput, location.origin);
@@ -241,7 +208,13 @@ export function FriendsPanel({
           throw new Error(
             'Enter the full friend code or a Quizmon friend link.',
           );
-        const result = await lookupPlayer(owner, code, controller.signal);
+        const options = {
+          queryKey: ['social', owner, 'lookup', code],
+          queryFn: () => lookupPlayer(owner, code),
+        };
+        if (lookupRetry)
+          await queryClient.invalidateQueries({ queryKey: options.queryKey });
+        const result = await queryClient.fetchQuery(options);
         if (!controller.signal.aborted) {
           revealFound.current = true;
           setFound(result);
@@ -251,38 +224,7 @@ export function FriendsPanel({
       });
     }
     return () => controller.abort();
-  }, [owner, initialInput, lookupRetry, onOwnCode]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    let refreshing = false;
-    const update = () => {
-      if (
-        busy ||
-        refreshing ||
-        document.visibilityState !== 'visible' ||
-        !navigator.onLine
-      )
-        return;
-      refreshing = true;
-      void refresh(controller.signal)
-        .catch((cause: unknown) => {
-          if (!controller.signal.aborted) setError(errorMessage(cause));
-        })
-        .finally(() => {
-          refreshing = false;
-        });
-    };
-    const timer = window.setInterval(update, 60_000);
-    document.addEventListener('visibilitychange', update);
-    window.addEventListener('online', update);
-    return () => {
-      controller.abort();
-      window.clearInterval(timer);
-      document.removeEventListener('visibilitychange', update);
-      window.removeEventListener('online', update);
-    };
-  }, [busy, refresh]);
+  }, [owner, initialInput, lookupRetry, queryClient]);
 
   function run(work: (signal: AbortSignal) => Promise<void>) {
     const signal = lifetime.current?.signal;
@@ -388,6 +330,9 @@ export function FriendsPanel({
               onClick={() => {
                 setError('');
                 setLookupRetry((n) => n + 1);
+                void queryClient.invalidateQueries({
+                  queryKey: ['social', owner],
+                });
               }}
             >
               Retry
@@ -567,23 +512,13 @@ export function FriendsPanel({
                   tone="quiet"
                   disabled={busy}
                   onClick={() =>
-                    run(async (signal) => {
-                      const old = pages[view]!;
-                      const next = await friendPage(
-                        owner,
-                        view,
-                        old.nextCursor!,
-                        signal,
-                      );
-                      if (!signal.aborted)
-                        setPages((pages) => ({
-                          ...pages,
-                          [view]: {
-                            ...next,
-                            items: [...old.items, ...next.items],
-                            players: [...old.players, ...next.players],
-                          },
-                        }));
+                    run(async () => {
+                      const result = await {
+                        friends,
+                        incoming,
+                        outgoing,
+                      }[view].fetchNextPage();
+                      if (result.error) throw result.error;
                     })
                   }
                 >

@@ -3,17 +3,20 @@ import { parsePokemonCatalog } from '@/domain/pokemon/catalog';
 import catalogUrl from 'virtual:pokemon-catalog-url';
 
 import type { PokemonCatalog } from '@/domain/pokemon/types';
+import { queryOptions } from '@tanstack/react-query';
+import { queryClient } from './query-client';
 
-let catalogPromise: Promise<PokemonCatalog> | undefined;
+export const pokemonCatalogQuery = queryOptions({
+  queryKey: ['pokemon-catalog', catalogUrl],
+  queryFn: fetchPokemonCatalog,
+  staleTime: Infinity,
+  gcTime: Infinity,
+});
 
 export const loadPokemonCatalog = () =>
-  (catalogPromise ??= fetchPokemonCatalog());
+  queryClient.fetchQuery(pokemonCatalogQuery);
 
-export const resetPokemonCatalog = () => {
-  catalogPromise = undefined;
-};
-
-const fetchPokemonCatalog = async (): Promise<PokemonCatalog> => {
+async function fetchPokemonCatalog(): Promise<PokemonCatalog> {
   const response = await fetch(catalogUrl);
   if (!response.ok) {
     throw new Error(`The Pokémon catalog request failed (${response.status}).`);
@@ -25,4 +28,4 @@ const fetchPokemonCatalog = async (): Promise<PokemonCatalog> => {
       response.body.pipeThrough(new DecompressionStream('gzip')),
     ).json(),
   );
-};
+}

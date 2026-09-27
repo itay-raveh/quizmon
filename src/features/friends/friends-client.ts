@@ -5,6 +5,7 @@ import {
   type SocialPlayer,
 } from '../../domain/social/friends';
 import { accountSnapshot } from '../account/account';
+import { queryClient } from '../../lib/query-client';
 
 export interface FriendsPage {
   items: FriendRelation[];
@@ -16,15 +17,14 @@ export interface PlayerLookup {
   request: FriendRelation | null;
 }
 
-const ownPlayers = new Map<
-  string,
-  { player: SocialPlayer; fetchedAt: number }
->();
-
 export function cachedOwnPlayer(owner: string, maxAge = Infinity) {
-  const cached = ownPlayers.get(owner);
-  return cached && Date.now() - cached.fetchedAt < maxAge
-    ? cached.player
+  const cached = queryClient.getQueryState<SocialPlayer>([
+    'social',
+    owner,
+    'identity',
+  ]);
+  return cached?.data && Date.now() - cached.dataUpdatedAt < maxAge
+    ? cached.data
     : undefined;
 }
 
@@ -109,9 +109,7 @@ function relation(value: unknown): FriendRelation {
 }
 
 export async function ownPlayer(owner: string, signal?: AbortSignal) {
-  const me = player((await request(owner, '/identity', {}, signal)).player);
-  ownPlayers.set(owner, { player: me, fetchedAt: Date.now() });
-  return me;
+  return player((await request(owner, '/identity', {}, signal)).player);
 }
 
 export async function friendPage(

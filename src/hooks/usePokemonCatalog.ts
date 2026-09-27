@@ -1,9 +1,7 @@
 import type { PokemonCatalog } from '@/domain/pokemon/types';
-import {
-  loadPokemonCatalog,
-  resetPokemonCatalog,
-} from '@/lib/pokemon-catalog-client';
-import { useCallback, useEffect, useState } from 'react';
+import { pokemonCatalogQuery } from '@/lib/pokemon-catalog-client';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
 type CatalogState =
   | { status: 'loading'; catalog?: never }
@@ -11,30 +9,13 @@ type CatalogState =
   | { status: 'error'; catalog?: never };
 
 export const usePokemonCatalog = () => {
-  const [attempt, setAttempt] = useState(0);
-  const [state, setState] = useState<CatalogState>({ status: 'loading' });
-
-  useEffect(() => {
-    let active = true;
-
-    void loadPokemonCatalog()
-      .then((catalog) => {
-        if (active) setState({ status: 'ready', catalog });
-      })
-      .catch(() => {
-        if (active) setState({ status: 'error' });
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [attempt]);
-
-  const retry = useCallback(() => {
-    resetPokemonCatalog();
-    setState({ status: 'loading' });
-    setAttempt((current) => current + 1);
-  }, []);
-
+  const query = useQuery(pokemonCatalogQuery);
+  const refetch = query.refetch;
+  const state: CatalogState = query.isSuccess
+    ? { status: 'ready', catalog: query.data }
+    : query.isError
+      ? { status: 'error' }
+      : { status: 'loading' };
+  const retry = useCallback(() => void refetch(), [refetch]);
   return { ...state, retry };
 };

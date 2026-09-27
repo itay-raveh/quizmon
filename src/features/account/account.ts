@@ -27,6 +27,7 @@ import {
 } from '../../lib/storage/rxdb-game';
 import { playerSchema, roundSchema } from '../../lib/storage/rxdb-schema';
 import { isRecord } from '../../lib/validation';
+import { queryClient } from '../../lib/query-client';
 import { accountReturnPath } from './account-navigation';
 
 const auth = createAuthClient({ plugins: [emailOTPClient()] });
@@ -240,7 +241,11 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
 }
 
 export function loadAccountConfig() {
-  return accountRequest('/api/account/config')
+  return queryClient
+    .fetchQuery({
+      queryKey: ['account', 'config'],
+      queryFn: () => accountRequest('/api/account/config'),
+    })
     .then((value) => {
       if (isRecord(value) && typeof value.emailDelivery === 'string')
         update({ emailDelivery: value.emailDelivery });

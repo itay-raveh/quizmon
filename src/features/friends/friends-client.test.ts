@@ -1,11 +1,14 @@
 import { afterEach, expect, test, vi } from 'vitest';
-import { cachedOwnPlayer, ownPlayer } from './friends-client';
+import { queryClient } from '../../lib/query-client';
+import { cachedOwnPlayer } from './friends-client';
+import { identityQuery } from './social-queries';
 
 vi.mock('../account/account', () => ({
   accountSnapshot: () => ({ owner: 'cache-test-owner' }),
 }));
 
 afterEach(() => {
+  queryClient.clear();
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
@@ -34,7 +37,9 @@ test('cached identity is scoped to its owner and expires for refresh', async () 
     ),
   );
 
-  await ownPlayer('cache-test-owner');
+  await queryClient.fetchQuery(identityQuery('cache-test-owner'));
+  await queryClient.fetchQuery(identityQuery('cache-test-owner'));
+  expect(fetch).toHaveBeenCalledTimes(1);
   expect(cachedOwnPlayer('cache-test-owner', 60_000)?.code).toBe(
     'AABBCCDDEEFF0011',
   );

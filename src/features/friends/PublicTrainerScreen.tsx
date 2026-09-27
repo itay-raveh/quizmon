@@ -1,18 +1,11 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+import { useLayoutEffect, useSyncExternalStore } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { GameButton } from '../../components/GameButton';
 import { ArrowLeftIcon } from '../../components/icons';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { accountSnapshot, subscribeAccount } from '../account/account';
 import { PublicTrainerPassport } from '../trainer/PublicTrainerPassport';
-import {
-  fetchPublicTrainer,
-  type PublicTrainer,
-} from './public-trainer-client';
+import { fetchPublicTrainer } from './public-trainer-client';
 
 export function PublicTrainerScreen({
   playerId,
@@ -30,50 +23,33 @@ export function PublicTrainerScreen({
   backLabel: string;
 }) {
   const { owner } = useSyncExternalStore(subscribeAccount, accountSnapshot);
-  const [loaded, setLoaded] = useState<{
-    key: string;
-    trainer: PublicTrainer;
-  }>();
-  const [error, setError] = useState('');
-  const [retry, setRetry] = useState(0);
-
-  useEffect(() => {
-    if (!owner) return;
-    const controller = new AbortController();
-    void fetchPublicTrainer(owner, playerId, controller.signal)
-      .then((next) => {
-        if (!controller.signal.aborted) {
-          setLoaded({ key: `${owner}:${playerId}`, trainer: next });
-          setError('');
-        }
-      })
-      .catch((cause: unknown) => {
-        if (!controller.signal.aborted)
-          setError(
-            cause instanceof TypeError
-              ? 'Could not reach this Trainer. Check your connection and try again.'
-              : cause instanceof Error
-                ? cause.message
-                : 'Could not load this Trainer. Try again.',
-          );
-      });
-    return () => controller.abort();
-  }, [owner, playerId, retry]);
+  const trainer = useQuery({
+    queryKey: ['social', owner, 'trainer', playerId],
+    queryFn: () => fetchPublicTrainer(owner, playerId),
+    enabled: Boolean(owner),
+  });
+  const error = trainer.error
+    ? trainer.error instanceof TypeError
+      ? 'Could not reach this Trainer. Check your connection and try again.'
+      : trainer.error instanceof Error
+        ? trainer.error.message
+        : 'Could not load this Trainer. Try again.'
+    : '';
 
   useLayoutEffect(() => {
-    if (loaded?.key !== `${owner}:${playerId}` || !catalog) return;
+    if (!trainer.data || !catalog) return;
     document
       .getElementById('public-trainer-title')
       ?.focus({ preventScroll: true });
-  }, [loaded, owner, playerId, catalog]);
+  }, [trainer.data, catalog]);
 
-  if (loaded?.key === `${owner}:${playerId}` && catalog)
+  if (trainer.data && catalog)
     return (
       <PublicTrainerPassport
         backLabel={backLabel}
         catalog={catalog}
         onBack={onBack}
-        trainer={loaded.trainer}
+        trainer={trainer.data}
       />
     );
 
@@ -106,12 +82,7 @@ export function PublicTrainerScreen({
       ) : error ? (
         <>
           <p role="alert">{error}</p>
-          <GameButton
-            onClick={() => {
-              setError('');
-              setRetry((current) => current + 1);
-            }}
-          >
+          <GameButton onClick={() => void trainer.refetch()}>
             Try again
           </GameButton>
         </>

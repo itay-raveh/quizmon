@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { Link } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import {
@@ -24,54 +29,27 @@ import {
   readDailyLeaderboard,
   readTrainingLeaderboard,
 } from './leaderboards-client';
-import { cachedOwnPlayer, friendPage, ownPlayer } from './friends-client';
+import { friendsPageQuery, identityQuery } from './social-queries';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import './friends.css';
-
-const standingsCache = new Map<string, Leaderboard>();
-const standingsCacheFetchedAt = new Map<string, number>();
-const hasFriendsCache = new Map<string, boolean>();
-const hasFriendsCacheFetchedAt = new Map<string, number>();
 
 function InviteFriends({
   owner,
   onError,
-  retry,
   failed,
   onShareFailure,
 }: {
   owner: string;
   onError: (failed: boolean) => void;
-  retry: number;
   failed: boolean;
   onShareFailure: (link: string) => void;
 }) {
-  const [identity, setIdentity] = useState(() => ({
-    owner,
-    code: cachedOwnPlayer(owner)?.code ?? '',
-  }));
-  const code = identity.owner === owner ? identity.code : '';
+  const identity = useQuery(identityQuery(owner));
+  const code = identity.data?.code ?? '';
   const [message, setMessage] = useState('');
   useEffect(() => {
-    const cached = cachedOwnPlayer(owner, 60_000);
-    if (cached) {
-      queueMicrotask(() => setIdentity({ owner, code: cached.code ?? '' }));
-      onError(!cached.code);
-      return;
-    }
-    const controller = new AbortController();
-    void ownPlayer(owner, controller.signal)
-      .then((player) => {
-        if (!controller.signal.aborted) {
-          setIdentity({ owner, code: player.code ?? '' });
-          onError(!player.code);
-        }
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) onError(true);
-      });
-    return () => controller.abort();
-  }, [owner, onError, retry]);
+    onError(identity.isError || (identity.isSuccess && !code));
+  }, [identity.isError, identity.isSuccess, code, onError]);
   const link = `${location.origin}/social/friends?code=${code}`;
   return (
     <div className="leaderboard-invite">
@@ -175,52 +153,28 @@ function Standings({
   const playSound = useInteractionSound();
   const dailyDate = mode === 'daily' ? date : '';
   const dailyCatalog = mode === 'daily' ? catalog : undefined;
-  const cacheKey = `${owner}:${mode}:${dailyDate}:${scope}`;
-  const [data, setData] = useState<Leaderboard | undefined>(() =>
-    standingsCache.get(`${cacheKey}:`),
-  );
-  const [hasFriends, setHasFriends] = useState<boolean | null | undefined>(() =>
-    hasFriendsCache.get(owner),
-  );
-  const [busy, setBusy] = useState(!data);
-  const [request, setRequest] = useState({
-    after: null as string | null,
-    revision: 0,
-  });
-  useEffect(() => {
-    if (scope !== 'friends' || data?.items.length !== 0) return;
-    if (Date.now() - (hasFriendsCacheFetchedAt.get(owner) ?? 0) < 60_000)
-      return;
-    const controller = new AbortController();
-    void friendPage(owner, 'friends', undefined, controller.signal)
-      .then((page) => {
-        if (!controller.signal.aborted) {
-          hasFriendsCache.set(owner, page.items.length > 0);
-          hasFriendsCacheFetchedAt.set(owner, Date.now());
-          setHasFriends(page.items.length > 0);
-        }
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setHasFriends(null);
-      });
-    return () => controller.abort();
-  }, [owner, scope, data]);
-  useEffect(() => {
-    const key = `${cacheKey}:${request.after ?? ''}`;
-    if (
-      request.revision === 0 &&
-      Date.now() - (standingsCacheFetchedAt.get(key) ?? 0) < 60_000
-    )
-      return;
-    const controller = new AbortController();
-    const read = async () => {
+  const [after, setAfter] = useState<string | null>(null);
+  let savedId: string | undefined;
+  if (mode === 'daily') {
+    try {
+      savedId = readDailyResult(dailyDate, currentDailyTrack)?.puzzleId;
+    } catch {
+      // The leaderboard can load before the local save opens.
+    }
+  }
+  const board = useQuery({
+    queryKey: [
+      'social',
+      owner,
+      'leaderboard',
+      mode,
+      dailyDate,
+      scope,
+      savedId,
+      after,
+    ],
+    queryFn: async (): Promise<Leaderboard> => {
       if (mode === 'daily') {
-        let savedId: string | undefined;
-        try {
-          savedId = readDailyResult(dailyDate, currentDailyTrack)?.puzzleId;
-        } catch {
-          // The leaderboard can load before the local save opens.
-        }
         if (!savedId && !dailyCatalog)
           throw new Error('Daily catalog is unavailable.');
         return readDailyLeaderboard(
@@ -228,75 +182,41 @@ function Standings({
           dailyDate,
           scope,
           savedId ?? (await getDailyPuzzleId(dailyCatalog!, dailyDate)),
-          request.after,
-          controller.signal,
+          after,
         );
       }
-      return readTrainingLeaderboard(
-        owner,
-        scope,
-        request.after,
-        controller.signal,
-      );
-    };
-    void read()
-      .then((next) => {
-        if (!controller.signal.aborted) {
-          standingsCache.delete(key);
-          standingsCache.set(key, next);
-          standingsCacheFetchedAt.set(key, Date.now());
-          if (standingsCache.size > 24) {
-            const oldest = standingsCache.keys().next().value!;
-            standingsCache.delete(oldest);
-            standingsCacheFetchedAt.delete(oldest);
-          }
-          setData(next);
-          onError('');
-        }
-      })
-      .catch((cause: unknown) => {
-        if (!controller.signal.aborted)
-          onError(
-            cause instanceof TypeError
-              ? 'Could not reach the leaderboard. Check your connection and try again.'
-              : cause instanceof Error
-                ? cause.message
-                : 'Could not load the leaderboard.',
-          );
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setBusy(false);
-      });
-    return () => controller.abort();
-  }, [owner, dailyCatalog, mode, dailyDate, scope, request, cacheKey, onError]);
+      return readTrainingLeaderboard(owner, scope, after);
+    },
+    refetchInterval: 60_000,
+  });
+  const data = board.data;
+  const busy = board.isFetching;
+  const friends = useInfiniteQuery({
+    ...friendsPageQuery(owner, 'friends'),
+    enabled: scope === 'friends' && data?.items.length === 0,
+  });
   useEffect(() => {
-    const refresh = () => {
-      if (document.visibilityState === 'visible' && navigator.onLine)
-        setRequest((current) => ({
-          ...current,
-          revision: current.revision + 1,
-        }));
-    };
-    const timer = window.setInterval(refresh, 60_000);
-    document.addEventListener('visibilitychange', refresh);
-    window.addEventListener('online', refresh);
-    return () => {
-      window.clearInterval(timer);
-      document.removeEventListener('visibilitychange', refresh);
-      window.removeEventListener('online', refresh);
-    };
-  }, []);
+    const cause = board.error ?? (scope === 'friends' ? friends.error : null);
+    onError(
+      cause
+        ? cause instanceof TypeError
+          ? 'Could not reach the leaderboard. Check your connection and try again.'
+          : cause instanceof Error
+            ? cause.message
+            : 'Could not load the leaderboard.'
+        : '',
+    );
+  }, [board.error, friends.error, scope, onError]);
   const load = (after: string | null) => {
-    const cached = standingsCache.get(`${cacheKey}:${after ?? ''}`);
-    setData(cached);
-    setBusy(!cached);
+    setAfter(after);
     onError('');
-    setRequest((current) => ({ after, revision: current.revision + 1 }));
   };
   const noFriends =
-    scope === 'friends' && data?.items.length === 0 && hasFriends === false;
+    scope === 'friends' &&
+    data?.items.length === 0 &&
+    friends.data?.pages[0]?.items.length === 0;
   const checkingFriends =
-    scope === 'friends' && data?.items.length === 0 && hasFriends === undefined;
+    scope === 'friends' && data?.items.length === 0 && friends.isPending;
   const pastDaily = mode === 'daily' && date < getUtcDate();
   return (
     <section
@@ -408,9 +328,9 @@ function Standings({
               {data.total} {data.total === 1 ? 'trainer' : 'trainers'}
             </p>
           )}
-          {(request.after || data.nextCursor) && (
+          {(after || data.nextCursor) && (
             <div className="friends-actions">
-              {request.after && (
+              {after && (
                 <GameButton
                   tone="quiet"
                   disabled={busy}
@@ -460,6 +380,7 @@ export function LeaderboardScreen({
   ) => void;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
+  const queryClient = useQueryClient();
   const [scope, setScope] = useState<LeaderboardScope>(initialScope);
   const [mode, setMode] = useState<LeaderboardMode>(initialMode);
   const [date, setDate] = useState(() =>
@@ -471,7 +392,6 @@ export function LeaderboardScreen({
   const [inviteError, setInviteError] = useState(false);
   const [standingsError, setStandingsError] = useState('');
   const [shareFallbackLink, setShareFallbackLink] = useState('');
-  const [retry, setRetry] = useState(0);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -561,7 +481,6 @@ export function LeaderboardScreen({
                 <InviteFriends
                   owner={account.owner}
                   onError={setInviteError}
-                  retry={retry}
                   failed={inviteError}
                   onShareFailure={setShareFallbackLink}
                 />
@@ -621,7 +540,9 @@ export function LeaderboardScreen({
                       setInviteError(false);
                       setStandingsError('');
                       setShareFallbackLink('');
-                      setRetry((value) => value + 1);
+                      void queryClient.invalidateQueries({
+                        queryKey: ['social', account.owner],
+                      });
                     }}
                   >
                     Retry
@@ -656,7 +577,7 @@ export function LeaderboardScreen({
               }}
             >
               <Standings
-                key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}:${retry}`}
+                key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}`}
                 owner={account.owner}
                 catalog={catalog}
                 mode={mode}
