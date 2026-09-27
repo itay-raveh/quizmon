@@ -9,7 +9,6 @@ import { questionCategories, type QuestionData } from './types.ts';
 
 export interface QuestionLineup {
   seed: string;
-  contentVersion: number;
   questions: QuestionData[];
 }
 
@@ -130,7 +129,6 @@ const question = z
     showTypes: z.boolean().optional(),
     assistanceUsed: nonnegativeInteger.optional(),
     initialClues: nonnegativeInteger.optional(),
-    rulesVersion: nonnegativeInteger.optional(),
     suppliedClues: strings.optional(),
     assistanceAllowed: z.boolean().optional(),
     visual: visual.optional(),
@@ -184,9 +182,3 @@ export const savedQuestionSchema = z
 
 export const isQuestionData = (value: unknown): value is QuestionData =>
   question.safeParse(value).success;
-
-export const savedLineupSchema = z.object({
-  seed: text.min(1).max(200),
-  contentVersion: nonnegativeInteger,
-  questions: z.array(savedQuestionSchema),
-});

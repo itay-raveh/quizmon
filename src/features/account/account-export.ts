@@ -1,4 +1,3 @@
-import { formatVersions } from '../../domain/versions';
 import { downloadBlob } from '../../lib/download';
 import { isRecord } from '../../lib/validation';
 import { accountSnapshot } from './account';
@@ -24,7 +23,6 @@ export async function downloadAccountExport() {
   if (
     !isRecord(value) ||
     value.format !== 'quizmon-account-export' ||
-    value.version !== formatVersions.accountExport ||
     value.accountId !== owner ||
     accountSnapshot().owner !== owner
   )

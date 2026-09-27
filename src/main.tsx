@@ -1,6 +1,5 @@
 import './app/styles.css';
 import { mountGame } from './app/mount-game';
-import { discardOldBrowserData } from './lib/storage/reset-browser';
 import { captureUnexpectedError, initSentry } from './lib/sentry';
 
 initSentry();
@@ -9,9 +8,7 @@ const root = document.getElementById('root');
 if (!root) throw new Error('Missing root element');
 
 const showGame = mountGame(root);
-void discardOldBrowserData()
-  .catch(() => undefined)
-  .then(() => import('./app/initialize-game'))
+void import('./app/initialize-game')
   .then(({ initializeGame }) => initializeGame())
   .then(showGame)
   .catch((error) => {

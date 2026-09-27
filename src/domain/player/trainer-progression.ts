@@ -84,7 +84,7 @@ const trainerSpecialties = Object.keys(
   trainerSpecialtyDetails,
 ) as TrainerSpecialty[];
 
-export const getTrainerSpecialtyCount = (
+const getTrainerSpecialtyCount = (
   correctQuestionTypes: Partial<Record<QuestionType, number>>,
   specialty: TrainerSpecialty,
 ): number =>

@@ -16,16 +16,13 @@ release:
       memory: 128Mi
     limits:
       memory: 512Mi
-powersync:
+sync:
   enabled: false
-  sourceSecret:
+  mongoSecret:
     name: ''
-    key: uri
-    revision: ''
-  storageSecret:
+    key: url
+  mongoTlsSecret:
     name: ''
-    key: uri
-    revision: ''
   resources:
     requests:
       cpu: 100m

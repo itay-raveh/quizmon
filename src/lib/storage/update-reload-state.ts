@@ -1,4 +1,3 @@
-import { SAVE_SCHEMA_VERSION } from '@/domain/player/player-save';
 import {
   readStoredJson,
   removeStoredValue,
@@ -54,7 +53,6 @@ const saveUpdateState = () =>
   !getSaveIssue() &&
   writeStoredJson('sessionStorage', UPDATE_STATE_KEY, {
     url: window.location.href,
-    saveVersion: SAVE_SCHEMA_VERSION,
     values: Object.fromEntries(current),
   });
 

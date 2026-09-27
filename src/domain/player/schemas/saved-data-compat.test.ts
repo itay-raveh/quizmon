@@ -1,11 +1,9 @@
 import { isQuestionData } from '../../quiz/question-lineup';
-import { getUnifiedScoreKey } from '../../quiz/scoring';
 import { completion } from '../../../../tests/online/progress-fixtures';
 import { defaultGameSettings } from '../../settings/game-settings';
 import { emptyPlayerData } from '../player-save';
 import { parseActiveGameSave } from '../active-game';
 import { SaveError } from '../save-schema';
-import { isUuid } from '../../../lib/validation';
 import { parseRound } from './round';
 import { parsePlayerData } from './player-data';
 
@@ -21,8 +19,6 @@ const question = {
   media: { kind: 'none' },
 };
 const round = {
-  version: 1,
-  contentVersion: 1,
   elapsedMilliseconds: 0,
   questionCount: 1,
   roundId: crypto.randomUUID(),
@@ -58,7 +54,7 @@ it('preserves unfinished-round output and unknown settings', () => {
     settings: saved.settings,
     playerRestoreId: null,
   });
-  expect(parseRound({ ...round, version: 2 })).toBeNull();
+  expect(parseRound({ ...round, version: 2 })).not.toBeNull();
   expect(parseRound({ ...round, questionCount: 2 })).toBeNull();
   expect(
     parseRound({
@@ -100,14 +96,13 @@ it('rejects unsafe saved round counts', () => {
   ).toBeNull();
 });
 
-it('upgrades an unfinished round with a seed ID before strict validation', () => {
-  const upgraded = parseActiveGameSave({ ...round, roundId: round.seed });
-  expect(isUuid(upgraded.roundId)).toBe(true);
-  expect(parseRound(upgraded)?.roundId).toBe(upgraded.roundId);
-  expect(
-    parseActiveGameSave({ ...round, seed: round.roundId, roundId: undefined })
-      .roundId,
-  ).toBe(round.roundId);
+it('rejects unfinished rounds without a stable round ID', () => {
+  expect(() => parseActiveGameSave({ ...round, roundId: round.seed })).toThrow(
+    SaveError,
+  );
+  expect(() => parseActiveGameSave({ ...round, roundId: undefined })).toThrow(
+    SaveError,
+  );
 });
 
 it('keeps player-data normalization and recovery error category', () => {
@@ -148,7 +143,7 @@ it('deduplicates saved selections before they become game settings', () => {
 
 it('keeps historical scores and counts while filtering retired settings', () => {
   const base = emptyPlayerData();
-  const result = structuredClone(completion(crypto.randomUUID()).result);
+  const result = structuredClone(completion().result);
   Reflect.set(result.answers[0]!, 'questionType', 'evolution-items');
   result.rules!.questionTypes = ['evolution-items'];
   result.scoreMultipliers!.questionTypes[0]!.questionType = 'evolution-items';
@@ -164,16 +159,14 @@ it('keeps historical scores and counts while filtering retired settings', () => 
         ...base.results.progress,
         correctQuestionTypes: { 'evolution-items': 7 },
       },
-      training: { [getUnifiedScoreKey(result)]: result },
+      training: { score: result },
     },
   });
   expect(parsed.settings?.questionTypes).toEqual(['type-check']);
   expect(parsed.results.progress.correctQuestionTypes['evolution-items']).toBe(
     7,
   );
-  expect(parsed.results.training[getUnifiedScoreKey(result)]?.score).toBe(
-    result.score,
-  );
+  expect(parsed.results.training.score?.score).toBe(result.score);
 });
 
 it('accepts sparse saved counts and rejects unknown count keys', () => {

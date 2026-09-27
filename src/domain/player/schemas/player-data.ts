@@ -5,13 +5,11 @@ import {
   utcTimestampSchema,
 } from '../../../lib/validation.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
-import { isLeagueVictory, LEAGUE_QUESTION_COUNT } from '../../quiz/league.ts';
+import { isLeagueVictory } from '../../quiz/league.ts';
 import { questionHistorySchema } from '../../quiz/question-history.ts';
-import { savedLineupSchema } from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { savedRoundRulesSchema } from '../../quiz/round-rules.ts';
 import { savedScoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
-import { getUnifiedScoreKey } from '../../quiz/scoring.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
 import {
   getDailyResultKey,
@@ -61,8 +59,6 @@ const savedResult = z
         speedBonus: nonnegativeInteger.optional(),
       }),
     ),
-    contentVersion: nonnegativeInteger,
-    scoreVersion: nonnegativeInteger.optional(),
     correctCount: nonnegativeInteger,
     questionCount: nonnegativeInteger.min(1),
     score: nonnegativeInteger,
@@ -103,7 +99,7 @@ export const progressSchema = z.object({
 const results = z
   .object({
     daily: z.record(z.string(), savedResult),
-    training: z.record(z.string(), savedResult),
+    training: z.object({ score: savedResult.optional() }),
     progress: progressSchema,
     streak: z.object({
       creditedDates: z
@@ -113,7 +109,7 @@ const results = z
     league: z.object({ completed: z.boolean(), seed: name.nullable() }),
   })
   .refine(
-    ({ daily, training, streak }) =>
+    ({ daily, streak }) =>
       Object.entries(daily).every(([key, result]) => {
         const parsed = parseDailyResultKey(key);
         return (
@@ -121,9 +117,6 @@ const results = z
           getDailyResultKey(parsed.date, result.dailyTrack) === key
         );
       }) &&
-      Object.entries(training).every(
-        ([key, result]) => getUnifiedScoreKey(result) === key,
-      ) &&
       streak.creditedDates.every((date) => hasDailyResultOnDate(daily, date)),
   );
 export const savedSettingsSchema = z.object({
@@ -170,12 +163,6 @@ const playerData = z.object({
       (records) => new Set(records.map(({ id }) => id)).size === records.length,
     ),
   questionHistory: questionHistorySchema,
-  leagueLineup: savedLineupSchema
-    .nullable()
-    .refine(
-      (lineup) =>
-        lineup === null || lineup.questions.length === LEAGUE_QUESTION_COUNT,
-    ),
   results,
   settings: savedSettingsSchema.nullable(),
   profile: trainerProfileSchema.nullable(),
@@ -193,7 +180,6 @@ export const parsePlayerData = (value: unknown): PlayerData => {
   const data = parsed.data;
   return {
     questionHistory: data.questionHistory,
-    leagueLineup: data.leagueLineup,
     hallOfFame: data.hallOfFame,
     pokedex: [...new Set(data.pokedex)],
     profile: data.profile,

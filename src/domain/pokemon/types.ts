@@ -93,7 +93,6 @@ interface TypeRelations {
 
 export interface PokemonCatalog {
   topics?: TopicCatalog;
-  contentVersion: number;
   pokemon: Record<string, PokemonKnowledge>;
   typeRelations: Record<string, TypeRelations>;
 }

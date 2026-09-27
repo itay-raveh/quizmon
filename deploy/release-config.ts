@@ -81,8 +81,8 @@ export function renderSourceWorkerConfig(
     no_bundle: false,
     vars: {
       AUTH_ORIGIN: config.origin,
-      POWERSYNC_URL: config.sync.endpoint,
-      POWERSYNC_AUDIENCE: config.sync.audience,
+      SYNC_URL: config.sync.endpoint,
+      SYNC_AUDIENCE: config.sync.audience,
       MAIL_DELIVERY: 'cloudflare',
       MAIL_FROM: config.mailFrom,
     },

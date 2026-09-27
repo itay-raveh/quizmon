@@ -30,7 +30,6 @@ import {
   uuidSchema,
 } from '../../lib/validation.ts';
 import { defaultGameSettings } from '../settings/game-settings.ts';
-import { gameVersions } from '../versions.ts';
 
 const strings = (max = 100) =>
   z
@@ -103,10 +102,6 @@ const configSchema = z.object({
   daily_track: z.custom<DailyTrack>(isDailyTrack).optional(),
 });
 const roundDataSchema = z.object({
-  score_version: z
-    .int()
-    .refine((value): boolean => value === 1 || value === 2)
-    .optional(),
   config: configSchema,
   answers: z.array(roundAnswerSchema),
   found: strings(2000).refine((names) =>
@@ -119,7 +114,6 @@ const roundDataSchema = z.object({
     })
     .nullable(),
 });
-export type RoundData = z.infer<typeof roundDataSchema>;
 const baseRoundSchema = z.object({
   id: uuidSchema,
   mode: z.enum(['training', 'daily', 'league']),
@@ -242,7 +236,6 @@ export function archiveCompletion(
     completed_at: completion.completedAt,
     credited,
     data: {
-      score_version: completion.scoreVersion,
       config: {
         training_mode: completion.training.trainingMode,
         ...(completion.training.difficulty
@@ -333,12 +326,7 @@ export function scoreRound(
     questionCount:
       round.mode === 'training' ? 10 : round.mode === 'daily' ? 5 : 15,
     ...getResponseTime(answers),
-    score: calculateScore(
-      answers,
-      multipliers,
-      undefined,
-      round.data.score_version ?? 1,
-    ),
+    score: calculateScore(answers, multipliers),
     ...(multipliers ? { scoreMultipliers: multipliers } : {}),
     ...(round.mode === 'daily'
       ? {
@@ -359,8 +347,6 @@ export function scoreRound(
           puzzleId: round.puzzle_id!,
         }
       : {}),
-    contentVersion: gameVersions.content,
-    scoreVersion: round.data.score_version ?? 1,
   };
 }
 

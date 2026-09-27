@@ -38,7 +38,6 @@ import { buildTopicCatalog } from './catalog-topics.ts';
 import { extractPokemonKnowledge } from './catalog-knowledge.ts';
 import { addPkmnDescriptions } from './pkmn-descriptions.ts';
 import { addShowdownBattleData } from './showdown-battle.ts';
-import { gameVersions } from '../src/domain/versions.ts';
 
 const DATA_DIRECTORY = new URL('../src/domain/pokemon/data/', import.meta.url);
 const CONCURRENCY = 4;
@@ -313,7 +312,6 @@ export const buildPokemonCatalog = async (
 
   return addSpriteMeasurements(
     {
-      contentVersion: gameVersions.content,
       pokemon: sortRecord(entries),
       typeRelations: {},
     },
@@ -369,12 +367,10 @@ if (import.meta.main) {
   if (mode === '--showdown-only') {
     if (!catalog.topics) throw new Error('Missing topic catalog');
     addPkmnDescriptions(catalog.topics);
-    catalog.contentVersion = gameVersions.content;
   } else if (mode === '--topics-only' || mode === undefined) {
     const topics = await buildTopicCatalog(client, catalog);
     await addItemSpriteIdentities(topics);
     catalog.topics = topics;
-    catalog.contentVersion = gameVersions.content;
   }
   if (mode !== '--sprites-only') {
     await addShowdownBattleData(catalog);

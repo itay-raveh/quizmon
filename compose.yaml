@@ -2,6 +2,7 @@ name: quizmon
 services:
   db:
     image: postgres:18@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280
+    # Existing development volumes can still contain logical replication slots.
     command: [postgres, -c, wal_level=logical]
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -15,20 +16,21 @@ services:
       interval: 2s
       timeout: 2s
       retries: 20
-  powersync:
-    image: journeyapps/powersync-service@sha256:39f6a534f757afd1c633e91a19b23fde03186d16b5543b4af0f5c8f09d4cb79d
-    command: [start, -r, unified]
-    depends_on:
-      db:
-        condition: service_healthy
+  mongo:
+    image: mongo:7.0.43@sha256:9854f7139445d766a9523571d6f047530c45547460ffcf8259eb2bf4264632ca
     ports:
-      - '127.0.0.1:8089:8080'
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    environment:
-      POWERSYNC_CONFIG_PATH: /config/service.yaml
-      NODE_OPTIONS: --max-old-space-size=512
+      - '127.0.0.1:27018:27017'
     volumes:
-      - ./deploy/powersync:/config:ro
+      - mongo:/data/db
+    healthcheck:
+      test:
+        [
+          CMD-SHELL,
+          "mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' | grep -q 1",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 30
 volumes:
   database:
+  mongo:

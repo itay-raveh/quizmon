@@ -5,6 +5,7 @@ import type { PlayerData } from '../../domain/player/player-save';
 import { selectedAccount } from '../account/account';
 import { readPlayerData } from '../../lib/storage/player-storage';
 import {
+  backupPreview,
   downloadBackup,
   parseBackup,
   restoreBackup,
@@ -44,7 +45,7 @@ export const BackupSettings = ({
   const dismissDownloadNotice = useCallback(() => setDownloadNotice(0), []);
   const [busy, setBusy] = useState(false);
   const current = readPlayerData();
-  const accountBackup = !!preview?.state.account;
+  const accountBackup = !!preview?.accountId;
 
   useEffect(() => {
     if (preview) previewHeading.current?.focus();
@@ -58,14 +59,14 @@ export const BackupSettings = ({
     setBusy(true);
     try {
       validateBackupSize(file.size);
-      const backup = parseBackup(await file.text());
-      if (!accountRecovery && backup.state.account)
+      const backup = await parseBackup(await file.text());
+      if (!accountRecovery && backup.accountId)
         throw new Error(
           'This is an account backup. Sign in to that account and use Device recovery.',
         );
       if (
         accountRecovery &&
-        (!backup.state.account || backup.state.account.id !== selectedAccount())
+        (!backup.accountId || backup.accountId !== selectedAccount())
       )
         throw new Error('Choose a backup from this account.');
       setPreview(backup);
@@ -103,7 +104,7 @@ export const BackupSettings = ({
     try {
       await restoreBackup(preview);
       setPreview(null);
-      setRestored(preview.state.account ? 'account' : 'guest');
+      setRestored(preview.accountId ? 'account' : 'guest');
     } catch (error) {
       setError(
         error instanceof Error
@@ -214,7 +215,7 @@ export const BackupSettings = ({
                   <tr key={label}>
                     <th scope="row">{label}</th>
                     <td>{value(current)}</td>
-                    <td>{value(preview.state.save.data)}</td>
+                    <td>{value(backupPreview(preview))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -222,8 +223,8 @@ export const BackupSettings = ({
           )}
           <p>
             {accountBackup
-              ? 'Restores missing pending changes to the same account. Shared progress comes from sync. This does not replace account history or restore unfinished rounds.'
-              : 'Replaces saved progress, profile, and settings, and ends unfinished rounds. Reminders stay on this device.'}
+              ? 'Merges missing rounds and device data into this account. Sync then carries completed rounds to your other devices.'
+              : 'Merges completed rounds and device data. The backup profile and settings are applied.'}
           </p>
           <div className="backup-settings__actions">
             <GameButton
@@ -241,9 +242,7 @@ export const BackupSettings = ({
                 void handleRestore();
               }}
             >
-              {accountBackup
-                ? 'Recover pending changes'
-                : 'Replace and restore'}
+              {accountBackup ? 'Recover pending changes' : 'Merge and restore'}
             </GameButton>
           </div>
         </div>

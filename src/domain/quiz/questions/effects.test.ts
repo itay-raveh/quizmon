@@ -10,7 +10,6 @@ import { isQuestionData } from '../question-lineup.ts';
 
 const items = [...itemData.values, ...moreItems.values];
 const catalog = {
-  contentVersion: 1,
   pokemon: {},
   typeRelations: {},
   topics: { abilities: abilityData.values, items },

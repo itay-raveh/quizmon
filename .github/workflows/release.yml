@@ -33,6 +33,7 @@ jobs:
     env:
       MISE_LOCKED: 1
       QUIZMON_RELEASE_IMAGE: quizmon-release:checked
+      QUIZMON_WORKER_DEPLOY_HOLD: '1'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -51,9 +52,10 @@ jobs:
         run: |
           mise install helm kubeconform
           mise run check:chart
-          docker compose -f compose.yaml up -d --wait db
+          docker compose -f compose.yaml up -d --wait db mongo
           node tests/online/check-migrations.ts
       - name: Build and prepare Worker
+        if: env.QUIZMON_WORKER_DEPLOY_HOLD != '1'
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
@@ -82,10 +84,10 @@ jobs:
             --label "org.opencontainers.image.revision=$GITHUB_SHA" \
             --iidfile .wrangler/release-image-id -t "$QUIZMON_RELEASE_IMAGE" .
           docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/migrations/meta/_journal.json
-          docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/deploy/powersync/sync-config.yaml
+          docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/rxdb-sync.ts
       - name: Check real sync isolation
+        if: env.QUIZMON_WORKER_DEPLOY_HOLD != '1'
         run: |
-          docker compose -f compose.yaml pull powersync
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-runtime-config.ts
       - name: Publish checked migration image
@@ -115,6 +117,7 @@ jobs:
           fi
           printf '%s\n' "$digest_reference" >> "$GITHUB_STEP_SUMMARY"
       - name: Deploy Worker
+        if: env.QUIZMON_WORKER_DEPLOY_HOLD != '1'
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

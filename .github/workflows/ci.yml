@@ -49,7 +49,8 @@ jobs:
           install_args: node
           cache: false
       - run: npm ci
-      - run: docker compose -f compose.yaml pull db
+      - run: docker compose -f compose.yaml pull db mongo
+      - run: docker compose -f compose.yaml up --wait --wait-timeout 60 mongo
       - run: npm run build
       - run: npm run test:sync
 

@@ -1,5 +1,3 @@
-import { isRecord } from '../../lib/validation.ts';
-
 export type SaveErrorKind = 'newer' | 'invalid' | 'unavailable';
 
 export class SaveError extends Error {
@@ -10,40 +8,3 @@ export class SaveError extends Error {
     this.name = 'SaveError';
   }
 }
-
-interface SaveSchema<T> {
-  currentVersion: number;
-  parseCurrent: (data: unknown) => T;
-}
-
-export const parseVersionedSave = <T>(
-  value: unknown,
-  schema: SaveSchema<T>,
-): { data: T; version: number } => {
-  if (
-    !isRecord(value) ||
-    !Number.isSafeInteger(value.version) ||
-    Number(value.version) < 1
-  )
-    throw new SaveError('invalid', 'The save has an invalid version.');
-  const version = Number(value.version);
-  if (version > schema.currentVersion)
-    throw new SaveError(
-      'newer',
-      'This save was created by a newer version of Quizmon.',
-    );
-  if (version !== schema.currentVersion)
-    throw new SaveError('invalid', 'This save uses an unsupported version.');
-  try {
-    return {
-      data: schema.parseCurrent(structuredClone(value.data)),
-      version: schema.currentVersion,
-    };
-  } catch (error) {
-    if (error instanceof SaveError) throw error;
-    throw new SaveError(
-      'invalid',
-      'This save contains invalid progress or settings.',
-    );
-  }
-};

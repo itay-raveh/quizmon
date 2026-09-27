@@ -1,167 +1,49 @@
-import { archiveCompletion } from '../../domain/sync/round-facts';
-import { completion } from '../../../tests/online/progress-fixtures';
-import {
-  emptyPlayerData,
-  SAVE_SCHEMA_VERSION,
-} from '../../domain/player/player-save';
-import {
-  parseBackup,
-  verifyAccountBackupRecovery,
-  type PlayerBackup,
-} from './backup';
+import { emptyDeviceState } from '../../lib/storage/rxdb-game';
+import { parseBackup } from './backup';
 
-const recoveryAccess = vi.hoisted(() => ({
-  accountRequest: vi.fn(),
-  selectedAccount: vi.fn(),
-  canRecoverAccountSave: vi.fn(),
-}));
-vi.mock('../account/account', () => ({
-  accountRequest: recoveryAccess.accountRequest,
-  selectedAccount: recoveryAccess.selectedAccount,
-}));
-vi.mock('../../lib/storage/player-storage', async (importOriginal) => ({
-  ...(await importOriginal()),
-  canRecoverAccountSave: recoveryAccess.canRecoverAccountSave,
-}));
-
-it('verifies the live owner before account backup recovery', async () => {
-  const owner = { id: 'trainer', serverEpoch: crypto.randomUUID() };
-  const backup = { state: { account: owner } } as PlayerBackup;
-  recoveryAccess.canRecoverAccountSave.mockReturnValue(true);
-  recoveryAccess.selectedAccount.mockReturnValue(owner.id);
-  recoveryAccess.accountRequest.mockResolvedValue(owner);
-  await expect(verifyAccountBackupRecovery(backup)).resolves.toBeUndefined();
-
-  recoveryAccess.selectedAccount.mockReturnValue('other');
-  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
-    'backup account',
-  );
-  recoveryAccess.selectedAccount.mockReturnValue(owner.id);
-  recoveryAccess.accountRequest.mockResolvedValue({ ...owner, id: 'other' });
-  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
-    'does not own',
-  );
-  recoveryAccess.accountRequest.mockResolvedValue({
-    ...owner,
-    serverEpoch: crypto.randomUUID(),
-  });
-  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
-    'older account instance',
-  );
-  recoveryAccess.accountRequest.mockRejectedValue(
-    Object.assign(new Error('Sign in again.'), { name: 'AccountSignIn' }),
-  );
-  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
-    'Sign in again.',
-  );
-  recoveryAccess.accountRequest.mockRejectedValue(
-    new TypeError('Failed to fetch'),
-  );
-  await expect(verifyAccountBackupRecovery(backup)).rejects.toThrow(
-    'Connect to the account service',
-  );
+const backup = () => ({
+  format: 'quizmon-backup',
+  exportedAt: '2026-09-26T10:00:00.000Z',
+  accountId: null,
+  schemaVersions: { players: 0, rounds: 0, device: 0 },
+  player: null,
+  rounds: [],
+  device: [{ id: 'state', payload: emptyDeviceState() }],
 });
 
-it('rejects malformed pending payloads and retains valid offline edits', () => {
-  const datasetId = crypto.randomUUID();
-  const id = crypto.randomUUID();
-  const action = {
-    id,
-    datasetId,
-    kind: 'edit',
-    payload: { id, unit: 'name', value: 'Trainer' },
-  };
-  const row = { id, payload: JSON.stringify(action) };
-  const backup = {
-    format: 'quizmon-backup',
-    version: 2,
-    exportedAt: new Date().toISOString(),
-    state: {
-      version: 2,
-      datasetId,
-      save: {
-        version: SAVE_SCHEMA_VERSION,
-        restoreId: null,
-        data: emptyPlayerData(),
-      },
-      account: { id: 'trainer', serverEpoch: crypto.randomUUID() },
-    },
-    records: {
-      local_actions: [row],
-      local_completions: [],
-      pending_actions: [row],
-      server_rounds: [],
-    },
-  };
-  expect(parseBackup(JSON.stringify(backup)).records.pending_actions).toEqual([
-    row,
-  ]);
-  expect(() => parseBackup(JSON.stringify({ ...backup, version: 1 }))).toThrow(
-    'unsupported version',
-  );
-  expect(() =>
+it('validates backup identity and device data before any restore writes', async () => {
+  expect((await parseBackup(JSON.stringify(backup()))).accountId).toBeNull();
+  await expect(
     parseBackup(
       JSON.stringify({
-        ...backup,
-        records: {
-          ...backup.records,
-          pending_actions: [
-            {
-              id,
-              payload: JSON.stringify({
-                ...action,
-                payload: { id, unit: 'name', value: 'Different' },
-              }),
-            },
-          ],
-        },
+        ...backup(),
+        accountId: 'other',
+        player: { id: 'guest', ownerId: 'guest', profile: {}, settings: null },
       }),
     ),
-  ).toThrow('The backup contains an unrecognized pending change.');
-
-  const malformed = {
-    ...backup,
-    records: {
-      ...backup.records,
-      local_actions: [
-        {
-          id,
-          payload: JSON.stringify({
-            ...action,
-            payload: { id, unit: 'name', value: { broken: true } },
-          }),
-        },
-      ],
-      pending_actions: [],
-    },
-  };
-  expect(() => parseBackup(JSON.stringify(malformed))).toThrow(
-    'The backup contains an invalid action.',
-  );
-
-  const { credited: _credited, ...upload } = archiveCompletion(
-    completion(datasetId),
-  );
-  void _credited;
-  const brokenRound = {
-    ...backup,
-    records: {
-      ...backup.records,
-      local_actions: [
-        {
-          id: upload.id,
-          payload: JSON.stringify({
-            id: upload.id,
-            datasetId,
-            kind: 'round',
-            payload: { ...upload, data: { ...upload.data, answers: [] } },
-          }),
-        },
-      ],
-      pending_actions: [],
-    },
-  };
-  expect(() => parseBackup(JSON.stringify(brokenRound))).toThrow(
-    'The backup contains an invalid action.',
-  );
+  ).rejects.toThrow('invalid player');
+  await expect(
+    parseBackup(
+      JSON.stringify({
+        ...backup(),
+        device: [{ id: 'state', payload: { dailyAttempts: {} } }],
+      }),
+    ),
+  ).rejects.toThrow();
+  await expect(
+    parseBackup(
+      JSON.stringify({
+        ...backup(),
+        device: [...backup().device, ...backup().device],
+      }),
+    ),
+  ).rejects.toThrow('duplicate records');
+  await expect(
+    parseBackup(
+      JSON.stringify({
+        ...backup(),
+        schemaVersions: { players: 1, rounds: 0, device: 0 },
+      }),
+    ),
+  ).rejects.toThrow('newer version');
 });

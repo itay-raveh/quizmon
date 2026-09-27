@@ -10,46 +10,23 @@ import { bodyLimit } from 'hono/body-limit';
 import { HTTPException } from 'hono/http-exception';
 import { matchedRoutes } from 'hono/route';
 import { Client } from 'pg';
-import { z } from 'zod';
-import { isDailyDate, isRecord, uuidSchema } from '../src/lib/validation.ts';
+import { isRecord } from '../src/lib/validation.ts';
 import type { SyncConnection } from '../src/domain/sync/connection.ts';
-import { uuid } from '../src/domain/sync/progress.ts';
 import { authPlugins } from './auth-options.ts';
 import { FriendshipError } from './friends.ts';
 import { friendshipApi } from './friends-api.ts';
 import { leaderboardApi } from './leaderboards-api.ts';
 import { trainerApi } from './trainers-api.ts';
+import { bootstrapSocialIdentity } from './friend-identity.ts';
 import { reserveEmail } from './email-budget.ts';
 import {
   EmailDeliveryError,
   codeLifetimeSeconds,
   type AccountMail,
 } from './email.ts';
-import {
-  ProgressError,
-  applyEdit,
-  bootstrapPlayer,
-  linkDataset,
-  submitRound,
-} from './progress-api.ts';
 import * as schema from './schema.ts';
 
 const testMailbox = new Map<string, { code: string; createdAt: number }>();
-const syncChangesSchema = z.object({
-  actions: z
-    .array(
-      z
-        .object({
-          id: uuidSchema,
-          datasetId: uuidSchema,
-          kind: z.enum(['round', 'edit']),
-          payload: z.record(z.string(), z.unknown()),
-        })
-        .refine(({ id, payload }) => payload.id === id),
-    )
-    .min(1)
-    .max(100),
-});
 
 export interface AccountServices {
   sync: SyncConnection;
@@ -125,8 +102,7 @@ export interface AccountEnv {
     auth: ReturnType<typeof createAuth>;
     accountId: string;
     origin: string;
-    state: Awaited<ReturnType<typeof bootstrapPlayer>>;
-    body: Record<string, unknown>;
+    sync: SyncConnection;
   };
 }
 
@@ -142,7 +118,7 @@ export function createAccountApi(services: AccountServices) {
     await next();
   });
   app.onError((error, context) => {
-    if (error instanceof ProgressError || error instanceof FriendshipError)
+    if (error instanceof FriendshipError)
       return context.json({ error: error.code }, error.status);
     if (error instanceof HTTPException) {
       context.header('Cache-Control', 'no-store');
@@ -172,6 +148,7 @@ export function createAccountApi(services: AccountServices) {
       context.set('db', db);
       context.set('auth', createAuth(db, services));
       context.set('origin', services.origin);
+      context.set('sync', sync);
       await next();
     } finally {
       await client.end();
@@ -209,106 +186,16 @@ export function createAccountApi(services: AccountServices) {
   signedIn.get('/me', (context) =>
     context.json({ id: context.get('accountId') }),
   );
-  signedIn.get('/account/export', (context) =>
-    exportAccount(
-      services.connectionString,
-      context.get('accountId'),
-      context.req.raw.signal,
-    ),
-  );
+  signedIn.get('/account/export', (context) => exportAccount(context));
   signedIn.route('/friends', friendshipApi);
   signedIn.route('/leaderboards', leaderboardApi);
   signedIn.route('/trainers', trainerApi);
   signedIn.get('/account', async (context) => {
-    const state = await bootstrapPlayer(
-      context.get('db'),
-      context.get('accountId'),
-    );
+    await bootstrapSocialIdentity(context);
     return context.json({
       id: context.get('accountId'),
-      serverEpoch: state.epoch,
       sync,
     });
-  });
-  for (const path of ['/account/link', '/sync/changes'])
-    signedIn.post(path, async (context, next) => {
-      const state = await bootstrapPlayer(
-        context.get('db'),
-        context.get('accountId'),
-      );
-      if (context.req.header('Origin') !== services.origin)
-        return context.text('Invalid origin.', 403);
-      let body: unknown;
-      try {
-        body = await context.req.json();
-      } catch {
-        return context.json({ error: 'invalid_json' }, 400);
-      }
-      if (
-        !isRecord(body) ||
-        body.expectedAccountId !== context.get('accountId')
-      )
-        return context.json({ error: 'account_changed' }, 403);
-      if (body.serverEpoch !== state.epoch)
-        return context.json({ error: 'server_epoch_changed' }, 409);
-      context.set('state', state);
-      context.set('body', body);
-      await next();
-    });
-  signedIn.post('/account/link', async (context) => {
-    const body = context.get('body');
-    if (
-      !uuid(body.datasetId) ||
-      typeof body.merge !== 'boolean' ||
-      (body.profileCreatedAt !== undefined &&
-        !isDailyDate(body.profileCreatedAt))
-    )
-      return context.json({ error: 'invalid_link' }, 400);
-    return context.json(
-      await linkDataset(
-        context.get('db'),
-        context.get('accountId'),
-        body.datasetId,
-        context.get('state').epoch,
-        body.merge,
-        body.profileCreatedAt,
-      ),
-    );
-  });
-  signedIn.post('/sync/changes', async (context) => {
-    const parsed = syncChangesSchema.safeParse(context.get('body'));
-    if (!parsed.success) return context.json({ error: 'invalid_actions' }, 400);
-    const outcomes = [];
-    for (const action of parsed.data.actions) {
-      try {
-        outcomes.push(
-          action.kind === 'round'
-            ? await submitRound(
-                context.get('db'),
-                context.get('accountId'),
-                action.datasetId,
-                context.get('state').epoch,
-                action.payload,
-              )
-            : await applyEdit(
-                context.get('db'),
-                context.get('accountId'),
-                action.datasetId,
-                context.get('state').epoch,
-                action.payload,
-              ),
-        );
-      } catch (error) {
-        if (error instanceof ProgressError && error.status === 400)
-          outcomes.push({
-            id: action.id,
-            status: 'rejected',
-            reason: error.code,
-          });
-        else throw error;
-      }
-    }
-    return context.json({ outcomes });
   });
   app.route('/api', signedIn);
   return app;

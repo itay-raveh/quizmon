@@ -1,6 +1,11 @@
 import { rememberShownQuestion } from '../../domain/quiz/question-history';
 import type { QuestionData } from '../../domain/quiz/types';
-import { reportSaveError, transactPlayer } from './player-storage';
+import {
+  getPlayerDatabase,
+  refreshPlayerData,
+  reportSaveError,
+} from './player-storage';
+import { updateDeviceState } from './rxdb-game';
 
 export const registerShownQuestion = async (
   question: QuestionData,
@@ -9,16 +14,18 @@ export const registerShownQuestion = async (
   restoreId: string | null,
 ): Promise<boolean> => {
   try {
-    return await transactPlayer((state) => {
-      if (state.save.restoreId !== restoreId) return false;
-      state.save.data.questionHistory = rememberShownQuestion(
-        state.save.data.questionHistory,
+    const saved = await updateDeviceState(getPlayerDatabase(), (state) => {
+      if (state.restoreId !== restoreId) return false;
+      state.questionHistory = rememberShownQuestion(
+        state.questionHistory,
         question,
         roundId,
         index,
       );
       return true;
     });
+    await refreshPlayerData();
+    return saved;
   } catch (error) {
     reportSaveError(error);
     return false;

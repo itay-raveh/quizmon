@@ -33,7 +33,6 @@ export default defineConfig({
       input: ['index.html', ...contentPageEntries],
     },
   },
-  optimizeDeps: { exclude: ['@powersync/web'] },
   plugins: [
     react(),
     siteMetadata(),

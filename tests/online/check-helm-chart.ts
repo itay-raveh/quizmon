@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { parseAllDocuments, type YAMLSeq } from 'yaml';
+import { parseAllDocuments, type YAMLMap, type YAMLSeq } from 'yaml';
 import { checkReleaseConfigSchema } from '../../scripts/generate-release-config-schema.ts';
 
 checkReleaseConfigSchema();
@@ -11,13 +11,20 @@ const manifest = (kind: string) =>
   documents.find((document) => document.get('kind') === kind);
 const job = manifest('Job');
 const deployment = manifest('Deployment');
-const sync = manifest('ConfigMap');
 const sequence = (document: typeof job, path: (string | number)[]) =>
   (document?.getIn(path) as YAMLSeq | undefined)?.toJSON();
 
 assert.deepEqual(
   documents.map((document) => document.get('kind')).sort(),
-  ['ConfigMap', 'Deployment', 'Job', 'Service'].sort(),
+  ['Deployment', 'Job', 'Service'].sort(),
+);
+assert.equal(
+  deployment?.getIn([
+    'metadata',
+    'annotations',
+    'secret.reloader.stakater.com/reload',
+  ]),
+  'mongo-test,mongo-tls-test',
 );
 assert.deepEqual(
   sequence(job, ['spec', 'template', 'spec', 'containers', 0, 'args']),
@@ -32,16 +39,42 @@ assert.deepEqual(
     'spec',
     'template',
     'spec',
+    'containers',
+    0,
+    'command',
+  ]),
+  ['node', 'server/rxdb-sync.ts'],
+);
+assert.deepEqual(
+  sequence(deployment, [
+    'spec',
+    'template',
+    'spec',
     'initContainers',
     0,
-    'args',
+    'command',
   ]),
-  ['/opt/quizmon/deploy/powersync/sync-config.yaml', '/sync/sync-config.yaml'],
+  [
+    'sh',
+    '-c',
+    'cat /mongo-tls/tls.crt /mongo-tls/tls.key > /mongo-client/client.pem',
+  ],
 );
-const config = sync?.getIn(['data', 'service.yaml']);
-assert.equal(typeof config, 'string');
-assert.match(config as string, /uri: !env PS_SOURCE_URI/);
-assert.match(config as string, /uri: !env PS_STORAGE_URI/);
-assert.equal((config as string).match(/sslmode: verify-full/g)?.length, 2);
+assert.deepEqual(
+  (
+    deployment?.getIn([
+      'spec',
+      'template',
+      'spec',
+      'containers',
+      0,
+      'env',
+      3,
+      'valueFrom',
+      'secretKeyRef',
+    ]) as YAMLMap
+  )?.toJSON(),
+  { name: 'mongo-test', key: 'url' },
+);
 
-console.log('Migration and PowerSync wiring passed.');
+console.log('Migration and RxServer wiring passed.');

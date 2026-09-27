@@ -12,8 +12,7 @@ import {
 
 describe('completed round facts', () => {
   it('identifies a fresh League victory as the same archived record', async () => {
-    const datasetId = crypto.randomUUID();
-    const saved = completion(datasetId, 'league');
+    const saved = completion('league');
     const questions: QuestionData[] = saved.result.answers.map(
       (answer, index) => ({
         id: `question-${index}`,
@@ -38,13 +37,12 @@ describe('completed round facts', () => {
         questions,
         settings: defaultGameSettings,
         mode: { kind: 'league' },
-        contentVersion: saved.contentVersion,
         roundId: saved.completionId,
       },
       saved.completedAt,
       'Pilot Trainer',
     );
-    const archived = archiveCompletion({ ...fresh, datasetId });
+    const archived = archiveCompletion(fresh);
     const [projected] = projectRoundHistory([archived]).hallOfFame;
     expect(victory).toMatchObject({
       id: archived.id,
@@ -57,9 +55,7 @@ describe('completed round facts', () => {
   });
 
   it('accepts a League victory only for a perfect full round', () => {
-    const perfect = archiveCompletion(
-      completion(crypto.randomUUID(), 'league'),
-    );
+    const perfect = archiveCompletion(completion('league'));
     expect(validateRoundFact(perfect)).toBe(true);
 
     const short = structuredClone(perfect);
@@ -76,7 +72,7 @@ describe('completed round facts', () => {
   });
 
   it('accepts bounded retired IDs in completed facts without counting them as current types', () => {
-    const round = archiveCompletion(completion(crypto.randomUUID()));
+    const round = archiveCompletion(completion());
     round.data.answers[0]!.question_type = 'evolution-items';
     round.data.config.question_types = ['evolution-items', 'type-check'];
     expect(validateRoundFact(round)).toBe(true);
@@ -93,13 +89,13 @@ describe('completed round facts', () => {
   });
 
   it('rejects array-shaped enum fields in uploaded rounds', () => {
-    const round = archiveCompletion(completion(crypto.randomUUID()));
+    const round = archiveCompletion(completion());
     Reflect.set(round.data.answers[0]!, 'category', ['knowledge']);
     expect(validateRoundFact(round)).toBe(false);
   });
 
   it('rejects malformed nested uploads without accepting credited from clients', () => {
-    const round = archiveCompletion(completion(crypto.randomUUID(), 'daily'));
+    const round = archiveCompletion(completion('daily'));
     const upload = structuredClone(round);
     Reflect.deleteProperty(upload, 'credited');
     expect(validateRoundUpload(upload)).toBe(true);
@@ -120,7 +116,7 @@ describe('completed round facts', () => {
   });
 
   it('rederives score from answers instead of saved totals', () => {
-    const old = completion(crypto.randomUUID());
+    const old = completion();
     const expected = old.result.score;
     old.result.score = 0;
     old.result.answers[0]!.points = 0;
@@ -133,23 +129,8 @@ describe('completed round facts', () => {
     expect(scoreRound(round).score).toBe(expected);
   });
 
-  it('keeps the earlier factor rule for archived rounds without a score version', () => {
-    const round = archiveCompletion(completion(crypto.randomUUID()));
-    round.data.config.difficulty = 4;
-    round.data.config.question_types = ['ev-yields'];
-    for (const answer of round.data.answers) answer.question_type = 'ev-yields';
-    delete round.data.score_version;
-    expect(validateRoundFact(round)).toBe(true);
-    const earlier = scoreRound(round);
-    round.data.score_version = 2;
-    const current = scoreRound(round);
-    expect(earlier.scoreVersion).toBe(1);
-    expect(current.scoreVersion).toBe(2);
-    expect(current.score).toBeGreaterThan(earlier.score);
-  });
-
   it('retains a Daily start date through a completion after midnight', () => {
-    const old = completion(crypto.randomUUID(), 'daily', {
+    const old = completion('daily', {
       dailyDate: '2026-09-11',
       completedAt: '2026-09-12T00:01:00.000Z',
     });
@@ -165,7 +146,7 @@ describe('completed round facts', () => {
       Object.keys(projectRoundHistory([round]).results.daily),
     ).toHaveLength(1);
     const duplicate = archiveCompletion(
-      completion(crypto.randomUUID(), 'daily', {
+      completion('daily', {
         dailyDate: '2026-09-11',
         discoveries: ['ivysaur'],
       }),

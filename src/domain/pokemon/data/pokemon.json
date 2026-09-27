@@ -1,5 +1,4 @@
 {
-  "contentVersion": 3,
   "pokemon": {
     "abomasnow": {
       "abilities": ["snow-warning", "soundproof"],

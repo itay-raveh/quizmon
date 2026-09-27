@@ -1,8 +1,0 @@
-config:
-  edition: 3
-streams:
-  my_progress:
-    auto_subscribe: true
-    queries:
-      - SELECT id, code, joined_on, name, avatar, partner, specialty, answer_flow, timer_display, training_mode, difficulty, question_selection, generations, form_groups, question_types, auto_types FROM player WHERE id = auth.user_id()
-      - SELECT id, player_id, mode, day, puzzle_id, started_on, completed_at, credited, data FROM round WHERE player_id = auth.user_id()
