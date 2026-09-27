@@ -537,6 +537,12 @@
   margin: 0;
 }
 
+.leaderboard-empty .leaderboard-invite {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
 .leaderboard-empty__action.game-button {
   display: inline-flex;
   width: auto;

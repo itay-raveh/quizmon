@@ -275,9 +275,11 @@ function Standings({
     setError('');
     setRequest((current) => ({ after, revision: current.revision + 1 }));
   };
-  const noFriends = scope === 'friends' && hasFriends === false;
+  const noFriends =
+    scope === 'friends' && data?.items.length === 0 && hasFriends === false;
   const checkingFriends =
     scope === 'friends' && data?.items.length === 0 && hasFriends === undefined;
+  const pastDaily = mode === 'daily' && date < getUtcDate();
   return (
     <section
       className="leaderboard-standings"
@@ -367,10 +369,11 @@ function Standings({
                     ? 'No scores for this date'
                     : 'No Training scores yet'}
               </strong>
+              {noFriends && <InviteFriends owner={owner} />}
               {!noFriends && (
                 <Link
                   className="game-button leaderboard-empty__action"
-                  to="/"
+                  to={pastDaily ? `/daily/${date}` : '/'}
                   onClick={(event) => {
                     if (
                       event.metaKey ||
@@ -380,11 +383,12 @@ function Standings({
                     )
                       return;
                     playSound('tap');
-                    onOpenPlay();
+                    if (!pastDaily) onOpenPlay();
                   }}
                 >
-                  Open{' '}
-                  {mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}
+                  {pastDaily
+                    ? 'Open this Daily Challenge'
+                    : `Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
                 </Link>
               )}
             </div>
@@ -418,7 +422,9 @@ function Standings({
           )}
         </>
       )}
-      {scope === 'friends' && <InviteFriends owner={owner} />}
+      {scope === 'friends' && !noFriends && !checkingFriends && (
+        <InviteFriends owner={owner} />
+      )}
     </section>
   );
 }
