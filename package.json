@@ -139,7 +139,6 @@
           "server/auth-schema-config.ts",
           "server/instrument.ts",
           "deploy/migrate-release.ts",
-          "deploy/transfer-alpha-progress.ts",
           "worker/index.ts"
         ]
       }
