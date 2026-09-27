@@ -56,6 +56,18 @@
   background: var(--wrong);
 }
 
+.champion-search__answer {
+  width: min(100%, 34rem);
+  margin: 0.35rem 0 0;
+  padding: 0.55rem 0.75rem;
+  justify-self: center;
+  color: var(--navy);
+  background: var(--missed);
+  border: 2px solid var(--navy);
+  border-radius: 0.5rem;
+  font-weight: 700;
+}
+
 .champion-search__controls > .game-button {
   min-width: 5.75rem;
   min-height: 3rem;

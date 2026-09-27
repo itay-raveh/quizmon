@@ -5,6 +5,7 @@ import {
   type EntityRendering,
 } from '@/domain/quiz/question-rendering';
 import { PokemonSearch } from '@/components/PokemonSearch';
+import { formatPokemonName } from '@/domain/pokemon/format';
 import type { PokemonSearchOption } from '@/domain/quiz/types';
 import { useMemo, useState } from 'react';
 
@@ -52,46 +53,57 @@ export const ChampionSearch = ({
       : 'wrong'
     : null;
 
+  const correctLabel =
+    options.find(({ name }) => name === correctOption)?.label ??
+    formatPokemonName(correctOption);
+
   return (
-    <PokemonSearch
-      disabled={disabled || answered}
-      mode="champion"
-      renderPokemon={
-        answerKind !== 'pokemon'
-          ? undefined
-          : (pokemon) => (
-              <>
-                {pokemon.sprite ? (
-                  <span className="pokemon-picker__sprite" aria-hidden="true">
-                    <QuestionSprite
-                      src={pokemon.sprite}
-                      rule={policy.sprite}
-                      state={{ answered, cluesShown }}
-                    />
-                  </span>
-                ) : null}
-                <QuestionIdentity
-                  name={pokemon.name}
-                  dexNumber={pokemon.dexNumber}
-                  policy={policy}
-                  state={{ answered, cluesShown }}
-                  hideNumberFromAccessibility
-                />
-              </>
-            )
-      }
-      onConfirm={onAnswer}
-      searchSubject={
-        answerKind === 'pokemon'
-          ? 'Pokémon'
-          : answerKind === 'tm'
-            ? 'TM'
-            : answerKind
-      }
-      onQueryChange={setQuery}
-      options={searchOptions}
-      query={query}
-      result={result}
-    />
+    <>
+      <PokemonSearch
+        disabled={disabled || answered}
+        mode="champion"
+        renderPokemon={
+          answerKind !== 'pokemon'
+            ? undefined
+            : (pokemon) => (
+                <>
+                  {pokemon.sprite ? (
+                    <span className="pokemon-picker__sprite" aria-hidden="true">
+                      <QuestionSprite
+                        src={pokemon.sprite}
+                        rule={policy.sprite}
+                        state={{ answered, cluesShown }}
+                      />
+                    </span>
+                  ) : null}
+                  <QuestionIdentity
+                    name={pokemon.name}
+                    dexNumber={pokemon.dexNumber}
+                    policy={policy}
+                    state={{ answered, cluesShown }}
+                    hideNumberFromAccessibility
+                  />
+                </>
+              )
+        }
+        onConfirm={onAnswer}
+        searchSubject={
+          answerKind === 'pokemon'
+            ? 'Pokémon'
+            : answerKind === 'tm'
+              ? 'TM'
+              : answerKind
+        }
+        onQueryChange={setQuery}
+        options={searchOptions}
+        query={query}
+        result={result}
+      />
+      {result === 'wrong' && (
+        <p className="champion-search__answer">
+          Correct answer: <strong>{correctLabel}</strong>
+        </p>
+      )}
+    </>
   );
 };
