@@ -79,7 +79,7 @@ async function readLeaderboard(
   if (after) query.set('after', after);
   const response = await fetch(`/api/leaderboards/${mode}?${query}`, {
     credentials: 'same-origin',
-    signal: AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
+    signal: AbortSignal.any([signal, AbortSignal.timeout(30_000)]),
   });
   if (response.status === 401)
     throw new Error('Sign in again to view leaderboards.');

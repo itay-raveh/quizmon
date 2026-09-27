@@ -86,11 +86,11 @@ spec:
             - { name: http, containerPort: 8080 }
           startupProbe:
             httpGet: { path: /health, port: http }
-            periodSeconds: 5
-            failureThreshold: 60
+            periodSeconds: 1
+            failureThreshold: 300
           readinessProbe:
             httpGet: { path: /health, port: http }
-            periodSeconds: 10
+            periodSeconds: 1
           resources:
             {{- toYaml .Values.sync.resources | nindent 12 }}
       {{- if .Values.sync.mongoTlsSecret.name }}

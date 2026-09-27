@@ -55,8 +55,8 @@ export async function fetchPublicTrainer(
     {
       credentials: 'same-origin',
       signal: signal
-        ? AbortSignal.any([signal, AbortSignal.timeout(15_000)])
-        : AbortSignal.timeout(15_000),
+        ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
+        : AbortSignal.timeout(30_000),
     },
   );
   if (response.status === 401)

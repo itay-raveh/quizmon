@@ -44,8 +44,8 @@ async function request(
       ? { body: JSON.stringify({ ...body, expectedAccountId: owner }) }
       : {}),
     signal: signal
-      ? AbortSignal.any([signal, AbortSignal.timeout(15_000)])
-      : AbortSignal.timeout(15_000),
+      ? AbortSignal.any([signal, AbortSignal.timeout(30_000)])
+      : AbortSignal.timeout(30_000),
   });
   if (response.status === 401) throw new Error('Sign in again to use Friends.');
   if (response.status === 429)

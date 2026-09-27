@@ -28,7 +28,7 @@ export async function read<T>(
   const { token } = await context.get('auth').api.getToken({
     headers: context.req.raw.headers,
   });
-  for (let attempt = 0; attempt < 4; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     let response: Response;
     try {
       response = await fetch(`${context.get('sync').endpoint}/read/${path}`, {
@@ -38,15 +38,15 @@ export async function read<T>(
           ...(body ? { 'Content-Type': 'application/json' } : {}),
         },
         ...(body ? { body: JSON.stringify(body) } : {}),
-        signal: AbortSignal.timeout(4_000),
+        signal: AbortSignal.timeout(2_000),
       });
     } catch {
-      if (attempt === 3) throw new SyncReadError('network');
+      if (attempt === 4) throw new SyncReadError('network');
       await new Promise((resolve) => setTimeout(resolve, 2 ** attempt * 1000));
       continue;
     }
     if (response.ok) return response.json() as Promise<T>;
-    if (attempt === 3 || ![502, 503, 504].includes(response.status))
+    if (attempt === 4 || ![502, 503, 504].includes(response.status))
       throw new SyncReadError(response.status);
     await new Promise((resolve) => setTimeout(resolve, 2 ** attempt * 1000));
   }
