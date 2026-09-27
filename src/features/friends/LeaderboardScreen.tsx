@@ -473,6 +473,14 @@ export function LeaderboardScreen({
         <h1 className="game-panel__title" id="social-title">
           Rankings
         </h1>
+        {account.owner && !account.mergeRequired && (
+          <InviteFriends
+            owner={account.owner}
+            onError={setInviteError}
+            failed={inviteError}
+            onShareFailure={setShareFallbackLink}
+          />
+        )}
       </header>
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
@@ -498,7 +506,7 @@ export function LeaderboardScreen({
                   Training
                 </button>
               </div>
-              <div className="leaderboard-filter leaderboard-filter--players">
+              <div className="leaderboard-filter">
                 <div
                   className="leaderboard-scopes"
                   role="group"
@@ -519,12 +527,6 @@ export function LeaderboardScreen({
                     Global
                   </button>
                 </div>
-                <InviteFriends
-                  owner={account.owner}
-                  onError={setInviteError}
-                  failed={inviteError}
-                  onShareFailure={setShareFallbackLink}
-                />
               </div>
               {mode === 'daily' && (
                 <div className="leaderboard-filter leaderboard-date">

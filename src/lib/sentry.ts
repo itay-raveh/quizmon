@@ -93,9 +93,16 @@ export const initSentry = () => {
   }
 };
 
-export const attachFeedback = (element: Element) => {
+export const attachFeedback = (
+  element: Element,
+  callbacks?: {
+    onFormOpen?: () => void;
+    onFormClose?: () => void;
+    onFormSubmitted?: () => void;
+  },
+) => {
   try {
-    return feedback?.attachTo(element);
+    return feedback?.attachTo(element, callbacks);
   } catch {
     return undefined;
   }

@@ -297,43 +297,12 @@
   font-weight: 800;
 }
 
-@container app-shell (max-width: 36rem) {
-  .leaderboard-toolbar {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.6rem;
-  }
-
-  .leaderboard-scopes {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-}
-
-@container app-shell (max-width: 22.5rem) {
-  .leaderboard-date input {
-    padding-inline: 0.25rem;
-    font-size: var(--text-small);
-  }
-}
-
 .leaderboard-filter {
   display: grid;
   gap: 0.35rem;
   color: var(--muted);
   font-size: var(--text-label);
   font-weight: 700;
-}
-
-.leaderboard-filter--players {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.leaderboard-filter--players .leaderboard-invite .game-button {
-  min-height: 2.75rem;
-  padding: 0.35rem 0.55rem;
-  font-size: var(--text-label);
 }
 
 .leaderboard-scopes {
@@ -381,8 +350,7 @@
   min-width: 0;
   overflow-wrap: anywhere;
   grid-column: 1 / -1;
-  justify-self: end;
-  width: min(100%, 17rem);
+  width: 100%;
 }
 
 .leaderboard-date .game-button {
@@ -439,6 +407,44 @@
   color: var(--ink);
   font: inherit;
   font-size: var(--text-label);
+}
+
+@container app-shell (max-width: 36rem) {
+  .leaderboard-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  .leaderboard-modes,
+  .leaderboard-scopes {
+    width: 100%;
+  }
+
+  .leaderboard-modes button {
+    min-width: 0;
+  }
+
+  .leaderboard-scopes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .social-error-banner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .social-error-banner .game-button {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+  }
+}
+
+@container app-shell (max-width: 22.5rem) {
+  .leaderboard-date input {
+    padding-inline: 0.25rem;
+    font-size: var(--text-small);
+  }
 }
 
 .leaderboard-table th[scope='row'] {
