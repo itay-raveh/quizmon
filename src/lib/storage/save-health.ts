@@ -1,5 +1,6 @@
 import { SaveError, type SaveErrorKind } from '../../domain/player/save-schema';
 import { trackFailure } from '../analytics';
+import { captureUnexpectedError } from '../sentry';
 
 export interface SaveIssue {
   kind: SaveErrorKind;
@@ -31,6 +32,8 @@ export const reportSaveIssue = (error: unknown): SaveError => {
   if (!issue) {
     issue = { kind: failure.kind, message: failure.message };
     trackFailure(`save.${failure.kind}`);
+    if (!(error instanceof SaveError))
+      captureUnexpectedError(`save.${failure.kind}`, error);
     notify();
   }
   return failure;

@@ -3,10 +3,10 @@ import {
   canRecoverGuestSave,
 } from '@/lib/storage/player-storage';
 import { Footer } from '@/app/Footer';
-import { FeedbackButton } from '@/app/FeedbackButton';
 import { Logo } from '@/app/Logo';
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
+import { Sentry, sentryEnabled } from '@/lib/sentry';
 import { AccountSettings } from '@/features/account/AccountSettings';
 import { AutomaticUpdate } from '@/features/installation/AutomaticUpdate';
 import { useModalDialog } from '@/hooks/useModalDialog';
@@ -44,7 +44,7 @@ const messages = {
   unavailable: {
     title: 'Saved data is unavailable',
     message:
-      'Your browser could not access site storage. Allow storage for Quizmon, then try again.',
+      'Quizmon could not open saved data on this device. Check that site storage is allowed, then try again.',
   },
 };
 
@@ -63,6 +63,11 @@ const SaveRecoveryDialog = ({
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [needsSignIn, setNeedsSignIn] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [report, setReport] = useState('');
+  const [reportEmail, setReportEmail] = useState('');
+  const [reportStatus, setReportStatus] = useState('');
+  const [sendingReport, setSendingReport] = useState(false);
   const { dialogProps } = useModalDialog(() => {}, { initialFocus: heading });
   const copy = messages[issue.kind];
   const act = async (action: () => void | Promise<void>) => {
@@ -155,6 +160,11 @@ const SaveRecoveryDialog = ({
         <GameButton tone="quiet" disabled={busy} onClick={onRetry}>
           Try again
         </GameButton>
+        {sentryEnabled && !reportOpen && (
+          <GameButton tone="quiet" onClick={() => setReportOpen(true)}>
+            Report a problem
+          </GameButton>
+        )}
         {issue.kind !== 'unavailable' &&
           (canRecoverGuestSave() || canRecoverAccountSave()) && (
             <GameButton
@@ -166,6 +176,51 @@ const SaveRecoveryDialog = ({
             </GameButton>
           )}
       </div>
+      {reportOpen && (
+        <form
+          className="save-recovery__report"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!report.trim() || sendingReport) return;
+            setSendingReport(true);
+            setReportStatus('');
+            void Sentry.sendFeedback({
+              message: `Save recovery (${issue.kind}): ${report.trim()}`,
+              email: reportEmail.trim() || undefined,
+            })
+              .then(() => {
+                setReportStatus('Report sent. Thank you.');
+                setReport('');
+              })
+              .catch(() =>
+                setReportStatus(
+                  'Report could not be sent. Check your connection and try again.',
+                ),
+              )
+              .finally(() => setSendingReport(false));
+          }}
+        >
+          <label htmlFor="save-recovery-report">What happened?</label>
+          <textarea
+            id="save-recovery-report"
+            required
+            value={report}
+            onChange={(event) => setReport(event.target.value)}
+            placeholder="Tell us what you were doing when this appeared."
+          />
+          <label htmlFor="save-recovery-email">Email (optional)</label>
+          <input
+            id="save-recovery-email"
+            type="email"
+            value={reportEmail}
+            onChange={(event) => setReportEmail(event.target.value)}
+          />
+          <GameButton disabled={sendingReport || !report.trim()} type="submit">
+            {sendingReport ? 'Sending…' : 'Send report'}
+          </GameButton>
+          {reportStatus && <p role="status">{reportStatus}</p>}
+        </form>
+      )}
       <input
         ref={input}
         hidden
@@ -270,7 +325,6 @@ export const SaveRecoveryBoundary = ({ children }: { children: ReactNode }) => {
     <div className="app app--landing">
       {issue.kind === 'newer' && <AutomaticUpdate allowed />}
       <div className="background" aria-hidden="true" />
-      <FeedbackButton />
       <div className="app__screen">
         <main>
           <Logo />
