@@ -24,88 +24,75 @@ import {
   readDailyLeaderboard,
   readTrainingLeaderboard,
 } from './leaderboards-client';
-import { SocialSections } from './SocialSections';
 import { friendPage, ownPlayer } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import './friends.css';
 
 const standingsCache = new Map<string, Leaderboard>();
 
-function InviteFriends({ owner }: { owner: string }) {
+function InviteFriends({
+  owner,
+  onError,
+  retry,
+  failed,
+  onShareFailure,
+}: {
+  owner: string;
+  onError: (failed: boolean) => void;
+  retry: number;
+  failed: boolean;
+  onShareFailure: (link: string) => void;
+}) {
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
-  const [loadError, setLoadError] = useState(false);
-  const [showLink, setShowLink] = useState(false);
-  const [retry, setRetry] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     void ownPlayer(owner, controller.signal)
       .then((player) => {
-        if (!controller.signal.aborted) setCode(player.code ?? '');
+        if (!controller.signal.aborted) {
+          setCode(player.code ?? '');
+          onError(!player.code);
+        }
       })
       .catch(() => {
-        if (!controller.signal.aborted) setLoadError(true);
+        if (!controller.signal.aborted) onError(true);
       });
     return () => controller.abort();
-  }, [owner, retry]);
+  }, [owner, onError, retry]);
   const link = `${location.origin}/social/friends?code=${code}`;
   return (
     <div className="leaderboard-invite">
-      {loadError ? (
-        <>
-          <p role="alert">Could not load your invite link.</p>
-          <GameButton
-            tone="quiet"
-            onClick={() => {
-              setLoadError(false);
-              setRetry((value) => value + 1);
-            }}
-          >
-            Retry invite link
-          </GameButton>
-        </>
-      ) : (
-        <GameButton
-          tone="quiet"
-          disabled={!code}
-          onClick={() => {
-            setMessage('');
-            setShowLink(false);
-            void shareFriendLink(link)
-              .then((result) =>
-                setMessage(
-                  result === 'shared'
-                    ? 'Friend link shared.'
-                    : result === 'copied'
-                      ? 'Friend link copied.'
-                      : '',
-                ),
-              )
-              .catch(() => {
-                setMessage('Select the link below to copy it.');
-                setShowLink(true);
-              });
-          }}
-        >
-          <ShareNetworkIcon aria-hidden="true" />
-          {!code
-            ? 'Loading invite link…'
-            : canShareFriendLink()
-              ? 'Invite friends'
-              : 'Copy invite link'}
-        </GameButton>
-      )}
-      {message && <p role={showLink ? 'alert' : 'status'}>{message}</p>}
-      {showLink && (
-        <label className="friends-field">
-          Your invite link
-          <input
-            readOnly
-            value={link}
-            onFocus={(event) => event.target.select()}
-          />
-        </label>
-      )}
+      <GameButton
+        tone="quiet"
+        disabled={!code}
+        onClick={() => {
+          setMessage('');
+          onShareFailure('');
+          void shareFriendLink(link)
+            .then((result) =>
+              setMessage(
+                result === 'shared'
+                  ? 'Friend link shared.'
+                  : result === 'copied'
+                    ? 'Friend link copied.'
+                    : '',
+              ),
+            )
+            .catch(() => {
+              onShareFailure(link);
+            });
+        }}
+      >
+        <ShareNetworkIcon aria-hidden="true" />
+        {!code
+          ? failed
+            ? 'Invite friends'
+            : 'Loading invite link…'
+          : canShareFriendLink()
+            ? 'Invite friends'
+            : 'Copy invite link'}
+      </GameButton>
+      {message && <p role="status">{message}</p>}
     </div>
   );
 }
@@ -161,6 +148,7 @@ function Standings({
   scope,
   onViewPlayer,
   onOpenPlay,
+  onError,
 }: {
   owner: string;
   catalog?: PokemonCatalog;
@@ -169,6 +157,7 @@ function Standings({
   scope: LeaderboardScope;
   onViewPlayer: (id: string) => void;
   onOpenPlay: () => void;
+  onError: (message: string) => void;
 }) {
   const playSound = useInteractionSound();
   const dailyDate = mode === 'daily' ? date : '';
@@ -178,7 +167,6 @@ function Standings({
     standingsCache.get(`${cacheKey}:`),
   );
   const [hasFriends, setHasFriends] = useState<boolean | null>();
-  const [error, setError] = useState('');
   const [busy, setBusy] = useState(!data);
   const [request, setRequest] = useState({
     after: null as string | null,
@@ -233,12 +221,12 @@ function Standings({
           if (standingsCache.size > 24)
             standingsCache.delete(standingsCache.keys().next().value!);
           setData(next);
-          setError('');
+          onError('');
         }
       })
       .catch((cause: unknown) => {
         if (!controller.signal.aborted)
-          setError(
+          onError(
             cause instanceof TypeError
               ? 'Could not reach the leaderboard. Check your connection and try again.'
               : cause instanceof Error
@@ -250,7 +238,7 @@ function Standings({
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [owner, dailyCatalog, mode, dailyDate, scope, request, cacheKey]);
+  }, [owner, dailyCatalog, mode, dailyDate, scope, request, cacheKey, onError]);
   useEffect(() => {
     const refresh = () => {
       if (document.visibilityState === 'visible' && navigator.onLine)
@@ -272,7 +260,7 @@ function Standings({
     const cached = standingsCache.get(`${cacheKey}:${after ?? ''}`);
     setData(cached);
     setBusy(!cached);
-    setError('');
+    onError('');
     setRequest((current) => ({ after, revision: current.revision + 1 }));
   };
   const noFriends =
@@ -288,22 +276,12 @@ function Standings({
     >
       {busy && !data && <StandingsSkeleton />}
       {checkingFriends && <StandingsSkeleton />}
-      {error && (
-        <p role="alert" className="settings-error">
-          {error}
-          {data ? ' Showing the last loaded standings.' : ''}
-        </p>
-      )}
-      {error && !data && !busy && (
-        <GameButton tone="quiet" onClick={() => load(null)}>
-          Retry
-        </GameButton>
-      )}
       {data && !checkingFriends && (
         <>
           {data.viewer && (
             <div className="leaderboard-viewer">
-              Your place <strong>#{data.viewer.rank}</strong>
+              <span>{data.viewer.player.name}</span>
+              <strong>#{data.viewer.rank}</strong>
             </div>
           )}
           {data.items.length ? (
@@ -369,7 +347,9 @@ function Standings({
                     ? 'No scores for this date'
                     : 'No Training scores yet'}
               </strong>
-              {noFriends && <InviteFriends owner={owner} />}
+              {noFriends && (
+                <span>Share your link to bring a friend here.</span>
+              )}
               {!noFriends && (
                 <Link
                   className="game-button leaderboard-empty__action"
@@ -422,9 +402,6 @@ function Standings({
           )}
         </>
       )}
-      {scope === 'friends' && !noFriends && !checkingFriends && (
-        <InviteFriends owner={owner} />
-      )}
     </section>
   );
 }
@@ -461,6 +438,10 @@ export function LeaderboardScreen({
       : getUtcDate(),
   );
   const [today, setToday] = useState(getUtcDate);
+  const [inviteError, setInviteError] = useState(false);
+  const [standingsError, setStandingsError] = useState('');
+  const [shareFallbackLink, setShareFallbackLink] = useState('');
+  const [retry, setRetry] = useState(0);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -477,15 +458,18 @@ export function LeaderboardScreen({
   }, [today, date, scope, mode, onSelectionChange]);
   const chooseScope = (next: LeaderboardScope) => {
     setScope(next);
+    setStandingsError('');
     onSelectionChange?.(date, next, mode);
   };
   const chooseMode = (next: LeaderboardMode) => {
     setMode(next);
+    setStandingsError('');
     onSelectionChange?.(date, scope, next);
   };
   const chooseDate = (next: string) => {
     if (isDailyDate(next) && next <= today) {
       setDate(next);
+      setStandingsError('');
       onSelectionChange?.(next, scope, mode);
     }
   };
@@ -494,15 +478,73 @@ export function LeaderboardScreen({
       className="game-panel social-screen"
       aria-labelledby="social-title"
     >
-      <header className="game-panel__header">
+      <header className="game-panel__header leaderboard-header">
         <h1 className="game-panel__title" id="social-title">
-          Social
+          Rankings
         </h1>
+        {account.owner && !account.mergeRequired && (
+          <div className="leaderboard-header__actions">
+            <Link to="/account" className="leaderboard-friends-link">
+              Friends list
+            </Link>
+            <InviteFriends
+              owner={account.owner}
+              onError={setInviteError}
+              retry={retry}
+              failed={inviteError}
+              onShareFailure={setShareFallbackLink}
+            />
+          </div>
+        )}
       </header>
-      <SocialSections active="rankings" />
       <div className="friends-panel">
         {account.owner && !account.mergeRequired ? (
           <>
+            {(inviteError || standingsError || shareFallbackLink) && (
+              <div className="social-error-banner" role="alert">
+                <strong>
+                  {shareFallbackLink
+                    ? standingsError
+                      ? 'Standings and invite sharing unavailable'
+                      : 'Could not share invite link'
+                    : standingsError && inviteError
+                      ? 'Rankings and invite link unavailable'
+                      : standingsError
+                        ? 'Standings unavailable'
+                        : 'Invite link unavailable'}
+                </strong>
+                {standingsError && <span>{standingsError}</span>}
+                {inviteError && (
+                  <span>Your invite link could not be loaded.</span>
+                )}
+                {shareFallbackLink && (
+                  <span>Select the link below to copy it.</span>
+                )}
+                {shareFallbackLink && (
+                  <label className="friends-field">
+                    Invite link
+                    <input
+                      readOnly
+                      value={shareFallbackLink}
+                      onFocus={(event) => event.target.select()}
+                    />
+                  </label>
+                )}
+                {(inviteError || standingsError) && (
+                  <GameButton
+                    tone="quiet"
+                    onClick={() => {
+                      setInviteError(false);
+                      setStandingsError('');
+                      setShareFallbackLink('');
+                      setRetry((value) => value + 1);
+                    }}
+                  >
+                    Retry
+                  </GameButton>
+                )}
+              </div>
+            )}
             <div className="leaderboard-toolbar">
               <div
                 className="leaderboard-modes"
@@ -602,7 +644,7 @@ export function LeaderboardScreen({
               }}
             >
               <Standings
-                key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}`}
+                key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}:${retry}`}
                 owner={account.owner}
                 catalog={catalog}
                 mode={mode}
@@ -610,6 +652,7 @@ export function LeaderboardScreen({
                 scope={scope}
                 onViewPlayer={onViewPlayer}
                 onOpenPlay={onOpenPlay}
+                onError={setStandingsError}
               />
             </div>
           </>

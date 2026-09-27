@@ -28,7 +28,6 @@ import { HomeScreen } from './HomeScreen';
 import { MotionProvider } from './providers/MotionProvider';
 import type { useGameNavigation } from './useGameNavigation';
 import { AccountScreen } from '../features/account/AccountScreen';
-import { FriendsScreen } from '../features/friends/FriendsScreen';
 import { LeaderboardScreen } from '../features/friends/LeaderboardScreen';
 import { PublicTrainerScreen } from '../features/friends/PublicTrainerScreen';
 import { AppNavigation } from './AppNavigation';
@@ -107,24 +106,19 @@ const AppScreen = ({
       </section>
     );
   }
-  if (session.phase !== 'questions' && destination.destination === 'account') {
-    return (
-      <AccountScreen
-        hasTrainerName={Boolean(trainer.profile.name.trim())}
-        onEditCard={() => destination.trainer('front', true)}
-      />
-    );
-  }
-  if (session.phase !== 'questions' && destination.destination === 'friends') {
+  if (
+    session.phase !== 'questions' &&
+    (destination.destination === 'account' ||
+      destination.destination === 'friends')
+  ) {
     return (
       <>
         <div className="social-route" hidden={Boolean(destination.playerId)}>
-          <FriendsScreen
-            key={destination.friendCode}
-            onCloseInvitation={() => destination.open('friends')}
-            onSignIn={() => destination.account()}
+          <AccountScreen
+            trainerName={trainer.profile.name}
+            onEditCard={() => destination.trainer('front', true)}
             onViewPlayer={onViewPlayer}
-            initialInput={destination.friendCode}
+            friendCode={destination.friendCode}
           />
         </div>
         {destination.playerId && (
@@ -392,7 +386,7 @@ export const AppView = (props: AppViewProps) => {
           : ((
               {
                 account: 'Account',
-                friends: 'Friends',
+                friends: 'Account',
                 rankings: 'Rankings',
                 questions: 'Question',
                 results: 'Results',
@@ -443,10 +437,10 @@ export const AppView = (props: AppViewProps) => {
   };
   const showNavigation = props.session.phase !== 'questions';
   const active =
-    destination.destination === 'account'
+    destination.destination === 'account' ||
+    destination.destination === 'friends'
       ? null
-      : destination.destination === 'rankings' ||
-          destination.destination === 'friends'
+      : destination.destination === 'rankings'
         ? 'social'
         : props.trainer.isOpen
           ? 'trainer'
@@ -467,7 +461,10 @@ export const AppView = (props: AppViewProps) => {
                 {showNavigation ? (
                   <AppNavigation
                     active={active}
-                    accountOpen={destination.destination === 'account'}
+                    accountOpen={
+                      destination.destination === 'account' ||
+                      destination.destination === 'friends'
+                    }
                     onSettings={props.settingsDialog.open}
                     socialPath={
                       props.session.phase === 'results' &&

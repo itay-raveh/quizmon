@@ -2,6 +2,45 @@
   text-align: left;
 }
 
+.account-screen .game-panel__header {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.account-screen__code {
+  color: var(--muted);
+  font: 700 var(--text-mini) var(--font-data);
+  letter-spacing: 0.04em;
+}
+
+.account-screen__sections {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.account-screen__section {
+  min-width: 0;
+  border-top: 1px solid var(--navy);
+}
+
+.account-screen__section summary {
+  padding: 0.8rem 0.2rem;
+  color: var(--navy);
+  font-size: var(--text-headline);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.account-screen__section summary:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.account-screen__section > .account-settings,
+.account-screen__section > .friends-panel {
+  padding: 0.3rem 0.2rem 1rem;
+}
+
 .account-settings,
 .account-settings__section {
   display: grid;

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
+import { formatFriendCode } from '../../domain/social/friends';
+import { FriendsPanel } from '../friends/FriendsPanel';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   readStoredValue,
@@ -55,18 +57,35 @@ const WelcomeTrainerDialog = ({
 };
 
 export function AccountScreen({
-  hasTrainerName,
+  trainerName,
   onEditCard,
+  onViewPlayer,
+  friendCode = '',
 }: {
-  hasTrainerName: boolean;
+  trainerName: string;
   onEditCard: () => void;
+  onViewPlayer: (id: string) => void;
+  friendCode?: string;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const navigate = useNavigate();
   const signingIn = !account.owner && !account.mergeRequired;
-  const friendInvitation = accountReturnPath(window.location.href).startsWith(
-    '/social/friends?code=',
-  );
+  const hasTrainerName = Boolean(trainerName.trim());
+  const [ownCode, setOwnCode] = useState('');
+  const returnPath = friendCode
+    ? `/social/friends?code=${friendCode}`
+    : accountReturnPath(window.location.href);
+  const friendInvitation =
+    accountReturnPath(window.location.href).startsWith(
+      '/social/friends?code=',
+    ) || Boolean(friendCode);
+  useEffect(() => {
+    if (friendCode && (signingIn || account.mergeRequired))
+      void navigate(
+        `/account?returnTo=${encodeURIComponent(`/social/friends?code=${friendCode}`)}`,
+        { replace: true },
+      );
+  }, [friendCode, signingIn, account.mergeRequired, navigate]);
   const heading = useRef<HTMLHeadingElement>(null);
   const [welcomeFor] = useState(() =>
     readStoredValue('sessionStorage', accountWelcomeKey),
@@ -80,9 +99,9 @@ export function AccountScreen({
     if (!account.owner || welcomeFor !== account.owner) return;
     removeStoredValue('sessionStorage', accountWelcomeKey);
     if (hasTrainerName) {
-      void navigate(accountReturnPath(window.location.href), { replace: true });
+      void navigate(returnPath, { replace: true });
     }
-  }, [account.owner, hasTrainerName, navigate, welcomeFor]);
+  }, [account.owner, hasTrainerName, navigate, returnPath, welcomeFor]);
   return (
     <>
       <section
@@ -96,8 +115,13 @@ export function AccountScreen({
             tabIndex={-1}
             ref={heading}
           >
-            {signingIn ? 'Sign in' : 'Account'}
+            {signingIn ? 'Sign in' : trainerName.trim() || 'Account'}
           </h1>
+          {!signingIn && ownCode && (
+            <small className="account-screen__code">
+              {formatFriendCode(ownCode)}
+            </small>
+          )}
         </header>
         {signingIn && friendInvitation && (
           <p>
@@ -105,13 +129,39 @@ export function AccountScreen({
             see their profile and choose whether to send a friend request.
           </p>
         )}
-        <AccountSettings />
+        {signingIn || account.mergeRequired ? (
+          <AccountSettings />
+        ) : (
+          <div className="account-screen__sections">
+            <details
+              className="account-screen__section"
+              open={Boolean(account.error)}
+            >
+              <summary>Account settings</summary>
+              <AccountSettings />
+            </details>
+            <details className="account-screen__section" open>
+              <summary>Friends</summary>
+              <FriendsPanel
+                key={`${account.owner}:${friendCode}`}
+                owner={account.owner}
+                initialInput={friendCode}
+                adding={Boolean(friendCode)}
+                onToggleAdding={() =>
+                  void navigate('/account', { replace: true })
+                }
+                onViewPlayer={onViewPlayer}
+                onOwnCode={setOwnCode}
+              />
+            </details>
+          </div>
+        )}
       </section>
       {showWelcome ? (
         <WelcomeTrainerDialog
           onEditCard={onEditCard}
           onContinue={() => {
-            void navigate(accountReturnPath(window.location.href), {
+            void navigate(returnPath, {
               replace: true,
             });
           }}

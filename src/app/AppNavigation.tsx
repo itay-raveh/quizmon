@@ -17,7 +17,7 @@ export type MainDestination = 'play' | 'trainer' | 'social';
 const destinations = [
   ['play', 'Play', PuzzlePieceIcon],
   ['trainer', 'Trainer', CardholderIcon],
-  ['social', 'Social', UsersIcon],
+  ['social', 'Rankings', UsersIcon],
 ] as const;
 
 export function AppNavigation({
@@ -43,9 +43,10 @@ export function AppNavigation({
   const location = useLocation();
   const playSound = useInteractionSound();
   const paths = { play: '/', trainer: '/trainer', social: socialPath };
-  const accountPath = accountOpen
-    ? `${location.pathname}${location.search}${location.hash}`
-    : `/account?returnTo=${encodeURIComponent(`${location.pathname}${location.search}${location.hash}`)}`;
+  const accountPath =
+    accountOpen && location.pathname === '/account'
+      ? `${location.pathname}${location.search}${location.hash}`
+      : `/account?returnTo=${encodeURIComponent(`${location.pathname}${location.search}${location.hash}`)}`;
   return (
     <header className="app-header">
       <SettingsButton disabled={!trainerAvailable} onClick={onSettings} />
@@ -105,7 +106,8 @@ export function AppNavigation({
                 event.altKey
               )
                 return;
-              if (accountOpen) event.preventDefault();
+              if (accountOpen && location.pathname === '/account')
+                event.preventDefault();
               else playSound('tap');
             }}
           >

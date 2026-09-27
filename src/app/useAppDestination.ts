@@ -25,10 +25,6 @@ export function useAppDestination() {
           ? 'rankings'
           : null;
 
-  const open = (next: 'friends' | 'rankings') => {
-    void navigate(next === 'friends' ? '/social/friends' : '/social/rankings');
-  };
-
   const account = (returnTo?: string) => {
     const origin =
       returnTo ?? `${location.pathname}${location.search}${location.hash}`;
@@ -70,7 +66,6 @@ export function useAppDestination() {
     playerId,
     viewPlayer,
     closePlayer,
-    open,
     trainer,
     standingsDate: params.get('date') ?? undefined,
     standingsScope:

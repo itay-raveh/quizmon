@@ -64,7 +64,7 @@ function Player({
       </div>
       {player.code && (
         <small className="friends-player__code">
-          Support code: {formatFriendCode(player.code)}
+          {formatFriendCode(player.code)}
         </small>
       )}
     </div>
@@ -132,12 +132,14 @@ export function FriendsPanel({
   adding,
   onViewPlayer,
   onToggleAdding,
+  onOwnCode,
 }: {
   owner: string;
   initialInput: string;
   adding: boolean;
   onViewPlayer?: (id: string) => void;
   onToggleAdding: () => void;
+  onOwnCode?: (code: string) => void;
 }) {
   const [me, setMe] = useState<SocialPlayer>();
   const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>({});
@@ -181,10 +183,11 @@ export function FriendsPanel({
       );
       if (signal.aborted) return;
       setMe(data.me);
+      onOwnCode?.(data.me.code ?? '');
       setPages(data.pages);
       setError('');
     },
-    [owner, pages],
+    [owner, pages, onOwnCode],
   );
 
   useEffect(() => {
@@ -194,6 +197,7 @@ export function FriendsPanel({
       .then(async (data) => {
         if (controller.signal.aborted) return;
         setMe(data.me);
+        onOwnCode?.(data.me.code ?? '');
         setPages(data.pages);
         if (!initialInput || controller.signal.aborted) return;
         const code = parseFriendInput(initialInput, location.origin);
@@ -214,7 +218,7 @@ export function FriendsPanel({
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [owner, initialInput, lookupRetry]);
+  }, [owner, initialInput, lookupRetry, onOwnCode]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -332,22 +336,35 @@ export function FriendsPanel({
   const initialLoading = busy && !me && !pages.friends && !error;
   return (
     <div className="friends-panel">
-      {error && (
-        <p className="settings-error" role="alert">
-          {error}
-        </p>
-      )}
-      {error && !busy && (!me || (adding && !found)) && (
-        <GameButton
-          tone="quiet"
-          onClick={() => {
-            setBusy(true);
-            setError('');
-            setLookupRetry((n) => n + 1);
-          }}
-        >
-          Retry
-        </GameButton>
+      {(error || showLink) && (
+        <div className="social-error-banner" role="alert">
+          <strong>
+            {error ? 'Friends unavailable' : 'Invite link could not be shared'}
+          </strong>
+          <span>{error || 'Select and copy the link below.'}</span>
+          {showLink && (
+            <label className="friends-field">
+              Invite link
+              <input
+                readOnly
+                value={link}
+                onFocus={(event) => event.target.select()}
+              />
+            </label>
+          )}
+          {error && !busy && (!me || (adding && !found)) && (
+            <GameButton
+              tone="quiet"
+              onClick={() => {
+                setBusy(true);
+                setError('');
+                setLookupRetry((n) => n + 1);
+              }}
+            >
+              Retry
+            </GameButton>
+          )}
+        </div>
       )}
       {busy && (
         <p className="visually-hidden" role="status">
@@ -358,6 +375,7 @@ export function FriendsPanel({
       <div className="friends-panel__heading">
         <h2
           id={adding ? 'add-friend-title' : 'friends-title'}
+          className={adding ? undefined : 'visually-hidden'}
           ref={friendsHeading}
           tabIndex={-1}
         >
@@ -395,24 +413,6 @@ export function FriendsPanel({
           </GameButton>
         )}
       </div>
-      {!adding && showLink && (
-        <>
-          <p role="alert">Could not share or copy the link.</p>
-          <label className="friends-field">
-            Select your invite link to copy it
-            <input
-              readOnly
-              value={link}
-              onFocus={(event) => event.target.select()}
-            />
-          </label>
-        </>
-      )}
-      {!adding && me?.code && (
-        <small className="friends-panel__code">
-          Your support code: {formatFriendCode(me.code)}
-        </small>
-      )}
       {adding && (
         <section className="friends-add" aria-labelledby="add-friend-title">
           <p>
