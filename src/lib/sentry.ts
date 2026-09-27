@@ -9,6 +9,7 @@ const dsn = env.PROD ? env.VITE_SENTRY_DSN : undefined;
 let feedback: ReturnType<typeof Sentry.feedbackIntegration> | undefined;
 let identityVersion = 0;
 
+export const feedbackLabel = 'Send feedback';
 export const sentryEnabled = Boolean(dsn);
 
 export const initSentry = () => {
@@ -17,8 +18,16 @@ export const initSentry = () => {
     feedback = Sentry.feedbackIntegration({
       autoInject: false,
       enableScreenshot: true,
+      emailLabel: 'Email (optional)',
+      formTitle: feedbackLabel,
       isEmailRequired: false,
       isNameRequired: false,
+      messageLabel: 'Your feedback',
+      messagePlaceholder:
+        'Report a problem, share an idea, or leave a comment.',
+      showName: false,
+      submitButtonLabel: feedbackLabel,
+      successMessageText: 'Thanks for your feedback.',
     });
     Sentry.init({
       dsn,
@@ -84,7 +93,7 @@ export const initSentry = () => {
   }
 };
 
-export const attachBugReport = (element: Element) => {
+export const attachFeedback = (element: Element) => {
   try {
     return feedback?.attachTo(element);
   } catch {

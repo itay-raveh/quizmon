@@ -1,7 +1,7 @@
 import { useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../components/GameButton';
 import { downloadBackup } from '../features/settings/backup';
-import { BugReportButton } from './BugReportButton';
+import { FeedbackButton } from './FeedbackButton';
 import {
   getSaveError,
   isSaveRetrying,
@@ -46,7 +46,7 @@ export const LocalGame = () => {
           >
             Download saved progress
           </GameButton>
-          <BugReportButton label="Report issue" />
+          <FeedbackButton showLabel />
           {exportError && <p>{exportError}</p>}
         </section>
       )}

@@ -12,7 +12,7 @@ If you enable Daily reminders, we store the push subscription and time zone need
 
 ## Analytics and Reports
 
-Sentry counts page views, game starts and completions, and aggregate scores and durations. These metrics do not use a Quizmon visitor or account ID, and we do not set analytics markers in your browser. They count plays, not unique players. Sentry also receives errors and diagnostic traces. Signed-in diagnostics may include your account ID and email. Report a bug sends the details and any screenshot or contact information you choose to submit. We do not record session replays.
+Sentry counts page views, game starts and completions, and aggregate scores and durations. These metrics do not use a Quizmon visitor or account ID, and we do not set analytics markers in your browser. They count plays, not unique players. Sentry also receives errors and diagnostic traces. Signed-in diagnostics may include your account ID and email. Sending feedback shares your message and any screenshot or contact information you choose to submit. We do not record session replays.
 
 Cloudflare hosts and protects Quizmon and provides traffic and security statistics from site requests. Its traffic dashboard estimates unique visitors from IP addresses and can include bots, so this is not a count of unique players. We do not use Cloudflare's browser analytics script. Cloudflare may use [security cookies](https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/) to protect the site.
 

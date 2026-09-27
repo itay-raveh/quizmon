@@ -25,7 +25,7 @@ The local account service uses PostgreSQL, and RxServer syncs account saves thro
 
 ## Sentry
 
-Production releases send browser errors, bug reports, traces, and game metrics to the browser Sentry project. Worker errors and traces use a separate project. Guests have no Quizmon account identity in Sentry; a verified signed-in session supplies its account ID and email for diagnostics. Game metrics omit account identity. Sentry is optional for loading, play, and saving.
+Production releases send browser errors, player feedback, traces, and game metrics to the browser Sentry project. Worker errors and traces use a separate project. Guests have no Quizmon account identity in Sentry; a verified signed-in session supplies its account ID and email for diagnostics. Game metrics omit account identity. Sentry is optional for loading, play, and saving.
 
 Set the GitHub Actions secrets `SENTRY_BROWSER_DSN`, `SENTRY_WORKER_DSN`, `SENTRY_ORG`, `SENTRY_BROWSER_PROJECT`, `SENTRY_WORKER_PROJECT`, and `SENTRY_AUTH_TOKEN`. The token needs Sentry's `org:ci` scope for source map uploads. The release stops if a secret or upload is missing. Browser maps are uploaded and deleted from `dist/`; the checked Worker bundle and its map are uploaded before the same bundle is deployed. Local development and tests do not send Sentry events.
 

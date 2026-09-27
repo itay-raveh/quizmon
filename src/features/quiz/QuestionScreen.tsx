@@ -1,4 +1,4 @@
-import { BugReportButton } from '@/app/BugReportButton';
+import { FeedbackButton } from '@/app/FeedbackButton';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
 import { showsSearchResponse } from '@/domain/quiz/question-interaction';
 import { GameButton } from '@/components/GameButton';
@@ -150,7 +150,7 @@ export const QuestionScreen = ({
         >
           {timerText}
         </span>
-        <BugReportButton />
+        <FeedbackButton />
       </header>
 
       {isLeague ? <LeagueProgress currentQuestion={number} /> : null}

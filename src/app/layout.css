@@ -6,7 +6,7 @@
   container: app-shell / inline-size;
 }
 
-.app-header .bug-report-button {
+.app-header .feedback-button {
   grid-column: 3;
   justify-self: end;
   display: grid;

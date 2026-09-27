@@ -10,7 +10,7 @@ import {
 } from '../components/icons';
 import { accountSnapshot, subscribeAccount } from '../features/account/account';
 import { SettingsButton } from '../features/settings/SettingsButton';
-import { BugReportButton } from './BugReportButton';
+import { FeedbackButton } from './FeedbackButton';
 
 export type MainDestination = 'play' | 'trainer' | 'social';
 
@@ -119,7 +119,7 @@ export function AppNavigation({
           </Link>
         </nav>
       ) : null}
-      <BugReportButton />
+      <FeedbackButton />
     </header>
   );
 }

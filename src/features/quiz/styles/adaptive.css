@@ -21,7 +21,7 @@
     margin-left: 0;
   }
 
-  .question__topline .bug-report-button {
+  .question__topline .feedback-button {
     grid-column: 3;
     grid-row: 1 / 3;
   }

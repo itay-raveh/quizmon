@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
-import { BugReportButton } from '../../app/BugReportButton';
+import { FeedbackButton } from '../../app/FeedbackButton';
 import {
   ArrowsClockwiseIcon,
   MedalIcon,
@@ -467,7 +467,7 @@ export const AccountSettings = ({
                         ? 'Reconnecting…'
                         : 'Try again'}
                   </GameButton>
-                  <BugReportButton label="Report issue" />
+                  <FeedbackButton showLabel />
                 </div>
               )}
             </section>
