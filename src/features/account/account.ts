@@ -1,5 +1,5 @@
 import { decodeJwt } from 'jose';
-import { emailOTPClient, jwtClient } from 'better-auth/client/plugins';
+import { emailOTPClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import {
   replicateServer,
@@ -25,13 +25,16 @@ import { playerSchema, roundSchema } from '../../lib/storage/rxdb-schema';
 import { isRecord } from '../../lib/validation';
 import { accountReturnPath } from './account-navigation';
 
-const auth = createAuthClient({ plugins: [emailOTPClient(), jwtClient()] });
+const auth = createAuthClient({ plugins: [emailOTPClient()] });
 const selectionKey = 'quizmon.baseline.account';
 export const accountWelcomeKey = 'quizmon.baseline.account-welcome';
 type RecoveryReason = 'sign-in' | 'retry' | null;
 let candidate: string | undefined;
 let started = false;
 let tokenTimer: ReturnType<typeof setInterval> | undefined;
+let retryTimer: ReturnType<typeof setTimeout> | undefined;
+let syncAttempt: Promise<void> | undefined;
+let tokenAttempt: Promise<void> | undefined;
 let replications: RxServerReplicationState<unknown>[] = [];
 let snapshot = {
   owner: '',
@@ -59,6 +62,21 @@ export const subscribeAccount = (listener: () => void) => {
 export const selectedAccount = () =>
   localStorage.getItem(selectionKey) ?? undefined;
 
+class AccountServiceError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+  }
+}
+
+class AccountNetworkError extends Error {
+  constructor(cause: unknown) {
+    super('Connection temporarily unavailable.', { cause });
+  }
+}
+
 export async function accountRequest(path: string, body?: unknown) {
   const response = await fetch(path, {
     method: body === undefined ? 'GET' : 'POST',
@@ -66,16 +84,19 @@ export async function accountRequest(path: string, body?: unknown) {
     headers: { 'Content-Type': 'application/json' },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     signal: AbortSignal.timeout(15_000),
+  }).catch((error: unknown) => {
+    throw new AccountNetworkError(error);
   });
   const value: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     if (response.status === 401) clearSentryUser();
-    throw new Error(
+    throw new AccountServiceError(
       isRecord(value) && typeof value.error === 'string'
         ? value.error
         : response.status === 401
           ? 'Sign in to resume syncing.'
           : `Account service unavailable (${response.status}).`,
+      response.status,
     );
   }
   return value;
@@ -227,12 +248,85 @@ const stopReplication = async () => {
   replications = [];
 };
 
+const clearRetryTimer = () => {
+  if (retryTimer) clearTimeout(retryTimer);
+  retryTimer = undefined;
+};
+
+const retryableConnectionError = (error: unknown) =>
+  error instanceof AccountNetworkError ||
+  (error instanceof AccountServiceError &&
+    (error.status === 429 || error.status >= 500));
+
+const scheduleConnectionRetry = () => {
+  if (retryTimer || document.visibilityState !== 'visible') return;
+  retryTimer = setTimeout(() => {
+    retryTimer = undefined;
+    if (document.visibilityState !== 'visible') return;
+    if (replications.length) void refreshReplicationToken();
+    else void retryAccountSync();
+  }, 5_000);
+};
+
 const syncToken = async (expected: string) => {
-  const { data, error } = await auth.token();
-  if (error || !data) throw new Error('Sign in to resume syncing.');
-  if (decodeJwt(data.token).sub !== expected)
+  const value = await accountRequest('/api/auth/token');
+  if (!isRecord(value) || typeof value.token !== 'string')
+    throw new Error('The account service returned an invalid sync token.');
+  if (decodeJwt(value.token).sub !== expected)
     throw new Error('The signed-in account changed. Sync is paused.');
-  return data.token;
+  return value.token;
+};
+
+const reportTokenError = (error: unknown) => {
+  if (snapshot.recoveryReason === 'sign-in') return;
+  if (retryableConnectionError(error)) {
+    update({
+      error: '',
+      diagnostic: '',
+      recoveryReason: 'retry',
+      offline: true,
+      status: 'Saved on this device. Will sync when connected.',
+    });
+    scheduleConnectionRetry();
+    return;
+  }
+  update({
+    error:
+      error instanceof Error ? error.message : 'Sign in to resume syncing.',
+    recoveryReason:
+      error instanceof AccountServiceError && error.status === 401
+        ? 'sign-in'
+        : 'retry',
+  });
+};
+
+const refreshReplicationToken = (): Promise<void> => {
+  if (tokenAttempt) return tokenAttempt;
+  tokenAttempt = refreshToken().finally(() => {
+    tokenAttempt = undefined;
+  });
+  return tokenAttempt;
+};
+
+const refreshToken = async () => {
+  const owner = selectedAccount();
+  if (!owner) return;
+  try {
+    const fresh = await syncToken(owner);
+    clearRetryTimer();
+    if (snapshot.offline && !snapshot.error)
+      update({
+        offline: false,
+        recoveryReason: null,
+        status: 'Saved on this device. Syncing…',
+      });
+    replications.forEach((replication) => {
+      replication.setHeaders({ Authorization: `Bearer ${fresh}` });
+      replication.reSync();
+    });
+  } catch (error) {
+    reportTokenError(error);
+  }
 };
 
 export async function startAccountSync() {
@@ -250,7 +344,8 @@ export async function startAccountSync() {
   void refreshIdentity().catch(() => {});
   window.addEventListener('online', () => {
     update({ offline: false, status: 'Saved on this device. Syncing…' });
-    void retryAccountSync();
+    if (replications.length) void refreshReplicationToken();
+    else void retryAccountSync();
   });
   window.addEventListener('offline', () => {
     update({
@@ -261,10 +356,26 @@ export async function startAccountSync() {
   window.addEventListener('storage', (event) => {
     if (event.key === selectionKey) window.location.assign('/');
   });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (replications.length) {
+      if (snapshot.offline) void refreshReplicationToken();
+      else replications.forEach((replication) => replication.reSync());
+    } else if (snapshot.recoveryReason === 'retry') void retryAccountSync();
+  });
   await retryAccountSync();
 }
 
-export async function retryAccountSync() {
+export function retryAccountSync(): Promise<void> {
+  if (syncAttempt) return syncAttempt;
+  clearRetryTimer();
+  syncAttempt = connectAccountSync().finally(() => {
+    syncAttempt = undefined;
+  });
+  return syncAttempt;
+}
+
+async function connectAccountSync() {
   const owner = selectedAccount();
   if (!owner) return;
   await stopReplication();
@@ -298,27 +409,36 @@ export async function retryAccountSync() {
       live: true,
     });
     replications = [players, rounds];
+    const failed = new Set<RxServerReplicationState<unknown>>();
     for (const replication of replications) {
-      replication.error$.subscribe((error) =>
+      replication.error$.subscribe((error) => {
+        failed.add(replication);
         update({
           error: error.message,
           recoveryReason: 'retry',
           diagnostic: error.stack ?? error.message,
           status: 'Saved on this device. Sync is retrying.',
-        }),
-      );
+        });
+      });
+      replication.active$.subscribe((active) => {
+        if (
+          active ||
+          replication.isStopped() ||
+          !failed.delete(replication) ||
+          failed.size ||
+          snapshot.recoveryReason !== 'retry'
+        )
+          return;
+        update({
+          error: '',
+          diagnostic: '',
+          recoveryReason: null,
+          offline: false,
+          status: 'Synced',
+        });
+      });
       replication.unauthorized$.subscribe(() => {
-        void syncToken(owner)
-          .then((fresh) => {
-            replication.setHeaders({ Authorization: `Bearer ${fresh}` });
-            replication.reSync();
-          })
-          .catch((error: Error) =>
-            update({
-              error: error.message,
-              recoveryReason: 'sign-in',
-            }),
-          );
+        void refreshReplicationToken();
       });
       replication.outdatedClient$.subscribe(() =>
         update({
@@ -328,19 +448,7 @@ export async function retryAccountSync() {
       );
     }
     tokenTimer = setInterval(() => {
-      void syncToken(owner)
-        .then((fresh) => {
-          replications.forEach((replication) => {
-            replication.setHeaders({ Authorization: `Bearer ${fresh}` });
-            replication.reSync();
-          });
-        })
-        .catch((error: Error) =>
-          update({
-            error: error.message,
-            recoveryReason: 'sign-in',
-          }),
-        );
+      void refreshReplicationToken();
     }, 240_000);
     update({
       error: '',
@@ -353,7 +461,16 @@ export async function retryAccountSync() {
     void Promise.all(
       replications.map((replication) => replication.awaitInitialReplication()),
     )
-      .then(() => update({ status: 'Synced', error: '', diagnostic: '' }))
+      .then(() => {
+        if (failed.size) return;
+        update({
+          status: 'Synced',
+          error: '',
+          diagnostic: '',
+          recoveryReason: null,
+          offline: false,
+        });
+      })
       .catch((error: Error) =>
         update({
           error: error.message,
@@ -362,16 +479,29 @@ export async function retryAccountSync() {
         }),
       );
   } catch (error) {
+    const retryable = retryableConnectionError(error);
     update({
-      error: error instanceof Error ? error.message : 'Sync is unavailable.',
-      recoveryReason: 'retry',
-      status: 'Saved on this device. Sync is paused.',
+      error: retryable
+        ? ''
+        : error instanceof Error
+          ? error.message
+          : 'Sync is unavailable.',
+      recoveryReason:
+        error instanceof AccountServiceError && error.status === 401
+          ? 'sign-in'
+          : 'retry',
+      offline: retryable,
+      status: retryable
+        ? 'Saved on this device. Will sync when connected.'
+        : 'Saved on this device. Sync is paused.',
     });
+    if (retryable) scheduleConnectionRetry();
   }
 }
 
 export async function signOutAccount() {
   clearSentryUser();
+  clearRetryTimer();
   await stopReplication();
   await auth.signOut();
   localStorage.removeItem(selectionKey);
