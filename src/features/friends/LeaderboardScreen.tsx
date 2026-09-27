@@ -1,7 +1,12 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Link } from 'react-router';
 import { GameButton } from '../../components/GameButton';
-import { EyeIcon } from '../../components/icons';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  EyeIcon,
+  ShareNetworkIcon,
+} from '../../components/icons';
 import { isDailyDate } from '../../lib/validation';
 import { useInteractionSound } from '../../lib/audio/sound-context';
 import { getUtcDate } from '../../domain/quiz/daily';
@@ -20,9 +25,68 @@ import {
   readTrainingLeaderboard,
 } from './leaderboards-client';
 import { SocialSections } from './SocialSections';
+import { ownPlayer } from './friends-client';
+import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import './friends.css';
 
 const standingsCache = new Map<string, Leaderboard>();
+
+function InviteFriends({ owner }: { owner: string }) {
+  const [code, setCode] = useState('');
+  const [message, setMessage] = useState('');
+  useEffect(() => {
+    const controller = new AbortController();
+    void ownPlayer(owner, controller.signal)
+      .then((player) => {
+        if (!controller.signal.aborted) setCode(player.code ?? '');
+      })
+      .catch(() => {
+        if (!controller.signal.aborted)
+          setMessage(
+            'Could not load your friend link. Reopen rankings to retry.',
+          );
+      });
+    return () => controller.abort();
+  }, [owner]);
+  return (
+    <div className="leaderboard-invite">
+      <GameButton
+        tone="quiet"
+        disabled={!code}
+        onClick={() => {
+          setMessage('');
+          void shareFriendLink(`${location.origin}/social/friends?code=${code}`)
+            .then((result) =>
+              setMessage(
+                result === 'shared'
+                  ? 'Friend link shared.'
+                  : result === 'copied'
+                    ? 'Friend link copied.'
+                    : '',
+              ),
+            )
+            .catch((error: unknown) =>
+              setMessage(
+                error instanceof Error
+                  ? error.message
+                  : 'Could not share the link.',
+              ),
+            );
+        }}
+      >
+        <ShareNetworkIcon aria-hidden="true" />
+        {canShareFriendLink() ? 'Invite friends' : 'Copy invite link'}
+      </GameButton>
+      {message && <p role="status">{message}</p>}
+    </div>
+  );
+}
+
+function shiftDailyDate(date: string, days: number): string {
+  const value = new Date(`${date}T00:00:00Z`);
+  value.setUTCDate(value.getUTCDate() + days);
+  return getUtcDate(value);
+}
 
 function StandingsSkeleton() {
   return (
@@ -190,19 +254,6 @@ function Standings({
       )}
       {data && (
         <>
-          {data.viewer ? (
-            <div className="leaderboard-viewer">
-              <span>
-                Your place <strong>#{data.viewer.rank}</strong>
-              </span>
-              <span>
-                <strong>{data.viewer.score.toLocaleString()}</strong> points
-                <small>
-                  {(data.viewer.elapsedMilliseconds / 1000).toFixed(3)}s
-                </small>
-              </span>
-            </div>
-          ) : null}
           {data.items.length ? (
             <>
               <table className="leaderboard-table">
@@ -322,7 +373,7 @@ export function LeaderboardScreen({
   onViewPlayer,
   onOpenPlay,
   initialDate,
-  initialScope = 'global',
+  initialScope = 'friends',
   initialMode = 'daily',
   onSelectionChange,
 }: {
@@ -348,6 +399,7 @@ export function LeaderboardScreen({
       : getUtcDate(),
   );
   const [today, setToday] = useState(getUtcDate);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     const timer = window.setInterval(() => {
       const next = getUtcDate();
@@ -419,22 +471,29 @@ export function LeaderboardScreen({
                   >
                     <button
                       type="button"
-                      aria-pressed={scope === 'global'}
-                      onClick={() => chooseScope('global')}
-                    >
-                      Global
-                    </button>
-                    <button
-                      type="button"
                       aria-pressed={scope === 'friends'}
                       onClick={() => chooseScope('friends')}
                     >
                       Friends
                     </button>
+                    <button
+                      type="button"
+                      aria-pressed={scope === 'global'}
+                      onClick={() => chooseScope('global')}
+                    >
+                      Global
+                    </button>
                   </div>
                 </div>
                 {mode === 'daily' && (
                   <div className="leaderboard-filter leaderboard-date">
+                    <GameButton
+                      tone="quiet"
+                      aria-label="Previous day"
+                      onClick={() => chooseDate(shiftDailyDate(date, -1))}
+                    >
+                      <ArrowLeftIcon aria-hidden="true" />
+                    </GameButton>
                     <input
                       type="date"
                       value={date}
@@ -442,20 +501,56 @@ export function LeaderboardScreen({
                       aria-label="Challenge date"
                       onChange={(event) => chooseDate(event.target.value)}
                     />
+                    <GameButton
+                      tone="quiet"
+                      aria-label="Next day"
+                      disabled={date >= today}
+                      onClick={() => chooseDate(shiftDailyDate(date, 1))}
+                    >
+                      <ArrowRightIcon aria-hidden="true" />
+                    </GameButton>
                   </div>
                 )}
               </div>
             </div>
-            <Standings
-              key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}`}
-              owner={account.owner}
-              catalog={catalog}
-              mode={mode}
-              date={date}
-              scope={scope}
-              onViewPlayer={onViewPlayer}
-              onOpenPlay={onOpenPlay}
-            />
+            {scope === 'friends' && <InviteFriends owner={account.owner} />}
+            <div
+              className="leaderboard-swipe"
+              onTouchStart={(event) => {
+                const touch = event.touches.item(0);
+                touchStart.current =
+                  event.touches.length === 1 && touch
+                    ? { x: touch.clientX, y: touch.clientY }
+                    : null;
+              }}
+              onTouchEnd={(event) => {
+                const start = touchStart.current;
+                touchStart.current = null;
+                const touch = event.changedTouches.item(0);
+                if (!start || event.changedTouches.length !== 1 || !touch)
+                  return;
+                const dx = touch.clientX - start.x;
+                const dy = touch.clientY - start.y;
+                if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5)
+                  return;
+                if (dx < 0 && scope === 'friends') chooseScope('global');
+                if (dx > 0 && scope === 'global') chooseScope('friends');
+              }}
+              onTouchCancel={() => {
+                touchStart.current = null;
+              }}
+            >
+              <Standings
+                key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${scope}`}
+                owner={account.owner}
+                catalog={catalog}
+                mode={mode}
+                date={date}
+                scope={scope}
+                onViewPlayer={onViewPlayer}
+                onOpenPlay={onOpenPlay}
+              />
+            </div>
           </>
         ) : (
           <div className="social-screen__intro">

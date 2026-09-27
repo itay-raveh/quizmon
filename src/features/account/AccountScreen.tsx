@@ -64,6 +64,9 @@ export function AccountScreen({
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const navigate = useNavigate();
   const signingIn = !account.owner && !account.mergeRequired;
+  const friendInvitation = accountReturnPath(window.location.href).startsWith(
+    '/social/friends?code=',
+  );
   const heading = useRef<HTMLHeadingElement>(null);
   const [welcomeFor] = useState(() =>
     readStoredValue('sessionStorage', accountWelcomeKey),
@@ -96,6 +99,12 @@ export function AccountScreen({
             {signingIn ? 'Sign in' : 'Account'}
           </h1>
         </header>
+        {signingIn && friendInvitation && (
+          <p>
+            A Trainer invited you to connect. Sign in or create an account to
+            see their profile and choose whether to send a friend request.
+          </p>
+        )}
         <AccountSettings />
       </section>
       {showWelcome ? (

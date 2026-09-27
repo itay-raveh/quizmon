@@ -1,8 +1,33 @@
 import { expect, test } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { MemoryRouter } from 'react-router';
+import { createElement } from 'react';
 import { isAppPath } from './app-path';
+import { useAppDestination } from './useAppDestination';
 import { accountReturnPath } from '../features/account/account-navigation';
 import { parseFriendInput } from '../domain/social/friends';
 import { parseDailyDate, shouldAutoStartDaily } from '../domain/quiz/daily';
+
+function Scope() {
+  return createElement('span', null, useAppDestination().standingsScope);
+}
+
+test('Social standings default to friends while explicit global links remain global', () => {
+  for (const [path, scope] of [
+    ['/social/rankings', 'friends'],
+    ['/social/rankings?scope=global', 'global'],
+  ] as const) {
+    expect(
+      renderToStaticMarkup(
+        createElement(
+          MemoryRouter,
+          { initialEntries: [path] },
+          createElement(Scope),
+        ),
+      ),
+    ).toContain(`<span>${scope}</span>`);
+  }
+});
 
 test('shared app links load the app and retain their destination after sign-in', () => {
   const paths = [
@@ -38,4 +63,9 @@ test('daily reminders and friend invites resolve from their new paths', () => {
       'https://quizmon.test',
     ),
   ).toBe('AABBCCDDEEFF0011');
+  expect(
+    accountReturnPath(
+      `https://quizmon.test/account?returnTo=${encodeURIComponent('/social/friends?code=AABBCCDDEEFF0011')}`,
+    ),
+  ).toBe('/social/friends?code=AABBCCDDEEFF0011');
 });

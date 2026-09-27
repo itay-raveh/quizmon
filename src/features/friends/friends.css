@@ -118,22 +118,6 @@
   gap: 0.4rem;
 }
 
-.leaderboard-viewer {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.75rem;
-  padding: 0.65rem 0.8rem;
-  color: var(--navy);
-  background: var(--yellow);
-  border: 2px solid var(--navy);
-  border-radius: var(--button-radius);
-}
-
-.leaderboard-viewer strong {
-  font-family: var(--font-data);
-}
-
 .friends-panel {
   align-content: start;
   display: grid;
@@ -317,7 +301,7 @@
 .leaderboard-controls {
   display: grid;
   min-height: 6.5rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: auto minmax(13rem, 1fr);
   align-items: center;
   gap: 0.75rem;
 }
@@ -362,6 +346,8 @@
   }
 
   .leaderboard-controls {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
     gap: 0.5rem;
   }
 
@@ -372,10 +358,6 @@
 }
 
 @container app-shell (max-width: 22.5rem) {
-  .leaderboard-controls {
-    min-height: 7.5rem;
-  }
-
   .leaderboard-date input {
     padding-inline: 0.25rem;
     font-size: var(--text-small);
@@ -428,8 +410,45 @@
 }
 
 .leaderboard-date {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+  align-items: center;
+  gap: 0.35rem;
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.leaderboard-date .game-button {
+  display: grid;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.35rem;
+  place-items: center;
+}
+
+.leaderboard-date svg,
+.leaderboard-invite svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.leaderboard-invite {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.leaderboard-invite .game-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
+}
+
+.leaderboard-invite p {
+  margin: 0;
+  font-size: var(--text-small);
 }
 
 .leaderboard-date input {
@@ -458,6 +477,10 @@
   display: grid;
   align-content: start;
   gap: 0.75rem;
+}
+
+.leaderboard-swipe {
+  touch-action: pan-y;
 }
 
 .leaderboard-loading {
@@ -541,13 +564,6 @@
   align-items: center;
   margin-top: 0.25rem;
   text-decoration: none;
-}
-
-.leaderboard-viewer small {
-  display: block;
-  font-family: var(--font-data);
-  font-size: var(--text-small);
-  font-weight: 400;
 }
 
 .leaderboard-table {

@@ -74,9 +74,9 @@ export function useAppDestination() {
     trainer,
     standingsDate: params.get('date') ?? undefined,
     standingsScope:
-      params.get('scope') === 'friends'
-        ? ('friends' as const)
-        : ('global' as const),
+      params.get('scope') === 'global'
+        ? ('global' as const)
+        : ('friends' as const),
     standingsMode:
       params.get('mode') === 'training'
         ? ('training' as const)

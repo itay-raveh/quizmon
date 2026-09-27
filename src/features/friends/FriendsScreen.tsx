@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { GameButton } from '../../components/GameButton';
 import { accountSnapshot, subscribeAccount } from '../account/account';
 import { FriendsPanel } from './FriendsPanel';
@@ -18,6 +18,18 @@ export function FriendsScreen({
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const [adding, setAdding] = useState(Boolean(initialInput));
+  const redirecting = useRef(false);
+  useEffect(() => {
+    if (
+      initialInput &&
+      !account.owner &&
+      !account.mergeRequired &&
+      !redirecting.current
+    ) {
+      redirecting.current = true;
+      onSignIn();
+    }
+  }, [initialInput, account.owner, account.mergeRequired, onSignIn]);
   return (
     <section
       className="game-panel social-screen"
