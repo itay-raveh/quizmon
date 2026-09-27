@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { GameButton } from '../../components/GameButton';
 import { accountSnapshot, subscribeAccount } from '../account/account';
 import { FriendsPanel } from './FriendsPanel';
@@ -17,7 +17,7 @@ export function FriendsScreen({
   initialInput?: string;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
-  const [adding, setAdding] = useState(Boolean(initialInput));
+  const adding = Boolean(initialInput);
   const redirecting = useRef(false);
   useEffect(() => {
     if (
@@ -47,10 +47,7 @@ export function FriendsScreen({
           owner={account.owner}
           initialInput={initialInput}
           adding={adding}
-          onToggleAdding={() => {
-            if (adding && initialInput) onCloseInvitation();
-            else setAdding(!adding);
-          }}
+          onToggleAdding={onCloseInvitation}
           onViewPlayer={onViewPlayer}
         />
       ) : (
@@ -67,7 +64,7 @@ export function FriendsScreen({
               ? 'Add this browser’s progress or use your account progress before using Friends.'
               : initialInput
                 ? 'Sign in to see their Trainer name. Opening the link does not send a request. You decide whether to ask to connect.'
-                : 'Sign in to add friends and compare Daily scores. Requests only become friendships when accepted.'}
+                : 'Sign in to invite friends and compare Daily scores. Requests only become friendships when accepted.'}
           </p>
           <GameButton onClick={onSignIn}>
             {account.mergeRequired ? 'Choose progress' : 'Sign in to continue'}

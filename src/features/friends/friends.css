@@ -97,8 +97,7 @@
   transform: none;
 }
 
-.friends-icon-button.game-button:focus-visible,
-.friends-panel__switch:focus-visible {
+.friends-icon-button.game-button:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
 }
@@ -160,62 +159,24 @@
   line-height: 1.15;
 }
 
-.friends-panel__switch {
-  flex: none;
-  min-height: 2.75rem;
-  padding: 0.3rem 0.15rem;
-  color: var(--navy);
-  background: none;
-  border: 0;
-  font: inherit;
-  font-size: var(--text-label);
-  font-weight: 800;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.25rem;
-  cursor: pointer;
+.friends-panel__heading .game-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
 }
 
-.friends-panel__switch:hover {
-  color: var(--blue);
+.friends-panel__heading svg {
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
-.friends-add__share,
-.friends-add__find {
-  display: grid;
-  justify-items: start;
-  gap: 0.65rem;
-}
-
-.friends-add__find .friends-field {
-  width: 100%;
-  margin-block: 0.2rem;
-}
-
-.friends-add__share {
-  padding-top: 1.15rem;
-  border-top: 1px solid var(--navy);
-}
-
-.friends-add h3 {
-  font-size: var(--text-body);
-}
-
-.friends-code {
-  width: 100%;
-}
-
-.friends-code summary {
-  width: max-content;
-  padding-block: 0.35rem;
-  color: var(--navy);
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.friends-code summary:focus-visible {
-  outline: 3px solid var(--blue);
-  outline-offset: 2px;
+.friends-panel__code,
+.friends-player__code {
+  color: var(--muted);
+  font-family: var(--font-data);
+  font-size: var(--text-mini);
+  overflow-wrap: anywhere;
 }
 
 .friends-found {
@@ -274,10 +235,6 @@
   display: grid;
   gap: 0.25rem;
   overflow-wrap: anywhere;
-}
-
-.friends-player small {
-  font-family: var(--font-data);
 }
 
 .friends-actions {

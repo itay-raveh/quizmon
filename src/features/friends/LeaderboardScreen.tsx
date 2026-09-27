@@ -367,25 +367,26 @@ function Standings({
                     ? 'No scores for this date'
                     : 'No Training scores yet'}
               </strong>
-              <Link
-                className="game-button leaderboard-empty__action"
-                to={noFriends ? '/social/friends' : '/'}
-                onClick={(event) => {
-                  if (
-                    event.metaKey ||
-                    event.ctrlKey ||
-                    event.shiftKey ||
-                    event.altKey
-                  )
-                    return;
-                  playSound('tap');
-                  if (!noFriends) onOpenPlay();
-                }}
-              >
-                {noFriends
-                  ? 'Open Friends'
-                  : `Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
-              </Link>
+              {!noFriends && (
+                <Link
+                  className="game-button leaderboard-empty__action"
+                  to="/"
+                  onClick={(event) => {
+                    if (
+                      event.metaKey ||
+                      event.ctrlKey ||
+                      event.shiftKey ||
+                      event.altKey
+                    )
+                      return;
+                    playSound('tap');
+                    onOpenPlay();
+                  }}
+                >
+                  Open{' '}
+                  {mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}
+                </Link>
+              )}
             </div>
           )}
           {data.items.length > 0 && (
@@ -417,6 +418,7 @@ function Standings({
           )}
         </>
       )}
+      {scope === 'friends' && <InviteFriends owner={owner} />}
     </section>
   );
 }
@@ -567,7 +569,6 @@ export function LeaderboardScreen({
                 )}
               </div>
             </div>
-            {scope === 'friends' && <InviteFriends owner={account.owner} />}
             <div
               className="leaderboard-swipe"
               onTouchStart={(event) => {

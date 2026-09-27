@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameButton } from '../../components/GameButton';
-import { SoundButton } from '../../components/SoundButton';
 import { Toast } from '../../components/Toast';
-import { EyeIcon, TrashIcon } from '../../components/icons';
+import { EyeIcon, ShareNetworkIcon, TrashIcon } from '../../components/icons';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   formatFriendCode,
@@ -30,7 +29,7 @@ const labels = {
 };
 const empty = {
   incoming: 'No incoming requests.',
-  friends: 'No friends yet. Use Add friend to connect with someone.',
+  friends: 'No friends yet. Share your link to invite someone.',
   outgoing: 'No sent requests.',
 };
 const errorMessage = (error: unknown) =>
@@ -63,7 +62,11 @@ function Player({
           </GameButton>
         )}
       </div>
-      {player.code && <small>{formatFriendCode(player.code)}</small>}
+      {player.code && (
+        <small className="friends-player__code">
+          Support code: {formatFriendCode(player.code)}
+        </small>
+      )}
     </div>
   );
 }
@@ -138,8 +141,9 @@ export function FriendsPanel({
 }) {
   const [me, setMe] = useState<SocialPlayer>();
   const [pages, setPages] = useState<Partial<Record<View, FriendsPage>>>({});
-  const [input, setInput] = useState(initialInput);
   const [found, setFound] = useState<PlayerLookup>();
+  const [showLink, setShowLink] = useState(false);
+  const [lookupRetry, setLookupRetry] = useState(0);
   const [busy, setBusy] = useState(true);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -150,7 +154,6 @@ export function FriendsPanel({
   const lifetime = useRef<AbortController | null>(null);
   const sendIds = useRef(new Map<string, string>());
   const foundRegion = useRef<HTMLElement>(null);
-  const addHeading = useRef<HTMLHeadingElement>(null);
   const friendsHeading = useRef<HTMLHeadingElement>(null);
   const revealFound = useRef(false);
 
@@ -199,7 +202,10 @@ export function FriendsPanel({
             'Enter the full friend code or a Quizmon friend link.',
           );
         const result = await lookupPlayer(owner, code, controller.signal);
-        if (!controller.signal.aborted) setFound(result);
+        if (!controller.signal.aborted) {
+          revealFound.current = true;
+          setFound(result);
+        }
       })
       .catch((error: unknown) => {
         if (!controller.signal.aborted) setError(errorMessage(error));
@@ -208,7 +214,7 @@ export function FriendsPanel({
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [owner, initialInput]);
+  }, [owner, initialInput, lookupRetry]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -276,9 +282,7 @@ export function FriendsPanel({
         }[action],
       );
       if (action === 'remove')
-        requestAnimationFrame(() =>
-          (adding ? addHeading : friendsHeading).current?.focus(),
-        );
+        requestAnimationFrame(() => friendsHeading.current?.focus());
     });
   }
 
@@ -333,8 +337,15 @@ export function FriendsPanel({
           {error}
         </p>
       )}
-      {error && !me && !busy && (
-        <GameButton tone="quiet" onClick={() => run(refresh)}>
+      {error && !busy && (!me || (adding && !found)) && (
+        <GameButton
+          tone="quiet"
+          onClick={() => {
+            setBusy(true);
+            setError('');
+            setLookupRetry((n) => n + 1);
+          }}
+        >
           Retry
         </GameButton>
       )}
@@ -347,27 +358,67 @@ export function FriendsPanel({
       <div className="friends-panel__heading">
         <h2
           id={adding ? 'add-friend-title' : 'friends-title'}
-          ref={adding ? addHeading : friendsHeading}
+          ref={friendsHeading}
           tabIndex={-1}
         >
-          {adding
-            ? initialInput
-              ? 'Friend link'
-              : 'Add a friend'
-            : 'Your friends'}
+          {adding ? 'Friend link' : 'Your friends'}
         </h2>
-        <SoundButton className="friends-panel__switch" onClick={onToggleAdding}>
-          {adding ? 'Your friends' : 'Add friend'}
-        </SoundButton>
+        {adding ? (
+          <GameButton tone="quiet" onClick={onToggleAdding}>
+            Your friends
+          </GameButton>
+        ) : (
+          <GameButton
+            tone="quiet"
+            disabled={busy || !link}
+            onClick={() =>
+              run(async (signal) => {
+                setShowLink(false);
+                try {
+                  const outcome = await shareFriendLink(link);
+                  if (!signal.aborted)
+                    setNotice(
+                      outcome === 'shared'
+                        ? 'Friend link shared.'
+                        : outcome === 'copied'
+                          ? 'Friend link copied.'
+                          : '',
+                    );
+                } catch {
+                  if (!signal.aborted) setShowLink(true);
+                }
+              })
+            }
+          >
+            <ShareNetworkIcon aria-hidden="true" />
+            {canShareFriendLink() ? 'Invite friends' : 'Copy invite link'}
+          </GameButton>
+        )}
       </div>
+      {!adding && showLink && (
+        <>
+          <p role="alert">Could not share or copy the link.</p>
+          <label className="friends-field">
+            Select your invite link to copy it
+            <input
+              readOnly
+              value={link}
+              onFocus={(event) => event.target.select()}
+            />
+          </label>
+        </>
+      )}
+      {!adding && me?.code && (
+        <small className="friends-panel__code">
+          Your support code: {formatFriendCode(me.code)}
+        </small>
+      )}
       {adding && (
         <section className="friends-add" aria-labelledby="add-friend-title">
-          {initialInput && (
-            <p>
-              This link finds a Trainer. It does not send a request until you
-              choose to send one.
-            </p>
-          )}
+          <p>
+            This link finds a Trainer. It does not send a request until you
+            choose to send one.
+          </p>
           {initialInput && busy && !found && (
             <div className="friends-link-loading" aria-hidden="true">
               <span className="social-skeleton" />
@@ -430,92 +481,6 @@ export function FriendsPanel({
                   Send friend request
                 </GameButton>
               )}
-            </section>
-          )}
-          {(!initialInput || Boolean(error)) && (
-            <form
-              className="friends-add__find"
-              onSubmit={(event) => {
-                event.preventDefault();
-                run(async (signal) => {
-                  setFound(undefined);
-                  const code = parseFriendInput(input, location.origin);
-                  if (!code)
-                    throw new Error(
-                      'Enter the full friend code or a Quizmon friend link.',
-                    );
-                  const result = await lookupPlayer(owner, code, signal);
-                  if (!signal.aborted) {
-                    revealFound.current = true;
-                    setFound(result);
-                  }
-                });
-              }}
-            >
-              <h3>Find a Trainer</h3>
-              <label className="friends-field">
-                Their friend code or link
-                <input
-                  value={input}
-                  maxLength={2048}
-                  autoComplete="off"
-                  spellCheck={false}
-                  disabled={busy}
-                  onChange={(event) => {
-                    setInput(event.target.value);
-                    setFound(undefined);
-                  }}
-                />
-              </label>
-              <GameButton type="submit" disabled={busy || !input.trim()}>
-                Find Trainer
-              </GameButton>
-            </form>
-          )}
-          {!initialInput && me && (
-            <section
-              className="friends-add__share"
-              aria-label="Share your link"
-            >
-              <h3>Share your link</h3>
-              <GameButton
-                tone="quiet"
-                disabled={busy}
-                onClick={() =>
-                  run(async (signal) => {
-                    const outcome = await shareFriendLink(link);
-                    if (!signal.aborted)
-                      setNotice(
-                        outcome === 'shared'
-                          ? 'Friend link shared.'
-                          : outcome === 'copied'
-                            ? 'Friend link copied.'
-                            : '',
-                      );
-                  })
-                }
-              >
-                {canShareFriendLink() ? 'Share my link' : 'Copy my link'}
-              </GameButton>
-              <details className="friends-code">
-                <summary>Show link and code</summary>
-                <label className="friends-field">
-                  Your link
-                  <input
-                    readOnly
-                    value={link}
-                    onFocus={(event) => event.target.select()}
-                  />
-                </label>
-                <label className="friends-field">
-                  Your friend code
-                  <input
-                    readOnly
-                    value={me.code ? formatFriendCode(me.code) : ''}
-                    onFocus={(event) => event.target.select()}
-                  />
-                </label>
-              </details>
             </section>
           )}
         </section>

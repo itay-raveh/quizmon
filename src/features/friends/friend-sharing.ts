@@ -21,8 +21,6 @@ export async function shareFriendLink(
     await navigator.clipboard.writeText(url);
     return 'copied';
   } catch {
-    throw new Error(
-      'Could not share the link. Open Show link and code to select it.',
-    );
+    throw new Error('Could not share or copy the link.');
   }
 }
