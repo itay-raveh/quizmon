@@ -11,7 +11,16 @@ import * as schema from './schema.ts';
 
 type ReadContext = Context<AccountEnv>;
 
-async function read<T>(
+export class SyncReadError extends Error {
+  readonly status: number | 'network';
+
+  constructor(status: number | 'network') {
+    super('Sync read failed');
+    this.status = status;
+  }
+}
+
+export async function read<T>(
   context: ReadContext,
   path: string,
   body?: object,
@@ -19,17 +28,29 @@ async function read<T>(
   const { token } = await context.get('auth').api.getToken({
     headers: context.req.raw.headers,
   });
-  const response = await fetch(`${context.get('sync').endpoint}/read/${path}`, {
-    method: body ? 'POST' : 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-    signal: AbortSignal.timeout(15_000),
-  });
-  if (!response.ok) throw new Error(`Player read failed (${response.status}).`);
-  return response.json() as Promise<T>;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    let response: Response;
+    try {
+      response = await fetch(`${context.get('sync').endpoint}/read/${path}`, {
+        method: body ? 'POST' : 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          ...(body ? { 'Content-Type': 'application/json' } : {}),
+        },
+        ...(body ? { body: JSON.stringify(body) } : {}),
+        signal: AbortSignal.timeout(4_000),
+      });
+    } catch {
+      if (attempt === 3) throw new SyncReadError('network');
+      await new Promise((resolve) => setTimeout(resolve, 2 ** attempt * 1000));
+      continue;
+    }
+    if (response.ok) return response.json() as Promise<T>;
+    if (attempt === 3 || ![502, 503, 504].includes(response.status))
+      throw new SyncReadError(response.status);
+    await new Promise((resolve) => setTimeout(resolve, 2 ** attempt * 1000));
+  }
+  throw new SyncReadError('network');
 }
 
 export async function publicPlayers(

@@ -118,16 +118,14 @@ it('retries account startup and wake failures, then clears a recovered replicati
 
   first.error.emit(new Error('private server details'));
   expect(accountSnapshot().error).toBe('Sync could not finish.');
-  expect(sentry.captureUnexpectedError).toHaveBeenCalledWith(
-    'account.sync.players',
-    expect.objectContaining({ message: 'Replication failed' }),
-  );
+  expect(sentry.captureUnexpectedError).not.toHaveBeenCalled();
   first.active.emit(true);
   first.active.emit(false);
   expect(accountSnapshot()).toMatchObject({ error: '', status: 'Synced' });
 
   failNextToken = true;
   await vi.advanceTimersByTimeAsync(240_000);
+  expect(sentry.captureUnexpectedError).not.toHaveBeenCalled();
   expect(accountSnapshot()).toMatchObject({
     offline: true,
     error: '',
@@ -149,6 +147,15 @@ it('retries account startup and wake failures, then clears a recovered replicati
   page.dispatchEvent(new Event('visibilitychange'));
   await vi.waitFor(() => expect(accountCalls).toBe(4));
   expect(accountSnapshot()).toMatchObject({ offline: false, status: 'Synced' });
+
+  third.error.emit(new Error('private server details'));
+  await vi.advanceTimersByTimeAsync(60_000);
+  expect(sentry.captureUnexpectedError).toHaveBeenCalledWith(
+    'account.sync.players',
+    expect.objectContaining({ message: 'Replication stalled' }),
+  );
+  third.active.emit(true);
+  third.active.emit(false);
 
   mocks.invalidConfig = true;
   await retryAccountSync();

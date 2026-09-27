@@ -37,6 +37,8 @@ let candidate: string | undefined;
 let started = false;
 let tokenTimer: ReturnType<typeof setInterval> | undefined;
 let retryTimer: ReturnType<typeof setTimeout> | undefined;
+let replicationErrorTimer: ReturnType<typeof setTimeout> | undefined;
+let replicationErrorReported = false;
 let syncAttempt: Promise<void> | undefined;
 let tokenAttempt: Promise<void> | undefined;
 let replications: RxServerReplicationState<unknown>[] = [];
@@ -249,6 +251,9 @@ export function loadAccountConfig() {
 const stopReplication = async () => {
   if (tokenTimer) clearInterval(tokenTimer);
   tokenTimer = undefined;
+  if (replicationErrorTimer) clearTimeout(replicationErrorTimer);
+  replicationErrorTimer = undefined;
+  replicationErrorReported = false;
   await Promise.allSettled(
     replications.map((replication) => replication.cancel()),
   );
@@ -422,11 +427,25 @@ async function connectAccountSync() {
     const failed = new Set<RxServerReplicationState<unknown>>();
     for (const replication of replications) {
       replication.error$.subscribe(() => {
-        if (!failed.size && navigator.onLine)
-          captureUnexpectedError(
-            `account.sync.${replication === players ? 'players' : 'rounds'}`,
-            new Error('Replication failed'),
-          );
+        if (
+          !replicationErrorTimer &&
+          !replicationErrorReported &&
+          navigator.onLine
+        )
+          replicationErrorTimer = setTimeout(() => {
+            replicationErrorTimer = undefined;
+            if (
+              !failed.size ||
+              !navigator.onLine ||
+              document.visibilityState !== 'visible'
+            )
+              return;
+            replicationErrorReported = true;
+            captureUnexpectedError(
+              `account.sync.${replication === players ? 'players' : 'rounds'}`,
+              new Error('Replication stalled'),
+            );
+          }, 60_000);
         failed.add(replication);
         update({
           error: 'Sync could not finish.',
@@ -435,14 +454,13 @@ async function connectAccountSync() {
         });
       });
       replication.active$.subscribe((active) => {
-        if (
-          active ||
-          replication.isStopped() ||
-          !failed.delete(replication) ||
-          failed.size ||
-          snapshot.recoveryReason !== 'retry'
-        )
+        if (active || replication.isStopped() || !failed.delete(replication))
           return;
+        if (failed.size) return;
+        if (replicationErrorTimer) clearTimeout(replicationErrorTimer);
+        replicationErrorTimer = undefined;
+        replicationErrorReported = false;
+        if (snapshot.recoveryReason !== 'retry') return;
         update({
           error: '',
           recoveryReason: null,

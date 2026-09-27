@@ -39,6 +39,7 @@ spec:
         app.kubernetes.io/component: sync
     spec:
       automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 5
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

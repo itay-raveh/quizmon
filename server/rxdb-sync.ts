@@ -24,6 +24,18 @@ const boardRequest = z.object({
   puzzleId: z.string().optional(),
 });
 
+export const syncAdapter: typeof RxServerAdapterExpress = {
+  ...RxServerAdapterExpress,
+  closeConnection(response, code, message) {
+    // An SSE response has already sent 200 headers when its token expires.
+    if (response.headersSent) {
+      response.end();
+      return;
+    }
+    RxServerAdapterExpress.closeConnection(response, code, message);
+  },
+};
+
 export async function startSyncServer(config: {
   mongoUrl: string;
   mongoTlsCaFile?: string;
@@ -61,7 +73,7 @@ export async function startSyncServer(config: {
     };
     const server = await createRxServer({
       database: db,
-      adapter: RxServerAdapterExpress,
+      adapter: syncAdapter,
       hostname: '0.0.0.0',
       port: config.port,
       cors: config.origin,

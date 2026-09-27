@@ -19,6 +19,7 @@ import { leaderboardApi } from './leaderboards-api.ts';
 import { trainerApi } from './trainers-api.ts';
 import { bootstrapSocialIdentity } from './friend-identity.ts';
 import { reserveEmail } from './email-budget.ts';
+import { SyncReadError } from './read.ts';
 import {
   EmailDeliveryError,
   codeLifetimeSeconds,
@@ -157,7 +158,12 @@ export function createAccountApi(services: AccountServices) {
     console.error(error);
     try {
       Sentry.captureException(error, {
-        tags: { 'error.kind': 'account.api' },
+        tags: {
+          'error.kind': 'account.api',
+          ...(error instanceof SyncReadError
+            ? { 'upstream.status': String(error.status) }
+            : {}),
+        },
       });
     } catch {
       // Monitoring must not change account responses.
