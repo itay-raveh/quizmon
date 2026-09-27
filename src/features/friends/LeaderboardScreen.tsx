@@ -25,7 +25,7 @@ import {
   readTrainingLeaderboard,
 } from './leaderboards-client';
 import { SocialSections } from './SocialSections';
-import { ownPlayer } from './friends-client';
+import { friendPage, ownPlayer } from './friends-client';
 import { canShareFriendLink, shareFriendLink } from './friend-sharing';
 import './friends.css';
 
@@ -34,6 +34,9 @@ const standingsCache = new Map<string, Leaderboard>();
 function InviteFriends({ owner }: { owner: string }) {
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
+  const [loadError, setLoadError] = useState(false);
+  const [showLink, setShowLink] = useState(false);
+  const [retry, setRetry] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     void ownPlayer(owner, controller.signal)
@@ -41,43 +44,68 @@ function InviteFriends({ owner }: { owner: string }) {
         if (!controller.signal.aborted) setCode(player.code ?? '');
       })
       .catch(() => {
-        if (!controller.signal.aborted)
-          setMessage(
-            'Could not load your friend link. Reopen rankings to retry.',
-          );
+        if (!controller.signal.aborted) setLoadError(true);
       });
     return () => controller.abort();
-  }, [owner]);
+  }, [owner, retry]);
+  const link = `${location.origin}/social/friends?code=${code}`;
   return (
     <div className="leaderboard-invite">
-      <GameButton
-        tone="quiet"
-        disabled={!code}
-        onClick={() => {
-          setMessage('');
-          void shareFriendLink(`${location.origin}/social/friends?code=${code}`)
-            .then((result) =>
-              setMessage(
-                result === 'shared'
-                  ? 'Friend link shared.'
-                  : result === 'copied'
-                    ? 'Friend link copied.'
-                    : '',
-              ),
-            )
-            .catch((error: unknown) =>
-              setMessage(
-                error instanceof Error
-                  ? error.message
-                  : 'Could not share the link.',
-              ),
-            );
-        }}
-      >
-        <ShareNetworkIcon aria-hidden="true" />
-        {canShareFriendLink() ? 'Invite friends' : 'Copy invite link'}
-      </GameButton>
-      {message && <p role="status">{message}</p>}
+      {loadError ? (
+        <>
+          <p role="alert">Could not load your invite link.</p>
+          <GameButton
+            tone="quiet"
+            onClick={() => {
+              setLoadError(false);
+              setRetry((value) => value + 1);
+            }}
+          >
+            Retry invite link
+          </GameButton>
+        </>
+      ) : (
+        <GameButton
+          tone="quiet"
+          disabled={!code}
+          onClick={() => {
+            setMessage('');
+            setShowLink(false);
+            void shareFriendLink(link)
+              .then((result) =>
+                setMessage(
+                  result === 'shared'
+                    ? 'Friend link shared.'
+                    : result === 'copied'
+                      ? 'Friend link copied.'
+                      : '',
+                ),
+              )
+              .catch(() => {
+                setMessage('Select the link below to copy it.');
+                setShowLink(true);
+              });
+          }}
+        >
+          <ShareNetworkIcon aria-hidden="true" />
+          {!code
+            ? 'Loading invite link…'
+            : canShareFriendLink()
+              ? 'Invite friends'
+              : 'Copy invite link'}
+        </GameButton>
+      )}
+      {message && <p role={showLink ? 'alert' : 'status'}>{message}</p>}
+      {showLink && (
+        <label className="friends-field">
+          Your invite link
+          <input
+            readOnly
+            value={link}
+            onFocus={(event) => event.target.select()}
+          />
+        </label>
+      )}
     </div>
   );
 }
@@ -149,12 +177,25 @@ function Standings({
   const [data, setData] = useState<Leaderboard | undefined>(() =>
     standingsCache.get(`${cacheKey}:`),
   );
+  const [hasFriends, setHasFriends] = useState<boolean | null>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(!data);
   const [request, setRequest] = useState({
     after: null as string | null,
     revision: 0,
   });
+  useEffect(() => {
+    if (scope !== 'friends' || data?.items.length !== 0) return;
+    const controller = new AbortController();
+    void friendPage(owner, 'friends', undefined, controller.signal)
+      .then((page) => {
+        if (!controller.signal.aborted) setHasFriends(page.items.length > 0);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setHasFriends(null);
+      });
+    return () => controller.abort();
+  }, [owner, scope, data]);
   useEffect(() => {
     const key = `${cacheKey}:${request.after ?? ''}`;
     const controller = new AbortController();
@@ -234,13 +275,17 @@ function Standings({
     setError('');
     setRequest((current) => ({ after, revision: current.revision + 1 }));
   };
+  const noFriends = scope === 'friends' && hasFriends === false;
+  const checkingFriends =
+    scope === 'friends' && data?.items.length === 0 && hasFriends === undefined;
   return (
     <section
       className="leaderboard-standings"
       aria-label={`${scope === 'global' ? 'Global' : 'Friends'} ${mode === 'daily' ? 'Daily' : 'Training'} standings`}
-      aria-busy={busy}
+      aria-busy={busy || checkingFriends}
     >
       {busy && !data && <StandingsSkeleton />}
+      {checkingFriends && <StandingsSkeleton />}
       {error && (
         <p role="alert" className="settings-error">
           {error}
@@ -252,8 +297,13 @@ function Standings({
           Retry
         </GameButton>
       )}
-      {data && (
+      {data && !checkingFriends && (
         <>
+          {data.viewer && (
+            <div className="leaderboard-viewer">
+              Your place <strong>#{data.viewer.rank}</strong>
+            </div>
+          )}
           {data.items.length ? (
             <>
               <table className="leaderboard-table">
@@ -311,13 +361,15 @@ function Standings({
           ) : (
             <div className="leaderboard-empty">
               <strong>
-                {mode === 'daily'
-                  ? 'No scores for this date'
-                  : 'No Training scores yet'}
+                {noFriends
+                  ? 'Invite friends to compare scores'
+                  : mode === 'daily'
+                    ? 'No scores for this date'
+                    : 'No Training scores yet'}
               </strong>
               <Link
                 className="game-button leaderboard-empty__action"
-                to="/"
+                to={noFriends ? '/social/friends' : '/'}
                 onClick={(event) => {
                   if (
                     event.metaKey ||
@@ -327,10 +379,12 @@ function Standings({
                   )
                     return;
                   playSound('tap');
-                  onOpenPlay();
+                  if (!noFriends) onOpenPlay();
                 }}
               >
-                Open {mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}
+                {noFriends
+                  ? 'Open Friends'
+                  : `Open ${mode === 'daily' ? 'today’s Daily Challenge' : 'Training'}`}
               </Link>
             </div>
           )}

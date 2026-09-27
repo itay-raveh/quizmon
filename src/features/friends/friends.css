@@ -118,6 +118,22 @@
   gap: 0.4rem;
 }
 
+.leaderboard-viewer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  color: var(--navy);
+  background: var(--yellow);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+}
+
+.leaderboard-viewer strong {
+  font-family: var(--font-data);
+}
+
 .friends-panel {
   align-content: start;
   display: grid;
@@ -449,6 +465,12 @@
 .leaderboard-invite p {
   margin: 0;
   font-size: var(--text-small);
+}
+
+.leaderboard-invite .friends-field {
+  flex-basis: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .leaderboard-date input {
