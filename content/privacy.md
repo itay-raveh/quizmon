@@ -2,7 +2,7 @@
 
 _Last updated: September 27, 2026_
 
-Quizmon is an open-source game operated by Itay Raveh. For privacy questions, contact <quizmon@raveh.dev>.
+Quizmon is a source-available game operated by Itay Raveh. For privacy questions, contact <quizmon@raveh.dev>.
 
 ## What We Keep
 

@@ -10,9 +10,10 @@ const markdown = new Marked({
     if (token.type !== 'link') return;
     const page = contentPages.find(({ source }) => source === token.href);
     if (page) token.href = page.path;
-    if (token.href === '../LICENSE') {
+    if (token.href === '../LICENSE')
       token.href = `${site.repositoryUrl}/blob/main/LICENSE`;
-    }
+    if (token.href === '../NOTICE')
+      token.href = `${site.repositoryUrl}/blob/main/NOTICE`;
   },
 });
 

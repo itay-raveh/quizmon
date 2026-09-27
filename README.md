@@ -43,4 +43,4 @@ The build fetches the trainer sprites listed in `src/domain/player/data/trainer-
 
 ## Licenses
 
-The code uses the [MIT License](LICENSE). See the [Terms of Use](content/terms.md) for third-party credits and legal notices.
+Quizmon's original code is source-available under the [Apache License 2.0 with Commons Clause](LICENSE). Keep the [NOTICE](NOTICE) with redistributed copies. This license does not cover third-party artwork, data, trademarks, or separately licensed text. See the [Terms of Use](content/terms.md) for credits.

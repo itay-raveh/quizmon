@@ -20,7 +20,7 @@ export const contentPages = [
     label: 'Terms',
     title: 'Terms of Use',
     description:
-      'Terms for playing Quizmon, including acceptable use, saved progress, open-source licensing, and artwork credits.',
+      'Terms for playing Quizmon, including acceptable use, saved progress, source-available licensing, and artwork credits.',
     source: 'terms.md',
   },
 ];

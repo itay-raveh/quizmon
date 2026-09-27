@@ -2,7 +2,7 @@
 
 _Last updated: September 27, 2026_
 
-Quizmon is an open-source Pokémon knowledge game operated by Itay Raveh. By using this service, you agree to these terms.
+Quizmon is a source-available Pokémon knowledge game operated by Itay Raveh. By using this service, you agree to these terms.
 
 ## The Service
 
@@ -33,9 +33,9 @@ To the extent permitted by law, we are not liable for indirect or consequential 
 
 Our [Privacy and Cookies policy](privacy.md) explains the information we collect, how we use it, and your choices.
 
-## Intellectual Property and Open Source
+## Code License and Third-Party Rights
 
-Quizmon's code is available under the [MIT License](../LICENSE). You may review, modify, and run it under that license. These terms do not restrict those rights. The code license does not cover third-party artwork or trademarks.
+Quizmon's original code is available under the [Apache License 2.0 with Commons Clause](../LICENSE), with attribution in its [NOTICE](../NOTICE). You may copy, modify, and share it under those terms, but may not sell substantially the same software. The code license does not cover third-party artwork, data, trademarks, or separately licensed text.
 
 The card animation uses [Sparkles](https://opengameart.org/content/sparkles), © 2005-2013 Julien Jorge <julien.jorge@stuff-o-matic.com>, under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The sprite sheet is unmodified.
 
