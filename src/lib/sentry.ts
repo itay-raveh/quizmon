@@ -51,32 +51,6 @@ export const initSentry = () => {
         }),
         feedback,
       ],
-      beforeBreadcrumb(breadcrumb) {
-        return ['http', 'fetch', 'xhr', 'navigation', 'ui.input'].includes(
-          breadcrumb.category ?? '',
-        )
-          ? null
-          : breadcrumb;
-      },
-      beforeSend(event) {
-        delete event.request;
-        delete event.extra;
-        delete event.message;
-        event.breadcrumbs = [];
-        for (const exception of event.exception?.values ?? [])
-          exception.value = exception.type ?? 'Unexpected error';
-        return event;
-      },
-      beforeSendSpan(span) {
-        if (span.op?.startsWith('http')) {
-          span.description = span.description?.split('?')[0];
-          for (const key of ['url', 'http.url']) {
-            const value = span.data[key];
-            if (typeof value === 'string') span.data[key] = value.split('?')[0];
-          }
-        }
-        return span;
-      },
       beforeSendLog(log) {
         return log.message === 'quizmon.failure' ? log : null;
       },
