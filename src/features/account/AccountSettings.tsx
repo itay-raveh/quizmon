@@ -5,6 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { GameButton } from '../../components/GameButton';
 import { FeedbackButton } from '../../app/FeedbackButton';
+import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   ArrowsClockwiseIcon,
   MedalIcon,
@@ -43,6 +44,47 @@ const codeSchema = z.object({
     .regex(new RegExp(REGEXP_ONLY_DIGITS), 'Use digits only.'),
 });
 
+const DeleteAccountDialog = ({
+  onCancel,
+  onConfirm,
+}: {
+  onCancel: () => void;
+  onConfirm: () => void;
+}) => {
+  const { dialog, dialogProps, closeDialog } = useModalDialog(onCancel);
+
+  return (
+    <dialog
+      {...dialogProps}
+      aria-describedby="delete-account-description"
+      aria-labelledby="delete-account-title"
+      className="confirm-dialog"
+    >
+      <div className="confirm-dialog__body">
+        <h2 id="delete-account-title">Delete your account?</h2>
+        <p id="delete-account-description">
+          Your account and synced progress will be deleted. This cannot be
+          undone. Other devices may retain local copies.
+        </p>
+        <div className="confirm-dialog__actions">
+          <GameButton autoFocus tone="quiet" onClick={closeDialog}>
+            Keep account
+          </GameButton>
+          <GameButton
+            className="confirm-dialog__confirm"
+            onClick={() => {
+              dialog.current?.close();
+              onConfirm();
+            }}
+          >
+            Delete account
+          </GameButton>
+        </div>
+      </div>
+    </dialog>
+  );
+};
+
 export const AccountSettings = ({
   recoverySignIn = false,
 }: {
@@ -56,6 +98,7 @@ export const AccountSettings = ({
   const [busy, setBusy] = useState(false);
   const [preparingAccount, setPreparingAccount] = useState(false);
   const [reauthenticating, setReauthenticating] = useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const emailForm = useForm<z.input<typeof emailSchema>>({
@@ -413,17 +456,19 @@ export const AccountSettings = ({
             <GameButton
               tone="quiet"
               disabled={busy}
-              onClick={() => {
-                if (
-                  window.confirm(
-                    'Delete your account and synced progress? This cannot be undone. Other devices may retain local copies.',
-                  )
-                )
-                  run(deleteAccount);
-              }}
+              onClick={() => setDeleteConfirmationOpen(true)}
             >
               Delete account
             </GameButton>
+            {deleteConfirmationOpen && (
+              <DeleteAccountDialog
+                onCancel={() => setDeleteConfirmationOpen(false)}
+                onConfirm={() => {
+                  setDeleteConfirmationOpen(false);
+                  run(deleteAccount);
+                }}
+              />
+            )}
             {error === 'Sign in again to delete your account.' && (
               <GameButton
                 tone="quiet"
