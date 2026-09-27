@@ -452,7 +452,9 @@ export function LeaderboardScreen({
   useLayoutEffect(() => {
     if (account.owner && !account.mergeRequired && swipe.current)
       swipe.current.scrollLeft =
-        firstScope.current === 'global' ? swipe.current.clientWidth : 0;
+        firstScope.current === 'global'
+          ? swipe.current.scrollWidth - swipe.current.clientWidth
+          : 0;
   }, [account.owner, account.mergeRequired]);
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -474,7 +476,10 @@ export function LeaderboardScreen({
   };
   const scrollToScope = (next: LeaderboardScope) => {
     swipe.current?.scrollTo({
-      left: next === 'global' ? swipe.current.clientWidth : 0,
+      left:
+        next === 'global'
+          ? swipe.current.scrollWidth - swipe.current.clientWidth
+          : 0,
     });
   };
   const chooseMode = (next: LeaderboardMode) => {
@@ -624,7 +629,9 @@ export function LeaderboardScreen({
               onScroll={(event) => {
                 chooseScope(
                   event.currentTarget.scrollLeft >
-                    event.currentTarget.clientWidth / 2
+                    (event.currentTarget.scrollWidth -
+                      event.currentTarget.clientWidth) /
+                      2
                     ? 'global'
                     : 'friends',
                 );
