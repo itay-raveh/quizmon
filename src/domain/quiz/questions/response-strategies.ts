@@ -5,12 +5,21 @@ import type { FamilyRules } from './family-rules.ts';
 
 /** Choice buttons, search, or a type grid; families constrain the usable cases. */
 export type ResponseStrategy =
-  | { kind: 'choices'; minimumOptions: 2 | 4 }
+  | {
+      kind: 'choices';
+      /** Minimum count required before the question can be offered. */
+      minimumOptions: 2 | 4;
+    }
   | {
       kind: 'search';
+      /** Search either the eligible Pokémon pool or builder-supplied entries. */
       candidates: 'pool' | 'provided';
     }
-  | { kind: 'type-grid'; correct: 'subject-types' | 'effectiveness' };
+  | {
+      kind: 'type-grid';
+      /** Select the subject's types or every type with the asked multiplier. */
+      correct: 'subject-types' | 'effectiveness';
+    };
 
 /** Apply resolved response and presentation rules and snapshot them on the draft. */
 export const applyResponseStrategy = (

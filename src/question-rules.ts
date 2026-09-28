@@ -16,12 +16,17 @@ type RenderingControls<
   Related extends keyof EntityRendering = never,
   Search extends keyof EntityRendering = never,
 > = {
+  /** Prompt subject fields this family can change. */
   subject?: [Subject] extends [never] ? never : Renderable<Subject>;
+  /** Answer choice fields this family can change. */
   choices?: [Choices] extends [never] ? never : Renderable<Choices>;
+  /** Related-entity fields this family can change. */
   related?: [Related] extends [never] ? never : Renderable<Related>;
+  /** Search-result fields this family can change. */
   search?: [Search] extends [never] ? never : Renderable<Search>;
 };
 
+/** Only fields with a real rendering consumer are configurable per family. */
 type FamilyRenderingControls = {
   'item-identification': RenderingControls<'sprite', 'sprite'>;
   'item-uses': RenderingControls<'sprite'>;
@@ -108,6 +113,7 @@ export type QuestionRuleEntry<
   Rules extends { rendering: QuestionRendering },
   Type extends keyof FamilyRules,
 > = Omit<Rules, 'rendering'> & {
+  /** Visibility changes applied after the family policy. */
   rendering?: RenderingControlsFor<Type>;
 };
 
@@ -119,8 +125,11 @@ export type QuestionRuleRow<
   Rules extends { rendering: QuestionRendering },
   Type extends keyof FamilyRules,
 > = {
+  /** Family visibility changes applied after the base policy. */
   rendering: RenderingControlsFor<Type>;
+  /** Complete rules for questions without a difficulty level. */
   unleveled?: QuestionRuleEntry<Rules, Type>;
+  /** Complete numeric level entries; the highest available level is selected. */
   levels: DifficultyRules<QuestionRuleEntry<Rules, Type>>;
 };
 /** Base controls copied into level entries before their specific overrides. */
@@ -242,11 +251,9 @@ const controls = {
   'berry-flavors': {
     view: { answer: { kind: 'text' }, subject: { inlineItem: 'sprite' } },
     completeFlavors: false,
-    allOptions: false,
   },
   'natural-gift': {
     view: { answer: { kind: 'type' }, subject: { inlineItem: 'sprite' } },
-    allOptions: false,
   },
   'pokemon-from-historical-sprite': {
     view: {
@@ -1132,7 +1139,6 @@ export const questionRules = {
       5: {
         ...controls['berry-flavors'],
         completeFlavors: true,
-        allOptions: true,
         response: {
           kind: 'choices',
           minimumOptions: 2,
@@ -1145,7 +1151,6 @@ export const questionRules = {
     levels: {
       5: {
         ...controls['natural-gift'],
-        allOptions: true,
         response: {
           kind: 'choices',
           minimumOptions: 2,

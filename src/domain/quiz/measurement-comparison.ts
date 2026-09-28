@@ -1,6 +1,9 @@
 export interface MeasurementRules {
+  /** Smallest winner-to-runner-up ratio accepted. */
   minimumRatio: number;
+  /** Largest winner-to-runner-up ratio accepted. */
   maximumRatio: number;
+  /** Largest winner-to-any-option ratio accepted. */
   maximumSpread: number;
 }
 

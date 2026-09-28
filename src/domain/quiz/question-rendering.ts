@@ -11,9 +11,13 @@ export type SpriteVisibility =
 
 /** Visibility fields for one entity role; omitted `types` defaults to `always`. */
 export interface EntityRendering {
+  /** Sprite appearance, including silhouette and clue-count reveal. */
   sprite: SpriteVisibility;
+  /** Whether the entity's name is visible. */
   name: Visibility;
+  /** Whether its National Pokédex number is visible. */
   number: Visibility;
+  /** Whether type badges are visible when that role renders types. */
   types?: Visibility;
 }
 

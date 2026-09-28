@@ -9,12 +9,16 @@ import type { QuestionData } from './types.ts';
 const answerViewSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('text'),
+    /** Format a nature or move explanation beside a text answer. */
     detail: z.enum(['nature', 'move']).optional(),
+    /** Use the full-width statement answer layout. */
     layout: z.literal('statements').optional(),
   }),
   z.object({
     kind: z.literal('pokemon'),
+    /** Reveal option type badges after answering. */
     revealTypes: z.literal('after-answer').optional(),
+    /** Use the counter-pick answer layout. */
     layout: z.literal('super-effective-attacker').optional(),
   }),
   z.object({ kind: z.literal('type') }),
@@ -26,9 +30,13 @@ export const questionViewSchema = z.object({
   answer: answerViewSchema,
   subject: z
     .object({
+      /** Conceal the subject's identity until the answer. */
       identity: z.literal('after-answer').optional(),
+      /** Conceal its portrait in search presentation. */
       portrait: z.literal('after-answer').optional(),
+      /** Conceal its type badges until the answer. */
       types: z.literal('after-answer').optional(),
+      /** Show an item sprite or name inline with the prompt. */
       inlineItem: z.enum(['sprite', 'named']).optional(),
     })
     .optional(),
