@@ -9,7 +9,7 @@ import { pickTarget } from './selection.ts';
 
 export const buildPropertyQuestion = (
   category: 'ability' | 'move',
-): QuestionBuilder<FamilyRules['ability-check']> => {
+): QuestionBuilder<FamilyRules['pokemon-abilities']> => {
   const property = category === 'ability' ? 'abilities' : 'levelMoves';
   const subject = category === 'ability' ? 'ability' : 'move by leveling up';
   return (context) => {

@@ -1,8 +1,10 @@
 import { z } from 'zod';
-import type { QuestionRepetition } from './types.ts';
+import type { QuestionData, QuestionRepetition } from './types.ts';
+
+type HistoryQuestionType = QuestionData['questionType'];
 
 interface HistoryQuestion {
-  questionType: string;
+  questionType: HistoryQuestionType;
   repetition: QuestionRepetition;
 }
 
@@ -49,11 +51,12 @@ export const emptyQuestionHistory = (): QuestionHistory => ({
 const lastSeen = (entries: Record<string, number>, key: string): number =>
   Object.hasOwn(entries, key) ? entries[key]! : 0;
 
-const subjectKey = (type: string, name: string): string => `${type}:${name}`;
+const subjectKey = (type: HistoryQuestionType, name: string): string =>
+  `${type}:${name}`;
 
 export const getSubjectRecency = (
   history: QuestionHistory,
-  type: string,
+  type: HistoryQuestionType,
   name: string,
 ): number => lastSeen(history.subjects, subjectKey(type, name));
 

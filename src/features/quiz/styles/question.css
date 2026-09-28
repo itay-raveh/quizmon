@@ -175,23 +175,23 @@
   color: var(--navy);
 }
 
-.question-evolution-link {
+.question-evolution-chain {
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: start;
   gap: 0.35rem;
 }
 
-.question-evolution-link .question-visual__subject {
+.question-evolution-chain .question-visual__subject {
   width: 100%;
 }
 
-.question-evolution-link .question-visual__pokemon-slot {
+.question-evolution-chain .question-visual__pokemon-slot {
   width: min(100%, 5rem);
   height: auto;
   aspect-ratio: 1;
 }
 
-.question-evolution-link .question-relation__arrow {
+.question-evolution-chain .question-relation__arrow {
   width: clamp(1.25rem, 5cqw, 2.5rem);
   margin-top: 1.5rem;
 }

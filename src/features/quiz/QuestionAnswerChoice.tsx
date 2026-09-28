@@ -51,7 +51,7 @@ export const QuestionAnswerChoice = ({
   const revealsOptionTypes =
     (answered || question.showTypes) && reservesOptionTypes;
   const showdownStat =
-    question.visual?.kind === 'stat-showdown'
+    question.visual?.kind === 'stat-extremes'
       ? question.visual.stat
       : undefined;
   const label = question.optionLabels?.[option] ?? formatPokemonName(option);
@@ -135,7 +135,7 @@ export const QuestionAnswerChoice = ({
   const attackTypes = typeRelations
     ? question.visual?.kind === 'type-matchup'
       ? [option]
-      : question.visual?.kind === 'counter-pick'
+      : question.visual?.kind === 'super-effective-attacker'
         ? visual?.types
         : undefined
     : undefined;

@@ -28,14 +28,6 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   const fact = archiveCompletion(completion('training'));
   expect(await writeCompletedRound(first, 'guest', fact)).toBe(true);
   expect(await writeCompletedRound(first, 'guest', fact)).toBe(false);
-  const retired = structuredClone(fact);
-  retired.id = crypto.randomUUID();
-  Reflect.set(retired.data.answers[0]!, 'question_type', 'retired-type');
-  await first.rounds.insert({
-    id: retired.id,
-    ownerId: 'guest',
-    fact: retired,
-  });
   await first.close();
 
   const second = await openPlayerDatabase(name, storage, false);
@@ -54,6 +46,17 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   );
   await writePlayerPreferences(second, 'guest', { settings: null });
   expect((await readGameData(second, 'guest')).data.settings).toBeNull();
+  const invalid = structuredClone(fact);
+  invalid.id = crypto.randomUUID();
+  Reflect.set(invalid.data.answers[0]!, 'question_type', 'retired-type');
+  await second.rounds.insert({
+    id: invalid.id,
+    ownerId: 'guest',
+    fact: invalid,
+  });
+  await expect(readGameData(second, 'guest')).rejects.toThrow(
+    'A saved completed round is invalid.',
+  );
   await second.remove();
 });
 
@@ -76,7 +79,7 @@ it('returns cloneable Daily attempts from RxDB documents', async () => {
       questions: [
         {
           id: 'q',
-          questionType: 'type-check',
+          questionType: 'pokemon-types',
           category: 'knowledge',
           subject: { kind: 'pokemon', name: 'A', generation: 'I', types: [] },
           repetition: {
@@ -140,7 +143,7 @@ it('credits only the first Daily round after two offline devices sync', async ()
     await writeCompletedRound(db, 'guest', second);
     await writeCompletedRound(db, 'guest', first);
     const { data } = await readGameData(db, 'guest');
-    expect(data.results.progress.correctQuestionTypes['type-check']).toBe(4);
+    expect(data.results.progress.correctQuestionTypes['pokemon-types']).toBe(4);
     const rows = await boardRows(
       db,
       'daily',

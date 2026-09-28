@@ -13,8 +13,8 @@ export const buildEffect: QuestionBuilder<EffectRules> = (context) => {
       : topics.items.filter(
           (item) =>
             item.effectKind ===
-              (context.questionType === 'medicine-cabinet' ? 'bag' : 'held') &&
-            (context.questionType !== 'medicine-cabinet' ||
+              (context.questionType === 'item-uses' ? 'bag' : 'held') &&
+            (context.questionType !== 'item-uses' ||
               (item.category !== 'data-cards' &&
                 item.name !== 'key-stone' &&
                 !item.name.startsWith('mega-'))),

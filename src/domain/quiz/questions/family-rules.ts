@@ -50,7 +50,7 @@ interface FamilyControls {
     machineDiscChance: number;
     response: SearchResponse<'provided'>;
   };
-  'medicine-cabinet': EffectDistractors & {
+  'item-uses': EffectDistractors & {
     sameItemCategory: boolean;
     allowMissingSprites: boolean;
   };
@@ -61,8 +61,8 @@ interface FamilyControls {
     allOptions: boolean;
     excludeTypeHintNames: boolean;
   };
-  'name-that-region': { allOptions: boolean };
-  'move-purpose': { statusMovesOnly: boolean; sameMoveType: boolean };
+  'location-region': { allOptions: boolean };
+  'move-category': { statusMovesOnly: boolean; sameMoveType: boolean };
   'pokedex-categories': {
     sameColorOrShape: boolean;
     closeAlternatives: boolean;
@@ -103,47 +103,47 @@ interface FamilyControls {
   };
   'berry-flavors': { completeFlavors: boolean; allOptions: boolean };
   'natural-gift': { allOptions: boolean };
-  'pokedex-scan': PokemonDistractors & {
+  'pokemon-from-historical-sprite': PokemonDistractors & {
     currentSpriteChance: number;
     backSpriteChance: number;
     frontSpriteChance: number;
     response: SearchResponse<'pool'>;
   };
-  'sprite-match': PokemonDistractors;
-  'silhouette-match': PokemonDistractors;
-  'whos-that-pokemon': PokemonDistractors & {
+  'sprite-for-pokemon': PokemonDistractors;
+  'silhouette-for-pokemon': PokemonDistractors;
+  'pokemon-from-silhouette': PokemonDistractors & {
     response: SearchResponse<'pool'>;
   };
-  'pixel-peek': PokemonDistractors & {
+  'pokemon-from-pixel-crop': PokemonDistractors & {
     response: SearchResponse<'pool'>;
     cropScale: number;
   };
-  'shiny-spotter': PokemonDistractors;
-  'field-notes': PokemonDistractors & {
+  'shiny-pokemon-identification': PokemonDistractors;
+  'pokedex-entry-match': PokemonDistractors & {
     response: SearchResponse<'pool'>;
   };
-  'type-check': {
+  'pokemon-types': {
     singleType: boolean;
     response: GridResponse<'subject-types'>;
     similarityWeights: SimilarityWeights;
   };
-  'odd-one-out': { singleType: boolean };
-  'type-roundup': { singleType: boolean };
-  'type-twins': PokemonDistractors;
-  'legend-hunt': NoControls;
-  'generation-roundup': NoControls;
-  'evolution-link': PokemonDistractors & { response: SearchResponse<'pool'> };
-  'evolution-shift': { similarityWeights: SimilarityWeights };
-  'ability-check': { plausibleProperties: boolean };
-  'move-check': { plausibleProperties: boolean };
-  'stat-showdown': { statGap: readonly [number, number] | null };
+  'type-odd-one-out': { singleType: boolean };
+  'pokemon-by-type': { singleType: boolean };
+  'dual-type-match': PokemonDistractors;
+  'legendary-mythical-selection': NoControls;
+  'pokemon-by-generation': NoControls;
+  'evolution-chain': PokemonDistractors & { response: SearchResponse<'pool'> };
+  'evolution-gained-type': { similarityWeights: SimilarityWeights };
+  'pokemon-abilities': { plausibleProperties: boolean };
+  'level-up-moves': { plausibleProperties: boolean };
+  'stat-extremes': { statGap: readonly [number, number] | null };
   'type-matchup': {
     singleType: boolean;
     showTypes: boolean;
     multipliers: readonly number[];
     response: GridResponse<'effectiveness'>;
   };
-  'counter-pick': PokemonDistractors & {
+  'super-effective-attacker': PokemonDistractors & {
     singleType: boolean;
     showTypes: boolean;
     multipliers: readonly number[];

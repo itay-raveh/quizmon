@@ -31,34 +31,38 @@ export const QuestionInstruction = ({
       </>
     );
   if (question.questionType === 'nature-effects') return 'Which nature?';
-  if (kind === 'type-check' && question.answer.interaction === 'multi-select')
+  if (
+    kind === 'pokemon-types' &&
+    question.answer.interaction === 'multi-select'
+  )
     return 'Select every type this Pokémon has.';
   if (
     question.visual?.kind === 'type-matchup' &&
     question.answer.interaction === 'multi-select'
   )
     return `Select every attack type that deals ×${formatTypeMultiplier(question.visual.multiplier)} damage.`;
-  if (kind === 'type-check') return 'Which type does this Pokémon have?';
-  if (kind === 'type-twins') return 'Which Pokémon has the same two types?';
-  if (kind === 'evolution-link') return 'Complete the evolution chain';
-  if (kind === 'evolution-shift')
+  if (kind === 'pokemon-types') return 'Which type does this Pokémon have?';
+  if (kind === 'dual-type-match')
+    return 'Which Pokémon has the same two types?';
+  if (kind === 'evolution-chain') return 'Complete the evolution chain';
+  if (kind === 'evolution-gained-type')
     return 'Which type does it gain on evolution?';
-  if (kind === 'type-roundup') return 'Select every Pokémon with this type';
-  if (kind === 'generation-roundup')
+  if (kind === 'pokemon-by-type') return 'Select every Pokémon with this type';
+  if (kind === 'pokemon-by-generation')
     return 'Select every Pokémon introduced in this generation';
   if (question.visual?.kind === 'type-matchup')
     return `Which type deals ×${formatTypeMultiplier(question.visual.multiplier)} damage?`;
-  if (question.visual?.kind === 'counter-pick')
+  if (question.visual?.kind === 'super-effective-attacker')
     return `Whose best attack type deals ×${formatTypeMultiplier(question.visual.multiplier)} damage?`;
-  if (question.visual?.kind === 'stat-showdown')
+  if (question.visual?.kind === 'stat-extremes')
     return (
       <>
         Which Pokémon has the <strong>{question.visual.direction}</strong> stat?
       </>
     );
-  if (question.questionType === 'ability-check')
+  if (question.questionType === 'pokemon-abilities')
     return 'Which ability can this Pokémon have?';
-  if (question.questionType === 'move-check')
+  if (question.questionType === 'level-up-moves')
     return 'Which move can it learn by leveling up?';
   const { prompt } = question;
   if (prompt.kind === 'text')

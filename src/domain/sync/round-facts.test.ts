@@ -73,7 +73,7 @@ describe('completed round facts', () => {
 
   it('rejects completed facts with retired question types', () => {
     const round = archiveCompletion(completion());
-    Reflect.set(round.data.answers[0]!, 'question_type', 'evolution-items');
+    Reflect.set(round.data.answers[0]!, 'question_type', 'missing-type');
     expect(validateRoundFact(round)).toBe(false);
   });
 
@@ -143,9 +143,9 @@ describe('completed round facts', () => {
       '2026-09-11',
     );
     const combined = projectRoundHistory([round, duplicate]);
-    expect(combined.results.progress.correctQuestionTypes['type-check']).toBe(
-      4,
-    );
+    expect(
+      combined.results.progress.correctQuestionTypes['pokemon-types'],
+    ).toBe(4);
     expect(combined.pokedex).toEqual(['bulbasaur', 'ivysaur']);
   });
 });

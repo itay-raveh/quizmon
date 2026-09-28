@@ -7,25 +7,29 @@ describe('getTrainingSettings', () => {
       getTrainingSettings({
         ...defaultGameSettings,
         difficulty: undefined,
-        questionTypes: ['evolution-shift'],
+        questionTypes: ['evolution-gained-type'],
       }),
     ).toMatchObject({
       questionTypes: leagueQuestionTypes,
       trainingMode: 'league',
     });
     expect(leagueQuestionTypes).toHaveLength(17);
-    for (const advanced of ['ability-check', 'move-check', 'stat-showdown']) {
+    for (const advanced of [
+      'pokemon-abilities',
+      'level-up-moves',
+      'stat-extremes',
+    ]) {
       expect(leagueQuestionTypes).not.toContain(advanced);
     }
     expect(
       getTrainingSettings({
         ...defaultGameSettings,
         difficulty: undefined,
-        questionTypes: ['ability-check', 'move-check', 'stat-showdown'],
+        questionTypes: ['pokemon-abilities', 'level-up-moves', 'stat-extremes'],
         trainingMode: 'custom',
       }),
     ).toMatchObject({
-      questionTypes: ['ability-check', 'move-check', 'stat-showdown'],
+      questionTypes: ['pokemon-abilities', 'level-up-moves', 'stat-extremes'],
       trainingMode: 'custom',
     });
   });

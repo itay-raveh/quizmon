@@ -14,7 +14,7 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
-export const buildRegion: QuestionBuilder<FamilyRules['name-that-region']> = (
+export const buildRegion: QuestionBuilder<FamilyRules['location-region']> = (
   context,
 ) => {
   const topics = context.catalog.topics;

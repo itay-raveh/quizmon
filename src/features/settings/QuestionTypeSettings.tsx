@@ -63,7 +63,7 @@ export const QuestionTypeSettings = ({
   submitted,
 }: QuestionTypeSettingsProps) => {
   const [explainedQuestionType, setExplainedQuestionType] =
-    useState<QuestionType>('pokedex-scan');
+    useState<QuestionType>('pokemon-from-historical-sprite');
   const [initialExpandedGroup] = useState<QuestionTypeGroup>(() =>
     getInitialExpandedGroup(draft.questionTypes),
   );
@@ -110,7 +110,7 @@ export const QuestionTypeSettings = ({
         </div>
         {hasError ? (
           <p className="form-error" id="question-types-error" role="alert">
-            {selectedQuestionTypes.has('generation-roundup') &&
+            {selectedQuestionTypes.has('pokemon-by-generation') &&
             draft.generations.length < 2
               ? 'Select at least two generations for Generation roundup.'
               : questionTypesAreValid

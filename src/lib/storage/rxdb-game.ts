@@ -15,7 +15,6 @@ import {
   trainerProfileSchema,
 } from '../../domain/player/trainer-profile';
 import { questionHistorySchema } from '../../domain/quiz/question-history';
-import { questionTypes } from '../../domain/quiz/questions/definitions';
 import {
   validateRoundFact,
   type RoundFact,
@@ -52,22 +51,6 @@ export const parseDeviceState = (payload: unknown): DeviceState => {
       }),
     ),
   };
-};
-
-const currentQuestionTypes = new Set<string>([...questionTypes, 'champion']);
-
-const hasRetiredQuestionType = (fact: RoundFact): boolean => {
-  const { config, answers } = fact.data;
-  const types = [
-    ...(Array.isArray(config.question_types) ? config.question_types : []),
-    ...(Array.isArray(config.auto_types) ? config.auto_types : []),
-    ...(Array.isArray(answers)
-      ? answers.map((answer) => answer.question_type)
-      : []),
-  ];
-  return types.some(
-    (type) => typeof type === 'string' && !currentQuestionTypes.has(type),
-  );
 };
 
 export async function ensureDeviceState(db: PlayerDatabase): Promise<void> {
@@ -117,7 +100,6 @@ export async function readGameData(
     if (saved.ownerId !== ownerId)
       throw new Error('A saved completed round belongs to another account.');
     if (validateRoundFact(saved.fact)) return [saved.fact];
-    if (hasRetiredQuestionType(saved.fact)) return [];
     throw new Error('A saved completed round is invalid.');
   });
   rounds.sort(

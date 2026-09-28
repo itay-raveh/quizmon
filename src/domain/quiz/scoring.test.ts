@@ -21,8 +21,8 @@ describe('scoring', () => {
       difficulty: 4,
       generations: 3,
       questionTypes: [
-        { questionType: 'sprite-match', multiplier: 0.75 },
-        { questionType: 'type-check', multiplier: 1 },
+        { questionType: 'sprite-for-pokemon', multiplier: 0.75 },
+        { questionType: 'pokemon-types', multiplier: 1 },
         { questionType: 'ev-yields', multiplier: 1.25 },
       ],
     };
@@ -46,7 +46,7 @@ describe('scoring', () => {
     const answers = [
       {
         category: 'identity' as const,
-        questionType: 'sprite-match' as const,
+        questionType: 'sprite-for-pokemon' as const,
         correct: true,
         points: 1_000,
         speedBonus: 2_000,
@@ -64,7 +64,7 @@ describe('scoring', () => {
       generations: 1,
       perQuestion: true,
       questionTypes: [
-        { questionType: 'sprite-match', multiplier: 0.75 },
+        { questionType: 'sprite-for-pokemon', multiplier: 0.75 },
         { questionType: 'ev-yields', multiplier: 1.25 },
       ],
     };

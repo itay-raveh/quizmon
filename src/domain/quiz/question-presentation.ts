@@ -11,7 +11,7 @@ const answerViewSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('pokemon'),
     revealTypes: z.literal('after-answer').optional(),
-    layout: z.literal('counter-pick').optional(),
+    layout: z.literal('super-effective-attacker').optional(),
   }),
   z.object({ kind: z.literal('type') }),
   z.object({ kind: z.literal('item') }),
@@ -47,7 +47,7 @@ export const getQuestionView = (question: QuestionData): QuestionView => {
   const view = resolved?.view ?? Object.values(row.levels)[0]!.view;
   if (question.optionImages) return { ...view, answer: { kind: 'item' } };
   if (
-    question.questionType === 'field-notes' &&
+    question.questionType === 'pokedex-entry-match' &&
     question.answer.interaction === 'search'
   )
     return {

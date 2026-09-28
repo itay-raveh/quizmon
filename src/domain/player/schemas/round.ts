@@ -6,7 +6,7 @@ import { formGroups, generations } from '../../pokemon/types.ts';
 import { savedQuestionSchema } from '../../quiz/question-lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { questionCategories, type GameMode } from '../../quiz/types.ts';
-import { savedScoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
+import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
 import { isDailyTrack } from '../../quiz/daily-track.ts';
 import {
@@ -61,7 +61,7 @@ const round = z
   .object({
     completedAt: utcTimestampSchema.optional(),
     startedOn: dailyDateSchema.optional(),
-    scoreMultipliers: savedScoreMultipliersSchema.optional(),
+    scoreMultipliers: scoreMultipliersSchema.optional(),
     elapsedMilliseconds: finiteNonnegative,
     questionCount: nonnegativeInteger.min(1),
     seed: z.string().min(1).max(200),

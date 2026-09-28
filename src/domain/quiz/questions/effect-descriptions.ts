@@ -135,7 +135,7 @@ export const buildEffectDescription = (
           kind: 'text',
           text: prompt,
           ...(kind === 'ability' ? { description: fact.text } : {}),
-          ...(context.questionType === 'medicine-cabinet'
+          ...(context.questionType === 'item-uses'
             ? {}
             : { supportingText: `Generation ${fact.generation}` }),
         },

@@ -318,38 +318,38 @@
   padding-right: 0;
 }
 
-.answers.answers--counter-pick {
+.answers.answers--super-effective-attacker {
   grid-template-columns: 1fr;
   gap: 0.6rem;
 }
 
-.answers--counter-pick .answer--pokemon {
+.answers--super-effective-attacker .answer--pokemon {
   --answer-sprite-size: 4.5rem;
   min-height: 5.25rem;
   grid-template-columns: 2.25rem var(--answer-sprite-size) minmax(0, 1fr);
   grid-template-rows: auto;
 }
 
-.answers--counter-pick .answer--pokemon kbd {
+.answers--super-effective-attacker .answer--pokemon kbd {
   position: static;
   justify-self: center;
 }
 
-.answers--counter-pick .answer__nameplate {
+.answers--super-effective-attacker .answer__nameplate {
   padding: 0.5rem 3.25rem 0.5rem 0.5rem;
   border: 0;
   text-align: left;
 }
 
-.answers--counter-pick .answer__name {
+.answers--super-effective-attacker .answer__name {
   font-size: var(--text-body);
 }
 
-.answers--counter-pick .answer__types {
+.answers--super-effective-attacker .answer__types {
   justify-content: flex-start;
 }
 
-.answers--counter-pick .answer-matchup__help {
+.answers--super-effective-attacker .answer-matchup__help {
   top: 0.25rem;
   right: 0.25rem;
   bottom: 0.25rem;
@@ -363,7 +363,7 @@
   transform: none;
 }
 
-.answers--counter-pick .answer-matchup__help > span {
+.answers--super-effective-attacker .answer-matchup__help > span {
   font-size: var(--text-body);
 }
 
@@ -455,23 +455,23 @@
 }
 
 @media (min-width: 36.01rem) {
-  .answers.answers--counter-pick {
+  .answers.answers--super-effective-attacker {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @container (max-width: 16rem) {
-  .answers--counter-pick .answer--pokemon {
+  .answers--super-effective-attacker .answer--pokemon {
     grid-template-columns: 2.25rem minmax(0, 1fr) 2.75rem;
     grid-template-rows: var(--answer-sprite-size) auto;
   }
 
-  .answers--counter-pick .answer__nameplate {
+  .answers--super-effective-attacker .answer__nameplate {
     grid-column: 1 / -1;
     padding: 0.5rem;
   }
 
-  .answers--counter-pick .answer-matchup__help {
+  .answers--super-effective-attacker .answer-matchup__help {
     bottom: auto;
     width: 3rem;
     min-height: 4rem;
@@ -481,7 +481,7 @@
     border-radius: 0.2rem;
   }
 
-  .answers--counter-pick .answer-matchup__help:focus-visible {
+  .answers--super-effective-attacker .answer-matchup__help:focus-visible {
     outline-color: var(--navy);
   }
 }

@@ -9,7 +9,7 @@ import { isLeagueVictory } from '../../quiz/league.ts';
 import { questionHistorySchema } from '../../quiz/question-history.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { savedRoundRulesSchema } from '../../quiz/round-rules.ts';
-import { savedScoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
+import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
 import {
   getDailyResultKey,
@@ -36,10 +36,10 @@ const nonnegativeInteger = z.int().min(0);
 const finiteNonnegative = z.number().nonnegative();
 const counts = (keys: readonly string[]) =>
   z.partialRecord(z.enum(keys), nonnegativeInteger);
-const historicalQuestionType = z.string().min(1).max(200);
+const savedQuestionType = z.enum([...questionTypes, 'champion']);
 const savedResult = z
   .object({
-    scoreMultipliers: savedScoreMultipliersSchema.optional(),
+    scoreMultipliers: scoreMultipliersSchema.optional(),
     rules: savedRoundRulesSchema.optional(),
     dailyTrack: z.custom<DailyTrack>(isDailyTrack).optional(),
     puzzleId: z
@@ -54,7 +54,7 @@ const savedResult = z
         correct: z.boolean(),
         subject: answerSubjectSchema.optional(),
         points: nonnegativeInteger,
-        questionType: historicalQuestionType.optional(),
+        questionType: savedQuestionType.optional(),
         responseMilliseconds: finiteNonnegative.optional(),
         speedBonus: nonnegativeInteger.optional(),
       }),
@@ -89,9 +89,7 @@ export const progressSchema = z.object({
   championAnswersWithoutClues: nonnegativeInteger,
   correctCategories: counts(questionCategories),
   correctGenerations: counts(generations),
-  correctQuestionTypes: z
-    .record(historicalQuestionType, nonnegativeInteger)
-    .refine((value) => Object.keys(value).length <= 200),
+  correctQuestionTypes: counts(questionTypes),
   correctPokemon: z.array(name).transform((names) => [...new Set(names)]),
   masteryRounds: nonnegativeInteger,
   quickAttackRounds: nonnegativeInteger,
@@ -140,16 +138,13 @@ export const savedSettingsSchema = z.object({
       generations.filter((value) => selected.includes(value)),
     ),
   questionTypes: z
-    .array(historicalQuestionType)
+    .array(z.enum(questionTypes))
     .min(1)
-    .transform((selected) => {
-      const available = questionTypes.filter((value) =>
-        selected.includes(value),
-      );
-      return available.length ? available : [...questionTypes];
-    }),
+    .transform((selected) =>
+      questionTypes.filter((value) => selected.includes(value)),
+    ),
   automaticQuestionTypes: z
-    .array(historicalQuestionType)
+    .array(z.enum(questionTypes))
     .transform((selected) =>
       questionTypes.filter((value) => selected.includes(value)),
     )

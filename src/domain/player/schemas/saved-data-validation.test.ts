@@ -9,7 +9,7 @@ import { parsePlayerData } from './player-data';
 
 const question = {
   id: 'q',
-  questionType: 'type-check',
+  questionType: 'pokemon-types',
   category: 'knowledge',
   subject: { kind: 'pokemon', name: 'A', generation: 'I', types: [] },
   repetition: { identity: 'A', subjects: [], primary: [], distractors: [] },
@@ -31,14 +31,19 @@ const round = {
 
 it('keeps saved question acceptance and required option invariants', () => {
   expect(isQuestionData({ ...question, futureField: true })).toBe(true);
-  expect(isQuestionData({ ...question, questionType: 'evolution-items' })).toBe(
+  expect(isQuestionData({ ...question, questionType: 'missing-type' })).toBe(
     false,
   );
   expect(isQuestionData({ ...question, options: ['A', 'A'] })).toBe(false);
   expect(
     isQuestionData({
       ...question,
-      media: { kind: 'pixel-peek', src: '', focusX: Infinity, focusY: 0 },
+      media: {
+        kind: 'pokemon-from-pixel-crop',
+        src: '',
+        focusX: Infinity,
+        focusY: 0,
+      },
     }),
   ).toBe(false);
 });
@@ -72,11 +77,11 @@ it('preserves unfinished-round output and unknown settings', () => {
 it('discards an unfinished round with a retired question', () => {
   const saved = {
     ...round,
-    questions: [{ ...question, questionType: 'evolution-items' }],
+    questions: [{ ...question, questionType: 'missing-type' }],
     settings: {
       ...defaultGameSettings,
-      questionTypes: ['evolution-items'],
-      automaticQuestionTypes: ['evolution-items'],
+      questionTypes: ['missing-type'],
+      automaticQuestionTypes: ['missing-type'],
     },
   };
   expect(parseRound(saved)).toBeNull();
@@ -123,44 +128,61 @@ it('deduplicates saved selections before they become game settings', () => {
     settings: {
       ...defaultGameSettings,
       generations: ['IX', 'I', 'IX'],
-      questionTypes: ['stat-showdown', 'type-check', 'stat-showdown'],
-      automaticQuestionTypes: ['type-check'],
+      questionTypes: ['stat-extremes', 'pokemon-types', 'stat-extremes'],
+      automaticQuestionTypes: ['pokemon-types'],
     },
   });
   expect(parsed.settings?.generations).toEqual(['I', 'IX']);
   expect(parsed.settings?.questionTypes).toEqual([
-    'type-check',
-    'stat-showdown',
+    'pokemon-types',
+    'stat-extremes',
   ]);
-  expect(parsed.settings?.automaticQuestionTypes).toEqual(['type-check']);
+  expect(parsed.settings?.automaticQuestionTypes).toEqual(['pokemon-types']);
 });
 
-it('keeps historical scores and counts while filtering retired settings', () => {
+it('rejects saved results and settings that use retired question IDs', () => {
   const base = emptyPlayerData();
   const result = structuredClone(completion().result);
-  Reflect.set(result.answers[0]!, 'questionType', 'evolution-items');
-  result.rules!.questionTypes = ['evolution-items'];
-  result.scoreMultipliers!.questionTypes[0]!.questionType = 'evolution-items';
-  const parsed = parsePlayerData({
+  Reflect.set(result.answers[0]!, 'questionType', 'missing-type');
+  Reflect.set(result.rules!, 'questionTypes', ['missing-type']);
+  Reflect.set(
+    result.scoreMultipliers!.questionTypes[0]!,
+    'questionType',
+    'missing-type',
+  );
+  const saved = {
     ...base,
     settings: {
       ...defaultGameSettings,
-      questionTypes: ['evolution-items', 'type-check'],
+      questionTypes: ['missing-type', 'pokemon-types'],
     },
     results: {
       ...base.results,
       progress: {
         ...base.results.progress,
-        correctQuestionTypes: { 'evolution-items': 7 },
+        correctQuestionTypes: { 'missing-type': 7 },
       },
       training: { score: result },
     },
+  };
+  expect(() => parsePlayerData(saved)).toThrow(SaveError);
+  expect(() =>
+    parsePlayerData({ ...saved, settings: defaultGameSettings }),
+  ).toThrow(SaveError);
+});
+
+it('keeps current champion answers in saved results', () => {
+  const base = emptyPlayerData();
+  const parsed = parsePlayerData({
+    ...base,
+    results: {
+      ...base.results,
+      training: { score: completion('league').result },
+    },
   });
-  expect(parsed.settings?.questionTypes).toEqual(['type-check']);
-  expect(parsed.results.progress.correctQuestionTypes['evolution-items']).toBe(
-    7,
+  expect(parsed.results.training.score?.answers.at(-1)?.questionType).toBe(
+    'champion',
   );
-  expect(parsed.results.training.score?.score).toBe(result.score);
 });
 
 it('accepts sparse saved counts and rejects unknown count keys', () => {

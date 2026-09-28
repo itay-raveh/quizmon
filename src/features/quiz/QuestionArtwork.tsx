@@ -99,12 +99,12 @@ export const QuestionArtwork = ({
   };
   if (
     pixelSprite &&
-    (visual?.kind === 'type-check' || visual?.kind === 'type-twins')
+    (visual?.kind === 'pokemon-types' || visual?.kind === 'dual-type-match')
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
         <QuestionSubject {...subject}>
-          {visual.kind === 'type-check' ? (
+          {visual.kind === 'pokemon-types' ? (
             <MysteryType
               answered={answered}
               types={question.subject.types ?? []}
@@ -138,10 +138,10 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'evolution-link') {
+  if (visual?.kind === 'evolution-chain') {
     return (
       <div
-        className="question-visual question-evolution-link"
+        className="question-visual question-evolution-chain"
         aria-hidden="true"
       >
         {[visual.before, question.subject.name, visual.after].map(
@@ -162,7 +162,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'generation-roundup') {
+  if (visual?.kind === 'pokemon-by-generation') {
     return (
       <div className="question-visual" aria-hidden="true">
         <strong>
@@ -171,7 +171,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'type-roundup') {
+  if (visual?.kind === 'pokemon-by-type') {
     return (
       <div className="question-visual" aria-hidden="true">
         <TypeBadges
@@ -191,21 +191,21 @@ export const QuestionArtwork = ({
       );
   }
   if (
-    visual?.kind === 'stat-showdown' ||
+    visual?.kind === 'stat-extremes' ||
     visual?.kind === 'measurement-comparison'
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
         <StatDirection
           label={formatPokemonName(
-            visual.kind === 'stat-showdown' ? visual.stat : visual.measurement,
+            visual.kind === 'stat-extremes' ? visual.stat : visual.measurement,
           )}
           direction={visual.direction === 'highest' ? 'up' : 'down'}
         />
       </div>
     );
   }
-  if (visual?.kind === 'evolution-shift') {
+  if (visual?.kind === 'evolution-gained-type') {
     const { evolution, gainedType } = visual;
     const retainedTypes = evolution.types.filter((type) => type !== gainedType);
     return (
@@ -259,7 +259,8 @@ export const QuestionArtwork = ({
   }
   if (
     pixelSprite &&
-    (visual?.kind === 'type-matchup' || visual?.kind === 'counter-pick')
+    (visual?.kind === 'type-matchup' ||
+      visual?.kind === 'super-effective-attacker')
   ) {
     const answer = question.answer.correctOptions[0];
     const answerVisual = answer ? question.optionVisuals?.[answer] : undefined;
@@ -338,7 +339,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (media.kind === 'pixel-peek') {
+  if (media.kind === 'pokemon-from-pixel-crop') {
     return (
       <>
         <div

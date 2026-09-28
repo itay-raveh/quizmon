@@ -13,10 +13,7 @@ const roundRulesSchema = z.object({
   questionTypes: z.array(z.enum(questionTypes)).min(1),
 });
 
-export const savedRoundRulesSchema = roundRulesSchema.extend({
-  automaticQuestionTypes: z.array(z.string().min(1).max(200)).min(1).optional(),
-  questionTypes: z.array(z.string().min(1).max(200)).min(1),
-});
+export const savedRoundRulesSchema = roundRulesSchema;
 
 export type RoundRules = z.infer<typeof savedRoundRulesSchema>;
 

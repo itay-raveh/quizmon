@@ -95,7 +95,7 @@ export const buildMatchupQuestion: QuestionBuilder<
 };
 
 export const buildCounterPickQuestion: QuestionBuilder<
-  FamilyRules['counter-pick']
+  FamilyRules['super-effective-attacker']
 > = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const typeKey = (types: readonly string[]) => [...types].sort().join(',');
@@ -170,7 +170,7 @@ export const buildCounterPickQuestion: QuestionBuilder<
           media: { kind: 'pixel-sprite', src: targetSprite },
           presentation: { kind: 'pokemon' },
         }),
-        visual: { kind: 'counter-pick', multiplier },
+        visual: { kind: 'super-effective-attacker', multiplier },
       };
     }
   }

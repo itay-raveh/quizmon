@@ -80,7 +80,6 @@ export const getSpeciesHistory = ({
     }
     return result;
   };
-  // Read existing form-keyed saves as species history without rewriting saved lineups.
   const normalized = {
     ...history,
     subjects: merge(history.subjects, (key) =>

@@ -63,7 +63,7 @@ export const buildCategory: QuestionBuilder<
   }
 };
 export const buildDescriptionQuestion: QuestionBuilder<
-  FamilyRules['field-notes']
+  FamilyRules['pokedex-entry-match']
 > = (context) => {
   const eligible = unambiguousDescriptions(
     context.pool.filter(

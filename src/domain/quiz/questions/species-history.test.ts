@@ -10,7 +10,7 @@ import { getSpeciesHistory, speciesQuestion } from './species-history.ts';
 import { makeTopicQuestion } from './topic-support.ts';
 import { getUnleveledQuestionRule } from '../question-variants.ts';
 
-it('matches form repetitions in legacy and structured identities', () => {
+it('matches form repetitions across identity formats', () => {
   const catalog = {
     pokemon: {
       'Mr. Mime: Mega': { speciesName: 'Mr. Mime' },
@@ -22,8 +22,8 @@ it('matches form repetitions in legacy and structured identities', () => {
     pool: [],
     random: () => 0,
     used: new Set<string>(),
-    questionType: 'pokedex-scan' as const,
-    variant: getUnleveledQuestionRule('pokedex-scan')!,
+    questionType: 'pokemon-from-historical-sprite' as const,
+    variant: getUnleveledQuestionRule('pokemon-from-historical-sprite')!,
   };
   const topic = makeTopicQuestion(
     context,
@@ -32,7 +32,10 @@ it('matches form repetitions in legacy and structured identities', () => {
     'Mr. Mime: Mega',
     ['Mr. Mime: Mega', 'A', 'B', 'C'],
   )!;
-  const question = { ...topic, questionType: 'pokedex-scan' } as QuestionData;
+  const question = {
+    ...topic,
+    questionType: 'pokemon-from-historical-sprite',
+  } as QuestionData;
   const canonicalTopic = makeTopicQuestion(
     context,
     { kind: 'pokemon', name: 'Mr. Mime', generation: 'I', types: [] },
@@ -42,7 +45,7 @@ it('matches form repetitions in legacy and structured identities', () => {
   )!;
   const canonical = {
     ...canonicalTopic,
-    questionType: 'pokedex-scan',
+    questionType: 'pokemon-from-historical-sprite',
   } as QuestionData;
   const history = rememberQuestion(emptyQuestionHistory(), question);
   const normalized = getSpeciesHistory({ ...context, history })!;
@@ -53,19 +56,19 @@ it('matches form repetitions in legacy and structured identities', () => {
     'Mr. Mime',
   ]);
 
-  const legacyForm = {
+  const simpleForm = {
     ...question,
     repetition: targetRepetition({ pokemonOptions: false })(question),
   };
-  const legacyCanonical = {
+  const simpleCanonical = {
     ...canonical,
     repetition: targetRepetition({ pokemonOptions: false })(canonical),
   };
-  const legacyHistory = rememberQuestion(emptyQuestionHistory(), legacyForm);
+  const simpleHistory = rememberQuestion(emptyQuestionHistory(), simpleForm);
   expect(
     getQuestionRecency(
-      getSpeciesHistory({ ...context, history: legacyHistory })!,
-      speciesQuestion(catalog, legacyCanonical),
+      getSpeciesHistory({ ...context, history: simpleHistory })!,
+      speciesQuestion(catalog, simpleCanonical),
     ),
   ).toBe(1);
 });

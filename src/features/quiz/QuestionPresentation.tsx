@@ -178,7 +178,7 @@ export const QuestionPresentation = ({
       {(answered || question.showTypes) &&
       !(
         (question.visual?.kind === 'type-matchup' ||
-          question.visual?.kind === 'counter-pick') &&
+          question.visual?.kind === 'super-effective-attacker') &&
         question.media.kind === 'pixel-sprite'
       ) &&
       (question.subject.types ?? []).length > 0 &&

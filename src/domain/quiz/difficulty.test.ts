@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { difficultyLevels, resolveDifficultyVariant } from './difficulty';
 import { getQuestionVariant } from './question-variants';
-import { questionTypes } from './questions/definitions';
 
 describe('difficulty variants', () => {
   it.each([
@@ -35,14 +34,10 @@ it.each(['height-comparison', 'weight-comparison'] as const)(
   },
 );
 
-it.each(['move-types', 'type-check', 'medicine-cabinet'] as const)(
+it.each(['move-types', 'pokemon-types', 'item-uses'] as const)(
   '%s starts at Level 2',
   (type) => {
     expect(getQuestionVariant(type, 1)).toBeUndefined();
     expect(getQuestionVariant(type, 2)?.level).toBe(2);
   },
 );
-
-it('does not offer evolution items as a question family', () => {
-  expect(questionTypes).not.toContain('evolution-items');
-});

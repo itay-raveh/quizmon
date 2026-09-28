@@ -35,28 +35,7 @@ export const scoreMultipliersSchema = z
     ({ perQuestion, questionMix }) => !perQuestion || questionMix === undefined,
   );
 
-export const savedScoreMultipliersSchema = z
-  .object({
-    ...scoreMultipliersSchema.shape,
-    questionTypes: z
-      .array(
-        z.object({
-          questionType: z.string().min(1).max(200),
-          multiplier: z.literal([0.75, 1, 1.25]),
-        }),
-      )
-      .min(1)
-      .refine(
-        (factors) =>
-          new Set(factors.map(({ questionType }) => questionType)).size ===
-          factors.length,
-      ),
-  })
-  .refine(
-    ({ perQuestion, questionMix }) => !perQuestion || questionMix === undefined,
-  );
-
-export type ScoreMultipliers = z.infer<typeof savedScoreMultipliersSchema>;
+export type ScoreMultipliers = z.infer<typeof scoreMultipliersSchema>;
 const formGroupGenerations = new Map(
   formGroups.map((group) => [group, new Set<string>()]),
 );

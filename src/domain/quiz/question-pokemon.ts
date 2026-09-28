@@ -12,28 +12,28 @@ export const getQuestionPokemon = (
     ];
   const subjects =
     question.subject.kind === 'pokemon' ? [question.subject.name] : [];
-  if (question.visual?.kind === 'evolution-link') {
+  if (question.visual?.kind === 'evolution-chain') {
     subjects.push(question.visual.before, question.visual.after);
-  } else if (question.visual?.kind === 'evolution-shift') {
+  } else if (question.visual?.kind === 'evolution-gained-type') {
     subjects.push(question.visual.evolution.name);
   }
   switch (question.questionType) {
     case 'champion':
-    case 'counter-pick':
-    case 'evolution-link':
-    case 'field-notes':
-    case 'generation-roundup':
-    case 'legend-hunt':
-    case 'odd-one-out':
-    case 'pixel-peek':
-    case 'pokedex-scan':
-    case 'shiny-spotter':
-    case 'silhouette-match':
-    case 'sprite-match':
-    case 'whos-that-pokemon':
-    case 'stat-showdown':
-    case 'type-roundup':
-    case 'type-twins':
+    case 'super-effective-attacker':
+    case 'evolution-chain':
+    case 'pokedex-entry-match':
+    case 'pokemon-by-generation':
+    case 'legendary-mythical-selection':
+    case 'type-odd-one-out':
+    case 'pokemon-from-pixel-crop':
+    case 'pokemon-from-historical-sprite':
+    case 'shiny-pokemon-identification':
+    case 'silhouette-for-pokemon':
+    case 'sprite-for-pokemon':
+    case 'pokemon-from-silhouette':
+    case 'stat-extremes':
+    case 'pokemon-by-type':
+    case 'dual-type-match':
       return [
         ...new Set([
           ...subjects,

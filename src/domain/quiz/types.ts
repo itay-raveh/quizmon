@@ -31,7 +31,7 @@ type QuestionMedia =
   | {
       focusX: number;
       focusY: number;
-      kind: 'pixel-peek';
+      kind: 'pokemon-from-pixel-crop';
       src: string;
       zoom?: number;
     }
@@ -54,23 +54,23 @@ export interface PokemonSearchOption {
 
 type QuestionVisual =
   | {
-      kind: 'evolution-link' | 'evolution-endpoints';
+      kind: 'evolution-chain' | 'evolution-endpoints';
       before: string;
       after: string;
       stages: Record<string, PokemonOptionVisual>;
     }
-  | { kind: 'generation-roundup'; generation: Generation }
-  | { kind: 'type-check' }
-  | { kind: 'type-twins' }
-  | { kind: 'type-roundup'; type: string }
+  | { kind: 'pokemon-by-generation'; generation: Generation }
+  | { kind: 'pokemon-types' }
+  | { kind: 'dual-type-match' }
+  | { kind: 'pokemon-by-type'; type: string }
   | {
       evolution: PokemonOptionVisual & { name: string };
       gainedType: string;
-      kind: 'evolution-shift';
+      kind: 'evolution-gained-type';
     }
   | {
       direction: 'highest' | 'lowest';
-      kind: 'stat-showdown';
+      kind: 'stat-extremes';
       stat: StatName;
     }
   | {
@@ -79,7 +79,7 @@ type QuestionVisual =
       direction: 'highest' | 'lowest';
     }
   | { kind: 'type-matchup'; multiplier: number }
-  | { kind: 'counter-pick'; multiplier: number };
+  | { kind: 'super-effective-attacker'; multiplier: number };
 
 type QuestionInteraction = 'single-choice' | 'multi-select' | 'search';
 

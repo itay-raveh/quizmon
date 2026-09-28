@@ -55,7 +55,7 @@ test('reveals a Field notes answer in its choice without a duplicate portrait', 
     },
     options: ['grotle'],
     prompt: { kind: 'text', text: 'A Pokédex description' },
-    questionType: 'field-notes',
+    questionType: 'pokedex-entry-match',
     repetition: {
       identity: 'grotle',
       subjects: ['pokemon/grotle'],

@@ -13,12 +13,12 @@ describe('saved rendering type visibility', () => {
   });
 
   it('validates the Level 5 type policy and rejects unknown values', () => {
-    const rendering = resolveQuestionRendering('evolution-shift', 5);
+    const rendering = resolveQuestionRendering('evolution-gained-type', 5);
     expect(rendering.subject.types).toBe('after-answer');
     expect(rendering.related.types).toBe('after-answer');
-    expect(resolveQuestionRendering('evolution-shift', 3).subject.types).toBe(
-      'always',
-    );
+    expect(
+      resolveQuestionRendering('evolution-gained-type', 3).subject.types,
+    ).toBe('always');
     expect(questionRenderingSchema.safeParse(rendering).success).toBe(true);
     expect(
       questionRenderingSchema.safeParse({

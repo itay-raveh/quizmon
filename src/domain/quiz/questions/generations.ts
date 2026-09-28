@@ -51,6 +51,6 @@ export const buildGenerationRoundupQuestion: QuestionBuilder = (context) => {
       presentation: { kind: 'pokemon' },
       details: { kind: 'generation' },
     }),
-    visual: { kind: 'generation-roundup', generation },
+    visual: { kind: 'pokemon-by-generation', generation },
   };
 };

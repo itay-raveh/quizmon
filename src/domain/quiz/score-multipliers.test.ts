@@ -24,7 +24,7 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
       ...multipliers,
       questionTypes: [
         ...multipliers.questionTypes,
-        { questionType: 'sprite-match', multiplier: 0.75 },
+        { questionType: 'sprite-for-pokemon', multiplier: 0.75 },
       ],
     }),
   ).toBe(42.1875);
@@ -42,7 +42,7 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
 it('uses the Item uses level factors', () => {
   expect(
     ([1, 2, 3, 4, 5] as const).map((level) =>
-      getQuestionTypeMultiplier('medicine-cabinet', level),
+      getQuestionTypeMultiplier('item-uses', level),
     ),
   ).toEqual([undefined, 0.75, 1, 1.25, 1.25]);
 });
@@ -52,15 +52,17 @@ it('scores the drawn question mix without rewarding unused selected types', () =
     difficulty: 5 as const,
     generations: ['I' as const],
     formGroups: ['standard' as const],
-    questionTypes: ['type-check', 'stat-showdown', 'legend-hunt'] as (
-      'type-check' | 'stat-showdown' | 'legend-hunt'
-    )[],
+    questionTypes: [
+      'pokemon-types',
+      'stat-extremes',
+      'legendary-mythical-selection',
+    ] as ('pokemon-types' | 'stat-extremes' | 'legendary-mythical-selection')[],
   };
   const drawn = [
     ...Array.from({ length: 9 }, () => ({
-      questionType: 'type-check' as const,
+      questionType: 'pokemon-types' as const,
     })),
-    { questionType: 'stat-showdown' as const },
+    { questionType: 'stat-extremes' as const },
   ];
   const actual = getTrainingScoreMultipliers(settings, drawn);
   expect(actual?.perQuestion).toBe(true);
@@ -68,12 +70,12 @@ it('scores the drawn question mix without rewarding unused selected types', () =
   expect(
     getTrainingScoreMultipliers(settings, [
       ...drawn.slice(0, 9),
-      { questionType: 'legend-hunt' },
+      { questionType: 'legendary-mythical-selection' },
     ])?.perQuestion,
   ).toBe(true);
   expect(
     getTrainingScoreMultipliers(
-      { ...settings, questionTypes: ['type-check', 'stat-showdown'] },
+      { ...settings, questionTypes: ['pokemon-types', 'stat-extremes'] },
       drawn,
     )?.perQuestion,
   ).toBe(true);
@@ -87,7 +89,7 @@ it('accepts saved factors without depending on current variant rules', () => {
   expect(
     isScoreMultipliers({
       ...multipliers,
-      questionTypes: [{ questionType: 'sprite-match', multiplier: 0.75 }],
+      questionTypes: [{ questionType: 'sprite-for-pokemon', multiplier: 0.75 }],
     }),
   ).toBe(true);
 });
@@ -116,16 +118,16 @@ it.each([
 });
 
 it.each([
-  ['pokedex-scan', 3, 0.75],
+  ['pokemon-from-historical-sprite', 3, 0.75],
   ['item-identification', 5, 1.25],
-  ['sprite-match', 3, 1],
+  ['sprite-for-pokemon', 3, 1],
   ['hidden-abilities', 3, undefined],
   ['hidden-abilities', 4, 1.25],
-  ['field-notes', 3, 0.75],
-  ['field-notes', 5, 1.25],
-  ['type-check', 5, 1],
-  ['legend-hunt', 5, 0.75],
-  ['stat-showdown', 5, 1.25],
+  ['pokedex-entry-match', 3, 0.75],
+  ['pokedex-entry-match', 5, 1.25],
+  ['pokemon-types', 5, 1],
+  ['legendary-mythical-selection', 5, 0.75],
+  ['stat-extremes', 5, 1.25],
 ] as const)(
   'weights %s at level %i by the current variant introduction',
   (type, level, factor) => {
@@ -138,20 +140,24 @@ it('counts unique generations, eligible form groups, and selected types once', (
       difficulty: 3,
       formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
       generations: ['I', 'II', 'II'],
-      questionTypes: ['sprite-match', 'sprite-match', 'hidden-abilities'],
+      questionTypes: [
+        'sprite-for-pokemon',
+        'sprite-for-pokemon',
+        'hidden-abilities',
+      ],
     }),
   ).toEqual({
     difficulty: 3,
     generations: 2,
     formGroupCount: 1,
-    questionTypes: [{ questionType: 'sprite-match', multiplier: 1 }],
+    questionTypes: [{ questionType: 'sprite-for-pokemon', multiplier: 1 }],
   });
   expect(
     getTrainingScoreMultipliers({
       difficulty: 3,
       formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
       generations: ['I', 'VII'],
-      questionTypes: ['sprite-match'],
+      questionTypes: ['sprite-for-pokemon'],
     })?.formGroupCount,
   ).toBe(2);
   expect(
@@ -159,14 +165,14 @@ it('counts unique generations, eligible form groups, and selected types once', (
       difficulty: 3,
       formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
       generations: ['I', 'VI', 'VII', 'VIII'],
-      questionTypes: ['sprite-match'],
+      questionTypes: ['sprite-for-pokemon'],
     })?.formGroupCount,
   ).toBe(4);
   expect(
     getTrainingScoreMultipliers({
       difficulty: 3,
       generations: [],
-      questionTypes: ['sprite-match'],
+      questionTypes: ['sprite-for-pokemon'],
     }),
   ).toBeUndefined();
 });

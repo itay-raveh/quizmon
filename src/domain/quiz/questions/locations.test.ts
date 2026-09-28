@@ -35,7 +35,7 @@ it('asks only about distinct named places in Name that region', () => {
     used: new Set<string>(),
   };
 
-  expect(buildQuestionType(context, 'name-that-region')?.subject.name).toBe(
+  expect(buildQuestionType(context, 'location-region')?.subject.name).toBe(
     'ecruteak-city',
   );
   expect(
@@ -47,7 +47,7 @@ it('asks only about distinct named places in Name that region', () => {
           topics: { ...catalog.topics!, locations: locations.slice(0, -1) },
         },
       },
-      'name-that-region',
+      'location-region',
     ),
   ).toBeUndefined();
 });

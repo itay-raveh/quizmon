@@ -85,7 +85,7 @@
 }
 
 @container (max-width: 16rem) {
-  .question-evolution-link,
+  .question-evolution-chain,
   .question-evolution-endpoints,
   .question-relation,
   .question__response .answers--pokemon,
@@ -93,12 +93,12 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .question-evolution-link .question-relation__arrow {
+  .question-evolution-chain .question-relation__arrow {
     margin: 0.5rem 0;
     width: 2.9rem;
   }
 
-  .question-evolution-link .question-relation__arrow svg,
+  .question-evolution-chain .question-relation__arrow svg,
   .question-evolution-endpoints .question-relation__arrow svg,
   .question-relation .question-relation__arrow svg {
     transform: rotate(90deg);

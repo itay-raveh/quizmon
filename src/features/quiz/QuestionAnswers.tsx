@@ -63,8 +63,9 @@ export const QuestionAnswers = ({
         question.optionVisuals && policy.sprite !== 'never'
           ? 'answers--pokemon'
           : '',
-        view.answer.kind === 'pokemon' && view.answer.layout === 'counter-pick'
-          ? 'answers--counter-pick'
+        view.answer.kind === 'pokemon' &&
+        view.answer.layout === 'super-effective-attacker'
+          ? 'answers--super-effective-attacker'
           : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',
         question.options.length > 4 && !multiSelect ? 'answers--many' : '',

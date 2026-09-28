@@ -26,7 +26,10 @@ export const applyResponseStrategy = (
       : rules.view,
     showTypes: 'showTypes' in rules ? rules.showTypes : undefined,
   };
-  if (question.media.kind === 'pixel-peek' && 'cropScale' in rules) {
+  if (
+    question.media.kind === 'pokemon-from-pixel-crop' &&
+    'cropScale' in rules
+  ) {
     question.media = {
       ...question.media,
       zoom: (question.media.zoom ?? 1) * rules.cropScale,

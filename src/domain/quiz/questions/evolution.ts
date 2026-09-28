@@ -254,7 +254,7 @@ export const buildEvolution: QuestionBuilder<
   }
 };
 export const buildEvolutionShiftQuestion: QuestionBuilder<
-  FamilyRules['evolution-shift']
+  FamilyRules['evolution-gained-type']
 > = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
   const target = pickTarget(context, ({ evolvesTo, types }) => {
@@ -302,14 +302,14 @@ export const buildEvolutionShiftQuestion: QuestionBuilder<
         types: evolution.types,
       },
       gainedType: correct,
-      kind: 'evolution-shift',
+      kind: 'evolution-gained-type',
     },
   };
 };
 const regionalForm = (name: string): string | undefined =>
   name.match(/-(alola|galar|hisui|paldea)(?:-|$)/)?.[1];
 export const buildEvolutionLinkQuestion: QuestionBuilder<
-  FamilyRules['evolution-link']
+  FamilyRules['evolution-chain']
 > = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
   const middleStages = context.pool.filter(
@@ -383,7 +383,7 @@ export const buildEvolutionLinkQuestion: QuestionBuilder<
       presentation: { kind: 'pokemon' },
     }),
     visual: {
-      kind: 'evolution-link',
+      kind: 'evolution-chain',
       before,
       after,
       stages: getOptionVisuals(context, [before, target.name, after]),

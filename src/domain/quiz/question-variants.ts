@@ -79,8 +79,10 @@ export const getQuestionRendering = (
       },
     });
   }
-  // Older saved questions can carry custom media and concealment outside the grid.
-  if (question.concealOptionLabels && question.questionType !== 'legend-hunt')
+  if (
+    question.concealOptionLabels &&
+    question.questionType !== 'legendary-mythical-selection'
+  )
     return mergeRendering(fallback, {
       choices: {
         name: 'after-answer',

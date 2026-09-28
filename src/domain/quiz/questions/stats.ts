@@ -149,7 +149,7 @@ export const buildNature: QuestionBuilder<FamilyRules['nature-effects']> = (
   }
 };
 export const buildStatQuestion: QuestionBuilder<
-  FamilyRules['stat-showdown']
+  FamilyRules['stat-extremes']
 > = (context) => {
   const stat = pick(statNames, context.random) as StatName;
   const direction = context.random() < 0.5 ? 'highest' : 'lowest';
@@ -225,6 +225,6 @@ export const buildStatQuestion: QuestionBuilder<
       presentation: { kind: 'pokemon' },
       details: { kind: 'stat', stat },
     }),
-    visual: { direction, kind: 'stat-showdown', stat },
+    visual: { direction, kind: 'stat-extremes', stat },
   };
 };

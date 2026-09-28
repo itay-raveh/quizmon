@@ -63,7 +63,7 @@ const pickScanSprite = (
 };
 
 export const buildPokedexScanQuestion: QuestionBuilder<
-  FamilyRules['pokedex-scan']
+  FamilyRules['pokemon-from-historical-sprite']
 > = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target) return undefined;
@@ -113,7 +113,7 @@ export const buildSilhouetteMatchQuestion = buildNamedPokemonQuestion;
 export const buildSpriteMatchQuestion = buildNamedPokemonQuestion;
 
 export const buildWhosThatPokemonQuestion: QuestionBuilder<
-  FamilyRules['whos-that-pokemon']
+  FamilyRules['pokemon-from-silhouette']
 > = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;
@@ -127,7 +127,7 @@ export const buildWhosThatPokemonQuestion: QuestionBuilder<
 };
 
 export const buildPixelPeekQuestion: QuestionBuilder<
-  FamilyRules['pixel-peek']
+  FamilyRules['pokemon-from-pixel-crop']
 > = (context) => {
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target?.pokemon.sprite) return undefined;
@@ -142,14 +142,14 @@ export const buildPixelPeekQuestion: QuestionBuilder<
         context.random,
         target.pokemon.pixelPeekFocus,
       ),
-      kind: 'pixel-peek',
+      kind: 'pokemon-from-pixel-crop',
       src: target.pokemon.sprite,
     },
   });
 };
 
 export const buildShinySpotterQuestion: QuestionBuilder<
-  FamilyRules['shiny-spotter']
+  FamilyRules['shiny-pokemon-identification']
 > = (context) => {
   const eligible = context.pool.filter(
     ({ pokemon }) => pokemon.sprite && pokemon.shinySprite,

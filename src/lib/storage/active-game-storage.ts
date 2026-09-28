@@ -34,12 +34,12 @@ const normalizeQuestionPokemon = (
   const namedPokemon = [
     ...(question.searchOptions ?? []),
     ...(prompt.kind === 'pokemon' ? [prompt] : []),
-    ...(visual?.kind === 'evolution-shift' ? [visual.evolution] : []),
+    ...(visual?.kind === 'evolution-gained-type' ? [visual.evolution] : []),
   ];
   const numberedPokemon = [
     ...namedPokemon.map((pokemon) => [pokemon.name, pokemon] as const),
     ...Object.entries(question.optionVisuals ?? {}),
-    ...(visual?.kind === 'evolution-link' ||
+    ...(visual?.kind === 'evolution-chain' ||
     visual?.kind === 'evolution-endpoints'
       ? Object.entries(visual.stages)
       : []),

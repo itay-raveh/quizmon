@@ -18,7 +18,7 @@ const catalog = {
 it('builds ability, bag-item, and held-item effects from their own source pools', () => {
   const families = [
     { type: 'ability-effects', levels: [3, 4, 5], kind: undefined },
-    { type: 'medicine-cabinet', levels: [2, 3, 4, 5], kind: 'bag' },
+    { type: 'item-uses', levels: [2, 3, 4, 5], kind: 'bag' },
     { type: 'held-item-effects', levels: [3, 4, 5], kind: 'held' },
   ] as const;
   for (const { type: questionType, levels, kind } of families)
@@ -131,7 +131,7 @@ it('builds bag-item uses in an older-generation round', () => {
       random: createSeededRandom('bag-gen-one'),
       used: new Set(),
     },
-    'medicine-cabinet',
+    'item-uses',
   );
   expect(question?.subject.generation).toBe('I');
 });
@@ -157,7 +157,7 @@ it('excludes Data Cards and Mega accessories from Item uses', () => {
         random: createSeededRandom('excluded-item-uses'),
         used: new Set(),
       },
-      'medicine-cabinet',
+      'item-uses',
     ),
   ).toBeUndefined();
 });
@@ -171,10 +171,10 @@ it('narrows Item uses distractors at each level', () => {
     buildEffectDescription(
       {
         catalog,
-        questionType: 'medicine-cabinet',
+        questionType: 'item-uses',
         difficulty,
         generations: ['IX'],
-        variant: getQuestionVariant('medicine-cabinet', difficulty)!.variant,
+        variant: getQuestionVariant('item-uses', difficulty)!.variant,
         pool: [],
         random: createSeededRandom('item-distractors'),
         used: new Set(),
@@ -247,14 +247,14 @@ it('respects a raw effect similarity limit', () => {
   );
   const target = bagItems.find((item) => item.name === 'rare-candy')!;
   const variant = {
-    ...getQuestionVariant('medicine-cabinet', 2)!.variant,
+    ...getQuestionVariant('item-uses', 2)!.variant,
     maximumEffectSimilarity: 0,
   };
   expect(
     buildEffectDescription(
       {
         catalog,
-        questionType: 'medicine-cabinet',
+        questionType: 'item-uses',
         difficulty: 2,
         generations: ['IX'],
         variant,

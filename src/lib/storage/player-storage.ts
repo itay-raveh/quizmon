@@ -81,11 +81,11 @@ export const retryPlayerSave = async () => {
 export const currentOwnerId = () => accountId ?? 'guest';
 
 export const playerDatabaseName = async (owner?: string) => {
-  if (!owner) return 'quizmon_guest';
+  if (!owner) return 'quizmon_guest_v2';
   const digest = new Uint8Array(
     await crypto.subtle.digest('SHA-256', new TextEncoder().encode(owner)),
   );
-  return `quizmon_account_${Array.from(digest, (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+  return `quizmon_account_v2_${Array.from(digest, (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
 };
 
 export const getPlayerDatabase = (): PlayerDatabase => {
