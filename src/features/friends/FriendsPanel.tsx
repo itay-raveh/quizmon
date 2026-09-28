@@ -10,6 +10,7 @@ import { EyeIcon, ShareNetworkIcon, TrashIcon } from '../../components/icons';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   formatFriendCode,
+  friendInvitePath,
   parseFriendInput,
   type FriendRelation,
   type SocialPlayer,
@@ -305,9 +306,7 @@ export function FriendsPanel({
     );
   }
 
-  const link = me?.code
-    ? `${location.origin}/social/friends?code=${me.code}`
-    : '';
+  const link = me?.code ? `${location.origin}${friendInvitePath(me.code)}` : '';
   const initialLoading = !pages.friends && !error;
   return (
     <div className="friends-panel">

@@ -30,12 +30,15 @@ export function normalizeFriendCode(value: string) {
 export const formatFriendCode = (code: string) =>
   code.match(/.{1,4}/g)?.join('-') ?? code;
 
+export const friendInvitePath = (code: string) =>
+  `/account/friends?code=${encodeURIComponent(code)}`;
+
 export function parseFriendInput(value: string, origin: string) {
   const code = normalizeFriendCode(value);
   if (code) return code;
   try {
     const url = new URL(value);
-    if (url.origin !== origin || url.pathname !== '/social/friends')
+    if (url.origin !== origin || url.pathname !== '/account/friends')
       return null;
     return normalizeFriendCode(url.searchParams.get('code') ?? '');
   } catch {

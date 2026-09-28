@@ -13,15 +13,15 @@ export function useAppDestination() {
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const playerId =
-    matchPath('/social/players/:id', location.pathname)?.params.id ?? '';
+    matchPath('/players/:id', location.pathname)?.params.id ?? '';
   const profileFrom = (location.state as ProfileState | null)?.from;
   const destination: Destination | null =
     location.pathname === '/account'
       ? 'account'
-      : location.pathname === '/social/friends' ||
+      : location.pathname === '/account/friends' ||
           (playerId && profileFrom === 'friends')
         ? 'friends'
-        : location.pathname === '/social/rankings' || playerId
+        : location.pathname === '/rankings' || playerId
           ? 'rankings'
           : null;
 
@@ -32,14 +32,14 @@ export function useAppDestination() {
   };
 
   const viewPlayer = (id: string) => {
-    void navigate(`/social/players/${encodeURIComponent(id)}`, {
+    void navigate(`/players/${encodeURIComponent(id)}`, {
       state: { from: destination === 'friends' ? 'friends' : 'rankings' },
     });
   };
 
   const closePlayer = () => {
     if (profileFrom) void navigate(-1);
-    else void navigate('/social/rankings', { replace: true });
+    else void navigate('/rankings', { replace: true });
   };
 
   const trainer = (view: TrainerView = 'front', edit = false) => {
@@ -48,10 +48,10 @@ export function useAppDestination() {
 
   const selectStandings = useCallback(
     (date: string, scope: 'global' | 'friends', mode: LeaderboardMode) => {
-      void navigate(
-        `/social/rankings?${new URLSearchParams({ date, scope, mode })}`,
-        { replace: true, preventScrollReset: true },
-      );
+      void navigate(`/rankings?${new URLSearchParams({ date, scope, mode })}`, {
+        replace: true,
+        preventScrollReset: true,
+      });
     },
     [navigate],
   );
@@ -62,7 +62,9 @@ export function useAppDestination() {
     pathname: location.pathname,
     destination,
     friendCode:
-      location.pathname === '/social/friends' ? (params.get('code') ?? '') : '',
+      location.pathname === '/account/friends'
+        ? (params.get('code') ?? '')
+        : '',
     playerId,
     viewPlayer,
     closePlayer,

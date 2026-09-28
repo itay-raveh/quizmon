@@ -33,6 +33,7 @@ import type {
   LeaderboardMode,
   LeaderboardScope,
 } from '../../domain/social/leaderboards';
+import { friendInvitePath } from '../../domain/social/friends';
 import { accountSnapshot, subscribeAccount } from '../account/account';
 import {
   readDailyLeaderboard,
@@ -59,7 +60,7 @@ function InviteFriends({
   useEffect(() => {
     onError(identity.isError || (identity.isSuccess && !code));
   }, [identity.isError, identity.isSuccess, code, onError]);
-  const link = `${location.origin}/social/friends?code=${code}`;
+  const link = `${location.origin}${friendInvitePath(code)}`;
   return (
     <div className="leaderboard-invite">
       <GameButton

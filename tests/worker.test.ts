@@ -31,6 +31,24 @@ const mockSpriteFetch = () => {
   return upstream;
 };
 
+test('new page routes load the app while retired Social routes do not', async () => {
+  const { env } = makeEnv();
+  env.ASSETS.fetch.mockResolvedValue(new Response('app'));
+  await worker.fetch(
+    new Request('https://quizmon.test/account/friends?code=AABBCCDDEEFF0011'),
+    env,
+  );
+  expect(env.ASSETS.fetch).toHaveBeenNthCalledWith(
+    1,
+    expect.objectContaining({ url: 'https://quizmon.test/index.html' }),
+  );
+  await worker.fetch(new Request('https://quizmon.test/social/friends'), env);
+  expect(env.ASSETS.fetch).toHaveBeenNthCalledWith(
+    2,
+    expect.objectContaining({ url: 'https://quizmon.test/social/friends' }),
+  );
+});
+
 describe('Daily reminders', () => {
   it('deletes pre-reset registrations before sending another reminder', async () => {
     const storage = {

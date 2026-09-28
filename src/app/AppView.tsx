@@ -113,7 +113,10 @@ const AppScreen = ({
   ) {
     return (
       <>
-        <div className="social-route" hidden={Boolean(destination.playerId)}>
+        <div
+          className="destination-route"
+          hidden={Boolean(destination.playerId)}
+        >
           <AccountScreen
             trainerName={trainer.profile.name}
             onEditCard={() => destination.trainer('front', true)}
@@ -140,7 +143,10 @@ const AppScreen = ({
   if (session.phase !== 'questions' && destination.destination === 'rankings') {
     return (
       <>
-        <div className="social-route" hidden={Boolean(destination.playerId)}>
+        <div
+          className="destination-route"
+          hidden={Boolean(destination.playerId)}
+        >
           <LeaderboardScreen
             catalog={
               catalogState.status === 'ready' ? catalogState.catalog : undefined
@@ -441,7 +447,7 @@ export const AppView = (props: AppViewProps) => {
     destination.destination === 'friends'
       ? null
       : destination.destination === 'rankings'
-        ? 'social'
+        ? 'rankings'
         : props.trainer.isOpen
           ? 'trainer'
           : 'play';
@@ -466,10 +472,10 @@ export const AppView = (props: AppViewProps) => {
                       destination.destination === 'friends'
                     }
                     onSettings={props.settingsDialog.open}
-                    socialPath={
+                    rankingsPath={
                       props.session.phase === 'results' &&
                       props.session.mode.kind === 'daily'
-                        ? `/social/rankings?date=${props.session.mode.date}`
+                        ? `/rankings?date=${props.session.mode.date}`
                         : undefined
                     }
                     trainerAvailable={props.catalogState.status === 'ready'}

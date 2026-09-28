@@ -7,7 +7,10 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
-import { formatFriendCode } from '../../domain/social/friends';
+import {
+  formatFriendCode,
+  friendInvitePath,
+} from '../../domain/social/friends';
 import { FriendsPanel } from '../friends/FriendsPanel';
 import { cachedOwnPlayer } from '../friends/friends-client';
 import { useModalDialog } from '../../hooks/useModalDialog';
@@ -92,19 +95,9 @@ export function AccountScreen({
     [account.owner],
   );
   const returnPath = friendCode
-    ? `/social/friends?code=${friendCode}`
+    ? friendInvitePath(friendCode)
     : accountReturnPath(window.location.href);
-  const friendInvitation =
-    accountReturnPath(window.location.href).startsWith(
-      '/social/friends?code=',
-    ) || Boolean(friendCode);
-  useEffect(() => {
-    if (friendCode && (signingIn || account.mergeRequired))
-      void navigate(
-        `/account?returnTo=${encodeURIComponent(`/social/friends?code=${friendCode}`)}`,
-        { replace: true },
-      );
-  }, [friendCode, signingIn, account.mergeRequired, navigate]);
+  const friendInvitation = returnPath.startsWith('/account/friends?code=');
   const heading = useRef<HTMLHeadingElement>(null);
   const [welcomeFor] = useState(() =>
     readStoredValue('sessionStorage', accountWelcomeKey),

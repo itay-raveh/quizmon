@@ -12,12 +12,12 @@ import { accountSnapshot, subscribeAccount } from '../features/account/account';
 import { SettingsButton } from '../features/settings/SettingsButton';
 import { FeedbackButton } from './FeedbackButton';
 
-export type MainDestination = 'play' | 'trainer' | 'social';
+export type MainDestination = 'play' | 'trainer' | 'rankings';
 
 const destinations = [
   ['play', 'Play', PuzzlePieceIcon],
   ['trainer', 'Trainer', CardholderIcon],
-  ['social', 'Rankings', ChartBarIcon],
+  ['rankings', 'Rankings', ChartBarIcon],
 ] as const;
 
 export function AppNavigation({
@@ -26,7 +26,7 @@ export function AppNavigation({
   loading = false,
   onNavigate,
   onSettings,
-  socialPath = '/social/rankings',
+  rankingsPath = '/rankings',
   showNavigation = true,
   trainerAvailable,
 }: {
@@ -35,14 +35,14 @@ export function AppNavigation({
   loading?: boolean;
   onNavigate: (destination: MainDestination) => void;
   onSettings: () => void;
-  socialPath?: string;
+  rankingsPath?: string;
   showNavigation?: boolean;
   trainerAvailable: boolean;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const location = useLocation();
   const playSound = useInteractionSound();
-  const paths = { play: '/', trainer: '/trainer', social: socialPath };
+  const paths = { play: '/', trainer: '/trainer', rankings: rankingsPath };
   const accountPath =
     accountOpen && location.pathname === '/account'
       ? `${location.pathname}${location.search}${location.hash}`
