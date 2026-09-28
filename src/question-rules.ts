@@ -282,7 +282,6 @@ const controls = {
   evolutionConditions: {
     view: { answer: { kind: 'text' } },
     minimumEvolutionConditions: 1,
-    multiSelectEvolutionConditions: false,
     exactEvolutionValues: false,
     mixedLevelEvolutionConditions: false,
     compactEvolutionLabels: false,
@@ -328,7 +327,6 @@ const controls = {
     sameEncounterMethodWeight: 100,
     encounterConditions: false,
     closeAlternatives: false,
-    multiSelectEncounters: false,
     similarityWeights: {
       sharedType: 12,
       shape: 8,
@@ -341,7 +339,6 @@ const controls = {
   },
   berryFlavors: {
     view: { answer: { kind: 'text' } },
-    completeFlavors: false,
   },
   naturalGift: {
     view: { answer: { kind: 'type' } },
@@ -776,6 +773,14 @@ const renderings = {
   },
 } satisfies { [Type in keyof FamilyRules]: RenderingControlsFor<Type> };
 
+const responsePresets = {
+  single: { kind: 'choices', selection: 'single', minimumOptions: 4 },
+  shortSingle: { kind: 'choices', selection: 'single', minimumOptions: 2 },
+  multi: { kind: 'choices', selection: 'multi', minimumOptions: 4 },
+  shortMulti: { kind: 'choices', selection: 'multi', minimumOptions: 2 },
+  adaptive: { kind: 'choices', selection: 'adaptive', minimumOptions: 4 },
+} as const;
+
 /** Source of leveled and unleveled builder configuration for every family. */
 export const questionRules = {
   itemIdentification: {
@@ -784,26 +789,17 @@ export const questionRules = {
       1: {
         ...controls.itemIdentification,
         distinctItemCategories: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       2: {
         ...controls.itemIdentification,
         sameItemPocket: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.itemIdentification,
         sameItemCategory: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.itemIdentification,
@@ -824,10 +820,7 @@ export const questionRules = {
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
         preferSimilarEffects: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.itemUses,
@@ -835,10 +828,7 @@ export const questionRules = {
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.8,
         preferSimilarEffects: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.itemUses,
@@ -846,10 +836,7 @@ export const questionRules = {
         minimumEffectSimilarity: 0.3,
         maximumEffectSimilarity: 0.8,
         preferSimilarEffects: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.itemUses,
@@ -859,10 +846,7 @@ export const questionRules = {
         preferSimilarEffects: true,
         useFullEffectText: true,
         allowMissingSprites: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -876,10 +860,7 @@ export const questionRules = {
           maximumRatio: Infinity,
           maximumSpread: Infinity,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.weightComparison,
@@ -888,10 +869,7 @@ export const questionRules = {
           maximumRatio: Infinity,
           maximumSpread: Infinity,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.weightComparison,
@@ -900,10 +878,7 @@ export const questionRules = {
           maximumRatio: 2,
           maximumSpread: 2,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.weightComparison,
@@ -912,10 +887,7 @@ export const questionRules = {
           maximumRatio: 1.5,
           maximumSpread: 1.5,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -929,10 +901,7 @@ export const questionRules = {
           maximumRatio: Infinity,
           maximumSpread: Infinity,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.heightComparison,
@@ -941,10 +910,7 @@ export const questionRules = {
           maximumRatio: Infinity,
           maximumSpread: Infinity,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.heightComparison,
@@ -953,10 +919,7 @@ export const questionRules = {
           maximumRatio: 2,
           maximumSpread: 2,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.heightComparison,
@@ -965,10 +928,7 @@ export const questionRules = {
           maximumRatio: 1.5,
           maximumSpread: 1.5,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -978,19 +938,13 @@ export const questionRules = {
       2: {
         ...controls.moveTypes,
         showMoveDescription: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.moveTypes,
         allOptions: true,
         excludeTypeHintNames: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 2,
-        },
+        response: responsePresets.shortSingle,
       },
     },
   },
@@ -999,18 +953,12 @@ export const questionRules = {
     levels: {
       2: {
         ...controls.locationRegion,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.locationRegion,
         allOptions: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 2,
-        },
+        response: responsePresets.shortSingle,
       },
     },
   },
@@ -1020,27 +968,18 @@ export const questionRules = {
       2: {
         ...controls.moveCategory,
         statusMovesOnly: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.moveCategory,
         statusMovesOnly: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.moveCategory,
         statusMovesOnly: false,
         sameMoveType: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1049,27 +988,18 @@ export const questionRules = {
     levels: {
       2: {
         ...controls.pokedexCategories,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.pokedexCategories,
         sameColorOrShape: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.pokedexCategories,
         sameColorOrShape: true,
         closeAlternatives: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1080,35 +1010,25 @@ export const questionRules = {
         ...controls.evolutionConditions,
         minimumEvolutionConditions: 1,
         mixedLevelEvolutionConditions: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.evolutionConditions,
         minimumEvolutionConditions: 1,
         mixedLevelEvolutionConditions: true,
         evolutionLocations: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.evolutionConditions,
         minimumEvolutionConditions: 2,
-        multiSelectEvolutionConditions: true,
         exactEvolutionValues: true,
         compactEvolutionLabels: true,
         exactLevelQuestionChance: 0.2,
         directEvolutionItems: true,
         evolutionLocations: true,
         preferCloseConditionValues: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.adaptive,
       },
     },
   },
@@ -1120,20 +1040,14 @@ export const questionRules = {
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
         preferSimilarEffects: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.abilityEffects,
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
         preferSimilarEffects: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.abilityEffects,
@@ -1157,10 +1071,7 @@ export const questionRules = {
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.8,
         preferSimilarEffects: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.heldItemEffects,
@@ -1168,10 +1079,7 @@ export const questionRules = {
         minimumEffectSimilarity: 0.3,
         maximumEffectSimilarity: 0.8,
         preferSimilarEffects: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.heldItemEffects,
@@ -1181,10 +1089,7 @@ export const questionRules = {
         preferSimilarEffects: true,
         useFullEffectText: true,
         allowMissingSprites: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1194,19 +1099,13 @@ export const questionRules = {
       4: {
         ...controls.hiddenAbilities,
         sameTypeAbilityDistractors: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.hiddenAbilities,
         sameTypeAbilityDistractors: true,
         allowMissingSprites: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1216,18 +1115,12 @@ export const questionRules = {
       4: {
         ...controls.natureEffects,
         shareNatureStat: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.natureEffects,
         shareNatureStat: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1237,19 +1130,13 @@ export const questionRules = {
       4: {
         ...controls.evYields,
         completeEvYield: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.evYields,
         completeEvYield: true,
         closeAlternatives: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1258,20 +1145,13 @@ export const questionRules = {
     levels: {
       4: {
         ...controls.encounterLocations,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.encounterLocations,
         encounterConditions: true,
         closeAlternatives: true,
-        multiSelectEncounters: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.multi,
       },
     },
   },
@@ -1280,19 +1160,11 @@ export const questionRules = {
     levels: {
       4: {
         ...controls.berryFlavors,
-        completeFlavors: false,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.berryFlavors,
-        completeFlavors: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 2,
-        },
+        response: responsePresets.shortMulti,
       },
     },
   },
@@ -1301,10 +1173,7 @@ export const questionRules = {
     levels: {
       5: {
         ...controls.naturalGift,
-        response: {
-          kind: 'choices',
-          minimumOptions: 2,
-        },
+        response: responsePresets.shortSingle,
       },
     },
   },
@@ -1312,39 +1181,27 @@ export const questionRules = {
     rendering: renderings.pokemonFromHistoricalSprite,
     unleveled: {
       ...controls.pokemonFromHistoricalSprite,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       1: {
         ...controls.pokemonFromHistoricalSprite,
         currentSpriteChance: 1,
         distractorRankDirection: 'least-similar',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       2: {
         ...controls.pokemonFromHistoricalSprite,
         currentSpriteChance: 1,
         distractorRankDirection: 'most-similar',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.pokemonFromHistoricalSprite,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.pokemonFromHistoricalSprite,
@@ -1360,47 +1217,32 @@ export const questionRules = {
     rendering: renderings.spriteForPokemon,
     unleveled: {
       ...controls.spriteForPokemon,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       1: {
         ...controls.spriteForPokemon,
         distractorRankDirection: 'least-similar',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.spriteForPokemon,
         distractorRankDirection: 'most-similar',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.spriteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.spriteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1408,39 +1250,27 @@ export const questionRules = {
     rendering: renderings.silhouetteForPokemon,
     unleveled: {
       ...controls.silhouetteForPokemon,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       2: {
         ...controls.silhouetteForPokemon,
         distractorRankDirection: 'least-similar',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.silhouetteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.silhouetteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1448,27 +1278,18 @@ export const questionRules = {
     rendering: renderings.pokemonFromSilhouette,
     unleveled: {
       ...controls.pokemonFromSilhouette,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       2: {
         ...controls.pokemonFromSilhouette,
         distractorRankDirection: 'least-similar',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.pokemonFromSilhouette,
         distractorRankDirection: 'most-similar',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.pokemonFromSilhouette,
@@ -1483,29 +1304,20 @@ export const questionRules = {
     rendering: renderings.pokemonFromPixelCrop,
     unleveled: {
       ...controls.pokemonFromPixelCrop,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       3: {
         ...controls.pokemonFromPixelCrop,
         cropScale: 0.65,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.pokemonFromPixelCrop,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.pokemonFromPixelCrop,
@@ -1521,38 +1333,26 @@ export const questionRules = {
     rendering: renderings.shinyPokemonIdentification,
     unleveled: {
       ...controls.shinyPokemonIdentification,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       3: {
         ...controls.shinyPokemonIdentification,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.shinyPokemonIdentification,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.shinyPokemonIdentification,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1560,18 +1360,12 @@ export const questionRules = {
     rendering: renderings.pokedexEntryMatch,
     unleveled: {
       ...controls.pokedexEntryMatch,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       2: {
         ...controls.pokedexEntryMatch,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.pokedexEntryMatch,
@@ -1593,19 +1387,13 @@ export const questionRules = {
     rendering: renderings.pokemonTypes,
     unleveled: {
       ...controls.pokemonTypes,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       2: {
         ...controls.pokemonTypes,
         singleType: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.pokemonTypes,
@@ -1620,26 +1408,17 @@ export const questionRules = {
     rendering: renderings.typeOddOneOut,
     unleveled: {
       ...controls.typeOddOneOut,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       2: {
         ...controls.typeOddOneOut,
         singleType: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.typeOddOneOut,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1647,26 +1426,17 @@ export const questionRules = {
     rendering: renderings.pokemonByType,
     unleveled: {
       ...controls.pokemonByType,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.multi,
     },
     levels: {
       2: {
         ...controls.pokemonByType,
         singleType: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.multi,
       },
       3: {
         ...controls.pokemonByType,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.multi,
       },
     },
   },
@@ -1674,18 +1444,12 @@ export const questionRules = {
     rendering: renderings.dualTypeMatch,
     unleveled: {
       ...controls.dualTypeMatch,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       3: {
         ...controls.dualTypeMatch,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1693,18 +1457,12 @@ export const questionRules = {
     rendering: renderings.legendaryMythicalSelection,
     unleveled: {
       ...controls.legendaryMythicalSelection,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.multi,
     },
     levels: {
       2: {
         ...controls.legendaryMythicalSelection,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.multi,
       },
     },
   },
@@ -1712,18 +1470,12 @@ export const questionRules = {
     rendering: renderings.pokemonByGeneration,
     unleveled: {
       ...controls.pokemonByGeneration,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.multi,
     },
     levels: {
       2: {
         ...controls.pokemonByGeneration,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.multi,
       },
     },
   },
@@ -1731,18 +1483,12 @@ export const questionRules = {
     rendering: renderings.evolutionChain,
     unleveled: {
       ...controls.evolutionChain,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       2: {
         ...controls.evolutionChain,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.evolutionChain,
@@ -1757,25 +1503,16 @@ export const questionRules = {
     rendering: renderings.evolutionGainedType,
     unleveled: {
       ...controls.evolutionGainedType,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       3: {
         ...controls.evolutionGainedType,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.evolutionGainedType,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
         rendering: {
           subject: { types: 'after-answer' },
           related: { types: 'after-answer' },
@@ -1787,26 +1524,17 @@ export const questionRules = {
     rendering: renderings.pokemonAbilities,
     unleveled: {
       ...controls.pokemonAbilities,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       3: {
         ...controls.pokemonAbilities,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.pokemonAbilities,
         plausibleProperties: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1814,26 +1542,17 @@ export const questionRules = {
     rendering: renderings.levelUpMoves,
     unleveled: {
       ...controls.levelUpMoves,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       4: {
         ...controls.levelUpMoves,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.levelUpMoves,
         plausibleProperties: true,
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1841,35 +1560,23 @@ export const questionRules = {
     rendering: renderings.statExtremes,
     unleveled: {
       ...controls.statExtremes,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       3: {
         ...controls.statExtremes,
         statGap: [41, Infinity],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.statExtremes,
         statGap: [21, 40],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.statExtremes,
         statGap: [10, 20],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1877,10 +1584,7 @@ export const questionRules = {
     rendering: renderings.typeMatchup,
     unleveled: {
       ...controls.typeMatchup,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       1: {
@@ -1888,36 +1592,24 @@ export const questionRules = {
         singleType: true,
         rendering: { subject: { types: 'always' } },
         multipliers: [2],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       2: {
         ...controls.typeMatchup,
         singleType: true,
         multipliers: [2],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.typeMatchup,
         rendering: { subject: { types: 'always' } },
         multipliers: [2, 4],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       4: {
         ...controls.typeMatchup,
         multipliers: [0.25, 0.5, 2, 4],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.typeMatchup,
@@ -1933,10 +1625,7 @@ export const questionRules = {
     rendering: renderings.superEffectiveAttacker,
     unleveled: {
       ...controls.superEffectiveAttacker,
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       2: {
@@ -1947,27 +1636,18 @@ export const questionRules = {
           choices: { types: 'always' },
         },
         multipliers: [2],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls.superEffectiveAttacker,
         multipliers: [2, 4],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
         rendering: { choices: { types: 'always' } },
       },
       4: {
         ...controls.superEffectiveAttacker,
         multipliers: [0.25, 0.5, 2, 4],
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       5: {
         ...controls.superEffectiveAttacker,
@@ -1975,10 +1655,7 @@ export const questionRules = {
         distractorPoolSize: 3,
         multipliers: [0.25, 0.5, 2, 4],
         smallPoolPolicy: 'fixed-size',
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
     },
   },
@@ -1986,10 +1663,7 @@ export const questionRules = {
     rendering: renderings['champion'],
     unleveled: {
       ...controls['champion'],
-      response: {
-        kind: 'choices',
-        minimumOptions: 4,
-      },
+      response: responsePresets.single,
     },
     levels: {
       1: {
@@ -2000,10 +1674,7 @@ export const questionRules = {
           assistance: false,
           penalty: 2,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       2: {
         ...controls['champion'],
@@ -2012,10 +1683,7 @@ export const questionRules = {
           assistance: false,
           penalty: 1,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.single,
       },
       3: {
         ...controls['champion'],
@@ -2024,10 +1692,7 @@ export const questionRules = {
           assistance: true,
           penalty: 0,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.adaptive,
       },
       5: {
         ...controls['champion'],
@@ -2036,10 +1701,7 @@ export const questionRules = {
           assistance: false,
           penalty: 0,
         },
-        response: {
-          kind: 'choices',
-          minimumOptions: 4,
-        },
+        response: responsePresets.adaptive,
       },
     },
   },

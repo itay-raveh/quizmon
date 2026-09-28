@@ -142,7 +142,7 @@ export const buildEvolution: QuestionBuilder<
       continue;
     const trueChoices = ordered(context, allTrue).slice(
       0,
-      variant.multiSelectEvolutionConditions && !exactLevel ? 3 : 1,
+      variant.response.selection === 'adaptive' && !exactLevel ? 3 : 1,
     );
     const trueLabels = new Set(allTrue.map(({ label }) => label));
     const wrongByLabel = new Map<
@@ -206,7 +206,7 @@ export const buildEvolution: QuestionBuilder<
     const correct = trueChoices.map(({ label }) => label);
     const options = [...correct, ...selectedWrong.map(({ label }) => label)];
     const multipleAnswers =
-      variant.multiSelectEvolutionConditions && !exactLevel;
+      variant.response.selection === 'adaptive' && !exactLevel;
     const prompt = exactLevel
       ? 'What is the minimum level for this evolution?'
       : multipleAnswers

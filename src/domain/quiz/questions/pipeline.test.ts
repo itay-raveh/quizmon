@@ -7,7 +7,10 @@ import { createSeededRandom } from '../../../lib/random.ts';
 import { savedQuestionSchema } from '../question-lineup.ts';
 import { getQuestionView } from '../question-presentation.ts';
 import { questionRenderingSchema } from '../question-rendering.ts';
-import { getQuestionVariant } from '../question-variants.ts';
+import {
+  getQuestionVariant,
+  getUnleveledQuestionRule,
+} from '../question-variants.ts';
 import type { QuestionData } from '../types.ts';
 import { questionRules } from '../../../question-rules.ts';
 import { buildQuestionType } from './registry.ts';
@@ -68,6 +71,14 @@ it('builds every configured family with a renderable answer and saved view', () 
         ),
       ).find(Boolean);
       expect(question, `${type}:${difficulty}`).toBeDefined();
+      const response =
+        difficulty === undefined
+          ? getUnleveledQuestionRule(type)?.response
+          : getQuestionVariant(type, difficulty)?.variant.response;
+      if (response?.kind === 'choices' && response.selection !== 'adaptive')
+        expect(question!.answer.interaction, `${type}:${difficulty}`).toBe(
+          response.selection === 'single' ? 'single-choice' : 'multi-select',
+        );
       const saved = savedQuestionSchema.parse(question);
       expect(questionRenderingSchema.safeParse(saved.rendering).success).toBe(
         true,

@@ -24,6 +24,8 @@ export const buildBerry: QuestionBuilder<
   );
   for (const target of pool) {
     const gift = context.questionType === 'naturalGift';
+    const multiFlavors =
+      !gift && context.variant.response.selection === 'multi';
     const availableGiftGen = target.generations.find(
       (gen) =>
         ['IV', 'V', 'VI', 'VII'].includes(gen) &&
@@ -36,26 +38,18 @@ export const buildBerry: QuestionBuilder<
     const strongest = positive.filter(
       (flavor) => target.flavors[flavor] === max,
     );
-    if (
-      !gift &&
-      !(
-        'completeFlavors' in context.variant && context.variant.completeFlavors
-      ) &&
-      strongest.length !== 1
-    )
-      continue;
+    if (!gift && !multiFlavors && strongest.length !== 1) continue;
     const strongestFlavor = gift ? '' : formatPokemonName(strongest[0]!);
     const correct = gift
       ? target.giftType
-      : 'completeFlavors' in context.variant && context.variant.completeFlavors
+      : multiFlavors
         ? positive.map(formatPokemonName)
         : strongestFlavor;
     const other = gift
       ? Object.keys(context.catalog.typeRelations)
       : Object.keys(target.flavors).map(formatPokemonName);
     const options =
-      gift ||
-      ('completeFlavors' in context.variant && context.variant.completeFlavors)
+      gift || multiFlavors
         ? other
         : [
             strongestFlavor,
@@ -68,7 +62,7 @@ export const buildBerry: QuestionBuilder<
     if (!item?.sprite) continue;
     const prompt = gift
       ? `Which type does Natural Gift have with ${item.label}?`
-      : 'completeFlavors' in context.variant && context.variant.completeFlavors
+      : multiFlavors
         ? `Which flavors does ${item.label} have?`
         : `What is the strongest flavor of ${item.label}?`;
     const question = makeTopicQuestion(
@@ -85,16 +79,10 @@ export const buildBerry: QuestionBuilder<
           kind: 'item',
           before: gift
             ? 'Which type does Natural Gift have with '
-            : 'completeFlavors' in context.variant &&
-                context.variant.completeFlavors
+            : multiFlavors
               ? 'Which flavors does '
               : 'What is the strongest flavor of ',
-          after:
-            !gift &&
-            'completeFlavors' in context.variant &&
-            context.variant.completeFlavors
-              ? ' have?'
-              : '?',
+          after: !gift && multiFlavors ? ' have?' : '?',
           name: item.label,
           sprite: item.sprite,
           ...(gift ? { supportingText: `Generation ${availableGiftGen}` } : {}),

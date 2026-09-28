@@ -9,6 +9,8 @@ import type { FamilyRules } from './family-rules.ts';
 export type ResponseStrategy =
   | {
       kind: 'choices';
+      /** Single answer, multiple answers, or a family-specific prompt that decides between them. */
+      selection: 'single' | 'multi' | 'adaptive';
       /** Minimum count required before the question can be offered. */
       minimumOptions: 2 | 4;
     }
@@ -162,6 +164,12 @@ export const applyResponseStrategy = (
     };
   }
   const response = rules.response;
+  if (response.kind === 'choices' && response.selection !== 'adaptive')
+    question.answer = {
+      ...question.answer,
+      interaction:
+        response.selection === 'single' ? 'single-choice' : 'multi-select',
+    };
   if (response.kind === 'search') {
     question.answer = { ...question.answer, interaction: 'search' };
     question.optionVisuals = undefined;

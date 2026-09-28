@@ -110,7 +110,7 @@ export const buildEncounter: QuestionBuilder<
       context,
       context.pool.filter((candidate) => possiblyAvailable.has(candidate.name)),
     );
-    const multiSelect = context.variant.multiSelectEncounters;
+    const multiSelect = context.variant.response.selection === 'multi';
     if (available.length < (multiSelect ? 2 : 1)) continue;
     const correct = available.slice(
       0,

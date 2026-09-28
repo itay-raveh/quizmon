@@ -118,8 +118,6 @@ interface FamilyControls {
   evolutionConditions: {
     /** Minimum distinct true conditions required for a target. */
     minimumEvolutionConditions: number;
-    /** Ask for multiple correct conditions when available. */
-    multiSelectEvolutionConditions: boolean;
     /** Keep numeric levels and other exact values in condition labels. */
     exactEvolutionValues: boolean;
     /** Allow exact level labels without enabling other exact values. */
@@ -170,17 +168,12 @@ interface FamilyControls {
     encounterConditions: boolean;
     /** Rank wrong Pokémon by encounter method and similarity. */
     closeAlternatives: boolean;
-    /** Allow two or three correct Pokémon in a four-option question. */
-    multiSelectEncounters: boolean;
     /** Similarity coefficients for wrong Pokémon. */
     similarityWeights: SimilarityWeights;
     /** Extra rank points for a wrong Pokémon using the same encounter method. */
     sameEncounterMethodWeight: number;
   };
-  berryFlavors: {
-    /** Ask for every positive flavor rather than the single strongest flavor. */
-    completeFlavors: boolean;
-  };
+  berryFlavors: NoControls;
   naturalGift: NoControls;
   pokemonFromHistoricalSprite: PokemonDistractors & {
     /** Probability of showing the current sprite instead of a historical one. */
@@ -316,6 +309,23 @@ type FamilyAnswerKinds = {
   champion: 'pokemon';
 };
 
+type ChoiceSelectionFor<Type extends keyof FamilyControls> = Type extends
+  'evolutionConditions' | 'champion'
+  ? 'single' | 'adaptive'
+  : Type extends 'encounterLocations' | 'berryFlavors'
+    ? 'single' | 'multi'
+    : Type extends
+          'pokemonByType' | 'legendaryMythicalSelection' | 'pokemonByGeneration'
+      ? 'multi'
+      : 'single';
+
+type FamilyResponse<
+  Type extends keyof FamilyControls,
+  Strategy,
+> = Strategy extends ChoiceResponse
+  ? Strategy & { selection: ChoiceSelectionFor<Type> }
+  : Strategy;
+
 /**
  * Fully resolved builder input. Each family owns its controls and supported
  * response modes; its answer presentation kind is fixed by the family.
@@ -324,8 +334,8 @@ export type FamilyRules = {
   [Type in keyof FamilyControls]: Omit<FamilyControls[Type], 'response'> & {
     /** Answer mode allowed for this family. */
     response: FamilyControls[Type] extends { response: infer Strategy }
-      ? Strategy
-      : ChoiceResponse;
+      ? FamilyResponse<Type, Strategy>
+      : FamilyResponse<Type, ChoiceResponse>;
     /** Fully merged visibility policy passed to the renderer. */
     rendering: QuestionRendering;
     /** Answer and subject layout, with the family's answer kind enforced. */
