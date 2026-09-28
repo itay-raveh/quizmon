@@ -1,10 +1,6 @@
 import type { RoundFact } from '../../domain/sync/round-facts';
 import type { GameSettings } from '../../domain/settings/types';
 import type { TrainerProfile } from '../../domain/player/trainer-profile';
-import { parseRound } from '../../domain/player/schemas/round.ts';
-import { validateRoundFact } from '../../domain/sync/round-facts.ts';
-import { migrateQuestionTypes } from './question-type-migration.ts';
-import { isRecord } from '../validation.ts';
 
 export interface SyncedPlayer {
   id: string;
@@ -63,34 +59,14 @@ export const deviceSchema = {
   required: ['id', 'payload'],
 } as const;
 
+const manualCutoffRequired = (): never => {
+  throw new Error(
+    'The version-0 database requires the manual question-ID cutoff.',
+  );
+};
+
 export const migrations = {
-  players: { 1: migrateQuestionTypes },
-  rounds: {
-    1: (old: SyncedRound) => {
-      const migrated = migrateQuestionTypes(old) as SyncedRound;
-      return validateRoundFact(migrated.fact) ? migrated : null;
-    },
-  },
-  device: {
-    1: (old: DeviceRecord) => {
-      const migrated = migrateQuestionTypes(old) as DeviceRecord;
-      if (old.id.startsWith('round:'))
-        return parseRound(migrated.payload) ? migrated : null;
-      if (old.id !== 'state' || !isRecord(migrated.payload)) return migrated;
-      const attempts = migrated.payload.dailyAttempts;
-      return {
-        ...migrated,
-        payload: {
-          ...migrated.payload,
-          dailyAttempts: isRecord(attempts)
-            ? Object.fromEntries(
-                Object.entries(attempts).filter(([, round]) =>
-                  Boolean(parseRound(round)),
-                ),
-              )
-            : {},
-        },
-      };
-    },
-  },
+  players: { 1: manualCutoffRequired },
+  rounds: { 1: manualCutoffRequired },
+  device: { 1: manualCutoffRequired },
 };

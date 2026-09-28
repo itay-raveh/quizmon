@@ -26,7 +26,6 @@ import {
   writePlayerPreferences,
 } from '../../lib/storage/rxdb-game';
 import {
-  migrations,
   deviceSchema,
   playerSchema,
   roundSchema,
@@ -93,7 +92,7 @@ const header = z.object({
   device: z.array(z.unknown()),
 });
 
-export async function parseBackup(text: string): Promise<PlayerBackup> {
+export function parseBackup(text: string): PlayerBackup {
   validateBackupSize(new Blob([text]).size);
   let raw: unknown;
   try {
@@ -110,35 +109,17 @@ export async function parseBackup(text: string): Promise<PlayerBackup> {
     rounds: roundSchema.version,
     device: deviceSchema.version,
   };
-  const migrate = async (
-    name: keyof typeof schemaVersions,
-    docs: unknown[],
-  ) => {
+  for (const name of Object.keys(
+    schemaVersions,
+  ) as (keyof typeof schemaVersions)[]) {
     if (backup.schemaVersions[name] > schemaVersions[name])
       throw new Error('This backup needs a newer version of Quizmon.');
-    for (
-      let version = backup.schemaVersions[name] + 1;
-      version <= schemaVersions[name];
-      version++
-    ) {
-      const strategy = (
-        migrations[name] as Record<
-          number,
-          (doc: unknown) => object | null | Promise<object | null>
-        >
-      )[version];
-      if (!strategy) throw new Error('The backup cannot be migrated.');
-      docs = (await Promise.all(docs.map(async (doc) => strategy(doc)))).filter(
-        (doc) => doc !== null,
-      );
-    }
-    return docs;
-  };
-  const [playerDocs, roundDocs, deviceDocs] = await Promise.all([
-    migrate('players', backup.player === null ? [] : [backup.player]),
-    migrate('rounds', backup.rounds),
-    migrate('device', backup.device),
-  ]);
+    if (backup.schemaVersions[name] < schemaVersions[name])
+      throw new Error('This backup is from before the question-ID cutoff.');
+  }
+  const playerDocs = backup.player === null ? [] : [backup.player];
+  const roundDocs = backup.rounds;
+  const deviceDocs = backup.device;
   if (
     backup.accountId !== null &&
     !/^[A-Za-z0-9_-]{1,128}$/.test(backup.accountId)

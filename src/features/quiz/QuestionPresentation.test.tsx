@@ -10,7 +10,7 @@ test('separates a move description from its question', () => {
   const question: QuestionData = {
     answer: { interaction: 'single-choice', correctOptions: ['normal'] },
     category: 'move',
-    id: 'move-types:move:pound',
+    id: 'moveTypes:move:pound',
     media: { kind: 'none' },
     options: ['normal', 'ghost', 'water', 'psychic'],
     prompt: {
@@ -99,7 +99,7 @@ test('shows TM disc art and a visible type label for each choice', () => {
   const question: QuestionData = {
     answer: { interaction: 'single-choice', correctOptions: ['fire'] },
     category: 'move',
-    id: 'item-identification:move:flamethrower',
+    id: 'itemIdentification:move:flamethrower',
     media: { kind: 'none' },
     options: ['fire', 'water', 'grass', 'electric'],
     optionImages: Object.fromEntries(
@@ -219,7 +219,7 @@ test('choice name visibility follows the saved rendering policy', () => {
   const question: QuestionData = {
     answer: { interaction: 'single-choice', correctOptions: ['bulbasaur'] },
     category: 'identity',
-    id: 'sprite-for-pokemon:bulbasaur',
+    id: 'spriteForPokemon:bulbasaur',
     media: { kind: 'none' },
     options: ['bulbasaur'],
     optionVisuals: {

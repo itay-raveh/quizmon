@@ -5,7 +5,6 @@ import { MongoClient } from 'mongodb';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
 import { getRxStorageMongoDB } from 'rxdb/plugins/storage-mongodb';
-import { createRxDatabase } from 'rxdb/plugins/core';
 import { replicateServer } from 'rxdb-server/plugins/replication-server';
 import { archiveCompletion } from '../../src/domain/sync/round-facts.ts';
 import { createTrainerProfile } from '../../src/domain/player/trainer-profile.ts';
@@ -74,24 +73,18 @@ const jwks = createServer((request, response) => {
 });
 
 try {
-  const old = await createRxDatabase({
-    name: mongoName,
-    storage: getRxStorageMongoDB({ connection: mongoUrl }),
-    multiInstance: false,
-  });
-  const oldRounds = await old.addCollections({
-    rounds: { schema: { ...roundSchema, version: 0 } },
-  });
+  const seeded = await openPlayerDatabase(
+    mongoName,
+    getRxStorageMongoDB({ connection: mongoUrl }),
+    false,
+  );
   const historical = archiveCompletion(completion('daily'));
-  historical.data.config.question_types = ['pokemon-types' as never];
-  historical.data.config.auto_types = ['pokemon-types' as never];
-  historical.data.answers[0]!.question_type = 'pokemon-types' as never;
-  await oldRounds.rounds.insert({
+  await seeded.rounds.insert({
     id: historical.id,
     ownerId: 'migration-trainer',
     fact: historical,
   });
-  await old.close();
+  await seeded.close();
   worker = await startAccountWorker({
     connectionString: postgres.connectionString,
     origin,
