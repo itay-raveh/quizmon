@@ -103,43 +103,6 @@ function shiftDailyDate(date: string, days: number): string {
   return getUtcDate(value);
 }
 
-function StandingsSkeleton() {
-  return (
-    <div
-      className="leaderboard-loading"
-      role="status"
-      aria-label="Loading standings"
-    >
-      <p className="visually-hidden">Loading standings</p>
-      <table className="leaderboard-table" aria-hidden="true">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Trainer</th>
-            <th>Score / time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {[0, 1, 2].map((row) => (
-            <tr key={row}>
-              <td>
-                <span className="social-skeleton" />
-              </td>
-              <th>
-                <span className="social-skeleton" />
-              </th>
-              <td>
-                <span className="social-skeleton" />
-                <span className="social-skeleton" />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 function Standings({
   owner,
   catalog,
@@ -233,6 +196,10 @@ function Standings({
     friends.data?.pages[0]?.items.length === 0;
   const checkingFriends =
     scope === 'friends' && data?.items.length === 0 && friends.isPending;
+  const showSkeleton = (busy && !data) || checkingFriends;
+  const visibleRows = showSkeleton
+    ? Array.from({ length: pageSize }, () => null)
+    : (data?.items ?? []);
   const pastDaily = mode === 'daily' && date < getUtcDate();
   const offset = Number(after ?? 0);
   const versionHelpId = `leaderboard-version-help-${scope}`;
@@ -243,19 +210,25 @@ function Standings({
       aria-busy={busy || checkingFriends}
       inert={!active}
     >
-      {busy && !data && <StandingsSkeleton />}
-      {checkingFriends && <StandingsSkeleton />}
-      {data && !checkingFriends && (
+      {(data || showSkeleton) && (
         <>
-          {data.viewer && (
+          {showSkeleton && (
+            <p className="visually-hidden" role="status">
+              Loading standings
+            </p>
+          )}
+          {!showSkeleton && data?.viewer && (
             <div className="leaderboard-viewer">
               <span>{data.viewer.player.name}</span>
               <strong>#{data.viewer.rank}</strong>
             </div>
           )}
-          {data.items.length ? (
+          {showSkeleton || data?.items.length ? (
             <>
-              <table className="leaderboard-table">
+              <table
+                className={`leaderboard-table${showSkeleton ? ' leaderboard-loading' : ''}`}
+                aria-hidden={showSkeleton || undefined}
+              >
                 <caption className="visually-hidden">
                   {mode === 'daily'
                     ? `Daily standings for ${date}`
@@ -269,18 +242,20 @@ function Standings({
                   </tr>
                 </thead>
                 <tbody>
-                  {data.items.map((row) => (
+                  {visibleRows.map((row, index) => (
                     <tr
-                      key={row.player.id}
-                      data-comparable={row.comparable}
+                      key={row?.player.id ?? index}
+                      data-comparable={row?.comparable}
                       aria-current={
-                        row.player.id === owner && row.comparable
+                        row?.player.id === owner && row.comparable
                           ? 'true'
                           : undefined
                       }
                     >
                       <td>
-                        {row.comparable ? (
+                        {!row ? (
+                          <span className="social-skeleton" />
+                        ) : row.comparable ? (
                           row.rank
                         ) : (
                           <SoundButton
@@ -295,11 +270,22 @@ function Standings({
                       </td>
                       <th scope="row">
                         <span className="leaderboard-player">
-                          <span>
-                            {row.player.name}
-                            {row.player.id === owner ? ' (you)' : ''}
-                          </span>
-                          {row.player.id !== owner && (
+                          {row ? (
+                            <span>
+                              {row.player.name}
+                              {row.player.id === owner ? ' (you)' : ''}
+                            </span>
+                          ) : (
+                            <span className="social-skeleton" />
+                          )}
+                          {!row ? (
+                            <GameButton
+                              aria-label="Loading profile"
+                              className="friends-icon-button"
+                              disabled
+                              tone="quiet"
+                            />
+                          ) : row.player.id !== owner ? (
                             <GameButton
                               aria-label={`View ${row.player.name}'s profile`}
                               className="friends-icon-button"
@@ -309,20 +295,30 @@ function Standings({
                             >
                               <EyeIcon aria-hidden="true" weight="regular" />
                             </GameButton>
-                          )}
+                          ) : null}
                         </span>
                       </th>
                       <td>
-                        <strong>{row.score.toLocaleString()}</strong>
+                        <strong>
+                          {row ? (
+                            row.score.toLocaleString()
+                          ) : (
+                            <span className="social-skeleton" />
+                          )}
+                        </strong>
                         <small>
-                          {(row.elapsedMilliseconds / 1000).toFixed(3)}s
+                          {row ? (
+                            `${(row.elapsedMilliseconds / 1000).toFixed(3)}s`
+                          ) : (
+                            <span className="social-skeleton" />
+                          )}
                         </small>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {mode === 'daily' && (
+              {!showSkeleton && mode === 'daily' && (
                 <div
                   className="leaderboard-version-help"
                   id={versionHelpId}
@@ -380,12 +376,12 @@ function Standings({
               )}
             </div>
           )}
-          {data.items.length > 0 && (
+          {data && !showSkeleton && data.items.length > 0 && (
             <p className="social-screen__note">
               {data.total} {data.total === 1 ? 'trainer' : 'trainers'}
             </p>
           )}
-          {(after || data.nextCursor) && (
+          {data && !showSkeleton && (after || data.nextCursor) && (
             <div className="leaderboard-pagination">
               {after && (
                 <GameButton

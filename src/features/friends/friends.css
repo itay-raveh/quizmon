@@ -482,20 +482,12 @@
   scroll-snap-align: start;
 }
 
-.leaderboard-loading {
-  width: 100%;
-}
-
 .social-skeleton {
   display: block;
   height: 0.85em;
   background: var(--cream);
   border-radius: 0.25rem;
   animation: leaderboard-pulse 1.2s ease-in-out infinite alternate;
-}
-
-.leaderboard-loading tbody tr {
-  height: 3.8rem;
 }
 
 .leaderboard-loading td:first-child .social-skeleton {
@@ -511,7 +503,7 @@
   margin-left: auto;
 }
 
-.leaderboard-loading td:last-child .social-skeleton + .social-skeleton {
+.leaderboard-loading td:last-child small .social-skeleton {
   width: 3rem;
   margin-top: 0.35rem;
 }
