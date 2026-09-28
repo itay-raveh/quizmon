@@ -33,9 +33,21 @@ const layout = async (content: string, currentPath?: string) => {
 export const contentPageEntries = [
   ...contentPages.map(({ path }) => `${path.slice(1)}.html`),
   '404.html',
+  'maintenance.html',
 ];
 
 export const renderContentPage = async (path: string) => {
+  if (path === '/maintenance.html') {
+    return {
+      path,
+      title: 'Under maintenance',
+      description: undefined,
+      noindex: true as const,
+      html: await layout(
+        readFileSync(new URL('./maintenance.html', import.meta.url), 'utf8'),
+      ),
+    };
+  }
   if (path === '/404.html') {
     return {
       path,
