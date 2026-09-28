@@ -48,10 +48,10 @@ import {
   buildTypeTwinsQuestion,
 } from './types.ts';
 import {
-  applyResponseStrategy,
+  assembleQuestion,
   hasVisibleChoices,
   hasVisibleSubject,
-} from './response-strategies.ts';
+} from './rendering-pipeline.ts';
 import type { FamilyRules } from './family-rules.ts';
 
 const questionBuilders = {
@@ -191,7 +191,7 @@ export const buildQuestionType = (
           : original.options.length < 2))
     )
       continue;
-    const draft = applyResponseStrategy(
+    const draft = assembleQuestion(
       original,
       variantContext,
       rules,

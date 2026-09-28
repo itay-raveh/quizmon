@@ -14,8 +14,11 @@ import {
 import type { QuestionData } from '../types.ts';
 import { questionRules } from '../../../question-rules.ts';
 import { buildQuestionType } from './registry.ts';
-import { hasVisibleChoices, hasVisibleSubject } from './response-strategies.ts';
-import { applyResponseStrategy } from './response-strategies.ts';
+import {
+  assembleQuestion,
+  hasVisibleChoices,
+  hasVisibleSubject,
+} from './rendering-pipeline.ts';
 import type { QuestionType } from './definitions.ts';
 
 const dataDir = fileURLToPath(new URL('../../pokemon/data/', import.meta.url));
@@ -207,7 +210,7 @@ it('uses the configured source for choice sprites', () => {
       types: pokemon.types,
     },
   };
-  const result = applyResponseStrategy(
+  const result = assembleQuestion(
     question,
     {
       catalog,
@@ -231,7 +234,7 @@ it('uses the configured source for choice sprites', () => {
       },
     },
   } as const;
-  const search = applyResponseStrategy(
+  const search = assembleQuestion(
     question,
     {
       catalog,
