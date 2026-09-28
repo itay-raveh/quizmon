@@ -49,17 +49,13 @@ export const LEAGUE_QUESTION_COUNT = leagueStages.length * LEAGUE_STAGE_SIZE;
 
 const stageQuestionTypes: readonly (readonly QuestionType[])[] = [
   [
-    'pokemon-from-historical-sprite',
-    'silhouette-for-pokemon',
-    'pokemon-from-pixel-crop',
+    'pokemonFromHistoricalSprite',
+    'silhouetteForPokemon',
+    'pokemonFromPixelCrop',
   ],
-  [
-    'shiny-pokemon-identification',
-    'pokedex-entry-match',
-    'evolution-gained-type',
-  ],
-  ['pokemon-types', 'pokemon-by-type', 'pokemon-abilities'],
-  ['level-up-moves', 'stat-extremes', 'type-matchup'],
+  ['shinyPokemonIdentification', 'pokedexEntryMatch', 'evolutionGainedType'],
+  ['pokemonTypes', 'pokemonByType', 'pokemonAbilities'],
+  ['levelUpMoves', 'statExtremes', 'typeMatchup'],
 ];
 
 export { getChallengeSettings as getLeagueSettings } from '../settings/game-settings.ts';
@@ -71,7 +67,7 @@ export const getLeagueQuestionTypes = (
     shuffle(types, createSeededRandom(`quizmon-league-types:${seed}:${index}`)),
   ),
   ...shuffle(
-    ['type-odd-one-out', 'super-effective-attacker'] as const,
+    ['typeOddOneOut', 'superEffectiveAttacker'] as const,
     createSeededRandom(`quizmon-league-types:${seed}:champion`),
   ),
   'champion',

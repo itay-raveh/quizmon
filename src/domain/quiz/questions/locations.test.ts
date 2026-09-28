@@ -35,7 +35,7 @@ it('asks only about distinct named places in Name that region', () => {
     used: new Set<string>(),
   };
 
-  expect(buildQuestionType(context, 'location-region')?.subject.name).toBe(
+  expect(buildQuestionType(context, 'locationRegion')?.subject.name).toBe(
     'ecruteak-city',
   );
   expect(
@@ -47,7 +47,7 @@ it('asks only about distinct named places in Name that region', () => {
           topics: { ...catalog.topics!, locations: locations.slice(0, -1) },
         },
       },
-      'location-region',
+      'locationRegion',
     ),
   ).toBeUndefined();
 });
@@ -115,11 +115,11 @@ it('uses the whole location and selects every offered encounter at level five', 
   };
   const level4 = buildQuestionType(
     { ...base, difficulty: 4 },
-    'encounter-locations',
+    'encounterLocations',
   );
   const level5 = buildQuestionType(
     { ...base, difficulty: 5 },
-    'encounter-locations',
+    'encounterLocations',
   );
 
   expect(level4?.prompt).toMatchObject({

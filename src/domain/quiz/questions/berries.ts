@@ -14,7 +14,7 @@ const positiveFlavors = (flavors: Record<string, number>) =>
     .filter((flavor) => flavors[flavor]! > 0)
     .sort();
 export const buildBerry: QuestionBuilder<
-  FamilyRules['berry-flavors'] | FamilyRules['natural-gift']
+  FamilyRules['berryFlavors'] | FamilyRules['naturalGift']
 > = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
@@ -23,7 +23,7 @@ export const buildBerry: QuestionBuilder<
     topics.berries.filter((entity) => topicEligible(context, entity)),
   );
   for (const target of pool) {
-    const gift = context.questionType === 'natural-gift';
+    const gift = context.questionType === 'naturalGift';
     const availableGiftGen = target.generations.find(
       (gen) =>
         ['IV', 'V', 'VI', 'VII'].includes(gen) &&

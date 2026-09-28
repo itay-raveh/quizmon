@@ -27,7 +27,7 @@ const createMatchupChecker = (
 };
 
 export const buildMatchupQuestion: QuestionBuilder<
-  FamilyRules['type-matchup']
+  FamilyRules['typeMatchup']
 > = (context) => {
   const attackTypes = Object.keys(context.catalog.typeRelations);
   for (const multiplier of shuffle(
@@ -87,7 +87,7 @@ export const buildMatchupQuestion: QuestionBuilder<
         presentation: { kind: 'text' },
         media: targetMedia(target),
       }),
-      visual: { kind: 'type-matchup', multiplier },
+      visual: { kind: 'typeMatchup', multiplier },
     };
   }
 
@@ -95,7 +95,7 @@ export const buildMatchupQuestion: QuestionBuilder<
 };
 
 export const buildCounterPickQuestion: QuestionBuilder<
-  FamilyRules['super-effective-attacker']
+  FamilyRules['superEffectiveAttacker']
 > = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const typeKey = (types: readonly string[]) => [...types].sort().join(',');
@@ -170,7 +170,7 @@ export const buildCounterPickQuestion: QuestionBuilder<
           media: { kind: 'pixel-sprite', src: targetSprite },
           presentation: { kind: 'pokemon' },
         }),
-        visual: { kind: 'super-effective-attacker', multiplier },
+        visual: { kind: 'superEffectiveAttacker', multiplier },
       };
     }
   }

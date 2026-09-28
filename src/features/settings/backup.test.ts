@@ -42,7 +42,7 @@ it('validates backup identity and device data before any restore writes', async 
     parseBackup(
       JSON.stringify({
         ...backup(),
-        schemaVersions: { players: 1, rounds: 0, device: 0 },
+        schemaVersions: { players: 2, rounds: 0, device: 0 },
       }),
     ),
   ).rejects.toThrow('newer version');

@@ -17,7 +17,7 @@ import {
 export const buildMeasurement =
   (
     measurement: 'height' | 'weight',
-  ): QuestionBuilder<FamilyRules['weight-comparison']> =>
+  ): QuestionBuilder<FamilyRules['weightComparison']> =>
   (context) => {
     const rules = context.variant.measurement;
     if (!rules) return;

@@ -99,12 +99,12 @@ export const QuestionArtwork = ({
   };
   if (
     pixelSprite &&
-    (visual?.kind === 'pokemon-types' || visual?.kind === 'dual-type-match')
+    (visual?.kind === 'pokemonTypes' || visual?.kind === 'dualTypeMatch')
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
         <QuestionSubject {...subject}>
-          {visual.kind === 'pokemon-types' ? (
+          {visual.kind === 'pokemonTypes' ? (
             <MysteryType
               answered={answered}
               types={question.subject.types ?? []}
@@ -138,7 +138,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'evolution-chain') {
+  if (visual?.kind === 'evolutionChain') {
     return (
       <div
         className="question-visual question-evolution-chain"
@@ -162,7 +162,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'pokemon-by-generation') {
+  if (visual?.kind === 'pokemonByGeneration') {
     return (
       <div className="question-visual" aria-hidden="true">
         <strong>
@@ -171,7 +171,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (visual?.kind === 'pokemon-by-type') {
+  if (visual?.kind === 'pokemonByType') {
     return (
       <div className="question-visual" aria-hidden="true">
         <TypeBadges
@@ -191,21 +191,21 @@ export const QuestionArtwork = ({
       );
   }
   if (
-    visual?.kind === 'stat-extremes' ||
+    visual?.kind === 'statExtremes' ||
     visual?.kind === 'measurement-comparison'
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
         <StatDirection
           label={formatPokemonName(
-            visual.kind === 'stat-extremes' ? visual.stat : visual.measurement,
+            visual.kind === 'statExtremes' ? visual.stat : visual.measurement,
           )}
           direction={visual.direction === 'highest' ? 'up' : 'down'}
         />
       </div>
     );
   }
-  if (visual?.kind === 'evolution-gained-type') {
+  if (visual?.kind === 'evolutionGainedType') {
     const { evolution, gainedType } = visual;
     const retainedTypes = evolution.types.filter((type) => type !== gainedType);
     return (
@@ -259,8 +259,8 @@ export const QuestionArtwork = ({
   }
   if (
     pixelSprite &&
-    (visual?.kind === 'type-matchup' ||
-      visual?.kind === 'super-effective-attacker')
+    (visual?.kind === 'typeMatchup' ||
+      visual?.kind === 'superEffectiveAttacker')
   ) {
     const answer = question.answer.correctOptions[0];
     const answerVisual = answer ? question.optionVisuals?.[answer] : undefined;
@@ -274,7 +274,7 @@ export const QuestionArtwork = ({
           question.subject.name,
         )}
       >
-        {visual.kind === 'type-matchup' ? (
+        {visual.kind === 'typeMatchup' ? (
           <MysteryType answered={answered} types={answer ? [answer] : []} />
         ) : answer &&
           answerVisual &&
@@ -339,7 +339,7 @@ export const QuestionArtwork = ({
       </div>
     );
   }
-  if (media.kind === 'pokemon-from-pixel-crop') {
+  if (media.kind === 'pokemonFromPixelCrop') {
     return (
       <>
         <div

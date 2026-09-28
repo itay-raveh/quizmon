@@ -28,22 +28,22 @@ type RenderingControls<
 
 /** Only fields with a real rendering consumer are configurable per family. */
 type FamilyRenderingControls = {
-  'item-identification': RenderingControls<'sprite', 'sprite'>;
-  'item-uses': RenderingControls<'sprite'>;
-  'ability-effects': RenderingControls<'sprite'>;
-  'held-item-effects': RenderingControls<'sprite' | 'name'>;
-  'berry-flavors': RenderingControls<'sprite'>;
-  'natural-gift': RenderingControls<'sprite'>;
-  'pokemon-from-historical-sprite': {
+  itemIdentification: RenderingControls<'sprite', 'sprite'>;
+  itemUses: RenderingControls<'sprite'>;
+  abilityEffects: RenderingControls<'sprite'>;
+  heldItemEffects: RenderingControls<'sprite' | 'name'>;
+  berryFlavors: RenderingControls<'sprite'>;
+  naturalGift: RenderingControls<'sprite'>;
+  pokemonFromHistoricalSprite: {
     choices?: Renderable<'sprite' | 'number'>;
     related?: { name?: 'never'; number?: 'never' };
     search?: Renderable<'sprite' | 'number'>;
   };
-  'sprite-for-pokemon': {
+  spriteForPokemon: {
     subject?: { sprite?: 'never' };
     choices?: { name?: HiddenUntilAnswer; number?: HiddenUntilAnswer };
   };
-  'silhouette-for-pokemon': {
+  silhouetteForPokemon: {
     subject?: { sprite?: 'never' };
     choices?: {
       sprite?: 'silhouette';
@@ -51,19 +51,19 @@ type FamilyRenderingControls = {
       number?: HiddenUntilAnswer;
     };
   };
-  'pokemon-from-silhouette': {
+  pokemonFromSilhouette: {
     subject?: { sprite?: 'silhouette' };
     choices?: { sprite?: 'never' };
     related?: { name?: 'never'; number?: 'never' };
     search?: { sprite?: 'never'; number?: EntityRendering['number'] };
   };
-  'pokemon-from-pixel-crop': {
+  pokemonFromPixelCrop: {
     choices?: { sprite?: 'never' };
     related?: { name?: HiddenUntilAnswer; number?: HiddenUntilAnswer };
     search?: { sprite?: 'never'; number?: EntityRendering['number'] };
   };
-  'pokemon-by-generation': RenderingControls<never, 'number'>;
-  'evolution-chain': {
+  pokemonByGeneration: RenderingControls<never, 'number'>;
+  evolutionChain: {
     subject?: {
       sprite?: HiddenUntilAnswer;
       name?: HiddenUntilAnswer;
@@ -73,12 +73,12 @@ type FamilyRenderingControls = {
     related?: Renderable<'sprite' | 'name' | 'number'>;
     search?: Renderable<'sprite' | 'number'>;
   };
-  'evolution-gained-type': RenderingControls<
+  evolutionGainedType: RenderingControls<
     'sprite' | 'name' | 'number' | 'types',
     never,
     'sprite' | 'name' | 'number' | 'types'
   >;
-  'super-effective-attacker': {
+  superEffectiveAttacker: {
     subject?: { types?: 'always' | 'after-answer' };
     related?: {
       sprite?: HiddenUntilAnswer;
@@ -134,14 +134,14 @@ export type QuestionRuleRow<
 };
 /** Base controls copied into level entries before their specific overrides. */
 const controls = {
-  'item-identification': {
+  itemIdentification: {
     view: { answer: { kind: 'text' } },
     distinctItemCategories: false,
     sameItemPocket: false,
     sameItemCategory: false,
     machineDiscChance: 0,
   },
-  'item-uses': {
+  itemUses: {
     view: { answer: { kind: 'text' }, subject: { inlineItem: 'sprite' } },
     minimumEffectSimilarity: 0,
     maximumEffectSimilarity: 0.35,
@@ -150,28 +150,28 @@ const controls = {
     sameItemCategory: false,
     allowMissingSprites: false,
   },
-  'weight-comparison': {
+  weightComparison: {
     view: { answer: { kind: 'pokemon' } },
   },
-  'height-comparison': {
+  heightComparison: {
     view: { answer: { kind: 'pokemon' } },
   },
-  'move-types': {
+  moveTypes: {
     view: { answer: { kind: 'type' } },
     showMoveDescription: false,
     allOptions: false,
     excludeTypeHintNames: false,
   },
-  'location-region': {
+  locationRegion: {
     view: { answer: { kind: 'text' } },
     allOptions: false,
   },
-  'move-category': {
+  moveCategory: {
     view: { answer: { kind: 'text', detail: 'move' } },
     statusMovesOnly: false,
     sameMoveType: false,
   },
-  'pokedex-categories': {
+  pokedexCategories: {
     view: { answer: { kind: 'pokemon' } },
     sameColorOrShape: false,
     closeAlternatives: false,
@@ -185,7 +185,7 @@ const controls = {
       statScale: 80,
     },
   },
-  'evolution-conditions': {
+  evolutionConditions: {
     view: { answer: { kind: 'text' } },
     minimumEvolutionConditions: 1,
     multiSelectEvolutionConditions: false,
@@ -198,7 +198,7 @@ const controls = {
     preferCloseConditionValues: false,
     allowMissingSprites: false,
   },
-  'ability-effects': {
+  abilityEffects: {
     view: { answer: { kind: 'text' }, subject: { inlineItem: 'sprite' } },
     minimumEffectSimilarity: 0,
     maximumEffectSimilarity: 0.35,
@@ -206,7 +206,7 @@ const controls = {
     useFullEffectText: false,
     allowMissingSprites: false,
   },
-  'held-item-effects': {
+  heldItemEffects: {
     view: {
       answer: { kind: 'text', layout: 'statements' },
       subject: { inlineItem: 'named' },
@@ -218,21 +218,21 @@ const controls = {
     sameItemCategory: false,
     allowMissingSprites: false,
   },
-  'hidden-abilities': {
+  hiddenAbilities: {
     view: { answer: { kind: 'text' } },
     sameTypeAbilityDistractors: false,
     allowMissingSprites: false,
   },
-  'nature-effects': {
+  natureEffects: {
     view: { answer: { kind: 'text', detail: 'nature' } },
     shareNatureStat: false,
   },
-  'ev-yields': {
+  evYields: {
     view: { answer: { kind: 'text' } },
     completeEvYield: false,
     closeAlternatives: false,
   },
-  'encounter-locations': {
+  encounterLocations: {
     view: { answer: { kind: 'pokemon' } },
     sameEncounterMethodWeight: 100,
     encounterConditions: false,
@@ -248,14 +248,14 @@ const controls = {
       statScale: 80,
     },
   },
-  'berry-flavors': {
+  berryFlavors: {
     view: { answer: { kind: 'text' }, subject: { inlineItem: 'sprite' } },
     completeFlavors: false,
   },
-  'natural-gift': {
+  naturalGift: {
     view: { answer: { kind: 'type' }, subject: { inlineItem: 'sprite' } },
   },
-  'pokemon-from-historical-sprite': {
+  pokemonFromHistoricalSprite: {
     view: {
       answer: { kind: 'pokemon' },
       subject: { identity: 'after-answer' },
@@ -278,7 +278,7 @@ const controls = {
     backSpriteChance: 0,
     frontSpriteChance: 0.75,
   },
-  'sprite-for-pokemon': {
+  spriteForPokemon: {
     view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
@@ -295,7 +295,7 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
   },
-  'silhouette-for-pokemon': {
+  silhouetteForPokemon: {
     view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
@@ -312,7 +312,7 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
   },
-  'pokemon-from-silhouette': {
+  pokemonFromSilhouette: {
     view: {
       answer: { kind: 'pokemon' },
       subject: { identity: 'after-answer' },
@@ -332,7 +332,7 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
   },
-  'pokemon-from-pixel-crop': {
+  pokemonFromPixelCrop: {
     view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
@@ -350,7 +350,7 @@ const controls = {
     smallPoolPolicy: 'semantic-band',
     cropScale: 1,
   },
-  'shiny-pokemon-identification': {
+  shinyPokemonIdentification: {
     view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
@@ -367,7 +367,7 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
   },
-  'pokedex-entry-match': {
+  pokedexEntryMatch: {
     view: {
       answer: { kind: 'pokemon' },
       subject: { identity: 'after-answer' },
@@ -387,7 +387,7 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
   },
-  'pokemon-types': {
+  pokemonTypes: {
     similarityWeights: {
       sharedType: 12,
       shape: 8,
@@ -400,15 +400,15 @@ const controls = {
     view: { answer: { kind: 'type' }, subject: { types: 'after-answer' } },
     singleType: false,
   },
-  'type-odd-one-out': {
+  typeOddOneOut: {
     view: { answer: { kind: 'pokemon', revealTypes: 'after-answer' } },
     singleType: false,
   },
-  'pokemon-by-type': {
+  pokemonByType: {
     view: { answer: { kind: 'pokemon', revealTypes: 'after-answer' } },
     singleType: false,
   },
-  'dual-type-match': {
+  dualTypeMatch: {
     view: {
       answer: { kind: 'pokemon', revealTypes: 'after-answer' },
       subject: { types: 'after-answer' },
@@ -428,13 +428,13 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
   },
-  'legendary-mythical-selection': {
+  legendaryMythicalSelection: {
     view: { answer: { kind: 'pokemon' } },
   },
-  'pokemon-by-generation': {
+  pokemonByGeneration: {
     view: { answer: { kind: 'pokemon' } },
   },
-  'evolution-chain': {
+  evolutionChain: {
     view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
@@ -451,7 +451,7 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
   },
-  'evolution-gained-type': {
+  evolutionGainedType: {
     similarityWeights: {
       sharedType: 12,
       shape: 8,
@@ -463,30 +463,30 @@ const controls = {
     },
     view: { answer: { kind: 'type' } },
   },
-  'pokemon-abilities': {
+  pokemonAbilities: {
     view: { answer: { kind: 'text' } },
     plausibleProperties: false,
   },
-  'level-up-moves': {
+  levelUpMoves: {
     view: { answer: { kind: 'text' } },
     plausibleProperties: false,
   },
-  'stat-extremes': {
+  statExtremes: {
     view: { answer: { kind: 'pokemon' } },
     statGap: null,
   },
-  'type-matchup': {
+  typeMatchup: {
     view: { answer: { kind: 'type' }, subject: { types: 'after-answer' } },
     singleType: false,
     showTypes: false,
     multipliers: [4, 2, 0.5, 0.25],
   },
-  'super-effective-attacker': {
+  superEffectiveAttacker: {
     view: {
       answer: {
         kind: 'pokemon',
         revealTypes: 'after-answer',
-        layout: 'super-effective-attacker',
+        layout: 'superEffectiveAttacker',
       },
       subject: { types: 'after-answer' },
     },
@@ -545,32 +545,32 @@ export const baseQuestionRendering: QuestionRendering = {
 
 /** Family rendering overrides, checked against each family's usable fields. */
 const renderings = {
-  'item-identification': {},
-  'item-uses': {},
-  'weight-comparison': {},
-  'height-comparison': {},
-  'move-types': {},
-  'location-region': {},
-  'move-category': {},
-  'pokedex-categories': {},
-  'evolution-conditions': {},
-  'ability-effects': {},
-  'held-item-effects': {},
-  'hidden-abilities': {},
-  'nature-effects': {},
-  'ev-yields': {},
-  'encounter-locations': {},
-  'berry-flavors': {},
-  'natural-gift': {},
-  'pokemon-from-historical-sprite': {
+  itemIdentification: {},
+  itemUses: {},
+  weightComparison: {},
+  heightComparison: {},
+  moveTypes: {},
+  locationRegion: {},
+  moveCategory: {},
+  pokedexCategories: {},
+  evolutionConditions: {},
+  abilityEffects: {},
+  heldItemEffects: {},
+  hiddenAbilities: {},
+  natureEffects: {},
+  evYields: {},
+  encounterLocations: {},
+  berryFlavors: {},
+  naturalGift: {},
+  pokemonFromHistoricalSprite: {
     choices: { sprite: 'never' },
     search: { sprite: 'never' },
   },
-  'sprite-for-pokemon': {
+  spriteForPokemon: {
     subject: { sprite: 'never' },
     choices: { name: 'after-answer', number: 'after-answer' },
   },
-  'silhouette-for-pokemon': {
+  silhouetteForPokemon: {
     subject: { sprite: 'never' },
     choices: {
       sprite: 'silhouette',
@@ -578,25 +578,25 @@ const renderings = {
       number: 'after-answer',
     },
   },
-  'pokemon-from-silhouette': {
+  pokemonFromSilhouette: {
     subject: { sprite: 'silhouette' },
     choices: { sprite: 'never' },
     search: { sprite: 'never' },
   },
-  'pokemon-from-pixel-crop': {
+  pokemonFromPixelCrop: {
     choices: { sprite: 'never' },
     related: { name: 'after-answer', number: 'after-answer' },
     search: { sprite: 'never' },
   },
-  'shiny-pokemon-identification': {},
-  'pokedex-entry-match': {},
-  'pokemon-types': {},
-  'type-odd-one-out': {},
-  'pokemon-by-type': {},
-  'dual-type-match': {},
-  'legendary-mythical-selection': {},
-  'pokemon-by-generation': { choices: { number: 'after-answer' } },
-  'evolution-chain': {
+  shinyPokemonIdentification: {},
+  pokedexEntryMatch: {},
+  pokemonTypes: {},
+  typeOddOneOut: {},
+  pokemonByType: {},
+  dualTypeMatch: {},
+  legendaryMythicalSelection: {},
+  pokemonByGeneration: { choices: { number: 'after-answer' } },
+  evolutionChain: {
     subject: {
       sprite: 'after-answer',
       name: 'after-answer',
@@ -605,18 +605,18 @@ const renderings = {
     choices: { sprite: 'never', number: 'never' },
     search: { sprite: 'never' },
   },
-  'evolution-gained-type': {
+  evolutionGainedType: {
     related: {
       sprite: 'after-answer',
       name: 'after-answer',
       number: 'after-answer',
     },
   },
-  'pokemon-abilities': {},
-  'level-up-moves': {},
-  'stat-extremes': {},
-  'type-matchup': {},
-  'super-effective-attacker': {
+  pokemonAbilities: {},
+  levelUpMoves: {},
+  statExtremes: {},
+  typeMatchup: {},
+  superEffectiveAttacker: {
     related: { sprite: 'after-answer', name: 'never', number: 'never' },
   },
   champion: {
@@ -628,11 +628,11 @@ const renderings = {
 
 /** Source of leveled and unleveled builder configuration for every family. */
 export const questionRules = {
-  'item-identification': {
-    rendering: renderings['item-identification'],
+  itemIdentification: {
+    rendering: renderings.itemIdentification,
     levels: {
       1: {
-        ...controls['item-identification'],
+        ...controls.itemIdentification,
         distinctItemCategories: true,
         response: {
           kind: 'choices',
@@ -640,7 +640,7 @@ export const questionRules = {
         },
       },
       2: {
-        ...controls['item-identification'],
+        ...controls.itemIdentification,
         sameItemPocket: true,
         response: {
           kind: 'choices',
@@ -648,7 +648,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['item-identification'],
+        ...controls.itemIdentification,
         sameItemCategory: true,
         response: {
           kind: 'choices',
@@ -656,21 +656,21 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['item-identification'],
+        ...controls.itemIdentification,
         response: { kind: 'search', candidates: 'provided' },
       },
       5: {
-        ...controls['item-identification'],
+        ...controls.itemIdentification,
         machineDiscChance: 0.5,
         response: { kind: 'search', candidates: 'provided' },
       },
     },
   },
-  'item-uses': {
-    rendering: renderings['item-uses'],
+  itemUses: {
+    rendering: renderings.itemUses,
     levels: {
       2: {
-        ...controls['item-uses'],
+        ...controls.itemUses,
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
         preferSimilarEffects: false,
@@ -680,7 +680,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['item-uses'],
+        ...controls.itemUses,
         sameItemCategory: true,
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.8,
@@ -691,7 +691,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['item-uses'],
+        ...controls.itemUses,
         sameItemCategory: true,
         minimumEffectSimilarity: 0.3,
         maximumEffectSimilarity: 0.8,
@@ -702,7 +702,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['item-uses'],
+        ...controls.itemUses,
         sameItemCategory: true,
         minimumEffectSimilarity: 0.5,
         maximumEffectSimilarity: 0.8,
@@ -716,11 +716,11 @@ export const questionRules = {
       },
     },
   },
-  'weight-comparison': {
-    rendering: renderings['weight-comparison'],
+  weightComparison: {
+    rendering: renderings.weightComparison,
     levels: {
       2: {
-        ...controls['weight-comparison'],
+        ...controls.weightComparison,
         measurement: {
           minimumRatio: 2,
           maximumRatio: Infinity,
@@ -732,7 +732,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['weight-comparison'],
+        ...controls.weightComparison,
         measurement: {
           minimumRatio: 1.3,
           maximumRatio: Infinity,
@@ -744,7 +744,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['weight-comparison'],
+        ...controls.weightComparison,
         measurement: {
           minimumRatio: 1.3,
           maximumRatio: 2,
@@ -756,7 +756,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['weight-comparison'],
+        ...controls.weightComparison,
         measurement: {
           minimumRatio: 1.3,
           maximumRatio: 1.5,
@@ -769,11 +769,11 @@ export const questionRules = {
       },
     },
   },
-  'height-comparison': {
-    rendering: renderings['height-comparison'],
+  heightComparison: {
+    rendering: renderings.heightComparison,
     levels: {
       2: {
-        ...controls['height-comparison'],
+        ...controls.heightComparison,
         measurement: {
           minimumRatio: 2,
           maximumRatio: Infinity,
@@ -785,7 +785,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['height-comparison'],
+        ...controls.heightComparison,
         measurement: {
           minimumRatio: 1.3,
           maximumRatio: Infinity,
@@ -797,7 +797,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['height-comparison'],
+        ...controls.heightComparison,
         measurement: {
           minimumRatio: 1.3,
           maximumRatio: 2,
@@ -809,7 +809,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['height-comparison'],
+        ...controls.heightComparison,
         measurement: {
           minimumRatio: 1.3,
           maximumRatio: 1.5,
@@ -822,11 +822,11 @@ export const questionRules = {
       },
     },
   },
-  'move-types': {
-    rendering: renderings['move-types'],
+  moveTypes: {
+    rendering: renderings.moveTypes,
     levels: {
       2: {
-        ...controls['move-types'],
+        ...controls.moveTypes,
         showMoveDescription: true,
         response: {
           kind: 'choices',
@@ -834,7 +834,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['move-types'],
+        ...controls.moveTypes,
         allOptions: true,
         excludeTypeHintNames: true,
         response: {
@@ -844,18 +844,18 @@ export const questionRules = {
       },
     },
   },
-  'location-region': {
-    rendering: renderings['location-region'],
+  locationRegion: {
+    rendering: renderings.locationRegion,
     levels: {
       2: {
-        ...controls['location-region'],
+        ...controls.locationRegion,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       3: {
-        ...controls['location-region'],
+        ...controls.locationRegion,
         allOptions: true,
         response: {
           kind: 'choices',
@@ -864,11 +864,11 @@ export const questionRules = {
       },
     },
   },
-  'move-category': {
-    rendering: renderings['move-category'],
+  moveCategory: {
+    rendering: renderings.moveCategory,
     levels: {
       2: {
-        ...controls['move-category'],
+        ...controls.moveCategory,
         statusMovesOnly: true,
         response: {
           kind: 'choices',
@@ -876,7 +876,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['move-category'],
+        ...controls.moveCategory,
         statusMovesOnly: false,
         response: {
           kind: 'choices',
@@ -884,7 +884,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['move-category'],
+        ...controls.moveCategory,
         statusMovesOnly: false,
         sameMoveType: true,
         response: {
@@ -894,18 +894,18 @@ export const questionRules = {
       },
     },
   },
-  'pokedex-categories': {
-    rendering: renderings['pokedex-categories'],
+  pokedexCategories: {
+    rendering: renderings.pokedexCategories,
     levels: {
       2: {
-        ...controls['pokedex-categories'],
+        ...controls.pokedexCategories,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       3: {
-        ...controls['pokedex-categories'],
+        ...controls.pokedexCategories,
         sameColorOrShape: true,
         response: {
           kind: 'choices',
@@ -913,7 +913,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['pokedex-categories'],
+        ...controls.pokedexCategories,
         sameColorOrShape: true,
         closeAlternatives: true,
         response: {
@@ -923,11 +923,11 @@ export const questionRules = {
       },
     },
   },
-  'evolution-conditions': {
-    rendering: renderings['evolution-conditions'],
+  evolutionConditions: {
+    rendering: renderings.evolutionConditions,
     levels: {
       3: {
-        ...controls['evolution-conditions'],
+        ...controls.evolutionConditions,
         minimumEvolutionConditions: 1,
         mixedLevelEvolutionConditions: true,
         response: {
@@ -936,7 +936,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['evolution-conditions'],
+        ...controls.evolutionConditions,
         minimumEvolutionConditions: 1,
         mixedLevelEvolutionConditions: true,
         evolutionLocations: true,
@@ -946,7 +946,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['evolution-conditions'],
+        ...controls.evolutionConditions,
         minimumEvolutionConditions: 2,
         multiSelectEvolutionConditions: true,
         exactEvolutionValues: true,
@@ -962,11 +962,11 @@ export const questionRules = {
       },
     },
   },
-  'ability-effects': {
-    rendering: renderings['ability-effects'],
+  abilityEffects: {
+    rendering: renderings.abilityEffects,
     levels: {
       3: {
-        ...controls['ability-effects'],
+        ...controls.abilityEffects,
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
         preferSimilarEffects: false,
@@ -976,7 +976,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['ability-effects'],
+        ...controls.abilityEffects,
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
         preferSimilarEffects: true,
@@ -986,7 +986,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['ability-effects'],
+        ...controls.abilityEffects,
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
         preferSimilarEffects: true,
@@ -998,11 +998,11 @@ export const questionRules = {
       },
     },
   },
-  'held-item-effects': {
-    rendering: renderings['held-item-effects'],
+  heldItemEffects: {
+    rendering: renderings.heldItemEffects,
     levels: {
       3: {
-        ...controls['held-item-effects'],
+        ...controls.heldItemEffects,
         sameItemCategory: true,
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.8,
@@ -1013,7 +1013,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['held-item-effects'],
+        ...controls.heldItemEffects,
         sameItemCategory: true,
         minimumEffectSimilarity: 0.3,
         maximumEffectSimilarity: 0.8,
@@ -1024,7 +1024,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['held-item-effects'],
+        ...controls.heldItemEffects,
         sameItemCategory: true,
         minimumEffectSimilarity: 0.5,
         maximumEffectSimilarity: 0.8,
@@ -1038,11 +1038,11 @@ export const questionRules = {
       },
     },
   },
-  'hidden-abilities': {
-    rendering: renderings['hidden-abilities'],
+  hiddenAbilities: {
+    rendering: renderings.hiddenAbilities,
     levels: {
       4: {
-        ...controls['hidden-abilities'],
+        ...controls.hiddenAbilities,
         sameTypeAbilityDistractors: false,
         response: {
           kind: 'choices',
@@ -1050,7 +1050,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['hidden-abilities'],
+        ...controls.hiddenAbilities,
         sameTypeAbilityDistractors: true,
         allowMissingSprites: true,
         response: {
@@ -1060,11 +1060,11 @@ export const questionRules = {
       },
     },
   },
-  'nature-effects': {
-    rendering: renderings['nature-effects'],
+  natureEffects: {
+    rendering: renderings.natureEffects,
     levels: {
       4: {
-        ...controls['nature-effects'],
+        ...controls.natureEffects,
         shareNatureStat: false,
         response: {
           kind: 'choices',
@@ -1072,7 +1072,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['nature-effects'],
+        ...controls.natureEffects,
         shareNatureStat: true,
         response: {
           kind: 'choices',
@@ -1081,11 +1081,11 @@ export const questionRules = {
       },
     },
   },
-  'ev-yields': {
-    rendering: renderings['ev-yields'],
+  evYields: {
+    rendering: renderings.evYields,
     levels: {
       4: {
-        ...controls['ev-yields'],
+        ...controls.evYields,
         completeEvYield: false,
         response: {
           kind: 'choices',
@@ -1093,7 +1093,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['ev-yields'],
+        ...controls.evYields,
         completeEvYield: true,
         closeAlternatives: true,
         response: {
@@ -1103,18 +1103,18 @@ export const questionRules = {
       },
     },
   },
-  'encounter-locations': {
-    rendering: renderings['encounter-locations'],
+  encounterLocations: {
+    rendering: renderings.encounterLocations,
     levels: {
       4: {
-        ...controls['encounter-locations'],
+        ...controls.encounterLocations,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       5: {
-        ...controls['encounter-locations'],
+        ...controls.encounterLocations,
         encounterConditions: true,
         closeAlternatives: true,
         multiSelectEncounters: true,
@@ -1125,11 +1125,11 @@ export const questionRules = {
       },
     },
   },
-  'berry-flavors': {
-    rendering: renderings['berry-flavors'],
+  berryFlavors: {
+    rendering: renderings.berryFlavors,
     levels: {
       4: {
-        ...controls['berry-flavors'],
+        ...controls.berryFlavors,
         completeFlavors: false,
         response: {
           kind: 'choices',
@@ -1137,7 +1137,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['berry-flavors'],
+        ...controls.berryFlavors,
         completeFlavors: true,
         response: {
           kind: 'choices',
@@ -1146,11 +1146,11 @@ export const questionRules = {
       },
     },
   },
-  'natural-gift': {
-    rendering: renderings['natural-gift'],
+  naturalGift: {
+    rendering: renderings.naturalGift,
     levels: {
       5: {
-        ...controls['natural-gift'],
+        ...controls.naturalGift,
         response: {
           kind: 'choices',
           minimumOptions: 2,
@@ -1158,10 +1158,10 @@ export const questionRules = {
       },
     },
   },
-  'pokemon-from-historical-sprite': {
-    rendering: renderings['pokemon-from-historical-sprite'],
+  pokemonFromHistoricalSprite: {
+    rendering: renderings.pokemonFromHistoricalSprite,
     unleveled: {
-      ...controls['pokemon-from-historical-sprite'],
+      ...controls.pokemonFromHistoricalSprite,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1169,7 +1169,7 @@ export const questionRules = {
     },
     levels: {
       1: {
-        ...controls['pokemon-from-historical-sprite'],
+        ...controls.pokemonFromHistoricalSprite,
         currentSpriteChance: 1,
         distractorRankDirection: 'least-similar',
         response: {
@@ -1178,7 +1178,7 @@ export const questionRules = {
         },
       },
       2: {
-        ...controls['pokemon-from-historical-sprite'],
+        ...controls.pokemonFromHistoricalSprite,
         currentSpriteChance: 1,
         distractorRankDirection: 'most-similar',
         response: {
@@ -1187,7 +1187,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['pokemon-from-historical-sprite'],
+        ...controls.pokemonFromHistoricalSprite,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
@@ -1197,7 +1197,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['pokemon-from-historical-sprite'],
+        ...controls.pokemonFromHistoricalSprite,
         response: {
           kind: 'search',
           candidates: 'pool',
@@ -1206,10 +1206,10 @@ export const questionRules = {
       },
     },
   },
-  'sprite-for-pokemon': {
-    rendering: renderings['sprite-for-pokemon'],
+  spriteForPokemon: {
+    rendering: renderings.spriteForPokemon,
     unleveled: {
-      ...controls['sprite-for-pokemon'],
+      ...controls.spriteForPokemon,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1217,7 +1217,7 @@ export const questionRules = {
     },
     levels: {
       1: {
-        ...controls['sprite-for-pokemon'],
+        ...controls.spriteForPokemon,
         distractorRankDirection: 'least-similar',
         response: {
           kind: 'choices',
@@ -1225,7 +1225,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['sprite-for-pokemon'],
+        ...controls.spriteForPokemon,
         distractorRankDirection: 'most-similar',
         response: {
           kind: 'choices',
@@ -1233,7 +1233,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['sprite-for-pokemon'],
+        ...controls.spriteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
@@ -1243,7 +1243,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['sprite-for-pokemon'],
+        ...controls.spriteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
         smallPoolPolicy: 'fixed-size',
@@ -1254,10 +1254,10 @@ export const questionRules = {
       },
     },
   },
-  'silhouette-for-pokemon': {
-    rendering: renderings['silhouette-for-pokemon'],
+  silhouetteForPokemon: {
+    rendering: renderings.silhouetteForPokemon,
     unleveled: {
-      ...controls['silhouette-for-pokemon'],
+      ...controls.silhouetteForPokemon,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1265,7 +1265,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['silhouette-for-pokemon'],
+        ...controls.silhouetteForPokemon,
         distractorRankDirection: 'least-similar',
         response: {
           kind: 'choices',
@@ -1273,7 +1273,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['silhouette-for-pokemon'],
+        ...controls.silhouetteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
@@ -1283,7 +1283,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['silhouette-for-pokemon'],
+        ...controls.silhouetteForPokemon,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
         smallPoolPolicy: 'fixed-size',
@@ -1294,10 +1294,10 @@ export const questionRules = {
       },
     },
   },
-  'pokemon-from-silhouette': {
-    rendering: renderings['pokemon-from-silhouette'],
+  pokemonFromSilhouette: {
+    rendering: renderings.pokemonFromSilhouette,
     unleveled: {
-      ...controls['pokemon-from-silhouette'],
+      ...controls.pokemonFromSilhouette,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1305,7 +1305,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['pokemon-from-silhouette'],
+        ...controls.pokemonFromSilhouette,
         distractorRankDirection: 'least-similar',
         response: {
           kind: 'choices',
@@ -1313,7 +1313,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['pokemon-from-silhouette'],
+        ...controls.pokemonFromSilhouette,
         distractorRankDirection: 'most-similar',
         response: {
           kind: 'choices',
@@ -1321,7 +1321,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['pokemon-from-silhouette'],
+        ...controls.pokemonFromSilhouette,
         response: {
           kind: 'search',
           candidates: 'pool',
@@ -1329,10 +1329,10 @@ export const questionRules = {
       },
     },
   },
-  'pokemon-from-pixel-crop': {
-    rendering: renderings['pokemon-from-pixel-crop'],
+  pokemonFromPixelCrop: {
+    rendering: renderings.pokemonFromPixelCrop,
     unleveled: {
-      ...controls['pokemon-from-pixel-crop'],
+      ...controls.pokemonFromPixelCrop,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1340,7 +1340,7 @@ export const questionRules = {
     },
     levels: {
       3: {
-        ...controls['pokemon-from-pixel-crop'],
+        ...controls.pokemonFromPixelCrop,
         cropScale: 0.65,
         response: {
           kind: 'choices',
@@ -1348,7 +1348,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['pokemon-from-pixel-crop'],
+        ...controls.pokemonFromPixelCrop,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
@@ -1358,7 +1358,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['pokemon-from-pixel-crop'],
+        ...controls.pokemonFromPixelCrop,
         response: {
           kind: 'search',
           candidates: 'pool',
@@ -1367,10 +1367,10 @@ export const questionRules = {
       },
     },
   },
-  'shiny-pokemon-identification': {
-    rendering: renderings['shiny-pokemon-identification'],
+  shinyPokemonIdentification: {
+    rendering: renderings.shinyPokemonIdentification,
     unleveled: {
-      ...controls['shiny-pokemon-identification'],
+      ...controls.shinyPokemonIdentification,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1378,14 +1378,14 @@ export const questionRules = {
     },
     levels: {
       3: {
-        ...controls['shiny-pokemon-identification'],
+        ...controls.shinyPokemonIdentification,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       4: {
-        ...controls['shiny-pokemon-identification'],
+        ...controls.shinyPokemonIdentification,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
         smallPoolPolicy: 'fixed-size',
@@ -1395,7 +1395,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['shiny-pokemon-identification'],
+        ...controls.shinyPokemonIdentification,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
         smallPoolPolicy: 'fixed-size',
@@ -1406,10 +1406,10 @@ export const questionRules = {
       },
     },
   },
-  'pokedex-entry-match': {
-    rendering: renderings['pokedex-entry-match'],
+  pokedexEntryMatch: {
+    rendering: renderings.pokedexEntryMatch,
     unleveled: {
-      ...controls['pokedex-entry-match'],
+      ...controls.pokedexEntryMatch,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1417,14 +1417,14 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['pokedex-entry-match'],
+        ...controls.pokedexEntryMatch,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       4: {
-        ...controls['pokedex-entry-match'],
+        ...controls.pokedexEntryMatch,
         response: {
           kind: 'search',
           candidates: 'pool',
@@ -1436,10 +1436,10 @@ export const questionRules = {
       },
     },
   },
-  'pokemon-types': {
-    rendering: renderings['pokemon-types'],
+  pokemonTypes: {
+    rendering: renderings.pokemonTypes,
     unleveled: {
-      ...controls['pokemon-types'],
+      ...controls.pokemonTypes,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1447,7 +1447,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['pokemon-types'],
+        ...controls.pokemonTypes,
         singleType: true,
         response: {
           kind: 'choices',
@@ -1455,7 +1455,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['pokemon-types'],
+        ...controls.pokemonTypes,
         response: {
           kind: 'type-grid',
           correct: 'subject-types',
@@ -1463,10 +1463,10 @@ export const questionRules = {
       },
     },
   },
-  'type-odd-one-out': {
-    rendering: renderings['type-odd-one-out'],
+  typeOddOneOut: {
+    rendering: renderings.typeOddOneOut,
     unleveled: {
-      ...controls['type-odd-one-out'],
+      ...controls.typeOddOneOut,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1474,7 +1474,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['type-odd-one-out'],
+        ...controls.typeOddOneOut,
         singleType: true,
         response: {
           kind: 'choices',
@@ -1482,7 +1482,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['type-odd-one-out'],
+        ...controls.typeOddOneOut,
         response: {
           kind: 'choices',
           minimumOptions: 4,
@@ -1490,10 +1490,10 @@ export const questionRules = {
       },
     },
   },
-  'pokemon-by-type': {
-    rendering: renderings['pokemon-by-type'],
+  pokemonByType: {
+    rendering: renderings.pokemonByType,
     unleveled: {
-      ...controls['pokemon-by-type'],
+      ...controls.pokemonByType,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1501,7 +1501,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['pokemon-by-type'],
+        ...controls.pokemonByType,
         singleType: true,
         response: {
           kind: 'choices',
@@ -1509,7 +1509,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['pokemon-by-type'],
+        ...controls.pokemonByType,
         response: {
           kind: 'choices',
           minimumOptions: 4,
@@ -1517,10 +1517,10 @@ export const questionRules = {
       },
     },
   },
-  'dual-type-match': {
-    rendering: renderings['dual-type-match'],
+  dualTypeMatch: {
+    rendering: renderings.dualTypeMatch,
     unleveled: {
-      ...controls['dual-type-match'],
+      ...controls.dualTypeMatch,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1528,7 +1528,7 @@ export const questionRules = {
     },
     levels: {
       3: {
-        ...controls['dual-type-match'],
+        ...controls.dualTypeMatch,
         response: {
           kind: 'choices',
           minimumOptions: 4,
@@ -1536,10 +1536,10 @@ export const questionRules = {
       },
     },
   },
-  'legendary-mythical-selection': {
-    rendering: renderings['legendary-mythical-selection'],
+  legendaryMythicalSelection: {
+    rendering: renderings.legendaryMythicalSelection,
     unleveled: {
-      ...controls['legendary-mythical-selection'],
+      ...controls.legendaryMythicalSelection,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1547,7 +1547,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['legendary-mythical-selection'],
+        ...controls.legendaryMythicalSelection,
         response: {
           kind: 'choices',
           minimumOptions: 4,
@@ -1555,10 +1555,10 @@ export const questionRules = {
       },
     },
   },
-  'pokemon-by-generation': {
-    rendering: renderings['pokemon-by-generation'],
+  pokemonByGeneration: {
+    rendering: renderings.pokemonByGeneration,
     unleveled: {
-      ...controls['pokemon-by-generation'],
+      ...controls.pokemonByGeneration,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1566,7 +1566,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['pokemon-by-generation'],
+        ...controls.pokemonByGeneration,
         response: {
           kind: 'choices',
           minimumOptions: 4,
@@ -1574,10 +1574,10 @@ export const questionRules = {
       },
     },
   },
-  'evolution-chain': {
-    rendering: renderings['evolution-chain'],
+  evolutionChain: {
+    rendering: renderings.evolutionChain,
     unleveled: {
-      ...controls['evolution-chain'],
+      ...controls.evolutionChain,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1585,14 +1585,14 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['evolution-chain'],
+        ...controls.evolutionChain,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       4: {
-        ...controls['evolution-chain'],
+        ...controls.evolutionChain,
         response: {
           kind: 'search',
           candidates: 'pool',
@@ -1600,10 +1600,10 @@ export const questionRules = {
       },
     },
   },
-  'evolution-gained-type': {
-    rendering: renderings['evolution-gained-type'],
+  evolutionGainedType: {
+    rendering: renderings.evolutionGainedType,
     unleveled: {
-      ...controls['evolution-gained-type'],
+      ...controls.evolutionGainedType,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1611,14 +1611,14 @@ export const questionRules = {
     },
     levels: {
       3: {
-        ...controls['evolution-gained-type'],
+        ...controls.evolutionGainedType,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       5: {
-        ...controls['evolution-gained-type'],
+        ...controls.evolutionGainedType,
         response: {
           kind: 'choices',
           minimumOptions: 4,
@@ -1630,10 +1630,10 @@ export const questionRules = {
       },
     },
   },
-  'pokemon-abilities': {
-    rendering: renderings['pokemon-abilities'],
+  pokemonAbilities: {
+    rendering: renderings.pokemonAbilities,
     unleveled: {
-      ...controls['pokemon-abilities'],
+      ...controls.pokemonAbilities,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1641,14 +1641,14 @@ export const questionRules = {
     },
     levels: {
       3: {
-        ...controls['pokemon-abilities'],
+        ...controls.pokemonAbilities,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       5: {
-        ...controls['pokemon-abilities'],
+        ...controls.pokemonAbilities,
         plausibleProperties: true,
         response: {
           kind: 'choices',
@@ -1657,10 +1657,10 @@ export const questionRules = {
       },
     },
   },
-  'level-up-moves': {
-    rendering: renderings['level-up-moves'],
+  levelUpMoves: {
+    rendering: renderings.levelUpMoves,
     unleveled: {
-      ...controls['level-up-moves'],
+      ...controls.levelUpMoves,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1668,14 +1668,14 @@ export const questionRules = {
     },
     levels: {
       4: {
-        ...controls['level-up-moves'],
+        ...controls.levelUpMoves,
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
       5: {
-        ...controls['level-up-moves'],
+        ...controls.levelUpMoves,
         plausibleProperties: true,
         response: {
           kind: 'choices',
@@ -1684,10 +1684,10 @@ export const questionRules = {
       },
     },
   },
-  'stat-extremes': {
-    rendering: renderings['stat-extremes'],
+  statExtremes: {
+    rendering: renderings.statExtremes,
     unleveled: {
-      ...controls['stat-extremes'],
+      ...controls.statExtremes,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1695,7 +1695,7 @@ export const questionRules = {
     },
     levels: {
       3: {
-        ...controls['stat-extremes'],
+        ...controls.statExtremes,
         statGap: [41, Infinity],
         response: {
           kind: 'choices',
@@ -1703,7 +1703,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['stat-extremes'],
+        ...controls.statExtremes,
         statGap: [21, 40],
         response: {
           kind: 'choices',
@@ -1711,7 +1711,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['stat-extremes'],
+        ...controls.statExtremes,
         statGap: [10, 20],
         response: {
           kind: 'choices',
@@ -1720,10 +1720,10 @@ export const questionRules = {
       },
     },
   },
-  'type-matchup': {
-    rendering: renderings['type-matchup'],
+  typeMatchup: {
+    rendering: renderings.typeMatchup,
     unleveled: {
-      ...controls['type-matchup'],
+      ...controls.typeMatchup,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1731,7 +1731,7 @@ export const questionRules = {
     },
     levels: {
       1: {
-        ...controls['type-matchup'],
+        ...controls.typeMatchup,
         singleType: true,
         showTypes: true,
         multipliers: [2],
@@ -1741,7 +1741,7 @@ export const questionRules = {
         },
       },
       2: {
-        ...controls['type-matchup'],
+        ...controls.typeMatchup,
         singleType: true,
         multipliers: [2],
         response: {
@@ -1750,7 +1750,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['type-matchup'],
+        ...controls.typeMatchup,
         showTypes: true,
         multipliers: [2, 4],
         response: {
@@ -1759,7 +1759,7 @@ export const questionRules = {
         },
       },
       4: {
-        ...controls['type-matchup'],
+        ...controls.typeMatchup,
         multipliers: [0.25, 0.5, 2, 4],
         response: {
           kind: 'choices',
@@ -1767,7 +1767,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['type-matchup'],
+        ...controls.typeMatchup,
         response: {
           kind: 'type-grid',
           correct: 'effectiveness',
@@ -1776,10 +1776,10 @@ export const questionRules = {
       },
     },
   },
-  'super-effective-attacker': {
-    rendering: renderings['super-effective-attacker'],
+  superEffectiveAttacker: {
+    rendering: renderings.superEffectiveAttacker,
     unleveled: {
-      ...controls['super-effective-attacker'],
+      ...controls.superEffectiveAttacker,
       response: {
         kind: 'choices',
         minimumOptions: 4,
@@ -1787,7 +1787,7 @@ export const questionRules = {
     },
     levels: {
       2: {
-        ...controls['super-effective-attacker'],
+        ...controls.superEffectiveAttacker,
         singleType: true,
         showTypes: true,
         multipliers: [2],
@@ -1797,7 +1797,7 @@ export const questionRules = {
         },
       },
       3: {
-        ...controls['super-effective-attacker'],
+        ...controls.superEffectiveAttacker,
         showTypes: true,
         multipliers: [2, 4],
         response: {
@@ -1807,7 +1807,7 @@ export const questionRules = {
         rendering: { subject: { types: 'after-answer' } },
       },
       4: {
-        ...controls['super-effective-attacker'],
+        ...controls.superEffectiveAttacker,
         multipliers: [0.25, 0.5, 2, 4],
         response: {
           kind: 'choices',
@@ -1815,7 +1815,7 @@ export const questionRules = {
         },
       },
       5: {
-        ...controls['super-effective-attacker'],
+        ...controls.superEffectiveAttacker,
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
         multipliers: [0.25, 0.5, 2, 4],

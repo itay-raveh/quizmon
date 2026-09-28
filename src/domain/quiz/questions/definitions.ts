@@ -28,229 +28,229 @@ export const questionTypeGroups = [
 export type QuestionTypeGroup = (typeof questionTypeGroups)[number]['id'];
 
 export const questionDefinitions = {
-  'item-identification': {
+  itemIdentification: {
     label: 'Item identification',
     specialty: 'item',
     description: 'Identify an item or match a move to a type-colored TM disc.',
     group: 'identity',
   },
-  'item-uses': {
+  itemUses: {
     label: 'Item uses',
     specialty: 'item',
     description: 'Identify what an item does.',
     group: 'knowledge',
   },
-  'weight-comparison': {
+  weightComparison: {
     label: 'Weight comparison',
     specialty: 'description',
     description: 'Compare Pokémon weights.',
     group: 'knowledge',
   },
-  'height-comparison': {
+  heightComparison: {
     label: 'Height comparison',
     specialty: 'description',
     description: 'Compare Pokémon heights.',
     group: 'knowledge',
   },
-  'move-types': {
+  moveTypes: {
     label: 'Move types',
     specialty: 'move',
     description: 'Identify a move’s type.',
     group: 'battle',
   },
-  'location-region': {
+  locationRegion: {
     label: 'Name that region',
     specialty: 'description',
     description: 'Match a location to its region.',
     group: 'knowledge',
   },
-  'move-category': {
+  moveCategory: {
     label: 'Move purpose',
     specialty: 'move',
     description: 'Identify physical, special and status moves.',
     group: 'battle',
   },
-  'pokedex-categories': {
+  pokedexCategories: {
     label: 'Pokédex categories',
     specialty: 'description',
     description: 'Match a Pokédex category to its Pokémon.',
     group: 'knowledge',
   },
-  'evolution-conditions': {
+  evolutionConditions: {
     label: 'Evolution conditions',
     specialty: 'evolution',
     description: 'Identify a complete evolution method.',
     group: 'knowledge',
   },
-  'ability-effects': {
+  abilityEffects: {
     label: 'Ability effects',
     specialty: 'ability',
     description: 'Identify an ability from its effect.',
     group: 'battle',
   },
-  'held-item-effects': {
+  heldItemEffects: {
     label: 'Held-item effects',
     specialty: 'item',
     description: 'Identify what a held item does.',
     group: 'battle',
   },
-  'hidden-abilities': {
+  hiddenAbilities: {
     label: 'Hidden abilities',
     specialty: 'ability',
     description: 'Identify a Pokémon’s Hidden Ability.',
     group: 'battle',
   },
-  'nature-effects': {
+  natureEffects: {
     label: 'Nature effects',
     specialty: 'stat',
     description: 'Match raised and lowered stats to a nature.',
     group: 'battle',
   },
-  'ev-yields': {
+  evYields: {
     label: 'EV yields',
     specialty: 'stat',
     description: 'Identify the base effort values awarded by a Pokémon.',
     group: 'battle',
   },
-  'encounter-locations': {
+  encounterLocations: {
     label: 'Encounter locations',
     specialty: 'description',
     description:
       'Identify a Pokémon encountered in a stated game and location.',
     group: 'knowledge',
   },
-  'berry-flavors': {
+  berryFlavors: {
     label: 'Berry flavors',
     specialty: 'berry',
     description: 'Identify a berry’s flavors.',
     group: 'knowledge',
   },
-  'natural-gift': {
+  naturalGift: {
     label: 'Natural Gift',
     specialty: 'berry',
     description: 'Identify Natural Gift’s type from its berry.',
     group: 'battle',
   },
 
-  'pokemon-from-historical-sprite': {
+  pokemonFromHistoricalSprite: {
     label: 'Pokédex scan',
     specialty: 'identity',
     description: 'Identify Pokémon across generations of game sprites.',
     group: 'identity',
   },
-  'silhouette-for-pokemon': {
+  silhouetteForPokemon: {
     label: 'Silhouette match',
     specialty: 'identity',
     description: 'Pick the silhouette of a named Pokémon.',
     group: 'identity',
   },
-  'sprite-for-pokemon': {
+  spriteForPokemon: {
     label: 'Sprite match',
     specialty: 'identity',
     description: 'Pick the sprite of a named Pokémon.',
     group: 'identity',
   },
-  'pokemon-from-silhouette': {
+  pokemonFromSilhouette: {
     label: 'Who’s that Pokémon?',
     specialty: 'identity',
     description: 'Name the Pokémon hidden in a silhouette.',
     group: 'identity',
   },
-  'pokemon-from-pixel-crop': {
+  pokemonFromPixelCrop: {
     label: 'Pixel peek',
     specialty: 'identity',
     description: 'Name a Pokémon from a tiny sprite crop.',
     group: 'identity',
   },
-  'shiny-pokemon-identification': {
+  shinyPokemonIdentification: {
     label: 'Shiny spotter',
     specialty: 'identity',
     description: 'Find the Pokémon shown in shiny colors.',
     group: 'identity',
   },
-  'pokedex-entry-match': {
+  pokedexEntryMatch: {
     label: 'Field notes',
     specialty: 'description',
     description: 'Match a Pokédex entry to its Pokémon.',
     group: 'knowledge',
   },
-  'pokemon-types': {
+  pokemonTypes: {
     label: 'Type check',
     specialty: 'type',
     description: 'Identify a Pokémon’s typing.',
     group: 'knowledge',
   },
-  'type-odd-one-out': {
+  typeOddOneOut: {
     label: 'Odd one out',
     specialty: 'type',
     description:
       'Three Pokémon share a type. Choose the Pokémon that does not have that type.',
     group: 'knowledge',
   },
-  'pokemon-by-type': {
+  pokemonByType: {
     label: 'Type roundup',
     specialty: 'type',
     description: 'Select every Pokémon with the named type.',
     group: 'knowledge',
   },
-  'dual-type-match': {
+  dualTypeMatch: {
     label: 'Type twins',
     specialty: 'type',
     description: 'Match both types of a dual-type Pokémon.',
     group: 'knowledge',
   },
-  'legendary-mythical-selection': {
+  legendaryMythicalSelection: {
     label: 'Legend hunt',
     specialty: 'identity',
     description: 'Select every Legendary or Mythical Pokémon.',
     group: 'knowledge',
   },
-  'pokemon-by-generation': {
+  pokemonByGeneration: {
     label: 'Generation roundup',
     specialty: 'identity',
     description: 'Select every Pokémon introduced in the named generation.',
     group: 'knowledge',
   },
-  'evolution-chain': {
+  evolutionChain: {
     label: 'Evolution link',
     specialty: 'evolution',
     description: 'Complete an evolution chain using four name-only choices.',
     group: 'knowledge',
   },
-  'evolution-gained-type': {
+  evolutionGainedType: {
     label: 'Evolution shift',
     specialty: 'evolution',
     description: 'Choose the type a Pokémon gains when it evolves.',
     group: 'knowledge',
   },
-  'pokemon-abilities': {
+  pokemonAbilities: {
     label: 'Ability check',
     league: false,
     specialty: 'ability',
     description: 'Choose an ability the named Pokémon can have.',
     group: 'battle',
   },
-  'level-up-moves': {
+  levelUpMoves: {
     label: 'Move check',
     league: false,
     specialty: 'move',
     description: 'Choose a move the Pokémon learns by leveling up.',
     group: 'battle',
   },
-  'stat-extremes': {
+  statExtremes: {
     label: 'Stat showdown',
     league: false,
     specialty: 'stat',
     description: 'Find the highest or lowest stat among four Pokémon.',
     group: 'battle',
   },
-  'type-matchup': {
+  typeMatchup: {
     label: 'Type matchup',
     specialty: 'matchup',
     description: 'Choose a type that hits the Pokémon super effectively.',
     group: 'battle',
   },
-  'super-effective-attacker': {
+  superEffectiveAttacker: {
     label: 'Counter pick',
     specialty: 'matchup',
     description: 'Pick a Pokémon with a super-effective attack type.',
@@ -279,15 +279,15 @@ export const getQuestionTitle = (question: {
 
 const categoryLabels: Record<QuestionCategory, string> = {
   knowledge: 'General knowledge',
-  ability: questionDefinitions['pokemon-abilities'].label,
+  ability: questionDefinitions.pokemonAbilities.label,
   champion: 'Champion question',
-  description: questionDefinitions['pokedex-entry-match'].label,
-  evolution: questionDefinitions['evolution-gained-type'].label,
-  identity: questionDefinitions['pokemon-from-historical-sprite'].label,
-  matchup: questionDefinitions['type-matchup'].label,
-  move: questionDefinitions['level-up-moves'].label,
-  stat: questionDefinitions['stat-extremes'].label,
-  type: questionDefinitions['pokemon-types'].label,
+  description: questionDefinitions.pokedexEntryMatch.label,
+  evolution: questionDefinitions.evolutionGainedType.label,
+  identity: questionDefinitions.pokemonFromHistoricalSprite.label,
+  matchup: questionDefinitions.typeMatchup.label,
+  move: questionDefinitions.levelUpMoves.label,
+  stat: questionDefinitions.statExtremes.label,
+  type: questionDefinitions.pokemonTypes.label,
 };
 
 export const getCategoryLabel = (category: QuestionCategory): string =>

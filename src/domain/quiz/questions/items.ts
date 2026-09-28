@@ -10,7 +10,7 @@ import {
 } from './topic-support.ts';
 
 const buildMachineDiscQuestion: QuestionBuilder<
-  FamilyRules['item-identification']
+  FamilyRules['itemIdentification']
 > = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
@@ -115,7 +115,7 @@ const buildMachineDiscQuestion: QuestionBuilder<
 };
 
 export const buildItemIdentification: QuestionBuilder<
-  FamilyRules['item-identification']
+  FamilyRules['itemIdentification']
 > = (context) => {
   const chance = context.variant.machineDiscChance;
   if (chance === 1 || (chance > 0 && context.random() < chance)) {

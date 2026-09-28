@@ -11,7 +11,7 @@ import {
   topicEligible,
 } from './topic-support.ts';
 
-export const buildHidden: QuestionBuilder<FamilyRules['hidden-abilities']> = (
+export const buildHidden: QuestionBuilder<FamilyRules['hiddenAbilities']> = (
   context,
 ) => {
   const pool = orderedPokemon(context, context.pool);

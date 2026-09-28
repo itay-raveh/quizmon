@@ -18,9 +18,9 @@ import {
 } from './selection.ts';
 import { typeOptions } from './type-options.ts';
 
-export const buildTypeQuestion: QuestionBuilder<
-  FamilyRules['pokemon-types']
-> = (context) => {
+export const buildTypeQuestion: QuestionBuilder<FamilyRules['pokemonTypes']> = (
+  context,
+) => {
   const target = pickTarget(context, ({ types }) => types.length > 0);
   if (!target) return undefined;
   const correct = pick(target.pokemon.types, context.random);
@@ -36,7 +36,7 @@ export const buildTypeQuestion: QuestionBuilder<
       presentation: { kind: 'text' },
       media: targetMedia(target),
     }),
-    visual: { kind: 'pokemon-types' },
+    visual: { kind: 'pokemonTypes' },
   };
 };
 const countPokemonTypes = (candidates: readonly Candidate[]) => {
@@ -147,13 +147,13 @@ export const buildChooseAllTypeQuestion: QuestionBuilder = (context) => {
       ),
       presentation: { kind: 'pokemon' },
     }),
-    visual: { kind: 'pokemon-by-type', type },
+    visual: { kind: 'pokemonByType', type },
   };
 };
 const sameTypes = (left: readonly string[], right: readonly string[]) =>
   left.length === right.length && left.every((type) => right.includes(type));
 export const buildTypeTwinsQuestion: QuestionBuilder<
-  FamilyRules['dual-type-match']
+  FamilyRules['dualTypeMatch']
 > = (context) => {
   const pool = context.pool.filter(({ pokemon }) => pokemon.sprite);
   const typePairKey = (types: readonly string[]) => [...types].sort().join('|');
@@ -217,6 +217,6 @@ export const buildTypeTwinsQuestion: QuestionBuilder<
       media: { kind: 'pixel-sprite', src: target.pokemon.sprite },
       presentation: { kind: 'pokemon' },
     }),
-    visual: { kind: 'dual-type-match' },
+    visual: { kind: 'dualTypeMatch' },
   };
 };

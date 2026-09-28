@@ -60,7 +60,7 @@ export const getTrainingSettings = (settings: GameSettings): GameSettings => ({
       ).filter(
         (type) =>
           getQuestionVariant(type, settings.difficulty!) &&
-          (type !== 'pokemon-by-generation' || settings.generations.length > 1),
+          (type !== 'pokemonByGeneration' || settings.generations.length > 1),
       )
     : isLeagueTraining(settings)
       ? [...leagueQuestionTypes]

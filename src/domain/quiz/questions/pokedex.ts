@@ -14,7 +14,7 @@ import {
 } from './topic-support.ts';
 
 export const buildCategory: QuestionBuilder<
-  FamilyRules['pokedex-categories']
+  FamilyRules['pokedexCategories']
 > = (context) => {
   const pool = distinctPokemon(
     orderedPokemon(
@@ -63,7 +63,7 @@ export const buildCategory: QuestionBuilder<
   }
 };
 export const buildDescriptionQuestion: QuestionBuilder<
-  FamilyRules['pokedex-entry-match']
+  FamilyRules['pokedexEntryMatch']
 > = (context) => {
   const eligible = unambiguousDescriptions(
     context.pool.filter(

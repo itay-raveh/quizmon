@@ -29,8 +29,8 @@ it('keeps duplicate catalog clues out of Field Notes and the League finale', () 
   expect(new Set(clues).size).toBe(1);
 
   for (const [questionType, difficulty] of [
-    ['pokedex-entry-match', 3],
-    ['pokedex-entry-match', 4],
+    ['pokedexEntryMatch', 3],
+    ['pokedexEntryMatch', 4],
     ['champion', undefined],
   ] as const) {
     const question = buildQuestionType(

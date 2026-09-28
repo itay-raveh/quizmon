@@ -37,7 +37,7 @@ const media = z.discriminatedUnion('kind', [
     revealAt: nonnegativeInteger.optional(),
   }),
   z.object({
-    kind: z.literal('pokemon-from-pixel-crop'),
+    kind: z.literal('pokemonFromPixelCrop'),
     src: text,
     focusX: z.number(),
     focusY: z.number(),
@@ -50,21 +50,21 @@ const multiplier = { multiplier: z.number().min(0) };
 const direction = z.enum(['highest', 'lowest']);
 const visual = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('evolution-endpoints'), ...evolutionEndpoints }),
-  z.object({ kind: z.literal('evolution-chain'), ...evolutionEndpoints }),
-  z.object({ kind: z.literal('pokemon-types') }),
-  z.object({ kind: z.literal('dual-type-match') }),
-  z.object({ kind: z.literal('pokemon-by-type'), type: text }),
+  z.object({ kind: z.literal('evolutionChain'), ...evolutionEndpoints }),
+  z.object({ kind: z.literal('pokemonTypes') }),
+  z.object({ kind: z.literal('dualTypeMatch') }),
+  z.object({ kind: z.literal('pokemonByType'), type: text }),
   z.object({
-    kind: z.literal('pokemon-by-generation'),
+    kind: z.literal('pokemonByGeneration'),
     generation: z.enum(generations),
   }),
   z.object({
-    kind: z.literal('evolution-gained-type'),
+    kind: z.literal('evolutionGainedType'),
     evolution: sprite.extend({ name: text }),
     gainedType: text,
   }),
   z.object({
-    kind: z.literal('stat-extremes'),
+    kind: z.literal('statExtremes'),
     stat: z.enum(statNames),
     direction,
   }),
@@ -73,8 +73,8 @@ const visual = z.discriminatedUnion('kind', [
     measurement: z.enum(['height', 'weight']),
     direction,
   }),
-  z.object({ kind: z.literal('type-matchup'), ...multiplier }),
-  z.object({ kind: z.literal('super-effective-attacker'), ...multiplier }),
+  z.object({ kind: z.literal('typeMatchup'), ...multiplier }),
+  z.object({ kind: z.literal('superEffectiveAttacker'), ...multiplier }),
 ]);
 const prompt = z.discriminatedUnion('kind', [
   z.object({

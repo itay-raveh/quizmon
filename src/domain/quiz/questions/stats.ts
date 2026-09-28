@@ -25,7 +25,7 @@ const yieldLabel = (yieldValues: Record<string, number>) =>
     .filter((stat) => yieldValues[stat]! > 0)
     .map((stat) => `${yieldValues[stat]} ${formatPokemonName(stat)}`)
     .join(' + ');
-export const buildEvYield: QuestionBuilder<FamilyRules['ev-yields']> = (
+export const buildEvYield: QuestionBuilder<FamilyRules['evYields']> = (
   context,
 ) => {
   const pool = orderedPokemon(
@@ -100,7 +100,7 @@ export const buildEvYield: QuestionBuilder<FamilyRules['ev-yields']> = (
     if (question) return question;
   }
 };
-export const buildNature: QuestionBuilder<FamilyRules['nature-effects']> = (
+export const buildNature: QuestionBuilder<FamilyRules['natureEffects']> = (
   context,
 ) => {
   const pool = ordered(
@@ -148,9 +148,9 @@ export const buildNature: QuestionBuilder<FamilyRules['nature-effects']> = (
     if (question) return question;
   }
 };
-export const buildStatQuestion: QuestionBuilder<
-  FamilyRules['stat-extremes']
-> = (context) => {
+export const buildStatQuestion: QuestionBuilder<FamilyRules['statExtremes']> = (
+  context,
+) => {
   const stat = pick(statNames, context.random) as StatName;
   const direction = context.random() < 0.5 ? 'highest' : 'lowest';
   const candidates = context.pool;
@@ -225,6 +225,6 @@ export const buildStatQuestion: QuestionBuilder<
       presentation: { kind: 'pokemon' },
       details: { kind: 'stat', stat },
     }),
-    visual: { direction, kind: 'stat-extremes', stat },
+    visual: { direction, kind: 'statExtremes', stat },
   };
 };

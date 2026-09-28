@@ -14,11 +14,11 @@ describe('question rendering rules', () => {
   });
 
   it('validates the Level 5 type policy and rejects unknown values', () => {
-    const rendering = resolveQuestionRendering('evolution-gained-type', 5);
+    const rendering = resolveQuestionRendering('evolutionGainedType', 5);
     expect(rendering.subject.types).toBe('after-answer');
     expect(rendering.related.types).toBe('after-answer');
     expect(
-      resolveQuestionRendering('evolution-gained-type', 3).subject.types,
+      resolveQuestionRendering('evolutionGainedType', 3).subject.types,
     ).toBe('always');
     expect(questionRenderingSchema.safeParse(rendering).success).toBe(true);
     expect(
@@ -30,12 +30,12 @@ describe('question rendering rules', () => {
   });
 
   it('applies family defaults and level overrides', () => {
-    const silhouette = resolveQuestionRendering('silhouette-for-pokemon', 4);
+    const silhouette = resolveQuestionRendering('silhouetteForPokemon', 4);
     expect(silhouette.subject.sprite).toBe('never');
     expect(silhouette.choices.sprite).toBe('silhouette');
     expect(silhouette.choices.name).toBe('after-answer');
 
-    const counterPick = resolveQuestionRendering('super-effective-attacker', 3);
+    const counterPick = resolveQuestionRendering('superEffectiveAttacker', 3);
     expect(counterPick.related.name).toBe('never');
     expect(counterPick.subject.types).toBe('after-answer');
   });
@@ -44,11 +44,11 @@ describe('question rendering rules', () => {
 const unsupportedTypeChoices = {
   // @ts-expect-error TypeAnswerPicker does not consume choice rendering.
   choices: { name: 'never' },
-} satisfies RenderingControlsFor<'pokemon-types'>;
+} satisfies RenderingControlsFor<'pokemonTypes'>;
 void unsupportedTypeChoices;
 
 const unsupportedCounterPick = {
   // @ts-expect-error This artwork always reveals subject types after answering.
   subject: { types: 'never' },
-} satisfies RenderingControlsFor<'super-effective-attacker'>;
+} satisfies RenderingControlsFor<'superEffectiveAttacker'>;
 void unsupportedCounterPick;

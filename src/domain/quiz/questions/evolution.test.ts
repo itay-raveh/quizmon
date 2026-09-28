@@ -30,7 +30,7 @@ const build = (
       random: createSeededRandom(seed),
       used: new Set(),
     },
-    'evolution-conditions',
+    'evolutionConditions',
   );
 
 it('uses one condition at levels 3 and 4 and reserves multi-select and exact-level quizzes for level 5', () => {

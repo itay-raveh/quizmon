@@ -103,7 +103,7 @@ export const getQuestionRendering = (
   }
   if (
     question.concealOptionLabels &&
-    question.questionType !== 'legendary-mythical-selection'
+    question.questionType !== 'legendaryMythicalSelection'
   )
     return mergeRendering(fallback, {
       choices: {

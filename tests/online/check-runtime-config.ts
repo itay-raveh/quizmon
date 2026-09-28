@@ -4,6 +4,8 @@ import { once } from 'node:events';
 import { MongoClient } from 'mongodb';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
+import { getRxStorageMongoDB } from 'rxdb/plugins/storage-mongodb';
+import { createRxDatabase } from 'rxdb/plugins/core';
 import { replicateServer } from 'rxdb-server/plugins/replication-server';
 import { archiveCompletion } from '../../src/domain/sync/round-facts.ts';
 import { createTrainerProfile } from '../../src/domain/player/trainer-profile.ts';
@@ -72,6 +74,24 @@ const jwks = createServer((request, response) => {
 });
 
 try {
+  const old = await createRxDatabase({
+    name: mongoName,
+    storage: getRxStorageMongoDB({ connection: mongoUrl }),
+    multiInstance: false,
+  });
+  const oldRounds = await old.addCollections({
+    rounds: { schema: { ...roundSchema, version: 0 } },
+  });
+  const historical = archiveCompletion(completion('daily'));
+  historical.data.config.question_types = ['pokemon-types' as never];
+  historical.data.config.auto_types = ['pokemon-types' as never];
+  historical.data.answers[0]!.question_type = 'pokemon-types' as never;
+  await oldRounds.rounds.insert({
+    id: historical.id,
+    ownerId: 'migration-trainer',
+    fact: historical,
+  });
+  await old.close();
   worker = await startAccountWorker({
     connectionString: postgres.connectionString,
     origin,
@@ -88,6 +108,11 @@ try {
     port,
     databaseName: mongoName,
   });
+  assert.equal(
+    (await sync.db.rounds.findOne(historical.id).exec())?.fact.data.answers[0]
+      ?.question_type,
+    'pokemonTypes',
+  );
   assert.equal((await fetch(endpoint + '/health')).status, 200);
   assert.equal(
     (await fetch(`${endpoint}/players/${playerSchema.version}/pull?limit=1`))
@@ -295,14 +320,14 @@ try {
   );
   assert.equal(
     await mongo
-      .db(`${mongoName}-v0`)
+      .db(`${mongoName}-v${roundSchema.version}`)
       .collection('players')
       .countDocuments({ ownerId: a.id }),
     0,
   );
   assert.equal(
     await mongo
-      .db(`${mongoName}-v0`)
+      .db(`${mongoName}-v${roundSchema.version}`)
       .collection('rounds')
       .countDocuments({ ownerId: a.id }),
     0,
@@ -321,6 +346,7 @@ try {
   jwks.close();
   await mongo.connect();
   await mongo.db(`${mongoName}-v0`).dropDatabase();
+  await mongo.db(`${mongoName}-v${roundSchema.version}`).dropDatabase();
   await mongo.close();
   await postgres.close();
 }

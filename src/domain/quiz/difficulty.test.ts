@@ -25,7 +25,7 @@ describe('difficulty variants', () => {
   });
 });
 
-it.each(['height-comparison', 'weight-comparison'] as const)(
+it.each(['heightComparison', 'weightComparison'] as const)(
   '%s starts at Level 2',
   (type) => {
     expect(
@@ -34,7 +34,7 @@ it.each(['height-comparison', 'weight-comparison'] as const)(
   },
 );
 
-it.each(['move-types', 'pokemon-types', 'item-uses'] as const)(
+it.each(['moveTypes', 'pokemonTypes', 'itemUses'] as const)(
   '%s starts at Level 2',
   (type) => {
     expect(getQuestionVariant(type, 1)).toBeUndefined();

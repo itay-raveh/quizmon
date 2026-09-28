@@ -19,7 +19,7 @@ test('separates a move description from its question', () => {
       description: 'The user strikes the target with its forelegs or tail.',
       supportingText: 'Pokémon Pearl',
     },
-    questionType: 'move-types',
+    questionType: 'moveTypes',
     repetition: {
       identity: 'pound',
       subjects: ['move/pound'],
@@ -55,7 +55,7 @@ test('reveals a Field notes answer in its choice without a duplicate portrait', 
     },
     options: ['grotle'],
     prompt: { kind: 'text', text: 'A Pokédex description' },
-    questionType: 'pokedex-entry-match',
+    questionType: 'pokedexEntryMatch',
     repetition: {
       identity: 'grotle',
       subjects: ['pokemon/grotle'],
@@ -112,7 +112,7 @@ test('shows TM disc art and a visible type label for each choice', () => {
       kind: 'text',
       text: 'Which TM disc matches Flamethrower?',
     },
-    questionType: 'item-identification',
+    questionType: 'itemIdentification',
     repetition: {
       identity: 'flamethrower',
       subjects: ['move/flamethrower'],
@@ -151,7 +151,7 @@ test('choice name visibility follows the saved rendering policy', () => {
       bulbasaur: { dexNumber: 1, src: '/bulbasaur.png', types: ['grass'] },
     },
     prompt: { kind: 'text', text: 'Find Bulbasaur.' },
-    questionType: 'sprite-for-pokemon',
+    questionType: 'spriteForPokemon',
     repetition: {
       identity: 'bulbasaur',
       subjects: ['pokemon/bulbasaur'],

@@ -19,7 +19,7 @@ const answerViewSchema = z.discriminatedUnion('kind', [
     /** Reveal option type badges after answering. */
     revealTypes: z.literal('after-answer').optional(),
     /** Use the counter-pick answer layout. */
-    layout: z.literal('super-effective-attacker').optional(),
+    layout: z.literal('superEffectiveAttacker').optional(),
   }),
   z.object({ kind: z.literal('type') }),
   z.object({ kind: z.literal('item') }),
@@ -60,7 +60,7 @@ export const getQuestionView = (question: QuestionData): QuestionView => {
   const view = resolved?.view ?? Object.values(row.levels)[0]!.view;
   if (question.optionImages) return { ...view, answer: { kind: 'item' } };
   if (
-    question.questionType === 'pokedex-entry-match' &&
+    question.questionType === 'pokedexEntryMatch' &&
     question.answer.interaction === 'search'
   )
     return {

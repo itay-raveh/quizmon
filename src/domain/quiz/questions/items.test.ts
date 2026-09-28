@@ -37,7 +37,7 @@ test('item identification never asks for an item with shared sprite art', () => 
       random: () => 0.999,
       used: new Set(),
     },
-    'item-identification',
+    'itemIdentification',
   );
   expect(question?.subject.name).toBe('potion');
   expect(question?.options).toHaveLength(4);
@@ -69,7 +69,7 @@ test('item identification searches item names from level four', () => {
       random: () => 0,
       used: new Set(),
     },
-    'item-identification',
+    'itemIdentification',
   );
   expect(question?.answer.interaction).toBe('search');
   expect(question?.searchOptions).toContainEqual({
@@ -136,7 +136,7 @@ test('level five searches real TM numbers without revealing disc types', () => {
       random: () => 0,
       used: new Set(),
     },
-    'item-identification',
+    'itemIdentification',
   );
   expect(question?.subject.kind).toBe('move');
   expect(question?.subject.name).not.toBe('court-change');

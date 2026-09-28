@@ -18,7 +18,7 @@ const purposeExcludedMoves = new Set([
 ]);
 
 export const buildMove: QuestionBuilder<
-  FamilyRules['move-types'] | FamilyRules['move-category']
+  FamilyRules['moveTypes'] | FamilyRules['moveCategory']
 > = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
@@ -32,7 +32,7 @@ export const buildMove: QuestionBuilder<
     ),
   );
   for (const target of pool) {
-    const purpose = context.questionType === 'move-category';
+    const purpose = context.questionType === 'moveCategory';
     if (purpose && purposeExcludedMoves.has(target.name)) continue;
     const contexts = target.contexts.filter(
       (entry) =>

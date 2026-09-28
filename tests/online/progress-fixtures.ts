@@ -39,7 +39,7 @@ export function completion(
           selected: [correct ? 'bulbasaur' : 'ivysaur'],
         },
         subject: { kind: 'pokemon', name: 'bulbasaur', generation: 'I' },
-        questionType: champion ? 'champion' : 'pokemon-types',
+        questionType: champion ? 'champion' : 'pokemonTypes',
         category,
         cluesUsed: assistsUsed,
         correct,

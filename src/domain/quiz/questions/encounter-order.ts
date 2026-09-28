@@ -30,7 +30,7 @@ export const orderEncounterLocations = (
         context.history
           ? getSubjectRecency(
               context.history,
-              'encounter-locations',
+              'encounterLocations',
               `location/${entry.area}`,
             )
           : 0,

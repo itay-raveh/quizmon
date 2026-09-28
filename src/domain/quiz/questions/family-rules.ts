@@ -63,7 +63,7 @@ export type EffectRules = EffectDistractors & {
 type NoControls = object;
 
 interface FamilyControls {
-  'item-identification': {
+  itemIdentification: {
     /** Require wrong items from different categories. */
     distinctItemCategories: boolean;
     /** Restrict wrong items to the target's bag pocket. */
@@ -75,21 +75,21 @@ interface FamilyControls {
     /** Search uses item names supplied by the builder. */
     response: SearchResponse<'provided'>;
   };
-  'item-uses': EffectDistractors & {
+  itemUses: EffectDistractors & {
     /** Restrict wrong effects to items in the target's category. */
     sameItemCategory: boolean;
     /** Permit targets without an item sprite. */
     allowMissingSprites: boolean;
   };
-  'weight-comparison': {
+  weightComparison: {
     /** Ratio and spread limits for four Pokémon weights. */
     measurement: MeasurementRules;
   };
-  'height-comparison': {
+  heightComparison: {
     /** Ratio and spread limits for four Pokémon heights. */
     measurement: MeasurementRules;
   };
-  'move-types': {
+  moveTypes: {
     /** Include the move's description in the prompt. */
     showMoveDescription: boolean;
     /** Offer every type instead of four sampled types. */
@@ -97,17 +97,17 @@ interface FamilyControls {
     /** Skip move names that contain their answer type. */
     excludeTypeHintNames: boolean;
   };
-  'location-region': {
+  locationRegion: {
     /** Offer every eligible region instead of four sampled regions. */
     allOptions: boolean;
   };
-  'move-category': {
+  moveCategory: {
     /** Ask only about status moves. */
     statusMovesOnly: boolean;
     /** Choose wrong moves with the same type as the target. */
     sameMoveType: boolean;
   };
-  'pokedex-categories': {
+  pokedexCategories: {
     /** Require each wrong Pokémon to share the target's color or shape. */
     sameColorOrShape: boolean;
     /** Rank eligible wrong Pokémon by similarity before taking three. */
@@ -115,7 +115,7 @@ interface FamilyControls {
     /** Similarity coefficients for ranking wrong Pokémon. */
     similarityWeights: SimilarityWeights;
   };
-  'evolution-conditions': {
+  evolutionConditions: {
     /** Minimum distinct true conditions required for a target. */
     minimumEvolutionConditions: number;
     /** Ask for multiple correct conditions when available. */
@@ -137,35 +137,35 @@ interface FamilyControls {
     /** Permit targets without a Pokémon sprite. */
     allowMissingSprites: boolean;
   };
-  'ability-effects': EffectDistractors & {
+  abilityEffects: EffectDistractors & {
     /** Permit targets without a sprite. */
     allowMissingSprites: boolean;
     /** Search uses ability names supplied by the builder. */
     response: SearchResponse<'provided'>;
   };
-  'held-item-effects': EffectDistractors & {
+  heldItemEffects: EffectDistractors & {
     /** Restrict wrong effects to items in the target's category. */
     sameItemCategory: boolean;
     /** Permit targets without an item sprite. */
     allowMissingSprites: boolean;
   };
-  'hidden-abilities': {
+  hiddenAbilities: {
     /** Source wrong abilities from Pokémon sharing a target type. */
     sameTypeAbilityDistractors: boolean;
     /** Permit targets without a Pokémon sprite. */
     allowMissingSprites: boolean;
   };
-  'nature-effects': {
+  natureEffects: {
     /** Choose wrong natures that share a raised or lowered stat. */
     shareNatureStat: boolean;
   };
-  'ev-yields': {
+  evYields: {
     /** Ask for the full EV yield instead of one boosted stat. */
     completeEvYield: boolean;
     /** Rank wrong full-yield answers by total EV distance. */
     closeAlternatives: boolean;
   };
-  'encounter-locations': {
+  encounterLocations: {
     /** Include time- and weather-dependent encounter records. */
     encounterConditions: boolean;
     /** Rank wrong Pokémon by encounter method and similarity. */
@@ -177,12 +177,12 @@ interface FamilyControls {
     /** Extra rank points for a wrong Pokémon using the same encounter method. */
     sameEncounterMethodWeight: number;
   };
-  'berry-flavors': {
+  berryFlavors: {
     /** Ask for every positive flavor rather than the single strongest flavor. */
     completeFlavors: boolean;
   };
-  'natural-gift': NoControls;
-  'pokemon-from-historical-sprite': PokemonDistractors & {
+  naturalGift: NoControls;
+  pokemonFromHistoricalSprite: PokemonDistractors & {
     /** Probability of showing the current sprite instead of a historical one. */
     currentSpriteChance: number;
     /** Probability of taking a back sprite before sampling a generation. */
@@ -192,24 +192,24 @@ interface FamilyControls {
     /** Search uses the current eligible Pokémon pool. */
     response: SearchResponse<'pool'>;
   };
-  'sprite-for-pokemon': PokemonDistractors;
-  'silhouette-for-pokemon': PokemonDistractors;
-  'pokemon-from-silhouette': PokemonDistractors & {
+  spriteForPokemon: PokemonDistractors;
+  silhouetteForPokemon: PokemonDistractors;
+  pokemonFromSilhouette: PokemonDistractors & {
     /** Search uses the current eligible Pokémon pool. */
     response: SearchResponse<'pool'>;
   };
-  'pokemon-from-pixel-crop': PokemonDistractors & {
+  pokemonFromPixelCrop: PokemonDistractors & {
     /** Search uses the current eligible Pokémon pool. */
     response: SearchResponse<'pool'>;
     /** Multiplier applied to the generated pixel-crop zoom. */
     cropScale: number;
   };
-  'shiny-pokemon-identification': PokemonDistractors;
-  'pokedex-entry-match': PokemonDistractors & {
+  shinyPokemonIdentification: PokemonDistractors;
+  pokedexEntryMatch: PokemonDistractors & {
     /** Search uses the current eligible Pokémon pool. */
     response: SearchResponse<'pool'>;
   };
-  'pokemon-types': {
+  pokemonTypes: {
     /** Restrict targets to Pokémon with exactly one type. */
     singleType: boolean;
     /** A type grid selects every type of the subject. */
@@ -217,38 +217,38 @@ interface FamilyControls {
     /** Score types by their closest Pokémon to rank wrong answers. */
     similarityWeights: SimilarityWeights;
   };
-  'type-odd-one-out': {
+  typeOddOneOut: {
     /** Restrict candidates to Pokémon with exactly one type. */
     singleType: boolean;
   };
-  'pokemon-by-type': {
+  pokemonByType: {
     /** Restrict candidates to Pokémon with exactly one type. */
     singleType: boolean;
   };
-  'dual-type-match': PokemonDistractors;
-  'legendary-mythical-selection': NoControls;
-  'pokemon-by-generation': NoControls;
-  'evolution-chain': PokemonDistractors & {
+  dualTypeMatch: PokemonDistractors;
+  legendaryMythicalSelection: NoControls;
+  pokemonByGeneration: NoControls;
+  evolutionChain: PokemonDistractors & {
     /** Search uses the current eligible Pokémon pool. */
     response: SearchResponse<'pool'>;
   };
-  'evolution-gained-type': {
+  evolutionGainedType: {
     /** Score types by their closest Pokémon to rank wrong answers. */
     similarityWeights: SimilarityWeights;
   };
-  'pokemon-abilities': {
+  pokemonAbilities: {
     /** Prefer wrong abilities found on Pokémon sharing a target type. */
     plausibleProperties: boolean;
   };
-  'level-up-moves': {
+  levelUpMoves: {
     /** Prefer wrong moves learned by Pokémon sharing a target type. */
     plausibleProperties: boolean;
   };
-  'stat-extremes': {
+  statExtremes: {
     /** Inclusive allowed stat-point gap to each wrong Pokémon; null disables it. */
     statGap: readonly [number, number] | null;
   };
-  'type-matchup': {
+  typeMatchup: {
     /** Restrict targets to Pokémon with exactly one type. */
     singleType: boolean;
     /** Show the target's types before answering. */
@@ -258,7 +258,7 @@ interface FamilyControls {
     /** A type grid selects every attack type with the requested multiplier. */
     response: GridResponse<'effectiveness'>;
   };
-  'super-effective-attacker': PokemonDistractors & {
+  superEffectiveAttacker: PokemonDistractors & {
     /** Restrict targets to Pokémon with exactly one type. */
     singleType: boolean;
     /** Show the target's types before answering. */
@@ -280,43 +280,43 @@ interface FamilyControls {
 }
 
 type FamilyAnswerKinds = {
-  'item-identification': 'text';
-  'item-uses': 'text';
-  'weight-comparison': 'pokemon';
-  'height-comparison': 'pokemon';
-  'move-types': 'type';
-  'location-region': 'text';
-  'move-category': 'text';
-  'pokedex-categories': 'pokemon';
-  'evolution-conditions': 'text';
-  'ability-effects': 'text';
-  'held-item-effects': 'text';
-  'hidden-abilities': 'text';
-  'nature-effects': 'text';
-  'ev-yields': 'text';
-  'encounter-locations': 'pokemon';
-  'berry-flavors': 'text';
-  'natural-gift': 'type';
-  'pokemon-from-historical-sprite': 'pokemon';
-  'sprite-for-pokemon': 'pokemon';
-  'silhouette-for-pokemon': 'pokemon';
-  'pokemon-from-silhouette': 'pokemon';
-  'pokemon-from-pixel-crop': 'pokemon';
-  'shiny-pokemon-identification': 'pokemon';
-  'pokedex-entry-match': 'pokemon';
-  'pokemon-types': 'type';
-  'type-odd-one-out': 'pokemon';
-  'pokemon-by-type': 'pokemon';
-  'dual-type-match': 'pokemon';
-  'legendary-mythical-selection': 'pokemon';
-  'pokemon-by-generation': 'pokemon';
-  'evolution-chain': 'pokemon';
-  'evolution-gained-type': 'type';
-  'pokemon-abilities': 'text';
-  'level-up-moves': 'text';
-  'stat-extremes': 'pokemon';
-  'type-matchup': 'type';
-  'super-effective-attacker': 'pokemon';
+  itemIdentification: 'text';
+  itemUses: 'text';
+  weightComparison: 'pokemon';
+  heightComparison: 'pokemon';
+  moveTypes: 'type';
+  locationRegion: 'text';
+  moveCategory: 'text';
+  pokedexCategories: 'pokemon';
+  evolutionConditions: 'text';
+  abilityEffects: 'text';
+  heldItemEffects: 'text';
+  hiddenAbilities: 'text';
+  natureEffects: 'text';
+  evYields: 'text';
+  encounterLocations: 'pokemon';
+  berryFlavors: 'text';
+  naturalGift: 'type';
+  pokemonFromHistoricalSprite: 'pokemon';
+  spriteForPokemon: 'pokemon';
+  silhouetteForPokemon: 'pokemon';
+  pokemonFromSilhouette: 'pokemon';
+  pokemonFromPixelCrop: 'pokemon';
+  shinyPokemonIdentification: 'pokemon';
+  pokedexEntryMatch: 'pokemon';
+  pokemonTypes: 'type';
+  typeOddOneOut: 'pokemon';
+  pokemonByType: 'pokemon';
+  dualTypeMatch: 'pokemon';
+  legendaryMythicalSelection: 'pokemon';
+  pokemonByGeneration: 'pokemon';
+  evolutionChain: 'pokemon';
+  evolutionGainedType: 'type';
+  pokemonAbilities: 'text';
+  levelUpMoves: 'text';
+  statExtremes: 'pokemon';
+  typeMatchup: 'type';
+  superEffectiveAttacker: 'pokemon';
   champion: 'pokemon';
 };
 

@@ -6,15 +6,15 @@ import { ordered, topicEligible } from './topic-support.ts';
 export const buildEffect: QuestionBuilder<EffectRules> = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;
-  const kind = context.questionType === 'ability-effects' ? 'ability' : 'item';
+  const kind = context.questionType === 'abilityEffects' ? 'ability' : 'item';
   const entities =
     kind === 'ability'
       ? topics.abilities
       : topics.items.filter(
           (item) =>
             item.effectKind ===
-              (context.questionType === 'item-uses' ? 'bag' : 'held') &&
-            (context.questionType !== 'item-uses' ||
+              (context.questionType === 'itemUses' ? 'bag' : 'held') &&
+            (context.questionType !== 'itemUses' ||
               (item.category !== 'data-cards' &&
                 item.name !== 'key-stone' &&
                 !item.name.startsWith('mega-'))),

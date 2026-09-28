@@ -22,8 +22,8 @@ it('matches form repetitions across identity formats', () => {
     pool: [],
     random: () => 0,
     used: new Set<string>(),
-    questionType: 'pokemon-from-historical-sprite' as const,
-    variant: getUnleveledQuestionRule('pokemon-from-historical-sprite')!,
+    questionType: 'pokemonFromHistoricalSprite' as const,
+    variant: getUnleveledQuestionRule('pokemonFromHistoricalSprite')!,
   };
   const topic = makeTopicQuestion(
     context,
@@ -34,7 +34,7 @@ it('matches form repetitions across identity formats', () => {
   )!;
   const question = {
     ...topic,
-    questionType: 'pokemon-from-historical-sprite',
+    questionType: 'pokemonFromHistoricalSprite',
   } as QuestionData;
   const canonicalTopic = makeTopicQuestion(
     context,
@@ -45,7 +45,7 @@ it('matches form repetitions across identity formats', () => {
   )!;
   const canonical = {
     ...canonicalTopic,
-    questionType: 'pokemon-from-historical-sprite',
+    questionType: 'pokemonFromHistoricalSprite',
   } as QuestionData;
   const history = rememberQuestion(emptyQuestionHistory(), question);
   const normalized = getSpeciesHistory({ ...context, history })!;

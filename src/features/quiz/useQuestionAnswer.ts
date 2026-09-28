@@ -36,18 +36,18 @@ const preloadQuestionImages = (question: QuestionData) => {
     ...(question.media.kind === 'none' || rendering.subject.sprite === 'never'
       ? []
       : [question.media.src]),
-    ...(question.visual?.kind === 'evolution-chain' ||
+    ...(question.visual?.kind === 'evolutionChain' ||
     question.visual?.kind === 'evolution-endpoints'
       ? Object.entries(question.visual.stages).flatMap(([name, { src }]) => {
           const role =
-            question.visual?.kind === 'evolution-chain' &&
+            question.visual?.kind === 'evolutionChain' &&
             name === question.subject.name
               ? 'subject'
               : 'related';
           return rendering[role].sprite === 'never' ? [] : [src];
         })
       : []),
-    ...(question.visual?.kind === 'evolution-gained-type' &&
+    ...(question.visual?.kind === 'evolutionGainedType' &&
     rendering.related.sprite !== 'never'
       ? [question.visual.evolution.src]
       : []),

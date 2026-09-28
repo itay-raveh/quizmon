@@ -21,9 +21,9 @@ describe('scoring', () => {
       difficulty: 4,
       generations: 3,
       questionTypes: [
-        { questionType: 'sprite-for-pokemon', multiplier: 0.75 },
-        { questionType: 'pokemon-types', multiplier: 1 },
-        { questionType: 'ev-yields', multiplier: 1.25 },
+        { questionType: 'spriteForPokemon', multiplier: 0.75 },
+        { questionType: 'pokemonTypes', multiplier: 1 },
+        { questionType: 'evYields', multiplier: 1.25 },
       ],
     };
     expect(calculateScore(answers, multipliers)).toBe(25313);
@@ -46,14 +46,14 @@ describe('scoring', () => {
     const answers = [
       {
         category: 'identity' as const,
-        questionType: 'sprite-for-pokemon' as const,
+        questionType: 'spriteForPokemon' as const,
         correct: true,
         points: 1_000,
         speedBonus: 2_000,
       },
       {
         category: 'identity' as const,
-        questionType: 'ev-yields' as const,
+        questionType: 'evYields' as const,
         correct: true,
         points: 1_000,
         speedBonus: 0,
@@ -64,8 +64,8 @@ describe('scoring', () => {
       generations: 1,
       perQuestion: true,
       questionTypes: [
-        { questionType: 'sprite-for-pokemon', multiplier: 0.75 },
-        { questionType: 'ev-yields', multiplier: 1.25 },
+        { questionType: 'spriteForPokemon', multiplier: 0.75 },
+        { questionType: 'evYields', multiplier: 1.25 },
       ],
     };
     expect(getScoreBreakdown(answers)).toEqual({
@@ -95,7 +95,7 @@ describe('scoring', () => {
   it('applies every drawn factor even when only one of ten answers earns points', () => {
     const answers = Array.from({ length: 10 }, (_, index) => ({
       category: 'identity' as const,
-      questionType: 'ev-yields' as const,
+      questionType: 'evYields' as const,
       correct: index === 0,
       points: index === 0 ? 1_000 : 0,
     }));
@@ -103,7 +103,7 @@ describe('scoring', () => {
       difficulty: 1,
       generations: 1,
       perQuestion: true,
-      questionTypes: [{ questionType: 'ev-yields', multiplier: 1.25 }],
+      questionTypes: [{ questionType: 'evYields', multiplier: 1.25 }],
     };
     expect(calculateScore(answers, multipliers)).toBe(10_245);
   });

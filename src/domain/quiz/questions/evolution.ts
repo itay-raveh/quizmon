@@ -28,7 +28,7 @@ const evolutionConditionLabel = (
   condition: string,
   variant: NonNullable<
     Parameters<
-      QuestionBuilder<FamilyRules['evolution-conditions']>
+      QuestionBuilder<FamilyRules['evolutionConditions']>
     >[0]['variant']
   >,
 ): string | undefined => {
@@ -82,7 +82,7 @@ const evolutionConditionKind = (condition: string) =>
     : condition.replace(/\d+/g, '#').split(' ')[0];
 
 export const buildEvolution: QuestionBuilder<
-  FamilyRules['evolution-conditions']
+  FamilyRules['evolutionConditions']
 > = (context) => {
   const topics = context.catalog.topics;
   const variant = context.variant;
@@ -243,7 +243,7 @@ export const buildEvolution: QuestionBuilder<
     if (question)
       return {
         ...question,
-        questionType: 'evolution-conditions',
+        questionType: 'evolutionConditions',
         options: exactLevel
           ? question.options.toSorted(
               (a, b) =>
@@ -254,7 +254,7 @@ export const buildEvolution: QuestionBuilder<
   }
 };
 export const buildEvolutionShiftQuestion: QuestionBuilder<
-  FamilyRules['evolution-gained-type']
+  FamilyRules['evolutionGainedType']
 > = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
   const target = pickTarget(context, ({ evolvesTo, types }) => {
@@ -302,14 +302,14 @@ export const buildEvolutionShiftQuestion: QuestionBuilder<
         types: evolution.types,
       },
       gainedType: correct,
-      kind: 'evolution-gained-type',
+      kind: 'evolutionGainedType',
     },
   };
 };
 const regionalForm = (name: string): string | undefined =>
   name.match(/-(alola|galar|hisui|paldea)(?:-|$)/)?.[1];
 export const buildEvolutionLinkQuestion: QuestionBuilder<
-  FamilyRules['evolution-chain']
+  FamilyRules['evolutionChain']
 > = (context) => {
   const poolNames = new Set(context.pool.map(({ name }) => name));
   const middleStages = context.pool.filter(
@@ -383,7 +383,7 @@ export const buildEvolutionLinkQuestion: QuestionBuilder<
       presentation: { kind: 'pokemon' },
     }),
     visual: {
-      kind: 'evolution-chain',
+      kind: 'evolutionChain',
       before,
       after,
       stages: getOptionVisuals(context, [before, target.name, after]),

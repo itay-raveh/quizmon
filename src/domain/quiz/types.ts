@@ -31,7 +31,7 @@ type QuestionMedia =
   | {
       focusX: number;
       focusY: number;
-      kind: 'pokemon-from-pixel-crop';
+      kind: 'pokemonFromPixelCrop';
       src: string;
       zoom?: number;
     }
@@ -54,23 +54,23 @@ export interface PokemonSearchOption {
 
 type QuestionVisual =
   | {
-      kind: 'evolution-chain' | 'evolution-endpoints';
+      kind: 'evolutionChain' | 'evolution-endpoints';
       before: string;
       after: string;
       stages: Record<string, PokemonOptionVisual>;
     }
-  | { kind: 'pokemon-by-generation'; generation: Generation }
-  | { kind: 'pokemon-types' }
-  | { kind: 'dual-type-match' }
-  | { kind: 'pokemon-by-type'; type: string }
+  | { kind: 'pokemonByGeneration'; generation: Generation }
+  | { kind: 'pokemonTypes' }
+  | { kind: 'dualTypeMatch' }
+  | { kind: 'pokemonByType'; type: string }
   | {
       evolution: PokemonOptionVisual & { name: string };
       gainedType: string;
-      kind: 'evolution-gained-type';
+      kind: 'evolutionGainedType';
     }
   | {
       direction: 'highest' | 'lowest';
-      kind: 'stat-extremes';
+      kind: 'statExtremes';
       stat: StatName;
     }
   | {
@@ -78,8 +78,8 @@ type QuestionVisual =
       measurement: 'height' | 'weight';
       direction: 'highest' | 'lowest';
     }
-  | { kind: 'type-matchup'; multiplier: number }
-  | { kind: 'super-effective-attacker'; multiplier: number };
+  | { kind: 'typeMatchup'; multiplier: number }
+  | { kind: 'superEffectiveAttacker'; multiplier: number };
 
 type QuestionInteraction = 'single-choice' | 'multi-select' | 'search';
 

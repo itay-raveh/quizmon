@@ -187,7 +187,7 @@ export const QuestionScreen = ({
             answerKind={
               question.subject.kind === 'ability'
                 ? 'ability'
-                : question.questionType === 'item-identification'
+                : question.questionType === 'itemIdentification'
                   ? question.subject.kind === 'move'
                     ? 'tm'
                     : 'item'

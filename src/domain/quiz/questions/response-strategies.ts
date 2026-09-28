@@ -37,10 +37,7 @@ export const applyResponseStrategy = (
       : rules.view,
     showTypes: 'showTypes' in rules ? rules.showTypes : undefined,
   };
-  if (
-    question.media.kind === 'pokemon-from-pixel-crop' &&
-    'cropScale' in rules
-  ) {
+  if (question.media.kind === 'pokemonFromPixelCrop' && 'cropScale' in rules) {
     question.media = {
       ...question.media,
       zoom: (question.media.zoom ?? 1) * rules.cropScale,
@@ -67,7 +64,7 @@ export const applyResponseStrategy = (
           ? (question.subject.types ?? [])
           : question.options.filter(
               (type) =>
-                question.visual?.kind === 'type-matchup' &&
+                question.visual?.kind === 'typeMatchup' &&
                 attackMultiplier(
                   context.catalog,
                   type,

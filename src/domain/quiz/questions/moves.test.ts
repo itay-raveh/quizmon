@@ -44,11 +44,11 @@ test('Move types excludes names that reveal their type from Level 3', () => {
     used: new Set(),
   });
 
-  expect(buildQuestionType(context(2), 'move-types')?.subject.name).toBe(
+  expect(buildQuestionType(context(2), 'moveTypes')?.subject.name).toBe(
     'fire-punch',
   );
   for (const difficulty of [3, 4, 5] as const)
     expect(
-      buildQuestionType(context(difficulty), 'move-types')?.subject.name,
+      buildQuestionType(context(difficulty), 'moveTypes')?.subject.name,
     ).toBe('pound');
 });

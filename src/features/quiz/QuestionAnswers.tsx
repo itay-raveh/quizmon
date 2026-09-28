@@ -64,7 +64,7 @@ export const QuestionAnswers = ({
           ? 'answers--pokemon'
           : '',
         view.answer.kind === 'pokemon' &&
-        view.answer.layout === 'super-effective-attacker'
+        view.answer.layout === 'superEffectiveAttacker'
           ? 'answers--super-effective-attacker'
           : '',
         hasTypeOptionBadges ? 'answers--type-options' : '',

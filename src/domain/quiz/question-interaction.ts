@@ -24,9 +24,9 @@ export const showsCorrectSearchAnswerInArtwork = (
     return false;
   const view = getQuestionView(question);
   const rendering = getQuestionRendering(question);
-  if (question.visual?.kind === 'evolution-chain')
+  if (question.visual?.kind === 'evolutionChain')
     return rendering.subject.name !== 'never';
-  if (question.media.kind === 'pokemon-from-pixel-crop')
+  if (question.media.kind === 'pokemonFromPixelCrop')
     return rendering.related.name !== 'never';
   if (
     question.media.kind !== 'sprite' &&

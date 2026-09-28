@@ -14,7 +14,7 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
-export const buildRegion: QuestionBuilder<FamilyRules['location-region']> = (
+export const buildRegion: QuestionBuilder<FamilyRules['locationRegion']> = (
   context,
 ) => {
   const topics = context.catalog.topics;
@@ -75,7 +75,7 @@ export const buildRegion: QuestionBuilder<FamilyRules['location-region']> = (
   }
 };
 export const buildEncounter: QuestionBuilder<
-  FamilyRules['encounter-locations']
+  FamilyRules['encounterLocations']
 > = (context) => {
   const topics = context.catalog.topics;
   if (!topics) return;

@@ -51,9 +51,7 @@ export const QuestionAnswerChoice = ({
   const revealsOptionTypes =
     (answered || question.showTypes) && reservesOptionTypes;
   const showdownStat =
-    question.visual?.kind === 'stat-extremes'
-      ? question.visual.stat
-      : undefined;
+    question.visual?.kind === 'statExtremes' ? question.visual.stat : undefined;
   const label = question.optionLabels?.[option] ?? formatPokemonName(option);
   const reveal = question.optionReveals?.[option];
   const measurement = question.visual?.kind === 'measurement-comparison';
@@ -133,9 +131,9 @@ export const QuestionAnswerChoice = ({
       index + 1
     );
   const attackTypes = typeRelations
-    ? question.visual?.kind === 'type-matchup'
+    ? question.visual?.kind === 'typeMatchup'
       ? [option]
-      : question.visual?.kind === 'super-effective-attacker'
+      : question.visual?.kind === 'superEffectiveAttacker'
         ? visual?.types
         : undefined
     : undefined;
@@ -264,7 +262,7 @@ export const QuestionAnswerChoice = ({
       {answered ? (
         <AnswerEffectiveness
           option={option}
-          isTypeOption={question.visual?.kind === 'type-matchup'}
+          isTypeOption={question.visual?.kind === 'typeMatchup'}
           attackTypes={attackTypes}
           defenderTypes={question.subject.types ?? []}
           typeRelations={typeRelations}

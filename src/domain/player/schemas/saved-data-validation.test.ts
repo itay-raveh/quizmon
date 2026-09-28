@@ -9,7 +9,7 @@ import { parsePlayerData } from './player-data';
 
 const question = {
   id: 'q',
-  questionType: 'pokemon-types',
+  questionType: 'pokemonTypes',
   category: 'knowledge',
   subject: { kind: 'pokemon', name: 'A', generation: 'I', types: [] },
   repetition: { identity: 'A', subjects: [], primary: [], distractors: [] },
@@ -39,7 +39,7 @@ it('keeps saved question acceptance and required option invariants', () => {
     isQuestionData({
       ...question,
       media: {
-        kind: 'pokemon-from-pixel-crop',
+        kind: 'pokemonFromPixelCrop',
         src: '',
         focusX: Infinity,
         focusY: 0,
@@ -128,16 +128,16 @@ it('deduplicates saved selections before they become game settings', () => {
     settings: {
       ...defaultGameSettings,
       generations: ['IX', 'I', 'IX'],
-      questionTypes: ['stat-extremes', 'pokemon-types', 'stat-extremes'],
-      automaticQuestionTypes: ['pokemon-types'],
+      questionTypes: ['statExtremes', 'pokemonTypes', 'statExtremes'],
+      automaticQuestionTypes: ['pokemonTypes'],
     },
   });
   expect(parsed.settings?.generations).toEqual(['I', 'IX']);
   expect(parsed.settings?.questionTypes).toEqual([
-    'pokemon-types',
-    'stat-extremes',
+    'pokemonTypes',
+    'statExtremes',
   ]);
-  expect(parsed.settings?.automaticQuestionTypes).toEqual(['pokemon-types']);
+  expect(parsed.settings?.automaticQuestionTypes).toEqual(['pokemonTypes']);
 });
 
 it('rejects saved results and settings that use retired question IDs', () => {
@@ -154,7 +154,7 @@ it('rejects saved results and settings that use retired question IDs', () => {
     ...base,
     settings: {
       ...defaultGameSettings,
-      questionTypes: ['missing-type', 'pokemon-types'],
+      questionTypes: ['missing-type', 'pokemonTypes'],
     },
     results: {
       ...base.results,

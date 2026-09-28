@@ -20,8 +20,8 @@ const question = (name: string) => {
     catalog,
     generations: ['VI'],
     pool: [],
-    questionType: 'natural-gift',
-    variant: getQuestionVariant('natural-gift', 5)!.variant,
+    questionType: 'naturalGift',
+    variant: getQuestionVariant('naturalGift', 5)!.variant,
     random: () => 0.5,
     used: new Set(),
   });

@@ -79,7 +79,7 @@ it('returns cloneable Daily attempts from RxDB documents', async () => {
       questions: [
         {
           id: 'q',
-          questionType: 'pokemon-types',
+          questionType: 'pokemonTypes',
           category: 'knowledge',
           subject: { kind: 'pokemon', name: 'A', generation: 'I', types: [] },
           repetition: {
@@ -143,7 +143,7 @@ it('credits only the first Daily round after two offline devices sync', async ()
     await writeCompletedRound(db, 'guest', second);
     await writeCompletedRound(db, 'guest', first);
     const { data } = await readGameData(db, 'guest');
-    expect(data.results.progress.correctQuestionTypes['pokemon-types']).toBe(4);
+    expect(data.results.progress.correctQuestionTypes['pokemonTypes']).toBe(4);
     const rows = await boardRows(
       db,
       'daily',

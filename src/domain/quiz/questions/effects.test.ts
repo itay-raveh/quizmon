@@ -17,9 +17,9 @@ const catalog = {
 
 it('builds ability, bag-item, and held-item effects from their own source pools', () => {
   const families = [
-    { type: 'ability-effects', levels: [3, 4, 5], kind: undefined },
-    { type: 'item-uses', levels: [2, 3, 4, 5], kind: 'bag' },
-    { type: 'held-item-effects', levels: [3, 4, 5], kind: 'held' },
+    { type: 'abilityEffects', levels: [3, 4, 5], kind: undefined },
+    { type: 'itemUses', levels: [2, 3, 4, 5], kind: 'bag' },
+    { type: 'heldItemEffects', levels: [3, 4, 5], kind: 'held' },
   ] as const;
   for (const { type: questionType, levels, kind } of families)
     for (const difficulty of levels) {
@@ -35,11 +35,11 @@ it('builds ability, bag-item, and held-item effects from their own source pools'
       );
       expect(question, `${questionType} level ${difficulty}`).toBeDefined();
       expect(question!.options).toHaveLength(
-        questionType === 'ability-effects' && difficulty === 5 ? 1 : 4,
+        questionType === 'abilityEffects' && difficulty === 5 ? 1 : 4,
       );
       expect(new Set(question!.options).size).toBe(question!.options.length);
       expect(question!.options).toContain(question!.answer.correctOptions[0]);
-      if (questionType === 'ability-effects') {
+      if (questionType === 'abilityEffects') {
         const answer = question!.answer.correctOptions[0]!;
         expect(answer).toBe(question!.subject.name);
         expect(question!.prompt.kind).toBe('text');
@@ -82,10 +82,10 @@ it('searches ability names from an unambiguous short effect at level 5', () => {
   const question = buildEffectDescription(
     {
       catalog,
-      questionType: 'ability-effects',
+      questionType: 'abilityEffects',
       difficulty: 5,
       generations: ['IX'],
-      variant: getQuestionVariant('ability-effects', 5)!.variant,
+      variant: getQuestionVariant('abilityEffects', 5)!.variant,
       pool: [],
       random: createSeededRandom('short-ability-effects'),
       used: new Set(),
@@ -106,10 +106,10 @@ it('searches ability names from an unambiguous short effect at level 5', () => {
     buildEffectDescription(
       {
         catalog,
-        questionType: 'ability-effects',
+        questionType: 'abilityEffects',
         difficulty: 5,
         generations: ['IX'],
-        variant: getQuestionVariant('ability-effects', 5)!.variant,
+        variant: getQuestionVariant('abilityEffects', 5)!.variant,
         pool: [],
         random: createSeededRandom('duplicate-ability-effect'),
         used: new Set(),
@@ -131,7 +131,7 @@ it('builds bag-item uses in an older-generation round', () => {
       random: createSeededRandom('bag-gen-one'),
       used: new Set(),
     },
-    'item-uses',
+    'itemUses',
   );
   expect(question?.subject.generation).toBe('I');
 });
@@ -157,7 +157,7 @@ it('excludes Data Cards and Mega accessories from Item uses', () => {
         random: createSeededRandom('excluded-item-uses'),
         used: new Set(),
       },
-      'item-uses',
+      'itemUses',
     ),
   ).toBeUndefined();
 });
@@ -171,10 +171,10 @@ it('narrows Item uses distractors at each level', () => {
     buildEffectDescription(
       {
         catalog,
-        questionType: 'item-uses',
+        questionType: 'itemUses',
         difficulty,
         generations: ['IX'],
-        variant: getQuestionVariant('item-uses', difficulty)!.variant,
+        variant: getQuestionVariant('itemUses', difficulty)!.variant,
         pool: [],
         random: createSeededRandom('item-distractors'),
         used: new Set(),
@@ -218,10 +218,10 @@ it('keeps held Berry distractors among Berries', () => {
   const question = buildEffectDescription(
     {
       catalog,
-      questionType: 'held-item-effects',
+      questionType: 'heldItemEffects',
       difficulty: 3,
       generations: ['IX'],
-      variant: getQuestionVariant('held-item-effects', 3)!.variant,
+      variant: getQuestionVariant('heldItemEffects', 3)!.variant,
       pool: [],
       random: createSeededRandom('held-berries'),
       used: new Set(),
@@ -247,14 +247,14 @@ it('respects a raw effect similarity limit', () => {
   );
   const target = bagItems.find((item) => item.name === 'rare-candy')!;
   const variant = {
-    ...getQuestionVariant('item-uses', 2)!.variant,
+    ...getQuestionVariant('itemUses', 2)!.variant,
     maximumEffectSimilarity: 0,
   };
   expect(
     buildEffectDescription(
       {
         catalog,
-        questionType: 'item-uses',
+        questionType: 'itemUses',
         difficulty: 2,
         generations: ['IX'],
         variant,

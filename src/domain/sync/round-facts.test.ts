@@ -143,9 +143,9 @@ describe('completed round facts', () => {
       '2026-09-11',
     );
     const combined = projectRoundHistory([round, duplicate]);
-    expect(
-      combined.results.progress.correctQuestionTypes['pokemon-types'],
-    ).toBe(4);
+    expect(combined.results.progress.correctQuestionTypes['pokemonTypes']).toBe(
+      4,
+    );
     expect(combined.pokedex).toEqual(['bulbasaur', 'ivysaur']);
   });
 });
