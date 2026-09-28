@@ -52,7 +52,7 @@ run = [
   "npm run check:chart-wiring < .wrangler/chart-rendered.yaml",
 ]
 
-[tasks.maintenance]
+[tasks."quizmon:maintenance"]
 description = "Toggle production maintenance using the adjacent infrastructure checkout"
 run = 'mise -C "${QUIZMON_INFRA_DIR:-../infra}" run quizmon:maintenance -- "$@"'
 
