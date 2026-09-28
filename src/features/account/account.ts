@@ -444,15 +444,27 @@ async function connectAccountSync() {
       live: true,
     });
     replications = [players, rounds];
-    const failed = new Map<RxServerReplicationState<unknown>, Error>();
+    const failed = new Map<RxServerReplicationState<unknown>, Error | null>();
     for (const replication of replications) {
       replication.error$.subscribe((error) => {
         const errors =
           isRecord(error) && isRecord(error.parameters)
             ? error.parameters.errors
             : null;
+        const inner: unknown = Array.isArray(errors) ? errors[0] : null;
+        if (isRecord(inner) && inner.name === 'TypeError') {
+          failed.set(replication, null);
+          if (![...failed.values()].some(Boolean))
+            update({
+              error: '',
+              recoveryReason: 'retry',
+              offline: true,
+              status: 'Saved on this device. Will sync when connected.',
+            });
+          return;
+        }
         const diagnostic = new Error('Replication stalled');
-        diagnostic.name = `Replication stalled (${rxErrorCode(error)}, ${rxErrorCode(Array.isArray(errors) ? errors[0] : null)})`;
+        diagnostic.name = `Replication stalled (${rxErrorCode(error)}, ${rxErrorCode(inner)})`;
         failed.set(replication, diagnostic);
         if (
           !replicationErrorTimer &&
@@ -461,7 +473,7 @@ async function connectAccountSync() {
         )
           replicationErrorTimer = setTimeout(() => {
             replicationErrorTimer = undefined;
-            const stalled = failed.entries().next().value;
+            const stalled = [...failed].find(([, diagnostic]) => diagnostic);
             if (
               !stalled ||
               !navigator.onLine ||
@@ -483,7 +495,15 @@ async function connectAccountSync() {
       replication.active$.subscribe((active) => {
         if (active || replication.isStopped() || !failed.delete(replication))
           return;
-        if (failed.size) return;
+        if (failed.size) {
+          if ([...failed.values()].some(Boolean)) return;
+          update({
+            error: '',
+            offline: true,
+            status: 'Saved on this device. Will sync when connected.',
+          });
+          return;
+        }
         if (replicationErrorTimer) clearTimeout(replicationErrorTimer);
         replicationErrorTimer = undefined;
         replicationErrorReported = false;

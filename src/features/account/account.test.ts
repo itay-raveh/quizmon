@@ -123,8 +123,21 @@ it('retries account startup and wake failures, then clears a recovered replicati
   first.active.emit(false);
   expect(accountSnapshot()).toMatchObject({ error: '', status: 'Synced' });
 
+  first.error.emit(
+    Object.assign(new Error('private network details'), {
+      code: 'RC_PULL',
+      parameters: { errors: [{ name: 'TypeError' }] },
+    }),
+  );
+  expect(accountSnapshot()).toMatchObject({ offline: true, error: '' });
+  await vi.advanceTimersByTimeAsync(60_000);
+  expect(sentry.captureUnexpectedError).not.toHaveBeenCalled();
+  first.active.emit(true);
+  first.active.emit(false);
+  expect(accountSnapshot()).toMatchObject({ offline: false, status: 'Synced' });
+
   failNextToken = true;
-  await vi.advanceTimersByTimeAsync(240_000);
+  await vi.advanceTimersByTimeAsync(180_000);
   expect(sentry.captureUnexpectedError).not.toHaveBeenCalled();
   expect(accountSnapshot()).toMatchObject({
     offline: true,
