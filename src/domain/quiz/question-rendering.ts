@@ -1,9 +1,15 @@
 import { z } from 'zod';
 
+/** When a name, number, type, or sprite becomes visible to the player. */
 export type Visibility = 'always' | 'after-answer' | 'never';
+/**
+ * Sprite visibility also supports a concealed silhouette and clue-count reveal.
+ * `afterClues` is a nonnegative integer in saved questions; answering also reveals it.
+ */
 export type SpriteVisibility =
   Visibility | 'silhouette' | { afterClues: number; silhouette?: boolean };
 
+/** Visibility fields for one entity role; omitted `types` defaults to `always`. */
 export interface EntityRendering {
   sprite: SpriteVisibility;
   name: Visibility;
@@ -12,8 +18,9 @@ export interface EntityRendering {
 }
 
 type RenderingRole = 'subject' | 'choices' | 'related' | 'search';
-/** Resolved visibility policy for each entity role in a question. */
+/** Resolved policy for the prompt subject, answer choices, related entities, and search entries. */
 export type QuestionRendering = Record<RenderingRole, EntityRendering>;
+/** Sparse per-role policy applied on top of a complete `QuestionRendering`. */
 export type RenderingOverrides = {
   [Role in RenderingRole]?: Partial<EntityRendering>;
 };
@@ -23,11 +30,13 @@ export interface RevealState {
   cluesShown: number;
 }
 
+/** `after-answer` becomes visible only after the answer is recorded. */
 export const isVisible = (
   rule: Visibility,
   { answered }: RevealState,
 ): boolean => rule === 'always' || (rule === 'after-answer' && answered);
 
+/** Resolve whether a sprite is shown and whether it remains silhouetted. */
 export const spriteState = (rule: SpriteVisibility, state: RevealState) => ({
   visible:
     typeof rule === 'object'
@@ -50,7 +59,7 @@ const mergeEntityRendering = (
   types: overrides?.types ?? defaults.types ?? 'always',
 });
 
-/** Replace only the named visibility fields in a complete policy. */
+/** Merge named fields only; omitted role fields retain their previous values. */
 export const mergeRendering = (
   defaults: QuestionRendering,
   overrides?: RenderingOverrides,
@@ -77,6 +86,7 @@ const entityRenderingSchema = z.object({
   types: visibilitySchema.optional(),
 });
 
+/** Validate a complete saved rendering snapshot, not a sparse override. */
 export const questionRenderingSchema = z.object({
   subject: entityRenderingSchema,
   choices: entityRenderingSchema,

@@ -258,6 +258,7 @@ export const questionDefinitions = {
   },
 } satisfies Record<string, QuestionDefinition>;
 
+/** Current persisted family IDs, derived from the definitions without a second enum. */
 export type QuestionType = keyof typeof questionDefinitions;
 export const questionTypes = Object.keys(questionDefinitions) as QuestionType[];
 const unleveledQuestionTypes = questionTypes.filter(

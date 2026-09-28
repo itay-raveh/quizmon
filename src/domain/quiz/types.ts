@@ -147,8 +147,11 @@ export interface QuestionData {
   optionReveals?: Record<string, string>;
   explanation?: string;
   context?: string;
+  /** Level of the selected rule, which can be below the requested difficulty. */
   variantLevel?: Difficulty;
+  /** Resolved visibility snapshot saved when this question was generated. */
   rendering?: QuestionRendering;
+  /** Resolved answer and subject presentation saved with this question. */
   view?: QuestionView;
   namesOnly?: boolean;
   showTypes?: boolean;
@@ -173,6 +176,7 @@ export interface QuestionData {
   optionStats?: Record<string, number>;
   optionVisuals?: Record<string, PokemonOptionVisual>;
   prompt: QuestionPrompt;
+  /** Current family ID, with `champion` reserved for the League finale. */
   questionType: QuestionType | 'champion';
   searchOptions?: PokemonSearchOption[];
   visual?: QuestionVisual;

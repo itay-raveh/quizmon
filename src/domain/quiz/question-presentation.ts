@@ -21,6 +21,7 @@ const answerViewSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('item') }),
 ]);
 
+/** Saved answer and subject presentation shape, separate from visibility. */
 export const questionViewSchema = z.object({
   answer: answerViewSchema,
   subject: z
@@ -33,9 +34,10 @@ export const questionViewSchema = z.object({
     .optional(),
 });
 
+/** Answer layout and subject treatment; field visibility belongs to rendering. */
 export type QuestionView = z.infer<typeof questionViewSchema>;
 
-/** Prefer a question's saved answer and subject presentation. */
+/** Use the saved view when present; otherwise resolve the current family view. */
 export const getQuestionView = (question: QuestionData): QuestionView => {
   if (question.view) return question.view;
   const row = questionRules[question.questionType] as {

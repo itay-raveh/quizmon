@@ -91,13 +91,19 @@ type FamilyRenderingControls = {
   };
 };
 
-/** Rendering fields and values that the named family can actually use. */
+/**
+ * Rendering overrides a family can consume. Unsupported roles, fields, and
+ * answer-revealing values fail at configuration time.
+ */
 export type RenderingControlsFor<Type extends keyof FamilyRules> =
   Type extends keyof FamilyRenderingControls
     ? FamilyRenderingControls[Type]
     : RenderingControls;
 
-/** A complete family's controls for one level or the unleveled path, with an optional rendering override. */
+/**
+ * Complete controls for one level or the unleveled path. `rendering` overrides
+ * the family policy; controls do not inherit from lower levels.
+ */
 export type QuestionRuleEntry<
   Rules extends { rendering: QuestionRendering },
   Type extends keyof FamilyRules,
@@ -105,7 +111,10 @@ export type QuestionRuleEntry<
   rendering?: RenderingControlsFor<Type>;
 };
 
-/** Family rendering policy plus sparse numeric difficulty entries. */
+/**
+ * One family's rules. Numeric `levels` may be sparse; resolution selects the
+ * highest defined level at or below the requested difficulty.
+ */
 export type QuestionRuleRow<
   Rules extends { rendering: QuestionRendering },
   Type extends keyof FamilyRules,
@@ -114,6 +123,7 @@ export type QuestionRuleRow<
   unleveled?: QuestionRuleEntry<Rules, Type>;
   levels: DifficultyRules<QuestionRuleEntry<Rules, Type>>;
 };
+/** Base controls copied into level entries before their specific overrides. */
 const controls = {
   'item-identification': {
     view: { answer: { kind: 'text' } },
@@ -518,7 +528,7 @@ const controls = {
   > & { view: FamilyRules[Type]['view'] };
 };
 
-/** Default visibility before family and entry overrides are merged. */
+/** Visibility defaults applied before family and level rendering overrides. */
 export const baseQuestionRendering: QuestionRendering = {
   subject: { sprite: 'always', name: 'always', number: 'always' },
   choices: { sprite: 'always', name: 'always', number: 'always' },
@@ -526,6 +536,7 @@ export const baseQuestionRendering: QuestionRendering = {
   search: { sprite: 'always', name: 'always', number: 'always' },
 };
 
+/** Family rendering overrides, checked against each family's usable fields. */
 const renderings = {
   'item-identification': {},
   'item-uses': {},
@@ -608,7 +619,7 @@ const renderings = {
   },
 } satisfies { [Type in keyof FamilyRules]: RenderingControlsFor<Type> };
 
-/** Typed configuration consumed by the question builders. */
+/** Source of leveled and unleveled builder configuration for every family. */
 export const questionRules = {
   'item-identification': {
     rendering: renderings['item-identification'],

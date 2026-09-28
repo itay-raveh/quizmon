@@ -23,10 +23,6 @@ Optional accounts sync completed progress and add friends and Daily leaderboards
 
 The local account service uses PostgreSQL, and RxServer syncs account saves through MongoDB. `npm run dev` starts both databases. Completed rounds are archived once, and account progress and Pokédex entries are derived from those rounds. Unfinished rounds stay in the browser.
 
-## Question configuration
-
-The [question configuration API](.agents/context/QUESTION_RULES.md) covers family controls, rendering, level selection, and saved-question behavior.
-
 ## Sentry
 
 Production releases send browser errors, player feedback, traces, and game metrics to the browser Sentry project. Worker errors and traces use a separate project. Guests have no Quizmon account identity in Sentry; a verified signed-in session supplies its account ID and email for diagnostics. Game metrics omit account identity. Sentry is optional for loading, play, and saving.

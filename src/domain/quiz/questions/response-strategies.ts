@@ -3,6 +3,7 @@ import type { Difficulty } from '../difficulty.ts';
 import type { QuestionContext, QuestionDraft } from './context.ts';
 import type { FamilyRules } from './family-rules.ts';
 
+/** Choice buttons, search, or a type grid; families constrain the usable cases. */
 export type ResponseStrategy =
   | { kind: 'choices'; minimumOptions: 2 | 4 }
   | {
@@ -11,6 +12,7 @@ export type ResponseStrategy =
     }
   | { kind: 'type-grid'; correct: 'subject-types' | 'effectiveness' };
 
+/** Apply resolved response and presentation rules and snapshot them on the draft. */
 export const applyResponseStrategy = (
   draft: QuestionDraft,
   context: QuestionContext,

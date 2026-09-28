@@ -29,7 +29,10 @@ const withRendering = <
     ),
   }) as Rules;
 
-/** Resolve the separate rule used when a question has no difficulty. */
+/**
+ * Resolve a family's separate no-difficulty entry, including rendering.
+ * Returns `undefined` when the family has no unleveled entry.
+ */
 export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
   type: Type,
 ): FamilyRules[Type] | undefined => {
@@ -37,7 +40,10 @@ export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
   return row.unleveled ? withRendering(row, row.unleveled) : undefined;
 };
 
-/** Resolve a complete rule and its actual level, or undefined below its first level. */
+/**
+ * Resolve the highest family level at or below `difficulty` and merge its
+ * rendering. The returned `level` is the selected rule's level.
+ */
 export const getQuestionVariant = <Type extends keyof FamilyRules>(
   type: Type,
   difficulty: Difficulty,
@@ -54,7 +60,10 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
     : undefined;
 };
 
-/** Merge base, family, and selected entry rendering policies. */
+/**
+ * Resolve base, family, then selected-entry rendering. If no level matches,
+ * use the unleveled entry when present, otherwise the base policy.
+ */
 export const resolveQuestionRendering = (
   type: QuestionData['questionType'],
   level?: Difficulty,
@@ -63,7 +72,10 @@ export const resolveQuestionRendering = (
   getUnleveledQuestionRule(type)?.rendering ??
   baseQuestionRendering;
 
-/** Prefer a question's saved rendering snapshot over the current configuration. */
+/**
+ * Use a question's saved rendering snapshot when present. Questions without
+ * one derive a policy from current rules and their own concealment metadata.
+ */
 export const getQuestionRendering = (
   question: QuestionData,
 ): QuestionRendering => {

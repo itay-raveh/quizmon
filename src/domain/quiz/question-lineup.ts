@@ -159,6 +159,7 @@ const question = z
         answer.correctOptions.length === 1),
   );
 
+/** Validate saved questions against current IDs and complete rendering snapshots. */
 export const savedQuestionSchema = question;
 
 export const isQuestionData = (value: unknown): value is QuestionData =>

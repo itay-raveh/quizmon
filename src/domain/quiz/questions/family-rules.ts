@@ -198,7 +198,10 @@ type FamilyAnswerKinds = {
   champion: 'pokemon';
 };
 
-/** Fully resolved builder rules, including each family's supported response and answer kind. */
+/**
+ * Fully resolved builder input. Each family owns its controls and supported
+ * response modes; its answer presentation kind is fixed by the family.
+ */
 export type FamilyRules = {
   [Type in keyof FamilyControls]: Omit<FamilyControls[Type], 'response'> & {
     response: FamilyControls[Type] extends { response: infer Strategy }
