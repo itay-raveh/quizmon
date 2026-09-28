@@ -1,5 +1,6 @@
 import { FeedbackButton } from '@/app/FeedbackButton';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
+import { getQuestionView } from '@/domain/quiz/question-presentation';
 import {
   showsCorrectSearchAnswerInArtwork,
   showsSearchResponse,
@@ -96,6 +97,7 @@ export const QuestionScreen = ({
   }, [answerFlow, answered]);
   const isChampion = question.category === 'champion';
   const rendering = getQuestionRendering(question);
+  const answerView = getQuestionView(question).answer;
   const isLeague = mode.kind === 'league';
   const modeLabel = isLeague
     ? getLeagueStageLabel(number)
@@ -185,13 +187,13 @@ export const QuestionScreen = ({
         {searchVisible && question.searchOptions ? (
           <ChampionSearch
             answerKind={
-              question.subject.kind === 'ability'
-                ? 'ability'
-                : question.questionType === 'itemIdentification'
-                  ? question.subject.kind === 'move'
-                    ? 'tm'
-                    : 'item'
-                  : 'pokemon'
+              answerView.kind === 'item'
+                ? question.subject.kind === 'move'
+                  ? 'tm'
+                  : 'item'
+                : answerView.kind === 'pokemon'
+                  ? 'pokemon'
+                  : 'ability'
             }
             policy={rendering.search}
             cluesShown={cluesShown}
