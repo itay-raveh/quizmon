@@ -1,5 +1,5 @@
 import type { QuestionData } from './types';
-import { getQuestionRendering } from './question-variants';
+import { getQuestionRendering } from './variants';
 
 export const usesSearchAnswer = (question: QuestionData): boolean =>
   question.answer.interaction === 'search';

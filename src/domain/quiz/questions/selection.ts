@@ -1,6 +1,6 @@
 import { createSeededRandom, shuffle } from '../../../lib/random.ts';
 import type { PokemonKnowledge } from '../../pokemon/types.ts';
-import { getPokemonRecency, getSubjectRecency } from '../question-history.ts';
+import { getPokemonRecency, getSubjectRecency } from '../history.ts';
 import type { Candidate, QuestionContext } from './context.ts';
 import { groupPokemon, pickForm, speciesWeight } from './sampling.ts';
 import { getSpeciesHistory, speciesName } from './species-history.ts';

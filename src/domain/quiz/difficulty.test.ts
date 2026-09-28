@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { difficultyLevels, resolveDifficultyVariant } from './difficulty';
-import { getQuestionVariant } from './question-variants';
+import { getQuestionVariant } from './variants';
 
 describe('difficulty variants', () => {
   it.each([

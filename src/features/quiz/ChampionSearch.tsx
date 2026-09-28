@@ -3,7 +3,7 @@ import {
   isVisible,
   spriteState,
   type QuestionRendering,
-} from '@/domain/quiz/question-rendering';
+} from '@/domain/quiz/rendering';
 import { PokemonSearch } from '@/components/PokemonSearch';
 import { formatPokemonName } from '@/domain/pokemon/format';
 import type { PokemonSearchOption } from '@/domain/quiz/types';

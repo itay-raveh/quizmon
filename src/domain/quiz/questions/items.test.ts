@@ -1,6 +1,6 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { expect, test } from 'vitest';
-import { isQuestionData } from '../question-lineup.ts';
+import { isQuestionData } from '../lineup.ts';
 import { buildQuestionType } from './registry.ts';
 
 const item = (name: string, category: string, spriteIdentity: string) => ({

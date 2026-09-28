@@ -13,13 +13,13 @@ Each question family has one rule file in [`src/domain/quiz/question-rules/`](..
 | Question content and distractor generation | [Family builders](../../src/domain/quiz/questions/registry.ts) |
 | Shared entity and answer rendering | [`QuestionEntity`](../../src/features/quiz/QuestionEntity.tsx), [`QuestionAnswerChoice`](../../src/features/quiz/QuestionAnswerChoice.tsx), and [`ChampionSearch`](../../src/features/quiz/ChampionSearch.tsx) |
 
-`QuestionType` comes from `questionDefinitions`. `champion` is the additional League finale ID. [`savedQuestionSchema`](../../src/domain/quiz/question-lineup.ts) rejects saved questions with unknown IDs.
+`QuestionType` comes from `questionDefinitions`. `champion` is the additional League finale ID. [`savedQuestionSchema`](../../src/domain/quiz/lineup.ts) rejects saved questions with unknown IDs.
 
 ## Rules and levels
 
 A family file exports a row with `rendering`, `levels`, and optionally `unleveled`. Its local `controls` supplies defaults copied into each entry. Every level entry is complete: it does not inherit controls from lower levels. The numeric level keys use [`Difficulty`](../../src/domain/quiz/difficulty.ts), currently 1 through 5.
 
-[`getQuestionVariant(type, difficulty)`](../../src/domain/quiz/question-variants.ts) selects the highest defined level at or below the requested difficulty and returns its actual level with the resolved rule. It returns `undefined` if no level qualifies. [`getUnleveledQuestionRule(type)`](../../src/domain/quiz/question-variants.ts) reads the separate `unleveled` entry.
+[`getQuestionVariant(type, difficulty)`](../../src/domain/quiz/variants.ts) selects the highest defined level at or below the requested difficulty and returns its actual level with the resolved rule. It returns `undefined` if no level qualifies. [`getUnleveledQuestionRule(type)`](../../src/domain/quiz/variants.ts) reads the separate `unleveled` entry.
 
 [`FamilyRules`](../../src/domain/quiz/questions/family-rules.ts) defines each builder's control fields and allowed answer presentation. [`QuestionRuleRow`](../../src/domain/quiz/question-rules/types.ts) checks a family file's levels and rendering; the registry checks that every family has a file. The [`ResponseStrategy`](../../src/domain/quiz/questions/response-strategies.ts) specifies:
 
@@ -32,7 +32,7 @@ The response and `view.answer.kind` types reject modes and answer layouts a fami
 For example, the Level 5 item rule is in [`item-identification.ts`](../../src/domain/quiz/question-rules/item-identification.ts). To inspect its resolved value:
 
 ```ts
-import { getQuestionVariant } from './src/domain/quiz/question-variants.ts';
+import { getQuestionVariant } from './src/domain/quiz/variants.ts';
 
 const result = getQuestionVariant('itemIdentification', 5);
 if (result) console.log(result.level, result.variant.response);
@@ -40,14 +40,14 @@ if (result) console.log(result.level, result.variant.response);
 
 ## Rendering
 
-[`baseQuestionRendering`](../../src/domain/quiz/question-rules/shared.ts) provides a complete default. A family's local `rendering` value overrides it. A level can provide a further `rendering` override. [`mergeRendering`](../../src/domain/quiz/question-rendering.ts) replaces only the fields specified by each override.
+[`baseQuestionRendering`](../../src/domain/quiz/question-rules/shared.ts) provides a complete default. A family's local `rendering` value overrides it. A level can provide a further `rendering` override. [`mergeRendering`](../../src/domain/quiz/rendering.ts) replaces only the fields specified by each override.
 
 `subject`, `choices`, `related`, and `search` are the four rendering roles. Each has `sprite`, `name`, `number`, and `types`. Field visibility is `always`, `after-answer`, or `never`. A sprite is `null` or an object with `reveal`, `silhouette`, and optional Pokémon `source` (`front` or `all`). `reveal` is `always`, `after-answer`, or `{ afterClues: number }`. Search names are required by the TypeScript type and saved-question schema.
 
 [`RenderingControlsFor<Type>`](../../src/domain/quiz/question-rules/types.ts) permits only fields that the family's current renderer consumes and restricts values that would disclose an answer. To change a family rule, update its file. If TypeScript rejects a rendering setting, inspect the generated media and UI path before extending the allowed type.
 
-[`resolveQuestionRendering(type, level?)`](../../src/domain/quiz/question-variants.ts) resolves current rules. [`getQuestionRendering(question)`](../../src/domain/quiz/question-variants.ts) prefers a saved question's rendering snapshot, so later rule edits do not alter that question's appearance.
+[`resolveQuestionRendering(type, level?)`](../../src/domain/quiz/variants.ts) resolves current rules. [`getQuestionRendering(question)`](../../src/domain/quiz/variants.ts) prefers a saved question's rendering snapshot, so later rule edits do not alter that question's appearance.
 
 ## Saved data
 
-Generated questions store their resolved `rendering`, `view`, and selected level. [`questionRenderingSchema`](../../src/domain/quiz/question-rendering.ts) validates complete saved rendering snapshots; [`savedQuestionSchema`](../../src/domain/quiz/question-lineup.ts) validates the whole saved question. TypeScript checks authored rules, while runtime validation handles records read from storage. A new visibility combination still needs a generation or UI check to establish that its clues and answers remain usable.
+Generated questions store their resolved `rendering`, `view`, and selected level. [`questionRenderingSchema`](../../src/domain/quiz/rendering.ts) validates complete saved rendering snapshots; [`savedQuestionSchema`](../../src/domain/quiz/lineup.ts) validates the whole saved question. TypeScript checks authored rules, while runtime validation handles records read from storage. A new visibility combination still needs a generation or UI check to establish that its clues and answers remain usable.

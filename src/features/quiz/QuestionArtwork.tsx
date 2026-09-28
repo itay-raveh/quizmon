@@ -1,12 +1,12 @@
 import { StatDirection } from './StatDirection';
 import { NatureEffect } from './NatureEffect';
-import { getQuestionRendering } from '@/domain/quiz/question-variants';
-import { usesSearchAnswer } from '@/domain/quiz/question-interaction';
+import { getQuestionRendering } from '@/domain/quiz/variants';
+import { usesSearchAnswer } from '@/domain/quiz/interaction';
 import {
   isVisible,
   spriteState,
   type EntityRendering,
-} from '@/domain/quiz/question-rendering';
+} from '@/domain/quiz/rendering';
 import {
   ItemRenderable,
   PokemonRenderable,
@@ -22,7 +22,7 @@ import {
   formatPokemonTypeAnnouncement,
 } from '@/domain/pokemon/format';
 import type { QuestionData } from '@/domain/quiz/types';
-import { getQuestionView } from '@/domain/quiz/question-presentation';
+import { getQuestionView } from '@/domain/quiz/presentation';
 import { Fragment, type CSSProperties } from 'react';
 interface QuestionArtworkProps {
   answered: boolean;

@@ -1,6 +1,6 @@
 import { observeAnswer } from '../../domain/quiz/answer-observation';
-import { getQuestionRendering } from '@/domain/quiz/question-variants';
-import { showsSearchResponse } from '@/domain/quiz/question-interaction';
+import { getQuestionRendering } from '@/domain/quiz/variants';
+import { showsSearchResponse } from '@/domain/quiz/interaction';
 import {
   getAnswerPoints,
   getSpeedBonusPoints,

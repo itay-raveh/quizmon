@@ -4,7 +4,7 @@ import {
   type QuestionRendering,
   type SpriteRendering,
   type Visibility,
-} from '../question-rendering.ts';
+} from '../rendering.ts';
 import type { FamilyRules } from '../questions/family-rules.ts';
 
 type Renderable<Fields extends keyof EntityRendering> = Partial<

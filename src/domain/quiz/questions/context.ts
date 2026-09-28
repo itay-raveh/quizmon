@@ -4,7 +4,7 @@ import type {
   PokemonCatalog,
   PokemonKnowledge,
 } from '../../pokemon/types.ts';
-import type { QuestionHistory } from '../question-history.ts';
+import type { QuestionHistory } from '../history.ts';
 import type { QuestionData } from '../types.ts';
 
 export interface Candidate {

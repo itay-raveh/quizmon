@@ -7,7 +7,7 @@ import { SaveError } from '../../domain/player/save-schema';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import type { QuestionData } from '../../domain/quiz/types';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
-import { getQuestionView } from '../../domain/quiz/question-presentation';
+import { getQuestionView } from '../../domain/quiz/presentation';
 import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import {
   readLocalDailyAttempts,

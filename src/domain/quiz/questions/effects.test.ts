@@ -3,10 +3,10 @@ import itemData from '../../pokemon/data/topics-items-0.json' with { type: 'json
 import moreItems from '../../pokemon/data/topics-items-1.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
-import { getQuestionVariant } from '../question-variants.ts';
+import { getQuestionVariant } from '../variants.ts';
 import { buildEffectDescription } from './effect-descriptions.ts';
 import { buildQuestionType } from './registry.ts';
-import { isQuestionData } from '../question-lineup.ts';
+import { isQuestionData } from '../lineup.ts';
 
 const items = [...itemData.values, ...moreItems.values];
 const catalog = {

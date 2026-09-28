@@ -5,11 +5,8 @@ import {
   getSubjectRecency,
   questionRepeatPolicy,
   rememberQuestion,
-} from '../question-history.ts';
-import {
-  getQuestionVariant,
-  getUnleveledQuestionRule,
-} from '../question-variants.ts';
+} from '../history.ts';
+import { getQuestionVariant, getUnleveledQuestionRule } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
 import { buildHidden } from './abilities.ts';
 import { buildCounterPickQuestion, buildMatchupQuestion } from './battle.ts';

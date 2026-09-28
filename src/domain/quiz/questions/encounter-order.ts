@@ -1,4 +1,4 @@
-import { getSubjectRecency } from '../question-history.ts';
+import { getSubjectRecency } from '../history.ts';
 import type { TopicCatalog } from '../topic-catalog.ts';
 import type { QuestionContext } from './context.ts';
 import { ordered } from './topic-support.ts';

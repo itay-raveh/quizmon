@@ -1,5 +1,5 @@
-import { getQuestionRendering } from '@/domain/quiz/question-variants';
-import { getQuestionView } from '@/domain/quiz/question-presentation';
+import { getQuestionRendering } from '@/domain/quiz/variants';
+import { getQuestionView } from '@/domain/quiz/presentation';
 import { QuestionAnswerChoice } from './QuestionAnswerChoice';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
 import type { QuestionData } from '@/domain/quiz/types';

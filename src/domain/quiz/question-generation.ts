@@ -12,7 +12,7 @@ import {
   getLeagueQuestionTypes,
   getLeagueSettings,
 } from './league.ts';
-import { type QuestionHistory } from './question-history.ts';
+import { type QuestionHistory } from './history.ts';
 import type { QuestionContext } from './questions/context.ts';
 import { buildQuestionType } from './questions/registry.ts';
 import type { QuestionData, QuestionType } from './types.ts';

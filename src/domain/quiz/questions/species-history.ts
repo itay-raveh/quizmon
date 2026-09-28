@@ -1,5 +1,5 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
-import type { QuestionHistory } from '../question-history.ts';
+import type { QuestionHistory } from '../history.ts';
 import type { QuestionData } from '../types.ts';
 import type { QuestionContext } from './context.ts';
 

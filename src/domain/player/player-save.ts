@@ -1,7 +1,4 @@
-import {
-  emptyQuestionHistory,
-  type QuestionHistory,
-} from '../quiz/question-history.ts';
+import { emptyQuestionHistory, type QuestionHistory } from '../quiz/history.ts';
 import type { GameSettings } from '../settings/types.ts';
 import type { LeagueVictoryRecord } from './hall-of-fame.ts';
 import { emptyResults, type SavedResults } from './results.ts';

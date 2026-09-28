@@ -1,4 +1,4 @@
-import { spriteState } from '../question-rendering.ts';
+import { spriteState } from '../rendering.ts';
 import { choosePokemonSprite, getOptionVisuals } from './assembly.ts';
 import { applyResponseStrategy } from './response-strategies.ts';
 import type { Difficulty } from '../difficulty.ts';

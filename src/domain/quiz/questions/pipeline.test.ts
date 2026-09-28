@@ -4,13 +4,10 @@ import pokemonData from '../../pokemon/data/pokemon.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import type { TopicCatalog } from '../topic-catalog.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
-import { savedQuestionSchema } from '../question-lineup.ts';
-import { getQuestionView } from '../question-presentation.ts';
-import { questionRenderingSchema } from '../question-rendering.ts';
-import {
-  getQuestionVariant,
-  getUnleveledQuestionRule,
-} from '../question-variants.ts';
+import { savedQuestionSchema } from '../lineup.ts';
+import { getQuestionView } from '../presentation.ts';
+import { questionRenderingSchema } from '../rendering.ts';
+import { getQuestionVariant, getUnleveledQuestionRule } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
 import { questionRules } from '../question-rules/registry.ts';
 import { buildQuestionType } from './registry.ts';

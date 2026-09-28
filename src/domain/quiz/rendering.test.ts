@@ -1,14 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { questionRenderingSchema } from './question-rendering';
+import { questionRenderingSchema } from './rendering';
 import type {
   QuestionRuleEntry,
   RenderingControlsFor,
 } from './question-rules/types';
 import type { FamilyRules } from './questions/family-rules';
-import {
-  baseQuestionRendering,
-  resolveQuestionRendering,
-} from './question-variants';
+import { baseQuestionRendering, resolveQuestionRendering } from './variants';
 
 describe('question rendering rules', () => {
   it('accepts the base rendering', () => {

@@ -1,10 +1,10 @@
 import { FeedbackButton } from '@/app/FeedbackButton';
-import { getQuestionRendering } from '@/domain/quiz/question-variants';
-import { getQuestionView } from '@/domain/quiz/question-presentation';
+import { getQuestionRendering } from '@/domain/quiz/variants';
+import { getQuestionView } from '@/domain/quiz/presentation';
 import {
   showsCorrectSearchAnswerInArtwork,
   showsSearchResponse,
-} from '@/domain/quiz/question-interaction';
+} from '@/domain/quiz/interaction';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
 import { formatPokemonName } from '@/domain/pokemon/format';

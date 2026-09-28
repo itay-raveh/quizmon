@@ -1,7 +1,7 @@
 import {
   baseQuestionRendering,
   resolveQuestionRendering,
-} from '@/domain/quiz/question-variants';
+} from '@/domain/quiz/variants';
 import type { QuestionData } from '@/domain/quiz/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';

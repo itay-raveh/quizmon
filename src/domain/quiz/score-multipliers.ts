@@ -8,7 +8,7 @@ import { getFormGroup } from '../pokemon/forms.ts';
 import pokemonGenerations from '../pokemon/data/pokemon-generations.json' with { type: 'json' };
 import { difficultySchema } from './difficulty.ts';
 import { questionTypes } from './questions/definitions.ts';
-import { getQuestionVariant } from './question-variants.ts';
+import { getQuestionVariant } from './variants.ts';
 
 export const scoreMultipliersSchema = z
   .object({

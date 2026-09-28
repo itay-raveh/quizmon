@@ -1,4 +1,4 @@
-import { baseQuestionRendering } from '@/domain/quiz/question-variants';
+import { baseQuestionRendering } from '@/domain/quiz/variants';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
 import { ChampionSearch } from './ChampionSearch';

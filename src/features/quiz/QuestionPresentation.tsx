@@ -12,7 +12,7 @@ import {
   type EntityRendering,
   type QuestionRendering,
   type RevealState,
-} from '@/domain/quiz/question-rendering';
+} from '@/domain/quiz/rendering';
 import {
   ItemRenderable,
   QuestionIdentity,
@@ -22,7 +22,7 @@ import { QuestionClues } from './QuestionClues';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionInstruction } from './QuestionInstruction';
 import { usesVisualInstruction } from './question-instruction-policy';
-import { getQuestionView } from '@/domain/quiz/question-presentation';
+import { getQuestionView } from '@/domain/quiz/presentation';
 import { supplementalItemSprites } from './item-sprites';
 
 const QuestionPrompt = ({

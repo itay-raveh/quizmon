@@ -6,7 +6,7 @@ import {
   type EntityRendering,
   type RevealState,
   type SpriteRendering,
-} from '@/domain/quiz/question-rendering';
+} from '@/domain/quiz/rendering';
 import type { ComponentProps, ReactNode } from 'react';
 
 export const QuestionSprite = ({

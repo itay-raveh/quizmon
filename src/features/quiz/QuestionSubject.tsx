@@ -3,7 +3,7 @@ import {
   spriteState,
   type EntityRendering,
   type RevealState,
-} from '@/domain/quiz/question-rendering';
+} from '@/domain/quiz/rendering';
 import type { ReactNode } from 'react';
 import { PokemonRenderable } from './QuestionEntity';
 

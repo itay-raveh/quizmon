@@ -1,5 +1,5 @@
-import type { QuestionRendering } from './question-rendering.ts';
-import type { QuestionView } from './question-presentation.ts';
+import type { QuestionRendering } from './rendering.ts';
+import type { QuestionView } from './presentation.ts';
 import type { Generation, StatName } from '../pokemon/types.ts';
 import type { Difficulty } from './difficulty.ts';
 import type { DailyTrack } from './daily-track.ts';

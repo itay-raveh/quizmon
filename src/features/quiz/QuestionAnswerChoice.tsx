@@ -9,9 +9,9 @@ import {
   formatPokemonTypeAnnouncement,
 } from '@/domain/pokemon/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { getQuestionRendering } from '@/domain/quiz/question-variants';
-import { getQuestionView } from '@/domain/quiz/question-presentation';
-import { isVisible, spriteState } from '@/domain/quiz/question-rendering';
+import { getQuestionRendering } from '@/domain/quiz/variants';
+import { getQuestionView } from '@/domain/quiz/presentation';
+import { isVisible, spriteState } from '@/domain/quiz/rendering';
 import type { QuestionData } from '@/domain/quiz/types';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
 import { answerOptionState } from './answer-option-state';

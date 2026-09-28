@@ -3,7 +3,7 @@ import { answerObservationSchema } from '../../quiz/answer-observation.ts';
 import type { ActiveGameSnapshot } from '../active-game.ts';
 import { answerSubjectSchema } from '../../quiz/subject.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
-import { savedQuestionSchema } from '../../quiz/question-lineup.ts';
+import { savedQuestionSchema } from '../../quiz/lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { questionCategories, type GameMode } from '../../quiz/types.ts';
 import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';

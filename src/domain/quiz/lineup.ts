@@ -1,6 +1,6 @@
-import { questionViewSchema } from './question-presentation.ts';
+import { questionViewSchema } from './presentation.ts';
 import { z } from 'zod';
-import { questionRenderingSchema } from './question-rendering.ts';
+import { questionRenderingSchema } from './rendering.ts';
 import { questionSubjectSchema } from './subject.ts';
 import { difficultySchema } from './difficulty.ts';
 import { generations, statNames } from '../pokemon/types.ts';

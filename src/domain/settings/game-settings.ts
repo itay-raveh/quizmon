@@ -2,7 +2,7 @@ import {
   supportsUnleveledQuestion,
   leagueQuestionTypes,
 } from '../quiz/questions/definitions.ts';
-import { getQuestionVariant } from '../quiz/question-variants.ts';
+import { getQuestionVariant } from '../quiz/variants.ts';
 import { getFormGroup } from '../pokemon/forms.ts';
 import {
   formGroups,

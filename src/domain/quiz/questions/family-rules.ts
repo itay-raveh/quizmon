@@ -1,6 +1,6 @@
 import type { MeasurementRules } from '../measurement-comparison.ts';
-import type { QuestionRendering } from '../question-rendering.ts';
-import type { QuestionView } from '../question-presentation.ts';
+import type { QuestionRendering } from '../rendering.ts';
+import type { QuestionView } from '../presentation.ts';
 import type { ResponseStrategy } from './response-strategies.ts';
 
 type ChoiceResponse = Extract<ResponseStrategy, { kind: 'choices' }>;

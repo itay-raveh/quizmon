@@ -1,4 +1,4 @@
-import type { QuestionRendering } from '../question-rendering.ts';
+import type { QuestionRendering } from '../rendering.ts';
 
 export const frontSprite = {
   reveal: 'always',

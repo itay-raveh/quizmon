@@ -1,4 +1,4 @@
-import type { QuestionLineup } from '../quiz/question-lineup.ts';
+import type { QuestionLineup } from '../quiz/lineup.ts';
 import type {
   AnswerResult,
   GameMode,

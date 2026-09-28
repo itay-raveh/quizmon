@@ -4,10 +4,7 @@ import type {
   QuestionRuleEntry,
   QuestionRuleRow,
 } from './question-rules/types.ts';
-import {
-  mergeRendering,
-  type QuestionRendering,
-} from './question-rendering.ts';
+import { mergeRendering, type QuestionRendering } from './rendering.ts';
 import { resolveDifficultyVariant, type Difficulty } from './difficulty.ts';
 import type { QuestionData } from './types.ts';
 import type { FamilyRules } from './questions/family-rules.ts';

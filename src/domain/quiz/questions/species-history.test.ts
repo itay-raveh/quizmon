@@ -3,12 +3,12 @@ import {
   emptyQuestionHistory,
   getQuestionRecency,
   rememberQuestion,
-} from '../question-history.ts';
+} from '../history.ts';
 import type { QuestionData } from '../types.ts';
 import { targetRepetition } from './repetition.ts';
 import { getSpeciesHistory, speciesQuestion } from './species-history.ts';
 import { makeTopicQuestion } from './topic-support.ts';
-import { getUnleveledQuestionRule } from '../question-variants.ts';
+import { getUnleveledQuestionRule } from '../variants.ts';
 
 it('matches form repetitions across identity formats', () => {
   const catalog = {

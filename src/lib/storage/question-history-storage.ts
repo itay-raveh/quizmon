@@ -1,4 +1,4 @@
-import { rememberShownQuestion } from '../../domain/quiz/question-history';
+import { rememberShownQuestion } from '../../domain/quiz/history';
 import type { QuestionData } from '../../domain/quiz/types';
 import {
   getPlayerDatabase,

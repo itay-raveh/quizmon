@@ -1,4 +1,4 @@
-import { isQuestionData } from '../../quiz/question-lineup';
+import { isQuestionData } from '../../quiz/lineup';
 import { completion } from '../../../../tests/online/progress-fixtures';
 import { defaultGameSettings } from '../../settings/game-settings';
 import { emptyPlayerData } from '../player-save';

@@ -14,7 +14,7 @@ import {
   createTrainerProfile,
   trainerProfileSchema,
 } from '../../domain/player/trainer-profile';
-import { questionHistorySchema } from '../../domain/quiz/question-history';
+import { questionHistorySchema } from '../../domain/quiz/history';
 import {
   validateRoundFact,
   type RoundFact,

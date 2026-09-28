@@ -1,12 +1,12 @@
 import type { QuestionData } from './types';
-import { baseQuestionRendering } from './question-variants';
-import { savedQuestionSchema } from './question-lineup.ts';
-import { getQuestionView } from './question-presentation.ts';
+import { baseQuestionRendering } from './variants';
+import { savedQuestionSchema } from './lineup.ts';
+import { getQuestionView } from './presentation.ts';
 import {
   showsCorrectSearchAnswerInArtwork,
   showsSearchResponse,
   usesSearchAnswer,
-} from './question-interaction';
+} from './interaction';
 
 const question: QuestionData = {
   answer: { correctOptions: ['pikachu'], interaction: 'search' },

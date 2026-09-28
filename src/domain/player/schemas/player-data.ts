@@ -6,7 +6,7 @@ import {
 } from '../../../lib/validation.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { isLeagueVictory } from '../../quiz/league.ts';
-import { questionHistorySchema } from '../../quiz/question-history.ts';
+import { questionHistorySchema } from '../../quiz/history.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { savedRoundRulesSchema } from '../../quiz/round-rules.ts';
 import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
