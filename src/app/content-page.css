@@ -1,12 +1,12 @@
 @import '../styles/fonts.css';
 @import '../styles/foundation.css';
 
-html:has(.legal-page),
-.legal-page {
+html:has(.content-page),
+.content-page {
   min-width: 0;
 }
 
-.legal-page {
+.content-page {
   position: relative;
   isolation: isolate;
   display: grid;
@@ -17,13 +17,13 @@ html:has(.legal-page),
   line-height: 1.65;
 }
 
-.legal-header,
-.legal-content {
+.content-page__header,
+.content-page__content {
   width: min(100%, 48rem);
   margin-inline: auto;
 }
 
-.legal-header nav {
+.content-page__header nav {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -31,15 +31,15 @@ html:has(.legal-page),
   margin-bottom: 1rem;
 }
 
-.legal-header a {
+.content-page__header a {
   padding-block: 0.5rem;
 }
 
-.legal-header a:first-child {
+.content-page__header a:first-child {
   margin-right: auto;
 }
 
-.legal-content {
+.content-page__content {
   display: block;
   min-height: auto;
   grid-row: 2;
@@ -54,65 +54,53 @@ html:has(.legal-page),
   overflow-wrap: anywhere;
 }
 
-.legal-page .site-footer {
+.content-page .site-footer {
   grid-row: 3;
 }
 
-.legal-content h1 {
+.content-page__content h1 {
   margin: 0 0 0.75rem;
   font-size: var(--text-display);
   line-height: 1.15;
 }
 
-.legal-content h2 {
+.content-page__content h2 {
   margin: 1.75rem 0 0.5rem;
   font-size: var(--text-headline);
   line-height: 1.25;
 }
 
-.legal-content p,
-.legal-content ul {
+.content-page__content p,
+.content-page__content ul {
   margin: 0.75rem 0;
 }
 
-.legal-content ul {
+.content-page__content ul {
   padding-left: 1.25rem;
 }
 
-.legal-content li + li {
+.content-page__content li + li {
   margin-top: 0.5rem;
 }
 
-.legal-content hr {
+.content-page__content hr {
   margin: 2rem 0 1rem;
   border: 0;
   border-top: 1px solid var(--muted);
 }
 
-.legal-content > p:first-of-type,
-.legal-content > p:last-child {
-  color: var(--muted);
-  font-size: var(--text-footer);
-}
-
-.about-content > p:first-of-type,
-.about-content > p:last-child {
-  color: inherit;
-  font-size: inherit;
-}
-
 @media print {
-  .legal-page {
+  .content-page {
     padding: 0;
     background: white;
   }
 
-  .legal-header,
+  .content-page__header,
   .background {
     display: none;
   }
 
-  .legal-content {
+  .content-page__content {
     width: 100%;
     padding: 0;
     border: 0;

@@ -12,7 +12,7 @@ import {
 } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { CacheFirst } from 'workbox-strategies';
-import { contentPages } from './app/content-pages';
+import { staticPages } from './app/static-pages';
 import { isAppPath } from './app/app-path';
 
 declare const self: ServiceWorkerGlobalScope & {
@@ -74,8 +74,10 @@ registerRoute(
     } catch {
       // Offline navigation still uses the precached page below.
     }
-    const contentPage = contentPages.find(({ path }) =>
-      [path, `${path}/`, `${path}.html`].includes(options.url.pathname),
+    const contentPage = staticPages.find(
+      ({ path, noindex }) =>
+        !noindex &&
+        [path, `${path}/`, `${path}.html`].includes(options.url.pathname),
     );
     const isApp =
       options.url.pathname === '/index.html' || isAppPath(options.url.pathname);

@@ -1,4 +1,4 @@
-export const contentPages = [
+export const staticPages = [
   {
     path: '/about',
     label: 'How to play',
@@ -6,6 +6,10 @@ export const contentPages = [
     description:
       'Learn how Quizmon’s Daily Challenge, Training, scores, badges, and Pokémon League work, and how your progress is saved.',
     source: 'about.md',
+    format: 'markdown',
+    inFooter: true,
+    inSitemap: true,
+    noindex: false,
   },
   {
     path: '/privacy',
@@ -14,6 +18,10 @@ export const contentPages = [
     description:
       'How Quizmon handles game analytics, optional reminders, browser storage, and your privacy choices.',
     source: 'privacy.md',
+    format: 'markdown',
+    inFooter: true,
+    inSitemap: true,
+    noindex: false,
   },
   {
     path: '/terms',
@@ -22,5 +30,29 @@ export const contentPages = [
     description:
       'Terms for playing Quizmon, including acceptable use, saved progress, source-available licensing, and artwork credits.',
     source: 'terms.md',
+    format: 'markdown',
+    inFooter: true,
+    inSitemap: true,
+    noindex: false,
   },
-];
+  {
+    path: '/404',
+    title: 'Page Not Found',
+    description: '',
+    source: '404.html',
+    format: 'html',
+    inFooter: false,
+    inSitemap: false,
+    noindex: true,
+  },
+  {
+    path: '/maintenance',
+    title: 'Under maintenance',
+    description: '',
+    source: 'maintenance.html',
+    format: 'html',
+    inFooter: false,
+    inSitemap: false,
+    noindex: true,
+  },
+] as const;

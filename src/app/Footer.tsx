@@ -1,11 +1,13 @@
 import { CoffeeIcon } from '@phosphor-icons/react/ssr';
-import { contentPages } from './content-pages.ts';
+import { staticPages } from './static-pages.ts';
 import { site } from './site.ts';
 
-const footerLinks = contentPages.map(({ path, label }) => ({
-  href: path,
-  label,
-}));
+const footerLinks = staticPages
+  .filter(({ inFooter }) => inFooter)
+  .map((page) => ({
+    href: page.path,
+    label: 'label' in page ? page.label : page.title,
+  }));
 
 const footerDisclaimer =
   'Quizmon is unofficial and not affiliated with Nintendo. Pokémon and related names, characters, images, and trademarks belong to their respective owners.';

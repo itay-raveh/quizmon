@@ -2,13 +2,13 @@ import { readFileSync } from 'node:fs';
 import { Marked } from 'marked';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { contentPages } from '../src/app/content-pages.ts';
+import { staticPages } from '../src/app/static-pages.ts';
 import { site } from '../src/app/site.ts';
 
 const markdown = new Marked({
   walkTokens(token) {
     if (token.type !== 'link') return;
-    const page = contentPages.find(({ source }) => source === token.href);
+    const page = staticPages.find(({ source }) => source === token.href);
     if (page) token.href = page.path;
     if (token.href === '../LICENSE')
       token.href = `${site.repositoryUrl}/blob/main/LICENSE`;
@@ -30,53 +30,33 @@ const layout = async (content: string, currentPath?: string) => {
     );
 };
 
-export const contentPageEntries = [
-  ...contentPages.map(({ path }) => `${path.slice(1)}.html`),
-  '404.html',
-  'maintenance.html',
-];
+export const contentPageEntries = staticPages.map(
+  ({ path }) => `${path.slice(1)}.html`,
+);
 
 export const renderContentPage = async (path: string) => {
-  if (path === '/maintenance.html') {
-    return {
-      path,
-      title: 'Under maintenance',
-      description: undefined,
-      noindex: true as const,
-      html: await layout(
-        readFileSync(new URL('./maintenance.html', import.meta.url), 'utf8'),
-      ),
-    };
-  }
-  if (path === '/404.html') {
-    return {
-      path,
-      title: 'Page Not Found',
-      description: undefined,
-      noindex: true as const,
-      html: await layout(
-        readFileSync(new URL('./404.html', import.meta.url), 'utf8'),
-      ),
-    };
-  }
-
-  const page = contentPages.find((page) => `${page.path}.html` === path);
+  const page = staticPages.find((page) => `${page.path}.html` === path);
   if (!page) return;
 
+  const article = page.format === 'markdown';
   const source = readFileSync(
-    new URL(`../content/${page.source}`, import.meta.url),
+    new URL(
+      article ? `../content/${page.source}` : page.source,
+      import.meta.url,
+    ),
     'utf8',
   );
 
   return {
     ...page,
-    noindex: false as const,
     html: await layout(
-      `<header class="legal-header">
+      article
+        ? `<header class="content-page__header">
       <nav aria-label="Site"><a href="/">Back to Quizmon</a></nav>
     </header>
-    <main class="legal-content${page.path === '/about' ? ' about-content' : ''}">${markdown.parse(source, { async: false })}</main>`,
-      page.path,
+    <main class="content-page__content">${markdown.parse(source, { async: false })}</main>`
+        : source,
+      article ? page.path : undefined,
     ),
   };
 };

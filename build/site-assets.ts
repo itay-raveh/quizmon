@@ -1,5 +1,5 @@
 import { absoluteSiteUrl, site } from '../src/app/site.ts';
-import { contentPages } from '../src/app/content-pages.ts';
+import { staticPages } from '../src/app/static-pages.ts';
 
 const sitemapUrl = absoluteSiteUrl('/sitemap.xml');
 
@@ -49,7 +49,12 @@ Sitemap: ${sitemapUrl}
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[site.url, ...contentPages.map(({ path }) => absoluteSiteUrl(path))]
+${[
+  site.url,
+  ...staticPages
+    .filter(({ inSitemap }) => inSitemap)
+    .map(({ path }) => absoluteSiteUrl(path)),
+]
   .map(
     (url) => `  <url>
     <loc>${url}</loc>
