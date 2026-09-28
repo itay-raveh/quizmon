@@ -48,6 +48,18 @@ await test('runtime renderer preserves game bindings and limits without local da
   assert.equal(rendered.vars.SYNC_AUDIENCE, input.sync.audience);
   assert.equal(rendered.main, './worker/index.ts');
   assert.equal(rendered.assets.directory, './dist');
+  assert.deepEqual(rendered.assets.run_worker_first, [
+    '/api/*',
+    '/sprites/*',
+    '/trainer',
+    '/trainer/*',
+    '/league',
+    '/account',
+    '/account/friends',
+    '/rankings',
+    '/players/*',
+    '/daily/*',
+  ]);
   assert.equal(rendered.no_bundle, false);
   assert.ok(!JSON.stringify(rendered).includes('127.0.0.1'));
   assert.ok(!JSON.stringify(rendered).includes('test-mailbox'));

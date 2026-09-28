@@ -75,7 +75,9 @@
       "/trainer/*",
       "/league",
       "/account",
-      "/social/*",
+      "/account/friends",
+      "/rankings",
+      "/players/*",
       "/daily/*"
     ]
   }
