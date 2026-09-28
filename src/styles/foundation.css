@@ -276,6 +276,20 @@ main {
     0 0.3rem 0 var(--navy-shadow);
 }
 
+.game-button--icon-edit {
+  display: grid;
+  flex: none;
+  margin-left: auto;
+  place-items: center;
+  width: 2.8rem;
+  padding: 0;
+}
+
+.game-button--icon-edit svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
 html:has(.app--questions) {
   scrollbar-gutter: stable;
 }

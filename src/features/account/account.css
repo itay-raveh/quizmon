@@ -18,20 +18,6 @@
   overflow-wrap: anywhere;
 }
 
-.account-screen__edit-name.game-button {
-  display: grid;
-  flex: none;
-  margin-left: auto;
-  place-items: center;
-  width: 2.8rem;
-  padding: 0;
-}
-
-.account-screen__edit-name svg {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
 .account-screen__name-form {
   display: grid;
   gap: 0.55rem;

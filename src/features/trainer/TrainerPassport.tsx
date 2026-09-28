@@ -288,18 +288,18 @@ export const TrainerPassport = ({
         </h1>
         {view === 'front' ? (
           <GameButton
-            className="trainer-passport__edit"
-            tone={!profile.name && !editing ? 'primary' : 'quiet'}
+            aria-label={
+              editing
+                ? 'Cancel editing Trainer Card'
+                : profile.name
+                  ? 'Edit Trainer Card'
+                  : 'Add trainer name'
+            }
+            className="game-button--icon-edit"
+            tone="quiet"
             onClick={toggleEditor}
           >
-            {editing ? null : (
-              <PencilSimpleIcon aria-hidden="true" weight="bold" />
-            )}
-            {editing
-              ? 'Cancel'
-              : profile.name
-                ? 'Edit card'
-                : 'Add trainer name'}
+            <PencilSimpleIcon aria-hidden="true" weight="bold" />
           </GameButton>
         ) : null}
       </header>

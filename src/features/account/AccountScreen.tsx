@@ -167,7 +167,7 @@ export function AccountScreen({
                     ? 'Cancel editing trainer name'
                     : 'Edit trainer name'
                 }
-                className="account-screen__edit-name"
+                className="game-button--icon-edit"
                 disabled={savingName}
                 onClick={() => {
                   if (editingName) {
