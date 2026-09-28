@@ -139,6 +139,18 @@
   flex: 0 0 2.5rem;
 }
 
+.champion-search .item-renderable {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.champion-search .item-renderable__sprite {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
 .champion-search li > span {
   min-width: 0;
   overflow-wrap: anywhere;

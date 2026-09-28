@@ -23,10 +23,15 @@ export interface EntityRendering {
 
 type RenderingRole = 'subject' | 'choices' | 'related' | 'search';
 /** Resolved policy for the prompt subject, answer choices, related entities, and search entries. */
-export type QuestionRendering = Record<RenderingRole, EntityRendering>;
+export type QuestionRendering = Record<
+  Exclude<RenderingRole, 'search'>,
+  EntityRendering
+> & {
+  search: EntityRendering & { name: 'always' };
+};
 /** Sparse per-role policy applied on top of a complete `QuestionRendering`. */
 export type RenderingOverrides = {
-  [Role in RenderingRole]?: Partial<EntityRendering>;
+  [Role in RenderingRole]?: Partial<QuestionRendering[Role]>;
 };
 
 export interface RevealState {
@@ -53,15 +58,16 @@ export const spriteState = (rule: SpriteVisibility, state: RevealState) => ({
       : rule === 'silhouette'),
 });
 
-const mergeEntityRendering = (
-  defaults: EntityRendering,
-  overrides?: Partial<EntityRendering>,
-): EntityRendering => ({
-  sprite: overrides?.sprite ?? defaults.sprite,
-  name: overrides?.name ?? defaults.name,
-  number: overrides?.number ?? defaults.number,
-  types: overrides?.types ?? defaults.types ?? 'always',
-});
+const mergeEntityRendering = <Policy extends EntityRendering>(
+  defaults: Policy,
+  overrides?: Partial<Policy>,
+): Policy =>
+  ({
+    sprite: overrides?.sprite ?? defaults.sprite,
+    name: overrides?.name ?? defaults.name,
+    number: overrides?.number ?? defaults.number,
+    types: overrides?.types ?? defaults.types ?? 'always',
+  }) as Policy;
 
 /** Merge named fields only; omitted role fields retain their previous values. */
 export const mergeRendering = (
@@ -95,5 +101,5 @@ export const questionRenderingSchema = z.object({
   subject: entityRenderingSchema,
   choices: entityRenderingSchema,
   related: entityRenderingSchema,
-  search: entityRenderingSchema,
+  search: entityRenderingSchema.extend({ name: z.literal('always') }),
 });

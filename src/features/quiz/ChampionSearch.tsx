@@ -1,4 +1,8 @@
-import { QuestionIdentity, QuestionSprite } from './QuestionEntity';
+import {
+  ItemRenderable,
+  QuestionIdentity,
+  QuestionSprite,
+} from './QuestionEntity';
 import {
   isVisible,
   spriteState,
@@ -65,9 +69,8 @@ export const ChampionSearch = ({
         disabled={disabled || answered}
         mode="champion"
         renderPokemon={
-          answerKind !== 'pokemon'
-            ? undefined
-            : (pokemon) => (
+          answerKind === 'pokemon'
+            ? (pokemon) => (
                 <>
                   {pokemon.sprite ? (
                     <span className="pokemon-picker__sprite" aria-hidden="true">
@@ -87,6 +90,18 @@ export const ChampionSearch = ({
                   />
                 </>
               )
+            : answerKind === 'item' || answerKind === 'tm'
+              ? (item) => (
+                  <ItemRenderable
+                    name={item.label ?? formatPokemonName(item.name)}
+                    src={item.sprite}
+                    policy={policy}
+                    state={{ answered, cluesShown }}
+                    className="item-renderable"
+                    spriteClassName="item-renderable__sprite"
+                  />
+                )
+              : undefined
         }
         onConfirm={onAnswer}
         searchSubject={

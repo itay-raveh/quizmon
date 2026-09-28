@@ -113,6 +113,10 @@ test('shows TM disc art and a visible type label for each choice', () => {
       text: 'Which TM disc matches Flamethrower?',
     },
     questionType: 'itemIdentification',
+    rendering: {
+      ...baseQuestionRendering,
+      choices: { ...baseQuestionRendering.choices, sprite: 'always' },
+    },
     repetition: {
       identity: 'flamethrower',
       subjects: ['move/flamethrower'],
@@ -130,7 +134,78 @@ test('shows TM disc art and a visible type label for each choice', () => {
     />,
   );
   expect(markup).toContain('/sprites/items/tm-fire.png');
-  expect(markup).toContain('>Fire</span>');
+  expect(markup).toContain('aria-label="Fire"');
+  const spriteOnly = renderToStaticMarkup(
+    <QuestionAnswers
+      question={{
+        ...question,
+        rendering: {
+          ...question.rendering!,
+          choices: { ...question.rendering!.choices, name: 'never' },
+        },
+      }}
+      answered={false}
+      onSelect={() => {}}
+      selectedOptions={[]}
+    />,
+  );
+  expect(spriteOnly).toContain('/sprites/items/tm-fire.png');
+  expect(spriteOnly).not.toContain('>Fire</strong>');
+
+  const nameOnly = renderToStaticMarkup(
+    <QuestionAnswers
+      question={{
+        ...question,
+        rendering: {
+          ...question.rendering!,
+          choices: { ...question.rendering!.choices, sprite: 'never' },
+        },
+      }}
+      answered={false}
+      onSelect={() => {}}
+      selectedOptions={[]}
+    />,
+  );
+  expect(nameOnly).not.toContain('/sprites/items/tm-fire.png');
+  expect(nameOnly).toContain('aria-label="Fire"');
+});
+
+test('item subject visibility controls the same artwork renderer', () => {
+  const question: QuestionData = {
+    answer: { interaction: 'single-choice', correctOptions: ['lava-cookie'] },
+    category: 'identity',
+    id: 'itemIdentification:item:lava-cookie',
+    media: { kind: 'pixel-sprite', src: '/lava-cookie.png' },
+    options: ['lava-cookie'],
+    optionLabels: { 'lava-cookie': 'Lava Cookie' },
+    prompt: { kind: 'text', text: 'Which item is shown?' },
+    questionType: 'itemIdentification',
+    repetition: {
+      identity: 'lava-cookie',
+      subjects: ['item/lava-cookie'],
+      primary: [],
+      distractors: [],
+    },
+    subject: { kind: 'item', name: 'lava-cookie', generation: 'III' },
+  };
+  const markup = (name: 'always' | 'never', sprite: 'always' | 'never') =>
+    renderToStaticMarkup(
+      <QuestionArtwork
+        question={{
+          ...question,
+          rendering: {
+            ...baseQuestionRendering,
+            subject: { ...baseQuestionRendering.subject, name, sprite },
+          },
+        }}
+        answered={false}
+        cluesShown={0}
+      />,
+    );
+  expect(markup('never', 'always')).toContain('/lava-cookie.png');
+  expect(markup('never', 'always')).not.toContain('>Lava Cookie</strong>');
+  expect(markup('always', 'never')).not.toContain('/lava-cookie.png');
+  expect(markup('always', 'never')).toContain('>Lava Cookie</strong>');
 });
 
 test('choice name visibility follows the saved rendering policy', () => {

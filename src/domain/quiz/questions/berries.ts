@@ -82,8 +82,21 @@ export const buildBerry: QuestionBuilder<
       options,
       {
         prompt: {
-          kind: 'text',
-          text: prompt,
+          kind: 'item',
+          before: gift
+            ? 'Which type does Natural Gift have with '
+            : 'completeFlavors' in context.variant &&
+                context.variant.completeFlavors
+              ? 'Which flavors does '
+              : 'What is the strongest flavor of ',
+          after:
+            !gift &&
+            'completeFlavors' in context.variant &&
+            context.variant.completeFlavors
+              ? ' have?'
+              : '?',
+          name: item.label,
+          sprite: item.sprite,
           ...(gift ? { supportingText: `Generation ${availableGiftGen}` } : {}),
         },
         media: { kind: 'pixel-sprite', src: item.sprite },

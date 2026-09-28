@@ -16,7 +16,11 @@ import { AnswerEffectiveness } from './AnswerEffectiveness';
 import { answerOptionState } from './answer-option-state';
 import { MoveReveal } from './MoveReveal';
 import { NatureEffect } from './NatureEffect';
-import { QuestionIdentity, QuestionSprite } from './QuestionEntity';
+import {
+  ItemRenderable,
+  QuestionIdentity,
+  QuestionSprite,
+} from './QuestionEntity';
 
 interface QuestionAnswerChoiceProps {
   question: QuestionData;
@@ -43,6 +47,7 @@ export const QuestionAnswerChoice = ({
   const policy = getQuestionRendering(question).choices;
   const view = getQuestionView(question);
   const hasTypeOptionBadges = view.answer.kind === 'type';
+  const isItemChoice = view.answer.kind === 'item';
   const reservesOptionTypes =
     view.answer.kind === 'pokemon' &&
     view.answer.revealTypes === 'after-answer';
@@ -148,23 +153,24 @@ export const QuestionAnswerChoice = ({
         question.options.length <= 9 ? String(index + 1) : undefined
       }
       aria-pressed={multiSelect ? optionSelected : undefined}
-      className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${itemImage ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+      className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== 'never' ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
       disabled={answered}
       onClick={() => onSelect(option)}
       sound="none"
     >
       <kbd aria-hidden="true">{selectionMark}</kbd>
-      {itemImage ? (
-        <span className="answer__item-slot" aria-hidden="true">
-          <QuestionSprite
-            rule={policy.sprite}
-            state={state}
-            className="answer__item-sprite"
-            src={itemImage}
-          />
-        </span>
-      ) : null}
-      {visual ? (
+      {isItemChoice ? (
+        <ItemRenderable
+          className="answer__item-renderable"
+          name={label}
+          src={itemImage}
+          policy={policy}
+          state={state}
+          spriteSlotClassName="answer__item-slot"
+          spriteClassName="answer__item-sprite"
+          nameClassName="answer__text"
+        />
+      ) : visual ? (
         <>
           <span className="answer__sprite-field" aria-hidden="true">
             <QuestionSprite

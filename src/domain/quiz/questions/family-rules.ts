@@ -280,7 +280,7 @@ interface FamilyControls {
 }
 
 type FamilyAnswerKinds = {
-  itemIdentification: 'text';
+  itemIdentification: 'item';
   itemUses: 'text';
   weightComparison: 'pokemon';
   heightComparison: 'pokemon';

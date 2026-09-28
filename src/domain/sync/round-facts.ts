@@ -52,6 +52,14 @@ const archivedQuestionSchema = z.object({
       dex_number: z.int(),
       supporting_text: z.string().max(4000).optional(),
     }),
+    z.object({
+      kind: z.literal('item'),
+      name: z.string().max(4000),
+      before: z.string().max(4000),
+      after: z.string().max(4000),
+      sprite: z.string().max(4000).optional(),
+      supporting_text: z.string().max(4000).optional(),
+    }),
   ]),
   interaction: z.enum(['single-choice', 'multi-select', 'search']),
   options: answerObservationSchema.shape.options,
@@ -162,16 +170,29 @@ const archiveQuestion = (observation: AnswerObservation): ArchivedQuestion => ({
             ? { supporting_text: observation.prompt.supportingText }
             : {}),
         }
-      : {
-          kind: 'pokemon',
-          name: observation.prompt.name,
-          before: observation.prompt.before,
-          after: observation.prompt.after,
-          dex_number: observation.prompt.dexNumber,
-          ...(observation.prompt.supportingText
-            ? { supporting_text: observation.prompt.supportingText }
-            : {}),
-        },
+      : observation.prompt.kind === 'pokemon'
+        ? {
+            kind: 'pokemon',
+            name: observation.prompt.name,
+            before: observation.prompt.before,
+            after: observation.prompt.after,
+            dex_number: observation.prompt.dexNumber,
+            ...(observation.prompt.supportingText
+              ? { supporting_text: observation.prompt.supportingText }
+              : {}),
+          }
+        : {
+            kind: 'item',
+            name: observation.prompt.name,
+            before: observation.prompt.before,
+            after: observation.prompt.after,
+            ...(observation.prompt.sprite
+              ? { sprite: observation.prompt.sprite }
+              : {}),
+            ...(observation.prompt.supportingText
+              ? { supporting_text: observation.prompt.supportingText }
+              : {}),
+          },
   interaction: observation.interaction,
   options: observation.options,
   expected: observation.expected,
@@ -195,16 +216,29 @@ const liveQuestion = (question: ArchivedQuestion): AnswerObservation => {
             ? {}
             : { supportingText: question.prompt.supporting_text }),
         }
-      : {
-          kind: 'pokemon' as const,
-          name: question.prompt.name,
-          before: question.prompt.before,
-          after: question.prompt.after,
-          dexNumber: question.prompt.dex_number,
-          ...(question.prompt.supporting_text === undefined
-            ? {}
-            : { supportingText: question.prompt.supporting_text }),
-        };
+      : question.prompt.kind === 'pokemon'
+        ? {
+            kind: 'pokemon' as const,
+            name: question.prompt.name,
+            before: question.prompt.before,
+            after: question.prompt.after,
+            dexNumber: question.prompt.dex_number,
+            ...(question.prompt.supporting_text === undefined
+              ? {}
+              : { supportingText: question.prompt.supporting_text }),
+          }
+        : {
+            kind: 'item' as const,
+            name: question.prompt.name,
+            before: question.prompt.before,
+            after: question.prompt.after,
+            ...(question.prompt.sprite === undefined
+              ? {}
+              : { sprite: question.prompt.sprite }),
+            ...(question.prompt.supporting_text === undefined
+              ? {}
+              : { supportingText: question.prompt.supporting_text }),
+          };
   return {
     questionId: question.id,
     prompt,

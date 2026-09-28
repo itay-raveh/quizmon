@@ -58,7 +58,6 @@ export const getQuestionView = (question: QuestionData): QuestionView => {
       ? row.unleveled
       : resolveDifficultyVariant(row.levels, level)?.variant;
   const view = resolved?.view ?? Object.values(row.levels)[0]!.view;
-  if (question.optionImages) return { ...view, answer: { kind: 'item' } };
   if (
     question.questionType === 'pokedexEntryMatch' &&
     question.answer.interaction === 'search'

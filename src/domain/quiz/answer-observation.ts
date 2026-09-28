@@ -23,6 +23,14 @@ const prompt = z.discriminatedUnion('kind', [
     dexNumber: z.int(),
     supportingText: text.optional(),
   }),
+  z.object({
+    kind: z.literal('item'),
+    name: text,
+    before: text,
+    after: text,
+    sprite: text.optional(),
+    supportingText: text.optional(),
+  }),
 ]);
 export const answerObservationSchema = z
   .object({

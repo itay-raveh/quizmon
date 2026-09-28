@@ -132,9 +132,21 @@ export const buildEffectDescription = (
       {
         context: `effect-description:${fact.generation}`,
         prompt: {
-          kind: 'text',
-          text: prompt,
-          ...(kind === 'ability' ? { description: fact.text } : {}),
+          ...(kind === 'item'
+            ? {
+                kind: 'item' as const,
+                before: 'What does ',
+                after: ' do?',
+                name: target.label,
+                ...('sprite' in target && target.sprite
+                  ? { sprite: target.sprite }
+                  : {}),
+              }
+            : {
+                kind: 'text' as const,
+                text: prompt,
+                description: fact.text,
+              }),
           ...(context.questionType === 'itemUses'
             ? {}
             : { supportingText: `Generation ${fact.generation}` }),

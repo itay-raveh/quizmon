@@ -32,9 +32,7 @@ export const applyResponseStrategy = (
     ...draft,
     ...(level === undefined ? {} : { variantLevel: level }),
     rendering: rules.rendering,
-    view: draft.optionImages
-      ? { ...rules.view, answer: { kind: 'item' } }
-      : rules.view,
+    view: rules.view,
     showTypes: 'showTypes' in rules ? rules.showTypes : undefined,
   };
   if (question.media.kind === 'pokemonFromPixelCrop' && 'cropScale' in rules) {

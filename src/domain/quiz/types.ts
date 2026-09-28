@@ -102,6 +102,18 @@ export type QuestionPrompt =
       kind: 'pokemon';
       name: string;
       supportingText?: string;
+    }
+  | {
+      /** Text before the item rendered with the question's subject policy. */
+      before: string;
+      /** Text after the item rendered with the question's subject policy. */
+      after: string;
+      kind: 'item';
+      /** Display name, independent of the item's catalog key. */
+      name: string;
+      /** Sprite selected by question generation. */
+      sprite?: string;
+      supportingText?: string;
     };
 
 export interface QuestionRepetition {

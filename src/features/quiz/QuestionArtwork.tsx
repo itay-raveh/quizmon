@@ -7,7 +7,7 @@ import {
   spriteState,
   type EntityRendering,
 } from '@/domain/quiz/question-rendering';
-import { QuestionSprite } from './QuestionEntity';
+import { ItemRenderable, QuestionSprite } from './QuestionEntity';
 import {
   QuestionSubject,
   QuestionSubjectIdentity,
@@ -388,13 +388,28 @@ export const QuestionArtwork = ({
   }
   if (pixelSprite && question.subject.kind !== 'pokemon')
     return (
-      <div className="question-visual" aria-hidden="true">
-        <QuestionSprite
-          rule={rendering.subject.sprite}
-          state={state}
-          className="question-visual__pokemon"
-          src={pixelSprite}
-        />
+      <div className="question-visual">
+        {question.subject.kind === 'item' ? (
+          <ItemRenderable
+            className="question-visual__subject"
+            name={
+              question.optionLabels?.[question.subject.name] ??
+              formatPokemonName(question.subject.name)
+            }
+            src={pixelSprite}
+            policy={rendering.subject}
+            state={state}
+            spriteClassName="question-visual__pokemon"
+            nameClassName="question-visual__subject-name"
+          />
+        ) : (
+          <QuestionSprite
+            rule={rendering.subject.sprite}
+            state={state}
+            className="question-visual__pokemon"
+            src={pixelSprite}
+          />
+        )}
       </div>
     );
   return answerOnlyPortrait ||

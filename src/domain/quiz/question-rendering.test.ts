@@ -24,6 +24,12 @@ describe('question rendering rules', () => {
     expect(
       questionRenderingSchema.safeParse({
         ...rendering,
+        search: { ...rendering.search, name: 'never' },
+      }).success,
+    ).toBe(false);
+    expect(
+      questionRenderingSchema.safeParse({
+        ...rendering,
         subject: { ...rendering.subject, types: 'sometimes' },
       }).success,
     ).toBe(false);
@@ -52,3 +58,15 @@ const unsupportedCounterPick = {
   subject: { types: 'never' },
 } satisfies RenderingControlsFor<'superEffectiveAttacker'>;
 void unsupportedCounterPick;
+
+const itemChoicesWithoutIdentity = {
+  // @ts-expect-error Item choices need a name or sprite.
+  choices: { name: 'never', sprite: 'never' },
+} satisfies RenderingControlsFor<'itemIdentification'>;
+void itemChoicesWithoutIdentity;
+
+const searchWithoutName = {
+  // @ts-expect-error Search controls cannot remove the required name.
+  search: { name: 'never' },
+} satisfies RenderingControlsFor<'itemIdentification'>;
+void searchWithoutName;

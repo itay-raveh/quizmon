@@ -2,6 +2,8 @@ import type { DifficultyRules } from './domain/quiz/difficulty.ts';
 import {
   type EntityRendering,
   type QuestionRendering,
+  type SpriteVisibility,
+  type Visibility,
 } from './domain/quiz/question-rendering.ts';
 import type { FamilyRules } from './domain/quiz/questions/family-rules.ts';
 
@@ -9,6 +11,9 @@ type Renderable<Fields extends keyof EntityRendering> = Partial<
   Pick<EntityRendering, Fields>
 >;
 type HiddenUntilAnswer = 'after-answer' | 'never';
+type VisibleItem =
+  | { name?: Exclude<Visibility, 'never'>; sprite?: SpriteVisibility }
+  | { name: 'never'; sprite: Exclude<SpriteVisibility, 'never'> };
 
 type RenderingControls<
   Subject extends keyof EntityRendering = never,
@@ -28,12 +33,16 @@ type RenderingControls<
 
 /** Only fields with a real rendering consumer are configurable per family. */
 type FamilyRenderingControls = {
-  itemIdentification: RenderingControls<'sprite', 'sprite'>;
-  itemUses: RenderingControls<'sprite'>;
+  itemIdentification: {
+    subject?: VisibleItem;
+    choices?: VisibleItem;
+    search?: Renderable<'sprite'>;
+  };
+  itemUses: { subject?: VisibleItem };
   abilityEffects: RenderingControls<'sprite'>;
-  heldItemEffects: RenderingControls<'sprite' | 'name'>;
-  berryFlavors: RenderingControls<'sprite'>;
-  naturalGift: RenderingControls<'sprite'>;
+  heldItemEffects: { subject?: VisibleItem };
+  berryFlavors: { subject?: VisibleItem };
+  naturalGift: { subject?: VisibleItem };
   pokemonFromHistoricalSprite: {
     choices?: Renderable<'sprite' | 'number'>;
     related?: { name?: 'never'; number?: 'never' };
@@ -135,14 +144,14 @@ export type QuestionRuleRow<
 /** Base controls copied into level entries before their specific overrides. */
 const controls = {
   itemIdentification: {
-    view: { answer: { kind: 'text' } },
+    view: { answer: { kind: 'item' } },
     distinctItemCategories: false,
     sameItemPocket: false,
     sameItemCategory: false,
     machineDiscChance: 0,
   },
   itemUses: {
-    view: { answer: { kind: 'text' }, subject: { inlineItem: 'sprite' } },
+    view: { answer: { kind: 'text' } },
     minimumEffectSimilarity: 0,
     maximumEffectSimilarity: 0.35,
     preferSimilarEffects: true,
@@ -207,10 +216,7 @@ const controls = {
     allowMissingSprites: false,
   },
   heldItemEffects: {
-    view: {
-      answer: { kind: 'text', layout: 'statements' },
-      subject: { inlineItem: 'named' },
-    },
+    view: { answer: { kind: 'text', layout: 'statements' } },
     minimumEffectSimilarity: 0,
     maximumEffectSimilarity: 0.35,
     preferSimilarEffects: true,
@@ -249,11 +255,11 @@ const controls = {
     },
   },
   berryFlavors: {
-    view: { answer: { kind: 'text' }, subject: { inlineItem: 'sprite' } },
+    view: { answer: { kind: 'text' } },
     completeFlavors: false,
   },
   naturalGift: {
-    view: { answer: { kind: 'type' }, subject: { inlineItem: 'sprite' } },
+    view: { answer: { kind: 'type' } },
   },
   pokemonFromHistoricalSprite: {
     view: {
@@ -545,7 +551,11 @@ export const baseQuestionRendering: QuestionRendering = {
 
 /** Family rendering overrides, checked against each family's usable fields. */
 const renderings = {
-  itemIdentification: {},
+  itemIdentification: {
+    subject: { name: 'never', sprite: 'always' },
+    choices: { sprite: 'never' },
+    search: { sprite: 'never' },
+  },
   itemUses: {},
   weightComparison: {},
   heightComparison: {},

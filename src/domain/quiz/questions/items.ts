@@ -164,6 +164,7 @@ export const buildItemIdentification: QuestionBuilder<
           searchOptions: uniqueNames.map((item) => ({
             name: item.name,
             label: item.label,
+            sprite: item.sprite,
           })),
           optionLabels: { [target.name]: target.label },
           explanation: `${target.label}. Bag pocket: ${formatPokemonName(target.pocket)}. Category: ${formatPokemonName(target.category)}.`,
@@ -212,6 +213,9 @@ export const buildItemIdentification: QuestionBuilder<
         media: { kind: 'pixel-sprite', src: target.sprite! },
         optionLabels: Object.fromEntries(
           options.map((item) => [item.name, item.label]),
+        ),
+        optionImages: Object.fromEntries(
+          options.map((item) => [item.name, item.sprite!]),
         ),
         explanation: `${target.label}. Bag pocket: ${formatPokemonName(target.pocket)}. Category: ${formatPokemonName(target.category)}.`,
       },

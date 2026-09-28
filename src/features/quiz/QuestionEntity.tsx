@@ -57,3 +57,50 @@ export const QuestionIdentity = ({
     concealNumber={!isVisible(policy.number, state)}
   />
 );
+
+/** Render an item name and sprite from the same visibility policy in every role. */
+export const ItemRenderable = ({
+  name,
+  src,
+  policy,
+  state,
+  className,
+  spriteClassName,
+  spriteSlotClassName,
+  nameClassName,
+}: {
+  /** Player-facing item name or TM label. */
+  name: string;
+  /** Saved sprite URL, when this item has art. */
+  src?: string | null;
+  /** Subject, choice, or search visibility rules. */
+  policy: Pick<EntityRendering, 'name' | 'sprite'>;
+  state: RevealState;
+  className?: string;
+  spriteClassName?: string;
+  spriteSlotClassName?: string;
+  nameClassName?: string;
+}) => (
+  <span className={className}>
+    {src && policy.sprite !== 'never' ? (
+      <span className={spriteSlotClassName} aria-hidden="true">
+        <QuestionSprite
+          src={src}
+          rule={policy.sprite}
+          state={state}
+          className={spriteClassName}
+        />
+      </span>
+    ) : null}
+    {policy.name !== 'never' ? (
+      <strong
+        className={nameClassName}
+        style={{
+          visibility: isVisible(policy.name, state) ? undefined : 'hidden',
+        }}
+      >
+        {name}
+      </strong>
+    ) : null}
+  </span>
+);

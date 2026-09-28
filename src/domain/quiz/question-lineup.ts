@@ -91,6 +91,14 @@ const prompt = z.discriminatedUnion('kind', [
     supportingText: text.optional(),
     dexNumber: nonnegativeInteger,
   }),
+  z.object({
+    kind: z.literal('item'),
+    before: text,
+    after: text,
+    name: text,
+    sprite: text.optional(),
+    supportingText: text.optional(),
+  }),
 ]);
 const question = z
   .object({

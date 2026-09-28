@@ -8,12 +8,15 @@ import type {
   QuestionPrompt as QuestionPromptData,
 } from '@/domain/quiz/types';
 import {
-  isVisible,
   type EntityRendering,
   type QuestionRendering,
   type RevealState,
 } from '@/domain/quiz/question-rendering';
-import { QuestionIdentity, QuestionSprite } from './QuestionEntity';
+import {
+  ItemRenderable,
+  QuestionIdentity,
+  QuestionSprite,
+} from './QuestionEntity';
 import { QuestionClues } from './QuestionClues';
 import { QuestionArtwork } from './QuestionArtwork';
 import { QuestionInstruction } from './QuestionInstruction';
@@ -41,19 +44,14 @@ const QuestionPrompt = ({
       {prompt.kind === 'text' ? (
         <>
           {itemName ? (
-            <span className="question__item-subject">
-              {itemSprite ? (
-                <QuestionSprite
-                  rule={policy.sprite}
-                  state={state}
-                  src={itemSprite}
-                  className="question__item-portrait"
-                />
-              ) : null}
-              {isVisible(policy.name, state) ? (
-                <strong>{itemName}</strong>
-              ) : null}
-            </span>
+            <ItemRenderable
+              className="question__item-subject"
+              name={itemName}
+              src={itemSprite}
+              policy={policy}
+              state={state}
+              spriteClassName="question__item-portrait"
+            />
           ) : null}
           {itemName ? prompt.text.replace(itemName, 'it') : prompt.text}
           {prompt.description ? (
@@ -75,7 +73,7 @@ const QuestionPrompt = ({
             </span>
           ) : null}
         </>
-      ) : (
+      ) : prompt.kind === 'pokemon' ? (
         <>
           {prompt.before}
           <QuestionIdentity
@@ -86,6 +84,24 @@ const QuestionPrompt = ({
             name={prompt.name}
             dexNumber={prompt.dexNumber}
             numberClassName="question__subject-number"
+          />
+          {prompt.after}
+          {prompt.supportingText ? (
+            <span className="question__supporting-text">
+              {prompt.supportingText}
+            </span>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {prompt.before}
+          <ItemRenderable
+            className="question__item-subject"
+            name={prompt.name}
+            src={prompt.sprite}
+            policy={policy}
+            state={state}
+            spriteClassName="question__item-portrait"
           />
           {prompt.after}
           {prompt.supportingText ? (
@@ -161,7 +177,7 @@ export const QuestionPresentation = ({
             </ol>
           </div>
         ) : null}
-        {!inlineItem ? (
+        {!inlineItem && question.prompt.kind !== 'item' ? (
           <div className="question__stimulus">
             {isChampion && !isLeague && cluesShown > 1 ? (
               <QuestionClues cluesShown={cluesShown} question={question} />

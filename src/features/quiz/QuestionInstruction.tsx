@@ -13,7 +13,9 @@ export const QuestionInstruction = ({
     question.questionType === 'evYields'
       ? question.prompt.kind === 'pokemon'
         ? `${question.prompt.before}this Pokémon${question.prompt.after}`
-        : question.prompt.text
+        : question.prompt.kind === 'text'
+          ? question.prompt.text
+          : `${question.prompt.before}${question.prompt.name}${question.prompt.after}`
       : question.questionType === 'hiddenAbilities'
         ? 'What is this Pokémon’s Hidden Ability?'
         : kind === 'evolution-endpoints'
@@ -72,6 +74,8 @@ export const QuestionInstruction = ({
         ) : null}
       </>
     );
+  if (prompt.kind === 'item')
+    return `${prompt.before}${prompt.name}${prompt.after}`;
   return (
     <>
       {prompt.before}

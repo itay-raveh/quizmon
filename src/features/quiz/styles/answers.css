@@ -510,6 +510,10 @@
   grid-template-columns: auto 3rem minmax(0, 1fr);
 }
 
+.answer__item-renderable {
+  display: contents;
+}
+
 .answer__item-slot {
   display: grid;
   width: 3rem;

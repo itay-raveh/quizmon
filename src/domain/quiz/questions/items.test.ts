@@ -75,6 +75,7 @@ test('item identification searches item names from level four', () => {
   expect(question?.searchOptions).toContainEqual({
     name: 'potion',
     label: 'potion',
+    sprite: '/sprites/items/potion.png',
   });
   expect(question?.searchOptions).toHaveLength(1);
   expect(isQuestionData(question)).toBe(true);
