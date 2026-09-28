@@ -40,7 +40,7 @@ test('new page routes load the app while retired Social routes do not', async ()
   );
   expect(env.ASSETS.fetch).toHaveBeenNthCalledWith(
     1,
-    expect.objectContaining({ url: 'https://quizmon.test/index.html' }),
+    expect.objectContaining({ url: 'https://quizmon.test/' }),
   );
   await worker.fetch(new Request('https://quizmon.test/social/friends'), env);
   expect(env.ASSETS.fetch).toHaveBeenNthCalledWith(

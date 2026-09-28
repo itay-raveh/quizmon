@@ -81,9 +81,7 @@ export default {
       url.pathname !== '/' &&
       isAppPath(url.pathname)
     )
-      return env.ASSETS.fetch(
-        new Request(new URL('/index.html', url), request),
-      );
+      return env.ASSETS.fetch(new Request(new URL('/', url), request));
 
     return env.ASSETS.fetch(request);
   },
