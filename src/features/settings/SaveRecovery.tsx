@@ -90,7 +90,7 @@ const SaveRecoveryDialog = ({
     let accountBackup = false;
     try {
       validateBackupSize(file.size);
-      const backup = await parseBackup(await file.text());
+      const backup = parseBackup(await file.text());
       accountBackup = Boolean(backup.accountId);
       if (backup.accountId && canRecoverAccountSave())
         verifyAccountBackupRecovery(backup);

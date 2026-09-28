@@ -59,7 +59,7 @@ export const BackupSettings = ({
     setBusy(true);
     try {
       validateBackupSize(file.size);
-      const backup = await parseBackup(await file.text());
+      const backup = parseBackup(await file.text());
       if (!accountRecovery && backup.accountId)
         throw new Error(
           'This is an account backup. Sign in to that account and use Device recovery.',
