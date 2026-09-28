@@ -64,16 +64,6 @@ registerRoute(
   new NavigationRoute(async (options) => {
     if (['/maintenance', '/maintenance.html'].includes(options.url.pathname))
       return fetch(options.url.href, { cache: 'no-store' });
-    try {
-      const response = await fetch(options.url.href, { cache: 'no-store' });
-      if (
-        response.status === 503 &&
-        response.headers.get('X-Quizmon-Maintenance') === '1'
-      )
-        return response;
-    } catch {
-      // Offline navigation still uses the precached page below.
-    }
     const contentPage = staticPages.find(
       ({ path, noindex }) =>
         !noindex &&
@@ -93,7 +83,6 @@ registerRoute(
   }),
 );
 
-// Navigation must win over the precache route to show maintenance responses.
 precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(

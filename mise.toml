@@ -52,6 +52,10 @@ run = [
   "npm run check:chart-wiring < .wrangler/chart-rendered.yaml",
 ]
 
+[tasks.maintenance]
+description = "Toggle production maintenance using the adjacent infrastructure checkout"
+run = 'mise -C "${QUIZMON_INFRA_DIR:-../infra}" run quizmon:maintenance -- "$@"'
+
 [tasks."badges:export"]
 description = "Export badge and trophy PNGs from Aseprite masters"
 usage = '''
