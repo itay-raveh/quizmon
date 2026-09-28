@@ -62,7 +62,7 @@ self.addEventListener('activate', (event) => {
 
 registerRoute(
   new NavigationRoute(async (options) => {
-    if (options.url.pathname === '/maintenance.html')
+    if (['/maintenance', '/maintenance.html'].includes(options.url.pathname))
       return fetch(options.url.href, { cache: 'no-store' });
     try {
       const response = await fetch(options.url.href, { cache: 'no-store' });
