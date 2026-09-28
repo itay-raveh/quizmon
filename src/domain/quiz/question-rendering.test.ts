@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { questionRenderingSchema } from './question-rendering';
-import type { RenderingControlsFor } from '../../question-rules';
+import type {
+  QuestionRuleEntry,
+  RenderingControlsFor,
+} from '../../question-rules';
+import type { FamilyRules } from './questions/family-rules';
 import {
   baseQuestionRendering,
   resolveQuestionRendering,
@@ -37,8 +41,8 @@ describe('question rendering rules', () => {
 
   it('applies family defaults and level overrides', () => {
     const silhouette = resolveQuestionRendering('silhouetteForPokemon', 4);
-    expect(silhouette.subject.sprite).toBe('never');
-    expect(silhouette.choices.sprite).toBe('silhouette');
+    expect(silhouette.subject.sprite).toBeNull();
+    expect(silhouette.choices.sprite?.silhouette).toBe(true);
     expect(silhouette.choices.name).toBe('after-answer');
 
     const counterPick = resolveQuestionRendering('superEffectiveAttacker', 3);
@@ -61,7 +65,7 @@ void unsupportedCounterPick;
 
 const itemChoicesWithoutIdentity = {
   // @ts-expect-error Item choices need a name or sprite.
-  choices: { name: 'never', sprite: 'never' },
+  choices: { name: 'never', sprite: null },
 } satisfies RenderingControlsFor<'itemIdentification'>;
 void itemChoicesWithoutIdentity;
 
@@ -70,3 +74,54 @@ const searchWithoutName = {
   search: { name: 'never' },
 } satisfies RenderingControlsFor<'itemIdentification'>;
 void searchWithoutName;
+
+const pokemonChoicesWithoutIdentity = {
+  choices: {
+    // @ts-expect-error Pokémon choices need at least one visible field.
+    sprite: null,
+    name: 'never',
+    number: 'never',
+    types: 'never',
+  },
+} satisfies RenderingControlsFor<'spriteForPokemon'>;
+void pokemonChoicesWithoutIdentity;
+
+const pokemonSearchWithoutName = {
+  // @ts-expect-error Search always needs a name for query and selection.
+  search: { name: 'never' },
+} satisfies RenderingControlsFor<'pokemonFromSilhouette'>;
+void pokemonSearchWithoutName;
+
+const itemWithPokemonSource = {
+  subject: {
+    // @ts-expect-error Item art has no alternate Pokémon sprite source.
+    sprite: { reveal: 'always', silhouette: false, source: 'all' },
+  },
+} satisfies RenderingControlsFor<'itemIdentification'>;
+void itemWithPokemonSource;
+
+const cropWithHistoricalSource = {
+  subject: {
+    // @ts-expect-error The crop focus only describes the current front sprite.
+    sprite: { reveal: 'always', silhouette: false, source: 'all' },
+  },
+} satisfies RenderingControlsFor<'pokemonFromPixelCrop'>;
+void cropWithHistoricalSource;
+
+const shinyChoicesWithoutIdentity = {
+  // @ts-expect-error Shiny choices need a visible field before answering.
+  choices: { sprite: null, name: 'never', number: 'never', types: 'never' },
+} satisfies RenderingControlsFor<'shinyPokemonIdentification'>;
+void shinyChoicesWithoutIdentity;
+
+type FieldNotesChoiceRendering = NonNullable<
+  Extract<
+    QuestionRuleEntry<FamilyRules['pokedexEntryMatch'], 'pokedexEntryMatch'>,
+    { response: { kind: 'choices' } }
+  >['rendering']
+>;
+const fieldNotesChoiceSubject = {
+  // @ts-expect-error The hidden subject portrait is only rendered in search mode.
+  subject: { sprite: null },
+} satisfies FieldNotesChoiceRendering;
+void fieldNotesChoiceSubject;

@@ -1,8 +1,4 @@
-import {
-  ItemRenderable,
-  QuestionIdentity,
-  QuestionSprite,
-} from './QuestionEntity';
+import { ItemRenderable, PokemonRenderable } from './QuestionEntity';
 import {
   isVisible,
   spriteState,
@@ -41,9 +37,10 @@ export const ChampionSearch = ({
   const [query, setQuery] = useState('');
   const searchOptions = useMemo(
     () =>
-      options.map(({ name, label, dexNumber, sprite }) => ({
+      options.map(({ name, label, dexNumber, sprite, types }) => ({
         name,
         label,
+        types,
         dexNumber: isVisible(policy.number, { answered, cluesShown })
           ? dexNumber
           : undefined,
@@ -71,24 +68,17 @@ export const ChampionSearch = ({
         renderPokemon={
           answerKind === 'pokemon'
             ? (pokemon) => (
-                <>
-                  {pokemon.sprite ? (
-                    <span className="pokemon-picker__sprite" aria-hidden="true">
-                      <QuestionSprite
-                        src={pokemon.sprite}
-                        rule={policy.sprite}
-                        state={{ answered, cluesShown }}
-                      />
-                    </span>
-                  ) : null}
-                  <QuestionIdentity
-                    name={pokemon.name}
-                    dexNumber={pokemon.dexNumber}
-                    policy={policy}
-                    state={{ answered, cluesShown }}
-                    hideNumberFromAccessibility
-                  />
-                </>
+                <PokemonRenderable
+                  name={pokemon.name}
+                  dexNumber={pokemon.dexNumber}
+                  src={pokemon.sprite}
+                  types={pokemon.types}
+                  policy={policy}
+                  state={{ answered, cluesShown }}
+                  spriteSlotClassName="pokemon-picker__sprite"
+                  typesClassName="pokemon-picker__types"
+                  hideNumberFromAccessibility
+                />
               )
             : answerKind === 'item' || answerKind === 'tm'
               ? (item) => (

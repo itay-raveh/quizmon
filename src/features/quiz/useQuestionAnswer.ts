@@ -33,7 +33,7 @@ export interface UseQuestionAnswerOptions {
 const preloadQuestionImages = (question: QuestionData) => {
   const rendering = getQuestionRendering(question);
   const sources = [
-    ...(question.media.kind === 'none' || rendering.subject.sprite === 'never'
+    ...(question.media.kind === 'none' || rendering.subject.sprite === null
       ? []
       : [question.media.src]),
     ...(question.visual?.kind === 'evolutionChain' ||
@@ -44,16 +44,18 @@ const preloadQuestionImages = (question: QuestionData) => {
             name === question.subject.name
               ? 'subject'
               : 'related';
-          return rendering[role].sprite === 'never' ? [] : [src];
+          return rendering[role].sprite === null || !src ? [] : [src];
         })
       : []),
     ...(question.visual?.kind === 'evolutionGainedType' &&
-    rendering.related.sprite !== 'never'
-      ? [question.visual.evolution.src]
+    rendering.related.sprite !== null
+      ? [question.visual.evolution.src].filter((src): src is string => !!src)
       : []),
-    ...(rendering.choices.sprite === 'never'
+    ...(rendering.choices.sprite === null
       ? []
-      : Object.values(question.optionVisuals ?? {}).map(({ src }) => src)),
+      : Object.values(question.optionVisuals ?? {})
+          .map(({ src }) => src)
+          .filter((src): src is string => !!src)),
   ];
   for (const src of new Set(sources)) {
     const image = new Image();

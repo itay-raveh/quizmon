@@ -54,7 +54,7 @@ it('omits duplicate search feedback only when the artwork reveals the answer', (
       ...scan,
       rendering: {
         ...baseQuestionRendering,
-        related: { ...baseQuestionRendering.related, name: 'never' },
+        subject: { ...baseQuestionRendering.subject, name: 'never' },
       },
     }),
   ).toBe(false);
@@ -62,7 +62,10 @@ it('omits duplicate search feedback only when the artwork reveals the answer', (
 
 it('keeps the answer view in saved rounds and rejects retired question types', () => {
   const view = {
-    answer: { kind: 'pokemon' as const, revealTypes: 'after-answer' as const },
+    answer: {
+      kind: 'pokemon' as const,
+      layout: 'superEffectiveAttacker' as const,
+    },
   };
   const saved = savedQuestionSchema.parse({ ...question, view });
   expect(saved.view).toEqual(view);

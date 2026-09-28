@@ -24,8 +24,6 @@ export type QuestionCategory = (typeof questionCategories)[number];
 type QuestionMedia =
   | {
       kind: 'sprite';
-      revealAt?: number;
-      silhouette?: boolean;
       src: string;
     }
   | {
@@ -40,14 +38,14 @@ type QuestionMedia =
 
 export interface PokemonOptionVisual {
   dexNumber: number;
-  silhouette?: boolean;
-  src: string;
+  src: string | null;
   types: string[];
 }
 
 export interface PokemonSearchOption {
   sprite?: string | null;
   dexNumber?: number;
+  types?: string[];
   name: string;
   label?: string;
 }
@@ -166,7 +164,6 @@ export interface QuestionData {
   /** Resolved answer and subject presentation saved with this question. */
   view?: QuestionView;
   namesOnly?: boolean;
-  showTypes?: boolean;
   initialClues?: number;
   assistanceAllowed?: boolean;
   suppliedClues?: string[];
@@ -177,7 +174,6 @@ export interface QuestionData {
   clues?: (
     string | { kind: 'generation'; generation: Generation; types: string[] }
   )[];
-  concealOptionLabels?: boolean;
   subject: QuestionSubject;
   id: string;
   media: QuestionMedia;

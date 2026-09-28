@@ -1,4 +1,5 @@
 import type { PokemonKnowledge, StatName } from '../../pokemon/types.ts';
+import { pick } from '../../../lib/random.ts';
 import type {
   PokemonOptionVisual,
   QuestionCategory,
@@ -18,7 +19,6 @@ export const getOptionVisuals = (
       const pokemon = context.catalog.pokemon[option];
       if (!pokemon) return [];
       const src = getSource(pokemon, option);
-      if (!src) return [];
       return [
         [
           option,
@@ -31,6 +31,23 @@ export const getOptionVisuals = (
       ];
     }),
   );
+
+/** Sample a sprite from the requested source, falling back to the current front. */
+export const choosePokemonSprite = (
+  pokemon: PokemonKnowledge,
+  source: 'front' | 'all',
+  random: () => number,
+): string | null => {
+  if (source === 'front') return pokemon.sprite;
+  const sprites = [
+    pokemon.sprite,
+    ...pokemon.identitySprites.generations.flatMap(({ front, back }) => [
+      ...front,
+      ...back,
+    ]),
+  ].filter((src): src is string => Boolean(src));
+  return pick(sprites, random) ?? pokemon.sprite;
+};
 const getOptionDexNumbers = (
   context: QuestionContext,
   options: readonly string[],

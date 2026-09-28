@@ -68,7 +68,9 @@ export const buildPokedexScanQuestion: QuestionBuilder<
   const target = pickTarget(context, ({ sprite }) => Boolean(sprite));
   if (!target) return undefined;
   const currentChance = context.variant.currentSpriteChance;
+  const source = context.variant.rendering.subject.sprite?.source ?? 'front';
   const sprite =
+    source === 'front' ||
     currentChance === 1 ||
     (currentChance > 0 && context.random() < currentChance)
       ? target.pokemon.sprite

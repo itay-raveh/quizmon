@@ -8,6 +8,7 @@ import type {
   QuestionPrompt as QuestionPromptData,
 } from '@/domain/quiz/types';
 import {
+  isVisible,
   type EntityRendering,
   type QuestionRendering,
   type RevealState,
@@ -191,20 +192,13 @@ export const QuestionPresentation = ({
         ) : null}
       </div>
 
-      {(answered || question.showTypes) &&
-      !(
-        (question.visual?.kind === 'typeMatchup' ||
-          question.visual?.kind === 'superEffectiveAttacker') &&
-        question.media.kind === 'pixel-sprite'
-      ) &&
+      {(question.visual?.kind === 'pokemonTypes' ||
+        question.visual?.kind === 'dualTypeMatch') &&
+      isVisible(rendering.subject.types ?? 'never', revealState) &&
       (question.subject.types ?? []).length > 0 &&
-      view.subject?.types === 'after-answer' ? (
+      question.media.kind === 'pixel-sprite' ? (
         <TypeBadges
-          className={
-            question.visual && visualInstruction
-              ? 'visually-hidden'
-              : 'question__types'
-          }
+          className="visually-hidden"
           label={formatPokemonTypeAnnouncement(
             question.subject.types ?? [],
             question.subject.name,

@@ -16,7 +16,7 @@ export { baseQuestionRendering } from '../../question-rules.ts';
 
 const withRendering = <
   Type extends keyof FamilyRules,
-  Rules extends { rendering: QuestionRendering },
+  Rules extends { rendering: QuestionRendering; response: { kind: string } },
 >(
   row: QuestionRuleRow<Rules, Type>,
   entry: QuestionRuleEntry<Rules, Type>,
@@ -27,7 +27,7 @@ const withRendering = <
       mergeRendering(baseQuestionRendering, row.rendering),
       entry.rendering,
     ),
-  }) as Rules;
+  }) as unknown as Rules;
 
 /**
  * Resolve a family's separate no-difficulty entry, including rendering.
@@ -72,49 +72,9 @@ export const resolveQuestionRendering = (
   getUnleveledQuestionRule(type)?.rendering ??
   baseQuestionRendering;
 
-/**
- * Use a question's saved rendering snapshot when present. Questions without
- * one derive a policy from current rules and their own concealment metadata.
- */
+/** Use a question's saved rendering or resolve its current family policy. */
 export const getQuestionRendering = (
   question: QuestionData,
-): QuestionRendering => {
-  if (question.rendering) return question.rendering;
-  let fallback = resolveQuestionRendering(
-    question.questionType,
-    question.variantLevel,
-  );
-  if (
-    question.media.kind === 'sprite' &&
-    (question.media.silhouette !== undefined ||
-      question.media.revealAt !== undefined)
-  ) {
-    const { revealAt, silhouette } = question.media;
-    fallback = mergeRendering(fallback, {
-      subject: {
-        sprite:
-          revealAt === undefined
-            ? silhouette
-              ? 'silhouette'
-              : 'always'
-            : { afterClues: revealAt, silhouette },
-      },
-    });
-  }
-  if (
-    question.concealOptionLabels &&
-    question.questionType !== 'legendaryMythicalSelection'
-  )
-    return mergeRendering(fallback, {
-      choices: {
-        name: 'after-answer',
-        number: 'after-answer',
-        ...(Object.values(question.optionVisuals ?? {}).some(
-          (visual) => visual.silhouette,
-        )
-          ? { sprite: 'silhouette' }
-          : {}),
-      },
-    });
-  return fallback;
-};
+): QuestionRendering =>
+  question.rendering ??
+  resolveQuestionRendering(question.questionType, question.variantLevel);

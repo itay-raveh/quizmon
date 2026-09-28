@@ -1,4 +1,7 @@
-import { baseQuestionRendering } from '@/domain/quiz/question-variants';
+import {
+  baseQuestionRendering,
+  resolveQuestionRendering,
+} from '@/domain/quiz/question-variants';
 import type { QuestionData } from '@/domain/quiz/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
@@ -87,6 +90,8 @@ test('reveals a Field notes answer in its choice without a duplicate portrait', 
         question={{
           ...question,
           answer: { interaction: 'search', correctOptions: ['grotle'] },
+          rendering: resolveQuestionRendering('pokedexEntryMatch', 4),
+          searchOptions: [{ name: 'grotle', sprite: '/grotle.png' }],
         }}
         answered
         cluesShown={0}
@@ -115,7 +120,10 @@ test('shows TM disc art and a visible type label for each choice', () => {
     questionType: 'itemIdentification',
     rendering: {
       ...baseQuestionRendering,
-      choices: { ...baseQuestionRendering.choices, sprite: 'always' },
+      choices: {
+        ...baseQuestionRendering.choices,
+        sprite: { reveal: 'always', silhouette: false },
+      },
     },
     repetition: {
       identity: 'flamethrower',
@@ -151,6 +159,22 @@ test('shows TM disc art and a visible type label for each choice', () => {
   );
   expect(spriteOnly).toContain('/sprites/items/tm-fire.png');
   expect(spriteOnly).not.toContain('>Fire</strong>');
+  expect(
+    renderToStaticMarkup(
+      <QuestionAnswers
+        question={{
+          ...question,
+          rendering: {
+            ...question.rendering!,
+            choices: { ...question.rendering!.choices, name: 'never' },
+          },
+        }}
+        answered
+        onSelect={() => {}}
+        selectedOptions={[]}
+      />,
+    ),
+  ).toContain('aria-label="Fire');
 
   const nameOnly = renderToStaticMarkup(
     <QuestionAnswers
@@ -158,7 +182,7 @@ test('shows TM disc art and a visible type label for each choice', () => {
         ...question,
         rendering: {
           ...question.rendering!,
-          choices: { ...question.rendering!.choices, sprite: 'never' },
+          choices: { ...question.rendering!.choices, sprite: null },
         },
       }}
       answered={false}
@@ -188,24 +212,28 @@ test('item subject visibility controls the same artwork renderer', () => {
     },
     subject: { kind: 'item', name: 'lava-cookie', generation: 'III' },
   };
-  const markup = (name: 'always' | 'never', sprite: 'always' | 'never') =>
+  const markup = (name: 'always' | 'never', sprite: boolean) =>
     renderToStaticMarkup(
       <QuestionArtwork
         question={{
           ...question,
           rendering: {
             ...baseQuestionRendering,
-            subject: { ...baseQuestionRendering.subject, name, sprite },
+            subject: {
+              ...baseQuestionRendering.subject,
+              name,
+              sprite: sprite ? { reveal: 'always', silhouette: false } : null,
+            },
           },
         }}
         answered={false}
         cluesShown={0}
       />,
     );
-  expect(markup('never', 'always')).toContain('/lava-cookie.png');
-  expect(markup('never', 'always')).not.toContain('>Lava Cookie</strong>');
-  expect(markup('always', 'never')).not.toContain('/lava-cookie.png');
-  expect(markup('always', 'never')).toContain('>Lava Cookie</strong>');
+  expect(markup('never', true)).toContain('/lava-cookie.png');
+  expect(markup('never', true)).not.toContain('>Lava Cookie</strong>');
+  expect(markup('always', false)).not.toContain('/lava-cookie.png');
+  expect(markup('always', false)).toContain('>Lava Cookie</strong>');
 });
 
 test('choice name visibility follows the saved rendering policy', () => {
@@ -246,7 +274,7 @@ test('choice name visibility follows the saved rendering policy', () => {
       />,
     );
 
-  expect(markup(false)).toContain('aria-label="Sprite 1"');
+  expect(markup(false)).toContain('aria-label="No. 0001"');
   expect(markup(true)).toContain('aria-label="Bulbasaur"');
   expect(
     markup(true, {
@@ -256,5 +284,21 @@ test('choice name visibility follows the saved rendering policy', () => {
         choices: { ...rendering.choices, name: 'never' },
       },
     }),
-  ).toContain('aria-label="Sprite 1"');
+  ).toContain('aria-label="Bulbasaur"');
+
+  const typeOnly = markup(false, {
+    ...question,
+    rendering: {
+      ...rendering,
+      choices: {
+        sprite: null,
+        name: 'never',
+        number: 'never',
+        types: 'always',
+      },
+    },
+  });
+  expect(typeOnly).not.toContain('/bulbasaur.png');
+  expect(typeOnly).toContain('aria-label="Type: Grass."');
+  expect(typeOnly).toContain('type-badge');
 });

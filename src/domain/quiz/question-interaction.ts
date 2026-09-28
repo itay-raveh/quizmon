@@ -1,6 +1,5 @@
 import type { QuestionData } from './types';
 import { getQuestionRendering } from './question-variants';
-import { getQuestionView } from './question-presentation';
 
 export const usesSearchAnswer = (question: QuestionData): boolean =>
   question.answer.interaction === 'search';
@@ -22,18 +21,18 @@ export const showsCorrectSearchAnswerInArtwork = (
     question.answer.correctOptions[0] !== question.subject.name
   )
     return false;
-  const view = getQuestionView(question);
   const rendering = getQuestionRendering(question);
   if (question.visual?.kind === 'evolutionChain')
     return rendering.subject.name !== 'never';
   if (question.media.kind === 'pokemonFromPixelCrop')
-    return rendering.related.name !== 'never';
+    return rendering.subject.name !== 'never';
   if (
     question.media.kind !== 'sprite' &&
-    view.subject?.portrait !== 'after-answer'
+    !(
+      question.media.kind === 'none' &&
+      rendering.subject.sprite?.reveal === 'after-answer'
+    )
   )
     return false;
-  return view.subject?.identity === 'after-answer'
-    ? rendering.related.name !== 'never'
-    : rendering.subject.name !== 'never';
+  return rendering.subject.name !== 'never';
 };

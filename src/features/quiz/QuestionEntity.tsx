@@ -1,12 +1,13 @@
 import { PokemonIdentity } from '@/components/PokemonIdentity';
+import { TypeBadges } from '@/components/TypeBadge';
 import {
   isVisible,
   spriteState,
   type EntityRendering,
   type RevealState,
-  type SpriteVisibility,
+  type SpriteRendering,
 } from '@/domain/quiz/question-rendering';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 export const QuestionSprite = ({
   rule,
@@ -17,10 +18,10 @@ export const QuestionSprite = ({
   'alt' | 'className' | 'fetchPriority' | 'style'
 > & {
   src: string;
-  rule: SpriteVisibility;
+  rule: SpriteRendering;
   state: RevealState;
 }) => {
-  if (rule === 'never') return null;
+  if (rule === null) return null;
   const { visible, silhouette } = spriteState(rule, state);
   const className =
     `${props.className ?? ''} ${silhouette ? 'answer__sprite--silhouette' : ''}`.trim();
@@ -41,6 +42,7 @@ export const QuestionSprite = ({
 export const QuestionIdentity = ({
   policy,
   state,
+  revealChildren = false,
   ...props
 }: Omit<
   ComponentProps<typeof PokemonIdentity>,
@@ -48,15 +50,97 @@ export const QuestionIdentity = ({
 > & {
   policy: EntityRendering;
   state: RevealState;
+  revealChildren?: boolean;
 }) => (
   <PokemonIdentity
     {...props}
     dexNumber={policy.number === 'never' ? undefined : props.dexNumber}
-    revealed={isVisible(policy.name, state) || isVisible(policy.number, state)}
+    revealed={
+      isVisible(policy.name, state) ||
+      (props.dexNumber !== undefined && isVisible(policy.number, state)) ||
+      revealChildren
+    }
     concealName={!isVisible(policy.name, state)}
     concealNumber={!isVisible(policy.number, state)}
   />
 );
+
+/** Shared Pokémon fields for a prompt, choice, related entity, or search row. */
+export const PokemonRenderable = ({
+  name,
+  dexNumber,
+  src,
+  types,
+  policy,
+  state,
+  spriteSlotClassName,
+  spriteClassName,
+  identityClassName,
+  nameClassName,
+  numberClassName,
+  typesClassName,
+  spriteFallback,
+  reserveSpriteSlot = false,
+  hideNumberFromAccessibility = false,
+  children,
+}: {
+  name: string;
+  dexNumber?: number;
+  src?: string | null;
+  types?: readonly string[];
+  policy: EntityRendering;
+  state: RevealState;
+  spriteSlotClassName?: string;
+  spriteClassName?: string;
+  identityClassName?: string;
+  nameClassName?: string;
+  numberClassName?: string;
+  typesClassName?: string;
+  spriteFallback?: ReactNode;
+  reserveSpriteSlot?: boolean;
+  hideNumberFromAccessibility?: boolean;
+  children?: ReactNode;
+}) => {
+  const showTypes = Boolean(types?.length) && policy.types !== 'never';
+  const visibleTypes = showTypes && isVisible(policy.types, state);
+  return (
+    <>
+      {(src && policy.sprite !== null) ||
+      spriteFallback ||
+      reserveSpriteSlot ? (
+        <span className={spriteSlotClassName} aria-hidden="true">
+          {spriteFallback ??
+            (src ? (
+              <QuestionSprite
+                src={src}
+                rule={policy.sprite}
+                state={state}
+                className={spriteClassName}
+              />
+            ) : null)}
+        </span>
+      ) : null}
+      <QuestionIdentity
+        name={name}
+        dexNumber={dexNumber}
+        policy={policy}
+        state={state}
+        revealChildren={visibleTypes}
+        className={identityClassName}
+        nameClassName={nameClassName}
+        numberClassName={numberClassName}
+        hideNumberFromAccessibility={hideNumberFromAccessibility}
+      >
+        {showTypes ? (
+          <span style={{ visibility: visibleTypes ? undefined : 'hidden' }}>
+            <TypeBadges className={typesClassName} types={types ?? []} />
+          </span>
+        ) : null}
+        {children}
+      </QuestionIdentity>
+    </>
+  );
+};
 
 /** Render an item name and sprite from the same visibility policy in every role. */
 export const ItemRenderable = ({
@@ -82,7 +166,7 @@ export const ItemRenderable = ({
   nameClassName?: string;
 }) => (
   <span className={className}>
-    {src && policy.sprite !== 'never' ? (
+    {src && policy.sprite !== null ? (
       <span className={spriteSlotClassName} aria-hidden="true">
         <QuestionSprite
           src={src}

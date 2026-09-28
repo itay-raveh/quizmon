@@ -47,7 +47,11 @@ import {
   buildTypeQuestion,
   buildTypeTwinsQuestion,
 } from './types.ts';
-import { applyResponseStrategy } from './response-strategies.ts';
+import {
+  applyResponseStrategy,
+  hasVisibleChoices,
+  hasVisibleSubject,
+} from './response-strategies.ts';
 import type { FamilyRules } from './family-rules.ts';
 
 const questionBuilders = {
@@ -193,6 +197,7 @@ export const buildQuestionType = (
       rules,
       resolved?.level,
     );
+    if (!hasVisibleChoices(draft) || !hasVisibleSubject(draft)) continue;
 
     const question = {
       ...draft,

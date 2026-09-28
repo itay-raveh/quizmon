@@ -1,4 +1,3 @@
-import { TypeBadges } from '@/components/TypeBadge';
 import {
   isVisible,
   spriteState,
@@ -6,45 +5,13 @@ import {
   type RevealState,
 } from '@/domain/quiz/question-rendering';
 import type { ReactNode } from 'react';
-import { QuestionIdentity, QuestionSprite } from './QuestionEntity';
-
-export const QuestionSubjectTypes = ({
-  answered,
-  types,
-}: {
-  answered: boolean;
-  types: readonly string[];
-}) => (
-  <span style={{ visibility: answered ? undefined : 'hidden' }}>
-    <TypeBadges className="question-visual__subject-types" types={types} />
-  </span>
-);
-
-export const QuestionSubjectIdentity = ({
-  name,
-  dexNumber,
-  policy,
-  state,
-}: {
-  name: string;
-  dexNumber?: number;
-  policy: EntityRendering;
-  state: RevealState;
-}) => (
-  <QuestionIdentity
-    policy={policy}
-    state={state}
-    className="question-visual__subject-name"
-    name={name}
-    dexNumber={dexNumber}
-    numberClassName="question-visual__subject-number"
-  />
-);
+import { PokemonRenderable } from './QuestionEntity';
 
 export const QuestionSubject = ({
   name,
   dexNumber,
   src,
+  types,
   policy,
   state,
   framed = false,
@@ -54,7 +21,8 @@ export const QuestionSubject = ({
 }: {
   name: string;
   dexNumber?: number;
-  src?: string;
+  src?: string | null;
+  types?: readonly string[];
   policy: EntityRendering;
   state: RevealState;
   framed?: boolean;
@@ -64,34 +32,31 @@ export const QuestionSubject = ({
 }) => {
   const concealed =
     !isVisible(policy.name, state) &&
-    !spriteState(policy.sprite, state).visible;
+    !(dexNumber !== undefined && isVisible(policy.number, state)) &&
+    !(types?.length && isVisible(policy.types, state)) &&
+    !(src && spriteState(policy.sprite, state).visible);
   return (
     <div className="question-visual__subject">
-      {src || concealed || reservePortrait ? (
-        <span
-          className={
-            framed
-              ? 'question-visual__pokemon-slot'
-              : 'question-visual__portrait'
-          }
-        >
-          {concealed && concealment === 'question-mark' ? (
-            <span className="question-visual__question-mark">?</span>
-          ) : src ? (
-            <QuestionSprite
-              rule={policy.sprite}
-              state={state}
-              className="question-visual__pokemon"
-              src={src}
-            />
-          ) : null}
-        </span>
-      ) : null}
-      <QuestionSubjectIdentity
+      <PokemonRenderable
         policy={policy}
         state={state}
         name={name}
         dexNumber={dexNumber}
+        src={src}
+        types={types}
+        spriteSlotClassName={
+          framed ? 'question-visual__pokemon-slot' : 'question-visual__portrait'
+        }
+        spriteClassName="question-visual__pokemon"
+        spriteFallback={
+          concealed && concealment === 'question-mark' ? (
+            <span className="question-visual__question-mark">?</span>
+          ) : undefined
+        }
+        reserveSpriteSlot={reservePortrait}
+        identityClassName="question-visual__subject-name"
+        numberClassName="question-visual__subject-number"
+        typesClassName="question-visual__subject-types"
       />
       {children}
     </div>

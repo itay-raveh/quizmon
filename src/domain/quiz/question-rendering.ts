@@ -2,23 +2,26 @@ import { z } from 'zod';
 
 /** When a name, number, type, or sprite becomes visible to the player. */
 export type Visibility = 'always' | 'after-answer' | 'never';
-/**
- * Sprite visibility also supports a concealed silhouette and clue-count reveal.
- * `afterClues` is a nonnegative integer in saved questions; answering also reveals it.
- */
-export type SpriteVisibility =
-  Visibility | 'silhouette' | { afterClues: number; silhouette?: boolean };
+/** Sprite source and appearance; `null` means this role has no sprite. */
+export type SpriteRendering = {
+  /** When the sprite becomes visible; answering also reveals a clue-gated sprite. */
+  reveal: 'always' | 'after-answer' | { afterClues: number };
+  /** Keep the sprite concealed until the answer is recorded. */
+  silhouette: boolean;
+  /** Pokémon use the current front by default or sample all available sprites. */
+  source?: 'front' | 'all';
+} | null;
 
-/** Visibility fields for one entity role; omitted `types` defaults to `always`. */
+/** Visibility fields for one entity role. */
 export interface EntityRendering {
-  /** Sprite appearance, including silhouette and clue-count reveal. */
-  sprite: SpriteVisibility;
+  /** Sprite appearance and source; `null` hides the sprite. */
+  sprite: SpriteRendering;
   /** Whether the entity's name is visible. */
   name: Visibility;
   /** Whether its National Pokédex number is visible. */
   number: Visibility;
   /** Whether type badges are visible when that role renders types. */
-  types?: Visibility;
+  types: Visibility;
 }
 
 type RenderingRole = 'subject' | 'choices' | 'related' | 'search';
@@ -46,16 +49,13 @@ export const isVisible = (
 ): boolean => rule === 'always' || (rule === 'after-answer' && answered);
 
 /** Resolve whether a sprite is shown and whether it remains silhouetted. */
-export const spriteState = (rule: SpriteVisibility, state: RevealState) => ({
+export const spriteState = (rule: SpriteRendering, state: RevealState) => ({
   visible:
-    typeof rule === 'object'
-      ? state.answered || state.cluesShown >= rule.afterClues
-      : rule === 'silhouette' || isVisible(rule, state),
-  silhouette:
-    !state.answered &&
-    (typeof rule === 'object'
-      ? Boolean(rule.silhouette)
-      : rule === 'silhouette'),
+    rule !== null &&
+    (typeof rule.reveal === 'object'
+      ? state.answered || state.cluesShown >= rule.reveal.afterClues
+      : isVisible(rule.reveal, state)),
+  silhouette: rule !== null && !state.answered && rule.silhouette,
 });
 
 const mergeEntityRendering = <Policy extends EntityRendering>(
@@ -63,10 +63,11 @@ const mergeEntityRendering = <Policy extends EntityRendering>(
   overrides?: Partial<Policy>,
 ): Policy =>
   ({
-    sprite: overrides?.sprite ?? defaults.sprite,
+    sprite:
+      overrides?.sprite === undefined ? defaults.sprite : overrides.sprite,
     name: overrides?.name ?? defaults.name,
     number: overrides?.number ?? defaults.number,
-    types: overrides?.types ?? defaults.types ?? 'always',
+    types: overrides?.types ?? defaults.types,
   }) as Policy;
 
 /** Merge named fields only; omitted role fields retain their previous values. */
@@ -81,19 +82,22 @@ export const mergeRendering = (
 });
 
 const visibilitySchema = z.enum(['always', 'after-answer', 'never']);
-const spriteVisibilitySchema = z.union([
-  visibilitySchema,
-  z.literal('silhouette'),
-  z.object({
-    afterClues: z.int().min(0),
-    silhouette: z.boolean().optional(),
-  }),
-]);
+const spriteRenderingSchema = z
+  .object({
+    reveal: z.union([
+      z.literal('always'),
+      z.literal('after-answer'),
+      z.object({ afterClues: z.int().min(0) }),
+    ]),
+    silhouette: z.boolean(),
+    source: z.enum(['front', 'all']).optional(),
+  })
+  .nullable();
 const entityRenderingSchema = z.object({
-  sprite: spriteVisibilitySchema,
+  sprite: spriteRenderingSchema,
   name: visibilitySchema,
   number: visibilitySchema,
-  types: visibilitySchema.optional(),
+  types: visibilitySchema,
 });
 
 /** Validate a complete saved rendering snapshot, not a sparse override. */

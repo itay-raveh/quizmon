@@ -2,7 +2,7 @@ import type { DifficultyRules } from './domain/quiz/difficulty.ts';
 import {
   type EntityRendering,
   type QuestionRendering,
-  type SpriteVisibility,
+  type SpriteRendering,
   type Visibility,
 } from './domain/quiz/question-rendering.ts';
 import type { FamilyRules } from './domain/quiz/questions/family-rules.ts';
@@ -11,9 +11,60 @@ type Renderable<Fields extends keyof EntityRendering> = Partial<
   Pick<EntityRendering, Fields>
 >;
 type HiddenUntilAnswer = 'after-answer' | 'never';
+type VisibleChoice = Extract<Visibility, 'always'>;
+type VisibleChoiceSprite = Exclude<SpriteRendering, null> & {
+  reveal: 'always';
+  source: 'front' | 'all';
+};
+type ItemSprite = Exclude<SpriteRendering, null> & {
+  silhouette: false;
+  source?: never;
+};
 type VisibleItem =
-  | { name?: Exclude<Visibility, 'never'>; sprite?: SpriteVisibility }
-  | { name: 'never'; sprite: Exclude<SpriteVisibility, 'never'> };
+  | {
+      name?: Exclude<Visibility, 'never'>;
+      sprite?: ItemSprite;
+    }
+  | { name: VisibleChoice; sprite?: ItemSprite | null }
+  | { name?: Visibility; sprite: ItemSprite & { reveal: 'always' } };
+type ItemChoices = Partial<Pick<EntityRendering, 'name' | 'sprite'>> &
+  (
+    | { name: VisibleChoice; sprite?: ItemSprite | null }
+    | { sprite: ItemSprite & { reveal: 'always' } }
+  );
+type PokemonChoices = Partial<EntityRendering> &
+  (
+    | { sprite: VisibleChoiceSprite }
+    | { name: VisibleChoice }
+    | { number: VisibleChoice }
+    | { types: VisibleChoice }
+  );
+type PokemonSearch = Renderable<'sprite' | 'number' | 'types'>;
+type RequiredSubjectSprite = Omit<
+  Renderable<'sprite' | 'name' | 'number' | 'types'>,
+  'sprite'
+> & { sprite?: VisibleChoiceSprite };
+type FrontSubjectSprite = Omit<RequiredSubjectSprite, 'sprite'> & {
+  sprite?: VisibleChoiceSprite & { source: 'front' };
+};
+type FrontPokemonChoices = Partial<Omit<EntityRendering, 'sprite'>> & {
+  sprite?: (VisibleChoiceSprite & { source: 'front' }) | null;
+} & (
+    | { sprite: VisibleChoiceSprite & { source: 'front' } }
+    | { name: VisibleChoice }
+    | { number: VisibleChoice }
+    | { types: VisibleChoice }
+  );
+type HiddenPokemonSubject = {
+  name?: HiddenUntilAnswer;
+  number?: HiddenUntilAnswer;
+  types?: HiddenUntilAnswer;
+  sprite?:
+    | (Exclude<SpriteRendering, null> & {
+        reveal: 'after-answer';
+      })
+    | null;
+};
 
 type RenderingControls<
   Subject extends keyof EntityRendering = never,
@@ -35,52 +86,76 @@ type RenderingControls<
 type FamilyRenderingControls = {
   itemIdentification: {
     subject?: VisibleItem;
-    choices?: VisibleItem;
-    search?: Renderable<'sprite'>;
+    choices?: ItemChoices;
+    search?: { sprite?: ItemSprite | null };
   };
   itemUses: { subject?: VisibleItem };
   abilityEffects: RenderingControls<'sprite'>;
   heldItemEffects: { subject?: VisibleItem };
+  hiddenAbilities: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
+  evYields: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
   berryFlavors: { subject?: VisibleItem };
   naturalGift: { subject?: VisibleItem };
+  weightComparison: { choices?: PokemonChoices };
+  heightComparison: { choices?: PokemonChoices };
+  pokedexCategories: { choices?: PokemonChoices };
+  evolutionConditions: RenderingControls<
+    never,
+    never,
+    'sprite' | 'name' | 'number' | 'types'
+  >;
+  encounterLocations: { choices?: PokemonChoices };
+  shinyPokemonIdentification: { choices?: FrontPokemonChoices };
+  pokedexEntryMatch: {
+    subject?: HiddenPokemonSubject;
+    choices?: PokemonChoices;
+    search?: PokemonSearch;
+  };
+  legendaryMythicalSelection: { choices?: PokemonChoices };
+  statExtremes: { choices?: PokemonChoices };
   pokemonFromHistoricalSprite: {
-    choices?: Renderable<'sprite' | 'number'>;
-    related?: { name?: 'never'; number?: 'never' };
-    search?: Renderable<'sprite' | 'number'>;
+    subject?: RequiredSubjectSprite;
+    choices?: PokemonChoices;
+    search?: PokemonSearch;
   };
   spriteForPokemon: {
-    subject?: { sprite?: 'never' };
-    choices?: { name?: HiddenUntilAnswer; number?: HiddenUntilAnswer };
+    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+    choices?: PokemonChoices;
   };
   silhouetteForPokemon: {
-    subject?: { sprite?: 'never' };
-    choices?: {
-      sprite?: 'silhouette';
-      name?: HiddenUntilAnswer;
-      number?: HiddenUntilAnswer;
-    };
+    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+    choices?: PokemonChoices;
   };
   pokemonFromSilhouette: {
-    subject?: { sprite?: 'silhouette' };
-    choices?: { sprite?: 'never' };
-    related?: { name?: 'never'; number?: 'never' };
-    search?: { sprite?: 'never'; number?: EntityRendering['number'] };
+    subject?: RequiredSubjectSprite;
+    choices?: PokemonChoices;
+    search?: PokemonSearch;
   };
   pokemonFromPixelCrop: {
-    choices?: { sprite?: 'never' };
-    related?: { name?: HiddenUntilAnswer; number?: HiddenUntilAnswer };
-    search?: { sprite?: 'never'; number?: EntityRendering['number'] };
+    subject?: FrontSubjectSprite;
+    choices?: PokemonChoices;
+    search?: PokemonSearch;
   };
-  pokemonByGeneration: RenderingControls<never, 'number'>;
-  evolutionChain: {
-    subject?: {
-      sprite?: HiddenUntilAnswer;
-      name?: HiddenUntilAnswer;
-      number?: HiddenUntilAnswer;
+  pokemonByGeneration: { choices?: PokemonChoices };
+  pokemonTypes: {
+    subject?: Renderable<'sprite' | 'name' | 'number'> & {
+      types?: 'after-answer';
     };
-    choices?: Renderable<'sprite' | 'number'>;
-    related?: Renderable<'sprite' | 'name' | 'number'>;
-    search?: Renderable<'sprite' | 'number'>;
+  };
+  typeOddOneOut: { choices?: PokemonChoices };
+  pokemonByType: { choices?: PokemonChoices };
+  dualTypeMatch: {
+    subject?: Renderable<'sprite' | 'name' | 'number'> & {
+      types?: HiddenUntilAnswer;
+    };
+    choices?: PokemonChoices;
+  };
+  typeMatchup: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
+  evolutionChain: {
+    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+    choices?: PokemonChoices;
+    related?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+    search?: PokemonSearch;
   };
   evolutionGainedType: RenderingControls<
     'sprite' | 'name' | 'number' | 'types',
@@ -88,21 +163,19 @@ type FamilyRenderingControls = {
     'sprite' | 'name' | 'number' | 'types'
   >;
   superEffectiveAttacker: {
-    subject?: { types?: 'always' | 'after-answer' };
-    related?: {
-      sprite?: HiddenUntilAnswer;
-      name?: HiddenUntilAnswer;
-      number?: HiddenUntilAnswer;
+    subject?: Renderable<'sprite' | 'name' | 'number'> & {
+      types?: 'always' | 'after-answer';
     };
+    choices?: PokemonChoices;
+    related?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
   };
   champion: {
-    subject?: {
-      sprite?: { afterClues: 0 | 1 | 2 | 3 | 4; silhouette?: boolean };
-    };
-    choices?: { sprite?: 'never'; number?: HiddenUntilAnswer };
-    related?: { name?: 'never'; number?: 'never' };
-    search?: { sprite?: 'never'; number?: EntityRendering['number'] };
+    subject?: Renderable<'sprite' | 'name' | 'number' | 'types'>;
+    choices?: PokemonChoices;
+    search?: PokemonSearch;
   };
+  pokemonAbilities: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
+  levelUpMoves: RenderingControls<'sprite' | 'name' | 'number' | 'types'>;
 };
 
 /**
@@ -119,19 +192,31 @@ export type RenderingControlsFor<Type extends keyof FamilyRules> =
  * the family policy; controls do not inherit from lower levels.
  */
 export type QuestionRuleEntry<
-  Rules extends { rendering: QuestionRendering },
+  Rules extends { rendering: QuestionRendering; response: { kind: string } },
   Type extends keyof FamilyRules,
-> = Omit<Rules, 'rendering'> & {
-  /** Visibility changes applied after the family policy. */
-  rendering?: RenderingControlsFor<Type>;
-};
+> = Type extends 'pokedexEntryMatch'
+  ? Omit<Rules, 'rendering' | 'response'> &
+      (
+        | {
+            response: Extract<Rules['response'], { kind: 'search' }>;
+            rendering?: RenderingControlsFor<Type>;
+          }
+        | {
+            response: Exclude<Rules['response'], { kind: 'search' }>;
+            rendering?: Omit<RenderingControlsFor<Type>, 'subject'>;
+          }
+      )
+  : Omit<Rules, 'rendering'> & {
+      /** Visibility changes applied after the family policy. */
+      rendering?: RenderingControlsFor<Type>;
+    };
 
 /**
  * One family's rules. Numeric `levels` may be sparse; resolution selects the
  * highest defined level at or below the requested difficulty.
  */
 export type QuestionRuleRow<
-  Rules extends { rendering: QuestionRendering },
+  Rules extends { rendering: QuestionRendering; response: { kind: string } },
   Type extends keyof FamilyRules,
 > = {
   /** Family visibility changes applied after the base policy. */
@@ -262,10 +347,7 @@ const controls = {
     view: { answer: { kind: 'type' } },
   },
   pokemonFromHistoricalSprite: {
-    view: {
-      answer: { kind: 'pokemon' },
-      subject: { identity: 'after-answer' },
-    },
+    view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
     smallPoolSimilarityRatio: 0.6,
@@ -319,10 +401,7 @@ const controls = {
     smallPoolPolicy: 'semantic-band',
   },
   pokemonFromSilhouette: {
-    view: {
-      answer: { kind: 'pokemon' },
-      subject: { identity: 'after-answer' },
-    },
+    view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
     smallPoolSimilarityRatio: 0.6,
@@ -374,10 +453,7 @@ const controls = {
     smallPoolPolicy: 'semantic-band',
   },
   pokedexEntryMatch: {
-    view: {
-      answer: { kind: 'pokemon' },
-      subject: { identity: 'after-answer' },
-    },
+    view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
     smallPoolSimilarityRatio: 0.6,
@@ -403,22 +479,19 @@ const controls = {
       statMaximum: 3,
       statScale: 80,
     },
-    view: { answer: { kind: 'type' }, subject: { types: 'after-answer' } },
+    view: { answer: { kind: 'type' } },
     singleType: false,
   },
   typeOddOneOut: {
-    view: { answer: { kind: 'pokemon', revealTypes: 'after-answer' } },
+    view: { answer: { kind: 'pokemon' } },
     singleType: false,
   },
   pokemonByType: {
-    view: { answer: { kind: 'pokemon', revealTypes: 'after-answer' } },
+    view: { answer: { kind: 'pokemon' } },
     singleType: false,
   },
   dualTypeMatch: {
-    view: {
-      answer: { kind: 'pokemon', revealTypes: 'after-answer' },
-      subject: { types: 'after-answer' },
-    },
+    view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
     smallPoolSimilarityRatio: 0.6,
@@ -482,19 +555,16 @@ const controls = {
     statGap: null,
   },
   typeMatchup: {
-    view: { answer: { kind: 'type' }, subject: { types: 'after-answer' } },
+    view: { answer: { kind: 'type' } },
     singleType: false,
-    showTypes: false,
     multipliers: [4, 2, 0.5, 0.25],
   },
   superEffectiveAttacker: {
     view: {
       answer: {
         kind: 'pokemon',
-        revealTypes: 'after-answer',
         layout: 'superEffectiveAttacker',
       },
-      subject: { types: 'after-answer' },
     },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
@@ -511,14 +581,10 @@ const controls = {
     },
     smallPoolPolicy: 'semantic-band',
     singleType: false,
-    showTypes: false,
     multipliers: [4, 2, 0.5, 0.25],
   },
   champion: {
-    view: {
-      answer: { kind: 'pokemon' },
-      subject: { identity: 'after-answer' },
-    },
+    view: { answer: { kind: 'pokemon' } },
     distractorRankDirection: 'most-similar',
     distractorPoolSize: 15,
     smallPoolSimilarityRatio: 0.6,
@@ -541,98 +607,172 @@ const controls = {
   > & { view: FamilyRules[Type]['view'] };
 };
 
+const frontSprite = {
+  reveal: 'always',
+  silhouette: false,
+  source: 'front',
+} as const;
+const itemSprite = { reveal: 'always', silhouette: false } as const;
+const silhouetteSprite = { ...frontSprite, silhouette: true } as const;
+const answerSprite = { ...frontSprite, reveal: 'after-answer' } as const;
+
 /** Visibility defaults applied before family and level rendering overrides. */
 export const baseQuestionRendering: QuestionRendering = {
-  subject: { sprite: 'always', name: 'always', number: 'always' },
-  choices: { sprite: 'always', name: 'always', number: 'always' },
-  related: { sprite: 'always', name: 'always', number: 'always' },
-  search: { sprite: 'always', name: 'always', number: 'always' },
+  subject: {
+    sprite: null,
+    name: 'always',
+    number: 'always',
+    types: 'never',
+  },
+  choices: {
+    sprite: frontSprite,
+    name: 'always',
+    number: 'always',
+    types: 'never',
+  },
+  related: {
+    sprite: null,
+    name: 'always',
+    number: 'always',
+    types: 'never',
+  },
+  search: {
+    sprite: frontSprite,
+    name: 'always',
+    number: 'always',
+    types: 'never',
+  },
 };
 
 /** Family rendering overrides, checked against each family's usable fields. */
 const renderings = {
   itemIdentification: {
-    subject: { name: 'never', sprite: 'always' },
-    choices: { sprite: 'never' },
-    search: { sprite: 'never' },
+    subject: { name: 'never', sprite: itemSprite },
+    choices: { name: 'always', sprite: null },
+    search: { sprite: null },
   },
-  itemUses: {},
+  itemUses: { subject: { sprite: itemSprite } },
   weightComparison: {},
   heightComparison: {},
   moveTypes: {},
   locationRegion: {},
   moveCategory: {},
   pokedexCategories: {},
-  evolutionConditions: {},
+  evolutionConditions: { related: { sprite: frontSprite } },
   abilityEffects: {},
-  heldItemEffects: {},
-  hiddenAbilities: {},
+  heldItemEffects: { subject: { sprite: itemSprite } },
+  hiddenAbilities: { subject: { sprite: frontSprite } },
   natureEffects: {},
-  evYields: {},
+  evYields: { subject: { sprite: frontSprite } },
   encounterLocations: {},
-  berryFlavors: {},
-  naturalGift: {},
+  berryFlavors: { subject: { sprite: itemSprite } },
+  naturalGift: { subject: { sprite: itemSprite } },
   pokemonFromHistoricalSprite: {
-    choices: { sprite: 'never' },
-    search: { sprite: 'never' },
+    subject: {
+      sprite: { ...frontSprite, source: 'all' },
+      name: 'after-answer',
+      number: 'after-answer',
+    },
+    choices: { name: 'always', sprite: null },
+    search: { sprite: null },
   },
   spriteForPokemon: {
-    subject: { sprite: 'never' },
-    choices: { name: 'after-answer', number: 'after-answer' },
+    subject: { sprite: null },
+    choices: {
+      sprite: frontSprite,
+      name: 'after-answer',
+      number: 'after-answer',
+    },
   },
   silhouetteForPokemon: {
-    subject: { sprite: 'never' },
+    subject: { sprite: null },
     choices: {
-      sprite: 'silhouette',
+      sprite: silhouetteSprite,
       name: 'after-answer',
       number: 'after-answer',
     },
   },
   pokemonFromSilhouette: {
-    subject: { sprite: 'silhouette' },
-    choices: { sprite: 'never' },
-    search: { sprite: 'never' },
+    subject: {
+      sprite: silhouetteSprite,
+      name: 'after-answer',
+      number: 'after-answer',
+    },
+    choices: { name: 'always', sprite: null },
+    search: { sprite: null },
   },
   pokemonFromPixelCrop: {
-    choices: { sprite: 'never' },
-    related: { name: 'after-answer', number: 'after-answer' },
-    search: { sprite: 'never' },
+    subject: {
+      sprite: frontSprite,
+      name: 'after-answer',
+      number: 'after-answer',
+    },
+    choices: { name: 'always', sprite: null },
+    search: { sprite: null },
   },
   shinyPokemonIdentification: {},
-  pokedexEntryMatch: {},
-  pokemonTypes: {},
-  typeOddOneOut: {},
-  pokemonByType: {},
-  dualTypeMatch: {},
+  pokedexEntryMatch: {
+    subject: { name: 'never', number: 'never' },
+  },
+  pokemonTypes: {
+    subject: { sprite: frontSprite, types: 'after-answer' },
+  },
+  typeOddOneOut: { choices: { name: 'always', types: 'after-answer' } },
+  pokemonByType: { choices: { name: 'always', types: 'after-answer' } },
+  dualTypeMatch: {
+    subject: { sprite: frontSprite, types: 'after-answer' },
+    choices: { name: 'always', types: 'after-answer' },
+  },
   legendaryMythicalSelection: {},
-  pokemonByGeneration: { choices: { number: 'after-answer' } },
+  pokemonByGeneration: {
+    choices: { name: 'always', number: 'after-answer' },
+  },
   evolutionChain: {
     subject: {
-      sprite: 'after-answer',
+      sprite: answerSprite,
       name: 'after-answer',
       number: 'after-answer',
     },
-    choices: { sprite: 'never', number: 'never' },
-    search: { sprite: 'never' },
+    choices: { name: 'always', sprite: null, number: 'never' },
+    related: { sprite: frontSprite },
+    search: { sprite: null },
   },
   evolutionGainedType: {
+    subject: { sprite: frontSprite, types: 'always' },
     related: {
-      sprite: 'after-answer',
+      sprite: answerSprite,
+      name: 'after-answer',
+      number: 'after-answer',
+      types: 'always',
+    },
+  },
+  pokemonAbilities: { subject: { sprite: frontSprite } },
+  levelUpMoves: { subject: { sprite: frontSprite } },
+  statExtremes: {},
+  typeMatchup: {
+    subject: { sprite: frontSprite, types: 'after-answer' },
+  },
+  superEffectiveAttacker: {
+    subject: { sprite: frontSprite, types: 'after-answer' },
+    related: { sprite: answerSprite, name: 'never', number: 'never' },
+    choices: { name: 'always', types: 'after-answer' },
+  },
+  champion: {
+    subject: {
+      sprite: {
+        ...silhouetteSprite,
+        reveal: { afterClues: 4 },
+      },
       name: 'after-answer',
       number: 'after-answer',
     },
-  },
-  pokemonAbilities: {},
-  levelUpMoves: {},
-  statExtremes: {},
-  typeMatchup: {},
-  superEffectiveAttacker: {
-    related: { sprite: 'after-answer', name: 'never', number: 'never' },
-  },
-  champion: {
-    subject: { sprite: { afterClues: 4, silhouette: true } },
-    choices: { sprite: 'never', number: 'after-answer' },
-    search: { sprite: 'never', number: 'never' },
+    choices: {
+      sprite: null,
+      name: 'always',
+      number: 'after-answer',
+      types: 'after-answer',
+    },
+    search: { sprite: null, number: 'never' },
   },
 } satisfies { [Type in keyof FamilyRules]: RenderingControlsFor<Type> };
 
@@ -1439,9 +1579,12 @@ export const questionRules = {
           kind: 'search',
           candidates: 'pool',
         },
-        view: {
-          answer: { kind: 'pokemon' },
-          subject: { identity: 'after-answer', portrait: 'after-answer' },
+        rendering: {
+          subject: {
+            sprite: answerSprite,
+            name: 'after-answer',
+            number: 'after-answer',
+          },
         },
       },
     },
@@ -1743,7 +1886,7 @@ export const questionRules = {
       1: {
         ...controls.typeMatchup,
         singleType: true,
-        showTypes: true,
+        rendering: { subject: { types: 'always' } },
         multipliers: [2],
         response: {
           kind: 'choices',
@@ -1761,7 +1904,7 @@ export const questionRules = {
       },
       3: {
         ...controls.typeMatchup,
-        showTypes: true,
+        rendering: { subject: { types: 'always' } },
         multipliers: [2, 4],
         response: {
           kind: 'choices',
@@ -1799,7 +1942,10 @@ export const questionRules = {
       2: {
         ...controls.superEffectiveAttacker,
         singleType: true,
-        showTypes: true,
+        rendering: {
+          subject: { types: 'always' },
+          choices: { types: 'always' },
+        },
         multipliers: [2],
         response: {
           kind: 'choices',
@@ -1808,13 +1954,12 @@ export const questionRules = {
       },
       3: {
         ...controls.superEffectiveAttacker,
-        showTypes: true,
         multipliers: [2, 4],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
-        rendering: { subject: { types: 'after-answer' } },
+        rendering: { choices: { types: 'always' } },
       },
       4: {
         ...controls.superEffectiveAttacker,
@@ -1849,6 +1994,7 @@ export const questionRules = {
     levels: {
       1: {
         ...controls['champion'],
+        rendering: { choices: { types: 'always' } },
         finale: {
           opening: 'choices-types',
           assistance: false,

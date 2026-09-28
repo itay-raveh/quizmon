@@ -251,8 +251,6 @@ interface FamilyControls {
   typeMatchup: {
     /** Restrict targets to Pokémon with exactly one type. */
     singleType: boolean;
-    /** Show the target's types before answering. */
-    showTypes: boolean;
     /** Attack multipliers eligible to be asked about. */
     multipliers: readonly number[];
     /** A type grid selects every attack type with the requested multiplier. */
@@ -261,8 +259,6 @@ interface FamilyControls {
   superEffectiveAttacker: PokemonDistractors & {
     /** Restrict targets to Pokémon with exactly one type. */
     singleType: boolean;
-    /** Show the target's types before answering. */
-    showTypes: boolean;
     /** Attack multipliers eligible to be asked about. */
     multipliers: readonly number[];
   };

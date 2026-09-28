@@ -18,9 +18,8 @@ const nonnegativeInteger = z.int().min(0);
 const unique = (values: string[]) => new Set(values).size === values.length;
 const sprite = z.object({
   dexNumber: nonnegativeInteger,
-  src: text,
+  src: text.nullable(),
   types: strings,
-  silhouette: z.boolean().optional(),
 });
 const generationClue = z.object({
   kind: z.literal('generation'),
@@ -33,8 +32,6 @@ const media = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('sprite'),
     src: text,
-    silhouette: z.boolean().optional(),
-    revealAt: nonnegativeInteger.optional(),
   }),
   z.object({
     kind: z.literal('pokemonFromPixelCrop'),
@@ -134,13 +131,11 @@ const question = z
     rendering: questionRenderingSchema.optional(),
     view: questionViewSchema.optional(),
     namesOnly: z.boolean().optional(),
-    showTypes: z.boolean().optional(),
     assistanceUsed: nonnegativeInteger.optional(),
     initialClues: nonnegativeInteger.optional(),
     suppliedClues: strings.optional(),
     assistanceAllowed: z.boolean().optional(),
     visual: visual.optional(),
-    concealOptionLabels: z.boolean().optional(),
     clues: z.array(z.union([text, generationClue])).optional(),
     optionDexNumbers: z.record(z.string(), nonnegativeInteger).optional(),
     optionStats: z.record(z.string(), nonnegativeInteger).optional(),
@@ -156,6 +151,7 @@ const question = z
           label: text.optional(),
           dexNumber: nonnegativeInteger.optional(),
           sprite: text.nullable().optional(),
+          types: strings.optional(),
         }),
       )
       .optional(),

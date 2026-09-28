@@ -7,12 +7,12 @@ import {
   spriteState,
   type EntityRendering,
 } from '@/domain/quiz/question-rendering';
-import { ItemRenderable, QuestionSprite } from './QuestionEntity';
 import {
-  QuestionSubject,
-  QuestionSubjectIdentity,
-  QuestionSubjectTypes,
-} from './QuestionSubject';
+  ItemRenderable,
+  PokemonRenderable,
+  QuestionSprite,
+} from './QuestionEntity';
+import { QuestionSubject } from './QuestionSubject';
 import { GenerationLabel } from '@/components/GenerationLabel';
 import { RelationArrow, TypeEffectArrow } from './RelationArrow';
 import { Sprite } from './Sprite';
@@ -53,13 +53,16 @@ export const QuestionArtwork = ({
   const view = getQuestionView(question);
   const rendering = getQuestionRendering(question);
   const state = { answered, cluesShown };
-  const subjectTypesVisible =
-    answered ||
-    (Boolean(question.showTypes) &&
-      isVisible(rendering.subject.types ?? 'always', state));
+  const subjectTypesVisible = isVisible(
+    rendering.subject.types ?? 'never',
+    state,
+  );
   const media = question.media;
   const answerOnlyPortrait =
-    view.subject?.portrait === 'after-answer' && usesSearchAnswer(question);
+    (question.media.kind === 'none' ||
+      question.media.kind === 'pixel-sprite') &&
+    usesSearchAnswer(question) &&
+    rendering.subject.sprite?.reveal === 'after-answer';
   const subjectVisual = question.optionVisuals?.[question.subject.name];
   const subjectSearchOption = question.searchOptions?.find(
     ({ name }) => name === question.subject.name,
@@ -75,24 +78,14 @@ export const QuestionArtwork = ({
     question.prompt.kind === 'pokemon'
       ? question.prompt.dexNumber
       : (subjectVisual?.dexNumber ?? subjectSearchOption?.dexNumber);
-  const subjectPolicy: EntityRendering =
-    view.subject?.identity === 'after-answer'
-      ? {
-          ...rendering.subject,
-          sprite: answerOnlyPortrait
-            ? 'after-answer'
-            : rendering.subject.sprite,
-          name: rendering.related.name === 'never' ? 'never' : 'after-answer',
-          number:
-            rendering.related.number === 'never' ? 'never' : 'after-answer',
-        }
-      : rendering.subject;
+  const subjectPolicy: EntityRendering = rendering.subject;
   const subject: Parameters<typeof QuestionSubject>[0] = {
     policy: subjectPolicy,
     state,
     name: question.subject.name,
     dexNumber: subjectDexNumber,
     src: pixelSprite,
+    types: question.subject.types,
     reservePortrait:
       question.media.kind === 'pixel-sprite' || answerOnlyPortrait,
     concealment: answerOnlyPortrait ? 'blank' : 'question-mark',
@@ -103,18 +96,18 @@ export const QuestionArtwork = ({
   ) {
     return (
       <div className="question-visual" aria-hidden="true">
-        <QuestionSubject {...subject}>
+        <QuestionSubject
+          {...subject}
+          types={
+            visual.kind === 'pokemonTypes' ? undefined : question.subject.types
+          }
+        >
           {visual.kind === 'pokemonTypes' ? (
             <MysteryType
-              answered={answered}
+              answered={isVisible(rendering.subject.types ?? 'never', state)}
               types={question.subject.types ?? []}
             />
-          ) : (
-            <QuestionSubjectTypes
-              answered={answered || Boolean(question.showTypes)}
-              types={question.subject.types ?? []}
-            />
-          )}
+          ) : null}
         </QuestionSubject>
       </div>
     );
@@ -131,6 +124,7 @@ export const QuestionArtwork = ({
               name={name}
               src={visual.stages[name]?.src}
               dexNumber={visual.stages[name]?.dexNumber}
+              types={visual.stages[name]?.types}
               reservePortrait
             />
           </Fragment>
@@ -152,6 +146,7 @@ export const QuestionArtwork = ({
                 name={name}
                 dexNumber={visual.stages[name]?.dexNumber}
                 src={visual.stages[name]?.src}
+                types={visual.stages[name]?.types}
                 policy={index === 1 ? rendering.subject : rendering.related}
                 state={state}
                 framed
@@ -213,7 +208,7 @@ export const QuestionArtwork = ({
         className="question-visual question-relation question-relation--evolution"
         aria-hidden="true"
       >
-        <QuestionSubject {...subject} framed>
+        <QuestionSubject {...subject} types={undefined} framed>
           <span
             style={{
               visibility: isVisible(rendering.subject.types ?? 'always', state)
@@ -233,6 +228,7 @@ export const QuestionArtwork = ({
           dexNumber={evolution.dexNumber}
           reservePortrait
           src={evolution.src}
+          types={undefined}
           policy={rendering.related}
           state={state}
           framed
@@ -276,14 +272,12 @@ export const QuestionArtwork = ({
       >
         {visual.kind === 'typeMatchup' ? (
           <MysteryType answered={answered} types={answer ? [answer] : []} />
-        ) : answer &&
-          answerVisual &&
-          (rendering.related.name !== 'never' ||
-            rendering.related.number !== 'never') ? (
+        ) : answer && answerVisual ? (
           <QuestionSubject
             name={answer}
             src={answerVisual.src}
             dexNumber={answerVisual.dexNumber}
+            types={answerVisual.types}
             policy={rendering.related}
             state={state}
             framed
@@ -291,7 +285,7 @@ export const QuestionArtwork = ({
         ) : (
           <span className="question-visual__pokemon-slot">
             {spriteState(rendering.related.sprite, state).visible &&
-            answerVisual ? (
+            answerVisual?.src ? (
               <QuestionSprite
                 rule={rendering.related.sprite}
                 state={state}
@@ -304,12 +298,13 @@ export const QuestionArtwork = ({
           </span>
         )}
         <TypeEffectArrow multiplier={visual.multiplier} />
-        <QuestionSubject {...subject}>
-          <QuestionSubjectTypes
-            answered={subjectTypesVisible}
-            types={question.subject.types ?? []}
-          />
-        </QuestionSubject>
+        <QuestionSubject
+          {...subject}
+          policy={{
+            ...subjectPolicy,
+            types: subjectTypesVisible ? 'always' : 'never',
+          }}
+        />
       </div>
     );
   }
@@ -324,18 +319,20 @@ export const QuestionArtwork = ({
           aria-hidden={!visible || undefined}
           style={{ visibility: visible ? undefined : 'hidden' }}
         >
-          {rendering.subject.sprite !== 'never' ? (
+          {rendering.subject.sprite !== null ? (
             <Sprite silhouette={silhouette} src={media.src} />
           ) : null}
         </div>
-        {subjectPolicy.name !== 'never' || subjectPolicy.number !== 'never' ? (
-          <QuestionSubjectIdentity
-            policy={subjectPolicy}
-            state={state}
-            name={question.subject.name}
-            dexNumber={subjectDexNumber}
-          />
-        ) : null}
+        <PokemonRenderable
+          policy={{ ...subjectPolicy, sprite: null }}
+          state={state}
+          name={question.subject.name}
+          dexNumber={subjectDexNumber}
+          types={question.subject.types}
+          identityClassName="question-visual__subject-name"
+          numberClassName="question-visual__subject-number"
+          typesClassName="question-visual__subject-types"
+        />
       </div>
     );
   }
@@ -371,16 +368,16 @@ export const QuestionArtwork = ({
             }
           />
         </div>
-        <div
-          className="question-visual__subject"
-          style={{ visibility: answered ? undefined : 'hidden' }}
-          aria-hidden={!answered || undefined}
-        >
-          <QuestionSubjectIdentity
-            policy={rendering.related}
+        <div className="question-visual__subject">
+          <PokemonRenderable
+            policy={{ ...subjectPolicy, sprite: null }}
             state={state}
             name={question.subject.name}
             dexNumber={subjectDexNumber}
+            types={question.subject.types}
+            identityClassName="question-visual__subject-name"
+            numberClassName="question-visual__subject-number"
+            typesClassName="question-visual__subject-types"
           />
         </div>
       </>
@@ -413,7 +410,10 @@ export const QuestionArtwork = ({
       </div>
     );
   return answerOnlyPortrait ||
-    (pixelSprite && subjectPolicy.sprite !== 'never') ? (
+    (question.subject.kind === 'pokemon' &&
+      ((pixelSprite && subjectPolicy.sprite !== null) ||
+        (question.subject.types?.length &&
+          subjectPolicy.types !== 'never'))) ? (
     <div
       className="question-visual"
       aria-hidden={!answerOnlyPortrait || undefined}

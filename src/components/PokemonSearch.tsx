@@ -14,6 +14,7 @@ interface SearchPokemon {
   label?: string;
   dexNumber?: number;
   sprite?: string | null;
+  types?: string[];
 }
 interface PokemonSearchProps {
   searchSubject?: 'Pokémon' | 'ability' | 'item' | 'TM';

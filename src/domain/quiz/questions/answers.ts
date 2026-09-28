@@ -87,8 +87,10 @@ export const createPokemonSimilarityScorer = (
 };
 
 export const pokemonOptions = (
-  context: QuestionContext<PokemonDistractors> & {
-    variant: PokemonDistractors;
+  context: QuestionContext<
+    PokemonDistractors & { response?: { kind: string } }
+  > & {
+    variant: PokemonDistractors & { response?: { kind: string } };
   },
   {
     correct: target,
@@ -101,6 +103,7 @@ export const pokemonOptions = (
   },
 ): string[] => {
   const variant = context.variant;
+  if (variant.response?.kind === 'search') return [target.name];
   const similarityToTarget = createPokemonSimilarityScorer(
     target.pokemon,
     variant.similarityWeights,

@@ -16,8 +16,6 @@ const answerViewSchema = z.discriminatedUnion('kind', [
   }),
   z.object({
     kind: z.literal('pokemon'),
-    /** Reveal option type badges after answering. */
-    revealTypes: z.literal('after-answer').optional(),
     /** Use the counter-pick answer layout. */
     layout: z.literal('superEffectiveAttacker').optional(),
   }),
@@ -30,12 +28,6 @@ export const questionViewSchema = z.object({
   answer: answerViewSchema,
   subject: z
     .object({
-      /** Conceal the subject's identity until the answer. */
-      identity: z.literal('after-answer').optional(),
-      /** Conceal its portrait in search presentation. */
-      portrait: z.literal('after-answer').optional(),
-      /** Conceal its type badges until the answer. */
-      types: z.literal('after-answer').optional(),
       /** Show an item sprite or name inline with the prompt. */
       inlineItem: z.enum(['sprite', 'named']).optional(),
     })
@@ -58,13 +50,5 @@ export const getQuestionView = (question: QuestionData): QuestionView => {
       ? row.unleveled
       : resolveDifficultyVariant(row.levels, level)?.variant;
   const view = resolved?.view ?? Object.values(row.levels)[0]!.view;
-  if (
-    question.questionType === 'pokedexEntryMatch' &&
-    question.answer.interaction === 'search'
-  )
-    return {
-      ...view,
-      subject: { ...view.subject, portrait: 'after-answer' },
-    };
   return view;
 };

@@ -60,7 +60,9 @@ export const QuestionAnswers = ({
         )
           ? 'answers--effect-details'
           : '',
-        question.optionVisuals && policy.sprite !== 'never'
+        question.optionVisuals &&
+        policy.sprite !== null &&
+        Object.values(question.optionVisuals).some(({ src }) => src)
           ? 'answers--pokemon'
           : '',
         view.answer.kind === 'pokemon' &&

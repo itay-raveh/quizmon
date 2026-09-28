@@ -3,6 +3,7 @@ import { GenerationLabel } from '@/components/GenerationLabel';
 import { CheckIcon, MinusIcon, XIcon } from '@/components/icons';
 import { TypeBadges } from '@/components/TypeBadge';
 import {
+  formatPokedexNumber,
   formatGeneration,
   formatPokemonName,
   formatPokemonTypeAnnouncement,
@@ -18,8 +19,8 @@ import { MoveReveal } from './MoveReveal';
 import { NatureEffect } from './NatureEffect';
 import {
   ItemRenderable,
+  PokemonRenderable,
   QuestionIdentity,
-  QuestionSprite,
 } from './QuestionEntity';
 
 interface QuestionAnswerChoiceProps {
@@ -48,13 +49,13 @@ export const QuestionAnswerChoice = ({
   const view = getQuestionView(question);
   const hasTypeOptionBadges = view.answer.kind === 'type';
   const isItemChoice = view.answer.kind === 'item';
-  const reservesOptionTypes =
-    view.answer.kind === 'pokemon' &&
-    view.answer.revealTypes === 'after-answer';
   const state = { answered, cluesShown };
-  const concealed = !isVisible(policy.name, state);
-  const revealsOptionTypes =
-    (answered || question.showTypes) && reservesOptionTypes;
+  const typeRule = policy.types;
+  const revealsOptionTypes = isVisible(typeRule, state);
+  const concealed =
+    !isVisible(policy.name, state) &&
+    !isVisible(policy.number, state) &&
+    !revealsOptionTypes;
   const showdownStat =
     question.visual?.kind === 'statExtremes' ? question.visual.stat : undefined;
   const label = question.optionLabels?.[option] ?? formatPokemonName(option);
@@ -77,7 +78,10 @@ export const QuestionAnswerChoice = ({
     ) : null;
   const itemImage = question.optionImages?.[option];
   const visual =
-    policy.sprite === 'never' ? undefined : question.optionVisuals?.[option];
+    view.answer.kind === 'pokemon'
+      ? question.optionVisuals?.[option]
+      : undefined;
+  const hasSprite = Boolean(visual?.src && policy.sprite !== null);
   const dexNumber =
     question.optionDexNumbers?.[option] ??
     question.optionVisuals?.[option]?.dexNumber;
@@ -91,8 +95,10 @@ export const QuestionAnswerChoice = ({
   });
   const optionClassName = `answer${outcome === 'idle' ? '' : ` answer--${outcome}`}`;
   const typeAnnouncement =
-    revealsOptionTypes && visual
-      ? `. ${formatPokemonTypeAnnouncement(visual.types)}`
+    revealsOptionTypes &&
+    visual &&
+    (isVisible(policy.name, state) || isVisible(policy.number, state))
+      ? ` ${formatPokemonTypeAnnouncement(visual.types)}`
       : '';
   const resultAnnouncement =
     outcome === 'missed'
@@ -144,16 +150,26 @@ export const QuestionAnswerChoice = ({
     : undefined;
   const answerButton = (
     <GameButton
-      aria-label={
-        concealed
-          ? `${spriteState(policy.sprite, state).silhouette ? 'Silhouette' : 'Sprite'} ${index + 1}`
-          : `${label}${answered && reveal ? `. ${reveal}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`
-      }
+      aria-label={`${
+        answered || isVisible(policy.name, state)
+          ? label
+          : isVisible(policy.number, state) && dexNumber !== undefined
+            ? formatPokedexNumber(dexNumber)
+            : revealsOptionTypes && visual
+              ? formatPokemonTypeAnnouncement(visual.types)
+              : `${
+                  hasSprite
+                    ? spriteState(policy.sprite, state).silhouette
+                      ? 'Silhouette'
+                      : 'Sprite'
+                    : 'Choice'
+                } ${index + 1}`
+      }${answered && reveal ? `. ${reveal}.` : ''}${typeAnnouncement}${generationAnnouncement}${classificationAnnouncement}${statAnnouncement}${resultAnnouncement}`}
       aria-keyshortcuts={
         question.options.length <= 9 ? String(index + 1) : undefined
       }
       aria-pressed={multiSelect ? optionSelected : undefined}
-      className={`${optionClassName} ${visual ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== 'never' ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
+      className={`${optionClassName} ${hasSprite ? 'answer--pokemon' : ''} ${isItemChoice && itemImage && policy.sprite !== null ? 'answer--item' : ''} ${concealed ? 'answer--concealed' : ''}`.trim()}
       disabled={answered}
       onClick={() => onSelect(option)}
       sound="none"
@@ -171,51 +187,39 @@ export const QuestionAnswerChoice = ({
           nameClassName="answer__text"
         />
       ) : visual ? (
-        <>
-          <span className="answer__sprite-field" aria-hidden="true">
-            <QuestionSprite
-              rule={policy.sprite}
-              state={state}
-              className="answer__sprite"
-              src={visual.src}
-              fetchPriority="auto"
-            />
-          </span>
-          <QuestionIdentity
-            policy={policy}
-            state={state}
-            className={`answer__nameplate ${hasStatValue ? 'answer__nameplate--stat' : ''}`.trim()}
-            dexNumber={dexNumber}
-            hideNumberFromAccessibility
-            name={option}
-            nameClassName="answer__name"
-          >
-            {reservesOptionTypes ? (
-              <TypeBadges
-                className={`answer__types ${revealsOptionTypes ? '' : 'answer__types--reserved'}`.trim()}
-                types={visual.types}
-              />
-            ) : null}
-            {classification ? (
-              <span
-                aria-hidden="true"
-                className={`answer__classification ${answered ? '' : 'answer__classification--reserved'}`.trim()}
-              >
-                {classification}
-              </span>
-            ) : null}
-            {generation ? (
-              <span
-                aria-hidden="true"
-                className={`answer__generation ${answered ? '' : 'answer__generation--reserved'}`.trim()}
-              >
-                <GenerationLabel generation={generation} />
-              </span>
-            ) : null}
-            {detail}
-            {stat}
-          </QuestionIdentity>
-        </>
+        <PokemonRenderable
+          name={option}
+          dexNumber={dexNumber}
+          src={hasSprite ? visual.src : undefined}
+          types={visual.types}
+          policy={{ ...policy, types: typeRule }}
+          state={state}
+          spriteSlotClassName={hasSprite ? 'answer__sprite-field' : undefined}
+          spriteClassName="answer__sprite"
+          identityClassName={`${hasSprite ? 'answer__nameplate' : 'answer__identity'} ${hasStatValue ? (hasSprite ? 'answer__nameplate--stat' : 'answer__identity--stat') : ''}`.trim()}
+          nameClassName="answer__name"
+          typesClassName={`answer__types ${revealsOptionTypes ? '' : 'answer__types--reserved'}`.trim()}
+          hideNumberFromAccessibility
+        >
+          {classification ? (
+            <span
+              aria-hidden="true"
+              className={`answer__classification ${answered ? '' : 'answer__classification--reserved'}`.trim()}
+            >
+              {classification}
+            </span>
+          ) : null}
+          {generation ? (
+            <span
+              aria-hidden="true"
+              className={`answer__generation ${answered ? '' : 'answer__generation--reserved'}`.trim()}
+            >
+              <GenerationLabel generation={generation} />
+            </span>
+          ) : null}
+          {detail}
+          {stat}
+        </PokemonRenderable>
       ) : hasTypeOptionBadges ? (
         <TypeBadges className="answer__type-choice" types={[option]} />
       ) : dexNumber !== undefined ? (
