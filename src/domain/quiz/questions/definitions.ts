@@ -1,4 +1,4 @@
-import { questionRules } from '../../../question-rules.ts';
+import { questionRules } from '../question-rules/registry.ts';
 import type { TrainerSpecialty } from '../../player/trainer-progression.ts';
 import type { QuestionCategory } from '../types.ts';
 

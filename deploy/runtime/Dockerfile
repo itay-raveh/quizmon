@@ -9,7 +9,6 @@ COPY --from=dependencies /opt/quizmon/node_modules ./node_modules
 COPY deploy/migrate-release.ts deploy/migration-runner.ts deploy/release-lock.ts deploy/release-inputs.ts ./deploy/
 COPY src/lib/validation.ts src/lib/random.ts ./src/lib/
 COPY src/lib/storage/rxdb-database.ts src/lib/storage/rxdb-schema.ts ./src/lib/storage/
-COPY src/question-rules.ts ./src/
 COPY src/domain ./src/domain
 COPY server/instrument.ts server/sentry-spans.ts server/rxdb-sync.ts server/rxdb-read.ts ./server/
 COPY server/migrations ./server/migrations

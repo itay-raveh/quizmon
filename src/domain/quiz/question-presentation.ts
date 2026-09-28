@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { questionRules } from '../../question-rules.ts';
+import { questionRules } from './question-rules/registry.ts';
 import {
   resolveDifficultyVariant,
   type DifficultyVariants,

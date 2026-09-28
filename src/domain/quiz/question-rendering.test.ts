@@ -3,7 +3,7 @@ import { questionRenderingSchema } from './question-rendering';
 import type {
   QuestionRuleEntry,
   RenderingControlsFor,
-} from '../../question-rules';
+} from './question-rules/types';
 import type { FamilyRules } from './questions/family-rules';
 import {
   baseQuestionRendering,

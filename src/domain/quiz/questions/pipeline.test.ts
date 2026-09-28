@@ -12,7 +12,7 @@ import {
   getUnleveledQuestionRule,
 } from '../question-variants.ts';
 import type { QuestionData } from '../types.ts';
-import { questionRules } from '../../../question-rules.ts';
+import { questionRules } from '../question-rules/registry.ts';
 import { buildQuestionType } from './registry.ts';
 import {
   assembleQuestion,

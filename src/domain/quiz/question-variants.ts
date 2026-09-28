@@ -1,9 +1,9 @@
-import {
-  baseQuestionRendering,
-  questionRules,
-  type QuestionRuleEntry,
-  type QuestionRuleRow,
-} from '../../question-rules.ts';
+import { questionRules } from './question-rules/registry.ts';
+import { baseQuestionRendering } from './question-rules/shared.ts';
+import type {
+  QuestionRuleEntry,
+  QuestionRuleRow,
+} from './question-rules/types.ts';
 import {
   mergeRendering,
   type QuestionRendering,
@@ -12,7 +12,7 @@ import { resolveDifficultyVariant, type Difficulty } from './difficulty.ts';
 import type { QuestionData } from './types.ts';
 import type { FamilyRules } from './questions/family-rules.ts';
 
-export { baseQuestionRendering } from '../../question-rules.ts';
+export { baseQuestionRendering } from './question-rules/shared.ts';
 
 const withRendering = <
   Type extends keyof FamilyRules,
