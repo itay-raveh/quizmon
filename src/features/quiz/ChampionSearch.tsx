@@ -2,7 +2,7 @@ import { ItemRenderable, PokemonRenderable } from './QuestionEntity';
 import {
   isVisible,
   spriteState,
-  type EntityRendering,
+  type QuestionRendering,
 } from '@/domain/quiz/question-rendering';
 import { PokemonSearch } from '@/components/PokemonSearch';
 import { formatPokemonName } from '@/domain/pokemon/format';
@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
 
 interface ChampionSearchProps {
   answerKind?: 'pokemon' | 'ability' | 'item' | 'tm';
-  policy: EntityRendering;
+  policy: QuestionRendering['search'];
   cluesShown: number;
   answered: boolean;
   correctOption: string;
