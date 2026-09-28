@@ -13,6 +13,7 @@ test('reveals the correct search answer after a wrong guess', () => {
     onAnswer: () => {},
     options: [{ name: 'sticky-hold' }, { name: 'wonder-guard' }],
     selectedOption: 'wonder-guard',
+    showCorrectAnswerBanner: true,
   };
 
   expect(
@@ -20,5 +21,15 @@ test('reveals the correct search answer after a wrong guess', () => {
   ).toContain('Correct answer: <strong>Sticky Hold</strong>');
   expect(
     renderToStaticMarkup(<ChampionSearch {...props} answered={false} />),
+  ).not.toContain('Correct answer:');
+  expect(
+    renderToStaticMarkup(
+      <ChampionSearch
+        {...props}
+        answered
+        answerKind="pokemon"
+        showCorrectAnswerBanner={false}
+      />,
+    ),
   ).not.toContain('Correct answer:');
 });

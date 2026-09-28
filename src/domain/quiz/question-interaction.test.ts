@@ -1,7 +1,12 @@
 import type { QuestionData } from './types';
+import { baseQuestionRendering } from './question-variants';
 import { savedQuestionSchema } from './question-lineup.ts';
 import { getQuestionView } from './question-presentation.ts';
-import { showsSearchResponse, usesSearchAnswer } from './question-interaction';
+import {
+  showsCorrectSearchAnswerInArtwork,
+  showsSearchResponse,
+  usesSearchAnswer,
+} from './question-interaction';
 
 const question: QuestionData = {
   answer: { correctOptions: ['pikachu'], interaction: 'search' },
@@ -32,6 +37,26 @@ it('keeps Champion search and keyboard behavior in sync with the visible respons
   expect(showsSearchResponse(question, 1)).toBe(false);
   expect(
     showsSearchResponse({ ...question, searchOptions: undefined }, 0),
+  ).toBe(false);
+});
+
+it('omits duplicate search feedback only when the artwork reveals the answer', () => {
+  const scan: QuestionData = {
+    ...question,
+    category: 'identity',
+    media: { kind: 'sprite', src: '/pikachu.png' },
+    questionType: 'pokemon-from-historical-sprite',
+  };
+  expect(showsCorrectSearchAnswerInArtwork(scan)).toBe(true);
+  expect(showsCorrectSearchAnswerInArtwork(question)).toBe(false);
+  expect(
+    showsCorrectSearchAnswerInArtwork({
+      ...scan,
+      rendering: {
+        ...baseQuestionRendering,
+        related: { ...baseQuestionRendering.related, name: 'never' },
+      },
+    }),
   ).toBe(false);
 });
 

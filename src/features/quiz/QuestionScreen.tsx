@@ -1,6 +1,9 @@
 import { FeedbackButton } from '@/app/FeedbackButton';
 import { getQuestionRendering } from '@/domain/quiz/question-variants';
-import { showsSearchResponse } from '@/domain/quiz/question-interaction';
+import {
+  showsCorrectSearchAnswerInArtwork,
+  showsSearchResponse,
+} from '@/domain/quiz/question-interaction';
 import { GameButton } from '@/components/GameButton';
 import { XIcon } from '@/components/icons';
 import { formatPokemonName } from '@/domain/pokemon/format';
@@ -198,6 +201,9 @@ export const QuestionScreen = ({
             onAnswer={(option) => finishAnswer([option])}
             options={question.searchOptions}
             selectedOption={selectedOptions[0]}
+            showCorrectAnswerBanner={
+              !showsCorrectSearchAnswerInArtwork(question)
+            }
           />
         ) : (
           <QuestionAnswers

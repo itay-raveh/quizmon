@@ -19,6 +19,7 @@ interface ChampionSearchProps {
   onAnswer: (option: string) => void;
   options: readonly PokemonSearchOption[];
   selectedOption?: string;
+  showCorrectAnswerBanner: boolean;
 }
 
 export const ChampionSearch = ({
@@ -31,6 +32,7 @@ export const ChampionSearch = ({
   onAnswer,
   options,
   selectedOption,
+  showCorrectAnswerBanner,
 }: ChampionSearchProps) => {
   const [query, setQuery] = useState('');
   const searchOptions = useMemo(
@@ -99,7 +101,7 @@ export const ChampionSearch = ({
         query={query}
         result={result}
       />
-      {result === 'wrong' && (
+      {result === 'wrong' && showCorrectAnswerBanner && (
         <p className="champion-search__answer">
           Correct answer: <strong>{correctLabel}</strong>
         </p>
