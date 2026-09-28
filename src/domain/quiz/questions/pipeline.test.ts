@@ -47,13 +47,67 @@ const pool = Object.entries(catalog.pokemon).map(([name, pokemon]) => ({
   name,
   pokemon,
 }));
+const answerDomains = {
+  pokemon: new Set(Object.keys(catalog.pokemon)),
+  type: new Set(Object.keys(catalog.typeRelations)),
+  item: new Set(catalog.topics!.items.map(({ name }) => name)),
+  move: new Set(catalog.topics!.moves.map(({ name }) => name)),
+  ability: new Set(catalog.topics!.abilities.map(({ name }) => name)),
+  region: new Set(catalog.topics!.regions.map(({ name }) => name)),
+  nature: new Set(catalog.topics!.natures.map(({ name }) => name)),
+};
+const familyDomains = {
+  itemIdentification: ['item', 'item'],
+  itemUses: ['item', null],
+  weightComparison: ['pokemon', 'pokemon'],
+  heightComparison: ['pokemon', 'pokemon'],
+  moveTypes: ['move', 'type'],
+  locationRegion: ['location', 'region'],
+  moveCategory: ['move', 'move'],
+  pokedexCategories: ['pokemon', 'pokemon'],
+  evolutionConditions: ['pokemon', null],
+  abilityEffects: ['ability', 'ability'],
+  heldItemEffects: ['item', null],
+  hiddenAbilities: ['pokemon', 'ability'],
+  natureEffects: ['nature', 'nature'],
+  evYields: ['pokemon', null],
+  encounterLocations: ['location', 'pokemon'],
+  berryFlavors: ['berry', null],
+  naturalGift: ['berry', 'type'],
+  pokemonFromHistoricalSprite: ['pokemon', 'pokemon'],
+  spriteForPokemon: ['pokemon', 'pokemon'],
+  silhouetteForPokemon: ['pokemon', 'pokemon'],
+  pokemonFromSilhouette: ['pokemon', 'pokemon'],
+  pokemonFromPixelCrop: ['pokemon', 'pokemon'],
+  shinyPokemonIdentification: ['pokemon', 'pokemon'],
+  pokedexEntryMatch: ['pokemon', 'pokemon'],
+  pokemonTypes: ['pokemon', 'type'],
+  typeOddOneOut: ['pokemon', 'pokemon'],
+  pokemonByType: ['pokemon', 'pokemon'],
+  dualTypeMatch: ['pokemon', 'pokemon'],
+  legendaryMythicalSelection: ['pokemon', 'pokemon'],
+  pokemonByGeneration: ['pokemon', 'pokemon'],
+  evolutionChain: ['pokemon', 'pokemon'],
+  evolutionGainedType: ['pokemon', 'type'],
+  pokemonAbilities: ['pokemon', 'ability'],
+  levelUpMoves: ['pokemon', 'move'],
+  statExtremes: ['pokemon', 'pokemon'],
+  typeMatchup: ['pokemon', 'type'],
+  superEffectiveAttacker: ['pokemon', 'pokemon'],
+  champion: ['pokemon', 'pokemon'],
+} as const satisfies Record<
+  QuestionType | 'champion',
+  readonly [QuestionData['subject']['kind'], keyof typeof answerDomains | null]
+>;
 
 it('builds every configured family with a renderable answer and saved view', () => {
   for (const type of Object.keys(questionRules) as (
     QuestionType | 'champion'
   )[]) {
     const row = questionRules[type];
-    const levels = Object.keys(row.levels).map(Number) as (1 | 2 | 3 | 4 | 5)[];
+    const levels = ([1, 2, 3, 4, 5] as const).filter((level) =>
+      getQuestionVariant(type, level),
+    );
     for (const difficulty of [
       ...levels,
       ...('unleveled' in row ? [undefined] : []),
@@ -71,13 +125,26 @@ it('builds every configured family with a renderable answer and saved view', () 
         ),
       ).find(Boolean);
       expect(question, `${type}:${difficulty}`).toBeDefined();
+      const [subjectKind, answerDomain] = familyDomains[type];
+      expect(question!.subject.kind, `${type}:${difficulty}`).toBe(subjectKind);
+      if (answerDomain)
+        expect(
+          question!.options.every((option) =>
+            answerDomains[answerDomain].has(option),
+          ),
+          `${type}:${difficulty}`,
+        ).toBe(true);
       const response =
         difficulty === undefined
           ? getUnleveledQuestionRule(type)?.response
           : getQuestionVariant(type, difficulty)?.variant.response;
-      if (response?.kind === 'choices' && response.selection !== 'adaptive')
+      if (response?.kind === 'picker' && response.selection !== 'adaptive')
         expect(question!.answer.interaction, `${type}:${difficulty}`).toBe(
           response.selection === 'single' ? 'single-choice' : 'multi-select',
+        );
+      if (response?.kind === 'search' && response.selection === 'multi')
+        expect(question!.answer.interaction, `${type}:${difficulty}`).toBe(
+          'multi-select',
         );
       const saved = savedQuestionSchema.parse(question);
       expect(questionRenderingSchema.safeParse(saved.rendering).success).toBe(

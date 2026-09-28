@@ -10,7 +10,7 @@ import type { PokemonSearchOption } from '@/domain/quiz/types';
 import { useMemo, useState } from 'react';
 
 interface ChampionSearchProps {
-  answerKind?: 'pokemon' | 'ability' | 'item' | 'tm';
+  answerKind?: 'pokemon' | 'ability' | 'item';
   policy: QuestionRendering['search'];
   cluesShown: number;
   answered: boolean;
@@ -80,7 +80,7 @@ export const ChampionSearch = ({
                   hideNumberFromAccessibility
                 />
               )
-            : answerKind === 'item' || answerKind === 'tm'
+            : answerKind === 'item'
               ? (item) => (
                   <ItemRenderable
                     name={item.label ?? formatPokemonName(item.name)}
@@ -94,13 +94,7 @@ export const ChampionSearch = ({
               : undefined
         }
         onConfirm={onAnswer}
-        searchSubject={
-          answerKind === 'pokemon'
-            ? 'Pokémon'
-            : answerKind === 'tm'
-              ? 'TM'
-              : answerKind
-        }
+        searchSubject={answerKind === 'pokemon' ? 'Pokémon' : answerKind}
         onQueryChange={setQuery}
         options={searchOptions}
         query={query}

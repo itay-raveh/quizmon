@@ -58,6 +58,7 @@ export const pokemonFromPixelCrop = {
       ...controls,
       response: {
         kind: 'search',
+        selection: 'single',
         candidates: 'pool',
       },
       cropScale: 1.4,

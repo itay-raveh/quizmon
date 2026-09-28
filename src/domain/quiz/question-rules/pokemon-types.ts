@@ -39,7 +39,9 @@ export const pokemonTypes = {
     3: {
       ...controls,
       response: {
-        kind: 'type-grid',
+        kind: 'search',
+        selection: 'multi',
+        candidates: 'types',
         correct: 'subject-types',
       },
     },

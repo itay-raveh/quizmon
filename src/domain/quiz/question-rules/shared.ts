@@ -38,9 +38,9 @@ export const baseQuestionRendering: QuestionRendering = {
 };
 
 export const responsePresets = {
-  single: { kind: 'choices', selection: 'single', minimumOptions: 4 },
-  shortSingle: { kind: 'choices', selection: 'single', minimumOptions: 2 },
-  multi: { kind: 'choices', selection: 'multi', minimumOptions: 4 },
-  shortMulti: { kind: 'choices', selection: 'multi', minimumOptions: 2 },
-  adaptive: { kind: 'choices', selection: 'adaptive', minimumOptions: 4 },
+  single: { kind: 'picker', selection: 'single', minimumOptions: 4 },
+  shortSingle: { kind: 'picker', selection: 'single', minimumOptions: 2 },
+  multi: { kind: 'picker', selection: 'multi', minimumOptions: 4 },
+  shortMulti: { kind: 'picker', selection: 'multi', minimumOptions: 2 },
+  adaptive: { kind: 'picker', selection: 'adaptive', minimumOptions: 4 },
 } as const;

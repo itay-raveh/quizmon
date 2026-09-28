@@ -43,6 +43,7 @@ export const pokedexEntryMatch = {
       ...controls,
       response: {
         kind: 'search',
+        selection: 'single',
         candidates: 'pool',
       },
       rendering: {

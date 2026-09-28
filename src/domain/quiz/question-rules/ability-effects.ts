@@ -42,6 +42,7 @@ export const abilityEffects = {
       allowMissingSprites: true,
       response: {
         kind: 'search',
+        selection: 'single',
         candidates: 'provided',
       },
     },

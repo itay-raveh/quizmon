@@ -31,7 +31,7 @@ export const questionDefinitions = {
   itemIdentification: {
     label: 'Item identification',
     specialty: 'item',
-    description: 'Identify an item or match a move to a type-colored TM disc.',
+    description: 'Identify an item from its sprite.',
     group: 'identity',
   },
   itemUses: {

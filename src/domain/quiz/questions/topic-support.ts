@@ -72,11 +72,9 @@ export const makeTopicQuestion = (
     new Set(options.map((option) => labels[option] ?? option)).size !==
       options.length ||
     options.length <
-      (context.variant.response.kind === 'choices'
+      (context.variant.response.kind === 'picker'
         ? context.variant.response.minimumOptions
-        : context.variant.response.kind === 'search'
-          ? 1
-          : 4)
+        : 1)
   )
     return;
   const primary = [

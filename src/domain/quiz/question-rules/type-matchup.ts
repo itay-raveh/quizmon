@@ -50,7 +50,9 @@ export const typeMatchup = {
     5: {
       ...controls,
       response: {
-        kind: 'type-grid',
+        kind: 'search',
+        selection: 'multi',
+        candidates: 'types',
         correct: 'effectiveness',
       },
       multipliers: [0, 0.25, 0.5, 1, 2, 4],

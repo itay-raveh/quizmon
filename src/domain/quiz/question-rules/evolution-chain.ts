@@ -50,6 +50,7 @@ export const evolutionChain = {
       ...controls,
       response: {
         kind: 'search',
+        selection: 'single',
         candidates: 'pool',
       },
     },

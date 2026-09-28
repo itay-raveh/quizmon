@@ -3,11 +3,18 @@ import type { QuestionRendering } from '../rendering.ts';
 import type { QuestionView } from '../presentation.ts';
 import type { ResponseStrategy } from './response-strategies.ts';
 
-type ChoiceResponse = Extract<ResponseStrategy, { kind: 'choices' }>;
+type ChoiceResponse = Extract<ResponseStrategy, { kind: 'picker' }>;
 type SearchResponse<Candidates extends 'pool' | 'provided'> =
-  ChoiceResponse | { kind: 'search'; candidates: Candidates };
-type GridResponse<Correct extends 'subject-types' | 'effectiveness'> =
-  ChoiceResponse | { kind: 'type-grid'; correct: Correct };
+  | ChoiceResponse
+  | { kind: 'search'; selection: 'single'; candidates: Candidates };
+type TypeSearchResponse<Correct extends 'subject-types' | 'effectiveness'> =
+  | ChoiceResponse
+  | {
+      kind: 'search';
+      selection: 'multi';
+      candidates: 'types';
+      correct: Correct;
+    };
 export type SimilarityWeights = {
   /** Points per type shared with the target. */
   sharedType: number;
@@ -57,7 +64,7 @@ export type EffectRules = EffectDistractors & {
   /** Keep wrong items in the target's category when applicable. */
   sameItemCategory?: boolean;
   /** Search uses the builder's supplied candidate list. */
-  response: ChoiceResponse | { kind: 'search'; candidates: 'provided' };
+  response: SearchResponse<'provided'>;
 };
 
 type NoControls = object;
@@ -70,8 +77,6 @@ interface FamilyControls {
     sameItemPocket: boolean;
     /** Restrict wrong items to the target's pocket and category. */
     sameItemCategory: boolean;
-    /** Probability of trying a type-colored TM disc question first. */
-    machineDiscChance: number;
     /** Search uses item names supplied by the builder. */
     response: SearchResponse<'provided'>;
   };
@@ -205,8 +210,8 @@ interface FamilyControls {
   pokemonTypes: {
     /** Restrict targets to Pokémon with exactly one type. */
     singleType: boolean;
-    /** A type grid selects every type of the subject. */
-    response: GridResponse<'subject-types'>;
+    /** Search for every type of the subject. */
+    response: TypeSearchResponse<'subject-types'>;
     /** Score types by their closest Pokémon to rank wrong answers. */
     similarityWeights: SimilarityWeights;
   };
@@ -246,8 +251,8 @@ interface FamilyControls {
     singleType: boolean;
     /** Attack multipliers eligible to be asked about. */
     multipliers: readonly number[];
-    /** A type grid selects every attack type with the requested multiplier. */
-    response: GridResponse<'effectiveness'>;
+    /** Search for every attack type with the requested multiplier. */
+    response: TypeSearchResponse<'effectiveness'>;
   };
   superEffectiveAttacker: PokemonDistractors & {
     /** Restrict targets to Pokémon with exactly one type. */

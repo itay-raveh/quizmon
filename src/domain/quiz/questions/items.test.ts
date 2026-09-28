@@ -81,91 +81,27 @@ test('item identification searches item names from level four', () => {
   expect(isQuestionData(question)).toBe(true);
 });
 
-test('level five searches real TM numbers without revealing disc types', () => {
+test('level five item identification still searches items', () => {
   const catalog = {
     pokemon: {},
-    typeRelations: { fire: {}, water: {}, grass: {}, electric: {} },
+    typeRelations: {},
     topics: {
-      items: [],
-      moves: [
-        ...[
-          ['fire-move', 'fire', 'tm01'],
-          ['water-move', 'water', 'tm02'],
-          ['grass-move', 'grass', 'tm03'],
-          ['electric-move', 'electric', 'tm04'],
-        ].map(([name, type, machine]) => ({
-          name,
-          label: name,
-          generations: ['I'],
-          type,
-          damageClass: 'special',
-          contexts: [
-            {
-              game: 'silver',
-              generation: 'II',
-              type,
-              damageClass: 'special',
-              machine,
-            },
-          ],
-        })),
-        {
-          name: 'court-change',
-          label: 'Court Change',
-          generations: ['II'],
-          type: 'normal',
-          damageClass: 'status',
-          contexts: [
-            {
-              game: 'silver',
-              generation: 'II',
-              type: 'normal',
-              damageClass: 'status',
-            },
-          ],
-        },
-      ],
-      games: { silver: { label: 'Silver', generation: 'II' } },
+      items: [item('potion', 'medicine', 'potion')],
+      moves: [{ name: 'fire-move', contexts: [{ machine: 'tm01' }] }],
     },
   } as unknown as PokemonCatalog;
   const question = buildQuestionType(
     {
       catalog,
       difficulty: 5,
-      generations: ['II'],
       pool: [],
       random: () => 0,
       used: new Set(),
     },
     'itemIdentification',
   );
-  expect(question?.subject.kind).toBe('move');
-  expect(question?.subject.name).not.toBe('court-change');
-  const tmByMove: Record<string, string> = {
-    'fire-move': 'tm01',
-    'water-move': 'tm02',
-    'grass-move': 'tm03',
-    'electric-move': 'tm04',
-  };
-  expect(question?.answer.correctOptions).toEqual([
-    tmByMove[question!.subject.name],
-  ]);
+  expect(question?.subject).toMatchObject({ kind: 'item', name: 'potion' });
+  expect(question?.answer.correctOptions).toEqual(['potion']);
   expect(question?.answer.interaction).toBe('search');
-  expect(question?.options).toHaveLength(1);
-  expect(question?.searchOptions).toContainEqual({
-    name: 'tm01',
-    label: 'TM 01',
-  });
-  expect(question?.prompt).toMatchObject({
-    supportingText: 'Pokémon Silver',
-  });
-  expect(Object.values(question?.optionImages ?? {})[0]).toMatch(
-    /^\/sprites\/items\/tm-[a-z]+\.png$/,
-  );
-  expect(
-    question?.options.every((option) =>
-      /^TM \d+$/.test(question.optionLabels?.[option] ?? ''),
-    ),
-  ).toBe(true);
   expect(isQuestionData(question)).toBe(true);
 });

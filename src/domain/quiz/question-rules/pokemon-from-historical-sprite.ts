@@ -67,6 +67,7 @@ export const pokemonFromHistoricalSprite = {
       ...controls,
       response: {
         kind: 'search',
+        selection: 'single',
         candidates: 'pool',
       },
       backSpriteChance: 1,

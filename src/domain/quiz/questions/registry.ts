@@ -182,7 +182,7 @@ export const buildQuestionType = (
     const original = build(variantContext);
     if (
       !original ||
-      (rules.response.kind === 'choices' &&
+      (rules.response.kind === 'picker' &&
         (rules.response.minimumOptions === 4
           ? original.options.length !== 4
           : original.options.length < 2))

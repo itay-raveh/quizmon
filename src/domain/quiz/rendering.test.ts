@@ -114,7 +114,7 @@ void shinyChoicesWithoutIdentity;
 type FieldNotesChoiceRendering = NonNullable<
   Extract<
     QuestionRuleEntry<FamilyRules['pokedexEntryMatch'], 'pokedexEntryMatch'>,
-    { response: { kind: 'choices' } }
+    { response: { kind: 'picker' } }
   >['rendering']
 >;
 const fieldNotesChoiceSubject = {

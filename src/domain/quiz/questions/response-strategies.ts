@@ -3,10 +3,10 @@ import { choosePokemonSprite } from './assembly.ts';
 import type { QuestionContext, QuestionDraft } from './context.ts';
 import type { FamilyRules } from './family-rules.ts';
 
-/** Choice buttons, search, or a type grid; families constrain the usable cases. */
+/** Presentation and selection are independent response controls. */
 export type ResponseStrategy =
   | {
-      kind: 'choices';
+      kind: 'picker';
       /** `adaptive` keeps the mode chosen by a family-specific prompt or finale. */
       selection: 'single' | 'multi' | 'adaptive';
       /** Four requires exactly four choices; two accepts any count of at least two. */
@@ -14,11 +14,14 @@ export type ResponseStrategy =
     }
   | {
       kind: 'search';
+      selection: 'single';
       /** Search either the eligible Pokémon pool or builder-supplied entries. */
       candidates: 'pool' | 'provided';
     }
   | {
-      kind: 'type-grid';
+      kind: 'search';
+      selection: 'multi';
+      candidates: 'types';
       /** Select the subject's types or every type with the asked multiplier. */
       correct: 'subject-types' | 'effectiveness';
     };
@@ -30,13 +33,13 @@ export const applyResponseStrategy = (
   rules: FamilyRules[keyof FamilyRules],
 ): void => {
   const response = rules.response;
-  if (response.kind === 'choices' && response.selection !== 'adaptive')
+  if (response.kind === 'picker' && response.selection !== 'adaptive')
     question.answer = {
       ...question.answer,
       interaction:
         response.selection === 'single' ? 'single-choice' : 'multi-select',
     };
-  if (response.kind === 'search') {
+  if (response.kind === 'search' && response.selection === 'single') {
     question.answer = { ...question.answer, interaction: 'search' };
     question.optionVisuals = undefined;
     question.optionDexNumbers = undefined;
@@ -52,12 +55,12 @@ export const applyResponseStrategy = (
         types: pokemon.types,
       }));
   }
-  if (rules.response.kind === 'type-grid') {
+  if (response.kind === 'search' && response.selection === 'multi') {
     question.options = Object.keys(context.catalog.typeRelations);
     question.answer = {
       interaction: 'multi-select',
       correctOptions:
-        rules.response.correct === 'subject-types'
+        response.correct === 'subject-types'
           ? (question.subject.types ?? [])
           : question.options.filter(
               (type) =>
@@ -73,7 +76,7 @@ export const applyResponseStrategy = (
       question.prompt = {
         ...question.prompt,
         before:
-          rules.response.correct === 'subject-types'
+          response.correct === 'subject-types'
             ? 'Select every type of '
             : question.prompt.before.replace(
                 'Which type has',

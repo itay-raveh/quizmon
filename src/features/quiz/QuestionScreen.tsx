@@ -188,9 +188,7 @@ export const QuestionScreen = ({
           <ChampionSearch
             answerKind={
               answerView.kind === 'item'
-                ? question.subject.kind === 'move'
-                  ? 'tm'
-                  : 'item'
+                ? 'item'
                 : answerView.kind === 'pokemon'
                   ? 'pokemon'
                   : 'ability'

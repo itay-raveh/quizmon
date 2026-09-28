@@ -1,6 +1,5 @@
 import type { FamilyRules } from './family-rules.ts';
 import { formatPokemonName } from '../../pokemon/format.ts';
-import { generations } from '../../pokemon/types.ts';
 import type { QuestionBuilder } from './context.ts';
 import {
   makeTopicQuestion,
@@ -9,119 +8,9 @@ import {
   topicSubject,
 } from './topic-support.ts';
 
-const buildMachineDiscQuestion: QuestionBuilder<
-  FamilyRules['itemIdentification']
-> = (context) => {
-  const topics = context.catalog.topics;
-  if (!topics) return;
-  const types = Object.keys(context.catalog.typeRelations);
-  if (context.variant.response.kind !== 'search' && types.length < 4) return;
-  for (const target of ordered(
-    context,
-    topics.moves.filter((move) =>
-      move.contexts.some(
-        (entry) =>
-          entry.machine &&
-          (context.generations ?? generations).includes(entry.generation),
-      ),
-    ),
-  )) {
-    for (const rules of ordered(context, target.contexts)) {
-      if (
-        !(context.generations ?? generations).includes(rules.generation) ||
-        !types.includes(rules.type) ||
-        !rules.machine
-      )
-        continue;
-      const game = topics.games[rules.game];
-      if (!game) continue;
-      const search = context.variant.response.kind === 'search';
-      const machines = [
-        ...new Set(
-          topics.moves.flatMap((move) =>
-            move.contexts.flatMap((entry) =>
-              entry.game === rules.game && entry.machine ? [entry.machine] : [],
-            ),
-          ),
-        ),
-      ];
-      const seenTypes = new Set([rules.type]);
-      const alternatives = search
-        ? []
-        : ordered(
-            context,
-            topics.moves.flatMap((move) =>
-              move.contexts.flatMap((entry) =>
-                entry.game === rules.game &&
-                entry.machine &&
-                types.includes(entry.type) &&
-                entry.type !== rules.type
-                  ? [{ machine: entry.machine, type: entry.type }]
-                  : [],
-              ),
-            ),
-          )
-            .filter(({ type }) => {
-              if (seenTypes.has(type)) return false;
-              seenTypes.add(type);
-              return true;
-            })
-            .slice(0, 3);
-      if (!search && alternatives.length !== 3) continue;
-      const options = [
-        { machine: rules.machine, type: rules.type },
-        ...alternatives,
-      ];
-      const prompt = search
-        ? `Which TM teaches ${target.label}?`
-        : `Which TM disc matches ${target.label}?`;
-      const question = makeTopicQuestion(
-        context,
-        { kind: 'move', name: target.name, generation: rules.generation },
-        prompt,
-        rules.machine,
-        options.map(({ machine }) => machine),
-        {
-          prompt: {
-            kind: 'text',
-            text: prompt,
-            supportingText: `Pokémon ${game.label}`,
-          },
-          context: rules.game,
-          ...(search
-            ? {
-                searchOptions: machines.map((machine) => ({
-                  name: machine,
-                  label: `TM ${machine.slice(2)}`,
-                })),
-              }
-            : {}),
-          optionImages: Object.fromEntries(
-            options.map(({ machine, type }) => [
-              machine,
-              `/sprites/items/tm-${type}.png`,
-            ]),
-          ),
-          optionLabels: Object.fromEntries(
-            options.map(({ machine }) => [machine, `TM ${machine.slice(2)}`]),
-          ),
-          explanation: `${target.label} is taught by TM ${rules.machine.slice(2)} (${formatPokemonName(rules.type)} type) in Pokémon ${game.label}.`,
-        },
-        'move',
-      );
-      if (question) return question;
-    }
-  }
-};
-
 export const buildItemIdentification: QuestionBuilder<
   FamilyRules['itemIdentification']
 > = (context) => {
-  const chance = context.variant.machineDiscChance;
-  if (chance === 1 || (chance > 0 && context.random() < chance)) {
-    const question = buildMachineDiscQuestion(context);
-    if (question) return question;
-  }
   const topics = context.catalog.topics;
   if (!topics) return;
   const pool = ordered(

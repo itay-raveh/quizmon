@@ -11,7 +11,6 @@ const controls = {
   distinctItemCategories: false,
   sameItemPocket: false,
   sameItemCategory: false,
-  machineDiscChance: 0,
 } as const satisfies QuestionControlsFor<'itemIdentification'>;
 
 const rendering = {
@@ -40,12 +39,7 @@ export const itemIdentification = {
     },
     4: {
       ...controls,
-      response: { kind: 'search', candidates: 'provided' },
-    },
-    5: {
-      ...controls,
-      machineDiscChance: 0.5,
-      response: { kind: 'search', candidates: 'provided' },
+      response: { kind: 'search', selection: 'single', candidates: 'provided' },
     },
   },
 } satisfies QuestionRuleRow<

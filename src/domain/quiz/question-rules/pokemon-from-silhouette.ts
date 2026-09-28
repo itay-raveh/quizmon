@@ -55,6 +55,7 @@ export const pokemonFromSilhouette = {
       ...controls,
       response: {
         kind: 'search',
+        selection: 'single',
         candidates: 'pool',
       },
     },
