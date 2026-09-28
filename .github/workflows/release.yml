@@ -108,8 +108,11 @@ jobs:
           printf -v run_number '%09d' "$GITHUB_RUN_NUMBER"
           printf -v run_attempt '%03d' "$GITHUB_RUN_ATTEMPT"
           reference="ghcr.io/${GITHUB_REPOSITORY,,}/release:main-$run_number-$run_attempt-${GITHUB_SHA:0:12}"
+          quizmon_reference="ghcr.io/${GITHUB_REPOSITORY,,}:main-$run_number-$run_attempt-${GITHUB_SHA:0:12}"
           docker tag "$image_id" "$reference"
+          docker tag "$image_id" "$quizmon_reference"
           docker push "$reference"
+          docker push "$quizmon_reference"
           digest_reference=$(docker image inspect "$reference" --format '{{index .RepoDigests 0}}')
           test "${digest_reference%@*}" = "${reference%:*}"
           mkdir -p "$public_config"
