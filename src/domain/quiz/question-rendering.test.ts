@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { questionRenderingSchema } from './question-rendering';
+import type { RenderingControlsFor } from '../../question-rules';
 import {
-  defaultQuestionRendering,
+  baseQuestionRendering,
   resolveQuestionRendering,
 } from './question-variants';
 
-describe('saved rendering type visibility', () => {
-  it('accepts old snapshots without type visibility', () => {
+describe('question rendering rules', () => {
+  it('accepts the base rendering', () => {
     expect(
-      questionRenderingSchema.safeParse(defaultQuestionRendering).success,
+      questionRenderingSchema.safeParse(baseQuestionRendering).success,
     ).toBe(true);
   });
 
@@ -27,4 +28,27 @@ describe('saved rendering type visibility', () => {
       }).success,
     ).toBe(false);
   });
+
+  it('applies family defaults and level overrides', () => {
+    const silhouette = resolveQuestionRendering('silhouette-for-pokemon', 4);
+    expect(silhouette.subject.sprite).toBe('never');
+    expect(silhouette.choices.sprite).toBe('silhouette');
+    expect(silhouette.choices.name).toBe('after-answer');
+
+    const counterPick = resolveQuestionRendering('super-effective-attacker', 3);
+    expect(counterPick.related.name).toBe('never');
+    expect(counterPick.subject.types).toBe('after-answer');
+  });
 });
+
+const unsupportedTypeChoices = {
+  // @ts-expect-error TypeAnswerPicker does not consume choice rendering.
+  choices: { name: 'never' },
+} satisfies RenderingControlsFor<'pokemon-types'>;
+void unsupportedTypeChoices;
+
+const unsupportedCounterPick = {
+  // @ts-expect-error This artwork always reveals subject types after answering.
+  subject: { types: 'never' },
+} satisfies RenderingControlsFor<'super-effective-attacker'>;
+void unsupportedCounterPick;

@@ -1,4 +1,4 @@
-import { defaultQuestionRendering } from '@/domain/quiz/question-variants';
+import { baseQuestionRendering } from '@/domain/quiz/question-variants';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
 import { ChampionSearch } from './ChampionSearch';
@@ -6,7 +6,7 @@ import { ChampionSearch } from './ChampionSearch';
 test('reveals the correct search answer after a wrong guess', () => {
   const props = {
     answerKind: 'ability' as const,
-    policy: defaultQuestionRendering.search,
+    policy: baseQuestionRendering.search,
     cluesShown: 0,
     correctOption: 'sticky-hold',
     disabled: false,

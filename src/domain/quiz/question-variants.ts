@@ -1,10 +1,10 @@
 import {
+  baseQuestionRendering,
   questionRules,
   type QuestionRuleEntry,
   type QuestionRuleRow,
 } from '../../question-rules.ts';
 import {
-  defaultQuestionRendering,
   mergeRendering,
   type QuestionRendering,
 } from './question-rendering.ts';
@@ -12,21 +12,27 @@ import { resolveDifficultyVariant, type Difficulty } from './difficulty.ts';
 import type { QuestionData } from './types.ts';
 import type { FamilyRules } from './questions/family-rules.ts';
 
-export { defaultQuestionRendering } from './question-rendering.ts';
+export { baseQuestionRendering } from '../../question-rules.ts';
 
-const withRendering = <Rules extends { rendering: QuestionRendering }>(
-  row: QuestionRuleRow<Rules>,
-  entry: QuestionRuleEntry<Rules>,
+const withRendering = <
+  Type extends keyof FamilyRules,
+  Rules extends { rendering: QuestionRendering },
+>(
+  row: QuestionRuleRow<Rules, Type>,
+  entry: QuestionRuleEntry<Rules, Type>,
 ): Rules =>
   ({
     ...entry,
-    rendering: mergeRendering(row.rendering, entry.rendering),
+    rendering: mergeRendering(
+      mergeRendering(baseQuestionRendering, row.rendering),
+      entry.rendering,
+    ),
   }) as Rules;
 
 export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
   type: Type,
 ): FamilyRules[Type] | undefined => {
-  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type]>;
+  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type], Type>;
   return row.unleveled ? withRendering(row, row.unleveled) : undefined;
 };
 
@@ -39,7 +45,7 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
       variant: FamilyRules[Type];
     }
   | undefined => {
-  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type]>;
+  const row = questionRules[type] as QuestionRuleRow<FamilyRules[Type], Type>;
   const resolved = resolveDifficultyVariant(row.levels, difficulty);
   return resolved
     ? { level: resolved.level, variant: withRendering(row, resolved.variant) }
@@ -52,7 +58,7 @@ export const resolveQuestionRendering = (
 ): QuestionRendering =>
   (level ? getQuestionVariant(type, level)?.variant.rendering : undefined) ??
   getUnleveledQuestionRule(type)?.rendering ??
-  defaultQuestionRendering;
+  baseQuestionRendering;
 
 export const getQuestionRendering = (
   question: QuestionData,

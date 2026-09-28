@@ -17,13 +17,6 @@ export type RenderingOverrides = {
   [Role in RenderingRole]?: Partial<EntityRendering>;
 };
 
-export const defaultQuestionRendering: QuestionRendering = {
-  subject: { sprite: 'always', name: 'always', number: 'always' },
-  choices: { sprite: 'always', name: 'always', number: 'always' },
-  related: { sprite: 'always', name: 'always', number: 'always' },
-  search: { sprite: 'always', name: 'always', number: 'always' },
-};
-
 export interface RevealState {
   answered: boolean;
   cluesShown: number;

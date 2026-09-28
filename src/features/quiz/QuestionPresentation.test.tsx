@@ -1,4 +1,4 @@
-import { defaultQuestionRendering } from '@/domain/quiz/question-variants';
+import { baseQuestionRendering } from '@/domain/quiz/question-variants';
 import type { QuestionData } from '@/domain/quiz/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
@@ -31,7 +31,7 @@ test('separates a move description from its question', () => {
   const markup = renderToStaticMarkup(
     <QuestionPresentation
       question={question}
-      rendering={defaultQuestionRendering}
+      rendering={baseQuestionRendering}
       answered={false}
       cluesShown={0}
       isLeague={false}
@@ -131,4 +131,55 @@ test('shows TM disc art and a visible type label for each choice', () => {
   );
   expect(markup).toContain('/sprites/items/tm-fire.png');
   expect(markup).toContain('>Fire</span>');
+});
+
+test('choice name visibility follows the saved rendering policy', () => {
+  const rendering = {
+    ...baseQuestionRendering,
+    choices: {
+      ...baseQuestionRendering.choices,
+      name: 'after-answer' as const,
+    },
+  };
+  const question: QuestionData = {
+    answer: { interaction: 'single-choice', correctOptions: ['bulbasaur'] },
+    category: 'identity',
+    id: 'sprite-for-pokemon:bulbasaur',
+    media: { kind: 'none' },
+    options: ['bulbasaur'],
+    optionVisuals: {
+      bulbasaur: { dexNumber: 1, src: '/bulbasaur.png', types: ['grass'] },
+    },
+    prompt: { kind: 'text', text: 'Find Bulbasaur.' },
+    questionType: 'sprite-for-pokemon',
+    repetition: {
+      identity: 'bulbasaur',
+      subjects: ['pokemon/bulbasaur'],
+      primary: ['bulbasaur'],
+      distractors: [],
+    },
+    subject: { kind: 'pokemon', name: 'bulbasaur', generation: 'I' },
+    rendering,
+  };
+  const markup = (answered: boolean, current = question) =>
+    renderToStaticMarkup(
+      <QuestionAnswers
+        question={current}
+        answered={answered}
+        onSelect={() => {}}
+        selectedOptions={[]}
+      />,
+    );
+
+  expect(markup(false)).toContain('aria-label="Sprite 1"');
+  expect(markup(true)).toContain('aria-label="Bulbasaur"');
+  expect(
+    markup(true, {
+      ...question,
+      rendering: {
+        ...rendering,
+        choices: { ...rendering.choices, name: 'never' },
+      },
+    }),
+  ).toContain('aria-label="Sprite 1"');
 });

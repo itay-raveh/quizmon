@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { questionRules } from '../../question-rules.ts';
+import {
+  resolveDifficultyVariant,
+  type DifficultyVariants,
+} from './difficulty.ts';
 import type { QuestionData } from './types.ts';
 
 const answerViewSchema = z.discriminatedUnion('kind', [
@@ -35,15 +39,13 @@ export const getQuestionView = (question: QuestionData): QuestionView => {
   if (question.view) return question.view;
   const row = questionRules[question.questionType] as {
     unleveled?: { view: QuestionView };
-    levels: Record<number, { view: QuestionView }>;
+    levels: DifficultyVariants<{ view: QuestionView }>;
   };
   const level = question.variantLevel;
   const resolved =
     level === undefined
       ? row.unleveled
-      : Object.entries(row.levels)
-          .filter(([key]) => Number(key) <= level)
-          .at(-1)?.[1];
+      : resolveDifficultyVariant(row.levels, level)?.variant;
   const view = resolved?.view ?? Object.values(row.levels)[0]!.view;
   if (question.optionImages) return { ...view, answer: { kind: 'item' } };
   if (

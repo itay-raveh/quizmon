@@ -6,6 +6,7 @@ import type { TopicCatalog } from '../topic-catalog.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
 import { savedQuestionSchema } from '../question-lineup.ts';
 import { getQuestionView } from '../question-presentation.ts';
+import { questionRenderingSchema } from '../question-rendering.ts';
 import { questionRules } from '../../../question-rules.ts';
 import { buildQuestionType } from './registry.ts';
 import type { QuestionType } from './definitions.ts';
@@ -64,6 +65,9 @@ it('builds every configured family with a renderable answer and saved view', () 
       ).find(Boolean);
       expect(question, `${type}:${difficulty}`).toBeDefined();
       const saved = savedQuestionSchema.parse(question);
+      expect(questionRenderingSchema.safeParse(saved.rendering).success).toBe(
+        true,
+      );
       const view = getQuestionView(saved);
       expect(view, `${type}:${difficulty}`).toEqual(question!.view);
       if (question!.optionImages) expect(view.answer.kind, type).toBe('item');

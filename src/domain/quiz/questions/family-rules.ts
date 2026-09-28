@@ -157,12 +157,58 @@ interface FamilyControls {
   };
 }
 
+type FamilyAnswerKinds = {
+  'item-identification': 'text';
+  'item-uses': 'text';
+  'weight-comparison': 'pokemon';
+  'height-comparison': 'pokemon';
+  'move-types': 'type';
+  'location-region': 'text';
+  'move-category': 'text';
+  'pokedex-categories': 'pokemon';
+  'evolution-conditions': 'text';
+  'ability-effects': 'text';
+  'held-item-effects': 'text';
+  'hidden-abilities': 'text';
+  'nature-effects': 'text';
+  'ev-yields': 'text';
+  'encounter-locations': 'pokemon';
+  'berry-flavors': 'text';
+  'natural-gift': 'type';
+  'pokemon-from-historical-sprite': 'pokemon';
+  'sprite-for-pokemon': 'pokemon';
+  'silhouette-for-pokemon': 'pokemon';
+  'pokemon-from-silhouette': 'pokemon';
+  'pokemon-from-pixel-crop': 'pokemon';
+  'shiny-pokemon-identification': 'pokemon';
+  'pokedex-entry-match': 'pokemon';
+  'pokemon-types': 'type';
+  'type-odd-one-out': 'pokemon';
+  'pokemon-by-type': 'pokemon';
+  'dual-type-match': 'pokemon';
+  'legendary-mythical-selection': 'pokemon';
+  'pokemon-by-generation': 'pokemon';
+  'evolution-chain': 'pokemon';
+  'evolution-gained-type': 'type';
+  'pokemon-abilities': 'text';
+  'level-up-moves': 'text';
+  'stat-extremes': 'pokemon';
+  'type-matchup': 'type';
+  'super-effective-attacker': 'pokemon';
+  champion: 'pokemon';
+};
+
 export type FamilyRules = {
   [Type in keyof FamilyControls]: Omit<FamilyControls[Type], 'response'> & {
     response: FamilyControls[Type] extends { response: infer Strategy }
       ? Strategy
       : ChoiceResponse;
     rendering: QuestionRendering;
-    view: QuestionView;
+    view: Omit<QuestionView, 'answer'> & {
+      answer: Extract<
+        QuestionView['answer'],
+        { kind: FamilyAnswerKinds[Type] }
+      >;
+    };
   };
 };

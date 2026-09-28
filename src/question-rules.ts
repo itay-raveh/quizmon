@@ -1,19 +1,115 @@
 import type { DifficultyRules } from './domain/quiz/difficulty.ts';
 import {
-  defaultQuestionRendering,
+  type EntityRendering,
   type QuestionRendering,
-  type RenderingOverrides,
 } from './domain/quiz/question-rendering.ts';
-import type { QuestionView } from './domain/quiz/question-presentation.ts';
 import type { FamilyRules } from './domain/quiz/questions/family-rules.ts';
 
-export type QuestionRuleEntry<Rules extends { rendering: QuestionRendering }> =
-  Omit<Rules, 'rendering'> & { rendering?: RenderingOverrides };
+type Renderable<Fields extends keyof EntityRendering> = Partial<
+  Pick<EntityRendering, Fields>
+>;
+type HiddenUntilAnswer = 'after-answer' | 'never';
 
-export type QuestionRuleRow<Rules extends { rendering: QuestionRendering }> = {
-  rendering: QuestionRendering;
-  unleveled?: QuestionRuleEntry<Rules>;
-  levels: DifficultyRules<QuestionRuleEntry<Rules>>;
+type RenderingControls<
+  Subject extends keyof EntityRendering = never,
+  Choices extends keyof EntityRendering = never,
+  Related extends keyof EntityRendering = never,
+  Search extends keyof EntityRendering = never,
+> = {
+  subject?: [Subject] extends [never] ? never : Renderable<Subject>;
+  choices?: [Choices] extends [never] ? never : Renderable<Choices>;
+  related?: [Related] extends [never] ? never : Renderable<Related>;
+  search?: [Search] extends [never] ? never : Renderable<Search>;
+};
+
+type FamilyRenderingControls = {
+  'item-identification': RenderingControls<'sprite', 'sprite'>;
+  'item-uses': RenderingControls<'sprite'>;
+  'ability-effects': RenderingControls<'sprite'>;
+  'held-item-effects': RenderingControls<'sprite' | 'name'>;
+  'berry-flavors': RenderingControls<'sprite'>;
+  'natural-gift': RenderingControls<'sprite'>;
+  'pokemon-from-historical-sprite': {
+    choices?: Renderable<'sprite' | 'number'>;
+    related?: { name?: 'never'; number?: 'never' };
+    search?: Renderable<'sprite' | 'number'>;
+  };
+  'sprite-for-pokemon': {
+    subject?: { sprite?: 'never' };
+    choices?: { name?: HiddenUntilAnswer; number?: HiddenUntilAnswer };
+  };
+  'silhouette-for-pokemon': {
+    subject?: { sprite?: 'never' };
+    choices?: {
+      sprite?: 'silhouette';
+      name?: HiddenUntilAnswer;
+      number?: HiddenUntilAnswer;
+    };
+  };
+  'pokemon-from-silhouette': {
+    subject?: { sprite?: 'silhouette' };
+    choices?: { sprite?: 'never' };
+    related?: { name?: 'never'; number?: 'never' };
+    search?: { sprite?: 'never'; number?: EntityRendering['number'] };
+  };
+  'pokemon-from-pixel-crop': {
+    choices?: { sprite?: 'never' };
+    related?: { name?: HiddenUntilAnswer; number?: HiddenUntilAnswer };
+    search?: { sprite?: 'never'; number?: EntityRendering['number'] };
+  };
+  'pokemon-by-generation': RenderingControls<never, 'number'>;
+  'evolution-chain': {
+    subject?: {
+      sprite?: HiddenUntilAnswer;
+      name?: HiddenUntilAnswer;
+      number?: HiddenUntilAnswer;
+    };
+    choices?: Renderable<'sprite' | 'number'>;
+    related?: Renderable<'sprite' | 'name' | 'number'>;
+    search?: Renderable<'sprite' | 'number'>;
+  };
+  'evolution-gained-type': RenderingControls<
+    'sprite' | 'name' | 'number' | 'types',
+    never,
+    'sprite' | 'name' | 'number' | 'types'
+  >;
+  'super-effective-attacker': {
+    subject?: { types?: 'always' | 'after-answer' };
+    related?: {
+      sprite?: HiddenUntilAnswer;
+      name?: HiddenUntilAnswer;
+      number?: HiddenUntilAnswer;
+    };
+  };
+  champion: {
+    subject?: {
+      sprite?: { afterClues: 0 | 1 | 2 | 3 | 4; silhouette?: boolean };
+    };
+    choices?: { sprite?: 'never'; number?: HiddenUntilAnswer };
+    related?: { name?: 'never'; number?: 'never' };
+    search?: { sprite?: 'never'; number?: EntityRendering['number'] };
+  };
+};
+
+export type RenderingControlsFor<Type extends keyof FamilyRules> =
+  Type extends keyof FamilyRenderingControls
+    ? FamilyRenderingControls[Type]
+    : RenderingControls;
+
+export type QuestionRuleEntry<
+  Rules extends { rendering: QuestionRendering },
+  Type extends keyof FamilyRules,
+> = Omit<Rules, 'rendering'> & {
+  rendering?: RenderingControlsFor<Type>;
+};
+
+export type QuestionRuleRow<
+  Rules extends { rendering: QuestionRendering },
+  Type extends keyof FamilyRules,
+> = {
+  rendering: RenderingControlsFor<Type>;
+  unleveled?: QuestionRuleEntry<Rules, Type>;
+  levels: DifficultyRules<QuestionRuleEntry<Rules, Type>>;
 };
 const controls = {
   'item-identification': {
@@ -415,15 +511,104 @@ const controls = {
   },
 } as const satisfies {
   [Type in keyof FamilyRules]: Partial<
-    Omit<FamilyRules[Type], 'response' | 'rendering'>
-  > & { view: QuestionView };
+    Omit<FamilyRules[Type], 'response' | 'rendering' | 'view'>
+  > & { view: FamilyRules[Type]['view'] };
 };
+
+export const baseQuestionRendering: QuestionRendering = {
+  subject: { sprite: 'always', name: 'always', number: 'always' },
+  choices: { sprite: 'always', name: 'always', number: 'always' },
+  related: { sprite: 'always', name: 'always', number: 'always' },
+  search: { sprite: 'always', name: 'always', number: 'always' },
+};
+
+const renderings = {
+  'item-identification': {},
+  'item-uses': {},
+  'weight-comparison': {},
+  'height-comparison': {},
+  'move-types': {},
+  'location-region': {},
+  'move-category': {},
+  'pokedex-categories': {},
+  'evolution-conditions': {},
+  'ability-effects': {},
+  'held-item-effects': {},
+  'hidden-abilities': {},
+  'nature-effects': {},
+  'ev-yields': {},
+  'encounter-locations': {},
+  'berry-flavors': {},
+  'natural-gift': {},
+  'pokemon-from-historical-sprite': {
+    choices: { sprite: 'never' },
+    search: { sprite: 'never' },
+  },
+  'sprite-for-pokemon': {
+    subject: { sprite: 'never' },
+    choices: { name: 'after-answer', number: 'after-answer' },
+  },
+  'silhouette-for-pokemon': {
+    subject: { sprite: 'never' },
+    choices: {
+      sprite: 'silhouette',
+      name: 'after-answer',
+      number: 'after-answer',
+    },
+  },
+  'pokemon-from-silhouette': {
+    subject: { sprite: 'silhouette' },
+    choices: { sprite: 'never' },
+    search: { sprite: 'never' },
+  },
+  'pokemon-from-pixel-crop': {
+    choices: { sprite: 'never' },
+    related: { name: 'after-answer', number: 'after-answer' },
+    search: { sprite: 'never' },
+  },
+  'shiny-pokemon-identification': {},
+  'pokedex-entry-match': {},
+  'pokemon-types': {},
+  'type-odd-one-out': {},
+  'pokemon-by-type': {},
+  'dual-type-match': {},
+  'legendary-mythical-selection': {},
+  'pokemon-by-generation': { choices: { number: 'after-answer' } },
+  'evolution-chain': {
+    subject: {
+      sprite: 'after-answer',
+      name: 'after-answer',
+      number: 'after-answer',
+    },
+    choices: { sprite: 'never', number: 'never' },
+    search: { sprite: 'never' },
+  },
+  'evolution-gained-type': {
+    related: {
+      sprite: 'after-answer',
+      name: 'after-answer',
+      number: 'after-answer',
+    },
+  },
+  'pokemon-abilities': {},
+  'level-up-moves': {},
+  'stat-extremes': {},
+  'type-matchup': {},
+  'super-effective-attacker': {
+    related: { sprite: 'after-answer', name: 'never', number: 'never' },
+  },
+  champion: {
+    subject: { sprite: { afterClues: 4, silhouette: true } },
+    choices: { sprite: 'never', number: 'after-answer' },
+    search: { sprite: 'never', number: 'never' },
+  },
+} satisfies { [Type in keyof FamilyRules]: RenderingControlsFor<Type> };
 
 export const questionRules = {
   'item-identification': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['item-identification'],
     levels: {
-      '1': {
+      1: {
         ...controls['item-identification'],
         distinctItemCategories: true,
         response: {
@@ -431,7 +616,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '2': {
+      2: {
         ...controls['item-identification'],
         sameItemPocket: true,
         response: {
@@ -439,7 +624,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['item-identification'],
         sameItemCategory: true,
         response: {
@@ -447,11 +632,11 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['item-identification'],
         response: { kind: 'search', candidates: 'provided' },
       },
-      '5': {
+      5: {
         ...controls['item-identification'],
         machineDiscChance: 0.5,
         response: { kind: 'search', candidates: 'provided' },
@@ -459,9 +644,9 @@ export const questionRules = {
     },
   },
   'item-uses': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['item-uses'],
     levels: {
-      '2': {
+      2: {
         ...controls['item-uses'],
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
@@ -471,7 +656,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['item-uses'],
         sameItemCategory: true,
         minimumEffectSimilarity: 0,
@@ -482,7 +667,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['item-uses'],
         sameItemCategory: true,
         minimumEffectSimilarity: 0.3,
@@ -493,7 +678,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['item-uses'],
         sameItemCategory: true,
         minimumEffectSimilarity: 0.5,
@@ -509,9 +694,9 @@ export const questionRules = {
     },
   },
   'weight-comparison': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['weight-comparison'],
     levels: {
-      '2': {
+      2: {
         ...controls['weight-comparison'],
         measurement: {
           minimumRatio: 2,
@@ -523,7 +708,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['weight-comparison'],
         measurement: {
           minimumRatio: 1.3,
@@ -535,7 +720,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['weight-comparison'],
         measurement: {
           minimumRatio: 1.3,
@@ -547,7 +732,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['weight-comparison'],
         measurement: {
           minimumRatio: 1.3,
@@ -562,9 +747,9 @@ export const questionRules = {
     },
   },
   'height-comparison': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['height-comparison'],
     levels: {
-      '2': {
+      2: {
         ...controls['height-comparison'],
         measurement: {
           minimumRatio: 2,
@@ -576,7 +761,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['height-comparison'],
         measurement: {
           minimumRatio: 1.3,
@@ -588,7 +773,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['height-comparison'],
         measurement: {
           minimumRatio: 1.3,
@@ -600,7 +785,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['height-comparison'],
         measurement: {
           minimumRatio: 1.3,
@@ -615,9 +800,9 @@ export const questionRules = {
     },
   },
   'move-types': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['move-types'],
     levels: {
-      '2': {
+      2: {
         ...controls['move-types'],
         showMoveDescription: true,
         response: {
@@ -625,7 +810,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['move-types'],
         allOptions: true,
         excludeTypeHintNames: true,
@@ -637,16 +822,16 @@ export const questionRules = {
     },
   },
   'location-region': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['location-region'],
     levels: {
-      '2': {
+      2: {
         ...controls['location-region'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['location-region'],
         allOptions: true,
         response: {
@@ -657,9 +842,9 @@ export const questionRules = {
     },
   },
   'move-category': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['move-category'],
     levels: {
-      '2': {
+      2: {
         ...controls['move-category'],
         statusMovesOnly: true,
         response: {
@@ -667,7 +852,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['move-category'],
         statusMovesOnly: false,
         response: {
@@ -675,7 +860,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['move-category'],
         statusMovesOnly: false,
         sameMoveType: true,
@@ -687,16 +872,16 @@ export const questionRules = {
     },
   },
   'pokedex-categories': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['pokedex-categories'],
     levels: {
-      '2': {
+      2: {
         ...controls['pokedex-categories'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['pokedex-categories'],
         sameColorOrShape: true,
         response: {
@@ -704,7 +889,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['pokedex-categories'],
         sameColorOrShape: true,
         closeAlternatives: true,
@@ -716,9 +901,9 @@ export const questionRules = {
     },
   },
   'evolution-conditions': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['evolution-conditions'],
     levels: {
-      '3': {
+      3: {
         ...controls['evolution-conditions'],
         minimumEvolutionConditions: 1,
         mixedLevelEvolutionConditions: true,
@@ -727,7 +912,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['evolution-conditions'],
         minimumEvolutionConditions: 1,
         mixedLevelEvolutionConditions: true,
@@ -737,7 +922,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['evolution-conditions'],
         minimumEvolutionConditions: 2,
         multiSelectEvolutionConditions: true,
@@ -755,9 +940,9 @@ export const questionRules = {
     },
   },
   'ability-effects': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['ability-effects'],
     levels: {
-      '3': {
+      3: {
         ...controls['ability-effects'],
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
@@ -767,7 +952,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['ability-effects'],
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
@@ -777,7 +962,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['ability-effects'],
         minimumEffectSimilarity: 0,
         maximumEffectSimilarity: 0.35,
@@ -791,9 +976,9 @@ export const questionRules = {
     },
   },
   'held-item-effects': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['held-item-effects'],
     levels: {
-      '3': {
+      3: {
         ...controls['held-item-effects'],
         sameItemCategory: true,
         minimumEffectSimilarity: 0,
@@ -804,7 +989,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['held-item-effects'],
         sameItemCategory: true,
         minimumEffectSimilarity: 0.3,
@@ -815,7 +1000,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['held-item-effects'],
         sameItemCategory: true,
         minimumEffectSimilarity: 0.5,
@@ -831,9 +1016,9 @@ export const questionRules = {
     },
   },
   'hidden-abilities': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['hidden-abilities'],
     levels: {
-      '4': {
+      4: {
         ...controls['hidden-abilities'],
         sameTypeAbilityDistractors: false,
         response: {
@@ -841,7 +1026,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['hidden-abilities'],
         sameTypeAbilityDistractors: true,
         allowMissingSprites: true,
@@ -853,9 +1038,9 @@ export const questionRules = {
     },
   },
   'nature-effects': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['nature-effects'],
     levels: {
-      '4': {
+      4: {
         ...controls['nature-effects'],
         shareNatureStat: false,
         response: {
@@ -863,7 +1048,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['nature-effects'],
         shareNatureStat: true,
         response: {
@@ -874,9 +1059,9 @@ export const questionRules = {
     },
   },
   'ev-yields': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['ev-yields'],
     levels: {
-      '4': {
+      4: {
         ...controls['ev-yields'],
         completeEvYield: false,
         response: {
@@ -884,7 +1069,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['ev-yields'],
         completeEvYield: true,
         closeAlternatives: true,
@@ -896,16 +1081,16 @@ export const questionRules = {
     },
   },
   'encounter-locations': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['encounter-locations'],
     levels: {
-      '4': {
+      4: {
         ...controls['encounter-locations'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['encounter-locations'],
         encounterConditions: true,
         closeAlternatives: true,
@@ -918,9 +1103,9 @@ export const questionRules = {
     },
   },
   'berry-flavors': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['berry-flavors'],
     levels: {
-      '4': {
+      4: {
         ...controls['berry-flavors'],
         completeFlavors: false,
         response: {
@@ -928,7 +1113,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['berry-flavors'],
         completeFlavors: true,
         allOptions: true,
@@ -940,9 +1125,9 @@ export const questionRules = {
     },
   },
   'natural-gift': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['natural-gift'],
     levels: {
-      '5': {
+      5: {
         ...controls['natural-gift'],
         allOptions: true,
         response: {
@@ -953,32 +1138,7 @@ export const questionRules = {
     },
   },
   'pokemon-from-historical-sprite': {
-    rendering: {
-      subject: {
-        sprite: 'always',
-        name: 'never',
-        number: 'never',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['pokemon-from-historical-sprite'],
     unleveled: {
       ...controls['pokemon-from-historical-sprite'],
       response: {
@@ -987,7 +1147,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '1': {
+      1: {
         ...controls['pokemon-from-historical-sprite'],
         currentSpriteChance: 1,
         distractorRankDirection: 'least-similar',
@@ -996,7 +1156,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '2': {
+      2: {
         ...controls['pokemon-from-historical-sprite'],
         currentSpriteChance: 1,
         distractorRankDirection: 'most-similar',
@@ -1005,7 +1165,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['pokemon-from-historical-sprite'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
@@ -1015,7 +1175,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['pokemon-from-historical-sprite'],
         response: {
           kind: 'search',
@@ -1026,32 +1186,7 @@ export const questionRules = {
     },
   },
   'sprite-for-pokemon': {
-    rendering: {
-      subject: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'always',
-        name: 'after-answer',
-        number: 'after-answer',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['sprite-for-pokemon'],
     unleveled: {
       ...controls['sprite-for-pokemon'],
       response: {
@@ -1060,7 +1195,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '1': {
+      1: {
         ...controls['sprite-for-pokemon'],
         distractorRankDirection: 'least-similar',
         response: {
@@ -1068,7 +1203,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['sprite-for-pokemon'],
         distractorRankDirection: 'most-similar',
         response: {
@@ -1076,7 +1211,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['sprite-for-pokemon'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
@@ -1086,7 +1221,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['sprite-for-pokemon'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
@@ -1099,32 +1234,7 @@ export const questionRules = {
     },
   },
   'silhouette-for-pokemon': {
-    rendering: {
-      subject: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'silhouette',
-        name: 'after-answer',
-        number: 'after-answer',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['silhouette-for-pokemon'],
     unleveled: {
       ...controls['silhouette-for-pokemon'],
       response: {
@@ -1133,7 +1243,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['silhouette-for-pokemon'],
         distractorRankDirection: 'least-similar',
         response: {
@@ -1141,7 +1251,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['silhouette-for-pokemon'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
@@ -1151,7 +1261,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['silhouette-for-pokemon'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
@@ -1164,32 +1274,7 @@ export const questionRules = {
     },
   },
   'pokemon-from-silhouette': {
-    rendering: {
-      subject: {
-        sprite: 'silhouette',
-        name: 'never',
-        number: 'never',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['pokemon-from-silhouette'],
     unleveled: {
       ...controls['pokemon-from-silhouette'],
       response: {
@@ -1198,7 +1283,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['pokemon-from-silhouette'],
         distractorRankDirection: 'least-similar',
         response: {
@@ -1206,7 +1291,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['pokemon-from-silhouette'],
         distractorRankDirection: 'most-similar',
         response: {
@@ -1214,7 +1299,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['pokemon-from-silhouette'],
         response: {
           kind: 'search',
@@ -1224,32 +1309,7 @@ export const questionRules = {
     },
   },
   'pokemon-from-pixel-crop': {
-    rendering: {
-      subject: {
-        sprite: 'always',
-        name: 'never',
-        number: 'never',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['pokemon-from-pixel-crop'],
     unleveled: {
       ...controls['pokemon-from-pixel-crop'],
       response: {
@@ -1258,7 +1318,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '3': {
+      3: {
         ...controls['pokemon-from-pixel-crop'],
         cropScale: 0.65,
         response: {
@@ -1266,7 +1326,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['pokemon-from-pixel-crop'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
@@ -1276,7 +1336,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['pokemon-from-pixel-crop'],
         response: {
           kind: 'search',
@@ -1287,7 +1347,7 @@ export const questionRules = {
     },
   },
   'shiny-pokemon-identification': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['shiny-pokemon-identification'],
     unleveled: {
       ...controls['shiny-pokemon-identification'],
       response: {
@@ -1296,14 +1356,14 @@ export const questionRules = {
       },
     },
     levels: {
-      '3': {
+      3: {
         ...controls['shiny-pokemon-identification'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['shiny-pokemon-identification'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 6,
@@ -1313,7 +1373,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['shiny-pokemon-identification'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
@@ -1326,7 +1386,7 @@ export const questionRules = {
     },
   },
   'pokedex-entry-match': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['pokedex-entry-match'],
     unleveled: {
       ...controls['pokedex-entry-match'],
       response: {
@@ -1335,14 +1395,14 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['pokedex-entry-match'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['pokedex-entry-match'],
         response: {
           kind: 'search',
@@ -1356,7 +1416,7 @@ export const questionRules = {
     },
   },
   'pokemon-types': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['pokemon-types'],
     unleveled: {
       ...controls['pokemon-types'],
       response: {
@@ -1365,7 +1425,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['pokemon-types'],
         singleType: true,
         response: {
@@ -1373,7 +1433,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['pokemon-types'],
         response: {
           kind: 'type-grid',
@@ -1383,7 +1443,7 @@ export const questionRules = {
     },
   },
   'type-odd-one-out': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['type-odd-one-out'],
     unleveled: {
       ...controls['type-odd-one-out'],
       response: {
@@ -1392,7 +1452,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['type-odd-one-out'],
         singleType: true,
         response: {
@@ -1400,7 +1460,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['type-odd-one-out'],
         response: {
           kind: 'choices',
@@ -1410,7 +1470,7 @@ export const questionRules = {
     },
   },
   'pokemon-by-type': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['pokemon-by-type'],
     unleveled: {
       ...controls['pokemon-by-type'],
       response: {
@@ -1419,7 +1479,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['pokemon-by-type'],
         singleType: true,
         response: {
@@ -1427,7 +1487,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['pokemon-by-type'],
         response: {
           kind: 'choices',
@@ -1437,7 +1497,7 @@ export const questionRules = {
     },
   },
   'dual-type-match': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['dual-type-match'],
     unleveled: {
       ...controls['dual-type-match'],
       response: {
@@ -1446,7 +1506,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '3': {
+      3: {
         ...controls['dual-type-match'],
         response: {
           kind: 'choices',
@@ -1456,7 +1516,7 @@ export const questionRules = {
     },
   },
   'legendary-mythical-selection': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['legendary-mythical-selection'],
     unleveled: {
       ...controls['legendary-mythical-selection'],
       response: {
@@ -1465,7 +1525,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['legendary-mythical-selection'],
         response: {
           kind: 'choices',
@@ -1475,32 +1535,7 @@ export const questionRules = {
     },
   },
   'pokemon-by-generation': {
-    rendering: {
-      subject: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'always',
-        name: 'always',
-        number: 'after-answer',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['pokemon-by-generation'],
     unleveled: {
       ...controls['pokemon-by-generation'],
       response: {
@@ -1509,7 +1544,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['pokemon-by-generation'],
         response: {
           kind: 'choices',
@@ -1519,32 +1554,7 @@ export const questionRules = {
     },
   },
   'evolution-chain': {
-    rendering: {
-      subject: {
-        sprite: 'after-answer',
-        name: 'after-answer',
-        number: 'after-answer',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'never',
-        name: 'always',
-        number: 'never',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'never',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['evolution-chain'],
     unleveled: {
       ...controls['evolution-chain'],
       response: {
@@ -1553,14 +1563,14 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['evolution-chain'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['evolution-chain'],
         response: {
           kind: 'search',
@@ -1570,32 +1580,7 @@ export const questionRules = {
     },
   },
   'evolution-gained-type': {
-    rendering: {
-      subject: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      related: {
-        sprite: 'after-answer',
-        name: 'after-answer',
-        number: 'after-answer',
-        types: 'always',
-      },
-      search: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['evolution-gained-type'],
     unleveled: {
       ...controls['evolution-gained-type'],
       response: {
@@ -1604,14 +1589,14 @@ export const questionRules = {
       },
     },
     levels: {
-      '3': {
+      3: {
         ...controls['evolution-gained-type'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['evolution-gained-type'],
         response: {
           kind: 'choices',
@@ -1625,7 +1610,7 @@ export const questionRules = {
     },
   },
   'pokemon-abilities': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['pokemon-abilities'],
     unleveled: {
       ...controls['pokemon-abilities'],
       response: {
@@ -1634,14 +1619,14 @@ export const questionRules = {
       },
     },
     levels: {
-      '3': {
+      3: {
         ...controls['pokemon-abilities'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['pokemon-abilities'],
         plausibleProperties: true,
         response: {
@@ -1652,7 +1637,7 @@ export const questionRules = {
     },
   },
   'level-up-moves': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['level-up-moves'],
     unleveled: {
       ...controls['level-up-moves'],
       response: {
@@ -1661,14 +1646,14 @@ export const questionRules = {
       },
     },
     levels: {
-      '4': {
+      4: {
         ...controls['level-up-moves'],
         response: {
           kind: 'choices',
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['level-up-moves'],
         plausibleProperties: true,
         response: {
@@ -1679,7 +1664,7 @@ export const questionRules = {
     },
   },
   'stat-extremes': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['stat-extremes'],
     unleveled: {
       ...controls['stat-extremes'],
       response: {
@@ -1688,7 +1673,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '3': {
+      3: {
         ...controls['stat-extremes'],
         statGap: [41, Infinity],
         response: {
@@ -1696,7 +1681,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['stat-extremes'],
         statGap: [21, 40],
         response: {
@@ -1704,7 +1689,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['stat-extremes'],
         statGap: [10, 20],
         response: {
@@ -1715,7 +1700,7 @@ export const questionRules = {
     },
   },
   'type-matchup': {
-    rendering: defaultQuestionRendering,
+    rendering: renderings['type-matchup'],
     unleveled: {
       ...controls['type-matchup'],
       response: {
@@ -1724,7 +1709,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '1': {
+      1: {
         ...controls['type-matchup'],
         singleType: true,
         showTypes: true,
@@ -1734,7 +1719,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '2': {
+      2: {
         ...controls['type-matchup'],
         singleType: true,
         multipliers: [2],
@@ -1743,7 +1728,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['type-matchup'],
         showTypes: true,
         multipliers: [2, 4],
@@ -1752,7 +1737,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '4': {
+      4: {
         ...controls['type-matchup'],
         multipliers: [0.25, 0.5, 2, 4],
         response: {
@@ -1760,7 +1745,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['type-matchup'],
         response: {
           kind: 'type-grid',
@@ -1771,32 +1756,7 @@ export const questionRules = {
     },
   },
   'super-effective-attacker': {
-    rendering: {
-      subject: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      related: {
-        sprite: 'after-answer',
-        name: 'never',
-        number: 'never',
-        types: 'always',
-      },
-      search: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-    },
+    rendering: renderings['super-effective-attacker'],
     unleveled: {
       ...controls['super-effective-attacker'],
       response: {
@@ -1805,7 +1765,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '2': {
+      2: {
         ...controls['super-effective-attacker'],
         singleType: true,
         showTypes: true,
@@ -1815,7 +1775,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['super-effective-attacker'],
         showTypes: true,
         multipliers: [2, 4],
@@ -1825,7 +1785,7 @@ export const questionRules = {
         },
         rendering: { subject: { types: 'after-answer' } },
       },
-      '4': {
+      4: {
         ...controls['super-effective-attacker'],
         multipliers: [0.25, 0.5, 2, 4],
         response: {
@@ -1833,7 +1793,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['super-effective-attacker'],
         distractorRankDirection: 'most-similar',
         distractorPoolSize: 3,
@@ -1847,35 +1807,7 @@ export const questionRules = {
     },
   },
   champion: {
-    rendering: {
-      subject: {
-        sprite: {
-          afterClues: 4,
-          silhouette: true,
-        },
-        name: 'never',
-        number: 'never',
-        types: 'always',
-      },
-      choices: {
-        sprite: 'never',
-        name: 'always',
-        number: 'after-answer',
-        types: 'always',
-      },
-      related: {
-        sprite: 'always',
-        name: 'always',
-        number: 'always',
-        types: 'always',
-      },
-      search: {
-        sprite: 'never',
-        name: 'always',
-        number: 'never',
-        types: 'always',
-      },
-    },
+    rendering: renderings['champion'],
     unleveled: {
       ...controls['champion'],
       response: {
@@ -1884,7 +1816,7 @@ export const questionRules = {
       },
     },
     levels: {
-      '1': {
+      1: {
         ...controls['champion'],
         finale: {
           opening: 'choices-types',
@@ -1896,7 +1828,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '2': {
+      2: {
         ...controls['champion'],
         finale: {
           opening: 'choices',
@@ -1908,7 +1840,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '3': {
+      3: {
         ...controls['champion'],
         finale: {
           opening: 'search',
@@ -1920,7 +1852,7 @@ export const questionRules = {
           minimumOptions: 4,
         },
       },
-      '5': {
+      5: {
         ...controls['champion'],
         finale: {
           opening: 'search',
@@ -1934,4 +1866,6 @@ export const questionRules = {
       },
     },
   },
-} satisfies { [Type in keyof FamilyRules]: QuestionRuleRow<FamilyRules[Type]> };
+} satisfies {
+  [Type in keyof FamilyRules]: QuestionRuleRow<FamilyRules[Type], Type>;
+};

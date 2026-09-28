@@ -194,7 +194,7 @@ export interface SavedAnswerResult {
   correct: boolean;
   subject?: AnswerSubject;
   points: number;
-  questionType?: string;
+  questionType?: QuestionData['questionType'];
   responseMilliseconds?: number;
   speedBonus?: number;
 }
