@@ -41,7 +41,6 @@ const readPushPayload = (event: PushEvent): DailyPushPayload => {
   }
 };
 
-precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -63,6 +62,18 @@ self.addEventListener('activate', (event) => {
 
 registerRoute(
   new NavigationRoute(async (options) => {
+    if (options.url.pathname === '/maintenance.html')
+      return fetch(options.url.href, { cache: 'no-store' });
+    try {
+      const response = await fetch(options.url.href, { cache: 'no-store' });
+      if (
+        response.status === 503 &&
+        response.headers.get('X-Quizmon-Maintenance') === '1'
+      )
+        return response;
+    } catch {
+      // Offline navigation still uses the precached page below.
+    }
     const contentPage = contentPages.find(({ path }) =>
       [path, `${path}/`, `${path}.html`].includes(options.url.pathname),
     );
@@ -79,6 +90,9 @@ registerRoute(
       : response;
   }),
 );
+
+// Navigation must win over the precache route to show maintenance responses.
+precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(
   ({ sameOrigin, url }) =>

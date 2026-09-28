@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quizmon is under maintenance</title>
+    <style>
+      @font-face {
+        font-family: 'Gabarito Variable';
+        src: url('/maintenance/gabarito.woff2') format('woff2');
+        font-style: normal;
+        font-weight: 400 900;
+        font-display: swap;
+      }
+
+      :root {
+        color: #083b7e;
+        font-family: 'Gabarito Variable', system-ui, sans-serif;
+        background: #72c3ee;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 1.25rem;
+        background: #72c3ee url('/maintenance/landscape.webp') center bottom /
+          cover no-repeat fixed;
+      }
+
+      main {
+        width: min(100%, 38rem);
+        padding: clamp(1.25rem, 5vw, 2.25rem);
+        text-align: center;
+        background: #fffbea;
+        border: 4px solid #083b7e;
+        border-radius: 0.75rem;
+        box-shadow:
+          0 7px #eed23e,
+          0 11px #123f76;
+      }
+
+      .logo {
+        display: block;
+        width: min(14rem, 55%);
+        height: auto;
+        margin: 0 auto 0.75rem;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: #446078;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0.35rem 0 0;
+        font-size: clamp(1.75rem, 6vw, 2.5rem);
+        line-height: 1.08;
+      }
+
+      .lineup {
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        gap: clamp(0.35rem, 3vw, 1.5rem);
+        margin: 1.15rem 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .lineup li {
+        flex: 0 1 8rem;
+        min-width: 0;
+      }
+      .lineup li:nth-child(2) {
+        flex-basis: 9rem;
+      }
+
+      .lineup img {
+        display: block;
+        width: 100%;
+        height: auto;
+        image-rendering: pixelated;
+      }
+
+      .lineup span {
+        display: block;
+        padding-top: 0.15rem;
+        font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+        font-weight: 800;
+      }
+
+      .message {
+        max-width: 25rem;
+        margin: 0 auto 1.25rem;
+        color: #143149;
+        line-height: 1.45;
+      }
+
+      a {
+        display: inline-block;
+        padding: 0.65rem 1.25rem;
+        color: #e8fcff;
+        background: #0d6be6;
+        border: 3px solid #083b7e;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px #eed23e;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      a:hover {
+        background: #085bc5;
+      }
+      a:focus-visible {
+        outline: 3px solid #083b7e;
+        outline-offset: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img class="logo" src="/maintenance/wordmark.webp" alt="Quizmon" />
+      <p class="eyebrow">A quick tune-up</p>
+      <h1>We’re under maintenance</h1>
+      <ol class="lineup" aria-label="Timburr, Gurdurr, and Conkeldurr">
+        <li><img src="/maintenance/532.png" alt="" /><span>Timburr</span></li>
+        <li><img src="/maintenance/533.png" alt="" /><span>Gurdurr</span></li>
+        <li>
+          <img src="/maintenance/534.png" alt="" /><span>Conkeldurr</span>
+        </li>
+      </ol>
+      <p class="message">We’re working on Quizmon. Please check back soon.</p>
+      <a href="/">Try again</a>
+    </main>
+  </body>
+</html>

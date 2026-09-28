@@ -51,6 +51,14 @@ await test('runtime renderer preserves game bindings and limits without local da
   assert.deepEqual(
     (rendered.assets as Record<string, unknown>).run_worker_first,
     [
+      '/',
+      '/index.html',
+      '/about',
+      '/about.html',
+      '/privacy',
+      '/privacy.html',
+      '/terms',
+      '/terms.html',
       '/api/*',
       '/sprites/*',
       '/trainer',

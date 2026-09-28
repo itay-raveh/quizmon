@@ -8,6 +8,7 @@ type GameAccountEnv = Partial<AccountEnv> &
   Parameters<typeof game.fetch>[1] & {
     SENTRY_DSN?: string;
     SENTRY_RELEASE?: string;
+    MAINTENANCE_MODE?: string;
   };
 
 const dataCollection = {
@@ -22,9 +23,32 @@ const dataCollection = {
   graphQL: { document: false, variables: false },
 } satisfies NonNullable<Sentry.CloudflareOptions['dataCollection']>;
 
-const handler = {
-  fetch(request: Request, env: GameAccountEnv): Promise<Response> {
+export const handler = {
+  async fetch(request: Request, env: GameAccountEnv): Promise<Response> {
     const path = new URL(request.url).pathname;
+    if (env.MAINTENANCE_MODE === 'on') {
+      const headers = {
+        'Cache-Control': 'no-store',
+        'Retry-After': '300',
+        'X-Quizmon-Maintenance': '1',
+      };
+      if (path.startsWith('/api/') || !['GET', 'HEAD'].includes(request.method))
+        return new Response('Quizmon is under maintenance.', {
+          status: 503,
+          headers,
+        });
+
+      const page = await env.ASSETS.fetch(
+        new Request(new URL('/maintenance.html', request.url)),
+      );
+      return new Response(request.method === 'HEAD' ? null : page.body, {
+        status: 503,
+        headers: {
+          ...headers,
+          'Content-Type': 'text/html; charset=utf-8',
+        },
+      });
+    }
     if (path.startsWith('/api/') && !path.startsWith('/api/daily-reminders/'))
       return accounts.fetch(request, env);
     return game.fetch(request, env);
