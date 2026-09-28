@@ -119,6 +119,9 @@ const AppScreen = ({
         >
           <AccountScreen
             trainerName={trainer.profile.name}
+            onRename={(name) =>
+              trainer.updateProfile({ ...trainer.profile, name })
+            }
             onEditCard={() => destination.trainer('front', true)}
             onViewPlayer={onViewPlayer}
             friendCode={destination.friendCode}

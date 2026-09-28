@@ -4,13 +4,16 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type SubmitEvent,
 } from 'react';
 import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
+import { PencilSimpleIcon } from '../../components/icons';
 import {
   formatFriendCode,
   friendInvitePath,
 } from '../../domain/social/friends';
+import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
 import { FriendsPanel } from '../friends/FriendsPanel';
 import { cachedOwnPlayer } from '../friends/friends-client';
 import { useModalDialog } from '../../hooks/useModalDialog';
@@ -68,11 +71,13 @@ const WelcomeTrainerDialog = ({
 
 export function AccountScreen({
   trainerName,
+  onRename,
   onEditCard,
   onViewPlayer,
   friendCode = '',
 }: {
   trainerName: string;
+  onRename: (name: string) => Promise<boolean>;
   onEditCard: () => void;
   onViewPlayer: (id: string) => void;
   friendCode?: string;
@@ -81,6 +86,12 @@ export function AccountScreen({
   const navigate = useNavigate();
   const signingIn = !account.owner && !account.mergeRequired;
   const hasTrainerName = Boolean(trainerName.trim());
+  const [editingOwner, setEditingOwner] = useState<string | null>(null);
+  const editingName = Boolean(account.owner && editingOwner === account.owner);
+  const [nameDraft, setNameDraft] = useState(trainerName);
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState('');
+  const editNameButton = useRef<HTMLButtonElement>(null);
   const [ownCode, setOwnCode] = useState(() => ({
     owner: account.owner,
     code: cachedOwnPlayer(account.owner ?? '')?.code ?? '',
@@ -114,6 +125,25 @@ export function AccountScreen({
       void navigate(returnPath, { replace: true });
     }
   }, [account.owner, hasTrainerName, navigate, returnPath, welcomeFor]);
+  const closeNameEditor = () => {
+    editNameButton.current?.focus();
+    setEditingOwner(null);
+    setNameError('');
+  };
+  const saveName = async (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (savingName) return;
+    setSavingName(true);
+    setNameError('');
+    try {
+      if (await onRename(nameDraft)) closeNameEditor();
+      else setNameError('Trainer name could not be saved. Try again.');
+    } catch {
+      setNameError('Trainer name could not be saved. Try again.');
+    } finally {
+      setSavingName(false);
+    }
+  };
   return (
     <>
       <section
@@ -121,18 +151,82 @@ export function AccountScreen({
         aria-labelledby="account-title"
       >
         <header className="game-panel__header">
-          <h1
-            className="game-panel__title"
-            id="account-title"
-            tabIndex={-1}
-            ref={heading}
-          >
-            {signingIn ? 'Sign in' : trainerName.trim() || 'Account'}
-          </h1>
+          <div className="account-screen__name-row">
+            <h1
+              className="game-panel__title"
+              id="account-title"
+              tabIndex={-1}
+              ref={heading}
+            >
+              {signingIn ? 'Sign in' : trainerName.trim() || 'Account'}
+            </h1>
+            {!signingIn && !account.mergeRequired && (
+              <GameButton
+                aria-label={
+                  editingName
+                    ? 'Cancel editing trainer name'
+                    : 'Edit trainer name'
+                }
+                className="account-screen__edit-name"
+                disabled={savingName}
+                onClick={() => {
+                  if (editingName) {
+                    closeNameEditor();
+                    return;
+                  }
+                  setNameDraft(trainerName);
+                  setNameError('');
+                  setEditingOwner(account.owner);
+                }}
+                ref={editNameButton}
+                tone="quiet"
+              >
+                <PencilSimpleIcon aria-hidden="true" weight="bold" />
+              </GameButton>
+            )}
+          </div>
           {!signingIn && ownCode.owner === account.owner && ownCode.code && (
             <small className="account-screen__code">
               {formatFriendCode(ownCode.code)}
             </small>
+          )}
+          {editingName && !signingIn && !account.mergeRequired && (
+            <form
+              className="account-screen__name-form"
+              onKeyDown={(event) => {
+                if (event.key === 'Escape' && !savingName) {
+                  event.preventDefault();
+                  closeNameEditor();
+                }
+              }}
+              onSubmit={(event) => {
+                void saveName(event);
+              }}
+            >
+              <label htmlFor="account-trainer-name">Trainer name</label>
+              <input
+                autoComplete="nickname"
+                autoFocus
+                id="account-trainer-name"
+                maxLength={TRAINER_NAME_MAX_LENGTH}
+                onChange={(event) => setNameDraft(event.target.value)}
+                type="text"
+                value={nameDraft}
+              />
+              <div className="account-screen__name-actions">
+                <GameButton disabled={savingName} type="submit">
+                  Save
+                </GameButton>
+                <GameButton
+                  disabled={savingName}
+                  onClick={closeNameEditor}
+                  tone="quiet"
+                >
+                  Cancel
+                </GameButton>
+              </div>
+              {nameError && <p role="alert">{nameError}</p>}
+            </form>
           )}
         </header>
         {signingIn && friendInvitation && (

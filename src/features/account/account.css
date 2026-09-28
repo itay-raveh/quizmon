@@ -7,6 +7,63 @@
   gap: 0.2rem;
 }
 
+.account-screen__name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.account-screen__name-row .game-panel__title {
+  overflow-wrap: anywhere;
+}
+
+.account-screen__edit-name.game-button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.8rem;
+  padding: 0;
+}
+
+.account-screen__edit-name svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.account-screen__name-form {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 24rem;
+  padding-top: 0.5rem;
+}
+
+.account-screen__name-form label {
+  font-size: var(--text-label);
+  font-weight: 800;
+}
+
+.account-screen__name-form input {
+  min-height: 3rem;
+  padding: 0.6rem 0.7rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--navy);
+  border-radius: var(--button-radius);
+  font-weight: 700;
+}
+
+.account-screen__name-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.account-screen__name-form p {
+  margin: 0;
+  color: var(--error-ink);
+}
+
 .account-screen__code {
   color: var(--muted);
   font: 700 var(--text-mini) var(--font-data);
