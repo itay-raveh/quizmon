@@ -29,6 +29,7 @@ const withRendering = <
     ),
   }) as Rules;
 
+/** Resolve the separate rule used when a question has no difficulty. */
 export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
   type: Type,
 ): FamilyRules[Type] | undefined => {
@@ -36,6 +37,7 @@ export const getUnleveledQuestionRule = <Type extends keyof FamilyRules>(
   return row.unleveled ? withRendering(row, row.unleveled) : undefined;
 };
 
+/** Resolve a complete rule and its actual level, or undefined below its first level. */
 export const getQuestionVariant = <Type extends keyof FamilyRules>(
   type: Type,
   difficulty: Difficulty,
@@ -52,6 +54,7 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
     : undefined;
 };
 
+/** Merge base, family, and selected entry rendering policies. */
 export const resolveQuestionRendering = (
   type: QuestionData['questionType'],
   level?: Difficulty,
@@ -60,6 +63,7 @@ export const resolveQuestionRendering = (
   getUnleveledQuestionRule(type)?.rendering ??
   baseQuestionRendering;
 
+/** Prefer a question's saved rendering snapshot over the current configuration. */
 export const getQuestionRendering = (
   question: QuestionData,
 ): QuestionRendering => {

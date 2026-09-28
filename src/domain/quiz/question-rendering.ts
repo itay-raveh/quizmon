@@ -12,6 +12,7 @@ export interface EntityRendering {
 }
 
 type RenderingRole = 'subject' | 'choices' | 'related' | 'search';
+/** Resolved visibility policy for each entity role in a question. */
 export type QuestionRendering = Record<RenderingRole, EntityRendering>;
 export type RenderingOverrides = {
   [Role in RenderingRole]?: Partial<EntityRendering>;
@@ -49,6 +50,7 @@ const mergeEntityRendering = (
   types: overrides?.types ?? defaults.types ?? 'always',
 });
 
+/** Replace only the named visibility fields in a complete policy. */
 export const mergeRendering = (
   defaults: QuestionRendering,
   overrides?: RenderingOverrides,

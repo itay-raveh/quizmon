@@ -35,6 +35,7 @@ export const questionViewSchema = z.object({
 
 export type QuestionView = z.infer<typeof questionViewSchema>;
 
+/** Prefer a question's saved answer and subject presentation. */
 export const getQuestionView = (question: QuestionData): QuestionView => {
   if (question.view) return question.view;
   const row = questionRules[question.questionType] as {

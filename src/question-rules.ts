@@ -91,11 +91,13 @@ type FamilyRenderingControls = {
   };
 };
 
+/** Rendering fields and values that the named family can actually use. */
 export type RenderingControlsFor<Type extends keyof FamilyRules> =
   Type extends keyof FamilyRenderingControls
     ? FamilyRenderingControls[Type]
     : RenderingControls;
 
+/** A complete family's controls for one level or the unleveled path, with an optional rendering override. */
 export type QuestionRuleEntry<
   Rules extends { rendering: QuestionRendering },
   Type extends keyof FamilyRules,
@@ -103,6 +105,7 @@ export type QuestionRuleEntry<
   rendering?: RenderingControlsFor<Type>;
 };
 
+/** Family rendering policy plus sparse numeric difficulty entries. */
 export type QuestionRuleRow<
   Rules extends { rendering: QuestionRendering },
   Type extends keyof FamilyRules,
@@ -515,6 +518,7 @@ const controls = {
   > & { view: FamilyRules[Type]['view'] };
 };
 
+/** Default visibility before family and entry overrides are merged. */
 export const baseQuestionRendering: QuestionRendering = {
   subject: { sprite: 'always', name: 'always', number: 'always' },
   choices: { sprite: 'always', name: 'always', number: 'always' },
@@ -604,6 +608,7 @@ const renderings = {
   },
 } satisfies { [Type in keyof FamilyRules]: RenderingControlsFor<Type> };
 
+/** Typed configuration consumed by the question builders. */
 export const questionRules = {
   'item-identification': {
     rendering: renderings['item-identification'],

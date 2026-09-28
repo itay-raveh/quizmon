@@ -5,6 +5,7 @@ export const difficultyLevels = [1, 2, 3, 4, 5] as const;
 export const difficultySchema = z.literal(difficultyLevels);
 export type Difficulty = z.infer<typeof difficultySchema>;
 
+/** Sparse level map with at least one defined level. */
 export type DifficultyRules<Rules> = {
   [Level in Difficulty]: Readonly<
     Record<Level, Rules> & Partial<Record<Exclude<Difficulty, Level>, Rules>>
@@ -15,6 +16,7 @@ export type DifficultyVariants<Variant> = Readonly<
   Partial<Record<Difficulty, Variant>>
 >;
 
+/** Return the highest defined level at or below the requested difficulty. */
 export const resolveDifficultyVariant = <Variant>(
   variants: DifficultyVariants<Variant>,
   difficulty: Difficulty,
