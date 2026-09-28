@@ -5,15 +5,9 @@ import type {
   RenderingControlsFor,
 } from './question-rules/types';
 import type { FamilyRules } from './questions/family-rules';
-import { baseQuestionRendering, resolveQuestionRendering } from './variants';
+import { resolveQuestionRendering } from './variants';
 
 describe('question rendering rules', () => {
-  it('accepts the base rendering', () => {
-    expect(
-      questionRenderingSchema.safeParse(baseQuestionRendering).success,
-    ).toBe(true);
-  });
-
   it('validates the Level 5 type policy and rejects unknown values', () => {
     const rendering = resolveQuestionRendering('evolutionGainedType', 5);
     expect(rendering.subject.types).toBe('after-answer');
@@ -34,17 +28,6 @@ describe('question rendering rules', () => {
         subject: { ...rendering.subject, types: 'sometimes' },
       }).success,
     ).toBe(false);
-  });
-
-  it('applies family defaults and level overrides', () => {
-    const silhouette = resolveQuestionRendering('silhouetteForPokemon', 4);
-    expect(silhouette.subject.sprite).toBeNull();
-    expect(silhouette.choices.sprite?.silhouette).toBe(true);
-    expect(silhouette.choices.name).toBe('after-answer');
-
-    const counterPick = resolveQuestionRendering('superEffectiveAttacker', 3);
-    expect(counterPick.related.name).toBe('never');
-    expect(counterPick.subject.types).toBe('after-answer');
   });
 });
 

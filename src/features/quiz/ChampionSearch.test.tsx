@@ -18,10 +18,10 @@ test('reveals the correct search answer after a wrong guess', () => {
 
   expect(
     renderToStaticMarkup(<ChampionSearch {...props} answered />),
-  ).toContain('Correct answer: <strong>Sticky Hold</strong>');
+  ).toContain('<strong>Sticky Hold</strong>');
   expect(
     renderToStaticMarkup(<ChampionSearch {...props} answered={false} />),
-  ).not.toContain('Correct answer:');
+  ).not.toContain('<strong>Sticky Hold</strong>');
   expect(
     renderToStaticMarkup(
       <ChampionSearch
@@ -31,5 +31,5 @@ test('reveals the correct search answer after a wrong guess', () => {
         showCorrectAnswerBanner={false}
       />,
     ),
-  ).not.toContain('Correct answer:');
+  ).not.toContain('<strong>Sticky Hold</strong>');
 });

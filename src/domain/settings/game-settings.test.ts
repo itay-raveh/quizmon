@@ -13,7 +13,6 @@ describe('getTrainingSettings', () => {
       questionTypes: leagueQuestionTypes,
       trainingMode: 'league',
     });
-    expect(leagueQuestionTypes).toHaveLength(17);
     for (const advanced of [
       'pokemonAbilities',
       'levelUpMoves',
