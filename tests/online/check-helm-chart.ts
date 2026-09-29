@@ -9,14 +9,13 @@ for await (const chunk of process.stdin) input += chunk;
 const documents = parseAllDocuments(input);
 const manifest = (kind: string) =>
   documents.find((document) => document.get('kind') === kind);
-const job = manifest('Job');
 const deployment = manifest('Deployment');
-const sequence = (document: typeof job, path: (string | number)[]) =>
+const sequence = (document: typeof deployment, path: (string | number)[]) =>
   (document?.getIn(path) as YAMLSeq | undefined)?.toJSON();
 
 assert.deepEqual(
   documents.map((document) => document.get('kind')).sort(),
-  ['Deployment', 'Job', 'Service'].sort(),
+  ['Deployment', 'Service'].sort(),
 );
 assert.equal(
   deployment?.getIn([
@@ -25,14 +24,6 @@ assert.equal(
     'secret.reloader.stakater.com/reload',
   ]),
   'mongo-test,mongo-tls-test',
-);
-assert.deepEqual(
-  sequence(job, ['spec', 'template', 'spec', 'containers', 0, 'args']),
-  ['/migration/migration-connection.json'],
-);
-assert.deepEqual(
-  sequence(job, ['spec', 'template', 'spec', 'containers', 0, 'volumeMounts']),
-  [{ name: 'migration', mountPath: '/migration', readOnly: true }],
 );
 assert.deepEqual(
   sequence(deployment, [
@@ -110,4 +101,4 @@ assert.deepEqual(
   { name: 'mongo-test', key: 'url' },
 );
 
-console.log('Migration and RxServer wiring passed.');
+console.log('RxServer wiring passed.');

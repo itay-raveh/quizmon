@@ -9,9 +9,7 @@ import { Toast } from '../../components/Toast';
 import { EyeIcon, ShareNetworkIcon, TrashIcon } from '../../components/icons';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
-  formatFriendCode,
   friendInvitePath,
-  parseFriendInput,
   type FriendRelation,
   type SocialPlayer,
 } from '../../domain/social/friends';
@@ -67,11 +65,6 @@ function Player({
           </GameButton>
         )}
       </div>
-      {player.code && (
-        <small className="friends-player__code">
-          {formatFriendCode(player.code)}
-        </small>
-      )}
     </div>
   );
 }
@@ -124,14 +117,12 @@ export function FriendsPanel({
   adding,
   onViewPlayer,
   onToggleAdding,
-  onOwnCode,
 }: {
   owner: string;
   initialInput: string;
   adding: boolean;
   onViewPlayer?: (id: string) => void;
   onToggleAdding: () => void;
-  onOwnCode?: (code: string) => void;
 }) {
   const queryClient = useQueryClient();
   const identity = useQuery(identityQuery(owner));
@@ -197,21 +188,13 @@ export function FriendsPanel({
   }, [owner]);
 
   useEffect(() => {
-    if (me) onOwnCode?.(me.code ?? '');
-  }, [me, onOwnCode]);
-
-  useEffect(() => {
     const controller = new AbortController();
     if (initialInput) {
       void (async () => {
-        const code = parseFriendInput(initialInput, location.origin);
-        if (!code)
-          throw new Error(
-            'Enter the full friend code or a Quizmon friend link.',
-          );
+        const id = initialInput;
         const options = {
-          queryKey: ['social', owner, 'lookup', code],
-          queryFn: () => lookupPlayer(owner, code),
+          queryKey: ['social', owner, 'lookup', id],
+          queryFn: () => lookupPlayer(owner, id),
         };
         if (lookupRetry)
           await queryClient.invalidateQueries({ queryKey: options.queryKey });
@@ -306,7 +289,7 @@ export function FriendsPanel({
     );
   }
 
-  const link = me?.code ? `${location.origin}${friendInvitePath(me.code)}` : '';
+  const link = me ? `${location.origin}${friendInvitePath(me.id)}` : '';
   const initialLoading = !pages.friends && !error;
   return (
     <div className="friends-panel">

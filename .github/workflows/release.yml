@@ -47,7 +47,7 @@ jobs:
           install_args: node
           cache: false
       - run: npm ci
-      - name: Validate chart and migration
+      - name: Validate chart and import tools
         run: |
           mise install helm kubeconform
           mise run check:chart
@@ -75,7 +75,7 @@ jobs:
           ./node_modules/.bin/sentry-cli sourcemaps inject .wrangler/release-worker
           ./node_modules/.bin/sentry-cli sourcemaps upload --strict --wait --release "$GITHUB_SHA" --org "$SENTRY_ORG" --project "$SENTRY_WORKER_PROJECT" .wrangler/release-worker
           test -f .wrangler/release-worker/index.js.map
-      - name: Build checked migration image
+      - name: Build checked RxServer image
         env:
           SENTRY_WORKER_DSN: ${{ secrets.SENTRY_WORKER_DSN }}
         run: |
@@ -86,13 +86,12 @@ jobs:
             --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
             --label "org.opencontainers.image.revision=$GITHUB_SHA" \
             --iidfile .wrangler/release-image-id -t "$QUIZMON_RELEASE_IMAGE" .
-          docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/migrations/meta/_journal.json
           docker run --rm --entrypoint test "$QUIZMON_RELEASE_IMAGE" -f /opt/quizmon/server/rxdb-sync.ts
       - name: Check real sync isolation
         run: |
           export QUIZMON_PREBUILT_WORKER="$PWD/.wrangler/release-worker"
           node tests/online/check-runtime-config.ts
-      - name: Publish checked migration image
+      - name: Publish checked RxServer image
         env:
           REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REGISTRY_USER: ${{ github.actor }}

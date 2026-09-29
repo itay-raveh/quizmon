@@ -97,7 +97,7 @@ try {
   const auth = betterAuth({
     baseURL: 'http://localhost:4188',
     secret: 'cutover-integration-secret-123456',
-    database: mongodbAdapter(app, { client: mongo, transaction: false }),
+    database: mongodbAdapter(app, { client: mongo }),
     advanced: { database: { generateId: () => crypto.randomUUID() } },
     plugins: [
       emailOTP({

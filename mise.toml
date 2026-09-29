@@ -43,7 +43,7 @@ run = [
 ]
 
 [tasks."check:chart"]
-description = "Validate the Helm chart and its migration and RxServer wiring"
+description = "Validate the Helm chart and RxServer wiring"
 run = [
   "helm lint --strict charts/quizmon -f tests/online/chart-values.yaml",
   "mkdir -p .wrangler",

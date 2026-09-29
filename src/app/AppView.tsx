@@ -124,7 +124,7 @@ const AppScreen = ({
             }
             onEditCard={() => destination.trainer('front', true)}
             onViewPlayer={onViewPlayer}
-            friendCode={destination.friendCode}
+            friendId={destination.friendId}
           />
         </div>
         {destination.playerId && (

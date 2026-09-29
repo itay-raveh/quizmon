@@ -51,17 +51,17 @@ function InviteFriends({
   onShareFailure: (link: string) => void;
 }) {
   const identity = useQuery(identityQuery(owner));
-  const code = identity.data?.code ?? '';
+  const id = identity.data?.id ?? '';
   const [message, setMessage] = useState('');
   useEffect(() => {
-    onError(identity.isError || (identity.isSuccess && !code));
-  }, [identity.isError, identity.isSuccess, code, onError]);
-  const link = `${location.origin}${friendInvitePath(code)}`;
+    onError(identity.isError || (identity.isSuccess && !id));
+  }, [identity.isError, identity.isSuccess, id, onError]);
+  const link = `${location.origin}${friendInvitePath(id)}`;
   return (
     <div className="leaderboard-invite">
       <GameButton
         tone="quiet"
-        disabled={!code}
+        disabled={!id}
         onClick={() => {
           setMessage('');
           onShareFailure('');
@@ -81,7 +81,7 @@ function InviteFriends({
         }}
       >
         <ShareNetworkIcon aria-hidden="true" />
-        {!code
+        {!id
           ? failed
             ? 'Invite friends'
             : 'Loading invite link…'

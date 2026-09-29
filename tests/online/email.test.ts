@@ -2,7 +2,7 @@ import { localSync } from '../../scripts/dev/local-sync.ts';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { test } from 'node:test';
-import { Client } from 'pg';
+import { MongoClient } from 'mongodb';
 import { createAccountApi } from '../../server/api.ts';
 import { isRecord } from '../../src/lib/validation.ts';
 import {
@@ -11,14 +11,17 @@ import {
   type CodeDelivery,
 } from '../../server/email.ts';
 import { localEnv } from '../../scripts/dev/local-env.ts';
-import { testDatabase } from './account-fixture.ts';
+import { ensureAppIndexes } from '../../server/app-indexes.ts';
 
 const from = 'quizmon@example.test';
 const recipient = 'player@example.test';
 const code = '123456';
 const origin = 'http://localhost:4188';
-const database = await testDatabase();
-const connectionString = database.connectionString;
+const name = `quizmon_email_${crypto.randomUUID().replaceAll('-', '')}`;
+const mongoUrl = `mongodb://127.0.0.1:27018/${name}?directConnection=true`;
+const mongo = await new MongoClient(mongoUrl).connect();
+const db = mongo.db();
+await ensureAppIndexes(db);
 
 await test('Worker binding rejects missing acknowledgement and normalizes quota errors', async () => {
   let message: unknown;
@@ -78,7 +81,7 @@ await test('Worker binding rejects missing acknowledgement and normalizes quota 
 function apiWithDelivery(deliver: CodeDelivery) {
   return createAccountApi({
     sync: localSync,
-    connectionString,
+    mongoUrl,
     origin,
     secret: localEnv.BETTER_AUTH_SECRET!,
     mail: { mode: 'cloudflare', deliver },
@@ -137,10 +140,7 @@ await test('Better Auth surfaces delivery failure per request and a later retry 
   );
 });
 
-await test('real-mail mode has no test mailbox, stores hashed OTPs, and preserves verification and expiry', async (t) => {
-  const db = new Client({ connectionString });
-  await db.connect();
-  t.after(() => db.end());
+await test('real-mail mode has no test mailbox, stores hashed OTPs, and preserves verification and expiry', async () => {
   const email = `mail-${randomUUID()}@example.test`;
   let sentCode = '';
   const app = apiWithDelivery((_email, otp) => {
@@ -161,20 +161,11 @@ await test('real-mail mode has no test mailbox, stores hashed OTPs, and preserve
     (await app.request(`${origin}/api/dev/mailbox?email=${email}`)).status,
     404,
   );
-  assert.equal(
-    (
-      await db.query<{ name: string | null }>(
-        "SELECT to_regclass('public.test_mailbox')::text AS name",
-      )
-    ).rows[0]?.name,
-    null,
-  );
-  const stored = await db.query<{ value: string }>(
-    'SELECT value FROM verification WHERE identifier = $1',
-    [`sign-in-otp-${email}`],
-  );
-  assert.equal(stored.rowCount, 1);
-  assert.notEqual(stored.rows[0]!.value.split(':')[0], sentCode);
+  const stored = await db
+    .collection<{ identifier: string; value: string }>('verification')
+    .findOne({ identifier: `sign-in-otp-${email}` });
+  assert.ok(stored);
+  assert.notEqual(stored.value.split(':')[0], sentCode);
   const wrongCode =
     sentCode.slice(0, -1) + String((Number(sentCode.at(-1)) + 1) % 10);
   assert.equal(
@@ -199,10 +190,12 @@ await test('real-mail mode has no test mailbox, stores hashed OTPs, and preserve
     ).status,
     200,
   );
-  await db.query(
-    "UPDATE verification SET expires_at = now() - interval '1 second' WHERE identifier = $1",
-    [`sign-in-otp-${email}`],
-  );
+  await db
+    .collection('verification')
+    .updateOne(
+      { identifier: `sign-in-otp-${email}` },
+      { $set: { expiresAt: new Date(Date.now() - 1000) } },
+    );
   assert.equal(
     (await post(app, 'sign-in/email-otp', { email, otp: sentCode })).status,
     400,
@@ -233,4 +226,5 @@ await test('an ambiguous delivery failure returns a recoverable 503 without prov
   });
 });
 
-await database.close();
+await db.dropDatabase();
+await mongo.close();

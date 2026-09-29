@@ -21,6 +21,7 @@ import {
   roundSchema,
 } from '../../src/lib/storage/rxdb-schema.ts';
 import { startSyncServer } from '../../server/rxdb-sync.ts';
+import { ensureAppIndexes } from '../../server/app-indexes.ts';
 import { completion } from './progress-fixtures.ts';
 import {
   accountRequest,
@@ -28,12 +29,11 @@ import {
   json,
   signIn,
   startAccountWorker,
-  testDatabase,
 } from './account-fixture.ts';
 
-const postgres = await testDatabase();
 const mongoName = `quizmon_runtime_${crypto.randomUUID().replaceAll('-', '')}`;
 const mongoUrl = `mongodb://127.0.0.1:27018/${mongoName}?directConnection=true`;
+const appMongoUrl = `mongodb://127.0.0.1:27018/${mongoName}_app?directConnection=true`;
 const mongo = new MongoClient(mongoUrl);
 const port = await freePort();
 const endpoint = `http://127.0.0.1:${port}`;
@@ -76,6 +76,8 @@ const jwks = createServer((request, response) => {
 });
 
 try {
+  await mongo.connect();
+  await ensureAppIndexes(mongo.db(`${mongoName}_app`));
   const seeded = await openPlayerDatabase(
     mongoName,
     getRxStorageMongoDB({ connection: mongoUrl }),
@@ -88,7 +90,7 @@ try {
   });
   await seeded.close();
   worker = await startAccountWorker({
-    connectionString: postgres.connectionString,
+    mongoUrl: appMongoUrl,
     origin,
     sync: { endpoint, audience: 'quizmon-runtime' },
     prebuiltWorkerDir: process.env.QUIZMON_PREBUILT_WORKER,
@@ -255,25 +257,35 @@ try {
       expectedAccountId: a.id,
     }),
   );
-  const friendCode = (social.player as { code: string }).code;
-  const lookup = await json(
-    await request(`/api/friends/player/${friendCode}`, b),
-  );
+  assert.equal((social.player as { id: string }).id, a.id);
+  const lookup = await json(await request(`/api/friends/player/${a.id}`, b));
   assert.equal((lookup.player as { id: string }).id, a.id);
   const requestId = crypto.randomUUID();
-  assert.equal(
-    (
-      await request('/api/friends/requests', a, {
-        expectedAccountId: a.id,
-        peerId: b.id,
-        requestId,
-      })
-    ).status,
-    200,
+  const requests = await Promise.all([
+    request('/api/friends/requests', a, {
+      expectedAccountId: a.id,
+      peerId: b.id,
+      requestId,
+    }),
+    request('/api/friends/requests', a, {
+      expectedAccountId: a.id,
+      peerId: b.id,
+      requestId: crypto.randomUUID(),
+    }),
+  ]);
+  assert.deepEqual(
+    requests.map((response) => response.status),
+    [200, 200],
   );
+  const sent = await Promise.all(requests.map(json));
+  assert.equal(
+    (sent[0]!.request as { id: string }).id,
+    (sent[1]!.request as { id: string }).id,
+  );
+  const acceptedId = (sent[0]!.request as { id: string }).id;
   assert.equal(
     (
-      await request(`/api/friends/requests/${requestId}/accept`, b, {
+      await request(`/api/friends/requests/${acceptedId}/accept`, b, {
         expectedAccountId: b.id,
       })
     ).status,
@@ -420,6 +432,13 @@ try {
       .countDocuments({ ownerId: a.id }),
     0,
   );
+  assert.equal(
+    await mongo
+      .db(`${mongoName}_app`)
+      .collection('friend')
+      .countDocuments({ $or: [{ fromId: a.id }, { toId: a.id }] }),
+    0,
+  );
   console.log(
     'RxServer auth, offline sync, Daily receipt conflict, standings, and deletion passed.',
   );
@@ -437,5 +456,4 @@ try {
   await mongo.db(`${mongoName}-v${roundSchema.version}`).dropDatabase();
   await mongo.db(`${mongoName}_app`).dropDatabase();
   await mongo.close();
-  await postgres.close();
 }

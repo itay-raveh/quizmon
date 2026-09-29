@@ -13,7 +13,10 @@ export const releaseConfigSchema = z.object({
     endpoint: z.string().min(1),
     audience: z.string().min(1),
   }),
-  hyperdriveId: z.string().regex(/^[a-fA-F0-9]{32}$/),
+  hyperdriveId: z
+    .string()
+    .regex(/^[a-fA-F0-9]{32}$/)
+    .optional(),
   mailFrom: z.email(),
   authRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
   apiRateLimitNamespace: z.string().regex(/^[1-9]\d*$/),
@@ -49,15 +52,12 @@ export function readReleaseConfig(value: unknown): ReleaseConfig {
   publicUrl(sync.endpoint);
   if (origin.pathname !== '/')
     throw new Error('The application origin cannot contain a path.');
-  if (/^0+$/.test(config.hyperdriveId))
-    throw new Error('A provisioned Hyperdrive identifier is required.');
   if (config.authRateLimitNamespace === config.apiRateLimitNamespace)
     throw new Error('Distinct rate-limit namespace identifiers are required.');
   return {
     workerName: config.workerName,
     origin: origin.origin,
     sync,
-    hyperdriveId: config.hyperdriveId,
     mailFrom: config.mailFrom,
     authRateLimitNamespace: config.authRateLimitNamespace,
     apiRateLimitNamespace: config.apiRateLimitNamespace,
@@ -87,7 +87,6 @@ export function renderSourceWorkerConfig(
       MAIL_FROM: config.mailFrom,
     },
     assets: { ...template.assets, directory: './dist' },
-    hyperdrive: [{ binding: 'ACCOUNT_DB', id: config.hyperdriveId }],
     ratelimits: template.ratelimits.map((limit: unknown) => {
       if (
         !isRecord(limit) ||

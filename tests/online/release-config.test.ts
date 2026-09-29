@@ -40,9 +40,7 @@ await test('runtime renderer preserves game bindings and limits without local da
       rendered[field as keyof typeof rendered],
       rawConfig[field],
     );
-  assert.deepEqual(rendered.hyperdrive, [
-    { binding: 'ACCOUNT_DB', id: config.hyperdriveId },
-  ]);
+  assert.equal('hyperdrive' in rendered, false);
   assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
   assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
   assert.equal(rendered.vars.SYNC_AUDIENCE, input.sync.audience);
@@ -80,7 +78,6 @@ await test('unsupported, incomplete, or local production inputs are rejected bef
       ...config,
       origin: `https://user:${crypto.randomUUID()}@game.example.test`,
     },
-    { ...config, hyperdriveId: '0'.repeat(32) },
     { ...config, apiRateLimitNamespace: config.authRateLimitNamespace },
     { ...config, sync: { ...config.sync, endpoint: 'http://127.0.0.1:8089' } },
     { ...config, sync: { ...config.sync, audience: '' } },

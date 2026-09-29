@@ -35,7 +35,7 @@ test('new page routes load the app while retired Social routes do not', async ()
   const { env } = makeEnv();
   env.ASSETS.fetch.mockResolvedValue(new Response('app'));
   await worker.fetch(
-    new Request('https://quizmon.test/account/friends?code=AABBCCDDEEFF0011'),
+    new Request('https://quizmon.test/account/friends?id=trainer_a'),
     env,
   );
   expect(env.ASSETS.fetch).toHaveBeenNthCalledWith(

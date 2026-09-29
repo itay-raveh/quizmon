@@ -19,7 +19,7 @@ const reportFailure = (error: unknown) => {
 export default {
   async fetch(request: Request, env: Partial<AccountEnv>) {
     if (
-      !env.ACCOUNT_DB ||
+      !env.MONGO_URL ||
       !env.AUTH_RATE_LIMIT ||
       !env.API_RATE_LIMIT ||
       !env.BETTER_AUTH_SECRET ||
@@ -59,7 +59,7 @@ export default {
           endpoint: env.SYNC_URL,
           audience: env.SYNC_AUDIENCE,
         },
-        connectionString: env.ACCOUNT_DB.connectionString,
+        mongoUrl: env.MONGO_URL,
         origin: env.AUTH_ORIGIN,
         secret: env.BETTER_AUTH_SECRET,
         mail:

@@ -5,7 +5,6 @@ import {
   type SocialPlayer,
 } from '../../domain/social/friends';
 import { accountSnapshot } from '../account/account';
-import { queryClient } from '../../lib/query-client';
 
 export interface FriendsPage {
   items: FriendRelation[];
@@ -17,23 +16,11 @@ export interface PlayerLookup {
   request: FriendRelation | null;
 }
 
-export function cachedOwnPlayer(owner: string, maxAge = Infinity) {
-  const cached = queryClient.getQueryState<SocialPlayer>([
-    'social',
-    owner,
-    'identity',
-  ]);
-  return cached?.data && Date.now() - cached.dataUpdatedAt < maxAge
-    ? cached.data
-    : undefined;
-}
-
 const messages: Record<string, string> = {
-  player_not_found:
-    'No player has that friend code. Check the code and try again.',
-  invalid_code: 'Enter the full friend code or a Quizmon friend link.',
+  player_not_found: 'This friend link does not point to a player.',
+  invalid_player_id: 'This friend link is invalid.',
   account_changed: 'Your account changed. Close Friends and sign in again.',
-  self_request: 'This is your own friend code.',
+  self_request: 'This is your own account.',
   request_not_found:
     'This request is no longer available. Refresh your friends.',
   relationship_changed:
@@ -143,12 +130,12 @@ export async function friendPage(
 
 export async function lookupPlayer(
   owner: string,
-  code: string,
+  id: string,
   signal?: AbortSignal,
 ): Promise<PlayerLookup> {
   const value = await request(
     owner,
-    `/player/${encodeURIComponent(code)}`,
+    `/player/${encodeURIComponent(id)}`,
     undefined,
     signal,
   );
