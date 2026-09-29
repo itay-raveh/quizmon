@@ -63,7 +63,7 @@ export async function startSyncServer(config: {
       config.mongoTlsCertKeyFile,
     );
   const db = await openPlayerDatabase(
-    config.databaseName ?? 'quizmon_server',
+    config.databaseName ?? 'quizmon_progress',
     getRxStorageMongoDB({ connection: connection.toString() }),
     false,
   );

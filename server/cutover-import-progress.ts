@@ -16,7 +16,7 @@ const mongoUrl = process.env.CUTOVER_MONGO_URL;
 if (!mongoUrl) throw new Error('Set CUTOVER_MONGO_URL.');
 const targetMongoUrl = process.env.CUTOVER_TARGET_MONGO_URL ?? mongoUrl;
 const sourceName = process.env.CUTOVER_SOURCE_DB ?? 'quizmon_server-v1';
-const targetName = process.env.CUTOVER_TARGET_NAME ?? 'quizmon_server';
+const targetName = process.env.CUTOVER_TARGET_NAME ?? 'quizmon_progress';
 if (sourceName === `${targetName}-v0`)
   throw new Error('Source and target databases must differ.');
 
