@@ -7,13 +7,21 @@ import { z } from 'zod';
 import { createRxServer } from 'rxdb-server/plugins/server';
 import { RxServerAdapterExpress } from 'rxdb-server/plugins/adapter-express';
 import { getRxStorageMongoDB } from 'rxdb/plugins/storage-mongodb';
+import { addRxPlugin } from 'rxdb/plugins/core';
+import { RxDBCleanupPlugin } from 'rxdb/plugins/cleanup';
 import { savedSettingsSchema } from '../src/domain/player/schemas/player-data.ts';
 import { trainerProfileSchema } from '../src/domain/player/trainer-profile.ts';
-import { validateRoundFact } from '../src/domain/sync/round-facts.ts';
+import { compactRoundSchema } from '../src/domain/sync/compact-rounds.ts';
 import { openPlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
-import { boardRows, playerProfiles, trainerProfile } from './rxdb-read.ts';
+import {
+  dailyReceiptDocumentSchema,
+  dailyReceiptId,
+} from '../src/lib/storage/rxdb-schema.ts';
+import { playerProfiles, trainerProfile } from './rxdb-read.ts';
+import { boardRows, startStandings, type Standing } from './standings.ts';
 
 const accountId = z.string().regex(/^[A-Za-z0-9_-]{1,128}$/);
+addRxPlugin(RxDBCleanupPlugin);
 const idsRequest = z.object({ ids: z.array(accountId).max(101) });
 const boardRequest = z.object({
   mode: z.enum(['daily', 'training']),
@@ -21,8 +29,6 @@ const boardRequest = z.object({
   offset: z.int().min(0),
   limit: z.int().min(1).max(100),
   day: z.string().optional(),
-  puzzleId: z.string().optional(),
-  includeOther: z.boolean().optional().default(false),
 });
 
 export const syncAdapter: typeof RxServerAdapterExpress = {
@@ -45,6 +51,7 @@ export async function startSyncServer(config: {
   audience: string;
   port: number;
   databaseName?: string;
+  appDatabaseName?: string;
 }) {
   const jwks = createRemoteJWKSet(new URL('/api/auth/jwks', config.origin));
   const connection = new URL(config.mongoUrl);
@@ -60,7 +67,17 @@ export async function startSyncServer(config: {
     getRxStorageMongoDB({ connection: connection.toString() }),
     false,
   );
+  let client: MongoClient | undefined;
+  let standings: Awaited<ReturnType<typeof startStandings>> | undefined;
   try {
+    client = await new MongoClient(connection.toString()).connect();
+    const mongoClient = client;
+    const appStorage = client.db(config.appDatabaseName ?? 'quizmon_app');
+    standings = await startStandings(
+      db,
+      appStorage.collection<Standing>('standings'),
+    );
+    const board = standings;
     const verify = async (authorization?: string) => {
       if (!authorization?.startsWith('Bearer '))
         throw new Error('Missing sync token.');
@@ -92,14 +109,13 @@ export async function startSyncServer(config: {
       queryModifier: (auth, query) => ({
         ...query,
         selector: {
-          $and: [query.selector, { ownerId: { $eq: auth.data.ownerId } }],
+          $and: [query.selector, { id: { $eq: auth.data.ownerId } }],
         },
       }),
       changeValidator: (auth, change) => {
         const player = change.newDocumentState;
         return (
           player.id === auth.data.ownerId &&
-          player.ownerId === auth.data.ownerId &&
           trainerProfileSchema.safeParse(player.profile).success &&
           (player.settings === null ||
             savedSettingsSchema.safeParse(player.settings).success)
@@ -121,13 +137,34 @@ export async function startSyncServer(config: {
           !change.assumedMasterState &&
           !round._deleted &&
           round.ownerId === auth.data.ownerId &&
-          round.fact.id === round.id &&
-          validateRoundFact(round.fact)
+          compactRoundSchema.safeParse(round).success
+        );
+      },
+    });
+    server.addReplicationEndpoint({
+      name: 'dailyReceipts',
+      collection: db.dailyReceipts,
+      queryModifier: (auth, query) => ({
+        ...query,
+        selector: {
+          $and: [query.selector, { ownerId: { $eq: auth.data.ownerId } }],
+        },
+      }),
+      changeValidator: (auth, change) => {
+        const receipt = change.newDocumentState;
+        return (
+          !change.assumedMasterState &&
+          !receipt._deleted &&
+          receipt.ownerId === auth.data.ownerId &&
+          receipt.id === dailyReceiptId(receipt.ownerId, receipt.day) &&
+          dailyReceiptDocumentSchema.safeParse(receipt).success
         );
       },
     });
     server.serverApp.get('/health', (_request, response) => {
-      response.status(200).send('ok');
+      response
+        .status(board.healthy() ? 200 : 503)
+        .send(board.healthy() ? 'ok' : 'unavailable');
     });
     server.serverApp.use('/read', express.json({ limit: '32kb' }));
     server.serverApp.use('/read', (request, response, next) => {
@@ -157,10 +194,9 @@ export async function startSyncServer(config: {
     server.serverApp.post('/read/board', (request, response, next) => {
       const body = boardRequest.safeParse(request.body);
       if (!body.success) return response.sendStatus(400);
-      const { mode, visible, day, puzzleId, includeOther, offset, limit } =
-        body.data;
+      const { mode, visible, day, offset, limit } = body.data;
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
-      void boardRows(db, mode, visible, day, puzzleId, includeOther).then(
+      void boardRows(board, mode, visible, day).then(
         (rows) =>
           response.json({
             total: rows.length,
@@ -177,8 +213,9 @@ export async function startSyncServer(config: {
       void Promise.all([
         db.players.findOne(ownerId).exec(),
         db.rounds.find({ selector: { ownerId } }).exec(),
+        db.dailyReceipts.find({ selector: { ownerId } }).exec(),
       ]).then(
-        ([player, rounds]) =>
+        ([player, rounds, dailyReceipts]) =>
           response.json({
             player: player
               ? {
@@ -187,7 +224,12 @@ export async function startSyncServer(config: {
                   settings: player.settings,
                 }
               : null,
-            rounds: rounds.map((round) => round.fact),
+            rounds: rounds.map((round) =>
+              compactRoundSchema.parse(round.toMutableJSON()),
+            ),
+            dailyReceipts: dailyReceipts.map((receipt) =>
+              dailyReceiptDocumentSchema.parse(receipt.toMutableJSON()),
+            ),
           }),
         next,
       );
@@ -195,25 +237,26 @@ export async function startSyncServer(config: {
     server.serverApp.delete('/read/account', (_request, response, next) => {
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
       void (async () => {
-        const [rounds, player] = await Promise.all([
+        const [rounds, player, dailyReceipts] = await Promise.all([
           db.rounds.find({ selector: { ownerId } }).exec(),
           db.players.findOne(ownerId).exec(),
+          db.dailyReceipts.find({ selector: { ownerId } }).exec(),
         ]);
         const removed = await db.rounds.bulkRemove(rounds);
         if (removed.error.length)
           throw new Error('Could not delete account rounds.');
+        const removedReceipts =
+          await db.dailyReceipts.bulkRemove(dailyReceipts);
+        if (removedReceipts.error.length)
+          throw new Error('Could not delete Daily receipts.');
         await player?.remove();
-        const client = await new MongoClient(connection.toString()).connect();
-        try {
-          const storage = client.db(`${db.name}-v${db.rounds.schema.version}`);
-          await Promise.all([
-            storage.collection(db.rounds.name).deleteMany({ ownerId }),
-            storage.collection(db.players.name).deleteMany({ ownerId }),
-          ]);
-          response.sendStatus(204);
-        } finally {
-          await client.close();
-        }
+        await Promise.all([
+          db.rounds.cleanup(0),
+          db.players.cleanup(0),
+          db.dailyReceipts.cleanup(0),
+        ]);
+        await board.removeOwner(ownerId);
+        response.sendStatus(204);
       })().catch(next);
     });
     Sentry.setupExpressErrorHandler(server.serverApp);
@@ -228,8 +271,14 @@ export async function startSyncServer(config: {
     };
     server.serverApp.use(safeErrorResponse);
     await server.start();
+    db.onClose.push(() => {
+      board.close();
+      return mongoClient.close();
+    });
     return { server, db };
   } catch (error) {
+    standings?.close();
+    await client?.close();
     await db.close();
     throw error;
   }

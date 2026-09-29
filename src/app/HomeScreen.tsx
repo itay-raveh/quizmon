@@ -71,7 +71,6 @@ export const HomeScreen = ({
             mode={{
               kind: 'daily',
               date: dailyDate,
-              track: dailyResult.dailyTrack,
             }}
             result={dailyResult}
           >

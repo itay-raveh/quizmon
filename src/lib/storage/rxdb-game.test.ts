@@ -3,8 +3,7 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { expect, it } from 'vitest';
 import { createTrainerProfile } from '../../domain/player/trainer-profile';
 import { defaultGameSettings } from '../../domain/settings/game-settings';
-import { archiveCompletion } from '../../domain/sync/round-facts';
-import { boardRows } from '../../../server/rxdb-read';
+import { compactCompletion } from '../../domain/sync/compact-rounds';
 import { completion } from '../../../tests/online/progress-fixtures';
 import { openPlayerDatabase } from './rxdb-database';
 import {
@@ -25,7 +24,7 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
     settings: defaultGameSettings,
   });
   await writePlayerPreferences(first, 'guest', { profile });
-  const fact = archiveCompletion(completion('training'));
+  const fact = compactCompletion(completion('training'));
   expect(await writeCompletedRound(first, 'guest', fact)).toBe(true);
   expect(await writeCompletedRound(first, 'guest', fact)).toBe(false);
   await first.close();
@@ -35,7 +34,6 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   expect(data.profile?.name).toBe('Trainer');
   expect(data.settings).toEqual(defaultGameSettings);
   expect(Object.keys(data.results.training)).toHaveLength(1);
-  expect(await boardRows(second, 'training', null)).toHaveLength(1);
   await expect(
     writePlayerPreferences(second, 'guest', {
       settings: { ...defaultGameSettings, soundVolume: 2 },
@@ -48,11 +46,10 @@ it('projects saved rounds and preferences after IndexedDB reload', async () => {
   expect((await readGameData(second, 'guest')).data.settings).toBeNull();
   const invalid = structuredClone(fact);
   invalid.id = crypto.randomUUID();
-  Reflect.set(invalid.data.answers[0]!, 'question_type', 'retired-type');
+  Reflect.set(invalid.answers[0]!, 'type', 'retired-type');
   await second.rounds.insert({
-    id: invalid.id,
+    ...invalid,
     ownerId: 'guest',
-    fact: invalid,
   });
   await expect(readGameData(second, 'guest')).rejects.toThrow(
     'A saved completed round is invalid.',
@@ -94,7 +91,7 @@ it('returns cloneable Daily attempts from RxDB documents', async () => {
           media: { kind: 'none' },
         },
       ],
-      mode: { kind: 'daily', date, track: { difficulty: 3, scope: 'all' } },
+      mode: { kind: 'daily', date },
       settings: defaultGameSettings,
     };
     await (await db.device.findOne('state').exec())!.incrementalModify(
@@ -103,8 +100,8 @@ it('returns cloneable Daily attempts from RxDB documents', async () => {
         payload: {
           ...saved,
           dailyAttempts: {
-            [`${date}:3:all`]: round,
-            [`${date}:5:all`]: {
+            [date]: round,
+            invalid: {
               ...round,
               questions: [
                 { ...round.questions[0], questionType: 'retired-type' },
@@ -115,46 +112,9 @@ it('returns cloneable Daily attempts from RxDB documents', async () => {
       }),
     );
     const attempts = (await readDeviceState(db)).dailyAttempts;
-    const attempt = attempts[`${date}:3:all`];
+    const attempt = attempts[date];
     expect(structuredClone(attempt!).mode).toEqual(round.mode);
-    expect(attempts[`${date}:5:all`]).toBeUndefined();
-  } finally {
-    await db.remove();
-  }
-});
-
-it('credits only the first Daily round after two offline devices sync', async () => {
-  const name = `quizmon_daily_${crypto.randomUUID().replaceAll('-', '')}`;
-  const db = await openPlayerDatabase(
-    name,
-    getRxStorageDexie({ indexedDB, IDBKeyRange }),
-    false,
-  );
-  try {
-    await ensureDeviceState(db);
-    const first = archiveCompletion(
-      completion('daily', { completedAt: '2026-09-11T09:00:00.000Z' }),
-    );
-    const second = archiveCompletion(
-      completion('daily', { completedAt: '2026-09-11T10:00:00.000Z' }),
-    );
-    second.puzzle_id = 'b'.repeat(64);
-    second.data.config.daily_track = { difficulty: 2, scope: 'all' };
-    await writeCompletedRound(db, 'guest', second);
-    await writeCompletedRound(db, 'guest', first);
-    const { data } = await readGameData(db, 'guest');
-    expect(data.results.progress.correctQuestionTypes['pokemonTypes']).toBe(4);
-    const rows = await boardRows(
-      db,
-      'daily',
-      null,
-      '2026-09-11',
-      first.puzzle_id!,
-    );
-    expect(rows.map((row) => row.roundId)).toEqual([first.id]);
-    expect(
-      await boardRows(db, 'daily', null, '2026-09-11', second.puzzle_id),
-    ).toEqual([]);
+    expect(attempts.invalid).toBeUndefined();
   } finally {
     await db.remove();
   }

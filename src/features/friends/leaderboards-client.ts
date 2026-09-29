@@ -32,7 +32,6 @@ export async function readDailyLeaderboard(
   owner: string,
   date: string,
   scope: LeaderboardScope,
-  puzzleId: string,
   after: string | null,
   limit: number,
   signal?: AbortSignal,
@@ -42,7 +41,6 @@ export async function readDailyLeaderboard(
     'daily',
     date,
     scope,
-    puzzleId,
     after,
     limit,
     signal,
@@ -61,7 +59,6 @@ export async function readTrainingLeaderboard(
     'training',
     undefined,
     scope,
-    undefined,
     after,
     limit,
     signal,
@@ -73,7 +70,6 @@ async function readLeaderboard(
   mode: 'daily' | 'training',
   date: string | undefined,
   scope: LeaderboardScope,
-  puzzleId: string | undefined,
   after: string | null,
   limit: number,
   signal?: AbortSignal,
@@ -81,8 +77,6 @@ async function readLeaderboard(
   const changed = 'Your account changed. Reopen the leaderboard.';
   if (accountSnapshot().owner !== owner) throw new Error(changed);
   const query = new URLSearchParams(date ? { date, scope } : { scope });
-  if (puzzleId) query.set('puzzle', puzzleId);
-  if (mode === 'daily') query.set('versions', 'all');
   if (after) query.set('after', after);
   query.set('limit', String(limit));
   const response = await fetch(`/api/leaderboards/${mode}?${query}`, {

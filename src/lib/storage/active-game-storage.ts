@@ -8,7 +8,6 @@ import type { PokemonCatalog } from '../../domain/pokemon/types';
 import type { QuestionData } from '../../domain/quiz/types';
 import { getQuestionPokemon } from '../../domain/quiz/question-pokemon';
 import { getQuestionView } from '../../domain/quiz/presentation';
-import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import {
   readLocalDailyAttempts,
   readPlayerSave,
@@ -137,7 +136,7 @@ export const readDailyAttempts = (
   const stored = readLocalDailyAttempts();
   const attempts: Record<string, ActiveGameSnapshot> = {};
   for (const [key, value] of Object.entries(stored)) {
-    if (!key.startsWith(`${date}:`)) continue;
+    if (key !== date) continue;
     let snapshot: ActiveGameSnapshot;
     try {
       snapshot = parseActiveGameSave(value);
@@ -146,10 +145,9 @@ export const readDailyAttempts = (
     }
     if (
       snapshot?.mode.kind === 'daily' &&
-      snapshot.mode.track &&
       snapshot.mode.date === date &&
       snapshot.playerRestoreId === restoreId &&
-      getDailyResultKey(date, snapshot.mode.track) === key
+      key === date
     )
       attempts[key] = snapshot;
   }

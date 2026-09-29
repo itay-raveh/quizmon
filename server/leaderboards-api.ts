@@ -27,15 +27,11 @@ function parameters(query: (key: string) => string | undefined): {
 leaderboardApi.get('/daily', async (context) => {
   const date =
     context.req.query('date') ?? new Date().toISOString().slice(0, 10);
-  const puzzleId = context.req.query('puzzle');
-  const includeOther = context.req.query('versions') === 'all';
   const page = parameters((key) => context.req.query(key));
   if (
     !page ||
     !isDailyDate(date) ||
-    date > new Date().toISOString().slice(0, 10) ||
-    !puzzleId ||
-    !/^[a-f0-9]{64}$/.test(puzzleId)
+    date > new Date().toISOString().slice(0, 10)
   )
     return context.json({ error: 'invalid_leaderboard' }, 400);
   return context.json(
@@ -46,8 +42,6 @@ leaderboardApi.get('/daily', async (context) => {
       page.offset,
       page.limit,
       date,
-      puzzleId,
-      includeOther,
     ),
   );
 });

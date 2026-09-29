@@ -55,5 +55,6 @@ export async function exportAccount(context: Context<AccountEnv>) {
     friends,
     player: progress.player ?? null,
     rounds: progress.rounds,
+    dailyReceipts: progress.dailyReceipts ?? [],
   });
 }

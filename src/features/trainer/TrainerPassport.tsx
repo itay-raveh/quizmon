@@ -94,9 +94,6 @@ export const TrainerPassport = ({
     pokedexFound: pokemon.filter((name) => found.has(name)).length,
     pokedexTotal: pokemon.length,
   };
-  const [revealing, setRevealing] = useState(
-    !profile.hasBeenRevealed && view === 'front',
-  );
   const location = useLocation();
   const navigate = useNavigate();
   const playSound = useInteractionSound();
@@ -157,18 +154,6 @@ export const TrainerPassport = ({
   const preparationFailed = failedPreparationKey === artifactKey;
   const badges = getTrainerBadges(stats, catalog);
   const selectedBadge = badges.find(({ id }) => id === selectedBadgeId) ?? null;
-
-  useEffect(() => {
-    if (!profile.hasBeenRevealed) {
-      void onProfileChange({ ...profile, hasBeenRevealed: true });
-    }
-  }, [onProfileChange, profile]);
-
-  useEffect(() => {
-    if (!revealing) return;
-    const timeoutId = window.setTimeout(() => setRevealing(false), 560);
-    return () => window.clearTimeout(timeoutId);
-  }, [revealing]);
 
   useEffect(() => {
     if (view !== 'front' || !canShareArtifact) return;
@@ -404,9 +389,7 @@ export const TrainerPassport = ({
         </form>
       ) : null}
 
-      <div
-        className={`trainer-passport__artifact ${view === 'front' && revealing ? 'trainer-passport__artifact--reveal' : ''}`.trim()}
-      >
+      <div className="trainer-passport__artifact">
         {view === 'pokedex' ? (
           <TrainerPokedex catalog={catalog} foundPokemon={record.pokedex} />
         ) : view === 'badges' ? (

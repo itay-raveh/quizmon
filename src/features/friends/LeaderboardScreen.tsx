@@ -24,10 +24,6 @@ import {
 import { isDailyDate } from '../../lib/validation';
 import { useInteractionSound } from '../../lib/audio/sound-context';
 import { getUtcDate } from '../../domain/quiz/daily';
-import { currentDailyTrack } from '../../domain/quiz/daily-track';
-import { getDailyPuzzleId } from '../../domain/quiz/puzzle-id';
-import type { PokemonCatalog } from '../../domain/pokemon/types';
-import { readDailyResult } from '../../lib/storage/results-storage';
 import type {
   Leaderboard,
   LeaderboardMode,
@@ -106,7 +102,6 @@ function shiftDailyDate(date: string, days: number): string {
 
 function Standings({
   owner,
-  catalog,
   mode,
   date,
   scope,
@@ -117,7 +112,6 @@ function Standings({
   onError,
 }: {
   owner: string;
-  catalog?: PokemonCatalog;
   mode: LeaderboardMode;
   date: string;
   scope: LeaderboardScope;
@@ -129,16 +123,7 @@ function Standings({
 }) {
   const playSound = useInteractionSound();
   const dailyDate = mode === 'daily' ? date : '';
-  const dailyCatalog = mode === 'daily' ? catalog : undefined;
   const [after, setAfter] = useState<string | null>(null);
-  let savedId: string | undefined;
-  if (mode === 'daily') {
-    try {
-      savedId = readDailyResult(dailyDate, currentDailyTrack)?.puzzleId;
-    } catch {
-      // The leaderboard can load before the local save opens.
-    }
-  }
   const board = useQuery({
     queryKey: [
       'social',
@@ -147,19 +132,15 @@ function Standings({
       mode,
       dailyDate,
       scope,
-      savedId,
       after,
       pageSize,
     ],
     queryFn: async ({ signal }): Promise<Leaderboard> => {
       if (mode === 'daily') {
-        if (!savedId && !dailyCatalog)
-          throw new Error('Daily catalog is unavailable.');
         return readDailyLeaderboard(
           owner,
           dailyDate,
           scope,
-          savedId ?? (await getDailyPuzzleId(dailyCatalog!, dailyDate)),
           after,
           pageSize,
           signal,
@@ -417,7 +398,6 @@ function Standings({
 }
 
 export function LeaderboardScreen({
-  catalog,
   onAccount,
   onViewPlayer,
   onOpenPlay,
@@ -426,7 +406,6 @@ export function LeaderboardScreen({
   initialMode = 'daily',
   onSelectionChange,
 }: {
-  catalog?: PokemonCatalog;
   onAccount: () => void;
   onViewPlayer: (id: string) => void;
   onOpenPlay: () => void;
@@ -659,7 +638,6 @@ export function LeaderboardScreen({
                 <Standings
                   key={`${account.owner}:${mode}:${mode === 'daily' ? date : ''}:${boardScope}:${pageSize}`}
                   owner={account.owner}
-                  catalog={catalog}
                   mode={mode}
                   date={date}
                   scope={boardScope}

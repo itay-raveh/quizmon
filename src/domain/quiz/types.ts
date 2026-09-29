@@ -2,7 +2,6 @@ import type { QuestionRendering } from './rendering.ts';
 import type { QuestionView } from './presentation.ts';
 import type { Generation, StatName } from '../pokemon/types.ts';
 import type { Difficulty } from './difficulty.ts';
-import type { DailyTrack } from './daily-track.ts';
 import type { QuestionType } from './questions/definitions.ts';
 export type { QuestionType } from './questions/definitions.ts';
 
@@ -191,11 +190,8 @@ export interface QuestionData {
 }
 
 export type GameMode =
-  | { kind: 'training' }
-  | { kind: 'daily'; date: string; track?: DailyTrack }
-  | { kind: 'league' };
+  { kind: 'training' } | { kind: 'daily'; date: string } | { kind: 'league' };
 
-export type { AnswerObservation } from './answer-observation.ts';
 import type { AnswerObservation } from './answer-observation.ts';
 
 export interface SavedAnswerResult {
@@ -220,8 +216,6 @@ export interface AnswerResult extends SavedAnswerResult {
 
 export interface GameResult {
   scoreMultipliers?: ScoreMultipliers;
-  dailyTrack?: DailyTrack;
-  puzzleId?: string;
   rules?: RoundRules;
   answers: SavedAnswerResult[];
   correctCount: number;

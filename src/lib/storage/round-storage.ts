@@ -3,14 +3,12 @@ import { parseRound } from '../../domain/player/schemas/round';
 import { completeRound } from '../../domain/player/game-history';
 import { applyResult } from '../../domain/player/game-progress';
 import type { LeagueVictoryRecord } from '../../domain/player/hall-of-fame';
-import { defaultGameSettings } from '../../domain/settings/game-settings';
-import { getDailyResultKey } from '../../domain/quiz/daily-track';
 import type { RoundCompletion } from '../../domain/sync/progress';
 import {
-  archiveCompletion,
-  scoreRound,
-  validateRoundFact,
-} from '../../domain/sync/round-facts';
+  compactCompletion,
+  compactRoundSchema,
+  scoreCompactRound,
+} from '../../domain/sync/compact-rounds';
 import type { ActiveGameSnapshot } from './active-game-storage';
 import {
   currentOwnerId,
@@ -19,7 +17,11 @@ import {
   readPlayerSave,
   refreshPlayerData,
 } from './player-storage';
-import { updateDeviceState, writeCompletedRound } from './rxdb-game';
+import {
+  updateDeviceState,
+  writeCompletedRound,
+  writeDailyReceipt,
+} from './rxdb-game';
 
 let tabId: string;
 let active: ActiveGameSnapshot | null = null;
@@ -44,12 +46,12 @@ export const initializeLocalRound = async () => {
     return;
   }
   if (!active.completedAt) return;
-  const { completion, victory } = await completeRound(
+  const { completion, victory } = completeRound(
     active,
     active.completedAt,
     readPlayerData().profile?.name ?? '',
   );
-  await commitRoundCompletion(completion, victory, true, active.startedOn);
+  await commitRoundCompletion(completion, victory, true);
 };
 
 export const readLocalRound = () => structuredClone(active);
@@ -81,9 +83,9 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
     await stored.incrementalModify((data) => ({ ...data, payload: round }));
   else await db.device.insert({ id: roundKey(), payload: round });
   const mode = round.mode;
-  if (mode.kind === 'daily' && mode.track)
+  if (mode.kind === 'daily')
     await updateDeviceState(db, (state) => {
-      state.dailyAttempts[getDailyResultKey(mode.date, mode.track)] = round;
+      state.dailyAttempts[mode.date] = round;
     });
   active = structuredClone(round);
   await refreshPlayerData();
@@ -108,62 +110,34 @@ export const commitRoundCompletion = async (
   completion: RoundCompletion,
   victory?: LeagueVictoryRecord,
   keepRound = false,
-  startedOn?: string,
 ) => {
   const db = getPlayerDatabase();
   const ownerId = currentOwnerId();
-  const round = archiveCompletion(
-    completion,
-    true,
-    completion.mode === 'daily'
-      ? (startedOn ?? completion.dailyDate!)
-      : completion.completedAt.slice(0, 10),
-  );
+  const round = compactCompletion(completion);
   const existing = await db.rounds.findOne(round.id).exec();
-  if (!existing && round.mode === 'daily') {
-    const all = await db.rounds.find().exec();
-    round.credited = !all.some(
-      ({ fact }) =>
-        validateRoundFact(fact) &&
-        fact.mode === 'daily' &&
-        fact.day === round.day &&
-        fact.credited,
-    );
-  }
-  const fact = existing?.toMutableJSON().fact ?? round;
-  const result = scoreRound(fact);
+  const fact = existing
+    ? compactRoundSchema.parse(existing.toMutableJSON())
+    : round;
+  const result = scoreCompactRound(fact);
   const data = readPlayerData();
   const outcome = applyResult(
     data,
     fact.mode === 'daily'
       ? {
           kind: 'daily',
-          date: fact.day!,
-          ...(result.dailyTrack ? { track: result.dailyTrack } : {}),
+          date: fact.day,
         }
       : { kind: fact.mode },
     result,
-    {
-      ...defaultGameSettings,
-      trainingMode: completion.training.trainingMode,
-      difficulty: completion.training.difficulty,
-      questionSelection: completion.training.questionSelection,
-      generations: completion.training.generations,
-      formGroups:
-        completion.training.formGroups ?? defaultGameSettings.formGroups,
-      questionTypes: completion.training.questionTypes,
-      automaticQuestionTypes: completion.training.automaticQuestionTypes,
-    },
     victory,
-    fact.completed_at.slice(0, 10),
   );
   const saved = await writeCompletedRound(db, ownerId, fact);
-  if (round.mode === 'daily' && completion.result.dailyTrack)
+  if (round.mode === 'daily') {
+    await writeDailyReceipt(db, ownerId, round.day, round.id);
     await updateDeviceState(db, (state) => {
-      delete state.dailyAttempts[
-        getDailyResultKey(round.day!, completion.result.dailyTrack)
-      ];
+      delete state.dailyAttempts[round.day];
     });
+  }
   if (!keepRound) {
     const stored = await db.device.findOne(roundKey()).exec();
     await stored?.remove();

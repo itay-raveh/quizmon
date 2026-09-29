@@ -5,10 +5,9 @@ import { answerSubjectSchema } from '../../quiz/subject.ts';
 import { formGroups, generations } from '../../pokemon/types.ts';
 import { savedQuestionSchema } from '../../quiz/lineup.ts';
 import { questionTypes } from '../../quiz/questions/definitions.ts';
-import { questionCategories, type GameMode } from '../../quiz/types.ts';
+import { questionCategories } from '../../quiz/types.ts';
 import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
-import { isDailyTrack } from '../../quiz/daily-track.ts';
 import {
   answerFlows,
   timerDisplays,
@@ -29,7 +28,6 @@ const mode = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('daily'),
     date: dailyDateSchema,
-    track: z.custom(isDailyTrack).optional(),
   }),
 ]);
 const answer = z.object({
@@ -83,7 +81,7 @@ export const parseRound = (value: unknown): ActiveGameSnapshot | null => {
   const snapshot = parsed.data;
   return {
     ...snapshot,
-    mode: snapshot.mode as GameMode,
+    mode: snapshot.mode,
     settings: snapshot.settings,
     playerRestoreId:
       typeof snapshot.playerRestoreId === 'string'

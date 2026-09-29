@@ -1,4 +1,3 @@
-import { dailyTrackLabel } from '@/domain/quiz/daily-track';
 import { GameButton } from '@/components/GameButton';
 import { CaretDownIcon, CheckIcon, XIcon } from '@/components/icons';
 import type { TrainerProgressChange } from '@/domain/player/trainer-progression';
@@ -191,15 +190,10 @@ export const ResultsScreen = ({
           <h1 id="results-title" ref={heading} tabIndex={-1}>
             {resultTitle}
           </h1>
-          {result.dailyTrack ? (
-            <p className="results__subtitle">
-              {dailyTrackLabel(result.dailyTrack)}
-            </p>
-          ) : null}
           {isDaily ? (
             <p className="results__date">{formatDailyDate(mode.date)}</p>
           ) : null}
-          {!result.dailyTrack && result.rules ? (
+          {result.rules ? (
             <details className="results__settings">
               <summary>
                 <span>

@@ -1,4 +1,3 @@
-import { parseDailyResultKey } from '@/domain/quiz/daily-track';
 import { emptyPlayerData } from '@/domain/player/player-save';
 import { readPlayerSave } from '@/lib/storage/player-storage';
 import { readDailyAttempts } from '@/lib/storage/active-game-storage';
@@ -13,16 +12,12 @@ export const readDailyState = (date: string) => {
     return {
       readError: false,
       results: save.data.results,
-      completed: Object.entries(save.data.results.daily)
-        .filter(([key]) => parseDailyResultKey(key)?.date === date)
-        .map(([, result]) => result),
       attempts,
     };
   } catch {
     return {
       readError: true,
       results: emptyPlayerData().results,
-      completed: [],
       attempts: {},
     };
   }

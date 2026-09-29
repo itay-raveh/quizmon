@@ -96,8 +96,6 @@ export async function readBoard(
   offset: number,
   limit: number,
   day?: string,
-  puzzleId?: string,
-  includeOther = false,
 ): Promise<Leaderboard> {
   const viewerId = context.get('accountId');
   let visible: string[] | null = null;
@@ -136,8 +134,6 @@ export async function readBoard(
     mode,
     visible,
     day,
-    puzzleId,
-    includeOther,
     offset,
     limit,
   });

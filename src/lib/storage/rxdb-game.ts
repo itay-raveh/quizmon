@@ -1,7 +1,10 @@
 import { z } from 'zod';
 import type { ActiveGameSnapshot } from '../../domain/player/active-game';
 import { parseRound } from '../../domain/player/schemas/round';
-import { projectRoundHistory } from '../../domain/player/game-history';
+import {
+  projectCompactRoundHistory,
+  recentQuestionHistory,
+} from '../../domain/player/compact-history';
 import {
   emptyPlayerData,
   type PlayerData,
@@ -14,16 +17,15 @@ import {
   createTrainerProfile,
   trainerProfileSchema,
 } from '../../domain/player/trainer-profile';
-import { questionHistorySchema } from '../../domain/quiz/history';
 import {
-  validateRoundFact,
-  type RoundFact,
-} from '../../domain/sync/round-facts';
+  compactRoundSchema,
+  type CompactRound,
+} from '../../domain/sync/compact-rounds';
 import type { PlayerDatabase } from './rxdb-database';
+import { dailyReceiptId } from './rxdb-schema';
 
 const deviceStateSchema = z.object({
   restoreId: z.string().nullable(),
-  questionHistory: questionHistorySchema,
   dailyAttempts: z.record(z.string(), z.unknown()),
 });
 
@@ -32,10 +34,8 @@ export type DeviceState = z.infer<typeof deviceStateSchema> & {
 };
 
 export const emptyDeviceState = (): DeviceState => {
-  const data = emptyPlayerData();
   return {
     restoreId: null,
-    questionHistory: data.questionHistory,
     dailyAttempts: {},
   };
 };
@@ -90,37 +90,36 @@ export async function readGameData(
   db: PlayerDatabase,
   ownerId: string,
 ): Promise<{ data: PlayerData; device: DeviceState }> {
-  const [player, device, documents] = await Promise.all([
+  const [player, device, documents, receipts] = await Promise.all([
     db.players.findOne(ownerId).exec(),
     readDeviceState(db),
     db.rounds.find().exec(),
+    db.dailyReceipts.find({ selector: { ownerId } }).exec(),
   ]);
   const rounds = documents.flatMap((document) => {
     const saved = document.toMutableJSON();
     if (saved.ownerId !== ownerId)
       throw new Error('A saved completed round belongs to another account.');
-    if (validateRoundFact(saved.fact)) return [saved.fact];
+    if (compactRoundSchema.safeParse(saved).success) return [saved];
     throw new Error('A saved completed round is invalid.');
   });
-  rounds.sort(
-    (a, b) =>
-      a.completed_at.localeCompare(b.completed_at) || a.id.localeCompare(b.id),
-  );
-  if (player && player.ownerId !== ownerId)
-    throw new Error('The saved player belongs to another account.');
   const savedPlayer = player?.toMutableJSON();
   return {
     device,
     data: parsePlayerData({
       ...emptyPlayerData(),
-      ...projectRoundHistory(rounds),
+      ...projectCompactRoundHistory(
+        rounds,
+        savedPlayer?.profile.name ?? '',
+        new Set(receipts.map((receipt) => receipt.roundId)),
+      ),
       profile: savedPlayer
         ? trainerProfileSchema.parse(savedPlayer.profile)
         : null,
       settings: savedPlayer?.settings
         ? savedSettingsSchema.parse(savedPlayer.settings)
         : null,
-      questionHistory: device.questionHistory,
+      questionHistory: recentQuestionHistory(rounds),
     }),
   };
 }
@@ -149,7 +148,6 @@ export async function writePlayerPreferences(
   }
   await db.players.insert({
     id: ownerId,
-    ownerId,
     ...apply({ profile: null, settings: null }),
   });
 }
@@ -157,19 +155,36 @@ export async function writePlayerPreferences(
 export async function writeCompletedRound(
   db: PlayerDatabase,
   ownerId: string,
-  fact: RoundFact,
+  round: CompactRound,
 ): Promise<boolean> {
-  if (!validateRoundFact(fact))
-    throw new Error('The completed round is invalid.');
-  const existing = await db.rounds.findOne(fact.id).exec();
+  const parsed = compactRoundSchema.safeParse(round);
+  if (!parsed.success) throw new Error('The completed round is invalid.');
+  const canonical = parsed.data;
+  const existing = await db.rounds.findOne(round.id).exec();
   if (existing) {
     if (
       existing.ownerId !== ownerId ||
-      JSON.stringify(existing.fact) !== JSON.stringify(fact)
+      JSON.stringify(compactRoundSchema.parse(existing.toMutableJSON())) !==
+        JSON.stringify(canonical)
     )
       throw new Error('This round ID has a different saved result.');
     return false;
   }
-  await db.rounds.insert({ id: fact.id, ownerId, fact });
+  await db.rounds.insert({ ...canonical, ownerId });
   return true;
+}
+
+export async function writeDailyReceipt(
+  db: PlayerDatabase,
+  ownerId: string,
+  day: string,
+  roundId: string,
+): Promise<void> {
+  const id = dailyReceiptId(ownerId, day);
+  if (await db.dailyReceipts.findOne(id).exec()) return;
+  try {
+    await db.dailyReceipts.insert({ id, ownerId, day, roundId });
+  } catch (error) {
+    if (!(await db.dailyReceipts.findOne(id).exec())) throw error;
+  }
 }
