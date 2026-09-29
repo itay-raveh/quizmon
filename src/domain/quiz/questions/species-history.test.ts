@@ -1,4 +1,6 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
+import { recentQuestionHistory } from '../../player/compact-history.ts';
+import type { CompactRound } from '../../sync/compact-rounds.ts';
 import {
   emptyQuestionHistory,
   getQuestionRecency,
@@ -71,4 +73,27 @@ it('matches form repetitions across identity formats', () => {
       speciesQuestion(catalog, simpleCanonical),
     ),
   ).toBe(1);
+
+  const saved: CompactRound = {
+    id: '00000000-0000-4000-8000-000000000003',
+    mode: 'daily',
+    day: '2026-09-11',
+    completedAt: '2026-09-11T12:00:00.000Z',
+    answers: Array.from({ length: 5 }, () => ({
+      type: 'pokemonFromHistoricalSprite',
+      subject: 'Mr. Mime: Mega',
+      expected: ['Mr. Mime: Mega'],
+      selected: ['Mr. Mime: Mega'],
+      responseMs: 1000,
+    })),
+  };
+  expect(
+    getQuestionRecency(
+      getSpeciesHistory({
+        ...context,
+        history: recentQuestionHistory([saved]),
+      })!,
+      speciesQuestion(catalog, canonical),
+    ),
+  ).toBeGreaterThan(0);
 });

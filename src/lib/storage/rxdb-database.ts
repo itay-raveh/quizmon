@@ -1,23 +1,22 @@
-import { addRxPlugin, createRxDatabase } from 'rxdb/plugins/core';
-import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
+import { createRxDatabase } from 'rxdb/plugins/core';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import type { RxCollection, RxDatabase, RxStorage } from 'rxdb';
 import {
   deviceSchema,
-  migrations,
+  dailyReceiptSchema,
   playerSchema,
   roundSchema,
+  type DailyReceipt,
   type DeviceRecord,
   type SyncedPlayer,
   type SyncedRound,
 } from './rxdb-schema.ts';
 
-addRxPlugin(RxDBMigrationSchemaPlugin);
-
 interface PlayerCollections {
   players: RxCollection<SyncedPlayer>;
   rounds: RxCollection<SyncedRound>;
   device: RxCollection<DeviceRecord>;
+  dailyReceipts: RxCollection<DailyReceipt>;
 }
 
 export type PlayerDatabase = RxDatabase<PlayerCollections>;
@@ -34,18 +33,10 @@ export async function openPlayerDatabase(
   });
   try {
     await db.addCollections({
-      players: {
-        schema: playerSchema,
-        migrationStrategies: migrations.players,
-      },
-      rounds: {
-        schema: roundSchema,
-        migrationStrategies: migrations.rounds,
-      },
-      device: {
-        schema: deviceSchema,
-        migrationStrategies: migrations.device,
-      },
+      players: { schema: playerSchema },
+      rounds: { schema: roundSchema },
+      device: { schema: deviceSchema },
+      dailyReceipts: { schema: dailyReceiptSchema },
     });
     return db;
   } catch (error) {

@@ -59,18 +59,13 @@ export const useGameCompletion = ({
         progressStart.current?.seed === seed
           ? progressStart.current.stats
           : getTrainerStats(previousData.results, previousData.pokedex);
-      const { completion, victory: leagueRecord } = await completeRound(
+      const { completion, victory: leagueRecord } = completeRound(
         round,
         completedAt,
         previousData.profile?.name ?? '',
       );
       const { result } = completion;
-      const best = await commitRoundCompletion(
-        completion,
-        leagueRecord,
-        false,
-        round.startedOn,
-      );
+      const best = await commitRoundCompletion(completion, leagueRecord, false);
       const progressChanges = getTrainerProgressChanges(
         previousTrainerStats,
         readTrainerStats(),

@@ -98,10 +98,6 @@
   min-width: 0;
 }
 
-.trainer-passport__artifact--reveal {
-  animation: trainer-reveal 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
 .trainer-artifact-frame {
   --trainer-frame-border: var(--navy);
   --trainer-frame-surface: var(--paper);

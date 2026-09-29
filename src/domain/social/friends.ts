@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 export const socialPlayerSchema = z.object({
   id: z.string(),
-  code: z.string().nullable(),
   name: z.string(),
   partnerPokemon: z.string().nullable(),
 });
@@ -18,30 +17,5 @@ export interface FriendRelation {
   updatedAt: string;
 }
 
-export function normalizeFriendCode(value: string) {
-  const code = value
-    .trim()
-    .replaceAll('-', '')
-    .replaceAll(' ', '')
-    .toUpperCase();
-  return /^[A-F0-9]{16}$/.test(code) ? code : null;
-}
-
-export const formatFriendCode = (code: string) =>
-  code.match(/.{1,4}/g)?.join('-') ?? code;
-
-export const friendInvitePath = (code: string) =>
-  `/account/friends?code=${encodeURIComponent(code)}`;
-
-export function parseFriendInput(value: string, origin: string) {
-  const code = normalizeFriendCode(value);
-  if (code) return code;
-  try {
-    const url = new URL(value);
-    if (url.origin !== origin || url.pathname !== '/account/friends')
-      return null;
-    return normalizeFriendCode(url.searchParams.get('code') ?? '');
-  } catch {
-    return null;
-  }
-}
+export const friendInvitePath = (id: string) =>
+  `/account/friends?id=${encodeURIComponent(id)}`;

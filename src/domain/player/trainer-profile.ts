@@ -1,6 +1,4 @@
 import { z } from 'zod';
-import { dailyDateSchema } from '../../lib/validation.ts';
-import { getUtcDate } from '../quiz/daily.ts';
 import { isTrainerAvatar } from './trainer-avatars.ts';
 import {
   trainerSpecialtyDetails,
@@ -14,8 +12,6 @@ export const trainerProfileSchema = z.object({
     .custom<string>(isTrainerAvatar)
     .nullish()
     .transform((avatar) => avatar ?? null),
-  createdAt: dailyDateSchema,
-  hasBeenRevealed: z.boolean(),
   name: z
     .string()
     .transform((name) => name.trim().slice(0, TRAINER_NAME_MAX_LENGTH)),
@@ -34,8 +30,6 @@ export type TrainerProfile = z.infer<typeof trainerProfileSchema>;
 
 export const createTrainerProfile = (): TrainerProfile => ({
   avatar: null,
-  createdAt: getUtcDate(),
-  hasBeenRevealed: false,
   name: '',
   partnerPokemon: null,
   specialty: null,

@@ -64,8 +64,9 @@ const registerSubscription = async (
   const today = getUtcDate();
   const response = await fetch(`/api/daily-reminders/${id}`, {
     body: JSON.stringify({
-      completedDate:
-        readDailyState(today).completed.length > 0 ? today : undefined,
+      completedDate: readDailyState(today).results.daily[today]
+        ? today
+        : undefined,
       subscription: subscription.toJSON(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
       hour: Number(time.slice(0, 2)),

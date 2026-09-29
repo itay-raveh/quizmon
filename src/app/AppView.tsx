@@ -124,7 +124,7 @@ const AppScreen = ({
             }
             onEditCard={() => destination.trainer('front', true)}
             onViewPlayer={onViewPlayer}
-            friendCode={destination.friendCode}
+            friendId={destination.friendId}
           />
         </div>
         {destination.playerId && (
@@ -151,9 +151,6 @@ const AppScreen = ({
           hidden={Boolean(destination.playerId)}
         >
           <LeaderboardScreen
-            catalog={
-              catalogState.status === 'ready' ? catalogState.catalog : undefined
-            }
             onAccount={() => destination.account()}
             onViewPlayer={onViewPlayer}
             onOpenPlay={onOpenPlay}
@@ -357,9 +354,7 @@ const AppOverlays = ({
           navigation.dailyLinkConfirmation ? 'Play Daily' : undefined
         }
         resumable={
-          session.phase === 'questions' &&
-          session.mode.kind === 'daily' &&
-          Boolean(session.mode.track)
+          session.phase === 'questions' && session.mode.kind === 'daily'
         }
         onCancel={navigation.cancelLeave}
         onConfirm={() => void navigation.confirmLeave()}
@@ -435,7 +430,12 @@ export const AppView = (props: AppViewProps) => {
       heading.focus({ preventScroll: true });
     }
     if (navigationType !== NavigationType.Pop) window.scrollTo(0, 0);
-  }, [navigationType, props.catalogState.status, screenKey]);
+  }, [
+    navigationType,
+    props.catalogState.status,
+    props.trainer.view,
+    screenKey,
+  ]);
   const onViewPlayer = (id: string) => {
     profileTrigger.current = document.activeElement as HTMLElement;
     destination.viewPlayer(id);

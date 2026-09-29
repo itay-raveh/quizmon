@@ -6,18 +6,22 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
 import { getRxStorageMongoDB } from 'rxdb/plugins/storage-mongodb';
 import { replicateServer } from 'rxdb-server/plugins/replication-server';
-import { archiveCompletion } from '../../src/domain/sync/round-facts.ts';
+import { compactCompletion } from '../../src/domain/sync/compact-rounds.ts';
 import { createTrainerProfile } from '../../src/domain/player/trainer-profile.ts';
 import { openPlayerDatabase } from '../../src/lib/storage/rxdb-database.ts';
 import type {
+  DailyReceipt,
   SyncedPlayer,
   SyncedRound,
 } from '../../src/lib/storage/rxdb-schema.ts';
 import {
+  dailyReceiptId,
+  dailyReceiptSchema,
   playerSchema,
   roundSchema,
 } from '../../src/lib/storage/rxdb-schema.ts';
 import { startSyncServer } from '../../server/rxdb-sync.ts';
+import { ensureAppIndexes } from '../../server/app-indexes.ts';
 import { completion } from './progress-fixtures.ts';
 import {
   accountRequest,
@@ -25,12 +29,11 @@ import {
   json,
   signIn,
   startAccountWorker,
-  testDatabase,
 } from './account-fixture.ts';
 
-const postgres = await testDatabase();
 const mongoName = `quizmon_runtime_${crypto.randomUUID().replaceAll('-', '')}`;
 const mongoUrl = `mongodb://127.0.0.1:27018/${mongoName}?directConnection=true`;
+const appMongoUrl = `mongodb://127.0.0.1:27018/${mongoName}_app?directConnection=true`;
 const mongo = new MongoClient(mongoUrl);
 const port = await freePort();
 const endpoint = `http://127.0.0.1:${port}`;
@@ -73,20 +76,21 @@ const jwks = createServer((request, response) => {
 });
 
 try {
+  await mongo.connect();
+  await ensureAppIndexes(mongo.db(`${mongoName}_app`));
   const seeded = await openPlayerDatabase(
     mongoName,
     getRxStorageMongoDB({ connection: mongoUrl }),
     false,
   );
-  const historical = archiveCompletion(completion('daily'));
+  const historical = compactCompletion(completion('daily'));
   await seeded.rounds.insert({
-    id: historical.id,
+    ...historical,
     ownerId: 'migration-trainer',
-    fact: historical,
   });
   await seeded.close();
   worker = await startAccountWorker({
-    connectionString: postgres.connectionString,
+    mongoUrl: appMongoUrl,
     origin,
     sync: { endpoint, audience: 'quizmon-runtime' },
     prebuiltWorkerDir: process.env.QUIZMON_PREBUILT_WORKER,
@@ -100,10 +104,10 @@ try {
     audience: 'quizmon-runtime',
     port,
     databaseName: mongoName,
+    appDatabaseName: `${mongoName}_app`,
   });
   assert.equal(
-    (await sync.db.rounds.findOne(historical.id).exec())?.fact.data.answers[0]
-      ?.question_type,
+    (await sync.db.rounds.findOne(historical.id).exec())?.answers[0]?.type,
     'pokemonTypes',
   );
   assert.equal((await fetch(endpoint + '/health')).status, 200);
@@ -129,6 +133,15 @@ try {
   }
   const [a, b] = accounts;
   assert.ok(a && b && a.id !== b.id);
+  assert.equal(
+    (
+      await fetch(`${endpoint}/rounds/1/push`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${a.token}` },
+      })
+    ).status,
+    404,
+  );
   const preflight = await fetch(
     `${endpoint}/players/${playerSchema.version}/pull`,
     {
@@ -177,7 +190,6 @@ try {
   const one = await local('runtimeone');
   const player = await one.players.insert({
     id: a.id,
-    ownerId: a.id,
     profile: createTrainerProfile(),
     settings: null,
   });
@@ -195,8 +207,8 @@ try {
   await within(first.awaitDocumentPushed(player), 'player push');
   assert.ok(await sync.db.players.findOne(a.id).exec());
 
-  const fact = archiveCompletion(completion(), true, '2026-09-11');
-  const round = await one.rounds.insert({ id: fact.id, ownerId: a.id, fact });
+  const fact = compactCompletion(completion());
+  const round = await one.rounds.insert({ ...fact, ownerId: a.id });
   const rounds = replicateServer<SyncedRound>({
     collection: one.rounds,
     replicationIdentifier: 'runtime-round-a',
@@ -209,6 +221,34 @@ try {
   });
   replications.push(rounds);
   await within(rounds.awaitDocumentPushed(round), 'round push');
+  const firstDaily = compactCompletion(completion('daily'));
+  assert(firstDaily.mode === 'daily');
+  const firstDailyDoc = await one.rounds.insert({
+    ...firstDaily,
+    ownerId: a.id,
+  });
+  await within(rounds.awaitDocumentPushed(firstDailyDoc), 'first Daily push');
+  const firstReceipt = await one.dailyReceipts.insert({
+    id: dailyReceiptId(a.id, firstDaily.day),
+    ownerId: a.id,
+    day: firstDaily.day,
+    roundId: firstDaily.id,
+  });
+  const receiptSync = replicateServer<DailyReceipt>({
+    collection: one.dailyReceipts,
+    replicationIdentifier: 'runtime-receipt-a',
+    url: `${endpoint}/dailyReceipts/${dailyReceiptSchema.version}`,
+    headers: { Authorization: `Bearer ${a.token}` },
+    push: {},
+    pull: {},
+    live: true,
+    retryTime: 100,
+  });
+  replications.push(receiptSync);
+  await within(
+    receiptSync.awaitDocumentPushed(firstReceipt),
+    'first Daily receipt push',
+  );
   const request = accountRequest(worker.base, origin);
   assert.equal((await request('/api/account', a)).status, 200);
   assert.equal((await request('/api/account', b)).status, 200);
@@ -217,25 +257,35 @@ try {
       expectedAccountId: a.id,
     }),
   );
-  const friendCode = (social.player as { code: string }).code;
-  const lookup = await json(
-    await request(`/api/friends/player/${friendCode}`, b),
-  );
+  assert.equal((social.player as { id: string }).id, a.id);
+  const lookup = await json(await request(`/api/friends/player/${a.id}`, b));
   assert.equal((lookup.player as { id: string }).id, a.id);
   const requestId = crypto.randomUUID();
-  assert.equal(
-    (
-      await request('/api/friends/requests', a, {
-        expectedAccountId: a.id,
-        peerId: b.id,
-        requestId,
-      })
-    ).status,
-    200,
+  const requests = await Promise.all([
+    request('/api/friends/requests', a, {
+      expectedAccountId: a.id,
+      peerId: b.id,
+      requestId,
+    }),
+    request('/api/friends/requests', a, {
+      expectedAccountId: a.id,
+      peerId: b.id,
+      requestId: crypto.randomUUID(),
+    }),
+  ]);
+  assert.deepEqual(
+    requests.map((response) => response.status),
+    [200, 200],
   );
+  const sent = await Promise.all(requests.map(json));
+  assert.equal(
+    (sent[0]!.request as { id: string }).id,
+    (sent[1]!.request as { id: string }).id,
+  );
+  const acceptedId = (sent[0]!.request as { id: string }).id;
   assert.equal(
     (
-      await request(`/api/friends/requests/${requestId}/accept`, b, {
+      await request(`/api/friends/requests/${acceptedId}/accept`, b, {
         expectedAccountId: b.id,
       })
     ).status,
@@ -259,9 +309,19 @@ try {
   assert.equal(friendsBoard.total, 1);
   const accountExport = await json(await request('/api/account/export', a));
   assert.equal(accountExport.accountId, a.id);
-  assert.equal((accountExport.rounds as unknown[]).length, 1);
+  assert.equal((accountExport.rounds as unknown[]).length, 2);
+  assert.equal((accountExport.dailyReceipts as unknown[]).length, 1);
 
   const second = await local('runtimetwo');
+  const secondDaily = compactCompletion(completion('daily'));
+  assert(secondDaily.mode === 'daily');
+  await second.rounds.insert({ ...secondDaily, ownerId: a.id });
+  await second.dailyReceipts.insert({
+    id: dailyReceiptId(a.id, secondDaily.day),
+    ownerId: a.id,
+    day: secondDaily.day,
+    roundId: secondDaily.id,
+  });
   const pull = replicateServer<SyncedRound>({
     collection: second.rounds,
     replicationIdentifier: 'runtime-round-a-second',
@@ -275,6 +335,39 @@ try {
   replications.push(pull);
   await within(pull.awaitInitialReplication(), 'second-device pull');
   assert.ok(await second.rounds.findOne(fact.id).exec());
+  const secondReceiptSync = replicateServer<DailyReceipt>({
+    collection: second.dailyReceipts,
+    replicationIdentifier: 'runtime-receipt-a-second',
+    url: `${endpoint}/dailyReceipts/${dailyReceiptSchema.version}`,
+    headers: { Authorization: `Bearer ${a.token}` },
+    push: {},
+    pull: {},
+    live: false,
+    retryTime: 100,
+  });
+  replications.push(secondReceiptSync);
+  await within(
+    secondReceiptSync.awaitInitialReplication(),
+    'Daily receipt conflict',
+  );
+  assert.equal(
+    (
+      await second.dailyReceipts
+        .findOne(dailyReceiptId(a.id, firstDaily.day))
+        .exec()
+    )?.roundId,
+    firstDaily.id,
+  );
+  const dailyBoard = await json(
+    await request(`/api/leaderboards/daily?date=${firstDaily.day}`, a),
+  );
+  assert.equal(dailyBoard.total, 1);
+  await secondReceiptSync.cancel();
+  replications.splice(replications.indexOf(secondReceiptSync), 1);
+  await pull.cancel();
+  replications.splice(replications.indexOf(pull), 1);
+  await second.close();
+  databases.splice(databases.indexOf(second), 1);
 
   const other = await local('runtimeother');
   const isolated = replicateServer<SyncedRound>({
@@ -315,7 +408,7 @@ try {
     await mongo
       .db(`${mongoName}-v${roundSchema.version}`)
       .collection('players')
-      .countDocuments({ ownerId: a.id }),
+      .countDocuments({ id: a.id }),
     0,
   );
   assert.equal(
@@ -325,8 +418,29 @@ try {
       .countDocuments({ ownerId: a.id }),
     0,
   );
+  assert.equal(
+    await mongo
+      .db(`${mongoName}-v${roundSchema.version}`)
+      .collection('dailyReceipts')
+      .countDocuments({ ownerId: a.id }),
+    0,
+  );
+  assert.equal(
+    await mongo
+      .db(`${mongoName}_app`)
+      .collection('standings')
+      .countDocuments({ ownerId: a.id }),
+    0,
+  );
+  assert.equal(
+    await mongo
+      .db(`${mongoName}_app`)
+      .collection('friend')
+      .countDocuments({ $or: [{ fromId: a.id }, { toId: a.id }] }),
+    0,
+  );
   console.log(
-    'RxServer account JWT, offline push, second-device pull, owner isolation, and deletion passed.',
+    'RxServer auth, offline sync, Daily receipt conflict, standings, and deletion passed.',
   );
 } finally {
   await Promise.allSettled(
@@ -340,6 +454,6 @@ try {
   await mongo.connect();
   await mongo.db(`${mongoName}-v0`).dropDatabase();
   await mongo.db(`${mongoName}-v${roundSchema.version}`).dropDatabase();
+  await mongo.db(`${mongoName}_app`).dropDatabase();
   await mongo.close();
-  await postgres.close();
 }

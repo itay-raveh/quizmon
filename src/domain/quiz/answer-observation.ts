@@ -88,10 +88,3 @@ export function observeAnswer(
     selected: [...selected],
   };
 }
-
-export function observationCorrect(value: AnswerObservation) {
-  return (
-    value.selected.length === value.expected.length &&
-    value.expected.every((answer) => value.selected.includes(answer))
-  );
-}

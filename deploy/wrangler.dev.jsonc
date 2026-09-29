@@ -29,7 +29,7 @@
     },
   ],
   "secrets": {
-    "required": ["BETTER_AUTH_SECRET"],
+    "required": ["BETTER_AUTH_SECRET", "MONGO_URL"],
   },
   "vars": {
     "SYNC_URL": "http://127.0.0.1:8089",
@@ -41,13 +41,6 @@
   "send_email": [
     {
       "name": "EMAIL",
-    },
-  ],
-  "hyperdrive": [
-    {
-      "binding": "ACCOUNT_DB",
-      "id": "00000000000000000000000000000000",
-      "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon",
     },
   ],
   "env": {
@@ -71,7 +64,7 @@
         },
       ],
       "secrets": {
-        "required": ["BETTER_AUTH_SECRET"],
+        "required": ["BETTER_AUTH_SECRET", "MONGO_URL"],
       },
       "vars": {
         "SYNC_URL": "http://127.0.0.1:8089",
@@ -84,13 +77,6 @@
         {
           "name": "EMAIL",
           "remote": true,
-        },
-      ],
-      "hyperdrive": [
-        {
-          "binding": "ACCOUNT_DB",
-          "id": "00000000000000000000000000000000",
-          "localConnectionString": "postgresql://postgres:unused@127.0.0.1:5548/quizmon",
         },
       ],
     },

@@ -1,10 +1,5 @@
 import { type GameMode, type GameResult } from '../quiz/types.ts';
-import {
-  getTrainingSettings,
-  isLeagueTraining,
-  TRAINING_QUESTION_COUNT,
-} from '../settings/game-settings.ts';
-import { type GameSettings } from '../settings/types.ts';
+import { TRAINING_QUESTION_COUNT } from '../settings/game-settings.ts';
 import { type SavedResults } from './results.ts';
 
 export type TrainerStats = SavedResults['progress'] & {
@@ -16,7 +11,6 @@ export const addResultToProgress = (
   progress: SavedResults['progress'],
   result: GameResult,
   mode: GameMode,
-  settings: GameSettings,
 ): SavedResults['progress'] => {
   const correctCategories = { ...progress.correctCategories };
   const correctGenerations = { ...progress.correctGenerations };
@@ -46,26 +40,7 @@ export const addResultToProgress = (
   const isPerfect = result.correctCount === result.questionCount;
   const isLeagueRound =
     mode.kind === 'training' &&
-    result.questionCount === TRAINING_QUESTION_COUNT &&
-    (result.rules
-      ? (() => {
-          const automatic =
-            result.rules.automaticQuestionTypes ??
-            settings.automaticQuestionTypes ??
-            getTrainingSettings({
-              ...settings,
-              difficulty: result.rules.difficulty,
-              generations: result.rules.generations,
-              questionSelection: 'automatic',
-            }).questionTypes;
-          return (
-            automatic.length === result.rules.questionTypes.length &&
-            automatic.every((type) =>
-              result.rules!.questionTypes.includes(type),
-            )
-          );
-        })()
-      : isLeagueTraining(settings));
+    result.questionCount === TRAINING_QUESTION_COUNT;
   const earnedQuickAttack =
     isLeagueRound && result.correctCount >= 8 && result.elapsedSeconds < 60;
   return {

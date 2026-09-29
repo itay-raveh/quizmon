@@ -15,7 +15,6 @@ import {
   readPlayerSave,
   reportSaveError,
 } from '../../lib/storage/player-storage';
-import { registerShownQuestion } from '../../lib/storage/question-history-storage';
 import { readDailyResult } from '../../lib/storage/results-storage';
 
 interface ActiveGameOptions {
@@ -42,7 +41,7 @@ const resolveRestoration = (
 
   const completedDaily =
     snapshot.mode.kind === 'daily' &&
-    Boolean(readDailyResult(snapshot.mode.date, snapshot.mode.track));
+    Boolean(readDailyResult(snapshot.mode.date));
 
   const finished = snapshot.answers.length === snapshot.questionCount;
   if (completedDaily && !finished) {
@@ -131,28 +130,6 @@ export const useActiveGame = ({
     startDailyGame,
     startTimer,
   ]);
-
-  const visibleQuestion =
-    session.phase === 'questions' &&
-    session.answers.length < session.questions.length &&
-    !(
-      session.mode.kind === 'league' &&
-      session.answers.some(({ correct }) => !correct)
-    )
-      ? session.questions[session.questionIndex]
-      : undefined;
-  const roundId = session.phase === 'questions' ? session.roundId : '';
-  const questionIndex =
-    session.phase === 'questions' ? session.questionIndex : 0;
-  useEffect(() => {
-    if (visibleQuestion)
-      void registerShownQuestion(
-        visibleQuestion,
-        roundId,
-        questionIndex,
-        playerRestoreId,
-      );
-  }, [visibleQuestion, roundId, questionIndex, playerRestoreId]);
 
   const persist = useCallback(() => {
     if (!catalog || session.phase !== 'questions') return;

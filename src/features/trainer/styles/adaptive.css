@@ -1,15 +1,3 @@
-@keyframes trainer-reveal {
-  from {
-    opacity: 0;
-    transform: rotateY(90deg) scale(0.92);
-  }
-
-  to {
-    opacity: 1;
-    transform: rotateY(0) scale(1);
-  }
-}
-
 @keyframes trainer-card-polish {
   0%,
   12% {

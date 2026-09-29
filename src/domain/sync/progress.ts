@@ -1,33 +1,15 @@
 import type { AnswerResult, GameResult } from '../quiz/types.ts';
-import { getTrainingSettings } from '../settings/game-settings.ts';
 import type { GameSettings } from '../settings/types.ts';
 
 export type TrainingConfig = Pick<
   GameSettings,
-  | 'trainingMode'
-  | 'generations'
-  | 'questionTypes'
-  | 'difficulty'
-  | 'questionSelection'
-  | 'automaticQuestionTypes'
-> & { formGroups?: GameSettings['formGroups'] };
+  'difficulty' | 'generations' | 'formGroups'
+>;
 
 export const trainingConfig = (settings: GameSettings): TrainingConfig => ({
-  trainingMode: settings.trainingMode,
+  difficulty: settings.difficulty,
   generations: [...settings.generations],
-  questionTypes: [...settings.questionTypes],
   formGroups: [...settings.formGroups],
-  ...(settings.difficulty === undefined
-    ? {}
-    : { difficulty: settings.difficulty }),
-  ...(settings.questionSelection === undefined
-    ? {}
-    : { questionSelection: settings.questionSelection }),
-  automaticQuestionTypes: [
-    ...(settings.automaticQuestionTypes ??
-      getTrainingSettings({ ...settings, questionSelection: 'automatic' })
-        .questionTypes),
-  ],
 });
 
 export interface RoundCompletion {
@@ -40,6 +22,4 @@ export interface RoundCompletion {
     answers: AnswerResult[];
     elapsedMilliseconds: number;
   };
-  discoveries: string[];
-  victory: { trainerName: string; pokemon: string[] } | null;
 }

@@ -1,4 +1,3 @@
-import { and, eq, inArray, or } from 'drizzle-orm';
 import type { Context } from 'hono';
 import type { AccountEnv } from './api.ts';
 import type {
@@ -7,7 +6,7 @@ import type {
 } from '../src/domain/social/leaderboards.ts';
 import type { SocialPlayer } from '../src/domain/social/friends.ts';
 import type { TrainerProfile } from '../src/domain/player/trainer-profile.ts';
-import * as schema from './schema.ts';
+import { friendCollection } from './friends.ts';
 
 type ReadContext = Context<AccountEnv>;
 
@@ -58,20 +57,13 @@ export async function publicPlayers(
   ids: string[],
 ): Promise<SocialPlayer[]> {
   if (!ids.length) return [];
-  const rows = await context
-    .get('db')
-    .select({ id: schema.player.id, code: schema.player.code })
-    .from(schema.player)
-    .where(inArray(schema.player.id, ids));
-  const codes = new Map(rows.map((row) => [row.id, row.code]));
   const profiles = await read<{ id: string; profile: TrainerProfile }[]>(
     context,
     'players',
-    { ids: rows.map((row) => row.id) },
+    { ids },
   );
   return profiles.map(({ id, profile }) => ({
     id,
-    code: codes.get(id) ?? null,
     name: profile.name.trim() || 'Trainer',
     partnerPokemon: profile.partnerPokemon,
   }));
@@ -96,25 +88,16 @@ export async function readBoard(
   offset: number,
   limit: number,
   day?: string,
-  puzzleId?: string,
-  includeOther = false,
 ): Promise<Leaderboard> {
   const viewerId = context.get('accountId');
   let visible: string[] | null = null;
   if (scope === 'friends') {
-    const rows = await context
-      .get('db')
-      .select()
-      .from(schema.friend)
-      .where(
-        and(
-          eq(schema.friend.status, 'accepted'),
-          or(
-            eq(schema.friend.fromId, viewerId),
-            eq(schema.friend.toId, viewerId),
-          ),
-        ),
-      );
+    const rows = await friendCollection(context.get('db'))
+      .find({
+        status: 'accepted',
+        $or: [{ fromId: viewerId }, { toId: viewerId }],
+      })
+      .toArray();
     visible = [
       viewerId,
       ...rows.map((row) => (row.fromId === viewerId ? row.toId : row.fromId)),
@@ -136,8 +119,6 @@ export async function readBoard(
     mode,
     visible,
     day,
-    puzzleId,
-    includeOther,
     offset,
     limit,
   });

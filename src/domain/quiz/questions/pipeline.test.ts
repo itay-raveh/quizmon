@@ -16,7 +16,7 @@ import {
   hasVisibleChoices,
   hasVisibleSubject,
 } from './rendering-pipeline.ts';
-import type { QuestionType } from './definitions.ts';
+import { questionDefinitions, type QuestionType } from './definitions.ts';
 
 const dataDir = fileURLToPath(new URL('../../pokemon/data/', import.meta.url));
 const topics: Record<string, unknown> = {};
@@ -92,6 +92,18 @@ it('builds every configured family with a renderable answer and saved view', () 
       expect(hasVisibleSubject(saved), `${type}:${difficulty}`).toBe(true);
       const view = getQuestionView(saved);
       expect(view, `${type}:${difficulty}`).toEqual(question!.view);
+      if (type !== 'champion') {
+        const definition = questionDefinitions[type];
+        expect(question!.category, `${type}:${difficulty}`).toBe(
+          definition.category,
+        );
+        expect(question!.subject.kind, `${type}:${difficulty}`).toBe(
+          definition.subjectKind,
+        );
+        expect(view.answer.kind === 'pokemon', `${type}:${difficulty}`).toBe(
+          definition.answerIsPokemon,
+        );
+      }
       if (question!.optionImages) expect(view.answer.kind, type).toBe('item');
       else if (question!.optionVisuals)
         expect(view.answer.kind, type).toBe('pokemon');

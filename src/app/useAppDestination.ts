@@ -61,10 +61,8 @@ export function useAppDestination() {
     isKnownPath: isAppPath(location.pathname),
     pathname: location.pathname,
     destination,
-    friendCode:
-      location.pathname === '/account/friends'
-        ? (params.get('code') ?? '')
-        : '',
+    friendId:
+      location.pathname === '/account/friends' ? (params.get('id') ?? '') : '',
     playerId,
     viewPlayer,
     closePlayer,

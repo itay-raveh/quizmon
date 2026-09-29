@@ -71,22 +71,18 @@ export async function testDatabase(migrationDirectory = migrationsFolder) {
 }
 
 export async function startAccountWorker({
-  connectionString,
+  mongoUrl,
   origin = 'http://localhost:4188',
   secret = crypto.randomUUID() + crypto.randomUUID(),
   sync = localSync,
   prebuiltWorkerDir = process.env.QUIZMON_PREBUILT_WORKER,
 }: {
-  connectionString: string;
+  mongoUrl: string;
   origin?: string;
   secret?: string;
   sync?: typeof localSync;
   prebuiltWorkerDir?: string;
 }) {
-  const previous =
-    process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB;
-  process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB =
-    connectionString;
   const worker = createTestHarness({
     workers: [
       {
@@ -101,6 +97,7 @@ export async function startAccountWorker({
         },
         secrets: {
           BETTER_AUTH_SECRET: secret,
+          MONGO_URL: mongoUrl,
           VAPID_PRIVATE_KEY: crypto.randomUUID(),
         },
       },
@@ -112,13 +109,6 @@ export async function startAccountWorker({
   } catch (error) {
     await worker.close();
     throw error;
-  } finally {
-    if (previous === undefined)
-      delete process.env
-        .CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB;
-    else
-      process.env.CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_ACCOUNT_DB =
-        previous;
   }
 }
 

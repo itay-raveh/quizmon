@@ -1,15 +1,14 @@
 import { accountRuntime } from './account-config.ts';
 import { exportAccount } from './account-export.ts';
 import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
-import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Hono, type Context } from 'hono';
 import * as Sentry from '@sentry/cloudflare';
 import { bodyLimit } from 'hono/body-limit';
 import { HTTPException } from 'hono/http-exception';
 import { matchedRoutes } from 'hono/route';
-import { Client } from 'pg';
+import { MongoClient, type Db } from 'mongodb';
 import { isRecord } from '../src/lib/validation.ts';
 import type { SyncConnection } from '../src/domain/sync/connection.ts';
 import { authPlugins } from './auth-options.ts';
@@ -17,7 +16,6 @@ import { FriendshipError } from './friends.ts';
 import { friendshipApi } from './friends-api.ts';
 import { leaderboardApi } from './leaderboards-api.ts';
 import { trainerApi } from './trainers-api.ts';
-import { bootstrapSocialIdentity } from './friend-identity.ts';
 import { reserveEmail } from './email-budget.ts';
 import { SyncReadError } from './read.ts';
 import {
@@ -25,24 +23,24 @@ import {
   codeLifetimeSeconds,
   type AccountMail,
 } from './email.ts';
-import * as schema from './schema.ts';
 
 const testMailbox = new Map<string, { code: string; createdAt: number }>();
 
 export interface AccountServices {
   sync: SyncConnection;
-  connectionString: string;
+  mongoUrl: string;
   secret: string;
   origin: string;
   mail: AccountMail;
 }
 
-const createAuth = (db: NodePgDatabase, services: AccountServices) => {
+const createAuth = (db: Db, client: MongoClient, services: AccountServices) => {
   let deliveryError: EmailDeliveryError | undefined;
   const auth = betterAuth({
     baseURL: services.origin,
     secret: services.secret,
-    database: drizzleAdapter(db, { provider: 'pg', schema, transaction: true }),
+    database: mongodbAdapter(db, { client }),
+    advanced: { database: { generateId: () => crypto.randomUUID() } },
     trustedOrigins: [services.origin],
     telemetry: { enabled: false },
     user: {
@@ -67,6 +65,11 @@ const createAuth = (db: NodePgDatabase, services: AccountServices) => {
             throw new APIError('SERVICE_UNAVAILABLE', {
               message: 'Account progress could not be deleted. Try again.',
             });
+        },
+        afterDelete: async (user) => {
+          await db.collection('friend').deleteMany({
+            $or: [{ fromId: user.id }, { toId: user.id }],
+          });
         },
       },
     },
@@ -125,7 +128,7 @@ const createAuth = (db: NodePgDatabase, services: AccountServices) => {
 
 export interface AccountEnv {
   Variables: {
-    db: NodePgDatabase;
+    db: Db;
     auth: ReturnType<typeof createAuth>;
     accountId: string;
     origin: string;
@@ -180,17 +183,20 @@ export function createAccountApi(services: AccountServices) {
       )
     )
       return context.notFound();
-    const client = new Client({ connectionString: services.connectionString });
+    const client = new MongoClient(services.mongoUrl, {
+      maxPoolSize: 3,
+      serverSelectionTimeoutMS: 5_000,
+    });
     await client.connect();
     try {
-      const db = drizzle(client);
+      const db = client.db();
       context.set('db', db);
-      context.set('auth', createAuth(db, services));
+      context.set('auth', createAuth(db, client, services));
       context.set('origin', services.origin);
       context.set('sync', sync);
       await next();
     } finally {
-      await client.end();
+      await client.close();
     }
   });
   app.all('/api/auth/*', (context) =>
@@ -229,8 +235,7 @@ export function createAccountApi(services: AccountServices) {
   signedIn.route('/friends', friendshipApi);
   signedIn.route('/leaderboards', leaderboardApi);
   signedIn.route('/trainers', trainerApi);
-  signedIn.get('/account', async (context) => {
-    await bootstrapSocialIdentity(context);
+  signedIn.get('/account', (context) => {
     return context.json({
       id: context.get('accountId'),
       sync,

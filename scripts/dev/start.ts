@@ -1,7 +1,9 @@
 import { execFile, spawn, type ChildProcess } from 'node:child_process';
 import { setTimeout } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
+import { MongoClient } from 'mongodb';
 import { emailMode, envFile, requiredMailSetting } from './local-env.ts';
+import { ensureAppIndexes } from '../../server/app-indexes.ts';
 
 const preview = process.argv.includes('--preview');
 const origin = `http://127.0.0.1:${preview ? 4173 : 5173}`;
@@ -59,7 +61,7 @@ async function stop() {
   const before = runningBefore;
   if (!before) return;
   const running = await runningServices();
-  const started = ['mongo', 'db'].filter(
+  const started = ['mongo'].filter(
     (service) => running.has(service) && !before.has(service),
   );
   if (started.length) await run('docker', ['compose', 'stop', ...started]);
@@ -69,8 +71,15 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const)
 try {
   runningBefore = await runningServices();
   if (stopping) throw new Error('Development interrupted.');
-  await start('docker', ['compose', 'up', '-d', '--wait', 'db', 'mongo']);
-  await start('npm', ['run', 'db:migrate']);
+  await start('docker', ['compose', 'up', '-d', '--wait', 'mongo']);
+  const mongo = await new MongoClient(
+    'mongodb://127.0.0.1:27018/quizmon_app?directConnection=true',
+  ).connect();
+  try {
+    await ensureAppIndexes(mongo.db());
+  } finally {
+    await mongo.close();
+  }
   if (preview) await start('npm', ['run', 'build']);
   const api = launch('node_modules/.bin/wrangler', [
     'dev',
@@ -86,6 +95,8 @@ try {
       : ['--local']),
     '--var',
     `AUTH_ORIGIN:${origin}`,
+    '--var',
+    'MONGO_URL:mongodb://127.0.0.1:27018/quizmon_app?directConnection=true',
     '--ip',
     '0.0.0.0',
     '--port',

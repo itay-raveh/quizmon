@@ -48,7 +48,7 @@ await test('explicit local fixtures remain local with the test mailbox', () => {
 await test('public accounts reject inaccessible routes and oversized writes', async () => {
   const api = createAccountApi({
     ...valid,
-    connectionString: 'postgresql://unavailable.invalid/test',
+    mongoUrl: 'mongodb://unavailable.invalid/test',
     mail: {
       mode: 'cloudflare',
       deliver: () => {

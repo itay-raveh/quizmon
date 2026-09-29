@@ -5,6 +5,8 @@ type HistoryQuestionType = QuestionData['questionType'];
 
 interface HistoryQuestion {
   questionType: HistoryQuestionType;
+  subject: { name: string };
+  answer: { correctOptions: string[] };
   repetition: QuestionRepetition;
 }
 
@@ -16,7 +18,7 @@ export const questionRepeatPolicy = {
 } as const;
 
 const sequence = z.int().min(0);
-const recency = z.record(z.string().min(1).max(1000), sequence);
+const recency = z.record(z.string().min(1).max(20_000), sequence);
 export const questionHistorySchema = z
   .object({
     sequence,
@@ -24,17 +26,11 @@ export const questionHistorySchema = z
     questions: recency,
     pokemon: recency,
     distractors: recency,
-    rounds: z.record(
-      z.string().min(1).max(200),
-      z.object({ index: sequence, sequence: z.int().min(1) }),
-    ),
   })
-  .refine(
-    ({ sequence, rounds, subjects, questions, pokemon, distractors }) =>
-      Object.values(rounds).every((round) => round.sequence <= sequence) &&
-      [subjects, questions, pokemon, distractors].every((entries) =>
-        Object.values(entries).every((seen) => seen <= sequence),
-      ),
+  .refine(({ sequence, subjects, questions, pokemon, distractors }) =>
+    [subjects, questions, pokemon, distractors].every((entries) =>
+      Object.values(entries).every((seen) => seen <= sequence),
+    ),
   );
 
 export type QuestionHistory = z.infer<typeof questionHistorySchema>;
@@ -45,7 +41,6 @@ export const emptyQuestionHistory = (): QuestionHistory => ({
   questions: {},
   pokemon: {},
   distractors: {},
-  rounds: {},
 });
 
 const lastSeen = (entries: Record<string, number>, key: string): number =>
@@ -74,7 +69,11 @@ export const getPokemonRecency = (
 };
 
 const getQuestionKey = (question: HistoryQuestion): string =>
-  `${question.questionType}:${question.repetition.identity}`;
+  JSON.stringify([
+    question.questionType,
+    question.subject.name,
+    [...question.answer.correctOptions].sort(),
+  ]);
 
 export const getQuestionRecency = (
   history: QuestionHistory,
@@ -113,31 +112,5 @@ export const rememberQuestion = (
     ),
     pokemon: update(history.pokemon, primary),
     distractors: update(history.distractors, distractors),
-    rounds: history.rounds,
-  };
-};
-
-export const rememberShownQuestion = (
-  history: QuestionHistory,
-  question: HistoryQuestion,
-  roundId: string,
-  index: number,
-): QuestionHistory => {
-  if (
-    Object.hasOwn(history.rounds, roundId) &&
-    history.rounds[roundId]!.index >= index
-  )
-    return history;
-  const remembered = rememberQuestion(history, question);
-  return {
-    ...remembered,
-    rounds: Object.fromEntries(
-      Object.entries({
-        ...history.rounds,
-        [roundId]: { index, sequence: remembered.sequence },
-      })
-        .sort((a, b) => b[1].sequence - a[1].sequence)
-        .slice(0, questionRepeatPolicy.rememberedRounds),
-    ),
   };
 };

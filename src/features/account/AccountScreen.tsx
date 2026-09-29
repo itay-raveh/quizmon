@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -9,13 +8,9 @@ import {
 import { useNavigate } from 'react-router';
 import { GameButton } from '../../components/GameButton';
 import { PencilSimpleIcon } from '../../components/icons';
-import {
-  formatFriendCode,
-  friendInvitePath,
-} from '../../domain/social/friends';
+import { friendInvitePath } from '../../domain/social/friends';
 import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
 import { FriendsPanel } from '../friends/FriendsPanel';
-import { cachedOwnPlayer } from '../friends/friends-client';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
   readStoredValue,
@@ -74,13 +69,13 @@ export function AccountScreen({
   onRename,
   onEditCard,
   onViewPlayer,
-  friendCode = '',
+  friendId = '',
 }: {
   trainerName: string;
   onRename: (name: string) => Promise<boolean>;
   onEditCard: () => void;
   onViewPlayer: (id: string) => void;
-  friendCode?: string;
+  friendId?: string;
 }) {
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const navigate = useNavigate();
@@ -92,23 +87,10 @@ export function AccountScreen({
   const [savingName, setSavingName] = useState(false);
   const [nameError, setNameError] = useState('');
   const editNameButton = useRef<HTMLButtonElement>(null);
-  const [ownCode, setOwnCode] = useState(() => ({
-    owner: account.owner,
-    code: cachedOwnPlayer(account.owner ?? '')?.code ?? '',
-  }));
-  const updateOwnCode = useCallback(
-    (code: string) =>
-      setOwnCode((current) =>
-        current.owner === account.owner && current.code === code
-          ? current
-          : { owner: account.owner, code },
-      ),
-    [account.owner],
-  );
-  const returnPath = friendCode
-    ? friendInvitePath(friendCode)
+  const returnPath = friendId
+    ? friendInvitePath(friendId)
     : accountReturnPath(window.location.href);
-  const friendInvitation = returnPath.startsWith('/account/friends?code=');
+  const friendInvitation = returnPath.startsWith('/account/friends?id=');
   const heading = useRef<HTMLHeadingElement>(null);
   const [welcomeFor] = useState(() =>
     readStoredValue('sessionStorage', accountWelcomeKey),
@@ -185,11 +167,6 @@ export function AccountScreen({
               </GameButton>
             )}
           </div>
-          {!signingIn && ownCode.owner === account.owner && ownCode.code && (
-            <small className="account-screen__code">
-              {formatFriendCode(ownCode.code)}
-            </small>
-          )}
           {editingName && !signingIn && !account.mergeRequired && (
             <form
               className="account-screen__name-form"
@@ -258,15 +235,14 @@ export function AccountScreen({
             <details className="account-screen__section" open>
               <summary>Friends</summary>
               <FriendsPanel
-                key={`${account.owner}:${friendCode}`}
+                key={`${account.owner}:${friendId}`}
                 owner={account.owner}
-                initialInput={friendCode}
-                adding={Boolean(friendCode)}
+                initialInput={friendId}
+                adding={Boolean(friendId)}
                 onToggleAdding={() =>
                   void navigate('/account', { replace: true })
                 }
                 onViewPlayer={onViewPlayer}
-                onOwnCode={updateOwnCode}
               />
             </details>
           </div>

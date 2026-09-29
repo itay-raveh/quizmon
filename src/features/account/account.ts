@@ -26,6 +26,10 @@ import {
   writeCompletedRound,
 } from '../../lib/storage/rxdb-game';
 import { playerSchema, roundSchema } from '../../lib/storage/rxdb-schema';
+import {
+  dailyReceiptId,
+  dailyReceiptSchema,
+} from '../../lib/storage/rxdb-schema';
 import { isRecord } from '../../lib/validation';
 import { queryClient } from '../../lib/query-client';
 import { accountReturnPath } from './account-navigation';
@@ -183,7 +187,17 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         await ensureDeviceState(target);
         const rounds = await guest.rounds.find().exec();
         for (const round of rounds)
-          await writeCompletedRound(target, owner, round.toMutableJSON().fact);
+          await writeCompletedRound(target, owner, round.toMutableJSON());
+        for (const receipt of await guest.dailyReceipts.find().exec()) {
+          const id = dailyReceiptId(owner, receipt.day);
+          if (!(await target.dailyReceipts.findOne(id).exec()))
+            await target.dailyReceipts.insert({
+              id,
+              ownerId: owner,
+              day: receipt.day,
+              roundId: receipt.roundId,
+            });
+        }
         const [guestPlayer, accountPlayer] = await Promise.all([
           guest.players.findOne('guest').exec(),
           target.players.findOne(owner).exec(),
@@ -192,7 +206,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
           await target.players.insert({
             ...guestPlayer.toMutableJSON(),
             id: owner,
-            ownerId: owner,
           });
         const local = await guest.device.find().exec();
         const accountState = await readDeviceState(target);
@@ -201,11 +214,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
           ? parseDeviceState(source.toMutableJSON().payload)
           : emptyDeviceState();
         await updateDeviceState(target, (state) => {
-          if (
-            guestState.questionHistory.sequence > state.questionHistory.sequence
-          ) {
-            state.questionHistory = guestState.questionHistory;
-          }
           state.dailyAttempts = {
             ...guestState.dailyAttempts,
             ...state.dailyAttempts,
@@ -443,7 +451,16 @@ async function connectAccountSync() {
       pull: {},
       live: true,
     });
-    replications = [players, rounds];
+    const dailyReceipts = replicateServer({
+      collection: db.dailyReceipts,
+      replicationIdentifier: `quizmon-daily-receipts-${owner}`,
+      url: `${base}/dailyReceipts/${dailyReceiptSchema.version}`,
+      headers,
+      push: {},
+      pull: {},
+      live: true,
+    });
+    replications = [players, rounds, dailyReceipts];
     const failed = new Map<RxServerReplicationState<unknown>, Error | null>();
     for (const replication of replications) {
       replication.error$.subscribe((error) => {
@@ -482,7 +499,7 @@ async function connectAccountSync() {
               return;
             replicationErrorReported = true;
             captureUnexpectedError(
-              `account.sync.${stalled[0] === players ? 'players' : 'rounds'}`,
+              `account.sync.${stalled[0] === players ? 'players' : stalled[0] === rounds ? 'rounds' : 'dailyReceipts'}`,
               stalled[1],
             );
           }, 60_000);

@@ -11,13 +11,6 @@ import { questionTypes } from '../../quiz/questions/definitions.ts';
 import { savedRoundRulesSchema } from '../../quiz/round-rules.ts';
 import { scoreMultipliersSchema } from '../../quiz/score-multipliers.ts';
 import { difficultySchema } from '../../quiz/difficulty.ts';
-import {
-  getDailyResultKey,
-  hasDailyResultOnDate,
-  isDailyTrack,
-  parseDailyResultKey,
-  type DailyTrack,
-} from '../../quiz/daily-track.ts';
 import { questionCategories } from '../../quiz/types.ts';
 import { SaveError } from '../save-schema.ts';
 import type { PlayerData } from '../player-save.ts';
@@ -41,11 +34,6 @@ const savedResult = z
   .object({
     scoreMultipliers: scoreMultipliersSchema.optional(),
     rules: savedRoundRulesSchema.optional(),
-    dailyTrack: z.custom<DailyTrack>(isDailyTrack).optional(),
-    puzzleId: z
-      .string()
-      .regex(/^[a-f0-9]{64}$/)
-      .optional(),
     answers: z.array(
       z.object({
         category: z.enum(questionCategories),
@@ -108,14 +96,9 @@ const results = z
   })
   .refine(
     ({ daily, streak }) =>
-      Object.entries(daily).every(([key, result]) => {
-        const parsed = parseDailyResultKey(key);
-        return (
-          parsed !== undefined &&
-          getDailyResultKey(parsed.date, result.dailyTrack) === key
-        );
-      }) &&
-      streak.creditedDates.every((date) => hasDailyResultOnDate(daily, date)),
+      Object.keys(daily).every(
+        (key) => dailyDateSchema.safeParse(key).success,
+      ) && streak.creditedDates.every((date) => Object.hasOwn(daily, date)),
   );
 export const savedSettingsSchema = z.object({
   difficulty: difficultySchema,

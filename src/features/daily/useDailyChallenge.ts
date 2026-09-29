@@ -13,13 +13,7 @@ import {
   shouldAutoStartDaily,
 } from '../../domain/quiz/daily';
 import {
-  currentDailyTrack,
-  getDailyResultKey,
-  isDailyTrack,
-  type DailyTrack,
-} from '../../domain/quiz/daily-track';
-import {
-  buildDailyTrackQuestions,
+  buildDailyQuestions,
   resolveTrainingSettings,
 } from '../../domain/quiz/question-generation';
 import type { GameResult } from '../../domain/quiz/types';
@@ -46,15 +40,9 @@ export const useDailyChallenge = ({
 }: DailyChallengeOptions) => {
   const location = useLocation();
   const route = useMemo(() => {
-    const params = new URLSearchParams(location.search);
-    const candidate = {
-      difficulty: Number(params.get('level')),
-      scope: params.get('scope'),
-    };
     return {
       autoStart: shouldAutoStartDaily(location.pathname, location.search),
       date: parseDailyDate(location.pathname),
-      track: isDailyTrack(candidate) ? candidate : undefined,
     };
   }, [location.pathname, location.search]);
   const [today, setToday] = useState(getUtcDate);
@@ -83,10 +71,7 @@ export const useDailyChallenge = ({
     setCompletion((current) => {
       if (nextDate !== current.date)
         return { date: nextDate, result: null, resultSaved: false };
-      const saved =
-        next.results.daily[
-          getDailyResultKey(nextDate, current.result?.dailyTrack)
-        ];
+      const saved = next.results.daily[nextDate];
       return saved
         ? { date: nextDate, result: saved, resultSaved: true }
         : { ...current };
@@ -109,9 +94,7 @@ export const useDailyChallenge = ({
     };
   }, [refresh, today]);
 
-  const choose = async (
-    track: DailyTrack = route.track ?? currentDailyTrack,
-  ) => {
+  const choose = async () => {
     setError('');
     const currentDate = getUtcDate();
     const selectedDate = route.date ?? currentDate;
@@ -119,49 +102,34 @@ export const useDailyChallenge = ({
     const saved = readDailyState(selectedDate);
     setSnapshot({ date: selectedDate, data: saved });
     if (saved.readError) return;
-    const key = getDailyResultKey(selectedDate, track);
+    const key = selectedDate;
     const exactResult = saved.results.daily[key];
     const exactAttempt = saved.attempts[key];
-    const result =
-      exactResult ?? (exactAttempt ? undefined : saved.completed[0]);
+    const result = exactResult;
     if (result) {
       setCompletion({ date: selectedDate, result, resultSaved: true });
       return;
     }
     if (!catalog || !canPersistResults()) return;
-    const attempt = exactAttempt ?? Object.values(saved.attempts)[0];
+    const attempt = exactAttempt;
     if (attempt) {
       resume(attempt);
-      return;
-    }
-    if (
-      track.difficulty !== currentDailyTrack.difficulty ||
-      track.scope !== currentDailyTrack.scope
-    ) {
-      setError(
-        'This challenge is no longer available. Your saved attempts and results are unchanged.',
-      );
       return;
     }
     try {
       const next = resolveTrainingSettings(catalog, {
         ...settings,
-        difficulty: track.difficulty,
-        generations: track.scope === 'gen-i' ? ['I'] : [...generations],
+        difficulty: 3,
+        generations: [...generations],
         formGroups: [...formGroups],
         questionSelection: 'automatic',
       });
-      const seed = `daily:${selectedDate}:${track.difficulty}:${track.scope}`;
-      const questions = buildDailyTrackQuestions(
-        catalog,
-        selectedDate,
-        next,
-        track.scope,
-      );
+      const seed = `daily:${selectedDate}`;
+      const questions = buildDailyQuestions(catalog, selectedDate, next);
       const started = await startGame(
         questions,
         next,
-        { kind: 'daily', date: selectedDate, track },
+        { kind: 'daily', date: selectedDate },
         seed,
       );
       if (started === false)
@@ -187,10 +155,7 @@ export const useDailyChallenge = ({
     },
     [route.date],
   );
-  const requestedKey = getDailyResultKey(date, route.track);
-  const savedResult =
-    savedState.results.daily[requestedKey] ??
-    (savedState.attempts[requestedKey] ? undefined : savedState.completed[0]);
+  const savedResult = savedState.results.daily[date];
   return {
     autoStart: route.autoStart,
     linkedDate: route.date,

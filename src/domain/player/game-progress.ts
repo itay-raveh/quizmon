@@ -2,36 +2,23 @@ import type { GameMode, GameResult } from '../quiz/types.ts';
 import type { LeagueVictoryRecord } from './hall-of-fame.ts';
 import type { PlayerData } from './player-save.ts';
 import { addResultToProgress } from './progress.ts';
-import { getUtcDate } from '../quiz/daily.ts';
 import { isLeagueVictory } from '../quiz/league.ts';
 import { getBestResult, isBetterResult } from '../quiz/result-ranking.ts';
 import { getRulesScoreKey } from '../quiz/round-rules.ts';
-import { getDailyResultKey } from '../quiz/daily-track.ts';
-import { defaultGameSettings } from '../settings/game-settings.ts';
-import type { GameSettings } from '../settings/types.ts';
 export const applyResult = (
   data: PlayerData,
   mode: GameMode,
   result: GameResult,
-  settings: GameSettings = defaultGameSettings,
   victory?: LeagueVictoryRecord,
-  completedDate = getUtcDate(),
 ): { best: GameResult; isNewBest: boolean } => {
   const { results, hallOfFame } = data;
   const recordProgress = () => {
-    results.progress = addResultToProgress(
-      results.progress,
-      result,
-      mode,
-      settings,
-    );
+    results.progress = addResultToProgress(results.progress, result, mode);
   };
 
   if (mode.kind === 'daily') {
-    const key = getDailyResultKey(mode.date, mode.track);
-    const dailyResult = mode.track
-      ? { ...result, dailyTrack: { ...mode.track } }
-      : result;
+    const key = mode.date;
+    const dailyResult = result;
     const previous = results.daily[key];
     if (previous) {
       return { best: previous, isNewBest: false };
@@ -39,18 +26,13 @@ export const applyResult = (
     const previousBest = getBestResult(
       Object.values(results.daily).filter(
         (previous) =>
-          getRulesScoreKey(previous) === getRulesScoreKey(dailyResult) &&
-          getDailyResultKey('', previous.dailyTrack) ===
-            getDailyResultKey('', mode.track),
+          getRulesScoreKey(previous) === getRulesScoreKey(dailyResult),
       ),
     );
     const isNewBest = !previousBest || isBetterResult(result, previousBest);
     results.daily[key] = dailyResult;
     recordProgress();
-    if (
-      mode.date === completedDate &&
-      !results.streak.creditedDates.includes(mode.date)
-    ) {
+    if (!results.streak.creditedDates.includes(mode.date)) {
       results.streak.creditedDates.push(mode.date);
       results.streak.creditedDates.sort();
     }

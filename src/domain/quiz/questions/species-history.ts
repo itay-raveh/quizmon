@@ -6,55 +6,26 @@ import type { QuestionContext } from './context.ts';
 export const speciesName = (catalog: PokemonCatalog, name: string): string =>
   catalog.pokemon[name]?.speciesName ?? name;
 
-const speciesIdentity = (catalog: PokemonCatalog, identity: string): string => {
-  if (identity.startsWith('[')) {
-    try {
-      const parts: unknown = JSON.parse(identity);
-      if (
-        Array.isArray(parts) &&
-        parts.length === 5 &&
-        typeof parts[1] === 'string' &&
-        (typeof parts[3] === 'string' ||
-          (Array.isArray(parts[3]) &&
-            parts[3].every((name) => typeof name === 'string'))) &&
-        Array.isArray(parts[4]) &&
-        parts[4].every((name) => typeof name === 'string')
-      ) {
-        const names = (values: string[]) =>
-          values.map((name) => speciesName(catalog, name)).sort();
-        return JSON.stringify([
-          parts[0],
-          speciesName(catalog, parts[1]),
-          parts[2],
-          typeof parts[3] === 'string'
-            ? speciesName(catalog, parts[3])
-            : names(parts[3]),
-          names(parts[4]),
-        ]);
-      }
-      return identity;
-    } catch {
-      return identity;
-    }
-  }
-  if (catalog.pokemon[identity]) return speciesName(catalog, identity);
-  return identity
-    .split(':')
-    .map((part) =>
-      part
-        .split(',')
-        .map((name) => speciesName(catalog, name))
-        .sort()
-        .join(','),
+const normalizeQuestionKey = (catalog: PokemonCatalog, key: string) => {
+  try {
+    const parts: unknown = JSON.parse(key);
+    if (
+      Array.isArray(parts) &&
+      parts.length === 3 &&
+      typeof parts[0] === 'string' &&
+      typeof parts[1] === 'string' &&
+      Array.isArray(parts[2]) &&
+      parts[2].every((value) => typeof value === 'string')
     )
-    .join(':');
-};
-
-const historyKey = (key: string, normalize: (name: string) => string) => {
-  const separator = key.indexOf(':');
-  return separator < 0
-    ? key
-    : `${key.slice(0, separator + 1)}${normalize(key.slice(separator + 1))}`;
+      return JSON.stringify([
+        parts[0],
+        speciesName(catalog, parts[1]),
+        parts[2].map((name: string) => speciesName(catalog, name)).sort(),
+      ]);
+  } catch {
+    return key;
+  }
+  return key;
 };
 
 const cache = new WeakMap<
@@ -82,11 +53,14 @@ export const getSpeciesHistory = ({
   };
   const normalized = {
     ...history,
-    subjects: merge(history.subjects, (key) =>
-      historyKey(key, (name) => speciesName(catalog, name)),
-    ),
+    subjects: merge(history.subjects, (key) => {
+      const separator = key.indexOf(':');
+      return separator < 0
+        ? key
+        : `${key.slice(0, separator + 1)}${speciesName(catalog, key.slice(separator + 1))}`;
+    }),
     questions: merge(history.questions, (key) =>
-      historyKey(key, (identity) => speciesIdentity(catalog, identity)),
+      normalizeQuestionKey(catalog, key),
     ),
     pokemon: merge(history.pokemon, (name) => speciesName(catalog, name)),
     distractors: merge(history.distractors, (name) =>
@@ -104,10 +78,19 @@ export const speciesQuestion = (
   catalog: PokemonCatalog,
   question: QuestionData,
 ) => ({
-  questionType: question.questionType,
+  ...question,
+  subject: {
+    ...question.subject,
+    name: speciesName(catalog, question.subject.name),
+  },
+  answer: {
+    ...question.answer,
+    correctOptions: question.answer.correctOptions.map((name) =>
+      speciesName(catalog, name),
+    ),
+  },
   repetition: {
     ...question.repetition,
-    identity: speciesIdentity(catalog, question.repetition.identity),
     subjects: [
       ...new Set(
         question.repetition.subjects.map((name) => speciesName(catalog, name)),

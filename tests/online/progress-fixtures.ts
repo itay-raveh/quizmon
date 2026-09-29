@@ -14,7 +14,6 @@ export function completion(
   mode: RoundCompletion['mode'] = 'training',
   options: {
     failedLeague?: boolean;
-    discoveries?: string[];
     completedAt?: string;
     dailyDate?: string;
     assistsUsed?: number;
@@ -67,16 +66,12 @@ export function completion(
     mode,
     dailyDate: mode === 'daily' ? (options.dailyDate ?? '2026-09-11') : null,
     training: {
-      trainingMode: 'league',
       difficulty: 3,
       formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
       generations: [...generations],
-      questionTypes: [...coreQuestionTypes],
     },
     completedAt: options.completedAt ?? '2026-09-11T10:00:00.000Z',
-    discoveries: options.discoveries ?? ['bulbasaur'],
     result: {
-      ...(mode === 'daily' ? { puzzleId: 'a'.repeat(64) } : {}),
       rules: {
         difficulty: 3,
         generations: [...generations],
@@ -90,9 +85,5 @@ export function completion(
       ...(scoreMultipliers ? { scoreMultipliers } : {}),
       score: calculateScore(answers, scoreMultipliers),
     },
-    victory:
-      mode === 'league' && !options.failedLeague
-        ? { trainerName: 'Pilot Trainer', pokemon: ['bulbasaur'] }
-        : null,
   };
 }

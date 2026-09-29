@@ -1,6 +1,5 @@
 import type { AccountEnv } from './api.ts';
 import { Hono, type Context } from 'hono';
-import { normalizeFriendCode } from '../src/domain/social/friends.ts';
 import { lookupSocialPlayer, ownSocialPlayer } from './friend-identity.ts';
 import { publicPlayers } from './read.ts';
 import { isRecord } from '../src/lib/validation.ts';
@@ -79,11 +78,11 @@ friendshipApi.post('/identity', async (context) => {
     player: await ownSocialPlayer(context),
   });
 });
-friendshipApi.get('/player/:code', async (context) => {
-  const code = normalizeFriendCode(context.req.param('code'));
-  if (!code) throw new FriendshipError('invalid_code', 400);
+friendshipApi.get('/player/:id', async (context) => {
+  const id = context.req.param('id');
+  if (!isAccountId(id)) throw new FriendshipError('invalid_player_id', 400);
   return context.json(
-    await lookupSocialPlayer(context, context.get('accountId'), code),
+    await lookupSocialPlayer(context, context.get('accountId'), id),
   );
 });
 friendshipApi.get('/', (context) => list(context, 'friends'));

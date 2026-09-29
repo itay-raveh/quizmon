@@ -157,13 +157,11 @@ export const buildLeagueQuestions = (
   return questions;
 };
 
-export const buildDailyTrackQuestions = (
+export const buildDailyQuestions = (
   catalog: PokemonCatalog,
   date: string,
   settings: GameSettings,
-  scope: string,
 ): QuestionData[] => {
-  const identity = `${scope}:${settings.difficulty}`;
   const ordinal = Math.floor(Date.parse(`${date}T00:00:00Z`) / 86_400_000);
   const types = settings.questionTypes;
   if (!types.length) throw new Error('No eligible Daily questions.');
@@ -172,10 +170,7 @@ export const buildDailyTrackQuestions = (
     (_, index) => {
       const slot = ordinal * (DAILY_QUESTION_COUNT - 1) + index;
       const cycle = Math.floor(slot / types.length);
-      const deck = shuffle(
-        types,
-        createSeededRandom(`daily-types:${identity}:${cycle}`),
-      );
+      const deck = shuffle(types, createSeededRandom(`daily-types:${cycle}`));
       return deck[((slot % deck.length) + deck.length) % deck.length]!;
     },
   );
@@ -183,7 +178,7 @@ export const buildDailyTrackQuestions = (
     catalog,
     [...sequence, 'champion'],
     settings,
-    createSeededRandom(`daily:${date}:${identity}`),
+    createSeededRandom(`daily:${date}`),
     undefined,
     [
       ...sequence.map((_, index) =>

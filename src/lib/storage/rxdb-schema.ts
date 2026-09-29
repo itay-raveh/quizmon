@@ -1,19 +1,35 @@
-import type { RoundFact } from '../../domain/sync/round-facts';
+import type { CompactRound } from '../../domain/sync/compact-rounds';
 import type { GameSettings } from '../../domain/settings/types';
 import type { TrainerProfile } from '../../domain/player/trainer-profile';
+import { z } from 'zod';
+import { dailyDateSchema, uuidSchema } from '../validation.ts';
 
 export interface SyncedPlayer {
   id: string;
-  ownerId: string;
   profile: TrainerProfile;
   settings: GameSettings | null;
 }
 
-export interface SyncedRound {
+export type SyncedRound = CompactRound & { ownerId: string };
+
+export interface DailyReceipt {
   id: string;
   ownerId: string;
-  fact: RoundFact;
+  day: string;
+  roundId: string;
 }
+
+export const dailyReceiptId = (ownerId: string, day: string) =>
+  `${ownerId}/${day}`;
+
+export const dailyReceiptDocumentSchema = z
+  .object({
+    id: z.string(),
+    ownerId: z.string().regex(/^[A-Za-z0-9_-]{1,128}$/),
+    day: dailyDateSchema,
+    roundId: uuidSchema,
+  })
+  .refine(({ id, ownerId, day }) => id === dailyReceiptId(ownerId, day));
 
 export interface DeviceRecord {
   id: string;
@@ -22,11 +38,10 @@ export interface DeviceRecord {
 
 const identity = {
   id: { type: 'string', maxLength: 128 },
-  ownerId: { type: 'string', maxLength: 128 },
 } as const;
 
 export const playerSchema = {
-  version: 1,
+  version: 0,
   primaryKey: 'id',
   type: 'object',
   properties: {
@@ -34,22 +49,31 @@ export const playerSchema = {
     profile: { type: 'object', additionalProperties: true },
     settings: { type: ['object', 'null'], additionalProperties: true },
   },
-  required: ['id', 'ownerId', 'profile', 'settings'],
+  required: ['id', 'profile', 'settings'],
 } as const;
 
 export const roundSchema = {
-  version: 1,
+  version: 0,
   primaryKey: 'id',
   type: 'object',
+  indexes: [['ownerId', 'completedAt', 'id']],
   properties: {
     ...identity,
-    fact: { type: 'object', additionalProperties: true },
+    ownerId: { type: 'string', maxLength: 128 },
+    mode: { type: 'string', enum: ['training', 'daily', 'league'] },
+    completedAt: { type: 'string', maxLength: 24 },
+    day: { type: 'string' },
+    training: { type: 'object', additionalProperties: true },
+    answers: {
+      type: 'array',
+      items: { type: 'object', additionalProperties: true },
+    },
   },
-  required: ['id', 'ownerId', 'fact'],
+  required: ['id', 'ownerId', 'mode', 'completedAt', 'answers'],
 } as const;
 
 export const deviceSchema = {
-  version: 1,
+  version: 0,
   primaryKey: 'id',
   type: 'object',
   properties: {
@@ -59,14 +83,16 @@ export const deviceSchema = {
   required: ['id', 'payload'],
 } as const;
 
-const manualCutoffRequired = (): never => {
-  throw new Error(
-    'The version-0 database requires the manual question-ID cutoff.',
-  );
-};
-
-export const migrations = {
-  players: { 1: manualCutoffRequired },
-  rounds: { 1: manualCutoffRequired },
-  device: { 1: manualCutoffRequired },
-};
+export const dailyReceiptSchema = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  indexes: [['ownerId', 'day']],
+  properties: {
+    id: { type: 'string', maxLength: 140 },
+    ownerId: identity.id,
+    day: { type: 'string', maxLength: 10 },
+    roundId: identity.id,
+  },
+  required: ['id', 'ownerId', 'day', 'roundId'],
+} as const;
