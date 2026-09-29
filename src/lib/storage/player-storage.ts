@@ -132,7 +132,6 @@ export const initializePlayerStorage = (
     };
     database.players.$.subscribe(changed);
     database.rounds.$.subscribe(changed);
-    database.dailyReceipts.$.subscribe(changed);
     database.device.$.subscribe(changed);
   })();
   return initialization;

@@ -22,7 +22,6 @@ import {
   type CompactRound,
 } from '../../domain/sync/compact-rounds';
 import type { PlayerDatabase } from './rxdb-database';
-import { dailyReceiptId } from './rxdb-schema';
 
 const deviceStateSchema = z.object({
   restoreId: z.string().nullable(),
@@ -90,11 +89,10 @@ export async function readGameData(
   db: PlayerDatabase,
   ownerId: string,
 ): Promise<{ data: PlayerData; device: DeviceState }> {
-  const [player, device, documents, receipts] = await Promise.all([
+  const [player, device, documents] = await Promise.all([
     db.players.findOne(ownerId).exec(),
     readDeviceState(db),
     db.rounds.find().exec(),
-    db.dailyReceipts.find({ selector: { ownerId } }).exec(),
   ]);
   const rounds = documents.flatMap((document) => {
     const saved = document.toMutableJSON();
@@ -108,11 +106,7 @@ export async function readGameData(
     device,
     data: parsePlayerData({
       ...emptyPlayerData(),
-      ...projectCompactRoundHistory(
-        rounds,
-        savedPlayer?.profile.name ?? '',
-        new Set(receipts.map((receipt) => receipt.roundId)),
-      ),
+      ...projectCompactRoundHistory(rounds, savedPlayer?.profile.name ?? ''),
       profile: savedPlayer
         ? trainerProfileSchema.parse(savedPlayer.profile)
         : null,
@@ -172,19 +166,4 @@ export async function writeCompletedRound(
   }
   await db.rounds.insert({ ...canonical, ownerId });
   return true;
-}
-
-export async function writeDailyReceipt(
-  db: PlayerDatabase,
-  ownerId: string,
-  day: string,
-  roundId: string,
-): Promise<void> {
-  const id = dailyReceiptId(ownerId, day);
-  if (await db.dailyReceipts.findOne(id).exec()) return;
-  try {
-    await db.dailyReceipts.insert({ id, ownerId, day, roundId });
-  } catch (error) {
-    if (!(await db.dailyReceipts.findOne(id).exec())) throw error;
-  }
 }

@@ -3,12 +3,7 @@ import {
   compactRoundSchema,
   type CompactRound,
 } from '../src/domain/sync/compact-rounds.ts';
-import {
-  dailyReceiptDocumentSchema,
-  dailyReceiptId,
-  type DailyReceipt,
-  type SyncedRound,
-} from '../src/lib/storage/rxdb-schema.ts';
+import type { SyncedRound } from '../src/lib/storage/rxdb-schema.ts';
 import { questionDefinitions } from '../src/domain/quiz/questions/definitions.ts';
 import { trainerProfileSchema } from '../src/domain/player/trainer-profile.ts';
 import { savedSettingsSchema } from '../src/domain/player/schemas/player-data.ts';
@@ -43,7 +38,6 @@ const legacyRound = z.object({
     mode: z.enum(['training', 'daily', 'league']),
     day: z.string().nullable(),
     completed_at: z.string(),
-    credited: z.boolean(),
     data: z.object({
       config: z.object({
         difficulty: z.number().optional(),
@@ -122,44 +116,4 @@ export function convertLegacyRound(value: unknown): SyncedRound | null {
         : { ...common, mode: 'league' },
   );
   return { ...round, ownerId };
-}
-
-export function historicalDailyReceipts(
-  source: readonly unknown[],
-  retained: readonly SyncedRound[],
-): DailyReceipt[] {
-  const retainedById = new Map(retained.map((round) => [round.id, round]));
-  const groups = new Map<
-    string,
-    { id: string; ownerId: string; day: string }[]
-  >();
-  for (const value of source) {
-    const { id, ownerId, fact } = legacyRound.parse(value);
-    if (fact.mode !== 'daily') continue;
-    const round = retainedById.get(id);
-    if (
-      !fact.day ||
-      round?.mode !== 'daily' ||
-      round.ownerId !== ownerId ||
-      round.day !== fact.day
-    )
-      throw new Error(`Historical Daily ${id} cannot be credited.`);
-    const key = dailyReceiptId(ownerId, fact.day);
-    const credited = groups.get(key) ?? [];
-    if (fact.credited) credited.push({ id, ownerId, day: fact.day });
-    groups.set(key, credited);
-  }
-  return [...groups.entries()].map(([key, credited]) => {
-    if (credited.length !== 1)
-      throw new Error(
-        `Historical Daily ${key} has ${credited.length} winners.`,
-      );
-    const winner = credited[0]!;
-    return dailyReceiptDocumentSchema.parse({
-      id: key,
-      ownerId: winner.ownerId,
-      day: winner.day,
-      roundId: winner.id,
-    });
-  });
 }

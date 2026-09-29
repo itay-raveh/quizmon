@@ -13,10 +13,6 @@ import { savedSettingsSchema } from '../src/domain/player/schemas/player-data.ts
 import { trainerProfileSchema } from '../src/domain/player/trainer-profile.ts';
 import { compactRoundSchema } from '../src/domain/sync/compact-rounds.ts';
 import { openPlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
-import {
-  dailyReceiptDocumentSchema,
-  dailyReceiptId,
-} from '../src/lib/storage/rxdb-schema.ts';
 import { playerProfiles, trainerProfile } from './rxdb-read.ts';
 import { boardRows, startStandings, type Standing } from './standings.ts';
 
@@ -141,26 +137,6 @@ export async function startSyncServer(config: {
         );
       },
     });
-    server.addReplicationEndpoint({
-      name: 'dailyReceipts',
-      collection: db.dailyReceipts,
-      queryModifier: (auth, query) => ({
-        ...query,
-        selector: {
-          $and: [query.selector, { ownerId: { $eq: auth.data.ownerId } }],
-        },
-      }),
-      changeValidator: (auth, change) => {
-        const receipt = change.newDocumentState;
-        return (
-          !change.assumedMasterState &&
-          !receipt._deleted &&
-          receipt.ownerId === auth.data.ownerId &&
-          receipt.id === dailyReceiptId(receipt.ownerId, receipt.day) &&
-          dailyReceiptDocumentSchema.safeParse(receipt).success
-        );
-      },
-    });
     server.serverApp.get('/health', (_request, response) => {
       response
         .status(board.healthy() ? 200 : 503)
@@ -213,9 +189,8 @@ export async function startSyncServer(config: {
       void Promise.all([
         db.players.findOne(ownerId).exec(),
         db.rounds.find({ selector: { ownerId } }).exec(),
-        db.dailyReceipts.find({ selector: { ownerId } }).exec(),
       ]).then(
-        ([player, rounds, dailyReceipts]) =>
+        ([player, rounds]) =>
           response.json({
             player: player
               ? {
@@ -227,9 +202,6 @@ export async function startSyncServer(config: {
             rounds: rounds.map((round) =>
               compactRoundSchema.parse(round.toMutableJSON()),
             ),
-            dailyReceipts: dailyReceipts.map((receipt) =>
-              dailyReceiptDocumentSchema.parse(receipt.toMutableJSON()),
-            ),
           }),
         next,
       );
@@ -237,24 +209,15 @@ export async function startSyncServer(config: {
     server.serverApp.delete('/read/account', (_request, response, next) => {
       const ownerId = accountId.parse(response.locals.ownerId as unknown);
       void (async () => {
-        const [rounds, player, dailyReceipts] = await Promise.all([
+        const [rounds, player] = await Promise.all([
           db.rounds.find({ selector: { ownerId } }).exec(),
           db.players.findOne(ownerId).exec(),
-          db.dailyReceipts.find({ selector: { ownerId } }).exec(),
         ]);
         const removed = await db.rounds.bulkRemove(rounds);
         if (removed.error.length)
           throw new Error('Could not delete account rounds.');
-        const removedReceipts =
-          await db.dailyReceipts.bulkRemove(dailyReceipts);
-        if (removedReceipts.error.length)
-          throw new Error('Could not delete Daily receipts.');
         await player?.remove();
-        await Promise.all([
-          db.rounds.cleanup(0),
-          db.players.cleanup(0),
-          db.dailyReceipts.cleanup(0),
-        ]);
+        await Promise.all([db.rounds.cleanup(0), db.players.cleanup(0)]);
         await board.removeOwner(ownerId);
         response.sendStatus(204);
       })().catch(next);

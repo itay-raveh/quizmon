@@ -18,7 +18,6 @@ import {
 export function projectCompactRoundHistory(
   rounds: Iterable<CompactRound>,
   trainerName: string,
-  acceptedDailyRoundIds: ReadonlySet<string>,
 ) {
   const data = emptyPlayerData();
   const seen = new Set<string>();
@@ -35,8 +34,7 @@ export function projectCompactRoundHistory(
       ...new Set([...data.pokedex, ...discoverCompactRound(round)]),
     ];
     if (round.mode === 'daily') {
-      if (creditedDays.has(round.day) || !acceptedDailyRoundIds.has(round.id))
-        continue;
+      if (creditedDays.has(round.day)) continue;
       creditedDays.add(round.day);
     }
     const result = scoreCompactRound(round);

@@ -3,11 +3,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { MongoClient } from 'mongodb';
 import { getRxStorageMongoDB } from 'rxdb/plugins/storage-mongodb';
 import { openPlayerDatabase } from '../src/lib/storage/rxdb-database.ts';
-import {
-  convertLegacyPlayer,
-  convertLegacyRound,
-  historicalDailyReceipts,
-} from './cutover-data.ts';
+import { convertLegacyPlayer, convertLegacyRound } from './cutover-data.ts';
 
 const args = process.argv.slice(2);
 if (args.some((arg) => arg !== '--apply'))
@@ -40,9 +36,6 @@ try {
     return [];
   });
   rounds.sort((a, b) => a.id.localeCompare(b.id));
-  const receipts = historicalDailyReceipts(legacyRounds, rounds).sort((a, b) =>
-    a.id.localeCompare(b.id),
-  );
   const owners = new Set(players.map(({ id }) => id));
   if (
     owners.size !== players.length ||
@@ -51,7 +44,7 @@ try {
   )
     throw new Error('Legacy progress has duplicate IDs or missing owners.');
   const hash = createHash('sha256')
-    .update(JSON.stringify({ players, rounds, receipts }))
+    .update(JSON.stringify({ players, rounds }))
     .digest('hex');
   console.log(
     JSON.stringify({
@@ -59,7 +52,6 @@ try {
       target: `${targetName}-v0`,
       players: players.length,
       rounds: rounds.length,
-      receipts: receipts.length,
       omitted: Object.fromEntries([...omitted].sort()),
       sha256: hash,
       applied: args.includes('--apply'),
@@ -83,12 +75,6 @@ try {
         if (!current) await db.rounds.insert(round);
         else if (!isDeepStrictEqual(current.toJSON(), round))
           throw new Error(`Round ${round.id} differs from source.`);
-      }
-      for (const receipt of receipts) {
-        const current = await db.dailyReceipts.findOne(receipt.id).exec();
-        if (!current) await db.dailyReceipts.insert(receipt);
-        else if (!isDeepStrictEqual(current.toJSON(), receipt))
-          throw new Error(`Daily receipt ${receipt.id} differs from source.`);
       }
       console.log('Progress import complete.');
     } finally {

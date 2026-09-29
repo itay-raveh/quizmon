@@ -26,10 +26,6 @@ import {
   writeCompletedRound,
 } from '../../lib/storage/rxdb-game';
 import { playerSchema, roundSchema } from '../../lib/storage/rxdb-schema';
-import {
-  dailyReceiptId,
-  dailyReceiptSchema,
-} from '../../lib/storage/rxdb-schema';
 import { isRecord } from '../../lib/validation';
 import { queryClient } from '../../lib/query-client';
 import { accountReturnPath } from './account-navigation';
@@ -188,16 +184,6 @@ export async function finishSignIn(merge: boolean, useAccountOnly = false) {
         const rounds = await guest.rounds.find().exec();
         for (const round of rounds)
           await writeCompletedRound(target, owner, round.toMutableJSON());
-        for (const receipt of await guest.dailyReceipts.find().exec()) {
-          const id = dailyReceiptId(owner, receipt.day);
-          if (!(await target.dailyReceipts.findOne(id).exec()))
-            await target.dailyReceipts.insert({
-              id,
-              ownerId: owner,
-              day: receipt.day,
-              roundId: receipt.roundId,
-            });
-        }
         const [guestPlayer, accountPlayer] = await Promise.all([
           guest.players.findOne('guest').exec(),
           target.players.findOne(owner).exec(),
@@ -451,16 +437,7 @@ async function connectAccountSync() {
       pull: {},
       live: true,
     });
-    const dailyReceipts = replicateServer({
-      collection: db.dailyReceipts,
-      replicationIdentifier: `quizmon-daily-receipts-${owner}`,
-      url: `${base}/dailyReceipts/${dailyReceiptSchema.version}`,
-      headers,
-      push: {},
-      pull: {},
-      live: true,
-    });
-    replications = [players, rounds, dailyReceipts];
+    replications = [players, rounds];
     const failed = new Map<RxServerReplicationState<unknown>, Error | null>();
     for (const replication of replications) {
       replication.error$.subscribe((error) => {
@@ -499,7 +476,7 @@ async function connectAccountSync() {
               return;
             replicationErrorReported = true;
             captureUnexpectedError(
-              `account.sync.${stalled[0] === players ? 'players' : stalled[0] === rounds ? 'rounds' : 'dailyReceipts'}`,
+              `account.sync.${stalled[0] === players ? 'players' : 'rounds'}`,
               stalled[1],
             );
           }, 60_000);

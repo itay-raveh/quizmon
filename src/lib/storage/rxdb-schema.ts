@@ -1,8 +1,6 @@
 import type { CompactRound } from '../../domain/sync/compact-rounds';
 import type { GameSettings } from '../../domain/settings/types';
 import type { TrainerProfile } from '../../domain/player/trainer-profile';
-import { z } from 'zod';
-import { dailyDateSchema, uuidSchema } from '../validation.ts';
 
 export interface SyncedPlayer {
   id: string;
@@ -11,25 +9,6 @@ export interface SyncedPlayer {
 }
 
 export type SyncedRound = CompactRound & { ownerId: string };
-
-export interface DailyReceipt {
-  id: string;
-  ownerId: string;
-  day: string;
-  roundId: string;
-}
-
-export const dailyReceiptId = (ownerId: string, day: string) =>
-  `${ownerId}/${day}`;
-
-export const dailyReceiptDocumentSchema = z
-  .object({
-    id: z.string(),
-    ownerId: z.string().regex(/^[A-Za-z0-9_-]{1,128}$/),
-    day: dailyDateSchema,
-    roundId: uuidSchema,
-  })
-  .refine(({ id, ownerId, day }) => id === dailyReceiptId(ownerId, day));
 
 export interface DeviceRecord {
   id: string;
@@ -81,18 +60,4 @@ export const deviceSchema = {
     payload: { type: 'object', additionalProperties: true },
   },
   required: ['id', 'payload'],
-} as const;
-
-export const dailyReceiptSchema = {
-  version: 0,
-  primaryKey: 'id',
-  type: 'object',
-  indexes: [['ownerId', 'day']],
-  properties: {
-    id: { type: 'string', maxLength: 140 },
-    ownerId: identity.id,
-    day: { type: 'string', maxLength: 10 },
-    roundId: identity.id,
-  },
-  required: ['id', 'ownerId', 'day', 'roundId'],
 } as const;

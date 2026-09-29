@@ -2,13 +2,12 @@ import { emptyDeviceState } from '../../lib/storage/rxdb-game';
 import { parseBackup } from './backup';
 
 const backup = () => ({
-  format: 'quizmon-backup-v2',
+  format: 'quizmon-backup-v3',
   exportedAt: '2026-09-26T10:00:00.000Z',
   accountId: null,
-  schemaVersions: { players: 0, rounds: 0, device: 0, dailyReceipts: 0 },
+  schemaVersions: { players: 0, rounds: 0, device: 0 },
   player: null,
   rounds: [],
-  dailyReceipts: [],
   device: [{ id: 'state', payload: emptyDeviceState() }],
 });
 
@@ -43,7 +42,7 @@ it('validates backup identity and device data before any restore writes', () => 
     parseBackup(
       JSON.stringify({
         ...backup(),
-        schemaVersions: { players: 2, rounds: 0, device: 0, dailyReceipts: 0 },
+        schemaVersions: { players: 2, rounds: 0, device: 0 },
       }),
     ),
   ).toThrow('newer version');
@@ -51,18 +50,6 @@ it('validates backup identity and device data before any restore writes', () => 
     parseBackup(JSON.stringify({ ...backup(), format: 'quizmon-backup' })),
   ).toThrow('valid Quizmon backup');
   expect(() =>
-    parseBackup(
-      JSON.stringify({
-        ...backup(),
-        dailyReceipts: [
-          {
-            id: 'guest/2026-09-26',
-            ownerId: 'guest',
-            day: '2026-09-26',
-            roundId: '00000000-0000-4000-8000-000000000000',
-          },
-        ],
-      }),
-    ),
-  ).toThrow('invalid Daily receipt');
+    parseBackup(JSON.stringify({ ...backup(), format: 'quizmon-backup-v2' })),
+  ).toThrow('valid Quizmon backup');
 });
