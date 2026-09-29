@@ -64,6 +64,11 @@ registerRoute(
   new NavigationRoute(async (options) => {
     if (['/maintenance', '/maintenance.html'].includes(options.url.pathname))
       return fetch(options.url.href, { cache: 'no-store' });
+    try {
+      return await fetch(options.request, { cache: 'no-store' });
+    } catch {
+      // The precached shell keeps completed and unfinished play available offline.
+    }
     const contentPage = staticPages.find(
       ({ path, noindex }) =>
         !noindex &&

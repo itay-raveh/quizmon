@@ -89,6 +89,58 @@ html:has(.content-page),
   border-top: 1px solid var(--muted);
 }
 
+.maintenance {
+  width: min(100%, 52rem);
+  text-align: center;
+}
+
+.maintenance__crew {
+  position: relative;
+  width: min(100%, 34rem);
+  aspect-ratio: 1.65;
+  margin: -1rem auto 0.5rem;
+}
+
+.maintenance__crew img {
+  position: absolute;
+  height: auto;
+  filter: drop-shadow(0 0.35rem 0.15rem rgb(8 59 126 / 18%));
+}
+
+.maintenance__conkeldurr {
+  width: 68%;
+  left: 22%;
+  bottom: -3%;
+}
+
+.maintenance__gurdurr {
+  width: 46%;
+  left: 1%;
+  top: -2%;
+}
+
+.maintenance__timburr {
+  width: 37%;
+  right: 0;
+  bottom: -5%;
+}
+
+.maintenance__retry {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.55rem 1.15rem;
+  color: var(--primary-text);
+  background: var(--blue);
+  border: 2px solid var(--navy);
+  border-radius: var(--button-radius);
+  box-shadow: 0 0.2rem 0 var(--navy-shadow);
+  text-decoration: none;
+}
+
+.maintenance__retry:hover {
+  background: var(--navy);
+}
+
 @media print {
   .content-page {
     padding: 0;
