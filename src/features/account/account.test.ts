@@ -26,7 +26,7 @@ vi.mock('../../lib/sentry', () => ({
   setVerifiedSentryUser: () => Promise.resolve(),
 }));
 vi.mock('../../lib/storage/player-storage', () => ({
-  getPlayerDatabase: () => ({ players: {}, rounds: {}, dailyReceipts: {} }),
+  getPlayerDatabase: () => ({ players: {}, rounds: {} }),
 }));
 vi.mock('../../lib/storage/rxdb-database', () => ({}));
 vi.mock('../../lib/storage/rxdb-game', () => ({}));
@@ -106,8 +106,7 @@ it('retries account startup and wake failures, then clears a recovered replicati
 
   const first = replication();
   const second = replication();
-  const firstReceipt = replication();
-  mocks.replications.push(first.state, second.state, firstReceipt.state);
+  mocks.replications.push(first.state, second.state);
   const { accountSnapshot, retryAccountSync, startAccountSync } =
     await import('./account');
 
@@ -156,8 +155,7 @@ it('retries account startup and wake failures, then clears a recovered replicati
 
   const third = replication();
   const fourth = replication();
-  const secondReceipt = replication();
-  mocks.replications.push(third.state, fourth.state, secondReceipt.state);
+  mocks.replications.push(third.state, fourth.state);
   page.visibilityState = 'visible';
   page.dispatchEvent(new Event('visibilitychange'));
   await vi.waitFor(() => expect(accountCalls).toBe(4));

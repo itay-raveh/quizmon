@@ -6,7 +6,6 @@ import {
   compactRoundSchema,
   scoreCompactRound,
 } from '../src/domain/sync/compact-rounds.ts';
-import { dailyReceiptDocumentSchema } from '../src/lib/storage/rxdb-schema.ts';
 
 export interface Standing {
   _id: string;
@@ -44,6 +43,11 @@ const isBetter = (candidate: Standing, previous: Standing) =>
         (candidate.completedAt < previous.completedAt ||
           (candidate.completedAt === previous.completedAt &&
             candidate.roundId < previous.roundId)))));
+
+const isEarlier = (candidate: Standing, previous: Standing) =>
+  candidate.completedAt < previous.completedAt ||
+  (candidate.completedAt === previous.completedAt &&
+    candidate.roundId < previous.roundId);
 
 async function* documents<T extends { id: string }>(
   collection: RxCollection<T>,
@@ -87,33 +91,24 @@ export async function startStandings(
   // ponytail: one RxServer owns this rebuild. Add a lease before running replicas.
   await collection.deleteMany({});
   const bestTraining = new Map<string, Standing>();
+  const firstDaily = new Map<string, Standing>();
   for await (const value of documents(db.rounds)) {
     const round = compactRoundSchema.safeParse(value);
-    if (!round.success || round.data.mode !== 'training') continue;
+    if (!round.success || round.data.mode === 'league') continue;
     const ownerId = value.ownerId;
     const candidate = standingFromRound(round.data, ownerId);
-    const previous = bestTraining.get(ownerId);
-    if (!previous || isBetter(candidate, previous))
-      bestTraining.set(ownerId, candidate);
+    if (round.data.mode === 'training') {
+      const previous = bestTraining.get(ownerId);
+      if (!previous || isBetter(candidate, previous))
+        bestTraining.set(ownerId, candidate);
+    } else {
+      const previous = firstDaily.get(candidate._id);
+      if (!previous || isEarlier(candidate, previous))
+        firstDaily.set(candidate._id, candidate);
+    }
   }
-  if (bestTraining.size)
-    await collection.insertMany([...bestTraining.values()]);
-  for await (const value of documents(db.dailyReceipts)) {
-    const receipt = dailyReceiptDocumentSchema.safeParse(value);
-    if (!receipt.success) continue;
-    const roundDoc = await db.rounds.findOne(receipt.data.roundId).exec();
-    if (!roundDoc || roundDoc.ownerId !== receipt.data.ownerId) continue;
-    const round = compactRoundSchema.safeParse(roundDoc.toMutableJSON());
-    if (
-      !round.success ||
-      round.data.mode !== 'daily' ||
-      round.data.day !== receipt.data.day
-    )
-      continue;
-    await collection.insertOne(
-      standingFromRound(round.data, receipt.data.ownerId),
-    );
-  }
+  const initial = [...bestTraining.values(), ...firstDaily.values()];
+  if (initial.length) await collection.insertMany(initial);
 
   let pending = Promise.resolve();
   let failure: unknown;
@@ -136,36 +131,13 @@ export async function startStandings(
             upsert: true,
           });
       } else if (round.data.mode === 'daily') {
-        const receipt = await db.dailyReceipts
-          .findOne(`${ownerId}/${round.data.day}`)
-          .exec();
-        if (receipt?.roundId === round.data.id)
-          await collection.replaceOne(
-            { _id: `daily/${ownerId}/${round.data.day}` },
-            standingFromRound(round.data, ownerId),
-            { upsert: true },
-          );
+        const candidate = standingFromRound(round.data, ownerId);
+        const previous = await collection.findOne({ _id: candidate._id });
+        if (!previous || isEarlier(candidate, previous))
+          await collection.replaceOne({ _id: candidate._id }, candidate, {
+            upsert: true,
+          });
       }
-    });
-  });
-  const receipts = db.dailyReceipts.$.subscribe((event) => {
-    if (event.operation !== 'INSERT') return;
-    enqueue(async () => {
-      const receipt = dailyReceiptDocumentSchema.safeParse(event.documentData);
-      if (!receipt.success) return;
-      const roundDoc = await db.rounds.findOne(receipt.data.roundId).exec();
-      if (!roundDoc || roundDoc.ownerId !== receipt.data.ownerId) return;
-      const round = compactRoundSchema.safeParse(roundDoc.toMutableJSON());
-      if (
-        !round.success ||
-        round.data.mode !== 'daily' ||
-        round.data.day !== receipt.data.day
-      )
-        return;
-      const candidate = standingFromRound(round.data, receipt.data.ownerId);
-      await collection.replaceOne({ _id: candidate._id }, candidate, {
-        upsert: true,
-      });
     });
   });
 
@@ -185,7 +157,6 @@ export async function startStandings(
     },
     close() {
       rounds.unsubscribe();
-      receipts.unsubscribe();
     },
   };
 }

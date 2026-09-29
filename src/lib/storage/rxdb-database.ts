@@ -3,10 +3,8 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import type { RxCollection, RxDatabase, RxStorage } from 'rxdb';
 import {
   deviceSchema,
-  dailyReceiptSchema,
   playerSchema,
   roundSchema,
-  type DailyReceipt,
   type DeviceRecord,
   type SyncedPlayer,
   type SyncedRound,
@@ -16,7 +14,6 @@ interface PlayerCollections {
   players: RxCollection<SyncedPlayer>;
   rounds: RxCollection<SyncedRound>;
   device: RxCollection<DeviceRecord>;
-  dailyReceipts: RxCollection<DailyReceipt>;
 }
 
 export type PlayerDatabase = RxDatabase<PlayerCollections>;
@@ -36,7 +33,6 @@ export async function openPlayerDatabase(
       players: { schema: playerSchema },
       rounds: { schema: roundSchema },
       device: { schema: deviceSchema },
-      dailyReceipts: { schema: dailyReceiptSchema },
     });
     return db;
   } catch (error) {

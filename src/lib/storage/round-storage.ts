@@ -17,11 +17,7 @@ import {
   readPlayerSave,
   refreshPlayerData,
 } from './player-storage';
-import {
-  updateDeviceState,
-  writeCompletedRound,
-  writeDailyReceipt,
-} from './rxdb-game';
+import { updateDeviceState, writeCompletedRound } from './rxdb-game';
 
 let tabId: string;
 let active: ActiveGameSnapshot | null = null;
@@ -133,7 +129,6 @@ export const commitRoundCompletion = async (
   );
   const saved = await writeCompletedRound(db, ownerId, fact);
   if (round.mode === 'daily') {
-    await writeDailyReceipt(db, ownerId, round.day, round.id);
     await updateDeviceState(db, (state) => {
       delete state.dailyAttempts[round.day];
     });

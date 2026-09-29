@@ -23,14 +23,10 @@ export async function playerProfiles(db: PlayerDatabase, ids: string[]) {
 export async function trainerProfile(db: PlayerDatabase, id: string) {
   const profile =
     (await db.players.findOne(id).exec())?.profile ?? createTrainerProfile();
-  const [rounds, receipts] = await Promise.all([
-    db.rounds.find({ selector: { ownerId: id } }).exec(),
-    db.dailyReceipts.find({ selector: { ownerId: id } }).exec(),
-  ]);
+  const rounds = await db.rounds.find({ selector: { ownerId: id } }).exec();
   const projection = projectCompactRoundHistory(
     rounds.map((round) => compactRoundSchema.parse(round.toMutableJSON())),
     profile.name,
-    new Set(receipts.map((receipt) => receipt.roundId)),
   );
   const pokedex = projection.pokedex;
   return {

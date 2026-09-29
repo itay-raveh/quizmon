@@ -6,7 +6,6 @@ import {
   scoreCompactRound,
 } from '../../src/domain/sync/compact-rounds.ts';
 import { openPlayerDatabase } from '../../src/lib/storage/rxdb-database.ts';
-import { dailyReceiptId } from '../../src/lib/storage/rxdb-schema.ts';
 import {
   boardRows,
   startStandings,
@@ -33,12 +32,6 @@ try {
   assert(daily.mode === 'daily');
   await db.rounds.insert({ ...first, ownerId: 'alpha' });
   await db.rounds.insert({ ...daily, ownerId: 'alpha' });
-  await db.dailyReceipts.insert({
-    id: dailyReceiptId('alpha', daily.day),
-    ownerId: 'alpha',
-    day: daily.day,
-    roundId: daily.id,
-  });
   standings = await startStandings(db, collection);
   assert.equal(
     (await boardRows(standings, 'training', null))[0]?.roundId,
@@ -58,13 +51,25 @@ try {
   );
   assert.ok(scoreCompactRound(faster).score > scoreCompactRound(first).score);
 
-  const rejected = compactCompletion(completion('daily'));
-  assert(rejected.mode === 'daily');
-  rejected.answers[0]!.responseMs = 0;
-  await db.rounds.insert({ ...rejected, ownerId: 'alpha' });
+  const later = compactCompletion(
+    completion('daily', { completedAt: '2026-09-11T11:00:00.000Z' }),
+  );
+  assert(later.mode === 'daily');
+  later.answers[0]!.responseMs = 0;
+  await db.rounds.insert({ ...later, ownerId: 'alpha' });
   assert.equal(
     (await boardRows(standings, 'daily', null, daily.day))[0]?.roundId,
     daily.id,
+  );
+  assert.ok(scoreCompactRound(later).score > scoreCompactRound(daily).score);
+
+  const earlier = compactCompletion(
+    completion('daily', { completedAt: '2026-09-11T09:00:00.000Z' }),
+  );
+  await db.rounds.insert({ ...earlier, ownerId: 'alpha' });
+  assert.equal(
+    (await boardRows(standings, 'daily', null, daily.day))[0]?.roundId,
+    earlier.id,
   );
 
   standings.close();
@@ -81,7 +86,7 @@ try {
   );
   assert.equal(
     (await boardRows(standings, 'daily', null, daily.day))[0]?.roundId,
-    daily.id,
+    earlier.id,
   );
   console.log('Standings update and rebuild passed.');
 } finally {

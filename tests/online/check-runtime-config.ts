@@ -10,13 +10,10 @@ import { compactCompletion } from '../../src/domain/sync/compact-rounds.ts';
 import { createTrainerProfile } from '../../src/domain/player/trainer-profile.ts';
 import { openPlayerDatabase } from '../../src/lib/storage/rxdb-database.ts';
 import type {
-  DailyReceipt,
   SyncedPlayer,
   SyncedRound,
 } from '../../src/lib/storage/rxdb-schema.ts';
 import {
-  dailyReceiptId,
-  dailyReceiptSchema,
   playerSchema,
   roundSchema,
 } from '../../src/lib/storage/rxdb-schema.ts';
@@ -83,7 +80,7 @@ try {
     getRxStorageMongoDB({ connection: mongoUrl }),
     false,
   );
-  const historical = compactCompletion(completion('daily'));
+  const historical = compactCompletion(completion('league'));
   await seeded.rounds.insert({
     ...historical,
     ownerId: 'migration-trainer',
@@ -228,27 +225,6 @@ try {
     ownerId: a.id,
   });
   await within(rounds.awaitDocumentPushed(firstDailyDoc), 'first Daily push');
-  const firstReceipt = await one.dailyReceipts.insert({
-    id: dailyReceiptId(a.id, firstDaily.day),
-    ownerId: a.id,
-    day: firstDaily.day,
-    roundId: firstDaily.id,
-  });
-  const receiptSync = replicateServer<DailyReceipt>({
-    collection: one.dailyReceipts,
-    replicationIdentifier: 'runtime-receipt-a',
-    url: `${endpoint}/dailyReceipts/${dailyReceiptSchema.version}`,
-    headers: { Authorization: `Bearer ${a.token}` },
-    push: {},
-    pull: {},
-    live: true,
-    retryTime: 100,
-  });
-  replications.push(receiptSync);
-  await within(
-    receiptSync.awaitDocumentPushed(firstReceipt),
-    'first Daily receipt push',
-  );
   const request = accountRequest(worker.base, origin);
   assert.equal((await request('/api/account', a)).status, 200);
   assert.equal((await request('/api/account', b)).status, 200);
@@ -310,18 +286,13 @@ try {
   const accountExport = await json(await request('/api/account/export', a));
   assert.equal(accountExport.accountId, a.id);
   assert.equal((accountExport.rounds as unknown[]).length, 2);
-  assert.equal((accountExport.dailyReceipts as unknown[]).length, 1);
 
   const second = await local('runtimetwo');
-  const secondDaily = compactCompletion(completion('daily'));
+  const secondDaily = compactCompletion(
+    completion('daily', { completedAt: '2026-09-11T11:00:00.000Z' }),
+  );
   assert(secondDaily.mode === 'daily');
   await second.rounds.insert({ ...secondDaily, ownerId: a.id });
-  await second.dailyReceipts.insert({
-    id: dailyReceiptId(a.id, secondDaily.day),
-    ownerId: a.id,
-    day: secondDaily.day,
-    roundId: secondDaily.id,
-  });
   const pull = replicateServer<SyncedRound>({
     collection: second.rounds,
     replicationIdentifier: 'runtime-round-a-second',
@@ -329,41 +300,46 @@ try {
     headers: { Authorization: `Bearer ${a.token}` },
     push: {},
     pull: {},
-    live: false,
+    live: true,
     retryTime: 100,
   });
   replications.push(pull);
   await within(pull.awaitInitialReplication(), 'second-device pull');
   assert.ok(await second.rounds.findOne(fact.id).exec());
-  const secondReceiptSync = replicateServer<DailyReceipt>({
-    collection: second.dailyReceipts,
-    replicationIdentifier: 'runtime-receipt-a-second',
-    url: `${endpoint}/dailyReceipts/${dailyReceiptSchema.version}`,
-    headers: { Authorization: `Bearer ${a.token}` },
-    push: {},
-    pull: {},
-    live: false,
-    retryTime: 100,
-  });
-  replications.push(secondReceiptSync);
-  await within(
-    secondReceiptSync.awaitInitialReplication(),
-    'Daily receipt conflict',
-  );
-  assert.equal(
-    (
-      await second.dailyReceipts
-        .findOne(dailyReceiptId(a.id, firstDaily.day))
-        .exec()
-    )?.roundId,
-    firstDaily.id,
-  );
   const dailyBoard = await json(
     await request(`/api/leaderboards/daily?date=${firstDaily.day}`, a),
   );
   assert.equal(dailyBoard.total, 1);
-  await secondReceiptSync.cancel();
-  replications.splice(replications.indexOf(secondReceiptSync), 1);
+  assert.equal(
+    (
+      await mongo
+        .db(`${mongoName}_app`)
+        .collection<{ _id: string; roundId: string }>('standings')
+        .findOne({ _id: `daily/${a.id}/${firstDaily.day}` })
+    )?.roundId,
+    firstDaily.id,
+  );
+  const earlierDaily = compactCompletion(
+    completion('daily', { completedAt: '2026-09-11T09:00:00.000Z' }),
+  );
+  const earlierDoc = await second.rounds.insert({
+    ...earlierDaily,
+    ownerId: a.id,
+  });
+  await within(pull.awaitDocumentPushed(earlierDoc), 'earlier Daily push');
+  const changedBoard = await json(
+    await request(`/api/leaderboards/daily?date=${firstDaily.day}`, a),
+  );
+  assert.equal(changedBoard.total, 1);
+  assert.equal(
+    (
+      await mongo
+        .db(`${mongoName}_app`)
+        .collection<{ _id: string; roundId: string }>('standings')
+        .findOne({ _id: `daily/${a.id}/${firstDaily.day}` })
+    )?.roundId,
+    earlierDaily.id,
+  );
   await pull.cancel();
   replications.splice(replications.indexOf(pull), 1);
   await second.close();
@@ -420,13 +396,6 @@ try {
   );
   assert.equal(
     await mongo
-      .db(`${mongoName}-v${roundSchema.version}`)
-      .collection('dailyReceipts')
-      .countDocuments({ ownerId: a.id }),
-    0,
-  );
-  assert.equal(
-    await mongo
       .db(`${mongoName}_app`)
       .collection('standings')
       .countDocuments({ ownerId: a.id }),
@@ -440,7 +409,7 @@ try {
     0,
   );
   console.log(
-    'RxServer auth, offline sync, Daily receipt conflict, standings, and deletion passed.',
+    'RxServer auth, offline sync, Daily ordering, standings, and deletion passed.',
   );
 } finally {
   await Promise.allSettled(

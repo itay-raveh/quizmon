@@ -71,7 +71,6 @@ try {
   assert.equal(report.applied, false);
   assert.equal(report.players, 1);
   assert.equal(report.rounds, 1);
-  assert.equal(report.receipts, 1);
   const first = await run(process.execPath, [command, '--apply'], { env });
   const second = await run(process.execPath, [command, '--apply'], { env });
   assert.equal(first.stdout, second.stdout);
@@ -83,11 +82,9 @@ try {
   try {
     const player = await db.players.findOne('trainer').exec();
     const round = await db.rounds.findOne(id).exec();
-    const receipt = await db.dailyReceipts.findOne('trainer/2026-09-29').exec();
-    assert.ok(player && round && receipt);
+    assert.ok(player && round);
     assert.equal(Object.hasOwn(player.profile, 'createdAt'), false);
     assert.equal(round.answers[0]?.options, undefined);
-    assert.equal(receipt.roundId, id);
   } finally {
     await db.close();
   }

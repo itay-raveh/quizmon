@@ -5,7 +5,7 @@ import {
   type CompactRound,
 } from '../sync/compact-rounds.ts';
 
-it('credits the first received Daily while retaining discoveries from both attempts', () => {
+it('credits the earliest completed Daily while retaining discoveries from both attempts', () => {
   const answer = (subject: string, options: string[], responseMs = 1000) => ({
     type: 'pokemonFromHistoricalSprite' as const,
     subject,
@@ -32,13 +32,12 @@ it('credits the first received Daily while retaining discoveries from both attem
   };
 
   const projected = projectCompactRoundHistory(
-    [earlier, receivedFirst],
+    [receivedFirst, earlier],
     'Trainer',
-    new Set([receivedFirst.id]),
   );
 
   expect(projected.results.daily['2026-09-11']?.score).toBe(
-    scoreCompactRound(receivedFirst).score,
+    scoreCompactRound(earlier).score,
   );
   expect(projected.results.streak.creditedDates).toEqual(['2026-09-11']);
   expect(projected.pokedex).toEqual([

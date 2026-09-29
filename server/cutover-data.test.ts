@@ -1,6 +1,6 @@
-import { convertLegacyRound, historicalDailyReceipts } from './cutover-data.ts';
+import { convertLegacyRound } from './cutover-data.ts';
 
-const legacy = (mode: 'training' | 'daily', credited = true) => ({
+const legacy = (mode: 'training' | 'daily') => ({
   id: crypto.randomUUID(),
   ownerId: 'trainer',
   fact: {
@@ -8,7 +8,6 @@ const legacy = (mode: 'training' | 'daily', credited = true) => ({
     mode,
     day: mode === 'daily' ? '2026-09-29' : null,
     completed_at: '2026-09-29T12:00:00.000Z',
-    credited,
     data: {
       config: {
         difficulty: 3,
@@ -31,7 +30,7 @@ const legacy = (mode: 'training' | 'daily', credited = true) => ({
   },
 });
 
-it('converts only supported round facts and seeds the credited historical Daily', () => {
+it('converts only supported round facts', () => {
   const training = legacy('training');
   training.fact.id = training.id;
   const compact = convertLegacyRound(training);
@@ -47,21 +46,4 @@ it('converts only supported round facts and seeds the credited historical Daily'
   training.fact.data.answers[0]!.question_type = 'itemIdentification';
   training.fact.data.answers[0]!.subject.kind = 'move';
   expect(convertLegacyRound(training)).toBeNull();
-
-  const first = legacy('daily');
-  const second = legacy('daily', false);
-  first.fact.id = first.id;
-  second.fact.id = second.id;
-  const retained = [convertLegacyRound(first)!, convertLegacyRound(second)!];
-  expect(historicalDailyReceipts([second, first], retained)).toEqual([
-    {
-      id: 'trainer/2026-09-29',
-      ownerId: 'trainer',
-      day: '2026-09-29',
-      roundId: first.id,
-    },
-  ]);
-  expect(() => historicalDailyReceipts([second], retained)).toThrow(
-    '0 winners',
-  );
 });

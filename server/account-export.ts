@@ -55,6 +55,5 @@ export async function exportAccount(context: Context<AccountEnv>) {
     })),
     player: progress.player ?? null,
     rounds: progress.rounds,
-    dailyReceipts: progress.dailyReceipts ?? [],
   });
 }

@@ -30,13 +30,9 @@ import {
 } from '../../lib/storage/rxdb-game';
 import {
   deviceSchema,
-  dailyReceiptDocumentSchema,
-  dailyReceiptId,
-  dailyReceiptSchema,
   playerSchema,
   roundSchema,
   type DeviceRecord,
-  type DailyReceipt,
   type SyncedPlayer,
   type SyncedRound,
 } from '../../lib/storage/rxdb-schema';
@@ -46,18 +42,16 @@ import { selectedAccount } from '../account/account';
 const MAX_BACKUP_BYTES = 512 * 1024 * 1024;
 
 export interface PlayerBackup {
-  format: 'quizmon-backup-v2';
+  format: 'quizmon-backup-v3';
   exportedAt: string;
   accountId: string | null;
   schemaVersions: {
     players: number;
     rounds: number;
     device: number;
-    dailyReceipts: number;
   };
   player: SyncedPlayer | null;
   rounds: SyncedRound[];
-  dailyReceipts: DailyReceipt[];
   device: DeviceRecord[];
 }
 
@@ -69,25 +63,22 @@ export const validateBackupSize = (size: number): void => {
 async function createBackup(): Promise<PlayerBackup> {
   const db = recoveryDatabase();
   const ownerId = currentOwnerId();
-  const [player, rounds, device, dailyReceipts] = await Promise.all([
+  const [player, rounds, device] = await Promise.all([
     db.players.findOne(ownerId).exec(),
     db.rounds.find().exec(),
     db.device.find().exec(),
-    db.dailyReceipts.find().exec(),
   ]);
   const backup: PlayerBackup = {
-    format: 'quizmon-backup-v2',
+    format: 'quizmon-backup-v3',
     exportedAt: new Date().toISOString(),
     accountId: selectedAccount() ?? null,
     schemaVersions: {
       players: db.players.schema.version,
       rounds: db.rounds.schema.version,
       device: db.device.schema.version,
-      dailyReceipts: db.dailyReceipts.schema.version,
     },
     player: player?.toMutableJSON() ?? null,
     rounds: rounds.map((round) => round.toMutableJSON()),
-    dailyReceipts: dailyReceipts.map((receipt) => receipt.toMutableJSON()),
     device: device.map((record) => record.toMutableJSON()),
   };
   validateBackupSize(new Blob([JSON.stringify(backup)]).size);
@@ -95,18 +86,16 @@ async function createBackup(): Promise<PlayerBackup> {
 }
 
 const header = z.object({
-  format: z.literal('quizmon-backup-v2'),
+  format: z.literal('quizmon-backup-v3'),
   exportedAt: z.string(),
   accountId: z.string().nullable(),
   schemaVersions: z.object({
     players: z.int().min(0),
     rounds: z.int().min(0),
     device: z.int().min(0),
-    dailyReceipts: z.int().min(0),
   }),
   player: z.unknown().nullable(),
   rounds: z.array(z.unknown()),
-  dailyReceipts: z.array(z.unknown()),
   device: z.array(z.unknown()),
 });
 
@@ -126,7 +115,6 @@ export function parseBackup(text: string): PlayerBackup {
     players: playerSchema.version,
     rounds: roundSchema.version,
     device: deviceSchema.version,
-    dailyReceipts: dailyReceiptSchema.version,
   };
   for (const name of Object.keys(
     schemaVersions,
@@ -138,7 +126,6 @@ export function parseBackup(text: string): PlayerBackup {
   }
   const playerDocs = backup.player === null ? [] : [backup.player];
   const roundDocs = backup.rounds;
-  const receiptDocs = backup.dailyReceipts;
   const deviceDocs = backup.device;
   if (
     backup.accountId !== null &&
@@ -169,20 +156,6 @@ export function parseBackup(text: string): PlayerBackup {
       throw new Error('The backup has an invalid completed round.');
     return { ...round.data, ownerId };
   });
-  const dailyReceipts: DailyReceipt[] = receiptDocs.map((value) => {
-    const parsed = dailyReceiptDocumentSchema.safeParse(value);
-    if (!parsed.success || parsed.data.ownerId !== ownerId)
-      throw new Error('The backup has an invalid Daily receipt.');
-    return parsed.data;
-  });
-  const roundsById = new Map(rounds.map((round) => [round.id, round]));
-  if (
-    dailyReceipts.some((receipt) => {
-      const round = roundsById.get(receipt.roundId);
-      return round?.mode !== 'daily' || round.day !== receipt.day;
-    })
-  )
-    throw new Error('The backup has an invalid Daily receipt.');
   const device: DeviceRecord[] = deviceDocs.map((value) => {
     if (
       !isRecord(value) ||
@@ -199,20 +172,18 @@ export function parseBackup(text: string): PlayerBackup {
   if (
     !device.some((record) => record.id === 'state') ||
     new Set(rounds.map(({ id }) => id)).size !== rounds.length ||
-    new Set(dailyReceipts.map(({ id }) => id)).size !== dailyReceipts.length ||
     new Set(device.map(({ id }) => id)).size !== device.length
   )
     throw new Error(
       'The backup is missing data or contains duplicate records.',
     );
   return {
-    format: 'quizmon-backup-v2',
+    format: 'quizmon-backup-v3',
     exportedAt: backup.exportedAt,
     accountId: backup.accountId,
     schemaVersions,
     player,
     rounds,
-    dailyReceipts,
     device,
   };
 }
@@ -223,7 +194,6 @@ export function backupPreview(backup: PlayerBackup): PlayerData {
     ...projectCompactRoundHistory(
       backup.rounds,
       backup.player?.profile.name ?? '',
-      new Set(backup.dailyReceipts.map(({ roundId }) => roundId)),
     ),
     profile: backup.player?.profile ?? null,
     settings: backup.player?.settings ?? null,
@@ -264,11 +234,6 @@ export async function restoreBackup(backup: PlayerBackup): Promise<void> {
   }
   for (const round of backup.rounds)
     await writeCompletedRound(db, ownerId, round);
-  for (const receipt of backup.dailyReceipts) {
-    const id = dailyReceiptId(ownerId, receipt.day);
-    if (!(await db.dailyReceipts.findOne(id).exec()))
-      await db.dailyReceipts.insert(receipt);
-  }
   if (backup.player) await writePlayerPreferences(db, ownerId, backup.player);
   const state = parseDeviceState(
     backup.device.find((record) => record.id === 'state')!.payload,
