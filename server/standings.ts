@@ -76,6 +76,14 @@ export async function startStandings(
     roundId: 1,
     ownerId: 1,
   });
+  await collection.createIndex({
+    mode: 1,
+    score: -1,
+    elapsedMilliseconds: 1,
+    completedAt: 1,
+    roundId: 1,
+    ownerId: 1,
+  });
   // ponytail: one RxServer owns this rebuild. Add a lease before running replicas.
   await collection.deleteMany({});
   const bestTraining = new Map<string, Standing>();
