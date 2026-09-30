@@ -130,6 +130,7 @@ export interface AccountEnv {
     accountId: string;
     origin: string;
     sync: SyncConnection;
+    syncToken?: Promise<string>;
   };
 }
 
@@ -209,9 +210,13 @@ export function createAccountApi(services: AccountServices) {
     });
   const signedIn = new Hono<AccountEnv>();
   signedIn.use('*', async (context, next) => {
-    const session = await context
-      .get('auth')
-      .api.getSession({ headers: context.req.raw.headers });
+    const session = await Sentry.startSpan(
+      { name: 'auth.session', op: 'auth' },
+      () =>
+        context
+          .get('auth')
+          .api.getSession({ headers: context.req.raw.headers }),
+    );
     if (!session)
       return context.json({ error: 'Sign in to continue syncing.' }, 401);
     context.set('accountId', session.user.id);

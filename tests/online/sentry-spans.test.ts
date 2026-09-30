@@ -47,4 +47,14 @@ void test('database spans retain operations while removing queries and connectio
     'db.query.summary': 'SELECT users',
     'sentry.op': 'db',
   });
+
+  const connect = filterWorkerDatabaseSpan({
+    name: 'pg.connect',
+    attributes: {
+      'db.system.name': 'postgresql',
+      'server.address': 'private-host',
+    },
+  });
+  assert.equal(connect.name, 'pg.connect');
+  assert.deepEqual(connect.attributes, { 'db.system.name': 'postgresql' });
 });

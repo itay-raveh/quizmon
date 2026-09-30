@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import * as Sentry from '@sentry/cloudflare';
 import type { AccountEnv } from './api.ts';
 import type {
   Leaderboard,
@@ -25,9 +26,20 @@ export async function read<T>(
   path: string,
   body?: object,
 ): Promise<T> {
-  const { token } = await context.get('auth').api.getToken({
-    headers: context.req.raw.headers,
-  });
+  let tokenPromise = context.get('syncToken');
+  if (!tokenPromise) {
+    tokenPromise = Sentry.startSpan(
+      { name: 'auth.sync-token', op: 'auth' },
+      async () =>
+        (
+          await context.get('auth').api.getToken({
+            headers: context.req.raw.headers,
+          })
+        ).token,
+    );
+    context.set('syncToken', tokenPromise);
+  }
+  const token = await tokenPromise;
   for (let attempt = 0; attempt < 5; attempt++) {
     let response: Response;
     try {
