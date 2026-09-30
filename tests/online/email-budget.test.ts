@@ -1,8 +1,10 @@
-import assert from 'node:assert/strict';
-import { test } from 'node:test';
-import { MongoClient } from 'mongodb';
 import { localSync } from '../../scripts/dev/local-sync.ts';
 import { localEnv } from '../../scripts/dev/local-env.ts';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { test } from 'node:test';
+import { testDatabase } from './account-fixture.ts';
 import { createAccountApi } from '../../server/api.ts';
 import {
   DAILY_EMAIL_LIMIT,
@@ -12,30 +14,14 @@ import {
 import { EmailDeliveryError } from '../../server/email.ts';
 
 await test('email reservations are atomic and failed sends remain charged', async (t) => {
-  const name = `quizmon_budget_${crypto.randomUUID().replaceAll('-', '')}`;
-  const mongoUrl = `mongodb://127.0.0.1:27018/${name}?directConnection=true`;
-  const mongo = await new MongoClient(mongoUrl).connect();
-  const db = mongo.db();
-  t.after(async () => {
-    await db.dropDatabase();
-    await mongo.close();
-  });
+  const database = await testDatabase();
+  const { pool, connectionString } = database;
+  t.after(database.close);
+  const db = drizzle(pool);
   await reserveEmail(db);
-  const budget = db.collection<{
-    _id: number;
-    day: string;
-    dayCount: number;
-    cycle: string;
-    cycleCount: number;
-  }>('mail_budget');
-  await budget.updateOne(
-    { _id: 1 },
-    {
-      $set: {
-        dayCount: DAILY_EMAIL_LIMIT - 1,
-        cycleCount: DAILY_EMAIL_LIMIT - 1,
-      },
-    },
+  await pool.query(
+    'UPDATE mail_budget SET day_count=$1, cycle_count=$1 WHERE id=1',
+    [DAILY_EMAIL_LIMIT - 1],
   );
   const results = await Promise.allSettled(
     Array.from({ length: 30 }, () => reserveEmail(db)),
@@ -49,36 +35,37 @@ await test('email reservations are atomic and failed sends remain charged', asyn
       assert.ok(
         result.reason instanceof EmailDeliveryError && result.reason.limited,
       );
-  const counts = async () => {
-    const row = await budget.findOne({ _id: 1 });
-    return { dayCount: row?.dayCount, cycleCount: row?.cycleCount };
-  };
+  const counts = async () =>
+    (
+      await pool.query<{ day_count: number; cycle_count: number }>(
+        'SELECT day_count, cycle_count FROM mail_budget WHERE id=1',
+      )
+    ).rows[0];
   assert.deepEqual(await counts(), {
-    dayCount: DAILY_EMAIL_LIMIT,
-    cycleCount: DAILY_EMAIL_LIMIT,
+    day_count: DAILY_EMAIL_LIMIT,
+    cycle_count: DAILY_EMAIL_LIMIT,
   });
-  await budget.updateOne(
-    { _id: 1 },
-    { $set: { day: '2000-01-01', cycleCount: CYCLE_EMAIL_LIMIT - 1 } },
+  await pool.query(
+    "UPDATE mail_budget SET day='2000-01-01', cycle_count=$1 WHERE id=1",
+    [CYCLE_EMAIL_LIMIT - 1],
   );
   await reserveEmail(db);
   await assert.rejects(reserveEmail(db), EmailDeliveryError);
   assert.deepEqual(await counts(), {
-    dayCount: 1,
-    cycleCount: CYCLE_EMAIL_LIMIT,
+    day_count: 1,
+    cycle_count: CYCLE_EMAIL_LIMIT,
   });
-  await budget.updateOne(
-    { _id: 1 },
-    { $set: { day: '2000-01-01', cycle: '2000-01' } },
+  await pool.query(
+    "UPDATE mail_budget SET day='2000-01-01', cycle='2000-01' WHERE id=1",
   );
   await reserveEmail(db);
-  assert.deepEqual(await counts(), { dayCount: 1, cycleCount: 1 });
+  assert.deepEqual(await counts(), { day_count: 1, cycle_count: 1 });
 
   let sends = 0;
   const origin = 'http://localhost:4188';
   const app = createAccountApi({
     sync: localSync,
-    mongoUrl,
+    connectionString,
     origin,
     secret: localEnv.BETTER_AUTH_SECRET!,
     mail: {
@@ -94,17 +81,16 @@ await test('email reservations are atomic and failed sends remain charged', asyn
       method: 'POST',
       headers: { Origin: origin, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: `quota-${crypto.randomUUID()}@example.test`,
+        email: `quota-${randomUUID()}@example.test`,
         type: 'sign-in',
       }),
     });
   assert.equal((await send()).status, 503);
   assert.equal(sends, 1);
-  assert.deepEqual(await counts(), { dayCount: 2, cycleCount: 2 });
-  await budget.updateOne(
-    { _id: 1 },
-    { $set: { cycleCount: CYCLE_EMAIL_LIMIT } },
-  );
+  assert.deepEqual(await counts(), { day_count: 2, cycle_count: 2 });
+  await pool.query('UPDATE mail_budget SET cycle_count=$1 WHERE id=1', [
+    CYCLE_EMAIL_LIMIT,
+  ]);
   assert.equal((await send()).status, 429);
   assert.equal(sends, 1);
 });

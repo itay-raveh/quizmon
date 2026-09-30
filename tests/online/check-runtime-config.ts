@@ -18,7 +18,6 @@ import {
   roundSchema,
 } from '../../src/lib/storage/rxdb-schema.ts';
 import { startSyncServer } from '../../server/rxdb-sync.ts';
-import { ensureAppIndexes } from '../../server/app-indexes.ts';
 import { completion } from './progress-fixtures.ts';
 import {
   accountRequest,
@@ -26,11 +25,12 @@ import {
   json,
   signIn,
   startAccountWorker,
+  testDatabase,
 } from './account-fixture.ts';
 
 const mongoName = `quizmon_runtime_${crypto.randomUUID().replaceAll('-', '')}`;
 const mongoUrl = `mongodb://127.0.0.1:27018/${mongoName}?directConnection=true`;
-const appMongoUrl = `mongodb://127.0.0.1:27018/${mongoName}_app?directConnection=true`;
+const postgres = await testDatabase();
 const mongo = new MongoClient(mongoUrl);
 const port = await freePort();
 const endpoint = `http://127.0.0.1:${port}`;
@@ -74,7 +74,6 @@ const jwks = createServer((request, response) => {
 
 try {
   await mongo.connect();
-  await ensureAppIndexes(mongo.db(`${mongoName}_app`));
   const seeded = await openPlayerDatabase(
     mongoName,
     getRxStorageMongoDB({ connection: mongoUrl }),
@@ -87,7 +86,7 @@ try {
   });
   await seeded.close();
   worker = await startAccountWorker({
-    mongoUrl: appMongoUrl,
+    connectionString: postgres.connectionString,
     origin,
     sync: { endpoint, audience: 'quizmon-runtime' },
     prebuiltWorkerDir: process.env.QUIZMON_PREBUILT_WORKER,
@@ -402,10 +401,14 @@ try {
     0,
   );
   assert.equal(
-    await mongo
-      .db(`${mongoName}_app`)
-      .collection('friend')
-      .countDocuments({ $or: [{ fromId: a.id }, { toId: a.id }] }),
+    Number(
+      (
+        await postgres.pool.query<{ count: string }>(
+          'SELECT count(*) FROM friend WHERE from_id = $1 OR to_id = $1',
+          [a.id],
+        )
+      ).rows[0]!.count,
+    ),
     0,
   );
   console.log(
@@ -419,6 +422,7 @@ try {
   await sync?.server.close();
   await sync?.db.close();
   await worker?.close();
+  await postgres.close();
   jwks.close();
   await mongo.connect();
   await mongo.db(`${mongoName}-v0`).dropDatabase();

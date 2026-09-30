@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "quizmon.releaseName" . }}
+  labels:
+    {{- include "quizmon.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migration
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: {{ .Values.release.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.release.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "quizmon.labels" . | nindent 8 }}
+        app.kubernetes.io/component: migration
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrate
+          image: {{ include "quizmon.image" . | quote }}
+          args: [/migration/migration-connection.json]
+          securityContext:
+            {{- include "quizmon.containerSecurity" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.release.resources | nindent 12 }}
+          volumeMounts:
+            - { name: migration, mountPath: /migration, readOnly: true }
+      volumes:
+        - name: migration
+          secret:
+            secretName: {{ .Values.inputs.migrationConnection.name | quote }}
+            defaultMode: 0440
+            items:
+              - key: {{ .Values.inputs.migrationConnection.key | quote }}
+                path: migration-connection.json

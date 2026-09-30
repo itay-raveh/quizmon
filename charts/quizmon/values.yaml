@@ -2,6 +2,20 @@ releaseImage:
   repository: ''
   digest: ''
 runtimeConfig: {}
+inputs:
+  migrationConnection:
+    name: ''
+    key: migration-connection.json
+    revision: ''
+release:
+  activeDeadlineSeconds: 300
+  backoffLimit: 0
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
 sync:
   enabled: false
   mongoSecret:

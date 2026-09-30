@@ -6,7 +6,8 @@ import type {
 } from '../src/domain/social/leaderboards.ts';
 import type { SocialPlayer } from '../src/domain/social/friends.ts';
 import type { TrainerProfile } from '../src/domain/player/trainer-profile.ts';
-import { friendCollection } from './friends.ts';
+import { and, eq, or } from 'drizzle-orm';
+import { friend } from './schema.ts';
 
 type ReadContext = Context<AccountEnv>;
 
@@ -92,12 +93,16 @@ export async function readBoard(
   const viewerId = context.get('accountId');
   let visible: string[] | null = null;
   if (scope === 'friends') {
-    const rows = await friendCollection(context.get('db'))
-      .find({
-        status: 'accepted',
-        $or: [{ fromId: viewerId }, { toId: viewerId }],
-      })
-      .toArray();
+    const rows = await context
+      .get('db')
+      .select({ fromId: friend.fromId, toId: friend.toId })
+      .from(friend)
+      .where(
+        and(
+          eq(friend.status, 'accepted'),
+          or(eq(friend.fromId, viewerId), eq(friend.toId, viewerId)),
+        ),
+      );
     visible = [
       viewerId,
       ...rows.map((row) => (row.fromId === viewerId ? row.toId : row.fromId)),

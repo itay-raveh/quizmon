@@ -1,14 +1,15 @@
 import { accountRuntime } from './account-config.ts';
 import { exportAccount } from './account-export.ts';
 import { betterAuth } from 'better-auth';
-import { mongodbAdapter } from 'better-auth/adapters/mongodb';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
+import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Hono, type Context } from 'hono';
 import * as Sentry from '@sentry/cloudflare';
 import { bodyLimit } from 'hono/body-limit';
 import { HTTPException } from 'hono/http-exception';
 import { matchedRoutes } from 'hono/route';
-import { MongoClient, type Db } from 'mongodb';
+import { Client } from 'pg';
 import { isRecord } from '../src/lib/validation.ts';
 import type { SyncConnection } from '../src/domain/sync/connection.ts';
 import { authPlugins } from './auth-options.ts';
@@ -23,23 +24,24 @@ import {
   codeLifetimeSeconds,
   type AccountMail,
 } from './email.ts';
+import * as schema from './schema.ts';
 
 const testMailbox = new Map<string, { code: string; createdAt: number }>();
 
 export interface AccountServices {
   sync: SyncConnection;
-  mongoUrl: string;
+  connectionString: string;
   secret: string;
   origin: string;
   mail: AccountMail;
 }
 
-const createAuth = (db: Db, client: MongoClient, services: AccountServices) => {
+const createAuth = (db: NodePgDatabase, services: AccountServices) => {
   let deliveryError: EmailDeliveryError | undefined;
   const auth = betterAuth({
     baseURL: services.origin,
     secret: services.secret,
-    database: mongodbAdapter(db, { client }),
+    database: drizzleAdapter(db, { provider: 'pg', schema, transaction: true }),
     advanced: { database: { generateId: () => crypto.randomUUID() } },
     trustedOrigins: [services.origin],
     telemetry: { enabled: false },
@@ -65,11 +67,6 @@ const createAuth = (db: Db, client: MongoClient, services: AccountServices) => {
             throw new APIError('SERVICE_UNAVAILABLE', {
               message: 'Account progress could not be deleted. Try again.',
             });
-        },
-        afterDelete: async (user) => {
-          await db.collection('friend').deleteMany({
-            $or: [{ fromId: user.id }, { toId: user.id }],
-          });
         },
       },
     },
@@ -128,7 +125,7 @@ const createAuth = (db: Db, client: MongoClient, services: AccountServices) => {
 
 export interface AccountEnv {
   Variables: {
-    db: Db;
+    db: NodePgDatabase;
     auth: ReturnType<typeof createAuth>;
     accountId: string;
     origin: string;
@@ -183,20 +180,17 @@ export function createAccountApi(services: AccountServices) {
       )
     )
       return context.notFound();
-    const client = new MongoClient(services.mongoUrl, {
-      maxPoolSize: 3,
-      serverSelectionTimeoutMS: 5_000,
-    });
+    const client = new Client({ connectionString: services.connectionString });
     await client.connect();
     try {
-      const db = client.db();
+      const db = drizzle(client);
       context.set('db', db);
-      context.set('auth', createAuth(db, client, services));
+      context.set('auth', createAuth(db, services));
       context.set('origin', services.origin);
       context.set('sync', sync);
       await next();
     } finally {
-      await client.close();
+      await client.end();
     }
   });
   app.all('/api/auth/*', (context) =>
