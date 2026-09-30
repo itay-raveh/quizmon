@@ -19,7 +19,7 @@ const config = {
   apiRateLimitNamespace: '2012',
 };
 
-await test('runtime renderer preserves game bindings and limits without local database or mailbox defaults', async () => {
+await test('runtime renderer binds the provisioned Hyperdrive without local defaults', async () => {
   const rawConfig = JSON.parse(
     await readFile(
       new URL('../../deploy/wrangler.json', import.meta.url),
@@ -40,7 +40,9 @@ await test('runtime renderer preserves game bindings and limits without local da
       rendered[field as keyof typeof rendered],
       rawConfig[field],
     );
-  assert.equal('hyperdrive' in rendered, false);
+  assert.deepEqual(rendered.hyperdrive, [
+    { binding: 'ACCOUNT_DB', id: config.hyperdriveId },
+  ]);
   assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
   assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
   assert.equal(rendered.vars.SYNC_AUDIENCE, input.sync.audience);
@@ -79,6 +81,8 @@ await test('unsupported, incomplete, or local production inputs are rejected bef
       origin: `https://user:${crypto.randomUUID()}@game.example.test`,
     },
     { ...config, apiRateLimitNamespace: config.authRateLimitNamespace },
+    { ...config, hyperdriveId: undefined },
+    { ...config, hyperdriveId: '0'.repeat(32) },
     { ...config, sync: { ...config.sync, endpoint: 'http://127.0.0.1:8089' } },
     { ...config, sync: { ...config.sync, audience: '' } },
   ])

@@ -21,7 +21,7 @@ npm run dev
 
 Optional accounts sync completed progress and add friends and Daily leaderboards. Local development requires Docker. The [Helm chart](charts/quizmon/) packages the online services; `deploy/` contains their release tooling.
 
-The local account service uses PostgreSQL, and RxServer syncs account saves through MongoDB. `npm run dev` starts both databases. Completed rounds are archived once, and account progress and Pokédex entries are derived from those rounds. Unfinished rounds stay in the browser.
+The account Worker uses PostgreSQL through Hyperdrive, and RxServer syncs account saves through MongoDB. `npm run dev` starts both databases. Completed rounds are archived once, and account progress and Pokédex entries are derived from those rounds. Unfinished rounds stay in the browser.
 
 ## Sentry
 

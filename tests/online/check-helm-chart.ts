@@ -10,12 +10,29 @@ const documents = parseAllDocuments(input);
 const manifest = (kind: string) =>
   documents.find((document) => document.get('kind') === kind);
 const deployment = manifest('Deployment');
+const job = manifest('Job');
 const sequence = (document: typeof deployment, path: (string | number)[]) =>
   (document?.getIn(path) as YAMLSeq | undefined)?.toJSON();
 
 assert.deepEqual(
   documents.map((document) => document.get('kind')).sort(),
-  ['Deployment', 'Service'].sort(),
+  ['Deployment', 'Job', 'Service'].sort(),
+);
+assert.deepEqual(
+  sequence(job, ['spec', 'template', 'spec', 'containers', 0, 'args']),
+  ['/migration/migration-connection.json'],
+);
+assert.equal(
+  job?.getIn([
+    'spec',
+    'template',
+    'spec',
+    'volumes',
+    0,
+    'secret',
+    'secretName',
+  ]),
+  'migration-test',
 );
 assert.equal(
   deployment?.getIn([
@@ -101,4 +118,4 @@ assert.deepEqual(
   { name: 'mongo-test', key: 'url' },
 );
 
-console.log('RxServer wiring passed.');
+console.log('Migration and RxServer wiring passed.');

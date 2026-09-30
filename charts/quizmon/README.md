@@ -1,10 +1,11 @@
 # Quizmon Helm chart
 
-Runs RxServer. The Worker deploys through GitHub Actions.
+Migrates the account database and runs RxServer. The Worker deploys through GitHub Actions.
 
 ## Requirements
 
 - A Quizmon release image, pinned by digest.
+- A PostgreSQL migration connection Secret for the account database.
 - For RxServer: a MongoDB connection Secret, a public account origin that serves Better Auth JWKS, and Reloader watching the sync Deployment's MongoDB Secrets.
 
 Infrastructure supplies the databases, certificates, networking, Secrets, and Flux resources.
@@ -15,8 +16,9 @@ Set these in your environment's Helm values. See [values.yaml](values.yaml) for 
 
 | Value | Usage |
 | --- | --- |
-| `releaseImage.repository`, `releaseImage.digest` | RxServer image repository and `sha256:` digest. |
+| `releaseImage.repository`, `releaseImage.digest` | Release image repository and `sha256:` digest. |
 | `runtimeConfig` | [Public application configuration](../../deploy/release-config.ts), used by RxServer. |
+| `inputs.migrationConnection` | Secret reference for the PostgreSQL migration connection. |
 | `sync.enabled` | Run RxServer. Default: `false`. |
 | `sync.mongoSecret` | Secret reference for the MongoDB URI. Required when sync is enabled. |
 | `sync.mongoTlsSecret` | Secret reference for the MongoDB client certificate and CA. |

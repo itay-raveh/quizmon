@@ -1,7 +1,7 @@
 {
   "type": "object",
   "additionalProperties": false,
-  "required": ["releaseImage", "runtimeConfig", "sync"],
+  "required": ["releaseImage", "runtimeConfig", "inputs", "release", "sync"],
   "properties": {
     "releaseImage": {
       "type": "object",
@@ -12,7 +12,10 @@
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9./_-]*$"
         },
-        "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
       }
     },
     "runtimeConfig": {
@@ -33,12 +36,18 @@
               "type": "string",
               "pattern": "^https://[^/@?#:]+(?:[.][^/@?#:]+)+$"
             },
-            "audience": { "type": "string", "minLength": 1 }
+            "audience": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "required": ["endpoint", "audience"],
           "additionalProperties": false
         },
-        "hyperdriveId": { "type": "string", "pattern": "^[a-fA-F0-9]{32}$" },
+        "hyperdriveId": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{32}$"
+        },
         "mailFrom": {
           "type": "string",
           "format": "email",
@@ -48,30 +57,50 @@
           "type": "string",
           "pattern": "^[1-9]\\d*$"
         },
-        "apiRateLimitNamespace": { "type": "string", "pattern": "^[1-9]\\d*$" }
+        "apiRateLimitNamespace": {
+          "type": "string",
+          "pattern": "^[1-9]\\d*$"
+        }
       },
       "required": [
         "workerName",
         "origin",
         "sync",
+        "hyperdriveId",
         "mailFrom",
         "authRateLimitNamespace",
         "apiRateLimitNamespace"
       ],
       "additionalProperties": false
     },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["migrationConnection"],
+      "properties": {
+        "migrationConnection": {
+          "$ref": "#/definitions/secretKey"
+        }
+      }
+    },
     "sync": {
       "type": "object",
       "additionalProperties": false,
       "required": ["enabled", "mongoSecret", "mongoTlsSecret", "resources"],
       "properties": {
-        "enabled": { "type": "boolean" },
-        "mongoSecret": { "$ref": "#/definitions/optionalSecretKey" },
+        "enabled": {
+          "type": "boolean"
+        },
+        "mongoSecret": {
+          "$ref": "#/definitions/optionalSecretKey"
+        },
         "mongoTlsSecret": {
           "type": "object",
           "additionalProperties": false,
           "required": ["name"],
-          "properties": { "name": { "type": "string" } }
+          "properties": {
+            "name": { "type": "string" }
+          }
         },
         "resources": {
           "type": "object",
@@ -81,18 +110,36 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "cpu": { "type": "string", "minLength": 1 },
-                "memory": { "type": "string", "minLength": 1 },
-                "ephemeral-storage": { "type": "string", "minLength": 1 }
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
               }
             },
             "limits": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "cpu": { "type": "string", "minLength": 1 },
-                "memory": { "type": "string", "minLength": 1 },
-                "ephemeral-storage": { "type": "string", "minLength": 1 }
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
               }
             }
           }
@@ -100,33 +147,116 @@
       },
       "allOf": [
         {
-          "if": { "properties": { "enabled": { "const": true } } },
+          "if": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          },
           "then": {
             "properties": {
-              "mongoSecret": { "$ref": "#/definitions/mongoSecretKey" }
+              "mongoSecret": {
+                "$ref": "#/definitions/mongoSecretKey"
+              }
             }
           }
         }
       ]
     },
-    "inputs": {
+    "release": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["migrationConnection"],
+      "required": ["activeDeadlineSeconds", "backoffLimit", "resources"],
       "properties": {
-        "migrationConnection": { "$ref": "#/definitions/secretKey" }
+        "activeDeadlineSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "backoffLimit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "requests": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "memory": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ephemeral-storage": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
   "$schema": "https://json-schema.org/draft-07/schema#",
   "definitions": {
+    "secretKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "key", "revision"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 253,
+          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "optionalSecretKey": {
       "type": "object",
       "additionalProperties": false,
       "required": ["name", "key"],
       "properties": {
-        "name": { "type": "string" },
-        "key": { "type": "string" }
+        "name": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        }
       }
     },
     "mongoSecretKey": {
@@ -139,21 +269,10 @@
           "maxLength": 253,
           "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
         },
-        "key": { "type": "string", "pattern": "^[a-zA-Z0-9._-]+$" }
-      }
-    },
-    "secretKey": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["name", "key", "revision"],
-      "properties": {
-        "name": {
+        "key": {
           "type": "string",
-          "maxLength": 253,
-          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$"
-        },
-        "key": { "type": "string", "pattern": "^[a-zA-Z0-9._-]+$" },
-        "revision": { "type": "string", "minLength": 1 }
+          "pattern": "^[a-zA-Z0-9._-]+$"
+        }
       }
     }
   }
