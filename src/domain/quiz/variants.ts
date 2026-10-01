@@ -50,7 +50,7 @@ export const getQuestionVariant = <Type extends keyof FamilyRules>(
  * Resolve base, family, then selected-entry rendering. Saved questions without
  * a level retain their family visibility when no snapshot is available.
  */
-export const resolveQuestionRendering = (
+const resolveQuestionRendering = (
   type: QuestionData['questionType'],
   level?: Difficulty,
 ): QuestionRendering =>

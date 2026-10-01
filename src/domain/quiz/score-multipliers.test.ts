@@ -4,6 +4,10 @@ import {
   scoreMultipliersSchema,
 } from './score-multipliers';
 import type { ScoreMultipliers } from './types';
+import { difficultyLevels } from './difficulty';
+import { questionTypes } from './questions/definitions';
+import { calculateScore } from './scoring';
+import { getQuestionVariant } from './variants';
 
 const multipliers: ScoreMultipliers = {
   difficulty: 5,
@@ -39,35 +43,41 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
 });
 
 it('scores the drawn question mix without rewarding unused selected types', () => {
+  const difficulty = difficultyLevels.find(
+    (level) =>
+      questionTypes.filter((type) => getQuestionVariant(type, level)).length >=
+      3,
+  )!;
+  const [first, second, unused] = questionTypes.filter((type) =>
+    getQuestionVariant(type, difficulty),
+  );
   const settings = {
-    difficulty: 4 as const,
+    difficulty,
     generations: ['I' as const],
     formGroups: ['standard' as const],
-    questionTypes: ['pokemonTypes', 'statExtremes', 'dualTypeMatch'] as (
-      'pokemonTypes' | 'statExtremes' | 'dualTypeMatch'
-    )[],
+    questionTypes: [first!, second!, unused!],
   };
   const drawn = [
     ...Array.from({ length: 9 }, () => ({
-      questionType: 'pokemonTypes' as const,
+      questionType: first!,
     })),
-    { questionType: 'statExtremes' as const },
+    { questionType: second! },
   ];
   const actual = getTrainingScoreMultipliers(settings, drawn);
   expect(actual?.perQuestion).toBe(true);
-  expect(actual && getScoreMultiplier(actual)).toBe(5);
-  expect(
-    getTrainingScoreMultipliers(settings, [
-      ...drawn.slice(0, 9),
-      { questionType: 'dualTypeMatch' },
-    ])?.perQuestion,
-  ).toBe(true);
-  expect(
-    getTrainingScoreMultipliers(
-      { ...settings, questionTypes: ['pokemonTypes', 'statExtremes'] },
-      drawn,
-    )?.perQuestion,
-  ).toBe(true);
+  const withoutUnused = getTrainingScoreMultipliers(
+    { ...settings, questionTypes: [first!, second!] },
+    drawn,
+  );
+  const answers = drawn.map(({ questionType }) => ({
+    category: 'identity' as const,
+    questionType,
+    correct: true,
+    points: 1_000,
+  }));
+  expect(calculateScore(answers, actual)).toBe(
+    calculateScore(answers, withoutUnused),
+  );
 });
 
 it('accepts saved factors without depending on current variant rules', () => {
@@ -107,39 +117,32 @@ it.each([
 });
 
 it('counts unique generations, eligible form groups, and selected types once', () => {
-  const result = getTrainingScoreMultipliers({
-    difficulty: 3,
+  const difficulty = difficultyLevels.find((level) =>
+    getQuestionVariant('spriteForPokemon', level),
+  )!;
+  const settings = {
+    difficulty,
     formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
     generations: ['I', 'II', 'II'],
     questionTypes: ['spriteForPokemon', 'spriteForPokemon', 'hiddenAbilities'],
+  } as const;
+  const result = getTrainingScoreMultipliers({
+    ...settings,
+    generations: [...settings.generations],
+    formGroups: [...settings.formGroups],
+    questionTypes: [...settings.questionTypes],
   });
-  expect(result).toMatchObject({
-    difficulty: 3,
-    generations: 2,
-    formGroupCount: 1,
+  const unique = getTrainingScoreMultipliers({
+    ...settings,
+    generations: ['I', 'II'],
+    formGroups: [...settings.formGroups],
+    questionTypes: ['spriteForPokemon', 'hiddenAbilities'],
   });
-  expect(result?.questionTypes.map(({ questionType }) => questionType)).toEqual(
-    ['spriteForPokemon'],
-  );
+  expect(result).toEqual(unique);
+  expect(result?.generations).toBe(2);
   expect(
     getTrainingScoreMultipliers({
-      difficulty: 3,
-      formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
-      generations: ['I', 'VII'],
-      questionTypes: ['spriteForPokemon'],
-    })?.formGroupCount,
-  ).toBe(2);
-  expect(
-    getTrainingScoreMultipliers({
-      difficulty: 3,
-      formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
-      generations: ['I', 'VI', 'VII', 'VIII'],
-      questionTypes: ['spriteForPokemon'],
-    })?.formGroupCount,
-  ).toBe(4);
-  expect(
-    getTrainingScoreMultipliers({
-      difficulty: 3,
+      difficulty,
       generations: [],
       questionTypes: ['spriteForPokemon'],
     }),

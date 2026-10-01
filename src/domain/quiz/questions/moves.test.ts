@@ -1,6 +1,8 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { expect, test } from 'vitest';
 import type { QuestionContext } from './context.ts';
+import { difficultyLevels } from '../difficulty.ts';
+import { getQuestionVariant } from '../variants.ts';
 import { buildQuestionType } from './registry.ts';
 
 const move = (name: string, label: string, type: string) => ({
@@ -20,7 +22,17 @@ const move = (name: string, label: string, type: string) => ({
   ],
 });
 
-test('Move types excludes names that reveal their type from Level 4', () => {
+test('Move types excludes names that reveal their type when the hint filter is enabled', () => {
+  const relaxed = difficultyLevels.find(
+    (level) =>
+      getQuestionVariant('moveTypes', level)?.variant.excludeTypeHintNames ===
+      false,
+  )!;
+  const strict = difficultyLevels.find(
+    (level) =>
+      getQuestionVariant('moveTypes', level)?.variant.excludeTypeHintNames ===
+      true,
+  )!;
   const catalog = {
     pokemon: {},
     typeRelations: { fire: {}, water: {}, normal: {}, grass: {} },
@@ -44,10 +56,10 @@ test('Move types excludes names that reveal their type from Level 4', () => {
     used: new Set(),
   });
 
-  expect(buildQuestionType(context(3), 'moveTypes')?.subject.name).toBe(
+  expect(buildQuestionType(context(relaxed), 'moveTypes')?.subject.name).toBe(
     'fire-punch',
   );
-  expect(buildQuestionType(context(4), 'moveTypes')?.subject.name).toBe(
+  expect(buildQuestionType(context(strict), 'moveTypes')?.subject.name).toBe(
     'pound',
   );
 });

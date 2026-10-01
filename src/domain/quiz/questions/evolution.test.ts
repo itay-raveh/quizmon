@@ -3,6 +3,10 @@ import evolutionData from '../../pokemon/data/topics-evolutions-0.json' with { t
 import gameData from '../../pokemon/data/topics-games-0.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
+import { difficultyLevels, type Difficulty } from '../difficulty.ts';
+import { getQuestionVariant } from '../variants.ts';
+import { responsePresets } from '../question-rules/shared.ts';
+import { buildEvolution } from './evolution.ts';
 import { buildQuestionType } from './registry.ts';
 
 const catalog = {
@@ -17,7 +21,7 @@ const pool = Object.entries(catalog.pokemon).map(([name, pokemon]) => ({
   pokemon,
 }));
 const build = (
-  difficulty: 3 | 4 | 5,
+  difficulty: Difficulty,
   seed: string,
   selected = pool,
   source = catalog,
@@ -33,73 +37,76 @@ const build = (
     'evolutionConditions',
   );
 
-it('uses one condition at levels 3 and 4 and reserves multi-select and exact-level quizzes for level 5', () => {
-  const levelFiveInteractions = new Set<string>();
-  let mixedLevelQuestions = 0;
-  for (const level of [3, 4, 5] as const)
-    for (let seed = 0; seed < 10; seed++) {
-      const question = build(level, `${level}:${seed}`);
-      expect(question).toBeDefined();
-      expect(question!.options).toHaveLength(4);
-      expect(new Set(question!.options).size).toBe(4);
-      expect(
-        question!.answer.correctOptions.every((option) =>
-          question!.options.includes(option),
-        ),
-      ).toBe(true);
-      if (level === 5) {
-        levelFiveInteractions.add(question!.answer.interaction);
-        if (question!.answer.interaction === 'multi-select')
-          expect(question!.answer.correctOptions.length).toBeGreaterThan(1);
-        else {
-          expect(question!.answer.correctOptions).toHaveLength(1);
-          expect(
-            question!.options.every((option) => option.startsWith('Level ')),
-          ).toBe(true);
-        }
-      } else {
-        expect(question!.answer.interaction).toBe('single-choice');
-        expect(question!.answer.correctOptions).toHaveLength(1);
-        expect(question!.prompt).not.toMatchObject({
-          text: 'What is the minimum level for this evolution?',
-        });
-        if (question!.answer.correctOptions[0]?.startsWith('Reach level ')) {
-          mixedLevelQuestions++;
-          expect(
-            question!.options.filter((option) =>
-              option.startsWith('Reach level '),
-            ),
-          ).toHaveLength(1);
-        }
-      }
-    }
-  expect(levelFiveInteractions).toEqual(
-    new Set(['multi-select', 'single-choice']),
-  );
-  expect(mixedLevelQuestions).toBeGreaterThan(0);
-});
-
-it('offers level-up as one mixed condition at level 3', () => {
+it('offers level-up as one mixed condition when mixed conditions are enabled', () => {
+  const requiredLevel = evolutionData.values
+    .find((entry) => entry.before === 'turtwig' && entry.after === 'grotle')!
+    .conditions.find((condition) => condition.startsWith('at level '))!
+    .slice(9);
+  const difficulty = difficultyLevels.find((level) => {
+    const variant = getQuestionVariant('evolutionConditions', level)?.variant;
+    return (
+      variant?.mixedLevelEvolutionConditions && !variant.exactEvolutionValues
+    );
+  })!;
   const selected = pool.filter(({ name }) =>
     ['turtwig', 'grotle'].includes(name),
   );
-  const question = build(3, 'turtwig', selected);
+  const question = build(difficulty, 'turtwig', selected);
   expect(question?.prompt).toMatchObject({
     kind: 'text',
     text: 'Which of these is a requirement for this evolution?',
   });
-  expect(question?.answer.correctOptions).toEqual(['Reach level 18']);
-  expect(question?.options).toHaveLength(4);
+  expect(question?.answer.correctOptions).toEqual([
+    `Reach level ${requiredLevel}`,
+  ]);
   expect(
     question?.options.filter((option) => option.startsWith('Reach level ')),
-  ).toEqual(['Reach level 18']);
+  ).toEqual([`Reach level ${requiredLevel}`]);
+});
+
+it('asks for the exact evolution level when the rule requests it', () => {
+  const requiredLevel = evolutionData.values
+    .find((entry) => entry.before === 'turtwig' && entry.after === 'grotle')!
+    .conditions.find((condition) => condition.startsWith('at level '))!
+    .slice(9);
+  const difficulty = difficultyLevels.find((level) =>
+    getQuestionVariant('evolutionConditions', level),
+  )!;
+  const selected = pool.filter(({ name }) =>
+    ['turtwig', 'grotle'].includes(name),
+  );
+  const variant = {
+    ...getQuestionVariant('evolutionConditions', difficulty)!.variant,
+    exactLevelQuestionChance: 1,
+    exactEvolutionValues: true,
+    compactEvolutionLabels: true,
+    response: responsePresets.adaptive,
+  };
+  const question = buildEvolution({
+    catalog,
+    difficulty,
+    pool: selected,
+    variant,
+    random: () => 0,
+    used: new Set(),
+  });
+  expect(question?.answer.correctOptions).toEqual([`Level ${requiredLevel}`]);
+  expect(question?.answer.interaction).toBe('single-choice');
+  expect(question?.options.every((option) => /^Level \d+$/.test(option))).toBe(
+    true,
+  );
 });
 
 it('includes trade and held item as independent Rhyperior requirements', () => {
+  const difficulty = difficultyLevels.find(
+    (level) =>
+      (getQuestionVariant('evolutionConditions', level)?.variant
+        .minimumEvolutionConditions ?? 0) > 1,
+  )!;
   const selected = pool.filter(({ name }) =>
     ['rhydon', 'rhyperior'].includes(name),
   );
-  const question = build(5, 'rhyperior', selected);
+  const question = build(difficulty, 'rhyperior', selected);
   expect(question?.answer.correctOptions).toHaveLength(2);
   expect(question?.answer.correctOptions).toEqual(
     expect.arrayContaining(['Trade', 'Hold Protector']),
@@ -107,6 +114,10 @@ it('includes trade and held item as independent Rhyperior requirements', () => {
 });
 
 it('does not call either alternative method mandatory', () => {
+  const difficulty = difficultyLevels.find((level) => {
+    const variant = getQuestionVariant('evolutionConditions', level)?.variant;
+    return variant?.evolutionLocations && !variant.exactEvolutionValues;
+  })!;
   const selected = pool.filter(({ name }) =>
     ['magneton', 'magnezone'].includes(name),
   );
@@ -122,5 +133,7 @@ it('does not call either alternative method mandatory', () => {
       ),
     },
   } as PokemonCatalog;
-  expect(build(4, 'alternate-methods', selected, source)).toBeUndefined();
+  expect(
+    build(difficulty, 'alternate-methods', selected, source),
+  ).toBeUndefined();
 });

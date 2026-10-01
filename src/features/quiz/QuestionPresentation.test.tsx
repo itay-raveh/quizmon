@@ -1,7 +1,4 @@
-import {
-  baseQuestionRendering,
-  resolveQuestionRendering,
-} from '@/domain/quiz/variants';
+import { baseQuestionRendering } from '@/domain/quiz/variants';
 import type { QuestionData } from '@/domain/quiz/types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, test } from 'vitest';
@@ -90,7 +87,13 @@ test('reveals a Field notes answer in its choice without a duplicate portrait', 
         question={{
           ...question,
           answer: { interaction: 'search', correctOptions: ['grotle'] },
-          rendering: resolveQuestionRendering('pokedexEntryMatch', 5),
+          rendering: {
+            ...baseQuestionRendering,
+            subject: {
+              ...baseQuestionRendering.subject,
+              sprite: { reveal: 'after-answer', silhouette: false },
+            },
+          },
           searchOptions: [{ name: 'grotle', sprite: '/grotle.png' }],
         }}
         answered

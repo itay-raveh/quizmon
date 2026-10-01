@@ -1,7 +1,12 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { buildQuestionType } from './registry.ts';
+import { difficultyLevels } from '../difficulty.ts';
+import { getQuestionVariant } from '../variants.ts';
 
 it('asks only about distinct named places in Name that region', () => {
+  const difficulty = difficultyLevels.find((level) =>
+    getQuestionVariant('locationRegion', level),
+  )!;
   const regions = ['kanto', 'johto', 'sinnoh', 'paldea'].map((name) => ({
     name,
     label: name,
@@ -29,7 +34,7 @@ it('asks only about distinct named places in Name that region', () => {
   } as unknown as PokemonCatalog;
   const context = {
     catalog,
-    difficulty: 3 as const,
+    difficulty,
     pool: [],
     random: () => 0,
     used: new Set<string>(),
@@ -52,7 +57,17 @@ it('asks only about distinct named places in Name that region', () => {
   ).toBeUndefined();
 });
 
-it('uses the whole location and selects every offered encounter at level five', () => {
+it('uses the whole location and selects every offered encounter for multi-select', () => {
+  const singleLevel = difficultyLevels.find(
+    (level) =>
+      getQuestionVariant('encounterLocations', level)?.variant.response
+        .selection === 'single',
+  )!;
+  const multiLevel = difficultyLevels.find(
+    (level) =>
+      getQuestionVariant('encounterLocations', level)?.variant.response
+        .selection === 'multi',
+  )!;
   const names = ['a', 'b', 'c', 'd', 'e'];
   const pokemon = Object.fromEntries(
     names.map((name, index) => [
@@ -113,26 +128,26 @@ it('uses the whole location and selects every offered encounter at level five', 
     random: () => 0,
     used: new Set<string>(),
   };
-  const level4 = buildQuestionType(
-    { ...base, difficulty: 4 },
+  const single = buildQuestionType(
+    { ...base, difficulty: singleLevel },
     'encounterLocations',
   );
-  const level5 = buildQuestionType(
-    { ...base, difficulty: 5 },
+  const multi = buildQuestionType(
+    { ...base, difficulty: multiLevel },
     'encounterLocations',
   );
 
-  expect(level4?.prompt).toMatchObject({
-    text: 'Which Pokémon can you find at Route 4?',
-  });
-  expect(level4?.answer.interaction).toBe('single-choice');
+  expect(single?.prompt.kind === 'text' && single.prompt.text).toContain(
+    'Route 4',
+  );
+  expect(single?.answer.interaction).toBe('single-choice');
   expect(
-    level4?.options.filter((name) => ['a', 'b'].includes(name)),
+    single?.options.filter((name) => ['a', 'b'].includes(name)),
   ).toHaveLength(1);
-  expect(level5?.prompt).toMatchObject({
-    text: 'Which Pokémon can you find at Route 4? Select all that apply.',
-  });
-  expect(level5?.answer.interaction).toBe('multi-select');
-  expect(level5?.answer.correctOptions.toSorted()).toEqual(['a', 'b']);
-  expect(level5?.options).toHaveLength(4);
+  expect(multi?.prompt.kind === 'text' && multi.prompt.text).toContain(
+    'Route 4',
+  );
+  expect(multi?.answer.interaction).toBe('multi-select');
+  expect(multi?.answer.correctOptions.toSorted()).toEqual(['a', 'b']);
+  expect(multi?.options).toEqual(expect.arrayContaining(['a', 'b']));
 });

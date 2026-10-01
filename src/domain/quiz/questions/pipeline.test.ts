@@ -12,6 +12,7 @@ import {
 } from '../question-generation.ts';
 import { leagueStages } from '../league.ts';
 import { questionRenderingSchema } from '../rendering.ts';
+import { difficultyLevels } from '../difficulty.ts';
 import { getQuestionRendering, getQuestionVariant } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
 import { defaultGameSettings } from '../../settings/game-settings.ts';
@@ -54,12 +55,17 @@ const pool = Object.entries(catalog.pokemon).map(([name, pokemon]) => ({
   pokemon,
 }));
 it('samples Training families independently on each question', () => {
+  const families = [
+    'pokemonFromHistoricalSprite',
+    'spriteForPokemon',
+  ] as QuestionType[];
+  const difficulty = difficultyLevels.find((level) =>
+    families.every((type) => getQuestionVariant(type, level)),
+  )!;
   const settings = {
     ...defaultGameSettings,
-    questionTypes: [
-      'pokemonFromHistoricalSprite',
-      'spriteForPokemon',
-    ] as QuestionType[],
+    difficulty,
+    questionTypes: families,
   };
   const rounds = ['random-mix-a', 'random-mix-b', 'random-mix-c'].map((seed) =>
     buildQuestions(catalog, settings, createSeededRandom(seed)),
@@ -107,7 +113,7 @@ it('builds every configured family with a renderable answer and saved view', () 
   for (const type of Object.keys(questionRules) as (
     QuestionType | 'champion'
   )[]) {
-    const levels = ([1, 2, 3, 4, 5] as const).filter((level) =>
+    const levels = difficultyLevels.filter((level) =>
       getQuestionVariant(type, level),
     );
     for (const difficulty of levels) {
@@ -165,8 +171,11 @@ it('does not generate a question without a level', () => {
 });
 
 it('uses saved presentation for an older question without a level', () => {
+  const difficulty = difficultyLevels.find((level) =>
+    getQuestionVariant('pokemonFromHistoricalSprite', level),
+  )!;
   const question = buildQuestionType(
-    { catalog, pool, difficulty: 1, random: () => 0, used: new Set() },
+    { catalog, pool, difficulty, random: () => 0, used: new Set() },
     'pokemonFromHistoricalSprite',
   )!;
   const saved = savedQuestionSchema.parse({
@@ -178,13 +187,16 @@ it('uses saved presentation for an older question without a level', () => {
 });
 
 it('rejects image-only choices when a catalog sprite is missing', () => {
+  const difficulty = difficultyLevels.find((level) =>
+    getQuestionVariant('spriteForPokemon', level),
+  )!;
   const question = buildQuestionType(
     {
       catalog,
       pool,
       random: createSeededRandom('sprite-only-choice'),
       used: new Set(),
-      difficulty: 1,
+      difficulty,
     },
     'spriteForPokemon',
   )!;
@@ -246,7 +258,10 @@ it('uses the configured source for choice sprites', () => {
     ]),
   ].filter(Boolean);
   const backIndex = sprites.indexOf(back);
-  const rules = getQuestionVariant('spriteForPokemon', 1)!.variant;
+  const spriteLevel = difficultyLevels.find((level) =>
+    getQuestionVariant('spriteForPokemon', level),
+  )!;
+  const rules = getQuestionVariant('spriteForPokemon', spriteLevel)!.variant;
   const allSources = {
     ...rules,
     rendering: {
@@ -290,7 +305,15 @@ it('uses the configured source for choice sprites', () => {
   expect(result.optionVisuals?.[name]?.src).toBe(back);
   expect(result.optionVisuals?.[name]?.src).not.toBe(pokemon.sprite);
 
-  const searchRules = getQuestionVariant('pokedexEntryMatch', 5)!.variant;
+  const searchLevel = difficultyLevels.find(
+    (level) =>
+      getQuestionVariant('pokedexEntryMatch', level)?.variant.response.kind ===
+      'search',
+  )!;
+  const searchRules = getQuestionVariant(
+    'pokedexEntryMatch',
+    searchLevel,
+  )!.variant;
   const searchWithHistoricalSubject = {
     ...searchRules,
     rendering: {

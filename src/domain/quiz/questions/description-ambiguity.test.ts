@@ -1,6 +1,9 @@
 import catalog from '../../pokemon/data/pokemon.json' with { type: 'json' };
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { createSeededRandom } from '../../../lib/random.ts';
+import { difficultyLevels } from '../difficulty.ts';
+import { leagueStages } from '../league.ts';
+import { getQuestionVariant } from '../variants.ts';
 import { buildQuestionType } from './registry.ts';
 import { redactName } from './prompts.ts';
 import {
@@ -28,11 +31,19 @@ it('keeps duplicate catalog clues out of Field Notes and the League finale', () 
   );
   expect(new Set(clues).size).toBe(1);
 
-  for (const [questionType, difficulty] of [
-    ['pokedexEntryMatch', 4],
-    ['pokedexEntryMatch', 5],
-    ['champion', 5],
-  ] as const) {
+  const cases = [
+    ...difficultyLevels
+      .filter((level) => getQuestionVariant('pokedexEntryMatch', level))
+      .map((difficulty) => ({
+        questionType: 'pokedexEntryMatch' as const,
+        difficulty,
+      })),
+    {
+      questionType: 'champion' as const,
+      difficulty: leagueStages.at(-1)!.level,
+    },
+  ];
+  for (const { questionType, difficulty } of cases) {
     const question = buildQuestionType(
       {
         catalog: catalog as unknown as PokemonCatalog,

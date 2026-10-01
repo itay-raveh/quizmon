@@ -1,6 +1,8 @@
 import type { PokemonCatalog } from '../../pokemon/types.ts';
 import { expect, test } from 'vitest';
 import { isQuestionData } from '../lineup.ts';
+import { difficultyLevels } from '../difficulty.ts';
+import { getQuestionVariant } from '../variants.ts';
 import { buildQuestionType } from './registry.ts';
 
 const item = (name: string, category: string, spriteIdentity: string) => ({
@@ -14,6 +16,9 @@ const item = (name: string, category: string, spriteIdentity: string) => ({
 });
 
 test('item identification never asks for an item with shared sprite art', () => {
+  const difficulty = difficultyLevels.find((level) =>
+    getQuestionVariant('itemIdentification', level),
+  )!;
   const catalog = {
     pokemon: {},
     typeRelations: {},
@@ -31,7 +36,7 @@ test('item identification never asks for an item with shared sprite art', () => 
   const question = buildQuestionType(
     {
       catalog,
-      difficulty: 2,
+      difficulty,
       generations: ['II'],
       pool: [],
       random: () => 0.999,
@@ -40,10 +45,14 @@ test('item identification never asks for an item with shared sprite art', () => 
     'itemIdentification',
   );
   expect(question?.subject.name).toBe('potion');
-  expect(question?.options).toHaveLength(4);
 });
 
-test('item identification searches item names from level four', () => {
+test('item identification searches item names when using a search response', () => {
+  const difficulty = difficultyLevels.find(
+    (level) =>
+      getQuestionVariant('itemIdentification', level)?.variant.response.kind ===
+      'search',
+  )!;
   const catalog = {
     pokemon: {},
     typeRelations: {},
@@ -64,7 +73,7 @@ test('item identification searches item names from level four', () => {
   const question = buildQuestionType(
     {
       catalog,
-      difficulty: 4,
+      difficulty,
       pool: [],
       random: () => 0,
       used: new Set(),

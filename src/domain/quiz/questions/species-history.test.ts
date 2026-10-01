@@ -11,8 +11,12 @@ import { targetRepetition } from './repetition.ts';
 import { getSpeciesHistory, speciesQuestion } from './species-history.ts';
 import { makeTopicQuestion } from './topic-support.ts';
 import { getQuestionVariant } from '../variants.ts';
+import { difficultyLevels } from '../difficulty.ts';
 
 it('matches form repetitions across identity formats', () => {
+  const difficulty = difficultyLevels.find((level) =>
+    getQuestionVariant('pokemonFromHistoricalSprite', level),
+  )!;
   const catalog = {
     pokemon: {
       'Mr. Mime: Mega': { speciesName: 'Mr. Mime' },
@@ -25,8 +29,9 @@ it('matches form repetitions across identity formats', () => {
     random: () => 0,
     used: new Set<string>(),
     questionType: 'pokemonFromHistoricalSprite' as const,
-    difficulty: 1 as const,
-    variant: getQuestionVariant('pokemonFromHistoricalSprite', 1)!.variant,
+    difficulty,
+    variant: getQuestionVariant('pokemonFromHistoricalSprite', difficulty)!
+      .variant,
   };
   const topic = makeTopicQuestion(
     context,
