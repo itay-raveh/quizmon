@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type Dispatch } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type Dispatch,
+} from 'react';
 import type {
   CompleteGame,
   GameSession,
@@ -12,7 +18,7 @@ import {
   type ActiveGameSnapshot,
 } from '../../lib/storage/active-game-storage';
 import {
-  readPlayerSave,
+  readPlayerRestoreId,
   reportSaveError,
 } from '../../lib/storage/player-storage';
 import { readDailyResult } from '../../lib/storage/results-storage';
@@ -22,12 +28,12 @@ interface ActiveGameOptions {
   catalog?: PokemonCatalog;
   completeGame: CompleteGame;
   dispatch: Dispatch<GameSessionAction>;
-  elapsedSeconds: number;
   getElapsedMilliseconds: () => number;
   resetTimer: (elapsedMilliseconds?: number) => void;
   session: GameSession;
   startDailyGame: () => void;
   startTimer: () => void;
+  timerRunning: boolean;
 }
 
 type Restoration =
@@ -56,18 +62,18 @@ export const useActiveGame = ({
   catalog,
   completeGame,
   dispatch,
-  elapsedSeconds,
   getElapsedMilliseconds,
   resetTimer,
   session,
   startDailyGame,
   startTimer,
+  timerRunning,
 }: ActiveGameOptions) => {
   const restorationAttempted = useRef(false);
   const [restoring, setRestoring] = useState(true);
   const [playerRestoreId] = useState(() => {
     try {
-      return readPlayerSave().restoreId;
+      return readPlayerRestoreId();
     } catch {
       return null;
     }
@@ -131,7 +137,7 @@ export const useActiveGame = ({
     startTimer,
   ]);
 
-  const persist = useCallback(() => {
+  const persist = useEffectEvent(() => {
     if (!catalog || session.phase !== 'questions') return;
 
     void writeActiveGame({
@@ -147,21 +153,23 @@ export const useActiveGame = ({
       playerRestoreId,
       seed: session.seed,
     }).catch(reportSaveError);
-  }, [catalog, getElapsedMilliseconds, playerRestoreId, session]);
+  });
 
   useEffect(() => {
-    persist();
-  }, [elapsedSeconds, persist]);
-
-  useEffect(() => {
+    if (session.phase !== 'questions') return;
+    const interval = timerRunning
+      ? window.setInterval(() => persist(), 1000)
+      : undefined;
     const saveWhenHidden = () => {
       if (document.visibilityState === 'hidden') persist();
     };
 
     document.addEventListener('visibilitychange', saveWhenHidden);
-    return () =>
+    return () => {
+      if (interval !== undefined) window.clearInterval(interval);
       document.removeEventListener('visibilitychange', saveWhenHidden);
-  }, [persist]);
+    };
+  }, [session.phase, timerRunning]);
 
   return restoring;
 };

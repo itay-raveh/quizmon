@@ -39,15 +39,8 @@ export const App = () => {
   );
   useUpdateSnapshot('session', session);
   const trainer = useTrainerCard();
-  const {
-    elapsedMilliseconds,
-    elapsedSeconds,
-    getElapsedMilliseconds,
-    pause,
-    reset,
-    running,
-    start,
-  } = useStopwatch(settings.timerDisplay === 'milliseconds');
+  const { getElapsedMilliseconds, pause, reset, running, start } =
+    useStopwatch();
 
   const startingGame = useRef(false);
   const startGame = useCallback<StartGame>(
@@ -167,7 +160,6 @@ export const App = () => {
     catalog,
     completeGame,
     dispatch: dispatchSession,
-    elapsedSeconds,
     getElapsedMilliseconds,
     resetTimer: reset,
     session,
@@ -175,6 +167,7 @@ export const App = () => {
       void daily.start();
     },
     startTimer: start,
+    timerRunning: running,
   });
   const promptedDailyLink = useRef<string | null>(null);
   useEffect(() => {
@@ -214,10 +207,10 @@ export const App = () => {
         question={{
           assistance: (count) => dispatchSession({ type: 'assistance', count }),
           answer: answerQuestion,
-          elapsedMilliseconds,
-          elapsedSeconds,
+          getElapsedMilliseconds,
           pauseTimer: pause,
           recordAnswer,
+          timerRunning: running,
         }}
         session={session}
         settingsDialog={settingsDialog}

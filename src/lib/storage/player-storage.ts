@@ -9,6 +9,7 @@ import { getSaveIssue } from './save-health';
 import { openPlayerDatabase, type PlayerDatabase } from './rxdb-database';
 import {
   ensureDeviceState,
+  readDeviceState,
   readGameData,
   writePlayerPreferences,
   type DeviceState,
@@ -115,6 +116,26 @@ export const refreshPlayerData = async () => {
     restoreListeners.forEach((listener) => listener());
 };
 
+const refreshDeviceState = async () => {
+  if (!database || !device) return;
+  const previous = device;
+  const next = await readDeviceState(database);
+  device = next;
+  if (
+    previous.restoreId !== next.restoreId ||
+    Object.keys(previous.dailyAttempts).length !==
+      Object.keys(next.dailyAttempts).length ||
+    Object.entries(next.dailyAttempts).some(
+      ([date, round]) =>
+        previous.dailyAttempts[date]?.roundId !== round.roundId ||
+        previous.dailyAttempts[date]?.answers.length !== round.answers.length,
+    )
+  )
+    emit();
+  if (previous.restoreId !== next.restoreId)
+    restoreListeners.forEach((listener) => listener());
+};
+
 export const initializePlayerStorage = (
   selectedAccount?: string,
 ): Promise<void> => {
@@ -132,7 +153,10 @@ export const initializePlayerStorage = (
     };
     database.players.$.subscribe(changed);
     database.rounds.$.subscribe(changed);
-    database.device.$.subscribe(changed);
+    database.device.$.subscribe(({ documentId }) => {
+      if (documentId === 'state')
+        void refreshDeviceState().catch(reportSaveError);
+    });
   })();
   return initialization;
 };
@@ -143,6 +167,11 @@ export const readPlayerSave = (): PlayerSave => {
     restoreId: device.restoreId,
     data: structuredClone(data),
   };
+};
+
+export const readPlayerRestoreId = (): string | null => {
+  if (!device) throw new Error('The local save is still opening.');
+  return device.restoreId;
 };
 
 export const readPlayerData = (): PlayerData => readPlayerSave().data;

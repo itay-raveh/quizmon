@@ -14,7 +14,7 @@ import {
   currentOwnerId,
   getPlayerDatabase,
   readPlayerData,
-  readPlayerSave,
+  readPlayerRestoreId,
   refreshPlayerData,
 } from './player-storage';
 import { updateDeviceState, writeCompletedRound } from './rxdb-game';
@@ -53,7 +53,7 @@ export const initializeLocalRound = async () => {
 export const readLocalRound = () => structuredClone(active);
 
 export const persistLocalRound = async (round: ActiveGameSnapshot) => {
-  if (round.playerRestoreId !== readPlayerSave().restoreId)
+  if (round.playerRestoreId !== readPlayerRestoreId())
     throw new Error('This round belongs to a replaced save. Reload Quizmon.');
   const db = getPlayerDatabase();
   const [completed, closed, stored] = await Promise.all([
@@ -84,7 +84,6 @@ export const persistLocalRound = async (round: ActiveGameSnapshot) => {
       state.dailyAttempts[mode.date] = round;
     });
   active = structuredClone(round);
-  await refreshPlayerData();
 };
 
 export const removeLocalRound = async () => {

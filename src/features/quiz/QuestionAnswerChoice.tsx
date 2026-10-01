@@ -14,6 +14,7 @@ import { getQuestionView } from '@/domain/quiz/presentation';
 import { isVisible, spriteState } from '@/domain/quiz/rendering';
 import type { QuestionData } from '@/domain/quiz/types';
 import { AnswerEffectiveness } from './AnswerEffectiveness';
+import { memo } from 'react';
 import { answerOptionState } from './answer-option-state';
 import { MoveReveal } from './MoveReveal';
 import { NatureEffect } from './NatureEffect';
@@ -29,18 +30,18 @@ interface QuestionAnswerChoiceProps {
   index: number;
   answered: boolean;
   cluesShown: number;
-  selectedOptions: readonly string[];
+  selected: boolean;
   onSelect: (option: string) => void;
   typeRelations?: PokemonCatalog['typeRelations'];
 }
 
-export const QuestionAnswerChoice = ({
+const QuestionAnswerChoiceInner = ({
   question,
   option,
   index,
   answered,
   cluesShown,
-  selectedOptions,
+  selected,
   onSelect,
   typeRelations,
 }: QuestionAnswerChoiceProps) => {
@@ -85,7 +86,7 @@ export const QuestionAnswerChoice = ({
   const dexNumber =
     question.optionDexNumbers?.[option] ??
     question.optionVisuals?.[option]?.dexNumber;
-  const optionSelected = selectedOptions.includes(option);
+  const optionSelected = selected;
   const optionCorrect = question.answer.correctOptions.includes(option);
   const outcome = answerOptionState({
     answered,
@@ -283,3 +284,5 @@ export const QuestionAnswerChoice = ({
     answerButton
   );
 };
+
+export const QuestionAnswerChoice = memo(QuestionAnswerChoiceInner);

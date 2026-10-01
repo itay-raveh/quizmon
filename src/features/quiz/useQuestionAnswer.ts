@@ -20,7 +20,7 @@ import {
 import { reportSaveError } from '../../lib/storage/player-storage';
 export interface UseQuestionAnswerOptions {
   answerFlow: AnswerFlow;
-  elapsedMilliseconds: number;
+  getElapsedMilliseconds: () => number;
   questionStartedMilliseconds?: number;
   interactionPaused: boolean;
   nextQuestion?: QuestionData;
@@ -66,7 +66,7 @@ const preloadQuestionImages = (question: QuestionData) => {
 };
 export const useQuestionAnswer = ({
   answerFlow,
-  elapsedMilliseconds,
+  getElapsedMilliseconds,
   questionStartedMilliseconds,
   interactionPaused,
   nextQuestion,
@@ -86,7 +86,7 @@ export const useQuestionAnswer = ({
   const answerWrite = useRef<void | Promise<void>>(undefined);
   const answerRemaining = useRef(0);
   const questionStartedAt = useRef(
-    questionStartedMilliseconds ?? elapsedMilliseconds,
+    questionStartedMilliseconds ?? getElapsedMilliseconds(),
   );
   useEffect(() => {
     preloadQuestionImages(question);
@@ -176,11 +176,27 @@ export const useQuestionAnswer = ({
         if (answerWrite.current) await answerWrite.current;
       };
       reveal();
-      answerWrite.current = onAnswerRecorded?.(answer);
-      if (answerWrite.current)
-        void answerWrite.current.catch((error: unknown) =>
-          reportSaveError(error, saveAnswer),
-        );
+      const write = new Promise<void>((resolve, reject) => {
+        let started = false;
+        const run = () => {
+          if (started) return;
+          started = true;
+          window.clearTimeout(fallback);
+          document.removeEventListener('visibilitychange', onHidden);
+          Promise.resolve()
+            .then(() => onAnswerRecorded?.(answer))
+            .then(resolve, reject);
+        };
+        const onHidden = () => {
+          if (document.visibilityState === 'hidden') run();
+        };
+        const fallback = window.setTimeout(run, 100);
+        document.addEventListener('visibilitychange', onHidden);
+        if (document.visibilityState === 'hidden') run();
+        else window.requestAnimationFrame(() => window.setTimeout(run, 0));
+      });
+      answerWrite.current = write;
+      void write.catch((error: unknown) => reportSaveError(error, saveAnswer));
     },
     [
       answerFlow,

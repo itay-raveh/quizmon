@@ -19,7 +19,7 @@ import type { GameMode, QuestionData } from '@/domain/quiz/types';
 import type { TimerDisplay } from '@/domain/settings/types';
 import { TrainerTitleMark } from '@/features/trainer/TrainerTitleMark';
 import { LeagueProgress } from '@/features/league/LeagueProgress';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChampionSearch } from './ChampionSearch';
 import { QuestionAnswers } from './QuestionAnswers';
 import { QuestionPresentation } from './QuestionPresentation';
@@ -30,13 +30,51 @@ import {
 } from './useQuestionAnswer';
 interface QuestionScreenProps extends UseQuestionAnswerOptions {
   typeRelations?: PokemonCatalog['typeRelations'];
-  elapsedSeconds: number;
   mode: GameMode;
   number: number;
   onNewGame: () => void;
   timerDisplay: TimerDisplay;
+  timerRunning: boolean;
   total: number;
 }
+const QuestionTimer = ({
+  getElapsedMilliseconds,
+  timerDisplay,
+  timerRunning,
+}: Pick<
+  QuestionScreenProps,
+  'getElapsedMilliseconds' | 'timerDisplay' | 'timerRunning'
+>) => {
+  const [elapsed, setElapsed] = useState(getElapsedMilliseconds);
+  useEffect(() => {
+    if (!timerRunning || timerDisplay === 'hidden') return;
+    const update = () => setElapsed(getElapsedMilliseconds());
+    const initial = window.setTimeout(update, 0);
+    const interval = window.setInterval(
+      update,
+      timerDisplay === 'milliseconds' ? 50 : 250,
+    );
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(interval);
+    };
+  }, [getElapsedMilliseconds, timerDisplay, timerRunning]);
+  const hidden = timerDisplay === 'hidden';
+  const displayElapsed = timerRunning ? elapsed : getElapsedMilliseconds();
+  const text =
+    timerDisplay === 'milliseconds'
+      ? formatDurationMilliseconds(displayElapsed)
+      : formatDuration(Math.floor(displayElapsed / 1000));
+  return (
+    <span
+      className={`timer ${hidden ? 'timer--hidden' : ''}`.trim()}
+      aria-hidden={hidden}
+      aria-label={hidden ? undefined : `Elapsed time ${text}`}
+    >
+      {text}
+    </span>
+  );
+};
 const formatCorrectAnswer = (question: QuestionData): string => {
   const names = question.answer.correctOptions.map(
     (option) => question.optionLabels?.[option] ?? formatPokemonName(option),
@@ -47,9 +85,8 @@ const formatCorrectAnswer = (question: QuestionData): string => {
 export const QuestionScreen = ({
   answerFlow,
   typeRelations,
-  elapsedMilliseconds,
+  getElapsedMilliseconds,
   questionStartedMilliseconds,
-  elapsedSeconds,
   interactionPaused,
   mode,
   nextQuestion,
@@ -61,6 +98,7 @@ export const QuestionScreen = ({
   onNewGame,
   question,
   timerDisplay,
+  timerRunning,
   total,
 }: QuestionScreenProps) => {
   const heading = useRef<HTMLHeadingElement>(null);
@@ -76,7 +114,7 @@ export const QuestionScreen = ({
     selectOption,
   } = useQuestionAnswer({
     answerFlow,
-    elapsedMilliseconds,
+    getElapsedMilliseconds,
     questionStartedMilliseconds,
     interactionPaused,
     nextQuestion,
@@ -94,16 +132,14 @@ export const QuestionScreen = ({
       advanceButton.current?.focus({ preventScroll: true });
   }, [answerFlow, answered]);
   const isChampion = question.category === 'champion';
-  const rendering = getQuestionRendering(question);
-  const answerView = getQuestionView(question).answer;
+  const rendering = useMemo(() => getQuestionRendering(question), [question]);
+  const answerView = useMemo(
+    () => getQuestionView(question).answer,
+    [question],
+  );
   const isLeague = mode.kind === 'league';
   const searchVisible = showsSearchResponse(question, cluesShown);
   const championChoicesVisible = isChampion && !searchVisible;
-  const timerHidden = timerDisplay === 'hidden';
-  const timerText =
-    timerDisplay === 'milliseconds'
-      ? formatDurationMilliseconds(elapsedMilliseconds)
-      : formatDuration(elapsedSeconds);
   const checkAnswerAction =
     question.answer.interaction === 'multi-select' && !answered ? (
       <GameButton
@@ -141,13 +177,11 @@ export const QuestionScreen = ({
           <XIcon aria-hidden="true" weight="bold" />
         </GameButton>
         <RoundProgress current={number} total={total} />
-        <span
-          className={`timer ${timerHidden ? 'timer--hidden' : ''}`.trim()}
-          aria-hidden={timerHidden}
-          aria-label={timerHidden ? undefined : `Elapsed time ${timerText}`}
-        >
-          {timerText}
-        </span>
+        <QuestionTimer
+          getElapsedMilliseconds={getElapsedMilliseconds}
+          timerDisplay={timerDisplay}
+          timerRunning={timerRunning}
+        />
         <FeedbackButton />
       </header>
 

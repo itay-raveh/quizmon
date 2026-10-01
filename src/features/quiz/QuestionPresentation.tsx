@@ -24,6 +24,7 @@ import { QuestionInstruction } from './QuestionInstruction';
 import { usesVisualInstruction } from './question-instruction-policy';
 import { getQuestionView } from '@/domain/quiz/presentation';
 import { supplementalItemSprites } from './item-sprites';
+import { memo } from 'react';
 
 const QuestionPrompt = ({
   className,
@@ -118,7 +119,7 @@ const QuestionPrompt = ({
     </p>
   );
 };
-export const QuestionPresentation = ({
+const QuestionPresentationInner = ({
   question,
   rendering,
   answered,
@@ -212,3 +213,5 @@ export const QuestionPresentation = ({
     </>
   );
 };
+
+export const QuestionPresentation = memo(QuestionPresentationInner);

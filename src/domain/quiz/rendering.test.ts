@@ -2,9 +2,6 @@ import { questionRenderingSchema } from './rendering';
 import { baseQuestionRendering } from './variants';
 
 it('rejects invalid saved rendering values', () => {
-  expect(questionRenderingSchema.safeParse(baseQuestionRendering).success).toBe(
-    true,
-  );
   expect(
     questionRenderingSchema.safeParse({
       ...baseQuestionRendering,

@@ -11,6 +11,7 @@ import { getQuestionView } from '../../domain/quiz/presentation';
 import {
   readLocalDailyAttempts,
   readPlayerSave,
+  readPlayerRestoreId,
   reportSaveError,
 } from './player-storage';
 import {
@@ -115,7 +116,7 @@ export const readActiveGame = (
 export const writeActiveGame = async (
   snapshot: ActiveGameSnapshot,
 ): Promise<void> => {
-  const playerRestoreId = readPlayerSave().restoreId;
+  const playerRestoreId = readPlayerRestoreId();
   if (
     snapshot.playerRestoreId !== undefined &&
     snapshot.playerRestoreId !== playerRestoreId

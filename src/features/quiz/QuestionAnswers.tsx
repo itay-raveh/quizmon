@@ -83,7 +83,7 @@ export const QuestionAnswers = ({
           index={index}
           answered={answered}
           cluesShown={cluesShown}
-          selectedOptions={selectedOptions}
+          selected={selectedOptions.includes(option)}
           onSelect={onSelect}
           typeRelations={typeRelations}
         />

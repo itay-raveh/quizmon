@@ -61,10 +61,10 @@ const CatalogRouteState = ({
 interface QuestionView {
   assistance: (count: number) => void;
   answer: (answer: AnswerResult) => void | Promise<void>;
-  elapsedMilliseconds: number;
-  elapsedSeconds: number;
+  getElapsedMilliseconds: () => number;
   pauseTimer: () => number;
   recordAnswer: (answer: AnswerResult) => void | Promise<void>;
+  timerRunning: boolean;
 }
 interface AppViewProps {
   catalogState: CatalogState;
@@ -275,8 +275,7 @@ const AppScreen = ({
         questionStartedMilliseconds={session.answers
           .slice(0, session.questionIndex)
           .reduce((sum, answer) => sum + (answer.responseMilliseconds ?? 0), 0)}
-        elapsedMilliseconds={question.elapsedMilliseconds}
-        elapsedSeconds={question.elapsedSeconds}
+        getElapsedMilliseconds={question.getElapsedMilliseconds}
         interactionPaused={
           settingsDialog.isOpen || navigation.leaveConfirmationOpen
         }
@@ -292,6 +291,7 @@ const AppScreen = ({
         }}
         question={currentQuestion}
         timerDisplay={session.settings.timerDisplay}
+        timerRunning={question.timerRunning}
         total={session.questions.length}
       />
     ) : null;
