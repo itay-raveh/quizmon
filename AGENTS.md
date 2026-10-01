@@ -59,9 +59,13 @@ Run commands from the repository root.
 
 Write the smallest deterministic test that would catch a meaningful regression. Prioritize unit tests for game rules, scoring, progression, question generation, saved-data validation, and other nontrivial logic; assert exact numeric results when those numbers are the rule being tested. Derive fixtures from shared definitions instead of hardcoding game versions. Add a focused component test only for complex UI state or interaction that cannot be covered at the logic boundary, and assert the behavior or state change rather than exact screen prose, incidental DOM structure, or displayed fixture numbers. Do not add Playwright tests for now. Keep Worker, account and sync, migration, Helm, and other focused integration checks when they prove a contract that unit tests cannot, without repeating every lower-level case. Keep pre-push fast by running game unit tests; move valuable slow checks to CI rather than deleting them to meet a rigid time limit. Tests should survive unrelated copy, data, and version changes. This follows [behavior-focused unit testing](https://abseil.io/resources/swe-book/html/ch12.html) and the [practical test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html), adapted to this repository.
 
+On every repository change, search existing tests for assertions that merely repeat static configuration, such as level tables, rendering flags, multipliers, or route lists, and delete any such tests you find. Never add a test whose only expected result is a hardcoded copy of configuration or another reading of that same configuration. Test observable behavior, nontrivial rules, and validation of untrusted inputs instead.
+
 ## Deployment
 
 Pull requests and pushes to `main` run `.github/workflows/ci.yml`. After checks pass, a push to `main` calls `.github/workflows/release.yml` to build, test, and publish the release image. GitHub does not deploy the Worker.
+
+After pushing, report the local checks and remote commit. Do not wait for CI or deployment runs unless the user explicitly asks for their results.
 
 `charts/quizmon/` runs the release image: verify inputs, migrate PostgreSQL under the release lock, then run RxServer and deploy and verify the Worker. Infrastructure owns the databases, networking, certificates, Secrets, and Flux configuration. Cloudflare deployment credentials stay in Kubernetes Secrets. Never commit secret values or secret files.
 
