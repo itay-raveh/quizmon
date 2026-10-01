@@ -142,6 +142,48 @@ test('item subject visibility controls the same artwork renderer', () => {
   expect(markup('always', false)).toContain('>Lava Cookie</strong>');
 });
 
+test('unnamed item-use prompt stays readable before the answer', () => {
+  const rendering = resolveQuestionRendering('itemUses', 5);
+  const question: QuestionData = {
+    answer: { interaction: 'single-choice', correctOptions: ['Cures poison.'] },
+    category: 'knowledge',
+    id: 'itemUses:item:antidote',
+    media: { kind: 'pixel-sprite', src: '/antidote.png' },
+    options: ['Cures poison.'],
+    prompt: {
+      kind: 'item',
+      before: 'What does ',
+      after: ' do?',
+      name: 'Antidote',
+      sprite: '/antidote.png',
+    },
+    questionType: 'itemUses',
+    rendering,
+    repetition: {
+      identity: 'antidote',
+      subjects: ['item/antidote'],
+      primary: [],
+      distractors: [],
+    },
+    subject: { kind: 'item', name: 'antidote', generation: 'I' },
+  };
+  const markup = (answered: boolean) =>
+    renderToStaticMarkup(
+      <QuestionPresentation
+        question={question}
+        rendering={rendering}
+        answered={answered}
+        cluesShown={0}
+        isLeague={false}
+      />,
+    );
+
+  expect(markup(false)).toContain('class="visually-hidden">this item</span>');
+  expect(markup(true)).not.toContain(
+    'class="visually-hidden">this item</span>',
+  );
+});
+
 test('choice name visibility follows the saved rendering policy', () => {
   const rendering = {
     ...baseQuestionRendering,

@@ -162,6 +162,53 @@ it('excludes Data Cards and Mega accessories from Item uses', () => {
   ).toBeUndefined();
 });
 
+it('uses self-describing medicine only when its name is hidden', () => {
+  const medicine = catalog.topics!.items.filter((item) =>
+    [
+      'antidote',
+      'burn-heal',
+      'ice-heal',
+      'awakening',
+      'paralyze-heal',
+    ].includes(item.name),
+  );
+  const medicineCatalog = {
+    ...catalog,
+    topics: { ...catalog.topics!, items: medicine },
+  };
+  const build = (difficulty: 2 | 3 | 5, items = medicine) =>
+    buildQuestionType(
+      {
+        catalog: {
+          ...medicineCatalog,
+          topics: { ...medicineCatalog.topics, items },
+        },
+        difficulty,
+        generations: ['IX'],
+        pool: [],
+        random: createSeededRandom(`named-medicine:${difficulty}`),
+        used: new Set(),
+      },
+      'itemUses',
+    );
+
+  expect(medicine).toHaveLength(5);
+  expect(build(2)).toBeUndefined();
+  expect(build(3)).toBeUndefined();
+  const question = build(5);
+  expect(question).toBeDefined();
+  expect(medicine.some((item) => item.name === question!.subject.name)).toBe(
+    true,
+  );
+  expect(question!.rendering!.subject.name).toBe('after-answer');
+  expect(
+    build(
+      5,
+      medicine.map((item) => ({ ...item, sprite: null })),
+    ),
+  ).toBeUndefined();
+});
+
 it('narrows Item uses distractors at each level', () => {
   const bagItems = catalog.topics!.items.filter(
     (item) => item.effectKind === 'bag',

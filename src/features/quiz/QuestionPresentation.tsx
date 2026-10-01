@@ -96,6 +96,9 @@ const QuestionPrompt = ({
       ) : (
         <>
           {prompt.before}
+          {!isVisible(policy.name, state) ? (
+            <span className="visually-hidden">this item</span>
+          ) : null}
           <ItemRenderable
             className="question__item-subject"
             name={prompt.name}
