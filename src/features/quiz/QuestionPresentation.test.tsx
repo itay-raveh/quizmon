@@ -143,7 +143,13 @@ test('item subject visibility controls the same artwork renderer', () => {
 });
 
 test('unnamed item-use prompt stays readable before the answer', () => {
-  const rendering = resolveQuestionRendering('itemUses', 5);
+  const rendering = {
+    ...baseQuestionRendering,
+    subject: {
+      ...baseQuestionRendering.subject,
+      name: 'after-answer' as const,
+    },
+  };
   const question: QuestionData = {
     answer: { interaction: 'single-choice', correctOptions: ['Cures poison.'] },
     category: 'knowledge',

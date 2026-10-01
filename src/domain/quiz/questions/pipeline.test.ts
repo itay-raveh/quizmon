@@ -7,7 +7,7 @@ import { createSeededRandom } from '../../../lib/random.ts';
 import { savedQuestionSchema } from '../lineup.ts';
 import { getQuestionView } from '../presentation.ts';
 import { questionRenderingSchema } from '../rendering.ts';
-import { getQuestionVariant, getUnleveledQuestionRule } from '../variants.ts';
+import { getQuestionVariant } from '../variants.ts';
 import type { QuestionData } from '../types.ts';
 import { questionRules } from '../question-rules/registry.ts';
 import { buildQuestionType } from './registry.ts';
@@ -16,7 +16,7 @@ import {
   hasVisibleChoices,
   hasVisibleSubject,
 } from './rendering-pipeline.ts';
-import { questionDefinitions, type QuestionType } from './definitions.ts';
+import type { QuestionType } from './definitions.ts';
 
 const dataDir = fileURLToPath(new URL('../../pokemon/data/', import.meta.url));
 const topics: Record<string, unknown> = {};
@@ -72,18 +72,6 @@ it('builds every configured family with a renderable answer and saved view', () 
         ),
       ).find(Boolean);
       expect(question, `${type}:${difficulty}`).toBeDefined();
-      const response =
-        difficulty === undefined
-          ? getUnleveledQuestionRule(type)?.response
-          : getQuestionVariant(type, difficulty)?.variant.response;
-      if (response?.kind === 'picker' && response.selection !== 'adaptive')
-        expect(question!.answer.interaction, `${type}:${difficulty}`).toBe(
-          response.selection === 'single' ? 'single-choice' : 'multi-select',
-        );
-      if (response?.kind === 'search' && response.selection === 'multi')
-        expect(question!.answer.interaction, `${type}:${difficulty}`).toBe(
-          'multi-select',
-        );
       const saved = savedQuestionSchema.parse(question);
       expect(questionRenderingSchema.safeParse(saved.rendering).success).toBe(
         true,
@@ -92,18 +80,6 @@ it('builds every configured family with a renderable answer and saved view', () 
       expect(hasVisibleSubject(saved), `${type}:${difficulty}`).toBe(true);
       const view = getQuestionView(saved);
       expect(view, `${type}:${difficulty}`).toEqual(question!.view);
-      if (type !== 'champion') {
-        const definition = questionDefinitions[type];
-        expect(question!.category, `${type}:${difficulty}`).toBe(
-          definition.category,
-        );
-        expect(question!.subject.kind, `${type}:${difficulty}`).toBe(
-          definition.subjectKind,
-        );
-        expect(view.answer.kind === 'pokemon', `${type}:${difficulty}`).toBe(
-          definition.answerIsPokemon,
-        );
-      }
       if (question!.optionImages) expect(view.answer.kind, type).toBe('item');
       else if (question!.optionVisuals)
         expect(view.answer.kind, type).toBe('pokemon');

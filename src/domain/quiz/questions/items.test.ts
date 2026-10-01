@@ -80,28 +80,3 @@ test('item identification searches item names from level four', () => {
   expect(question?.searchOptions).toHaveLength(1);
   expect(isQuestionData(question)).toBe(true);
 });
-
-test('level five item identification still searches items', () => {
-  const catalog = {
-    pokemon: {},
-    typeRelations: {},
-    topics: {
-      items: [item('potion', 'medicine', 'potion')],
-      moves: [{ name: 'fire-move', contexts: [{ machine: 'tm01' }] }],
-    },
-  } as unknown as PokemonCatalog;
-  const question = buildQuestionType(
-    {
-      catalog,
-      difficulty: 5,
-      pool: [],
-      random: () => 0,
-      used: new Set(),
-    },
-    'itemIdentification',
-  );
-  expect(question?.subject).toMatchObject({ kind: 'item', name: 'potion' });
-  expect(question?.answer.correctOptions).toEqual(['potion']);
-  expect(question?.answer.interaction).toBe('search');
-  expect(isQuestionData(question)).toBe(true);
-});

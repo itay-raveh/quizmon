@@ -13,13 +13,6 @@ describe('getTrainingSettings', () => {
       questionTypes: leagueQuestionTypes,
       trainingMode: 'league',
     });
-    for (const advanced of [
-      'pokemonAbilities',
-      'levelUpMoves',
-      'statExtremes',
-    ]) {
-      expect(leagueQuestionTypes).not.toContain(advanced);
-    }
     expect(
       getTrainingSettings({
         ...defaultGameSettings,

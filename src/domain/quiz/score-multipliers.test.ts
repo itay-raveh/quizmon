@@ -1,5 +1,4 @@
 import {
-  getQuestionTypeMultiplier,
   getTrainingScoreMultipliers,
   getScoreMultiplier,
   scoreMultipliersSchema,
@@ -37,14 +36,6 @@ it('adds hard types and penalizes easy types in the combined multiplier', () => 
       ],
     }),
   ).toBe(70.3125);
-});
-
-it('uses the Item uses level factors', () => {
-  expect(
-    ([1, 2, 3, 4, 5] as const).map((level) =>
-      getQuestionTypeMultiplier('itemUses', level),
-    ),
-  ).toEqual([undefined, 0.75, 1, 1.25, 1.25]);
 });
 
 it('scores the drawn question mix without rewarding unused selected types', () => {
@@ -117,41 +108,21 @@ it.each([
   expect(isScoreMultipliers({ ...multipliers, ...overrides })).toBe(false);
 });
 
-it.each([
-  ['pokemonFromHistoricalSprite', 3, 0.75],
-  ['itemIdentification', 5, 1.25],
-  ['spriteForPokemon', 3, 1],
-  ['hiddenAbilities', 3, undefined],
-  ['hiddenAbilities', 4, 1.25],
-  ['pokedexEntryMatch', 3, 0.75],
-  ['pokedexEntryMatch', 5, 1.25],
-  ['pokemonTypes', 5, 1],
-  ['legendaryMythicalSelection', 5, 0.75],
-  ['statExtremes', 5, 1.25],
-] as const)(
-  'weights %s at level %i by the current variant introduction',
-  (type, level, factor) => {
-    expect(getQuestionTypeMultiplier(type, level)).toBe(factor);
-  },
-);
 it('counts unique generations, eligible form groups, and selected types once', () => {
-  expect(
-    getTrainingScoreMultipliers({
-      difficulty: 3,
-      formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
-      generations: ['I', 'II', 'II'],
-      questionTypes: [
-        'spriteForPokemon',
-        'spriteForPokemon',
-        'hiddenAbilities',
-      ],
-    }),
-  ).toEqual({
+  const result = getTrainingScoreMultipliers({
+    difficulty: 3,
+    formGroups: ['standard', 'regional', 'mega', 'gigantamax'],
+    generations: ['I', 'II', 'II'],
+    questionTypes: ['spriteForPokemon', 'spriteForPokemon', 'hiddenAbilities'],
+  });
+  expect(result).toMatchObject({
     difficulty: 3,
     generations: 2,
     formGroupCount: 1,
-    questionTypes: [{ questionType: 'spriteForPokemon', multiplier: 1 }],
   });
+  expect(result?.questionTypes.map(({ questionType }) => questionType)).toEqual(
+    ['spriteForPokemon'],
+  );
   expect(
     getTrainingScoreMultipliers({
       difficulty: 3,

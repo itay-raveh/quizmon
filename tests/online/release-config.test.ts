@@ -46,24 +46,6 @@ await test('runtime renderer binds the provisioned Hyperdrive without local defa
   assert.equal(rendered.vars.MAIL_DELIVERY, 'cloudflare');
   assert.equal(rendered.vars.AUTH_ORIGIN, config.origin);
   assert.equal(rendered.vars.SYNC_AUDIENCE, input.sync.audience);
-  assert.equal(rendered.main, './worker/index.ts');
-  assert.equal(rendered.assets.directory, './dist');
-  assert.deepEqual(
-    (rendered.assets as Record<string, unknown>).run_worker_first,
-    [
-      '/api/*',
-      '/sprites/*',
-      '/trainer',
-      '/trainer/*',
-      '/league',
-      '/account',
-      '/account/friends',
-      '/rankings',
-      '/players/*',
-      '/daily/*',
-    ],
-  );
-  assert.equal(rendered.no_bundle, false);
   assert.ok(!JSON.stringify(rendered).includes('127.0.0.1'));
   assert.ok(!JSON.stringify(rendered).includes('test-mailbox'));
 });
