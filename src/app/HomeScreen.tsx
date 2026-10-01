@@ -13,7 +13,7 @@ import type { GameResult } from '@/domain/quiz/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
-import { TrainerBadgeMark } from '@/features/trainer/TrainerBadgeMark';
+import { TrainerBadgeCase } from '@/features/trainer/TrainerBadgeCase';
 import { Logo } from './Logo';
 import { Link } from 'react-router';
 import { useInteractionSound } from '@/lib/audio/sound-context';
@@ -26,7 +26,7 @@ interface HomeScreenProps {
   dailyResultSaved: boolean;
   dailyStreak: number;
   level: Difficulty;
-  badges: readonly Pick<TrainerBadge, 'id' | 'tier' | 'earned'>[];
+  badges: readonly TrainerBadge[];
   leagueCompleted?: boolean;
   onCustomizeTraining: () => void;
   onRetryCatalog: () => void;
@@ -64,11 +64,7 @@ export const HomeScreen = ({
       {leagueUnlocked ? (
         <LeagueTrophy locked={!leagueCompleted} />
       ) : (
-        <span className="landing__league-badges" aria-hidden="true">
-          {badges.map(({ id, tier }) => (
-            <TrainerBadgeMark key={id} id={id} tier={tier} />
-          ))}
-        </span>
+        <TrainerBadgeCase badges={badges} compact />
       )}
       <span className="landing__league-copy">
         <strong>Quizmon League</strong>

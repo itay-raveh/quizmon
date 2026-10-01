@@ -89,7 +89,7 @@
   place-items: center;
 }
 
-.trainer-badge:hover {
+button.trainer-badge:hover {
   background: var(--case-tile-hover);
   border-color: #dfe9ea;
 }
@@ -111,28 +111,28 @@
   border-width: 5px;
 }
 
-.trainer-badge[data-earned='true']:hover {
+button.trainer-badge[data-earned='true']:hover {
   border-color: var(--tier-light);
 }
 
-.trainer-badge:active {
+button.trainer-badge:active {
   box-shadow: inset 0 0 0 2px var(--navy);
   transform: translateY(0.12rem);
 }
 
-.trainer-badge:hover .trainer-badge-mark img {
+button.trainer-badge:hover .trainer-badge-mark img {
   --trainer-badge-depth: drop-shadow(0.23rem 0.3rem 0 var(--navy-shadow));
 
   transform: translate(-0.06rem, -0.12rem) scale(1.025);
 }
 
-.trainer-badge:active .trainer-badge-mark img {
+button.trainer-badge:active .trainer-badge-mark img {
   --trainer-badge-depth: drop-shadow(0.05rem 0.1rem 0 var(--navy-shadow));
 
   transform: translate(0.08rem, 0.1rem) scale(0.99);
 }
 
-.trainer-badge:focus-visible {
+button.trainer-badge:focus-visible {
   outline: 3px solid var(--paper);
   outline-offset: 2px;
 }
@@ -168,6 +168,41 @@
 .trainer-badge-case__badges .trainer-badge-mark {
   width: min(7.4rem, 88%);
   max-width: 100%;
+}
+
+.trainer-artifact-frame.trainer-badge-case--compact {
+  width: 5.8rem;
+  height: 3rem;
+  aspect-ratio: auto;
+  border-width: 2px;
+  border-radius: 0.3rem;
+}
+
+.trainer-badge-case--compact .trainer-badge-case__badges {
+  padding: 0.12rem;
+  border-width: 0.15rem;
+  gap: 0.1rem;
+}
+
+.trainer-badge-case--compact .trainer-badge {
+  padding: 0;
+  border-width: 1px;
+  border-radius: 0.12rem;
+  box-shadow: inset 0 0 0 1px var(--navy);
+  cursor: inherit;
+}
+
+.trainer-badge-case--compact .trainer-badge[data-earned='true'] {
+  box-shadow: inset 0.06rem 0.06rem 0 var(--tier-light);
+}
+
+.trainer-badge-case--compact .trainer-badge-case__badges .trainer-badge-mark {
+  width: 90%;
+}
+
+.trainer-badge-case--compact .trainer-badge-case__rivet {
+  width: 0.3rem;
+  border-width: 1px;
 }
 
 .trainer-titles {
