@@ -11,10 +11,7 @@ import {
   PencilSimpleIcon,
   ShareNetworkIcon,
 } from '../../components/icons';
-import {
-  getDailyStreak,
-  type TrainerStats,
-} from '../../domain/player/progress';
+import { getDailyStreak } from '../../domain/player/progress';
 import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
 import { trainerAvatarOptions } from '../../domain/player/trainer-avatars';
 import { createSearch, normalizeSearch } from '../../domain/pokemon/search';
@@ -27,14 +24,13 @@ import {
   trainerViewLabels,
   type TrainerBadgeId,
   type TrainerSpecialty,
-  type TrainerView,
 } from '../../domain/player/trainer-progression';
 import type { PokemonCatalog } from '../../domain/pokemon/types';
 import { getUtcDate } from '../../domain/quiz/daily';
 import { requestPersistentStorage } from '../../lib/storage/persistent-storage';
 import { readPlayerData } from '../../lib/storage/player-storage';
-import { type TrainerProfile } from '../../lib/storage/trainer-profile-storage';
 import { useUpdateState } from '../../lib/storage/update-reload-state';
+import type { useTrainerCard } from './useTrainerCard';
 import { PokemonPicker } from './PokemonPicker';
 import { TrainerBadgeCase } from './TrainerBadgeCase';
 import { TrainerBadgeDialog } from './TrainerBadgeDialog';
@@ -51,10 +47,10 @@ import {
 
 interface TrainerPassportProps {
   catalog: PokemonCatalog;
-  onProfileChange: (profile: TrainerProfile) => Promise<boolean>;
-  profile: TrainerProfile;
-  requestedView: TrainerView;
-  stats: TrainerStats;
+  trainer: Pick<
+    ReturnType<typeof useTrainerCard>,
+    'profile' | 'stats' | 'updateProfile' | 'view'
+  >;
 }
 
 interface ShareNotice {
@@ -78,13 +74,8 @@ const searchAvatars = createSearch(
   })),
 );
 
-export const TrainerPassport = ({
-  catalog,
-  onProfileChange,
-  profile,
-  requestedView: view,
-  stats,
-}: TrainerPassportProps) => {
+export const TrainerPassport = ({ catalog, trainer }: TrainerPassportProps) => {
+  const { profile, stats, updateProfile: onProfileChange, view } = trainer;
   const data = readPlayerData();
   const found = new Set(data.pokedex);
   const pokemon = Object.keys(catalog.pokemon);
@@ -410,9 +401,8 @@ export const TrainerPassport = ({
             partnerHeight={savedPartner?.height}
             partnerSprite={savedPartner?.sprite ?? null}
             partnerSpriteMeasurements={savedPartner?.spriteMeasurements}
-            profile={visibleProfile}
+            trainer={{ profile: visibleProfile, stats }}
             record={record}
-            rank={rank}
             titleTier={equippedTitle?.tier ?? 0}
           />
         )}

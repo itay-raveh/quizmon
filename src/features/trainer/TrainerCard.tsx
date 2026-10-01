@@ -6,12 +6,13 @@ import { PlayerName } from '@/components/PlayerName';
 import { Trophy } from '@/components/Trophy';
 import {
   getCardFinish,
+  getTrainerRank,
   trainerSpecialtyDetails,
   trainerTierLabels,
   trainerViewLabels,
-  type TrainerRank,
   type TrainerTier,
 } from '@/domain/player/trainer-progression';
+import type { TrainerStats } from '@/domain/player/progress';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import type { TrainerProfile } from '@/lib/storage/trainer-profile-storage';
 import type { Ref } from 'react';
@@ -25,8 +26,7 @@ interface TrainerCardProps {
   partnerHeight?: number;
   partnerSprite: string | null;
   partnerSpriteMeasurements?: PackedSpriteMeasurements | null;
-  profile: TrainerProfile;
-  rank: TrainerRank;
+  trainer: { profile: TrainerProfile; stats: TrainerStats };
   titleTier?: TrainerTier;
   record: {
     dayCombo: number;
@@ -50,11 +50,12 @@ export const TrainerCard = ({
   partnerHeight,
   partnerSprite,
   partnerSpriteMeasurements,
-  profile,
-  rank,
+  trainer,
   titleTier = 1,
   record,
 }: TrainerCardProps) => {
+  const { profile, stats } = trainer;
+  const rank = getTrainerRank(stats);
   const finish = getCardFinish(rank);
   const isChampion = rank === 'Champion';
   const partnerName = profile.partnerPokemon ?? emptyPartnerLabel;
@@ -93,10 +94,7 @@ export const TrainerCard = ({
         </header>
         <div className="trainer-card__identity">
           <h2>
-            <PlayerName
-              name={profile.name || `${site.name} Trainer`}
-              champion={isChampion}
-            />
+            <PlayerName trainer={trainer} fallback={`${site.name} Trainer`} />
           </h2>
           {profile.specialty ? (
             <p

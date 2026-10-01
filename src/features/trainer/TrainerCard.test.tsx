@@ -1,14 +1,19 @@
 import { createTrainerProfile } from '@/domain/player/trainer-profile';
+import { getTrainerStats } from '@/domain/player/progress';
+import { emptyResults } from '@/domain/player/results';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { TrainerCard } from './TrainerCard';
 
 const renderPartner = (partnerHeight: number, avatar: string) =>
   renderToStaticMarkup(
     <TrainerCard
-      profile={{
-        ...createTrainerProfile(),
-        avatar,
-        partnerPokemon: 'typhlosion-hisui',
+      trainer={{
+        profile: {
+          ...createTrainerProfile(),
+          avatar,
+          partnerPokemon: 'typhlosion-hisui',
+        },
+        stats: getTrainerStats(emptyResults()),
       }}
       partnerDexNumber={157}
       partnerHeight={partnerHeight}
@@ -16,7 +21,6 @@ const renderPartner = (partnerHeight: number, avatar: string) =>
       partnerSpriteMeasurements={[
         0.251736, 0.604167, 0.802083, 0.520833, 0.864583,
       ]}
-      rank="Youngster"
       record={{ dayCombo: 0, pokedexFound: 0, pokedexTotal: 1236 }}
     />,
   );

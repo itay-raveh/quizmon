@@ -186,10 +186,7 @@ function Standings({
           )}
           {!showSkeleton && data?.viewer && (
             <div className="leaderboard-viewer">
-              <PlayerName
-                name={data.viewer.player.name}
-                champion={data.viewer.player.leagueCompleted}
-              />
+              <PlayerName trainer={data.viewer.player} />
               <strong>#{data.viewer.rank}</strong>
             </div>
           )}
@@ -242,10 +239,7 @@ function Standings({
                         <span className="leaderboard-player">
                           {row ? (
                             <span>
-                              <PlayerName
-                                name={row.player.name}
-                                champion={row.player.leagueCompleted}
-                              />
+                              <PlayerName trainer={row.player} />
                               {row.player.id === owner ? ' (you)' : ''}
                             </span>
                           ) : (

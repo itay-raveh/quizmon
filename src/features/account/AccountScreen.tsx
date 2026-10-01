@@ -11,6 +11,8 @@ import { PlayerName } from '../../components/PlayerName';
 import { PencilSimpleIcon } from '../../components/icons';
 import { friendInvitePath } from '../../domain/social/friends';
 import { TRAINER_NAME_MAX_LENGTH } from '../../domain/player/trainer-profile';
+import type { TrainerProfile } from '../../domain/player/trainer-profile';
+import type { TrainerStats } from '../../domain/player/progress';
 import { FriendsPanel } from '../friends/FriendsPanel';
 import { useModalDialog } from '../../hooks/useModalDialog';
 import {
@@ -66,20 +68,19 @@ const WelcomeTrainerDialog = ({
 };
 
 export function AccountScreen({
-  trainerName,
-  leagueCompleted,
+  trainer,
   onRename,
   onEditCard,
   onViewPlayer,
   friendId = '',
 }: {
-  trainerName: string;
-  leagueCompleted: boolean;
+  trainer: { profile: TrainerProfile; stats: TrainerStats };
   onRename: (name: string) => Promise<boolean>;
   onEditCard: () => void;
   onViewPlayer: (id: string) => void;
   friendId?: string;
 }) {
+  const trainerName = trainer.profile.name;
   const account = useSyncExternalStore(subscribeAccount, accountSnapshot);
   const navigate = useNavigate();
   const signingIn = !account.owner && !account.mergeRequired;
@@ -146,10 +147,7 @@ export function AccountScreen({
               {signingIn ? (
                 'Sign in'
               ) : (
-                <PlayerName
-                  name={trainerName.trim() || 'Account'}
-                  champion={leagueCompleted}
-                />
+                <PlayerName trainer={trainer} fallback="Account" />
               )}
             </h1>
             {!signingIn && !account.mergeRequired && (

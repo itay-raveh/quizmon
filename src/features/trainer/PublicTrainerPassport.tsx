@@ -77,7 +77,7 @@ export function PublicTrainerPassport({
             id="public-trainer-title"
             tabIndex={-1}
           >
-            <PlayerName name={name} champion={stats.leagueCompleted} />
+            <PlayerName trainer={trainer} />
           </h1>
           <p>Trainer profile · View only</p>
         </div>
@@ -125,12 +125,14 @@ export function PublicTrainerPassport({
             partnerHeight={partner?.height}
             partnerSprite={partner?.sprite ?? null}
             partnerSpriteMeasurements={partner?.spriteMeasurements}
-            profile={{
-              ...profile,
-              name,
-              specialty: equippedTitle?.specialty ?? null,
+            trainer={{
+              profile: {
+                ...profile,
+                name,
+                specialty: equippedTitle?.specialty ?? null,
+              },
+              stats,
             }}
-            rank={rank}
             record={record}
             titleTier={equippedTitle?.tier ?? 0}
           />

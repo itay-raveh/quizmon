@@ -50,7 +50,7 @@ function Player({
     <div className="friends-player">
       <div className="friends-player__name">
         <strong>
-          <PlayerName name={player.name} champion={player.leagueCompleted} />
+          <PlayerName trainer={player} />
         </strong>
         {onView && (
           <GameButton

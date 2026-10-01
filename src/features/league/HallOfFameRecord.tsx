@@ -82,7 +82,10 @@ export const HallOfFameRecord = ({
       </div>
       <div className="hall-record__honors">
         <h2>
-          <PlayerName name={record.trainerName || 'League Champion'} champion />
+          <PlayerName
+            trainer={{ name: record.trainerName, leagueCompleted: true }}
+            fallback="League Champion"
+          />
         </h2>
         <p className="hall-record__score">
           <strong>{formatScore(record.result.score)}</strong> points

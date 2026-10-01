@@ -119,8 +119,7 @@ const AppScreen = ({
           hidden={Boolean(destination.playerId)}
         >
           <AccountScreen
-            trainerName={trainer.profile.name}
-            leagueCompleted={trainer.stats.leagueCompleted}
+            trainer={trainer}
             onRename={(name) =>
               trainer.updateProfile({ ...trainer.profile, name })
             }
@@ -187,15 +186,7 @@ const AppScreen = ({
           onRetry={catalogState.retry}
         />
       );
-    return (
-      <TrainerPassport
-        catalog={catalogState.catalog}
-        onProfileChange={trainer.updateProfile}
-        profile={trainer.profile}
-        requestedView={trainer.view}
-        stats={trainer.stats}
-      />
-    );
+    return <TrainerPassport catalog={catalogState.catalog} trainer={trainer} />;
   }
   const leagueBadges = getTrainerBadges(trainer.stats);
   const leagueUnlocked =
