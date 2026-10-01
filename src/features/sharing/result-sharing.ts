@@ -22,7 +22,7 @@ export const buildShareContent = (
 
   return {
     text: [
-      result.rules
+      mode.kind !== 'daily' && result.rules
         ? `Level ${result.rules.difficulty} · Gen ${result.rules.generations.join(', ')} · ${result.rules.formGroups.join(', ')} forms`
         : null,
       `${formatScore(result.score)} points`,
