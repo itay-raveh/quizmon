@@ -10,15 +10,14 @@ const result = (level: 1 | 2 | 3 | 4 | 5, correctCount = 10) =>
   }) as GameResult;
 
 describe('level advancement suggestion', () => {
-  it('suggests the next level after a saved perfect Training round', () => {
-    expect(suggestedLevel(result(1), 1, true)).toBe(2);
-    expect(suggestedLevel(result(4), 4, true)).toBe(5);
+  it('suggests the next level after a perfect Training round', () => {
+    expect(suggestedLevel(result(1), 1)).toBe(2);
+    expect(suggestedLevel(result(4), 4)).toBe(5);
   });
 
   it('does not suggest after a miss, at Level 5, or when settings changed', () => {
-    expect(suggestedLevel(result(1, 9), 1, true)).toBeNull();
-    expect(suggestedLevel(result(5), 5, true)).toBeNull();
-    expect(suggestedLevel(result(2), 3, true)).toBeNull();
-    expect(suggestedLevel(result(2), 2, false)).toBeNull();
+    expect(suggestedLevel(result(1, 9), 1)).toBeNull();
+    expect(suggestedLevel(result(5), 5)).toBeNull();
+    expect(suggestedLevel(result(2), 3)).toBeNull();
   });
 });

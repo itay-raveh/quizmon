@@ -102,7 +102,7 @@ export const ResultsScreen = ({
   const perfectTraining =
     isTraining && result.correctCount === result.questionCount;
   const nextLevel = isTraining
-    ? suggestedLevel(result, settings.difficulty, resultSaved)
+    ? suggestedLevel(result, settings.difficulty)
     : null;
   const leagueVictory = isLeague && isLeagueVictory(result);
   const score = getScoreBreakdown(result.answers);
