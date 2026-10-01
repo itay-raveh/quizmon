@@ -63,11 +63,6 @@ export const getLeagueStage = (questionNumber: number): LeagueStage =>
     )
   ] ?? leagueStages[0]!;
 
-export const getLeagueStageLabel = (questionNumber: number): string => {
-  const stage = getLeagueStage(questionNumber);
-  return `${stage.heading} · Level ${stage.level} · ${stage.title}`;
-};
-
 export const isLeagueVictory = (result: GameResult): boolean =>
   result.answers.length === LEAGUE_QUESTION_COUNT &&
   result.questionCount === LEAGUE_QUESTION_COUNT &&

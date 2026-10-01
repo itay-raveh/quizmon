@@ -14,7 +14,6 @@ import {
   getModeLabel,
 } from '@/domain/quiz/format';
 import type { PokemonCatalog } from '@/domain/pokemon/types';
-import { getLeagueStageLabel } from '@/domain/quiz/league';
 import { getQuestionTitle } from '@/domain/quiz/questions/definitions';
 import { getAnswerPoints } from '@/domain/quiz/scoring';
 import type { GameMode, QuestionData } from '@/domain/quiz/types';
@@ -99,11 +98,7 @@ export const QuestionScreen = ({
   const rendering = getQuestionRendering(question);
   const answerView = getQuestionView(question).answer;
   const isLeague = mode.kind === 'league';
-  const modeLabel = isLeague
-    ? getLeagueStageLabel(number)
-    : mode.kind === 'daily'
-      ? getModeLabel(mode)
-      : null;
+  const modeLabel = mode.kind === 'daily' ? getModeLabel(mode) : null;
   const searchVisible = showsSearchResponse(question, cluesShown);
   const championChoicesVisible = isChampion && !searchVisible;
   const timerHidden = timerDisplay === 'hidden';
