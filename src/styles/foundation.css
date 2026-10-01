@@ -335,33 +335,20 @@ html:has(.app--questions) {
 .level-label {
   display: inline-flex;
   align-items: center;
-  overflow: hidden;
-  color: var(--navy);
-  background: var(--paper);
-  border: 2px solid var(--navy);
-  border-radius: 0.24em;
-  line-height: 1;
-  vertical-align: -0.2em;
+  gap: 0.18em;
+  vertical-align: -0.12em;
   white-space: nowrap;
-}
-
-.level-label__word {
-  padding: 0.25em 0.38em;
-  font-size: 0.72em;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
 }
 
 .level-label__number {
   display: inline-grid;
-  min-width: 1.7em;
-  align-self: stretch;
-  padding-inline: 0.3em;
+  min-width: 1.55em;
+  padding: 0.1em 0.2em;
   place-items: center;
   color: var(--navy);
   background: var(--yellow);
-  border-left: 2px solid var(--navy);
+  border: 2px solid var(--navy);
+  border-radius: 0.24em;
   font-family: var(--font-data);
   font-size: 0.84em;
   font-weight: 850;
