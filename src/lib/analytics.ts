@@ -1,8 +1,6 @@
 import type { GameMode, GameResult } from '../domain/quiz/types';
 import { Sentry, sentryEnabled } from './sentry';
 
-const metricScope = () => new Sentry.Scope();
-
 const record = (send: () => void) => {
   if (!sentryEnabled) return;
   try {
@@ -12,17 +10,12 @@ const record = (send: () => void) => {
   }
 };
 
-export const trackPageViewed = () => {
-  if (!sentryEnabled) return;
-  record(() =>
-    Sentry.metrics.count('quizmon.page_view', 1, { scope: metricScope() }),
-  );
-};
+export const trackPageViewed = () =>
+  record(() => Sentry.metrics.count('quizmon.page_view', 1));
 
 export const trackGameStarted = (mode: GameMode, questionCount: number) =>
   record(() => {
     const options = {
-      scope: metricScope(),
       attributes: { 'game.mode': mode.kind },
     };
     Sentry.metrics.count('quizmon.game_started', 1, options);
@@ -39,7 +32,6 @@ export const trackGameCompleted = (
 ) =>
   record(() => {
     const options = {
-      scope: metricScope(),
       attributes: {
         'game.mode': mode,
       },
@@ -66,7 +58,6 @@ export const trackGameCompleted = (
 export const trackFailure = (kind: string) =>
   record(() => {
     Sentry.metrics.count('quizmon.failure', 1, {
-      scope: metricScope(),
       attributes: { 'error.kind': kind },
     });
     Sentry.logger.warn('quizmon.failure', { 'error.kind': kind });

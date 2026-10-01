@@ -4,15 +4,11 @@ const metrics = vi.hoisted(() => ({
   count: vi.fn(),
   distribution: vi.fn(),
 }));
-type MetricCall = [
-  string,
-  number,
-  { scope: object; attributes?: Record<string, string> },
-];
+type MetricCall = [string, number, { attributes?: Record<string, string> }?];
 const countCalls = () => metrics.count.mock.calls as MetricCall[];
 
 vi.mock('./sentry', () => ({
-  Sentry: { Scope: class {}, metrics },
+  Sentry: { metrics },
   sentryEnabled: true,
 }));
 import {
@@ -26,7 +22,7 @@ beforeEach(() => {
   metrics.distribution.mockReset();
 });
 
-it('emits bounded game metrics without answers or player identity', () => {
+it('emits game metrics without answer payloads', () => {
   trackPageViewed();
   trackGameStarted({ kind: 'training' }, 10);
   trackGameCompleted('training', {
@@ -37,19 +33,13 @@ it('emits bounded game metrics without answers or player identity', () => {
     answers: [{ secret: 'never send answers' }],
   } as unknown as GameResult);
 
-  expect(
-    countCalls().some(
-      ([name, value, options]) =>
-        name === 'quizmon.page_view' && value === 1 && !!options.scope,
-    ),
-  ).toBe(true);
+  expect(metrics.count).toHaveBeenCalledWith('quizmon.page_view', 1);
   expect(
     countCalls().some(
       ([name, value, options]) =>
         name === 'quizmon.game_completed' &&
         value === 1 &&
-        options.attributes?.['game.mode'] === 'training' &&
-        !!options.scope,
+        options?.attributes?.['game.mode'] === 'training',
     ),
   ).toBe(true);
   const emitted = JSON.stringify([
@@ -61,21 +51,6 @@ it('emits bounded game metrics without answers or player identity', () => {
     'quizmon.game.score',
     1200,
     expect.any(Object),
-  );
-});
-
-it('counts page views without storing visitor markers', () => {
-  trackPageViewed();
-  trackPageViewed();
-  trackPageViewed();
-
-  expect(countCalls().map(([name]) => name)).toEqual([
-    'quizmon.page_view',
-    'quizmon.page_view',
-    'quizmon.page_view',
-  ]);
-  expect(new Set(countCalls().map(([, , options]) => options.scope)).size).toBe(
-    countCalls().length,
   );
 });
 

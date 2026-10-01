@@ -57,12 +57,6 @@ export const initSentry = () => {
         }),
         feedback,
       ],
-      beforeSendMetric(metric) {
-        delete metric.attributes?.['user.id'];
-        delete metric.attributes?.['user.email'];
-        delete metric.attributes?.['user.name'];
-        return metric;
-      },
     });
     Sentry.setUser(null);
   } catch {
