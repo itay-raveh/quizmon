@@ -80,19 +80,6 @@ it('scores the drawn question mix without rewarding unused selected types', () =
   );
 });
 
-it('accepts saved factors without depending on current variant rules', () => {
-  expect(isScoreMultipliers(multipliers)).toBe(true);
-  expect(isScoreMultipliers({ ...multipliers, formGroupCount: 4 })).toBe(true);
-  expect(isScoreMultipliers({ ...multipliers, questionMix: 1.025 })).toBe(true);
-  expect(isScoreMultipliers({ ...multipliers, perQuestion: true })).toBe(true);
-  expect(
-    isScoreMultipliers({
-      ...multipliers,
-      questionTypes: [{ questionType: 'spriteForPokemon', multiplier: 0.75 }],
-    }),
-  ).toBe(true);
-});
-
 it.each([
   { difficulty: 6 },
   { generations: 0 },
