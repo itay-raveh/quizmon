@@ -1,12 +1,20 @@
 import { site } from '@/app/site';
 import { GameButton } from '@/components/GameButton';
-import { ArrowRightIcon, SlidersHorizontalIcon } from '@/components/icons';
+import { LevelLabel } from '@/components/LevelLabel';
+import {
+  ArrowRightIcon,
+  LockSimpleIcon,
+  SlidersHorizontalIcon,
+} from '@/components/icons';
+import type { Difficulty } from '@/domain/quiz/difficulty';
 import { formatDailyDate } from '@/domain/quiz/format';
 import type { GameResult } from '@/domain/quiz/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
 import { Logo } from './Logo';
+import { Link } from 'react-router';
+import { useInteractionSound } from '@/lib/audio/sound-context';
 
 interface HomeScreenProps {
   catalogStatus: 'loading' | 'ready' | 'error';
@@ -15,6 +23,9 @@ interface HomeScreenProps {
   dailyResult: GameResult | null;
   dailyResultSaved: boolean;
   dailyStreak: number;
+  level: Difficulty;
+  earnedBadgeCount: number;
+  badgeCount: number;
   leagueUnlocked: boolean;
   leagueCompleted?: boolean;
   onCustomizeTraining: () => void;
@@ -32,6 +43,9 @@ export const HomeScreen = ({
   dailyResult,
   dailyResultSaved,
   dailyStreak,
+  level,
+  earnedBadgeCount,
+  badgeCount,
   leagueUnlocked,
   leagueCompleted = false,
   onCustomizeTraining,
@@ -41,8 +55,29 @@ export const HomeScreen = ({
   onStartLeague,
   storageAvailable,
 }: HomeScreenProps) => {
+  const playSound = useInteractionSound();
   const catalogReady = catalogStatus === 'ready';
   const dailyDetail = `${formatDailyDate(dailyDate)}${storageAvailable ? '' : ' · Browser storage required'}`;
+  const leagueContent = (
+    <>
+      <LeagueTrophy locked={!leagueCompleted} />
+      <span className="landing__league-copy">
+        <strong>Quizmon League</strong>
+        <span>
+          {leagueUnlocked
+            ? leagueCompleted
+              ? 'Challenge · Hall of Fame'
+              : 'Challenge'
+            : `Earn all ${badgeCount} badges · ${earnedBadgeCount}/${badgeCount} earned`}
+        </span>
+      </span>
+      {leagueUnlocked ? (
+        <ArrowRightIcon aria-hidden="true" weight="bold" />
+      ) : (
+        <LockSimpleIcon aria-hidden="true" weight="bold" />
+      )}
+    </>
+  );
 
   return (
     <section className="landing" aria-labelledby="landing-title">
@@ -118,11 +153,13 @@ export const HomeScreen = ({
             <SlidersHorizontalIcon aria-hidden="true" weight="bold" />
           </GameButton>
           <GameButton
-            aria-label="Start training"
+            aria-label={`Start Level ${level} training`}
             disabled={!catalogReady}
             onClick={onStart}
           >
-            <span>Start training</span>
+            <span>
+              <LevelLabel level={level} /> Training
+            </span>
           </GameButton>
         </div>
         {leagueUnlocked ? (
@@ -133,16 +170,18 @@ export const HomeScreen = ({
             tone="quiet"
             onClick={onStartLeague}
           >
-            <LeagueTrophy locked={!leagueCompleted} />
-            <span className="landing__league-copy">
-              <strong>Quizmon League</strong>
-              <span>
-                {leagueCompleted ? 'Challenge · Hall of Fame' : 'Challenge'}
-              </span>
-            </span>
-            <ArrowRightIcon aria-hidden="true" weight="bold" />
+            {leagueContent}
           </GameButton>
-        ) : null}
+        ) : (
+          <Link
+            to="/trainer/badges"
+            aria-label={`Quizmon League locked. Earn all ${badgeCount} League Badges. ${earnedBadgeCount} of ${badgeCount} earned. View Badge Case.`}
+            className="game-button game-button--quiet landing__league-button landing__league-button--locked"
+            onClick={() => playSound('tap')}
+          >
+            {leagueContent}
+          </Link>
+        )}
       </div>
     </section>
   );

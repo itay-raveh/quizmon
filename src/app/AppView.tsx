@@ -1,5 +1,5 @@
 import {
-  isLeagueUnlocked,
+  getTrainerBadges,
   trainerViewLabels,
 } from '../domain/player/trainer-progression';
 import { getUtcDate } from '../domain/quiz/daily';
@@ -84,6 +84,7 @@ const AppScreen = ({
   catalogState,
   daily,
   league,
+  settings,
   navigation,
   question,
   session,
@@ -195,8 +196,9 @@ const AppScreen = ({
       />
     );
   }
+  const leagueBadges = getTrainerBadges(trainer.stats);
   const leagueUnlocked =
-    session.phase === 'landing' && isLeagueUnlocked(trainer.stats);
+    session.phase === 'landing' && leagueBadges.every(({ earned }) => earned);
   const leagueVictory =
     session.phase === 'results' &&
     session.mode.kind === 'league' &&
@@ -254,6 +256,9 @@ const AppScreen = ({
           dailyResultSaved={daily.resultSaved}
           dailyError={daily.error}
           dailyStreak={daily.date === getUtcDate() ? daily.streak : 0}
+          level={settings.difficulty ?? 1}
+          earnedBadgeCount={leagueBadges.filter(({ earned }) => earned).length}
+          badgeCount={leagueBadges.length}
           leagueUnlocked={leagueUnlocked}
           leagueCompleted={trainer.stats.leagueCompleted}
           onCustomizeTraining={settingsDialog.openTraining}

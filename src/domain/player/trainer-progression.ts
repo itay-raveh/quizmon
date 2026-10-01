@@ -291,9 +291,6 @@ export const getTrainerBadges = (
     ...getProgress(milestones(stats, catalog)),
   }));
 
-export const isLeagueUnlocked = (stats: TrainerStats): boolean =>
-  getTrainerBadges(stats).every(({ earned }) => earned);
-
 export const getTrainerTitles = (
   stats: TrainerStats,
   equipped: TrainerSpecialty | null,

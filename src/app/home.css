@@ -175,6 +175,27 @@
   text-align: left;
 }
 
+.landing__league-button--locked.game-button {
+  color: var(--navy);
+  background: var(--paper);
+  box-shadow:
+    inset 0 0.1rem 0 white,
+    inset 0 -0.14rem 0 rgba(8, 59, 126, 0.1),
+    0 0.22rem 0 var(--yellow),
+    0 0.3rem 0 var(--navy-shadow);
+  text-decoration: none;
+}
+
+.landing__league-button--locked .landing__league-copy strong,
+.landing__league-button--locked .landing__league-copy > span {
+  color: var(--navy);
+}
+
+.landing__league-button--locked .league-trophy__image {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
 .landing__status {
   width: 100%;
   margin: 0;

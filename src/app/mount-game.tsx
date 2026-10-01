@@ -32,6 +32,9 @@ export const mountGame = (root: HTMLElement) => {
                 dailyResult={null}
                 dailyResultSaved={true}
                 dailyStreak={0}
+                level={1}
+                earnedBadgeCount={0}
+                badgeCount={8}
                 leagueUnlocked={false}
                 onCustomizeTraining={() => {}}
                 onRetryCatalog={() => {}}

@@ -307,6 +307,11 @@ html:has(.app--questions) {
   white-space: nowrap;
 }
 
+.level-label__number {
+  font-family: var(--font-data);
+  font-weight: 850;
+}
+
 .generation-label--stacked {
   display: inline-grid;
   justify-items: center;

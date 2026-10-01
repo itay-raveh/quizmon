@@ -1,4 +1,5 @@
 import { GameButton } from '@/components/GameButton';
+import { LevelLabel } from '@/components/LevelLabel';
 import { CaretDownIcon, CheckIcon, XIcon } from '@/components/icons';
 import type { TrainerProgressChange } from '@/domain/player/trainer-progression';
 import {
@@ -49,7 +50,9 @@ const LevelAdvancementOffer = ({
   if (!visible) return null;
   return (
     <aside className="level-advancement-offer" aria-label="Training suggestion">
-      <strong>Ready to try Level {nextLevel}?</strong>
+      <strong>
+        Ready to try <LevelLabel level={nextLevel} />?
+      </strong>
       <div className="level-advancement-offer__actions">
         <GameButton onClick={onCustomize}>Customize training</GameButton>
         <GameButton tone="quiet" onClick={() => setVisible(false)}>
@@ -197,7 +200,7 @@ export const ResultsScreen = ({
             <details className="results__settings">
               <summary>
                 <span>
-                  Level {result.rules.difficulty} ·{' '}
+                  <LevelLabel level={result.rules.difficulty} /> ·{' '}
                   {generations.every((generation) =>
                     result.rules?.generations.includes(generation),
                   )
