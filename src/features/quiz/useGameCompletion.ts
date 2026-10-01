@@ -21,6 +21,7 @@ import {
   commitRoundCompletion,
   readLocalRound,
 } from '../../lib/storage/round-storage';
+import { recordCompletedTrainingRound } from './level-advancement';
 
 interface GameCompletionOptions {
   catalog?: PokemonCatalog;
@@ -66,6 +67,9 @@ export const useGameCompletion = ({
       );
       const { result } = completion;
       const best = await commitRoundCompletion(completion, leagueRecord, false);
+      if (mode.kind === 'training' && result.rules) {
+        recordCompletedTrainingRound(result.rules.difficulty, seed);
+      }
       const progressChanges = getTrainerProgressChanges(
         previousTrainerStats,
         readTrainerStats(),

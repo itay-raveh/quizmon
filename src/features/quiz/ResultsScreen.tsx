@@ -22,18 +22,20 @@ import { useGameSounds } from '@/lib/audio/sound-context';
 import { useEffect, useRef } from 'react';
 import { AnimatedScore } from './AnimatedScore';
 import { CatchCombo } from '@/features/daily/CatchCombo';
-import { suggestedLevel } from './level-advancement';
+import { markStayedAtLevel, suggestedLevel } from './level-advancement';
 import { MultipliedScore } from './MultipliedScore';
 import type { Difficulty } from '@/domain/quiz/difficulty';
 
 const LevelAdvancementOffer = ({
   currentLevel,
   nextLevel,
+  roundSeed,
   onTrainAgain,
   onTryLevel,
 }: {
   currentLevel: Difficulty;
   nextLevel: Difficulty;
+  roundSeed: string;
   onTrainAgain: () => void;
   onTryLevel: (level: Difficulty) => void;
 }) => {
@@ -46,7 +48,13 @@ const LevelAdvancementOffer = ({
         <GameButton onClick={() => onTryLevel(nextLevel)}>
           Try <LevelLabel level={nextLevel} />
         </GameButton>
-        <GameButton tone="quiet" onClick={onTrainAgain}>
+        <GameButton
+          tone="quiet"
+          onClick={() => {
+            markStayedAtLevel(currentLevel, roundSeed);
+            onTrainAgain();
+          }}
+        >
           Train <LevelLabel level={currentLevel} /> again
         </GameButton>
       </div>
@@ -74,6 +82,7 @@ interface ResultsScreenProps {
   trainingError?: string;
   result: GameResult;
   resultSaved: boolean;
+  roundSeed: string;
   progressChanges: TrainerProgressChange[];
 }
 
@@ -91,6 +100,7 @@ export const ResultsScreen = ({
   trainingError,
   result,
   resultSaved,
+  roundSeed,
   progressChanges,
 }: ResultsScreenProps) => {
   const { playPerfect, playResults, playScoreCount, stopCelebration } =
@@ -318,6 +328,7 @@ export const ResultsScreen = ({
         <LevelAdvancementOffer
           currentLevel={result.rules.difficulty}
           nextLevel={nextLevel}
+          roundSeed={roundSeed}
           onTrainAgain={onTrainAgain}
           onTryLevel={onTryLevel}
         />

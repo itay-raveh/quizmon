@@ -327,6 +327,7 @@ const AppScreen = ({
       trainingError={training.error}
       result={session.result}
       resultSaved={session.resultSaved}
+      roundSeed={session.seed}
       progressChanges={session.progressChanges}
     />
   );
