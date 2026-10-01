@@ -10,5 +10,4 @@ export const friendsPageQuery = (
     queryFn: ({ pageParam }) => friendPage(owner, view, pageParam ?? undefined),
     initialPageParam: null as string | null,
     getNextPageParam: (last) => last.nextCursor,
-    refetchInterval: 60_000,
   });

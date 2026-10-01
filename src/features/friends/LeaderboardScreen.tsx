@@ -139,7 +139,6 @@ function Standings({
   const friends = useInfiniteQuery({
     ...friendsPageQuery(owner, 'friends'),
     enabled: active && scope === 'friends' && data?.items.length === 0,
-    refetchInterval: false,
   });
   useEffect(() => {
     const cause = board.error ?? (scope === 'friends' ? friends.error : null);
