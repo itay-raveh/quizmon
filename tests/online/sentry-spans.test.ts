@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { filterNodeDatabaseSpan } from '../../server/sentry-spans.ts';
 import { filterWorkerDatabaseSpan } from '../../worker/sentry-spans.ts';
 
-void test('database spans retain safe query shapes without values or connection details', () => {
+void test('database spans remove connection details and retain SDK query summaries', () => {
   const mongo = filterNodeDatabaseSpan({
     op: 'db',
     description: 'find { email: secret }',
@@ -26,12 +26,12 @@ void test('database spans retain safe query shapes without values or connection 
   });
 
   const postgres = filterWorkerDatabaseSpan({
-    name: "SELECT * FROM users WHERE email = 'secret'",
+    name: 'SELECT * FROM users WHERE email = ?',
     attributes: {
       'db.system.name': 'postgresql',
       'db.namespace': 'quizmon',
       'db.query.summary': 'SELECT users',
-      'db.query.text': "SELECT * FROM users WHERE email = 'secret'",
+      'db.query.text': 'SELECT * FROM users WHERE email = ?',
       'db.connection_string': 'postgresql://private-host/quizmon',
       'db.user': 'private-user',
       'server.address': 'private-host',

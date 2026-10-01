@@ -51,9 +51,6 @@ export const initSentry = () => {
         }),
         feedback,
       ],
-      beforeSendLog(log) {
-        return log.message === 'quizmon.failure' ? log : null;
-      },
       beforeSendMetric(metric) {
         delete metric.attributes?.['user.id'];
         delete metric.attributes?.['user.email'];

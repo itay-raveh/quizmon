@@ -41,7 +41,6 @@
     "@sentry/cloudflare": "^11.0.0",
     "@sentry/node": "10.75.1",
     "@sentry/react": "^10.75.1",
-    "@sentry/server-utils": "^11.0.0",
     "@tanstack/react-query": "^5.104.0",
     "@zumer/snapdom": "^2.24.15",
     "better-auth": "1.7.6",
@@ -136,7 +135,6 @@
     "ignoreDependencies": [
       "@fontsource-variable/gabarito",
       "@fontsource-variable/martian-mono",
-      "@sentry/server-utils",
       "cloudflare"
     ],
     "workspaces": {
