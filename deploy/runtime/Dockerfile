@@ -10,7 +10,7 @@ COPY deploy/migrate-release.ts deploy/migration-runner.ts deploy/release-lock.ts
 COPY src/lib/validation.ts src/lib/random.ts ./src/lib/
 COPY src/lib/storage/rxdb-database.ts src/lib/storage/rxdb-schema.ts ./src/lib/storage/
 COPY src/domain ./src/domain
-COPY server/instrument.ts server/sentry-spans.ts server/rxdb-sync.ts server/rxdb-read.ts server/standings.ts ./server/
+COPY server/instrument.ts server/rxdb-sync.ts server/rxdb-read.ts server/standings.ts ./server/
 COPY server/migrations ./server/migrations
 RUN node --input-type=module -e "await import('./server/instrument.ts'); await import('./server/rxdb-sync.ts'); await import('./deploy/migration-runner.ts')"
 ARG SENTRY_DSN

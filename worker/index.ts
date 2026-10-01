@@ -1,7 +1,6 @@
 import game, { DailyReminder as DailyReminderClass } from './game.ts';
 import accounts from '../server/worker.ts';
 import * as Sentry from '@sentry/cloudflare';
-import { filterWorkerDatabaseSpan } from './sentry-spans.ts';
 import type { DailyReminderEnv } from './daily-reminder.ts';
 
 type GameAccountEnv = Partial<AccountEnv> &
@@ -48,7 +47,6 @@ export default Sentry.withSentry(
               exception.value = exception.type ?? 'Unexpected error';
             return event;
           },
-          beforeSendSpan: filterWorkerDatabaseSpan,
         }
       : undefined,
   handler,

@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/node';
-import { filterNodeDatabaseSpan } from './sentry-spans.ts';
 
 if (process.env.SENTRY_DSN)
   Sentry.init({
@@ -17,5 +16,4 @@ if (process.env.SENTRY_DSN)
         exception.value = exception.type ?? 'Unexpected error';
       return event;
     },
-    beforeSendSpan: filterNodeDatabaseSpan,
   });
