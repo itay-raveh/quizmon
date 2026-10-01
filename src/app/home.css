@@ -153,6 +153,11 @@
 }
 
 .landing__actions .game-button > span {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
   color: inherit;
   font: inherit;
   letter-spacing: normal;
