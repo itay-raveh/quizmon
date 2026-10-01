@@ -7,11 +7,13 @@ import {
   SlidersHorizontalIcon,
 } from '@/components/icons';
 import type { Difficulty } from '@/domain/quiz/difficulty';
+import type { TrainerBadge } from '@/domain/player/trainer-progression';
 import { formatDailyDate } from '@/domain/quiz/format';
 import type { GameResult } from '@/domain/quiz/types';
 import { LeagueTrophy } from '@/features/league/LeagueTrophy';
 import { CatchCombo } from '@/features/daily/CatchCombo';
 import { ShareResultButton } from '@/features/sharing/ShareResultButton';
+import { TrainerBadgeMark } from '@/features/trainer/TrainerBadgeMark';
 import { Logo } from './Logo';
 import { Link } from 'react-router';
 import { useInteractionSound } from '@/lib/audio/sound-context';
@@ -26,6 +28,7 @@ interface HomeScreenProps {
   level: Difficulty;
   earnedBadgeCount: number;
   badgeCount: number;
+  badges?: readonly Pick<TrainerBadge, 'id' | 'tier'>[];
   leagueUnlocked: boolean;
   leagueCompleted?: boolean;
   onCustomizeTraining: () => void;
@@ -46,6 +49,7 @@ export const HomeScreen = ({
   level,
   earnedBadgeCount,
   badgeCount,
+  badges = [],
   leagueUnlocked,
   leagueCompleted = false,
   onCustomizeTraining,
@@ -60,7 +64,22 @@ export const HomeScreen = ({
   const dailyDetail = `${formatDailyDate(dailyDate)}${storageAvailable ? '' : ' · Browser storage required'}`;
   const leagueContent = (
     <>
-      <LeagueTrophy locked={!leagueCompleted} />
+      {leagueUnlocked ? (
+        <LeagueTrophy locked={!leagueCompleted} />
+      ) : (
+        <span className="landing__league-badges" aria-hidden="true">
+          {badges.length
+            ? badges.map(({ id, tier }) => (
+                <TrainerBadgeMark key={id} id={id} tier={tier} />
+              ))
+            : Array.from({ length: badgeCount }, (_, index) => (
+                <span
+                  className="landing__league-badge-placeholder"
+                  key={index}
+                />
+              ))}
+        </span>
+      )}
       <span className="landing__league-copy">
         <strong>Quizmon League</strong>
         <span>
@@ -68,7 +87,7 @@ export const HomeScreen = ({
             ? leagueCompleted
               ? 'Challenge · Hall of Fame'
               : 'Challenge'
-            : `Earn all ${badgeCount} badges · ${earnedBadgeCount}/${badgeCount} earned`}
+            : `${earnedBadgeCount} / ${badgeCount} badges`}
         </span>
       </span>
       {leagueUnlocked ? (

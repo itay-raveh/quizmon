@@ -332,9 +332,40 @@ html:has(.app--questions) {
   white-space: nowrap;
 }
 
+.level-label {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--navy);
+  background: var(--paper);
+  border: 2px solid var(--navy);
+  border-radius: 0.24em;
+  line-height: 1;
+  vertical-align: -0.2em;
+  white-space: nowrap;
+}
+
+.level-label__word {
+  padding: 0.25em 0.38em;
+  font-size: 0.72em;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .level-label__number {
+  display: inline-grid;
+  min-width: 1.7em;
+  align-self: stretch;
+  padding-inline: 0.3em;
+  place-items: center;
+  color: var(--navy);
+  background: var(--yellow);
+  border-left: 2px solid var(--navy);
   font-family: var(--font-data);
+  font-size: 0.84em;
   font-weight: 850;
+  line-height: 1;
 }
 
 .generation-label--stacked {
