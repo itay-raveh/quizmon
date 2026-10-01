@@ -16,10 +16,116 @@ env:
   MISE_LOCKED: 1
 
 jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      runtime: ${{ steps.filter.outputs.runtime }}
+      sync: ${{ steps.filter.outputs.sync }}
+      chart: ${{ steps.filter.outputs.chart }}
+      workflow: ${{ steps.filter.outputs.workflow }}
+      readme: ${{ steps.filter.outputs.readme }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          base: ${{ github.ref }}
+          predicate-quantifier: some-with-excludes
+          filters: |
+            code:
+              - 'src/**/*.ts'
+              - 'src/**/*.tsx'
+              - 'src/**/*.css'
+              - 'src/**/*.json'
+              - 'server/**'
+              - 'worker/**'
+              - 'deploy/**'
+              - 'scripts/**'
+              - 'build/**'
+              - 'tests/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'vite*.ts'
+              - 'tsconfig.json'
+              - 'eslint.config.js'
+              - 'drizzle.config.ts'
+              - '!**/*.md'
+            runtime:
+              - 'src/**'
+              - 'server/**'
+              - 'worker/**'
+              - 'deploy/**'
+              - 'scripts/**'
+              - 'build/**'
+              - 'content/**'
+              - 'public/**'
+              - 'index.html'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'vite*.ts'
+              - 'tsconfig.json'
+              - 'mise.toml'
+              - 'mise.lock'
+              - '!**/*.test.ts'
+              - '!**/*.test.tsx'
+              - '!**/*.spec.ts'
+              - '!**/*.spec.tsx'
+              - '!**/__tests__/**'
+              - '!scripts/dev/**'
+              - '!{src,server,worker,deploy,scripts,build,public}/**/*.md'
+              - '!deploy/wrangler.dev.jsonc'
+            sync:
+              - 'src/domain/**'
+              - 'src/lib/storage/**'
+              - 'src/lib/random.ts'
+              - 'src/lib/validation.ts'
+              - 'server/**'
+              - 'deploy/**'
+              - 'tests/online/**'
+              - 'compose.yaml'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'mise.toml'
+              - 'mise.lock'
+              - '.github/workflows/**'
+              - '!{src,server}/**/*.test.ts'
+              - '!{src,server}/**/*.test.tsx'
+              - '!{src,server}/**/*.spec.ts'
+              - '!{src,server}/**/*.spec.tsx'
+              - '!**/*.md'
+            chart:
+              - 'charts/**'
+              - 'tests/online/chart-values.yaml'
+              - 'tests/online/check-helm-chart.ts'
+              - 'mise.toml'
+              - 'mise.lock'
+              - '.github/workflows/**'
+              - '!**/*.md'
+            workflow:
+              - '.github/workflows/**'
+              - 'mise.toml'
+              - 'mise.lock'
+              - 'prek.toml'
+            readme:
+              - 'README.md'
+
   checks:
+    needs: changes
+    if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
+      - name: Verify change detection
+        env:
+          RESULT: ${{ needs.changes.result }}
+        run: test "$RESULT" = success
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
@@ -35,9 +141,38 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: npm run commitlint -- --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
-      - run: mise run check
+      - run: npm run format:check
+      - run: betterleaks git --redact --no-banner --no-color .
+      - if: needs.changes.outputs.code == 'true'
+        run: npm run lint
+      - if: needs.changes.outputs.code == 'true'
+        run: npm run check:dead-code
+      - if: needs.changes.outputs.code == 'true'
+        run: npm test
+      - if: needs.changes.outputs.code == 'true'
+        run: npm run test:online
+      - if: needs.changes.outputs.chart == 'true'
+        run: mise run check:chart
+      - if: needs.changes.outputs.code == 'true' && needs.changes.outputs.runtime != 'true'
+        run: npx tsc --noEmit
+      - if: needs.changes.outputs.runtime == 'true'
+        run: npm run build
+      - if: needs.changes.outputs.workflow == 'true'
+        run: prek validate-config prek.toml
+      - if: needs.changes.outputs.runtime == 'true'
+        run: npm run deploy:dry-run
+      - if: needs.changes.outputs.workflow == 'true'
+        run: actionlint
+      - if: needs.changes.outputs.workflow == 'true'
+        run: zizmor --offline .github/workflows
+      - if: needs.changes.outputs.runtime == 'true'
+        run: lychee --offline --include-fragments --root-dir "$PWD/dist" dist/index.html
+      - if: needs.changes.outputs.readme == 'true' || needs.changes.outputs.runtime == 'true'
+        run: lychee --offline --include-fragments README.md
 
   sync:
+    needs: changes
+    if: needs.changes.outputs.sync == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -55,8 +190,9 @@ jobs:
       - run: npm run test:sync
 
   publish:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [checks, sync]
+    if: >-
+      always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.result == 'success' && needs.changes.outputs.runtime == 'true' && needs.checks.result == 'success' && (needs.sync.result == 'success' || needs.sync.result == 'skipped')
+    needs: [changes, checks, sync]
     permissions:
       contents: read
       packages: write
